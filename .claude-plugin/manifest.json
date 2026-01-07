@@ -1,0 +1,106 @@
+{
+  "$schema": "https://claude.ai/schemas/plugin-manifest.json",
+  "name": "jerry",
+  "version": "0.1.0",
+  "description": "Framework for behavior and workflow guardrails with knowledge accrual",
+  "author": "Jerry Framework Contributors",
+  "license": "MIT",
+  "repository": "https://github.com/geekatron/jerry",
+  "keywords": [
+    "workflow",
+    "guardrails",
+    "knowledge-management",
+    "work-tracker",
+    "hexagonal-architecture"
+  ],
+  "engines": {
+    "claude-code": ">=1.0.0"
+  },
+  "main": "src/interface/cli/main.py",
+  "skills": [
+    {
+      "name": "worktracker",
+      "description": "Local work/task tracking (Azure DevOps/JIRA alternative)",
+      "entry": "skills/worktracker/SKILL.md",
+      "commands": [
+        "create",
+        "list",
+        "update",
+        "complete",
+        "search"
+      ]
+    },
+    {
+      "name": "architecture",
+      "description": "System design and architecture guidance",
+      "entry": "skills/architecture/SKILL.md",
+      "commands": [
+        "analyze",
+        "diagram",
+        "review"
+      ]
+    },
+    {
+      "name": "problem-solving",
+      "description": "Domain use case invocation",
+      "entry": "skills/problem-solving/SKILL.md",
+      "commands": [
+        "solve",
+        "decompose",
+        "research"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "orchestrator",
+      "description": "Task decomposition and coordination",
+      "entry": ".claude/agents/orchestrator.md"
+    },
+    {
+      "name": "qa-engineer",
+      "description": "Test design and quality assurance",
+      "entry": ".claude/agents/qa-engineer.md"
+    },
+    {
+      "name": "security-auditor",
+      "description": "Security review and vulnerability assessment",
+      "entry": ".claude/agents/security-auditor.md"
+    }
+  ],
+  "commands": [
+    {
+      "name": "architect",
+      "description": "Create architecture plan before implementation",
+      "entry": ".claude/commands/architect.md"
+    },
+    {
+      "name": "release",
+      "description": "Prepare release and CI/CD handoff",
+      "entry": ".claude/commands/release.md"
+    }
+  ],
+  "hooks": {
+    "pre_tool_use": ".claude/hooks/pre_tool_use.py",
+    "subagent_stop": ".claude/hooks/subagent_stop.py"
+  },
+  "configuration": {
+    "settings_file": ".claude/settings.json",
+    "rules_directory": ".claude/rules"
+  },
+  "dependencies": {
+    "runtime": {
+      "python": ">=3.11"
+    },
+    "optional": {
+      "typescript": ">=5.0"
+    }
+  },
+  "capabilities": {
+    "context_management": true,
+    "work_tracking": true,
+    "knowledge_capture": true,
+    "agent_orchestration": true,
+    "security_guardrails": true
+  }
+}
