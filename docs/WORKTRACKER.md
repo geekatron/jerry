@@ -3,7 +3,7 @@
 > Persistent work tracking for long-running sessions. Survives context compaction.
 
 **Last Updated**: 2026-01-07
-**Current Phase**: Phase 3 - Hexagonal Core Design
+**Current Phase**: Phase 3 - Hexagonal Core Design (Revised)
 **Session ID**: MG1nh
 
 ---
@@ -15,7 +15,8 @@
 | Phase 0: Research & Analysis | ✅ COMPLETED | 100% |
 | Phase 1: Governance Layer | ✅ COMPLETED | 100% |
 | Phase 2: Skills Interface Layer | ✅ COMPLETED | 100% |
-| **Phase 3: Hexagonal Core** | 🔄 IN DESIGN | 5% |
+| Phase 2.5: Deep Analysis (NEW) | ✅ COMPLETED | 100% |
+| **Phase 3: Hexagonal Core** | 🔄 IN DESIGN | 10% |
 | Phase 4: Testing & Validation | ⏳ PENDING | 0% |
 
 ---
@@ -70,44 +71,110 @@
 
 ---
 
-## Phase 3: Hexagonal Core (IN PROGRESS)
+## Phase 2.5: Deep Analysis of ECW Artifacts (NEW - COMPLETED)
 
-### WORK-010: Design & Planning ✅
-- **Status**: COMPLETED - AWAITING APPROVAL
-- **Output**: `docs/plans/PLAN.md`
+### WORK-015: ECW Lessons Learned Analysis ✅
+- **Status**: COMPLETED
+- **Input**: `docs/knowledge/dragonsbelurkin/glimmering-brewing-lake.md`
+- **Findings**:
+  - 108+ use cases documented
+  - State machines for Initiative/Phase/Task/Subtask
+  - CloudEvents 1.0 schema already defined
+  - 4 Bounded Contexts: Work Management, Knowledge Capture, Identity & Access, Reporting
 
-#### Sub-tasks:
-- [x] WORK-010.1: Deep research on DDD/Hexagonal/CQRS best practices
-- [x] WORK-010.2: Create Bounded Context Diagram
-- [x] WORK-010.3: Create Domain Entity Class Diagrams
-- [x] WORK-010.4: Create Value Object specifications
-- [x] WORK-010.5: Create Domain Event specifications
-- [x] WORK-010.6: Create Port Interface specifications
-- [x] WORK-010.7: Create Use Case specifications (Commands)
-- [x] WORK-010.8: Create Use Case specifications (Queries)
-- [x] WORK-010.9: Create Sequence Diagrams
-- [x] WORK-010.10: Create Activity Diagrams
-- [x] WORK-010.11: Create JSON Schemas for data contracts
-- [x] WORK-010.12: Create Package Diagram
-- [x] WORK-010.13: Define BDD test specifications
-- [x] WORK-010.14: Plan for edge cases and failure scenarios
+### WORK-016: Aggregate Root Sizing Research ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/AGGREGATE_ROOT_ANALYSIS.md`
+- **Key Finding**: Task as primary AR, Phase/Plan as secondary ARs
+- **Sources**: Vaughn Vernon (Implementing DDD), Eric Evans, ProjectOvation case study
+
+### WORK-017: CloudEvents Schema Analysis ✅
+- **Status**: COMPLETED
+- **Input**: `src/infrastructure/schemas/json/external/cloudevents-base.schema.json`
+- **Decision**: Adopt CloudEvents 1.0 with Jerry-specific extensions
+
+---
+
+## Phase 3: Hexagonal Core (IN PROGRESS - REVISED)
+
+### WORK-010: Design & Planning 🔄
+- **Status**: IN PROGRESS - REQUIRES REVISION
+- **Output**: `docs/plans/PLAN.md` (to be updated)
+- **REVISION REQUIRED**: Incorporate aggregate root findings
+
+#### New Sub-tasks (Based on Analysis):
+- [x] WORK-010.1: Analyze ECW v3 lessons learned
+- [x] WORK-010.2: Research aggregate root sizing (Vernon, Evans)
+- [x] WORK-010.3: Document aggregate root decision
+- [ ] WORK-010.4: Revise Bounded Context Diagram (3 ARs)
+- [ ] WORK-010.5: Revise Domain Entity Class Diagrams
+- [ ] WORK-010.6: Define strongly typed identity objects
+- [ ] WORK-010.7: Define CloudEvents-based domain events
+- [ ] WORK-010.8: Create eventual consistency event flow diagrams
+- [ ] WORK-010.9: Revise Use Case specifications
+- [ ] WORK-010.10: Revise JSON Schemas (CloudEvents)
+- [ ] WORK-010.11: Define BDD test specifications
 
 ### WORK-011: Domain Layer Implementation ⏳
-- **Status**: PENDING (awaiting WORK-010 approval)
+- **Status**: PENDING (awaiting WORK-010 revision)
 
-#### Sub-tasks (BDD Red/Green/Refactor):
-- [ ] WORK-011.1: Implement WorkItem aggregate
-  - [ ] Write failing unit tests (RED)
-  - [ ] Implement WorkItem entity (GREEN)
-  - [ ] Refactor and optimize (REFACTOR)
-  - [ ] Write integration tests
-  - [ ] Write contract tests
-- [ ] WORK-011.2: Implement Status value object
-- [ ] WORK-011.3: Implement Priority value object
-- [ ] WORK-011.4: Implement WorkItemId value object
-- [ ] WORK-011.5: Implement domain events
-- [ ] WORK-011.6: Implement domain exceptions
-- [ ] WORK-011.7: Define port interfaces (IRepository, INotifier)
+#### **REVISED Sub-tasks - Three Aggregate Roots:**
+
+**WORK-011.1: Strongly Typed Identity Objects**
+- [ ] RED: Write failing tests for TaskId
+- [ ] GREEN: Implement TaskId value object
+- [ ] RED: Write failing tests for PhaseId
+- [ ] GREEN: Implement PhaseId value object
+- [ ] RED: Write failing tests for PlanId
+- [ ] GREEN: Implement PlanId value object
+- [ ] RED: Write failing tests for SubtaskId
+- [ ] GREEN: Implement SubtaskId value object
+
+**WORK-011.2: Status Value Objects with State Machines**
+- [ ] RED: Write failing tests for TaskStatus
+- [ ] GREEN: Implement TaskStatus with valid transitions
+- [ ] RED: Write failing tests for PhaseStatus
+- [ ] GREEN: Implement PhaseStatus
+- [ ] RED: Write failing tests for PlanStatus
+- [ ] GREEN: Implement PlanStatus
+
+**WORK-011.3: CloudEvents Domain Events**
+- [ ] RED: Write failing tests for CloudEvent base
+- [ ] GREEN: Implement CloudEvent base class
+- [ ] RED: Write failing tests for TaskCreatedEvent
+- [ ] GREEN: Implement TaskCreatedEvent
+- [ ] Continue for all task/phase/plan events...
+
+**WORK-011.4: Task Aggregate Root (Primary AR)**
+- [ ] RED: Write failing tests for Task creation
+- [ ] GREEN: Implement Task.create()
+- [ ] RED: Write failing tests for Subtask management
+- [ ] GREEN: Implement add_subtask, check_subtask, remove_subtask
+- [ ] RED: Write failing tests for status transitions
+- [ ] GREEN: Implement start, complete, block, unblock
+- [ ] RED: Write failing tests for completion guards
+- [ ] GREEN: Implement all_subtasks_checked, evidence_attached guards
+
+**WORK-011.5: Phase Aggregate Root (Secondary AR)**
+- [ ] RED: Write failing tests for Phase creation
+- [ ] GREEN: Implement Phase.create()
+- [ ] RED: Write failing tests for task ID reference management
+- [ ] GREEN: Implement add_task_ref, remove_task_ref
+- [ ] Note: Progress derived from projections (eventual consistency)
+
+**WORK-011.6: Plan Aggregate Root (Tertiary AR)**
+- [ ] RED: Write failing tests for Plan creation
+- [ ] GREEN: Implement Plan.create()
+- [ ] RED: Write failing tests for phase ID reference management
+- [ ] GREEN: Implement add_phase_ref, remove_phase_ref
+- [ ] Note: Progress derived from projections (eventual consistency)
+
+**WORK-011.7: Domain Ports (Interfaces)**
+- [ ] Define IEventStore port
+- [ ] Define ITaskRepository port
+- [ ] Define IPhaseRepository port
+- [ ] Define IPlanRepository port
+- [ ] Define IEventBus port
 
 ### WORK-012: Application Layer Implementation ⏳
 - **Status**: PENDING
@@ -126,7 +193,7 @@
 
 | ID | Title | Severity | Status | Phase Found |
 |----|-------|----------|--------|-------------|
-| BUG-001 | (None yet) | - | - | - |
+| (None yet) | | | | |
 
 ---
 
@@ -139,6 +206,7 @@
 | DEBT-001 | Consider mypy for type checking | Low | OPEN | Phase 0 |
 | DEBT-002 | Add pre-commit hooks for linting | Medium | OPEN | Phase 1 |
 | DEBT-003 | Consider pytest over unittest | Low | OPEN | Phase 0 |
+| DEBT-004 | ECW had 128+ failing tests (context isolation) | High | NOTED | Phase 2.5 |
 
 ---
 
@@ -151,6 +219,13 @@
 | DISC-001 | Context rot threshold ~256k tokens | Research | CAPTURED | TECHNOLOGY_STACK_ANALYSIS.md |
 | DISC-002 | MCP has official Python SDK | Research | CAPTURED | POLYGLOT_ARCHITECTURE_ANALYSIS.md |
 | DISC-003 | Hexagonal enables polyglot adapters | Architecture | CAPTURED | POLYGLOT_ARCHITECTURE_ANALYSIS.md |
+| DISC-004 | **Small Aggregates Principle** - 70% of ARs are single entity + VOs | DDD | CAPTURED | AGGREGATE_ROOT_ANALYSIS.md |
+| DISC-005 | **Task as Primary AR** - Based on Vernon's ProjectOvation | DDD | CAPTURED | AGGREGATE_ROOT_ANALYSIS.md |
+| DISC-006 | **ECW Plan AR = Slow** - User confirmed performance issue | Performance | CAPTURED | AGGREGATE_ROOT_ANALYSIS.md |
+| DISC-007 | **ECW Phase AR = Still Slow** - User confirmed | Performance | CAPTURED | AGGREGATE_ROOT_ANALYSIS.md |
+| DISC-008 | **CloudEvents Required** - User hard requirement | Architecture | CAPTURED | User requirements |
+| DISC-009 | **Strongly Typed IDs Required** - User hard requirement | Architecture | CAPTURED | User requirements |
+| DISC-010 | ECW v3 had 108+ use cases documented | Knowledge | NOTED | glimmering-brewing-lake.md |
 
 ---
 
@@ -160,20 +235,33 @@
 - **Branch**: `claude/create-code-plugin-skill-MG1nh`
 - **Framework**: Jerry - behavior/workflow guardrails with knowledge accrual
 - **First Skill**: Work Tracker (local Azure DevOps/JIRA)
-- **Architecture**: Hexagonal (Ports & Adapters) with DDD and CQRS
+- **Architecture**: Hexagonal (Ports & Adapters) with DDD, Event Sourcing, CQRS
 - **Language**: Python 3.11+ (zero-dependency core where possible)
 
-### Key Decisions Made
+### Key Decisions Made (Updated)
 1. Python over TypeScript for core (evidence: stdlib completeness)
 2. SQLite for persistence (stdlib, no external deps)
 3. TypeScript reserved for network adapters if needed
 4. BDD approach with Red/Green/Refactor cycle
 5. All tests must be real, no stubs/mocks for assertions
+6. **NEW: Task as Primary Aggregate Root** (Vernon's small aggregates)
+7. **NEW: Phase and Plan as Secondary ARs** (eventual consistency)
+8. **NEW: CloudEvents 1.0 for all events** (user requirement)
+9. **NEW: Strongly typed identity objects** (user requirement)
+
+### Hard Requirements (From User)
+1. CloudEvents for event schema
+2. CloudEvents for persisting/transporting events
+3. Multiple Aggregate Roots (2-3) for large work trackers
+4. Strongly typed identity objects (not raw UUID/GUID)
+5. Must run in Claude Code Web Research Preview
 
 ### Next Actions
-1. Complete WORK-010 (Design & Planning)
-2. Get user approval on design artifacts
-3. Proceed to WORK-011 (Domain Layer) upon approval
+1. Update PLAN.md with revised aggregate root design
+2. Create new bounded context diagrams
+3. Define CloudEvents-based domain events
+4. Get user approval on revised design
+5. Proceed to WORK-011 (Domain Layer) upon approval
 
 ---
 
@@ -182,3 +270,7 @@
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-07 | Claude | Initial creation with Phases 0-3 |
+| 2026-01-07 | Claude | Added Phase 2.5: Deep Analysis |
+| 2026-01-07 | Claude | Revised Phase 3 based on aggregate root research |
+| 2026-01-07 | Claude | Added DISC-004 through DISC-010 |
+| 2026-01-07 | Claude | Updated Key Decisions with new findings |
