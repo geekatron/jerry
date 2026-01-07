@@ -1,677 +1,1722 @@
 ---
-name: problem-statement
-description: |
-  Manage Problem Statements (PS) for ECW sidequests using event sourcing.
-
-  USE WHEN:
-  - Understanding current problem context
-  - Adding constraints or questions discovered during work
-  - Tracking exploration progress and findings
-  - Working on phase-related tasks
-  - Starting a session (auto-loaded via SessionStart hook)
-  - **AUTOMATIC:** User says "research X", "analyze Y", "investigate Z", etc.
-
-  Provides contextual PS awareness during development with full audit trail.
-  Automatically invokes specialized agents when trigger phrases detected.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
-  - TodoWrite
-  - Task
-  # Context7 MCP tools for library/framework documentation (SOP-CB.6)
-  - mcp__context7__resolve-library-id
-  - mcp__context7__query-docs
+name: work-tracker
+description: Generate and track work items with phases, tasks, sub-tasks, and verification criteria. Use when starting new work, tracking progress, reviewing remaining work, or syncing work state across sessions. Integrates with ECW workflow for full traceability. (user)
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(python scripts/:*), TodoWrite
+version: "2.0.0"
 activation-keywords:
-  - research
-  - analyze
-  - investigate
-  - create adr
-  - review
-  - synthesize
-version: "2.7.0"
-model: inherit
+  - "track"
+  - "track work"
+  - "work items"
+  - "task list"
+  - "project status"
+  - "where were we"
+  - "what's remaining"
+  - "resume"
+  - "continue work"
+  - "show my work"
+  - "list work"
+  - "what's done"
+  - "mark complete"
+  - "update progress"
+  - "new project"
+  - "start project"
 ---
 
-# Problem Statement Skill
+# Work Tracker Skill
 
-> **Version:** 2.7.0
-> **Architecture:** Hexagonal + Event Sourcing
-> **Progressive Disclosure:** See `references/` for detailed documentation
+> **Template Version:** 2.0.0
+> **ECW Compatible:** v2.1.0+
+> **Persistence:** File-based (works in both local and web Claude Code)
+
+## Purpose
+
+Generate structured work tracking that survives session compaction and enables full progress tracking with:
+
+- **Phases:** High-level milestones
+- **Tasks:** Actionable work items within phases
+- **Sub-tasks:** Granular steps within tasks
+- **Verification Criteria:** How to confirm completion
+
+## When to Use This Skill
+
+Activate when:
+
+- Starting a new project or feature
+- Tracking work items ("track this work", "create a project")
+- Tracking progress ("what's remaining", "show status", "update progress")
+- Reviewing work state ("where are we", "what's done")
+- Resuming after session break (recovery verification)
+- Syncing state for cross-session continuity
+- User says "show my work" or selects a work item by number/name
+
+## Session Integration Flow
+
+At session start, the SessionStart hook:
+
+1. Calls `detect_work_state.py --write-state` to analyze all work items
+2. Writes state to `.ecw/work-state.json`
+3. Displays work context in session output
+
+When this skill activates, it should:
+
+### 1. Read Work State
+
+```bash
+cat .ecw/work-state.json
+```
+
+Or use the script directly:
+
+```bash
+python .claude/skills/work-tracker/scripts/detect_work_state.py --format json
+```
+
+### 2. Handle Based on State
+
+**State: `none`** (No work items exist)
+
+- Suggest: "No work items found. Want to create one? Say 'new project' or describe your work."
+- If user provides context, generate work tracker using `generate_tracker.py`
+
+**State: `single_active`** (One active work item)
+
+- Display: "Active work: {title} at {progress}%"
+- Display: "Current task: {task_id} - {task_desc}"
+- Ask: "Resume this work, or start something new?"
+- If resume: Load work to TodoWrite, show progress summary
+- If new: Proceed to new work flow
+
+**State: `multiple`** (Multiple work items)
+
+- Display numbered list of all work items with status and progress
+- Ask: "Which work item to focus on? (1/2/3 or 'new' for fresh start)"
+- Accept number or name as selection
+- Load selected work to TodoWrite
+
+**State: `error`** (Detection failed)
+
+- Display: "Unable to auto-detect work state."
+- Offer: "1. New Project, 2. Load from file, 3. Repair"
+
+### 3. Sync to TodoWrite
+
+When loading work, sync current phase tasks to TodoWrite:
+
+```bash
+python .claude/skills/work-tracker/scripts/load_from_file.py \
+  --work docs/plans/*.md \
+  --to-todowrite
+```
+
+## Environment Compatibility
+
+| Feature                   | Local CLI          | Web (Research Preview) |
+| ------------------------- | ------------------ | ---------------------- |
+| Work generation           | ✅                 | ✅                     |
+| Status updates            | ✅                 | ✅                     |
+| File sync (`.ecw/plans/`) | ✅                 | ✅                     |
+| Progress tracking         | ✅                 | ✅                     |
+| SessionStart integration  | ✅                 | ✅                     |
+| MCP Memory Keeper         | ✅ (if configured) | ❌ (not available)     |
+
+**Detection:** Use `$CLAUDE_CODE_REMOTE` to detect environment (see `docs/guides/claude-code-capabilities.md`)
+
+## Command Framework (Initiative 12 CQRS)
+
+The work-tracker skill now includes a complete CQRS command framework with 21 command classes and natural language interface.
+
+### Working Directory & Invocation
+
+**CRITICAL:** The wt.py script must be invoked correctly to avoid path resolution errors.
+
+#### Recommended: Invoke from Project Root
+
+Always invoke wt.py from the **project root** using the full relative path:
+
+```bash
+# From project root (recommended)
+cd /path/to/ecw-skills
+python3 .claude/skills/work-tracker/scripts/wt.py --tracker docs/plans/project.md "mark task 1.1 complete"
+```
+
+#### Alternative: Invoke from Skill Directory
+
+If running from the skill directory, use `scripts/` prefix:
+
+```bash
+# From skill directory
+cd /path/to/ecw-skills/.claude/skills/work-tracker
+python3 scripts/wt.py --tracker ../../../docs/plans/project.md "mark task 1.1 complete"
+```
+
+**Note:** Tracker paths must be relative to your current working directory, NOT the script location.
+
+#### Path Resolution Rules
+
+| Working Directory | wt.py Path | Tracker Path |
+|-------------------|------------|--------------|
+| Project root | `.claude/skills/work-tracker/scripts/wt.py` | `docs/plans/project.md` |
+| Skill root (`.claude/skills/work-tracker/`) | `scripts/wt.py` | `../../../docs/plans/project.md` |
+| Any directory | Full absolute path | Absolute or relative to CWD |
+
+#### Common Errors & Troubleshooting
+
+**Error:** `FileNotFoundError: docs/plans/project.md not found`
+- **Cause:** Running from skill directory but using project-root-relative path
+- **Fix:** Either `cd` to project root OR use relative path from current directory
+
+**Error:** `ModuleNotFoundError: No module named 'commands'`
+- **Cause:** Python can't find the commands package
+- **Fix:** Run from skill directory OR ensure PYTHONPATH includes skill root
+
+**Error:** `JSON file not found: .ecw/plans/project.json`
+- **Cause:** JSON SSOT not initialized or path resolution issue
+- **Fix:** Run `python3 scripts/sync_to_file.py --plan <tracker_path>` first
+
+**Error:** `Invalid task ID format`
+- **Cause:** Task ID doesn't match X.Y pattern (e.g., using "1" instead of "1.1")
+- **Fix:** Use full task ID like "1.1", "2.3", etc.
+
+#### Diagnosing Path Issues
+
+If you encounter path errors, use this checklist:
+
+```bash
+# 1. Check your current working directory
+pwd
+
+# 2. Verify the tracker file exists from your location
+ls -la docs/plans/project.md  # For project root
+ls -la ../../../docs/plans/project.md  # For skill directory
+
+# 3. Check if JSON SSOT exists
+ls -la .ecw/plans/  # For project root
+ls -la ../../../.ecw/plans/  # For skill directory
+
+# 4. Verify Python can find modules
+python3 -c "import sys; print('\n'.join(sys.path))"
+
+# 5. Test with absolute paths (always works)
+python3 /full/path/to/scripts/wt.py --tracker /full/path/to/tracker.md "show progress"
+```
+
+#### Quick Debugging Reference
+
+| Symptom | Most Likely Cause | Quick Fix |
+|---------|-------------------|-----------|
+| "file not found" | Wrong working directory | `cd` to project root |
+| "module not found" | Python path issue | Run from skill directory |
+| "JSON not found" | SSOT not synced | Run sync_to_file.py |
+| Command works but no changes | Using wrong tracker | Check --tracker path |
+
+#### CLAUDE.md Integration
+
+The CLAUDE.md file specifies wt.py usage (SOP-WT.0). All examples in CLAUDE.md assume **project root** as working directory:
+
+```bash
+# CLAUDE.md examples (from project root)
+python3 .claude/skills/work-tracker/scripts/wt.py --tracker docs/plans/wt-skill-dev/19-sop-remediation.md "mark task 5.3 complete"
+```
+
+### Natural Language Interface (wt.py)
+
+```bash
+# Phase operations
+python scripts/wt.py "add phase 9 called Integration Testing"
+python scripts/wt.py "update phase 3 to complete"
+python scripts/wt.py "delete phase 7"
+python scripts/wt.py "reorder phases"
+
+# Task operations
+python scripts/wt.py "add task to phase 9 called Create BDD tests"
+python scripts/wt.py "mark task 5.3 complete"
+python scripts/wt.py "update task 2.1 status in_progress"
+python scripts/wt.py "move task 5.3 to phase 6"
+python scripts/wt.py "delete task 4.2"
+
+# Subtask operations
+python scripts/wt.py "add subtask to task 9.1 called Test hooks"
+python scripts/wt.py "check subtask 1.1.4"
+python scripts/wt.py "complete subtask 3.2.5"
+python scripts/wt.py "delete subtask 2.3.1"
+
+# Evidence operations
+python scripts/wt.py "attach evidence to task 2.3"
+python scripts/wt.py "verify evidence for task 1.1"
+
+# Progress and display
+python scripts/wt.py "show progress"
+python scripts/wt.py "what's remaining"
+
+# Markdown generation
+python scripts/wt.py "regenerate markdown"
+python scripts/wt.py "regenerate enhanced"
+```
+
+### Available Commands (21 Classes)
+
+#### Phase Commands
+- **AddPhaseCommand** - Add new phase with title, target date
+- **UpdatePhaseCommand** - Update phase status/properties
+- **DeletePhaseCommand** - Remove phase and its tasks
+- **ReorderPhasesCommand** - Change phase sequence
+
+#### Task Commands
+- **AddTaskCommand** - Add task to specific phase
+- **UpdateTaskCommand** - Update task status/verification
+- **DeleteTaskCommand** - Remove task from phase
+- **MoveTaskCommand** - Move task between phases
+
+#### Subtask Commands
+- **AddSubtaskCommand** - Add subtask to task
+- **UpdateSubtaskCommand** - Check/uncheck subtasks
+- **DeleteSubtaskCommand** - Remove subtask
+- **BulkSubtaskCommand** - Bulk check/uncheck operations
+
+#### Work Tracker Commands
+- **UpdateWorkTrackerCommand** - Recalculate all progress
+- **AttachEvidenceCommand** - Add evidence to tasks/subtasks
+- **VerifyEvidenceCommand** - Mark evidence as verified
+
+#### Initiative Commands
+- **CreateInitiativeCommand** - Start new initiative
+- **UpdateInitiativeMetadataCommand** - Update metadata
+- **SetInitiativeProgressCommand** - Set overall progress
+- **LinkPlanCommand** - Link plans together
+
+#### Markdown Generation
+- **FullFidelityMarkdownGenerator** - Lossless round-trip markdown (recommended)
+- ~~EnhancedMarkdownGenerator~~ - DEPRECATED (loses data)
+- ~~MarkdownGenerator~~ - DEPRECATED (loses data)
+
+### Command Execution Flow
+
+```
+User Input → Natural Language → Dispatcher → Command → ScriptBridge → Scripts → Fingerprint
+```
+
+This ensures:
+- ✅ Skill fingerprints maintained (wt-v2.0.0-*)
+- ✅ Sync logs show skill attribution
+- ✅ JSON properly synced to `.claude/docs/.ecw/plans/`
+- ✅ Main branch compatibility preserved
+
+## Quick Workflow
+
+> **D-040 IMPORTANT:** All operations MUST use `wt.py`. See [CLI Reference](docs/cli-reference.md) for all 27 commands.
+
+### 1. Create New Work Tracker
+
+```bash
+# Use generate_tracker.py for new trackers
+python scripts/generate_tracker.py \
+  --title "Authentication" \
+  --output docs/plans/authentication.md
+```
+
+### 2. Build Tracker Structure
+
+```bash
+# Use wt.py for ALL operations (D-040)
+TRACKER="docs/plans/authentication.md"
+
+# Add phases
+python scripts/wt.py --tracker $TRACKER "add phase Implementation"
+python scripts/wt.py --tracker $TRACKER "add phase Testing"
+
+# Add tasks to phases
+python scripts/wt.py --tracker $TRACKER "add task to phase 1: Write unit tests"
+python scripts/wt.py --tracker $TRACKER "add task to phase 1: Implement auth module"
+
+# Add subtasks
+python scripts/wt.py --tracker $TRACKER "add subtask to task 1.1: Test login function"
+python scripts/wt.py --tracker $TRACKER "add subtask to task 1.1: Test logout function"
+```
+
+### 3. Track Progress
+
+```bash
+# Mark tasks in progress
+python scripts/wt.py --tracker $TRACKER "mark task 1.1 in progress"
+
+# Check subtasks as you complete them
+python scripts/wt.py --tracker $TRACKER "check subtask 1.1.1"
+python scripts/wt.py --tracker $TRACKER "check subtask 1.1.2"
+
+# Mark tasks complete
+python scripts/wt.py --tracker $TRACKER "mark task 1.1 complete"
+
+# View progress
+python scripts/wt.py --tracker $TRACKER "show progress"
+```
+
+### 4. Manage Evidence (D-040 - Use wt.py!)
+
+```bash
+# Attach evidence (command output)
+python scripts/wt.py --tracker $TRACKER \
+  'attach evidence to task 1.1: command_output "pytest tests/ - 25 passed"'
+
+# Attach evidence (file reference)
+python scripts/wt.py --tracker $TRACKER \
+  'attach evidence to task 1.2: file_reference "docs/screenshots/feature.png"'
+
+# Attach evidence (manual note)
+python scripts/wt.py --tracker $TRACKER \
+  'attach evidence to task 1.3: manual_note "Manually verified login flow"'
+```
+
+### Documentation Links
+
+| Document | Purpose |
+|----------|---------|
+| [CLI Reference](docs/cli-reference.md) | All 27 commands with examples |
+| [Architecture](docs/architecture.md) | Hexagonal layers, JSON SSOT |
+| [Migration API](docs/migration-tools-api.md) | Schema migration functions |
+| [Playbooks](docs/playbooks-runbooks.md) | Migration guides, troubleshooting |
+
+### 5. Session Management
+
+```bash
+# Sync to JSON for persistence
+python scripts/sync_to_file.py \
+  --work docs/plans/project.md
+
+# Load work state at session start
+python scripts/load_from_file.py \
+  --all --format sessionstart
+
+# Verify integrity
+python scripts/verify_recovery.py \
+  --work docs/plans/project.md
+```
+
+### 6. Export and Report
+
+```bash
+# Export to proposal format
+python scripts/export_work.py \
+  --work docs/plans/project.md \
+  --to-proposal docs/proposals/
+
+# Generate enhanced documentation
+python scripts/wt.py "regenerate enhanced"
+```
+
+## Persistence Architecture
+
+### Universal (Works Everywhere)
+
+```
+┌─────────────────────────────────────────────────────┐
+│                 FILE-BASED PERSISTENCE               │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  ┌─────────────────────┐    ┌─────────────────────┐ │
+│  │  docs/plans/*.md     │    │  .ecw/plans/*.json   │ │
+│  │  (Primary/Human)    │    │  (Secondary/Fast)   │ │
+│  │  Git-tracked        │    │  Machine-readable   │ │
+│  └──────────┬──────────┘    └──────────┬──────────┘ │
+│             │                          │            │
+│             └──────────┬───────────────┘            │
+│                        │                            │
+│             ┌──────────▼──────────┐                 │
+│             │   sync_to_file.py   │                 │
+│             │   load_from_file.py │                 │
+│             └─────────────────────┘                 │
+│                                                      │
+│  ✅ Works in Local CLI                               │
+│  ✅ Works in Web (Research Preview)                  │
+│  ✅ Works in Hooks (subprocess context)              │
+│                                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+### Local-Only Enhancement (Optional)
+
+```
+┌─────────────────────────────────────────────────────┐
+│           MCP MEMORY KEEPER (LOCAL ONLY)             │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  If $CLAUDE_CODE_REMOTE != "true" AND MCP configured:│
+│                                                      │
+│  ┌─────────────────────────────────────────────────┐│
+│  │  work:{id}:meta     → Work metadata             ││
+│  │  work:{id}:phase:{n} → Phase status             ││
+│  │  work:{id}:task:{n.m} → Task details            ││
+│  │  work:{id}:progress  → Progress summary         ││
+│  └─────────────────────────────────────────────────┘│
+│                                                      │
+│  ❌ NOT available in Web (Research Preview)          │
+│  ❌ NOT available in Hooks (subprocess isolation)    │
+│                                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+## Sync Protocol
+
+### Primary (File-Based - Always Used)
+
+```python
+# On work creation/update
+1. Write markdown to docs/plans/*.md
+2. Parse work structure
+3. Write JSON to .ecw/plans/*.json (sync_to_file.py)
+4. Update TodoWrite for active tasks
+
+# On session resume
+1. SessionStart calls load_from_file.py
+2. Display active work with progress
+3. Show current task context
+```
+
+### Secondary (MCP - Local CLI Only)
+
+```python
+# Only if $CLAUDE_CODE_REMOTE != "true"
+# AND Memory Keeper MCP is configured
+
+# On sync request
+1. Check environment: if remote, skip MCP
+2. Store structured data in Memory Keeper
+3. Keys: work:{id}:meta, work:{id}:phase:*, etc.
+```
+
+## Recovery Verification
+
+```bash
+python .claude/skills/work-tracker/scripts/verify_recovery.py \
+  --work docs/plans/project-name.md
+```
+
+**What it verifies:**
+
+1. Work file exists on disk
+2. Checksum is valid (content integrity)
+3. Progress summary matches task statuses
+4. JSON sync file exists and matches
+
+**On mismatch:**
+
+- Disk is source of truth
+- JSON is regenerated from disk
+- Issue is reported
+
+## Work Structure (ECW Full v2.0.0)
+
+```markdown
+# Work Tracker: {Title}
+
+> **Version:** 2.0.0
+> **Template:** ECW Full v2.0.0
+> **Status:** Active | Complete | On Hold
+> **Created:** YYYY-MM-DD
+> **Updated:** YYYY-MM-DD
+> **Session:** {session-id}
+> **Work ID:** {slug}-{date}
+
+---
 
 ## Overview
 
-Manages Problem Statements (PS) for ECW sidequests using event sourcing and hexagonal architecture. Provides CLI tools, auto-migration from markdown, and SessionStart integration.
-
-**NEW in v2.7.0:** Automatic Agent Invocation - skill detects trigger phrases and automatically creates PS entries + invokes specialized agents.
+{Brief description of the project goal}
 
 ---
 
-## Automatic Agent Invocation (Phase 38.17 - Option A)
+## Phases
 
-When the user says phrases like "research X", "analyze Y", or "investigate Z", this skill **automatically**:
-1. Detects the trigger phrase
-2. Creates a PS exploration entry via CLI
-3. Invokes the appropriate specialized agent via Task tool
+### Phase 1: {Phase Name}
 
-### Trigger Detection
+> **Status:** Pending | In Progress | Complete
 
-The skill activates on these trigger phrases:
+#### Tasks
 
-| Trigger Phrase | Agent Invoked | Entry Type |
-|----------------|---------------|------------|
-| `research {topic}` | ps-researcher | RESEARCH |
-| `analyze {topic}` | ps-analyst | ANALYSIS |
-| `investigate {topic}` | ps-investigator | INVESTIGATION |
-| `create ADR for {topic}` | ps-architect | DECISION |
-| `review {topic}` | ps-reviewer | REVIEW |
-| `synthesize {topic}` | ps-synthesizer | SYNTHESIS |
+| ID  | Task | Status  | Verification |
+| --- | ---- | ------- | ------------ |
+| 1.1 | ...  | Pending | ...          |
 
-### Activation Rules
+#### Sub-tasks
 
-1. **Trigger must be at sentence start** - "research API patterns" activates, "I researched this" does not
-2. **Topic is extracted** from text following the trigger phrase
-3. **Debouncing** - duplicate triggers within 5 seconds are ignored
+- [ ] 1.1.1: ...
 
-### Automatic Workflow
+---
 
-When triggered, the skill executes:
+## Progress Summary
 
-```bash
-# Step 1: Create PS entry (c-006 compliant - classified at creation)
-python3 {baseDir}/scripts/cli.py add-entry {ps-id} "{Type}: {topic}" \
-    --type {ENTRY_TYPE} \
-    --severity MEDIUM
+| Phase | Tasks | Done | Remaining | % Complete |
+| ----- | ----- | ---- | --------- | ---------- |
 
-# Step 2: Capture entry ID from output (e.g., "e-042")
+---
 
-# Step 3: Invoke appropriate agent via Task tool
+## Recovery Checksum
 ```
 
-### Task Invocation Template
+{16-char-hex-checksum}
 
-For each trigger, the skill invokes the Task tool with:
+```
 
-```python
-Task(
-    description="{agent-name}: {topic}",
-    subagent_type="general-purpose",
-    prompt="""
-You are the {agent-name} agent.
+## Status Indicators
 
-## PS CONTEXT (REQUIRED)
-- **PS ID:** {ps_id}
-- **Entry ID:** {entry_id}
-- **Topic:** {topic}
+| Status      | Meaning               | Icon |
+| ----------- | --------------------- | ---- |
+| Pending     | Not started           | ⏳   |
+| In Progress | Currently working     | 🔄   |
+| Blocked     | Waiting on dependency | 🔴   |
+| Complete    | Verified done         | ✅   |
+| Deferred    | Postponed             | ⏸️   |
 
-## MANDATORY PERSISTENCE (c-009)
-After completing your work, you MUST:
+## Hierarchical Status Taxonomy
 
-1. Use the Write tool to create your output at:
-   `sidequests/{sidequest}/docs/{output_dir}/{ps_id}-{entry_id}-{topic_slug}.md`
+Work Tracker v2.0.0+ implements a **hierarchical status taxonomy** that provides granular progress tracking through workflow zones.
 
-2. Use the template structure from:
-   `.claude/skills/problem-statement/templates/{template}.md`
+### Status Format
 
-3. Run this command to link the artifact:
+Statuses follow the format: `Zone.Phase.Step` or `Zone.Status`
+
+Examples:
+- `Discovery.Created` - Simple zone status
+- `Development.Work.SliceStarted` - Full hierarchical (Zone.Phase.Step)
+- `Review.Code.Approved` - Multi-level hierarchy
+
+### Status Zones (6 Lifecycle Zones)
+
+Work items progress through these zones in sequence:
+
+```
+Discovery → Design → Development → Review → Consent → Terminal
+```
+
+| Zone | Purpose | Entry Status | Exit Status |
+|------|---------|--------------|-------------|
+| **Discovery** | Problem exploration, requirements gathering | `Discovery.Created` | `Discovery.ReadyForDesign` |
+| **Design** | Domain modeling, architecture decisions | `Design.Domain.Modeling` | `Design.ReadyForDevelopment` |
+| **Development** | Implementation (Work→Right→Fast) | `Development.Work.SliceStarted` | `Development.ReadyForReview` |
+| **Review** | Code, design, evidence validation | `Review.Code.Requested` | `Review.AllApproved` |
+| **Consent** | User approval workflow (SOP-WT.2) | `Consent.Awaiting` | `Consent.Granted` |
+| **Terminal** | Final states (completed/cancelled) | Any terminal status | N/A |
+
+### Zone-Specific Status Enums
+
+#### Discovery Zone (`DiscoveryStatus`)
+
+| Status | Value | Purpose |
+|--------|-------|---------|
+| CREATED | `Discovery.Created` | Initial state |
+| EXPLORING | `Discovery.Exploring` | Active exploration |
+| REQUIREMENTS_GATHERING | `Discovery.Requirements.Gathering` | Collecting requirements |
+| REQUIREMENTS_CLARIFYING | `Discovery.Requirements.Clarifying` | Refining requirements |
+| USECASE_ANALYZING | `Discovery.UseCase.Analyzing` | Analyzing use cases |
+| USECASE_SLICING | `Discovery.UseCase.Slicing` | Breaking into slices |
+| READY_FOR_DESIGN | `Discovery.ReadyForDesign` | Zone exit status |
+
+#### Design Zone (`DesignStatus`)
+
+| Status | Value | Purpose |
+|--------|-------|---------|
+| DOMAIN_MODELING | `Design.Domain.Modeling` | Creating domain model |
+| DOMAIN_COMPLETED | `Design.Domain.Completed` | Domain model done |
+| ARCHITECTURE_DRAFTING | `Design.Architecture.Drafting` | Architecture design |
+| ARCHITECTURE_VALIDATED | `Design.Architecture.Validated` | Architecture approved |
+| CONTRACTS_DEFINING | `Design.Contracts.Defining` | API/Interface contracts |
+| CONTRACTS_AGREED | `Design.Contracts.Agreed` | Contracts finalized |
+| READY_FOR_DEVELOPMENT | `Design.ReadyForDevelopment` | Zone exit status |
+
+#### Development Zone (`DevelopmentStatus`) - Kent Beck Phases
+
+Development follows Kent Beck's "Make it Work → Make it Right → Make it Fast":
+
+**Make it Work (Work Phase)**
+| Status | Value | Purpose |
+|--------|-------|---------|
+| WORK_SLICE_STARTED | `Development.Work.SliceStarted` | Started implementation |
+| WORK_IMPLEMENTING | `Development.Work.Implementing` | Writing code |
+| WORK_INTEGRATING | `Development.Work.Integrating` | Integration work |
+| WORK_SLICE_WORKS | `Development.Work.SliceWorks` | Basic functionality works |
+
+**Make it Right (Right Phase)**
+| Status | Value | Purpose |
+|--------|-------|---------|
+| RIGHT_REFACTORING | `Development.Right.Refactoring` | Code cleanup |
+| RIGHT_EDGE_CASES | `Development.Right.EdgeCases` | Handling edge cases |
+| RIGHT_TEST_HARDENING | `Development.Right.TestHardening` | Improving test coverage |
+| RIGHT_SLICE_CLEAN | `Development.Right.SliceClean` | Code is clean |
+
+**Make it Fast (Fast Phase)**
+| Status | Value | Purpose |
+|--------|-------|---------|
+| FAST_PROFILING | `Development.Fast.Profiling` | Performance profiling |
+| FAST_OPTIMIZING | `Development.Fast.Optimizing` | Optimization work |
+| FAST_LOAD_TESTING | `Development.Fast.LoadTesting` | Load testing |
+| FAST_SLICE_OPTIMIZED | `Development.Fast.SliceOptimized` | Performance acceptable |
+
+**Exit Status**
+| Status | Value | Purpose |
+|--------|-------|---------|
+| READY_FOR_REVIEW | `Development.ReadyForReview` | Zone exit status |
+
+#### Review Zone (`ReviewStatus`)
+
+| Category | Statuses |
+|----------|----------|
+| **Code Review** | `Review.Code.Requested`, `Review.Code.InReview`, `Review.Code.ChangesRequested`, `Review.Code.Approved` |
+| **Design Review** | `Review.Design.Requested`, `Review.Design.InReview`, `Review.Design.ChangesRequested`, `Review.Design.Approved` |
+| **Evidence Review** | `Review.Evidence.Requested`, `Review.Evidence.InReview`, `Review.Evidence.ChangesRequested`, `Review.Evidence.Approved` |
+| **Security Review** | `Review.Security.Requested`, `Review.Security.InReview`, `Review.Security.ChangesRequested`, `Review.Security.Approved` |
+| **Exit** | `Review.AllApproved` |
+
+#### Consent Zone (`ConsentStatus`)
+
+| Status | Value | Purpose |
+|--------|-------|---------|
+| AWAITING_CONSENT | `Consent.Awaiting` | Waiting for user approval |
+| CONSENT_GRANTED | `Consent.Granted` | User approved (zone exit) |
+| CONSENT_DENIED | `Consent.Denied` | User rejected |
+
+#### Terminal Zone (`TerminalStatus`)
+
+| Status | Value | Purpose |
+|--------|-------|---------|
+| COMPLETE | `Terminal.Complete` | Successfully completed |
+| MERGED | `Terminal.Merged` | Code merged to main |
+| SUPERSEDED | `Terminal.Superseded` | Replaced by another work item |
+| CANCELLED | `Terminal.Cancelled` | Work cancelled |
+| REJECTED | `Terminal.Rejected` | Work rejected |
+| ARCHIVED | `Terminal.Archived` | Archived for reference |
+
+### Cross-Zone Statuses
+
+These statuses can apply regardless of current zone:
+
+#### Deferred Status (`DeferredStatus`)
+
+| Status | Value | Resumable | Priority |
+|--------|-------|-----------|----------|
+| NEXT_SPRINT | `Deferred.NextSprint` | Yes | High |
+| NEXT_PHASE | `Deferred.NextPhase` | Yes | Medium |
+| BACKLOG | `Deferred.Backlog` | Yes | Low |
+| INDEFINITELY | `Deferred.Indefinitely` | No (explicit) | None |
+
+#### Blocking Status (`BlockingStatus`)
+
+| Status | Value | Description |
+|--------|-------|-------------|
+| TECHNICAL_ISSUE | `Blocked.TechnicalIssue` | Technical blocker |
+| WAITING_DEPENDENCY | `Blocked.WaitingDependency` | Waiting on another work item |
+| WAITING_RESOURCE | `Blocked.WaitingResource` | Resource unavailable |
+| WAITING_APPROVAL | `Blocked.WaitingApproval` | Waiting for approval |
+| WAITING_CLARIFICATION | `Blocked.WaitingClarification` | Need more information |
+| WAITING_EXTERNAL | `Blocked.WaitingExternal` | External dependency |
+
+### Backtrack Triggers
+
+When work needs to return to an earlier zone, a **backtrack trigger** must be specified:
+
+#### Discovery Backtrack Triggers
+- `SCOPE_CREEP` - Requirements expanded beyond original
+- `WRONG_PROBLEM` - Solving wrong problem
+- `STAKEHOLDER_CHANGE` - Stakeholder requirements changed
+- `REQUIREMENTS_UNCLEAR` - Requirements need clarification
+- `MARKET_SHIFT` - Market conditions changed
+
+#### Design Backtrack Triggers
+- `ENTITY_MISSING` - Domain model incomplete
+- `RELATIONSHIP_WRONG` - Incorrect entity relationships
+- `CONTRACT_INVALID` - API contract doesn't work
+- `ARCHITECTURE_FLAW` - Architecture issue discovered
+- `PERFORMANCE_CONSTRAINT` - Can't meet performance with current design
+
+#### Development Backtrack Triggers
+- `NEEDS_MORE_WORK` - Implementation incomplete
+- `ALGORITHM_CHOICE_WRONG` - Wrong algorithm selected
+- `MISSING_TESTS` - Test coverage insufficient
+- `INTEGRATION_FAILED` - Integration issues
+
+### Status Transitions
+
+**Forward Transitions (Normal Flow)**
+```
+Discovery → Design → Development → Review → Consent → Terminal
+```
+
+**Backtrack Transitions (Require Trigger)**
+```
+Development → Design (trigger: ENTITY_MISSING)
+Development → Discovery (trigger: SCOPE_CREEP)
+Review → Development (trigger: NEEDS_MORE_WORK)
+```
+
+**Cross-Zone Transitions**
+```
+Any Zone → Deferred (preserves previous zone)
+Any Zone → Blocked (preserves previous zone)
+Deferred → Previous Zone (resume)
+Blocked → Previous Zone (unblock)
+```
+
+### Status History Tracking
+
+Each status change is recorded with:
+- `from_status` - Previous status
+- `to_status` - New status
+- `timestamp` - When change occurred
+- `is_backtrack` - Boolean flag for backtracks
+- `is_zone_change` - Boolean flag for zone transitions
+- `reason` - Backtrack trigger (if applicable)
+
+### Using Hierarchical Status
+
+```bash
+# Update task with hierarchical status
+python scripts/wt.py --tracker docs/plans/project.md "update task 1.1 status to Development.Work.Implementing"
+
+# Mark task for backtrack to Discovery
+python scripts/wt.py --tracker docs/plans/project.md "update task 1.1 status to Discovery.Exploring"
+# System will prompt for backtrack trigger
+
+# Defer a task
+python scripts/wt.py --tracker docs/plans/project.md "update task 1.1 status to Deferred.NextSprint"
+
+# Block a task
+python scripts/wt.py --tracker docs/plans/project.md "update task 1.1 status to Blocked.WaitingDependency"
+```
+
+## Evidence Tracking
+
+Work Tracker supports **evidence tracking** to provide verifiable proof of task completion. Evidence can be recorded at **task-level** or **sub-task-level** based on work complexity.
+
+### Evidence Levels
+
+Evidence can be one of three levels:
+
+| Level            | Description                                    | Use When                                |
+| ---------------- | ---------------------------------------------- | --------------------------------------- |
+| `command_output` | Shell command execution with output            | Tests passed, builds succeeded          |
+| `file_reference` | Reference to artifact file                     | Screenshots, logs, generated files      |
+| `manual_note`    | Human verification note                        | Manual testing, stakeholder approval    |
+
+### Recording Evidence
+
+Use `update_status.py` with evidence arguments when marking tasks complete:
+
+**Command Output Evidence:**
+
+```bash
+python scripts/update_status.py \
+  --plan docs/work/my-work.md \
+  --task 1.1 \
+  --status complete \
+  --evidence-level command_output \
+  --evidence-command "pytest tests/" \
+  --evidence-output "===== 25 passed ====="
+```
+
+**File Reference Evidence:**
+
+```bash
+python scripts/update_status.py \
+  --plan docs/work/my-work.md \
+  --task 1.2 \
+  --status complete \
+  --evidence-level file_reference \
+  --evidence-file "docs/screenshots/feature-complete.png"
+```
+
+**Manual Note Evidence:**
+
+```bash
+python scripts/update_status.py \
+  --plan docs/work/my-work.md \
+  --task 1.3 \
+  --status complete \
+  --evidence-level manual_note \
+  --evidence-note "Feature reviewed and approved by product team"
+```
+
+### Enforcement Mode
+
+Use `--enforce-evidence` to **require** evidence before marking tasks complete:
+
+```bash
+python scripts/update_status.py \
+  --plan docs/work/my-work.md \
+  --task 2.1 \
+  --status complete \
+  --enforce-evidence \
+  --evidence-level command_output \
+  --evidence-command "npm test" \
+  --evidence-output "All tests passed"
+```
+
+Without evidence, the update will be **rejected**:
+
+```
+Error: Evidence enforcement failed - Task 2.1 requires at least 1 evidence entry
+```
+
+### Flexible Evidence
+
+Evidence is **flexible** - you can choose the granularity:
+
+- **Task-level only:** Evidence for overall task completion
+- **Sub-task-level only:** Evidence for individual sub-tasks
+- **Mixed:** Some tasks have task-level evidence, others have sub-task evidence
+- **Combined:** Both task-level AND sub-task-level evidence for the same task
+
+Example: Complex task with both levels
+
+```
+## Evidence
+
+#### Task 1.1: Implement authentication
+
+Evidence Entry (ID: abc123)
+- Level: command_output
+- Status: verified
+
+Command: pytest tests/integration/
+Output: ===== 50 integration tests passed =====
+
+✅ VERIFIED: Integration tests passed for task 1.1
+
+#### Task 1.1 / Sub-task 1.1.1: Unit tests
+
+Evidence Entry (ID: def456)
+- Level: file_reference
+- Status: verified
+
+File Reference: tests/unit/test_auth.py
+
+✅ VERIFIED: Unit tests for authentication module
+```
+
+### Evidence Display
+
+Evidence appears automatically in:
+
+- **Progress reports:** `show_progress.py` shows evidence count per task
+- **Work state:** `detect_work_state.py` includes evidence summary
+- **SessionStart hook:** Shows evidence verification percentage
+
+Example progress display:
+
+```
+PHASE 1: Implementation
+Status: In Progress
+Evidence: 5 entries, 80% verified
+
+Tasks:
+  ✅ 1.1: Authentication (2 evidence) ✅
+  🔄 1.2: Authorization (1 evidence) ⏳
+  ⏳ 1.3: Logging ○
+```
+
+Evidence indicators:
+- ✅ = Has verified evidence
+- ⏳ = Has pending (unverified) evidence
+- ○ = No evidence yet
+
+## Command Execution Patterns
+
+### Natural Language Interface (wt.py)
+
+The skill provides a natural language CLI for common operations:
+
+```bash
+# When user says "mark task 5.3 complete"
+python scripts/wt.py "mark task 5.3 complete"
+
+# When user says "add phase Testing"
+python scripts/wt.py "add phase Testing"
+
+# When user says "show progress"
+python scripts/wt.py "show progress"
+
+# When user says "update phase 2 to in progress"
+python scripts/wt.py "update phase 2 to in progress"
+```
+
+### Direct Script Execution
+
+For specific operations, use the appropriate scripts directly:
+
+#### Status Updates
+```bash
+# Update task status
+python scripts/update_status.py --plan {tracker} --task 1.2 --status complete
+
+# Update phase status
+python scripts/update_status.py --plan {tracker} --phase 2 --status "in_progress"
+
+# Check off subtask
+python scripts/update_status.py --plan {tracker} --subtask 1.2.3 --check
+```
+
+#### Progress and Display
+```bash
+# Show current progress
+python scripts/show_progress.py --plan {tracker} --format compact
+
+# Detect work state (for session start)
+python scripts/detect_work_state.py
+
+# Verify integrity
+python scripts/verify_recovery.py --plan {tracker}
+```
+
+#### Tracker Management
+```bash
+# Generate new tracker
+python scripts/generate_tracker.py --title "New Feature" --output {path}
+
+# Sync markdown to JSON
+python scripts/sync_to_file.py --plan {tracker}
+
+# Load from file to TodoWrite
+python scripts/load_from_file.py --plan {tracker}
+```
+
+### Command Routing
+
+When the skill is activated via keywords:
+
+1. **Parse intent from user message**
+   - "mark X complete" → update_status command
+   - "add phase Y" → phase management (future)
+   - "show progress" → display command
+
+2. **Execute appropriate command**
    ```bash
-   python3 .claude/skills/problem-statement/scripts/cli.py link-artifact \\
-       {ps_id} {entry_id} FILE \\
-       "docs/{output_dir}/{ps_id}-{entry_id}-{topic_slug}.md" \\
-       "{Type}: {topic}"
+   # The skill determines which script to run based on intent
+   if intent == "update_task":
+       python scripts/wt.py "{user_message}"
+   elif intent == "show_progress":
+       python scripts/show_progress.py --plan {tracker}
    ```
 
-DO NOT return transient output only. File creation AND link-artifact are MANDATORY.
+3. **Capture and embed evidence**
+   - Real command outputs are captured
+   - Evidence is embedded in markdown
+   - Fingerprints are maintained
 
-## CONTEXT7 MCP INTEGRATION (SOP-CB.6)
-If researching a library or framework:
-1. Use `mcp__context7__resolve-library-id` to get library ID
-2. Use `mcp__context7__query-docs` to query documentation
+### Important Notes
 
-## YOUR {TYPE} TASK
-{specific_task_instructions}
+- **Always use scripts, never modify markdown directly**
+- **The wt.py wrapper handles natural language → command translation**
+- **Scripts maintain fingerprints and sync logs automatically**
+- **Evidence is captured from actual command execution**
 
-## COMPLETION CHECKLIST
-- [ ] File created with Write tool
-- [ ] link-artifact command executed
-- [ ] Frontmatter includes ps and exploration fields
-- [ ] Template structure followed
-"""
-)
+### Evidence Schema
+
+Evidence entries in markdown follow this structure:
+
+```markdown
+**Evidence Entry (ID: {unique-id})** (YYYY-MM-DD HH:MM)
+- **Level**: command_output | file_reference | manual_note
+- **Status**: verified | pending
+
+[Level-specific content]
+
+✅ **VERIFIED**: Description
+or
+⏳ **PENDING**: Description
 ```
 
-### Agent-Specific Templates
+Evidence syncs to JSON with metadata:
 
-| Agent | Template | Output Directory |
-|-------|----------|------------------|
-| ps-researcher | `templates/research.md` | `docs/research/` |
-| ps-analyst | `templates/deep-analysis.md` | `docs/analysis/` |
-| ps-architect | `templates/adr.md` | `docs/decisions/` |
-| ps-reviewer | `templates/review.md` | `docs/reviews/` |
-| ps-investigator | `templates/investigation.md` | `docs/investigations/` |
-| ps-synthesizer | `templates/synthesis.md` | `docs/synthesis/` |
-
-### Token Budget Warning (FMEA Risk A4)
-
-When token budget exceeds 80%, the skill warns:
-
+```json
+{
+  "evidence": [
+    {
+      "id": "abc12345",
+      "task_id": "1.1",
+      "subtask_id": null,
+      "timestamp": "2025-12-28T10:00:00",
+      "level": "command_output",
+      "verification_status": "verified",
+      "command": "pytest tests/",
+      "output": "===== 25 passed ====="
+    }
+  ]
+}
 ```
-⚠️ TOKEN BUDGET WARNING
-Current session at 80% token budget.
-Consider using SDK orchestrator for complex multi-agent pipelines.
-SDK approach offers 67% token reduction via context isolation.
-```
-
-### Negative Examples (No Activation)
-
-These phrases do NOT trigger automatic invocation:
-
-| Input | Why Not |
-|-------|---------|
-| "I researched this yesterday" | Past tense, not imperative |
-| "what is the capital of France" | No trigger phrase |
-| "the research shows..." | "research" not at sentence start |
-
-### Error Handling
-
-| Error | Behavior |
-|-------|----------|
-| CLI command fails | Report error, no Task invocation |
-| Entry ID not parseable | Report parsing error, no Task invocation |
-| No PS exists for phase | Suggest creating PS first |
-| Task tool blocked | Report failure, entry remains (no rollback) |
-
-### Multi-Agent Pipelines
-
-For complex multi-step work like "research X, then analyze, then create ADR", the skill recommends using the SDK orchestrator instead:
-
-```
-💡 RECOMMENDATION
-Multi-agent pipeline detected. Consider using SDK orchestrator:
-python3 .claude/skills/problem-statement/orchestrator/pipeline.py \\
-    --phases research,analyze,decide \\
-    --topic "{topic}"
-
-Benefits: 67% token reduction, context isolation, native subagent support.
-```
-
----
-
-## Dependencies
-
-- **ECW Library:** `.claude/lib/ecw/`
-- **Python:** >=3.9
-- **Packages:** cloudevents>=1.11.0
-
-## Quick Start
-
-```bash
-# Create PS
-python {baseDir}/scripts/cli.py create <ps-id> "<title>"
-
-# Add constraint
-python {baseDir}/scripts/cli.py add-constraint <ps-id> "<text>"
-
-# Add question
-python {baseDir}/scripts/cli.py add-question <ps-id> "<text>"
-
-# View PS
-python {baseDir}/scripts/cli.py view <ps-id>
-
-# Export to markdown
-python {baseDir}/scripts/cli.py export <ps-id> <output.md>
-```
-
-## Querying PS State (c-007)
-
-**CRITICAL: Use CLI list commands, NOT grep on markdown exports.**
-
-```bash
-# List open exploration entries
-python {baseDir}/scripts/cli.py list-entries <ps-id> --status OPEN
-
-# List all entries (no filter)
-python {baseDir}/scripts/cli.py list-entries <ps-id>
-
-# List unvalidated constraints
-python {baseDir}/scripts/cli.py list-constraints <ps-id> --status HYPOTHESIS
-
-# List unanswered questions
-python {baseDir}/scripts/cli.py list-questions <ps-id> --status OPEN
-```
-
-### Available Filters
-
-| Command | Filter Options |
-|---------|----------------|
-| `list-entries` | `OPEN`, `RESOLVED`, `WONT_FIX` |
-| `list-constraints` | `HYPOTHESIS`, `VALIDATED`, `DEFERRED`, `REJECTED` |
-| `list-questions` | `OPEN`, `ANSWERED` |
-
-### Forbidden Patterns (c-007)
-
-| Forbidden | Use Instead |
-|-----------|-------------|
-| `view --format markdown \| grep OPEN` | `list-entries --status OPEN` |
-| `export && grep HYPOTHESIS` | `list-constraints --status HYPOTHESIS` |
-| `cat PS-*.md \| grep` | Use CLI list commands |
-
-## Exploration Entry Classification (c-006)
-
-**CRITICAL: All exploration entries MUST be classified at creation time.**
-
-Unclassified entries (Type=UNKNOWN, Severity=NOT_ASSESSED) provide no actionable value and waste tokens on useless output.
-
-### Mandatory Classification
-
-```bash
-# CORRECT: Classified at creation (c-006 compliant)
-python {baseDir}/scripts/cli.py add-entry <ps-id> "Finding description" \
-    --type DISCOVERY \
-    --type-context "Found during codebase analysis" \
-    --severity MEDIUM \
-    --severity-rationale "Affects implementation approach"
-
-# WARNING: Unclassified entry (c-006 violation warning shown)
-python {baseDir}/scripts/cli.py add-entry <ps-id> "Finding description"
-```
-
-### Entry Types
-
-| Type | Use When |
-|------|----------|
-| `RESEARCH` | Investigating documentation, patterns, prior art |
-| `ANALYSIS` | Examining code, architecture, data flows |
-| `DISCOVERY` | Found unexpected behavior, hidden constraints |
-| `DECISION` | Made implementation choice, selected approach |
-| `INSIGHT` | Synthesized understanding, connected concepts |
-| `BLOCKER` | Identified impediment requiring resolution |
-
-### Severity Levels
-
-| Level | Use When |
-|-------|----------|
-| `CRITICAL` | Blocks all progress, must resolve immediately |
-| `HIGH` | Significant impact, needs attention soon |
-| `MEDIUM` | Notable finding, plan for resolution |
-| `LOW` | Minor observation, address when convenient |
-
-### Retroactive Classification
-
-If entries exist without classification:
-
-```bash
-# Set type
-python {baseDir}/scripts/cli.py set-entry-type <ps-id> e-001 DISCOVERY \
-    --context "Classified retroactively"
-
-# Set severity
-python {baseDir}/scripts/cli.py assess-severity <ps-id> e-001 MEDIUM \
-    --rationale "Impact assessment after discovery"
-```
-
-## Key Features
-
-| Feature | Description |
-|---------|-------------|
-| Event Sourcing | Full audit trail via CloudEvents 1.0 |
-| Auto-Migration | Legacy markdown PSs migrate automatically |
-| SessionStart | PS context loaded at session start |
-| 6 Entity Types | Constraints, Questions, Explorations, Experiences, Wisdoms, Relationships |
-
-## Data Storage
-
-| Store | Location | Configurable Via |
-|-------|----------|------------------|
-| Events | `.ecw/events.db` | `ECW_EVENT_STORE_PATH` |
-| Projections | `.ecw/projections.db` | `ECW_PROJECTION_STORE_PATH` |
-| Legacy MD | `sidequests/<name>/docs/ps/` | Auto-migrated |
-
-## Session Integration
-
-At session start, the SessionStart hook:
-1. Detects active sidequest from git branch
-2. Loads PS state via hooks adapter
-3. Displays PS summary in context
-4. Checks for drift between database and markdown (Phase 38.17)
-
-## Source of Truth (Phase 38.17)
-
-**CRITICAL: The event database is the canonical source of truth, NOT markdown exports.**
 
 ### Best Practices
 
-| Do | Don't |
-|----|-------|
-| Query database first with CLI | Read markdown exports as primary |
-| Use `cli.py view` to get current state | Assume markdown is up-to-date |
-| Export with `cli.py export` after changes | Edit markdown directly (unless providing feedback) |
-| Run `cli.py sync` to import user edits | Trust markdown over database |
+1. **Use command_output for automated verification:** Tests, builds, linters
+2. **Use file_reference for artifacts:** Screenshots, logs, generated documentation
+3. **Use manual_note sparingly:** Only when automated verification isn't possible
+4. **Add evidence as you complete work:** Don't wait until the end
+5. **Use --enforce-evidence for critical work:** Ensures nothing gets marked complete without proof
+6. **Be specific in verification markers:** Explain what was verified and why
 
-### Database-First Workflow
+## Skill Fingerprinting
 
-```bash
-# 1. ALWAYS query database first
-python {baseDir}/scripts/cli.py view <ps-id>
+Work tracker artifacts include fingerprint headers for provenance tracking and migration support.
 
-# 2. Make changes via CLI
-python {baseDir}/scripts/cli.py add-constraint <ps-id> "..."
+### Fingerprint Format
 
-# 3. Export to markdown for user review
-python {baseDir}/scripts/cli.py export <ps-id> <output.md>
-
-# 4. If user edits markdown, sync back
-python {baseDir}/scripts/cli.py sync <ps-id>
 ```
+
+wt-v{version}-{8hex}
+
+````
+
+Example: `wt-v2.0.0-abc12345`
+
+Components:
+- `wt` - Work tracker prefix
+- `v{version}` - Skill version (e.g., `v2.0.0`)
+- `{8hex}` - 8-character hash of skill components (SKILL.md, scripts, templates)
+
+### Artifact Headers
+
+Work tracker artifacts include these provenance headers:
+
+```markdown
+> **Skill-Version:** 2.0.0
+> **Skill-Fingerprint:** wt-v2.0.0-abc12345
+````
 
 ### Drift Detection
 
-When SessionStart detects drift between database and markdown:
-- **Soft enforcement:** Warning displayed at session start
-- **Medium enforcement:** Warning on PS commands (future)
-- **Hard enforcement:** Block PS closure until resolved
+Drift occurs when the skill version that created an artifact differs from the current skill version.
 
-### User Feedback Loop (SOP-PS.6)
-
-Users CAN edit the PS markdown to provide feedback:
-1. User edits markdown (adds answers, constraints, or `<!-- USER_FEEDBACK: ... -->`)
-2. Claude runs `cli.py sync <ps-id>` to import changes
-3. Database is updated with user feedback
-4. Re-export to update fingerprints
-
-## Testing
+**Check for drift:**
 
 ```bash
-pytest {baseDir}/tests/ -v
+python .claude/skills/work-tracker/scripts/verify_recovery.py \
+  --work docs/plans/project.md \
+  --check-drift
 ```
 
-## Detailed Documentation
+**Drift on status update:**
 
-For comprehensive documentation, see the `references/` directory:
+```bash
+python .claude/skills/work-tracker/scripts/update_status.py \
+  --work docs/plans/project.md \
+  --task 1.1 \
+  --status complete \
+  --warn-drift
+```
 
-| Document | Content |
+### Drift Types
+
+| Type                | Meaning                       | Action                  |
+| ------------------- | ----------------------------- | ----------------------- |
+| `pre_fingerprint`   | Created before fingerprinting | Auto-migrated on update |
+| `version_drifted`   | Skill version changed         | Consider re-sync        |
+| `hash_drifted`      | Same version, scripts changed | Consider re-sync        |
+| `migrated_artifact` | Previously migrated           | Recommend re-sync       |
+
+### Migration
+
+For pre-fingerprint artifacts:
+
+```bash
+python .claude/skills/work-tracker/scripts/migrate_artifacts.py \
+  --scan docs/plans/      # Find artifacts needing migration
+  --migrate docs/plans/   # Add fingerprint headers
+  --verify docs/plans/    # Verify migration complete
+```
+
+### Sync Log Tracking
+
+Status updates log the skill fingerprint:
+
+```
+| Time             | Action           | Source                             |
+| ---------------- | ---------------- | ---------------------------------- |
+| 2025-12-22 10:00 | Status update    | skill:work-tracker (wt-v2.0.0-abc) |
+```
+
+## TodoWrite Integration
+
+Work Tracker v2.0.0+ includes bidirectional synchronization with Claude Code's TodoWrite tool.
+
+### Overview
+
+The integration provides:
+- **Automatic initialization:** Session start populates TodoWrite from work-state.json
+- **Status synchronization:** TodoWrite updates sync back to work-tracker
+- **Conflict resolution:** Work-tracker is source of truth
+
+### Architecture
+
+```
+work-state.json  ←→  TodoWriteAdapter  ←→  TodoWrite Tool
+       ↑                                          ↓
+       └──────── update_status.py ←───────────────┘
+```
+
+### Components
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| TodoWriteAdapter | `application/services/todowrite_sync.py` | Format conversion |
+| WorkStateSyncService | `application/services/todowrite_sync.py` | Sync orchestration |
+| SyncValidator | `application/services/todowrite_sync.py` | Integrity validation |
+| ConflictResolver | `application/services/todowrite_sync.py` | Conflict handling |
+
+### Status Mapping
+
+| Work-Tracker | TodoWrite |
+|--------------|-----------|
+| Pending | pending |
+| In Progress | in_progress |
+| Complete | completed |
+| Blocked | pending |
+| Deferred | pending |
+
+### Usage
+
+**Initialize at session start:**
+```python
+from application.services import initialize_todowrite_from_work_state
+
+result = initialize_todowrite_from_work_state()
+# Returns: {"action": "initialize_todos", "todos": [...], "sync_enabled": True}
+```
+
+**Sync status update:**
+```python
+from application.services import WorkStateSyncService
+
+sync = WorkStateSyncService()
+result = sync.sync_todo_update(task_id="1.1", new_status="completed")
+```
+
+### Limitations
+
+1. **Task-level only:** Subtasks not shown in TodoWrite (too granular)
+2. **Session-bound:** TodoWrite resets each session (work-tracker persists)
+3. **Single work item:** TodoWrite shows one active work item at a time
+4. **No evidence:** Evidence tracking remains in work-tracker only
+
+## Examples
+
+### Example 1: Create New Work Tracker
+
+User: "Let's track the work for adding authentication"
+→ Generates work tracker with phases, syncs to `.ecw/plans/`
+
+### Example 2: Check Progress
+
+User: "What's remaining on the auth project?"
+→ Loads from file, shows remaining tasks with progress
+
+### Example 3: Mark Task Complete
+
+User: "Mark task 2.3 as complete"
+→ Updates markdown + JSON, recalculates progress
+
+### Example 4: Resume After Break
+
+User: (New session) "Where were we on the auth project?"
+→ SessionStart shows active work context from `.ecw/plans/`
+
+## Schema Migration (v1 to v2)
+
+Work Tracker v2.0.0 includes migration support for upgrading legacy v1 trackers to the v2 schema.
+
+### Migration Overview
+
+| Feature | v1 (Legacy) | v2 (Current) |
+|---------|-------------|--------------|
+| Schema Version | None (implicit) | `schema_version: "2.0.0"` |
+| Subtasks | Inline in tasks | Top-level `subtasks` array |
+| Events | Not tracked | `events` array for audit trail |
+| Evidence | Not tracked | `evidence` array for verification |
+| Status Taxonomy | Basic (4 statuses) | Hierarchical (6 zones) |
+
+### Using the SchemaMigrator
+
+```python
+from domain.migrations import SchemaMigrator
+
+migrator = SchemaMigrator()
+
+# Migrate in-memory data
+result = migrator.migrate(v1_data)
+if result.success:
+    v2_data = result.data
+
+# Migrate a file (with automatic backup)
+result = migrator.migrate_file("docs/plans/old-tracker.json", backup=True)
+
+# Dry run to preview changes
+result = migrator.migrate(v1_data, dry_run=True)
+print(result.preview)  # Shows planned changes
+```
+
+### Migration Features
+
+- **Idempotent**: Safe to run multiple times
+- **Data Preservation**: All original data preserved exactly
+- **Backup**: Automatic backup before file modification
+- **Event Logging**: `SchemaMigration` event recorded
+- **Pure Function**: No side effects on input data
+
+### Compatibility Checking
+
+Use `CompatibilityChecker` to analyze trackers before migration:
+
+```python
+from domain.validators import CompatibilityChecker
+
+checker = CompatibilityChecker()
+result = checker.analyze("docs/plans/tracker.json")
+
+print(f"Version: {result.detected_version}")
+print(f"Compatible: {result.is_compatible}")
+print(f"Needs Migration: {result.requires_migration}")
+
+# Check for issues
+for error in result.errors:
+    print(f"ERROR: {error.code} - {error.message}")
+for warning in result.warnings:
+    print(f"WARN: {warning.code} - {warning.message}")
+```
+
+### Migration Command (wt.py)
+
+```bash
+# Check compatibility
+python scripts/wt.py "check compatibility docs/plans/old-tracker.json"
+
+# Migrate tracker
+python scripts/wt.py "migrate docs/plans/old-tracker.json"
+
+# Dry run (preview only)
+python scripts/wt.py "migrate docs/plans/old-tracker.json --dry-run"
+```
+
+## Scripts
+
+| Script                 | Purpose                                        | Works In |
+| ---------------------- | ---------------------------------------------- | -------- |
+| `detect_work_state.py` | Detect all work items, write state JSON        | Both     |
+| `generate_tracker.py`  | Create new work tracker                        | Both     |
+| `update_status.py`     | Update task/phase status (with fingerprinting) | Both     |
+| `sync_to_file.py`      | Sync to `.ecw/plans/*.json`                    | Both     |
+| `load_from_file.py`    | Load for SessionStart                          | Both     |
+| `export_work.py`       | Export to proposal format                      | Both     |
+| `verify_recovery.py`   | Verify integrity (with drift detection)        | Both     |
+| `show_progress.py`     | Display progress summary                       | Both     |
+| `skill_fingerprint.py` | Compute/validate skill fingerprints            | Both     |
+| `migrate_artifacts.py` | Migrate pre-fingerprint artifacts              | Both     |
+
+## Domain Components
+
+### Validators (`domain/validators/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `CompatibilityChecker` | Analyze tracker schema version and compatibility |
+| `ProgressConsistencyChecker` | Verify phase/task progress consistency |
+| `SyncIntegrityValidator` | Validate JSON/MD synchronization |
+
+### Migrations (`domain/migrations/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `SchemaMigrator` | Migrate v1 trackers to v2 schema |
+| `MigrationResult` | Result dataclass for migration operations |
+
+## Self-Healing System
+
+> **Initiative:** 19 - SOP Violation Remediation
+> **Version:** 1.0.0
+> **Test Coverage:** 590 tests (Unit, Integration, Contract, Architectural, E2E)
+
+### Overview
+
+The Work Tracker skill includes an automated self-healing system based on the **MAPE-K autonomic computing model** (Kephart & Chess, 2003). This system automatically detects, diagnoses, and recovers from errors during work tracking operations.
+
+**Key Benefits:**
+- Automatic retry for transient errors (network, timeouts)
+- Circuit breaker protection against cascading failures
+- Structured error classification and recovery
+- Audit trail of all recovery attempts
+
+### Quick Start (For All Users)
+
+```bash
+# Self-healing is enabled by default
+python scripts/wt.py --tracker docs/plans/project.md "mark task 1.1 complete"
+
+# Disable self-healing for debugging
+python scripts/wt.py --no-self-healing --tracker docs/plans/project.md "mark task 1.1 complete"
+
+# Verbose mode shows health status
+python scripts/wt.py --verbose --tracker docs/plans/project.md "show progress"
+```
+
+### MAPE-K Control Loop
+
+The self-healing system implements the IBM Autonomic Computing MAPE-K control loop:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     MAPE-K Control Loop                         │
+│                 (Kephart & Chess, IBM 2003)                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐ │
+│   │ Monitor  │───▶│ Analyze  │───▶│  Plan    │───▶│ Execute  │ │
+│   └──────────┘    └──────────┘    └──────────┘    └──────────┘ │
+│        │                                               │        │
+│        │              ┌──────────┐                     │        │
+│        └─────────────▶│Knowledge │◀────────────────────┘        │
+│                       │   Base   │                              │
+│                       └──────────┘                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+Components:
+- Monitor: Tracks health metrics (success rate, latency, errors)
+- Analyze: Classifies errors into categories (transient, permanent, etc.)
+- Plan: Selects recovery strategy based on error type
+- Execute: Applies recovery action (retry, escalate, circuit break)
+- Knowledge: Records patterns for future decision-making
+```
+
+**Reference:** Kephart, J.O. & Chess, D.M. (2003). "The Vision of Autonomic Computing." *IEEE Computer*, 36(1), 41-50.
+
+### Error Classification
+
+The symptom analyzer classifies errors into recovery categories:
+
+| Category | Examples | Recovery Strategy | Confidence |
+|----------|----------|-------------------|------------|
+| **Transient** | TimeoutError, ConnectionError | Retry with backoff | 0.9 |
+| **Permanent** | FileNotFoundError, PermissionError | Escalate to user | 0.95 |
+| **Validation** | ValueError, JSONDecodeError | Alternative input | 0.7 |
+| **Resource** | MemoryError, DiskFull | Cleanup & retry | 0.8 |
+| **Unknown** | Unclassified exceptions | Conservative retry | 0.5 |
+
+### Retry Policies
+
+```python
+# Default policies (from domain/self_healing/value_objects.py)
+RetryPolicy.default()        # max_retries=3, initial_delay=1.0s, backoff=2.0
+RetryPolicy.aggressive()     # max_retries=5, initial_delay=0.5s, backoff=1.5
+RetryPolicy.conservative()   # max_retries=2, initial_delay=2.0s, backoff=3.0
+RetryPolicy.no_retry()       # max_retries=0 (immediate failure)
+```
+
+**Reference:** Nygard, M.T. (2007). *Release It! Design and Deploy Production-Ready Software*. Pragmatic Bookshelf. (Circuit Breaker pattern)
+
+### Circuit Breaker
+
+Prevents cascading failures when a service is degraded:
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│                   Circuit Breaker States                       │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│   ┌──────────┐   failure    ┌──────────┐   timeout  ┌──────┐ │
+│   │  CLOSED  │──────────────▶│   OPEN   │───────────▶│ HALF │ │
+│   │(normal)  │               │(blocking)│            │ OPEN │ │
+│   └──────────┘               └──────────┘            └──────┘ │
+│        ▲                                                 │    │
+│        │                    success                      │    │
+│        └─────────────────────────────────────────────────┘    │
+│                                                               │
+│   Thresholds: 5 failures → OPEN, 60s timeout → HALF_OPEN     │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+### Four-Level Enforcement Model
+
+The self-healing system integrates with a four-level enforcement model for SOP compliance:
+
+| Level | Mechanism | Behavior | Override |
+|-------|-----------|----------|----------|
+| **1. Advisory** | CLAUDE.md instructions | Provides recommendations, never blocks | Claude discretion |
+| **2. Soft** | SKILL.md consent prompts | Prompts for consent | `--skip-consent` flag |
+| **3. Medium** | Agent tool restrictions | Blocks subagents | `--parent-approved` flag |
+| **4. HARD** | PreToolUse hook | Blocks tool calls | `--user-approved` flag |
+
+#### Level 1: Advisory (CLAUDE.md)
+
+Advisory enforcement provides recommendations without blocking:
+
+```python
+from domain.self_healing.enforcement import AdvisoryAdvisor
+
+advisor = AdvisoryAdvisor()
+symptom = Symptom(command="test", error=TimeoutError())
+recommendation = advisor.advise(symptom)
+# Returns: AdvisoryRecommendation(action="RETRY_WITH_BACKOFF", confidence=0.9)
+```
+
+#### Level 2: Soft (SKILL.md)
+
+Soft enforcement requests user consent:
+
+```python
+from domain.self_healing.enforcement import ConsentManager
+
+manager = ConsentManager()
+if not manager.check_consent("self_healing"):
+    request = manager.request_consent("self_healing")
+    # Present request to user, await response
+    manager.process_response("self_healing", "yes")  # or "always" for blanket
+```
+
+#### Level 3: Medium (Agent Restrictions)
+
+Medium enforcement restricts subagent operations:
+
+```python
+from domain.self_healing.enforcement import AgentRestrictionEnforcer, AgentContext
+
+enforcer = AgentRestrictionEnforcer.with_default_restrictions()
+subagent = AgentContext(agent_type="subagent")
+
+result = enforcer.check_operation("create_initiative", subagent)
+# result.allowed = False (subagents cannot create initiatives)
+```
+
+**Reference:** SOP-IC (Initiative Consent) in CLAUDE.md
+
+#### Level 4: HARD (Hook Enforcement)
+
+HARD enforcement validates tool calls before execution:
+
+```python
+from domain.self_healing.enforcement import HookEnforcer
+
+enforcer = HookEnforcer.for_initiative_consent()
+decision = enforcer.check_tool_call(
+    tool_name="Write",
+    tool_input={"file_path": "docs/plans/99-new-initiative.md"},
+)
+# decision.proceed = False, decision.exit_code = 1
+```
+
+### Unified Four-Level Enforcer
+
+For comprehensive enforcement across all levels:
+
+```python
+from domain.self_healing.enforcement import FourLevelEnforcer, EnforcementContext
+
+# Create enforcer with default configurations
+enforcer = FourLevelEnforcer.with_defaults()
+
+# Check an operation against all levels
+context = EnforcementContext.for_operation("create_initiative", agent_type="subagent")
+result = enforcer.check(context)
+
+if not result.allowed:
+    print(f"Blocked at level: {result.blocking_level}")
+    print(f"Advisory recommendation: {result.recommendation}")
+```
+
+### CLI Usage Examples
+
+```bash
+# Standard operation (self-healing enabled)
+python scripts/wt.py --tracker docs/plans/project.md "mark task 1.1 complete"
+
+# Disable self-healing for debugging
+python scripts/wt.py --no-self-healing --tracker docs/plans/project.md "mark task 1.1 complete"
+
+# Verbose output shows health metrics
+python scripts/wt.py --verbose --tracker docs/plans/project.md "show progress"
+
+# Combined flags
+python scripts/wt.py --verbose --no-self-healing --tracker docs/plans/project.md "show progress"
+```
+
+### Domain Components
+
+#### Self-Healing (`domain/self_healing/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `HealthMonitor` | Tracks success rate, latency, error counts |
+| `SymptomAnalyzer` | Classifies errors into recovery categories |
+| `RemediationPlanner` | Selects recovery strategy based on analysis |
+| `ActionExecutor` | Executes recovery actions (retry, cleanup, etc.) |
+| `KnowledgeBase` | Records patterns for adaptive recovery |
+| `CircuitBreaker` | Prevents cascading failures |
+| `SelfHealingDispatcher` | Integrates MAPE-K with command dispatch |
+
+#### Enforcement (`domain/self_healing/enforcement/`)
+
+| Component | Purpose |
+|-----------|---------|
+| `AdvisoryAdvisor` | Level 1: Recommendations without blocking |
+| `ConsentManager` | Level 2: Consent tracking and prompts |
+| `AgentRestrictionEnforcer` | Level 3: Agent-based restrictions |
+| `HookEnforcer` | Level 4: Tool call validation |
+| `FourLevelEnforcer` | Unified enforcement across all levels |
+
+### Architecture Principles
+
+The self-healing system follows these architectural principles:
+
+1. **Domain-Driven Design (Evans, 2003):**
+   - Value objects are immutable (`@dataclass(frozen=True)`)
+   - Aggregates maintain consistency boundaries
+   - Domain layer has no infrastructure dependencies
+
+2. **Clean Architecture (Martin, 2017):**
+   - Domain → Application → Infrastructure dependency flow
+   - No circular dependencies between modules
+   - Testable without external systems
+
+3. **Resilience Patterns (Nygard, 2007):**
+   - Circuit breaker prevents cascading failures
+   - Retry with exponential backoff for transient errors
+   - Bulkhead isolation between components
+
+**References:**
+- Evans, E. (2003). *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley.
+- Martin, R.C. (2017). *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall.
+- Nygard, M.T. (2007). *Release It! Design and Deploy Production-Ready Software*. Pragmatic Bookshelf.
+
+### Test Coverage
+
+The self-healing system has comprehensive test coverage:
+
+| Test Level | Count | Purpose |
+|------------|-------|---------|
+| Unit | ~250 | Individual component behavior |
+| Integration | 16 | Component interactions |
+| Contract | 82 | API contracts and interfaces |
+| Architectural | 14 | Dependency rules and patterns |
+| E2E | 15 | Full CLI workflows |
+| **Total** | **590** | **All levels combined** |
+
+```bash
+# Run all self-healing tests
+python -m pytest tests/unit/test_self_healing/ tests/contract/test_self_healing/ \
+  tests/integration/test_self_healing*.py tests/architectural/test_self_healing/ \
+  tests/e2e/test_wt_self_healing_e2e.py -v
+```
+
+### Troubleshooting
+
+**Self-healing not activating:**
+1. Verify not using `--no-self-healing` flag
+2. Check circuit breaker state (may be OPEN after failures)
+3. Use `--verbose` to see health metrics
+
+**Too many retries:**
+1. Check if error is truly transient
+2. Adjust retry policy in dispatcher configuration
+3. Consider using `--no-self-healing` for debugging
+
+**Consent prompts appearing unexpectedly:**
+1. Check if consent state was cleared
+2. Use `--skip-consent` for automated workflows
+3. Verify blanket approval was granted if expected
+
+## D-040 Migration Status
+
+> **Initiative:** D-040 - Hexagonal Architecture Migration
+> **Status:** In Progress (Phase 16)
+> **Target:** ECW namespace under `src/ecw/`
+
+### Overview
+
+The work-tracker skill is being migrated to a standardized ECW (Evolving Claude Workflow) namespace
+structure. This migration separates legacy pre-Hexagonal scripts from the modern Hexagonal Architecture.
+
+### Current Package Structure (Legacy)
+
+| Package | Location | Status |
+|---------|----------|--------|
+| commands | `commands/` | Active (will migrate to `src/ecw/skills/work_tracker/cli/`) |
+| domain | `domain/` | Active (will migrate to `src/ecw/skills/work_tracker/domain/`) |
+| infrastructure | `infrastructure/` | Active (will migrate to `src/ecw/skills/work_tracker/infrastructure/`) |
+| application | `application/` | Active (will migrate to `src/ecw/skills/work_tracker/application/`) |
+| scripts | `scripts/` | Active (remains at root, canonical entry points) |
+
+### Target Package Structure (ECW Namespace)
+
+```
+src/
+└── ecw/                           # ECW namespace root
+    ├── common/                    # Shared cross-skill components
+    │   ├── di/                    # Dependency injection
+    │   ├── events/                # Event infrastructure
+    │   ├── persistence/           # Generic persistence
+    │   ├── validation/            # Shared validators
+    │   └── cli/                   # CLI utilities
+    └── skills/
+        └── work_tracker/          # Work tracker skill
+            ├── domain/            # Domain layer
+            ├── application/       # Application layer
+            ├── infrastructure/    # Infrastructure layer
+            └── cli/               # CLI layer
+```
+
+### Legacy Isolation
+
+Deprecated pre-Hexagonal scripts have been moved to `legacy/`:
+
+```
+legacy/
+├── scripts/               # Deprecated scripts (DO NOT USE)
+│   ├── update_status.py   # DEPRECATED - Use wt.py
+│   ├── sync_to_file.py    # DEPRECATED - Bypasses JSON SSOT
+│   ├── add_task.py        # DEPRECATED - Use wt.py
+│   ├── add_phase.py       # DEPRECATED - Use wt.py
+│   └── add_subtask.py     # DEPRECATED - Use wt.py
+└── tests/                 # Tests for legacy scripts
+    ├── unit/              # Unit tests using deprecated imports
+    └── integration/       # Integration tests using deprecated imports
+```
+
+### Path Migration Reference
+
+When migrating imports, use this mapping:
+
+| Old Import | New Import (Future) |
+|------------|---------------------|
+| `from domain.entities import Task` | `from ecw.skills.work_tracker.domain.entities import Task` |
+| `from application.use_cases import CreateTask` | `from ecw.skills.work_tracker.application.use_cases import CreateTask` |
+| `from infrastructure.adapters import JsonFileAdapter` | `from ecw.skills.work_tracker.infrastructure.adapters import JsonFileAdapter` |
+| `from commands.dispatcher import CommandDispatcher` | `from ecw.skills.work_tracker.cli.commands import CommandDispatcher` |
+
+### Data Migration Tools
+
+Schema migration utilities are available at `infrastructure/migration/`:
+
+| Function | Purpose |
 |----------|---------|
-| [architecture.md](references/architecture.md) | Hexagonal architecture, directory structure |
-| [cli-commands.md](references/cli-commands.md) | Full CLI reference (40+ commands) |
-| [event-sourcing.md](references/event-sourcing.md) | Event types, storage, projections |
-| [migration-guide.md](references/migration-guide.md) | Legacy markdown migration |
+| `is_v1_schema(data)` | Detect V1 (legacy) schema |
+| `is_v2_schema(data)` | Detect V2 (current) schema |
+| `migrate_v1_to_v2(data)` | Migrate V1 data to V2 format |
+| `validate_migration(original, migrated)` | Validate migration success |
 
----
+### Canonical Entry Point
 
-<!-- CANONICAL SOURCE: references/architecture.md -->
-<!-- Detailed architecture moved for progressive disclosure -->
-<!-- See references/ for full documentation -->
-
-## Architecture Summary
-
-```
-.claude/skills/problem-statement/
-├── SKILL.md              # This file
-├── agents/               # Agent definition files (Phase 38.17)
-│   ├── ps-researcher.md  # Deep research agent (6W + academic rigor)
-│   ├── ps-validator.md   # Constraint validation agent
-│   ├── ps-reporter.md    # Status reporting agent
-│   ├── ps-analyst.md     # Deep analysis (5 Whys, Trade-offs, FMEA)
-│   ├── ps-architect.md   # Architecture decisions (ADR/Nygard)
-│   ├── ps-reviewer.md    # Quality review (code, security, design)
-│   ├── ps-investigator.md # Failure analysis (5 Whys, Ishikawa)
-│   └── ps-synthesizer.md # Cross-document synthesis (Thematic Analysis)
-├── scripts/
-│   ├── cli.py            # CLI → hexagonal adapter
-│   ├── loader.py         # SessionStart integration
-│   ├── invoke_researcher.py    # ps-researcher wrapper (c-009)
-│   ├── invoke_validator.py     # ps-validator wrapper (c-009)
-│   ├── invoke_reporter.py      # ps-reporter wrapper (c-009)
-│   ├── invoke_analyst.py       # ps-analyst wrapper (c-009)
-│   ├── invoke_architect.py     # ps-architect wrapper (c-009)
-│   ├── invoke_reviewer.py      # ps-reviewer wrapper (c-009)
-│   ├── invoke_investigator.py  # ps-investigator wrapper (c-009)
-│   ├── invoke_synthesizer.py   # ps-synthesizer wrapper (c-009)
-│   └── ...
-├── templates/            # Output templates (Phase 38.17)
-│   ├── research.md       # Research document template (6W framework)
-│   ├── analysis.md       # Analysis report template
-│   ├── deep-analysis.md  # Deep analysis (5 Whys, Trade-off, FMEA)
-│   ├── adr.md            # Architecture Decision Record (Nygard)
-│   ├── review.md         # Quality review (severity categorized)
-│   ├── investigation.md  # Investigation report (Ishikawa, 5 Whys)
-│   └── synthesis.md      # Synthesis document (Thematic Analysis)
-└── references/           # Progressive disclosure
-    ├── architecture.md
-    ├── cli-commands.md
-    ├── event-sourcing.md
-    └── migration-guide.md
-```
-
-## Agents
-
-The PS skill provides specialized agents for different tasks. Each agent has a definition file in `agents/` and an invocation wrapper in `scripts/`.
-
-### Agent Portfolio Overview
-
-| Tier | Agent | Purpose | Prior Art |
-|------|-------|---------|-----------|
-| **Core** | ps-explorer | Codebase exploration (read-only) | - |
-| **Core** | ps-researcher | Deep research (6W, academic rigor) | Lasswell (1948), Creswell (2014) |
-| **Core** | ps-validator | Constraint validation | - |
-| **Core** | ps-reporter | Status reporting | - |
-| **Tier 1** | ps-analyst | Deep analysis, root cause | Toyota 5 Whys, NASA FMEA |
-| **Tier 1** | ps-architect | Architecture decisions | Nygard ADR (2011) |
-| **Tier 1** | ps-reviewer | Quality review | OWASP, Google Style |
-| **Tier 2** | ps-investigator | Failure/incident analysis | Ishikawa (1990), 5 Whys |
-| **Tier 2** | ps-synthesizer | Cross-document synthesis | Braun & Clarke (2006) |
-
-### Agent Reference Table
-
-| Agent | Definition | Wrapper | Persistence |
-|-------|------------|---------|-------------|
-| **ps-explorer** | N/A (read-only) | N/A | No |
-| **ps-researcher** | [`agents/ps-researcher.md`](agents/ps-researcher.md) | [`scripts/invoke_researcher.py`](scripts/invoke_researcher.py) | **MANDATORY** |
-| **ps-validator** | [`agents/ps-validator.md`](agents/ps-validator.md) | [`scripts/invoke_validator.py`](scripts/invoke_validator.py) | **MANDATORY** |
-| **ps-reporter** | [`agents/ps-reporter.md`](agents/ps-reporter.md) | [`scripts/invoke_reporter.py`](scripts/invoke_reporter.py) | **MANDATORY** |
-| **ps-analyst** | [`agents/ps-analyst.md`](agents/ps-analyst.md) | [`scripts/invoke_analyst.py`](scripts/invoke_analyst.py) | **MANDATORY** |
-| **ps-architect** | [`agents/ps-architect.md`](agents/ps-architect.md) | [`scripts/invoke_architect.py`](scripts/invoke_architect.py) | **MANDATORY** |
-| **ps-reviewer** | [`agents/ps-reviewer.md`](agents/ps-reviewer.md) | [`scripts/invoke_reviewer.py`](scripts/invoke_reviewer.py) | **MANDATORY** |
-| **ps-investigator** | [`agents/ps-investigator.md`](agents/ps-investigator.md) | [`scripts/invoke_investigator.py`](scripts/invoke_investigator.py) | **MANDATORY** |
-| **ps-synthesizer** | [`agents/ps-synthesizer.md`](agents/ps-synthesizer.md) | [`scripts/invoke_synthesizer.py`](scripts/invoke_synthesizer.py) | **MANDATORY** |
-
-### Agent Invocation (Recommended: Use Wrapper Scripts)
-
-The wrapper scripts automate c-009 compliant invocation:
-
+**All work tracker operations MUST use:**
 ```bash
-# Core Agents
-python3 {baseDir}/scripts/invoke_researcher.py <ps-id> "<topic>" "<research-prompt>"
-python3 {baseDir}/scripts/invoke_validator.py <ps-id> "<topic>" "<constraints>"
-python3 {baseDir}/scripts/invoke_reporter.py <ps-id> <report-type>
-
-# Tier 1 Agents
-python3 {baseDir}/scripts/invoke_analyst.py <ps-id> <analysis-type> "<topic>" "<analysis-prompt>"
-python3 {baseDir}/scripts/invoke_architect.py <ps-id> "<decision-title>" "<context>"
-python3 {baseDir}/scripts/invoke_reviewer.py <ps-id> <review-type> "<subject>" "<review-focus>"
-
-# Tier 2 Agents
-python3 {baseDir}/scripts/invoke_investigator.py <ps-id> "<symptom>" "<investigation-context>"
-python3 {baseDir}/scripts/invoke_synthesizer.py <ps-id> "<topic>" "<input-docs>" "<synthesis-focus>"
+python3 scripts/wt.py --tracker <path> "<command>"
 ```
 
-### Analysis Types (ps-analyst)
+This path (`scripts/wt.py`) is NOT changing during the migration.
 
-| Type | Framework | Description |
-|------|-----------|-------------|
-| `root-cause` | Toyota 5 Whys | Drill down to root cause |
-| `trade-off` | Kepner-Tregoe | Weighted criteria matrix |
-| `gap` | Gap Analysis | Current vs desired state |
-| `risk` | NASA FMEA | Failure mode analysis |
-| `impact` | Impact Analysis | Change consequence assessment |
-| `dependency` | Dependency Mapping | Component coupling analysis |
+## References
 
-### Review Types (ps-reviewer)
-
-| Type | Standards | Focus Areas |
-|------|-----------|-------------|
-| `code` | Google Code Style | Correctness, error handling, style |
-| `design` | SOLID, GRASP | SRP, OCP, LSP, ISP, DIP |
-| `architecture` | C4 Model | Coupling, cohesion, boundaries |
-| `security` | OWASP Top 10 (2021) | Injection, auth, XSS, CSRF |
-| `documentation` | Technical Writing | Clarity, completeness, accuracy |
-
-### Report Types (ps-reporter)
-
-| Type | Description |
-|------|-------------|
-| `phase-status` | Phase progress overview |
-| `constraint-status` | Constraint satisfaction report |
-| `knowledge-summary` | KB items generated in phase |
-| `experience-wisdom` | Experience/Wisdom synthesis |
-
-### When to Use Each Agent
-
-| Use Case | Agent | Output |
-|----------|-------|--------|
-| Quick codebase scan | ps-explorer | N/A (read-only) |
-| Deep 6W research | **ps-researcher** | `docs/research/` |
-| Validate constraints | **ps-validator** | Validation report |
-| Generate phase reports | **ps-reporter** | `docs/reports/` |
-| Root cause / trade-off analysis | **ps-analyst** | `docs/analysis/` |
-| Architecture decisions | **ps-architect** | `docs/decisions/` |
-| Quality review (code/security) | **ps-reviewer** | `docs/reviews/` |
-| Failure investigation | **ps-investigator** | `docs/investigations/` |
-| Cross-document synthesis | **ps-synthesizer** | `docs/synthesis/` |
-
-### Agent Output Locations
-
-| Agent | Location | Template |
-|-------|----------|----------|
-| ps-researcher | `docs/research/{ps-id}-{entry-id}-{topic-slug}.md` | `templates/research.md` |
-| ps-analyst | `docs/analysis/{ps-id}-{entry-id}-{analysis-type}.md` | `templates/deep-analysis.md` |
-| ps-architect | `docs/decisions/{ps-id}-{entry-id}-adr.md` | `templates/adr.md` |
-| ps-reviewer | `docs/reviews/{ps-id}-{entry-id}-{review-type}.md` | `templates/review.md` |
-| ps-investigator | `docs/investigations/{ps-id}-{entry-id}-investigation.md` | `templates/investigation.md` |
-| ps-synthesizer | `docs/synthesis/{ps-id}-{entry-id}-synthesis.md` | `templates/synthesis.md` |
-| ps-reporter | `docs/reports/{ps-id}-{entry-id}-{report-type}.md` | `templates/report.md` |
-
----
-
-## Sub-Agent Persistence (c-009, c-010) - CRITICAL
-
-**Problem:** Sub-agents return transient outputs that are lost when sessions end.
-
-**Solution:** All artifact-producing agents MUST:
-1. Use the **Write tool** to create files at proper locations
-2. Call **link-artifact** to establish bidirectional traceability
-
-### Four-Tier Enforcement (c-009)
-
-| Tier | Hook | Behavior |
-|------|------|----------|
-| **Advisory** | SessionStart | Reminder displayed at session start |
-| **Soft** | Stop | Warning if Task invoked without file creation |
-| **Medium** | PreToolUse (Task) | Persistence reminder injected into agent prompt |
-| **Hard** | PostToolUse (Task) | Block continuation until file created |
-
-### Agent Persistence Checklist
-
-When invoking ps-researcher, ps-validator, or ps-reporter:
+- `docs/guides/claude-code-capabilities.md` - Environment differences
+- `references/ecw-patterns.md` - ECW integration details
+- `references/completion-criteria.md` - Verification guidelines
+- `templates/work-tracker.md` - Base template
+- Kephart, J.O. & Chess, D.M. (2003). "The Vision of Autonomic Computing." *IEEE Computer*, 36(1), 41-50.
+- Evans, E. (2003). *Domain-Driven Design*. Addison-Wesley.
+- Martin, R.C. (2017). *Clean Architecture*. Prentice Hall.
+- Nygard, M.T. (2007). *Release It!* Pragmatic Bookshelf.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ SUB-AGENT PERSISTENCE CHECKLIST (c-009)                     │
-├─────────────────────────────────────────────────────────────┤
-│ [ ] 1. Create exploration entry (add-entry with --type)     │
-│ [ ] 2. Include entry ID in agent prompt                     │
-│ [ ] 3. Agent uses Write tool to create file                 │
-│ [ ] 4. Agent calls link-artifact after file creation        │
-│ [ ] 5. Verify file exists in repository                     │
-│ [ ] 6. Verify PS shows artifact linkage                     │
-└─────────────────────────────────────────────────────────────┘
+
 ```
-
-### Correct Agent Invocation Pattern
-
-```bash
-# 1. Create exploration entry FIRST
-python {baseDir}/scripts/cli.py add-entry phase-38.17 "Research topic" \
-    --type RESEARCH --severity MEDIUM
-# Returns: e-XXX
-
-# 2. Invoke agent with EXPLICIT persistence instructions
-# Include in Task prompt:
-"""
-You are ps-researcher.
-
-## MANDATORY PERSISTENCE (c-009)
-You MUST:
-1. Create file at: docs/research/{ps-id}-{entry-id}-{topic-slug}.md
-2. Use template: .claude/skills/problem-statement/templates/research.md
-3. After creating file, run:
-   python3 .claude/skills/problem-statement/scripts/cli.py link-artifact \
-       {ps-id} {entry-id} FILE "{file-path}" "{description}"
-
-DO NOT return transient output only. File creation is MANDATORY.
-
-## Your Task
-{actual_research_prompt}
-"""
-
-# 3. Verify after agent completes
-python {baseDir}/scripts/cli.py view phase-38.17  # Should show artifact link
-ls docs/research/{ps-id}-{entry-id}-*.md          # Should exist
-```
-
-### File Naming Convention
-
-| Component | Format | Example |
-|-----------|--------|---------|
-| PS ID | `phase-{N}.{M}` | `phase-38.17` |
-| Entry ID | `e-{NNN}` | `e-036` |
-| Topic Slug | `{lowercase-hyphenated}` | `subagent-persistence` |
-| **Full Path** | `docs/research/{ps-id}-{entry-id}-{topic-slug}.md` | `docs/research/phase-38.17-e-036-subagent-persistence.md` |
-
-### Bidirectional Traceability (c-010)
-
-**One-way traceability (BAD):**
-- File frontmatter references PS → BUT PS has no link to file
-- Cannot query PS to find artifacts
-
-**Bidirectional traceability (GOOD):**
-- File frontmatter references PS AND entry ID
-- PS has artifact link via `link-artifact` command
-- Can query both directions
-
-**File Frontmatter Example:**
-```yaml
----
-ps: phase-38.17
-exploration: e-036
-created: 2026-01-03
-status: RESEARCH
-agent: ps-researcher
----
-```
-
-**PS View Output Should Show:**
-```
-## Exploration Log
-  - [e-036] [RESEARCH] [MEDIUM] Research topic
-    Artifacts:
-      - FILE: docs/research/phase-38.17-e-036-topic.md
-```
-
-## Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 2.7.0 | 2026-01-04 | Phase 38.17: Automatic Agent Invocation (Option A Skill-as-Orchestrator), activation-keywords in frontmatter, Task tool invocation |
-| 2.6.0 | 2026-01-03 | Phase 38.17: Complete agent portfolio (8 agents), 5 new agents (ps-analyst, ps-architect, ps-reviewer, ps-investigator, ps-synthesizer) with evidence-based methodologies |
-| 2.5.0 | 2026-01-03 | Phase 38.17: Agent definition files (`agents/`), wrapper scripts for c-009 compliance |
-| 2.4.0 | 2026-01-03 | Phase 38.17: list-entries/constraints/questions with --status filter (c-007) |
-| 2.3.0 | 2026-01-03 | Phase 38.17: Mandatory entry classification (c-006), CLI auto-classification |
-| 2.2.0 | 2026-01-03 | Phase 38.17: Database-first guidance, sync command, drift detection |
-| 2.1.1 | 2026-01-02 | Add ps-researcher agent, templates, agent documentation |
-| 2.1.0 | 2026-01-02 | Progressive disclosure, `{baseDir}` paths |
-| 2.0.0 | 2025-12-30 | Hexagonal architecture rewrite |
-| 1.0.0 | 2025-12-28 | Initial release |

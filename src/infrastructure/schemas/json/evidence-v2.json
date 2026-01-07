@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ecw-skills.local/schemas/evidence-v2.json",
+  "title": "Evidence Schema v2.0",
+  "description": "JSON Schema for Work Tracker Evidence - Supports 6 evidence types with metadata and verification tracking",
+  "type": "object",
+  "required": ["id", "type", "content", "timestamp"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique evidence identifier"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "command_output",
+        "file_reference",
+        "manual_note",
+        "screenshot",
+        "test_report",
+        "code_review"
+      ],
+      "description": "Evidence type"
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Evidence content or description"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the evidence was captured"
+    },
+    "command": {
+      "type": "string",
+      "description": "Command executed (for command_output)"
+    },
+    "output": {
+      "type": "string",
+      "description": "Command output (legacy field, use content instead)"
+    },
+    "file_path": {
+      "type": "string",
+      "description": "Path to referenced file"
+    },
+    "file": {
+      "type": "string",
+      "description": "Legacy file path field (use file_path instead)"
+    },
+    "file_hash": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$",
+      "description": "SHA-256 hash of file content"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author of manual note"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL for external references"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["pending", "verified", "rejected", "needs_verification"],
+      "default": "pending",
+      "description": "Current verification status"
+    },
+    "verified": {
+      "type": "boolean",
+      "description": "Legacy verification flag (use verification_status instead)"
+    },
+    "verified_by": {
+      "type": "string",
+      "description": "Who verified the evidence"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the evidence was verified"
+    },
+    "verification_notes": {
+      "type": "string",
+      "description": "Notes from verification"
+    },
+    "verification_history": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/verification_entry"
+      },
+      "description": "History of verification status changes"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "confidence_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence level (0.0 to 1.0)"
+        },
+        "reviewer": {
+          "type": "string",
+          "description": "Code reviewer identifier"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["approved", "changes_requested", "commented", "pending", "rejected"],
+          "description": "Review status for code_review type"
+        },
+        "pr_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pull request number"
+        },
+        "mr_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Merge request number"
+        },
+        "platform": {
+          "type": "string",
+          "description": "Platform (github, gitlab, bitbucket, etc.)"
+        },
+        "framework": {
+          "type": "string",
+          "description": "Test framework (pytest, jest, etc.)"
+        },
+        "passed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of passed tests"
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of failed tests"
+        },
+        "skipped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of skipped tests"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of tests"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Image width in pixels"
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Image height in pixels"
+        },
+        "file_size": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "File size in bytes"
+        },
+        "exit_code": {
+          "type": "integer",
+          "description": "Command exit code"
+        },
+        "execution_time_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Execution time in milliseconds"
+        }
+      },
+      "additionalProperties": true,
+      "description": "Type-specific and custom metadata"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the evidence record was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the evidence record was last updated"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "Task or subtask ID this evidence is attached to"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": ["task", "subtask"],
+      "description": "Type of target (task or subtask)"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source of evidence (command, author, reviewer, etc.)"
+    }
+  },
+  "definitions": {
+    "verification_entry": {
+      "type": "object",
+      "required": ["status", "verified_at"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "verified", "rejected", "needs_verification"]
+        },
+        "verified_by": {
+          "type": "string"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "previous_status": {
+          "type": "string",
+          "enum": ["pending", "verified", "rejected", "needs_verification"]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "screenshot" }
+        }
+      },
+      "then": {
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "file_reference" }
+        }
+      },
+      "then": {
+        "anyOf": [
+          { "required": ["file_path"] },
+          { "required": ["file"] }
+        ]
+      }
+    }
+  ]
+}
