@@ -16,7 +16,7 @@
 | Phase 1: Governance Layer | ✅ COMPLETED | 100% |
 | Phase 2: Skills Interface Layer | ✅ COMPLETED | 100% |
 | Phase 2.5: Deep Analysis (NEW) | ✅ COMPLETED | 100% |
-| **Phase 3: Hexagonal Core** | 🔄 IN DESIGN | 10% |
+| **Phase 3: Hexagonal Core** | 🔄 DESIGN COMPLETE | 25% |
 | Phase 4: Testing & Validation | ⏳ PENDING | 0% |
 
 ---
@@ -93,30 +93,45 @@
 - **Input**: `src/infrastructure/schemas/json/external/cloudevents-base.schema.json`
 - **Decision**: Adopt CloudEvents 1.0 with Jerry-specific extensions
 
+### WORK-018: Graph Data Model Research ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/GRAPH_DATA_MODEL_ANALYSIS.md`
+- **Key Findings**:
+  - Property Graph model (Vertex, Edge, Properties) for Gremlin compatibility
+  - VertexId as base class for all strongly typed identifiers
+  - Phased migration: File → SQLite → Graph DB
+  - CloudEvents stored as graph vertices with EMITTED edges
+  - Gremlin traversal patterns for future graph queries
+
 ---
 
 ## Phase 3: Hexagonal Core (IN PROGRESS - REVISED)
 
-### WORK-010: Design & Planning 🔄
-- **Status**: IN PROGRESS - REQUIRES REVISION
-- **Output**: `docs/plans/PLAN.md` (to be updated)
-- **REVISION REQUIRED**: Incorporate aggregate root findings
+### WORK-010: Design & Planning ✅
+- **Status**: COMPLETED
+- **Output**: `docs/PLAN.md` (v3.0 - Graph-Ready)
+- **Key Artifacts Created**:
+  - `docs/PLAN.md` - Comprehensive implementation plan with graph model
+  - `docs/research/GRAPH_DATA_MODEL_ANALYSIS.md` - Gremlin research
+  - `docs/research/AGGREGATE_ROOT_ANALYSIS.md` - AR sizing research
+  - `docs/research/ECW_COMPREHENSIVE_LESSONS_LEARNED.md` - ECW analysis
 
-#### New Sub-tasks (Based on Analysis):
+#### Completed Sub-tasks:
 - [x] WORK-010.1: Analyze ECW v3 lessons learned
 - [x] WORK-010.2: Research aggregate root sizing (Vernon, Evans)
 - [x] WORK-010.3: Document aggregate root decision
-- [ ] WORK-010.4: Revise Bounded Context Diagram (3 ARs)
-- [ ] WORK-010.5: Revise Domain Entity Class Diagrams
-- [ ] WORK-010.6: Define strongly typed identity objects
-- [ ] WORK-010.7: Define CloudEvents-based domain events
-- [ ] WORK-010.8: Create eventual consistency event flow diagrams
-- [ ] WORK-010.9: Revise Use Case specifications
-- [ ] WORK-010.10: Revise JSON Schemas (CloudEvents)
-- [ ] WORK-010.11: Define BDD test specifications
+- [x] WORK-010.4: Revise Bounded Context Diagram (3 ARs) → in PLAN.md
+- [x] WORK-010.5: Revise Domain Entity Class Diagrams → in PLAN.md
+- [x] WORK-010.6: Define strongly typed identity objects → VertexId hierarchy
+- [x] WORK-010.7: Define CloudEvents-based domain events → in PLAN.md
+- [x] WORK-010.8: Create eventual consistency event flow diagrams → in PLAN.md
+- [x] WORK-010.9: Revise Use Case specifications → in PLAN.md
+- [x] WORK-010.10: Research graph data model (Gremlin) → GRAPH_DATA_MODEL_ANALYSIS.md
+- [x] WORK-010.11: Define BDD test specifications → in PLAN.md
 
-### WORK-011: Domain Layer Implementation ⏳
-- **Status**: PENDING (awaiting WORK-010 revision)
+### WORK-011: Domain Layer Implementation 🔄
+- **Status**: READY TO BEGIN
+- **Reference**: See `docs/PLAN.md` Section 5 (DOM-001 to DOM-022)
 
 #### **REVISED Sub-tasks - Three Aggregate Roots:**
 
@@ -247,6 +262,11 @@
 | DISC-023 | **Event Schema Versioning** - Required from day 1 for CloudEvents | Architecture | CAPTURED | REVISED-ARCHITECTURE-v3.0.md |
 | DISC-024 | **Circuit Breaker Pattern** - CLOSED → HALF_OPEN → OPEN states | Resilience | CAPTURED | self-healing-guide.md |
 | DISC-025 | **Eventual Consistency Flow** - Task → Phase → Plan via domain events | Architecture | CAPTURED | ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
+| DISC-026 | **Property Graph Model** - Vertex/Edge abstractions for Gremlin compatibility | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-027 | **VertexId Base Class** - Strongly typed IDs extend graph primitive | DDD | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-028 | **Gremlin Traversal Patterns** - out(), in(), repeat(), tree() for graph queries | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-029 | **Events as Vertices** - CloudEvents stored as graph nodes with EMITTED edges | Event Sourcing | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-030 | **Phased Migration Path** - File → SQLite → Graph DB for persistence | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 
 ---
 
@@ -265,10 +285,13 @@
 3. TypeScript reserved for network adapters if needed
 4. BDD approach with Red/Green/Refactor cycle
 5. All tests must be real, no stubs/mocks for assertions
-6. **NEW: Task as Primary Aggregate Root** (Vernon's small aggregates)
-7. **NEW: Phase and Plan as Secondary ARs** (eventual consistency)
-8. **NEW: CloudEvents 1.0 for all events** (user requirement)
-9. **NEW: Strongly typed identity objects** (user requirement)
+6. **Task as Primary Aggregate Root** (Vernon's small aggregates)
+7. **Phase and Plan as Secondary ARs** (eventual consistency)
+8. **CloudEvents 1.0 for all events** (user requirement)
+9. **Strongly typed identity objects** (user requirement)
+10. **NEW: Property Graph Data Model** - Vertex/Edge abstractions for Gremlin compatibility
+11. **NEW: VertexId as base class** - All strongly typed IDs extend VertexId
+12. **NEW: Phased Migration Path** - File → SQLite → Graph DB
 
 ### Hard Requirements (From User)
 1. CloudEvents for event schema
@@ -276,13 +299,14 @@
 3. Multiple Aggregate Roots (2-3) for large work trackers
 4. Strongly typed identity objects (not raw UUID/GUID)
 5. Must run in Claude Code Web Research Preview
+6. **Graph-ready data model** - Preparation for Gremlin/graph database
 
 ### Next Actions
-1. Update PLAN.md with revised aggregate root design
-2. Create new bounded context diagrams
-3. Define CloudEvents-based domain events
-4. Get user approval on revised design
-5. Proceed to WORK-011 (Domain Layer) upon approval
+1. ✅ ~~Update PLAN.md with revised aggregate root design~~
+2. ✅ ~~Research Gremlin data model for graph-readiness~~
+3. ✅ ~~Create GRAPH_DATA_MODEL_ANALYSIS.md~~
+4. **READY: Begin Phase 1 Implementation** (WORK-011)
+5. Start with DOM-001: Implement Vertex base class (BDD cycle)
 
 ---
 
@@ -299,3 +323,8 @@
 | 2026-01-07 | Claude | Added DISC-011 through DISC-025 (15 new discoveries) |
 | 2026-01-07 | Claude | Added DEBT-005 through DEBT-010 (6 new tech debt items) |
 | 2026-01-07 | Claude | Created ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
+| 2026-01-07 | Claude | **MAJOR: Graph data model research (Gremlin/TinkerPop)** |
+| 2026-01-07 | Claude | Added DISC-026 through DISC-030 (5 graph discoveries) |
+| 2026-01-07 | Claude | Added WORK-018: Graph Data Model Research |
+| 2026-01-07 | Claude | Completed WORK-010: Design & Planning |
+| 2026-01-07 | Claude | Updated Key Decisions with graph model decisions |
