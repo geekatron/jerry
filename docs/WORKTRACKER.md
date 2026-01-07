@@ -207,6 +207,12 @@
 | DEBT-002 | Add pre-commit hooks for linting | Medium | OPEN | Phase 1 |
 | DEBT-003 | Consider pytest over unittest | Low | OPEN | Phase 0 |
 | DEBT-004 | ECW had 128+ failing tests (context isolation) | High | NOTED | Phase 2.5 |
+| DEBT-005 | Implement 26 Hard Rules as enforcement hooks | High | OPEN | Phase 2.5 |
+| DEBT-006 | Implement Three-Tier Enforcement (Soft→Medium→Hard) | High | OPEN | Phase 2.5 |
+| DEBT-007 | Add Context7 MCP integration for library docs | Medium | OPEN | Phase 2.5 |
+| DEBT-008 | Implement self-healing MAPE-K patterns | Medium | OPEN | Phase 2.5 |
+| DEBT-009 | Consider Redis Streams over file-based signals | Medium | OPEN | Phase 2.5 |
+| DEBT-010 | Add automated backup + health checks | High | OPEN | Phase 2.5 |
 
 ---
 
@@ -226,6 +232,21 @@
 | DISC-008 | **CloudEvents Required** - User hard requirement | Architecture | CAPTURED | User requirements |
 | DISC-009 | **Strongly Typed IDs Required** - User hard requirement | Architecture | CAPTURED | User requirements |
 | DISC-010 | ECW v3 had 108+ use cases documented | Knowledge | NOTED | glimmering-brewing-lake.md |
+| DISC-011 | **Blackboard Pattern** - 13-57% improvement over master-slave for LLM agents | Architecture | CAPTURED | ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
+| DISC-012 | **LES-030: Hook Subprocess Isolation** - Hooks cannot access MCP context | Constraint | CAPTURED | ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
+| DISC-013 | **c-015: No Recursive Subagents** - Task tool filtered at adapter level | Constraint | CAPTURED | ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
+| DISC-014 | **c-009: Mandatory Persistence** - All agent outputs must be files | Constraint | CAPTURED | ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
+| DISC-015 | **26 Hard Rules** - Behavioral gates for quality enforcement | Process | CAPTURED | hard-rules.md |
+| DISC-016 | **Three-Tier Enforcement** - Soft → Medium → Hard gates | Process | CAPTURED | sop.md |
+| DISC-017 | **MAPE-K Control Loop** - Self-healing architecture pattern | Resilience | CAPTURED | self-healing-architecture.md |
+| DISC-018 | **8 Specialized Agents** - ps-researcher, ps-analyst, ps-architect, etc. | Agents | CAPTURED | problem-solving/agents/*.md |
+| DISC-019 | **7-Step Problem-Solving Framework** - Frame → Classify → Diagnose → Ideate → Decide → Act → Verify | Process | CAPTURED | problem_solving_meta_framework.md |
+| DISC-020 | **Integration Theater Anti-Pattern** - Tests pass via mocks, real execution fails | Anti-Pattern | CAPTURED | hard-rules.md (Rules 20-22) |
+| DISC-021 | **SOP-I Implementation Standards** - BDD+TDD, test pyramid, no stubs | Process | CAPTURED | sop.md |
+| DISC-022 | **SOP-ENF Design Review** - HARD enforcement requiring approval | Process | CAPTURED | sop.md |
+| DISC-023 | **Event Schema Versioning** - Required from day 1 for CloudEvents | Architecture | CAPTURED | REVISED-ARCHITECTURE-v3.0.md |
+| DISC-024 | **Circuit Breaker Pattern** - CLOSED → HALF_OPEN → OPEN states | Resilience | CAPTURED | self-healing-guide.md |
+| DISC-025 | **Eventual Consistency Flow** - Task → Phase → Plan via domain events | Architecture | CAPTURED | ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
 
 ---
 
@@ -274,3 +295,7 @@
 | 2026-01-07 | Claude | Revised Phase 3 based on aggregate root research |
 | 2026-01-07 | Claude | Added DISC-004 through DISC-010 |
 | 2026-01-07 | Claude | Updated Key Decisions with new findings |
+| 2026-01-07 | Claude | **MAJOR: Deep analysis of 60+ ECW artifacts** |
+| 2026-01-07 | Claude | Added DISC-011 through DISC-025 (15 new discoveries) |
+| 2026-01-07 | Claude | Added DEBT-005 through DEBT-010 (6 new tech debt items) |
+| 2026-01-07 | Claude | Created ECW_COMPREHENSIVE_LESSONS_LEARNED.md |
