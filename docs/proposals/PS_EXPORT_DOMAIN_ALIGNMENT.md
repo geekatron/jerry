@@ -23,6 +23,11 @@ This proposal recommends enhancing PS-EXPORT-SPECIFICATION v2.1 to align with Je
 ## I. Current State Analysis
 
 ### A. PS-EXPORT-SPECIFICATION v2.1 Common Properties
+> AN: created_on. updated_on, created_by, updated_by are required IAuditable fields
+> AN: we need a property to indicate the hash algorithm
+> AN: we need a version property to indicate the version of the object (Date+Hash)
+> AN: id needs to be an object in the DDD aggregates and models - can we leverage that here? 
+> AN: What's the upper limit of slug?
 
 | Property | Format | Description |
 |----------|--------|-------------|
@@ -39,6 +44,9 @@ This proposal recommends enhancing PS-EXPORT-SPECIFICATION v2.1 to align with Je
 ### B. Planned Domain Model Properties (from PLAN.md)
 
 **Task Entity:**
+
+>AN: You need a space, otherwise the table will not render
+
 | Property | Type | Description |
 |----------|------|-------------|
 | `id` | `TaskId` (VertexId) | Strongly typed identifier |
@@ -50,6 +58,9 @@ This proposal recommends enhancing PS-EXPORT-SPECIFICATION v2.1 to align with Je
 | `subtask_ids` | `List[SubtaskId]` | Child references |
 
 **Phase Entity:**
+
+>AN: You need a space, otherwise the table will not render
+
 | Property | Type | Description |
 |----------|------|-------------|
 | `id` | `PhaseId` (VertexId) | Strongly typed identifier |
@@ -59,9 +70,14 @@ This proposal recommends enhancing PS-EXPORT-SPECIFICATION v2.1 to align with Je
 
 ### C. Identified Gaps
 
+> AN: We should add additional Jerry data that is common to all objects:
+>  - Metadata : Dictionary <string, string> - for extensibility
+>  - Tags : string[] - For categorization and filtering
+>  - Where are we representing relationships? Edges in graph model? EdgePropery? NodeProperty?
+
 | Gap | PS-EXPORT | Domain Model | Resolution |
 |-----|-----------|--------------|------------|
-| ID Format | Prefix-based (c-001) | Strongly typed (TaskId) | Unify to strongly typed + prefix |
+| ID Format | Prefix-based (c-001) | Strongly typed (TaskId) | Unify to strongly typed + prefix | 
 | Session Tracking | `session_id` | Not planned | Add to Domain |
 | Hash | Content hash | Not planned | Add to Domain |
 | Slug | URL-safe | Not planned | Add to Domain |
@@ -95,6 +111,8 @@ class EntityBase:
     # Provenance
     created_on: datetime      # Creation timestamp (ISO 8601)
     updated_on: datetime      # Last modification (ISO 8601)
+    created_by: str           # User that created the entity
+    updated_by: str           # User that last modified the entity
     session_id: str           # Session that created/modified
 
     # Change Detection
