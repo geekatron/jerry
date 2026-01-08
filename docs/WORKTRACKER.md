@@ -223,13 +223,25 @@
 - **Output**: `docs/plans/AGENT_REORGANIZATION_PLAN.md`
 - **Scope**: 8 ps-*.md agents, architecture skill cleanup
 
-### WORK-021: Create Jerry Constitution 🔄
-- **Status**: IN PROGRESS
+### WORK-021: Create Jerry Constitution ✅
+- **Status**: COMPLETED
 - **Output**: `docs/governance/JERRY_CONSTITUTION.md`
-- **Sub-tasks**:
-  - [ ] AGT-001: Create Jerry Constitution v1.0
-  - [ ] AGT-002: Update CLAUDE.md with constitution reference
-  - [ ] AGT-003: Create simplified agent template
+- **Key Deliverables**:
+  - Jerry Constitution v1.0 with 13 principles across 5 articles
+  - BEHAVIOR_TESTS.md with 14 test scenarios (golden dataset)
+  - Agent TEMPLATE.md with constitutional compliance built-in
+  - CLAUDE.md updated with constitution reference and quick reference table
+- **Industry Prior Art**:
+  - Anthropic Constitutional AI, SHADE-Arena adversarial testing
+  - OpenAI Model Spec, Confessions Framework
+  - DeepEval G-Eval, LLM-as-a-Judge pattern
+  - Datadog golden dataset methodology
+- **Sub-tasks** (all completed):
+  - [x] AGT-001.1: Draft constitution with 13 numbered principles
+  - [x] AGT-001.2: Create BEHAVIOR_TESTS.md with 14 test scenarios
+  - [x] AGT-002: Update CLAUDE.md with constitution reference
+  - [x] AGT-003: Create simplified agent template
+- **Discoveries**: DISC-069
 
 ### WORK-022: Refactor ps-*.md Agents 🔄
 - **Status**: IN PROGRESS
@@ -451,6 +463,7 @@
 | DISC-066 | **RDF* for Edge Properties** - W3C extension to RDF supporting property graph edge attributes | Standards | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 | DISC-067 | **Named-Graph-First Pattern** - Each named graph conforms to governing model in KG (Netflix) | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 | DISC-068 | **Conceptual RDF, Flexible Physical** - Netflix uses RDF conceptually, not necessarily everywhere | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-069 | **Jerry Constitution v1.0** - Self-governing agent framework with 13 principles, 4-tier enforcement, behavioral tests | Governance | CAPTURED | JERRY_CONSTITUTION.md |
 
 ---
 
@@ -495,8 +508,8 @@
 3. ✅ ~~Create GRAPH_DATA_MODEL_ANALYSIS.md~~
 4. ✅ ~~Research agent behavior enforcement best practices~~
 5. ✅ ~~Create Agent Reorganization Plan~~
-6. **CURRENT: Create Jerry Constitution v1.0** (AGT-001)
-7. **NEXT: Refactor ps-*.md agents** (WORK-022)
+6. ✅ ~~Create Jerry Constitution v1.0~~ (WORK-021 complete)
+7. **CURRENT: Refactor ps-*.md agents** (WORK-022)
 8. Phase 3 Hexagonal Core paused pending agent work
 
 ---
@@ -552,3 +565,9 @@
 | 2026-01-08 | Claude | Added Python graph libraries analysis (kglab, RDFLib, NetworkX) |
 | 2026-01-08 | Claude | Added RDF/OWL alignment strategy and Netflix UDA insights |
 | 2026-01-08 | Claude | Added DISC-064 through DISC-068 (5 graph/KG discoveries) |
+| 2026-01-08 | Claude | **MAJOR: Completed Jerry Constitution v1.0 (WORK-021)** |
+| 2026-01-08 | Claude | Created docs/governance/JERRY_CONSTITUTION.md (13 principles, 5 articles) |
+| 2026-01-08 | Claude | Created docs/governance/BEHAVIOR_TESTS.md (14 test scenarios) |
+| 2026-01-08 | Claude | Created .claude/agents/TEMPLATE.md (constitution-compliant agent template) |
+| 2026-01-08 | Claude | Updated CLAUDE.md with Agent Governance section |
+| 2026-01-08 | Claude | Added DISC-069 (Jerry Constitution) |
