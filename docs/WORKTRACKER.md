@@ -244,13 +244,14 @@
 - **Discoveries**: DISC-069
 
 ### WORK-022: Refactor ps-*.md Agents 🔄
-- **Status**: IN PROGRESS
+- **Status**: IN PROGRESS (3/8 complete)
 - **Research**: `docs/research/PS_AGENT_REFACTORING_STRATEGY.md` ✅
+- **Template**: `skills/problem-solving/agents/PS_AGENT_TEMPLATE.md` ✅
 - **Discoveries**: DISC-049 through DISC-053 (5 agent design discoveries)
 - **Sub-tasks**:
-  - [ ] AGT-010: Refactor ps-researcher.md
-  - [ ] AGT-011: Refactor ps-analyst.md
-  - [ ] AGT-012: Refactor ps-architect.md
+  - [x] AGT-010: Refactor ps-researcher.md v2.0.0
+  - [x] AGT-011: Refactor ps-analyst.md v2.0.0
+  - [x] AGT-012: Refactor ps-architect.md v2.0.0
   - [ ] AGT-013: Refactor ps-validator.md
   - [ ] AGT-014: Refactor ps-synthesizer.md
   - [ ] AGT-015: Refactor ps-reviewer.md
@@ -358,6 +359,36 @@
   - W3C: RDF*, OWL standards
 - **Discoveries**: DISC-064 through DISC-068
 
+### WORK-030: Refactor problem-solving/SKILL.md ⏳
+- **Status**: PENDING
+- **Priority**: HIGH (User requested)
+- **Issue Found**: DISC-070 - File contains work-tracker content (frontmatter says `name: work-tracker`) but is in problem-solving directory
+- **Current State**: 1723 lines, significant cruft, unclear orchestration
+- **Goal**: Clean, focused skill definition with user playbooks
+- **Sub-tasks**:
+  - [ ] SKILL-001: Research - Analyze current SKILL.md structure and identify cruft
+  - [ ] SKILL-002: Research - Study industry skill/capability definition patterns
+  - [ ] SKILL-003: Design - Create SKILL.md refactoring plan (ultrathink)
+  - [ ] SKILL-004: Create User Playbook - How to invoke the skill
+  - [ ] SKILL-005: Create User Playbook - How orchestration between subagents works
+  - [ ] SKILL-006: Implement - Refactor SKILL.md to focus on agent instructions
+  - [ ] SKILL-007: Implement - Separate user docs from agent instructions
+  - [ ] SKILL-008: Validate - Test skill invocation still works
+  - [ ] SKILL-009: Validate - Verify orchestration flow is documented and working
+- **Deliverables**:
+  - `skills/problem-solving/SKILL.md` - Clean, focused agent skill definition
+  - `skills/problem-solving/PLAYBOOK.md` - User-facing guide (how to invoke, orchestration)
+  - `skills/problem-solving/docs/ORCHESTRATION.md` - Detailed subagent flow documentation
+- **Prior Art Required**:
+  - Claude Code skills documentation patterns
+  - Multi-agent orchestration patterns (Google ADK, AutoGen)
+  - Anthropic prompt engineering best practices
+- **Discovered Issues to Address**:
+  - Frontmatter name mismatch (`work-tracker` in `problem-solving` directory)
+  - ECW-specific references that don't apply to Jerry
+  - Mixing of user documentation with agent instructions
+  - Unclear orchestration between ps-* agents
+
 ---
 
 ## Phase BUGS
@@ -464,6 +495,7 @@
 | DISC-067 | **Named-Graph-First Pattern** - Each named graph conforms to governing model in KG (Netflix) | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 | DISC-068 | **Conceptual RDF, Flexible Physical** - Netflix uses RDF conceptually, not necessarily everywhere | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 | DISC-069 | **Jerry Constitution v1.0** - Self-governing agent framework with 13 principles, 4-tier enforcement, behavioral tests | Governance | CAPTURED | JERRY_CONSTITUTION.md |
+| DISC-070 | **Skill Definition Cruft** - problem-solving/SKILL.md contains work-tracker content (1723 lines, wrong frontmatter name) | Bug | CAPTURED | WORK-030 |
 
 ---
 
@@ -571,3 +603,7 @@
 | 2026-01-08 | Claude | Created .claude/agents/TEMPLATE.md (constitution-compliant agent template) |
 | 2026-01-08 | Claude | Updated CLAUDE.md with Agent Governance section |
 | 2026-01-08 | Claude | Added DISC-069 (Jerry Constitution) |
+| 2026-01-08 | Claude | **WORK-022 Progress**: Refactored ps-researcher, ps-analyst, ps-architect to v2.0.0 |
+| 2026-01-08 | Claude | Created PS_AGENT_TEMPLATE.md v2.0 (unified agent template) |
+| 2026-01-08 | Claude | Added WORK-030: Refactor problem-solving/SKILL.md |
+| 2026-01-08 | Claude | Added DISC-070 (SKILL.md cruft - work-tracker content in problem-solving) |
