@@ -2,8 +2,8 @@
 
 > Persistent work tracking for long-running sessions. Survives context compaction.
 
-**Last Updated**: 2026-01-07
-**Current Phase**: Phase 3 - Hexagonal Core Design (Revised)
+**Last Updated**: 2026-01-08
+**Current Phase**: Phase 3.5 - Agent Reorganization (NEW PRIORITY)
 **Session ID**: MG1nh
 
 ---
@@ -16,7 +16,8 @@
 | Phase 1: Governance Layer | ✅ COMPLETED | 100% |
 | Phase 2: Skills Interface Layer | ✅ COMPLETED | 100% |
 | Phase 2.5: Deep Analysis (NEW) | ✅ COMPLETED | 100% |
-| **Phase 3: Hexagonal Core** | 🔄 DESIGN COMPLETE | 25% |
+| Phase 3: Hexagonal Core | ⏸️ PAUSED (Design Complete) | 25% |
+| **Phase 3.5: Agent Reorganization** | 🔄 IN PROGRESS | 10% |
 | Phase 4: Testing & Validation | ⏳ PENDING | 0% |
 
 ---
@@ -202,6 +203,64 @@
 
 ---
 
+## Phase 3.5: Agent Reorganization (IN PROGRESS - NEW PRIORITY)
+
+> **Plan Document:** `docs/plans/AGENT_REORGANIZATION_PLAN.md`
+> **Research:** `docs/research/AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md`
+> **Focus:** Advisory, Soft, Medium enforcement (defer Hard)
+
+### WORK-019: Agent Enforcement Research ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md`
+- **Key Findings**:
+  - 4-Tier Progressive Enforcement (Advisory → Soft → Medium → Hard)
+  - Industry consensus: 75% soft enforcement, 25% hard
+  - Constitutional AI as foundation for self-governing agents
+  - Sources: Anthropic, OpenAI, Google DeepMind, academic research
+
+### WORK-020: Agent Reorganization Plan ✅
+- **Status**: COMPLETED
+- **Output**: `docs/plans/AGENT_REORGANIZATION_PLAN.md`
+- **Scope**: 8 ps-*.md agents, architecture skill cleanup
+
+### WORK-021: Create Jerry Constitution 🔄
+- **Status**: IN PROGRESS
+- **Output**: `docs/governance/JERRY_CONSTITUTION.md`
+- **Sub-tasks**:
+  - [ ] AGT-001: Create Jerry Constitution v1.0
+  - [ ] AGT-002: Update CLAUDE.md with constitution reference
+  - [ ] AGT-003: Create simplified agent template
+
+### WORK-022: Refactor ps-*.md Agents ⏳
+- **Status**: PENDING
+- **Sub-tasks**:
+  - [ ] AGT-010: Refactor ps-researcher.md
+  - [ ] AGT-011: Refactor ps-analyst.md
+  - [ ] AGT-012: Refactor ps-architect.md
+  - [ ] AGT-013: Refactor ps-validator.md
+  - [ ] AGT-014: Refactor ps-synthesizer.md
+  - [ ] AGT-015: Refactor ps-reviewer.md
+  - [ ] AGT-016: Refactor ps-investigator.md
+  - [ ] AGT-017: Refactor ps-reporter.md
+  - [ ] AGT-018: Clean up architecture SKILL.md
+
+### WORK-023: Implement Soft Enforcement ⏳
+- **Status**: PENDING
+- **Sub-tasks**:
+  - [ ] AGT-020: Implement self-monitoring interface
+  - [ ] AGT-021: Add reflection prompts
+  - [ ] AGT-022: Create warning message patterns
+  - [ ] AGT-023: Implement consent request pattern
+
+### WORK-024: Implement Medium Enforcement ⏳
+- **Status**: PENDING
+- **Sub-tasks**:
+  - [ ] AGT-030: Define trust levels
+  - [ ] AGT-031: Implement tool restriction enforcement
+  - [ ] AGT-032: Create escalation trigger patterns
+
+---
+
 ## Phase BUGS
 
 > Track bugs discovered during development
@@ -267,6 +326,13 @@
 | DISC-028 | **Gremlin Traversal Patterns** - out(), in(), repeat(), tree() for graph queries | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 | DISC-029 | **Events as Vertices** - CloudEvents stored as graph nodes with EMITTED edges | Event Sourcing | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 | DISC-030 | **Phased Migration Path** - File → SQLite → Graph DB for persistence | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-031 | **4-Tier Progressive Enforcement** - Advisory → Soft → Medium → Hard (industry standard) | Enforcement | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-032 | **Constitutional AI** - Self-supervised alignment using principles not labeling (Anthropic) | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-033 | **75% Soft Enforcement** - Industry consensus favors soft over hard enforcement | Enforcement | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-034 | **Pro2Guard Framework** - Proactive runtime enforcement with probabilistic risk | Research | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-035 | **OpenAI Model Spec** - No single intervention is solution; layered defense required | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-036 | **DeepMind CCLs** - Critical Capability Levels for graduated risk assessment | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-037 | **Self-Monitoring Agents** - RLHF + self-critique for continuous alignment | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
 
 ---
 
@@ -305,8 +371,11 @@
 1. ✅ ~~Update PLAN.md with revised aggregate root design~~
 2. ✅ ~~Research Gremlin data model for graph-readiness~~
 3. ✅ ~~Create GRAPH_DATA_MODEL_ANALYSIS.md~~
-4. **READY: Begin Phase 1 Implementation** (WORK-011)
-5. Start with DOM-001: Implement Vertex base class (BDD cycle)
+4. ✅ ~~Research agent behavior enforcement best practices~~
+5. ✅ ~~Create Agent Reorganization Plan~~
+6. **CURRENT: Create Jerry Constitution v1.0** (AGT-001)
+7. **NEXT: Refactor ps-*.md agents** (WORK-022)
+8. Phase 3 Hexagonal Core paused pending agent work
 
 ---
 
@@ -328,3 +397,10 @@
 | 2026-01-07 | Claude | Added WORK-018: Graph Data Model Research |
 | 2026-01-07 | Claude | Completed WORK-010: Design & Planning |
 | 2026-01-07 | Claude | Updated Key Decisions with graph model decisions |
+| 2026-01-08 | Claude | **MAJOR: Agent Behavior Enforcement Research** |
+| 2026-01-08 | Claude | Added Phase 3.5: Agent Reorganization (new priority) |
+| 2026-01-08 | Claude | Created AGENT_REORGANIZATION_PLAN.md |
+| 2026-01-08 | Claude | Created AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| 2026-01-08 | Claude | Added DISC-031 through DISC-037 (7 enforcement discoveries) |
+| 2026-01-08 | Claude | Added WORK-019 through WORK-024 (agent reorganization tasks) |
+| 2026-01-08 | Claude | Paused Phase 3 Hexagonal Core for agent work |
