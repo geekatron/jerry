@@ -927,6 +927,109 @@ g.V().has('Task', 'id', 'TASK-001')
 
 ---
 
+## 11. Response to User Feedback (AN.Q.1-3)
+
+### AN.Q.1: Python Graph Data Model Libraries (Prior Art)
+
+**Answer:** Yes, there are several mature Python libraries that could be reused or adapted:
+
+| Library | Purpose | Jerry Applicability | License |
+|---------|---------|---------------------|---------|
+| **[kglab](https://github.com/DerwenAI/kglab)** | Unified KG abstraction layer across RDF, NetworkX, Pandas | **HIGH** - Abstracts multiple paradigms | MIT |
+| **[RDFLib](https://github.com/RDFLib/rdflib)** | Pure Python RDF processing (v8 alpha) | **HIGH** - Semantic Web foundation | BSD-3 |
+| **[NetworkX](https://networkx.org/)** | Graph algorithms, property graph structure | **MEDIUM** - Good for algorithms | BSD-3 |
+| **[rdf2gremlin](https://github.com/costezki/rdf2gremlin)** | RDF → TinkerPop/Gremlin transformation | **HIGH** - Bridges RDF to property graph | Apache-2.0 |
+| **[AWS graph-notebook](https://github.com/aws/graph-notebook)** | Jupyter integration for TinkerPop, openCypher, SPARQL | **LOW** - More for exploration | Apache-2.0 |
+
+**Recommendation:** Consider **kglab** as an abstraction layer if Jerry needs to support both RDF/Semantic Web and property graph paradigms. It provides:
+- RDF serialization (Turtle, XML, JSON-LD)
+- SPARQL query execution
+- SHACL validation
+- NetworkX algorithm integration
+- Pandas DataFrame export
+
+**Citation:** [kglab GitHub](https://github.com/DerwenAI/kglab) - "Graph Data Science: an abstraction layer in Python for building knowledge graphs"
+
+### AN.Q.1.a: Where is that analysis documented?
+
+**Answer:** This analysis is now documented in this section (Section 11) of `docs/research/GRAPH_DATA_MODEL_ANALYSIS.md`.
+
+### AN.Q.2: Semantic Web (RDF/OWL) Alignment
+
+**Answer:** The current property graph model can align with RDF/OWL, but there are important considerations:
+
+#### Alignment Challenges
+
+| Aspect | Property Graph | RDF/OWL | Alignment Strategy |
+|--------|----------------|---------|-------------------|
+| **Edge Properties** | Native (key-value on edges) | Requires reification or RDF* | Use RDF* or named graphs |
+| **Schema** | Optional/implicit | Explicit via RDFS/OWL | Define OWL ontology for Jerry entities |
+| **Identifiers** | String IDs | URIs (required) | Jerry URI scheme (SPEC-001) already URI-compatible |
+| **Inference** | None native | RDFS/OWL reasoning | Layer on via RDFLib + pySHACL |
+| **Query Language** | Gremlin | SPARQL | Support both via adapters |
+
+#### Jerry URI → RDF URI Mapping
+
+Jerry's URI scheme (SPEC-001) is designed to be RDF-compatible:
+
+```
+Jerry URI: jer:jer:work-tracker:task:task-042+hash
+RDF URI:   https://jerry.dev/jer/work-tracker/task/task-042#hash
+```
+
+#### Recommended Semantic Web Path
+
+1. **Phase 1 (Current)**: Property graph with Jerry URI scheme
+2. **Phase 2**: Add RDF serialization adapter (using RDFLib)
+3. **Phase 3**: Define OWL ontology for Jerry domain
+4. **Phase 4**: Enable SPARQL queries alongside Gremlin
+
+**Key Insight:** Netflix uses "conceptual RDF for their knowledge graph" but does not require "RDF all the way through." Jerry can follow this pattern.
+
+**Citation:** [Semantic Arts - Property Graphs](https://www.semanticarts.com/property-graphs-training-wheels-on-the-way-to-knowledge-graphs/) - "Property graphs can be training wheels on the way to knowledge graphs"
+
+### AN.Q.3: Netflix Knowledge Graph Insights
+
+**Answer:** Yes, Netflix's articles provide highly relevant insights:
+
+#### Key Lessons from Netflix Entertainment Knowledge Graph
+
+| Insight | Netflix Approach | Jerry Application |
+|---------|------------------|-------------------|
+| **Ontology-Driven Modeling** | Unified conceptual model across domains | Define Jerry ontology for work tracking entities |
+| **Named-Graph-First** | Each named graph conforms to governing model | Jerry URI scheme provides this structure |
+| **"Model Once, Represent Everywhere"** | Single domain model → multiple representations (GraphQL, Avro, SQL) | EntityBase → JSON, TOON, Graph, RDF |
+| **Knowledge Graph as Index** | KG captures relationships, data lives elsewhere | Jerry KG indexes work items, content in files |
+| **LLM Enhancement** | LLMs infer new relationships from unstructured data | Future: Jerry agents could enrich KG |
+
+#### Netflix UDA (Unified Data Architecture) Patterns
+
+1. **Upper Metamodel**: Standardizes domain definitions - Jerry has EntityBase
+2. **Data Container Representations**: Consistent artifacts across GraphQL, Avro, SQL - Jerry has JSON/TOON
+3. **Mappings**: Link concepts to physical data sources - Jerry has repository pattern
+4. **Modularity**: Each domain model is independent - Jerry has bounded contexts
+
+**Key Discovery (DISC-064):** Netflix's UDA pattern of "Model Once, Represent Everywhere" validates Jerry's approach of EntityBase → multiple serialization formats.
+
+**Citations:**
+- [Netflix: Unlocking Entertainment Intelligence with Knowledge Graph](https://netflixtechblog.medium.com/unlocking-entertainment-intelligence-with-knowledge-graph-da4b22090141)
+- [InfoQ: Netflix Upper Metamodel](https://www.infoq.com/news/2025/12/netflix-upper-uda-architecture/)
+- [Knowledge Graph Insights: Netflix UDA](https://knowledgegraphinsights.com/alex-bertails/)
+
+---
+
+## 12. New Discoveries from AN.Q Research
+
+| ID | Discovery | Category | Source |
+|----|-----------|----------|--------|
+| DISC-064 | **Netflix UDA "Model Once, Represent Everywhere"** - Single domain model with multiple projections (GraphQL, Avro, SQL, RDF) | Architecture | Netflix UDA |
+| DISC-065 | **kglab Abstraction Layer** - Unified Python API across RDF, NetworkX, Pandas, SHACL | Libraries | DerwenAI |
+| DISC-066 | **RDF* for Edge Properties** - Extension to RDF supporting property graph edge attributes | Standards | W3C |
+| DISC-067 | **Named-Graph-First Pattern** - Each named graph conforms to governing model in KG | Architecture | Netflix UDA |
+| DISC-068 | **Conceptual RDF, Flexible Physical** - Netflix uses RDF conceptually, not necessarily everywhere | Architecture | Netflix |
+
+---
+
 ## Feedback from User
 
 AN.Q.1. Did you see if there are any libraries (prior art) that implement a graph data model in Python that could be reused or adapted for Jerry?
@@ -938,7 +1041,7 @@ AN.Q.3.b. https://netflixtechblog.com/uda-unified-data-architecture-6a6aee261d8d
 
 ---
 
-*Document Version: 1.1*
+*Document Version: 1.2*
 *Created: 2026-01-07*
 *Updated: 2026-01-08*
 *Author: Claude (Distinguished Systems Engineer persona)*
@@ -951,3 +1054,4 @@ AN.Q.3.b. https://netflixtechblog.com/uda-unified-data-architecture-6a6aee261d8d
 |---------|------|---------|
 | 1.0 | 2026-01-07 | Initial graph data model analysis |
 | 1.1 | 2026-01-08 | Integrated Jerry URI scheme (SPEC-001): Added uri to vertices, updated CloudEvents type/source |
+| 1.2 | 2026-01-08 | Addressed AN.Q.1-3 feedback: Python libraries (kglab, RDFLib), RDF/OWL alignment, Netflix KG insights; Added DISC-064 through DISC-068 |

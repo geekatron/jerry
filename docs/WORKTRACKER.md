@@ -326,6 +326,26 @@
 - **Discoveries**: DISC-058 through DISC-063
 - **Decision**: Proceed with validated testing approach for WORK-021
 
+### WORK-029: Address Graph Data Model Feedback (AN.Q.1-3) ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/GRAPH_DATA_MODEL_ANALYSIS.md` v1.2 (Section 11-12)
+- **User Questions Addressed**:
+  - AN.Q.1: Python graph libraries (kglab, RDFLib, NetworkX, rdf2gremlin)
+  - AN.Q.1.a: Analysis documented in Section 11
+  - AN.Q.2: RDF/OWL alignment strategy (4-phase path)
+  - AN.Q.3: Netflix Knowledge Graph insights (UDA, "Model Once, Represent Everywhere")
+- **Key Findings**:
+  - **kglab** recommended as abstraction layer (RDF + NetworkX + Pandas)
+  - Jerry URI scheme already RDF-compatible
+  - Netflix UDA validates Jerry's EntityBase → multiple serialization approach
+  - Named-Graph-First pattern aligns with Jerry URI structure
+- **Industry Sources**:
+  - Netflix: UDA, Entertainment Knowledge Graph
+  - DerwenAI: kglab library
+  - Semantic Arts: Property Graph → Knowledge Graph path
+  - W3C: RDF*, OWL standards
+- **Discoveries**: DISC-064 through DISC-068
+
 ---
 
 ## Phase BUGS
@@ -426,6 +446,11 @@
 | DISC-061 | **Anthropic SHADE-Arena** - Test suite for covert harmful behavior detection | Red Team | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
 | DISC-062 | **Multi-Attempt ASR** - Attack Success Rate across 1/10/100/200 attempts measures robustness | Metrics | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
 | DISC-063 | **Golden Datasets** - Annotated test cases with happy/edge/adversarial scenarios (Datadog) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-064 | **Netflix UDA "Model Once, Represent Everywhere"** - Single domain model with multiple projections | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-065 | **kglab Abstraction Layer** - Unified Python API across RDF, NetworkX, Pandas, SHACL (MIT) | Libraries | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-066 | **RDF* for Edge Properties** - W3C extension to RDF supporting property graph edge attributes | Standards | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-067 | **Named-Graph-First Pattern** - Each named graph conforms to governing model in KG (Netflix) | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-068 | **Conceptual RDF, Flexible Physical** - Netflix uses RDF conceptually, not necessarily everywhere | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
 
 ---
 
@@ -522,3 +547,8 @@
 | 2026-01-08 | Claude | Created LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
 | 2026-01-08 | Claude | Added DISC-058 through DISC-063 (6 testing discoveries) |
 | 2026-01-08 | Claude | Validated behavioral testing approach against industry (Anthropic, OpenAI, Datadog, DeepEval) |
+| 2026-01-08 | Claude | **RESEARCH: Graph Data Model AN.Q Feedback** |
+| 2026-01-08 | Claude | Updated GRAPH_DATA_MODEL_ANALYSIS.md v1.2 with AN.Q responses |
+| 2026-01-08 | Claude | Added Python graph libraries analysis (kglab, RDFLib, NetworkX) |
+| 2026-01-08 | Claude | Added RDF/OWL alignment strategy and Netflix UDA insights |
+| 2026-01-08 | Claude | Added DISC-064 through DISC-068 (5 graph/KG discoveries) |
