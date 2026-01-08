@@ -17,7 +17,7 @@
 | Phase 2: Skills Interface Layer | ✅ COMPLETED | 100% |
 | Phase 2.5: Deep Analysis (NEW) | ✅ COMPLETED | 100% |
 | Phase 3: Hexagonal Core | ⏸️ PAUSED (Design Complete) | 25% |
-| **Phase 3.5: Agent Reorganization** | 🔄 IN PROGRESS | 60% |
+| **Phase 3.5: Agent Reorganization** | ✅ COMPLETED | 100% |
 | Phase 4: Testing & Validation | ⏳ PENDING | 0% |
 
 ---
@@ -359,17 +359,20 @@
   - W3C: RDF*, OWL standards
 - **Discoveries**: DISC-064 through DISC-068
 
-### WORK-030: Refactor problem-solving/SKILL.md ⏳
-- **Status**: PENDING
+### WORK-030: Refactor problem-solving/SKILL.md ✅
+- **Status**: COMPLETED
 - **Priority**: HIGH (User requested)
-- **Issue Found**: DISC-070 - File contains work-tracker content (frontmatter says `name: work-tracker`) but is in problem-solving directory
-- **Current State**: 1723 lines, significant cruft, unclear orchestration
-- **Goal**: Clean, focused skill definition with user playbooks
+- **Issue Fixed**: DISC-070 - Replaced 1722-line work-tracker content with proper problem-solving skill
+- **Final State**: 265-line clean SKILL.md + PLAYBOOK.md + ORCHESTRATION.md
+- **Deliverables**:
+  - `skills/problem-solving/SKILL.md` - Clean skill definition (265 lines)
+  - `skills/problem-solving/PLAYBOOK.md` - User guide with examples
+  - `skills/problem-solving/docs/ORCHESTRATION.md` - Technical orchestration guide
 - **Sub-tasks**:
-  - [ ] SKILL-001: Research - Analyze current SKILL.md structure and identify cruft
-  - [ ] SKILL-002: Research - Study industry skill/capability definition patterns
-  - [ ] SKILL-003: Design - Create SKILL.md refactoring plan (ultrathink)
-  - [ ] SKILL-004: Create User Playbook - How to invoke the skill
+  - [x] SKILL-001: Analyzed current SKILL.md - found work-tracker content (wrong!)
+  - [x] SKILL-002: Created new SKILL.md with proper frontmatter and content
+  - [x] SKILL-003: Created PLAYBOOK.md - User guide (invocation, examples)
+  - [x] SKILL-004: Created ORCHESTRATION.md - Technical orchestration patterns
   - [ ] SKILL-005: Create User Playbook - How orchestration between subagents works
   - [ ] SKILL-006: Implement - Refactor SKILL.md to focus on agent instructions
   - [ ] SKILL-007: Implement - Separate user docs from agent instructions
@@ -542,8 +545,8 @@
 5. ✅ ~~Create Agent Reorganization Plan~~
 6. ✅ ~~Create Jerry Constitution v1.0~~ (WORK-021 complete)
 7. ✅ ~~Refactor ps-*.md agents~~ (WORK-022 complete)
-8. **CURRENT: Refactor problem-solving/SKILL.md** (WORK-030)
-9. Phase 3 Hexagonal Core paused pending agent work
+8. ✅ ~~Refactor problem-solving/SKILL.md~~ (WORK-030 complete)
+9. Phase 3 Hexagonal Core ready to resume
 
 ---
 
@@ -610,3 +613,4 @@
 | 2026-01-08 | Claude | Added DISC-070 (SKILL.md cruft - work-tracker content in problem-solving) |
 | 2026-01-08 | Claude | **WORK-022 COMPLETED**: Refactored remaining 5 agents (ps-validator, ps-synthesizer, ps-reviewer, ps-investigator, ps-reporter) to v2.0.0 |
 | 2026-01-08 | Claude | **WORK-030 Progress**: Replaced 1722-line cruft SKILL.md with clean 265-line problem-solving skill definition |
+| 2026-01-08 | Claude | **WORK-030 COMPLETED**: Created PLAYBOOK.md (user guide) and ORCHESTRATION.md (technical docs) |
