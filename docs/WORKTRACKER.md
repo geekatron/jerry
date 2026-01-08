@@ -231,8 +231,10 @@
   - [ ] AGT-002: Update CLAUDE.md with constitution reference
   - [ ] AGT-003: Create simplified agent template
 
-### WORK-022: Refactor ps-*.md Agents ⏳
-- **Status**: PENDING
+### WORK-022: Refactor ps-*.md Agents 🔄
+- **Status**: IN PROGRESS
+- **Research**: `docs/research/PS_AGENT_REFACTORING_STRATEGY.md` ✅
+- **Discoveries**: DISC-049 through DISC-053 (5 agent design discoveries)
 - **Sub-tasks**:
   - [ ] AGT-010: Refactor ps-researcher.md
   - [ ] AGT-011: Refactor ps-analyst.md
@@ -356,6 +358,11 @@
 | DISC-046 | **TOON Spec Maturity** - v3.0 with ABNF grammar, 349 test fixtures, conformance rules | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
 | DISC-047 | **TOON Optimal Data Shapes** - Best for tabular arrays (40-60%), suboptimal for deep nesting | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
 | DISC-048 | **TOON Python Integration** - `python-toon` package with encode/decode API, CLI tools | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
+| DISC-049 | **XML-Structured Prompts** - Claude optimized for XML tags separating prompt components | Agent Design | CAPTURED | PS_AGENT_REFACTORING_STRATEGY.md |
+| DISC-050 | **Coordinator/Router Pattern** - LLM-based routing for agent selection (Google ADK, Azure) | Agent Design | CAPTURED | PS_AGENT_REFACTORING_STRATEGY.md |
+| DISC-051 | **State Management via output_key** - Google ADK pattern for sequential agent state sharing | Agent Design | CAPTURED | PS_AGENT_REFACTORING_STRATEGY.md |
+| DISC-052 | **Layered Security Defenses** - KnowBe4 5-layer defense: prompt separation, validation, filtering | Security | CAPTURED | PS_AGENT_REFACTORING_STRATEGY.md |
+| DISC-053 | **Monolith Anti-Pattern** - Single agent with many tasks degrades quality (ZenML research) | Anti-Pattern | CAPTURED | PS_AGENT_REFACTORING_STRATEGY.md |
 
 ---
 
@@ -441,3 +448,7 @@
 | 2026-01-08 | Claude | Completed WORK-025: TOON Format Research |
 | 2026-01-08 | Claude | Updated Hard Requirements with TOON + JSON serialization |
 | 2026-01-08 | Claude | Added Key Decision 15: Dual Serialization Strategy |
+| 2026-01-08 | Claude | **RESEARCH: PS Agent Refactoring Strategy** |
+| 2026-01-08 | Claude | Created PS_AGENT_REFACTORING_STRATEGY.md with L0/L1/L2 levels |
+| 2026-01-08 | Claude | Added DISC-049 through DISC-053 (5 agent design discoveries) |
+| 2026-01-08 | Claude | Industry citations: Google ADK, Microsoft Azure, KnowBe4, Anthropic |
