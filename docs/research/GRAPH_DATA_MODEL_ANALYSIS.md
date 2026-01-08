@@ -36,7 +36,7 @@ This analysis designs a graph-ready data model for Jerry Work Tracker that:
 - Event sourcing with CloudEvents 1.0 schema
 
 ### WHERE will this be implemented?
-- Domain layer: Graph abstractions (Vertex, Edge, Property)
+- Domain layer: Graph abstractions (Vertex, Edge, Property) //AN: Would be good to investigate if it makes sense to have separate property realizations like VertexProperty and EdgeProperty classes.
 - Infrastructure layer: Storage adapters (File, SQLite, Graph DB)
 - Application layer: Traversal queries via repository pattern
 
@@ -793,6 +793,17 @@ g.V().has('Task', 'id', 'TASK-001')
 ### DDD Integration
 9. **Martin Fowler - DDD Aggregate** - https://martinfowler.com/bliki/DDD_Aggregate.html
 10. **Vaughn Vernon - Implementing DDD** - Reference book
+
+---
+
+## Feedback from User
+
+AN.Q.1. Did you see if there are any libraries (prior art) that implement a graph data model in Python that could be reused or adapted for Jerry?
+AN.Q.1.a. If so, where is that analysis documented?
+AN.Q.2. Keep the Semantic Web in mind as this is the aspirational end goal for Jerry. How would this graph data model align with RDF/OWL standards for knowledge representation? 
+AN.Q.3. Netflix has a couple of great articles about Knowledge Graphs. Would it be worth reviewing those to see if there are any insights that could be applied here:
+AN.Q.3.a. https://netflixtechblog.medium.com/unlocking-entertainment-intelligence-with-knowledge-graph-da4b22090141
+AN.Q.3.b. https://netflixtechblog.com/uda-unified-data-architecture-6a6aee261d8d
 
 ---
 
