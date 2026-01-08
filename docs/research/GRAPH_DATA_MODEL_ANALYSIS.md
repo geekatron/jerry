@@ -242,6 +242,9 @@ class EdgeProperty(Property[T]):
 
 ### 3.1 Vertex Types (Labels)
 
+> **Note:** All vertices include a `uri` property using Jerry URI scheme (SPEC-001).
+> See: `docs/specifications/JERRY_URI_SPECIFICATION.md`
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          VERTEX LABELS                                   │
@@ -249,6 +252,7 @@ class EdgeProperty(Property[T]):
 │                                                                          │
 │   PLAN (Aggregate Root)                                                  │
 │   ├── id: PlanId (g:UUID with prefix "PLAN-")                           │
+│   ├── uri: JerryUri (e.g., "jer:jer:work-tracker:plan:PLAN-001+hash")   │
 │   ├── title: string                                                      │
 │   ├── description: string?                                               │
 │   ├── status: PlanStatus                                                 │
@@ -294,8 +298,8 @@ class EdgeProperty(Property[T]):
 │   EVENT (CloudEvents vertex)                                             │
 │   ├── id: EventId (g:UUID)                                               │
 │   ├── specversion: "1.0"                                                 │
-│   ├── type: string (e.g., "com.jerry.task.completed.v1")                │
-│   ├── source: string (e.g., "/jerry/tasks/TASK-001")                    │
+│   ├── type: JerryUri (e.g., "jer:jer:work-tracker:facts/TaskCompleted") │
+│   ├── source: JerryUri (e.g., "jer:jer:work-tracker:task:TASK-001")     │
 │   ├── time: datetime                                                     │
 │   ├── datacontenttype: "application/json"                               │
 │   └── data: Map (event payload)                                          │
@@ -799,13 +803,15 @@ class CloudEventVertex(Vertex):
 
     Enables event traversal and aggregate reconstruction.
 
-    Reference: https://cloudevents.io/
+    References:
+    - https://cloudevents.io/
+    - SPEC-001: Jerry URI Specification (for type/source URIs)
     """
 
     # CloudEvents required attributes
     specversion: str = "1.0"
-    type: str = ""  # e.g., "com.jerry.task.completed.v1"
-    source: str = ""  # e.g., "/jerry/tasks/TASK-001"
+    type: str = ""  # Jerry URI: "jer:jer:work-tracker:facts/TaskCompleted"
+    source: str = ""  # Jerry URI: "jer:jer:work-tracker:task:TASK-001"
     subject: str = ""  # Aggregate ID
     time: datetime = field(default_factory=datetime.utcnow)
     datacontenttype: str = "application/json"
@@ -932,6 +938,16 @@ AN.Q.3.b. https://netflixtechblog.com/uda-unified-data-architecture-6a6aee261d8d
 
 ---
 
-*Document Version: 1.0*
+*Document Version: 1.1*
 *Created: 2026-01-07*
+*Updated: 2026-01-08*
 *Author: Claude (Distinguished Systems Engineer persona)*
+
+---
+
+### Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-01-07 | Initial graph data model analysis |
+| 1.1 | 2026-01-08 | Integrated Jerry URI scheme (SPEC-001): Added uri to vertices, updated CloudEvents type/source |

@@ -1,7 +1,7 @@
 # Proposal: PS-EXPORT-SPECIFICATION and Domain Model Alignment
 
 > **Proposal ID:** PROP-001
-> **Status:** REVISED (v1.1)
+> **Status:** REVISED (v1.2)
 > **Created:** 2026-01-08
 > **Revised:** 2026-01-08
 > **Author:** Claude (Session claude/create-code-plugin-skill-MG1nh)
@@ -17,8 +17,12 @@ This proposal recommends enhancing PS-EXPORT-SPECIFICATION v2.1 to align with Je
 3. **Graph Readiness** - Both PS and Domain entities map to Vertex/Edge model
 4. **Provenance** - Common audit trail patterns (IAuditable: created_on, updated_on, created_by, updated_by)
 5. **Extensibility** - Metadata dictionary and tags for future needs
+6. **Unified Identity** - Jerry URI scheme for all resources (see SPEC-001)
 
 **Recommendation:** Adopt a unified **Entity Base Specification** that both PS-EXPORT and Domain Model inherit from.
+
+**Related Specifications:**
+- **SPEC-001:** Jerry URI Scheme (`docs/specifications/JERRY_URI_SPECIFICATION.md`)
 
 ---
 
@@ -36,6 +40,7 @@ This proposal recommends enhancing PS-EXPORT-SPECIFICATION v2.1 to align with Je
 | Property | Format | Description | Constraint |
 |----------|--------|-------------|------------|
 | `id` | `JerryId` object | Strongly typed identifier | Required, immutable |
+| `uri` | `JerryUri` | Full resource URI (SPEC-001) | Computed from id |
 | `slug` | `kebab-case` | URL-safe identifier | ≤75 chars (SEO optimal) |
 | `name` | Free text | Human-readable display name | ≤80 chars |
 | `short_description` | Free text | Brief summary | ≤200 chars |
@@ -208,6 +213,7 @@ class EntityBase(IAuditable, IVersioned):
 
     # Identity (Graph-Ready) - ID is a strongly-typed object
     id: "JerryId"                 # Strongly typed, extends VertexId
+    uri: "JerryUri" = field(init=False)  # Full resource URI (SPEC-001), computed from id
     slug: str                     # URL-safe identifier (≤75 chars, kebab-case)
 
     # Display
@@ -239,6 +245,8 @@ class EntityBase(IAuditable, IVersioned):
         """Compute derived fields."""
         if not self.version:
             self.version = self._compute_version()
+        # Compute URI from ID (see SPEC-001: Jerry URI Specification)
+        object.__setattr__(self, 'uri', self._compute_uri())
 
     def _compute_version(self) -> str:
         """
@@ -247,6 +255,22 @@ class EntityBase(IAuditable, IVersioned):
         """
         timestamp = self.updated_on.strftime("%Y-%m-%dT%H:%M:%SZ")
         return f"{timestamp}_{self.content_hash[:8]}"
+
+    def _compute_uri(self) -> "JerryUri":
+        """
+        Compute Jerry URI from entity ID.
+        See SPEC-001: Jerry URI Specification.
+
+        Format: jer:<partition>:<domain>:<entity_type>:<id>[+<version>]
+        Example: jer:jer:work-tracker:task:task-042+a1b2c3d4
+        """
+        from src.domain.identity import JerryUri  # Deferred import
+        return JerryUri.for_entity(
+            domain=self.label.lower().replace(" ", "-"),  # e.g., "work-tracker"
+            entity_type=self.id.prefix,                   # e.g., "task"
+            entity_id=self.id.full_form,                  # e.g., "task-042"
+            version=self.content_hash[:8] if self.content_hash else None
+        )
 
     @classmethod
     def compute_content_hash(cls, content_fields: Dict[str, Any], algorithm: str = "sha256") -> str:
@@ -358,9 +382,10 @@ class ConstraintId(JerryId):
 
 ```yaml
 ---
-# Entity Identity (JerryId object)
+# Entity Identity (JerryId object, JerryUri - SPEC-001)
 id: "{prefix}-{sequence}"      # Short form: "task-042", "c-001"
 id_full: "{prefix}-{sequence}-{uuid[:8]}"  # Full form (optional)
+uri: "jer:jer:{domain}:{type}:{id}+{version}"  # Jerry URI (SPEC-001)
 slug: "{kebab-case-slug}"      # Max 75 chars
 label: "{vertex-label}"        # e.g., "Task", "Constraint"
 
@@ -400,14 +425,20 @@ tags:
 
 ```json
 {
-  "$schema": "https://jerry.dev/schemas/entity-base-v1.1.json",
+  "$schema": "https://jerry.dev/schemas/entity-base-v1.2.json",
+  "$id": "jer:jer:jerry:schemas/EntityBase+1.2.0",
   "type": "object",
-  "required": ["id", "slug", "label", "name", "status", "created_on", "created_by", "content_hash", "hash_algorithm", "version"],
+  "required": ["id", "uri", "slug", "label", "name", "status", "created_on", "created_by", "content_hash", "hash_algorithm", "version"],
   "properties": {
     "id": {
       "type": "string",
       "pattern": "^[a-z]+-[0-9]{3,}(-[a-f0-9]{8})?$",
       "description": "JerryId in short or full form"
+    },
+    "uri": {
+      "type": "string",
+      "pattern": "^jer(\\+[0-9]+)?:[a-z]+:([a-z0-9-]+:)?[a-z0-9-]+:.+(\\+[a-z0-9.-]+)?$",
+      "description": "Jerry URI per SPEC-001 (jer:<partition>:<domain>:<resource>[+version])"
     },
     "slug": {
       "type": "string",
@@ -678,3 +709,4 @@ This revised alignment provides:
 |---------|------|---------|
 | 1.0 | 2026-01-08 | Initial proposal |
 | 1.1 | 2026-01-08 | Addressed user feedback (AN:): IAuditable, hash_algorithm, version, slug limits, metadata, tags, Edge relationships |
+| 1.2 | 2026-01-08 | Integrated Jerry URI scheme (SPEC-001): Added `uri` property to EntityBase, updated JSON schema to v1.2 with `$id` using Jerry URI |

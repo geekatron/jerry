@@ -302,6 +302,11 @@
   - JSON Schema `$id` compatible
 - **Prior Art**: RFC 8141 (URN), AWS ARN
 - **Discoveries**: DISC-057
+- **Sub-tasks**:
+  - [x] WORK-027.1: Create JERRY_URI_SPECIFICATION.md
+  - [x] WORK-027.2: Add ABNF grammar and JerryUri value object
+  - [x] WORK-027.3: Update PROP-001 v1.2 with uri property in EntityBase
+  - [x] WORK-027.4: Update GRAPH_DATA_MODEL_ANALYSIS.md v1.1 with URI integration
 
 ---
 
@@ -486,3 +491,6 @@
 | 2026-01-08 | Claude | Created PS_AGENT_REFACTORING_STRATEGY.md with L0/L1/L2 levels |
 | 2026-01-08 | Claude | Added DISC-049 through DISC-053 (5 agent design discoveries) |
 | 2026-01-08 | Claude | Industry citations: Google ADK, Microsoft Azure, KnowBe4, Anthropic |
+| 2026-01-08 | Claude | Completed WORK-027: Jerry URI Scheme Specification (SPEC-001) |
+| 2026-01-08 | Claude | Updated PROP-001 v1.2 with uri property in EntityBase |
+| 2026-01-08 | Claude | Updated GRAPH_DATA_MODEL_ANALYSIS.md v1.1 with URI integration |
