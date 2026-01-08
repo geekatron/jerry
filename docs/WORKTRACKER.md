@@ -290,6 +290,19 @@
 - **Discoveries**: DISC-054 through DISC-056
 - **Citations**: Clean DDD (UNIL), Backlinko SEO, Vernon/Evans DDD
 
+### WORK-027: Jerry URI Scheme Specification ✅
+- **Status**: COMPLETED
+- **Output**: `docs/specifications/JERRY_URI_SPECIFICATION.md`
+- **User Proposal**: Unified URN/URI for all resources (entities, events, commands, schemas)
+- **Pattern**: `jer[+scheme_version]:<partition>:[tenant_id]:<domain>:<resource>[+version]`
+- **Key Features**:
+  - Multi-tenancy native (tenant_id component)
+  - Versioning (scheme + resource)
+  - CloudEvents `type` field compatible
+  - JSON Schema `$id` compatible
+- **Prior Art**: RFC 8141 (URN), AWS ARN
+- **Discoveries**: DISC-057
+
 ---
 
 ## Phase BUGS
@@ -383,6 +396,7 @@
 | DISC-054 | **IAuditable Interface** - DDD pattern for created_by/updated_by audit trail (Clean DDD) | DDD | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
 | DISC-055 | **IVersioned Interface** - Composite version (timestamp+hash) for optimistic concurrency | DDD | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
 | DISC-056 | **Slug Max Length** - 75 chars optimal for SEO per Backlinko (avg top-10 is 66 chars) | Constraint | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
+| DISC-057 | **Jerry URI Scheme** - Unified multi-tenant resource naming (RFC 8141 + AWS ARN inspired) | Architecture | CAPTURED | JERRY_URI_SPECIFICATION.md |
 
 ---
 
