@@ -31,7 +31,9 @@
 |-----------|--------|-----------|------|-------------|
 | WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 400KB | c956cb0 |
 | WORK-032 | 🔄 Phase B pending | 5 files | 358KB | 281b93a |
-| WORK-033 | ⏳ PENDING | - | - | - |
+| WORK-033 | ⏳ PENDING (11 sub-tasks) | - | - | - |
+| WORK-034 | ⏳ PENDING (13 sub-tasks) | - | - | - |
+| WORK-035 | ⏳ PENDING (8 sub-tasks) | - | - | - |
 
 ### Recent Commits (This Session)
 ```
@@ -457,8 +459,72 @@ c71135b feat(analysis): Complete WORK-031 Step 3 - ps-analyst trade-off analysis
 
 ### WORK-033: Unified Design (WORK-031 + WORK-032) ⏳
 - **Status**: PENDING
+- **Priority**: HIGH
 - **Purpose**: Merge knowledge architecture and KM domain research into unified design
 - **Depends On**: WORK-031 (complete), WORK-032 (in progress)
+- **Sub-tasks**:
+  - [ ] DESIGN-001: Review ADR-031 (Knowledge Architecture) outputs
+  - [ ] DESIGN-002: Review WORK-032 KM synthesis outputs
+  - [ ] DESIGN-003: Identify integration points between knowledge arch + KM
+  - [ ] DESIGN-004: Create unified domain model for Jerry KM
+  - [ ] DESIGN-005: Define Use Cases for KM integration
+  - [ ] DESIGN-006: Create component diagrams (Mermaid)
+  - [ ] DESIGN-007: Create sequence diagrams for KM workflows
+  - [ ] DESIGN-008: Create class diagrams for KM entities
+  - [ ] DESIGN-009: Define ports/adapters for KM layer (hexagonal)
+  - [ ] DESIGN-010: Create ADR-033 for unified KM design
+  - [ ] DESIGN-011: Validate design with ps-validator
+- **Deliverables**:
+  - `docs/design/work-033-unified-km-design.md`
+  - `docs/decisions/ADR-033-unified-km-architecture.md`
+  - `docs/diagrams/km-component-diagram.md`
+  - `docs/diagrams/km-sequence-diagrams.md`
+  - `docs/diagrams/km-class-diagrams.md`
+
+### WORK-034: KM Implementation Phase 1 ⏳
+- **Status**: PENDING
+- **Priority**: MEDIUM
+- **Purpose**: Implement core KM functionality based on WORK-033 design
+- **Depends On**: WORK-033 (pending)
+- **Sub-tasks**:
+  - [ ] IMPL-001: RED - Write failing tests for KnowledgeItem entity
+  - [ ] IMPL-002: GREEN - Implement KnowledgeItem entity
+  - [ ] IMPL-003: RED - Write failing tests for Pattern (PAT) value object
+  - [ ] IMPL-004: GREEN - Implement Pattern value object
+  - [ ] IMPL-005: RED - Write failing tests for Lesson (LES) value object
+  - [ ] IMPL-006: GREEN - Implement Lesson value object
+  - [ ] IMPL-007: RED - Write failing tests for Assumption (ASM) value object
+  - [ ] IMPL-008: GREEN - Implement Assumption value object
+  - [ ] IMPL-009: RED - Write failing tests for KnowledgeRepository port
+  - [ ] IMPL-010: GREEN - Implement file-based KnowledgeRepository adapter
+  - [ ] IMPL-011: REFACTOR - Optimize and clean up KM domain layer
+  - [ ] IMPL-012: Integration tests for KM domain
+  - [ ] IMPL-013: Architecture tests for hexagonal compliance
+- **Deliverables**:
+  - `src/domain/knowledge/` - KM domain entities
+  - `src/infrastructure/persistence/knowledge_repository.py`
+  - `tests/unit/domain/knowledge/`
+  - `tests/integration/knowledge/`
+  - `tests/architecture/knowledge/`
+
+### WORK-035: Problem-Solving + KM Integration ⏳
+- **Status**: PENDING
+- **Priority**: MEDIUM
+- **Purpose**: Integrate KM with problem-solving skill
+- **Depends On**: WORK-034 (pending)
+- **Sub-tasks**:
+  - [ ] INT-001: Define KM capture points in problem-solving workflow
+  - [ ] INT-002: Implement AAR (After Action Review) protocol
+  - [ ] INT-003: Implement lessons learned capture
+  - [ ] INT-004: Implement pattern detection and storage
+  - [ ] INT-005: Implement assumption tracking
+  - [ ] INT-006: Create KM-aware agent prompts
+  - [ ] INT-007: Integration tests for PS + KM
+  - [ ] INT-008: End-to-end tests for full workflow
+- **Deliverables**:
+  - Updated `skills/problem-solving/agents/*.md` with KM integration
+  - `src/application/use_cases/capture_knowledge.py`
+  - `src/application/use_cases/retrieve_knowledge.py`
 
 ---
 
