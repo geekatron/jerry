@@ -434,52 +434,78 @@ c71135b feat(analysis): Complete WORK-031 Step 3 - ps-analyst trade-off analysis
 - **Status**: IN PROGRESS (Phase A complete, Phase B pending)
 - **Priority**: HIGH (User requested)
 - **Purpose**: Deep research into KM domain for Jerry integration
-- **Phase A: Research** (5 parallel ps-researcher agents):
-  - [x] R1: KM Fundamentals (44KB, 802 lines) - commit 281b93a
-  - [x] R2: KM Protocols (67KB, 1848 lines) - commit 281b93a
-  - [x] R3: KM Products (63KB, 1550 lines) - commit 281b93a
-  - [x] R4: Python KM SDKs (98KB, 3249 lines) - commit 281b93a
-  - [x] R5: KM Frameworks (86KB, 1935 lines) - commit 281b93a
-- **Phase B: Synthesis** (pending):
-  - [ ] ps-synthesizer: Combine 5 KM research documents
-- **Phase C: Analysis** (pending):
-  - [ ] ps-analyst: Trade-off analysis for KM integration
-- **Phase D: Architecture** (pending):
-  - [ ] ps-architect: ADR for KM integration
-- **Phase E: Validation** (pending):
-  - [ ] ps-validator: Validate KM decision
+- **Workflow** (ps-* agent orchestration):
+  - [x] **Step 1: ps-researcher × 5** (PARALLEL - Fan-Out)
+    - [x] R1: KM Fundamentals (44KB) → `work-032-e-001-km-fundamentals.md`
+    - [x] R2: KM Protocols (67KB) → `work-032-e-002-km-protocols.md`
+    - [x] R3: KM Products (63KB) → `work-032-e-003-km-products.md`
+    - [x] R4: Python KM SDKs (98KB) → `work-032-e-004-python-km-sdks.md`
+    - [x] R5: KM Frameworks (86KB) → `work-032-e-005-km-frameworks.md`
+    - **Commit**: 281b93a | **Total**: 358KB, 9384 lines
+  - [ ] **Step 2: ps-synthesizer** (Fan-In)
+    - Input: 5 research documents from Step 1
+    - Output: `docs/synthesis/work-032-e-006-km-synthesis.md`
+    - Task: Braun & Clarke thematic analysis, PAT/LES/ASM generation
+  - [ ] **Step 3: ps-analyst** (Trade-off Analysis)
+    - Input: Synthesis from Step 2
+    - Output: `docs/analysis/work-032-e-007-trade-off-analysis.md`
+    - Task: SWOT, decision matrix, risk analysis for KM options
+  - [ ] **Step 4: ps-architect** (ADR Creation)
+    - Input: Analysis from Step 3
+    - Output: `docs/decisions/ADR-032-km-integration.md`
+    - Task: Michael Nygard ADR format, implementation roadmap
+  - [ ] **Step 5: ps-validator** (Validation)
+    - Input: ADR from Step 4
+    - Output: `docs/validation/work-032-e-009-validation-report.md`
+    - Task: Verify decision meets Jerry constraints, constitutional compliance
 - **Deliverables**:
   - `docs/research/work-032-e-001-km-fundamentals.md` ✅
   - `docs/research/work-032-e-002-km-protocols.md` ✅
   - `docs/research/work-032-e-003-km-products.md` ✅
   - `docs/research/work-032-e-004-python-km-sdks.md` ✅
   - `docs/research/work-032-e-005-km-frameworks.md` ✅
-  - `docs/synthesis/work-032-e-006-km-synthesis.md` (pending)
-- **Total Phase A**: 358KB, 9384 lines
+  - `docs/synthesis/work-032-e-006-km-synthesis.md` (Step 2 pending)
+  - `docs/analysis/work-032-e-007-trade-off-analysis.md` (Step 3 pending)
+  - `docs/decisions/ADR-032-km-integration.md` (Step 4 pending)
+  - `docs/validation/work-032-e-009-validation-report.md` (Step 5 pending)
 
 ### WORK-033: Unified Design (WORK-031 + WORK-032) ⏳
 - **Status**: PENDING
 - **Priority**: HIGH
 - **Purpose**: Merge knowledge architecture and KM domain research into unified design
 - **Depends On**: WORK-031 (complete), WORK-032 (in progress)
-- **Sub-tasks**:
-  - [ ] DESIGN-001: Review ADR-031 (Knowledge Architecture) outputs
-  - [ ] DESIGN-002: Review WORK-032 KM synthesis outputs
-  - [ ] DESIGN-003: Identify integration points between knowledge arch + KM
-  - [ ] DESIGN-004: Create unified domain model for Jerry KM
-  - [ ] DESIGN-005: Define Use Cases for KM integration
-  - [ ] DESIGN-006: Create component diagrams (Mermaid)
-  - [ ] DESIGN-007: Create sequence diagrams for KM workflows
-  - [ ] DESIGN-008: Create class diagrams for KM entities
-  - [ ] DESIGN-009: Define ports/adapters for KM layer (hexagonal)
-  - [ ] DESIGN-010: Create ADR-033 for unified KM design
-  - [ ] DESIGN-011: Validate design with ps-validator
+- **Workflow** (ps-* agent orchestration):
+  - [ ] **Step 1: ps-researcher** (Integration Analysis)
+    - Input: ADR-031, WORK-032 synthesis
+    - Output: `docs/research/work-033-e-001-integration-analysis.md`
+    - Task: Analyze how WORK-031 + WORK-032 fit together
+  - [ ] **Step 2: ps-architect** (Design Creation)
+    - Input: Integration analysis from Step 1
+    - Output: `docs/design/work-033-e-002-unified-design.md`
+    - Task: Create unified domain model, Use Cases, diagrams
+    - Sub-deliverables:
+      - [ ] Component diagrams (Mermaid)
+      - [ ] Sequence diagrams for KM workflows
+      - [ ] Class diagrams for KM entities
+      - [ ] Ports/adapters for KM layer (hexagonal)
+  - [ ] **Step 3: ps-analyst** (Design Trade-offs)
+    - Input: Design from Step 2
+    - Output: `docs/analysis/work-033-e-003-design-trade-offs.md`
+    - Task: Evaluate design options, complexity analysis
+  - [ ] **Step 4: ps-architect** (ADR Creation)
+    - Input: Trade-offs from Step 3
+    - Output: `docs/decisions/ADR-033-unified-km-architecture.md`
+    - Task: Final architecture decision record
+  - [ ] **Step 5: ps-validator** (Validation)
+    - Input: ADR from Step 4
+    - Output: `docs/validation/work-033-e-005-validation-report.md`
+    - Task: Verify against Jerry Constitution, hexagonal compliance
 - **Deliverables**:
-  - `docs/design/work-033-unified-km-design.md`
+  - `docs/research/work-033-e-001-integration-analysis.md`
+  - `docs/design/work-033-e-002-unified-design.md`
+  - `docs/analysis/work-033-e-003-design-trade-offs.md`
   - `docs/decisions/ADR-033-unified-km-architecture.md`
-  - `docs/diagrams/km-component-diagram.md`
-  - `docs/diagrams/km-sequence-diagrams.md`
-  - `docs/diagrams/km-class-diagrams.md`
+  - `docs/validation/work-033-e-005-validation-report.md`
 
 ### WORK-034: KM Implementation Phase 1 ⏳
 - **Status**: PENDING
