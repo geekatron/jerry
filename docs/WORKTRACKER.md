@@ -333,6 +333,12 @@
 | DISC-035 | **OpenAI Model Spec** - No single intervention is solution; layered defense required | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
 | DISC-036 | **DeepMind CCLs** - Critical Capability Levels for graduated risk assessment | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
 | DISC-037 | **Self-Monitoring Agents** - RLHF + self-critique for continuous alignment | AI Safety | CAPTURED | AGENT_BEHAVIOR_ENFORCEMENT_ANALYSIS.md |
+| DISC-038 | **VertexProperty vs EdgeProperty** - TinkerPop distinguishes: VP has meta-properties, EP is simple | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-039 | **Meta-Properties for Audit** - Properties on properties enable who/when tracking | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-040 | **Cardinality Control** - VertexProperty supports SINGLE/LIST/SET for multi-values | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-041 | **7-Step Problem-Solving** - Frame→Classify→Diagnose→Ideate→Decide→Act→Verify | Process | CAPTURED | problem_solving_meta_framework.md |
+| DISC-042 | **Cynefin Classification** - Simple/Complicated/Complex/Chaotic determines approach | Process | CAPTURED | framework_misuse_decision_tree.md |
+| DISC-043 | **Framework Misuse Anti-Pattern** - Using right framework in wrong context | Anti-Pattern | CAPTURED | framework_misuse_decision_tree.md |
 
 ---
 
@@ -355,9 +361,11 @@
 7. **Phase and Plan as Secondary ARs** (eventual consistency)
 8. **CloudEvents 1.0 for all events** (user requirement)
 9. **Strongly typed identity objects** (user requirement)
-10. **NEW: Property Graph Data Model** - Vertex/Edge abstractions for Gremlin compatibility
-11. **NEW: VertexId as base class** - All strongly typed IDs extend VertexId
-12. **NEW: Phased Migration Path** - File → SQLite → Graph DB
+10. **Property Graph Data Model** - Vertex/Edge abstractions for Gremlin compatibility
+11. **VertexId as base class** - All strongly typed IDs extend VertexId
+12. **Phased Migration Path** - File → SQLite → Graph DB
+13. **NEW: VertexProperty + EdgeProperty** - Separate property classes per TinkerPop (meta-property support)
+14. **NEW: 7-Step Problem-Solving** - ps-* agents align with Frame→Classify→Diagnose→Ideate→Decide→Act→Verify
 
 ### Hard Requirements (From User)
 1. CloudEvents for event schema
@@ -404,3 +412,7 @@
 | 2026-01-08 | Claude | Added DISC-031 through DISC-037 (7 enforcement discoveries) |
 | 2026-01-08 | Claude | Added WORK-019 through WORK-024 (agent reorganization tasks) |
 | 2026-01-08 | Claude | Paused Phase 3 Hexagonal Core for agent work |
+| 2026-01-08 | Claude | **USER FEEDBACK: VertexProperty vs EdgeProperty investigation** |
+| 2026-01-08 | Claude | Added Section 2.4 to GRAPH_DATA_MODEL_ANALYSIS.md |
+| 2026-01-08 | Claude | Added DISC-038 through DISC-043 (6 new discoveries) |
+| 2026-01-08 | Claude | Updated Key Decisions with VertexProperty + 7-Step Problem-Solving |
