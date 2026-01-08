@@ -373,24 +373,30 @@
   - [x] SKILL-002: Created new SKILL.md with proper frontmatter and content
   - [x] SKILL-003: Created PLAYBOOK.md - User guide (invocation, examples)
   - [x] SKILL-004: Created ORCHESTRATION.md - Technical orchestration patterns
-  - [ ] SKILL-005: Create User Playbook - How orchestration between subagents works
-  - [ ] SKILL-006: Implement - Refactor SKILL.md to focus on agent instructions
-  - [ ] SKILL-007: Implement - Separate user docs from agent instructions
-  - [ ] SKILL-008: Validate - Test skill invocation still works
-  - [ ] SKILL-009: Validate - Verify orchestration flow is documented and working
+
+### WORK-031: Knowledge Architecture Research 🔄
+- **Status**: IN PROGRESS
+- **Priority**: HIGH (User requested - orchestration verification)
+- **Purpose**: Verify ps-* agent orchestration while researching knowledge architecture
+- **Extends**: GRAPH_DATA_MODEL_ANALYSIS.md, Netflix UDA, kglab analysis
+- **Research Tracks** (Parallel ps-researcher invocations):
+  - [ ] R1: Graph modeling best practices for Gremlin migration success
+  - [ ] R2: Semantic knowledge representations (OWL, SKOS, RDF-S)
+  - [ ] R3: Technologies for semantic presentation
+  - [ ] R4: Enabling semantics in data (linked data, JSON-LD)
+  - [ ] R5: LLM semantic grounding (RAG, knowledge-augmented generation)
+- **Workflow** (Full decision pattern from ORCHESTRATION.md):
+  - [ ] Step 1: ps-researcher × 5 (parallel research)
+  - [ ] Step 2: ps-synthesizer (combine research findings)
+  - [ ] Step 3: ps-analyst (trade-off analysis)
+  - [ ] Step 4: ps-architect (ADR creation)
+  - [ ] Step 5: ps-validator (verify decision meets constraints)
 - **Deliverables**:
-  - `skills/problem-solving/SKILL.md` - Clean, focused agent skill definition
-  - `skills/problem-solving/PLAYBOOK.md` - User-facing guide (how to invoke, orchestration)
-  - `skills/problem-solving/docs/ORCHESTRATION.md` - Detailed subagent flow documentation
-- **Prior Art Required**:
-  - Claude Code skills documentation patterns
-  - Multi-agent orchestration patterns (Google ADK, AutoGen)
-  - Anthropic prompt engineering best practices
-- **Discovered Issues to Address**:
-  - Frontmatter name mismatch (`work-tracker` in `problem-solving` directory)
-  - ECW-specific references that don't apply to Jerry
-  - Mixing of user documentation with agent instructions
-  - Unclear orchestration between ps-* agents
+  - `docs/research/work-031-*-*.md` (5 research documents)
+  - `docs/synthesis/work-031-knowledge-synthesis.md`
+  - `docs/analysis/work-031-trade-offs.md`
+  - `docs/decisions/work-031-adr-knowledge-architecture.md`
+  - `docs/analysis/work-031-validation.md`
 
 ---
 
