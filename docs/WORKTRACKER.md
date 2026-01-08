@@ -17,7 +17,7 @@
 | Phase 2: Skills Interface Layer | ✅ COMPLETED | 100% |
 | Phase 2.5: Deep Analysis (NEW) | ✅ COMPLETED | 100% |
 | Phase 3: Hexagonal Core | ⏸️ PAUSED (Design Complete) | 25% |
-| **Phase 3.5: Agent Reorganization** | 🔄 IN PROGRESS | 10% |
+| **Phase 3.5: Agent Reorganization** | 🔄 IN PROGRESS | 60% |
 | Phase 4: Testing & Validation | ⏳ PENDING | 0% |
 
 ---
@@ -243,8 +243,8 @@
   - [x] AGT-003: Create simplified agent template
 - **Discoveries**: DISC-069
 
-### WORK-022: Refactor ps-*.md Agents 🔄
-- **Status**: IN PROGRESS (3/8 complete)
+### WORK-022: Refactor ps-*.md Agents ✅
+- **Status**: COMPLETED (8/8 complete)
 - **Research**: `docs/research/PS_AGENT_REFACTORING_STRATEGY.md` ✅
 - **Template**: `skills/problem-solving/agents/PS_AGENT_TEMPLATE.md` ✅
 - **Discoveries**: DISC-049 through DISC-053 (5 agent design discoveries)
@@ -252,12 +252,12 @@
   - [x] AGT-010: Refactor ps-researcher.md v2.0.0
   - [x] AGT-011: Refactor ps-analyst.md v2.0.0
   - [x] AGT-012: Refactor ps-architect.md v2.0.0
-  - [ ] AGT-013: Refactor ps-validator.md
-  - [ ] AGT-014: Refactor ps-synthesizer.md
-  - [ ] AGT-015: Refactor ps-reviewer.md
-  - [ ] AGT-016: Refactor ps-investigator.md
-  - [ ] AGT-017: Refactor ps-reporter.md
-  - [ ] AGT-018: Clean up architecture SKILL.md
+  - [x] AGT-013: Refactor ps-validator.md v2.0.0
+  - [x] AGT-014: Refactor ps-synthesizer.md v2.0.0
+  - [x] AGT-015: Refactor ps-reviewer.md v2.0.0
+  - [x] AGT-016: Refactor ps-investigator.md v2.0.0
+  - [x] AGT-017: Refactor ps-reporter.md v2.0.0
+  - [ ] AGT-018: Clean up architecture SKILL.md (deferred to WORK-030)
 
 ### WORK-023: Implement Soft Enforcement ⏳
 - **Status**: PENDING
@@ -541,8 +541,9 @@
 4. ✅ ~~Research agent behavior enforcement best practices~~
 5. ✅ ~~Create Agent Reorganization Plan~~
 6. ✅ ~~Create Jerry Constitution v1.0~~ (WORK-021 complete)
-7. **CURRENT: Refactor ps-*.md agents** (WORK-022)
-8. Phase 3 Hexagonal Core paused pending agent work
+7. ✅ ~~Refactor ps-*.md agents~~ (WORK-022 complete)
+8. **CURRENT: Refactor problem-solving/SKILL.md** (WORK-030)
+9. Phase 3 Hexagonal Core paused pending agent work
 
 ---
 
@@ -607,3 +608,4 @@
 | 2026-01-08 | Claude | Created PS_AGENT_TEMPLATE.md v2.0 (unified agent template) |
 | 2026-01-08 | Claude | Added WORK-030: Refactor problem-solving/SKILL.md |
 | 2026-01-08 | Claude | Added DISC-070 (SKILL.md cruft - work-tracker content in problem-solving) |
+| 2026-01-08 | Claude | **WORK-022 COMPLETED**: Refactored remaining 5 agents (ps-validator, ps-synthesizer, ps-reviewer, ps-investigator, ps-reporter) to v2.0.0 |
