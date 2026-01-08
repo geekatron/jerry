@@ -308,6 +308,24 @@
   - [x] WORK-027.3: Update PROP-001 v1.2 with uri property in EntityBase
   - [x] WORK-027.4: Update GRAPH_DATA_MODEL_ANALYSIS.md v1.1 with URI integration
 
+### WORK-028: LLM Behavioral Governance Testing Research ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md`
+- **Purpose**: Validate testing approach for Jerry Constitution behavioral directives
+- **Key Findings**:
+  - LLM-as-a-Judge is industry standard (DeepEval, Datadog, Anthropic)
+  - Scenario-based testing with golden datasets validated (Datadog)
+  - Adversarial red-team testing essential (Anthropic SHADE-Arena, OpenAI)
+  - G-Eval with Chain-of-Thought enables custom criteria scoring
+  - Multi-attempt Attack Success Rate (ASR) measures robustness
+- **Industry Sources**:
+  - Anthropic: Frontier Red Team, SHADE-Arena, Modular Scaffold
+  - OpenAI: Safety Evaluations Hub, Confessions Framework
+  - Datadog: LLM Evaluation Framework Best Practices
+  - DeepEval: Open-source LLM testing with 50+ metrics
+- **Discoveries**: DISC-058 through DISC-063
+- **Decision**: Proceed with validated testing approach for WORK-021
+
 ---
 
 ## Phase BUGS
@@ -402,6 +420,12 @@
 | DISC-055 | **IVersioned Interface** - Composite version (timestamp+hash) for optimistic concurrency | DDD | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
 | DISC-056 | **Slug Max Length** - 75 chars optimal for SEO per Backlinko (avg top-10 is 66 chars) | Constraint | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
 | DISC-057 | **Jerry URI Scheme** - Unified multi-tenant resource naming (RFC 8141 + AWS ARN inspired) | Architecture | CAPTURED | JERRY_URI_SPECIFICATION.md |
+| DISC-058 | **LLM-as-a-Judge** - Industry standard for behavioral evaluation (DeepEval, Datadog, Anthropic) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-059 | **G-Eval with CoT** - Custom criteria scoring using Chain-of-Thought (DeepEval) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-060 | **OpenAI Confession Framework** - Self-compliance reporting for behavioral alignment | AI Safety | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-061 | **Anthropic SHADE-Arena** - Test suite for covert harmful behavior detection | Red Team | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-062 | **Multi-Attempt ASR** - Attack Success Rate across 1/10/100/200 attempts measures robustness | Metrics | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-063 | **Golden Datasets** - Annotated test cases with happy/edge/adversarial scenarios (Datadog) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
 
 ---
 
@@ -494,3 +518,7 @@
 | 2026-01-08 | Claude | Completed WORK-027: Jerry URI Scheme Specification (SPEC-001) |
 | 2026-01-08 | Claude | Updated PROP-001 v1.2 with uri property in EntityBase |
 | 2026-01-08 | Claude | Updated GRAPH_DATA_MODEL_ANALYSIS.md v1.1 with URI integration |
+| 2026-01-08 | Claude | **RESEARCH: LLM Behavioral Governance Testing** |
+| 2026-01-08 | Claude | Created LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| 2026-01-08 | Claude | Added DISC-058 through DISC-063 (6 testing discoveries) |
+| 2026-01-08 | Claude | Validated behavioral testing approach against industry (Anthropic, OpenAI, Datadog, DeepEval) |
