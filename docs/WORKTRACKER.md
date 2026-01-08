@@ -609,3 +609,4 @@
 | 2026-01-08 | Claude | Added WORK-030: Refactor problem-solving/SKILL.md |
 | 2026-01-08 | Claude | Added DISC-070 (SKILL.md cruft - work-tracker content in problem-solving) |
 | 2026-01-08 | Claude | **WORK-022 COMPLETED**: Refactored remaining 5 agents (ps-validator, ps-synthesizer, ps-reviewer, ps-investigator, ps-reporter) to v2.0.0 |
+| 2026-01-08 | Claude | **WORK-030 Progress**: Replaced 1722-line cruft SKILL.md with clean 265-line problem-solving skill definition |
