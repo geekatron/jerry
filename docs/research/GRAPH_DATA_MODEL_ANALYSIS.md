@@ -36,7 +36,7 @@ This analysis designs a graph-ready data model for Jerry Work Tracker that:
 - Event sourcing with CloudEvents 1.0 schema
 
 ### WHERE will this be implemented?
-- Domain layer: Graph abstractions (Vertex, Edge, Property) //AN: Would be good to investigate if it makes sense to have separate property realizations like VertexProperty and EdgeProperty classes.
+- Domain layer: Graph abstractions (Vertex, Edge, VertexProperty, EdgeProperty) — See Section 2.4
 - Infrastructure layer: Storage adapters (File, SQLite, Graph DB)
 - Application layer: Traversal queries via repository pattern
 
@@ -110,6 +110,131 @@ This analysis designs a graph-ready data model for Jerry Work Tracker that:
 | `g:Date` | ISO timestamp | `created_at`, `modified_at` |
 | `g:List` | JSON array | `subtask_ids`, `evidence_refs` |
 | `g:Map` | JSON object | Complex properties |
+
+### 2.4 VertexProperty vs EdgeProperty Investigation
+
+> **AN Response:** Investigating separate property realizations as suggested.
+
+**Source:** [TinkerPop VertexProperty API](https://tinkerpop.apache.org/javadocs/current/core/org/apache/tinkerpop/gremlin/structure/VertexProperty.html)
+
+#### Key Distinction in TinkerPop
+
+| Feature | Property (Edges) | VertexProperty (Vertices) |
+|---------|------------------|---------------------------|
+| Key/Value pair | ✓ | ✓ |
+| Is an Element | ✗ | ✓ |
+| Can have meta-properties | ✗ | ✓ |
+| Multi-value support | ✗ | ✓ (cardinality) |
+| Cardinality control | ✗ | ✓ (SINGLE/LIST/SET) |
+
+#### Why TinkerPop Has Distinct VertexProperty
+
+TinkerPop introduced `VertexProperty` to enable two critical features:
+
+1. **Multi-Properties (Multiple Values)**: A vertex can have multiple values for the same property key with cardinality control:
+   - `SINGLE`: Replace existing value
+   - `LIST`: Add new value (allow duplicates)
+   - `SET`: Add new value (no duplicates)
+
+2. **Meta-Properties (Properties on Properties)**: VertexProperty implements Element, allowing it to have key/value data attached. This creates a third level in the property hierarchy.
+
+#### Use Cases for Meta-Properties in Jerry
+
+| Use Case | Example | Benefit |
+|----------|---------|---------|
+| **Auditing** | `task.property("status", "complete", "changed_by", "claude", "changed_at", "2026-01-08")` | Track who/when for any property change |
+| **Permissions** | `task.property("title", "Secret", "readable_by", "admin")` | Property-level access control |
+| **Temporal** | `phase.property("target_date", "2026-03-01", "valid_from", "2026-01-01")` | Validity periods |
+| **Data Quality** | `task.property("estimate", 4, "confidence", 0.8, "source", "user")` | Confidence scores, provenance |
+
+#### Design Decision for Jerry
+
+**Recommendation:** Implement **separate VertexProperty and EdgeProperty classes** to align with TinkerPop semantics:
+
+```python
+# src/domain/graph/properties.py
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional, TypeVar, Generic
+from enum import Enum, auto
+
+class Cardinality(Enum):
+    """Property cardinality for VertexProperty (TinkerPop alignment)."""
+    SINGLE = auto()   # Replace existing value
+    LIST = auto()     # Allow duplicates
+    SET = auto()      # No duplicates
+
+T = TypeVar('T')
+
+@dataclass
+class Property(Generic[T]):
+    """
+    Simple property for edges (no meta-properties).
+
+    Aligned with TinkerPop Property interface.
+    """
+    key: str
+    value: T
+
+    def __hash__(self):
+        return hash((self.key, self.value))
+
+
+@dataclass
+class VertexProperty(Generic[T]):
+    """
+    Rich property for vertices with meta-property support.
+
+    Aligned with TinkerPop VertexProperty interface.
+    Implements Element semantics (has id, can have properties).
+
+    Reference: https://tinkerpop.apache.org/javadocs/current/core/
+               org/apache/tinkerpop/gremlin/structure/VertexProperty.html
+    """
+    id: str  # VertexProperty is an Element with its own ID
+    key: str
+    value: T
+    cardinality: Cardinality = Cardinality.SINGLE
+    meta_properties: Dict[str, Any] = field(default_factory=dict)
+
+    def set_meta(self, key: str, value: Any) -> None:
+        """Add meta-property (property on this property)."""
+        self.meta_properties[key] = value
+
+    def get_meta(self, key: str, default: Any = None) -> Any:
+        """Get meta-property value."""
+        return self.meta_properties.get(key, default)
+
+    def with_audit(self, changed_by: str, changed_at: str) -> "VertexProperty[T]":
+        """Add audit trail meta-properties."""
+        self.meta_properties["changed_by"] = changed_by
+        self.meta_properties["changed_at"] = changed_at
+        return self
+
+
+@dataclass
+class EdgeProperty(Property[T]):
+    """
+    Edge property (alias for clarity in domain model).
+
+    Edges in TinkerPop use simple Property (no meta-properties).
+    """
+    pass
+```
+
+#### Impact on Jerry Domain Model
+
+1. **Vertex class** should use `VertexProperty` for properties that need audit trails
+2. **Edge class** should use `EdgeProperty` (simple key-value)
+3. **Audit-critical properties** (status, title, etc.) should leverage meta-properties
+4. **Performance consideration**: Meta-properties add overhead; use selectively
+
+#### Compatibility Notes
+
+- **GraphML**: Does NOT preserve meta-properties (use GraphSON for export)
+- **GraphSON**: Full support for meta-properties
+- **Neo4j**: Native property graph, no meta-properties (flatten to separate edges if needed)
+- **Amazon Neptune**: TinkerPop-compatible, supports VertexProperty semantics
 
 ---
 
