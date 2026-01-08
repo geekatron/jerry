@@ -259,6 +259,18 @@
   - [ ] AGT-031: Implement tool restriction enforcement
   - [ ] AGT-032: Create escalation trigger patterns
 
+### WORK-025: TOON Format Research ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/TOON_FORMAT_ANALYSIS.md`
+- **Key Findings**:
+  - 30-60% token reduction vs JSON for LLM prompts
+  - 74% LLM accuracy vs JSON's 70%
+  - Lossless JSON ↔ TOON conversion
+  - Python implementation: `python-toon` package
+  - Specification v3.0 (November 2025)
+- **Discoveries**: DISC-044 through DISC-048
+- **Decision**: Add TOON as secondary serialization format for LLM-facing operations
+
 ---
 
 ## Phase BUGS
@@ -339,6 +351,11 @@
 | DISC-041 | **7-Step Problem-Solving** - Frame→Classify→Diagnose→Ideate→Decide→Act→Verify | Process | CAPTURED | problem_solving_meta_framework.md |
 | DISC-042 | **Cynefin Classification** - Simple/Complicated/Complex/Chaotic determines approach | Process | CAPTURED | framework_misuse_decision_tree.md |
 | DISC-043 | **Framework Misuse Anti-Pattern** - Using right framework in wrong context | Anti-Pattern | CAPTURED | framework_misuse_decision_tree.md |
+| DISC-044 | **TOON Token Reduction** - 30-60% token reduction vs JSON depending on data shape | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
+| DISC-045 | **TOON Improves LLM Accuracy** - 74% accuracy vs JSON's 70% in benchmarks | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
+| DISC-046 | **TOON Spec Maturity** - v3.0 with ABNF grammar, 349 test fixtures, conformance rules | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
+| DISC-047 | **TOON Optimal Data Shapes** - Best for tabular arrays (40-60%), suboptimal for deep nesting | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
+| DISC-048 | **TOON Python Integration** - `python-toon` package with encode/decode API, CLI tools | Serialization | CAPTURED | TOON_FORMAT_ANALYSIS.md |
 
 ---
 
@@ -366,6 +383,7 @@
 12. **Phased Migration Path** - File → SQLite → Graph DB
 13. **NEW: VertexProperty + EdgeProperty** - Separate property classes per TinkerPop (meta-property support)
 14. **NEW: 7-Step Problem-Solving** - ps-* agents align with Frame→Classify→Diagnose→Ideate→Decide→Act→Verify
+15. **NEW: Dual Serialization (JSON + TOON)** - JSON for persistence/API, TOON for LLM prompts (30-60% token savings)
 
 ### Hard Requirements (From User)
 1. CloudEvents for event schema
@@ -374,6 +392,7 @@
 4. Strongly typed identity objects (not raw UUID/GUID)
 5. Must run in Claude Code Web Research Preview
 6. **Graph-ready data model** - Preparation for Gremlin/graph database
+7. **TOON + JSON serialization** - Domain entities must persist to both formats (cost optimization for LLM)
 
 ### Next Actions
 1. ✅ ~~Update PLAN.md with revised aggregate root design~~
@@ -416,3 +435,9 @@
 | 2026-01-08 | Claude | Added Section 2.4 to GRAPH_DATA_MODEL_ANALYSIS.md |
 | 2026-01-08 | Claude | Added DISC-038 through DISC-043 (6 new discoveries) |
 | 2026-01-08 | Claude | Updated Key Decisions with VertexProperty + 7-Step Problem-Solving |
+| 2026-01-08 | Claude | **USER REQUIREMENT: TOON format for domain serialization** |
+| 2026-01-08 | Claude | Created TOON_FORMAT_ANALYSIS.md (comprehensive research) |
+| 2026-01-08 | Claude | Added DISC-044 through DISC-048 (5 TOON discoveries with L0/L1/L2) |
+| 2026-01-08 | Claude | Completed WORK-025: TOON Format Research |
+| 2026-01-08 | Claude | Updated Hard Requirements with TOON + JSON serialization |
+| 2026-01-08 | Claude | Added Key Decision 15: Dual Serialization Strategy |
