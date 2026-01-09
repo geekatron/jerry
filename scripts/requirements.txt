@@ -1,0 +1,6 @@
+# Test dependencies for scripts/
+# Install: uv pip install -r scripts/requirements.txt
+# Or: pip install -r scripts/requirements.txt
+
+pytest>=9.0.0
+pytest-cov>=4.0.0
