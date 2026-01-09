@@ -2,9 +2,9 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T03:15:00Z
+**Last Updated**: 2026-01-09T12:00:00Z
 **Current Phase**: Phase 7 - Design Document Synthesis (Final Stage)
-**Current Task**: ACTION-PLAN-002 - Awaiting Approval for Full Decision Workflow
+**Current Task**: ACTION-PLAN-002 - Cycle 1 Stage 1 (ps-synthesizer)
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -25,7 +25,8 @@
 | Phase BUGS | ✅ RESOLVED | 100% (2/2 closed) |
 
 > ✅ **BUGS RESOLVED**: BUG-001 fixed (98 tests validate), BUG-002 closed as Not a Bug.
-> 🔄 **CURRENT**: ACTION-PLAN-002 created - Full Decision Workflow awaiting approval.
+> 🔄 **CURRENT**: ACTION-PLAN-002 v2.0 APPROVED - Iterative Refinement with versioned artifacts.
+> 📋 **PROTOCOL**: Continue cycles until ps-validator reports PASS. Commit after each stage.
 
 ---
 
@@ -548,65 +549,89 @@
   - [x] Research DDD Aggregate Root sizing (Vaughn Vernon 4 Rules)
   - [x] Document findings with citations in `docs/research/`
 
-### SYNTH-003: Design Canon Creation ⏳
-- **Status**: PENDING (ACTION-PLAN-002 Stage 1)
+### SYNTH-003: Design Canon Creation 🔄
+- **Status**: IN_PROGRESS (Cycle 1, Stage 1)
 - **Description**: Create authoritative design canon document combining synthesis + industry research
 - **Agent**: `ps-synthesizer`
-- **Output**: `synthesis/PROJ-001-e-011-jerry-design-canon-v1.md`
-- **Input Artifacts**:
+- **Protocol**: Iterative Refinement (versioned artifacts, continue until PASS)
+- **Output Pattern**: `synthesis/PROJ-001-e-011-vN-jerry-design-canon.md`
+- **Input Artifacts (Cycle 1)**:
   - `research/PROJ-001-e-001-worktracker-proposal-extraction.md`
   - `research/PROJ-001-e-002-plan-graph-model.md`
   - `research/PROJ-001-e-003-revised-architecture-foundation.md`
   - `research/PROJ-001-e-004-strategic-plan-v3.md`
   - `research/PROJ-001-e-005-industry-best-practices.md`
   - `synthesis/PROJ-001-e-006-unified-architecture-canon.md`
+- **Additional Input (Cycle N>1)**: e-011-v(N-1) + e-014-v(N-1) validation feedback
 - **Content**:
   - [ ] L0: Executive Summary
   - [ ] L1: Technical Patterns (Identity, Entity, Aggregate, Event, Architecture, Graph, Testing)
   - [ ] L2: Strategic Implications (Bounded Context Map, Evolution Strategy, Constraints)
+- **Cycle History**:
+  | Cycle | Artifact | Status |
+  |-------|----------|--------|
+  | 1 | e-011-v1 | ⏳ PENDING |
 
 ### SYNTH-003b: Canon Gap Analysis ⏳
-- **Status**: PENDING (ACTION-PLAN-002 Stage 2)
+- **Status**: PENDING (Cycle 1, Stage 2)
 - **Description**: Analyze delta between canon and current implementation
 - **Agent**: `ps-analyst`
-- **Output**: `analysis/PROJ-001-e-012-canon-implementation-gap.md`
-- **Input**: e-011 + `src/session_management/`
+- **Output Pattern**: `analysis/PROJ-001-e-012-vN-canon-implementation-gap.md`
+- **Input**: e-011-vN + `src/session_management/` (+ e-012-v(N-1) if N>1)
 - **Analysis**: 5W1H + NASA SE Risk Assessment
+- **Cycle History**:
+  | Cycle | Artifact | Status |
+  |-------|----------|--------|
+  | 1 | e-012-v1 | ⏳ PENDING |
 
 ### SYNTH-004: Shared Kernel Implementation Guide ⏳
-- **Status**: PENDING (ACTION-PLAN-002 Stage 3)
+- **Status**: PENDING (Cycle 1, Stage 3)
 - **Description**: Create ADR for Shared Kernel implementation based on canon + gap analysis
 - **Agent**: `ps-architect`
-- **Output**: `decisions/PROJ-001-e-013-adr-shared-kernel.md`
-- **Input**: e-011 (canon) + e-012 (gap analysis)
+- **Output Pattern**: `decisions/PROJ-001-e-013-vN-adr-shared-kernel.md`
+- **Input**: e-011-vN + e-012-vN (+ e-013-v(N-1) if N>1)
 - **Content**:
   - [ ] Directory structure (`src/shared_kernel/`)
   - [ ] Implementation order (dependencies first)
   - [ ] Interface contracts per component
   - [ ] Migration path for `src/session_management/`
   - [ ] Test strategy
+- **Cycle History**:
+  | Cycle | Artifact | Status |
+  |-------|----------|--------|
+  | 1 | e-013-v1 | ⏳ PENDING |
 
 ### SYNTH-004b: Canon Validation ⏳
-- **Status**: PENDING (ACTION-PLAN-002 Stage 4)
+- **Status**: PENDING (Cycle 1, Stage 4)
 - **Description**: Validate canon and ADR completeness
 - **Agent**: `ps-validator`
-- **Output**: `analysis/PROJ-001-e-014-canon-validation.md`
+- **Output Pattern**: `analysis/PROJ-001-e-014-vN-canon-validation.md`
 - **Validation**:
   - [ ] Research coverage (patterns trace to findings)
   - [ ] Gap coverage (ADR addresses all gaps)
   - [ ] Actionability (implementation guide is executable)
   - [ ] Orphan check (no requirements without path)
+- **Verdict**: PASS → exit loop | FAIL → Cycle N+1
+- **Cycle History**:
+  | Cycle | Artifact | Verdict |
+  |-------|----------|---------|
+  | 1 | e-014-v1 | ⏳ PENDING |
 
-### SYNTH-005: Phase 7 Completion Report ⏳
-- **Status**: PENDING (ACTION-PLAN-002 Stage 5)
-- **Description**: Generate Phase 7 completion status report
+### SYNTH-005: Cycle Status Report ⏳
+- **Status**: PENDING (Cycle 1, Stage 5)
+- **Description**: Generate cycle status report
 - **Agent**: `ps-reporter`
-- **Output**: `reports/PROJ-001-e-015-phase7-completion.md`
+- **Output Pattern**: `reports/PROJ-001-e-015-vN-cycle-status.md`
 - **Content**:
-  - [ ] Phase 7 metrics (tasks, artifacts)
+  - [ ] Cycle N metrics (stages, artifacts)
+  - [ ] Validation verdict (from e-014-vN)
   - [ ] Artifact traceability matrix
-  - [ ] Phase 6 unblock confirmation
-  - [ ] Recommendations for next steps
+  - [ ] Delta from prior cycle (if N>1)
+  - [ ] Next steps (Cycle N+1 or Phase 7 COMPLETE)
+- **Cycle History**:
+  | Cycle | Artifact | Status |
+  |-------|----------|--------|
+  | 1 | e-015-v1 | ⏳ PENDING |
 
 ---
 
