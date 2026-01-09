@@ -160,83 +160,133 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 > **Prerequisites**: Shared Kernel ✅, Phase 7 Design Canon ✅
 > **Goal**: Refactor `src/session_management/` to use Shared Kernel patterns
 
+### Phase Structure (per Work Item Schema)
+
+| Phase | ID | Description | Status |
+|-------|-----|-------------|--------|
+| **Research** | R-008d | 5W1H + Context7 + Industry Research | 🔄 |
+| **Implementation** | I-008d | BDD Red/Green/Refactor Cycles | ⏳ |
+| **Test** | T-008d | Full Test Pyramid | ⏳ |
+| **Evidence** | E-008d | Verification + Commit | ⏳ |
+
+### Aggregated Test Matrix
+
+| Category | Subcategory | Count | Location | Status |
+|----------|-------------|-------|----------|--------|
+| Unit | Happy Path | 35 | `tests/session_management/unit/test_*.py` | ⏳ |
+| Unit | Edge Cases | 20 | `tests/session_management/unit/test_*.py` | ⏳ |
+| Unit | Negative | 15 | `tests/session_management/unit/test_*.py` | ⏳ |
+| Unit | Boundary | 10 | `tests/session_management/unit/test_*.py` | ⏳ |
+| Integration | Adapters | 12 | `tests/session_management/integration/test_*.py` | ⏳ |
+| Contract | Interfaces | 5 | `tests/session_management/contract/test_*.py` | ⏳ |
+| Architecture | Boundaries | 5 | `tests/session_management/architecture/test_*.py` | ⏳ |
+| **Total** | | **102** | | |
+
+### Verification Checklist (E-008d)
+
+Before marking ENFORCE-008d complete:
+
+- [ ] 5W1H research documented in `research/PROJ-001-R-008d-domain-refactoring.md`
+- [ ] Context7 research with 3+ citations persisted
+- [ ] All 102 tests implemented (no placeholders)
+- [ ] BDD cycles completed (RED → GREEN → REFACTOR) for each subtask
+- [ ] Happy path, edge, negative, boundary scenarios covered
+- [ ] Coverage ≥ 90%
+- [ ] Zero regressions (full test suite passes)
+- [ ] Architecture tests validate layer boundaries
+- [ ] Commit created with evidence hash
+- [ ] WORKTRACKER updated
+
 ### Subtask Dependency Graph
 
 ```
-008d.0 (Research)
+R-008d.0 (Research Phase)
     │
-    ▼
-008d.1 (Value Objects) ───────────────────────┐
-    │                                         │
-    ├──► 008d.1.1 (ProjectId → VertexId)      │
-    ├──► 008d.1.2 (Extract slug property)     │ SEQUENTIAL
-    └──► 008d.1.3 (Update VO tests)           │
+    ├─────────────────────────────────────────┐
+    ▼                                         ▼
+I-008d.1 (Value Objects) ──────────┐    I-008d.3 (New Objects)
+    │                              │          │
+    ├──► I-008d.1.1 (VertexId)     │          ├──► I-008d.3.1 (SessionId)
+    ├──► I-008d.1.2 (slug)         │ SEQ      ├──► I-008d.3.2 (Session)    PARALLEL
+    └──► T-008d.1.3 (VO tests)     │          └──► I-008d.3.3 (session_id)
+                                   │                      │
+I-008d.2 (Entities) ◄──────────────┘                      │
+    │                                                     │
+    ├──► I-008d.2.1 (EntityBase)   │                      │
+    ├──► I-008d.2.2 (JerryUri)     │ SEQ                  │
+    └──► I-008d.2.3 (metadata)     │                      │
+                                   │                      │
+                                   └──────────┬───────────┘
                                               │
-008d.2 (Entities) ◄───────────────────────────┘
-    │                                         │
-    ├──► 008d.2.1 (ProjectInfo → EntityBase)  │
-    ├──► 008d.2.2 (Add JerryUri)              │ SEQUENTIAL
-    └──► 008d.2.3 (Add extensibility)         │
-                                              │
-008d.3 (New Objects) ◄──── CAN PARALLEL ──────┤
-    │                                         │
-    ├──► 008d.3.1 (SessionId VO)              │
-    ├──► 008d.3.2 (Session aggregate)         │ PARALLEL with 008d.2
-    └──► 008d.3.3 (Add session_id to Project) │
-                                              │
-008d.4 (Infrastructure) ◄─────────────────────┘
+I-008d.4 (Infrastructure) ◄───────────────────┘
     │
-    ├──► 008d.4.1 (Update adapters)
-    ├──► 008d.4.2 (Migrate existing projects)
-    └──► 008d.4.3 (Update infra tests)
+    ├──► I-008d.4.1 (adapters)
+    ├──► I-008d.4.2 (migration)
+    └──► T-008d.4.3 (infra tests)
+                │
+                ▼
+         E-008d (Evidence)
 ```
 
 ---
 
-### 008d.0: Research & Analysis (5W1H) 🔄
+### R-008d.0: Research & Analysis Phase 🔄
 
+> **Phase ID**: R-008d
 > **Status**: IN PROGRESS
-> **Approach**: 5W1H + Context7 + Industry Best Practices
+> **Output Artifact**: `research/PROJ-001-R-008d-domain-refactoring.md`
 
 #### 5W1H Framework
 
-| Question | Analysis Required |
-|----------|-------------------|
-| **What** | Refactor ProjectId/ProjectInfo to use Shared Kernel patterns |
-| **Why** | Unify identity model across bounded contexts per ADR-013 |
-| **Who** | Impacts: session_management domain, all tests, CLI |
-| **Where** | `src/session_management/`, `src/shared_kernel/` |
-| **When** | After Shared Kernel complete (✅), before Application tests |
-| **How** | BDD Red/Green/Refactor with full test pyramid |
+| Question | Analysis | Evidence Required |
+|----------|----------|-------------------|
+| **What** | Refactor ProjectId/ProjectInfo to use Shared Kernel patterns | Current vs target state comparison |
+| **Why** | Unify identity model across bounded contexts per ADR-013 | Business justification, technical debt cost |
+| **Who** | Impacts: session_management domain, all tests, CLI | Component dependency map |
+| **Where** | `src/session_management/`, `src/shared_kernel/` | File inventory with change types |
+| **When** | After Shared Kernel complete (✅), before Application tests | Dependency graph validation |
+| **How** | BDD Red/Green/Refactor with full test pyramid | Pattern citations from Context7 |
 
 #### Research Tasks
 
-| ID | Task | Status | Output |
-|----|------|--------|--------|
-| 008d.0.1 | Review ADR-013 Shared Kernel spec | ⏳ | Notes |
-| 008d.0.2 | Review existing session_management domain | ⏳ | Gap list |
-| 008d.0.3 | Context7: DDD Value Object migration patterns | ⏳ | Citations |
-| 008d.0.4 | Context7: Entity refactoring best practices | ⏳ | Citations |
-| 008d.0.5 | Identify breaking changes and migration path | ⏳ | Migration plan |
-| 008d.0.6 | Document research findings | ⏳ | `research/PROJ-001-008d-refactoring-research.md` |
+| ID | Task | Status | Output Location |
+|----|------|--------|-----------------|
+| R-008d.0.1 | Review ADR-013 Shared Kernel spec | ⏳ | `research/PROJ-001-R-008d-domain-refactoring.md#adr-review` |
+| R-008d.0.2 | Review existing session_management domain | ⏳ | `research/PROJ-001-R-008d-domain-refactoring.md#current-state` |
+| R-008d.0.3 | Context7: DDD Value Object migration patterns | ⏳ | `research/PROJ-001-R-008d-domain-refactoring.md#context7-vo` |
+| R-008d.0.4 | Context7: Entity refactoring best practices | ⏳ | `research/PROJ-001-R-008d-domain-refactoring.md#context7-entity` |
+| R-008d.0.5 | Industry: Breaking changes migration strategies | ⏳ | `research/PROJ-001-R-008d-domain-refactoring.md#migration` |
+| R-008d.0.6 | Compile findings with full citations | ⏳ | `research/PROJ-001-R-008d-domain-refactoring.md` |
 
-#### Acceptance Criteria
+#### Context7 Research Requirements
 
-- [ ] 5W1H analysis documented
-- [ ] Context7 research with 3+ authoritative citations
-- [ ] Gap analysis between current and target state
+| Topic | Library/Source | Required Citations |
+|-------|----------------|-------------------|
+| Value Object patterns | pyeventsourcing, domain-driven-hexagon | 2+ |
+| Entity refactoring | Martin Fowler, Vaughn Vernon | 2+ |
+| Migration strategies | Feature toggles, strangler fig | 1+ |
+
+#### Acceptance Criteria (R-008d)
+
+- [ ] 5W1H analysis documented with evidence
+- [ ] Context7 research with 5+ authoritative citations
+- [ ] Gap analysis: current state vs target state matrix
+- [ ] File change inventory (MODIFY/CREATE/DELETE)
+- [ ] Breaking change assessment with mitigation
 - [ ] Migration plan for existing PROJ-001 directory
-- [ ] Research persisted to repository
+- [ ] Research artifact persisted: `research/PROJ-001-R-008d-domain-refactoring.md`
 
 ---
 
-### 008d.1: Value Object Refactoring
+### I-008d.1: Value Object Refactoring (Implementation Phase)
 
+> **Phase ID**: I-008d.1
 > **Status**: PENDING
-> **Depends On**: 008d.0
+> **Depends On**: R-008d.0
 > **Approach**: BDD Red/Green/Refactor
+> **Test Phase**: T-008d.1
 
-#### 008d.1.1: Refactor ProjectId to Extend VertexId
+#### I-008d.1.1: Refactor ProjectId to Extend VertexId
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -276,7 +326,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.1.2: Extract Slug as Separate Property
+#### I-008d.1.2: Extract Slug as Separate Property
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -309,7 +359,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.1.3: Update Domain Value Object Tests
+#### T-008d.1.3: Update Domain Value Object Tests
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -335,13 +385,15 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-### 008d.2: Entity Refactoring
+### I-008d.2: Entity Refactoring (Implementation Phase)
 
+> **Phase ID**: I-008d.2
 > **Status**: PENDING
-> **Depends On**: 008d.1
+> **Depends On**: I-008d.1
 > **Approach**: BDD Red/Green/Refactor
+> **Test Phase**: T-008d.2
 
-#### 008d.2.1: Refactor ProjectInfo to Extend EntityBase
+#### I-008d.2.1: Refactor ProjectInfo to Extend EntityBase
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -383,7 +435,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.2.2: Add JerryUri Computation
+#### I-008d.2.2: Add JerryUri Computation
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -408,7 +460,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.2.3: Add Extensibility (metadata, tags)
+#### I-008d.2.3: Add Extensibility (metadata, tags)
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -437,13 +489,15 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-### 008d.3: New Domain Objects
+### I-008d.3: New Domain Objects (Implementation Phase)
 
+> **Phase ID**: I-008d.3
 > **Status**: PENDING
-> **Depends On**: 008d.0 (can parallel with 008d.2)
+> **Depends On**: R-008d.0 (can parallel with I-008d.2)
 > **Approach**: BDD Red/Green/Refactor
+> **Test Phase**: T-008d.3
 
-#### 008d.3.1: Create SessionId Value Object
+#### I-008d.3.1: Create SessionId Value Object
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -482,7 +536,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.3.2: Create Session Aggregate Root
+#### I-008d.3.2: Create Session Aggregate Root
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -523,7 +577,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.3.3: Add session_id to ProjectInfo
+#### I-008d.3.3: Add session_id to ProjectInfo
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -547,13 +601,15 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-### 008d.4: Infrastructure Updates
+### I-008d.4: Infrastructure Updates (Implementation Phase)
 
+> **Phase ID**: I-008d.4
 > **Status**: PENDING
-> **Depends On**: 008d.1, 008d.2, 008d.3
+> **Depends On**: I-008d.1, I-008d.2, I-008d.3
 > **Approach**: BDD Red/Green/Refactor
+> **Test Phase**: T-008d.4
 
-#### 008d.4.1: Update FilesystemProjectAdapter
+#### I-008d.4.1: Update FilesystemProjectAdapter
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -589,7 +645,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.4.2: Migrate Existing Projects
+#### I-008d.4.2: Migrate Existing Projects
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -616,7 +672,7 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ---
 
-#### 008d.4.3: Update Infrastructure Tests
+#### T-008d.4.3: Update Infrastructure Tests
 
 | Phase | Description | Files | Tests |
 |-------|-------------|-------|-------|
@@ -869,10 +925,11 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 
 ### Current State (2026-01-09)
 
-- **Active Subtask**: 008d.0 - Research & Analysis
-- **Last Completed**: Shared Kernel implementation (58 tests)
+- **Active Phase**: R-008d (Research)
+- **Active Subtask**: R-008d.0 - Research & Analysis
+- **Last Completed**: Shared Kernel implementation (58 tests), Phase 7 Design Canon (✅)
 - **Blocker**: None
-- **Next Action**: Complete 5W1H research for 008d
+- **Next Action**: Complete 5W1H research for R-008d per WORKTRACKER schema
 
 ### Key Files
 
@@ -898,3 +955,5 @@ ENFORCE-009   ENFORCE-010   ENFORCE-011  ENFORCE-012-016
 |------|--------|---------|
 | 2026-01-09 | Claude | Created from WORKTRACKER restructuring |
 | 2026-01-09 | Claude | Added detailed 008d breakdown with BDD approach |
+| 2026-01-09 | Claude | Enhanced with Work Item Schema (R/I/T/E phases) |
+| 2026-01-09 | Claude | Added Aggregated Test Matrix and Verification Checklist |
