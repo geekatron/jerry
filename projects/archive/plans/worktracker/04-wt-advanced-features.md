@@ -1,7 +1,7 @@
 # Phase 4: Advanced Features (Weeks 25-32)
 
 > **Goal**: Implement HybridRAG, pattern discovery, external API, and final documentation.
-> **Reference**: [Index](./00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
+> **Reference**: [Index](00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
 
 **Status**: PENDING
 **Duration**: Weeks 25-32

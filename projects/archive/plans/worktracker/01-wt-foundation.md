@@ -1,7 +1,7 @@
 # Phase 1: Work Tracker Foundation (Weeks 1-8)
 
 > **Goal**: Deliver a fully integrated vertical slice of Task + Sub-Task with file-based persistence and CLI interface.
-> **Reference**: [Index](./00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
+> **Reference**: [Index](00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
 
 **Status**: PENDING
 **Duration**: Weeks 1-8

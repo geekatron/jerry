@@ -125,10 +125,10 @@ This implementation focuses on delivering a **fully integrated vertical slice** 
 
 | Phase | File | Status | WORK Items | Focus |
 |-------|------|--------|------------|-------|
-| **Phase 1** | [01-wt-foundation.md](./01-wt-foundation.md) | PENDING | WORK-101 to WORK-104 | Task + Sub-Task vertical slice |
-| **Phase 2** | [02-wt-infrastructure.md](./02-wt-infrastructure.md) | PENDING | WORK-201 to WORK-204 | Event Store, Graph, Semantic Index, RDF |
-| **Phase 3** | [03-wt-km-integration.md](./03-wt-km-integration.md) | PENDING | WORK-301 to WORK-304 | Knowledge Management domain |
-| **Phase 4** | [04-wt-advanced-features.md](./04-wt-advanced-features.md) | PENDING | WORK-401 to WORK-404 | HybridRAG, Pattern Discovery, API |
+| **Phase 1** | [01-wt-foundation.md](01-wt-foundation.md) | PENDING | WORK-101 to WORK-104 | Task + Sub-Task vertical slice |
+| **Phase 2** | [02-wt-infrastructure.md](02-wt-infrastructure.md) | PENDING | WORK-201 to WORK-204 | Event Store, Graph, Semantic Index, RDF |
+| **Phase 3** | [03-wt-km-integration.md](03-wt-km-integration.md) | PENDING | WORK-301 to WORK-304 | Knowledge Management domain |
+| **Phase 4** | [04-wt-advanced-features.md](04-wt-advanced-features.md) | PENDING | WORK-401 to WORK-404 | HybridRAG, Pattern Discovery, API |
 
 ---
 

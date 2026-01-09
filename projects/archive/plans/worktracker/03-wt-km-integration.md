@@ -1,7 +1,7 @@
 # Phase 3: Knowledge Management Integration (Weeks 17-24)
 
 > **Goal**: Implement KM domain entities and connect to Work Tracker through events.
-> **Reference**: [Index](./00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
+> **Reference**: [Index](00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
 
 **Status**: PENDING
 **Duration**: Weeks 17-24

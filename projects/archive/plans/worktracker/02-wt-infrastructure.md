@@ -1,7 +1,7 @@
 # Phase 2: Shared Infrastructure (Weeks 9-16)
 
 > **Goal**: Build shared infrastructure components for Event Store, Graph, Semantic Index, and RDF.
-> **Reference**: [Index](./00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
+> **Reference**: [Index](00-wt-index.md) | [Unified Design](../../design/work-034-e-003-unified-design.md)
 
 **Status**: PENDING
 **Duration**: Weeks 9-16
