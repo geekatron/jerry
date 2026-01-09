@@ -638,6 +638,8 @@
 | ID | Title | Priority | Status | Phase Found |
 |----|-------|----------|--------|-------------|
 | TD-001 | Update ps-* agent output paths to project-centric structure | HIGH | ✅ DONE | Phase 7 |
+| TD-002 | Update ps-* agents to use project-relative paths in REFERENCES | MEDIUM | ⏳ PENDING | Phase BUGS |
+| TD-003 | Add unit tests for Claude Code hook decision values | LOW | ⏳ PENDING | Phase BUGS |
 
 ### TD-001: Update ps-* Agent Output Paths ✅
 
@@ -657,6 +659,32 @@
 - **Reinforcement Level**: Medium (agents SHOULD use project-centric paths)
 - **Pattern**: `projects/${JERRY_PROJECT}/{research|synthesis|analysis|decisions|reports|investigations|reviews}/`
 - **Rationale**: Per PROJ-001 project isolation principle, all project artifacts belong in the project directory
+
+### TD-002: Update ps-* Agents to Use Project-Relative Paths in REFERENCES ⏳
+
+- **Status**: PENDING
+- **Priority**: MEDIUM
+- **Source**: BUG-001.5
+- **Description**: When ps-* agents generate documents that REFERENCE other documents (e.g., synthesis referencing research), they should use project-centric paths (`projects/PROJ-001-plugin-cleanup/research/...`) not old `docs/` paths.
+- **Root Cause**: TD-001 fixed OUTPUT paths but not REFERENCE paths within document content.
+- **Impact**: Without this fix, new documents will continue to have broken lineage references.
+- **Files to Update**:
+  - [ ] `skills/problem-solving/agents/ps-synthesizer.md` - Update source citation format
+  - [ ] `skills/problem-solving/agents/ps-analyst.md` - Update reference format
+  - [ ] `skills/problem-solving/agents/ps-reporter.md` - Update document link format
+  - [ ] `skills/problem-solving/agents/PS_AGENT_TEMPLATE.md` - Add reference path guidance
+
+### TD-003: Add Unit Tests for Claude Code Hook Decision Values ⏳
+
+- **Status**: PENDING
+- **Priority**: LOW
+- **Source**: BUG-002.4
+- **Description**: Add unit tests for `.claude/hooks/pre_tool_use.py` to validate correct decision values (`approve`/`block`) are returned.
+- **Rationale**: Prevent regression if hook is modified in future.
+- **Test Cases**:
+  - [ ] Test `approve` decision for allowed tools
+  - [ ] Test `block` decision for denied tools
+  - [ ] Test decision format matches Claude Code spec
 
 ---
 
