@@ -452,11 +452,12 @@ c71135b feat(analysis): Complete WORK-031 Step 3 - ps-analyst trade-off analysis
     - Output: `docs/analysis/work-032-e-007-trade-off-analysis.md`
     - Task: SWOT, decision matrix, risk analysis for KM options
     - **Commit**: ef09ae7 | **Size**: 29KB, 780 lines | **Rec**: Lightweight KM
-  - [ ] **Step 4: ps-architect** (ADR Creation) ← CURRENT
+  - [x] **Step 4: ps-architect** (ADR Creation) ✅
     - Input: Analysis from Step 3
     - Output: `docs/decisions/ADR-032-km-integration.md`
     - Task: Michael Nygard ADR format, implementation roadmap
-  - [ ] **Step 5: ps-validator** (Validation)
+    - **Commit**: d9849c9 | **Size**: 20KB, 548 lines | **Decision**: Lightweight KM
+  - [ ] **Step 5: ps-validator** (Validation) ← CURRENT
     - Input: ADR from Step 4
     - Output: `docs/validation/work-032-e-009-validation-report.md`
     - Task: Verify decision meets Jerry constraints, constitutional compliance
@@ -468,7 +469,7 @@ c71135b feat(analysis): Complete WORK-031 Step 3 - ps-analyst trade-off analysis
   - `docs/research/work-032-e-005-km-frameworks.md` ✅
   - `docs/synthesis/work-032-e-006-km-synthesis.md` ✅ (756d800)
   - `docs/analysis/work-032-e-007-trade-off-analysis.md` ✅ (ef09ae7)
-  - `docs/decisions/ADR-032-km-integration.md` (Step 4 pending)
+  - `docs/decisions/ADR-032-km-integration.md` ✅ (d9849c9)
   - `docs/validation/work-032-e-009-validation-report.md` (Step 5 pending)
 
 ### WORK-033: Unified Design (WORK-031 + WORK-032) ⏳
