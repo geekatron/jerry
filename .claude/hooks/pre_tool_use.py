@@ -96,6 +96,16 @@ def check_bash_command(tool_input: dict[str, Any]) -> tuple[bool, str]:
     """Check if a bash command is safe."""
     command = tool_input.get("command", "")
 
+    # Block cd commands - maintain working directory using absolute paths
+    # This prevents scripts from having incorrect path assumptions
+    cmd_stripped = command.strip()
+    if (cmd_stripped.startswith("cd ") or
+        cmd_stripped == "cd" or
+        " && cd " in command or
+        "; cd " in command or
+        "$(cd " in command):
+        return False, "cd command blocked: Use absolute paths instead of changing directories"
+
     # Check for dangerous commands
     for dangerous in DANGEROUS_COMMANDS:
         if dangerous in command:

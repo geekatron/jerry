@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-09T23:30:00Z
+**Last Updated**: 2026-01-09T23:55:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -204,11 +204,87 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Phase**: [PHASE-06-ENFORCEMENT](work/PHASE-06-ENFORCEMENT.md)
-> **Active Task**: ENFORCE-008d - Refactor to Unified Design
-> **Active Subtask**: 008d.0 - Research & Analysis (5W1H)
+> **Active Initiative**: [INIT-DEV-SKILL](work/INITIATIVE-DEV-SKILL.md) - Development Skill Creation
+> **Active Phase**: Phase 1 - Parallel Research (Pattern 3 - Fan-Out)
+> **Status**: 🔄 IN PROGRESS
 
-### Active Work Item Details
+### Active Initiative Details
+
+| Attribute | Value |
+|-----------|-------|
+| Initiative ID | INIT-DEV-SKILL |
+| PS ID | dev-skill |
+| Current Phase | 1 (Parallel Research) |
+| Total Phases | 7 |
+| Total Agent Invocations | 18 |
+| Iteration Count | 0 |
+
+### Initiative Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    DEVELOPMENT SKILL CREATION                                │
+│                    PS ID: dev-skill                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Phase 1: PARALLEL RESEARCH (6 ps-researcher)  ◀── CURRENT
+    │
+    ▼
+Phase 2: SYNTHESIS (1 ps-synthesizer)
+    │
+    ▼
+Phase 3: ANALYSIS (3 ps-analyst)
+    │
+    ▼
+Phase 4: ARCHITECTURE DECISIONS (5 ps-architect)
+    │
+    ▼
+    ┌─────────────────────────────────────┐
+    │     ITERATION LOOP ENTRY            │
+    └─────────────────┬───────────────────┘
+                      │
+Phase 5: VALIDATION ──┼──▶ If GAPS: iterate (max 3) → escalate
+    │                 │
+    ▼                 │
+Phase 6: REVIEW ──────┼──▶ If NEEDS_WORK: iterate
+    │                 │
+    ▼                 │
+Phase 7: REPORT       │
+    │                 │
+    ▼                 │
+USER APPROVAL ────────┘
+```
+
+### Next Actions
+
+1. **Execute Phase 1**: Invoke 6 ps-researcher agents in parallel
+2. **Research Topics**:
+   - R1: Agent-based software development workflows
+   - R2: Quality gate enforcement in CI/CD
+   - R3: BDD/TDD in multi-agent systems
+   - R4: Distinguished engineer review practices
+   - R5: Concurrent file access patterns
+   - R6: Task template schemas
+3. **Output**: 6 research artifacts in `research/dev-skill-e-00X-*.md`
+
+### Detailed Plan
+
+See [INITIATIVE-DEV-SKILL.md](work/INITIATIVE-DEV-SKILL.md) for:
+- Full ASCII workflow diagrams
+- Iteration loop state machine
+- Actionable feedback format
+- Artifact dependency graph
+- Execution tracker
+
+---
+
+## Paused Work
+
+> **Paused Task**: ENFORCE-008d - Refactor to Unified Design
+> **Reason**: Prerequisite initiative (INIT-DEV-SKILL) must complete first
+> **Resume When**: Development skill available to execute with quality gates
+
+### Paused Work Item Details
 
 | Attribute | Value |
 |-----------|-------|
@@ -216,18 +292,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | Phase | R-008d.0 (Research) |
 | Predecessors | Phase 7 (✅), Shared Kernel (✅) |
 | Successors | ENFORCE-009, ENFORCE-010, ENFORCE-013 |
-| Blocking | None |
-| Blocked By | None |
-
-### Next Actions
-
-> **RUNBOOK**: [RUNBOOK-001-008d](runbooks/RUNBOOK-001-008d-domain-refactoring.md) - Step-by-step execution guide
-> **VALIDATION**: [VALIDATION-001](runbooks/VALIDATION-001-runbook-test.md) - Runbook validation evidence
-
-1. Read RUNBOOK-001-008d Pre-Flight Checklist
-2. Execute Stage R: Research Phase (R-008d.0)
-3. Create research artifact: `research/PROJ-001-R-008d-domain-refactoring.md`
-4. Commit with checkpoint template from RUNBOOK
+| RUNBOOK | [RUNBOOK-001-008d](runbooks/RUNBOOK-001-008d-domain-refactoring.md) |
 
 ---
 
@@ -358,3 +423,5 @@ Before marking ANY task complete:
 | 2026-01-09 | Claude | Added full dependency graph and cross-references |
 | 2026-01-09 | Claude | Enhanced with Work Item Schema (R/I/T/E) and Enforced Principles |
 | 2026-01-09 | Claude | Added RUNBOOK-001-008d and validation evidence |
+| 2026-01-09 | Claude | Added INIT-DEV-SKILL initiative with full workflow orchestration |
+| 2026-01-09 | Claude | Paused ENFORCE-008d pending development skill completion |
