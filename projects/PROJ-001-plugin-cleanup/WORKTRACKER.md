@@ -221,10 +221,13 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ### Next Actions
 
-1. Complete 5W1H analysis for 008d
-2. Perform Context7 research on DDD refactoring patterns
-3. Document industry best practices with citations
-4. Create research artifact: `research/PROJ-001-R-008d-domain-refactoring.md`
+> **RUNBOOK**: [RUNBOOK-001-008d](runbooks/RUNBOOK-001-008d-domain-refactoring.md) - Step-by-step execution guide
+> **VALIDATION**: [VALIDATION-001](runbooks/VALIDATION-001-runbook-test.md) - Runbook validation evidence
+
+1. Read RUNBOOK-001-008d Pre-Flight Checklist
+2. Execute Stage R: Research Phase (R-008d.0)
+3. Create research artifact: `research/PROJ-001-R-008d-domain-refactoring.md`
+4. Commit with checkpoint template from RUNBOOK
 
 ---
 
@@ -264,6 +267,18 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 ---
 
 ## Cross-Reference Index
+
+### Runbooks (Execution Guides)
+
+| ID | Title | Location | Validated |
+|----|-------|----------|-----------|
+| RUNBOOK-001 | ENFORCE-008d Domain Refactoring | `runbooks/RUNBOOK-001-008d-domain-refactoring.md` | ✅ |
+
+### Validation Evidence
+
+| ID | Title | Location | Result |
+|----|-------|----------|--------|
+| VALIDATION-001 | Runbook Fresh Context Test | `runbooks/VALIDATION-001-runbook-test.md` | ✅ PASS |
 
 ### Research Artifacts
 
@@ -342,3 +357,4 @@ Before marking ANY task complete:
 | 2026-01-09 | Claude | Added Work Item Schema and Enforced Principles |
 | 2026-01-09 | Claude | Added full dependency graph and cross-references |
 | 2026-01-09 | Claude | Enhanced with Work Item Schema (R/I/T/E) and Enforced Principles |
+| 2026-01-09 | Claude | Added RUNBOOK-001-008d and validation evidence |
