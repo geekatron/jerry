@@ -175,14 +175,14 @@ This report synthesizes information from the following Phase 7 artifacts:
 
 | Document | Path | Purpose |
 |----------|------|---------|
-| e-001 | `docs/research/PROJ-001-e-001-worktracker-proposal-extraction.md` | WORKTRACKER_PROPOSAL architecture extraction |
-| e-002 | `docs/research/PROJ-001-e-002-plan-graph-model.md` | PLAN.md graph model extraction |
-| e-003 | `docs/research/PROJ-001-e-003-revised-architecture-foundation.md` | REVISED-ARCHITECTURE v3.0 foundation |
-| e-004 | `docs/research/PROJ-001-e-004-strategic-plan-v3.md` | Strategic Plan v3.0 extraction |
-| e-005 | `docs/research/PROJ-001-e-005-industry-best-practices.md` | Industry research (pyeventsourcing, Axon, Vaughn Vernon) |
-| e-006 | `docs/synthesis/PROJ-001-e-006-unified-architecture-canon.md` | Unified Architecture Canon |
-| e-007 | `docs/analysis/PROJ-001-e-007-implementation-gap-analysis.md` | Implementation Gap Analysis |
-| ADR-IMPL-001 | `docs/decisions/ADR-IMPL-001-unified-alignment.md` | Unified Implementation Alignment ADR |
+| e-001 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-001-worktracker-proposal-extraction.md` | WORKTRACKER_PROPOSAL architecture extraction |
+| e-002 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-002-plan-graph-model.md` | PLAN.md graph model extraction |
+| e-003 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-003-revised-architecture-foundation.md` | REVISED-ARCHITECTURE v3.0 foundation |
+| e-004 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-004-strategic-plan-v3.md` | Strategic Plan v3.0 extraction |
+| e-005 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-005-industry-best-practices.md` | Industry research (pyeventsourcing, Axon, Vaughn Vernon) |
+| e-006 | `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-006-unified-architecture-canon.md` | Unified Architecture Canon |
+| e-007 | `projects/PROJ-001-plugin-cleanup/analysis/PROJ-001-e-007-implementation-gap-analysis.md` | Implementation Gap Analysis |
+| ADR-IMPL-001 | `projects/PROJ-001-plugin-cleanup/decisions/ADR-IMPL-001-unified-alignment.md` | Unified Implementation Alignment ADR |
 
 ---
 

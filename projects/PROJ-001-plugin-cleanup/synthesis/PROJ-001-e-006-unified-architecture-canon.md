@@ -5,11 +5,11 @@
 > **Date**: 2026-01-09
 > **Synthesizer**: ps-synthesizer agent v2.0.0
 > **Sources**:
-> - e-001: `docs/research/PROJ-001-e-001-worktracker-proposal-extraction.md` (WORKTRACKER_PROPOSAL)
-> - e-002: `docs/research/PROJ-001-e-002-plan-graph-model.md` (PLAN.md Graph Model)
-> - e-003: `docs/research/PROJ-001-e-003-revised-architecture-foundation.md` (REVISED-ARCHITECTURE v3.0)
-> - e-004: `docs/research/PROJ-001-e-004-strategic-plan-v3.md` (Strategic Plan v3.0)
-> - e-005: `docs/research/PROJ-001-e-005-industry-best-practices.md` (Industry Best Practices)
+> - e-001: `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-001-worktracker-proposal-extraction.md` (WORKTRACKER_PROPOSAL)
+> - e-002: `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-002-plan-graph-model.md` (PLAN.md Graph Model)
+> - e-003: `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-003-revised-architecture-foundation.md` (REVISED-ARCHITECTURE v3.0)
+> - e-004: `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-004-strategic-plan-v3.md` (Strategic Plan v3.0)
+> - e-005: `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-005-industry-best-practices.md` (Industry Best Practices)
 
 ---
 
@@ -1123,11 +1123,11 @@ Based on unified canon, the following patterns MUST be implemented:
 ### Source Documents
 | ID | Title | Location |
 |----|-------|----------|
-| e-001 | WORKTRACKER_PROPOSAL Extraction | `docs/research/PROJ-001-e-001-worktracker-proposal-extraction.md` |
-| e-002 | PLAN.md Graph Model | `docs/research/PROJ-001-e-002-plan-graph-model.md` |
-| e-003 | REVISED-ARCHITECTURE v3.0 | `docs/research/PROJ-001-e-003-revised-architecture-foundation.md` |
-| e-004 | Strategic Plan v3.0 | `docs/research/PROJ-001-e-004-strategic-plan-v3.md` |
-| e-005 | Industry Best Practices | `docs/research/PROJ-001-e-005-industry-best-practices.md` |
+| e-001 | WORKTRACKER_PROPOSAL Extraction | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-001-worktracker-proposal-extraction.md` |
+| e-002 | PLAN.md Graph Model | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-002-plan-graph-model.md` |
+| e-003 | REVISED-ARCHITECTURE v3.0 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-003-revised-architecture-foundation.md` |
+| e-004 | Strategic Plan v3.0 | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-004-strategic-plan-v3.md` |
+| e-005 | Industry Best Practices | `projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-005-industry-best-practices.md` |
 
 ### Industry References
 - Alistair Cockburn - Hexagonal Architecture: https://alistair.cockburn.us/hexagonal-architecture/

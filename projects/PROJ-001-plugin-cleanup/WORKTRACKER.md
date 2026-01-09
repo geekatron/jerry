@@ -2,9 +2,9 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T00:15:00Z
-**Current Phase**: Phase 7 - Design Document Synthesis
-**Current Task**: SYNTH-001 - PS-* Agent Orchestration for Document Ingestion
+**Last Updated**: 2026-01-10T01:00:00Z
+**Current Phase**: Phase 7 - Design Document Synthesis (Resumed)
+**Current Task**: SYNTH-003 - Design Canon Creation
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -21,7 +21,10 @@
 | Phase 4: Governance Updates | ✅ COMPLETED | 100% |
 | Phase 5: Validation & Commit | ✅ COMPLETED | 100% |
 | Phase 6: Project Enforcement | ⏸️ BLOCKED | 55% (on Phase 7) |
-| Phase 7: Design Document Synthesis | 🔄 IN PROGRESS | 80% |
+| Phase 7: Design Document Synthesis | 🔄 IN PROGRESS | 85% |
+| Phase BUGS | ✅ RESOLVED | 100% (2/2 closed) |
+
+> ✅ **BUGS RESOLVED**: BUG-001 fixed, BUG-002 closed as Not a Bug. Resuming Phase 7.
 
 ---
 
@@ -573,12 +576,13 @@
 
 | ID | Title | Severity | Status | Phase Found |
 |----|-------|----------|--------|-------------|
-| BUG-001 | Phase 7 artifacts reference old `docs/` paths | MEDIUM | 🔄 OPEN | Phase 7 |
-| BUG-002 | Hook decision value needs verification (`allow` vs `approve`) | LOW | 🔄 OPEN | Phase 6 |
+| BUG-001 | Phase 7 artifacts reference old `docs/` paths | MEDIUM | ✅ FIXED | Phase 7 |
+| BUG-002 | Hook decision value needs verification (`allow` vs `approve`) | N/A | ✅ CLOSED (Not a Bug) | Phase 6 |
 
-### BUG-001: Phase 7 Artifacts Reference Old `docs/` Paths
+### BUG-001: Phase 7 Artifacts Reference Old `docs/` Paths ✅ FIXED
 
-- **Status**: OPEN
+- **Status**: FIXED
+- **Resolution Date**: 2026-01-10
 - **Severity**: MEDIUM
 - **Phase Found**: Phase 7 - Design Document Synthesis
 - **Description**: Multiple Phase 7 artifacts reference file paths using the old `docs/{category}/` convention instead of the correct `projects/PROJ-001-plugin-cleanup/{category}/` paths.
@@ -590,25 +594,31 @@
   - `projects/PROJ-001-plugin-cleanup/analysis/PROJ-001-e-009-alignment-validation.md` (2 references)
   - `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-006-unified-architecture-canon.md` (10 references)
 - **Sub-tasks**:
-  - [ ] BUG-001.1: Fix path references in e-010 (status report)
-  - [ ] BUG-001.2: Fix path references in e-007 (gap analysis)
-  - [ ] BUG-001.3: Fix path references in e-009 (validation)
-  - [ ] BUG-001.4: Fix path references in e-006 (canon)
-  - [ ] BUG-001.5: Update ps-* agents to use project-relative paths in REFERENCES (not just output paths)
+  - [x] BUG-001.1: Fix path references in e-010 (status report) - 8 refs fixed
+  - [x] BUG-001.2: Fix path references in e-007 (gap analysis) - 2 refs fixed
+  - [x] BUG-001.3: Fix path references in e-009 (validation) - 2 refs fixed
+  - [x] BUG-001.4: Fix path references in e-006 (canon) - 10 refs fixed
+  - [ ] BUG-001.5: Update ps-* agents to use project-relative paths in REFERENCES (moved to TECHDEBT)
+- **Validation**: `grep -r 'docs/(research|synthesis|analysis|decisions)/PROJ-001'` returns 0 matches
 
-### BUG-002: Hook Decision Value Needs Verification
+### BUG-002: Hook Decision Value Needs Verification ✅ CLOSED
 
-- **Status**: OPEN
-- **Severity**: LOW
+- **Status**: CLOSED (Not a Bug)
+- **Severity**: N/A
 - **Phase Found**: Phase 6 - Project Enforcement
+- **Resolution Date**: 2026-01-10
 - **Description**: The `.claude/hooks/pre_tool_use.py` hook was modified to change the decision value from `"allow"` to `"approve"`.
-- **Evidence**: `git diff` shows: `-print(json.dumps({"decision": "allow"}))` → `+print(json.dumps({"decision": "approve"}))`
-- **Impact**: Unknown - needs verification against Claude Code hooks specification.
+- **Research Findings**:
+  - Per Claude Code Hooks Mastery (github.com/disler/claude-code-hooks-mastery): Simple decision format uses `"approve"|"block"`
+  - Per Claude Code Official Docs: Prompt hooks return `"approve"` or `"deny"`
+  - The original `"allow"` value was **INCORRECT**
+  - The change to `"approve"` is **CORRECT**
+- **Analysis Document**: `analysis/PROJ-001-BUG-ANALYSIS-5W1H-NASA-SE.md`
 - **Sub-tasks**:
-  - [ ] BUG-002.1: Research Claude Code hooks spec for correct decision values
-  - [ ] BUG-002.2: Verify if `approve` is the correct value (vs `allow`)
-  - [ ] BUG-002.3: Update hook or revert if incorrect
-  - [ ] BUG-002.4: Add unit test for hook decision values
+  - [x] BUG-002.1: Research Claude Code hooks spec for correct decision values
+  - [x] BUG-002.2: Verify if `approve` is the correct value (vs `allow`) → YES, correct
+  - [x] BUG-002.3: Update hook or revert if incorrect → No action needed (already correct)
+  - [ ] BUG-002.4: Add unit test for hook decision values (moved to TECHDEBT)
 
 ---
 

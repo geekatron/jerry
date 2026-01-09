@@ -19,7 +19,7 @@ The Jerry Framework implementation is in its **early foundation phase**, with ap
 
 | Source | Location | Purpose |
 |--------|----------|---------|
-| Unified Architecture Canon | `docs/synthesis/PROJ-001-e-006-unified-architecture-canon.md` | Authoritative design specification |
+| Unified Architecture Canon | `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-006-unified-architecture-canon.md` | Authoritative design specification |
 | Current Implementation | `src/` directory tree | Actual codebase state |
 | Test Coverage | `tests/` directory | Quality assurance (none found) |
 
@@ -639,7 +639,7 @@ The Jerry Framework implementation is in its **early foundation phase**, with ap
 ### Source Documents
 | ID | Title | Location |
 |----|-------|----------|
-| e-006 | Unified Architecture Canon | `docs/synthesis/PROJ-001-e-006-unified-architecture-canon.md` |
+| e-006 | Unified Architecture Canon | `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-006-unified-architecture-canon.md` |
 
 ### Current Implementation Files
 | Path | Purpose |

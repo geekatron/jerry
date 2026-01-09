@@ -266,8 +266,8 @@ The ADR-IMPL-001 (Unified Implementation Alignment) is a well-structured, compre
 | Document | Path | Purpose |
 |----------|------|---------|
 | ADR-IMPL-001 | `docs/decisions/ADR-IMPL-001-unified-alignment.md` | Subject of validation |
-| Unified Canon | `docs/synthesis/PROJ-001-e-006-unified-architecture-canon.md` | Target patterns |
-| Gap Analysis | `docs/analysis/PROJ-001-e-007-implementation-gap-analysis.md` | Current gaps |
+| Unified Canon | `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-006-unified-architecture-canon.md` | Target patterns |
+| Gap Analysis | `projects/PROJ-001-plugin-cleanup/analysis/PROJ-001-e-007-implementation-gap-analysis.md` | Current gaps |
 | Jerry Constitution | `docs/governance/JERRY_CONSTITUTION.md` | Governance constraints |
 
 ### Validation Checklist (Complete)
