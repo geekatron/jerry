@@ -2,9 +2,9 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T02:30:00Z
-**Current Phase**: Phase 7 - Design Document Synthesis (Resumed)
-**Current Task**: SYNTH-003 - Design Canon Creation
+**Last Updated**: 2026-01-10T03:15:00Z
+**Current Phase**: Phase 7 - Design Document Synthesis (Final Stage)
+**Current Task**: ACTION-PLAN-002 - Awaiting Approval for Full Decision Workflow
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -21,10 +21,11 @@
 | Phase 4: Governance Updates | ✅ COMPLETED | 100% |
 | Phase 5: Validation & Commit | ✅ COMPLETED | 100% |
 | Phase 6: Project Enforcement | ⏸️ BLOCKED | 55% (on Phase 7) |
-| Phase 7: Design Document Synthesis | 🔄 IN PROGRESS | 85% |
+| Phase 7: Design Document Synthesis | 🔄 IN PROGRESS | 40% (2/7 tasks) |
 | Phase BUGS | ✅ RESOLVED | 100% (2/2 closed) |
 
-> ✅ **BUGS RESOLVED**: BUG-001 fixed, BUG-002 closed as Not a Bug. Resuming Phase 7.
+> ✅ **BUGS RESOLVED**: BUG-001 fixed (98 tests validate), BUG-002 closed as Not a Bug.
+> 🔄 **CURRENT**: ACTION-PLAN-002 created - Full Decision Workflow awaiting approval.
 
 ---
 
@@ -503,7 +504,9 @@
 
 > **Goal**: Systematically ingest all design documents using ps-* agents to build authoritative knowledge foundation.
 > **Prerequisites For**: Phase 6 ENFORCE-008d (Shared Kernel creation)
-> **Reference**: `ACTION-PLAN-001-ps-agent-orchestration.md`
+> **Reference**:
+>   - `design/ACTION-PLAN-001-ps-agent-orchestration.md` (Tiers 1-6: COMPLETED)
+>   - `design/ACTION-PLAN-002-design-canon-workflow.md` (Full Decision Workflow: PENDING APPROVAL)
 
 ### Document Evolution Chain (User-Defined)
 
@@ -546,27 +549,64 @@
   - [x] Document findings with citations in `docs/research/`
 
 ### SYNTH-003: Design Canon Creation ⏳
-- **Status**: PENDING (After SYNTH-001 & SYNTH-002)
+- **Status**: PENDING (ACTION-PLAN-002 Stage 1)
 - **Description**: Create authoritative design canon document combining synthesis + industry research
-- **Output**: `docs/synthesis/jerry-design-canon-v1.md`
+- **Agent**: `ps-synthesizer`
+- **Output**: `synthesis/PROJ-001-e-011-jerry-design-canon-v1.md`
+- **Input Artifacts**:
+  - `research/PROJ-001-e-001-worktracker-proposal-extraction.md`
+  - `research/PROJ-001-e-002-plan-graph-model.md`
+  - `research/PROJ-001-e-003-revised-architecture-foundation.md`
+  - `research/PROJ-001-e-004-strategic-plan-v3.md`
+  - `research/PROJ-001-e-005-industry-best-practices.md`
+  - `synthesis/PROJ-001-e-006-unified-architecture-canon.md`
 - **Content**:
-  - [ ] Identity Patterns (VertexId, JerryId, JerryUri)
-  - [ ] Entity Patterns (IAuditable, IVersioned, EntityBase)
-  - [ ] Aggregate Patterns (Task, Phase, Plan, Knowledge)
-  - [ ] Event Patterns (CloudEvents 1.0, Event Sourcing)
-  - [ ] Architecture Patterns (Hexagonal, CQRS)
-  - [ ] Graph Patterns (Vertex/Edge, Gremlin-compatible)
-  - [ ] Testing Patterns (BDD, Test Pyramid)
+  - [ ] L0: Executive Summary
+  - [ ] L1: Technical Patterns (Identity, Entity, Aggregate, Event, Architecture, Graph, Testing)
+  - [ ] L2: Strategic Implications (Bounded Context Map, Evolution Strategy, Constraints)
+
+### SYNTH-003b: Canon Gap Analysis ⏳
+- **Status**: PENDING (ACTION-PLAN-002 Stage 2)
+- **Description**: Analyze delta between canon and current implementation
+- **Agent**: `ps-analyst`
+- **Output**: `analysis/PROJ-001-e-012-canon-implementation-gap.md`
+- **Input**: e-011 + `src/session_management/`
+- **Analysis**: 5W1H + NASA SE Risk Assessment
 
 ### SYNTH-004: Shared Kernel Implementation Guide ⏳
-- **Status**: PENDING (After SYNTH-003)
-- **Description**: Create implementation guide for Shared Kernel based on design canon
-- **Output**: `docs/design/shared-kernel-implementation-guide.md`
+- **Status**: PENDING (ACTION-PLAN-002 Stage 3)
+- **Description**: Create ADR for Shared Kernel implementation based on canon + gap analysis
+- **Agent**: `ps-architect`
+- **Output**: `decisions/PROJ-001-e-013-adr-shared-kernel.md`
+- **Input**: e-011 (canon) + e-012 (gap analysis)
 - **Content**:
   - [ ] Directory structure (`src/shared_kernel/`)
-  - [ ] File-by-file implementation order
-  - [ ] Test specifications per component
-  - [ ] Migration path for existing code
+  - [ ] Implementation order (dependencies first)
+  - [ ] Interface contracts per component
+  - [ ] Migration path for `src/session_management/`
+  - [ ] Test strategy
+
+### SYNTH-004b: Canon Validation ⏳
+- **Status**: PENDING (ACTION-PLAN-002 Stage 4)
+- **Description**: Validate canon and ADR completeness
+- **Agent**: `ps-validator`
+- **Output**: `analysis/PROJ-001-e-014-canon-validation.md`
+- **Validation**:
+  - [ ] Research coverage (patterns trace to findings)
+  - [ ] Gap coverage (ADR addresses all gaps)
+  - [ ] Actionability (implementation guide is executable)
+  - [ ] Orphan check (no requirements without path)
+
+### SYNTH-005: Phase 7 Completion Report ⏳
+- **Status**: PENDING (ACTION-PLAN-002 Stage 5)
+- **Description**: Generate Phase 7 completion status report
+- **Agent**: `ps-reporter`
+- **Output**: `reports/PROJ-001-e-015-phase7-completion.md`
+- **Content**:
+  - [ ] Phase 7 metrics (tasks, artifacts)
+  - [ ] Artifact traceability matrix
+  - [ ] Phase 6 unblock confirmation
+  - [ ] Recommendations for next steps
 
 ---
 
