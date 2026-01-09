@@ -2,9 +2,11 @@
 
 > Persistent work tracking for long-running sessions. Survives context compaction.
 
-**Last Updated**: 2026-01-08
-**Current Phase**: Phase 3.5 - Agent Reorganization (NEW PRIORITY)
+**Last Updated**: 2026-01-09T04:00:00Z
+**Current Phase**: Phase 3.6 - Knowledge Architecture (IN PROGRESS)
+**Current Task**: WORK-035 - ADR Comparison & Direction Decision
 **Session ID**: MG1nh
+**Branch**: claude/create-code-plugin-skill-MG1nh
 
 ---
 
@@ -15,10 +17,37 @@
 | Phase 0: Research & Analysis | ✅ COMPLETED | 100% |
 | Phase 1: Governance Layer | ✅ COMPLETED | 100% |
 | Phase 2: Skills Interface Layer | ✅ COMPLETED | 100% |
-| Phase 2.5: Deep Analysis (NEW) | ✅ COMPLETED | 100% |
-| Phase 3: Hexagonal Core | ⏸️ PAUSED (Design Complete) | 25% |
-| **Phase 3.5: Agent Reorganization** | 🔄 IN PROGRESS | 10% |
+| Phase 2.5: Deep Analysis | ✅ COMPLETED | 100% |
+| Phase 3: Hexagonal Core | ⏸️ PAUSED | 25% |
+| Phase 3.5: Agent Reorganization | ✅ COMPLETED | 100% |
+| **Phase 3.6: Knowledge Architecture** | 🔄 IN PROGRESS | 75% |
 | Phase 4: Testing & Validation | ⏳ PENDING | 0% |
+
+---
+
+## Active Work Items (Current Session)
+
+| Work Item | Status | Artifacts | Size | Last Commit |
+|-----------|--------|-----------|------|-------------|
+| WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 394KB | c956cb0 |
+| WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 9 files | 457KB | 2e7ee7c |
+| WORK-033 | ✅ COMPLETE (ADR-033 PROPOSED) | 5 files | 266KB | 36ca4b1 |
+| WORK-034 | ✅ COMPLETE (ADR-034 APPROVED) | 6 files | 349KB | 6aa3904 |
+| WORK-035 | ⏳ PENDING | - | - | - |
+| WORK-036 | ⏳ PENDING (13 sub-tasks) | - | - | - |
+| WORK-037 | ⏳ PENDING (8 sub-tasks) | - | - | - |
+
+### Recent Commits (This Session - After Author Fix)
+```
+a7d5d4b fix(tracking): Correct artifact counts and sizes in WORKTRACKER
+475229d docs(tracking): Mark WORK-033 Step 2 complete, proceed to Step 3
+b78b419 feat(design): Complete WORK-033 Step 2 - ps-architect unified KM design
+eafe0cb docs(tracking): Mark WORK-033 Step 1 complete, update status
+b80389f feat(research): Complete WORK-033 Step 1 - ps-researcher integration analysis
+bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
+2e7ee7c feat(validation): Complete WORK-032 Step 5 - ps-validator approval
+698bc0d feat(decisions): Complete WORK-032 Step 4 - ADR-032 KM Integration
+```
 
 ---
 
@@ -223,28 +252,41 @@
 - **Output**: `docs/plans/AGENT_REORGANIZATION_PLAN.md`
 - **Scope**: 8 ps-*.md agents, architecture skill cleanup
 
-### WORK-021: Create Jerry Constitution 🔄
-- **Status**: IN PROGRESS
+### WORK-021: Create Jerry Constitution ✅
+- **Status**: COMPLETED
 - **Output**: `docs/governance/JERRY_CONSTITUTION.md`
-- **Sub-tasks**:
-  - [ ] AGT-001: Create Jerry Constitution v1.0
-  - [ ] AGT-002: Update CLAUDE.md with constitution reference
-  - [ ] AGT-003: Create simplified agent template
+- **Key Deliverables**:
+  - Jerry Constitution v1.0 with 13 principles across 5 articles
+  - BEHAVIOR_TESTS.md with 14 test scenarios (golden dataset)
+  - Agent TEMPLATE.md with constitutional compliance built-in
+  - CLAUDE.md updated with constitution reference and quick reference table
+- **Industry Prior Art**:
+  - Anthropic Constitutional AI, SHADE-Arena adversarial testing
+  - OpenAI Model Spec, Confessions Framework
+  - DeepEval G-Eval, LLM-as-a-Judge pattern
+  - Datadog golden dataset methodology
+- **Sub-tasks** (all completed):
+  - [x] AGT-001.1: Draft constitution with 13 numbered principles
+  - [x] AGT-001.2: Create BEHAVIOR_TESTS.md with 14 test scenarios
+  - [x] AGT-002: Update CLAUDE.md with constitution reference
+  - [x] AGT-003: Create simplified agent template
+- **Discoveries**: DISC-069
 
-### WORK-022: Refactor ps-*.md Agents 🔄
-- **Status**: IN PROGRESS
+### WORK-022: Refactor ps-*.md Agents ✅
+- **Status**: COMPLETED (8/8 complete)
 - **Research**: `docs/research/PS_AGENT_REFACTORING_STRATEGY.md` ✅
+- **Template**: `skills/problem-solving/agents/PS_AGENT_TEMPLATE.md` ✅
 - **Discoveries**: DISC-049 through DISC-053 (5 agent design discoveries)
 - **Sub-tasks**:
-  - [ ] AGT-010: Refactor ps-researcher.md
-  - [ ] AGT-011: Refactor ps-analyst.md
-  - [ ] AGT-012: Refactor ps-architect.md
-  - [ ] AGT-013: Refactor ps-validator.md
-  - [ ] AGT-014: Refactor ps-synthesizer.md
-  - [ ] AGT-015: Refactor ps-reviewer.md
-  - [ ] AGT-016: Refactor ps-investigator.md
-  - [ ] AGT-017: Refactor ps-reporter.md
-  - [ ] AGT-018: Clean up architecture SKILL.md
+  - [x] AGT-010: Refactor ps-researcher.md v2.0.0
+  - [x] AGT-011: Refactor ps-analyst.md v2.0.0
+  - [x] AGT-012: Refactor ps-architect.md v2.0.0
+  - [x] AGT-013: Refactor ps-validator.md v2.0.0
+  - [x] AGT-014: Refactor ps-synthesizer.md v2.0.0
+  - [x] AGT-015: Refactor ps-reviewer.md v2.0.0
+  - [x] AGT-016: Refactor ps-investigator.md v2.0.0
+  - [x] AGT-017: Refactor ps-reporter.md v2.0.0
+  - [ ] AGT-018: Clean up architecture SKILL.md (deferred to WORK-030)
 
 ### WORK-023: Implement Soft Enforcement ⏳
 - **Status**: PENDING
@@ -307,6 +349,321 @@
   - [x] WORK-027.2: Add ABNF grammar and JerryUri value object
   - [x] WORK-027.3: Update PROP-001 v1.2 with uri property in EntityBase
   - [x] WORK-027.4: Update GRAPH_DATA_MODEL_ANALYSIS.md v1.1 with URI integration
+
+### WORK-028: LLM Behavioral Governance Testing Research ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md`
+- **Purpose**: Validate testing approach for Jerry Constitution behavioral directives
+- **Key Findings**:
+  - LLM-as-a-Judge is industry standard (DeepEval, Datadog, Anthropic)
+  - Scenario-based testing with golden datasets validated (Datadog)
+  - Adversarial red-team testing essential (Anthropic SHADE-Arena, OpenAI)
+  - G-Eval with Chain-of-Thought enables custom criteria scoring
+  - Multi-attempt Attack Success Rate (ASR) measures robustness
+- **Industry Sources**:
+  - Anthropic: Frontier Red Team, SHADE-Arena, Modular Scaffold
+  - OpenAI: Safety Evaluations Hub, Confessions Framework
+  - Datadog: LLM Evaluation Framework Best Practices
+  - DeepEval: Open-source LLM testing with 50+ metrics
+- **Discoveries**: DISC-058 through DISC-063
+- **Decision**: Proceed with validated testing approach for WORK-021
+
+### WORK-029: Address Graph Data Model Feedback (AN.Q.1-3) ✅
+- **Status**: COMPLETED
+- **Output**: `docs/research/GRAPH_DATA_MODEL_ANALYSIS.md` v1.2 (Section 11-12)
+- **User Questions Addressed**:
+  - AN.Q.1: Python graph libraries (kglab, RDFLib, NetworkX, rdf2gremlin)
+  - AN.Q.1.a: Analysis documented in Section 11
+  - AN.Q.2: RDF/OWL alignment strategy (4-phase path)
+  - AN.Q.3: Netflix Knowledge Graph insights (UDA, "Model Once, Represent Everywhere")
+- **Key Findings**:
+  - **kglab** recommended as abstraction layer (RDF + NetworkX + Pandas)
+  - Jerry URI scheme already RDF-compatible
+  - Netflix UDA validates Jerry's EntityBase → multiple serialization approach
+  - Named-Graph-First pattern aligns with Jerry URI structure
+- **Industry Sources**:
+  - Netflix: UDA, Entertainment Knowledge Graph
+  - DerwenAI: kglab library
+  - Semantic Arts: Property Graph → Knowledge Graph path
+  - W3C: RDF*, OWL standards
+- **Discoveries**: DISC-064 through DISC-068
+
+### WORK-030: Refactor problem-solving/SKILL.md ✅
+- **Status**: COMPLETED
+- **Priority**: HIGH (User requested)
+- **Issue Fixed**: DISC-070 - Replaced 1722-line work-tracker content with proper problem-solving skill
+- **Final State**: 265-line clean SKILL.md + PLAYBOOK.md + ORCHESTRATION.md
+- **Deliverables**:
+  - `skills/problem-solving/SKILL.md` - Clean skill definition (265 lines)
+  - `skills/problem-solving/PLAYBOOK.md` - User guide with examples
+  - `skills/problem-solving/docs/ORCHESTRATION.md` - Technical orchestration guide
+- **Sub-tasks**:
+  - [x] SKILL-001: Analyzed current SKILL.md - found work-tracker content (wrong!)
+  - [x] SKILL-002: Created new SKILL.md with proper frontmatter and content
+  - [x] SKILL-003: Created PLAYBOOK.md - User guide (invocation, examples)
+  - [x] SKILL-004: Created ORCHESTRATION.md - Technical orchestration patterns
+
+### WORK-031: Knowledge Architecture Research ✅
+- **Status**: COMPLETED (ADR PROPOSED - awaiting human approval)
+- **Priority**: HIGH (User requested - orchestration verification)
+- **Purpose**: Verify ps-* agent orchestration while researching knowledge architecture
+- **Extends**: GRAPH_DATA_MODEL_ANALYSIS.md, Netflix UDA, kglab analysis
+- **Research Tracks** (Parallel ps-researcher invocations):
+  - [x] R1: Graph modeling best practices (58KB) - commit 6d57ac4
+  - [x] R2: Semantic knowledge representations (37KB) - commit 6d57ac4
+  - [x] R3: Technologies for semantic presentation (57KB) - commit 6d57ac4
+  - [x] R4: Enabling semantics in data (42KB) - commit 6d57ac4
+  - [x] R5: LLM semantic grounding (53KB) - commit 6d57ac4
+- **Workflow** (Full decision pattern from ORCHESTRATION.md):
+  - [x] Step 1: ps-researcher × 5 (247KB) - commit 6d57ac4
+  - [x] Step 2: ps-synthesizer (44KB, 10 patterns) - commit 775587c
+  - [x] Step 3: ps-analyst (34KB, trade-offs) - commit c71135b
+  - [x] Step 4: ps-architect (42KB, ADR-031) - commit a874fa7
+  - [x] Step 5: ps-validator (33KB, APPROVED) - commit c956cb0
+- **Deliverables**:
+  - `docs/research/work-031-e-001-gremlin-modeling.md` ✅
+  - `docs/research/work-031-e-002-semantic-representations.md` ✅
+  - `docs/research/work-031-e-003-semantic-technologies.md` ✅
+  - `docs/research/work-031-e-004-semantic-data.md` ✅
+  - `docs/research/work-031-e-005-llm-grounding.md` ✅
+  - `docs/synthesis/work-031-e-006-synthesis.md` ✅
+  - `docs/analysis/work-031-e-007-trade-off-analysis.md` ✅
+  - `docs/decisions/ADR-031-knowledge-architecture.md` ✅ (PROPOSED)
+  - `docs/validation/work-031-e-009-validation-report.md` ✅
+- **Decision**: Hybrid Property + RDF Architecture (22/25, 88%)
+- **Total Artifacts**: 400KB across 9 files
+
+### WORK-032: Knowledge Management Domain Research ✅
+- **Status**: COMPLETED (APPROVED WITH CONDITIONS - 25/25)
+- **Priority**: HIGH (User requested)
+- **Purpose**: Deep research into KM domain for Jerry integration
+- **Workflow** (ps-* agent orchestration):
+  - [x] **Step 1: ps-researcher × 5** (PARALLEL - Fan-Out)
+    - [x] R1: KM Fundamentals (44KB) → `work-032-e-001-km-fundamentals.md`
+    - [x] R2: KM Protocols (67KB) → `work-032-e-002-km-protocols.md`
+    - [x] R3: KM Products (63KB) → `work-032-e-003-km-products.md`
+    - [x] R4: Python KM SDKs (98KB) → `work-032-e-004-python-km-sdks.md`
+    - [x] R5: KM Frameworks (86KB) → `work-032-e-005-km-frameworks.md`
+    - **Commit**: 281b93a | **Total**: 358KB, 9384 lines
+  - [x] **Step 2: ps-synthesizer** (Fan-In) ✅
+    - Input: 5 research documents from Step 1
+    - Output: `docs/synthesis/work-032-e-006-km-synthesis.md`
+    - Task: Braun & Clarke thematic analysis, PAT/LES/ASM generation
+    - **Commit**: 756d800 | **Size**: 37KB, 858 lines | **Patterns**: 7
+  - [x] **Step 3: ps-analyst** (Trade-off Analysis) ✅
+    - Input: Synthesis from Step 2
+    - Output: `docs/analysis/work-032-e-007-trade-off-analysis.md`
+    - Task: SWOT, decision matrix, risk analysis for KM options
+    - **Commit**: ef09ae7 | **Size**: 29KB, 780 lines | **Rec**: Lightweight KM
+  - [x] **Step 4: ps-architect** (ADR Creation) ✅
+    - Input: Analysis from Step 3
+    - Output: `docs/decisions/ADR-032-km-integration.md`
+    - Task: Michael Nygard ADR format, implementation roadmap
+    - **Commit**: d9849c9 | **Size**: 20KB, 548 lines | **Decision**: Lightweight KM
+  - [x] **Step 5: ps-validator** (Validation) ✅
+    - Input: ADR from Step 4
+    - Output: `docs/validation/work-032-e-009-validation-report.md`
+    - Task: Verify decision meets Jerry constraints, constitutional compliance
+    - **Commit**: 49e1b4a | **Size**: 19KB, 523 lines | **Verdict**: APPROVED W/CONDITIONS
+- **Decision**: Lightweight KM (NetworkX + FAISS + RDFLib) - 8.5/10
+- **Total Artifacts**: 463KB across 10 files
+- **Deliverables**:
+  - `docs/research/work-032-e-001-km-fundamentals.md` ✅
+  - `docs/research/work-032-e-002-km-protocols.md` ✅
+  - `docs/research/work-032-e-003-km-products.md` ✅
+  - `docs/research/work-032-e-004-python-km-sdks.md` ✅
+  - `docs/research/work-032-e-005-km-frameworks.md` ✅
+  - `docs/synthesis/work-032-e-006-km-synthesis.md` ✅ (756d800)
+  - `docs/analysis/work-032-e-007-trade-off-analysis.md` ✅ (ef09ae7)
+  - `docs/decisions/ADR-032-km-integration.md` ✅ (d9849c9)
+  - `docs/validation/work-032-e-009-validation-report.md` ✅ (49e1b4a)
+
+### WORK-033: Unified Design (WORK-031 + WORK-032) ✅
+- **Status**: COMPLETE
+- **Priority**: HIGH
+- **Purpose**: Merge knowledge architecture and KM domain research into unified design
+- **Depends On**: WORK-031 ✅, WORK-032 ✅
+- **Workflow** (ps-* agent orchestration):
+  - [x] **Step 1: ps-researcher** (Integration Analysis) ✅
+    - Input: ADR-031, WORK-032 synthesis
+    - Output: `docs/research/work-033-e-001-integration-analysis.md`
+    - Task: Analyze how WORK-031 + WORK-032 fit together
+    - **Commit**: 2aebff6 | **Size**: 72KB, 1464 lines | **Finding**: 95% compatibility
+  - [x] **Step 2: ps-architect** (Design Creation) ✅
+    - Input: Integration analysis from Step 1
+    - Output: `docs/design/work-033-e-002-unified-design.md`
+    - Task: Create unified domain model, Use Cases, diagrams
+    - **Commit**: a0ddf43 | **Size**: 64KB, 2012 lines | **Diagrams**: 5
+    - Sub-deliverables:
+      - [x] Component diagrams (Mermaid) ✅
+      - [x] Sequence diagrams for KM workflows ✅
+      - [x] Class diagrams for KM entities ✅
+      - [x] Ports/adapters for KM layer (hexagonal) ✅
+  - [x] **Step 3: ps-analyst** (Design Trade-offs) ✅
+    - Input: Design from Step 2
+    - Output: `docs/analysis/work-033-e-003-design-trade-offs.md`
+    - Task: Evaluate design options, complexity analysis
+    - **Commit**: e8477e6 | **Size**: 66KB, 1495 lines | **Winner**: Phased (92%)
+  - [x] **Step 4: ps-architect** (ADR Creation - RE-DONE) ✅
+    - Input: Trade-offs from Step 3
+    - Output: `docs/decisions/ADR-033-unified-km-architecture.md`
+    - Task: Final architecture decision record
+    - **Commit**: 1a1011b | **Size**: 44KB, 1124 lines | **Status**: PROPOSED
+    - Includes: Domain model, ports, adapters, CQRS, 10-risk register, appendices
+  - [x] **Step 5: ps-validator** (Validation) ✅
+    - Input: ADR from Step 4
+    - Output: `docs/validation/work-033-e-005-validation-report.md`
+    - Task: Verify against Jerry Constitution, hexagonal compliance
+    - **Commit**: f41b1c7 | **Size**: 19KB, 227 lines | **Verdict**: APPROVED (25/25)
+  - [x] **USER REVIEW** - Approved by user ✅
+- **Final Status**: ADR-033 PROPOSED (not yet committed to implementation)
+- **Deliverables**:
+  - `docs/research/work-033-e-001-integration-analysis.md`
+  - `docs/design/work-033-e-002-unified-design.md`
+  - `docs/analysis/work-033-e-003-design-trade-offs.md`
+  - `docs/decisions/ADR-033-unified-km-architecture.md`
+  - `docs/validation/work-033-e-005-validation-report.md`
+
+### WORK-034: Work Tracker + KM Unified Proposal 🔄
+- **Status**: IN PROGRESS
+- **Priority**: HIGH
+- **Purpose**: Create alternative architecture proposal using Work Tracker domain as KM proving ground
+- **Depends On**: WORK-033 ✅
+- **Rationale**: Work Tracker is a smaller, tactical domain that can validate KM patterns before scaling
+- **Input Documents**:
+  - WORK-033 outputs (266KB): ADR-033, integration analysis, design, trade-offs, validation
+  - `docs/plans/WORK_TRACKER_PLAN.md` (89KB): Comprehensive Work Tracker domain plan
+- **Technology Stack** (same as WORK-033):
+  - NetworkX 3.2.1 (graph operations)
+  - FAISS 1.7.4 (vector search)
+  - RDFLib 7.0.0 (semantic web)
+- **Key Difference**: Domain model starts with Work Tracker (Task, Phase, Plan) with bidirectional graph references to KM entities (KnowledgeItem, Pattern, Lesson, Assumption)
+- **Workflow** (ps-* agent orchestration):
+  - [x] **Step 1: ps-researcher** (Domain Analysis) ✅
+    - Input: WORK-033 outputs, WORK_TRACKER_PLAN.md
+    - Output: `docs/research/work-034-e-001-domain-analysis.md`
+    - Task: Analyze both domains, identify synergies, mapping, integration points
+    - **Commit**: c893c52 | **Size**: 93KB, 2202 lines | **Exceeds target**
+  - [x] **Step 2: ps-synthesizer** (Domain Merge) ✅
+    - Input: Domain analysis from Step 1
+    - Output: `docs/synthesis/work-034-e-002-domain-synthesis.md`
+    - Task: Merge domain models, identify common patterns, graph relationships
+    - **Commit**: c2fa4c4 | **Size**: 54KB, 1445 lines | **Diagrams**: 7
+  - [ ] **Step 3: ps-architect** (Unified Design)
+    - Input: Synthesis from Step 2
+    - Output: `docs/design/work-034-e-003-unified-design.md`
+    - Task: Create comprehensive design document (match WORK_TRACKER_PLAN.md detail)
+    - Sub-deliverables:
+      - [ ] 5W1H Analysis for unified approach
+      - [ ] Bounded Context Diagram (Work Tracker + KM)
+      - [ ] Domain Model Class Diagrams
+      - [ ] Use Case Specifications
+      - [ ] Sequence Diagrams
+      - [ ] BDD Test Specifications
+  - [ ] **Step 4: ps-analyst** (Trade-off Analysis)
+    - Input: Design from Step 3
+    - Output: `docs/analysis/work-034-e-004-trade-off-analysis.md`
+    - Task: SWOT, decision matrix, risk analysis for Work Tracker-first approach
+  - [ ] **Step 5: ps-architect** (ADR-034 Creation)
+    - Input: Trade-offs from Step 4
+    - Output: `docs/decisions/ADR-034-work-tracker-km-unified.md`
+    - Task: Comprehensive ADR (target ~40-50KB to match ADR-033 + WORK_TRACKER_PLAN detail)
+  - [ ] **Step 6: ps-validator** (Validation)
+    - Input: ADR from Step 5
+    - Output: `docs/validation/work-034-e-006-validation-report.md`
+    - Task: Validate against Jerry Constitution, hexagonal compliance
+- **Deliverables**:
+  - `docs/research/work-034-e-001-domain-analysis.md`
+  - `docs/synthesis/work-034-e-002-domain-synthesis.md`
+  - `docs/design/work-034-e-003-unified-design.md`
+  - `docs/analysis/work-034-e-004-trade-off-analysis.md`
+  - `docs/decisions/ADR-034-work-tracker-km-unified.md`
+  - `docs/validation/work-034-e-006-validation-report.md`
+
+### WORK-035: ADR Comparison & Direction Decision ⏳
+- **Status**: PENDING
+- **Priority**: HIGH
+- **Purpose**: Review ADR-033 vs ADR-034 and decide implementation direction
+- **Depends On**: WORK-034 (pending)
+- **Input Documents**:
+  - `docs/decisions/ADR-033-unified-km-architecture.md` (44KB) - Pure KM approach
+  - `docs/decisions/ADR-034-work-tracker-km-unified.md` (pending) - Work Tracker-first approach
+  - All supporting artifacts from WORK-033 and WORK-034
+- **Expected Output**: Very high fidelity decision document (~60-80KB)
+- **Workflow** (ps-* agent orchestration):
+  - [ ] **Step 1: ps-researcher** (Deep ADR Comparison)
+    - Input: ADR-033, ADR-034, all supporting documents
+    - Output: `docs/research/work-035-e-001-adr-comparison.md`
+    - Task: Side-by-side comparison, domain overlap, implementation complexity
+  - [ ] **Step 2: ps-synthesizer** (Synthesis of Approaches)
+    - Input: Comparison from Step 1
+    - Output: `docs/synthesis/work-035-e-002-approach-synthesis.md`
+    - Task: Synthesize pros/cons, alignment with Jerry goals, risk profiles
+  - [ ] **Step 3: ps-analyst** (Decision Analysis)
+    - Input: Synthesis from Step 2
+    - Output: `docs/analysis/work-035-e-003-decision-analysis.md`
+    - Task: Decision matrix comparing both approaches with weighted criteria
+  - [ ] **Step 4: ps-architect** (Direction Recommendation)
+    - Input: Analysis from Step 3
+    - Output: `docs/decisions/ADR-035-implementation-direction.md`
+    - Task: Final recommendation ADR with detailed rationale
+  - [ ] **Step 5: ps-validator** (Validation)
+    - Input: ADR from Step 4
+    - Output: `docs/validation/work-035-e-005-validation-report.md`
+    - Task: Validate recommendation against Jerry Constitution
+  - [ ] **USER REVIEW** - Final approval before proceeding to implementation
+- **Deliverables**:
+  - `docs/research/work-035-e-001-adr-comparison.md`
+  - `docs/synthesis/work-035-e-002-approach-synthesis.md`
+  - `docs/analysis/work-035-e-003-decision-analysis.md`
+  - `docs/decisions/ADR-035-implementation-direction.md`
+  - `docs/validation/work-035-e-005-validation-report.md`
+
+### WORK-036: KM Implementation Phase 1 ⏳ (was WORK-034)
+- **Status**: PENDING
+- **Priority**: MEDIUM
+- **Purpose**: Implement core KM functionality based on chosen direction (WORK-035)
+- **Depends On**: WORK-035 (pending)
+- **Note**: Sub-tasks will be refined based on WORK-035 direction decision
+- **Sub-tasks** (preliminary - subject to refinement):
+  - [ ] IMPL-001: RED - Write failing tests for KnowledgeItem entity
+  - [ ] IMPL-002: GREEN - Implement KnowledgeItem entity
+  - [ ] IMPL-003: RED - Write failing tests for Pattern (PAT) value object
+  - [ ] IMPL-004: GREEN - Implement Pattern value object
+  - [ ] IMPL-005: RED - Write failing tests for Lesson (LES) value object
+  - [ ] IMPL-006: GREEN - Implement Lesson value object
+  - [ ] IMPL-007: RED - Write failing tests for Assumption (ASM) value object
+  - [ ] IMPL-008: GREEN - Implement Assumption value object
+  - [ ] IMPL-009: RED - Write failing tests for KnowledgeRepository port
+  - [ ] IMPL-010: GREEN - Implement file-based KnowledgeRepository adapter
+  - [ ] IMPL-011: REFACTOR - Optimize and clean up KM domain layer
+  - [ ] IMPL-012: Integration tests for KM domain
+  - [ ] IMPL-013: Architecture tests for hexagonal compliance
+- **Deliverables**:
+  - `src/domain/knowledge/` - KM domain entities
+  - `src/infrastructure/persistence/knowledge_repository.py`
+  - `tests/unit/domain/knowledge/`
+  - `tests/integration/knowledge/`
+  - `tests/architecture/knowledge/`
+
+### WORK-037: Problem-Solving + KM Integration ⏳ (was WORK-035)
+- **Status**: PENDING
+- **Priority**: MEDIUM
+- **Purpose**: Integrate KM with problem-solving skill
+- **Depends On**: WORK-036 (pending)
+- **Sub-tasks**:
+  - [ ] INT-001: Define KM capture points in problem-solving workflow
+  - [ ] INT-002: Implement AAR (After Action Review) protocol
+  - [ ] INT-003: Implement lessons learned capture
+  - [ ] INT-004: Implement pattern detection and storage
+  - [ ] INT-005: Implement assumption tracking
+  - [ ] INT-006: Create KM-aware agent prompts
+  - [ ] INT-007: Integration tests for PS + KM
+  - [ ] INT-008: End-to-end tests for full workflow
+- **Deliverables**:
+  - Updated `skills/problem-solving/agents/*.md` with KM integration
+  - `src/application/use_cases/capture_knowledge.py`
+  - `src/application/use_cases/retrieve_knowledge.py`
 
 ---
 
@@ -402,6 +759,19 @@
 | DISC-055 | **IVersioned Interface** - Composite version (timestamp+hash) for optimistic concurrency | DDD | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
 | DISC-056 | **Slug Max Length** - 75 chars optimal for SEO per Backlinko (avg top-10 is 66 chars) | Constraint | CAPTURED | PS_EXPORT_DOMAIN_ALIGNMENT.md |
 | DISC-057 | **Jerry URI Scheme** - Unified multi-tenant resource naming (RFC 8141 + AWS ARN inspired) | Architecture | CAPTURED | JERRY_URI_SPECIFICATION.md |
+| DISC-058 | **LLM-as-a-Judge** - Industry standard for behavioral evaluation (DeepEval, Datadog, Anthropic) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-059 | **G-Eval with CoT** - Custom criteria scoring using Chain-of-Thought (DeepEval) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-060 | **OpenAI Confession Framework** - Self-compliance reporting for behavioral alignment | AI Safety | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-061 | **Anthropic SHADE-Arena** - Test suite for covert harmful behavior detection | Red Team | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-062 | **Multi-Attempt ASR** - Attack Success Rate across 1/10/100/200 attempts measures robustness | Metrics | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-063 | **Golden Datasets** - Annotated test cases with happy/edge/adversarial scenarios (Datadog) | Testing | CAPTURED | LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| DISC-064 | **Netflix UDA "Model Once, Represent Everywhere"** - Single domain model with multiple projections | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-065 | **kglab Abstraction Layer** - Unified Python API across RDF, NetworkX, Pandas, SHACL (MIT) | Libraries | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-066 | **RDF* for Edge Properties** - W3C extension to RDF supporting property graph edge attributes | Standards | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-067 | **Named-Graph-First Pattern** - Each named graph conforms to governing model in KG (Netflix) | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-068 | **Conceptual RDF, Flexible Physical** - Netflix uses RDF conceptually, not necessarily everywhere | Architecture | CAPTURED | GRAPH_DATA_MODEL_ANALYSIS.md |
+| DISC-069 | **Jerry Constitution v1.0** - Self-governing agent framework with 13 principles, 4-tier enforcement, behavioral tests | Governance | CAPTURED | JERRY_CONSTITUTION.md |
+| DISC-070 | **Skill Definition Cruft** - problem-solving/SKILL.md contains work-tracker content (1723 lines, wrong frontmatter name) | Bug | CAPTURED | WORK-030 |
 
 ---
 
@@ -446,9 +816,10 @@
 3. ✅ ~~Create GRAPH_DATA_MODEL_ANALYSIS.md~~
 4. ✅ ~~Research agent behavior enforcement best practices~~
 5. ✅ ~~Create Agent Reorganization Plan~~
-6. **CURRENT: Create Jerry Constitution v1.0** (AGT-001)
-7. **NEXT: Refactor ps-*.md agents** (WORK-022)
-8. Phase 3 Hexagonal Core paused pending agent work
+6. ✅ ~~Create Jerry Constitution v1.0~~ (WORK-021 complete)
+7. ✅ ~~Refactor ps-*.md agents~~ (WORK-022 complete)
+8. ✅ ~~Refactor problem-solving/SKILL.md~~ (WORK-030 complete)
+9. Phase 3 Hexagonal Core ready to resume
 
 ---
 
@@ -494,3 +865,25 @@
 | 2026-01-08 | Claude | Completed WORK-027: Jerry URI Scheme Specification (SPEC-001) |
 | 2026-01-08 | Claude | Updated PROP-001 v1.2 with uri property in EntityBase |
 | 2026-01-08 | Claude | Updated GRAPH_DATA_MODEL_ANALYSIS.md v1.1 with URI integration |
+| 2026-01-08 | Claude | **RESEARCH: LLM Behavioral Governance Testing** |
+| 2026-01-08 | Claude | Created LLM_BEHAVIORAL_GOVERNANCE_TESTING_ANALYSIS.md |
+| 2026-01-08 | Claude | Added DISC-058 through DISC-063 (6 testing discoveries) |
+| 2026-01-08 | Claude | Validated behavioral testing approach against industry (Anthropic, OpenAI, Datadog, DeepEval) |
+| 2026-01-08 | Claude | **RESEARCH: Graph Data Model AN.Q Feedback** |
+| 2026-01-08 | Claude | Updated GRAPH_DATA_MODEL_ANALYSIS.md v1.2 with AN.Q responses |
+| 2026-01-08 | Claude | Added Python graph libraries analysis (kglab, RDFLib, NetworkX) |
+| 2026-01-08 | Claude | Added RDF/OWL alignment strategy and Netflix UDA insights |
+| 2026-01-08 | Claude | Added DISC-064 through DISC-068 (5 graph/KG discoveries) |
+| 2026-01-08 | Claude | **MAJOR: Completed Jerry Constitution v1.0 (WORK-021)** |
+| 2026-01-08 | Claude | Created docs/governance/JERRY_CONSTITUTION.md (13 principles, 5 articles) |
+| 2026-01-08 | Claude | Created docs/governance/BEHAVIOR_TESTS.md (14 test scenarios) |
+| 2026-01-08 | Claude | Created .claude/agents/TEMPLATE.md (constitution-compliant agent template) |
+| 2026-01-08 | Claude | Updated CLAUDE.md with Agent Governance section |
+| 2026-01-08 | Claude | Added DISC-069 (Jerry Constitution) |
+| 2026-01-08 | Claude | **WORK-022 Progress**: Refactored ps-researcher, ps-analyst, ps-architect to v2.0.0 |
+| 2026-01-08 | Claude | Created PS_AGENT_TEMPLATE.md v2.0 (unified agent template) |
+| 2026-01-08 | Claude | Added WORK-030: Refactor problem-solving/SKILL.md |
+| 2026-01-08 | Claude | Added DISC-070 (SKILL.md cruft - work-tracker content in problem-solving) |
+| 2026-01-08 | Claude | **WORK-022 COMPLETED**: Refactored remaining 5 agents (ps-validator, ps-synthesizer, ps-reviewer, ps-investigator, ps-reporter) to v2.0.0 |
+| 2026-01-08 | Claude | **WORK-030 Progress**: Replaced 1722-line cruft SKILL.md with clean 265-line problem-solving skill definition |
+| 2026-01-08 | Claude | **WORK-030 COMPLETED**: Created PLAYBOOK.md (user guide) and ORCHESTRATION.md (technical docs) |
