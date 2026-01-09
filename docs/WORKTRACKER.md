@@ -447,11 +447,12 @@ c71135b feat(analysis): Complete WORK-031 Step 3 - ps-analyst trade-off analysis
     - Output: `docs/synthesis/work-032-e-006-km-synthesis.md`
     - Task: Braun & Clarke thematic analysis, PAT/LES/ASM generation
     - **Commit**: 756d800 | **Size**: 37KB, 858 lines | **Patterns**: 7
-  - [ ] **Step 3: ps-analyst** (Trade-off Analysis) ← CURRENT
+  - [x] **Step 3: ps-analyst** (Trade-off Analysis) ✅
     - Input: Synthesis from Step 2
     - Output: `docs/analysis/work-032-e-007-trade-off-analysis.md`
     - Task: SWOT, decision matrix, risk analysis for KM options
-  - [ ] **Step 4: ps-architect** (ADR Creation)
+    - **Commit**: ef09ae7 | **Size**: 29KB, 780 lines | **Rec**: Lightweight KM
+  - [ ] **Step 4: ps-architect** (ADR Creation) ← CURRENT
     - Input: Analysis from Step 3
     - Output: `docs/decisions/ADR-032-km-integration.md`
     - Task: Michael Nygard ADR format, implementation roadmap
@@ -466,7 +467,7 @@ c71135b feat(analysis): Complete WORK-031 Step 3 - ps-analyst trade-off analysis
   - `docs/research/work-032-e-004-python-km-sdks.md` ✅
   - `docs/research/work-032-e-005-km-frameworks.md` ✅
   - `docs/synthesis/work-032-e-006-km-synthesis.md` ✅ (756d800)
-  - `docs/analysis/work-032-e-007-trade-off-analysis.md` (Step 3 pending)
+  - `docs/analysis/work-032-e-007-trade-off-analysis.md` ✅ (ef09ae7)
   - `docs/decisions/ADR-032-km-integration.md` (Step 4 pending)
   - `docs/validation/work-032-e-009-validation-report.md` (Step 5 pending)
 
