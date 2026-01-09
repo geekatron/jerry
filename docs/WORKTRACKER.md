@@ -4,7 +4,7 @@
 
 **Last Updated**: 2026-01-09T01:05:00Z
 **Current Phase**: Phase 3.6 - Knowledge Architecture (IN PROGRESS)
-**Current Task**: WORK-033 Step 5 - ps-validator (Validation)
+**Current Task**: WORK-034 Step 1 - ps-researcher (Domain Analysis)
 **Session ID**: MG1nh
 **Branch**: claude/create-code-plugin-skill-MG1nh
 
@@ -31,9 +31,11 @@
 |-----------|--------|-----------|------|-------------|
 | WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 394KB | c956cb0 |
 | WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 9 files | 457KB | 2e7ee7c |
-| WORK-033 | ⏸️ AWAITING USER REVIEW | 5 files | 266KB | f41b1c7 |
-| WORK-034 | ⏳ PENDING (13 sub-tasks) | - | - | - |
-| WORK-035 | ⏳ PENDING (8 sub-tasks) | - | - | - |
+| WORK-033 | ✅ COMPLETE (ADR-033 PROPOSED) | 5 files | 266KB | 36ca4b1 |
+| WORK-034 | 🔄 IN PROGRESS | - | - | - |
+| WORK-035 | ⏳ PENDING | - | - | - |
+| WORK-036 | ⏳ PENDING (13 sub-tasks) | - | - | - |
+| WORK-037 | ⏳ PENDING (8 sub-tasks) | - | - | - |
 
 ### Recent Commits (This Session - After Author Fix)
 ```
@@ -476,8 +478,8 @@ bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
   - `docs/decisions/ADR-032-km-integration.md` ✅ (d9849c9)
   - `docs/validation/work-032-e-009-validation-report.md` ✅ (49e1b4a)
 
-### WORK-033: Unified Design (WORK-031 + WORK-032) 🔄
-- **Status**: IN PROGRESS
+### WORK-033: Unified Design (WORK-031 + WORK-032) ✅
+- **Status**: COMPLETE
 - **Priority**: HIGH
 - **Purpose**: Merge knowledge architecture and KM domain research into unified design
 - **Depends On**: WORK-031 ✅, WORK-032 ✅
@@ -513,7 +515,8 @@ bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
     - Output: `docs/validation/work-033-e-005-validation-report.md`
     - Task: Verify against Jerry Constitution, hexagonal compliance
     - **Commit**: f41b1c7 | **Size**: 19KB, 227 lines | **Verdict**: APPROVED (25/25)
-  - [ ] **USER REVIEW** - Awaiting approval before marking WORK-033 complete
+  - [x] **USER REVIEW** - Approved by user ✅
+- **Final Status**: ADR-033 PROPOSED (not yet committed to implementation)
 - **Deliverables**:
   - `docs/research/work-033-e-001-integration-analysis.md`
   - `docs/design/work-033-e-002-unified-design.md`
@@ -521,12 +524,107 @@ bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
   - `docs/decisions/ADR-033-unified-km-architecture.md`
   - `docs/validation/work-033-e-005-validation-report.md`
 
-### WORK-034: KM Implementation Phase 1 ⏳
+### WORK-034: Work Tracker + KM Unified Proposal 🔄
+- **Status**: IN PROGRESS
+- **Priority**: HIGH
+- **Purpose**: Create alternative architecture proposal using Work Tracker domain as KM proving ground
+- **Depends On**: WORK-033 ✅
+- **Rationale**: Work Tracker is a smaller, tactical domain that can validate KM patterns before scaling
+- **Input Documents**:
+  - WORK-033 outputs (266KB): ADR-033, integration analysis, design, trade-offs, validation
+  - `docs/plans/WORK_TRACKER_PLAN.md` (89KB): Comprehensive Work Tracker domain plan
+- **Technology Stack** (same as WORK-033):
+  - NetworkX 3.2.1 (graph operations)
+  - FAISS 1.7.4 (vector search)
+  - RDFLib 7.0.0 (semantic web)
+- **Key Difference**: Domain model starts with Work Tracker (Task, Phase, Plan) with bidirectional graph references to KM entities (KnowledgeItem, Pattern, Lesson, Assumption)
+- **Workflow** (ps-* agent orchestration):
+  - [ ] **Step 1: ps-researcher** (Domain Analysis)
+    - Input: WORK-033 outputs, WORK_TRACKER_PLAN.md
+    - Output: `docs/research/work-034-e-001-domain-analysis.md`
+    - Task: Analyze both domains, identify synergies, mapping, integration points
+    - Expected Size: ~60-80KB (match WORK_TRACKER_PLAN.md fidelity)
+  - [ ] **Step 2: ps-synthesizer** (Domain Merge)
+    - Input: Domain analysis from Step 1
+    - Output: `docs/synthesis/work-034-e-002-domain-synthesis.md`
+    - Task: Merge domain models, identify common patterns, graph relationships
+  - [ ] **Step 3: ps-architect** (Unified Design)
+    - Input: Synthesis from Step 2
+    - Output: `docs/design/work-034-e-003-unified-design.md`
+    - Task: Create comprehensive design document (match WORK_TRACKER_PLAN.md detail)
+    - Sub-deliverables:
+      - [ ] 5W1H Analysis for unified approach
+      - [ ] Bounded Context Diagram (Work Tracker + KM)
+      - [ ] Domain Model Class Diagrams
+      - [ ] Use Case Specifications
+      - [ ] Sequence Diagrams
+      - [ ] BDD Test Specifications
+  - [ ] **Step 4: ps-analyst** (Trade-off Analysis)
+    - Input: Design from Step 3
+    - Output: `docs/analysis/work-034-e-004-trade-off-analysis.md`
+    - Task: SWOT, decision matrix, risk analysis for Work Tracker-first approach
+  - [ ] **Step 5: ps-architect** (ADR-034 Creation)
+    - Input: Trade-offs from Step 4
+    - Output: `docs/decisions/ADR-034-work-tracker-km-unified.md`
+    - Task: Comprehensive ADR (target ~40-50KB to match ADR-033 + WORK_TRACKER_PLAN detail)
+  - [ ] **Step 6: ps-validator** (Validation)
+    - Input: ADR from Step 5
+    - Output: `docs/validation/work-034-e-006-validation-report.md`
+    - Task: Validate against Jerry Constitution, hexagonal compliance
+- **Deliverables**:
+  - `docs/research/work-034-e-001-domain-analysis.md`
+  - `docs/synthesis/work-034-e-002-domain-synthesis.md`
+  - `docs/design/work-034-e-003-unified-design.md`
+  - `docs/analysis/work-034-e-004-trade-off-analysis.md`
+  - `docs/decisions/ADR-034-work-tracker-km-unified.md`
+  - `docs/validation/work-034-e-006-validation-report.md`
+
+### WORK-035: ADR Comparison & Direction Decision ⏳
+- **Status**: PENDING
+- **Priority**: HIGH
+- **Purpose**: Review ADR-033 vs ADR-034 and decide implementation direction
+- **Depends On**: WORK-034 (pending)
+- **Input Documents**:
+  - `docs/decisions/ADR-033-unified-km-architecture.md` (44KB) - Pure KM approach
+  - `docs/decisions/ADR-034-work-tracker-km-unified.md` (pending) - Work Tracker-first approach
+  - All supporting artifacts from WORK-033 and WORK-034
+- **Expected Output**: Very high fidelity decision document (~60-80KB)
+- **Workflow** (ps-* agent orchestration):
+  - [ ] **Step 1: ps-researcher** (Deep ADR Comparison)
+    - Input: ADR-033, ADR-034, all supporting documents
+    - Output: `docs/research/work-035-e-001-adr-comparison.md`
+    - Task: Side-by-side comparison, domain overlap, implementation complexity
+  - [ ] **Step 2: ps-synthesizer** (Synthesis of Approaches)
+    - Input: Comparison from Step 1
+    - Output: `docs/synthesis/work-035-e-002-approach-synthesis.md`
+    - Task: Synthesize pros/cons, alignment with Jerry goals, risk profiles
+  - [ ] **Step 3: ps-analyst** (Decision Analysis)
+    - Input: Synthesis from Step 2
+    - Output: `docs/analysis/work-035-e-003-decision-analysis.md`
+    - Task: Decision matrix comparing both approaches with weighted criteria
+  - [ ] **Step 4: ps-architect** (Direction Recommendation)
+    - Input: Analysis from Step 3
+    - Output: `docs/decisions/ADR-035-implementation-direction.md`
+    - Task: Final recommendation ADR with detailed rationale
+  - [ ] **Step 5: ps-validator** (Validation)
+    - Input: ADR from Step 4
+    - Output: `docs/validation/work-035-e-005-validation-report.md`
+    - Task: Validate recommendation against Jerry Constitution
+  - [ ] **USER REVIEW** - Final approval before proceeding to implementation
+- **Deliverables**:
+  - `docs/research/work-035-e-001-adr-comparison.md`
+  - `docs/synthesis/work-035-e-002-approach-synthesis.md`
+  - `docs/analysis/work-035-e-003-decision-analysis.md`
+  - `docs/decisions/ADR-035-implementation-direction.md`
+  - `docs/validation/work-035-e-005-validation-report.md`
+
+### WORK-036: KM Implementation Phase 1 ⏳ (was WORK-034)
 - **Status**: PENDING
 - **Priority**: MEDIUM
-- **Purpose**: Implement core KM functionality based on WORK-033 design
-- **Depends On**: WORK-033 (pending)
-- **Sub-tasks**:
+- **Purpose**: Implement core KM functionality based on chosen direction (WORK-035)
+- **Depends On**: WORK-035 (pending)
+- **Note**: Sub-tasks will be refined based on WORK-035 direction decision
+- **Sub-tasks** (preliminary - subject to refinement):
   - [ ] IMPL-001: RED - Write failing tests for KnowledgeItem entity
   - [ ] IMPL-002: GREEN - Implement KnowledgeItem entity
   - [ ] IMPL-003: RED - Write failing tests for Pattern (PAT) value object
@@ -547,11 +645,11 @@ bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
   - `tests/integration/knowledge/`
   - `tests/architecture/knowledge/`
 
-### WORK-035: Problem-Solving + KM Integration ⏳
+### WORK-037: Problem-Solving + KM Integration ⏳ (was WORK-035)
 - **Status**: PENDING
 - **Priority**: MEDIUM
 - **Purpose**: Integrate KM with problem-solving skill
-- **Depends On**: WORK-034 (pending)
+- **Depends On**: WORK-036 (pending)
 - **Sub-tasks**:
   - [ ] INT-001: Define KM capture points in problem-solving workflow
   - [ ] INT-002: Implement AAR (After Action Review) protocol
