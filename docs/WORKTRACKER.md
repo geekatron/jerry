@@ -30,20 +30,21 @@
 | Work Item | Status | Artifacts | Size | Last Commit |
 |-----------|--------|-----------|------|-------------|
 | WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 394KB | c956cb0 |
-| WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 9 files | 457KB | 49e1b4a |
-| WORK-033 | 🔄 IN PROGRESS (Step 2 done) | 2 files | 135KB | a0ddf43 |
+| WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 9 files | 457KB | 2e7ee7c |
+| WORK-033 | 🔄 IN PROGRESS (Step 2 done) | 2 files | 135KB | b78b419 |
 | WORK-034 | ⏳ PENDING (13 sub-tasks) | - | - | - |
 | WORK-035 | ⏳ PENDING (8 sub-tasks) | - | - | - |
 
-### Recent Commits (This Session)
+### Recent Commits (This Session - After Author Fix)
 ```
-2aebff6 feat(research): Complete WORK-033 Step 1 - ps-researcher integration analysis
-181bbc3 docs(tracking): Mark WORK-032 complete, start WORK-033
-49e1b4a feat(validation): Complete WORK-032 Step 5 - ps-validator approval
-d9849c9 feat(decisions): Complete WORK-032 Step 4 - ADR-032 KM Integration
-ef09ae7 feat(analysis): Complete WORK-032 Step 3 - ps-analyst trade-off analysis
-756d800 feat(synthesis): Complete WORK-032 Step 2 - ps-synthesizer KM synthesis
-281b93a feat(research): Complete WORK-032 Step 1 - parallel KM domain research
+a7d5d4b fix(tracking): Correct artifact counts and sizes in WORKTRACKER
+475229d docs(tracking): Mark WORK-033 Step 2 complete, proceed to Step 3
+b78b419 feat(design): Complete WORK-033 Step 2 - ps-architect unified KM design
+eafe0cb docs(tracking): Mark WORK-033 Step 1 complete, update status
+b80389f feat(research): Complete WORK-033 Step 1 - ps-researcher integration analysis
+bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
+2e7ee7c feat(validation): Complete WORK-032 Step 5 - ps-validator approval
+698bc0d feat(decisions): Complete WORK-032 Step 4 - ADR-032 KM Integration
 ```
 
 ---
