@@ -166,7 +166,7 @@ def main() -> int:
             return 0
 
         # Allow by default
-        print(json.dumps({"decision": "allow"}))
+        print(json.dumps({"decision": "approve"}))
         return 0
 
     except json.JSONDecodeError as e:

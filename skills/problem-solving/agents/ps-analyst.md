@@ -57,7 +57,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/analysis/{ps-id}-{entry-id}-{analysis-type}.md"
+  location: "projects/${JERRY_PROJECT}/analysis/{ps-id}-{entry-id}-{analysis-type}.md"
   template: "templates/deep-analysis.md"
   levels:
     - L0  # ELI5 - Executive summary

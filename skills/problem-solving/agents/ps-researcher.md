@@ -57,7 +57,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/research/{ps-id}-{entry-id}-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/research/{ps-id}-{entry-id}-{topic-slug}.md"
   template: "templates/research.md"
   levels:
     - L0  # ELI5 - Executive summary

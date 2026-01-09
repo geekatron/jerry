@@ -2,9 +2,9 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-09T22:00:00Z
-**Current Phase**: Phase 6 - Project Enforcement
-**Current Task**: ENFORCE-008d - Unified Design Alignment (Refactoring Required)
+**Last Updated**: 2026-01-10T00:15:00Z
+**Current Phase**: Phase 7 - Design Document Synthesis
+**Current Task**: SYNTH-001 - PS-* Agent Orchestration for Document Ingestion
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -20,7 +20,8 @@
 | Phase 3: Agent/Skill Updates | ✅ COMPLETED | 100% |
 | Phase 4: Governance Updates | ✅ COMPLETED | 100% |
 | Phase 5: Validation & Commit | ✅ COMPLETED | 100% |
-| Phase 6: Project Enforcement | 🔄 IN PROGRESS | 55% |
+| Phase 6: Project Enforcement | ⏸️ BLOCKED | 55% (on Phase 7) |
+| Phase 7: Design Document Synthesis | 🔄 IN PROGRESS | 80% |
 
 ---
 
@@ -495,13 +496,119 @@
 
 ---
 
+## Phase 7: Design Document Synthesis (IN PROGRESS)
+
+> **Goal**: Systematically ingest all design documents using ps-* agents to build authoritative knowledge foundation.
+> **Prerequisites For**: Phase 6 ENFORCE-008d (Shared Kernel creation)
+> **Reference**: `ACTION-PLAN-001-ps-agent-orchestration.md`
+
+### Document Evolution Chain (User-Defined)
+
+```
+1. REVISED-ARCHITECTURE-v3.0.md      → Foundation (ES + CQRS + Hexagonal)
+2. glimmering-brewing-lake-v3.md     → Claude's v3.0 recommendations
+3. projects/archive/PLAN.md          → Graph Database direction
+4. WORKTRACKER_PROPOSAL.md           → THE SYNTHESIS (32-week executable plan)
+```
+
+### SYNTH-001: PS-* Agent Orchestration for Document Ingestion ✅
+- **Status**: COMPLETED
+- **Description**: Execute tiered ps-* agent workflow to extract and synthesize design patterns
+- **Evidence**: ACTION-PLAN-001-ps-agent-orchestration.md
+- **Subtasks**:
+  - **Tier 1: Primary Research (Parallel)** ✅
+    - [x] T1.1: ps-researcher → `research/PROJ-001-e-001-worktracker-proposal-extraction.md`
+    - [x] T1.2: ps-researcher → `research/PROJ-001-e-002-plan-graph-model.md`
+    - [x] T1.3: ps-researcher → `research/PROJ-001-e-003-revised-architecture-foundation.md`
+    - [x] T1.4: ps-researcher → `research/PROJ-001-e-004-strategic-plan-v3.md`
+  - **Tier 2: Synthesis (Sequential)** ✅
+    - [x] T2.1: ps-synthesizer → `synthesis/PROJ-001-e-006-unified-architecture-canon.md`
+  - **Tier 3: Gap Analysis (Sequential)** ✅
+    - [x] T3.1: ps-analyst → `analysis/PROJ-001-e-007-implementation-gap-analysis.md`
+  - **Tier 4: Architecture Decision (Sequential)** ✅
+    - [x] T4.1: ps-architect → `decisions/ADR-IMPL-001-unified-alignment.md`
+  - **Tier 5: Validation & Reporting (Parallel)** ✅
+    - [x] T5.1: ps-validator → `analysis/PROJ-001-e-009-alignment-validation.md`
+    - [x] T5.2: ps-reporter → `reports/PROJ-001-e-010-synthesis-status-report.md`
+
+### SYNTH-002: Context7 Industry Research ✅
+- **Status**: COMPLETED
+- **Description**: Research industry best practices for patterns identified in synthesis
+- **Output**: `research/PROJ-001-e-005-industry-best-practices.md`
+- **Subtasks**:
+  - [x] Research Event Sourcing best practices (pyeventsourcing, Martin Fowler)
+  - [x] Research CQRS patterns and anti-patterns (Axon Framework)
+  - [x] Research Hexagonal Architecture (sairyss/domain-driven-hexagon)
+  - [x] Research DDD Aggregate Root sizing (Vaughn Vernon 4 Rules)
+  - [x] Document findings with citations in `docs/research/`
+
+### SYNTH-003: Design Canon Creation ⏳
+- **Status**: PENDING (After SYNTH-001 & SYNTH-002)
+- **Description**: Create authoritative design canon document combining synthesis + industry research
+- **Output**: `docs/synthesis/jerry-design-canon-v1.md`
+- **Content**:
+  - [ ] Identity Patterns (VertexId, JerryId, JerryUri)
+  - [ ] Entity Patterns (IAuditable, IVersioned, EntityBase)
+  - [ ] Aggregate Patterns (Task, Phase, Plan, Knowledge)
+  - [ ] Event Patterns (CloudEvents 1.0, Event Sourcing)
+  - [ ] Architecture Patterns (Hexagonal, CQRS)
+  - [ ] Graph Patterns (Vertex/Edge, Gremlin-compatible)
+  - [ ] Testing Patterns (BDD, Test Pyramid)
+
+### SYNTH-004: Shared Kernel Implementation Guide ⏳
+- **Status**: PENDING (After SYNTH-003)
+- **Description**: Create implementation guide for Shared Kernel based on design canon
+- **Output**: `docs/design/shared-kernel-implementation-guide.md`
+- **Content**:
+  - [ ] Directory structure (`src/shared_kernel/`)
+  - [ ] File-by-file implementation order
+  - [ ] Test specifications per component
+  - [ ] Migration path for existing code
+
+---
+
 ## Phase BUGS
 
 > Track bugs discovered during development
 
 | ID | Title | Severity | Status | Phase Found |
 |----|-------|----------|--------|-------------|
-| (None yet) | | | | |
+| BUG-001 | Phase 7 artifacts reference old `docs/` paths | MEDIUM | 🔄 OPEN | Phase 7 |
+| BUG-002 | Hook decision value needs verification (`allow` vs `approve`) | LOW | 🔄 OPEN | Phase 6 |
+
+### BUG-001: Phase 7 Artifacts Reference Old `docs/` Paths
+
+- **Status**: OPEN
+- **Severity**: MEDIUM
+- **Phase Found**: Phase 7 - Design Document Synthesis
+- **Description**: Multiple Phase 7 artifacts reference file paths using the old `docs/{category}/` convention instead of the correct `projects/PROJ-001-plugin-cleanup/{category}/` paths.
+- **Root Cause**: The ps-* agents were updated (TD-001) to OUTPUT to project-centric paths, but the agents still used old `docs/` paths when REFERENCING other documents in their output content.
+- **Impact**: Document lineage references are broken; traceability is compromised.
+- **Affected Files (20+ references)**:
+  - `projects/PROJ-001-plugin-cleanup/reports/PROJ-001-e-010-synthesis-status-report.md` (8 references)
+  - `projects/PROJ-001-plugin-cleanup/analysis/PROJ-001-e-007-implementation-gap-analysis.md` (2 references)
+  - `projects/PROJ-001-plugin-cleanup/analysis/PROJ-001-e-009-alignment-validation.md` (2 references)
+  - `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-006-unified-architecture-canon.md` (10 references)
+- **Sub-tasks**:
+  - [ ] BUG-001.1: Fix path references in e-010 (status report)
+  - [ ] BUG-001.2: Fix path references in e-007 (gap analysis)
+  - [ ] BUG-001.3: Fix path references in e-009 (validation)
+  - [ ] BUG-001.4: Fix path references in e-006 (canon)
+  - [ ] BUG-001.5: Update ps-* agents to use project-relative paths in REFERENCES (not just output paths)
+
+### BUG-002: Hook Decision Value Needs Verification
+
+- **Status**: OPEN
+- **Severity**: LOW
+- **Phase Found**: Phase 6 - Project Enforcement
+- **Description**: The `.claude/hooks/pre_tool_use.py` hook was modified to change the decision value from `"allow"` to `"approve"`.
+- **Evidence**: `git diff` shows: `-print(json.dumps({"decision": "allow"}))` → `+print(json.dumps({"decision": "approve"}))`
+- **Impact**: Unknown - needs verification against Claude Code hooks specification.
+- **Sub-tasks**:
+  - [ ] BUG-002.1: Research Claude Code hooks spec for correct decision values
+  - [ ] BUG-002.2: Verify if `approve` is the correct value (vs `allow`)
+  - [ ] BUG-002.3: Update hook or revert if incorrect
+  - [ ] BUG-002.4: Add unit test for hook decision values
 
 ---
 
@@ -511,7 +618,26 @@
 
 | ID | Title | Priority | Status | Phase Found |
 |----|-------|----------|--------|-------------|
-| (None yet) | | | | |
+| TD-001 | Update ps-* agent output paths to project-centric structure | HIGH | ✅ DONE | Phase 7 |
+
+### TD-001: Update ps-* Agent Output Paths ✅
+
+- **Status**: COMPLETED
+- **Description**: The ps-* agents now use `projects/${JERRY_PROJECT}/{category}/` for output paths instead of `docs/{category}/`.
+- **Files Updated**:
+  - [x] `skills/problem-solving/agents/ps-researcher.md` - Output: `projects/${JERRY_PROJECT}/research/`
+  - [x] `skills/problem-solving/agents/ps-analyst.md` - Output: `projects/${JERRY_PROJECT}/analysis/`
+  - [x] `skills/problem-solving/agents/ps-synthesizer.md` - Output: `projects/${JERRY_PROJECT}/synthesis/`
+  - [x] `skills/problem-solving/agents/ps-architect.md` - Output: `projects/${JERRY_PROJECT}/decisions/`
+  - [x] `skills/problem-solving/agents/ps-validator.md` - Output: `projects/${JERRY_PROJECT}/analysis/`
+  - [x] `skills/problem-solving/agents/ps-reporter.md` - Output: `projects/${JERRY_PROJECT}/reports/`
+  - [x] `skills/problem-solving/agents/ps-investigator.md` - Output: `projects/${JERRY_PROJECT}/investigations/`
+  - [x] `skills/problem-solving/agents/ps-reviewer.md` - Output: `projects/${JERRY_PROJECT}/reviews/`
+  - [x] `skills/problem-solving/agents/PS_AGENT_TEMPLATE.md` - Template updated
+  - [x] `skills/problem-solving/docs/ORCHESTRATION.md` - Diagram updated
+- **Reinforcement Level**: Medium (agents SHOULD use project-centric paths)
+- **Pattern**: `projects/${JERRY_PROJECT}/{research|synthesis|analysis|decisions|reports|investigations|reviews}/`
+- **Rationale**: Per PROJ-001 project isolation principle, all project artifacts belong in the project directory
 
 ---
 

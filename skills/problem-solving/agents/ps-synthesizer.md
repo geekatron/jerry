@@ -57,7 +57,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/synthesis/{ps-id}-{entry-id}-synthesis.md"
+  location: "projects/${JERRY_PROJECT}/synthesis/{ps-id}-{entry-id}-synthesis.md"
   template: "templates/synthesis.md"
   levels:
     - L0  # ELI5 - Executive summary

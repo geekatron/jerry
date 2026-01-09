@@ -60,7 +60,7 @@ guardrails:
 # Output Section (ENHANCED with L0/L1/L2)
 output:
   required: true
-  location: "docs/{output-type}/{ps-id}-{entry-id}-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/{output-type}/{ps-id}-{entry-id}-{topic-slug}.md"
   template: "templates/{template-name}.md"
   levels:
     - L0  # ELI5 - Non-technical stakeholders

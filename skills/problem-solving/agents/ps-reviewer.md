@@ -53,7 +53,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/reviews/{ps-id}-{entry-id}-{review-type}.md"
+  location: "projects/${JERRY_PROJECT}/reviews/{ps-id}-{entry-id}-{review-type}.md"
   template: "templates/review.md"
   levels:
     - L0  # ELI5 - Executive summary

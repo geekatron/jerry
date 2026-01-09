@@ -1,0 +1,17 @@
+{
+  "description": "Jerry Framework plugin hooks for session management and project enforcement",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/session_start.py",
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+  }
+}

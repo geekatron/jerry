@@ -57,7 +57,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/decisions/{ps-id}-{entry-id}-adr-{decision-slug}.md"
+  location: "projects/${JERRY_PROJECT}/decisions/{ps-id}-{entry-id}-adr-{decision-slug}.md"
   template: "templates/adr.md"
   levels:
     - L0  # ELI5 - Executive summary of decision

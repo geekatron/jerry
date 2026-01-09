@@ -45,9 +45,10 @@ This document explains how the Problem-Solving agents are orchestrated, how stat
        └────────────┘  └────────────┘  └────────────┘
               │               │               │
               ▼               ▼               ▼
-       ┌────────────┐  ┌────────────┐  ┌────────────┐
-       │docs/research│  │docs/analysis│  │docs/decisions│
-       └────────────┘  └────────────┘  └────────────┘
+       ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────┐
+       │projects/$PROJECT/│  │projects/$PROJECT/│  │projects/$PROJECT/ │
+       │    research/     │  │    analysis/     │  │    decisions/     │
+       └──────────────────┘  └──────────────────┘  └───────────────────┘
 ```
 
 ### Key Principles
