@@ -31,7 +31,7 @@
 |-----------|--------|-----------|------|-------------|
 | WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 394KB | c956cb0 |
 | WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 9 files | 457KB | 2e7ee7c |
-| WORK-033 | 🔄 IN PROGRESS (Step 4 re-done) | 4 files | 247KB | 1a1011b |
+| WORK-033 | ⏸️ AWAITING USER REVIEW | 5 files | 266KB | f41b1c7 |
 | WORK-034 | ⏳ PENDING (13 sub-tasks) | - | - | - |
 | WORK-035 | ⏳ PENDING (8 sub-tasks) | - | - | - |
 
@@ -508,10 +508,12 @@ bbf8543 docs(tracking): Mark WORK-032 complete, start WORK-033
     - Task: Final architecture decision record
     - **Commit**: 1a1011b | **Size**: 44KB, 1124 lines | **Status**: PROPOSED
     - Includes: Domain model, ports, adapters, CQRS, 10-risk register, appendices
-  - [ ] **Step 5: ps-validator** (Validation)
+  - [x] **Step 5: ps-validator** (Validation) ✅
     - Input: ADR from Step 4
     - Output: `docs/validation/work-033-e-005-validation-report.md`
     - Task: Verify against Jerry Constitution, hexagonal compliance
+    - **Commit**: f41b1c7 | **Size**: 19KB, 227 lines | **Verdict**: APPROVED (25/25)
+  - [ ] **USER REVIEW** - Awaiting approval before marking WORK-033 complete
 - **Deliverables**:
   - `docs/research/work-033-e-001-integration-analysis.md`
   - `docs/design/work-033-e-002-unified-design.md`
