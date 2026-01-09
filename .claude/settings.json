@@ -1,5 +1,5 @@
 {
-  "$schema": "https://claude.ai/schemas/claude-settings.json",
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "version": "1.0",
   "project": {
     "name": "jerry",
@@ -8,25 +8,37 @@
   "hooks": {
     "PreToolUse": [
       {
-        "type": "command",
-        "command": "python3 .claude/hooks/pre_tool_use.py",
-        "description": "Security guardrails for tool operations",
-        "timeout": 5000
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pre_tool_use.py",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "SubagentStop": [
       {
-        "type": "command",
-        "command": "python3 .claude/hooks/subagent_stop.py",
-        "description": "Agent handoff orchestration",
-        "timeout": 5000
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/subagent_stop.py",
+            "timeout": 5000
+          }
+        ]
       }
     ],
     "SessionStart": [
       {
-        "type": "command",
-        "command": "echo 'Jerry Framework initialized. See CLAUDE.md for context.'",
-        "description": "Session initialization message"
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Jerry Framework initialized. See CLAUDE.md for context.'"
+          }
+        ]
       }
     ]
   },
