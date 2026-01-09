@@ -29,9 +29,9 @@
 
 | Work Item | Status | Artifacts | Size | Last Commit |
 |-----------|--------|-----------|------|-------------|
-| WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 400KB | c956cb0 |
-| WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 10 files | 463KB | 49e1b4a |
-| WORK-033 | 🔄 IN PROGRESS (Step 2 done) | 2 files | 136KB | a0ddf43 |
+| WORK-031 | ✅ COMPLETE (ADR PROPOSED) | 9 files | 394KB | c956cb0 |
+| WORK-032 | ✅ COMPLETE (APPROVED W/CONDITIONS) | 9 files | 457KB | 49e1b4a |
+| WORK-033 | 🔄 IN PROGRESS (Step 2 done) | 2 files | 135KB | a0ddf43 |
 | WORK-034 | ⏳ PENDING (13 sub-tasks) | - | - | - |
 | WORK-035 | ⏳ PENDING (8 sub-tasks) | - | - | - |
 
