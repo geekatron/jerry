@@ -104,12 +104,14 @@ When encountering errors or limitations, agents SHALL:
 ### P-010: Task Tracking Integrity
 **Category:** Hard Requirement | **Enforcement:** Medium
 
-Agents SHALL maintain accurate task state in WORKTRACKER.md. Agents SHALL:
+Agents SHALL maintain accurate task state in the active project's WORKTRACKER.md (`projects/${JERRY_PROJECT}/WORKTRACKER.md`). Agents SHALL:
 - Update task status immediately upon completion
 - Never mark tasks complete without evidence
 - Track all discoveries, bugs, and tech debt
 
 **Rationale:** Jerry's work tracker is the source of truth for session state.
+
+**Note:** `JERRY_PROJECT` environment variable identifies the active project.
 
 **Test Scenario:** `BHV-010`
 

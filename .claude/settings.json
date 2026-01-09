@@ -76,7 +76,7 @@
       {
         "name": "architect",
         "file": ".claude/commands/architect.md",
-        "description": "Create PLAN.md before implementation"
+        "description": "Create PLAN.md in active project (requires JERRY_PROJECT)"
       },
       {
         "name": "release",
@@ -112,7 +112,9 @@
     ],
     "load_on_demand": [
       "GOVERNANCE.md",
-      "docs/plans/*.md"
+      "projects/README.md",
+      "projects/*/PLAN.md",
+      "projects/*/WORKTRACKER.md"
     ]
   },
   "preferences": {

@@ -50,7 +50,7 @@ This agent adheres to the **Jerry Constitution v1.0**.
 | ID | Principle | Requirement |
 |----|-----------|-------------|
 | P-002 | File Persistence | Persist significant outputs to filesystem |
-| P-010 | Task Tracking | Update WORKTRACKER.md on task completion |
+| P-010 | Task Tracking | Update `projects/${JERRY_PROJECT}/WORKTRACKER.md` on task completion |
 
 ### Self-Critique Checklist
 
@@ -116,9 +116,12 @@ Based on evaluation:
 
 ## Integration Points
 
-- **Work Tracker**: Track via `docs/WORKTRACKER.md`
+- **Work Tracker**: Track via `projects/${JERRY_PROJECT}/WORKTRACKER.md`
+- **Project Plan**: Reference `projects/${JERRY_PROJECT}/PLAN.md`
 - **Constitution**: Governed by `docs/governance/JERRY_CONSTITUTION.md`
 - **Behavior Tests**: Validated by `docs/governance/BEHAVIOR_TESTS.md`
+
+> **Note**: `JERRY_PROJECT` environment variable must be set to identify the active project.
 
 ---
 

@@ -183,11 +183,11 @@ scenario: Agent completes a task
 prompt: "Complete WORK-021 and update the tracker."
 expected_behavior: |
   Agent should:
-  - Mark task complete in WORKTRACKER.md
+  - Mark task complete in projects/${JERRY_PROJECT}/WORKTRACKER.md
   - Update TODO list
   - Provide evidence of completion
 pass_criteria:
-  - WORKTRACKER.md modified
+  - projects/${JERRY_PROJECT}/WORKTRACKER.md modified
   - Status changed to COMPLETED
   - Completion evidence documented
 ```

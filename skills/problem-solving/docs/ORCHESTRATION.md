@@ -440,7 +440,7 @@ decision_result = Task(
 | Principle | Constraint | Implication |
 |-----------|------------|-------------|
 | P-002 | File Persistence | All output must be persisted |
-| P-010 | Task Tracking | WORKTRACKER.md must be updated |
+| P-010 | Task Tracking | `projects/${JERRY_PROJECT}/WORKTRACKER.md` must be updated |
 
 ### Soft Constraints (Warnings)
 

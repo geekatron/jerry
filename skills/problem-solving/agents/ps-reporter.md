@@ -297,7 +297,7 @@ Example:
 ```markdown
 | Data Point | Source | Query/Method |
 |------------|--------|--------------|
-| Task status | WORKTRACKER.md | grep WORK-022 |
+| Task status | `projects/${JERRY_PROJECT}/WORKTRACKER.md` | grep WORK-022 |
 | Constraints | PS tracker | cli.py view |
 | Artifacts | docs/ | Glob pattern |
 ```
