@@ -205,18 +205,18 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 ## Current Focus
 
 > **Active Initiative**: [PHASE-IMPL-DOMAIN](work/PHASE-IMPL-DOMAIN.md) - Domain Layer Implementation
-> **Active Phase**: IMPL-REPO-001 - IRepository<T> Port (Domain)
-> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅, IMPL-004 ✅, IMPL-ES-001 ✅, IMPL-ES-003 ✅)
-> **Previous**: IMPL-ES-003 AggregateRoot Base Class Complete (44 tests)
+> **Active Phase**: IMPL-005 - WorkItem Aggregate
+> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅, IMPL-004 ✅, IMPL-ES-001 ✅, IMPL-ES-003 ✅, IMPL-REPO-001 ✅)
+> **Previous**: IMPL-REPO-001 IRepository<T> Port Complete (39 tests)
 
 ### Active Initiative Details
 
 | Attribute | Value |
 |-----------|-------|
 | Phase ID | PHASE-IMPL-DOMAIN |
-| Current Task | IMPL-REPO-001 (IRepository<T> Port) |
+| Current Task | IMPL-005 (WorkItem Aggregate) |
 | Total Tasks | 16 (10 original + 3 ES + 3 REPO infrastructure) |
-| Total Tests | 396 passing (338 from 6 impl tasks + 58 pre-existing) |
+| Total Tests | 435 passing (377 from 7 impl tasks + 58 pre-existing) |
 | Coverage Gate | 90%+ |
 
 ### Implementation Overview
@@ -271,7 +271,7 @@ IMPL-010: Architecture Tests          ⏳
 | IMPL-ES-001 | IEventStore Port + InMemoryEventStore | P0 (MVP) | IMPL-002 | PAT-001, PAT-003 | ✅ (65 tests) |
 | IMPL-ES-002 | ISnapshotStore Port + InMemorySnapshotStore | P1 | IMPL-ES-001 | PAT-001 | ⏳ |
 | IMPL-ES-003 | AggregateRoot Base Class | P0 (MVP) | IMPL-ES-001 | PAT-002 | ✅ (44 tests) |
-| IMPL-REPO-001 | IRepository<T> Port (Domain) | P0 (MVP) | IMPL-ES-003 | PAT-009 | ⏳ |
+| IMPL-REPO-001 | IRepository<T> Port (Domain) | P0 (MVP) | IMPL-ES-003 | PAT-009 | ✅ (39 tests) |
 | IMPL-REPO-002 | IFileStore + ISerializer<T> (Internal) | P0 (MVP) | None | PAT-010 | ⏳ |
 | IMPL-REPO-003 | JsonSerializer<T> + FileRepository<T> | P0 (MVP) | IMPL-REPO-001,002 | PAT-010 | ⏳ |
 
@@ -326,8 +326,8 @@ INFRASTRUCTURE LAYER (Internal/Private)
 
 ### Next Actions
 
-1. **IMPL-REPO-001**: Implement IRepository<T> port in domain layer (PAT-009) ◀── NEXT
-2. **IMPL-005**: Implement WorkItem Aggregate using AggregateRoot
+1. **IMPL-005**: Implement WorkItem Aggregate using AggregateRoot ◀── NEXT
+2. **IMPL-REPO-002**: Implement IFileStore + ISerializer<T> (Infrastructure)
 3. **IMPL-REPO-003**: Implement JsonSerializer<T> + FileRepository<T>
 4. **BDD Cycle**: RED → GREEN → REFACTOR for each task
 
@@ -557,3 +557,4 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | IMPL-ES-003 AggregateRoot Base Class complete (44 tests) |
 | 2026-01-10 | Claude | CORRECTION: IMPL-REPO-002 was incorrectly marked complete (reverted to ⏳) |
 | 2026-01-10 | Claude | Verified test counts: 6 impl tasks = 338 tests, 58 pre-existing = 396 total |
+| 2026-01-10 | Claude | IMPL-REPO-001 IRepository<T> Port complete (39 tests) |

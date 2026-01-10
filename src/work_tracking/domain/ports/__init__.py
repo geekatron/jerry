@@ -6,29 +6,41 @@ external systems. Adapters in the infrastructure layer implement these.
 
 Components:
     - IEventStore: Append-only event storage with optimistic concurrency
+    - IRepository: Generic aggregate persistence
     - StoredEvent: Immutable wrapper for persisted events
-    - ConcurrencyError: Raised on version conflicts
 
 References:
     - PAT-001: Event Store Interface Pattern
     - PAT-003: Optimistic Concurrency with File Locking
+    - PAT-009: Generic Repository Port
     - ADR-009: Event Storage Mechanism
 """
 from __future__ import annotations
 
 from .event_store import (
-    ConcurrencyError,
+    ConcurrencyError as EventStoreConcurrencyError,
     EventStoreError,
     IEventStore,
     StoredEvent,
     StreamNotFoundError,
+)
+from .repository import (
+    AggregateNotFoundError,
+    ConcurrencyError as RepositoryConcurrencyError,
+    IRepository,
+    RepositoryError,
 )
 
 __all__ = [
     # Event Store
     "IEventStore",
     "StoredEvent",
-    "ConcurrencyError",
+    "EventStoreConcurrencyError",
     "StreamNotFoundError",
     "EventStoreError",
+    # Repository
+    "IRepository",
+    "AggregateNotFoundError",
+    "RepositoryConcurrencyError",
+    "RepositoryError",
 ]
