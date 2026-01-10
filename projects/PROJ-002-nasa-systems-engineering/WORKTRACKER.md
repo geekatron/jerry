@@ -8,10 +8,10 @@
 
 | Metric | Count |
 |--------|-------|
-| Total Items | 30 |
+| Total Items | 31 |
 | Open | 0 |
 | In Progress | 0 |
-| Completed | 30 |
+| Completed | 31 |
 | Blocked | 0 |
 
 ### Gap Fix Backlog
@@ -30,6 +30,24 @@
 ---
 
 ## Active Work Items
+
+### ORCH-SKILL-002: Validate Orchestration Skill E2E
+- **Entry ID:** e-036
+- **Status:** COMPLETE
+- **Started:** 2026-01-10
+- **Completed:** 2026-01-10
+- **Tests Executed (5):**
+  1. ✅ **SKILL.md YAML Frontmatter** - Valid structure with 10 activation keywords
+  2. ✅ **Template Files Exist** - 3 templates totaling 696 lines
+  3. ✅ **Template Placeholders** - Valid {PLACEHOLDER} tokens throughout
+  4. ✅ **ORCHESTRATION.yaml Schema** - 7/7 required sections, all required fields present
+  5. ✅ **orch-tracker Agent E2E** - Successfully added CP-TEST-001 checkpoint
+- **Evidence:**
+  - `CP-TEST-001` checkpoint visible in `ORCHESTRATION.yaml` lines 285-290
+  - `latest_id` updated from `CP-005` to `CP-TEST-001`
+  - Agent invoked via Task tool with haiku model
+- **P-003 Compliance:** ✅ VERIFIED - Agent executed as worker, no nested spawning
+- **Exit Criteria:** ✅ PASSED - Skill produces real state changes in target files
 
 ### ORCH-SKILL-001: Create Orchestration Skill
 - **Entry ID:** e-035

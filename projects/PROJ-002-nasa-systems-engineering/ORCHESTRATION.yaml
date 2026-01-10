@@ -350,7 +350,7 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-005"
+  latest_id: "CP-TEST-001"
   entries:
     - id: "CP-001"
       timestamp: "2026-01-09T12:00:00Z"
@@ -382,6 +382,12 @@ checkpoints:
       description: "Orchestration artifacts created"
       recovery_point: "phase-3-execution"
 
+    - id: "CP-TEST-001"
+      timestamp: "2026-01-10T10:00:00Z"
+      trigger: "MANUAL"
+      description: "E2E test checkpoint to validate orchestration skill"
+      recovery_point: "orchestration-skill-test"
+
 # =============================================================================
 # METRICS
 # =============================================================================
@@ -407,7 +413,7 @@ metrics:
 
   timing:
     workflow_started: "2026-01-09T10:00:00Z"
-    last_activity: "2026-01-10T09:30:00Z"
+    last_activity: "2026-01-10T10:00:00Z"
     estimated_completion: null  # TBD after Phase 3 starts
 
 # =============================================================================
