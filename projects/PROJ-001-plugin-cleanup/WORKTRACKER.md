@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-09T23:55:00Z
+**Last Updated**: 2026-01-10T02:00:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -204,77 +204,179 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Initiative**: [INIT-DEV-SKILL](work/INITIATIVE-DEV-SKILL.md) - Development Skill Creation
-> **Active Phase**: Phase 1 - Parallel Research (Pattern 3 - Fan-Out)
-> **Status**: 🔄 IN PROGRESS
+> **Active Initiative**: [PHASE-IMPL-DOMAIN](work/PHASE-IMPL-DOMAIN.md) - Domain Layer Implementation
+> **Active Phase**: IMPL-004 - Quality Value Objects
+> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅)
+> **Previous**: ES Infrastructure Research Complete (PASS_WITH_CONCERNS)
 
 ### Active Initiative Details
 
 | Attribute | Value |
 |-----------|-------|
-| Initiative ID | INIT-DEV-SKILL |
-| PS ID | dev-skill |
-| Current Phase | 1 (Parallel Research) |
-| Total Phases | 7 |
-| Total Agent Invocations | 18 |
-| Iteration Count | 0 |
+| Phase ID | PHASE-IMPL-DOMAIN |
+| Current Task | IMPL-004 (Quality Value Objects) |
+| Total Tasks | 13 (10 original + 3 ES infrastructure) |
+| Total Tests | 74/162 (46% complete) |
+| Coverage Gate | 90%+ |
 
-### Initiative Overview
+### Implementation Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    DEVELOPMENT SKILL CREATION                                │
-│                    PS ID: dev-skill                                          │
+│                    DOMAIN LAYER IMPLEMENTATION                               │
+│                    Coverage Gate: 90%+                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
-Phase 1: PARALLEL RESEARCH (6 ps-researcher)  ◀── CURRENT
+IMPL-001: SnowflakeIdGenerator        ✅ COMPLETE (40/40 tests)
     │
     ▼
-Phase 2: SYNTHESIS (1 ps-synthesizer)
+IMPL-002: DomainEvent Base            ✅ COMPLETE (34/34 tests)
     │
     ▼
-Phase 3: ANALYSIS (3 ps-analyst)
+IMPL-003: WorkItemId Value Object     ✅ COMPLETE (implemented)
+    │
+    ├─────────────────────────────────────────────────┐
+    │                                                 │
+    ▼                                                 ▼
+IMPL-004: Quality Value Objects       ◀── CURRENT    IMPL-ES-001: IEventStore Port
+    │                                     (P0 MVP)        │
+    ▼                                                     ▼
+IMPL-005: WorkItem Aggregate          ⏳               IMPL-ES-002: ISnapshotStore Port
+    │                                     (P1)            │
+    ▼                                                     ▼
+IMPL-006: QualityGate Entity          ⏳               IMPL-ES-003: AggregateRoot Base
+    │                                     (P0 MVP)        │
+    ▼                                                     │
+IMPL-007: Domain Events               ⏳               ───┘
     │
     ▼
-Phase 4: ARCHITECTURE DECISIONS (5 ps-architect)
+IMPL-008: WorkItemAggregate (ES)      ⏳ ◀── First ES-enabled aggregate
     │
     ▼
-    ┌─────────────────────────────────────┐
-    │     ITERATION LOOP ENTRY            │
-    └─────────────────┬───────────────────┘
-                      │
-Phase 5: VALIDATION ──┼──▶ If GAPS: iterate (max 3) → escalate
-    │                 │
-    ▼                 │
-Phase 6: REVIEW ──────┼──▶ If NEEDS_WORK: iterate
-    │                 │
-    ▼                 │
-Phase 7: REPORT       │
-    │                 │
-    ▼                 │
-USER APPROVAL ────────┘
+IMPL-009: Domain Services             ⏳
+    │
+    ▼
+IMPL-010: Architecture Tests          ⏳
+    │
+    ▼
+┌─────────────────────────────────────┐
+│         90%+ COVERAGE GATE          │
+└─────────────────────────────────────┘
 ```
+
+### Event Sourcing Infrastructure Tasks (from Research)
+
+| ID | Task | Priority | Dependencies | Patterns Applied |
+|----|------|----------|--------------|------------------|
+| IMPL-ES-001 | IEventStore Port + InMemoryEventStore | P0 (MVP) | IMPL-002 | PAT-001, PAT-003 |
+| IMPL-ES-002 | ISnapshotStore Port + InMemorySnapshotStore | P1 | IMPL-ES-001 | PAT-001 |
+| IMPL-ES-003 | AggregateRoot Base Class | P0 (MVP) | IMPL-ES-001 | PAT-002 |
+| IMPL-REPO-001 | IRepository<T> Port (Domain) | P0 (MVP) | IMPL-ES-003 | PAT-009 |
+| IMPL-REPO-002 | IFileStore + ISerializer<T> (Internal) | P0 (MVP) | None | PAT-010 |
+| IMPL-REPO-003 | JsonSerializer<T> + FileRepository<T> | P0 (MVP) | IMPL-REPO-001,002 | PAT-010 |
+
+### Repository Layer Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         HEXAGONAL REPOSITORY DESIGN                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+DOMAIN LAYER (Ports)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  IRepository<T, TId>           ← Generic repository port                    │
+│    + get(id: TId) -> T | None                                               │
+│    + save(aggregate: T) -> None                                             │
+│    + delete(id: TId) -> None                                                │
+│    + exists(id: TId) -> bool                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ implements
+                                    ▼
+INFRASTRUCTURE LAYER (Public Adapters)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  FileRepository<T> : IRepository<T>      ← Composes IFileStore + ISerializer│
+│  JsonFileRepository<T> : IRepository<T>  ← Composes IFileStore + JsonSerial │
+│  EventSourcedRepository<T>               ← Composes IEventStore + ISnapshot │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ uses (internal)
+                                    ▼
+INFRASTRUCTURE LAYER (Internal/Private)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  IFileStore                    ← File operations (read/write/lock/fsync)    │
+│    + read(path) -> bytes                                                    │
+│    + write(path, data) -> None                                              │
+│    + locked_read_write(path, fn) -> T                                       │
+│                                                                             │
+│  ISerializer<T>                ← Serialization abstraction                  │
+│    + serialize(obj: T) -> bytes                                             │
+│    + deserialize(data: bytes) -> T                                          │
+│                                                                             │
+│  JsonSerializer<T> : ISerializer<T>      ← JSON format                      │
+│  ToonSerializer<T> : ISerializer<T>      ← TOON format (LLM interface)      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Design Principles:**
+- Repository adapters **compose** internal abstractions (not inherit)
+- Internal abstractions are **private** to infrastructure layer
+- Domain only knows about `IRepository<T>` port
+- Serialization strategy is **pluggable** (JSON, TOON, etc.)
 
 ### Next Actions
 
-1. **Execute Phase 1**: Invoke 6 ps-researcher agents in parallel
-2. **Research Topics**:
-   - R1: Agent-based software development workflows
-   - R2: Quality gate enforcement in CI/CD
-   - R3: BDD/TDD in multi-agent systems
-   - R4: Distinguished engineer review practices
-   - R5: Concurrent file access patterns
-   - R6: Task template schemas
-3. **Output**: 6 research artifacts in `research/dev-skill-e-00X-*.md`
+1. **IMPL-004**: Implement Quality Value Objects (TestCoverage, TestRatio, WorkItemStatus)
+2. **IMPL-ES-001**: Implement IEventStore port with InMemory adapter (PAT-001)
+3. **IMPL-ES-003**: Implement AggregateRoot base class with ES lifecycle (PAT-002)
+4. **BDD Cycle**: RED → GREEN → REFACTOR for each task
 
-### Detailed Plan
+### Research Artifacts
 
-See [INITIATIVE-DEV-SKILL.md](work/INITIATIVE-DEV-SKILL.md) for:
-- Full ASCII workflow diagrams
-- Iteration loop state machine
-- Actionable feedback format
-- Artifact dependency graph
-- Execution tracker
+| ID | Document | Status |
+|----|----------|--------|
+| IMPL-R-001 | [impl-001-domain-layer-5W1H.md](research/impl-001-domain-layer-5W1H.md) | ✅ COMPLETE |
+| IMPL-ES-5W1H | [impl-es-infrastructure-5W1H.md](research/impl-es-infrastructure-5W1H.md) | ✅ COMPLETE |
+| INIT-DEV-SKILL | [INITIATIVE-DEV-SKILL.md](work/INITIATIVE-DEV-SKILL.md) | ✅ GO |
+| ADR-007 | [ADR-007-id-generation-strategy.md](design/ADR-007-id-generation-strategy.md) | ✅ |
+| ADR-008 | [ADR-008-quality-gate-configuration.md](design/ADR-008-quality-gate-configuration.md) | ✅ |
+| ADR-009 | [ADR-009-event-storage-mechanism.md](design/ADR-009-event-storage-mechanism.md) | ✅ |
+
+### Event Sourcing Research (Parallel Orchestration)
+
+| ID | Document | Agent | Status |
+|----|----------|-------|--------|
+| ES-R-001 | [impl-es-e-001-eventsourcing-patterns.md](research/impl-es-e-001-eventsourcing-patterns.md) | ps-researcher | ✅ |
+| ES-R-002 | [impl-es-e-002-toon-serialization.md](research/impl-es-e-002-toon-serialization.md) | ps-researcher | ✅ |
+| ES-R-003 | [impl-es-e-003-bdd-tdd-patterns.md](research/impl-es-e-003-bdd-tdd-patterns.md) | ps-researcher | ✅ |
+| ES-R-004 | [impl-es-e-004-distinguished-review.md](research/impl-es-e-004-distinguished-review.md) | ps-researcher | ✅ |
+| ES-R-005 | [impl-es-e-005-concurrent-access.md](research/impl-es-e-005-concurrent-access.md) | ps-researcher | ✅ |
+| ES-R-006 | [impl-es-e-006-workitem-schema.md](research/impl-es-e-006-workitem-schema.md) | ps-researcher | ✅ |
+| ES-SYN | [impl-es-synthesis.md](synthesis/impl-es-synthesis.md) | ps-synthesizer | ✅ |
+| ES-REV | [impl-es-synthesis-design.md](reviews/impl-es-synthesis-design.md) | ps-reviewer | ✅ PASS_WITH_CONCERNS |
+| ES-RPT | [impl-es-knowledge-summary.md](reports/impl-es-knowledge-summary.md) | ps-reporter | ✅ |
+
+### Knowledge Items Generated
+
+| Type | ID | Title | Quality |
+|------|----|-------|---------|
+| PAT | PAT-001 | Event Store Interface Pattern | HIGH |
+| PAT | PAT-002 | Aggregate Root Event Emission | HIGH |
+| PAT | PAT-003 | Optimistic Concurrency with File Locking | HIGH |
+| PAT | PAT-004 | Given-When-Then Event Testing | MEDIUM |
+| PAT | PAT-005 | TOON for LLM Context Serialization | MEDIUM |
+| PAT | PAT-006 | Hybrid Identity (Snowflake + Display ID) | MEDIUM |
+| PAT | PAT-007 | Tiered Code Review for ES Systems | MEDIUM |
+| PAT | PAT-008 | Value Object Quality Gates | LOW |
+| PAT | PAT-009 | Generic Repository Port | HIGH |
+| PAT | PAT-010 | Composed Infrastructure Adapters | HIGH |
+| LES | LES-001 | Event Schemas Are Forever | HIGH |
+| LES | LES-002 | Layer Violations Compound | HIGH |
+| LES | LES-003 | Retry is Not Optional | HIGH |
+| ASM | ASM-001 | Filesystem durability sufficient | MEDIUM |
+| ASM | ASM-002 | Single-writer assumption holds | MEDIUM |
+| ASM | ASM-003 | Event replay under 100ms | MEDIUM |
+| ASM | ASM-004 | TOON suitable for LLM interface | HIGH |
 
 ---
 
@@ -355,6 +457,15 @@ See [INITIATIVE-DEV-SKILL.md](work/INITIATIVE-DEV-SKILL.md) for:
 | R-004 | Strategic Plan v3 | `research/e-004-*.md` | ✅ |
 | R-005 | Industry Best Practices | `research/e-005-*.md` | ✅ |
 | R-008d | Domain Refactoring | `research/PROJ-001-R-008d-*.md` | ⏳ |
+| ES-R-001 | EventSourcing Patterns | `research/impl-es-e-001-*.md` | ✅ |
+| ES-R-002 | TOON Serialization | `research/impl-es-e-002-*.md` | ✅ |
+| ES-R-003 | BDD/TDD Patterns | `research/impl-es-e-003-*.md` | ✅ |
+| ES-R-004 | Distinguished Review | `research/impl-es-e-004-*.md` | ✅ |
+| ES-R-005 | Concurrent Access | `research/impl-es-e-005-*.md` | ✅ |
+| ES-R-006 | Work Item Schema | `research/impl-es-e-006-*.md` | ✅ |
+| ES-SYN | ES Synthesis | `synthesis/impl-es-synthesis.md` | ✅ |
+| ES-REV | ES Review | `reviews/impl-es-synthesis-design.md` | ✅ |
+| ES-RPT | ES Knowledge Summary | `reports/impl-es-knowledge-summary.md` | ✅ |
 
 ### Decision Artifacts
 
@@ -425,3 +536,16 @@ Before marking ANY task complete:
 | 2026-01-09 | Claude | Added RUNBOOK-001-008d and validation evidence |
 | 2026-01-09 | Claude | Added INIT-DEV-SKILL initiative with full workflow orchestration |
 | 2026-01-09 | Claude | Paused ENFORCE-008d pending development skill completion |
+| 2026-01-09 | Claude | Transitioned to PHASE-IMPL-DOMAIN after INIT-DEV-SKILL GO |
+| 2026-01-09 | Claude | Added impl-001-domain-layer-5W1H.md research document |
+| 2026-01-09 | Claude | Created PHASE-IMPL-DOMAIN.md with 10 implementation tasks |
+| 2026-01-09 | Claude | IMPL-001 SnowflakeIdGenerator complete (40 tests, 86% coverage) |
+| 2026-01-09 | Claude | IMPL-002 DomainEvent Base complete (34 tests, 95% coverage) |
+| 2026-01-09 | Claude | IMPL-003 WorkItemId Value Object complete (hybrid identity pattern) |
+| 2026-01-10 | Claude | Completed ES Infrastructure research orchestration (6 parallel agents) |
+| 2026-01-10 | Claude | Generated synthesis with 8 patterns, 3 lessons, 4 assumptions |
+| 2026-01-10 | Claude | Distinguished review: PASS_WITH_CONCERNS |
+| 2026-01-10 | Claude | Added IMPL-ES-001, IMPL-ES-002, IMPL-ES-003 tasks from research |
+| 2026-01-10 | Claude | Added Repository Layer Architecture (IRepository, IFileStore, ISerializer) |
+| 2026-01-10 | Claude | Added IMPL-REPO-001, IMPL-REPO-002, IMPL-REPO-003 tasks |
+| 2026-01-10 | Claude | Added PAT-009 (Generic Repository Port), PAT-010 (Composed Adapters) |

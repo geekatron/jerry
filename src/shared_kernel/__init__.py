@@ -37,6 +37,8 @@ from .vertex_id import (
     VertexId,
 )
 from .jerry_uri import JerryUri
+from .snowflake_id import SnowflakeIdGenerator
+from .domain_event import DomainEvent, EventRegistry, get_global_registry
 
 # Protocols
 from .auditable import IAuditable
@@ -66,6 +68,10 @@ __all__ = [
     "EventId",
     "EdgeId",
     "JerryUri",
+    "SnowflakeIdGenerator",
+    "DomainEvent",
+    "EventRegistry",
+    "get_global_registry",
     # Protocols
     "IAuditable",
     "IVersioned",
