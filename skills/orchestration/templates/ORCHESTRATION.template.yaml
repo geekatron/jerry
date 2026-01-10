@@ -1,0 +1,255 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for multi-agent workflows
+# Document ID: {PROJECT_ID}-ORCH-STATE
+# Version: 1.0
+# Last Updated: {TIMESTAMP}
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "{WORKFLOW_ID}"
+  name: "{WORKFLOW_NAME}"
+  project_id: "{PROJECT_ID}"
+  version: "1.0"
+  created_at: "{CREATED_TIMESTAMP}"
+  updated_at: "{UPDATED_TIMESTAMP}"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL      # Phases execute in order
+    - CONCURRENT      # Pipelines run in parallel
+    - BARRIER_SYNC    # Cross-pollination at barriers
+    # Add patterns as applicable
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_concurrent_agents: 5      # Soft constraint
+    max_barrier_retries: 2        # Circuit breaker
+    checkpoint_frequency: "PHASE" # AGENT | PHASE | BARRIER
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  # Pipeline A definition
+  pipeline_a:
+    id: "pipeline-a"
+    name: "{PIPELINE_A_NAME}"
+    description: "{PIPELINE_A_DESCRIPTION}"
+    status: "PHASE_1_PENDING"  # PHASE_N_PENDING | PHASE_N_IN_PROGRESS | COMPLETE
+    current_phase: 1
+    total_phases: 2  # Update based on workflow
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "{PHASE_1_NAME}"
+        status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "agent-a-001"
+            name: "{AGENT_NAME}"
+            status: "PENDING"
+            artifact: "{path/to/artifact.md}"
+            inputs: []
+        artifacts: []
+
+      - id: 2
+        name: "{PHASE_2_NAME}"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "agent-a-002"
+            name: "{AGENT_NAME}"
+            status: "BLOCKED"
+            artifact: "{path/to/artifact.md}"
+        artifacts: []
+
+  # Pipeline B definition
+  pipeline_b:
+    id: "pipeline-b"
+    name: "{PIPELINE_B_NAME}"
+    description: "{PIPELINE_B_DESCRIPTION}"
+    status: "PHASE_1_PENDING"
+    current_phase: 1
+    total_phases: 2
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "{PHASE_1_NAME}"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "agent-b-001"
+            name: "{AGENT_NAME}"
+            status: "PENDING"
+            artifact: "{path/to/artifact.md}"
+        artifacts: []
+
+      - id: 2
+        name: "{PHASE_2_NAME}"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "agent-b-002"
+            name: "{AGENT_NAME}"
+            status: "BLOCKED"
+            artifact: "{path/to/artifact.md}"
+        artifacts: []
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "{BARRIER_NAME}"
+    status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE
+    completed_at: null
+    depends_on:
+      - "pipeline_a.phase.1"
+      - "pipeline_b.phase.1"
+    artifacts:
+      a_to_b:
+        path: "cross-pollination/barrier-1/a-to-b/{artifact}.md"
+        status: "PENDING"
+        key_content: null
+      b_to_a:
+        path: "cross-pollination/barrier-1/b-to-a/{artifact}.md"
+        status: "PENDING"
+        key_content: null
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 1 Agents"
+      execution_mode: "PARALLEL"  # PARALLEL | SEQUENTIAL
+      status: "READY"  # READY | IN_PROGRESS | COMPLETE | BLOCKED
+      agents:
+        - "agent-a-001"
+        - "agent-b-001"
+
+    - id: 2
+      name: "Barrier 1 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      tasks:
+        - "create-a-to-b-artifact"
+        - "create-b-to-a-artifact"
+
+    - id: 3
+      name: "Phase 2 Agents"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "agent-a-002"
+        - "agent-b-002"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  # Example entry:
+  # - id: "CP-001"
+  #   timestamp: "2026-01-10T09:00:00Z"
+  #   trigger: "PHASE_COMPLETE"  # PHASE_COMPLETE | BARRIER_COMPLETE | MANUAL
+  #   description: "Phase 1 complete"
+  #   recovery_point: "barrier-1-start"
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 4  # 2 per pipeline
+    phases_percent: 0
+    barriers_complete: 0
+    barriers_total: 1
+    barriers_percent: 0
+    agents_executed: 0
+    agents_total: 4
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 6  # 4 phase + 2 cross-pollination
+    artifacts_percent: 0
+
+  quality:
+    agent_success_rate: 0
+    barrier_validation_pass_rate: 0
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+  # Example:
+  # - id: "BLK-001"
+  #   description: "Blocking issue description"
+  #   blocking: ["agent-a-001"]
+  #   severity: "HIGH"  # LOW | MEDIUM | HIGH
+  #   created_at: "2026-01-10T09:00:00Z"
+
+issues:
+  resolved: []
+  # Example:
+  # - id: "ISS-001"
+  #   description: "Issue description"
+  #   resolution: "How it was resolved"
+  #   resolved_at: "2026-01-10T10:00:00Z"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 1 agents"
+      agents: ["agent-a-001", "agent-b-001"]
+      execution_mode: "PARALLEL"
+
+  subsequent:
+    - action: "Complete Barrier 1 cross-pollination"
+      depends_on: "Phase 1 complete"
+    - action: "Execute Phase 2 agents"
+      depends_on: "Barrier 1 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow not started"
+  next_step: "Execute Phase 1 agents"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"           # Strategic context
+    - "ORCHESTRATION_WORKTRACKER.md"    # Tactical documentation
+    - "ORCHESTRATION.yaml"              # This file - machine-readable state
+
+  cross_session_portable: true
+  ephemeral_references: false

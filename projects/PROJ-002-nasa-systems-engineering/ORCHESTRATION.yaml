@@ -1,0 +1,465 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for multi-agent workflows
+# Document ID: PROJ-002-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-01-10T09:30:00Z
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "SAO-CROSS-POLLINATED-PIPELINE"
+  name: "Skills & Agents Optimization Cross-Pollinated Pipeline"
+  project_id: "PROJ-002-nasa-systems-engineering"
+  version: "1.0"
+  created_at: "2026-01-09T10:00:00Z"
+  updated_at: "2026-01-10T09:30:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL      # Phases execute in order
+    - CONCURRENT      # Pipelines run in parallel
+    - BARRIER_SYNC    # Cross-pollination at barriers
+    - HIERARCHICAL    # Orchestrator delegates to agents
+    - STATE_MACHINE   # Explicit states and transitions
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_concurrent_agents: 5      # Soft constraint
+    max_barrier_retries: 2        # Circuit breaker
+    checkpoint_frequency: "PHASE" # AGENT | PHASE | BARRIER
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  ps:
+    id: "ps-pipeline"
+    name: "Problem-Solving Pipeline"
+    description: "Research, analysis, design, and synthesis"
+    status: "PHASE_3_PENDING"  # PHASE_N_PENDING | PHASE_N_IN_PROGRESS | COMPLETE
+    current_phase: 3
+    total_phases: 4
+    progress_percent: 50
+
+    phases:
+      - id: 1
+        name: "Research"
+        status: "COMPLETE"
+        started_at: "2026-01-09T10:00:00Z"
+        completed_at: "2026-01-09T12:00:00Z"
+        agents:
+          - id: "ps-r-001"
+            name: "Skills Optimization Researcher"
+            status: "COMPLETE"
+            artifact: "ps-pipeline/phase-1-research/skills-optimization.md"
+          - id: "ps-r-002"
+            name: "Agent Design Researcher"
+            status: "COMPLETE"
+            artifact: "ps-pipeline/phase-1-research/agent-design.md"
+          - id: "ps-r-003"
+            name: "Industry Practices Researcher"
+            status: "COMPLETE"
+            artifact: "ps-pipeline/phase-1-research/industry-practices.md"
+        artifacts:
+          - "ps-pipeline/phase-1-research/skills-optimization.md"
+          - "ps-pipeline/phase-1-research/agent-design.md"
+          - "ps-pipeline/phase-1-research/industry-practices.md"
+
+      - id: 2
+        name: "Analysis"
+        status: "COMPLETE"
+        started_at: "2026-01-09T14:00:00Z"
+        completed_at: "2026-01-09T16:00:00Z"
+        agents:
+          - id: "ps-a-001"
+            name: "Gap Analyst"
+            status: "COMPLETE"
+            artifact: "ps-pipeline/phase-2-analysis/gap-analysis.md"
+          - id: "ps-a-002"
+            name: "Trade Study Analyst"
+            status: "COMPLETE"
+            artifact: "ps-pipeline/phase-2-analysis/trade-study.md"
+        artifacts:
+          - "ps-pipeline/phase-2-analysis/gap-analysis.md"
+          - "ps-pipeline/phase-2-analysis/trade-study.md"
+
+      - id: 3
+        name: "Design"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-d-001"
+            name: "Agent Design Specialist"
+            status: "PENDING"
+            artifact: "ps-pipeline/phase-3-design/agent-design-specs.md"
+            inputs:
+              - "ps-pipeline/phase-2-analysis/gap-analysis.md"
+              - "ps-pipeline/phase-2-analysis/trade-study.md"
+              - "cross-pollination/barrier-2/nse-to-ps/risk-findings.md"
+          - id: "ps-d-002"
+            name: "Schema Contract Designer"
+            status: "PENDING"
+            artifact: "ps-pipeline/phase-3-design/schema-contracts.md"
+            inputs:
+              - "ps-pipeline/phase-2-analysis/trade-study.md"
+          - id: "ps-d-003"
+            name: "Architecture Blueprint Designer"
+            status: "PENDING"
+            artifact: "ps-pipeline/phase-3-design/arch-blueprints.md"
+            inputs:
+              - "ps-pipeline/phase-2-analysis/gap-analysis.md"
+              - "ps-pipeline/phase-2-analysis/trade-study.md"
+        artifacts: []
+
+      - id: 4
+        name: "Synthesis"
+        status: "BLOCKED"
+        blocked_by: "barrier-3"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-s-001"
+            name: "Synthesis Specialist"
+            status: "BLOCKED"
+            artifact: "ps-pipeline/phase-4-synthesis/final-synthesis.md"
+          - id: "ps-s-002"
+            name: "Implementation Planner"
+            status: "BLOCKED"
+            artifact: "ps-pipeline/phase-4-synthesis/impl-roadmap.md"
+        artifacts: []
+
+  nse:
+    id: "nse-pipeline"
+    name: "NASA SE Formalization Pipeline"
+    description: "Scope, risk, formal specs, and review"
+    status: "PHASE_3_PENDING"
+    current_phase: 3
+    total_phases: 4
+    progress_percent: 50
+
+    phases:
+      - id: 1
+        name: "Scope"
+        status: "COMPLETE"
+        started_at: "2026-01-09T10:00:00Z"
+        completed_at: "2026-01-09T12:00:00Z"
+        agents:
+          - id: "nse-r-001"
+            name: "Skills Requirements Engineer"
+            status: "COMPLETE"
+            artifact: "nse-pipeline/phase-1-scope/skills-requirements.md"
+          - id: "nse-r-002"
+            name: "Agent Requirements Engineer"
+            status: "COMPLETE"
+            artifact: "nse-pipeline/phase-1-scope/agent-requirements.md"
+        artifacts:
+          - "nse-pipeline/phase-1-scope/skills-requirements.md"
+          - "nse-pipeline/phase-1-scope/agent-requirements.md"
+
+      - id: 2
+        name: "Risk"
+        status: "COMPLETE"
+        started_at: "2026-01-09T14:00:00Z"
+        completed_at: "2026-01-09T16:00:00Z"
+        agents:
+          - id: "nse-k-001"
+            name: "Implementation Risk Analyst"
+            status: "COMPLETE"
+            artifact: "nse-pipeline/phase-2-risk/implementation-risks.md"
+          - id: "nse-k-002"
+            name: "Technical Risk Analyst"
+            status: "COMPLETE"
+            artifact: "nse-pipeline/phase-2-risk/technical-risks.md"
+        artifacts:
+          - "nse-pipeline/phase-2-risk/implementation-risks.md"
+          - "nse-pipeline/phase-2-risk/technical-risks.md"
+
+      - id: 3
+        name: "Formal"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-f-001"
+            name: "Formal Requirements Engineer"
+            status: "PENDING"
+            artifact: "nse-pipeline/phase-3-formal/formal-requirements.md"
+            inputs:
+              - "nse-pipeline/phase-1-scope/skills-requirements.md"
+              - "nse-pipeline/phase-1-scope/agent-requirements.md"
+              - "cross-pollination/barrier-2/ps-to-nse/analysis-findings.md"
+          - id: "nse-f-002"
+            name: "Risk Mitigation Specialist"
+            status: "PENDING"
+            artifact: "nse-pipeline/phase-3-formal/formal-mitigations.md"
+            inputs:
+              - "nse-pipeline/phase-2-risk/implementation-risks.md"
+              - "nse-pipeline/phase-2-risk/technical-risks.md"
+          - id: "nse-f-003"
+            name: "Verification Matrix Engineer"
+            status: "PENDING"
+            artifact: "nse-pipeline/phase-3-formal/verification-matrices.md"
+            inputs:
+              - "nse-pipeline/phase-1-scope/skills-requirements.md"
+              - "nse-pipeline/phase-1-scope/agent-requirements.md"
+        artifacts: []
+
+      - id: 4
+        name: "Review"
+        status: "BLOCKED"
+        blocked_by: "barrier-3"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-v-001"
+            name: "Technical Reviewer"
+            status: "BLOCKED"
+            artifact: "nse-pipeline/phase-4-review/tech-review-findings.md"
+          - id: "nse-v-002"
+            name: "Decision Gate Officer"
+            status: "BLOCKED"
+            artifact: "nse-pipeline/phase-4-review/go-nogo-decision.md"
+          - id: "nse-v-003"
+            name: "QA Sign-off Authority"
+            status: "BLOCKED"
+            artifact: "nse-pipeline/phase-4-review/qa-signoff.md"
+        artifacts: []
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "Research ↔ Scope"
+    status: "COMPLETE"
+    completed_at: "2026-01-09T13:00:00Z"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-1/ps-to-nse/research-findings.md"
+        status: "COMPLETE"
+        key_content: "8 options, 8 practices, 10 gaps"
+      nse_to_ps:
+        path: "cross-pollination/barrier-1/nse-to-ps/requirements-gaps.md"
+        status: "COMPLETE"
+        key_content: "85 requirements, 10 research gaps"
+
+  - id: "barrier-2"
+    name: "Analysis ↔ Risk"
+    status: "COMPLETE"
+    completed_at: "2026-01-09T17:00:00Z"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-2/ps-to-nse/analysis-findings.md"
+        status: "COMPLETE"
+        key_content: "Gap roadmap, trade decisions"
+      nse_to_ps:
+        path: "cross-pollination/barrier-2/nse-to-ps/risk-findings.md"
+        status: "COMPLETE"
+        key_content: "Risk register, go/no-go matrix"
+
+  - id: "barrier-3"
+    name: "Design ↔ Formal"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "ps-pipeline.phase.3"
+      - "nse-pipeline.phase.3"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-3/ps-to-nse/design-specs.md"
+        status: "PENDING"
+        key_content: null
+      nse_to_ps:
+        path: "cross-pollination/barrier-3/nse-to-ps/formal-artifacts.md"
+        status: "PENDING"
+        key_content: null
+
+  - id: "barrier-4"
+    name: "Synthesis ↔ Review"
+    status: "BLOCKED"
+    blocked_by: "barrier-3"
+    completed_at: null
+    depends_on:
+      - "ps-pipeline.phase.4"
+      - "nse-pipeline.phase.4"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-4/ps-to-nse/synthesis-complete.md"
+        status: "BLOCKED"
+        key_content: null
+      nse_to_ps:
+        path: "cross-pollination/barrier-4/nse-to-ps/review-complete.md"
+        status: "BLOCKED"
+        key_content: null
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 3 Agents"
+      execution_mode: "PARALLEL"
+      status: "READY"
+      agents:
+        - "ps-d-001"
+        - "ps-d-002"
+        - "ps-d-003"
+        - "nse-f-001"
+        - "nse-f-002"
+        - "nse-f-003"
+
+    - id: 2
+      name: "Barrier 3 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      tasks:
+        - "create-ps-to-nse-design-specs"
+        - "create-nse-to-ps-formal-artifacts"
+
+    - id: 3
+      name: "Phase 4 Agents"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "ps-s-001"
+        - "ps-s-002"
+        - "nse-v-001"
+        - "nse-v-002"
+        - "nse-v-003"
+
+    - id: 4
+      name: "Barrier 4 + Final Integration"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      tasks:
+        - "create-barrier-4-artifacts"
+        - "create-final-integration-synthesis"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "CP-005"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-01-09T12:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 1 complete for both pipelines"
+      recovery_point: "barrier-1-start"
+
+    - id: "CP-002"
+      timestamp: "2026-01-09T13:00:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Barrier 1 cross-pollination complete"
+      recovery_point: "phase-2-start"
+
+    - id: "CP-003"
+      timestamp: "2026-01-09T16:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 2 complete for both pipelines"
+      recovery_point: "barrier-2-start"
+
+    - id: "CP-004"
+      timestamp: "2026-01-09T17:00:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Barrier 2 cross-pollination complete"
+      recovery_point: "phase-3-start"
+
+    - id: "CP-005"
+      timestamp: "2026-01-10T09:30:00Z"
+      trigger: "MANUAL"
+      description: "Orchestration artifacts created"
+      recovery_point: "phase-3-execution"
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 4
+    phases_total: 8
+    phases_percent: 50
+    barriers_complete: 2
+    barriers_total: 4
+    barriers_percent: 50
+    agents_executed: 9
+    agents_total: 20
+    agents_percent: 45
+    artifacts_created: 13  # 9 phase + 4 cross-pollination
+    artifacts_total: 26    # 22 phase + 4 cross-pollination remaining
+    artifacts_percent: 50
+
+  quality:
+    agent_success_rate: 100
+    barrier_validation_pass_rate: 100
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: "2026-01-09T10:00:00Z"
+    last_activity: "2026-01-10T09:30:00Z"
+    estimated_completion: null  # TBD after Phase 3 starts
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved:
+    - id: "ISS-001"
+      description: "Task tool connection errors during Phase 2"
+      resolution: "Direct artifact creation"
+      resolved_at: "2026-01-09T16:00:00Z"
+    - id: "ISS-002"
+      description: "Ephemeral paths in WORKTRACKER"
+      resolution: "Remediated to repository-relative"
+      resolved_at: "2026-01-10T08:30:00Z"
+    - id: "ISS-003"
+      description: "PLAN.md not updated"
+      resolution: "Complete rewrite to v4.0"
+      resolved_at: "2026-01-10T08:30:00Z"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 3 agents (Group 1)"
+      agents: ["ps-d-001", "ps-d-002", "ps-d-003", "nse-f-001", "nse-f-002", "nse-f-003"]
+      execution_mode: "PARALLEL"
+
+  subsequent:
+    - action: "Complete Barrier 3 cross-pollination"
+      depends_on: "Phase 3 complete"
+    - action: "Execute Phase 4 agents (Group 3)"
+      depends_on: "Barrier 3 complete"
+    - action: "Complete Barrier 4 + Final Integration"
+      depends_on: "Phase 4 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "CP-005"
+  current_state: "Phase 3 pending execution"
+  next_step: "Execute Phase 3 agents in parallel"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"      # Strategic context
+    - "ORCHESTRATION_WORKTRACKER.md"  # Tactical documentation
+    - "ORCHESTRATION.yaml"         # This file - machine-readable state
+
+  cross_session_portable: true
+  ephemeral_references: false

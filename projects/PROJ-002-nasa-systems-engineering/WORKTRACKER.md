@@ -8,10 +8,10 @@
 
 | Metric | Count |
 |--------|-------|
-| Total Items | 29 |
+| Total Items | 30 |
 | Open | 0 |
 | In Progress | 0 |
-| Completed | 29 |
+| Completed | 30 |
 | Blocked | 0 |
 
 ### Gap Fix Backlog
@@ -30,6 +30,32 @@
 ---
 
 ## Active Work Items
+
+### ORCH-SKILL-001: Create Orchestration Skill
+- **Entry ID:** e-035
+- **Status:** COMPLETE
+- **Started:** 2026-01-10
+- **Completed:** 2026-01-10
+- **Artifacts Created (10):**
+  - `skills/orchestration/SKILL.md` - Main entry point with activation keywords
+  - `skills/orchestration/PLAYBOOK.md` - Step-by-step workflow guide
+  - `skills/orchestration/templates/ORCHESTRATION_PLAN.template.md` - Strategic context template
+  - `skills/orchestration/templates/ORCHESTRATION_WORKTRACKER.template.md` - Tactical execution template
+  - `skills/orchestration/templates/ORCHESTRATION.template.yaml` - Machine-readable state template
+  - `skills/orchestration/agents/orch-planner.md` - Creates orchestration plans
+  - `skills/orchestration/agents/orch-tracker.md` - Updates execution state
+  - `skills/orchestration/agents/orch-synthesizer.md` - Creates final synthesis
+  - `skills/orchestration/docs/PATTERNS.md` - 5 orchestration patterns documented
+  - `skills/orchestration/docs/STATE_SCHEMA.md` - Complete YAML schema specification
+- **Research Artifacts:**
+  - `projects/PROJ-002.../research/orchestration-skill-research.md` (~200 lines)
+- **Summary:** Created dedicated orchestration skill following progressive disclosure pattern (per Anthropic guidelines). Skill provides multi-agent workflow orchestration with cross-pollinated pipeline support, state checkpointing, barrier synchronization, and recovery capabilities. Based on industry research from LangGraph, CrewAI, Microsoft AI Agent Patterns, and NASA NPR 7123.1D.
+- **Industry References:**
+  - [Anthropic Prompt Engineering](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) - Progressive disclosure
+  - [LangGraph State Management](https://langchain-ai.github.io/langgraph/concepts/persistence/) - Checkpointing
+  - [CrewAI Flows](https://docs.crewai.com/concepts/flows) - Workflow patterns
+  - [Microsoft AI Agent Patterns](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns) - Orchestration
+- **Exit Criteria:** ✅ PASSED - Skill activates on keywords; templates usable; P-003 compliant (agents are workers, not orchestrators)
 
 ### ORCH-ISS-001: Risk Traceability Gap (MEDIUM) - RESOLVED
 - **Entry ID:** e-020

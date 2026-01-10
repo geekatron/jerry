@@ -112,6 +112,19 @@ projects/PROJ-{nnn}-{slug}/
 | `worktracker` | Task/issue management | `skills/worktracker/SKILL.md` |
 | `architecture` | System design guidance | `skills/architecture/SKILL.md` |
 | `problem-solving` | Domain use case invocation | `skills/problem-solving/SKILL.md` |
+| `orchestration` | Multi-agent workflow coordination | `skills/orchestration/SKILL.md` |
+
+### Orchestration Skill
+
+For multi-agent workflows requiring cross-pollinated pipelines, sync barriers, or state checkpointing, use the **orchestration** skill. The skill provides:
+
+- **ORCHESTRATION_PLAN.md** - Strategic context with ASCII workflow diagrams
+- **ORCHESTRATION_WORKTRACKER.md** - Tactical execution tracking
+- **ORCHESTRATION.yaml** - Machine-readable state (SSOT)
+
+Activate with: "orchestration", "multi-agent workflow", "cross-pollinated pipeline", "sync barrier"
+
+See `skills/orchestration/PLAYBOOK.md` for step-by-step workflow guidance.
 
 ---
 
