@@ -3,7 +3,7 @@
 > **Document ID:** proj-002-e-006-gap-analysis-37-requirements
 > **Date:** 2026-01-09
 > **Analyst:** ps-analyst (NASA SE Specialist)
-> **Plan Analyzed:** mossy-swimming-tarjan.md (v2.0 Evidence-Based)
+> **Plan Analyzed:** PLAN.md v2.0 (Evidence-Based)
 > **PS Entry:** e-006
 
 ---
