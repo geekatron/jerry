@@ -205,18 +205,18 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 ## Current Focus
 
 > **Active Initiative**: [PHASE-IMPL-DOMAIN](work/PHASE-IMPL-DOMAIN.md) - Domain Layer Implementation
-> **Active Phase**: IMPL-009 - Domain Services
-> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅, IMPL-004 ✅, IMPL-ES-001 ✅, IMPL-ES-003 ✅, IMPL-REPO-001 ✅, IMPL-005 ✅, IMPL-006 ✅, IMPL-007 ✅, IMPL-008 ✅)
-> **Previous**: IMPL-008 WorkItemAggregate ES-enabled (design evolution - 61 tests via IMPL-005)
+> **Active Phase**: IMPL-010 - Architecture Tests
+> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅, IMPL-004 ✅, IMPL-ES-001 ✅, IMPL-ES-003 ✅, IMPL-REPO-001 ✅, IMPL-005 ✅, IMPL-006 ✅, IMPL-007 ✅, IMPL-008 ✅, IMPL-009 ✅)
+> **Previous**: IMPL-009 Domain Services complete (45 tests: IdGenerator + QualityValidator)
 
 ### Active Initiative Details
 
 | Attribute | Value |
 |-----------|-------|
 | Phase ID | PHASE-IMPL-DOMAIN |
-| Current Task | IMPL-009 (Domain Services) |
+| Current Task | IMPL-010 (Architecture Tests) |
 | Total Tasks | 16 (10 original + 3 ES + 3 REPO infrastructure) |
-| Total Tests | 846 passing (640 work_tracking + 142 shared_kernel + 64 infrastructure) |
+| Total Tests | 891 passing (685 work_tracking + 142 shared_kernel + 64 infrastructure) |
 | Coverage Gate | 90%+ |
 | Coverage Audit | ✅ PASS (2026-01-10) |
 
@@ -256,10 +256,11 @@ IMPL-008: WorkItemAggregate (ES)      ✅ COMPLETE (via IMPL-005 design evolutio
     │   [HP:✅ NEG:✅ EDGE:✅]              (61 tests in WorkItem aggregate)
     │
     ▼
-IMPL-009: Domain Services             ⏳ ◀── NEXT
+IMPL-009: Domain Services             ✅ COMPLETE (IdGenerator + QualityValidator)
+    │   [HP:✅ NEG:✅ EDGE:✅]              (45 tests)
     │
     ▼
-IMPL-010: Architecture Tests          ⏳
+IMPL-010: Architecture Tests          ⏳ ◀── NEXT
     │
     ▼
 ┌─────────────────────────────────────┐
@@ -344,21 +345,21 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | IMPL-006 | 108 | ✅ | ✅ | ✅ | VERIFIED |
 | IMPL-007 | 30 | ✅ | ✅ | ✅ | VERIFIED |
 | IMPL-008 | 61* | ✅ | ✅ | ✅ | VERIFIED (via IMPL-005) |
-| **Total** | **640** | - | - | - | **ALL PASS** |
+| IMPL-009 | 45 | ✅ | ✅ | ✅ | VERIFIED |
+| **Total** | **685** | - | - | - | **ALL PASS** |
 
 *IMPL-008 tests are counted under IMPL-005 WorkItem aggregate (design evolution)
 
 **Shared Kernel**: 142 tests (Snowflake, DomainEvent, EntityBase, etc.)
 **Infrastructure**: 64 tests (FileStore, Serializer)
-**Grand Total**: 846 tests passing
+**Grand Total**: 891 tests passing
 
 ### Next Actions
 
-1. **IMPL-009**: Implement Domain Services (IdGenerator, QualityValidator) ◀── NEXT
+1. **IMPL-010**: Implement Architecture Tests ◀── NEXT
 2. **IMPL-REPO-002**: Implement IFileStore + ISerializer<T> (Infrastructure)
 3. **IMPL-REPO-003**: Implement JsonSerializer<T> + FileRepository<T>
-4. **IMPL-010**: Architecture Tests
-5. **BDD Cycle**: RED → GREEN → REFACTOR for each task
+4. **BDD Cycle**: RED → GREEN → REFACTOR for each task
 
 ### Research Artifacts
 
@@ -593,3 +594,4 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | IMPL-007 QualityGate Events complete (30 tests: 5 event types for gate execution tracking) |
 | 2026-01-10 | Claude | Updated test counts: 846 total (640 work_tracking + 142 shared_kernel + 64 infrastructure) |
 | 2026-01-10 | Claude | IMPL-008 complete via design evolution: WorkItem extends AggregateRoot (61 tests in IMPL-005) |
+| 2026-01-10 | Claude | IMPL-009 Domain Services complete (45 tests: IdGenerator + QualityValidator) |
