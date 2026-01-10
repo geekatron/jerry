@@ -8,10 +8,10 @@
 
 | Metric | Count |
 |--------|-------|
-| Total Items | 31 |
+| Total Items | 32 |
 | Open | 0 |
 | In Progress | 0 |
-| Completed | 31 |
+| Completed | 32 |
 | Blocked | 0 |
 
 ### Gap Fix Backlog
@@ -30,6 +30,35 @@
 ---
 
 ## Active Work Items
+
+### ORCH-SKILL-003: Skill Access Architecture Analysis (5W1H)
+- **Entry ID:** e-037
+- **Status:** COMPLETE
+- **Started:** 2026-01-10
+- **Completed:** 2026-01-10
+- **Method:** 5W1H Framework + Industry Research
+- **Research Questions:**
+  1. WHO should interact with the orchestration skill?
+  2. WHAT is the orchestration skill's role?
+  3. WHEN does state synchronization occur?
+  4. WHERE does state live?
+  5. WHY don't sub-agents need skill access?
+  6. HOW should the orchestration workflow function?
+- **Artifact:** `research/skill-access-architecture-analysis.md`
+- **Key Finding:** Sub-agents do NOT need access to the orchestration skill. The main Claude thread is the sole orchestrator; sub-agents are workers that write artifacts to designated paths. The filesystem (ORCHESTRATION.yaml) is the shared state layer.
+- **Industry Sources (6):**
+  - [Claude Code Subagents](https://code.claude.com/docs/en/sub-agents)
+  - [LangGraph Hierarchical Teams](https://langchain-ai.github.io/langgraph/tutorials/multi_agent/hierarchical_agent_teams/)
+  - [CrewAI Flows](https://docs.crewai.com/concepts/flows)
+  - [Kore.ai Multi-Agent Orchestration](https://www.kore.ai/blog/what-is-multi-agent-orchestration)
+  - [n8n AI Agent Frameworks](https://blog.n8n.io/ai-agent-orchestration-frameworks/)
+  - [Microsoft MCP Patterns](https://techcommunity.microsoft.com/blog/azuredevcommunityblog/orchestrating-multi-agent-intelligence-mcp-driven-patterns-in-agent-framework/4462150)
+- **Recommendations (4):**
+  1. R1: Main thread as sole orchestrator (CONFIRMED)
+  2. R2: Filesystem as shared state layer
+  3. R3: No modification to existing agents needed
+  4. R4: Orchestration skill is complete as-is
+- **Exit Criteria:** ✅ PASSED - 5W1H analysis complete; 6 industry sources cited; evidence-based conclusion
 
 ### ORCH-SKILL-002: Validate Orchestration Skill E2E
 - **Entry ID:** e-036
