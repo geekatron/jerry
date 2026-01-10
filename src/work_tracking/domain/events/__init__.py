@@ -6,22 +6,31 @@ All events are immutable and named in past tense.
 
 Components:
     - WorkItem Events: Events for work item lifecycle
+    - QualityGate Events: Events for gate execution tracking
 
 References:
+    - ADR-008: Quality Gate Layer Configuration
     - ADR-009: Event Storage Mechanism
     - impl-es-e-006-workitem-schema: WorkItem event catalog
 """
 from __future__ import annotations
 
+from .quality_gate_events import (
+    GateCheckCompleted,
+    GateExecutionCompleted,
+    GateExecutionStarted,
+    RiskAssessed,
+    ThresholdViolation,
+)
 from .work_item_events import (
-    WorkItemCreated,
-    StatusChanged,
-    PriorityChanged,
-    QualityMetricsUpdated,
-    WorkItemCompleted,
+    AssigneeChanged,
     DependencyAdded,
     DependencyRemoved,
-    AssigneeChanged,
+    PriorityChanged,
+    QualityMetricsUpdated,
+    StatusChanged,
+    WorkItemCompleted,
+    WorkItemCreated,
 )
 
 __all__ = [
@@ -34,4 +43,10 @@ __all__ = [
     "DependencyAdded",
     "DependencyRemoved",
     "AssigneeChanged",
+    # QualityGate Events
+    "GateExecutionStarted",
+    "GateCheckCompleted",
+    "GateExecutionCompleted",
+    "RiskAssessed",
+    "ThresholdViolation",
 ]
