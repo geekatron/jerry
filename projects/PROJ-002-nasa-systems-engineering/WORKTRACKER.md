@@ -587,9 +587,438 @@ projects/PROJ-002-nasa-systems-engineering/
 
 ---
 
+## Skills & Agents Optimization Initiative
+
+> **Source:** Cross-pollinated ps-* ↔ nse-* pipeline analysis (2026-01-09)
+> **Synthesis:** `synthesis/skills-agents-optimization-synthesis.md`
+> **Total Effort:** ~118 engineering hours
+> **Technical Debt:** ~104 hours
+
+### Initiative Summary
+
+| Metric | Count |
+|--------|-------|
+| Optimization Options | 8 (all GO) |
+| Gaps Identified | 18 |
+| Risks Assessed | 30 |
+| New Agents Proposed | 5 |
+
+### SAO-INIT-001: Foundation Work Items
+
+#### WI-SAO-001: Define session_context JSON Schema
+- **Entry ID:** sao-001
+- **Status:** OPEN
+- **Priority:** CRITICAL (P0)
+- **Estimated Effort:** 4h
+- **Risk Mitigation:** M-003 (R-TECH-001)
+- **Source Gap:** GAP-AGT-003
+- **Description:** Define canonical JSON Schema for session_context with required fields for reliable agent chaining.
+- **Acceptance Criteria:**
+  1. JSON Schema defined with required: session_id, source_agent, target_agent, payload
+  2. Payload includes: key_findings, open_questions, blockers, confidence
+  3. Schema version field for evolution support
+  4. TypeScript/Python types generated from schema
+- **Tasks:**
+  - [ ] **T-001.1:** Draft JSON Schema specification
+  - [ ] **T-001.2:** Add schema to `docs/schemas/session_context.json`
+  - [ ] **T-001.3:** Create validation utility documentation
+  - [ ] **T-001.4:** Update agent templates to reference schema
+
+#### WI-SAO-002: Add Schema Validation to All Agents
+- **Entry ID:** sao-002
+- **Status:** OPEN
+- **Priority:** CRITICAL (P0)
+- **Estimated Effort:** 8h
+- **Depends On:** WI-SAO-001
+- **Description:** Implement schema validation at all agent boundaries to prevent silent handoff failures.
+- **Acceptance Criteria:**
+  1. All 16 agents (8 ps-*, 8 nse-*) validate input/output against schema
+  2. Validation errors logged with context
+  3. Graceful degradation for missing optional fields
+- **Tasks:**
+  - [ ] **T-002.1:** Add input validation to ps-* agents (8)
+  - [ ] **T-002.2:** Add input validation to nse-* agents (8)
+  - [ ] **T-002.3:** Add output validation patterns to ORCHESTRATION.md
+  - [ ] **T-002.4:** Create test cases for validation
+
+#### WI-SAO-003: Add Model Field to Agent Frontmatter
+- **Entry ID:** sao-003
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 2h
+- **Source:** OPT-001
+- **Description:** Add explicit `model: opus/sonnet/haiku/auto` field to all agent definitions for consistent behavior.
+- **Acceptance Criteria:**
+  1. All agent templates include `model` field
+  2. "auto" value allows dynamic selection
+  3. Documentation updated in agent template guides
+- **Tasks:**
+  - [ ] **T-003.1:** Update PS_AGENT_TEMPLATE.md with model field
+  - [ ] **T-003.2:** Update NSE_AGENT_TEMPLATE.md with model field
+  - [ ] **T-003.3:** Add model field to all 16 agent definitions
+
+---
+
+### SAO-INIT-002: New Agent Development
+
+#### WI-SAO-004: Create nse-explorer Agent (Divergent)
+- **Entry ID:** sao-004
+- **Status:** OPEN
+- **Priority:** CRITICAL (P0)
+- **Estimated Effort:** 8h
+- **Source Gap:** GAP-006
+- **Belbin Role:** Plant + Resource Investigator
+- **Description:** Create divergent-mode agent for trade study exploration, concept investigation, and creative problem-solving. Currently all nse-* agents are convergent-only.
+- **Acceptance Criteria:**
+  1. Agent definition follows NSE_AGENT_TEMPLATE v1.0
+  2. Cognitive mode: divergent
+  3. Process refs: NPR 7123.1D Process 17 (Decision Analysis)
+  4. Output directory: `exploration/`
+  5. Templates: Alternative Analysis, Concept Exploration, Trade Space
+- **Tasks:**
+  - [ ] **T-004.1:** Draft nse-explorer.md agent definition
+  - [ ] **T-004.2:** Create exploration templates (3)
+  - [ ] **T-004.3:** Add activation keywords for exploration
+  - [ ] **T-004.4:** Create BDD tests for nse-explorer
+  - [ ] **T-004.5:** Update ORCHESTRATION.md with divergent patterns
+
+#### WI-SAO-005: Create nse-orchestrator Agent
+- **Entry ID:** sao-005
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 8h
+- **Source Gap:** GAP-COORD
+- **Belbin Role:** Coordinator
+- **Risk Mitigation:** M-005 (async delegation)
+- **Description:** Create pipeline orchestrator for nse-* agent coordination with async delegation support.
+- **Acceptance Criteria:**
+  1. Agent definition follows NSE_AGENT_TEMPLATE v1.0
+  2. Cognitive mode: mixed
+  3. Process refs: NPR 7123.1D Process 10 (Technical Planning)
+  4. Output: Delegation manifests
+  5. P-003 compliance enforced (single nesting)
+- **Tasks:**
+  - [ ] **T-005.1:** Draft nse-orchestrator.md agent definition
+  - [ ] **T-005.2:** Define delegation protocol schema
+  - [ ] **T-005.3:** Add async delegation timeout handling
+  - [ ] **T-005.4:** Create BDD tests for orchestration patterns
+  - [ ] **T-005.5:** Update ORCHESTRATION.md with hierarchical patterns
+
+#### WI-SAO-006: Create ps-orchestrator Agent
+- **Entry ID:** sao-006
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 8h
+- **Source Gap:** GAP-COORD
+- **Belbin Role:** Coordinator
+- **Description:** Create pipeline orchestrator for ps-* agent coordination.
+- **Acceptance Criteria:**
+  1. Agent definition follows PS_AGENT_TEMPLATE v2.0
+  2. Cognitive mode: mixed
+  3. Delegation criteria documented
+  4. P-003 compliance enforced
+- **Tasks:**
+  - [ ] **T-006.1:** Draft ps-orchestrator.md agent definition
+  - [ ] **T-006.2:** Define problem-solving delegation criteria
+  - [ ] **T-006.3:** Add workflow templates (3)
+  - [ ] **T-006.4:** Create BDD tests for ps-* orchestration
+
+#### WI-SAO-007: Create ps-critic Agent
+- **Entry ID:** sao-007
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 6h
+- **Source:** OPT-002
+- **Belbin Role:** Monitor Evaluator
+- **Risk Mitigation:** M-002 (circuit breaker)
+- **Description:** Create critic agent for quality evaluation and improvement feedback with circuit breaker.
+- **Acceptance Criteria:**
+  1. Agent definition follows PS_AGENT_TEMPLATE v2.0
+  2. Cognitive mode: convergent
+  3. Pairing with: ps-architect, ps-researcher
+  4. Output: Critique reports with improvement recommendations
+  5. max_iterations: 3, improvement_threshold: 0.10
+- **Tasks:**
+  - [ ] **T-007.1:** Draft ps-critic.md agent definition
+  - [ ] **T-007.2:** Define critique evaluation criteria
+  - [ ] **T-007.3:** Implement circuit breaker logic in template
+  - [ ] **T-007.4:** Create BDD tests for generator-critic loops
+
+#### WI-SAO-008: Create nse-qa Agent
+- **Entry ID:** sao-008
+- **Status:** OPEN
+- **Priority:** MEDIUM (P2)
+- **Estimated Effort:** 6h
+- **Belbin Role:** Monitor Evaluator
+- **Description:** Create NASA SE quality assurance agent for artifact validation.
+- **Acceptance Criteria:**
+  1. Agent definition follows NSE_AGENT_TEMPLATE v1.0
+  2. Validates NPR 7123.1D compliance
+  3. Checks traceability (P-040)
+  4. Output: QA reports
+- **Tasks:**
+  - [ ] **T-008.1:** Draft nse-qa.md agent definition
+  - [ ] **T-008.2:** Define NASA SE quality checklists
+  - [ ] **T-008.3:** Create NPR compliance validation templates
+  - [ ] **T-008.4:** Create BDD tests for QA workflows
+
+---
+
+### SAO-INIT-003: Template Unification
+
+#### WI-SAO-009: Create Unified Agent Template (Superset Schema)
+- **Entry ID:** sao-009
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 4h
+- **Source:** Trade Study TS-1 (Score: 3.8/5)
+- **Description:** Merge PS_AGENT_TEMPLATE v2.0 and NSE_AGENT_TEMPLATE v1.0 into unified superset.
+- **Acceptance Criteria:**
+  1. UNIFIED_AGENT_TEMPLATE v1.0 created
+  2. All fields optional initially (backward compatible)
+  3. nasa_se block optional for nse-* agents
+  4. Migration guide documented
+- **Tasks:**
+  - [ ] **T-009.1:** Merge template schemas
+  - [ ] **T-009.2:** Create UNIFIED_AGENT_TEMPLATE.md
+  - [ ] **T-009.3:** Document migration guide
+  - [ ] **T-009.4:** Create template validation checklist
+
+#### WI-SAO-010: Migrate ps-* Agents to Unified Template
+- **Entry ID:** sao-010
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 8h
+- **Depends On:** WI-SAO-009
+- **Description:** Migrate all 8 ps-* agents to unified template format.
+- **Acceptance Criteria:**
+  1. All 8 ps-* agents use UNIFIED_AGENT_TEMPLATE
+  2. Feature flags for gradual rollout
+  3. Backward compatibility maintained
+  4. All existing tests pass
+- **Tasks:**
+  - [ ] **T-010.1:** Migrate ps-researcher.md
+  - [ ] **T-010.2:** Migrate ps-analyst.md
+  - [ ] **T-010.3:** Migrate ps-architect.md
+  - [ ] **T-010.4:** Migrate ps-investigator.md
+  - [ ] **T-010.5:** Migrate ps-reporter.md
+  - [ ] **T-010.6:** Migrate ps-reviewer.md
+  - [ ] **T-010.7:** Migrate ps-synthesizer.md
+  - [ ] **T-010.8:** Migrate ps-validator.md
+
+#### WI-SAO-011: Migrate nse-* Agents to Unified Template
+- **Entry ID:** sao-011
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 8h
+- **Depends On:** WI-SAO-009
+- **Description:** Migrate all 8 nse-* agents to unified template format.
+- **Acceptance Criteria:**
+  1. All 8 nse-* agents use UNIFIED_AGENT_TEMPLATE
+  2. nasa_se block populated for all
+  3. All existing tests pass
+- **Tasks:**
+  - [ ] **T-011.1:** Migrate nse-requirements.md
+  - [ ] **T-011.2:** Migrate nse-verification.md
+  - [ ] **T-011.3:** Migrate nse-risk.md
+  - [ ] **T-011.4:** Migrate nse-reviewer.md
+  - [ ] **T-011.5:** Migrate nse-integration.md
+  - [ ] **T-011.6:** Migrate nse-configuration.md
+  - [ ] **T-011.7:** Migrate nse-architecture.md
+  - [ ] **T-011.8:** Migrate nse-reporter.md
+
+---
+
+### SAO-INIT-004: Infrastructure Development
+
+#### WI-SAO-012: Implement Parallel Execution Support
+- **Entry ID:** sao-012
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 16h
+- **Source:** OPT-004, Trade Study TS-4
+- **Risk Mitigation:** M-001 (context isolation), M-006 (file namespacing)
+- **Description:** Implement controlled parallel execution with max 5 concurrent agents and full context isolation.
+- **Acceptance Criteria:**
+  1. max_concurrent_agents: 5
+  2. isolation_mode: full (copy-on-spawn)
+  3. No shared mutable state
+  4. File namespacing: {workflow_id}/{agent_id}/
+  5. fan_in_timeout_ms: 300000
+- **Tasks:**
+  - [ ] **T-012.1:** Design parallel execution architecture
+  - [ ] **T-012.2:** Implement context isolation (copy-on-spawn)
+  - [ ] **T-012.3:** Implement file namespacing strategy
+  - [ ] **T-012.4:** Add timeout and deadlock detection
+  - [ ] **T-012.5:** Create parallel execution ORCHESTRATION patterns
+  - [ ] **T-012.6:** Create BDD tests for parallel workflows
+
+#### WI-SAO-013: Implement State Checkpointing
+- **Entry ID:** sao-013
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 12h
+- **Source:** OPT-003
+- **Risk Mitigation:** M-004 (write-ahead logging)
+- **Description:** Implement LangGraph-style state checkpointing for workflow recovery and debugging.
+- **Acceptance Criteria:**
+  1. Checkpoint on agent completion
+  2. Atomic writes (write-ahead logging)
+  3. max_checkpoints: 100, max_age_hours: 24
+  4. msgpack serialization for performance
+  5. Checkpoint restore capability
+- **Tasks:**
+  - [ ] **T-013.1:** Design checkpoint schema
+  - [ ] **T-013.2:** Implement checkpoint writer with WAL
+  - [ ] **T-013.3:** Implement checkpoint retention cleanup
+  - [ ] **T-013.4:** Create checkpoint restore protocol
+  - [ ] **T-013.5:** Add checkpointing to ORCHESTRATION.md
+
+#### WI-SAO-014: Implement Generator-Critic Loops
+- **Entry ID:** sao-014
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 8h
+- **Source:** OPT-002, Trade Study TS-5
+- **Risk Mitigation:** M-002 (circuit breaker)
+- **Depends On:** WI-SAO-007 (ps-critic)
+- **Description:** Implement paired agent generator-critic iteration with circuit breaker.
+- **Acceptance Criteria:**
+  1. max_iterations: 3
+  2. improvement_threshold: 0.10
+  3. circuit_breaker: consecutive_failures: 2
+  4. Logging of all iterations
+- **Tasks:**
+  - [ ] **T-014.1:** Design generator-critic protocol
+  - [ ] **T-014.2:** Implement iteration controller
+  - [ ] **T-014.3:** Implement improvement measurement
+  - [ ] **T-014.4:** Add circuit breaker logic
+  - [ ] **T-014.5:** Create BDD tests for quality loops
+
+#### WI-SAO-015: Add Guardrail Validation Hooks
+- **Entry ID:** sao-015
+- **Status:** OPEN
+- **Priority:** MEDIUM (P2)
+- **Estimated Effort:** 8h
+- **Source:** OPT-005
+- **Description:** Add pre/post validation hooks for constitutional principle enforcement.
+- **Acceptance Criteria:**
+  1. Async validation (non-blocking)
+  2. timeout_ms: 100
+  3. mode: warn (don't block, just log)
+  4. Pattern library for common checks
+- **Tasks:**
+  - [ ] **T-015.1:** Design guardrail hook interface
+  - [ ] **T-015.2:** Implement async validation runner
+  - [ ] **T-015.3:** Create pattern library (PII, secrets)
+  - [ ] **T-015.4:** Add hooks to agent templates
+  - [ ] **T-015.5:** Create BDD tests for guardrails
+
+---
+
+### SAO-INIT-005: Technical Debt Reduction
+
+#### WI-SAO-016: Define Skill Interface Contracts
+- **Entry ID:** sao-016
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 6h
+- **Source Gap:** GAP-SKL-002
+- **Description:** Define OpenAPI-style interface contracts for skill handoffs.
+- **Acceptance Criteria:**
+  1. Contract per skill (ps-*, nse-*)
+  2. Input/output type definitions
+  3. Contract testing framework documented
+- **Tasks:**
+  - [ ] **T-016.1:** Define ps-* skill interface contract
+  - [ ] **T-016.2:** Define nse-* skill interface contract
+  - [ ] **T-016.3:** Define cross-skill handoff contract
+  - [ ] **T-016.4:** Document contract testing approach
+
+#### WI-SAO-017: Centralize Tool Registry
+- **Entry ID:** sao-017
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 8h
+- **Source Gap:** GAP-AGT-009
+- **Description:** Create central TOOL_REGISTRY.yaml for consistent tool definitions.
+- **Acceptance Criteria:**
+  1. Single source of truth for tool definitions
+  2. Tool conflict detection
+  3. Usage tracking per agent
+- **Tasks:**
+  - [ ] **T-017.1:** Create TOOL_REGISTRY.yaml schema
+  - [ ] **T-017.2:** Extract tools from all agent definitions
+  - [ ] **T-017.3:** Implement conflict detection
+  - [ ] **T-017.4:** Update agent templates to reference registry
+
+#### WI-SAO-018: Add Schema Versioning
+- **Entry ID:** sao-018
+- **Status:** OPEN
+- **Priority:** MEDIUM (P2)
+- **Estimated Effort:** 4h
+- **Description:** Add version fields to all schemas for evolution support.
+- **Acceptance Criteria:**
+  1. All schemas include version field
+  2. Schema migration guide documented
+  3. Backward compatibility rules defined
+- **Tasks:**
+  - [ ] **T-018.1:** Add version to session_context schema
+  - [ ] **T-018.2:** Add version to agent template schema
+  - [ ] **T-018.3:** Document schema evolution rules
+
+---
+
+### SAO Progress Summary
+
+| Initiative | Work Items | Tasks | Status |
+|------------|------------|-------|--------|
+| SAO-INIT-001: Foundation | 3 | 12 | OPEN |
+| SAO-INIT-002: New Agents | 5 | 22 | OPEN |
+| SAO-INIT-003: Templates | 3 | 20 | OPEN |
+| SAO-INIT-004: Infrastructure | 4 | 22 | OPEN |
+| SAO-INIT-005: Debt Reduction | 3 | 10 | OPEN |
+| **TOTAL** | **18** | **86** | **OPEN** |
+
+### Implementation Priority (Risk-Informed)
+
+```
+Phase 1: Foundation (Week 1-2)
+  └── WI-SAO-001: session_context schema [CRITICAL]
+  └── WI-SAO-002: Schema validation [CRITICAL]
+  └── WI-SAO-003: Model field [HIGH]
+
+Phase 2: New Agents (Week 3-4)
+  └── WI-SAO-004: nse-explorer [CRITICAL]
+  └── WI-SAO-005: nse-orchestrator [HIGH]
+  └── WI-SAO-006: ps-orchestrator [HIGH]
+  └── WI-SAO-007: ps-critic [HIGH]
+
+Phase 3: Templates (Week 5)
+  └── WI-SAO-009: Unified template [HIGH]
+  └── WI-SAO-010: ps-* migration [HIGH]
+  └── WI-SAO-011: nse-* migration [HIGH]
+
+Phase 4: Infrastructure (Week 6-8)
+  └── WI-SAO-012: Parallel execution [HIGH]
+  └── WI-SAO-013: Checkpointing [HIGH]
+  └── WI-SAO-014: Generator-Critic [HIGH]
+
+Phase 5: Polish (Week 9+)
+  └── WI-SAO-008: nse-qa [MEDIUM]
+  └── WI-SAO-015: Guardrails [MEDIUM]
+  └── WI-SAO-016: Interface contracts [HIGH]
+  └── WI-SAO-017: Tool registry [HIGH]
+  └── WI-SAO-018: Schema versioning [MEDIUM]
+```
+
+---
+
 ## Notes
 
 Project implementation started 2026-01-09. Following phased approach with go/no-go gates.
+
+Skills & Agents Optimization analysis completed 2026-01-09 via cross-pollinated ps-* ↔ nse-* pipeline.
 
 ---
 
