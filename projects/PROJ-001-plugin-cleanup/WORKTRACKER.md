@@ -206,7 +206,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 > **Active Initiative**: [PHASE-IMPL-DOMAIN](work/PHASE-IMPL-DOMAIN.md) - Domain Layer Implementation
 > **Active Phase**: IMPL-REPO-001 - IRepository<T> Port (Domain)
-> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅, IMPL-004 ✅, IMPL-REPO-002 ✅, IMPL-ES-001 ✅, IMPL-ES-003 ✅)
+> **Status**: 🔄 IN PROGRESS (IMPL-001 ✅, IMPL-002 ✅, IMPL-003 ✅, IMPL-004 ✅, IMPL-ES-001 ✅, IMPL-ES-003 ✅)
 > **Previous**: IMPL-ES-003 AggregateRoot Base Class Complete (44 tests)
 
 ### Active Initiative Details
@@ -216,7 +216,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | Phase ID | PHASE-IMPL-DOMAIN |
 | Current Task | IMPL-REPO-001 (IRepository<T> Port) |
 | Total Tasks | 16 (10 original + 3 ES + 3 REPO infrastructure) |
-| Total Tests | 460 passing (402 from 7 impl tasks + 58 pre-existing) |
+| Total Tests | 396 passing (338 from 6 impl tasks + 58 pre-existing) |
 | Coverage Gate | 90%+ |
 
 ### Implementation Overview
@@ -272,7 +272,7 @@ IMPL-010: Architecture Tests          ⏳
 | IMPL-ES-002 | ISnapshotStore Port + InMemorySnapshotStore | P1 | IMPL-ES-001 | PAT-001 | ⏳ |
 | IMPL-ES-003 | AggregateRoot Base Class | P0 (MVP) | IMPL-ES-001 | PAT-002 | ✅ (44 tests) |
 | IMPL-REPO-001 | IRepository<T> Port (Domain) | P0 (MVP) | IMPL-ES-003 | PAT-009 | ⏳ |
-| IMPL-REPO-002 | IFileStore + ISerializer<T> (Internal) | P0 (MVP) | None | PAT-010 | ✅ (64 tests) |
+| IMPL-REPO-002 | IFileStore + ISerializer<T> (Internal) | P0 (MVP) | None | PAT-010 | ⏳ |
 | IMPL-REPO-003 | JsonSerializer<T> + FileRepository<T> | P0 (MVP) | IMPL-REPO-001,002 | PAT-010 | ⏳ |
 
 ### Repository Layer Architecture
@@ -555,3 +555,5 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | IMPL-ES-001 IEventStore + InMemoryEventStore complete (65 tests) |
 | 2026-01-10 | Claude | Started IMPL-ES-003 AggregateRoot Base Class |
 | 2026-01-10 | Claude | IMPL-ES-003 AggregateRoot Base Class complete (44 tests) |
+| 2026-01-10 | Claude | CORRECTION: IMPL-REPO-002 was incorrectly marked complete (reverted to ⏳) |
+| 2026-01-10 | Claude | Verified test counts: 6 impl tasks = 338 tests, 58 pre-existing = 396 total |
