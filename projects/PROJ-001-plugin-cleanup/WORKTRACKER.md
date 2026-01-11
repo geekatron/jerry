@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-11T00:30:00Z
+**Last Updated**: 2026-01-11T12:00:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -198,27 +198,58 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 100% | - | - |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 80% | - | - |
-| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | - | - | - |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 83% (5/6) | - | - |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 4 items | - | - |
+| **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 
 ---
 
 ## Current Focus
 
-> **Active Initiative**: DOC-001 WORKTRACKER Decomposition Archaeology
-> **Active Phase**: Documentation & Knowledge Capture
-> **Status**: 🔄 IN PROGRESS
-> **Summary**: Documenting how WORKTRACKER decomposition process works for reproducibility
+> **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills
+> **Active Phase**: Research COMPLETE → Implementation PENDING
+> **Status**: ✅ RESEARCH COMPLETE
+> **Summary**: Research phase finished with 11 artifacts; Option C (Composed Architecture) selected
 
-### Active Initiative Details
+### Active Initiative
+
+| Attribute | Value |
+|-----------|-------|
+| Initiative ID | INIT-WT-SKILLS |
+| Status | ✅ Research Complete, 🔄 Implementation Pending |
+| Research Tasks | 11/11 complete |
+| Implementation Tasks | 0/13 complete |
+| Objective | Transform worktracker skills with agents, templates, orchestration |
+| Plan File | [INITIATIVE-WORKTRACKER-SKILLS.md](work/INITIATIVE-WORKTRACKER-SKILLS.md) |
+| ADR | [ADR-INIT-WT-SKILLS-composed-architecture.md](decisions/ADR-INIT-WT-SKILLS-composed-architecture.md) |
+| Synthesis | [init-wt-skills-e-007-unified-synthesis.md](synthesis/init-wt-skills-e-007-unified-synthesis.md) |
+
+### Research Phase Summary (2026-01-11)
+
+| Phase | Artifacts | Status |
+|-------|-----------|--------|
+| Research (4 docs) | e-001 through e-004 | ✅ COMPLETE |
+| Analysis (2 docs) | e-005, e-006 | ✅ COMPLETE |
+| Synthesis (1 doc) | e-007 | ✅ COMPLETE |
+| Decision (1 ADR) | e-008 | ✅ ACCEPTED |
+| Validation (1 doc) | e-009 | ✅ APPROVED |
+| Review (1 doc) | e-010 (5/5 rating) | ✅ APPROVED |
+| Report (1 doc) | e-011 | ✅ COMPLETE |
+
+**Key Decision:** Option C (Composed Architecture) with 8.60/10 score
+**Implementation Roadmap:** 43 hours across 3 phases
+**Commit:** `cd91d0b` (4,345 lines)
+
+### DOC-001 Status Update
 
 | Attribute | Value |
 |-----------|-------|
 | Initiative ID | DOC-001 |
-| Current Task | DOC-001.R1-R3 (Parallel Research) |
-| Total Tasks | 8 (3 research + 1 synthesis + 3 deliverables + 1 parent) |
-| Objective | Create reproducible process for WORKTRACKER decomposition |
-| Deliverables | RUNBOOK-002, PURPOSE-CATALOG.md, worktracker-decomposition SKILL |
+| Status | ✅ COMPLETE (expanded to INIT-WT-SKILLS) |
+| Completed Tasks | 8/8 research & documentation |
+| Gap Identified | Skill is thin - documentation only, no agents |
+| Action | Expanded to INIT-WT-SKILLS initiative |
+| Deliverables | RUNBOOK-002 ✅, PURPOSE-CATALOG.md ✅, worktracker-decomposition SKILL.md ✅ (skeleton) |
 
 ### Previous Milestones (This Session)
 
@@ -502,14 +533,32 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 
 | ID | Title | Phase | Status | Predecessors | Successors |
 |----|-------|-------|--------|--------------|------------|
-| DOC-001 | WORKTRACKER Decomposition Archaeology | DOC | 🔄 IN PROGRESS | CI-001 | None |
-| DOC-001.R1 | Research: Git commit history for work/ | DOC.001 | ⏳ TODO | None | DOC-001.S |
-| DOC-001.R2 | Research: Document history analysis | DOC.001 | ⏳ TODO | None | DOC-001.S |
-| DOC-001.R3 | Research: Pattern extraction from work/ files | DOC.001 | ⏳ TODO | None | DOC-001.S |
-| DOC-001.S | Synthesis: Combine findings into narrative | DOC.001 | ⏳ TODO | R1, R2, R3 | D1, D2, D3 |
-| DOC-001.D1 | Deliverable: RUNBOOK-002 (decomposition process) | DOC.001 | ⏳ TODO | S | D3 |
-| DOC-001.D2 | Deliverable: PURPOSE-CATALOG.md (why each file) | DOC.001 | ⏳ TODO | S | D3 |
-| DOC-001.D3 | Deliverable: worktracker-decomposition SKILL | DOC.001 | ⏳ TODO | D1, D2 | None |
+| DOC-001 | WORKTRACKER Decomposition Archaeology | DOC | ✅ DONE | CI-001 | None |
+| DOC-001.R1 | Research: Git commit history for work/ | DOC.001 | ✅ DONE | None | DOC-001.S |
+| DOC-001.R2 | Research: Document history analysis | DOC.001 | ✅ DONE | None | DOC-001.S |
+| DOC-001.R3 | Research: Pattern extraction from work/ files | DOC.001 | ✅ DONE | None | DOC-001.S |
+| DOC-001.S | Synthesis: Combine findings into narrative | DOC.001 | ✅ DONE | R1, R2, R3 | D1, D2, D3 |
+| DOC-001.D1 | Deliverable: RUNBOOK-002 (decomposition process) | DOC.001 | ✅ DONE | S | D3 |
+| DOC-001.D2 | Deliverable: PURPOSE-CATALOG.md (why each file) | DOC.001 | ✅ DONE | S | D3 |
+| DOC-001.D3 | Deliverable: worktracker-decomposition SKILL | DOC.001 | ✅ DONE | D1, D2 | INIT-WT-SKILLS |
+
+### INIT-WT-SKILLS Tasks (Worktracker Skills Enhancement)
+
+| ID | Title | Phase | Status | Predecessors | Successors |
+|----|-------|-------|--------|--------------|------------|
+| WT-001 | Extract templates from SKILL.md | 1 | ⏳ TODO | DOC-001 | WT-002 |
+| WT-002 | Create agent schema for wt-* agents | 1 | ⏳ TODO | WT-001 | WT-003, WT-004 |
+| WT-003 | Design orchestration pattern | 1 | ⏳ TODO | WT-002 | WT-007 |
+| WT-004 | wt-analyzer agent (decomposition triggers) | 2 | ⏳ TODO | WT-002 | WT-005 |
+| WT-005 | wt-decomposer agent (execute decomposition) | 2 | ⏳ TODO | WT-004 | WT-006 |
+| WT-006 | wt-validator agent (validate decomposition) | 2 | ⏳ TODO | WT-005 | WT-007 |
+| WT-007 | Create PLAYBOOK.md with orchestration | 3 | ⏳ TODO | WT-003, WT-006 | WT-008 |
+| WT-008 | Update SKILL.md to reference agents | 3 | ⏳ TODO | WT-007 | WT-009 |
+| WT-009 | Create docs/ORCHESTRATION.md | 3 | ⏳ TODO | WT-007 | WT-011, WT-012 |
+| WT-010 | Analyze worktracker skill gaps | 4 | ⏳ TODO | None | WT-011 |
+| WT-011 | Apply same pattern to worktracker skill | 4 | ⏳ TODO | WT-009, WT-010 | WT-012 |
+| WT-012 | End-to-end decomposition test | 5 | ⏳ TODO | WT-009 | WT-013 |
+| WT-013 | Fresh context test (runbook execution) | 5 | ⏳ TODO | WT-012 | None |
 
 ### DOC-001 Execution Plan
 
@@ -545,6 +594,7 @@ PHASE 3: DELIVERABLES (Sequential)
 | ID | Title | Location | Validated |
 |----|-------|----------|-----------|
 | RUNBOOK-001 | ENFORCE-008d Domain Refactoring | `runbooks/RUNBOOK-001-008d-domain-refactoring.md` | ✅ |
+| RUNBOOK-002 | WORKTRACKER Decomposition | `runbooks/RUNBOOK-002-worktracker-decomposition.md` | ✅ |
 
 ### Validation Evidence
 
@@ -575,6 +625,10 @@ PHASE 3: DELIVERABLES (Sequential)
 | CI-R-001 | CI/CD Best Practices Research | `research/PROJ-001-CI-001-research.md` | ✅ |
 | CI-A-001 | CI/CD Analysis | `analysis/PROJ-001-CI-001-analysis.md` | ✅ |
 | CI-RPT-001 | CI/CD Validation Report | `reports/CI-001-validation-report.md` | ✅ |
+| DOC-001-R1 | WORKTRACKER Git History | `research/DOC-001-R1-git-history.md` | ✅ |
+| DOC-001-R2 | Session Transcript Analysis | `research/DOC-001-R2-session-analysis.md` | ✅ |
+| DOC-001-R3 | Work File Pattern Analysis | `research/DOC-001-R3-file-analysis.md` | ✅ |
+| DOC-001-S | WORKTRACKER Decomposition Synthesis | `synthesis/DOC-001-synthesis.md` | ✅ |
 
 ### Decision Artifacts
 
@@ -738,3 +792,18 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | Updated Current Focus to reflect DOC-001 as active initiative |
 | 2026-01-11 | Claude | Added DOC-001 work items (8 tasks: 3 research, 1 synthesis, 3 deliverables) |
 | 2026-01-11 | Claude | Execution plan: Fan-out R1/R2/R3 → Fan-in S → Sequential D1/D2/D3 |
+| 2026-01-11 | Claude | DOC-001.R1/R2/R3 COMPLETE: Parallel research phase done (3 agents) |
+| 2026-01-11 | Claude | DOC-001.S COMPLETE: Synthesis created (8 sections, 5 patterns, 580 lines) |
+| 2026-01-11 | Claude | DOC-001.D1 COMPLETE: RUNBOOK-002 created (decomposition runbook, 412 lines) |
+| 2026-01-11 | Claude | DOC-001.D2 COMPLETE: PURPOSE-CATALOG.md created (file registry, 222 lines) |
+| 2026-01-11 | Claude | DOC-001.D3 COMPLETE: worktracker-decomposition SKILL created (4 commands) |
+| 2026-01-11 | Claude | **DOC-001 COMPLETE**: All 8 tasks done, 3 deliverables created |
+| 2026-01-11 | Claude | DOC-001 REVISED: Identified skill is thin - no agents, inline templates |
+| 2026-01-11 | Claude | Deep analysis of 8 ps-* agents: researcher, analyst, synthesizer, validator, reporter, architect, reviewer, investigator |
+| 2026-01-11 | Claude | Industry research: Anthropic Agent Skills Standard, Context Rot (Chroma), Context Engineering |
+| 2026-01-11 | Claude | Created INIT-WT-SKILLS initiative: 13 tasks across 5 phases to shore up worktracker skills |
+| 2026-01-11 | Claude | Architecture decision: Option C (specialized agents that compose with ps-*) |
+| 2026-01-11 | Claude | DISC-003: Discovered link-artifact CLI command does not exist (25 files reference it) |
+| 2026-01-11 | Claude | TD-010: Elevated DISC-003 to tech debt - must implement scripts/cli.py |
+| 2026-01-11 | Claude | Preparing ps-* agent orchestration for INIT-WT-SKILLS research phase |
+| 2026-01-11 | Claude | Phase 1 LAUNCHED: 4 ps-researcher agents in background (e-001, e-002, e-003, e-004) |

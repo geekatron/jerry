@@ -11,7 +11,8 @@
 |------|-------------|
 | [← WORKTRACKER](../WORKTRACKER.md) | Back to index |
 | [TECHDEBT](PHASE-TECHDEBT.md) | Technical debt |
-| [Phase 6](PHASE-06-ENFORCEMENT.md) | Current phase |
+| [DISCOVERY](PHASE-DISCOVERY.md) | Technical discoveries |
+| [INITIATIVE-WT-SKILLS](INITIATIVE-WORKTRACKER-SKILLS.md) | Active initiative |
 
 ---
 

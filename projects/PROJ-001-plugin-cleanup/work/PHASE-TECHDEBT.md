@@ -11,7 +11,8 @@
 |------|-------------|
 | [← WORKTRACKER](../WORKTRACKER.md) | Back to index |
 | [BUGS](PHASE-BUGS.md) | Bug tracking |
-| [Phase 6](PHASE-06-ENFORCEMENT.md) | Current phase |
+| [DISCOVERY](PHASE-DISCOVERY.md) | Technical discoveries |
+| [INITIATIVE-WT-SKILLS](INITIATIVE-WORKTRACKER-SKILLS.md) | Active initiative (TD-010 related) |
 
 ---
 

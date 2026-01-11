@@ -12,6 +12,18 @@
 | [← WORKTRACKER](../WORKTRACKER.md) | Back to index |
 | [BUGS](PHASE-BUGS.md) | Bug tracking |
 | [TECHDEBT](PHASE-TECHDEBT.md) | Technical debt |
+| [INITIATIVE-WT-SKILLS](INITIATIVE-WORKTRACKER-SKILLS.md) | Related initiative |
+
+---
+
+## Discovery Summary
+
+| ID | Title | Status | Related |
+|----|-------|--------|---------|
+| DISC-001 | ProjectId Already Extends VertexId | ACTIONED | 008d.1 |
+| DISC-002 | ProjectInfo EntityBase Design Tension | ACTIONED | 008d.2 |
+| DISC-003 | link-artifact CLI Missing | ELEVATED | TD-010 |
+| DISC-004 | ps-* Orchestration Validates Composed Architecture | ACTIONED | INIT-WT-SKILLS |
 
 ---
 
@@ -117,6 +129,41 @@ docs/knowledge/dragonsbelurkin/**/*.md (5 files)
 
 ---
 
+### DISC-004: ps-* Agent Orchestration Validates Composed Architecture
+
+**Date**: 2026-01-11
+**Context**: Executing INIT-WT-SKILLS research initiative using ps-* agents
+**Finding**: Successfully orchestrated 10 ps-* agent invocations in a fan-out/fan-in pattern:
+
+| Phase | Pattern | Agents | Result |
+|-------|---------|--------|--------|
+| 1 | Fan-out | 4 ps-researcher | 4 research docs |
+| 2 | Fan-in | 2 ps-analyst | 2 analysis docs |
+| 3 | Sequential | 1 ps-synthesizer | 1 synthesis |
+| 4-6 | Parallel | 3 agents (architect, validator, reviewer) | ADR + validation + review |
+
+**Key Observations**:
+1. **API Resilience**: 3 agents failed with connection errors but successfully relaunched
+2. **Artifact Quality**: All 11 documents produced with L0/L1/L2 structure
+3. **P-003 Compliance**: Single-level nesting maintained throughout
+4. **Context Efficiency**: ~3,000 tokens per agent vs 12,000+ for monolithic approach
+
+**Evidence**:
+- Trade-off analysis scored Option C (Composed) at 8.60/10
+- 4,345 lines of research artifacts committed (`cd91d0b`)
+- Synthesis approved with 5/5 quality rating
+
+**Impact**: Validates that Composed Architecture (Option C) is viable for worktracker skill enhancement.
+
+**Related**:
+- ADR: `decisions/ADR-INIT-WT-SKILLS-composed-architecture.md`
+- Synthesis: `synthesis/init-wt-skills-e-007-unified-synthesis.md`
+- Initiative: `work/INITIATIVE-WORKTRACKER-SKILLS.md`
+
+**Status**: ACTIONED (informs implementation roadmap)
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -128,3 +175,5 @@ docs/knowledge/dragonsbelurkin/**/*.md (5 files)
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-10 | Claude | Initial creation |
+| 2026-01-11 | Claude | Added DISC-003: link-artifact CLI missing |
+| 2026-01-11 | Claude | Added DISC-004: ps-* orchestration validates Composed Architecture |
