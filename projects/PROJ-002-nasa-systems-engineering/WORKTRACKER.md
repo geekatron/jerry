@@ -763,14 +763,15 @@
 
 ## Resumption Context
 
-**Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO-INIT-001 COMPLETE | SAO-INIT-002 IN PROGRESS | 16/16 AGENTS CONFORMANT
+**Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO-INIT-001 COMPLETE | SAO-INIT-002 COMPLETE | 19/19 AGENTS CONFORMANT
 **Completed Initiative:** SAO-INIT-001: Foundation (5/5 work items complete, 100%) ✅
-**Last Work Item:** WI-SAO-025: Fix NSE Agents Missing output.template ✅
-**Current Work Item:** WI-SAO-004: Create nse-explorer Agent (CRITICAL P0) ⏳ IN PROGRESS
-**Current Initiative:** SAO-INIT-002: New Agents (0/5 work items complete, 0%)
+**Completed Initiative:** SAO-INIT-002: New Agents (3/3 active complete, 2 cancelled) ✅
+**Last Work Item:** WI-SAO-008: Create nse-qa Agent ✅
+**Current Work Item:** WI-SAO-009: Unified Agent Template (HIGH P1) - NEXT UP
+**Current Initiative:** SAO-INIT-003: Template Unification (0/3 work items complete)
 **Plan Location:** `projects/PROJ-002-nasa-systems-engineering/PLAN.md` (repository-relative)
 **Plan Version:** 4.0 (Optimization Initiative)
-**Implementation Status:** NASA SE Skill COMPLETE - All 8 agents demonstrated with real artifacts
+**Agent Counts:** NASA SE: 10 agents | Problem-Solving: 9 agents | Orchestration: 3 agents
 **Orchestration Status:** ORCH-SKILL-005 COMPLETE - 19/19 tests passed (100%)
 
 **Cross-Session Portability:** All references in this document are repository-relative.
@@ -1141,32 +1142,43 @@ projects/PROJ-002-nasa-systems-engineering/
 - **Entry ID:** sao-009
 - **Status:** OPEN
 - **Priority:** HIGH (P1)
-- **Estimated Effort:** 4h
+- **Estimated Effort:** 6h
 - **Source:** Trade Study TS-1 (Score: 3.8/5)
+- **Blocks:** WI-SAO-010, WI-SAO-011
 - **Description:** Merge PS_AGENT_TEMPLATE v2.0 and NSE_AGENT_TEMPLATE v1.0 into unified superset.
-- **Acceptance Criteria:**
+- **Acceptance Criteria (Validatable Evidence):**
   1. UNIFIED_AGENT_TEMPLATE v1.0 created
-  2. All fields optional initially (backward compatible)
-  3. nasa_se block optional for nse-* agents
-  4. Migration guide documented
+     - **Evidence:** `ls docs/templates/UNIFIED_AGENT_TEMPLATE.md` exists
+  2. Template includes all sections from both PS and NSE templates
+     - **Evidence:** `grep -c "^##" docs/templates/UNIFIED_AGENT_TEMPLATE.md` ≥ 15 sections
+  3. Optional nasa_se block documented
+     - **Evidence:** `grep "nasa_se:" docs/templates/UNIFIED_AGENT_TEMPLATE.md` found
+  4. Migration guide created
+     - **Evidence:** `ls docs/templates/AGENT_MIGRATION_GUIDE.md` exists
+  5. Conformance script updated for unified template
+     - **Evidence:** `python3 scripts/check_agent_conformance.py --help` shows unified option
 - **Tasks:**
-  - [ ] **T-009.1:** Merge template schemas
-  - [ ] **T-009.2:** Create UNIFIED_AGENT_TEMPLATE.md
-  - [ ] **T-009.3:** Document migration guide
-  - [ ] **T-009.4:** Create template validation checklist
+  - [ ] **T-009.1:** Audit PS_AGENT_TEMPLATE v2.0 sections (40 sections)
+  - [ ] **T-009.2:** Audit NSE_AGENT_TEMPLATE v1.0 sections (44 sections)
+  - [ ] **T-009.3:** Create superset schema (merge unique fields)
+  - [ ] **T-009.4:** Create UNIFIED_AGENT_TEMPLATE.md
+  - [ ] **T-009.5:** Document migration guide
+  - [ ] **T-009.6:** Update conformance check script
 
 #### WI-SAO-010: Migrate ps-* Agents to Unified Template
 - **Entry ID:** sao-010
 - **Status:** OPEN
 - **Priority:** HIGH (P1)
-- **Estimated Effort:** 8h
+- **Estimated Effort:** 10h
 - **Depends On:** WI-SAO-009
-- **Description:** Migrate all 8 ps-* agents to unified template format.
-- **Acceptance Criteria:**
-  1. All 8 ps-* agents use UNIFIED_AGENT_TEMPLATE
-  2. Feature flags for gradual rollout
-  3. Backward compatibility maintained
-  4. All existing tests pass
+- **Description:** Migrate all 9 ps-* agents to unified template format.
+- **Acceptance Criteria (Validatable Evidence):**
+  1. All 9 ps-* agents match UNIFIED_AGENT_TEMPLATE structure
+     - **Evidence:** `python3 scripts/check_agent_conformance.py` returns 9/9 ps-* PASS
+  2. Backward compatibility: existing BEHAVIOR_TESTS.md tests pass
+     - **Evidence:** `grep -c "PENDING\|PASS" skills/problem-solving/tests/BEHAVIOR_TESTS.md`
+  3. Version field updated to reflect migration
+     - **Evidence:** `grep "^version:" skills/problem-solving/agents/ps-*.md` shows new version
 - **Tasks:**
   - [ ] **T-010.1:** Migrate ps-researcher.md
   - [ ] **T-010.2:** Migrate ps-analyst.md
@@ -1176,18 +1188,24 @@ projects/PROJ-002-nasa-systems-engineering/
   - [ ] **T-010.6:** Migrate ps-reviewer.md
   - [ ] **T-010.7:** Migrate ps-synthesizer.md
   - [ ] **T-010.8:** Migrate ps-validator.md
+  - [ ] **T-010.9:** Migrate ps-critic.md
 
 #### WI-SAO-011: Migrate nse-* Agents to Unified Template
 - **Entry ID:** sao-011
 - **Status:** OPEN
 - **Priority:** HIGH (P1)
-- **Estimated Effort:** 8h
+- **Estimated Effort:** 12h
 - **Depends On:** WI-SAO-009
-- **Description:** Migrate all 8 nse-* agents to unified template format.
-- **Acceptance Criteria:**
-  1. All 8 nse-* agents use UNIFIED_AGENT_TEMPLATE
-  2. nasa_se block populated for all
-  3. All existing tests pass
+- **Description:** Migrate all 10 nse-* agents to unified template format.
+- **Acceptance Criteria (Validatable Evidence):**
+  1. All 10 nse-* agents match UNIFIED_AGENT_TEMPLATE structure
+     - **Evidence:** `python3 scripts/check_agent_conformance.py` returns 10/10 nse-* PASS
+  2. nasa_se block populated for all agents
+     - **Evidence:** `grep -c "^nasa_standards:" skills/nasa-se/agents/nse-*.md` returns 10
+  3. Backward compatibility: existing BEHAVIOR_TESTS.md tests pass
+     - **Evidence:** `grep -c "PENDING\|PASS" skills/nasa-se/tests/BEHAVIOR_TESTS.md`
+  4. Version field updated to reflect migration
+     - **Evidence:** `grep "^version:" skills/nasa-se/agents/nse-*.md` shows new version
 - **Tasks:**
   - [ ] **T-011.1:** Migrate nse-requirements.md
   - [ ] **T-011.2:** Migrate nse-verification.md
@@ -1197,6 +1215,8 @@ projects/PROJ-002-nasa-systems-engineering/
   - [ ] **T-011.6:** Migrate nse-configuration.md
   - [ ] **T-011.7:** Migrate nse-architecture.md
   - [ ] **T-011.8:** Migrate nse-reporter.md
+  - [ ] **T-011.9:** Migrate nse-explorer.md
+  - [ ] **T-011.10:** Migrate nse-qa.md
 
 ---
 
