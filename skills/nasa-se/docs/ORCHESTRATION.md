@@ -387,6 +387,171 @@ checkpoint:
 
 ---
 
+## Session Context Validation (WI-SAO-002)
+
+All agent handoffs MUST use the session context schema for reliable chaining.
+
+### Schema Reference
+
+- **Schema:** `docs/schemas/session_context.json`
+- **Version:** 1.0.0
+- **Scope:** All nse-* agents and cross-skill handoffs
+
+### Required Fields
+
+Every session context MUST include:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"       # REQUIRED: For evolution support
+  session_id: "{uuid}"          # REQUIRED: Detect session mismatch
+  source_agent:                 # REQUIRED: Sender identification
+    id: "nse-{domain}"
+    family: "nse"
+  target_agent:                 # REQUIRED: Receiver identification
+    id: "{target-agent-id}"
+    family: "ps|nse|orch"
+  payload:                      # REQUIRED: Handoff data
+    key_findings: [...]         # REQUIRED: Primary outputs
+    confidence:                 # REQUIRED: Confidence score
+      overall: 0.0-1.0
+  timestamp: "ISO-8601"         # REQUIRED: Creation time
+```
+
+### Input Validation (On Receive)
+
+Before processing, target agents MUST validate:
+
+```
+1. Schema Version Check
+   ├── IF schema_version != "1.0.0"
+   │   └── WARN "Potential schema mismatch" + attempt processing
+   └── IF schema_version missing
+       └── REJECT "Invalid handoff: missing schema_version"
+
+2. Session Identity Check
+   ├── IF session_id matches current session
+   │   └── CONTINUE normally
+   └── IF session_id differs
+       └── WARN "State from different session" + prompt user (see FIX-NEG-008)
+
+3. Source Agent Validation
+   ├── IF source_agent.id matches pattern ^(ps|nse|orch)-[a-z]+$
+   │   └── CONTINUE
+   └── ELSE
+       └── REJECT "Invalid source agent ID format"
+
+4. Payload Validation
+   ├── IF payload.key_findings is array
+   │   └── CONTINUE
+   ├── IF payload.confidence.overall is number 0.0-1.0
+   │   └── CONTINUE
+   └── ELSE
+       └── REJECT "Malformed payload"
+```
+
+### Output Validation (On Send)
+
+Before returning, source agents MUST:
+
+```
+1. Populate Key Findings
+   └── key_findings array with findings from SE domain artifacts
+
+2. Calculate Confidence
+   └── confidence.overall between 0.0 and 1.0 with NASA SE context
+
+3. Include Traceability (P-040)
+   └── Each finding.traceability links to REQ-*, RISK-*, TSR-*, ICD-*
+
+4. List Artifacts
+   └── artifacts array with paths to all created SE work products
+
+5. Set Timestamp
+   └── ISO-8601 timestamp at completion time
+
+6. Verify Target
+   └── target_agent.id matches expected downstream agent per dependency graph
+```
+
+### Validation Error Handling
+
+| Error Type | Severity | Action |
+|------------|----------|--------|
+| Missing required field | CRITICAL | Reject handoff, alert orchestrator |
+| Invalid schema_version | WARNING | Log warning, attempt processing |
+| Session mismatch | WARNING | Prompt user for decision (FIX-NEG-008) |
+| Malformed payload | CRITICAL | Reject handoff, request retry |
+| Invalid agent ID | CRITICAL | Reject handoff, halt workflow |
+| Missing traceability | WARNING | Log gap, continue with documentation |
+
+### Cross-Skill Handoff (nse ↔ ps)
+
+When handing off between skill families:
+
+```yaml
+# nse-requirements → ps-analyst example (for trade study support)
+session_context:
+  source_agent:
+    id: "nse-requirements"
+    family: "nse"
+    cognitive_mode: "convergent"
+  target_agent:
+    id: "ps-analyst"
+    family: "ps"               # Different family - cross-skill handoff
+    cognitive_mode: "divergent"
+  payload:
+    key_findings:
+      - id: "F-001"
+        summary: "Requirements trade study needed for mass allocation"
+        category: "requirement"
+        traceability: ["REQ-SYS-042", "TSR-001"]  # SE domain IDs
+    context:
+      se_lifecycle_phase: "Phase B"
+      review_milestone: "CDR"
+```
+
+**Cross-Skill Considerations:**
+1. Map SE lifecycle context for ps-* agents unfamiliar with NASA phases
+2. Include traceability in NASA SE format (REQ-*, RISK-*, TSR-*, ICD-*)
+3. Specify review milestone context for appropriate rigor level
+
+### NSE Agent Chain Validation
+
+For the 8-agent dependency chain, validate handoff compliance:
+
+```
+nse-requirements (foundation)
+    └── VALIDATES: schema_version, session_id, payload structure
+    └── OUTPUTS: REQ-* traceability, TBD/TBR counts
+           │
+    ┌──────┴──────────────────────────────────┐
+    ▼                                         ▼
+nse-verification                        nse-architecture
+    └── VALIDATES: input requirements IDs     └── VALIDATES: input requirements IDs
+    └── OUTPUTS: VCRM reference, test IDs     └── OUTPUTS: TSR reference, element IDs
+           │                                         │
+    ┌──────┴───────────────────┐                     │
+    ▼                          ▼                     ▼
+nse-risk                  nse-integration      nse-configuration
+    └── VALIDATES: req + design input              └── VALIDATES: all domain inputs
+    └── OUTPUTS: RISK-* IDs, L/C scores            └── OUTPUTS: CI-* references
+           │                          │                   │
+           └──────────────────────────┴───────────────────┘
+                                      │
+                                      ▼
+                               nse-reviewer
+                                  └── VALIDATES: all upstream artifacts
+                                  └── OUTPUTS: readiness decision, RFAs
+                                             │
+                                             ▼
+                                       nse-reporter
+                                          └── VALIDATES: all sources for aggregation
+                                          └── OUTPUTS: L0/L1/L2 status reports
+```
+
+---
+
 ## State Management
 
 ### Agent State Schema
