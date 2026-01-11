@@ -41,7 +41,7 @@ class TestCoverage:
 
     def __post_init__(self) -> None:
         """Validate coverage percentage after initialization."""
-        if not isinstance(self.percent, (int, float)):
+        if not isinstance(self.percent, int | float):
             raise TypeError(f"percent must be a number, got {type(self.percent).__name__}")
         if not 0.0 <= self.percent <= 100.0:
             raise ValueError(f"Coverage must be between 0 and 100, got {self.percent}")
@@ -65,7 +65,7 @@ class TestCoverage:
             >>> TestCoverage.from_percent(85.567)
             TestCoverage(percent=85.57)
         """
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, int | float):
             raise TypeError(f"value must be a number, got {type(value).__name__}")
         return cls(percent=round(value, 2))
 

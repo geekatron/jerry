@@ -122,9 +122,7 @@ class TestAllPathsAreProjectCentric:
         All references to project artifacts should use projects/ prefix.
         """
         proj_num = project_id.split("-")[1]
-        project_centric_pattern = re.compile(
-            rf"projects/PROJ-{proj_num}-[a-z0-9-]+/(research|synthesis|analysis|decisions|reports)"
-        )
+        # Pattern to detect legacy docs/ paths that should now be under projects/
         old_pattern = re.compile(rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}")
 
         for md_file in proj_root.rglob("*.md"):

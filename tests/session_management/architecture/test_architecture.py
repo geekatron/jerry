@@ -74,8 +74,7 @@ def get_python_files(directory: Path) -> Iterator[Path]:
     """Recursively get all Python files in a directory."""
     if not directory.exists():
         return
-    for path in directory.rglob("*.py"):
-        yield path
+    yield from directory.rglob("*.py")
 
 
 def extract_imports(file_path: Path) -> list[str]:

@@ -34,6 +34,7 @@ dependencies = []
 dev = [
     "mypy>=1.8.0",
     "ruff>=0.1.0",
+    "filelock>=3.12.0",
 ]
 test = [
     "pytest>=8.0.0",
@@ -43,6 +44,7 @@ test = [
 
 [project.scripts]
 jerry = "src.interface.cli.main:main"
+jerry-session-start = "src.interface.cli.session_start:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -50,6 +52,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+[tool.pyright]
+pythonVersion = "3.11"
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "standard"
 
 [tool.mypy]
 python_version = "3.11"

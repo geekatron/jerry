@@ -81,9 +81,9 @@ class FilesystemProjectAdapter:
         except PermissionError as e:
             raise RepositoryError(
                 f"Permission denied accessing projects directory: {base_path}", cause=e
-            )
+            ) from e
         except OSError as e:
-            raise RepositoryError(f"Error accessing projects directory: {e}", cause=e)
+            raise RepositoryError(f"Error accessing projects directory: {e}", cause=e) from e
 
         # Sort by project number
         projects.sort(key=lambda p: p.id.number)

@@ -126,7 +126,7 @@ class TestSessionIdGeneration:
     def test_generate_produces_unique_ids(self) -> None:
         """generate() should produce unique IDs."""
         ids = [SessionId.generate() for _ in range(100)]
-        unique_values = set(id.value for id in ids)
+        unique_values = {id.value for id in ids}
         assert len(unique_values) == 100
 
     def test_generated_id_matches_pattern(self) -> None:

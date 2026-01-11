@@ -129,7 +129,7 @@ class TestRatio:
             try:
                 level = QualityLevel(level)
             except ValueError:
-                raise ValueError(f"Unknown quality level: {level}")
+                raise ValueError(f"Unknown quality level: {level}") from None
 
         if level == QualityLevel.L0:
             return self.positive > 0

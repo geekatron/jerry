@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 scripts/session_start.py",
+            "command": ".venv/bin/jerry-session-start",
             "timeout": 10000
           }
         ]

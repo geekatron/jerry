@@ -157,7 +157,7 @@ def main() -> int:
 
         agent_name = input_data.get("agent_name", "unknown")
         agent_output = input_data.get("output", "")
-        session_id = input_data.get("session_id", "")
+        # session_id available in input_data if needed for future logging
 
         # Parse the agent's output for signals
         signals = parse_agent_output(agent_output)

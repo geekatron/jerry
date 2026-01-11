@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T22:30:00Z
+**Last Updated**: 2026-01-10T23:45:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -472,11 +472,21 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 
 | ID | Title | Phase | Status | Predecessors | Successors |
 |----|-------|-------|--------|--------------|------------|
-| CI-001 | CI/CD Pipeline Implementation | CI | ✅ DONE | Phase 6, TD-005 | None |
+| CI-001 | CI/CD Pipeline Implementation | CI | ✅ DONE | Phase 6, TD-005 | TD-006, TD-007, TD-008 |
 | CI-001.R | Research: CI Best Practices | CI.001 | ✅ DONE | TD-005 | CI-001.A |
 | CI-001.A | Analysis: Findings Synthesis | CI.001 | ✅ DONE | CI-001.R | CI-001.D |
 | CI-001.D | Decision: ADR-CI-001 | CI.001 | ✅ DONE | CI-001.A | CI-001.I |
-| CI-001.I | Implementation: Pre-commit + GHA | CI.001 | ✅ DONE | CI-001.D | None |
+| CI-001.I | Implementation: Pre-commit + GHA | CI.001 | ✅ DONE | CI-001.D | CI-001.V |
+| CI-001.V | Validation: E2E Pipeline Test | CI.001 | ✅ DONE | CI-001.I | None |
+
+### Tech Debt Tasks (Discovered by CI-001)
+
+| ID | Title | Priority | Status | Discovered | Root Cause |
+|----|-------|----------|--------|------------|------------|
+| TD-006 | Restructure scripts/ to remove sys.path hacks | HIGH | ⏳ TODO | CI-001.V | 7 E402 errors from sys.path.insert before imports |
+| TD-007 | Add filelock as optional dev dependency | MEDIUM | ⏳ TODO | CI-001.V | pyright error: Import "filelock" could not be resolved |
+| TD-008 | Fix ruff code quality issues (10 remaining) | LOW | ⏳ TODO | CI-001.V | Pre-existing: F841 unused vars, B904 raise from, UP038 isinstance |
+| TD-009 | Fix pyright type annotation issues | LOW | ⏳ TODO | CI-001.V | DataclassInstance.to_dict attribute access, type variance |
 
 ---
 
@@ -493,6 +503,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ID | Title | Location | Result |
 |----|-------|----------|--------|
 | VALIDATION-001 | Runbook Fresh Context Test | `runbooks/VALIDATION-001-runbook-test.md` | ✅ PASS |
+| VALIDATION-002 | CI-001 Pipeline E2E Test | `reports/CI-001-validation-report.md` | ✅ PASS |
 
 ### Research Artifacts
 
@@ -515,6 +526,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ES-RPT | ES Knowledge Summary | `reports/impl-es-knowledge-summary.md` | ✅ |
 | CI-R-001 | CI/CD Best Practices Research | `research/PROJ-001-CI-001-research.md` | ✅ |
 | CI-A-001 | CI/CD Analysis | `analysis/PROJ-001-CI-001-analysis.md` | ✅ |
+| CI-RPT-001 | CI/CD Validation Report | `reports/CI-001-validation-report.md` | ✅ |
 
 ### Decision Artifacts
 
@@ -666,3 +678,7 @@ Before marking ANY task complete:
 | 2026-01-10 | User | D5 approved: Security scanning (pip-audit) - security-first approach |
 | 2026-01-10 | Claude | CI-001.I DONE: Created .pre-commit-config.yaml and .github/workflows/ci.yml |
 | 2026-01-10 | Claude | **CI-001 COMPLETE**: Pre-commit + GitHub Actions pipeline implemented |
+| 2026-01-10 | Claude | CI-001.V COMPLETE: E2E validation (all hooks work, 1330 tests pass, escape hatches verified) |
+| 2026-01-10 | Claude | Added validation evidence: `reports/CI-001-validation-report.md` |
+| 2026-01-10 | Claude | DISCOVERY: CI revealed 17 pre-existing code quality issues → TD-006, TD-007, TD-008, TD-009 |
+| 2026-01-10 | Claude | Pushed commits 53d490f, 324caa6 to trigger GitHub Actions |
