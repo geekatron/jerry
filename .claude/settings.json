@@ -36,7 +36,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'Jerry Framework initialized. See CLAUDE.md for context.'"
+            "command": "python3 scripts/session_start.py",
+            "timeout": 10000
           }
         ]
       }
