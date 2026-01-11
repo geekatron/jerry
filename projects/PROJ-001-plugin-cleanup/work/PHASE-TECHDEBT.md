@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: ✅ COMPLETE (100% - 5/5 done)
+> **Status**: 🔄 IN PROGRESS (5/6 done - 83%)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -24,6 +24,7 @@
 | TD-003 | Add hook decision value tests | LOW | ✅ DONE | BUG-002 |
 | TD-004 | pytest_bdd dependency missing | LOW | ✅ DONE | 008d.3 |
 | TD-005 | Misplaced tests in projects/ | MEDIUM | ✅ DONE | ENFORCE-011 |
+| TD-010 | Implement link-artifact CLI command | HIGH | ⏳ TODO | DISC-003 |
 
 ---
 
@@ -338,3 +339,70 @@ S - 2-3 hours for extraction, parameterization, and verification
 | 2026-01-10 | Claude | TD-005: Deep analysis complete, execution plan defined |
 | 2026-01-10 | Claude | Completed TD-005: 69 tests migrated to tests/project_validation/ (commit f5cdfbe) |
 | 2026-01-10 | Claude | All techdebt items COMPLETE (5/5 = 100%) |
+| 2026-01-11 | Claude | Added TD-010: link-artifact CLI command missing (DISC-003) |
+
+---
+
+## TD-010: Implement link-artifact CLI Command
+
+> **Status**: ⏳ TODO
+> **Priority**: HIGH
+> **Source**: DISC-003 (INIT-WT-SKILLS preparation)
+
+### Description
+
+All 8 ps-* agents reference a non-existent CLI command `python3 scripts/cli.py link-artifact` as part of their MANDATORY PERSISTENCE protocol. This command is referenced in 25 files but has never been implemented.
+
+### Root Cause
+
+The ps-* agent specifications were designed with an aspirational CLI interface that was never built. The agents reference:
+```bash
+python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
+    "projects/${JERRY_PROJECT}/{category}/{filename}.md" \
+    "{description}"
+```
+
+### Impact
+
+- ps-* agents cannot complete their mandatory persistence protocol
+- Artifact linking is aspirational, not functional
+- Manual file creation works, but artifacts are not linked in any tracking system
+- Blocks full ps-* agent orchestration as designed
+
+### Scope of References (25 files)
+
+| Category | Count | Files |
+|----------|-------|-------|
+| ps-* agents | 9 | `skills/problem-solving/agents/*.md` |
+| Templates | 6 | `docs/knowledge/exemplars/templates/*.md` |
+| Orchestration | 1 | `skills/problem-solving/docs/ORCHESTRATION.md` |
+| Knowledge docs | 1 | `docs/knowledge/DISCOVERIES_EXPANDED.md` |
+| Archive/aspiration | 8 | Various |
+
+### Proposed Solution
+
+Implement `scripts/cli.py` with commands:
+1. `link-artifact {ps_id} {entry_id} FILE {path} {description}` - Link file artifact
+2. `view {ps_id}` - View problem-solving context with linked artifacts
+3. `validate-constraint {ps_id} {constraint_id} {evidence}` - Mark constraint validated
+
+### Files to Create/Modify
+
+| File | Action |
+|------|--------|
+| `scripts/cli.py` | **CREATE** - Main CLI entry point |
+| `src/interface/cli/ps_commands.py` | **CREATE** - Problem-solving CLI commands |
+| `src/domain/ps_context.py` | **CREATE** - PS context aggregate (if needed) |
+| `tests/interface/cli/test_ps_commands.py` | **CREATE** - CLI tests |
+
+### Acceptance Criteria
+
+- [ ] `scripts/cli.py link-artifact` command works as documented
+- [ ] `scripts/cli.py view {ps_id}` shows linked artifacts
+- [ ] All 8 ps-* agents can complete persistence protocol
+- [ ] Unit tests for CLI commands
+- [ ] Integration test with actual ps-* agent output
+
+### Effort Estimate
+
+M - Medium (4-8 hours)

@@ -83,6 +83,38 @@ This preserves immutability guarantees and backward compatibility.
 **Action**: Implemented audit fields on frozen ProjectInfo, updated tests (35 pass)
 **Status**: ACTIONED
 
+### DISC-003: link-artifact CLI Command Does Not Exist
+
+**Date**: 2026-01-11
+**Context**: Preparing to execute INIT-WT-SKILLS orchestration with ps-* agents
+**Finding**: All 8 ps-* agents reference `python3 scripts/cli.py link-artifact` in their MANDATORY PERSISTENCE protocol, but this command does not exist:
+- `scripts/cli.py` does not exist (only `scripts/session_start.py` found)
+- `src/**/cli*.py` pattern returns no matches
+- `link-artifact` is referenced in 25 files:
+  - 8 ps-* agent definitions
+  - 1 PS_AGENT_TEMPLATE.md
+  - 6 template files in `docs/knowledge/exemplars/templates/`
+  - 1 orchestration doc
+  - 9 aspiration/archive files
+
+**Scope of References**:
+```
+skills/problem-solving/agents/*.md (9 files)
+docs/knowledge/exemplars/templates/*.md (6 files)
+skills/problem-solving/docs/ORCHESTRATION.md
+docs/knowledge/DISCOVERIES_EXPANDED.md
+projects/archive/**/*.md (2 files)
+docs/knowledge/dragonsbelurkin/**/*.md (5 files)
+```
+
+**Impact**:
+- ps-* agents cannot complete their mandatory persistence protocol as designed
+- Artifact linking is aspirational, not functional
+- Orchestration dependent on non-existent infrastructure
+
+**Action**: Created TD-010 to implement `scripts/cli.py link-artifact` command
+**Status**: LOGGED → Elevated to TECHDEBT (TD-010)
+
 ---
 
 ## Archived Discoveries
