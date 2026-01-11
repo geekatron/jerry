@@ -472,11 +472,11 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 
 | ID | Title | Phase | Status | Predecessors | Successors |
 |----|-------|-------|--------|--------------|------------|
-| CI-001 | CI/CD Pipeline Implementation | CI | 🔄 IN PROGRESS | Phase 6, TD-005 | None |
+| CI-001 | CI/CD Pipeline Implementation | CI | ✅ DONE | Phase 6, TD-005 | None |
 | CI-001.R | Research: CI Best Practices | CI.001 | ✅ DONE | TD-005 | CI-001.A |
 | CI-001.A | Analysis: Findings Synthesis | CI.001 | ✅ DONE | CI-001.R | CI-001.D |
 | CI-001.D | Decision: ADR-CI-001 | CI.001 | ✅ DONE | CI-001.A | CI-001.I |
-| CI-001.I | Implementation: Pre-commit + GHA | CI.001 | ⏳ PENDING | CI-001.D | None |
+| CI-001.I | Implementation: Pre-commit + GHA | CI.001 | ✅ DONE | CI-001.D | None |
 
 ---
 
@@ -663,3 +663,6 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | CI-001.D DONE: ADR-CI-001 created (PROPOSED status, awaiting user review) |
 | 2026-01-10 | User | ADR-CI-001 feedback: D2→matrix 3.11-3.14, D3→blocking 80% with escape hatch |
 | 2026-01-10 | Claude | ADR-CI-001 status changed to ACCEPTED, ready for implementation |
+| 2026-01-10 | User | D5 approved: Security scanning (pip-audit) - security-first approach |
+| 2026-01-10 | Claude | CI-001.I DONE: Created .pre-commit-config.yaml and .github/workflows/ci.yml |
+| 2026-01-10 | Claude | **CI-001 COMPLETE**: Pre-commit + GitHub Actions pipeline implemented |

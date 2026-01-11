@@ -83,11 +83,19 @@ stages: [pre-commit]
 
 **Trade-off accepted**: May block PRs during legitimate refactoring (mitigated by escape hatch).
 
-### D4: Required PR Checks = Lint + Type + Test
+### D4: Required PR Checks = Lint + Type + Test + Coverage
 
-**Decision**: PRs must pass lint, type-check, and test jobs to merge.
+**Decision**: PRs must pass lint, type-check, test, and coverage jobs to merge.
 
-**Rationale**: These are the minimum quality gates. Coverage is not required (per D3).
+**Rationale**: These are the quality gates enforcing P-REGRESS and code quality.
+
+### D5: Security Scanning = pip-audit (blocking)
+
+**Decision**: Include `pip-audit` in CI to scan for vulnerable dependencies.
+
+**Rationale**: Security-first development. Jerry will be released publicly; vulnerable dependencies are unacceptable.
+
+**Trade-off accepted**: Adds ~30s to CI. May require dependency updates when CVEs are discovered.
 
 ---
 
@@ -99,6 +107,7 @@ stages: [pre-commit]
 - **Developer feedback** - Issues caught immediately, not in review
 - **Coverage enforced** - 80% minimum prevents quality drift
 - **Portability assured** - Matrix testing catches Python version issues
+- **Security enforced** - pip-audit catches vulnerable dependencies
 
 ### Negative
 - **Slower commits** - ~30 seconds per commit (mitigated by SKIP option)
@@ -173,7 +182,8 @@ User feedback incorporated (2026-01-10):
 - [x] D1: Test-on-commit approved (configurable for fast tests)
 - [x] D2: Python matrix 3.11-3.14 (changed from 3.14 only)
 - [x] D3: Coverage blocking at 80% with escape hatch (changed from soft)
-- [x] D4: Lint + Type + Test required (security scanning TBD)
+- [x] D4: Lint + Type + Test + Coverage required
+- [x] D5: Security scanning (pip-audit) included - security-first approach
 
 ---
 
@@ -184,3 +194,4 @@ User feedback incorporated (2026-01-10):
 | 2026-01-10 | Claude Opus 4.5 | Initial ADR proposal |
 | 2026-01-10 | User + Claude | User feedback: D2 changed to matrix, D3 changed to blocking |
 | 2026-01-10 | Claude Opus 4.5 | ADR status changed to ACCEPTED |
+| 2026-01-10 | User + Claude | Added D5: Security scanning (pip-audit) - security-first approach |
