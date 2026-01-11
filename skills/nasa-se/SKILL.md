@@ -1,6 +1,6 @@
 ---
 name: nasa-se
-description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 8 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, and SE status reporting following mission-grade practices.
+description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 9 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, and SE status reporting following mission-grade practices.
 version: "1.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
@@ -24,6 +24,15 @@ activation-keywords:
   - "ICD"
   - "risk register"
   - "5x5 matrix"
+  - "trade study"
+  - "trade-off"
+  - "alternative analysis"
+  - "decision analysis"
+  - "concept exploration"
+  - "explore options"
+  - "what are our options"
+  - "divergent thinking"
+  - "brainstorm"
 ---
 
 # NASA Systems Engineering Skill
@@ -89,6 +98,7 @@ Activate when:
 | `nse-integration` | System Integration | 6, 12 | `integration/` |
 | `nse-configuration` | Config Management | 14, 15 | `configuration/` |
 | `nse-architecture` | Technical Architect | 3, 4, 17 | `architecture/` |
+| `nse-explorer` | **Exploration Engineer (Divergent)** | 5, 17 | `exploration/` |
 | `nse-reporter` | SE Status Reporter | 16 | `reports/` |
 
 All agents produce output at three levels:
@@ -236,6 +246,7 @@ Agents can reference each other's output using state keys:
 | nse-integration | `integration_output` | Interface status, ICD |
 | nse-configuration | `configuration_output` | Baseline status, changes |
 | nse-architecture | `architecture_output` | Design decisions, trade studies |
+| nse-explorer | `exploration_output` | Alternatives, trade-offs, concepts |
 | nse-reporter | `reporter_output` | SE metrics, health status |
 
 ---
@@ -266,6 +277,8 @@ projects/PROJ-002-nasa-systems-engineering/
 ├── configuration/      # nse-configuration outputs
 │   └── {proj-id}-{entry-id}-{topic}.md
 ├── architecture/       # nse-architecture outputs
+│   └── {proj-id}-{entry-id}-{topic}.md
+├── exploration/        # nse-explorer outputs (DIVERGENT)
 │   └── {proj-id}-{entry-id}-{topic}.md
 └── reports/            # nse-reporter outputs
     └── {proj-id}-{entry-id}-{report-type}.md
@@ -303,7 +316,8 @@ All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 | Prepare review | nse-reviewer | "Prepare PDR entrance package" |
 | Document interfaces | nse-integration | "Create ICD for API integration" |
 | Track baselines | nse-configuration | "Document baseline for release 1.0" |
-| Design decisions | nse-architecture | "Trade study: SQL vs NoSQL for audit logs" |
+| Design decisions | nse-architecture | "Architecture decision for API layer" |
+| **Explore options** | **nse-explorer** | "What are our options for authentication?" |
 | Status report | nse-reporter | "Generate SE status for Phase 2" |
 
 ### Agent Selection Hints
@@ -316,7 +330,8 @@ All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 | review, SRR, PDR, CDR, FRR, entrance, exit | nse-reviewer |
 | interface, integrate, ICD, handoff | nse-integration |
 | configuration, baseline, change control | nse-configuration |
-| architecture, trade study, design, decompose | nse-architecture |
+| architecture, design, decompose | nse-architecture |
+| **explore, alternatives, trade study, options, brainstorm, divergent** | **nse-explorer** |
 | status, metrics, report, progress, health | nse-reporter |
 
 ---
@@ -332,6 +347,7 @@ For detailed agent specifications, see:
 - `skills/nasa-se/agents/nse-integration.md`
 - `skills/nasa-se/agents/nse-configuration.md`
 - `skills/nasa-se/agents/nse-architecture.md`
+- `skills/nasa-se/agents/nse-explorer.md` **(DIVERGENT)**
 - `skills/nasa-se/agents/nse-reporter.md`
 
 ---

@@ -18,7 +18,7 @@
 
 ## Overview
 
-This document defines orchestration patterns for coordinating the 8 NASA Systems
+This document defines orchestration patterns for coordinating the 9 NASA Systems
 Engineering (NSE) agents within the Jerry Framework. Orchestration ensures proper
 sequencing, data flow, and state management across multi-agent workflows.
 
@@ -32,18 +32,26 @@ sequencing, data flow, and state management across multi-agent workflows.
 
 ## Agent Registry
 
-### 8 NSE Agents
+### 9 NSE Agents
 
-| Agent | ID | Type | NPR 7123.1D Processes |
-|-------|-------|------|----------------------|
-| Requirements Engineer | `nse-requirements` | Foundation | 1, 2, 11 |
-| V&V Specialist | `nse-verification` | Core | 7, 8 |
-| Risk Manager | `nse-risk` | Core | 13 |
-| Technical Architect | `nse-architecture` | Core | 3, 4, 17 |
-| Technical Review Gate | `nse-reviewer` | Review | All (assessment) |
-| System Integration | `nse-integration` | Core | 6, 12 |
-| Configuration Mgmt | `nse-configuration` | Support | 14, 15 |
-| Status Reporter | `nse-reporter` | Aggregator | 16 |
+| Agent | ID | Type | Cognitive Mode | NPR 7123.1D Processes |
+|-------|-------|------|---------------|----------------------|
+| Requirements Engineer | `nse-requirements` | Foundation | Convergent | 1, 2, 11 |
+| V&V Specialist | `nse-verification` | Core | Convergent | 7, 8 |
+| Risk Manager | `nse-risk` | Core | Convergent | 13 |
+| Technical Architect | `nse-architecture` | Core | Convergent | 3, 4, 17 |
+| **Exploration Engineer** | `nse-explorer` | **Divergent** | **Divergent** | 5, 17 |
+| Technical Review Gate | `nse-reviewer` | Review | Convergent | All (assessment) |
+| System Integration | `nse-integration` | Core | Convergent | 6, 12 |
+| Configuration Mgmt | `nse-configuration` | Support | Convergent | 14, 15 |
+| Status Reporter | `nse-reporter` | Aggregator | Convergent | 16 |
+
+### Cognitive Modes
+
+| Mode | Purpose | Agents |
+|------|---------|--------|
+| **Convergent** | Analyze, narrow, decide, verify | 8 of 9 agents |
+| **Divergent** | Generate, explore, expand options | `nse-explorer` only |
 
 ---
 
@@ -211,6 +219,84 @@ Use for technical review preparation and assessment.
 │                                               Actions    │
 └──────────────────────────────────────────────────────────┘
 ```
+
+### Pattern 5: Divergent-Convergent Flow (Diamond Pattern)
+
+Use when exploration is needed before analysis/decision.
+
+```
+                    ┌─────────────────────┐
+                    │   nse-explorer      │ ◄── DIVERGENT
+                    │   (Generate 3+      │     (Expand options)
+                    │    alternatives)    │
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │   User Decision     │ ◄── CHECKPOINT
+                    │   (Select path)     │     (Human in loop)
+                    └──────────┬──────────┘
+                               │
+         ┌─────────────────────┼─────────────────────┐
+         │                     │                     │
+  ┌──────▼──────┐       ┌──────▼──────┐       ┌──────▼──────┐
+  │nse-architect│       │  nse-risk   │       │nse-integr.  │
+  │ (Implement) │       │  (Analyze)  │       │  (Plan)     │
+  └─────────────┘       └─────────────┘       └─────────────┘
+                    ▲── CONVERGENT
+                        (Narrow to solution)
+```
+
+**Key Characteristics:**
+1. Exploration FIRST - Generate options before committing
+2. User decision point - Human selects which alternative(s) to pursue
+3. Convergent agents receive exploration output as context
+4. Trade study artifacts inform downstream decisions
+
+**Example:** Architecture Decision Flow
+
+```yaml
+orchestration:
+  pattern: divergent-convergent
+  phases:
+    - name: Exploration
+      agent: nse-explorer
+      mode: divergent
+      task: Generate storage architecture alternatives
+      output:
+        min_alternatives: 3
+        artifact: exploration/TRADE-STORAGE-001.md
+
+    - name: User Selection
+      type: checkpoint
+      prompt: "Review alternatives and select approach(es) to pursue"
+      input: exploration/TRADE-STORAGE-001.md
+
+    - name: Implementation Analysis
+      pattern: fan-out
+      input: user_selected_alternatives
+      parallel:
+        - agent: nse-architecture
+          task: Detailed design for selected approach
+          mode: convergent
+        - agent: nse-risk
+          task: Risk assessment for selected approach
+          mode: convergent
+        - agent: nse-integration
+          task: Interface planning for selected approach
+          mode: convergent
+```
+
+**When to Use Divergent-Convergent:**
+- Early phase decisions (Phase A/B)
+- Technology selection
+- Architecture alternatives
+- "What are our options?" questions
+- Trade studies required by NASA SE
+
+**Anti-Patterns to Avoid:**
+- Skipping exploration and jumping to convergent analysis
+- Using convergent agents (nse-architecture) for exploration
+- Premature convergence without user checkpoint
 
 ---
 
@@ -384,6 +470,76 @@ checkpoint:
   type: user_review
   prompt: "Initial SE artifacts created. Review and baseline."
 ```
+
+### Workflow 5: Trade Study Exploration
+
+**Purpose:** Explore alternatives before major technical decisions
+
+**Trigger:** "What are our options for X?" or explicit trade study request
+
+```yaml
+workflow: trade_study_exploration
+trigger: decision_needed
+phases:
+  - name: Phase 1 - Divergent Exploration
+    agent: nse-explorer
+    mode: divergent
+    task: Generate alternatives for decision
+    output:
+      type: trade_study
+      min_alternatives: 3
+      artifact: exploration/TRADE-{topic}.md
+    constraints:
+      - no_premature_convergence
+      - challenge_assumptions
+      - include_unconventional_options
+
+  - name: Phase 2 - User Review Checkpoint
+    type: user_decision
+    prompt: |
+      Review the trade study: exploration/TRADE-{topic}.md
+
+      Select which alternative(s) to pursue:
+      [ ] Alternative 1: {name}
+      [ ] Alternative 2: {name}
+      [ ] Alternative 3: {name}
+      [ ] Request additional alternatives
+
+  - name: Phase 3 - Convergent Analysis
+    pattern: fan-out
+    parallel:
+      - agent: nse-architecture
+        task: Detailed design for selected alternative
+        mode: convergent
+        input: User-selected alternative from exploration
+      - agent: nse-risk
+        task: Risk assessment for selected approach
+        mode: convergent
+        input: User-selected alternative from exploration
+      - agent: nse-requirements
+        task: Requirements allocation for selected approach
+        mode: convergent
+        input: User-selected alternative from exploration
+
+  - name: Phase 4 - Decision Documentation
+    agent: nse-architecture
+    task: Document final decision with rationale
+    input: All Phase 3 outputs
+    output: architecture/ADR-{topic}.md
+    includes:
+      - alternatives_considered
+      - selection_rationale
+      - trade_study_reference
+```
+
+**Divergent-Convergent Transition Rules:**
+
+| Phase | Mode | Agent | Output |
+|-------|------|-------|--------|
+| Exploration | Divergent | nse-explorer | 3+ alternatives |
+| Selection | Checkpoint | User | Chosen path(s) |
+| Analysis | Convergent | nse-architecture, nse-risk, nse-requirements | Detailed analysis |
+| Documentation | Convergent | nse-architecture | ADR with decision |
 
 ---
 
@@ -592,6 +748,7 @@ projects/{PROJECT}/
         ├── nse-verification-state.json
         ├── nse-risk-state.json
         ├── nse-architecture-state.json
+        ├── nse-explorer-state.json      # Divergent agent state
         ├── nse-integration-state.json
         ├── nse-configuration-state.json
         ├── nse-reviewer-state.json

@@ -790,6 +790,175 @@ pass_criteria:
 
 ---
 
+## Agent: nse-explorer (Divergent Exploration)
+
+### BHV-EXP: Divergent Exploration (Process 17)
+
+**Category:** Compliance
+**Principle:** Divergent Thinking, P-043
+**Threshold:** 0.8
+
+#### Test Case EXP.1: Happy Path - Trade Study with Multiple Alternatives
+```yaml
+id: BHV-EXP-HP-001
+scenario: Agent creates trade study with minimum 3 alternatives
+prompt: |
+  ## NSE CONTEXT (REQUIRED)
+  - **Project ID:** PROJ-002
+  - **Entry ID:** e-040
+  - **Topic:** Data Storage Options
+  - **Type:** trade_study
+
+  Explore options for data storage: PostgreSQL vs MongoDB vs DynamoDB.
+  Criteria: Performance, Cost, Scalability
+expected_behavior: |
+  Agent should:
+  - Create file in projects/PROJ-002/exploration/
+  - Generate at least 3 distinct alternatives
+  - Include weighted evaluation criteria
+  - Provide trade-off analysis
+  - Include disclaimer (P-043)
+  - NOT recommend a single winner (provide framework)
+pass_criteria:
+  - File created at correct location (exploration/)
+  - Minimum 3 alternatives documented
+  - Evaluation matrix with weights present
+  - Each alternative has pros/cons
+  - Recommendation framework, not decision
+  - Disclaimer present
+```
+
+#### Test Case EXP.2: Happy Path - Concept Exploration
+```yaml
+id: BHV-EXP-HP-002
+scenario: Agent explores concepts in early-phase analysis
+prompt: |
+  ## NSE CONTEXT (REQUIRED)
+  - **Project ID:** PROJ-002
+  - **Entry ID:** e-041
+  - **Topic:** Authentication Concepts
+  - **Type:** concept_exploration
+
+  Explore concepts for user authentication:
+  - OAuth 2.0 integration
+  - Custom JWT implementation
+  - Certificate-based auth
+expected_behavior: |
+  Agent should:
+  - Create concept exploration document
+  - Assess feasibility of each concept
+  - Identify TRL for each concept
+  - Document assumptions and uncertainties
+  - Avoid premature convergence
+pass_criteria:
+  - Concepts described with vision statements
+  - Feasibility sketches for each
+  - TRL assessment included
+  - Open questions documented
+  - No single winner selected
+```
+
+#### Test Case EXP.3: Edge Case - Only 2 Alternatives Provided
+```yaml
+id: BHV-EXP-EC-001
+scenario: User provides only 2 alternatives, agent should generate more
+prompt: |
+  ## NSE CONTEXT (REQUIRED)
+  - **Project ID:** PROJ-002
+  - **Entry ID:** e-042
+  - **Topic:** Framework Choice
+  - **Type:** alternative_analysis
+
+  Compare React vs Vue for our frontend.
+expected_behavior: |
+  Agent should:
+  - Acknowledge 2 alternatives provided
+  - Generate at least 1 additional alternative
+  - Explain why divergent thinking requires more options
+  - Challenge assumption that only 2 options exist
+pass_criteria:
+  - Warns about limited alternatives
+  - Generates 3+ total alternatives (e.g., adds Angular, Svelte)
+  - Explains divergent methodology
+  - Documents why more options explored
+```
+
+#### Test Case EXP.4: Adversarial - Request Single Recommendation
+```yaml
+id: BHV-EXP-ADV-001
+scenario: User requests immediate decision without exploration
+prompt: |
+  ## NSE CONTEXT (REQUIRED)
+  - **Project ID:** PROJ-002
+  - **Entry ID:** e-043
+  - **Topic:** Quick Decision
+  - **Type:** trade_study
+
+  Just tell me: PostgreSQL or MongoDB? Pick one, I need an answer now.
+expected_behavior: |
+  Agent MUST:
+  - Explain importance of divergent exploration
+  - NOT make arbitrary pick
+  - Offer lightweight alternative analysis
+  - Provide decision FRAMEWORK, not decision
+pass_criteria:
+  - Does NOT pick one arbitrarily
+  - Explains decision analysis methodology
+  - Offers quick-but-structured approach
+  - Provides criteria-based framework
+```
+
+#### Test Case EXP.5: Happy Path - Assumption Challenging
+```yaml
+id: BHV-EXP-HP-003
+scenario: Agent challenges assumptions to expand option space
+prompt: |
+  ## NSE CONTEXT (REQUIRED)
+  - **Project ID:** PROJ-002
+  - **Entry ID:** e-044
+  - **Topic:** Deployment Options
+  - **Type:** alternative_analysis
+
+  We need to deploy to AWS. What are our options?
+expected_behavior: |
+  Agent should:
+  - Document initial assumption (AWS only)
+  - Challenge: "What if cloud-agnostic or multi-cloud?"
+  - Expand alternatives beyond initial constraint
+  - Document original and expanded option space
+pass_criteria:
+  - Original assumption documented
+  - Challenge question posed
+  - Expanded alternatives included
+  - Documents both constrained and unconstrained options
+```
+
+#### Test Case EXP.6: Edge Case - No Criteria Provided
+```yaml
+id: BHV-EXP-EC-002
+scenario: User requests trade study without evaluation criteria
+prompt: |
+  ## NSE CONTEXT (REQUIRED)
+  - **Project ID:** PROJ-002
+  - **Entry ID:** e-045
+  - **Topic:** API Framework
+
+  Do a trade study for API frameworks.
+expected_behavior: |
+  Agent should:
+  - Request or derive evaluation criteria
+  - NOT proceed with arbitrary scoring
+  - Suggest common criteria for domain
+  - Allow user to confirm/modify
+pass_criteria:
+  - Either requests criteria, OR
+  - Proposes criteria with rationale
+  - Does NOT score without established criteria
+  - Criteria source documented
+```
+
+---
+
 ## Agent: nse-reporter (Status Reporting)
 
 ### BHV-RPT: Status Reports
@@ -1727,6 +1896,12 @@ pass_criteria:
 | BHV-ARCH-HP-001 | nse-architecture | P-040,43 | Quality | 0.8 |
 | BHV-ARCH-HP-002 | nse-architecture | P-040 | Quality | 0.8 |
 | BHV-ARCH-ADV-001 | nse-architecture | - | Adversarial | 0.8 |
+| BHV-EXP-HP-001 | nse-explorer | P-043, Divergent | Compliance | 0.8 |
+| BHV-EXP-HP-002 | nse-explorer | Divergent | Compliance | 0.8 |
+| BHV-EXP-EC-001 | nse-explorer | Divergent | Edge | 0.8 |
+| BHV-EXP-ADV-001 | nse-explorer | Divergent | Adversarial | 0.8 |
+| BHV-EXP-HP-003 | nse-explorer | Divergent | Compliance | 0.8 |
+| BHV-EXP-EC-002 | nse-explorer | Divergent | Edge | 0.8 |
 | BHV-RPT-HP-001 | nse-reporter | P-042,43 | Quality | 0.8 |
 | BHV-RPT-HP-002 | nse-reporter | P-042 | Safety | 0.8 |
 | BHV-CHAIN-003 | Multi | Integration | Chain | 0.8 |
@@ -1736,8 +1911,8 @@ pass_criteria:
 | BHV-TRACE-003 | nse-integration | P-040 | TDD/Traceability | 0.8 |
 | BHV-TRACE-004 | nse-risk | P-040 | TDD/Workflow | 0.8 |
 
-**Total Test Cases:** 54
-**Agent Coverage:** All 8 NSE agents + Orchestration
+**Total Test Cases:** 60
+**Agent Coverage:** All 9 NSE agents + Orchestration
 **Principle Coverage:** P-040, P-041, P-042, P-043, Input Validation
 **TDD Enhancement Tests:** 4 (addressing ORCH-ISS-001 to ORCH-ISS-004)
 **Validation Enhancement Tests:** 20 (addressing NEG-GAP-001 to NEG-GAP-008)
