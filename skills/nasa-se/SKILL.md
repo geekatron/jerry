@@ -1,6 +1,6 @@
 ---
 name: nasa-se
-description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 9 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, and SE status reporting following mission-grade practices.
+description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
 version: "1.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
@@ -33,6 +33,12 @@ activation-keywords:
   - "what are our options"
   - "divergent thinking"
   - "brainstorm"
+  - "quality assurance"
+  - "QA audit"
+  - "artifact validation"
+  - "compliance check"
+  - "NPR compliance"
+  - "work product quality"
 ---
 
 # NASA Systems Engineering Skill
@@ -99,6 +105,7 @@ Activate when:
 | `nse-configuration` | Config Management | 14, 15 | `configuration/` |
 | `nse-architecture` | Technical Architect | 3, 4, 17 | `architecture/` |
 | `nse-explorer` | **Exploration Engineer (Divergent)** | 5, 17 | `exploration/` |
+| `nse-qa` | **Quality Assurance Specialist** | 14, 15, 16 | `qa/` |
 | `nse-reporter` | SE Status Reporter | 16 | `reports/` |
 
 All agents produce output at three levels:
@@ -247,6 +254,7 @@ Agents can reference each other's output using state keys:
 | nse-configuration | `configuration_output` | Baseline status, changes |
 | nse-architecture | `architecture_output` | Design decisions, trade studies |
 | nse-explorer | `exploration_output` | Alternatives, trade-offs, concepts |
+| nse-qa | `qa_output` | Compliance scores, audit findings |
 | nse-reporter | `reporter_output` | SE metrics, health status |
 
 ---
@@ -280,6 +288,8 @@ projects/PROJ-002-nasa-systems-engineering/
 │   └── {proj-id}-{entry-id}-{topic}.md
 ├── exploration/        # nse-explorer outputs (DIVERGENT)
 │   └── {proj-id}-{entry-id}-{topic}.md
+├── qa/                 # nse-qa outputs
+│   └── {proj-id}-{entry-id}-qa-report.md
 └── reports/            # nse-reporter outputs
     └── {proj-id}-{entry-id}-{report-type}.md
 ```
@@ -318,6 +328,7 @@ All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 | Track baselines | nse-configuration | "Document baseline for release 1.0" |
 | Design decisions | nse-architecture | "Architecture decision for API layer" |
 | **Explore options** | **nse-explorer** | "What are our options for authentication?" |
+| **Validate artifacts** | **nse-qa** | "Audit requirements doc for NPR compliance" |
 | Status report | nse-reporter | "Generate SE status for Phase 2" |
 
 ### Agent Selection Hints
@@ -332,6 +343,7 @@ All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 | configuration, baseline, change control | nse-configuration |
 | architecture, design, decompose | nse-architecture |
 | **explore, alternatives, trade study, options, brainstorm, divergent** | **nse-explorer** |
+| **QA, audit, compliance, artifact validation, work product quality** | **nse-qa** |
 | status, metrics, report, progress, health | nse-reporter |
 
 ---
@@ -348,6 +360,7 @@ For detailed agent specifications, see:
 - `skills/nasa-se/agents/nse-configuration.md`
 - `skills/nasa-se/agents/nse-architecture.md`
 - `skills/nasa-se/agents/nse-explorer.md` **(DIVERGENT)**
+- `skills/nasa-se/agents/nse-qa.md` **(QUALITY ASSURANCE)**
 - `skills/nasa-se/agents/nse-reporter.md`
 
 ---
@@ -364,4 +377,4 @@ For detailed agent specifications, see:
 
 *Skill Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042*
-*Last Updated: 2026-01-09*
+*Last Updated: 2026-01-11*
