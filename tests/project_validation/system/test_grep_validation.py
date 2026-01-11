@@ -8,6 +8,11 @@ Test Categories:
 - Happy Path: Zero matches for old patterns
 - Comprehensive: Full directory scan
 - Regression: Ensure fix is complete
+
+Migration History:
+    Originally: projects/PROJ-001-plugin-cleanup/tests/system/test_grep_validation.py
+    Migrated: 2026-01-10 (TD-005)
+    Commit: a911859 (original creation for BUG-001)
 """
 from __future__ import annotations
 
@@ -22,21 +27,23 @@ import pytest
 # SYSTEM-LEVEL VALIDATION
 # =============================================================================
 
-class TestNoOldPathsInProject:
-    """Verify no old docs/ paths exist in PROJ-001 artifacts."""
 
-    def test_zero_old_paths_via_grep(self, proj_001_root: Path):
+class TestNoOldPathsInProject:
+    """Verify no old docs/ paths exist in project artifacts."""
+
+    def test_zero_old_paths_via_grep(self, proj_root: Path, project_id: str) -> None:
         """
         CRITICAL: grep for old path pattern should return zero matches in artifact files.
 
-        This is the primary validation that BUG-001 is fixed.
+        This is the primary validation that BUG-001-like issues are prevented.
         Excludes: test files (which intentionally contain old patterns for testing)
         """
-        pattern = r"docs/(research|synthesis|analysis|decisions)/PROJ-001"
+        proj_num = project_id.split("-")[1]
+        pattern = rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}"
 
         # Use grep to search recursively, excluding test directory
         result = subprocess.run(
-            ["grep", "-r", "-E", "--exclude-dir=tests", pattern, str(proj_001_root)],
+            ["grep", "-r", "-E", "--exclude-dir=tests", pattern, str(proj_root)],
             capture_output=True,
             text=True,
         )
@@ -61,37 +68,38 @@ class TestNoOldPathsInProject:
 
         # Exit code 1 = no matches = PASS (or all matches were filtered)
 
-    def test_zero_old_paths_in_research(self, proj_001_root: Path):
+    def test_zero_old_paths_in_research(self, proj_root: Path, project_id: str) -> None:
         """No old paths in research directory."""
-        research_dir = proj_001_root / "research"
-        self._assert_no_old_paths_in_dir(research_dir)
+        research_dir = proj_root / "research"
+        self._assert_no_old_paths_in_dir(research_dir, project_id)
 
-    def test_zero_old_paths_in_synthesis(self, proj_001_root: Path):
+    def test_zero_old_paths_in_synthesis(self, proj_root: Path, project_id: str) -> None:
         """No old paths in synthesis directory."""
-        synthesis_dir = proj_001_root / "synthesis"
-        self._assert_no_old_paths_in_dir(synthesis_dir)
+        synthesis_dir = proj_root / "synthesis"
+        self._assert_no_old_paths_in_dir(synthesis_dir, project_id)
 
-    def test_zero_old_paths_in_analysis(self, proj_001_root: Path):
+    def test_zero_old_paths_in_analysis(self, proj_root: Path, project_id: str) -> None:
         """No old paths in analysis directory."""
-        analysis_dir = proj_001_root / "analysis"
-        self._assert_no_old_paths_in_dir(analysis_dir)
+        analysis_dir = proj_root / "analysis"
+        self._assert_no_old_paths_in_dir(analysis_dir, project_id)
 
-    def test_zero_old_paths_in_reports(self, proj_001_root: Path):
+    def test_zero_old_paths_in_reports(self, proj_root: Path, project_id: str) -> None:
         """No old paths in reports directory."""
-        reports_dir = proj_001_root / "reports"
-        self._assert_no_old_paths_in_dir(reports_dir)
+        reports_dir = proj_root / "reports"
+        self._assert_no_old_paths_in_dir(reports_dir, project_id)
 
-    def test_zero_old_paths_in_decisions(self, proj_001_root: Path):
+    def test_zero_old_paths_in_decisions(self, proj_root: Path, project_id: str) -> None:
         """No old paths in decisions directory."""
-        decisions_dir = proj_001_root / "decisions"
-        self._assert_no_old_paths_in_dir(decisions_dir)
+        decisions_dir = proj_root / "decisions"
+        self._assert_no_old_paths_in_dir(decisions_dir, project_id)
 
-    def _assert_no_old_paths_in_dir(self, directory: Path):
+    def _assert_no_old_paths_in_dir(self, directory: Path, project_id: str) -> None:
         """Helper to assert no old paths in a directory."""
         if not directory.exists():
             return  # Directory doesn't exist, nothing to check
 
-        pattern = re.compile(r"docs/(research|synthesis|analysis|decisions)/PROJ-001")
+        proj_num = project_id.split("-")[1]
+        pattern = re.compile(rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}")
 
         for md_file in directory.glob("*.md"):
             content = md_file.read_text()
@@ -103,48 +111,54 @@ class TestNoOldPathsInProject:
 
 
 class TestAllPathsAreProjectCentric:
-    """Verify all PROJ-001 paths use project-centric format."""
+    """Verify all project paths use project-centric format."""
 
-    def test_all_proj001_refs_are_project_centric(self, proj_001_root: Path):
+    def test_all_project_refs_are_project_centric(
+        self,
+        proj_root: Path,
+        project_id: str,
+    ) -> None:
         """
-        All references to PROJ-001 artifacts should use projects/ prefix.
+        All references to project artifacts should use projects/ prefix.
         """
+        proj_num = project_id.split("-")[1]
         project_centric_pattern = re.compile(
-            r"projects/PROJ-001-plugin-cleanup/(research|synthesis|analysis|decisions|reports)"
+            rf"projects/PROJ-{proj_num}-[a-z0-9-]+/(research|synthesis|analysis|decisions|reports)"
         )
-        old_pattern = re.compile(r"docs/(research|synthesis|analysis|decisions)/PROJ-001")
+        old_pattern = re.compile(rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}")
 
-        for md_file in proj_001_root.rglob("*.md"):
+        for md_file in proj_root.rglob("*.md"):
+            # Skip test files
+            if "tests" in str(md_file):
+                continue
+
             content = md_file.read_text()
 
             # Find all path references
             old_matches = old_pattern.findall(content)
-            new_matches = project_centric_pattern.findall(content)
 
             # Should have zero old matches
             assert len(old_matches) == 0, (
                 f"Old paths in {md_file}: {old_matches}"
             )
 
-            # If file references PROJ-001 paths, they should be project-centric
-            # (new_matches can be empty for files that don't reference other docs)
-
 
 class TestGrepCommandEquivalence:
     """Verify our Python validation matches grep behavior."""
 
-    def test_python_validation_matches_grep(self, proj_001_root: Path):
+    def test_python_validation_matches_grep(self, proj_root: Path, project_id: str) -> None:
         """
         Python regex validation should produce same results as grep for ARTIFACT files.
 
         This ensures our test logic is correct.
         Excludes: test files, bug documentation
         """
-        pattern = r"docs/(research|synthesis|analysis|decisions)/PROJ-001"
+        proj_num = project_id.split("-")[1]
+        pattern = rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}"
 
         # Count via grep (excluding tests)
         grep_result = subprocess.run(
-            ["grep", "-r", "-c", "-E", "--exclude-dir=tests", pattern, str(proj_001_root)],
+            ["grep", "-r", "-c", "-E", "--exclude-dir=tests", pattern, str(proj_root)],
             capture_output=True,
             text=True,
         )
@@ -160,19 +174,19 @@ class TestGrepCommandEquivalence:
         # Count via Python (excluding tests and documentation about the bug)
         python_pattern = re.compile(pattern)
         python_total = 0
-        for md_file in proj_001_root.rglob("*.md"):
+        for md_file in proj_root.rglob("*.md"):
             # Skip test files
             if "tests" in str(md_file):
                 continue
             # Skip bug documentation
-            if "BUG-ANALYSIS" in md_file.name:
+            if "BUG-ANALYSIS" in md_file.name or "BUG-" in md_file.name:
                 continue
 
             content = md_file.read_text()
             matches = python_pattern.findall(content)
             python_total += len(matches)
 
-        # Counts should be equal (regardless of absolute value)
-        # Note: Some documentation files may legitimately reference the old pattern
-        # when discussing the migration/bug fix
-        assert grep_total == python_total, f"grep ({grep_total}) and Python ({python_total}) counts should match"
+        # Counts should be equal
+        assert grep_total == python_total, (
+            f"grep ({grep_total}) and Python ({python_total}) counts should match"
+        )

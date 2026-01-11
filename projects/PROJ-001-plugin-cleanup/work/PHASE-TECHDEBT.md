@@ -23,7 +23,7 @@
 | TD-002 | Update ps-* agent reference paths | MEDIUM | ✅ DONE | BUG-001 |
 | TD-003 | Add hook decision value tests | LOW | ✅ DONE | BUG-002 |
 | TD-004 | pytest_bdd dependency missing | LOW | ✅ DONE | 008d.3 |
-| TD-005 | Misplaced tests in projects/ | MEDIUM | ⏳ PENDING | ENFORCE-011 |
+| TD-005 | Misplaced tests in projects/ | MEDIUM | 🔄 IN PROGRESS | ENFORCE-011 |
 
 ---
 
@@ -214,63 +214,103 @@ XS - Simple dependency addition or file removal
 
 ---
 
-## TD-005: Misplaced Tests in projects/ Directory ⏳
+## TD-005: Misplaced Tests in projects/ Directory 🔄
 
-> **Status**: PENDING
+> **Status**: IN PROGRESS
 > **Priority**: MEDIUM
 > **Source**: ENFORCE-011 investigation
+> **Started**: 2026-01-10
 
 ### Description
 
 Test files exist in `projects/PROJ-001-plugin-cleanup/tests/` which violates the project structure convention. Tests should be in `tests/` at the repository root, not within project workspaces.
 
-### Files Found
+### Deep Analysis Results (2026-01-10)
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `tests/unit/test_path_validation.py` | 292 | Path validation logic |
-| `tests/contract/test_document_schema.py` | 270 | Document schema validation |
-| `tests/integration/test_file_resolution.py` | 227 | File resolution tests |
-| `tests/system/test_grep_validation.py` | 178 | Grep validation tests |
-| `tests/architecture/test_path_conventions.py` | 270 | Path convention tests |
-| `tests/e2e/test_document_traceability.py` | 263 | Document traceability |
-| **Total** | **~1,500** | |
+#### Origin
+
+| Attribute | Value |
+|-----------|-------|
+| Created | 2026-01-09 |
+| Commit | `a911859` |
+| Author | Claude Opus 4.5 |
+| Purpose | BUG-001 regression prevention |
+
+**Finding**: These are NOT temporary tests. They were deliberately created as a comprehensive BUG-001 regression test suite following the test pyramid methodology.
+
+#### Test Inventory
+
+| Category | Tests | Value | Portability | Action |
+|----------|-------|-------|-------------|--------|
+| Unit (path validation) | 35 | HIGH | Fully portable | **MIGRATE** |
+| Architecture (ADR-003) | 14 | HIGH | Portable | **MIGRATE** |
+| System (grep validation) | 6 | HIGH | Portable | **MIGRATE** |
+| Integration (file resolution) | 22 | MEDIUM | Needs adaptation | **MIGRATE** |
+| E2E (traceability) | 8 | MEDIUM | PROJ-001 specific | Archive |
+| Contract (schema) | 13 | LOW | PROJ-001 specific | Archive |
+| **Total** | **98** | | | |
+
+#### Current State
+
+- 93/98 tests pass (95% pass rate)
+- 5 failures due to project evolution (new directories, new document formats)
+- Tests NOT running in CI (not in `pytest.ini` testpaths)
 
 ### Root Cause
 
-Likely created during earlier skill development or path validation work. The tests appear to validate project documentation conventions rather than session_management code.
+Created on 2026-01-09 as BUG-001 regression tests. Located in `projects/` because they validate project documentation - but this violates the convention that `projects/` should only contain research/design artifacts, not code.
 
 ### Impact
 
-- Confusing project structure
-- Tests not running as part of CI (not in `tests/` root)
-- Violates established convention: `projects/` for research/design only
+- Tests not running as part of CI
+- Violates established convention
+- Valuable regression tests being wasted
 
-### Proposed Solution
+### Execution Plan (Option A: Migrate Valuable Tests)
 
-1. Review each test file to understand its purpose
-2. If valid: Move to appropriate location in `tests/`
-3. If obsolete: Remove with documentation
-4. Update any imports/paths
+#### Phase 1: Setup
+- [ ] Create `tests/project_validation/` directory structure
+- [ ] Create shared fixtures in `tests/project_validation/conftest.py`
+
+#### Phase 2: Migrate Portable Tests (~60 tests)
+- [ ] Migrate `test_path_validation.py` → `tests/project_validation/unit/`
+- [ ] Migrate `test_path_conventions.py` → `tests/project_validation/architecture/`
+- [ ] Migrate `test_grep_validation.py` → `tests/project_validation/system/`
+- [ ] Parameterize tests to work with any `PROJ-*` directory dynamically
+
+#### Phase 3: Archive PROJ-001 Specific Tests
+- [ ] Document archived tests in this file
+- [ ] Remove `projects/PROJ-001-plugin-cleanup/tests/` directory
+
+#### Phase 4: CI Integration
+- [ ] Verify migrated tests run in main test suite
+- [ ] Update pytest.ini if needed
+- [ ] Document test execution strategy
 
 ### Files Affected
 
-| Location | Action |
-|----------|--------|
-| `projects/PROJ-001-plugin-cleanup/tests/` | Remove directory after migration |
-| `tests/project_validation/` | Potential new home if tests are valid |
+| Source | Destination | Action |
+|--------|-------------|--------|
+| `projects/.../tests/unit/test_path_validation.py` | `tests/project_validation/unit/` | Migrate + parameterize |
+| `projects/.../tests/architecture/test_path_conventions.py` | `tests/project_validation/architecture/` | Migrate + parameterize |
+| `projects/.../tests/system/test_grep_validation.py` | `tests/project_validation/system/` | Migrate + parameterize |
+| `projects/.../tests/integration/test_file_resolution.py` | `tests/project_validation/integration/` | Migrate + adapt |
+| `projects/.../tests/e2e/test_document_traceability.py` | Archive | Document & remove |
+| `projects/.../tests/contract/test_document_schema.py` | Archive | Document & remove |
+| `projects/.../tests/conftest.py` | Merge into new conftest | Migrate fixtures |
 
 ### Acceptance Criteria
 
-- [ ] All test files reviewed for relevance
-- [ ] Valid tests migrated to `tests/` directory
-- [ ] Obsolete tests removed
+- [ ] All valuable tests migrated to `tests/project_validation/`
+- [ ] Tests parameterized for dynamic project discovery
+- [ ] Archived tests documented
 - [ ] No test files remain in `projects/*/`
-- [ ] CI runs migrated tests
+- [ ] Migrated tests pass (target: ~60 tests)
+- [ ] Tests included in main test suite run
 
 ### Effort Estimate
 
-S - Requires review and migration of ~1,500 lines
+S - 2-3 hours for extraction, parameterization, and verification
 
 ---
 
@@ -283,3 +323,4 @@ S - Requires review and migration of ~1,500 lines
 | 2026-01-10 | Claude | Added TD-004: pytest_bdd dependency |
 | 2026-01-10 | Claude | Added TD-005: Misplaced tests in projects/ |
 | 2026-01-10 | Claude | Completed TD-002: All 9 ps-* agents updated |
+| 2026-01-10 | Claude | TD-005: Deep analysis complete, execution plan defined |
