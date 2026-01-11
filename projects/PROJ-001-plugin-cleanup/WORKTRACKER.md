@@ -205,10 +205,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Initiative**: ENFORCE-010 - Infrastructure Tests (NEXT)
-> **Active Phase**: Phase 6 Enforcement (75% complete)
-> **Status**: ✅ ENFORCE-009 COMPLETE - Ready for ENFORCE-010
-> **Previous**: ENFORCE-009 complete (319 tests: 130 SK + 189 SM)
+> **Active Initiative**: ENFORCE-011 - E2E Tests (NEXT)
+> **Active Phase**: Phase 6 Enforcement (80% complete)
+> **Status**: ✅ ENFORCE-010 COMPLETE - Ready for ENFORCE-011
+> **Previous**: ENFORCE-010 complete (341 tests: 130 SK + 211 SM)
 
 ### Active Initiative Details
 
@@ -460,7 +460,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | 008d.4.2 | Write infrastructure tests (28) | 6.008d.4 | ✅ | 008d.4.1 | 008d.4.3 |
 | 008d.4.3 | Verify compliance (all pass) | 6.008d.4 | ✅ | 008d.4.2 | 009 |
 | ENFORCE-009 | Application Layer Tests (28 tests) | 6 | ✅ | 008d | 011 |
-| ENFORCE-010 | Infrastructure Tests | 6 | ⏳ | 008d | 011 |
+| ENFORCE-010 | Infrastructure Integration Tests (22) | 6 | ✅ | 008d | 011 |
 | ENFORCE-011 | E2E Tests | 6 | ⏳ | 009, 010 | 012 |
 | ENFORCE-012 | Contract Tests | 6 | ⏳ | 011 | 014 |
 | ENFORCE-013 | Architecture Tests | 6 | ⏳ | 008d | 016 |
@@ -523,7 +523,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ID | Title | Location | Tests | Status |
 |----|-------|----------|-------|--------|
 | I-SK | Shared Kernel | `src/shared_kernel/` | 130 | ✅ |
-| I-SM | Session Management | `src/session_management/` | 189 | ✅ |
+| I-SM | Session Management | `src/session_management/` | 211 | ✅ |
 
 ### Test Suites
 
@@ -533,11 +533,11 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | Session Mgmt Domain | `tests/session_management/unit/domain/` | 133 | ✅ |
 | Session Mgmt Application | `tests/session_management/unit/application/` | 28 | ✅ |
 | Session Mgmt Infrastructure | `tests/session_management/unit/infrastructure/` | 28 | ✅ |
-| Session Mgmt Integration | `tests/session_management/integration/` | 0 | ⏳ |
+| Session Mgmt Integration | `tests/session_management/integration/` | 22 | ✅ |
 | Session Mgmt E2E | `tests/session_management/e2e/` | 0 | ⏳ |
 
 > **Note**: Shared Kernel count excludes `test_snowflake_id_bdd.py` (requires pytest_bdd - see TD-004).
-> Total verified: **319 tests passing** (130 SK + 189 SM)
+> Total verified: **341 tests passing** (130 SK + 211 SM)
 
 ---
 
@@ -637,3 +637,4 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | 008d.4 COMPLETE: Infrastructure tests for FilesystemProjectAdapter (28 tests) |
 | 2026-01-10 | Claude | **ENFORCE-008d COMPLETE**: Domain refactoring done (291 tests: 130 SK + 161 SM) |
 | 2026-01-10 | Claude | ENFORCE-009 COMPLETE: Application layer tests (28 tests) - Total: 319 tests |
+| 2026-01-10 | Claude | ENFORCE-010 COMPLETE: Infrastructure integration tests (22 tests) - Total: 341 tests |
