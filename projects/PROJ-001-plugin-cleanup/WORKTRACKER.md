@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T23:45:00Z
+**Last Updated**: 2026-01-11T00:30:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -205,21 +205,31 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Initiative**: ✅ PHASE 6 COMPLETE
-> **Active Phase**: Phase 6 Enforcement (100% complete)
-> **Status**: ✅ ALL ENFORCE TASKS COMPLETE
-> **Summary**: Project Enforcement fully implemented with 263 session_management tests
+> **Active Initiative**: DOC-001 WORKTRACKER Decomposition Archaeology
+> **Active Phase**: Documentation & Knowledge Capture
+> **Status**: 🔄 IN PROGRESS
+> **Summary**: Documenting how WORKTRACKER decomposition process works for reproducibility
 
 ### Active Initiative Details
 
 | Attribute | Value |
 |-----------|-------|
-| Phase ID | PHASE-IMPL-DOMAIN |
-| Current Task | ✅ COMPLETE (10 original tasks done) |
-| Total Tasks | 16 (10 original + 3 ES + 3 REPO infrastructure) |
-| Total Tests | 975 passing (746 work_tracking + 142 shared_kernel + 87 infrastructure) |
-| Coverage Gate | 90%+ |
-| Coverage Audit | ✅ PASS (2026-01-10) |
+| Initiative ID | DOC-001 |
+| Current Task | DOC-001.R1-R3 (Parallel Research) |
+| Total Tasks | 8 (3 research + 1 synthesis + 3 deliverables + 1 parent) |
+| Objective | Create reproducible process for WORKTRACKER decomposition |
+| Deliverables | RUNBOOK-002, PURPOSE-CATALOG.md, worktracker-decomposition SKILL |
+
+### Previous Milestones (This Session)
+
+| Milestone | Status | Tests |
+|-----------|--------|-------|
+| CI-001: CI/CD Pipeline | ✅ COMPLETE | 1330 pass |
+| TD-006: scripts/ restructure | ✅ COMPLETE | - |
+| TD-007: filelock dependency | ✅ COMPLETE | - |
+| TD-008: ruff fixes (11) | ✅ COMPLETE | - |
+| Ruff errors | 17 → 0 | - |
+| Pyright errors (src/) | 4 → 2 | - |
 
 ### Implementation Overview
 
@@ -488,6 +498,44 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | TD-008 | Fix ruff code quality issues (11 fixed) | LOW | ✅ DONE | CI-001.V | F841, B904, UP038, UP028, C401 all resolved |
 | TD-009 | Fix pyright type annotation issues | LOW | ⏳ TODO | CI-001.V | DataclassInstance.to_dict attribute access, type variance |
 
+### Documentation & Knowledge Capture Tasks (Active)
+
+| ID | Title | Phase | Status | Predecessors | Successors |
+|----|-------|-------|--------|--------------|------------|
+| DOC-001 | WORKTRACKER Decomposition Archaeology | DOC | 🔄 IN PROGRESS | CI-001 | None |
+| DOC-001.R1 | Research: Git commit history for work/ | DOC.001 | ⏳ TODO | None | DOC-001.S |
+| DOC-001.R2 | Research: Document history analysis | DOC.001 | ⏳ TODO | None | DOC-001.S |
+| DOC-001.R3 | Research: Pattern extraction from work/ files | DOC.001 | ⏳ TODO | None | DOC-001.S |
+| DOC-001.S | Synthesis: Combine findings into narrative | DOC.001 | ⏳ TODO | R1, R2, R3 | D1, D2, D3 |
+| DOC-001.D1 | Deliverable: RUNBOOK-002 (decomposition process) | DOC.001 | ⏳ TODO | S | D3 |
+| DOC-001.D2 | Deliverable: PURPOSE-CATALOG.md (why each file) | DOC.001 | ⏳ TODO | S | D3 |
+| DOC-001.D3 | Deliverable: worktracker-decomposition SKILL | DOC.001 | ⏳ TODO | D1, D2 | None |
+
+### DOC-001 Execution Plan
+
+```
+PHASE 1: INVESTIGATION (Parallel Fan-Out)
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  ps-researcher  │    │  ps-researcher  │    │  ps-researcher  │
+│  DOC-001.R1     │    │  DOC-001.R2     │    │  DOC-001.R3     │
+│  Git History    │    │  Doc History    │    │  File Analysis  │
+└────────┬────────┘    └────────┬────────┘    └────────┬────────┘
+         └──────────────────────┼──────────────────────┘
+                                │
+PHASE 2: SYNTHESIS (Fan-In)     │
+                                ▼
+                     ┌─────────────────────┐
+                     │   ps-synthesizer    │
+                     │   DOC-001.S         │
+                     └──────────┬──────────┘
+                                │
+PHASE 3: DELIVERABLES (Sequential)
+         ┌──────────────────────┼──────────────────────┐
+         ▼                      ▼                      ▼
+   RUNBOOK-002           PURPOSE-CATALOG          SKILL
+   (DOC-001.D1)          (DOC-001.D2)          (DOC-001.D3)
+```
+
 ---
 
 ## Cross-Reference Index
@@ -686,3 +734,7 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | TD-007 DONE: Added filelock to dev deps, configured pyright venv |
 | 2026-01-10 | Claude | TD-008 DONE: Fixed 11 ruff errors (F841, B904, UP038, UP028, C401) |
 | 2026-01-10 | Claude | Pushed commit ab51e4a - all 1330 tests pass, ruff clean |
+| 2026-01-11 | Claude | DOC-001 initiated: WORKTRACKER Decomposition Archaeology |
+| 2026-01-11 | Claude | Updated Current Focus to reflect DOC-001 as active initiative |
+| 2026-01-11 | Claude | Added DOC-001 work items (8 tasks: 3 research, 1 synthesis, 3 deliverables) |
+| 2026-01-11 | Claude | Execution plan: Fan-out R1/R2/R3 → Fan-in S → Sequential D1/D2/D3 |
