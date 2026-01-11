@@ -525,7 +525,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ADR-004 | Session Management Alignment | `design/ADR-004-*.md` | ✅ |
 | ADR-013 | Shared Kernel | `decisions/e-013-*.md` | ✅ |
 | ADR-016 | CloudEvents SDK Architecture | `decisions/PROJ-001-e-016-v1-adr-cloudevents-sdk.md` | ✅ |
-| ADR-CI-001 | CI/CD Pipeline Architecture | `decisions/ADR-CI-001-cicd-pipeline.md` | 🔄 PROPOSED |
+| ADR-CI-001 | CI/CD Pipeline Architecture | `decisions/ADR-CI-001-cicd-pipeline.md` | ✅ ACCEPTED |
 
 > **Note**: ADR-016 supersedes the CloudEvents section of ADR-013 (e-013-v2). The decision to use
 > the CloudEvents SDK in infrastructure (vs stdlib-only in shared_kernel) was made after deeper
@@ -661,3 +661,5 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | CI-001.R DONE: Research artifact created (11 sources, Context7 + WebSearch) |
 | 2026-01-10 | Claude | CI-001.A DONE: Analysis artifact created (4 decisions, Jerry-specific adaptations) |
 | 2026-01-10 | Claude | CI-001.D DONE: ADR-CI-001 created (PROPOSED status, awaiting user review) |
+| 2026-01-10 | User | ADR-CI-001 feedback: D2→matrix 3.11-3.14, D3→blocking 80% with escape hatch |
+| 2026-01-10 | Claude | ADR-CI-001 status changed to ACCEPTED, ready for implementation |

@@ -1,6 +1,6 @@
 # ADR-CI-001: CI/CD Pipeline Architecture
 
-> **Status**: PROPOSED
+> **Status**: ACCEPTED
 > **Date**: 2026-01-10
 > **Deciders**: User, Claude Opus 4.5
 > **Sources**:
@@ -65,21 +65,23 @@ stages: [pre-commit]
 
 **Trade-off accepted**: Commits take ~30 seconds. Documented escape hatch: `SKIP=pytest git commit`.
 
-### D2: Python Version = 3.14 only (no matrix)
+### D2: Python Version = 3.11-3.14 matrix
 
-**Decision**: Test only Python 3.14 in GitHub Actions.
+**Decision**: Test Python 3.11, 3.12, 3.13, and 3.14 in GitHub Actions.
 
-**Rationale**: Jerry targets 3.14. Matrix testing adds CI time without current benefit. Can expand if compatibility issues arise.
+**Rationale**: Jerry will be released for others to use. Matrix testing provides visibility into portability issues across Python versions.
 
-**Trade-off accepted**: Won't catch 3.11/3.12/3.13 compatibility issues automatically.
+**Trade-off accepted**: Slower CI (~4x parallel jobs) in exchange for compatibility assurance.
 
-### D3: Coverage Threshold = 80% (soft)
+### D3: Coverage Threshold = 80% (blocking with escape hatch)
 
-**Decision**: Report coverage but don't fail CI on threshold.
+**Decision**: Fail CI if coverage drops below 80%. Provide escape hatch for refactoring.
 
-**Rationale**: Avoid blocking PRs on coverage dips during refactoring. Coverage is informational, not a gate.
+**Rationale**: Quality enforcement requires teeth. 80% is industry standard minimum.
 
-**Trade-off accepted**: Coverage may drift downward without enforcement.
+**Escape hatch**: For large refactoring PRs, add `[skip-coverage]` to commit message or use workflow dispatch to bypass.
+
+**Trade-off accepted**: May block PRs during legitimate refactoring (mitigated by escape hatch).
 
 ### D4: Required PR Checks = Lint + Type + Test
 
@@ -95,12 +97,14 @@ stages: [pre-commit]
 - **P-REGRESS enforced** - Every commit validated against 1330 tests
 - **Clean PR workflow** - Status checks prevent broken merges
 - **Developer feedback** - Issues caught immediately, not in review
-- **Coverage visibility** - PR comments show coverage impact
+- **Coverage enforced** - 80% minimum prevents quality drift
+- **Portability assured** - Matrix testing catches Python version issues
 
 ### Negative
 - **Slower commits** - ~30 seconds per commit (mitigated by SKIP option)
+- **Slower CI** - 4x parallel jobs for Python matrix
 - **Initial setup** - Developers must run `pre-commit install`
-- **CI cost** - GitHub Actions minutes consumed on every push
+- **CI cost** - More GitHub Actions minutes consumed
 
 ### Neutral
 - **Configuration complexity** - Offset by single-source pyproject.toml
@@ -150,18 +154,26 @@ pre-commit run --all-files
 
 ### Alternative 3: Fast tests on commit, full on push
 
-**Rejected because**: Complexity of maintaining test markers. Full suite is only ~30s.
+**Considered but configurable**: Test stage is configurable. Default is full suite on commit, but developers can configure for fast tests when needed.
+
+### Alternative 4: Single Python version (3.14 only)
+
+**Rejected because**: Jerry will be released publicly. Matrix testing essential for portability assurance across Python 3.11-3.14.
+
+### Alternative 5: Coverage as informational only
+
+**Rejected because**: Quality enforcement requires teeth. Soft thresholds lead to drift. Escape hatch provided for legitimate refactoring scenarios.
 
 ---
 
 ## Review Checklist
 
-Before accepting this ADR:
+User feedback incorporated (2026-01-10):
 
-- [ ] User agrees with test-on-commit default
-- [ ] User agrees with Python 3.14 only (no matrix)
-- [ ] User agrees with 80% coverage threshold (non-blocking)
-- [ ] User agrees with Lint + Type + Test as required checks
+- [x] D1: Test-on-commit approved (configurable for fast tests)
+- [x] D2: Python matrix 3.11-3.14 (changed from 3.14 only)
+- [x] D3: Coverage blocking at 80% with escape hatch (changed from soft)
+- [x] D4: Lint + Type + Test required (security scanning TBD)
 
 ---
 
@@ -170,3 +182,5 @@ Before accepting this ADR:
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-10 | Claude Opus 4.5 | Initial ADR proposal |
+| 2026-01-10 | User + Claude | User feedback: D2 changed to matrix, D3 changed to blocking |
+| 2026-01-10 | Claude Opus 4.5 | ADR status changed to ACCEPTED |
