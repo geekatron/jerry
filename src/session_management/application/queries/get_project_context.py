@@ -6,10 +6,11 @@ for the structured output.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
-from ...domain import ProjectId, ValidationResult, InvalidProjectIdError
-from ..ports import IProjectRepository, IEnvironmentProvider, RepositoryError
+from ...domain import InvalidProjectIdError, ProjectId, ValidationResult
+from ..ports import IEnvironmentProvider, IProjectRepository, RepositoryError
 
 
 @dataclass
@@ -56,9 +57,7 @@ class GetProjectContextQuery:
             try:
                 project_id = ProjectId.parse(jerry_project)
                 result["project_id"] = project_id
-                result["validation"] = self.repository.validate_project(
-                    self.base_path, project_id
-                )
+                result["validation"] = self.repository.validate_project(self.base_path, project_id)
             except InvalidProjectIdError as e:
                 result["validation"] = ValidationResult.failure([e.message])
 

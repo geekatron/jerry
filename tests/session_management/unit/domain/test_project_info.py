@@ -18,9 +18,10 @@ Note: ProjectInfo does NOT extend EntityBase because it is an immutable snapshot
 (frozen=True) while EntityBase is designed for mutable entities. ProjectInfo
 implements IAuditable and IVersioned protocols directly via property accessors.
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -29,7 +30,6 @@ from src.session_management.domain.value_objects.project_id import ProjectId
 from src.session_management.domain.value_objects.project_status import ProjectStatus
 from src.shared_kernel.auditable import IAuditable
 from src.shared_kernel.versioned import IVersioned
-
 
 # =============================================================================
 # Protocol Compliance Tests (I-008d.2.1) - REVISED per DISC-002
@@ -94,10 +94,10 @@ class TestProjectInfoAuditMetadata:
 
     def test_has_created_at_property(self) -> None:
         """ProjectInfo should have created_at property."""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         project_id = ProjectId.parse("PROJ-001-test")
         project_info = ProjectInfo.create(project_id)
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert hasattr(project_info, "created_at")
         assert before <= project_info.created_at <= after
@@ -136,9 +136,7 @@ class TestProjectInfoProperties:
     def test_status_property(self) -> None:
         """ProjectInfo should have status property."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, status=ProjectStatus.IN_PROGRESS
-        )
+        project_info = ProjectInfo.create(project_id, status=ProjectStatus.IN_PROGRESS)
         assert project_info.status == ProjectStatus.IN_PROGRESS
 
     def test_default_status_is_unknown(self) -> None:
@@ -245,49 +243,37 @@ class TestProjectInfoComputedProperties:
     def test_is_complete_true_when_both_files_exist(self) -> None:
         """is_complete should be True when both plan and tracker exist."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, has_plan=True, has_tracker=True
-        )
+        project_info = ProjectInfo.create(project_id, has_plan=True, has_tracker=True)
         assert project_info.is_complete is True
 
     def test_is_complete_false_when_missing_plan(self) -> None:
         """is_complete should be False when plan missing."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, has_plan=False, has_tracker=True
-        )
+        project_info = ProjectInfo.create(project_id, has_plan=False, has_tracker=True)
         assert project_info.is_complete is False
 
     def test_is_complete_false_when_missing_tracker(self) -> None:
         """is_complete should be False when tracker missing."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, has_plan=True, has_tracker=False
-        )
+        project_info = ProjectInfo.create(project_id, has_plan=True, has_tracker=False)
         assert project_info.is_complete is False
 
     def test_is_active_true_for_in_progress(self) -> None:
         """is_active should be True for IN_PROGRESS status."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, status=ProjectStatus.IN_PROGRESS
-        )
+        project_info = ProjectInfo.create(project_id, status=ProjectStatus.IN_PROGRESS)
         assert project_info.is_active is True
 
     def test_is_active_false_for_archived(self) -> None:
         """is_active should be False for ARCHIVED status."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, status=ProjectStatus.ARCHIVED
-        )
+        project_info = ProjectInfo.create(project_id, status=ProjectStatus.ARCHIVED)
         assert project_info.is_active is False
 
     def test_is_active_false_for_completed(self) -> None:
         """is_active should be False for COMPLETED status."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, status=ProjectStatus.COMPLETED
-        )
+        project_info = ProjectInfo.create(project_id, status=ProjectStatus.COMPLETED)
         assert project_info.is_active is False
 
     def test_warnings_includes_missing_plan(self) -> None:
@@ -305,9 +291,7 @@ class TestProjectInfoComputedProperties:
     def test_warnings_empty_when_complete(self) -> None:
         """warnings should be empty when complete."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, has_plan=True, has_tracker=True
-        )
+        project_info = ProjectInfo.create(project_id, has_plan=True, has_tracker=True)
         assert project_info.warnings == []
 
 
@@ -328,9 +312,7 @@ class TestProjectInfoStringRepresentation:
     def test_str_includes_status(self) -> None:
         """__str__ should include status."""
         project_id = ProjectId.parse("PROJ-001-test")
-        project_info = ProjectInfo.create(
-            project_id, status=ProjectStatus.IN_PROGRESS
-        )
+        project_info = ProjectInfo.create(project_id, status=ProjectStatus.IN_PROGRESS)
         assert "In Progress" in str(project_info)
 
     def test_repr_includes_details(self) -> None:

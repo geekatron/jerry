@@ -8,6 +8,7 @@ References:
     - impl-es-e-006-workitem-schema: Work type hierarchy
     - WORKTRACKER: Work item categorization
 """
+
 from __future__ import annotations
 
 from enum import Enum
@@ -82,9 +83,7 @@ class WorkType(Enum):
             if work_type.value == normalized:
                 return work_type
         valid = [wt.value for wt in cls]
-        raise ValueError(
-            f"Invalid work type: {value!r}. Valid types: {', '.join(valid)}"
-        )
+        raise ValueError(f"Invalid work type: {value!r}. Valid types: {', '.join(valid)}")
 
     @property
     def can_have_subtasks(self) -> bool:

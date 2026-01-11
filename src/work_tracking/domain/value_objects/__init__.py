@@ -23,6 +23,7 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - impl-es-e-006-workitem-schema: Priority and WorkType specifications
 """
+
 from __future__ import annotations
 
 from .priority import Priority

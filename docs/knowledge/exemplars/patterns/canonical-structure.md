@@ -22,15 +22,15 @@ projects/                                                # Root of the source re
 │       └── PROJ-{proj_id}.{X}-{X}.md          # Examples:
 │                                                        #   PROJ-001-e-007-implementation-gap.md
 │                                                        #   PROJ-001-e-009-alignment-validation.md
-│                                                        
 │
-├── designs/                                             # DESIGNs may become large so creating folders per Project # All design artifacts for PROJECT                       
+│
+├── designs/                                             # DESIGNs may become large so creating folders per Project # All design artifacts for PROJECT
 │       └── project-{project_id}.{subproject_id}-*.md          # Design docs (use cases, diagrams, etc.)
 │                                                        # Examples:
 │                                                        #   project-38.17-e-191-signal-dispatcher-split-design.md
 │                                                        #   project-38.17-c009-subagent-persistence-enforcement.md
 │
-├── investigations/                                      # All INVESTIGATION artifacts for PROJECT                             
+├── investigations/                                      # All INVESTIGATION artifacts for PROJECT
 │       └── project-{project_id}.{subproject_id}-*-proof.md    # Evidence-linked artifacts
 │                                                        # SCOPE: Formal or systematic examination or research
 │                                                        # Examples:

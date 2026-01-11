@@ -8,6 +8,7 @@ References:
     - PAT-004-e006: Status State Machine
     - WORKTRACKER: Work item lifecycle
 """
+
 from __future__ import annotations
 
 from enum import Enum
@@ -23,9 +24,7 @@ class InvalidStateTransitionError(ValueError):
     def __init__(self, from_status: str, to_status: str) -> None:
         self.from_status = from_status
         self.to_status = to_status
-        super().__init__(
-            f"Cannot transition from '{from_status}' to '{to_status}'"
-        )
+        super().__init__(f"Cannot transition from '{from_status}' to '{to_status}'")
 
 
 # Module-level constant for valid transitions (avoids enum member issues)

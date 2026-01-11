@@ -14,14 +14,14 @@ References:
     - impl-es-e-006-workitem-schema: WorkItem event catalog
     - DDD Domain Events pattern (Evans, 2004)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
-from src.shared_kernel.domain_event import DomainEvent, _generate_event_id, _current_timestamp
-
+from src.shared_kernel.domain_event import DomainEvent, _current_timestamp, _generate_event_id
 
 # =============================================================================
 # WorkItem Creation Event
@@ -73,11 +73,7 @@ class WorkItemCreated(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> WorkItemCreated:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -136,11 +132,7 @@ class StatusChanged(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> StatusChanged:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -191,11 +183,7 @@ class WorkItemCompleted(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> WorkItemCompleted:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -250,11 +238,7 @@ class PriorityChanged(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> PriorityChanged:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -326,11 +310,7 @@ class QualityMetricsUpdated(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> QualityMetricsUpdated:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         gate_failures = data.get("gate_failures", [])
         if isinstance(gate_failures, list):
@@ -389,11 +369,7 @@ class DependencyAdded(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> DependencyAdded:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -434,11 +410,7 @@ class DependencyRemoved(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> DependencyRemoved:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -487,11 +459,7 @@ class AssigneeChanged(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> AssigneeChanged:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),

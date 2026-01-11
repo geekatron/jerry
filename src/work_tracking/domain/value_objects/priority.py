@@ -8,6 +8,7 @@ References:
     - PAT-005-e006: Quality Gate Value Objects
     - impl-es-e-006-workitem-schema: Priority specification
 """
+
 from __future__ import annotations
 
 from enum import IntEnum

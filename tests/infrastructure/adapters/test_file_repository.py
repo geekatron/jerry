@@ -13,6 +13,7 @@ References:
     - PAT-009: Generic Repository Port
     - PAT-010: Composed Infrastructure Adapters
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -27,7 +28,6 @@ from src.work_tracking.domain.ports.repository import (
     AggregateNotFoundError,
     ConcurrencyError,
 )
-
 
 # =============================================================================
 # Test Fixtures - Simple Aggregate for Testing
@@ -144,9 +144,7 @@ def repository(
 class TestFileRepositoryProtocol:
     """Tests for IRepository protocol compliance."""
 
-    def test_implements_protocol(
-        self, repository: FileRepository[SampleAggregate, str]
-    ) -> None:
+    def test_implements_protocol(self, repository: FileRepository[SampleAggregate, str]) -> None:
         """FileRepository implements IRepository."""
         assert hasattr(repository, "get")
         assert hasattr(repository, "get_or_raise")
@@ -239,9 +237,7 @@ class TestFileRepositoryGetOrRaise:
 class TestFileRepositorySave:
     """Tests for save operations."""
 
-    def test_save_new_aggregate(
-        self, repository: FileRepository[SampleAggregate, str]
-    ) -> None:
+    def test_save_new_aggregate(self, repository: FileRepository[SampleAggregate, str]) -> None:
         """Can save a new aggregate."""
         aggregate = SampleAggregate.create("TEST-001", "New Task")
         repository.save(aggregate)
@@ -424,9 +420,7 @@ class TestFileRepositoryVersionTracking:
 class TestFileRepositoryEdgeCases:
     """Edge case tests for file repository."""
 
-    def test_short_aggregate_id(
-        self, repository: FileRepository[SampleAggregate, str]
-    ) -> None:
+    def test_short_aggregate_id(self, repository: FileRepository[SampleAggregate, str]) -> None:
         """Handles short ID string."""
         aggregate = SampleAggregate.create("X", "Short ID")
         repository.save(aggregate)
@@ -444,9 +438,7 @@ class TestFileRepositoryEdgeCases:
         assert result is not None
         assert result.id == "TEST/001:special"
 
-    def test_unicode_in_title(
-        self, repository: FileRepository[SampleAggregate, str]
-    ) -> None:
+    def test_unicode_in_title(self, repository: FileRepository[SampleAggregate, str]) -> None:
         """Handles unicode content."""
         aggregate = SampleAggregate.create("TEST-001", "日本語テスト 🎉")
         repository.save(aggregate)
@@ -454,9 +446,7 @@ class TestFileRepositoryEdgeCases:
         assert result is not None
         assert result.title == "日本語テスト 🎉"
 
-    def test_large_aggregate(
-        self, repository: FileRepository[SampleAggregate, str]
-    ) -> None:
+    def test_large_aggregate(self, repository: FileRepository[SampleAggregate, str]) -> None:
         """Handles large aggregate with many items."""
         aggregate = SampleAggregate.create("TEST-001", "Large")
         for i in range(1000):

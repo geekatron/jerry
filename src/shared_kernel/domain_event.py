@@ -15,11 +15,12 @@ Exports:
     DomainEvent: Base class for all domain events
     EventRegistry: Registry for event type deserialization
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, ClassVar, Type
+from datetime import UTC, datetime
+from typing import Any, ClassVar
 
 from .vertex_id import EventId
 
@@ -31,7 +32,7 @@ def _generate_event_id() -> str:
 
 def _current_timestamp() -> datetime:
     """Get current UTC timestamp."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass(frozen=True)
@@ -139,11 +140,7 @@ class DomainEvent:
             For subclass-aware deserialization, use EventRegistry.deserialize()
         """
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),
@@ -185,16 +182,14 @@ class EventRegistry:
 
     def __init__(self) -> None:
         """Initialize empty registry."""
-        self._event_types: dict[str, Type[DomainEvent]] = {}
+        self._event_types: dict[str, type[DomainEvent]] = {}
 
     @property
-    def event_types(self) -> dict[str, Type[DomainEvent]]:
+    def event_types(self) -> dict[str, type[DomainEvent]]:
         """Return read-only copy of registered event types."""
         return dict(self._event_types)
 
-    def register(
-        self, event_class: Type[DomainEvent]
-    ) -> Type[DomainEvent]:
+    def register(self, event_class: type[DomainEvent]) -> type[DomainEvent]:
         """
         Register an event class for deserialization.
 
@@ -214,7 +209,7 @@ class EventRegistry:
         self._event_types[event_class.__name__] = event_class
         return event_class
 
-    def get(self, event_type: str) -> Type[DomainEvent] | None:
+    def get(self, event_type: str) -> type[DomainEvent] | None:
         """
         Get registered event class by type name.
 

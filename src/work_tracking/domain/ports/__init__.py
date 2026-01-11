@@ -15,10 +15,13 @@ References:
     - PAT-009: Generic Repository Port
     - ADR-009: Event Storage Mechanism
 """
+
 from __future__ import annotations
 
 from .event_store import (
     ConcurrencyError as EventStoreConcurrencyError,
+)
+from .event_store import (
     EventStoreError,
     IEventStore,
     StoredEvent,
@@ -26,9 +29,11 @@ from .event_store import (
 )
 from .repository import (
     AggregateNotFoundError,
-    ConcurrencyError as RepositoryConcurrencyError,
     IRepository,
     RepositoryError,
+)
+from .repository import (
+    ConcurrencyError as RepositoryConcurrencyError,
 )
 
 __all__ = [

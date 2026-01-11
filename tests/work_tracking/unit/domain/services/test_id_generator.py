@@ -11,6 +11,7 @@ References:
     - ADR-007: ID Generation Strategy
     - PAT-006: Hybrid Identity (Snowflake + Display ID)
 """
+
 from __future__ import annotations
 
 import pytest
@@ -20,7 +21,6 @@ from src.work_tracking.domain.services.id_generator import (
     WorkItemIdGenerator,
 )
 from src.work_tracking.domain.value_objects import WorkItemId
-
 
 # =============================================================================
 # IWorkItemIdGenerator Protocol Tests
@@ -169,7 +169,6 @@ class TestIdGeneratorThreadSafety:
     def test_concurrent_creates_are_unique(self) -> None:
         """Concurrent creates produce unique IDs."""
         import threading
-        from collections import Counter
 
         generator = WorkItemIdGenerator()
         ids: list[WorkItemId] = []
@@ -181,10 +180,7 @@ class TestIdGeneratorThreadSafety:
                 with lock:
                     ids.append(id)
 
-        threads = [
-            threading.Thread(target=generate_ids, args=(100,))
-            for _ in range(10)
-        ]
+        threads = [threading.Thread(target=generate_ids, args=(100,)) for _ in range(10)]
         for t in threads:
             t.start()
         for t in threads:

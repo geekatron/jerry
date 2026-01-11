@@ -1,12 +1,13 @@
 """BDD step definitions for Snowflake ID generation."""
+
 from __future__ import annotations
 
-import time
 import threading
+import time
 from typing import Any
 
 import pytest
-from pytest_bdd import given, when, then, scenarios, parsers
+from pytest_bdd import given, parsers, scenarios, then, when
 
 # Import the module under test (will fail until implemented - RED phase)
 from src.shared_kernel.snowflake_id import SnowflakeIdGenerator
@@ -149,7 +150,9 @@ def verify_worker_id_in_id(context: dict[str, Any], expected_worker_id: int) -> 
 def verify_all_unique(context: dict[str, Any]) -> None:
     """Verify all generated IDs are unique."""
     ids = context["ids"]
-    assert len(ids) == len(set(ids)), f"Found duplicates: {len(ids)} generated, {len(set(ids))} unique"
+    assert len(ids) == len(set(ids)), (
+        f"Found duplicates: {len(ids)} generated, {len(set(ids))} unique"
+    )
 
 
 @then("the second ID should be greater than the first")
@@ -183,8 +186,9 @@ def verify_parsed_sequence_range(context: dict[str, Any], min_val: int, max_val:
 def verify_parsed_timestamp_recent(context: dict[str, Any]) -> None:
     """Verify the parsed timestamp is recent (within last 5 seconds)."""
     import datetime
+
     parsed_dt = context["parsed"]["timestamp"]
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     delta = (now - parsed_dt).total_seconds()
     assert delta < 5, f"Timestamp is {delta} seconds old"
 
@@ -200,7 +204,9 @@ def verify_base62_alphanumeric(context: dict[str, Any]) -> None:
 def verify_base62_length(context: dict[str, Any], max_len: int) -> None:
     """Verify base62 string length."""
     base62 = context["base62"]
-    assert len(base62) <= max_len, f"Base62 '{base62}' is {len(base62)} chars, expected <= {max_len}"
+    assert len(base62) <= max_len, (
+        f"Base62 '{base62}' is {len(base62)} chars, expected <= {max_len}"
+    )
 
 
 @then(parsers.parse('a ValueError should be raised with message containing "{text}"'))

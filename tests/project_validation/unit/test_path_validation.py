@@ -14,12 +14,12 @@ Migration History:
     Migrated: 2026-01-10 (TD-005)
     Commit: a911859 (original creation for BUG-001)
 """
+
 from __future__ import annotations
 
 import re
 
 import pytest
-
 
 # =============================================================================
 # Path Validation Functions (Under Test)
@@ -48,7 +48,9 @@ def is_old_docs_path(path: str) -> bool:
 
 def extract_category_from_path(path: str) -> str | None:
     """Extract the category (research, synthesis, etc.) from a path."""
-    match = re.search(r"/(research|synthesis|analysis|decisions|reports|investigations|reviews)/", path)
+    match = re.search(
+        r"/(research|synthesis|analysis|decisions|reports|investigations|reviews)/", path
+    )
     return match.group(1) if match else None
 
 
@@ -260,13 +262,17 @@ class TestPathNormalization:
     def test_normalize_synthesis_path(self, default_project_id: str) -> None:
         """Should normalize docs/synthesis/ to projects/.../synthesis/."""
         old = "docs/synthesis/PROJ-001-e-006-unified-architecture-canon.md"
-        expected = f"projects/{default_project_id}/synthesis/PROJ-001-e-006-unified-architecture-canon.md"
+        expected = (
+            f"projects/{default_project_id}/synthesis/PROJ-001-e-006-unified-architecture-canon.md"
+        )
         assert normalize_path_to_project_centric(old, default_project_id) == expected
 
     def test_normalize_analysis_path(self, default_project_id: str) -> None:
         """Should normalize docs/analysis/ to projects/.../analysis/."""
         old = "docs/analysis/PROJ-001-e-007-implementation-gap-analysis.md"
-        expected = f"projects/{default_project_id}/analysis/PROJ-001-e-007-implementation-gap-analysis.md"
+        expected = (
+            f"projects/{default_project_id}/analysis/PROJ-001-e-007-implementation-gap-analysis.md"
+        )
         assert normalize_path_to_project_centric(old, default_project_id) == expected
 
     def test_normalize_decisions_path(self, default_project_id: str) -> None:

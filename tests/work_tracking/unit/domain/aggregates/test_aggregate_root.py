@@ -10,17 +10,17 @@ References:
     - PAT-001: Event Store Interface Pattern
     - IMPL-ES-003: AggregateRoot Base Class implementation
 """
+
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Sequence
+from datetime import UTC, datetime
 
 import pytest
 
 from src.shared_kernel.domain_event import DomainEvent
 from src.work_tracking.domain.aggregates.base import AggregateRoot
-
 
 # Fixtures - Concrete implementation for testing
 # Note: Classes prefixed with "_" to avoid pytest collection warnings
@@ -319,7 +319,7 @@ class TestLoadFromHistory:
 
     def test_sets_created_on_from_first_event(self) -> None:
         """created_on is set from first event timestamp."""
-        timestamp = datetime(2025, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+        timestamp = datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)
         event = _ItemCreatedEvent(
             aggregate_id="ITEM-001",
             aggregate_type="_SampleItem",
@@ -334,8 +334,8 @@ class TestLoadFromHistory:
 
     def test_sets_modified_on_from_last_event(self) -> None:
         """modified_on is set from last event timestamp."""
-        ts1 = datetime(2025, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
-        ts2 = datetime(2025, 1, 16, 14, 45, 0, tzinfo=timezone.utc)
+        ts1 = datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)
+        ts2 = datetime(2025, 1, 16, 14, 45, 0, tzinfo=UTC)
 
         events = [
             _ItemCreatedEvent(

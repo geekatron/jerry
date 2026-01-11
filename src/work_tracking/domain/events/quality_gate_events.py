@@ -14,14 +14,14 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - ADR-009: Event Storage Mechanism
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from src.shared_kernel.domain_event import DomainEvent, _generate_event_id, _current_timestamp
-
+from src.shared_kernel.domain_event import DomainEvent, _current_timestamp, _generate_event_id
 
 # =============================================================================
 # Gate Execution Lifecycle Events
@@ -71,11 +71,7 @@ class GateExecutionStarted(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> GateExecutionStarted:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         check_ids = data.get("check_ids", [])
         if isinstance(check_ids, list):
@@ -147,11 +143,7 @@ class GateCheckCompleted(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> GateCheckCompleted:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         violations = data.get("violations", [])
         if isinstance(violations, list):
@@ -225,11 +217,7 @@ class GateExecutionCompleted(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> GateExecutionCompleted:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         failed_check_ids = data.get("failed_check_ids", [])
         if isinstance(failed_check_ids, list):
@@ -300,11 +288,7 @@ class RiskAssessed(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> RiskAssessed:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         matched_patterns = data.get("matched_patterns", [])
         if isinstance(matched_patterns, list):
@@ -382,11 +366,7 @@ class ThresholdViolation(DomainEvent):
     def from_dict(cls, data: dict[str, Any]) -> ThresholdViolation:
         """Deserialize from dictionary."""
         timestamp_str = data.get("timestamp")
-        timestamp = (
-            datetime.fromisoformat(timestamp_str)
-            if timestamp_str
-            else _current_timestamp()
-        )
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
 
         return cls(
             event_id=data.get("event_id", _generate_event_id()),

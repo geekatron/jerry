@@ -16,6 +16,7 @@ References:
 Exports:
     SnowflakeIdGenerator: Main generator class
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -25,7 +26,7 @@ import threading
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import ClassVar
 
 
@@ -66,7 +67,7 @@ class SnowflakeIdGenerator:
     TIMESTAMP_BITS: ClassVar[int] = 41
 
     MAX_WORKER_ID: ClassVar[int] = (1 << 10) - 1  # 1023
-    MAX_SEQUENCE: ClassVar[int] = (1 << 12) - 1   # 4095
+    MAX_SEQUENCE: ClassVar[int] = (1 << 12) - 1  # 4095
 
     # Cached worker ID derivation (per-process singleton)
     _cached_derived_worker_id: ClassVar[int | None] = None
@@ -81,8 +82,7 @@ class SnowflakeIdGenerator:
         """Validate worker_id after initialization."""
         if self.worker_id < 0 or self.worker_id > self.MAX_WORKER_ID:
             raise ValueError(
-                f"Worker ID must be between 0 and {self.MAX_WORKER_ID}, "
-                f"got {self.worker_id}"
+                f"Worker ID must be between 0 and {self.MAX_WORKER_ID}, got {self.worker_id}"
             )
 
     def generate(self) -> int:
@@ -176,7 +176,7 @@ class SnowflakeIdGenerator:
 
         return {
             "timestamp_ms": timestamp_ms,
-            "timestamp": datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc),
+            "timestamp": datetime.fromtimestamp(timestamp_ms / 1000, tz=UTC),
             "worker_id": (snowflake_id >> 12) & 0x3FF,
             "sequence": snowflake_id & 0xFFF,
             "raw": snowflake_id,
@@ -245,10 +245,10 @@ class SnowflakeIdGenerator:
 
             # Combine multiple entropy sources
             identity_parts = [
-                socket.gethostname(),           # Machine identity
-                str(os.getpid()),               # Process identity
-                str(uuid.getnode()),            # MAC address
-                str(time.time_ns()),            # Startup timestamp (nanoseconds)
+                socket.gethostname(),  # Machine identity
+                str(os.getpid()),  # Process identity
+                str(uuid.getnode()),  # MAC address
+                str(time.time_ns()),  # Startup timestamp (nanoseconds)
             ]
             identity = "-".join(identity_parts)
 

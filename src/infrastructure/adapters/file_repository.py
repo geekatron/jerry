@@ -9,11 +9,12 @@ References:
     - PAT-009: Generic Repository Port
     - PAT-010: Composed Infrastructure Adapters
 """
+
 from __future__ import annotations
 
 import hashlib
-from pathlib import Path
-from typing import Callable, Generic, TypeVar
+from collections.abc import Callable
+from typing import Generic, TypeVar
 
 from src.infrastructure.internal.file_store import IFileStore
 from src.infrastructure.internal.serializer import ISerializer
@@ -22,7 +23,6 @@ from src.work_tracking.domain.ports.repository import (
     AggregateNotFoundError,
     ConcurrencyError,
 )
-
 
 # Type variables
 TAggregate = TypeVar("TAggregate", bound=AggregateRoot)
@@ -97,8 +97,12 @@ class FileRepository(Generic[TAggregate, TId]):
         Handles special characters that might cause issues in filenames.
         """
         # For IDs with special characters, use a hash
-        if any(c in id_str for c in "/\\:*?\"<>|"):
-            return hashlib.sha256(id_str.encode()).hexdigest()[:16] + "_" + id_str.replace("/", "_").replace(":", "_")[:32]
+        if any(c in id_str for c in '/\\:*?"<>|'):
+            return (
+                hashlib.sha256(id_str.encode()).hexdigest()[:16]
+                + "_"
+                + id_str.replace("/", "_").replace(":", "_")[:32]
+            )
         return id_str
 
     def get(self, id: TId) -> TAggregate | None:

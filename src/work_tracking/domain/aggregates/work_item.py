@@ -20,10 +20,11 @@ Exports:
     WorkItem: Event-sourced work item aggregate
     QualityGateNotMetError: Raised when quality requirements not satisfied
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Sequence
+from collections.abc import Sequence
+from datetime import UTC, datetime
 
 from src.shared_kernel.domain_event import DomainEvent
 from src.work_tracking.domain.aggregates.base import AggregateRoot
@@ -38,7 +39,6 @@ from src.work_tracking.domain.events.work_item_events import (
     WorkItemCreated,
 )
 from src.work_tracking.domain.value_objects import (
-    InvalidStateTransitionError,
     Priority,
     TestCoverage,
     TestRatio,
@@ -46,7 +46,6 @@ from src.work_tracking.domain.value_objects import (
     WorkItemStatus,
     WorkType,
 )
-
 
 # =============================================================================
 # Domain Exceptions
@@ -69,8 +68,7 @@ class QualityGateNotMetError(ValueError):
         self.work_item_id = work_item_id
         self.failures = failures
         message = (
-            f"Work item '{work_item_id}' does not meet quality requirements: "
-            f"{', '.join(failures)}"
+            f"Work item '{work_item_id}' does not meet quality requirements: {', '.join(failures)}"
         )
         super().__init__(message)
 
@@ -350,7 +348,7 @@ class WorkItem(AggregateRoot):
         # Calculate duration
         duration_seconds = 0
         if self._created_on:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             duration_seconds = int((now - self._created_on).total_seconds())
 
         # First emit status change
@@ -393,7 +391,7 @@ class WorkItem(AggregateRoot):
         # Calculate duration
         duration_seconds = 0
         if self._created_on:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             duration_seconds = int((now - self._created_on).total_seconds())
 
         # First emit status change
@@ -447,9 +445,7 @@ class WorkItem(AggregateRoot):
         # Clear completion timestamp
         self._completed_at = None
 
-    def change_priority(
-        self, new_priority: Priority, reason: str | None = None
-    ) -> None:
+    def change_priority(self, new_priority: Priority, reason: str | None = None) -> None:
         """
         Change the work item priority.
 
@@ -488,9 +484,7 @@ class WorkItem(AggregateRoot):
             ratio: Test type distribution (positive/negative/edge)
         """
         # Evaluate quality gate
-        gate_level, gate_passed, failures = self._evaluate_quality_gate(
-            coverage, ratio
-        )
+        gate_level, gate_passed, failures = self._evaluate_quality_gate(coverage, ratio)
 
         event = QualityMetricsUpdated(
             aggregate_id=self._id,
@@ -506,9 +500,7 @@ class WorkItem(AggregateRoot):
         )
         self._raise_event(event)
 
-    def add_dependency(
-        self, dependency_id: WorkItemId, dependency_type: str = "blocks"
-    ) -> None:
+    def add_dependency(self, dependency_id: WorkItemId, dependency_type: str = "blocks") -> None:
         """
         Add a dependency to this work item.
 
@@ -680,9 +672,7 @@ class WorkItem(AggregateRoot):
             failures.append("No test ratio provided")
         else:
             if not ratio.meets_level("L1"):
-                failures.append(
-                    f"Test ratio doesn't meet L1: need positive and negative tests"
-                )
+                failures.append("Test ratio doesn't meet L1: need positive and negative tests")
 
         gate_passed = len(failures) == 0
         return (gate_level, gate_passed, failures)

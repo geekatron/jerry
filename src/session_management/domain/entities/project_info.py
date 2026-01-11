@@ -17,7 +17,7 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from ..value_objects.project_id import ProjectId
 from ..value_objects.project_status import ProjectStatus
@@ -26,7 +26,7 @@ from ..value_objects.session_id import SessionId
 
 def _utc_now() -> datetime:
     """Return current UTC time."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass(frozen=True, slots=True)

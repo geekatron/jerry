@@ -14,6 +14,7 @@ References:
     - ENFORCE-011: E2E Tests
     - scripts/session_start.py: Entry point
 """
+
 from __future__ import annotations
 
 import json
@@ -21,11 +22,10 @@ import os
 import subprocess
 import sys
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
-
 
 # =============================================================================
 # Test Fixtures
@@ -379,9 +379,7 @@ class TestSessionStartNegative:
         assert "InvalidProject: invalid-format" in stdout
         assert "ACTION REQUIRED" in stdout
 
-    def test_nonexistent_project(
-        self, temp_projects_dir: str, session_start_script: Path
-    ) -> None:
+    def test_nonexistent_project(self, temp_projects_dir: str, session_start_script: Path) -> None:
         """Non-existent project shows error with available alternatives."""
         create_project(temp_projects_dir, "PROJ-001-exists")
 
@@ -430,9 +428,7 @@ class TestSessionStartNegative:
 class TestSessionStartFailures:
     """Failure scenario E2E tests for session start hook."""
 
-    def test_projects_directory_not_found(
-        self, session_start_script: Path
-    ) -> None:
+    def test_projects_directory_not_found(self, session_start_script: Path) -> None:
         """Non-existent projects directory handles gracefully."""
         exit_code, stdout, _ = run_session_start(
             session_start_script,

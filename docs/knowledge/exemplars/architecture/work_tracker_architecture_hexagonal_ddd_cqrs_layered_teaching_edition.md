@@ -1,6 +1,6 @@
 # Work Tracker Reference Architecture
 
-**Hexagonal Architecture + Domain‑Driven Design (DDD) + Command Query Responsibility Segregation (CQRS)**  
+**Hexagonal Architecture + Domain‑Driven Design (DDD) + Command Query Responsibility Segregation (CQRS)**
 **CLI + HTTP API + SQLite / JSON / Markdown Persistence**
 
 > This document is intentionally written as a *single linear narrative* where **every major concept is explained at three levels**:
@@ -88,7 +88,7 @@ We split the system into **zones** and we are explicit about **ports**:
 
 Key idea:
 
-> **Not all adapters expose all capabilities.**  
+> **Not all adapters expose all capabilities.**
 > A *Public API* might expose only “end-user” use cases, while a *Private/Admin API* exposes additional administration use cases.
 
 ---
@@ -393,7 +393,7 @@ It uses a *plug* (a port) so we can swap storage.
 
 ### 👶 Junior Engineer
 
-A **repository port** is an interface the application uses: 
+A **repository port** is an interface the application uses:
 
 ```text
 IProjectRepository
@@ -1047,4 +1047,3 @@ ACL responsibilities:
 ---
 
 *Document extended. End of appendices.*
-

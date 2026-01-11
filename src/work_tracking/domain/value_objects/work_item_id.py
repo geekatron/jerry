@@ -11,11 +11,11 @@ References:
 Exports:
     WorkItemId: Hybrid identity value object
 """
+
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-
 
 # Module-level pattern to avoid issues with slots in frozen dataclass
 _DISPLAY_PATTERN: re.Pattern[str] = re.compile(r"^WORK-(\d+)$")
@@ -57,22 +57,17 @@ class WorkItemId:
     def __post_init__(self) -> None:
         """Validate WorkItemId after initialization."""
         if self.internal_id < 0:
-            raise ValueError(
-                f"internal_id must be non-negative, got {self.internal_id}"
-            )
+            raise ValueError(f"internal_id must be non-negative, got {self.internal_id}")
         if not _DISPLAY_PATTERN.match(self.display_id):
             raise ValueError(
-                f"Invalid display_id format: {self.display_id!r}. "
-                f"Expected format: WORK-nnn"
+                f"Invalid display_id format: {self.display_id!r}. Expected format: WORK-nnn"
             )
         # Validate display number is positive
         match = _DISPLAY_PATTERN.match(self.display_id)
         if match:
             display_num = int(match.group(1))
             if display_num < 1:
-                raise ValueError(
-                    f"display_number must be positive, got {display_num}"
-                )
+                raise ValueError(f"display_number must be positive, got {display_num}")
 
     @classmethod
     def create(cls, internal_id: int, display_number: int) -> WorkItemId:
@@ -94,13 +89,9 @@ class WorkItemId:
             WorkItemId(internal_id=1767053847123456789, display_id='WORK-042')
         """
         if internal_id < 0:
-            raise ValueError(
-                f"internal_id must be non-negative, got {internal_id}"
-            )
+            raise ValueError(f"internal_id must be non-negative, got {internal_id}")
         if display_number < 1:
-            raise ValueError(
-                f"display_number must be positive, got {display_number}"
-            )
+            raise ValueError(f"display_number must be positive, got {display_number}")
 
         # Format with minimum 3 digits, no maximum
         display_id = f"WORK-{display_number:03d}"
@@ -133,8 +124,7 @@ class WorkItemId:
         match = _DISPLAY_PATTERN.match(display_id)
         if not match:
             raise ValueError(
-                f"Invalid display_id format: {display_id!r}. "
-                f"Expected format: WORK-nnn"
+                f"Invalid display_id format: {display_id!r}. Expected format: WORK-nnn"
             )
 
         return cls(internal_id=internal_id, display_id=display_id)

@@ -12,23 +12,23 @@ References:
     - Canon PAT-007: EntityBase Class (IAuditable, IVersioned)
     - ADR-013: Shared Kernel Module
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from pathlib import Path
 import tempfile
+from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
 
+from src.session_management.application.ports import RepositoryError
+from src.session_management.domain.value_objects.project_id import ProjectId
+from src.session_management.domain.value_objects.project_status import ProjectStatus
 from src.session_management.infrastructure.adapters.filesystem_project_adapter import (
     FilesystemProjectAdapter,
 )
-from src.session_management.domain.value_objects.project_id import ProjectId
-from src.session_management.domain.value_objects.project_status import ProjectStatus
-from src.session_management.application.ports import RepositoryError
 from src.shared_kernel.auditable import IAuditable
 from src.shared_kernel.versioned import IVersioned
-
 
 # =============================================================================
 # Test Fixtures
@@ -115,9 +115,9 @@ class TestScanProjectsAuditMetadata:
         self, adapter: FilesystemProjectAdapter, temp_projects_dir: str
     ) -> None:
         """Scanned ProjectInfo should have created_at timestamp."""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         projects = adapter.scan_projects(temp_projects_dir)
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         for project in projects:
             assert hasattr(project, "created_at")
@@ -220,11 +220,11 @@ class TestGetProjectAuditMetadata:
         self, adapter: FilesystemProjectAdapter, temp_single_project: tuple[str, str]
     ) -> None:
         """get_project should return ProjectInfo with created_at."""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         base_path, project_name = temp_single_project
         project_id = ProjectId.parse(project_name)
         project = adapter.get_project(base_path, project_id)
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert project is not None
         assert isinstance(project.created_at, datetime)
@@ -418,9 +418,7 @@ class TestGetProjectFunctional:
 class TestErrorHandling:
     """Tests for error handling."""
 
-    def test_scan_nonexistent_directory_raises(
-        self, adapter: FilesystemProjectAdapter
-    ) -> None:
+    def test_scan_nonexistent_directory_raises(self, adapter: FilesystemProjectAdapter) -> None:
         """scan_projects should raise RepositoryError for nonexistent directory."""
         with pytest.raises(RepositoryError, match="does not exist"):
             adapter.scan_projects("/nonexistent/path")

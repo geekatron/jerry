@@ -14,13 +14,13 @@ Migration History:
     Migrated: 2026-01-10 (TD-005)
     Commit: a911859 (original creation for BUG-001)
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
 import pytest
-
 
 # =============================================================================
 # ARCHITECTURE TESTS - PROJECT ISOLATION
@@ -107,12 +107,15 @@ class TestProjectIsolation:
 class TestNoDeprecatedPatterns:
     """Test that deprecated architectural patterns are not used."""
 
-    @pytest.mark.parametrize("pattern,message", [
-        (r"docs/research/PROJ-", "Research should be in projects/{PROJ-ID}/research/"),
-        (r"docs/synthesis/PROJ-", "Synthesis should be in projects/{PROJ-ID}/synthesis/"),
-        (r"docs/analysis/PROJ-", "Analysis should be in projects/{PROJ-ID}/analysis/"),
-        (r"docs/decisions/PROJ-", "Decisions should be in projects/{PROJ-ID}/decisions/"),
-    ])
+    @pytest.mark.parametrize(
+        "pattern,message",
+        [
+            (r"docs/research/PROJ-", "Research should be in projects/{PROJ-ID}/research/"),
+            (r"docs/synthesis/PROJ-", "Synthesis should be in projects/{PROJ-ID}/synthesis/"),
+            (r"docs/analysis/PROJ-", "Analysis should be in projects/{PROJ-ID}/analysis/"),
+            (r"docs/decisions/PROJ-", "Decisions should be in projects/{PROJ-ID}/decisions/"),
+        ],
+    )
     def test_no_deprecated_pattern(
         self,
         proj_root: Path,
@@ -184,8 +187,7 @@ class TestCategoryConventions:
         for item in proj_root.iterdir():
             if item.is_dir() and not item.name.startswith("."):
                 assert item.name in all_allowed, (
-                    f"Invalid category directory: {item.name}\n"
-                    f"Valid categories: {valid_categories}"
+                    f"Invalid category directory: {item.name}\nValid categories: {valid_categories}"
                 )
 
     def test_research_contains_extraction_docs(self, proj_root: Path) -> None:
@@ -207,7 +209,9 @@ class TestCategoryConventions:
         """
         synthesis_dir = proj_root / "synthesis"
         if synthesis_dir.exists():
-            canon_docs = list(synthesis_dir.glob("*canon*.md")) + list(synthesis_dir.glob("*unified*.md"))
+            canon_docs = list(synthesis_dir.glob("*canon*.md")) + list(
+                synthesis_dir.glob("*unified*.md")
+            )
             # Only check if synthesis dir has files
             if list(synthesis_dir.glob("*.md")):
                 assert len(canon_docs) >= 1, (
@@ -223,9 +227,7 @@ class TestCategoryConventions:
             adr_docs = list(decisions_dir.glob("ADR-*.md")) + list(decisions_dir.glob("*-adr-*.md"))
             # Only check if decisions dir has files
             if list(decisions_dir.glob("*.md")):
-                assert len(adr_docs) >= 1, (
-                    "Decisions directory should contain ADR documents"
-                )
+                assert len(adr_docs) >= 1, "Decisions directory should contain ADR documents"
 
 
 # =============================================================================
@@ -245,7 +247,9 @@ class TestRegressionPrevention:
         """
         # Get project number for pattern
         proj_num = project_id.split("-")[1]
-        bug001_pattern = re.compile(rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}")
+        bug001_pattern = re.compile(
+            rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}"
+        )
 
         # Check synthesis, analysis, reports directories
         for category in ["synthesis", "analysis", "reports"]:

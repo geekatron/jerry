@@ -19,11 +19,12 @@ Exports:
     Session: Event-sourced session aggregate
     SessionStatus: Enum for session lifecycle states
 """
+
 from __future__ import annotations
 
+from collections.abc import Sequence
 from datetime import datetime
 from enum import Enum
-from typing import Sequence
 
 from src.shared_kernel.domain_event import DomainEvent
 from src.work_tracking.domain.aggregates.base import AggregateRoot
@@ -233,9 +234,7 @@ class Session(AggregateRoot):
             ValueError: If session is not active
         """
         if self._status != SessionStatus.ACTIVE:
-            raise ValueError(
-                f"Cannot link project to session in {self._status.value} status"
-            )
+            raise ValueError(f"Cannot link project to session in {self._status.value} status")
 
         event = SessionProjectLinked(
             aggregate_id=self._id,

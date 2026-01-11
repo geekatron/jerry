@@ -8,9 +8,9 @@ These are "secondary ports" (driven) - they are called by the application
 to interact with external systems (filesystem, environment, etc.).
 """
 
-from .project_repository import IProjectRepository
 from .environment import IEnvironmentProvider
 from .exceptions import RepositoryError
+from .project_repository import IProjectRepository
 
 __all__ = [
     "IProjectRepository",

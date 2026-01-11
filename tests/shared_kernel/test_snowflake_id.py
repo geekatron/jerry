@@ -3,11 +3,12 @@
 These tests complement the BDD scenarios with additional edge cases
 and technical validations.
 """
+
 from __future__ import annotations
 
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -128,7 +129,7 @@ class TestSnowflakeIdParsing:
         id_value = generator.generate()
         parsed = SnowflakeIdGenerator.parse(id_value)
         assert isinstance(parsed["timestamp"], datetime)
-        assert parsed["timestamp"].tzinfo == timezone.utc
+        assert parsed["timestamp"].tzinfo == UTC
 
     def test_parse_roundtrip(self) -> None:
         """Parsed components match generation parameters."""

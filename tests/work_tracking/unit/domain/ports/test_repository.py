@@ -9,12 +9,14 @@ References:
     - PAT-009: Generic Repository Port
     - IMPL-REPO-001: IRepository Port implementation
 """
+
 from __future__ import annotations
 
-from typing import TypeVar
+from dataclasses import dataclass
 
 import pytest
 
+from src.shared_kernel.domain_event import DomainEvent
 from src.work_tracking.domain.aggregates.base import AggregateRoot
 from src.work_tracking.domain.ports.repository import (
     AggregateNotFoundError,
@@ -22,9 +24,6 @@ from src.work_tracking.domain.ports.repository import (
     IRepository,
     RepositoryError,
 )
-from src.shared_kernel.domain_event import DomainEvent
-from dataclasses import dataclass
-
 
 # =============================================================================
 # Test Fixtures
@@ -130,9 +129,7 @@ class TestIRepositoryProtocol:
 
     def test_is_protocol_class(self) -> None:
         """IRepository is a Protocol class."""
-        assert hasattr(IRepository, "__protocol_attrs__") or hasattr(
-            IRepository, "_is_protocol"
-        )
+        assert hasattr(IRepository, "__protocol_attrs__") or hasattr(IRepository, "_is_protocol")
 
 
 # =============================================================================

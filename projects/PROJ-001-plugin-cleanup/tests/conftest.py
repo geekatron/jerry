@@ -9,12 +9,11 @@ Test Pyramid Coverage:
 - Contract: Document schema compliance
 - Architecture: Path convention enforcement
 """
+
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
-from typing import Generator
 
 import pytest
 
@@ -55,7 +54,9 @@ def old_path_pattern() -> re.Pattern:
 @pytest.fixture
 def new_path_pattern() -> re.Pattern:
     """Regex pattern that matches new (correct) path format."""
-    return re.compile(r"projects/PROJ-001-plugin-cleanup/(research|synthesis|analysis|decisions|reports)/PROJ-001")
+    return re.compile(
+        r"projects/PROJ-001-plugin-cleanup/(research|synthesis|analysis|decisions|reports)/PROJ-001"
+    )
 
 
 @pytest.fixture

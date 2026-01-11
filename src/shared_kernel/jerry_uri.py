@@ -10,6 +10,7 @@ References:
 Exports:
     JerryUri (value object)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -35,9 +36,9 @@ class JerryUri:
 
     path_segments: tuple[str, ...]
 
-    VALID_ENTITY_TYPES: ClassVar[frozenset[str]] = frozenset({
-        "task", "phase", "plan", "knowledge", "actor", "event", "subtask"
-    })
+    VALID_ENTITY_TYPES: ClassVar[frozenset[str]] = frozenset(
+        {"task", "phase", "plan", "knowledge", "actor", "event", "subtask"}
+    )
     SCHEME: ClassVar[str] = "jerry"
 
     def __post_init__(self) -> None:
@@ -57,7 +58,7 @@ class JerryUri:
         prefix = f"{cls.SCHEME}://"
         if not uri.startswith(prefix):
             raise ValueError(f"Invalid JerryUri scheme: {uri}")
-        path = uri[len(prefix):]
+        path = uri[len(prefix) :]
         if not path:
             raise ValueError("JerryUri path cannot be empty")
         segments = tuple(path.split("/"))
@@ -70,11 +71,7 @@ class JerryUri:
 
     @classmethod
     def for_nested(
-        cls,
-        parent_type: str,
-        parent_id: str,
-        child_type: str,
-        child_id: str
+        cls, parent_type: str, parent_id: str, child_type: str, child_id: str
     ) -> JerryUri:
         """Create JerryUri for a nested entity."""
         return cls((parent_type, parent_id, child_type, child_id))

@@ -15,12 +15,12 @@ Exports:
     AggregateNotFoundError: Raised when aggregate not found
     RepositoryError: Base exception for repository errors
 """
+
 from __future__ import annotations
 
 from typing import Protocol, TypeVar
 
 from src.work_tracking.domain.aggregates.base import AggregateRoot
-
 
 # =============================================================================
 # Type Variables
@@ -83,8 +83,7 @@ class ConcurrencyError(RepositoryError):
         self.expected_version = expected
         self.actual_version = actual
         super().__init__(
-            f"Aggregate '{aggregate_id}' version mismatch: "
-            f"expected {expected}, actual {actual}"
+            f"Aggregate '{aggregate_id}' version mismatch: expected {expected}, actual {actual}"
         )
 
 

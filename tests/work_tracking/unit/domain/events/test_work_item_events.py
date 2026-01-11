@@ -9,9 +9,10 @@ References:
     - IMPL-005: WorkItem Aggregate (events are supporting components)
     - ADR-009: Event Storage Mechanism
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
 
@@ -25,7 +26,6 @@ from src.work_tracking.domain.events.work_item_events import (
     WorkItemCompleted,
     WorkItemCreated,
 )
-
 
 # =============================================================================
 # WorkItemCreated Tests

@@ -11,14 +11,14 @@ References:
     - Hexagonal Architecture (Ports & Adapters)
     - Dependency Rule: Source code dependencies can only point inward
 """
+
 from __future__ import annotations
 
 import ast
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import pytest
-
 
 # =============================================================================
 # Test Configuration
@@ -131,7 +131,9 @@ def get_external_imports(file_path: Path) -> list[str]:
             for alias in node.names:
                 module = alias.name.split(".")[0]
                 if module not in STDLIB_MODULES and module not in {
-                    "src", "session_management", "shared_kernel"
+                    "src",
+                    "session_management",
+                    "shared_kernel",
                 }:
                     external.append(module)
         elif isinstance(node, ast.ImportFrom):
@@ -141,7 +143,9 @@ def get_external_imports(file_path: Path) -> list[str]:
             if node.module:
                 module = node.module.split(".")[0]
                 if module not in STDLIB_MODULES and module not in {
-                    "src", "session_management", "shared_kernel"
+                    "src",
+                    "session_management",
+                    "shared_kernel",
                 }:
                     external.append(module)
 
@@ -183,7 +187,7 @@ class TestDomainLayerArchitecture:
                 violations.append(f"{rel_path}: {external}")
 
         assert not violations, (
-            f"Domain layer has external imports (violates stdlib-only rule):\n"
+            "Domain layer has external imports (violates stdlib-only rule):\n"
             + "\n".join(f"  - {v}" for v in violations)
         )
 
@@ -197,7 +201,7 @@ class TestDomainLayerArchitecture:
                 violations.append(str(rel_path))
 
         assert not violations, (
-            f"Domain layer imports from infrastructure (violates dependency rule):\n"
+            "Domain layer imports from infrastructure (violates dependency rule):\n"
             + "\n".join(f"  - {v}" for v in violations)
         )
 
@@ -211,7 +215,7 @@ class TestDomainLayerArchitecture:
                 violations.append(str(rel_path))
 
         assert not violations, (
-            f"Domain layer imports from application (violates dependency rule):\n"
+            "Domain layer imports from application (violates dependency rule):\n"
             + "\n".join(f"  - {v}" for v in violations)
         )
 
@@ -229,7 +233,7 @@ class TestApplicationLayerArchitecture:
                 violations.append(str(rel_path))
 
         assert not violations, (
-            f"Application layer imports from infrastructure (violates dependency rule):\n"
+            "Application layer imports from infrastructure (violates dependency rule):\n"
             + "\n".join(f"  - {v}" for v in violations)
         )
 
@@ -322,9 +326,8 @@ class TestDependencyDirection:
             if imports_from_layer(file_path, "infrastructure"):
                 violations.append(f"application -> infrastructure: {file_path.name}")
 
-        assert not violations, (
-            f"Dependency direction violations (must flow inward):\n"
-            + "\n".join(f"  - {v}" for v in violations)
+        assert not violations, "Dependency direction violations (must flow inward):\n" + "\n".join(
+            f"  - {v}" for v in violations
         )
 
     def test_no_circular_dependencies(self) -> None:

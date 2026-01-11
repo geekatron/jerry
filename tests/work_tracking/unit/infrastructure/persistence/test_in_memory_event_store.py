@@ -12,6 +12,7 @@ References:
     - PAT-003: Optimistic Concurrency with File Locking
     - IMPL-ES-001: IEventStore Port implementation
 """
+
 from __future__ import annotations
 
 import threading
@@ -294,8 +295,12 @@ class TestInMemoryEventStoreUtilityMethods:
     def test_count_events_all_streams(self) -> None:
         """count_events without argument returns total count."""
         store = InMemoryEventStore()
-        store.append("WORK-001", [create_event("WORK-001", i) for i in range(1, 4)], expected_version=-1)
-        store.append("WORK-002", [create_event("WORK-002", i) for i in range(1, 3)], expected_version=-1)
+        store.append(
+            "WORK-001", [create_event("WORK-001", i) for i in range(1, 4)], expected_version=-1
+        )
+        store.append(
+            "WORK-002", [create_event("WORK-002", i) for i in range(1, 3)], expected_version=-1
+        )
 
         assert store.count_events() == 5  # 3 + 2
 
@@ -448,24 +453,24 @@ class TestInMemoryEventStoreProtocolCompliance:
     def test_has_append_method(self) -> None:
         """InMemoryEventStore has append method."""
         store = InMemoryEventStore()
-        assert callable(getattr(store, "append"))
+        assert callable(store.append)
 
     def test_has_read_method(self) -> None:
         """InMemoryEventStore has read method."""
         store = InMemoryEventStore()
-        assert callable(getattr(store, "read"))
+        assert callable(store.read)
 
     def test_has_get_version_method(self) -> None:
         """InMemoryEventStore has get_version method."""
         store = InMemoryEventStore()
-        assert callable(getattr(store, "get_version"))
+        assert callable(store.get_version)
 
     def test_has_stream_exists_method(self) -> None:
         """InMemoryEventStore has stream_exists method."""
         store = InMemoryEventStore()
-        assert callable(getattr(store, "stream_exists"))
+        assert callable(store.stream_exists)
 
     def test_has_delete_stream_method(self) -> None:
         """InMemoryEventStore has delete_stream method."""
         store = InMemoryEventStore()
-        assert callable(getattr(store, "delete_stream"))
+        assert callable(store.delete_stream)

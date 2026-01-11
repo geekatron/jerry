@@ -18,12 +18,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import ClassVar, Pattern
+from re import Pattern
+from typing import ClassVar
 
 from src.shared_kernel.vertex_id import VertexId
 
 from ..exceptions import InvalidProjectIdError
-
 
 # Validation constants
 MIN_NUMBER = 1
@@ -55,9 +55,7 @@ class ProjectId(VertexId):
     """
 
     # Regex pattern for valid project IDs
-    _PATTERN: ClassVar[Pattern[str]] = re.compile(
-        r"^PROJ-(\d{3})-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$"
-    )
+    _PATTERN: ClassVar[Pattern[str]] = re.compile(r"^PROJ-(\d{3})-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)$")
 
     @classmethod
     def _is_valid_format(cls, value: str) -> bool:
@@ -96,9 +94,7 @@ class ProjectId(VertexId):
         Raises:
             NotImplementedError: Always, as ProjectId requires components
         """
-        raise NotImplementedError(
-            "ProjectId requires number and slug; use create(number, slug)"
-        )
+        raise NotImplementedError("ProjectId requires number and slug; use create(number, slug)")
 
     @classmethod
     def from_string(cls, value: str) -> ProjectId:
@@ -144,7 +140,7 @@ class ProjectId(VertexId):
             raise InvalidProjectIdError(
                 value,
                 "Must match format PROJ-{nnn}-{slug} where nnn is 001-999 "
-                "and slug is lowercase kebab-case"
+                "and slug is lowercase kebab-case",
             )
 
         return cls(value)
@@ -166,36 +162,32 @@ class ProjectId(VertexId):
         # Validate number type
         if not isinstance(number, int):
             raise InvalidProjectIdError(
-                f"PROJ-???-{slug}",
-                f"Number must be an integer, got {type(number).__name__}"
+                f"PROJ-???-{slug}", f"Number must be an integer, got {type(number).__name__}"
             )
 
         # Validate number range
         if not (MIN_NUMBER <= number <= MAX_NUMBER):
             raise InvalidProjectIdError(
                 f"PROJ-{number:03d}-{slug}" if number >= 0 else f"PROJ-{number}-{slug}",
-                f"Number must be between {MIN_NUMBER} and {MAX_NUMBER}"
+                f"Number must be between {MIN_NUMBER} and {MAX_NUMBER}",
             )
 
         # Validate slug exists
         if not slug:
-            raise InvalidProjectIdError(
-                f"PROJ-{number:03d}-",
-                "Slug cannot be empty"
-            )
+            raise InvalidProjectIdError(f"PROJ-{number:03d}-", "Slug cannot be empty")
 
         # Check slug format (lowercase kebab-case)
         if not re.match(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$", slug):
             raise InvalidProjectIdError(
                 f"PROJ-{number:03d}-{slug}",
-                "Slug must be lowercase kebab-case starting with a letter"
+                "Slug must be lowercase kebab-case starting with a letter",
             )
 
         # Check slug length
         if len(slug) > MAX_SLUG_LENGTH:
             raise InvalidProjectIdError(
                 f"PROJ-{number:03d}-{slug}",
-                f"Slug exceeds maximum length of {MAX_SLUG_LENGTH} characters"
+                f"Slug exceeds maximum length of {MAX_SLUG_LENGTH} characters",
             )
 
         value = f"PROJ-{number:03d}-{slug}"

@@ -10,6 +10,7 @@ References:
     - PAT-004-e006: Status State Machine
     - WORKTRACKER: Work item lifecycle
 """
+
 from __future__ import annotations
 
 import pytest

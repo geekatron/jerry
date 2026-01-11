@@ -5,6 +5,7 @@ Implements the IEnvironmentProvider port using os.environ.
 """
 
 from __future__ import annotations
+
 import os
 
 

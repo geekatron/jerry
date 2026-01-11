@@ -1,4 +1,5 @@
 """Pytest configuration for Jerry Framework tests."""
+
 from __future__ import annotations
 
 import sys

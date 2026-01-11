@@ -13,6 +13,7 @@ References:
     - ADR-009: Event Storage Mechanism
     - impl-es-e-006-workitem-schema: WorkItem event catalog
 """
+
 from __future__ import annotations
 
 from .quality_gate_events import (

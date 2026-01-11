@@ -8,8 +8,8 @@ These tests verify query logic without real I/O.
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import pytest
 
@@ -23,17 +23,18 @@ from domain import (
     ProjectStatus,
     ValidationResult,
 )
+
+from application.ports import RepositoryError
 from application.queries import (
+    GetNextProjectNumberQuery,
     ScanProjectsQuery,
     ValidateProjectQuery,
-    GetNextProjectNumberQuery,
 )
-from application.ports import RepositoryError
-
 
 # =============================================================================
 # Test Doubles (In-Memory Implementations)
 # =============================================================================
+
 
 @dataclass
 class InMemoryProjectRepository:
@@ -52,9 +53,7 @@ class InMemoryProjectRepository:
             raise self.should_raise
         return self.projects.get(str(project_id))
 
-    def validate_project(
-        self, base_path: str, project_id: ProjectId
-    ) -> ValidationResult:
+    def validate_project(self, base_path: str, project_id: ProjectId) -> ValidationResult:
         if self.should_raise:
             raise self.should_raise
         project = self.projects.get(str(project_id))
@@ -94,6 +93,7 @@ class InMemoryEnvironmentProvider:
 # ScanProjectsQuery Tests
 # =============================================================================
 
+
 class TestScanProjectsQueryHappyPath:
     """Happy path tests for ScanProjectsQuery."""
 
@@ -115,12 +115,11 @@ class TestScanProjectsQueryHappyPath:
     def test_scan_projects_returns_project_info_with_status(self):
         """Each project should include status information."""
         repo = InMemoryProjectRepository()
-        repo.add_project(ProjectInfo.create(
-            "PROJ-001-test",
-            status="IN_PROGRESS",
-            has_plan=True,
-            has_tracker=True
-        ))
+        repo.add_project(
+            ProjectInfo.create(
+                "PROJ-001-test", status="IN_PROGRESS", has_plan=True, has_tracker=True
+            )
+        )
 
         query = ScanProjectsQuery(repository=repo, base_path="/projects")
         result = query.execute()
@@ -189,22 +188,17 @@ class TestScanProjectsQueryFailure:
 # ValidateProjectQuery Tests
 # =============================================================================
 
+
 class TestValidateProjectQueryHappyPath:
     """Happy path tests for ValidateProjectQuery."""
 
     def test_validate_project_when_exists_returns_valid(self):
         """Valid project should return valid result."""
         repo = InMemoryProjectRepository()
-        repo.add_project(ProjectInfo.create(
-            "PROJ-001-test",
-            has_plan=True,
-            has_tracker=True
-        ))
+        repo.add_project(ProjectInfo.create("PROJ-001-test", has_plan=True, has_tracker=True))
 
         query = ValidateProjectQuery(
-            repository=repo,
-            base_path="/projects",
-            project_id_str="PROJ-001-test"
+            repository=repo, base_path="/projects", project_id_str="PROJ-001-test"
         )
         project_id, result = query.execute()
 
@@ -215,16 +209,10 @@ class TestValidateProjectQueryHappyPath:
     def test_validate_project_includes_warnings_for_missing_files(self):
         """Missing files should generate warnings."""
         repo = InMemoryProjectRepository()
-        repo.add_project(ProjectInfo.create(
-            "PROJ-001-test",
-            has_plan=False,
-            has_tracker=True
-        ))
+        repo.add_project(ProjectInfo.create("PROJ-001-test", has_plan=False, has_tracker=True))
 
         query = ValidateProjectQuery(
-            repository=repo,
-            base_path="/projects",
-            project_id_str="PROJ-001-test"
+            repository=repo, base_path="/projects", project_id_str="PROJ-001-test"
         )
         project_id, result = query.execute()
 
@@ -239,16 +227,10 @@ class TestValidateProjectQueryEdgeCases:
     def test_validate_project_with_missing_plan_returns_warning(self):
         """Missing PLAN.md should be a warning, not error."""
         repo = InMemoryProjectRepository()
-        repo.add_project(ProjectInfo.create(
-            "PROJ-001-test",
-            has_plan=False,
-            has_tracker=True
-        ))
+        repo.add_project(ProjectInfo.create("PROJ-001-test", has_plan=False, has_tracker=True))
 
         query = ValidateProjectQuery(
-            repository=repo,
-            base_path="/projects",
-            project_id_str="PROJ-001-test"
+            repository=repo, base_path="/projects", project_id_str="PROJ-001-test"
         )
         _, result = query.execute()
 
@@ -257,16 +239,10 @@ class TestValidateProjectQueryEdgeCases:
     def test_validate_project_with_missing_tracker_returns_warning(self):
         """Missing WORKTRACKER.md should be a warning."""
         repo = InMemoryProjectRepository()
-        repo.add_project(ProjectInfo.create(
-            "PROJ-001-test",
-            has_plan=True,
-            has_tracker=False
-        ))
+        repo.add_project(ProjectInfo.create("PROJ-001-test", has_plan=True, has_tracker=False))
 
         query = ValidateProjectQuery(
-            repository=repo,
-            base_path="/projects",
-            project_id_str="PROJ-001-test"
+            repository=repo, base_path="/projects", project_id_str="PROJ-001-test"
         )
         _, result = query.execute()
 
@@ -282,9 +258,7 @@ class TestValidateProjectQueryNegative:
         repo = InMemoryProjectRepository()
 
         query = ValidateProjectQuery(
-            repository=repo,
-            base_path="/projects",
-            project_id_str="PROJ-999-nonexistent"
+            repository=repo, base_path="/projects", project_id_str="PROJ-999-nonexistent"
         )
         project_id, result = query.execute()
 
@@ -297,9 +271,7 @@ class TestValidateProjectQueryNegative:
         repo = InMemoryProjectRepository()
 
         query = ValidateProjectQuery(
-            repository=repo,
-            base_path="/projects",
-            project_id_str="invalid-format"
+            repository=repo, base_path="/projects", project_id_str="invalid-format"
         )
         project_id, result = query.execute()
 
@@ -310,6 +282,7 @@ class TestValidateProjectQueryNegative:
 # =============================================================================
 # GetNextProjectNumberQuery Tests
 # =============================================================================
+
 
 class TestGetNextProjectNumberQueryHappyPath:
     """Happy path tests for GetNextProjectNumberQuery."""

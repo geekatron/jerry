@@ -9,6 +9,7 @@ References:
     - PAT-010: Composed Infrastructure Adapters
     - ADR-006: File Locking Strategy
 """
+
 from __future__ import annotations
 
 import os
@@ -20,7 +21,9 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 try:
-    from filelock import FileLock, Timeout as FileLockTimeout
+    from filelock import FileLock
+    from filelock import Timeout as FileLockTimeout
+
     HAS_FILELOCK = True
 except ImportError:
     HAS_FILELOCK = False
@@ -132,9 +135,7 @@ class IFileStore(Protocol):
         ...
 
     @contextmanager
-    def locked(
-        self, path: str | Path, *, timeout: float = 10.0
-    ) -> "Iterator[None]":
+    def locked(self, path: str | Path, *, timeout: float = 10.0) -> Iterator[None]:
         """Context manager for exclusive file lock.
 
         Args:
@@ -228,9 +229,7 @@ class LocalFileStore:
         return False
 
     @contextmanager
-    def locked(
-        self, path: str | Path, *, timeout: float = 10.0
-    ) -> "Iterator[None]":
+    def locked(self, path: str | Path, *, timeout: float = 10.0) -> Iterator[None]:
         """Context manager for exclusive file lock."""
         resolved = self._resolve_path(path)
         lock_path = resolved.with_suffix(resolved.suffix + ".lock")
@@ -292,9 +291,7 @@ class InMemoryFileStore:
         return False
 
     @contextmanager
-    def locked(
-        self, path: str | Path, *, timeout: float = 10.0
-    ) -> "Iterator[None]":
+    def locked(self, path: str | Path, *, timeout: float = 10.0) -> Iterator[None]:
         """Simulate file lock (no actual locking in memory)."""
         key = str(path)
         if key in self._locks:

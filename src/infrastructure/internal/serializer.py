@@ -8,6 +8,7 @@ References:
     - PAT-005: TOON for LLM Context Serialization
     - PAT-010: Composed Infrastructure Adapters
 """
+
 from __future__ import annotations
 
 import json
@@ -214,7 +215,4 @@ class InMemorySerializer(Generic[T]):
     def deserialize(self, data: bytes, target_type: type[T]) -> T:
         """This is a test double - raises if actually called with real data."""
         _ = data  # Unused, but required by protocol
-        raise DeserializeError(
-            target_type,
-            "InMemorySerializer cannot deserialize real data"
-        )
+        raise DeserializeError(target_type, "InMemorySerializer cannot deserialize real data")

@@ -14,13 +14,15 @@ Exports:
     TaskId, PhaseId, PlanId, SubtaskId, KnowledgeId, ActorId, EventId (subclasses)
     EdgeId (relationship identifier)
 """
+
 from __future__ import annotations
 
 import re
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import ClassVar, Pattern
+from re import Pattern
+from typing import ClassVar
 
 
 @dataclass(frozen=True)

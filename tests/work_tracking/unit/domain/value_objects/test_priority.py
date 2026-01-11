@@ -9,12 +9,12 @@ References:
     - IMPL-005: WorkItem Aggregate (Priority is a supporting VO)
     - impl-es-e-006-workitem-schema: Priority specification
 """
+
 from __future__ import annotations
 
 import pytest
 
 from src.work_tracking.domain.value_objects import Priority
-
 
 # =============================================================================
 # Enum Value Tests

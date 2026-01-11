@@ -7,6 +7,7 @@ References:
     - ADR-007: ID Generation Strategy
     - PHASE-IMPL-DOMAIN: IMPL-003 specification
 """
+
 from __future__ import annotations
 
 from dataclasses import FrozenInstanceError

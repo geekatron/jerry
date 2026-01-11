@@ -14,13 +14,13 @@ Migration History:
     Migrated: 2026-01-10 (TD-005)
     Commit: a911859 (original creation for BUG-001)
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
 import pytest
-
 
 # =============================================================================
 # HELPER FUNCTIONS

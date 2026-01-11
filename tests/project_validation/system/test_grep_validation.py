@@ -14,6 +14,7 @@ Migration History:
     Migrated: 2026-01-10 (TD-005)
     Commit: a911859 (original creation for BUG-001)
 """
+
 from __future__ import annotations
 
 import re
@@ -21,7 +22,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 
 # =============================================================================
 # SYSTEM-LEVEL VALIDATION
@@ -52,7 +52,8 @@ class TestNoOldPathsInProject:
         if result.returncode == 0:
             lines = result.stdout.strip().split("\n")
             real_violations = [
-                line for line in lines
+                line
+                for line in lines
                 if "BUG-" not in line  # Exclude bug documentation
                 and "Old format:" not in line  # Exclude format descriptions
                 and "OLD:" not in line  # Exclude migration docs
@@ -105,8 +106,7 @@ class TestNoOldPathsInProject:
             content = md_file.read_text()
             matches = pattern.findall(content)
             assert len(matches) == 0, (
-                f"Found {len(matches)} old path reference(s) in {md_file.name}:\n"
-                f"Matches: {matches}"
+                f"Found {len(matches)} old path reference(s) in {md_file.name}:\nMatches: {matches}"
             )
 
 
@@ -138,9 +138,7 @@ class TestAllPathsAreProjectCentric:
             old_matches = old_pattern.findall(content)
 
             # Should have zero old matches
-            assert len(old_matches) == 0, (
-                f"Old paths in {md_file}: {old_matches}"
-            )
+            assert len(old_matches) == 0, f"Old paths in {md_file}: {old_matches}"
 
 
 class TestGrepCommandEquivalence:

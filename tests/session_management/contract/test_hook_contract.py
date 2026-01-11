@@ -37,6 +37,7 @@ References:
     - ENFORCE-012: Contract Tests
     - scripts/session_start.py: Hook implementation
 """
+
 from __future__ import annotations
 
 import json
@@ -44,11 +45,10 @@ import re
 import subprocess
 import sys
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
-
 
 # =============================================================================
 # Contract Schema Definitions
@@ -196,9 +196,7 @@ class TestProjectContextTagContract:
             assert field in content, f"Missing required field: {field}"
 
         # Contract: Must have either ValidationMessage or ValidationWarnings
-        has_validation = (
-            "ValidationMessage:" in content or "ValidationWarnings:" in content
-        )
+        has_validation = "ValidationMessage:" in content or "ValidationWarnings:" in content
         assert has_validation, "Missing validation field (Message or Warnings)"
 
     def test_project_active_field_format(
@@ -335,9 +333,7 @@ class TestProjectErrorTagContract:
         for field in PROJECT_ERROR_SCHEMA["required_fields"]:
             assert field in content or field in stdout, f"Missing required field: {field}"
 
-    def test_action_required_on_error(
-        self, temp_root_dir: str, session_start_script: Path
-    ) -> None:
+    def test_action_required_on_error(self, temp_root_dir: str, session_start_script: Path) -> None:
         """ACTION REQUIRED message MUST appear on error."""
         _, stdout = run_hook(
             session_start_script,
@@ -405,9 +401,9 @@ class TestJsonSchemaContract:
 
         for proj in projects:
             # Contract: ID format is PROJ-NNN-slug
-            assert re.match(
-                r"PROJ-\d{3}-[a-z0-9-]+", proj["id"]
-            ), f"Invalid id format: {proj['id']}"
+            assert re.match(r"PROJ-\d{3}-[a-z0-9-]+", proj["id"]), (
+                f"Invalid id format: {proj['id']}"
+            )
 
     def test_json_status_is_valid_enum(
         self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
@@ -478,11 +474,13 @@ class TestExitCodeContract:
             {"JERRY_PROJECT": "PROJ-001-test", "CLAUDE_PROJECT_DIR": temp_root_dir},
         )
 
-        tag_count = sum([
-            "<project-context>" in stdout,
-            "<project-required>" in stdout,
-            "<project-error>" in stdout,
-        ])
+        tag_count = sum(
+            [
+                "<project-context>" in stdout,
+                "<project-required>" in stdout,
+                "<project-error>" in stdout,
+            ]
+        )
 
         # Contract: Exactly one tag type
         assert tag_count == 1, f"Expected exactly 1 tag type, found {tag_count}"

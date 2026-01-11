@@ -8,6 +8,7 @@ References:
     - Canon PAT-011 (L1812-1859)
     - Gap Analysis G-001 (L288-301)
 """
+
 from __future__ import annotations
 
 

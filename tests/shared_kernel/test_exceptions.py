@@ -1,14 +1,13 @@
 """Unit tests for shared_kernel.exceptions module."""
-from __future__ import annotations
 
-import pytest
+from __future__ import annotations
 
 from src.shared_kernel.exceptions import (
     ConcurrencyError,
     DomainError,
-    InvariantViolationError,
     InvalidStateError,
     InvalidStateTransitionError,
+    InvariantViolationError,
     NotFoundError,
     ValidationError,
 )

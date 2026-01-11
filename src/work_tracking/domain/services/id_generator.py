@@ -19,6 +19,7 @@ Exports:
     IWorkItemIdGenerator: Protocol for ID generation
     WorkItemIdGenerator: Concrete implementation
 """
+
 from __future__ import annotations
 
 import threading

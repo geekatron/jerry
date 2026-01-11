@@ -8,6 +8,7 @@ References:
     - PAT-005-e006: Quality Gate Value Objects
     - Constraint c-006: Test Distribution Requirements
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -60,24 +61,18 @@ class TestRatio:
         True
     """
 
-    positive: int      # Happy path tests
-    negative: int      # Error handling tests
-    edge_case: int     # Boundary condition tests
+    positive: int  # Happy path tests
+    negative: int  # Error handling tests
+    edge_case: int  # Boundary condition tests
 
     def __post_init__(self) -> None:
         """Validate test counts after initialization."""
         if not isinstance(self.positive, int):
-            raise TypeError(
-                f"positive must be an integer, got {type(self.positive).__name__}"
-            )
+            raise TypeError(f"positive must be an integer, got {type(self.positive).__name__}")
         if not isinstance(self.negative, int):
-            raise TypeError(
-                f"negative must be an integer, got {type(self.negative).__name__}"
-            )
+            raise TypeError(f"negative must be an integer, got {type(self.negative).__name__}")
         if not isinstance(self.edge_case, int):
-            raise TypeError(
-                f"edge_case must be an integer, got {type(self.edge_case).__name__}"
-            )
+            raise TypeError(f"edge_case must be an integer, got {type(self.edge_case).__name__}")
         if self.positive < 0:
             raise ValueError(f"positive must be non-negative, got {self.positive}")
         if self.negative < 0:

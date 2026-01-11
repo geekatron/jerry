@@ -8,11 +8,10 @@ References:
     - Clean Architecture dependency rule
     - DDD Aggregate boundaries
 """
+
 from __future__ import annotations
 
-import pytest
 from pytest_archon import archrule
-
 
 # =============================================================================
 # Event Dependency Rules

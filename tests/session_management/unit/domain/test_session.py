@@ -13,9 +13,10 @@ References:
     - Canon PAT-001: AggregateRoot Base Class
     - DDD Aggregate pattern (Evans, 2004)
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
 
@@ -32,7 +33,6 @@ from src.session_management.domain.events.session_events import (
 from src.session_management.domain.value_objects.project_id import ProjectId
 from src.session_management.domain.value_objects.session_id import SessionId
 from src.work_tracking.domain.aggregates.base import AggregateRoot
-
 
 # =============================================================================
 # AggregateRoot Compliance Tests (I-008d.3.2.1)

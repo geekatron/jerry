@@ -35,7 +35,6 @@ project_root = script_dir.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from src.session_management.domain import ProjectId, InvalidProjectIdError
 from src.session_management.application import GetProjectContextQuery
 from src.session_management.infrastructure import FilesystemProjectAdapter, OsEnvironmentAdapter
 
@@ -112,10 +111,7 @@ def output_project_required(context: dict) -> None:
     next_num = context["next_number"]
 
     # Create JSON representation for parsing
-    projects_json = json.dumps([
-        {"id": str(p.id), "status": p.status.name}
-        for p in projects
-    ])
+    projects_json = json.dumps([{"id": str(p.id), "status": p.status.name} for p in projects])
 
     print("Jerry Framework initialized.")
     print("<project-required>")
@@ -127,7 +123,9 @@ def output_project_required(context: dict) -> None:
     print("</project-required>")
     print()
     print("ACTION REQUIRED: No JERRY_PROJECT environment variable set.")
-    print("Claude MUST use AskUserQuestion to help the user select an existing project or create a new one.")
+    print(
+        "Claude MUST use AskUserQuestion to help the user select an existing project or create a new one."
+    )
     print("DO NOT proceed with any work until a project is selected.")
 
 

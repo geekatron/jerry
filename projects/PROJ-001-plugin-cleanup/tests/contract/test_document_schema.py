@@ -10,13 +10,11 @@ Test Categories:
 - Required Fields: Mandatory metadata present
 - Path Format: References use correct format
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
-
-import pytest
-
 
 # =============================================================================
 # SCHEMA DEFINITIONS
@@ -41,6 +39,7 @@ DOCUMENT_ID_PATTERN = re.compile(r"PROJ-\d{3}-e-\d{3}")
 # =============================================================================
 # CONTRACT TESTS - HEADER SCHEMA
 # =============================================================================
+
 
 class TestDocumentHeaderSchema:
     """Test that documents have required header fields."""
@@ -98,6 +97,7 @@ class TestDocumentHeaderSchema:
 # CONTRACT TESTS - PATH FORMAT
 # =============================================================================
 
+
 class TestPathFormatContract:
     """Test that path references conform to expected format."""
 
@@ -129,13 +129,22 @@ class TestPathFormatContract:
 
             for path in all_paths:
                 # Only validate paths to artifact categories (research, synthesis, etc.)
-                if any(cat in path for cat in ["/research/", "/synthesis/", "/analysis/", "/decisions/", "/reports/"]):
+                if any(
+                    cat in path
+                    for cat in [
+                        "/research/",
+                        "/synthesis/",
+                        "/analysis/",
+                        "/decisions/",
+                        "/reports/",
+                    ]
+                ):
                     if not PATH_FORMAT_PATTERN.match(path):
                         violations.append((md_file.name, path))
 
         assert len(violations) == 0, (
-            f"Found {len(violations)} path format violations:\n" +
-            "\n".join(f"  {doc}: {path}" for doc, path in violations)
+            f"Found {len(violations)} path format violations:\n"
+            + "\n".join(f"  {doc}: {path}" for doc, path in violations)
         )
 
     def test_no_docs_prefix_paths(self, proj_001_root: Path):
@@ -166,14 +175,15 @@ class TestPathFormatContract:
                 violations.append((md_file.name, matches))
 
         assert len(violations) == 0, (
-            f"Found {len(violations)} deprecated docs/ paths in Phase 7 artifacts:\n" +
-            "\n".join(f"  {doc}: {paths}" for doc, paths in violations)
+            f"Found {len(violations)} deprecated docs/ paths in Phase 7 artifacts:\n"
+            + "\n".join(f"  {doc}: {paths}" for doc, paths in violations)
         )
 
 
 # =============================================================================
 # CONTRACT TESTS - DOCUMENT ID FORMAT
 # =============================================================================
+
 
 class TestDocumentIdContract:
     """Test that document IDs follow expected format."""
@@ -197,8 +207,10 @@ class TestDocumentIdContract:
 
             # Check for either combined or separate format
             has_combined = DOCUMENT_ID_PATTERN.search(header) is not None
-            has_separate = (ps_id_pattern.search(header) is not None and
-                           entry_id_pattern.search(header) is not None)
+            has_separate = (
+                ps_id_pattern.search(header) is not None
+                and entry_id_pattern.search(header) is not None
+            )
 
             assert has_combined or has_separate, (
                 f"{doc.name} has invalid or missing document ID. "
@@ -232,6 +244,7 @@ class TestDocumentIdContract:
 # CONTRACT TESTS - REFERENCE CONSISTENCY
 # =============================================================================
 
+
 class TestReferenceConsistencyContract:
     """Test that references are consistent across documents."""
 
@@ -239,13 +252,14 @@ class TestReferenceConsistencyContract:
         """
         CONTRACT: Synthesis document should reference exactly 5 research sources.
         """
-        synthesis_path = proj_001_root / "synthesis" / "PROJ-001-e-006-unified-architecture-canon.md"
+        synthesis_path = (
+            proj_001_root / "synthesis" / "PROJ-001-e-006-unified-architecture-canon.md"
+        )
         content = synthesis_path.read_text()
 
         # Count research references
         research_refs = re.findall(
-            r"projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-\d{3}",
-            content
+            r"projects/PROJ-001-plugin-cleanup/research/PROJ-001-e-\d{3}", content
         )
         unique_refs = set(research_refs)
 

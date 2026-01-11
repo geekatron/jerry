@@ -10,12 +10,12 @@ References:
     - IMPL-005: WorkItem Aggregate (WorkType is a supporting VO)
     - impl-es-e-006-workitem-schema: WorkType hierarchy
 """
+
 from __future__ import annotations
 
 import pytest
 
 from src.work_tracking.domain.value_objects import WorkType
-
 
 # =============================================================================
 # Enum Value Tests

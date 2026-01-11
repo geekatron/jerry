@@ -11,13 +11,14 @@ References:
     - pyeventsourcing EventStore API
     - Microsoft Azure Event Sourcing Pattern
 """
+
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Protocol, Sequence
+from datetime import UTC, datetime
+from typing import Protocol
 from uuid import UUID, uuid4
-
 
 # =============================================================================
 # Exceptions
@@ -50,8 +51,7 @@ class ConcurrencyError(EventStoreError):
         self.expected_version = expected
         self.actual_version = actual
         super().__init__(
-            f"Stream '{stream_id}' version mismatch: "
-            f"expected {expected}, actual {actual}"
+            f"Stream '{stream_id}' version mismatch: expected {expected}, actual {actual}"
         )
 
 
@@ -79,7 +79,7 @@ class StreamNotFoundError(EventStoreError):
 
 def _current_utc() -> datetime:
     """Get current UTC timestamp."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,9 +132,7 @@ class StoredEvent:
         if not self.event_type:
             raise ValueError("event_type cannot be empty")
         if not isinstance(self.data, dict):
-            raise TypeError(
-                f"data must be a dict, got {type(self.data).__name__}"
-            )
+            raise TypeError(f"data must be a dict, got {type(self.data).__name__}")
 
     def to_dict(self) -> dict:
         """

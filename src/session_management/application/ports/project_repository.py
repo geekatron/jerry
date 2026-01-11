@@ -6,6 +6,7 @@ whatever storage mechanism is used (filesystem, database, etc.).
 """
 
 from __future__ import annotations
+
 from typing import Protocol
 
 from ...domain import ProjectId, ProjectInfo, ValidationResult
@@ -45,9 +46,7 @@ class IProjectRepository(Protocol):
         """
         ...
 
-    def validate_project(
-        self, base_path: str, project_id: ProjectId
-    ) -> ValidationResult:
+    def validate_project(self, base_path: str, project_id: ProjectId) -> ValidationResult:
         """Validate that a project exists and is properly configured.
 
         Args:

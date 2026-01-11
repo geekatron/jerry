@@ -11,6 +11,7 @@ References:
     - IMPL-REPO-002: IFileStore + ISerializer<T>
     - PAT-010: Composed Infrastructure Adapters
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,6 +31,7 @@ from src.infrastructure.internal.serializer import (
 @dataclass
 class SimpleUser:
     """Simple dataclass for testing."""
+
     name: str
     age: int
 
@@ -37,6 +39,7 @@ class SimpleUser:
 @dataclass
 class UserWithOptional:
     """Dataclass with optional field."""
+
     name: str
     email: str | None = None
 
@@ -44,6 +47,7 @@ class UserWithOptional:
 @dataclass
 class UserWithDatetime:
     """Dataclass with datetime field."""
+
     name: str
     created_at: datetime
 
@@ -51,6 +55,7 @@ class UserWithDatetime:
 @dataclass
 class NestedData:
     """Dataclass with nested structure."""
+
     user: SimpleUser
     tags: list[str]
 
@@ -65,7 +70,7 @@ class DictConvertible:
         return {"value": self.value}
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "DictConvertible":
+    def from_dict(cls, data: dict[str, Any]) -> DictConvertible:
         return cls(data["value"])
 
 
@@ -140,7 +145,7 @@ class TestJsonSerializerHappyPath:
 
         result = serializer.serialize(data)
 
-        assert "Привет".encode("utf-8") in result
+        assert "Привет".encode() in result
 
     def test_serialize_list(self) -> None:
         """Test serializing a list."""
@@ -167,10 +172,7 @@ class TestJsonSerializerDatetime:
     def test_serialize_datetime(self) -> None:
         """Test that datetime is serialized to ISO format."""
         serializer = JsonSerializer[UserWithDatetime]()
-        user = UserWithDatetime(
-            name="Eve",
-            created_at=datetime(2024, 1, 15, 10, 30, 0)
-        )
+        user = UserWithDatetime(name="Eve", created_at=datetime(2024, 1, 15, 10, 30, 0))
 
         result = serializer.serialize(user)
 
@@ -188,10 +190,7 @@ class TestJsonSerializerDatetime:
     def test_roundtrip_datetime(self) -> None:
         """Test datetime roundtrip."""
         serializer = JsonSerializer[UserWithDatetime]()
-        original = UserWithDatetime(
-            name="Frank",
-            created_at=datetime(2025, 6, 20, 14, 45, 30)
-        )
+        original = UserWithDatetime(name="Frank", created_at=datetime(2025, 6, 20, 14, 45, 30))
 
         json_bytes = serializer.serialize(original)
         restored = serializer.deserialize(json_bytes, UserWithDatetime)
@@ -380,14 +379,17 @@ class TestInMemorySerializer:
 class TestSerializerProtocolCompliance:
     """Tests that implementations comply with ISerializer protocol."""
 
-    @pytest.mark.parametrize("serializer", [
-        JsonSerializer(),
-        InMemorySerializer(),
-    ])
+    @pytest.mark.parametrize(
+        "serializer",
+        [
+            JsonSerializer(),
+            InMemorySerializer(),
+        ],
+    )
     def test_protocol_methods_exist(self, serializer) -> None:
         """Test that all protocol methods are implemented."""
-        assert callable(getattr(serializer, "serialize"))
-        assert callable(getattr(serializer, "deserialize"))
+        assert callable(serializer.serialize)
+        assert callable(serializer.deserialize)
 
     def test_json_serializer_generic_typing(self) -> None:
         """Test that JsonSerializer can be parameterized."""

@@ -12,6 +12,7 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - dev-skill-e-002: Quality Gate Enforcement patterns
 """
+
 from __future__ import annotations
 
 import pytest
@@ -24,7 +25,6 @@ from src.work_tracking.domain.value_objects.quality_gate import (
     Threshold,
     ThresholdType,
 )
-
 
 # =============================================================================
 # GateLevel Tests

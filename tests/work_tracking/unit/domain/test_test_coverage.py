@@ -9,6 +9,7 @@ References:
     - PAT-005-e006: Quality Gate Value Objects
     - Constraint c-004: Code Coverage Requirements
 """
+
 from __future__ import annotations
 
 from dataclasses import FrozenInstanceError

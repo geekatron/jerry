@@ -10,6 +10,7 @@ Exports:
     SessionAbandoned: Event emitted when a session is abandoned
     SessionProjectLinked: Event emitted when a session is linked to a project
 """
+
 from __future__ import annotations
 
 from .session_events import (

@@ -1,4 +1,5 @@
 """Unit tests for shared_kernel.vertex_id module."""
+
 from __future__ import annotations
 
 import pytest
@@ -12,7 +13,6 @@ from src.shared_kernel.vertex_id import (
     PlanId,
     SubtaskId,
     TaskId,
-    VertexId,
 )
 
 

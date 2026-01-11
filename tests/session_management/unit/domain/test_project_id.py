@@ -11,14 +11,14 @@ References:
     - Canon PAT-001: VertexId Base Class
     - ADR-013: Shared Kernel Module
 """
+
 from __future__ import annotations
 
 import pytest
 
-from src.session_management.domain.value_objects.project_id import ProjectId
 from src.session_management.domain.exceptions import InvalidProjectIdError
+from src.session_management.domain.value_objects.project_id import ProjectId
 from src.shared_kernel.vertex_id import VertexId
-
 
 # =============================================================================
 # VertexId Compliance Tests (I-008d.1.1)

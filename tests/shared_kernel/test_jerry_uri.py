@@ -1,4 +1,5 @@
 """Unit tests for shared_kernel.jerry_uri module."""
+
 from __future__ import annotations
 
 import pytest

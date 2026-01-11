@@ -11,6 +11,7 @@ References:
     - PAT-001: Event Store Interface Pattern
     - PAT-003: Optimistic Concurrency with File Locking
 """
+
 from __future__ import annotations
 
 from .in_memory_event_store import InMemoryEventStore

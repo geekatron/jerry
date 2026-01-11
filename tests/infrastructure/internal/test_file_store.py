@@ -11,20 +11,17 @@ References:
     - IMPL-REPO-002: IFileStore + ISerializer<T>
     - PAT-003: Optimistic Concurrency with File Locking
 """
+
 from __future__ import annotations
 
-import threading
-import time
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 
 from src.infrastructure.internal.file_store import (
-    FileNotFoundError_,
     FileLockError,
+    FileNotFoundError_,
     FileStoreError,
-    FileWriteError,
     InMemoryFileStore,
     LocalFileStore,
 )
@@ -160,6 +157,7 @@ class TestLocalFileStoreEdgeCases:
     def test_no_base_path_uses_relative_paths(self, tmp_path: Path) -> None:
         """Test store without base_path uses paths as-is."""
         import os
+
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
@@ -307,30 +305,32 @@ class TestInMemoryFileStoreNegativeCases:
 class TestFileStoreProtocolCompliance:
     """Tests that implementations comply with IFileStore protocol."""
 
-    @pytest.mark.parametrize("store_factory", [
-        lambda tmp_path: LocalFileStore(base_path=tmp_path),
-        lambda tmp_path: InMemoryFileStore(),
-    ])
-    def test_protocol_methods_exist(
-        self, tmp_path: Path, store_factory
-    ) -> None:
+    @pytest.mark.parametrize(
+        "store_factory",
+        [
+            lambda tmp_path: LocalFileStore(base_path=tmp_path),
+            lambda tmp_path: InMemoryFileStore(),
+        ],
+    )
+    def test_protocol_methods_exist(self, tmp_path: Path, store_factory) -> None:
         """Test that all protocol methods are implemented."""
         store = store_factory(tmp_path)
 
         # All these should be callable
-        assert callable(getattr(store, "read"))
-        assert callable(getattr(store, "write"))
-        assert callable(getattr(store, "exists"))
-        assert callable(getattr(store, "delete"))
-        assert callable(getattr(store, "locked"))
+        assert callable(store.read)
+        assert callable(store.write)
+        assert callable(store.exists)
+        assert callable(store.delete)
+        assert callable(store.locked)
 
-    @pytest.mark.parametrize("store_factory", [
-        lambda tmp_path: LocalFileStore(base_path=tmp_path),
-        lambda tmp_path: InMemoryFileStore(),
-    ])
-    def test_write_read_roundtrip(
-        self, tmp_path: Path, store_factory
-    ) -> None:
+    @pytest.mark.parametrize(
+        "store_factory",
+        [
+            lambda tmp_path: LocalFileStore(base_path=tmp_path),
+            lambda tmp_path: InMemoryFileStore(),
+        ],
+    )
+    def test_write_read_roundtrip(self, tmp_path: Path, store_factory) -> None:
         """Test write/read roundtrip works for all implementations."""
         store = store_factory(tmp_path)
         data = b"test data"

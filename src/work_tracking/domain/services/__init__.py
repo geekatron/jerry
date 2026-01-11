@@ -17,6 +17,7 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - Cosmic Python: Domain Services chapter
 """
+
 from __future__ import annotations
 
 from .id_generator import IWorkItemIdGenerator, WorkItemIdGenerator

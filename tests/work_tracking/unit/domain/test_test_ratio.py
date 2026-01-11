@@ -10,6 +10,7 @@ References:
     - PAT-005-e006: Quality Gate Value Objects
     - Constraint c-006: Test Distribution Requirements
 """
+
 from __future__ import annotations
 
 from dataclasses import FrozenInstanceError
@@ -91,11 +92,7 @@ class TestTestRatioProperties:
     def test_percentages_sum_to_hundred(self) -> None:
         """All percentages sum to approximately 100."""
         ratio = TestRatio(positive=5, negative=3, edge_case=2)
-        total_percent = (
-            ratio.positive_percent
-            + ratio.negative_percent
-            + ratio.edge_case_percent
-        )
+        total_percent = ratio.positive_percent + ratio.negative_percent + ratio.edge_case_percent
         assert total_percent == pytest.approx(100.0)
 
     def test_percentage_rounding(self) -> None:

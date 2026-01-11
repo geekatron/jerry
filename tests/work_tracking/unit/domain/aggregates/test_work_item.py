@@ -13,9 +13,10 @@ References:
     - IMPL-005: WorkItem Aggregate
     - impl-es-e-006-workitem-schema: WorkItem design specification
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -42,7 +43,6 @@ from src.work_tracking.domain.value_objects import (
     WorkItemStatus,
     WorkType,
 )
-
 
 # =============================================================================
 # Test Fixtures
@@ -121,9 +121,7 @@ class TestWorkItemCreation:
         assert item.description == "Detailed description here"
         assert item.parent_id == str(parent_id.internal_id)
 
-    def test_create_emits_work_item_created_event(
-        self, work_item_id: WorkItemId
-    ) -> None:
+    def test_create_emits_work_item_created_event(self, work_item_id: WorkItemId) -> None:
         """Creation emits WorkItemCreated event."""
         item = WorkItem.create(id=work_item_id, title="Test Task")
         events = item.collect_events()
@@ -139,9 +137,7 @@ class TestWorkItemCreation:
         with pytest.raises(ValueError, match="title cannot be empty"):
             WorkItem.create(id=work_item_id, title="")
 
-    def test_create_with_whitespace_title_raises(
-        self, work_item_id: WorkItemId
-    ) -> None:
+    def test_create_with_whitespace_title_raises(self, work_item_id: WorkItemId) -> None:
         """Whitespace-only title raises ValueError."""
         with pytest.raises(ValueError, match="title cannot be empty"):
             WorkItem.create(id=work_item_id, title="   ")
@@ -157,9 +153,7 @@ class TestWorkItemCreation:
         assert item.status == WorkItemStatus.PENDING
         assert item.status.is_waiting
 
-    def test_initial_quality_metrics_are_none(
-        self, work_item_id: WorkItemId
-    ) -> None:
+    def test_initial_quality_metrics_are_none(self, work_item_id: WorkItemId) -> None:
         """New work item has no quality metrics."""
         item = WorkItem.create(id=work_item_id, title="Test")
         assert item.test_coverage is None
@@ -205,9 +199,7 @@ class TestStatusTransitionsHappyPath:
         in_progress_item.start_work(reason="Blocker resolved")
         assert in_progress_item.status == WorkItemStatus.IN_PROGRESS
 
-    def test_complete_from_in_progress_with_metrics(
-        self, in_progress_item: WorkItem
-    ) -> None:
+    def test_complete_from_in_progress_with_metrics(self, in_progress_item: WorkItem) -> None:
         """Can complete from IN_PROGRESS with quality metrics."""
         in_progress_item.update_quality_metrics(
             coverage=TestCoverage.from_percent(80),
@@ -262,9 +254,7 @@ class TestStatusTransitionsInvalid:
         with pytest.raises(InvalidStateTransitionError):
             pending_item.block()
 
-    def test_cannot_transition_from_cancelled(
-        self, pending_item: WorkItem
-    ) -> None:
+    def test_cannot_transition_from_cancelled(self, pending_item: WorkItem) -> None:
         """Cannot transition from CANCELLED (terminal state)."""
         pending_item.cancel()
         with pytest.raises(InvalidStateTransitionError):
@@ -288,17 +278,13 @@ class TestStatusTransitionsInvalid:
 class TestQualityGates:
     """Tests for quality gate validation."""
 
-    def test_cannot_complete_without_quality_metrics(
-        self, in_progress_item: WorkItem
-    ) -> None:
+    def test_cannot_complete_without_quality_metrics(self, in_progress_item: WorkItem) -> None:
         """Cannot complete without any quality metrics."""
         with pytest.raises(QualityGateNotMetError) as exc_info:
             in_progress_item.complete()
         assert "No quality metrics recorded" in exc_info.value.failures
 
-    def test_can_complete_spike_without_quality_metrics(
-        self, work_item_id: WorkItemId
-    ) -> None:
+    def test_can_complete_spike_without_quality_metrics(self, work_item_id: WorkItemId) -> None:
         """SPIKEs don't require quality metrics."""
         item = WorkItem.create(
             id=work_item_id,
@@ -309,18 +295,14 @@ class TestQualityGates:
         item.complete()  # Should not raise
         assert item.status == WorkItemStatus.DONE
 
-    def test_update_quality_metrics_records_coverage(
-        self, pending_item: WorkItem
-    ) -> None:
+    def test_update_quality_metrics_records_coverage(self, pending_item: WorkItem) -> None:
         """Quality metrics update records coverage."""
         coverage = TestCoverage.from_percent(85.5)
         pending_item.update_quality_metrics(coverage=coverage)
         assert pending_item.test_coverage is not None
         assert pending_item.test_coverage.percent == 85.5
 
-    def test_update_quality_metrics_records_ratio(
-        self, pending_item: WorkItem
-    ) -> None:
+    def test_update_quality_metrics_records_ratio(self, pending_item: WorkItem) -> None:
         """Quality metrics update records test ratio."""
         ratio = TestRatio(positive=10, negative=5, edge_case=3)
         pending_item.update_quality_metrics(ratio=ratio)
@@ -385,9 +367,7 @@ class TestPriorityChanges:
 class TestDependencies:
     """Tests for dependency management."""
 
-    def test_add_dependency(
-        self, pending_item: WorkItem, second_work_item_id: WorkItemId
-    ) -> None:
+    def test_add_dependency(self, pending_item: WorkItem, second_work_item_id: WorkItemId) -> None:
         """Can add a dependency."""
         pending_item.add_dependency(second_work_item_id)
         assert str(second_work_item_id.internal_id) in pending_item.dependencies
@@ -497,17 +477,13 @@ class TestAssignee:
 class TestEventSourcing:
     """Tests for event sourcing behavior."""
 
-    def test_collect_events_returns_pending(
-        self, pending_item: WorkItem
-    ) -> None:
+    def test_collect_events_returns_pending(self, pending_item: WorkItem) -> None:
         """collect_events returns pending events."""
         events = pending_item.collect_events()
         assert len(events) == 1
         assert isinstance(events[0], WorkItemCreated)
 
-    def test_collect_events_clears_pending(
-        self, pending_item: WorkItem
-    ) -> None:
+    def test_collect_events_clears_pending(self, pending_item: WorkItem) -> None:
         """collect_events clears pending events."""
         pending_item.collect_events()
         events = pending_item.collect_events()
@@ -669,7 +645,7 @@ class TestEdgeCases:
         """created_on is set correctly."""
         assert pending_item.created_on is not None
         # Check it's recent (within last minute)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         delta = now - pending_item.created_on
         assert delta.total_seconds() < 60
 

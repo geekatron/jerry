@@ -18,7 +18,8 @@ from __future__ import annotations
 import re
 import uuid
 from dataclasses import dataclass
-from typing import ClassVar, Pattern
+from re import Pattern
+from typing import ClassVar
 
 from src.shared_kernel.vertex_id import VertexId
 

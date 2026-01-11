@@ -9,11 +9,12 @@ References:
     - PAT-001: Event Store Interface Pattern
     - PAT-003: Optimistic Concurrency with File Locking
 """
+
 from __future__ import annotations
 
 import threading
 from collections import defaultdict
-from typing import Sequence
+from collections.abc import Sequence
 
 from src.work_tracking.domain.ports.event_store import (
     ConcurrencyError,
@@ -109,8 +110,7 @@ class InMemoryEventStore:
                     )
                 if event.stream_id != stream_id:
                     raise ValueError(
-                        f"Event stream_id mismatch: expected '{stream_id}', "
-                        f"got '{event.stream_id}'"
+                        f"Event stream_id mismatch: expected '{stream_id}', got '{event.stream_id}'"
                     )
 
             # Append all events
@@ -144,9 +144,9 @@ class InMemoryEventStore:
 
             # Filter by version range
             result = [
-                e for e in events
-                if e.version >= from_version
-                and (to_version is None or e.version <= to_version)
+                e
+                for e in events
+                if e.version >= from_version and (to_version is None or e.version <= to_version)
             ]
 
             return result
@@ -181,10 +181,7 @@ class InMemoryEventStore:
             True if stream has at least one event
         """
         with self._lock:
-            return (
-                stream_id in self._streams
-                and len(self._streams[stream_id]) > 0
-            )
+            return stream_id in self._streams and len(self._streams[stream_id]) > 0
 
     def delete_stream(self, stream_id: str) -> bool:
         """
@@ -219,11 +216,7 @@ class InMemoryEventStore:
             List of stream IDs that have at least one event
         """
         with self._lock:
-            return [
-                stream_id
-                for stream_id, events in self._streams.items()
-                if events
-            ]
+            return [stream_id for stream_id, events in self._streams.items() if events]
 
     def count_events(self, stream_id: str | None = None) -> int:
         """

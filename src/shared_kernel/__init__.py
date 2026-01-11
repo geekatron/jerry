@@ -11,18 +11,29 @@ This module contains foundational types shared across all bounded contexts:
 References:
     - Canon Section "Shared Kernel Specification" (L1716-1860)
 """
+
 from __future__ import annotations
+
+# Protocols
+from .auditable import IAuditable
+from .domain_event import DomainEvent, EventRegistry, get_global_registry
+
+# Base classes
+from .entity_base import EntityBase
 
 # Exceptions
 from .exceptions import (
     ConcurrencyError,
     DomainError,
-    InvariantViolationError,
     InvalidStateError,
     InvalidStateTransitionError,
+    InvariantViolationError,
     NotFoundError,
     ValidationError,
 )
+from .jerry_uri import JerryUri
+from .snowflake_id import SnowflakeIdGenerator
+from .versioned import IVersioned
 
 # Identity
 from .vertex_id import (
@@ -36,17 +47,6 @@ from .vertex_id import (
     TaskId,
     VertexId,
 )
-from .jerry_uri import JerryUri
-from .snowflake_id import SnowflakeIdGenerator
-from .domain_event import DomainEvent, EventRegistry, get_global_registry
-
-# Protocols
-from .auditable import IAuditable
-from .versioned import IVersioned
-
-# Base classes
-from .entity_base import EntityBase
-
 
 __all__ = [
     # Exceptions

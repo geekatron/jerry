@@ -9,4 +9,5 @@ References:
     - ADR-IMPL-001: Unified Implementation Alignment
     - Canon Section: Work Management Bounded Context
 """
+
 from __future__ import annotations

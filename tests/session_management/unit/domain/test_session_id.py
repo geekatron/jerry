@@ -11,6 +11,7 @@ References:
     - Canon PAT-001: VertexId Base Class
     - ADR-013: Shared Kernel Module
 """
+
 from __future__ import annotations
 
 import re
@@ -19,7 +20,6 @@ import pytest
 
 from src.session_management.domain.value_objects.session_id import SessionId
 from src.shared_kernel.vertex_id import VertexId
-
 
 # =============================================================================
 # VertexId Compliance Tests (I-008d.3.1)

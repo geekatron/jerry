@@ -7,6 +7,7 @@ References:
     - TD-003: Add hook decision value tests
     - Claude Code Hooks: https://docs.anthropic.com/en/docs/claude-code/hooks
 """
+
 from __future__ import annotations
 
 import json
@@ -29,10 +30,12 @@ def run_hook(tool_name: str, tool_input: dict[str, Any]) -> tuple[int, dict[str,
     Returns:
         Tuple of (exit_code, parsed_output_json)
     """
-    input_json = json.dumps({
-        "tool_name": tool_name,
-        "tool_input": tool_input,
-    })
+    input_json = json.dumps(
+        {
+            "tool_name": tool_name,
+            "tool_input": tool_input,
+        }
+    )
 
     result = subprocess.run(
         [sys.executable, str(HOOK_SCRIPT)],
@@ -80,28 +83,37 @@ class TestApproveDecision:
 
     def test_write_to_safe_path_returns_approve(self) -> None:
         """Write to non-sensitive path should be approved."""
-        exit_code, output = run_hook("Write", {
-            "file_path": "/tmp/test_output.txt",
-            "content": "test content",
-        })
+        exit_code, output = run_hook(
+            "Write",
+            {
+                "file_path": "/tmp/test_output.txt",
+                "content": "test content",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "approve"
 
     def test_bash_safe_command_returns_approve(self) -> None:
         """Safe bash command should be approved."""
-        exit_code, output = run_hook("Bash", {
-            "command": "ls -la /tmp",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "ls -la /tmp",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "approve"
 
     def test_bash_git_status_returns_approve(self) -> None:
         """git status command should be approved."""
-        exit_code, output = run_hook("Bash", {
-            "command": "git status",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "git status",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "approve"
@@ -117,10 +129,13 @@ class TestBlockDecision:
 
     def test_write_to_ssh_blocked(self) -> None:
         """Writing to ~/.ssh should be blocked."""
-        exit_code, output = run_hook("Write", {
-            "file_path": "~/.ssh/authorized_keys",
-            "content": "malicious key",
-        })
+        exit_code, output = run_hook(
+            "Write",
+            {
+                "file_path": "~/.ssh/authorized_keys",
+                "content": "malicious key",
+            },
+        )
 
         assert exit_code == 0  # Hook exits 0, decision in output
         assert output["decision"] == "block"
@@ -129,10 +144,13 @@ class TestBlockDecision:
 
     def test_write_to_env_file_blocked(self) -> None:
         """Writing to .env files should be blocked."""
-        exit_code, output = run_hook("Write", {
-            "file_path": "/project/.env",
-            "content": "SECRET=value",
-        })
+        exit_code, output = run_hook(
+            "Write",
+            {
+                "file_path": "/project/.env",
+                "content": "SECRET=value",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
@@ -140,19 +158,25 @@ class TestBlockDecision:
 
     def test_write_to_credentials_blocked(self) -> None:
         """Writing to credentials.json should be blocked."""
-        exit_code, output = run_hook("Write", {
-            "file_path": "/path/credentials.json",
-            "content": "{}",
-        })
+        exit_code, output = run_hook(
+            "Write",
+            {
+                "file_path": "/path/credentials.json",
+                "content": "{}",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
 
     def test_bash_rm_rf_root_blocked(self) -> None:
         """rm -rf / command should be blocked."""
-        exit_code, output = run_hook("Bash", {
-            "command": "rm -rf /",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "rm -rf /",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
@@ -160,9 +184,12 @@ class TestBlockDecision:
 
     def test_bash_cd_command_blocked(self) -> None:
         """cd command should be blocked (use absolute paths instead)."""
-        exit_code, output = run_hook("Bash", {
-            "command": "cd /tmp && ls",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "cd /tmp && ls",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
@@ -170,9 +197,12 @@ class TestBlockDecision:
 
     def test_git_force_push_main_blocked(self) -> None:
         """git push --force to main should be blocked."""
-        exit_code, output = run_hook("Bash", {
-            "command": "git push --force origin main",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "git push --force origin main",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
@@ -182,9 +212,12 @@ class TestBlockDecision:
         """Piping to bash triggers warning but is approved (trusted sources)."""
         # Note: The hook warns but approves "| bash" patterns
         # Only exact "curl | bash" or "wget | bash" substring is blocked
-        exit_code, output = run_hook("Bash", {
-            "command": "echo 'test' | bash",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "echo 'test' | bash",
+            },
+        )
 
         # This triggers a warning but is approved
         assert exit_code == 0
@@ -192,9 +225,12 @@ class TestBlockDecision:
 
     def test_eval_command_blocked(self) -> None:
         """eval command should be blocked."""
-        exit_code, output = run_hook("Bash", {
-            "command": "eval $(cat script.sh)",
-        })
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "eval $(cat script.sh)",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
@@ -233,10 +269,13 @@ class TestDecisionFormat:
 
     def test_block_decision_includes_reason(self) -> None:
         """Block decision must include 'reason' field."""
-        _exit_code, output = run_hook("Write", {
-            "file_path": "~/.ssh/test",
-            "content": "x",
-        })
+        _exit_code, output = run_hook(
+            "Write",
+            {
+                "file_path": "~/.ssh/test",
+                "content": "x",
+            },
+        )
         _ = _exit_code  # Check exit code
 
         assert output["decision"] == "block"
@@ -283,21 +322,27 @@ class TestEdgeCases:
 
     def test_edit_to_sensitive_path_blocked(self) -> None:
         """Edit tool should also check file paths."""
-        exit_code, output = run_hook("Edit", {
-            "file_path": "~/.aws/credentials",
-            "old_string": "old",
-            "new_string": "new",
-        })
+        exit_code, output = run_hook(
+            "Edit",
+            {
+                "file_path": "~/.aws/credentials",
+                "old_string": "old",
+                "new_string": "new",
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"
 
     def test_multiedit_to_sensitive_path_blocked(self) -> None:
         """MultiEdit tool should also check file paths."""
-        exit_code, output = run_hook("MultiEdit", {
-            "file_path": "/etc/passwd",
-            "edits": [],
-        })
+        exit_code, output = run_hook(
+            "MultiEdit",
+            {
+                "file_path": "/etc/passwd",
+                "edits": [],
+            },
+        )
 
         assert exit_code == 0
         assert output["decision"] == "block"

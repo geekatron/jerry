@@ -67,7 +67,7 @@ The goal: **high retention, high transferability, high correctness** across doma
 ### Step 1 – Frame the Problem (5W1H)
 Explain the problem so clearly a 5‑year‑old can repeat it.
 
-Who, What, Where, When, Why, How  
+Who, What, Where, When, Why, How
 No solution work is allowed until this is complete.
 
 ### Step 2 – Classify the Problem
@@ -136,7 +136,7 @@ Institutionalize learning.
 
 “Now — brainstorm only. No judging.”
 
-**After ideas:**  
+**After ideas:**
 “Which assumption would fail first?”
 
 ---

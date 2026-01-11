@@ -21,11 +21,13 @@ References:
 Exports:
     AggregateRoot: Abstract base class for event-sourced aggregates
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from typing import Sequence, TypeVar
+from collections.abc import Sequence
+from datetime import datetime
+from typing import TypeVar
 
 from src.shared_kernel.domain_event import DomainEvent
 

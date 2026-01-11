@@ -19,7 +19,6 @@ import sys
 from datetime import datetime
 from typing import Any
 
-
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
@@ -54,6 +53,7 @@ STATUS_TRANSITIONS = {
 # =============================================================================
 # HOOK LOGIC
 # =============================================================================
+
 
 def parse_agent_output(output: str) -> dict[str, Any]:
     """
@@ -101,10 +101,7 @@ def parse_agent_output(output: str) -> dict[str, Any]:
     return signals
 
 
-def determine_handoff(
-    from_agent: str,
-    signals: dict[str, Any]
-) -> tuple[str | None, str | None]:
+def determine_handoff(from_agent: str, signals: dict[str, Any]) -> tuple[str | None, str | None]:
     """Determine if a handoff should occur based on agent and signals."""
     condition = signals.get("handoff_condition")
 
@@ -119,19 +116,9 @@ def determine_handoff(
     return None, None
 
 
-def log_handoff(
-    from_agent: str,
-    to_agent: str,
-    signals: dict[str, Any],
-    context: str
-) -> None:
+def log_handoff(from_agent: str, to_agent: str, signals: dict[str, Any], context: str) -> None:
     """Log the handoff for audit trail."""
-    log_dir = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "..",
-        "docs",
-        "experience"
-    )
+    log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "docs", "experience")
     os.makedirs(log_dir, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -142,22 +129,22 @@ def log_handoff(
 **Timestamp**: {datetime.now().isoformat()}
 **From**: {from_agent}
 **To**: {to_agent}
-**Condition**: {signals.get('handoff_condition', 'N/A')}
+**Condition**: {signals.get("handoff_condition", "N/A")}
 
 ## Context
 {context}
 
 ## Work Items
-{', '.join(signals.get('work_items', [])) or 'None referenced'}
+{", ".join(signals.get("work_items", [])) or "None referenced"}
 
 ## Summary from {from_agent}
-{signals.get('summary', 'No summary provided')}
+{signals.get("summary", "No summary provided")}
 """
 
     try:
         with open(log_file, "w") as f:
             f.write(log_content)
-    except IOError:
+    except OSError:
         # Non-fatal: log to stderr instead
         print(f"Warning: Could not write handoff log to {log_file}", file=sys.stderr)
 
@@ -183,37 +170,31 @@ def main() -> int:
             log_handoff(agent_name, to_agent, signals, context)
 
             # Output handoff instruction
-            print(json.dumps({
-                "action": "handoff",
-                "to_agent": to_agent,
-                "context": context,
-                "work_items": signals.get("work_items", []),
-                "summary": signals.get("summary", ""),
-                "status_transition": STATUS_TRANSITIONS.get(
-                    signals.get("handoff_condition", ""),
-                    None
+            print(
+                json.dumps(
+                    {
+                        "action": "handoff",
+                        "to_agent": to_agent,
+                        "context": context,
+                        "work_items": signals.get("work_items", []),
+                        "summary": signals.get("summary", ""),
+                        "status_transition": STATUS_TRANSITIONS.get(
+                            signals.get("handoff_condition", ""), None
+                        ),
+                    }
                 )
-            }))
+            )
             return 0
 
         # No handoff needed
-        print(json.dumps({
-            "action": "none",
-            "reason": "No handoff condition matched"
-        }))
+        print(json.dumps({"action": "none", "reason": "No handoff condition matched"}))
         return 1
 
     except json.JSONDecodeError as e:
-        print(json.dumps({
-            "action": "error",
-            "reason": f"Invalid JSON input - {e}"
-        }))
+        print(json.dumps({"action": "error", "reason": f"Invalid JSON input - {e}"}))
         return 2
     except Exception as e:
-        print(json.dumps({
-            "action": "error",
-            "reason": str(e)
-        }))
+        print(json.dumps({"action": "error", "reason": str(e)}))
         return 2
 
 

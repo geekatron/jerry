@@ -12,18 +12,18 @@ Test Categories:
 - Lineage: Verify document provenance
 - Round Trip: Start from any document, reach all related docs
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Set
 
 import pytest
-
 
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
+
 
 def extract_document_references(content: str) -> set[str]:
     """Extract all document references from content."""
@@ -51,9 +51,7 @@ def build_document_graph(proj_001_root: Path, project_root: Path) -> dict[str, s
 
 
 def traverse_from_document(
-    start: str,
-    graph: dict[str, set[str]],
-    visited: Set[str] | None = None
+    start: str, graph: dict[str, set[str]], visited: set[str] | None = None
 ) -> set[str]:
     """
     Traverse the document graph from a starting point.
@@ -78,6 +76,7 @@ def traverse_from_document(
 # E2E TESTS - DOCUMENT CHAIN TRAVERSAL
 # =============================================================================
 
+
 class TestDocumentChainTraversal:
     """Test complete document chain traversal."""
 
@@ -87,7 +86,9 @@ class TestDocumentChainTraversal:
 
         This verifies the traceability chain: research -> synthesis
         """
-        synthesis_path = proj_001_root / "synthesis" / "PROJ-001-e-006-unified-architecture-canon.md"
+        synthesis_path = (
+            proj_001_root / "synthesis" / "PROJ-001-e-006-unified-architecture-canon.md"
+        )
         content = synthesis_path.read_text()
         refs = extract_document_references(content)
 
@@ -164,6 +165,7 @@ class TestDocumentChainTraversal:
 # E2E TESTS - DOCUMENT LINEAGE VERIFICATION
 # =============================================================================
 
+
 class TestDocumentLineage:
     """Test document lineage and provenance."""
 
@@ -189,7 +191,9 @@ class TestDocumentLineage:
 
             # Should have some form of ID (Document ID, PS ID, Entry ID, or Project)
             has_id = any(x in header for x in ["Document ID", "PS ID", "Entry ID", "Project"])
-            assert has_id, f"{doc.name} missing identifier (Document ID, PS ID, Entry ID, or Project)"
+            assert has_id, (
+                f"{doc.name} missing identifier (Document ID, PS ID, Entry ID, or Project)"
+            )
 
             # Should have date
             assert "Date" in header, f"{doc.name} missing Date"
@@ -205,14 +209,13 @@ class TestDocumentLineage:
             wrong_project_pattern = re.compile(r"projects/PROJ-00[2-9]|projects/PROJ-01")
             wrong_refs = wrong_project_pattern.findall(content)
 
-            assert len(wrong_refs) == 0, (
-                f"{md_file.name} references wrong project: {wrong_refs}"
-            )
+            assert len(wrong_refs) == 0, f"{md_file.name} references wrong project: {wrong_refs}"
 
 
 # =============================================================================
 # E2E TESTS - ROUND TRIP VALIDATION
 # =============================================================================
+
 
 class TestRoundTripValidation:
     """Test that document references form valid round trips."""
@@ -257,7 +260,6 @@ class TestRoundTripValidation:
                 if not ref_path.exists():
                     broken_refs.append((md_file.name, ref))
 
-        assert len(broken_refs) == 0, (
-            f"Found {len(broken_refs)} broken references:\n" +
-            "\n".join(f"  {doc}: {ref}" for doc, ref in broken_refs)
+        assert len(broken_refs) == 0, f"Found {len(broken_refs)} broken references:\n" + "\n".join(
+            f"  {doc}: {ref}" for doc, ref in broken_refs
         )

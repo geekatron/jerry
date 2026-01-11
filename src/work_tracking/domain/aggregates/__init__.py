@@ -12,6 +12,7 @@ References:
     - IMPL-ES-003: AggregateRoot Base Class implementation
     - IMPL-005: WorkItem Aggregate implementation
 """
+
 from __future__ import annotations
 
 from .base import AggregateRoot

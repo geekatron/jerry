@@ -10,10 +10,11 @@ References:
     - PAT-001: Event Store Interface Pattern
     - IMPL-ES-001: IEventStore Port implementation
 """
+
 from __future__ import annotations
 
 from dataclasses import FrozenInstanceError
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import pytest
@@ -44,7 +45,7 @@ class TestStoredEventCreation:
 
     def test_create_with_all_fields(self) -> None:
         """StoredEvent can be created with all fields."""
-        timestamp = datetime(2025, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+        timestamp = datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)
         event_id = uuid4()
 
         event = StoredEvent(
@@ -60,14 +61,14 @@ class TestStoredEventCreation:
 
     def test_auto_generates_timestamp(self) -> None:
         """StoredEvent auto-generates timestamp if not provided."""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         event = StoredEvent(
             stream_id="WORK-001",
             version=1,
             event_type="Test",
             data={},
         )
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert before <= event.timestamp <= after
 
@@ -190,7 +191,7 @@ class TestStoredEventSerialization:
 
     def test_to_dict(self) -> None:
         """to_dict returns JSON-serializable dictionary."""
-        timestamp = datetime(2025, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+        timestamp = datetime(2025, 1, 15, 10, 30, 0, tzinfo=UTC)
         event_id = UUID("12345678-1234-5678-1234-567812345678")
 
         event = StoredEvent(
@@ -227,7 +228,7 @@ class TestStoredEventSerialization:
         assert event.version == 2
         assert event.event_type == "WorkItemUpdated"
         assert event.data == {"status": "in_progress"}
-        assert event.timestamp == datetime(2025, 6, 20, 14, 45, 30, tzinfo=timezone.utc)
+        assert event.timestamp == datetime(2025, 6, 20, 14, 45, 30, tzinfo=UTC)
         assert event.event_id == UUID("abcd1234-abcd-1234-abcd-1234abcd1234")
 
     def test_roundtrip(self) -> None:

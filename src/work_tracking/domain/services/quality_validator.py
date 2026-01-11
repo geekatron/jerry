@@ -20,6 +20,7 @@ Exports:
     QualityGateValidator: Concrete implementation
     ValidationResult: Immutable result of validation
 """
+
 from __future__ import annotations
 
 import fnmatch
@@ -32,7 +33,6 @@ from src.work_tracking.domain.value_objects import (
     TestCoverage,
     TestRatio,
 )
-
 
 # =============================================================================
 # Validation Result
@@ -130,15 +130,15 @@ class IQualityGateValidator(Protocol):
 
 # Coverage thresholds per gate level
 _COVERAGE_THRESHOLDS: dict[GateLevel, float] = {
-    GateLevel.L0: 0.0,   # No coverage requirement
+    GateLevel.L0: 0.0,  # No coverage requirement
     GateLevel.L1: 80.0,  # 80% for merge gate
     GateLevel.L2: 90.0,  # 90% for release gate
 }
 
 # Required test types per gate level
 _REQUIRED_TEST_TYPES: dict[GateLevel, set[str]] = {
-    GateLevel.L0: {"positive"},                           # At least positive tests
-    GateLevel.L1: {"positive", "negative"},               # Need negative tests
+    GateLevel.L0: {"positive"},  # At least positive tests
+    GateLevel.L1: {"positive", "negative"},  # Need negative tests
     GateLevel.L2: {"positive", "negative", "edge_case"},  # Full pyramid
 }
 
@@ -249,9 +249,7 @@ class QualityGateValidator(IQualityGateValidator):
         required_types = _REQUIRED_TEST_TYPES[gate_level]
         if ratio is None:
             if len(required_types) > 0 and gate_level != GateLevel.L0:
-                failures.append(
-                    f"Test ratio required for {gate_level.value} but not provided"
-                )
+                failures.append(f"Test ratio required for {gate_level.value} but not provided")
         else:
             if "positive" in required_types and ratio.positive == 0:
                 failures.append("Positive (happy path) tests required but none found")

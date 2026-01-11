@@ -17,11 +17,10 @@ References:
     - Hexagonal Architecture (Alistair Cockburn)
     - ADR-003: Code Structure
 """
+
 from __future__ import annotations
 
-import pytest
 from pytest_archon import archrule
-
 
 # =============================================================================
 # Domain Layer Independence Tests

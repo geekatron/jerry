@@ -19,6 +19,7 @@ References:
     - PAT-010: Composed Infrastructure Adapters
     - WORKTRACKER: IMPL-REPO-002
 """
+
 from __future__ import annotations
 
 from .file_store import IFileStore, LocalFileStore

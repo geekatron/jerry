@@ -12,19 +12,19 @@ References:
     - IMPL-ES-002: ISnapshotStore Port
     - PAT-001: Event Store Interface Pattern
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
 
 from src.work_tracking.domain.ports.snapshot_store import (
-    ISnapshotStore,
     InMemorySnapshotStore,
+    ISnapshotStore,
     SnapshotNotFoundError,
     StoredSnapshot,
 )
-
 
 # =============================================================================
 # StoredSnapshot Tests
@@ -249,18 +249,22 @@ class TestSnapshotStoreSave:
         """Can save snapshots for different aggregates."""
         store = InMemorySnapshotStore()
 
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=5,
-            state={"id": 1},
-        ))
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-002",
-            aggregate_type="WorkItem",
-            version=3,
-            state={"id": 2},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=5,
+                state={"id": 1},
+            )
+        )
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-002",
+                aggregate_type="WorkItem",
+                version=3,
+                state={"id": 2},
+            )
+        )
 
         assert store.exists("WORK-001")
         assert store.exists("WORK-002")
@@ -327,12 +331,14 @@ class TestSnapshotStoreDelete:
     def test_delete_existing_returns_true(self) -> None:
         """Deleting existing snapshot returns True."""
         store = InMemorySnapshotStore()
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=5,
-            state={},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=5,
+                state={},
+            )
+        )
 
         result = store.delete("WORK-001")
         assert result is True
@@ -347,12 +353,14 @@ class TestSnapshotStoreDelete:
     def test_delete_then_load_raises(self) -> None:
         """Loading after delete raises SnapshotNotFoundError."""
         store = InMemorySnapshotStore()
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=5,
-            state={},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=5,
+                state={},
+            )
+        )
         store.delete("WORK-001")
 
         with pytest.raises(SnapshotNotFoundError):
@@ -370,12 +378,14 @@ class TestSnapshotStoreExists:
     def test_exists_returns_true_for_saved(self) -> None:
         """exists() returns True for saved snapshots."""
         store = InMemorySnapshotStore()
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=1,
-            state={},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=1,
+                state={},
+            )
+        )
         assert store.exists("WORK-001") is True
 
     def test_exists_returns_false_for_new(self) -> None:
@@ -395,12 +405,14 @@ class TestSnapshotStoreGetVersion:
     def test_get_version_returns_snapshot_version(self) -> None:
         """get_version() returns the snapshot's version."""
         store = InMemorySnapshotStore()
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=42,
-            state={},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=42,
+                state={},
+            )
+        )
         assert store.get_version("WORK-001") == 42
 
     def test_get_version_returns_none_for_missing(self) -> None:
@@ -438,24 +450,28 @@ class TestSnapshotStoreEdgeCases:
             "nested": {"a": 1, "b": [1, 2, 3]},
             "list": [{"x": 1}, {"x": 2}],
         }
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=1,
-            state=complex_state,
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=1,
+                state=complex_state,
+            )
+        )
         loaded = store.load("WORK-001")
         assert loaded.state == complex_state
 
     def test_unicode_in_state(self) -> None:
         """Unicode in state is preserved."""
         store = InMemorySnapshotStore()
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=1,
-            state={"title": "日本語テスト", "emoji": "🎉"},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=1,
+                state={"title": "日本語テスト", "emoji": "🎉"},
+            )
+        )
         loaded = store.load("WORK-001")
         assert loaded.state["title"] == "日本語テスト"
         assert loaded.state["emoji"] == "🎉"
@@ -464,23 +480,27 @@ class TestSnapshotStoreEdgeCases:
         """Large state is handled correctly."""
         store = InMemorySnapshotStore()
         large_state = {"data": list(range(10000))}
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=1,
-            state=large_state,
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=1,
+                state=large_state,
+            )
+        )
         loaded = store.load("WORK-001")
         assert len(loaded.state["data"]) == 10000
 
     def test_version_at_boundary(self) -> None:
         """Version at int boundary works."""
         store = InMemorySnapshotStore()
-        store.save(StoredSnapshot(
-            aggregate_id="WORK-001",
-            aggregate_type="WorkItem",
-            version=2**31 - 1,  # Max 32-bit signed int
-            state={},
-        ))
+        store.save(
+            StoredSnapshot(
+                aggregate_id="WORK-001",
+                aggregate_type="WorkItem",
+                version=2**31 - 1,  # Max 32-bit signed int
+                state={},
+            )
+        )
         loaded = store.load("WORK-001")
         assert loaded.version == 2**31 - 1

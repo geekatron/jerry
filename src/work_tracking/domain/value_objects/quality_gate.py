@@ -16,6 +16,7 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - dev-skill-e-002: Quality Gate Enforcement patterns
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

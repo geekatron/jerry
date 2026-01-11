@@ -3,11 +3,12 @@
 These tests verify the DomainEvent base class and event infrastructure
 per ADR-009 (Event Storage Mechanism).
 """
+
 from __future__ import annotations
 
 import json
 from dataclasses import FrozenInstanceError
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -41,16 +42,16 @@ class TestDomainEventCreation:
 
     def test_event_has_auto_generated_timestamp(self) -> None:
         """Event gets auto-generated UTC timestamp."""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         event = DomainEvent(
             aggregate_id="WORK-001",
             aggregate_type="WorkItem",
         )
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert event.timestamp is not None
         assert before <= event.timestamp <= after
-        assert event.timestamp.tzinfo == timezone.utc
+        assert event.timestamp.tzinfo == UTC
 
     def test_event_default_version_is_one(self) -> None:
         """Event defaults to version 1."""
@@ -80,7 +81,7 @@ class TestDomainEventCreation:
 
     def test_event_accepts_explicit_timestamp(self) -> None:
         """Event accepts explicit timestamp."""
-        custom_time = datetime(2026, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        custom_time = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
         event = DomainEvent(
             aggregate_id="WORK-001",
             aggregate_type="WorkItem",
@@ -154,7 +155,7 @@ class TestDomainEventImmutability:
             aggregate_type="WorkItem",
         )
         with pytest.raises(FrozenInstanceError):
-            event.timestamp = datetime.now(timezone.utc)  # type: ignore
+            event.timestamp = datetime.now(UTC)  # type: ignore
 
 
 class TestDomainEventSerialization:
@@ -250,7 +251,7 @@ class TestDomainEventDeserialization:
 
     def test_from_dict_preserves_timestamp(self) -> None:
         """from_dict preserves timestamp correctly."""
-        custom_time = datetime(2026, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        custom_time = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
         original = DomainEvent(
             aggregate_id="WORK-001",
             aggregate_type="WorkItem",

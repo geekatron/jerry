@@ -9,6 +9,7 @@ Migration History:
     Migrated: 2026-01-10 (TD-005)
     Purpose: BUG-001 regression prevention + ADR-003 enforcement
 """
+
 from __future__ import annotations
 
 import re
@@ -19,7 +20,6 @@ if TYPE_CHECKING:
     pass  # Reserved for future type imports
 
 import pytest
-
 
 # =============================================================================
 # PROJECT DISCOVERY
@@ -38,10 +38,7 @@ def discover_projects(root: Path) -> list[Path]:
         return []
 
     pattern = re.compile(r"PROJ-\d{3}-[a-z0-9-]+")
-    return [
-        p for p in projects_dir.iterdir()
-        if p.is_dir() and pattern.match(p.name)
-    ]
+    return [p for p in projects_dir.iterdir() if p.is_dir() and pattern.match(p.name)]
 
 
 # =============================================================================
@@ -127,8 +124,8 @@ def valid_categories() -> set[str]:
         "design",
         "investigations",
         "reviews",
-        "work",       # Work tracking files
-        "runbooks",   # Execution guides
+        "work",  # Work tracking files
+        "runbooks",  # Execution guides
     }
 
 

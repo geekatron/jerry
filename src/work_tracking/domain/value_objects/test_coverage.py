@@ -8,6 +8,7 @@ References:
     - PAT-005-e006: Quality Gate Value Objects
     - Constraint c-004: Code Coverage Requirements
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -41,13 +42,9 @@ class TestCoverage:
     def __post_init__(self) -> None:
         """Validate coverage percentage after initialization."""
         if not isinstance(self.percent, (int, float)):
-            raise TypeError(
-                f"percent must be a number, got {type(self.percent).__name__}"
-            )
+            raise TypeError(f"percent must be a number, got {type(self.percent).__name__}")
         if not 0.0 <= self.percent <= 100.0:
-            raise ValueError(
-                f"Coverage must be between 0 and 100, got {self.percent}"
-            )
+            raise ValueError(f"Coverage must be between 0 and 100, got {self.percent}")
 
     @classmethod
     def from_percent(cls, value: float) -> TestCoverage:
@@ -99,9 +96,7 @@ class TestCoverage:
         if total == 0:
             return cls(percent=0.0)
         if covered > total:
-            raise ValueError(
-                f"covered ({covered}) cannot exceed total ({total})"
-            )
+            raise ValueError(f"covered ({covered}) cannot exceed total ({total})")
         return cls(percent=round((covered / total) * 100, 2))
 
     def meets_threshold(self, threshold: float) -> bool:

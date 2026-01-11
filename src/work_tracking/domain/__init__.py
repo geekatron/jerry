@@ -6,6 +6,7 @@ domain events, and domain services.
 
 This layer has NO external dependencies (stdlib only).
 """
+
 from __future__ import annotations
 
 # Value Objects

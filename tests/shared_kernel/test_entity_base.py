@@ -1,10 +1,9 @@
 """Unit tests for shared_kernel.entity_base module."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
-
-import pytest
+from datetime import UTC, datetime
 
 from src.shared_kernel.auditable import IAuditable
 from src.shared_kernel.entity_base import EntityBase
@@ -36,9 +35,9 @@ class TestEntityBase:
     def test_created_at_is_set(self) -> None:
         """EntityBase sets created_at to current time."""
         task_id = TaskId.generate()
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         entity = EntityBase(_id=task_id)
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
         assert before <= entity.created_at <= after
 
     def test_implements_iauditable(self) -> None:

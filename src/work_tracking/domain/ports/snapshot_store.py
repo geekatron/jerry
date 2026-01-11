@@ -10,14 +10,14 @@ References:
     - PAT-001: Event Store Interface Pattern
     - Event Sourcing: Snapshot Pattern
 """
+
 from __future__ import annotations
 
 import copy
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Protocol, runtime_checkable
 from uuid import UUID, uuid4
-
 
 # =============================================================================
 # Exceptions
@@ -52,7 +52,7 @@ class SnapshotNotFoundError(SnapshotStoreError):
 
 def _current_utc() -> datetime:
     """Get current UTC timestamp."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,9 +105,7 @@ class StoredSnapshot:
         if self.version < 1:
             raise ValueError(f"version must be >= 1, got {self.version}")
         if not isinstance(self.state, dict):
-            raise TypeError(
-                f"state must be a dict, got {type(self.state).__name__}"
-            )
+            raise TypeError(f"state must be a dict, got {type(self.state).__name__}")
 
     def to_dict(self) -> dict:
         """

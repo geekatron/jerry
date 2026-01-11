@@ -10,9 +10,10 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - ADR-009: Event Storage Mechanism
 """
+
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
 
@@ -23,7 +24,6 @@ from src.work_tracking.domain.events.quality_gate_events import (
     RiskAssessed,
     ThresholdViolation,
 )
-
 
 # =============================================================================
 # GateExecutionStarted Tests

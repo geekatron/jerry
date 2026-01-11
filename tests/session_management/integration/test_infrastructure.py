@@ -8,6 +8,7 @@ References:
     - ENFORCE-010: Infrastructure Tests
     - Hexagonal Architecture: Adapter testing
 """
+
 from __future__ import annotations
 
 import os
@@ -17,14 +18,13 @@ from unittest.mock import patch
 
 import pytest
 
-from src.session_management.infrastructure.adapters.os_environment_adapter import (
-    OsEnvironmentAdapter,
-)
+from src.session_management.domain.value_objects.project_status import ProjectStatus
 from src.session_management.infrastructure.adapters.filesystem_project_adapter import (
     FilesystemProjectAdapter,
 )
-from src.session_management.domain.value_objects.project_status import ProjectStatus
-
+from src.session_management.infrastructure.adapters.os_environment_adapter import (
+    OsEnvironmentAdapter,
+)
 
 # =============================================================================
 # OsEnvironmentAdapter Tests (ENFORCE-010.1)
@@ -169,9 +169,7 @@ class TestFilesystemAdapterEdgeCases:
 
         assert result == []
 
-    def test_adapter_with_only_archive_directory(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_with_only_archive_directory(self, temp_projects_dir: str) -> None:
         """Adapter should ignore archive directory."""
         Path(temp_projects_dir, "archive").mkdir()
 
@@ -180,9 +178,7 @@ class TestFilesystemAdapterEdgeCases:
 
         assert result == []
 
-    def test_adapter_with_mixed_valid_invalid_dirs(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_with_mixed_valid_invalid_dirs(self, temp_projects_dir: str) -> None:
         """Adapter should return only valid project directories."""
         base = Path(temp_projects_dir)
         # Valid project
@@ -224,9 +220,7 @@ class TestFilesystemAdapterEdgeCases:
             assert len(result) == 1
             assert result[0].id.slug == "test"
 
-    def test_adapter_with_deeply_nested_structure(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_with_deeply_nested_structure(self, temp_projects_dir: str) -> None:
         """Adapter should only scan top-level directories."""
         base = Path(temp_projects_dir)
         # Create nested structure
@@ -244,9 +238,7 @@ class TestFilesystemAdapterEdgeCases:
 class TestFilesystemAdapterFailureScenarios:
     """Failure scenario tests for FilesystemProjectAdapter."""
 
-    def test_adapter_handles_corrupt_worktracker(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_handles_corrupt_worktracker(self, temp_projects_dir: str) -> None:
         """Adapter should handle corrupt/binary WORKTRACKER.md gracefully."""
         base = Path(temp_projects_dir)
         proj = base / "PROJ-001-corrupt"
@@ -262,9 +254,7 @@ class TestFilesystemAdapterFailureScenarios:
         assert len(result) == 1
         assert result[0].status == ProjectStatus.UNKNOWN
 
-    def test_adapter_handles_extremely_large_worktracker(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_handles_extremely_large_worktracker(self, temp_projects_dir: str) -> None:
         """Adapter should handle very large WORKTRACKER.md without issues."""
         base = Path(temp_projects_dir)
         proj = base / "PROJ-001-large"
@@ -281,9 +271,7 @@ class TestFilesystemAdapterFailureScenarios:
         # Should still detect status from first 2KB
         assert result[0].status == ProjectStatus.IN_PROGRESS
 
-    def test_adapter_handles_empty_worktracker(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_handles_empty_worktracker(self, temp_projects_dir: str) -> None:
         """Adapter should handle empty WORKTRACKER.md."""
         base = Path(temp_projects_dir)
         proj = base / "PROJ-001-empty"
@@ -297,17 +285,13 @@ class TestFilesystemAdapterFailureScenarios:
         assert len(result) == 1
         assert result[0].status == ProjectStatus.UNKNOWN
 
-    def test_adapter_handles_file_with_bom(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_handles_file_with_bom(self, temp_projects_dir: str) -> None:
         """Adapter should handle files with UTF-8 BOM."""
         base = Path(temp_projects_dir)
         proj = base / "PROJ-001-bom"
         proj.mkdir()
         # Write with UTF-8 BOM
-        (proj / "WORKTRACKER.md").write_bytes(
-            b"\xef\xbb\xbf# Tracker\nIN_PROGRESS"
-        )
+        (proj / "WORKTRACKER.md").write_bytes(b"\xef\xbb\xbf# Tracker\nIN_PROGRESS")
         (proj / "PLAN.md").write_text("# Plan")
 
         adapter = FilesystemProjectAdapter()
@@ -322,15 +306,11 @@ class TestFilesystemAdapterFailureScenarios:
 # =============================================================================
 
 
-@pytest.mark.skipif(
-    os.name == "nt", reason="Symlinks may require admin on Windows"
-)
+@pytest.mark.skipif(os.name == "nt", reason="Symlinks may require admin on Windows")
 class TestFilesystemAdapterSymlinks:
     """Symlink tests for FilesystemProjectAdapter (Unix-like systems)."""
 
-    def test_adapter_follows_symlinked_project(
-        self, temp_projects_dir: str
-    ) -> None:
+    def test_adapter_follows_symlinked_project(self, temp_projects_dir: str) -> None:
         """Adapter should follow symlinks to project directories."""
         base = Path(temp_projects_dir)
         # Create actual project in a different location

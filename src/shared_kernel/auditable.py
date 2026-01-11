@@ -9,6 +9,7 @@ References:
 Exports:
     IAuditable (Protocol)
 """
+
 from __future__ import annotations
 
 from datetime import datetime

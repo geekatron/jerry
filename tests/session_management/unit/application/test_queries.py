@@ -10,30 +10,30 @@ References:
     - ENFORCE-009: Application Layer Tests
     - CQRS Pattern: Queries return data, don't modify state
 """
+
 from __future__ import annotations
 
 from unittest.mock import Mock
 
 import pytest
 
-from src.session_management.application.queries.scan_projects import ScanProjectsQuery
-from src.session_management.application.queries.validate_project import (
-    ValidateProjectQuery,
-)
+from src.session_management.application.ports import RepositoryError
 from src.session_management.application.queries.get_next_number import (
     GetNextProjectNumberQuery,
 )
 from src.session_management.application.queries.get_project_context import (
     GetProjectContextQuery,
 )
-from src.session_management.application.ports import RepositoryError
+from src.session_management.application.queries.scan_projects import ScanProjectsQuery
+from src.session_management.application.queries.validate_project import (
+    ValidateProjectQuery,
+)
+from src.session_management.domain.entities.project_info import ProjectInfo
 from src.session_management.domain.value_objects.project_id import ProjectId
 from src.session_management.domain.value_objects.project_status import ProjectStatus
 from src.session_management.domain.value_objects.validation_result import (
     ValidationResult,
 )
-from src.session_management.domain.entities.project_info import ProjectInfo
-
 
 # =============================================================================
 # Test Fixtures - Mock Repositories
@@ -74,22 +74,16 @@ def mock_environment() -> Mock:
 class TestScanProjectsQueryHappyPath:
     """Happy path tests for ScanProjectsQuery."""
 
-    def test_scan_projects_returns_sorted_list(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_scan_projects_returns_sorted_list(self, mock_repository: Mock) -> None:
         """scan_projects should return projects sorted by number."""
         projects = [
             create_mock_project(3, "gamma"),
             create_mock_project(1, "alpha"),
             create_mock_project(2, "beta"),
         ]
-        mock_repository.scan_projects.return_value = sorted(
-            projects, key=lambda p: p.id.number
-        )
+        mock_repository.scan_projects.return_value = sorted(projects, key=lambda p: p.id.number)
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert len(result) == 3
@@ -97,9 +91,7 @@ class TestScanProjectsQueryHappyPath:
         assert result[1].id.number == 2
         assert result[2].id.number == 3
 
-    def test_scan_projects_returns_project_info_with_status(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_scan_projects_returns_project_info_with_status(self, mock_repository: Mock) -> None:
         """scan_projects should return ProjectInfo with status."""
         projects = [
             create_mock_project(1, "alpha", ProjectStatus.IN_PROGRESS),
@@ -107,23 +99,17 @@ class TestScanProjectsQueryHappyPath:
         ]
         mock_repository.scan_projects.return_value = projects
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert result[0].status == ProjectStatus.IN_PROGRESS
         assert result[1].status == ProjectStatus.COMPLETED
 
-    def test_scan_projects_calls_repository_with_base_path(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_scan_projects_calls_repository_with_base_path(self, mock_repository: Mock) -> None:
         """scan_projects should pass base_path to repository."""
         mock_repository.scan_projects.return_value = []
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/custom/path"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/custom/path")
         query.execute()
 
         mock_repository.scan_projects.assert_called_once_with("/custom/path")
@@ -138,44 +124,32 @@ class TestScanProjectsQueryEdgeCases:
         """scan_projects with no projects returns empty list."""
         mock_repository.scan_projects.return_value = []
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert result == []
 
-    def test_scan_projects_with_single_project(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_scan_projects_with_single_project(self, mock_repository: Mock) -> None:
         """scan_projects with single project returns single-item list."""
         projects = [create_mock_project(1, "solo")]
         mock_repository.scan_projects.return_value = projects
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert len(result) == 1
         assert result[0].id.slug == "solo"
 
-    def test_scan_projects_with_gaps_in_numbering(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_scan_projects_with_gaps_in_numbering(self, mock_repository: Mock) -> None:
         """scan_projects handles gaps in project numbering."""
         projects = [
             create_mock_project(1, "first"),
             create_mock_project(5, "fifth"),
             create_mock_project(10, "tenth"),
         ]
-        mock_repository.scan_projects.return_value = sorted(
-            projects, key=lambda p: p.id.number
-        )
+        mock_repository.scan_projects.return_value = sorted(projects, key=lambda p: p.id.number)
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         numbers = [p.id.number for p in result]
@@ -185,17 +159,11 @@ class TestScanProjectsQueryEdgeCases:
 class TestScanProjectsQueryFailureScenarios:
     """Failure scenario tests for ScanProjectsQuery."""
 
-    def test_scan_projects_when_repository_raises_error(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_scan_projects_when_repository_raises_error(self, mock_repository: Mock) -> None:
         """scan_projects propagates RepositoryError."""
-        mock_repository.scan_projects.side_effect = RepositoryError(
-            "Directory not found"
-        )
+        mock_repository.scan_projects.side_effect = RepositoryError("Directory not found")
 
-        query = ScanProjectsQuery(
-            repository=mock_repository, base_path="/nonexistent"
-        )
+        query = ScanProjectsQuery(repository=mock_repository, base_path="/nonexistent")
 
         with pytest.raises(RepositoryError, match="Directory not found"):
             query.execute()
@@ -209,9 +177,7 @@ class TestScanProjectsQueryFailureScenarios:
 class TestValidateProjectQueryHappyPath:
     """Happy path tests for ValidateProjectQuery."""
 
-    def test_validate_project_when_exists_returns_valid(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_validate_project_when_exists_returns_valid(self, mock_repository: Mock) -> None:
         """validate_project returns valid result for existing project."""
         mock_repository.validate_project.return_value = ValidationResult.success()
 
@@ -246,9 +212,7 @@ class TestValidateProjectQueryHappyPath:
         assert len(result.messages) == 2
         assert "Missing PLAN.md" in result.messages
 
-    def test_validate_project_parses_project_id(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_validate_project_parses_project_id(self, mock_repository: Mock) -> None:
         """validate_project correctly parses project ID."""
         mock_repository.validate_project.return_value = ValidationResult.success()
 
@@ -324,9 +288,7 @@ class TestValidateProjectQueryNegativeCases:
 class TestGetNextProjectNumberQueryHappyPath:
     """Happy path tests for GetNextProjectNumberQuery."""
 
-    def test_get_next_number_returns_incremented_value(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_next_number_returns_incremented_value(self, mock_repository: Mock) -> None:
         """get_next_number returns max + 1."""
         projects = [
             create_mock_project(1, "alpha"),
@@ -335,9 +297,7 @@ class TestGetNextProjectNumberQueryHappyPath:
         ]
         mock_repository.scan_projects.return_value = projects
 
-        query = GetNextProjectNumberQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = GetNextProjectNumberQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert result == 4
@@ -346,22 +306,16 @@ class TestGetNextProjectNumberQueryHappyPath:
 class TestGetNextProjectNumberQueryEdgeCases:
     """Edge case tests for GetNextProjectNumberQuery."""
 
-    def test_get_next_number_with_no_projects_returns_001(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_next_number_with_no_projects_returns_001(self, mock_repository: Mock) -> None:
         """get_next_number with no projects returns 1."""
         mock_repository.scan_projects.return_value = []
 
-        query = GetNextProjectNumberQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = GetNextProjectNumberQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert result == 1
 
-    def test_get_next_number_with_gaps_uses_max_plus_one(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_next_number_with_gaps_uses_max_plus_one(self, mock_repository: Mock) -> None:
         """get_next_number ignores gaps, uses max + 1."""
         projects = [
             create_mock_project(1, "first"),
@@ -369,23 +323,17 @@ class TestGetNextProjectNumberQueryEdgeCases:
         ]
         mock_repository.scan_projects.return_value = projects
 
-        query = GetNextProjectNumberQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = GetNextProjectNumberQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert result == 6  # max(5) + 1, not filling gap
 
-    def test_get_next_number_with_single_project(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_next_number_with_single_project(self, mock_repository: Mock) -> None:
         """get_next_number with single project returns 2."""
         projects = [create_mock_project(1, "solo")]
         mock_repository.scan_projects.return_value = projects
 
-        query = GetNextProjectNumberQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = GetNextProjectNumberQuery(repository=mock_repository, base_path="/projects")
         result = query.execute()
 
         assert result == 2
@@ -394,16 +342,12 @@ class TestGetNextProjectNumberQueryEdgeCases:
 class TestGetNextProjectNumberQueryNegativeCases:
     """Negative test cases for GetNextProjectNumberQuery."""
 
-    def test_get_next_number_at_max_raises_error(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_next_number_at_max_raises_error(self, mock_repository: Mock) -> None:
         """get_next_number at 999 raises ValueError."""
         projects = [create_mock_project(999, "final")]
         mock_repository.scan_projects.return_value = projects
 
-        query = GetNextProjectNumberQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = GetNextProjectNumberQuery(repository=mock_repository, base_path="/projects")
 
         with pytest.raises(ValueError, match="Maximum project number"):
             query.execute()
@@ -412,17 +356,11 @@ class TestGetNextProjectNumberQueryNegativeCases:
 class TestGetNextProjectNumberQueryFailureScenarios:
     """Failure scenario tests for GetNextProjectNumberQuery."""
 
-    def test_get_next_number_when_scan_fails_propagates_error(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_next_number_when_scan_fails_propagates_error(self, mock_repository: Mock) -> None:
         """get_next_number propagates RepositoryError from scan."""
-        mock_repository.scan_projects.side_effect = RepositoryError(
-            "Permission denied"
-        )
+        mock_repository.scan_projects.side_effect = RepositoryError("Permission denied")
 
-        query = GetNextProjectNumberQuery(
-            repository=mock_repository, base_path="/projects"
-        )
+        query = GetNextProjectNumberQuery(repository=mock_repository, base_path="/projects")
 
         with pytest.raises(RepositoryError, match="Permission denied"):
             query.execute()
@@ -591,9 +529,7 @@ class TestGetProjectContextQueryFailureScenarios:
     ) -> None:
         """get_project_context handles RepositoryError on scan."""
         mock_environment.get_env.return_value = None
-        mock_repository.scan_projects.side_effect = RepositoryError(
-            "Directory inaccessible"
-        )
+        mock_repository.scan_projects.side_effect = RepositoryError("Directory inaccessible")
 
         query = GetProjectContextQuery(
             repository=mock_repository,

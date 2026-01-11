@@ -14,17 +14,18 @@ References:
     - Canon PAT-001: Event Store Interface Pattern
     - DDD Domain Events (Evans, 2004)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from src.shared_kernel.domain_event import DomainEvent
 
 
 def _utc_now() -> datetime:
     """Return current UTC time."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass(frozen=True)

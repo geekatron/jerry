@@ -11,6 +11,7 @@ References:
     - ADR-008: Quality Gate Layer Configuration
     - PAT-008: Value Object Quality Gates
 """
+
 from __future__ import annotations
 
 import pytest
@@ -26,7 +27,6 @@ from src.work_tracking.domain.value_objects import (
     TestCoverage,
     TestRatio,
 )
-
 
 # =============================================================================
 # IQualityGateValidator Protocol Tests

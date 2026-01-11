@@ -17,20 +17,20 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from src.session_management.domain import (
-    ProjectId,
-    ProjectStatus,
-    ProjectInfo,
-    ValidationResult,
-    InvalidProjectIdError,
     DomainError,
+    InvalidProjectIdError,
+    ProjectId,
+    ProjectInfo,
     ProjectNotFoundError,
+    ProjectStatus,
     ProjectValidationError,
+    ValidationResult,
 )
-
 
 # =============================================================================
 # ProjectId Tests
 # =============================================================================
+
 
 class TestProjectIdHappyPath:
     """Happy path tests for ProjectId value object."""
@@ -217,6 +217,7 @@ class TestProjectIdBoundary:
 # ProjectStatus Tests
 # =============================================================================
 
+
 class TestProjectStatus:
     """Tests for ProjectStatus enum."""
 
@@ -249,6 +250,7 @@ class TestProjectStatus:
 # =============================================================================
 # ValidationResult Tests
 # =============================================================================
+
 
 class TestValidationResult:
     """Tests for ValidationResult value object."""
@@ -298,6 +300,7 @@ class TestValidationResult:
 # =============================================================================
 # ProjectInfo Tests
 # =============================================================================
+
 
 class TestProjectInfo:
     """Tests for ProjectInfo entity."""
@@ -390,6 +393,7 @@ class TestProjectInfo:
 # =============================================================================
 # DomainError Tests
 # =============================================================================
+
 
 class TestDomainErrors:
     """Tests for domain error hierarchy."""
