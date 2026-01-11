@@ -205,10 +205,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Initiative**: ENFORCE-013 - Architecture Tests (NEXT)
-> **Active Phase**: Phase 6 Enforcement (90% complete)
-> **Status**: ✅ ENFORCE-012 COMPLETE - Ready for ENFORCE-013
-> **Previous**: ENFORCE-012 complete (380 tests: 130 SK + 250 SM)
+> **Active Initiative**: ENFORCE-014 - Update CLAUDE.md (NEXT)
+> **Active Phase**: Phase 6 Enforcement (95% complete)
+> **Status**: ✅ ENFORCE-013 COMPLETE - Ready for ENFORCE-014
+> **Previous**: ENFORCE-013 complete (393 tests: 130 SK + 263 SM)
 
 ### Active Initiative Details
 
@@ -463,7 +463,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ENFORCE-010 | Infrastructure Integration Tests (22) | 6 | ✅ | 008d | 011 |
 | ENFORCE-011 | E2E Tests (23 tests) | 6 | ✅ | 009, 010 | 012 |
 | ENFORCE-012 | Contract Tests (16 tests) | 6 | ✅ | 011 | 014 |
-| ENFORCE-013 | Architecture Tests | 6 | ⏳ | 008d | 016 |
+| ENFORCE-013 | Architecture Tests (13 tests) | 6 | ✅ | 008d | 016 |
 | ENFORCE-014 | Update CLAUDE.md | 6 | ⏳ | 011 | 015 |
 | ENFORCE-015 | Update Manifest | 6 | ⏳ | 014 | 016 |
 | ENFORCE-016 | Final Validation | 6 | ⏳ | ALL | None |
@@ -536,9 +536,10 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | Session Mgmt Integration | `tests/session_management/integration/` | 22 | ✅ |
 | Session Mgmt E2E | `tests/session_management/e2e/` | 23 | ✅ |
 | Session Mgmt Contract | `tests/session_management/contract/` | 16 | ✅ |
+| Session Mgmt Architecture | `tests/session_management/architecture/` | 13 | ✅ |
 
 > **Note**: Shared Kernel count excludes `test_snowflake_id_bdd.py` (requires pytest_bdd - see TD-004).
-> Total verified: **380 tests passing** (130 SK + 250 SM)
+> Total verified: **393 tests passing** (130 SK + 263 SM)
 
 ---
 
@@ -642,3 +643,4 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | ENFORCE-011 COMPLETE: E2E tests for session_start.py (23 tests) - Total: 364 tests |
 | 2026-01-10 | Claude | TD-005 logged: Misplaced tests in projects/ directory (MEDIUM priority) |
 | 2026-01-10 | Claude | ENFORCE-012 COMPLETE: Contract tests for hook output (16 tests) - Total: 380 tests |
+| 2026-01-10 | Claude | ENFORCE-013 COMPLETE: Architecture tests for hexagonal constraints (13 tests) - Total: 393 tests |
