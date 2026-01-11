@@ -872,6 +872,24 @@ projects/PROJ-002-nasa-systems-engineering/
   - [x] **T-020.3:** Enhance persistence requirements section
   - [x] **T-020.4:** Update generic placeholder with convention guidance
 
+#### E2E-VAL-001: Output Convention Regression Test
+- **Entry ID:** e2e-val-001
+- **Status:** ✅ COMPLETE
+- **Executed:** 2026-01-10
+- **Priority:** VALIDATION
+- **Source:** WI-SAO-020 acceptance criteria verification
+- **Description:** E2E validation to prove no regressions from PS_AGENT_TEMPLATE.md output convention changes.
+- **Test Matrix:**
+  | Agent | Expected Directory | Artifact Created | L0/L1/L2 | Status |
+  |-------|-------------------|------------------|----------|--------|
+  | ps-researcher | `research/` | `e2e-val-001-e-001-output-validation.md` (6.3KB) | ✓ | PASS |
+  | ps-analyst | `analysis/` | `e2e-val-001-e-002-convention-analysis.md` (9.0KB) | ✓ | PASS |
+  | ps-architect | `decisions/` | `e2e-val-001-e-003-adr-output-conventions.md` (2.8KB) | ✓ | PASS |
+- **P-002 Compliance:** All 3 agents persisted artifacts to correct directories
+- **Regression Status:** NO REGRESSIONS DETECTED
+- **Evidence:** Files verified via `ls -la` at each output directory
+- **Conclusion:** WI-SAO-020 changes do not break existing agent output conventions
+
 ---
 
 ### SAO-INIT-002: New Agent Development
