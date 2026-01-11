@@ -308,6 +308,7 @@ If invoked after another agent, check session.state for:
 | **ps-researcher** | `projects/${JERRY_PROJECT}/research/` | `templates/research.md` | Primary research, literature reviews, web findings |
 | **ps-analyst** | `projects/${JERRY_PROJECT}/analysis/` | `templates/deep-analysis.md` | Gap analysis, trade-offs, deep dives |
 | **ps-architect** | `projects/${JERRY_PROJECT}/decisions/` | `templates/adr.md` | Architecture Decision Records (ADRs) |
+| **ps-critic** | `projects/${JERRY_PROJECT}/critiques/` | `templates/critique.md` | Quality evaluation for generator-critic loops |
 | **ps-investigator** | `projects/${JERRY_PROJECT}/investigations/` | `templates/investigation.md` | Root cause analysis, incident reports |
 | **ps-reporter** | `projects/${JERRY_PROJECT}/reports/` | `templates/report.md` | Status reports, summaries, dashboards |
 | **ps-reviewer** | `projects/${JERRY_PROJECT}/reviews/` | `templates/review.md` | Code reviews, design reviews, security reviews |
@@ -325,11 +326,12 @@ If invoked after another agent, check session.state for:
 | **ps-researcher** | `{ps-id}-{entry-id}-{topic-slug}.md` | `work-024-e-001-oauth-patterns.md` |
 | **ps-analyst** | `{ps-id}-{entry-id}-{analysis-type}.md` | `work-024-e-002-gap-analysis.md` |
 | **ps-architect** | `{ps-id}-{entry-id}-adr-{decision-slug}.md` | `work-024-e-003-adr-auth-strategy.md` |
-| **ps-investigator** | `{ps-id}-{entry-id}-investigation.md` | `work-024-e-004-investigation.md` |
-| **ps-reporter** | `{ps-id}-{entry-id}-{report-type}.md` | `work-024-e-005-phase-status.md` |
-| **ps-reviewer** | `{ps-id}-{entry-id}-{review-type}.md` | `work-024-e-006-code-review.md` |
-| **ps-synthesizer** | `{ps-id}-{entry-id}-synthesis.md` | `work-024-e-007-synthesis.md` |
-| **ps-validator** | `{ps-id}-{entry-id}-validation.md` | `work-024-e-008-validation.md` |
+| **ps-critic** | `{ps-id}-{entry-id}-iter{n}-critique.md` | `work-024-e-004-iter2-critique.md` |
+| **ps-investigator** | `{ps-id}-{entry-id}-investigation.md` | `work-024-e-005-investigation.md` |
+| **ps-reporter** | `{ps-id}-{entry-id}-{report-type}.md` | `work-024-e-006-phase-status.md` |
+| **ps-reviewer** | `{ps-id}-{entry-id}-{review-type}.md` | `work-024-e-007-code-review.md` |
+| **ps-synthesizer** | `{ps-id}-{entry-id}-synthesis.md` | `work-024-e-008-synthesis.md` |
+| **ps-validator** | `{ps-id}-{entry-id}-validation.md` | `work-024-e-009-validation.md` |
 
 ### Mandatory Persistence Protocol
 

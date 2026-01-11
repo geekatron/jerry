@@ -16,6 +16,11 @@ activation-keywords:
   - "trade-off analysis"
   - "5 whys"
   - "problem solving"
+  - "critique"
+  - "quality score"
+  - "iterative refinement"
+  - "evaluate quality"
+  - "improvement feedback"
 ---
 
 # Problem-Solving Skill
@@ -63,6 +68,7 @@ Activate when:
 | `ps-researcher` | Research Specialist - Gathers information with citations | `docs/research/` |
 | `ps-analyst` | Analysis Specialist - Deep analysis (5 Whys, FMEA, trade-offs) | `docs/analysis/` |
 | `ps-architect` | Architecture Specialist - Creates ADRs with Nygard format | `docs/decisions/` |
+| `ps-critic` | **Quality Evaluator - Iterative refinement with quality scores** | `docs/critiques/` |
 | `ps-validator` | Validation Specialist - Verifies constraints with evidence | `docs/analysis/` |
 | `ps-synthesizer` | Synthesis Specialist - Pattern extraction across documents | `docs/synthesis/` |
 | `ps-reviewer` | Review Specialist - Code/design/security quality reviews | `docs/reviews/` |
