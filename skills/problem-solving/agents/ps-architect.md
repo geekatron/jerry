@@ -181,7 +181,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | Options evaluated with factual evidence |
-| P-002 (File Persistence) | **Medium** | ALL ADRs persisted to docs/decisions/ |
+| P-002 (File Persistence) | **Medium** | ALL ADRs persisted to projects/${JERRY_PROJECT}/decisions/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | Context, rationale, and sources documented |
 | P-011 (Evidence-Based) | Soft | Recommendations backed by evaluation |
@@ -245,7 +245,7 @@ When invoking this agent, the prompt MUST include:
 After creating your ADR, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/decisions/{ps_id}-{entry_id}-adr-{slug}.md`
+   `projects/${JERRY_PROJECT}/decisions/{ps_id}-{entry_id}-adr-{slug}.md`
 
 2. **Follow the template** structure from:
    `templates/adr.md`
@@ -253,7 +253,7 @@ After creating your ADR, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/decisions/{ps_id}-{entry_id}-adr-{slug}.md" \
+       "projects/${JERRY_PROJECT}/decisions/{ps_id}-{entry_id}-adr-{slug}.md" \
        "ADR: {topic}"
    ```
 
@@ -312,7 +312,7 @@ Example:
 architect_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
-  artifact_path: "docs/decisions/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/decisions/{filename}.md"
   adr_number: "{number}"
   decision: "{summary of decision}"
   status: "PROPOSED"
@@ -367,7 +367,7 @@ You are the ps-architect agent (v2.0.0).
 <role>Architecture Specialist with expertise in ADRs and system design</role>
 <task>Create ADR for event sourcing decision</task>
 <constraints>
-<must>Create file with Write tool at docs/decisions/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/decisions/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Evaluate at least 3 alternatives per P-011</must>
 <must>Set status to PROPOSED per P-020</must>
@@ -386,9 +386,9 @@ You are the ps-architect agent (v2.0.0).
 ## MANDATORY PERSISTENCE (P-002)
 After creating the ADR, you MUST:
 
-1. Create file at: `docs/decisions/work-024-e-202-adr-event-sourcing.md`
+1. Create file at: `projects/${JERRY_PROJECT}/decisions/work-024-e-202-adr-event-sourcing.md`
 2. Include L0 (executive), L1 (technical), L2 (architectural) sections
-3. Run: `python3 scripts/cli.py link-artifact work-024 e-202 FILE "docs/decisions/work-024-e-202-adr-event-sourcing.md" "ADR: Use Event Sourcing for Task History"`
+3. Run: `python3 scripts/cli.py link-artifact work-024 e-202 FILE "projects/${JERRY_PROJECT}/decisions/work-024-e-202-adr-event-sourcing.md" "ADR: Use Event Sourcing for Task History"`
 
 ## ARCHITECTURE TASK
 Create an ADR for the decision to use event sourcing for task history.
@@ -403,16 +403,16 @@ Document both positive and negative consequences.
 
 ```bash
 # 1. File exists
-ls docs/decisions/{ps_id}-{entry_id}-adr-*.md
+ls projects/${JERRY_PROJECT}/decisions/{ps_id}-{entry_id}-adr-*.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/decisions/{ps_id}-{entry_id}-adr-*.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/decisions/{ps_id}-{entry_id}-adr-*.md
 
 # 3. Has options table
-grep -E "^\| Option" docs/decisions/{ps_id}-{entry_id}-adr-*.md
+grep -E "^\| Option" projects/${JERRY_PROJECT}/decisions/{ps_id}-{entry_id}-adr-*.md
 
 # 4. Status is PROPOSED (not ACCEPTED)
-grep -E "^## Status" -A 1 docs/decisions/{ps_id}-{entry_id}-adr-*.md
+grep -E "^## Status" -A 1 projects/${JERRY_PROJECT}/decisions/{ps_id}-{entry_id}-adr-*.md
 
 # 5. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}

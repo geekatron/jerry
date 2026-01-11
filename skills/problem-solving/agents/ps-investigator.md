@@ -183,7 +183,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | Root cause supported by evidence |
-| P-002 (File Persistence) | **Medium** | ALL investigations persisted to docs/investigations/ |
+| P-002 (File Persistence) | **Medium** | ALL investigations persisted to projects/${JERRY_PROJECT}/investigations/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | Evidence chain documented for each Why |
 | P-011 (Evidence-Based) | Soft | Conclusions tied to specific evidence |
@@ -300,7 +300,7 @@ When invoking this agent, the prompt MUST include:
 After completing investigation, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/investigations/{ps_id}-{entry_id}-investigation.md`
+   `projects/${JERRY_PROJECT}/investigations/{ps_id}-{entry_id}-investigation.md`
 
 2. **Follow the template** structure from:
    `templates/investigation.md`
@@ -308,7 +308,7 @@ After completing investigation, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/investigations/{ps_id}-{entry_id}-investigation.md" \
+       "projects/${JERRY_PROJECT}/investigations/{ps_id}-{entry_id}-investigation.md" \
        "Investigation: {topic}"
    ```
 
@@ -372,7 +372,7 @@ Example:
 investigator_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
-  artifact_path: "docs/investigations/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/investigations/{filename}.md"
   severity: "{CRITICAL|HIGH|MEDIUM|LOW}"
   root_cause: "{summary}"
   confidence: "{high|medium|low}"
@@ -428,7 +428,7 @@ You are the ps-investigator agent (v2.0.0).
 <role>Investigation Specialist with expertise in root cause analysis</role>
 <task>Investigate API timeout incident</task>
 <constraints>
-<must>Create file with Write tool at docs/investigations/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/investigations/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Complete 5 Whys with evidence</must>
 <must>Define corrective actions with owners</must>
@@ -447,9 +447,9 @@ You are the ps-investigator agent (v2.0.0).
 ## MANDATORY PERSISTENCE (P-002)
 After completing investigation, you MUST:
 
-1. Create file at: `docs/investigations/work-024-e-400-investigation.md`
+1. Create file at: `projects/${JERRY_PROJECT}/investigations/work-024-e-400-investigation.md`
 2. Include L0 (executive), L1 (technical), L2 (systemic) sections
-3. Run: `python3 scripts/cli.py link-artifact work-024 e-400 FILE "docs/investigations/work-024-e-400-investigation.md" "Investigation: API timeout"`
+3. Run: `python3 scripts/cli.py link-artifact work-024 e-400 FILE "projects/${JERRY_PROJECT}/investigations/work-024-e-400-investigation.md" "Investigation: API timeout"`
 
 ## INVESTIGATION TASK
 Investigate the production API timeout issue reported at 2026-01-03 14:30.
@@ -466,16 +466,16 @@ Investigate the production API timeout issue reported at 2026-01-03 14:30.
 
 ```bash
 # 1. File exists
-ls docs/investigations/{ps_id}-{entry_id}-investigation.md
+ls projects/${JERRY_PROJECT}/investigations/{ps_id}-{entry_id}-investigation.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/investigations/{ps_id}-{entry_id}-investigation.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/investigations/{ps_id}-{entry_id}-investigation.md
 
 # 3. Has 5 Whys table
-grep -E "^\| Why [1-5]" docs/investigations/{ps_id}-{entry_id}-investigation.md
+grep -E "^\| Why [1-5]" projects/${JERRY_PROJECT}/investigations/{ps_id}-{entry_id}-investigation.md
 
 # 4. Has corrective actions
-grep -E "^### CA-\d+" docs/investigations/{ps_id}-{entry_id}-investigation.md
+grep -E "^### CA-\d+" projects/${JERRY_PROJECT}/investigations/{ps_id}-{entry_id}-investigation.md
 
 # 5. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}

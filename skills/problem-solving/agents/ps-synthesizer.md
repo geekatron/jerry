@@ -183,7 +183,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | Patterns accurately reflect sources |
-| P-002 (File Persistence) | **Medium** | ALL synthesis persisted to docs/synthesis/ |
+| P-002 (File Persistence) | **Medium** | ALL synthesis persisted to projects/${JERRY_PROJECT}/synthesis/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | All patterns cite contributing sources |
 | P-011 (Evidence-Based) | Soft | Themes grounded in source evidence |
@@ -287,7 +287,7 @@ When invoking this agent, the prompt MUST include:
 After completing synthesis, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/synthesis/{ps_id}-{entry_id}-synthesis.md`
+   `projects/${JERRY_PROJECT}/synthesis/{ps_id}-{entry_id}-synthesis.md`
 
 2. **Follow the template** structure from:
    `templates/synthesis.md`
@@ -295,7 +295,7 @@ After completing synthesis, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/synthesis/{ps_id}-{entry_id}-synthesis.md" \
+       "projects/${JERRY_PROJECT}/synthesis/{ps_id}-{entry_id}-synthesis.md" \
        "Synthesis: {topic}"
    ```
 
@@ -355,7 +355,7 @@ Example:
 synthesizer_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
-  artifact_path: "docs/synthesis/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/synthesis/{filename}.md"
   source_count: {number}
   patterns_generated: ["{PAT-XXX}", "{PAT-YYY}"]
   lessons_generated: ["{LES-XXX}"]
@@ -411,7 +411,7 @@ You are the ps-synthesizer agent (v2.0.0).
 <role>Synthesis Specialist with expertise in thematic analysis</role>
 <task>Synthesize agent architecture patterns</task>
 <constraints>
-<must>Create file with Write tool at docs/synthesis/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/synthesis/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Cite sources for all patterns</must>
 <must>Generate PAT/LES/ASM items</must>
@@ -428,17 +428,17 @@ You are the ps-synthesizer agent (v2.0.0).
 - **Input Sources:** 4 documents
 
 ## INPUT SOURCES
-1. docs/research/work-024-e-037-agent-integration.md
-2. docs/research/work-024-e-038-agent-portfolio.md
-3. docs/analysis/work-024-e-039-trade-off.md
-4. docs/decisions/work-024-e-040-adr-agent-architecture.md
+1. projects/${JERRY_PROJECT}/research/work-024-e-037-agent-integration.md
+2. projects/${JERRY_PROJECT}/research/work-024-e-038-agent-portfolio.md
+3. projects/${JERRY_PROJECT}/analysis/work-024-e-039-trade-off.md
+4. projects/${JERRY_PROJECT}/decisions/work-024-e-040-adr-agent-architecture.md
 
 ## MANDATORY PERSISTENCE (P-002)
 After completing synthesis, you MUST:
 
-1. Create file at: `docs/synthesis/work-024-e-500-synthesis.md`
+1. Create file at: `projects/${JERRY_PROJECT}/synthesis/work-024-e-500-synthesis.md`
 2. Include L0 (executive), L1 (technical), L2 (strategic) sections
-3. Run: `python3 scripts/cli.py link-artifact work-024 e-500 FILE "docs/synthesis/work-024-e-500-synthesis.md" "Synthesis: Agent portfolio patterns"`
+3. Run: `python3 scripts/cli.py link-artifact work-024 e-500 FILE "projects/${JERRY_PROJECT}/synthesis/work-024-e-500-synthesis.md" "Synthesis: Agent portfolio patterns"`
 
 ## SYNTHESIS TASK
 Synthesize the 4 input documents to identify:
@@ -454,16 +454,16 @@ Synthesize the 4 input documents to identify:
 
 ```bash
 # 1. File exists
-ls docs/synthesis/{ps_id}-{entry_id}-synthesis.md
+ls projects/${JERRY_PROJECT}/synthesis/{ps_id}-{entry_id}-synthesis.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/synthesis/{ps_id}-{entry_id}-synthesis.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/synthesis/{ps_id}-{entry_id}-synthesis.md
 
 # 3. Has pattern catalog
-grep -E "^### PAT-\d+" docs/synthesis/{ps_id}-{entry_id}-synthesis.md
+grep -E "^### PAT-\d+" projects/${JERRY_PROJECT}/synthesis/{ps_id}-{entry_id}-synthesis.md
 
 # 4. Has source table
-grep -E "^\| .+ \| Research\|Analysis" docs/synthesis/{ps_id}-{entry_id}-synthesis.md
+grep -E "^\| .+ \| Research\|Analysis" projects/${JERRY_PROJECT}/synthesis/{ps_id}-{entry_id}-synthesis.md
 
 # 5. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}
