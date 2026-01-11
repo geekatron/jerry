@@ -198,7 +198,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 100% | - | - |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | ⏳ PENDING | 33% | - | - |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 80% | - | - |
 | DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | - | - | - |
 
 ---
@@ -464,9 +464,9 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ENFORCE-011 | E2E Tests (23 tests) | 6 | ✅ | 009, 010 | 012 |
 | ENFORCE-012 | Contract Tests (16 tests) | 6 | ✅ | 011 | 014 |
 | ENFORCE-013 | Architecture Tests (13 tests) | 6 | ✅ | 008d | 016 |
-| ENFORCE-014 | Update CLAUDE.md | 6 | ⏳ | 011 | 015 |
-| ENFORCE-015 | Update Manifest | 6 | ⏳ | 014 | 016 |
-| ENFORCE-016 | Final Validation | 6 | ⏳ | ALL | None |
+| ENFORCE-014 | Update CLAUDE.md | 6 | ✅ | 011 | 015 |
+| ENFORCE-015 | Update Manifest | 6 | ✅ | 014 | 016 |
+| ENFORCE-016 | Final Validation | 6 | ✅ | ALL | None |
 
 ---
 
