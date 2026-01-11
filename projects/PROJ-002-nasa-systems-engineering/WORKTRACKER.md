@@ -1441,20 +1441,123 @@ Where `{workflow_id}`, `{pipeline_alias_*}`, `{source}`, `{target}` are ALL dyna
   - [ ] **T-018.2:** Add version to agent template schema
   - [ ] **T-018.3:** Document schema evolution rules
 
+#### WI-SAO-022: Migrate nse-architecture and nse-reporter to Standard Template Format
+- **Entry ID:** sao-022
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 4h
+- **Discovered:** 2026-01-11 during WI-SAO-002
+- **Discovery Context:** While adding session_context sections, found structural inconsistency
+- **Description:** Two NSE agents (nse-architecture.md, nse-reporter.md) use a non-standard format that differs significantly from the other 6 nse-* agents and the NSE_AGENT_TEMPLATE.md.
+- **Current State (Non-Standard):**
+  ```markdown
+  # NSE-Architecture Agent
+  > Description
+  ---
+  ```yaml
+  agent_id: nse-architecture
+  version: 1.0.0
+  ...constitutional_compliance:
+    P-040: "..."
+  ```
+  ---
+  <agent>...</agent>
+  ```
+- **Expected State (Standard per NSE_AGENT_TEMPLATE.md):**
+  ```yaml
+  ---
+  name: nse-architecture
+  version: "1.0.0"
+  ...
+  # Enforcement Tier
+  enforcement:
+    tier: "medium"
+  # Session Context
+  session_context:
+    schema: "docs/schemas/session_context.json"
+  ---
+  <agent>...</agent>
+  ```
+- **Impact:**
+  - Template maintenance requires handling two different formats
+  - Grep/search patterns for YAML fields fail on non-standard agents
+  - Inconsistent developer experience
+  - Risk of further drift as one format gets updated but not the other
+- **Acceptance Criteria:**
+  1. nse-architecture.md uses standard YAML frontmatter format
+  2. nse-reporter.md uses standard YAML frontmatter format
+  3. All content preserved during migration
+  4. Both agents pass grep tests for session_context, enforcement, etc.
+- **Tasks:**
+  - [ ] **T-022.1:** Create migration plan preserving all nse-architecture content
+  - [ ] **T-022.2:** Migrate nse-architecture.md to standard format
+  - [ ] **T-022.3:** Create migration plan preserving all nse-reporter content
+  - [ ] **T-022.4:** Migrate nse-reporter.md to standard format
+  - [ ] **T-022.5:** Verify grep patterns work on migrated agents
+  - [ ] **T-022.6:** Update version numbers to 2.0.0
+
+#### WI-SAO-023: Add session_context_validation XML Sections to NSE Agents
+- **Entry ID:** sao-023
+- **Status:** OPEN
+- **Priority:** MEDIUM (P2)
+- **Estimated Effort:** 3h
+- **Discovered:** 2026-01-11 during WI-SAO-002
+- **Discovery Context:** Added XML sections to ps-* agents but only YAML to nse-* agents
+- **Description:** For parity with ps-* agents, all nse-* agents should have `<session_context_validation>` XML sections with On Receive/On Send guidance. Currently only YAML configuration exists.
+- **Current State:**
+  - ps-* agents: YAML `session_context` section + XML `<session_context_validation>` section
+  - nse-* agents: YAML `session_context` section only
+- **Expected State:**
+  - Both families: YAML `session_context` section + XML `<session_context_validation>` section
+- **Acceptance Criteria:**
+  1. All 8 nse-* agents have `<session_context_validation>` XML section
+  2. Each section includes On Receive (Input Validation) guidance
+  3. Each section includes On Send (Output Validation) guidance
+  4. Each section includes agent-specific Output Checklist
+- **Tasks:**
+  - [ ] **T-023.1:** Add XML section to nse-requirements.md
+  - [ ] **T-023.2:** Add XML section to nse-verification.md
+  - [ ] **T-023.3:** Add XML section to nse-risk.md
+  - [ ] **T-023.4:** Add XML section to nse-reviewer.md
+  - [ ] **T-023.5:** Add XML section to nse-integration.md
+  - [ ] **T-023.6:** Add XML section to nse-configuration.md
+  - [ ] **T-023.7:** Add XML section to nse-architecture.md (after WI-SAO-022)
+  - [ ] **T-023.8:** Add XML section to nse-reporter.md (after WI-SAO-022)
+- **Depends On:** WI-SAO-022 (for nse-architecture and nse-reporter migration)
+
+#### WI-SAO-024: Audit Agent Template Conformance
+- **Entry ID:** sao-024
+- **Status:** OPEN
+- **Priority:** MEDIUM (P2)
+- **Estimated Effort:** 2h
+- **Discovered:** 2026-01-11 during WI-SAO-002
+- **Description:** Create automated conformance check to detect agent template drift. Prevents future structural inconsistencies.
+- **Root Cause:** WI-SAO-022 gap exists because there was no automated check ensuring agents match their templates.
+- **Acceptance Criteria:**
+  1. Script to validate agent structure against template
+  2. Check runs as pre-commit or CI
+  3. Reports structural deviations with actionable output
+- **Tasks:**
+  - [ ] **T-024.1:** Define required YAML sections per template
+  - [ ] **T-024.2:** Create conformance check script
+  - [ ] **T-024.3:** Add to pre-commit hooks or CI
+  - [ ] **T-024.4:** Document template conformance rules
+
 ---
 
 ### SAO Progress Summary
 
 | Initiative | Work Items | Completed | Tasks | Tasks Done | Status |
 |------------|------------|-----------|-------|------------|--------|
-| SAO-INIT-001: Foundation | 5 | 4 | 21 | 17 | **IN PROGRESS** |
+| SAO-INIT-001: Foundation | 5 | 4 | 21 | 19 | **IN PROGRESS** |
 | SAO-INIT-002: New Agents | 5 | 0 | 22 | 0 | OPEN |
 | SAO-INIT-003: Templates | 3 | 0 | 20 | 0 | OPEN |
 | SAO-INIT-004: Infrastructure | 5 | 0 | 34 | 0 | OPEN |
-| SAO-INIT-005: Debt Reduction | 3 | 0 | 10 | 0 | OPEN |
-| **TOTAL** | **21** | **4** | **107** | **17** | **IN PROGRESS** |
+| SAO-INIT-005: Debt Reduction | 6 | 0 | 28 | 0 | OPEN |
+| **TOTAL** | **24** | **4** | **125** | **19** | **IN PROGRESS** |
 
-**Foundation Progress:** 4/5 work items complete (80%), 17/21 tasks complete (81%)
+**Foundation Progress:** 4/5 work items complete (80%), 19/21 tasks complete (90%)
+**Debt Reduction:** +3 work items discovered during WI-SAO-002 (WI-SAO-022, 023, 024)
 
 ### Implementation Priority (Risk-Informed)
 
@@ -1504,7 +1607,14 @@ SAO-INIT-001 Foundation work:
 - WI-SAO-003 (model field) ✅ COMPLETE
 - WI-SAO-019 (agent architecture research) ✅ COMPLETE - 700+ line research document
 - WI-SAO-020 (output conventions) ✅ COMPLETE - 8/8 agents validated
-- WI-SAO-002 (schema validation) IN PROGRESS
+- WI-SAO-002 (schema validation) IN PROGRESS - T-002.1, T-002.2 complete (2026-01-11)
+
+WI-SAO-002 Progress (2026-01-11):
+- Added session_context YAML sections to all 16 agents (8 ps-*, 8 nse-*)
+- Added <session_context_validation> XML sections to all 8 ps-* agents
+- Discovered tech debt: nse-architecture.md and nse-reporter.md use non-standard format
+- Created WI-SAO-022 (migrate non-standard agents), WI-SAO-023 (nse XML parity), WI-SAO-024 (template conformance audit)
+- Commit: 96059c3
 
 ORCH-SKILL-005 Orchestration Tests (2026-01-10):
 - Pattern Tests: 4/4 PASS (Sequential, Fan-Out, Fan-In, Review Gate)
