@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T14:45:00Z
+**Last Updated**: 2026-01-10T16:30:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -442,19 +442,19 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ID | Title | Phase | Status | Predecessors | Successors |
 |----|-------|-------|--------|--------------|------------|
 | ENFORCE-008d | Refactor to Unified Design | 6 | 🔄 | Phase 7, SK | 009, 010, 013 |
-| 008d.0 | Research & Analysis | 6.008d | 🔄 | Phase 7 | 008d.1 |
-| 008d.1 | Value Object Refactoring | 6.008d | ⏳ | 008d.0 | 008d.2 |
-| 008d.1.1 | ProjectId → VertexId | 6.008d.1 | ⏳ | 008d.0 | 008d.1.2 |
-| 008d.1.2 | Extract slug property | 6.008d.1 | ⏳ | 008d.1.1 | 008d.1.3 |
-| 008d.1.3 | Update VO tests | 6.008d.1 | ⏳ | 008d.1.2 | 008d.2 |
-| 008d.2 | Entity Refactoring | 6.008d | ⏳ | 008d.1 | 008d.4 |
-| 008d.2.1 | ProjectInfo → EntityBase | 6.008d.2 | ⏳ | 008d.1 | 008d.2.2 |
-| 008d.2.2 | Add JerryUri | 6.008d.2 | ⏳ | 008d.2.1 | 008d.2.3 |
-| 008d.2.3 | Add extensibility | 6.008d.2 | ⏳ | 008d.2.2 | 008d.3 |
-| 008d.3 | New Domain Objects | 6.008d | ⏳ | 008d.0 | 008d.4 |
-| 008d.3.1 | Create SessionId | 6.008d.3 | ⏳ | 008d.0 | 008d.3.2 |
-| 008d.3.2 | Create Session aggregate | 6.008d.3 | ⏳ | 008d.3.1 | 008d.3.3 |
-| 008d.3.3 | Add session_id to Project | 6.008d.3 | ⏳ | 008d.3.2 | 008d.4 |
+| 008d.0 | Research & Analysis | 6.008d | ✅ | Phase 7 | 008d.1 |
+| 008d.1 | Value Object Refactoring (36 tests) | 6.008d | ✅ | 008d.0 | 008d.2 |
+| 008d.1.1 | ProjectId → VertexId | 6.008d.1 | ✅ | 008d.0 | 008d.1.2 |
+| 008d.1.2 | Extract slug property | 6.008d.1 | ✅ | 008d.1.1 | 008d.1.3 |
+| 008d.1.3 | Update VO tests | 6.008d.1 | ✅ | 008d.1.2 | 008d.2 |
+| 008d.2 | Entity Refactoring (35 tests) | 6.008d | ✅ | 008d.1 | 008d.4 |
+| 008d.2.1 | ProjectInfo IAuditable/IVersioned | 6.008d.2 | ✅ | 008d.1 | 008d.2.2 |
+| 008d.2.2 | DISC-002: Frozen design decision | 6.008d.2 | ✅ | 008d.2.1 | 008d.2.3 |
+| 008d.2.3 | Audit metadata tests | 6.008d.2 | ✅ | 008d.2.2 | 008d.3 |
+| 008d.3 | New Domain Objects (62 tests) | 6.008d | ✅ | 008d.0 | 008d.4 |
+| 008d.3.1 | SessionId extends VertexId (20 tests) | 6.008d.3 | ✅ | 008d.0 | 008d.3.2 |
+| 008d.3.2 | Session aggregate (36 tests) | 6.008d.3 | ✅ | 008d.3.1 | 008d.3.3 |
+| 008d.3.3 | Add session_id to ProjectInfo (6 tests) | 6.008d.3 | ✅ | 008d.3.2 | 008d.4 |
 | 008d.4 | Infrastructure Updates | 6.008d | ⏳ | 008d.1-3 | 009 |
 | 008d.4.1 | Update adapters | 6.008d.4 | ⏳ | 008d.1-3 | 008d.4.2 |
 | 008d.4.2 | Migrate existing projects | 6.008d.4 | ⏳ | 008d.4.1 | 008d.4.3 |
@@ -523,14 +523,14 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ID | Title | Location | Tests | Status |
 |----|-------|----------|-------|--------|
 | I-SK | Shared Kernel | `src/shared_kernel/` | 58 | ✅ |
-| I-SM | Session Management | `src/session_management/` | 57 | 🔄 |
+| I-SM | Session Management | `src/session_management/` | 133 | 🔄 |
 
 ### Test Suites
 
 | Suite | Location | Count | Status |
 |-------|----------|-------|--------|
 | Shared Kernel Unit | `tests/shared_kernel/` | 58 | ✅ |
-| Session Mgmt Domain | `tests/session_management/unit/` | 57 | ✅ |
+| Session Mgmt Domain | `tests/session_management/unit/` | 133 | ✅ |
 | Session Mgmt Integration | `tests/session_management/integration/` | 0 | ⏳ |
 | Session Mgmt E2E | `tests/session_management/e2e/` | 0 | ⏳ |
 
