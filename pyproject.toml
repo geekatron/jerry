@@ -35,6 +35,11 @@ dev = [
     "mypy>=1.8.0",
     "ruff>=0.1.0",
 ]
+test = [
+    "pytest>=8.0.0",
+    "pytest-bdd>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
 
 [project.scripts]
 jerry = "src.interface.cli.main:main"
@@ -75,3 +80,9 @@ known-first-party = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = [
+    "happy-path: marks tests as happy path scenarios",
+    "negative: marks tests as negative/error scenarios",
+    "edge-case: marks tests as edge case scenarios",
+    "boundary: marks tests as boundary value scenarios",
+]
