@@ -1,0 +1,183 @@
+# TEST-002-PARALLEL-WORKFLOW.yaml
+# E2E Test: Parallel Fan-Out/Fan-In Workflow (v2.0 - Dynamic Paths)
+# Pattern: Fan-Out with synthesis
+# Purpose: Verify parallel execution with synthesis and dynamic path resolution
+
+workflow:
+  id: "parallel-20260110-001"
+  name: "E2E Test: Parallel Fan-Out/Fan-In Workflow"
+  project_id: "TEST-E2E-002"
+  version: "2.0"
+  created_at: "2026-01-10T12:00:00Z"
+  updated_at: "2026-01-10T12:00:00Z"
+  status: "PENDING"
+
+  # Workflow ID configuration (v2.0)
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - CONCURRENT
+    - FAN_OUT
+    - FAN_IN
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 3
+    checkpoint_frequency: "PHASE"
+
+# Path configuration (v2.0)
+paths:
+  base: "orchestration/{workflow.id}/"
+  pipeline: "{base}{pipeline_alias}/{phase_id}/"
+  synthesis: "{base}synthesis/"
+
+pipelines:
+  fanout:
+    id: "fanout-pipeline"
+    name: "Fan-Out Pipeline"
+    description: "Parallel workers with synthesis"
+
+    # Pipeline alias configuration (v2.0)
+    short_alias: "fanout"
+    skill_source: "test-parallel"
+
+    status: "PENDING"
+    current_phase: 1
+    total_phases: 2
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "Parallel Phase"
+        path_id: "phase-1"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "parallel-agent-1"
+            name: "Parallel Worker 1"
+            status: "PENDING"
+            # Dynamic path: orchestration/parallel-20260110-001/fanout/phase-1/worker-1.md
+            artifact: "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-1/worker-1.md"
+            inputs: []
+          - id: "parallel-agent-2"
+            name: "Parallel Worker 2"
+            status: "PENDING"
+            artifact: "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-1/worker-2.md"
+            inputs: []
+          - id: "parallel-agent-3"
+            name: "Parallel Worker 3"
+            status: "PENDING"
+            artifact: "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-1/worker-3.md"
+            inputs: []
+        artifacts: []
+
+      - id: 2
+        name: "Synthesis Phase"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "phase-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "synthesis-agent"
+            name: "Synthesis Worker"
+            status: "BLOCKED"
+            artifact: "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-2/synthesis.md"
+            inputs:
+              - "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-1/worker-1.md"
+              - "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-1/worker-2.md"
+              - "orchestration/{workflow.id}/{pipelines.fanout.short_alias}/phase-1/worker-3.md"
+        artifacts: []
+
+barriers: []
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Parallel Phase"
+      execution_mode: "PARALLEL"
+      status: "READY"
+      agents:
+        - "parallel-agent-1"
+        - "parallel-agent-2"
+        - "parallel-agent-3"
+
+    - id: 2
+      name: "Synthesis Phase"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents:
+        - "synthesis-agent"
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 2
+    phases_percent: 0
+    agents_executed: 0
+    agents_total: 4
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 4
+    artifacts_percent: 0
+
+  quality:
+    agent_success_rate: 0
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+next_actions:
+  immediate:
+    - action: "Execute Parallel Phase agents"
+      agents: ["parallel-agent-1", "parallel-agent-2", "parallel-agent-3"]
+      execution_mode: "PARALLEL"
+
+  subsequent:
+    - action: "Execute Synthesis Phase agent"
+      depends_on: "Parallel Phase complete"
+
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow not started"
+  next_step: "Execute Parallel Phase agents"
+
+  files_to_read:
+    - "tests/e2e/v2/TEST-002-PARALLEL-WORKFLOW.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+# Test Validation (v2.0)
+test_validation:
+  description: "Validates fan-out/fan-in workflow with dynamic path resolution"
+  assertions:
+    - name: "Workflow ID format"
+      check: "workflow.id matches {purpose}-{YYYYMMDD}-{NNN}"
+    - name: "Pipeline alias configured"
+      check: "pipelines.fanout.short_alias is not empty"
+    - name: "Parallel agents use same phase path"
+      check: "All phase-1 agents write to orchestration/{workflow.id}/{pipeline_alias}/phase-1/"
+    - name: "Synthesis inputs reference all parallel outputs"
+      check: "synthesis-agent.inputs contains all worker artifact paths"
+    - name: "Path base uses workflow.id"
+      check: "paths.base contains {workflow.id}"

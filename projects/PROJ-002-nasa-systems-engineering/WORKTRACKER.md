@@ -1239,53 +1239,151 @@ projects/PROJ-002-nasa-systems-engineering/
   3. Phase progression visibility via `{phase_id}`
   4. Centralized cross-pollination within each run
   5. Extensibility for future pipelines beyond ps-* and nse-*
-- **Key Requirements (Refined 2026-01-10):**
-  1. **NO hardcoded values** - all identifiers must be dynamic
-  2. **Stable identifier generation** - created when orchestration skill creates plan
-  3. **User choice** - user can specify identifier or accept auto-generated
-  4. **Dual storage** - identifier stored in ORCHESTRATION.yaml AND human-facing *.md artifacts
-  5. **Cross-pollination support** - must work with barrier sync patterns
-  6. **Future extensibility** - must support adding new pipeline families
-- **Target Structure:**
-  ```
-  orchestration/{workflow_id}/
-  ├── {pipeline_id_1}/{phase}/    # e.g., first pipeline phases
-  ├── {pipeline_id_2}/{phase}/    # e.g., second pipeline phases
-  └── cross-pollination/          # Sync barrier artifacts
-      └── barrier-{n}/
-          ├── {source}-to-{target}/
-  ```
-  Where `{workflow_id}`, `{pipeline_id_*}`, `{source}`, `{target}` are ALL dynamic.
-- **Acceptance Criteria:**
-  1. [ ] Research complete - identifier strategy documented with options
-  2. [ ] Existing tests analyzed for hardcoded paths
-  3. [ ] Archive created at `archive/v_initial/` with existing artifacts
-  4. [ ] Orchestration skill updated to use dynamic path scheme
-  5. [ ] ORCHESTRATION.yaml template updated with workflow_id field
-  6. [ ] Human-facing markdown templates updated with workflow_id
-  7. [ ] All existing E2E tests pass (no regressions)
-  8. [ ] New E2E test validates dynamic path generation
-  9. [ ] Orchestration skill runs end-to-end successfully
-- **Migration Strategy:** Archive + Migrate
-  1. Create `archive/v_initial/` folder
-  2. Move existing `ps-pipeline/`, `nse-pipeline/`, `cross-pollination/` to archive
-  3. Implement dynamic path scheme in orchestration skill
-  4. Run E2E validation
-- **Blocking:** Cross-pollination phases 3-4 ✅ COMPLETE
-- **Tasks:**
-  - [ ] **T-021.1:** Research identifier strategies (semantic, UUID, hash-based, user-specified)
-  - [ ] **T-021.2:** Analyze existing E2E tests for hardcoded paths
-  - [ ] **T-021.3:** Create `archive/v_initial/` and migrate existing artifacts
-  - [ ] **T-021.4:** Propose identifier strategy with trade-offs
-  - [ ] **T-021.5:** Update ORCHESTRATION.template.yaml with dynamic workflow_id
-  - [ ] **T-021.6:** Update orchestration skill templates for dynamic paths
-  - [ ] **T-021.7:** Update orch-planner agent for identifier generation
-  - [ ] **T-021.8:** Update orch-tracker agent for dynamic path references
-  - [ ] **T-021.9:** Run existing E2E tests to validate no regressions
-  - [ ] **T-021.10:** Create new E2E test for dynamic path validation
-  - [ ] **T-021.11:** Run orchestration skill end-to-end
-  - [ ] **T-021.12:** Update WORKTRACKER with final implementation details
-  - [ ] **T-021.13:** Commit and push all changes
+
+##### Approved Decisions (2026-01-10)
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Identifier Strategy | **Option 3: User-specified with semantic fallback** | Balance of user control and sensible defaults |
+| Workflow ID Format | `{purpose}-{YYYYMMDD}-{NNN}` | Human-readable, sortable, unique |
+| Pipeline Aliases | Default from skill, overridable in workflow | Flexibility with sensible defaults |
+| Test Migration | Create new versions, move old to `deprecated/` | Clean separation, historical reference |
+
+##### Key Requirements (Refined 2026-01-10)
+
+1. **NO hardcoded values** - all identifiers must be dynamic
+2. **Stable identifier generation** - created when orchestration skill creates plan
+3. **User choice** - user can specify identifier or accept auto-generated
+4. **Dual storage** - identifier stored in ORCHESTRATION.yaml AND human-facing *.md artifacts
+5. **Cross-pollination support** - must work with barrier sync patterns
+6. **Future extensibility** - must support adding new pipeline families
+7. **Pipeline alias control** - default from skill registration, overridable per workflow
+8. **Documentation required** - users must know how to control identifiers
+
+##### Target Structure
+
+```
+orchestration/{workflow_id}/
+├── {pipeline_alias_1}/{phase}/   # e.g., ps/phase-1-research/
+├── {pipeline_alias_2}/{phase}/   # e.g., nse/phase-1-scope/
+└── cross-pollination/
+    └── barrier-{n}/
+        ├── {source}-to-{target}/ # e.g., ps-to-nse/
+```
+
+Where `{workflow_id}`, `{pipeline_alias_*}`, `{source}`, `{target}` are ALL dynamic.
+
+##### Pipeline Alias Configuration
+
+| Source | Priority | Example | Notes |
+|--------|----------|---------|-------|
+| Workflow YAML override | 1 (highest) | `short_alias: "custom"` | User-specified per workflow |
+| Skill registration | 2 | `short_alias: "ps"` | Default from skill SKILL.md |
+| Auto-derived | 3 (fallback) | First 3 chars of skill name | Last resort |
+
+##### Acceptance Criteria
+
+1. [x] Research complete - identifier strategy documented with options
+2. [x] Existing tests analyzed for hardcoded paths
+3. [x] Archive created at `archive/v_initial/` with existing artifacts
+4. [ ] Orchestration skill templates updated with dynamic path schema
+5. [ ] Pipeline alias configuration documented in skill
+6. [ ] orch-planner agent updated for workflow ID generation/prompting
+7. [ ] orch-tracker agent updated for dynamic path references
+8. [ ] New E2E tests created with dynamic path structure
+9. [ ] Old E2E tests moved to `tests/e2e/deprecated/` with README
+10. [ ] E2E validation passes (orchestration skill runs end-to-end)
+11. [ ] All changes committed and pushed
+
+##### Research Artifacts
+
+| Document | Location | Status |
+|----------|----------|--------|
+| Identifier Strategy Research | `research/wi-sao-021-identifier-strategy-research.md` | ✅ Complete |
+| E2E Test Path Analysis | `research/wi-sao-021-e2e-test-path-analysis.md` | ✅ Complete |
+
+##### Migration Status
+
+| Item | From | To | Status |
+|------|------|-----|--------|
+| ps-pipeline/ | project root | archive/v_initial/ | ✅ Complete |
+| nse-pipeline/ | project root | archive/v_initial/ | ✅ Complete |
+| cross-pollination/ | project root | archive/v_initial/ | ✅ Complete |
+| Old E2E tests | tests/e2e/ | tests/e2e/deprecated/ | Pending |
+
+##### Tasks
+
+**Phase 1: Research & Archive (COMPLETE)**
+- [x] **T-021.1:** Research identifier strategies (semantic, UUID, hash-based, user-specified)
+  - Deliverable: `research/wi-sao-021-identifier-strategy-research.md`
+  - Outcome: Option 3 recommended and approved
+- [x] **T-021.2:** Analyze existing E2E tests for hardcoded paths
+  - Deliverable: `research/wi-sao-021-e2e-test-path-analysis.md`
+  - Outcome: All 3 tests have hardcoded paths, need updates
+- [x] **T-021.3:** Create `archive/v_initial/` and migrate existing artifacts
+  - Deliverable: `archive/v_initial/` with 29 artifacts
+  - Outcome: ps-pipeline, nse-pipeline, cross-pollination archived
+- [x] **T-021.4:** Propose identifier strategy with trade-offs
+  - Outcome: Option 3 approved by user
+
+**Phase 2: Template Updates (IN PROGRESS)**
+- [ ] **T-021.5:** Update ORCHESTRATION.template.yaml with dynamic schema
+  - Add `workflow.id_source` field (user | auto)
+  - Add `workflow.id_format` field (semantic-date-seq)
+  - Add `pipelines.{key}.short_alias` field
+  - Add `paths` section with base, pipeline, barrier patterns
+- [ ] **T-021.6:** Update ORCHESTRATION_PLAN.template.md for dynamic paths
+  - Add workflow ID to header section
+  - Update artifact path examples to use dynamic structure
+- [ ] **T-021.7:** Update ORCHESTRATION_WORKTRACKER.template.md for dynamic paths
+  - Add workflow ID to header section
+  - Update progress tracking to reference dynamic paths
+- [ ] **T-021.8:** Document pipeline alias configuration in SKILL.md
+  - Explain default alias derivation from skill
+  - Document workflow-level override mechanism
+  - Provide examples for custom aliases
+
+**Phase 3: Agent Updates**
+- [ ] **T-021.9:** Update orch-planner.md for workflow ID handling
+  - Add prompt for user-specified workflow ID
+  - Implement auto-generation fallback
+  - Store ID source in ORCHESTRATION.yaml
+- [ ] **T-021.10:** Update orch-tracker.md for dynamic path references
+  - Read workflow ID from state file
+  - Construct paths using dynamic components
+  - Update status messages with correct paths
+
+**Phase 4: Test Migration**
+- [ ] **T-021.11:** Create `tests/e2e/deprecated/` folder structure
+  - Create deprecated/ directory
+  - Create deprecation README.md
+- [ ] **T-021.12:** Move old E2E tests to deprecated folder
+  - Move TEST-001-LINEAR-WORKFLOW.yaml
+  - Move TEST-002-PARALLEL-WORKFLOW.yaml
+  - Move TEST-003-CROSSPOLL-WORKFLOW.yaml
+  - Move artifacts/ folder
+- [ ] **T-021.13:** Create new TEST-001 with dynamic paths
+  - Use dynamic workflow ID
+  - Use dynamic pipeline aliases
+  - Create orchestration/{workflow_id}/ structure
+- [ ] **T-021.14:** Create new TEST-002 with dynamic paths
+  - Parallel workflow with dynamic paths
+- [ ] **T-021.15:** Create new TEST-003 with dynamic paths
+  - Cross-pollination with dynamic barrier paths
+
+**Phase 5: Validation**
+- [ ] **T-021.16:** Run orchestration skill end-to-end with new test
+  - Execute minimal workflow
+  - Verify artifacts created at dynamic paths
+  - Verify ORCHESTRATION.yaml state updates
+- [ ] **T-021.17:** Verify no regressions in orchestration behavior
+  - State machine transitions work
+  - Checkpoint creation works
+  - Cross-pollination barriers work
+
+**Phase 6: Finalization**
+- [ ] **T-021.18:** Update WORKTRACKER with implementation completion
+- [ ] **T-021.19:** Commit and push all changes
 
 ---
 

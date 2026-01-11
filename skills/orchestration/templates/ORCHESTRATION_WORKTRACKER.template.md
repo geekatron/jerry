@@ -2,11 +2,21 @@
 
 > **Document ID:** {PROJECT_ID}-ORCH-TRACKER
 > **Project:** {PROJECT_ID}
-> **Workflow:** {WORKFLOW_NAME}
+> **Workflow ID:** `{WORKFLOW_ID}`
+> **Workflow Name:** {WORKFLOW_NAME}
 > **Status:** {STATUS}
-> **Version:** 1.0
+> **Version:** 2.0
 > **Created:** {CREATED_DATE}
 > **Last Updated:** {UPDATED_DATE}
+
+### Artifact Output Configuration
+
+| Component | Path Pattern |
+|-----------|--------------|
+| Base Path | `orchestration/{WORKFLOW_ID}/` |
+| Pipeline A | `orchestration/{WORKFLOW_ID}/{PIPELINE_A_ALIAS}/` |
+| Pipeline B | `orchestration/{WORKFLOW_ID}/{PIPELINE_B_ALIAS}/` |
+| Cross-Pollination | `orchestration/{WORKFLOW_ID}/cross-pollination/` |
 
 ---
 
@@ -45,8 +55,8 @@
 | {agent-id} | {STATUS} | {date} | {date} | {artifact.md} | {notes} |
 
 **Phase 1 Artifacts:**
-- [ ] `{path/to/artifact1.md}`
-- [ ] `{path/to/artifact2.md}`
+- [ ] `orchestration/{WORKFLOW_ID}/{PIPELINE_A_ALIAS}/phase-1/{artifact1}.md`
+- [ ] `orchestration/{WORKFLOW_ID}/{PIPELINE_A_ALIAS}/phase-1/{artifact2}.md`
 
 #### Pipeline B Phase 1: {NAME}
 
@@ -64,8 +74,8 @@
 | b→a | {artifact-name.md} | {STATUS} | {summary} |
 
 **Barrier 1 Artifacts:**
-- [ ] `{path/to/cross-pollination/barrier-1/a-to-b/artifact.md}`
-- [ ] `{path/to/cross-pollination/barrier-1/b-to-a/artifact.md}`
+- [ ] `orchestration/{WORKFLOW_ID}/cross-pollination/barrier-1/{PIPELINE_A_ALIAS}-to-{PIPELINE_B_ALIAS}/handoff.md`
+- [ ] `orchestration/{WORKFLOW_ID}/cross-pollination/barrier-1/{PIPELINE_B_ALIAS}-to-{PIPELINE_A_ALIAS}/handoff.md`
 
 ---
 
@@ -209,5 +219,6 @@ Any Claude session (CLI, Web, other machines) can resume work.
 ---
 
 *Document ID: {PROJECT_ID}-ORCH-TRACKER*
-*Version: 1.0*
+*Workflow ID: {WORKFLOW_ID}*
+*Version: 2.0*
 *Last Checkpoint: {CP-ID}*

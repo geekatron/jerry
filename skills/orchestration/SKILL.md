@@ -1,7 +1,7 @@
 ---
 name: orchestration
 description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
-version: "1.0.0"
+version: "2.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "orchestration"
@@ -18,7 +18,7 @@ activation-keywords:
 
 # Orchestration Skill
 
-> **Version:** 1.0.0
+> **Version:** 2.0.0
 > **Framework:** Jerry Orchestration (ORCH)
 > **Constitutional Compliance:** Jerry Constitution v1.0
 > **Industry References:** [Anthropic Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [Microsoft AI Agent Patterns](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns), [LangGraph](https://langchain-ai.github.io/langgraph/), [CrewAI Flows](https://docs.crewai.com/concepts/flows)
@@ -185,17 +185,24 @@ Or use the `orch-planner` agent:
 
 ```
 "Create an orchestration plan for a cross-pollinated pipeline
- with ps-* and nse-* phases"
+ using problem-solving and nasa-systems-engineering skills"
 ```
+
+The planner will automatically:
+1. Generate a workflow ID (or use your specified ID)
+2. Resolve pipeline aliases from skill defaults
+3. Create dynamic path structure
 
 ### Step 2: Update State After Each Agent
 
-After each agent completes, update the state:
+After each agent completes, update the state. Reference artifacts using the dynamic path scheme:
 
 ```
-"Update ORCHESTRATION.yaml: ps-d-001 complete,
- artifact at ps-pipeline/phase-3-design/agent-design-specs.md"
+"Update ORCHESTRATION.yaml: agent-a-001 complete,
+ artifact at orchestration/{workflow_id}/{pipeline_alias}/phase-1/research.md"
 ```
+
+The orch-tracker agent will resolve placeholders to actual paths.
 
 ### Step 3: Track Progress
 
@@ -234,8 +241,8 @@ barriers:
   - id: string
     status: PENDING|COMPLETE
     artifacts:
-      ps_to_nse: {path, status}
-      nse_to_ps: {path, status}
+      a_to_b: {path, status}   # {pipeline_a_alias}-to-{pipeline_b_alias}
+      b_to_a: {path, status}   # {pipeline_b_alias}-to-{pipeline_a_alias}
 
 execution_queue:
   current_group: number
@@ -260,6 +267,112 @@ metrics:
 ```
 
 See `docs/STATE_SCHEMA.md` for complete schema documentation.
+
+---
+
+## Workflow Configuration
+
+### Workflow Identification
+
+Every orchestration workflow requires a unique identifier for:
+- Artifact organization under `orchestration/{workflow_id}/`
+- Cross-session resumption
+- State file correlation
+
+**Workflow ID Strategies:**
+
+| Strategy | Format | Example | When to Use |
+|----------|--------|---------|-------------|
+| User-Specified | Any valid identifier | `my-custom-workflow` | User has specific naming convention |
+| Auto-Generated | `{purpose}-{YYYYMMDD}-{NNN}` | `sao-crosspoll-20260110-001` | Default when no user preference |
+
+**Configuration in ORCHESTRATION.yaml:**
+
+```yaml
+workflow:
+  id: "sao-crosspoll-20260110-001"
+  id_source: "auto"        # "user" | "auto"
+  id_format: "semantic-date-seq"
+```
+
+**ID Generation Rules:**
+1. User-specified IDs take priority when provided
+2. Auto-generated IDs use semantic-date-sequence format
+3. IDs must be valid filesystem path components (no spaces, special characters)
+4. IDs are immutable once workflow is created
+
+### Pipeline Alias Configuration
+
+Each pipeline in a workflow has a **short alias** used in artifact paths. This provides flexibility while maintaining human-readable paths.
+
+**Alias Resolution Priority:**
+
+| Priority | Source | Example | Description |
+|----------|--------|---------|-------------|
+| 1 (Highest) | Workflow Override | `alpha` | Explicit override in ORCHESTRATION.yaml |
+| 2 | Skill Default | `ps` | Registered default from skill definition |
+| 3 (Fallback) | Auto-Derived | `problem-solving` | Derived from skill name |
+
+**Configuration in ORCHESTRATION.yaml:**
+
+```yaml
+pipelines:
+  pipeline_a:
+    short_alias: "ps"                    # Used in paths
+    skill_source: "problem-solving"       # Originating skill
+
+  pipeline_b:
+    short_alias: "nse"
+    skill_source: "nasa-systems-engineering"
+```
+
+**Skill Default Registration:**
+
+Skills can register a default pipeline alias. When creating new workflows, check if the skill provides a default:
+
+```yaml
+# In skill definition (future capability)
+skill:
+  name: "problem-solving"
+  default_pipeline_alias: "ps"
+```
+
+**User Override:**
+
+Users can override aliases when creating a workflow:
+
+```
+"Create an orchestration plan using problem-solving (alias: alpha)
+ and nasa-se (alias: beta) pipelines"
+```
+
+### Dynamic Path Scheme
+
+All artifact paths are dynamically constructed using workflow and pipeline identifiers. **No hardcoded pipeline names** (like `ps-pipeline` or `nse-pipeline`) should appear in templates or agents.
+
+**Path Templates:**
+
+| Component | Path Pattern |
+|-----------|--------------|
+| Base Path | `orchestration/{workflow_id}/` |
+| Pipeline Artifacts | `orchestration/{workflow_id}/{pipeline_alias}/{phase_id}/` |
+| Cross-Pollination | `orchestration/{workflow_id}/cross-pollination/{barrier_id}/{source}-to-{target}/` |
+
+**Example Path Resolution:**
+
+Given:
+- `workflow_id`: `sao-crosspoll-20260110-001`
+- `pipeline_a.short_alias`: `ps`
+- `pipeline_b.short_alias`: `nse`
+
+Resolved paths:
+```
+orchestration/sao-crosspoll-20260110-001/ps/phase-1/artifact.md
+orchestration/sao-crosspoll-20260110-001/nse/phase-1/artifact.md
+orchestration/sao-crosspoll-20260110-001/cross-pollination/barrier-1/ps-to-nse/handoff.md
+```
+
+**Important:** Templates use placeholders like `{WORKFLOW_ID}`, `{PIPELINE_A_ALIAS}`, etc. Agents MUST resolve these at runtime using the workflow configuration.
 
 ---
 
@@ -311,6 +424,7 @@ For workflow examples and step-by-step guides, see:
 
 ---
 
-*Skill Version: 1.0.0*
+*Skill Version: 2.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-01-10*
+*Updated: 2026-01-10 - Added dynamic path scheme and pipeline alias configuration*

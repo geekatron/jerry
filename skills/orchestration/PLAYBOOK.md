@@ -1,8 +1,9 @@
 # Orchestration Playbook
 
-> **Version:** 1.0.0
+> **Version:** 2.0.0
 > **Skill:** orchestration
 > **Purpose:** Step-by-step guide for multi-agent workflow orchestration
+> **Updated:** 2026-01-10 - Dynamic path scheme
 
 ---
 
@@ -14,7 +15,7 @@ When starting a new multi-agent workflow:
 
 ```
 "Initialize orchestration for PROJ-XXX with a cross-pollinated pipeline
- between ps-* and nse-* agents"
+ using problem-solving and nasa-systems-engineering skills"
 ```
 
 This creates:
@@ -22,22 +23,27 @@ This creates:
 - `ORCHESTRATION_WORKTRACKER.md` - Tactical tracking
 - `ORCHESTRATION.yaml` - Machine-readable state
 
+The planner will generate a workflow ID (e.g., `sao-crosspoll-20260110-001`) and
+configure pipeline aliases based on skill defaults or user overrides.
+
 ### 2. Execute Agents
 
 After planning, execute agents in priority order:
 
 ```
-"Execute ps-d-001 for Phase 3 design specs"
+"Execute agent-a-001 for Phase 1 research"
 ```
 
 ### 3. Update State
 
-After each agent completes:
+After each agent completes, reference the dynamic path:
 
 ```
-"Update orchestration: ps-d-001 complete,
- artifact at ps-pipeline/phase-3-design/agent-design-specs.md"
+"Update orchestration: agent-a-001 complete,
+ artifact at orchestration/{workflow_id}/{pipeline_alias}/phase-1/research.md"
 ```
+
+The tracker will resolve placeholders using values from ORCHESTRATION.yaml.
 
 ### 4. Check Progress
 
@@ -91,17 +97,24 @@ When all phases complete:
 **State Updates:**
 
 ```yaml
+# Configuration (from workflow)
+workflow:
+  id: "sao-crosspoll-20260110-001"
+pipelines:
+  pipeline_a:
+    short_alias: "ps"
+
 # Before agent execution
 agents:
-  - id: "ps-d-001"
+  - id: "agent-a-001"
     status: "PENDING"
     artifact: null
 
-# After agent execution
+# After agent execution (resolved path)
 agents:
-  - id: "ps-d-001"
+  - id: "agent-a-001"
     status: "COMPLETE"
-    artifact: "ps-pipeline/phase-3-design/agent-design-specs.md"
+    artifact: "orchestration/sao-crosspoll-20260110-001/ps/phase-1/research.md"
 ```
 
 ### Phase 3: Cross Barriers
@@ -157,15 +170,15 @@ agents:
 ```yaml
 # In ORCHESTRATION.yaml
 agents:
-  - id: "ps-d-001"
+  - id: "agent-a-001"
     status: "FAILED"
     artifact: null
 
 blockers:
   active:
     - id: "BLK-001"
-      description: "ps-d-001 failed: Task tool connection error"
-      blocking: ["barrier-3"]
+      description: "agent-a-001 failed: Task tool connection error"
+      blocking: ["barrier-1"]
       severity: "HIGH"
 ```
 
@@ -269,5 +282,6 @@ Check progress regularly:
 
 ---
 
-*Playbook Version: 1.0.0*
+*Playbook Version: 2.0.0*
 *Skill: orchestration*
+*Updated: 2026-01-10 - Dynamic path scheme*

@@ -1,0 +1,191 @@
+# TEST-001-LINEAR-WORKFLOW.yaml
+# E2E Test: Simple Linear/Sequential Workflow (v2.0 - Dynamic Paths)
+# Pattern: Sequential with Checkpoints
+# Purpose: Verify basic A → B → C execution with dynamic path resolution
+
+workflow:
+  id: "linear-20260110-001"
+  name: "E2E Test: Linear Sequential Workflow"
+  project_id: "TEST-E2E-001"
+  version: "2.0"
+  created_at: "2026-01-10T12:00:00Z"
+  updated_at: "2026-01-10T12:00:00Z"
+  status: "PENDING"
+
+  # Workflow ID configuration (v2.0)
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 1
+    checkpoint_frequency: "PHASE"
+
+# Path configuration (v2.0)
+paths:
+  base: "orchestration/{workflow.id}/"
+  pipeline: "{base}{pipeline_alias}/{phase_id}/"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+pipelines:
+  linear:
+    id: "linear-pipeline"
+    name: "Linear Test Pipeline"
+    description: "A → B → C sequential execution"
+
+    # Pipeline alias configuration (v2.0)
+    short_alias: "linear"
+    skill_source: "test-linear"
+
+    status: "PENDING"
+    current_phase: 1
+    total_phases: 3
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "Phase A"
+        path_id: "phase-1"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "test-agent-a"
+            name: "Test Agent A"
+            status: "PENDING"
+            # Dynamic path: orchestration/linear-20260110-001/linear/phase-1/phase-a-output.md
+            artifact: "orchestration/{workflow.id}/{pipelines.linear.short_alias}/phase-1/phase-a-output.md"
+            inputs: []
+        artifacts: []
+
+      - id: 2
+        name: "Phase B"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "phase-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "test-agent-b"
+            name: "Test Agent B"
+            status: "BLOCKED"
+            artifact: "orchestration/{workflow.id}/{pipelines.linear.short_alias}/phase-2/phase-b-output.md"
+            inputs:
+              - "orchestration/{workflow.id}/{pipelines.linear.short_alias}/phase-1/phase-a-output.md"
+        artifacts: []
+
+      - id: 3
+        name: "Phase C"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "phase-2"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "test-agent-c"
+            name: "Test Agent C"
+            status: "BLOCKED"
+            artifact: "orchestration/{workflow.id}/{pipelines.linear.short_alias}/phase-3/phase-c-output.md"
+            inputs:
+              - "orchestration/{workflow.id}/{pipelines.linear.short_alias}/phase-2/phase-b-output.md"
+        artifacts: []
+
+barriers: []
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase A"
+      execution_mode: "SEQUENTIAL"
+      status: "READY"
+      agents:
+        - "test-agent-a"
+
+    - id: 2
+      name: "Phase B"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents:
+        - "test-agent-b"
+
+    - id: 3
+      name: "Phase C"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "test-agent-c"
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 3
+    phases_percent: 0
+    agents_executed: 0
+    agents_total: 3
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 3
+    artifacts_percent: 0
+
+  quality:
+    agent_success_rate: 0
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+next_actions:
+  immediate:
+    - action: "Execute Phase A agent"
+      agents: ["test-agent-a"]
+      execution_mode: "SEQUENTIAL"
+
+  subsequent:
+    - action: "Execute Phase B agent"
+      depends_on: "Phase A complete"
+    - action: "Execute Phase C agent"
+      depends_on: "Phase B complete"
+
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow not started"
+  next_step: "Execute Phase A agent"
+
+  files_to_read:
+    - "tests/e2e/v2/TEST-001-LINEAR-WORKFLOW.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+# Test Validation (v2.0)
+test_validation:
+  description: "Validates sequential workflow with dynamic path resolution"
+  assertions:
+    - name: "Workflow ID format"
+      check: "workflow.id matches {purpose}-{YYYYMMDD}-{NNN}"
+    - name: "Pipeline alias configured"
+      check: "pipelines.linear.short_alias is not empty"
+    - name: "Artifact paths use dynamic references"
+      check: "No hardcoded paths in artifact definitions"
+    - name: "Path base uses workflow.id"
+      check: "paths.base contains {workflow.id}"

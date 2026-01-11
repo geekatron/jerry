@@ -2,8 +2,9 @@
 
 > **Document ID:** {PROJECT_ID}-ORCH-PLAN
 > **Project:** {PROJECT_ID}
+> **Workflow ID:** `{WORKFLOW_ID}`
 > **Status:** {ACTIVE|PAUSED|COMPLETE}
-> **Version:** 1.0
+> **Version:** 2.0
 > **Created:** {CREATED_DATE}
 > **Last Updated:** {UPDATED_DATE}
 
@@ -17,6 +18,19 @@ What is the expected outcome?}
 **Current State:** {Current execution state summary}
 
 **Orchestration Pattern:** {Pattern name from SKILL.md}
+
+### 1.1 Workflow Identification
+
+| Field | Value | Source |
+|-------|-------|--------|
+| Workflow ID | `{WORKFLOW_ID}` | {user \| auto} |
+| ID Format | `{purpose}-{YYYYMMDD}-{NNN}` | semantic-date-seq |
+| Base Path | `orchestration/{WORKFLOW_ID}/` | Dynamic |
+
+**Artifact Output Locations:**
+- Pipeline A: `orchestration/{WORKFLOW_ID}/{PIPELINE_A_ALIAS}/`
+- Pipeline B: `orchestration/{WORKFLOW_ID}/{PIPELINE_B_ALIAS}/`
+- Cross-pollination: `orchestration/{WORKFLOW_ID}/cross-pollination/`
 
 ---
 
@@ -136,7 +150,38 @@ Example for cross-pollinated pipeline:
 | `ORCHESTRATION_WORKTRACKER.md` | Tactical execution documentation |
 | `ORCHESTRATION_PLAN.md` | This file - strategic context |
 
-### 6.2 Checkpoint Strategy
+### 6.2 Artifact Path Structure (WI-SAO-021)
+
+All artifacts are stored under the workflow's base path using dynamic identifiers:
+
+```
+orchestration/{WORKFLOW_ID}/
+├── {PIPELINE_A_ALIAS}/
+│   ├── phase-1-{name}/
+│   │   └── {artifact}.md
+│   └── phase-2-{name}/
+│       └── {artifact}.md
+├── {PIPELINE_B_ALIAS}/
+│   ├── phase-1-{name}/
+│   │   └── {artifact}.md
+│   └── phase-2-{name}/
+│       └── {artifact}.md
+└── cross-pollination/
+    ├── barrier-1/
+    │   ├── {PIPELINE_A_ALIAS}-to-{PIPELINE_B_ALIAS}/
+    │   │   └── handoff.md
+    │   └── {PIPELINE_B_ALIAS}-to-{PIPELINE_A_ALIAS}/
+    │       └── handoff.md
+    └── barrier-2/
+        └── ...
+```
+
+**Pipeline Alias Resolution:**
+1. Workflow YAML override (highest priority)
+2. Skill registration default
+3. Auto-derived from skill name (fallback)
+
+### 6.3 Checkpoint Strategy
 
 | Trigger | When | Purpose |
 |---------|------|---------|
@@ -224,5 +269,6 @@ Barriers:
 ---
 
 *Document ID: {PROJECT_ID}-ORCH-PLAN*
-*Version: 1.0*
+*Workflow ID: {WORKFLOW_ID}*
+*Version: 2.0*
 *Cross-Session Portable: All paths are repository-relative*
