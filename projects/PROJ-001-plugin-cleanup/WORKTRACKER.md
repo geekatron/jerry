@@ -204,10 +204,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Initiative**: [PHASE-IMPL-DOMAIN](work/PHASE-IMPL-DOMAIN.md) - Domain Layer Implementation
-> **Active Phase**: COMPLETE - All 10 original IMPL tasks done
-> **Status**: ✅ DOMAIN COMPLETE (IMPL-001 ✅ through IMPL-010 ✅)
-> **Previous**: IMPL-010 Architecture Tests complete (27 tests: layer boundaries + dependency rules)
+> **Active Initiative**: ENFORCE-008d - Refactor to Unified Design
+> **Active Phase**: Phase 6 Enforcement (60% complete)
+> **Status**: 🔄 RESUMING ENFORCE-008d after IMPL tasks completion
+> **Previous**: All 16 IMPL tasks complete (975 tests) - Domain layer fully implemented
 
 ### Active Initiative Details
 
