@@ -33,9 +33,10 @@
 ### Current Focus
 | Initiative | Phase | Work Item | Status |
 |------------|-------|-----------|--------|
-| SAO | SAO-INIT-001: Foundation | COMPLETE | ✅ 5/5 |
+| SAO | SAO-INIT-005: Debt Reduction | WI-SAO-022: Template Migration | NEXT |
 
 **Last Completed:** WI-SAO-002 (Schema Validation) - 2026-01-11
+**Next Work Item:** WI-SAO-022 (Migrate nse-architecture/nse-reporter to standard format) - HIGH P1
 
 ### Gap Fix Backlog
 
@@ -760,8 +761,10 @@
 ## Resumption Context
 
 **Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO-INIT-001 COMPLETE
-**Current Initiative:** SAO-INIT-001: Foundation (5/5 work items complete, 100%) ✅
+**Completed Initiative:** SAO-INIT-001: Foundation (5/5 work items complete, 100%) ✅
 **Last Work Item:** WI-SAO-002: Add Schema Validation to All Agents ✅
+**Next Work Item:** WI-SAO-022: Migrate nse-architecture/nse-reporter to Standard Format (HIGH P1)
+**Next Initiative:** SAO-INIT-005: Debt Reduction (addressing tech debt before new agents)
 **Plan Location:** `projects/PROJ-002-nasa-systems-engineering/PLAN.md` (repository-relative)
 **Plan Version:** 4.0 (Optimization Initiative)
 **Implementation Status:** NASA SE Skill COMPLETE - All 8 agents demonstrated with real artifacts
@@ -1563,31 +1566,36 @@ Where `{workflow_id}`, `{pipeline_alias_*}`, `{source}`, `{target}` are ALL dyna
 ### Implementation Priority (Risk-Informed)
 
 ```
-Phase 1: Foundation
+Phase 1: Foundation ✅ COMPLETE
   └── WI-SAO-001: session_context schema [CRITICAL] ✅ COMPLETE
-  └── WI-SAO-002: Schema validation [CRITICAL] - NEXT UP
+  └── WI-SAO-002: Schema validation [CRITICAL] ✅ COMPLETE
   └── WI-SAO-003: Model field [HIGH] ✅ COMPLETE
   └── WI-SAO-019: Agent Architecture Research [CRITICAL] ✅ COMPLETE
   └── WI-SAO-020: Output Conventions in Template [HIGH] ✅ COMPLETE
 
-Phase 2: New Agents (Week 3-4)
+Tech Debt (Before New Agents) ← CURRENT
+  └── WI-SAO-022: Template migration [HIGH] - NEXT UP
+  └── WI-SAO-023: NSE XML parity [MEDIUM] - After 022
+  └── WI-SAO-024: Template conformance audit [MEDIUM] - Quick win
+
+Phase 2: New Agents
   └── WI-SAO-004: nse-explorer [CRITICAL]
   └── WI-SAO-005: nse-orchestrator [HIGH]
   └── WI-SAO-006: ps-orchestrator [HIGH]
   └── WI-SAO-007: ps-critic [HIGH]
 
-Phase 3: Templates (Week 5)
+Phase 3: Templates
   └── WI-SAO-009: Unified template [HIGH]
   └── WI-SAO-010: ps-* migration [HIGH]
   └── WI-SAO-011: nse-* migration [HIGH]
 
-Phase 4: Infrastructure (Week 6-8)
+Phase 4: Infrastructure
   └── WI-SAO-012: Parallel execution [HIGH]
   └── WI-SAO-013: Checkpointing [HIGH]
   └── WI-SAO-014: Generator-Critic [HIGH]
-  └── WI-SAO-021: Orchestration folder refactoring [HIGH] - After cross-poll phases 3-4
+  └── WI-SAO-021: Orchestration folder refactoring [HIGH]
 
-Phase 5: Polish (Week 9+)
+Phase 5: Polish
   └── WI-SAO-008: nse-qa [MEDIUM]
   └── WI-SAO-015: Guardrails [MEDIUM]
   └── WI-SAO-016: Interface contracts [HIGH]
