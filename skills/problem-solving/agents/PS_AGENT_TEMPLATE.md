@@ -16,6 +16,11 @@ name: ps-{agent-type}
 version: "2.0.0"
 description: "{one-line-description}"
 
+# Model Selection (WI-SAO-003)
+# Specifies which LLM model to use for this agent
+# Values: opus (complex), sonnet (balanced), haiku (fast), auto (dynamic selection)
+model: "{opus|sonnet|haiku|auto}"
+
 # Identity Section (NEW - Anthropic best practice)
 identity:
   role: "{specialist-role}"
@@ -58,6 +63,8 @@ guardrails:
   fallback_behavior: warn_and_retry
 
 # Output Section (ENHANCED with L0/L1/L2)
+# IMPORTANT: Replace {output-type} with agent-specific directory from table below
+# See "Agent-Specific Output Conventions" section for canonical mappings
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/{output-type}/{ps-id}-{entry-id}-{topic-slug}.md"
@@ -94,6 +101,23 @@ constitution:
 enforcement:
   tier: "{advisory|soft|medium|hard}"
   escalation_path: "{escalation-description}"
+
+# Session Context (Agent Handoff) - WI-SAO-001
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ---
 ```
 
@@ -269,6 +293,62 @@ If invoked after another agent, check session.state for:
 
 </agent>
 ```
+
+---
+
+## Agent-Specific Output Conventions (P-002 Compliance)
+
+> **Source:** WI-SAO-020 audit of all ps-* agents (2026-01-10)
+> **Principle:** Each agent type outputs to a dedicated directory. DO NOT mix output types.
+
+### Output Directory Reference
+
+| Agent | Output Directory | Template | Description |
+|-------|------------------|----------|-------------|
+| **ps-researcher** | `projects/${JERRY_PROJECT}/research/` | `templates/research.md` | Primary research, literature reviews, web findings |
+| **ps-analyst** | `projects/${JERRY_PROJECT}/analysis/` | `templates/deep-analysis.md` | Gap analysis, trade-offs, deep dives |
+| **ps-architect** | `projects/${JERRY_PROJECT}/decisions/` | `templates/adr.md` | Architecture Decision Records (ADRs) |
+| **ps-investigator** | `projects/${JERRY_PROJECT}/investigations/` | `templates/investigation.md` | Root cause analysis, incident reports |
+| **ps-reporter** | `projects/${JERRY_PROJECT}/reports/` | `templates/report.md` | Status reports, summaries, dashboards |
+| **ps-reviewer** | `projects/${JERRY_PROJECT}/reviews/` | `templates/review.md` | Code reviews, design reviews, security reviews |
+| **ps-synthesizer** | `projects/${JERRY_PROJECT}/synthesis/` | `templates/synthesis.md` | Cross-document pattern synthesis, meta-analysis |
+| **ps-validator** | `projects/${JERRY_PROJECT}/analysis/` | `templates/analysis.md` | Constraint validation reports |
+
+### Artifact Naming Convention
+
+```
+{ps-id}-{entry-id}-{type-specific-slug}.md
+```
+
+| Agent | Naming Pattern | Example |
+|-------|----------------|---------|
+| **ps-researcher** | `{ps-id}-{entry-id}-{topic-slug}.md` | `work-024-e-001-oauth-patterns.md` |
+| **ps-analyst** | `{ps-id}-{entry-id}-{analysis-type}.md` | `work-024-e-002-gap-analysis.md` |
+| **ps-architect** | `{ps-id}-{entry-id}-adr-{decision-slug}.md` | `work-024-e-003-adr-auth-strategy.md` |
+| **ps-investigator** | `{ps-id}-{entry-id}-investigation.md` | `work-024-e-004-investigation.md` |
+| **ps-reporter** | `{ps-id}-{entry-id}-{report-type}.md` | `work-024-e-005-phase-status.md` |
+| **ps-reviewer** | `{ps-id}-{entry-id}-{review-type}.md` | `work-024-e-006-code-review.md` |
+| **ps-synthesizer** | `{ps-id}-{entry-id}-synthesis.md` | `work-024-e-007-synthesis.md` |
+| **ps-validator** | `{ps-id}-{entry-id}-validation.md` | `work-024-e-008-validation.md` |
+
+### Mandatory Persistence Protocol
+
+**Every ps-* agent MUST:**
+
+1. **Create file** using Write tool at the designated output directory
+2. **Follow template** structure from the specified template file
+3. **Link artifact** by running:
+   ```bash
+   python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
+       "projects/${JERRY_PROJECT}/{output-type}/{artifact-name}.md" \
+       "{description}"
+   ```
+
+**P-002 Violation Conditions:**
+- ❌ Returning results without file creation
+- ❌ Writing to wrong output directory
+- ❌ Omitting link-artifact call
+- ❌ Using transient output (console only)
 
 ---
 

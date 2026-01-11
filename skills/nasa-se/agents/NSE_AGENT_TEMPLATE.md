@@ -16,6 +16,11 @@ name: nse-{agent-type}
 version: "1.0.0"
 description: "{one-line-description}"
 
+# Model Selection (WI-SAO-003)
+# Specifies which LLM model to use for this agent
+# Values: opus (complex), sonnet (balanced), haiku (fast), auto (dynamic selection)
+model: "{opus|sonnet|haiku|auto}"
+
 # Identity Section
 identity:
   role: "{specialist-role}"
@@ -105,6 +110,23 @@ constitution:
 enforcement:
   tier: "medium"
   escalation_path: "User notification with blocker details"
+
+# Session Context (Agent Handoff) - WI-SAO-001
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ---
 ```
 

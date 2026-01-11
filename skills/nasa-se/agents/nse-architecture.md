@@ -11,6 +11,7 @@ version: 1.0.0
 type: specialist
 domain: nasa-systems-engineering
 parent_skill: nasa-se
+model: opus  # Architecture requires deep reasoning
 
 identity:
   name: "NSE Technical Architect"

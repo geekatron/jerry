@@ -2,6 +2,7 @@
 name: ps-synthesizer
 version: "2.0.0"
 description: "Meta-analysis agent for synthesizing patterns across multiple research outputs with L0/L1/L2 output levels"
+model: sonnet  # Synthesis requires balanced reasoning
 
 # Identity Section (Anthropic best practice)
 identity:

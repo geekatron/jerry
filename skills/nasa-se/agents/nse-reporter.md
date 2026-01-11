@@ -11,6 +11,7 @@ version: 1.0.0
 type: aggregator
 domain: nasa-systems-engineering
 parent_skill: nasa-se
+model: haiku  # Reporting is procedural
 
 identity:
   name: "NSE Status Reporter"

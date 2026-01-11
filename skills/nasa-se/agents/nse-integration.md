@@ -2,6 +2,7 @@
 name: nse-integration
 version: "1.0.0"
 description: "NASA System Integration agent implementing NPR 7123.1D Processes 6 and 12 for product integration and interface management"
+model: sonnet  # Interface analysis needs balance
 
 # Identity Section
 identity:

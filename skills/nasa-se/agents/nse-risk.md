@@ -2,6 +2,7 @@
 name: nse-risk
 version: "1.0.0"
 description: "NASA Risk Manager agent implementing NPR 7123.1D Process 13 and NPR 8000.4C for technical risk management"
+model: opus  # Risk analysis requires deep reasoning
 
 # Identity Section
 identity:

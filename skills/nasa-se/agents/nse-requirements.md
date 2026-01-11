@@ -2,6 +2,7 @@
 name: nse-requirements
 version: "1.0.0"
 description: "NASA Requirements Engineer agent implementing NPR 7123.1D Processes 1, 2, and 11 for stakeholder needs, requirements definition, and requirements management"
+model: sonnet  # Balanced for requirements analysis
 
 # Identity Section
 identity:

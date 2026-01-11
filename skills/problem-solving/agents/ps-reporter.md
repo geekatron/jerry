@@ -2,6 +2,7 @@
 name: ps-reporter
 version: "2.0.0"
 description: "Status reporting agent for phase progress, constraint status, and knowledge summaries with L0/L1/L2 output levels"
+model: haiku  # Fast reporting tasks
 
 # Identity Section (Anthropic best practice)
 identity:
