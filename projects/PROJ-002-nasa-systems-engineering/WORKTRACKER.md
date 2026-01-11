@@ -1227,52 +1227,65 @@ projects/PROJ-002-nasa-systems-engineering/
 
 #### WI-SAO-021: Orchestration Folder Refactoring
 - **Entry ID:** sao-021
-- **Status:** OPEN
+- **Status:** IN PROGRESS
+- **Started:** 2026-01-10
 - **Priority:** HIGH (P1)
-- **Estimated Effort:** 6h
+- **Estimated Effort:** 12h (revised from 6h - includes research, testing, and validation)
 - **Source:** Cross-pollination pipeline architecture review (2026-01-10)
-- **Description:** Refactor orchestration output structure from flat `ps-pipeline/`, `nse-pipeline/`, `cross-pollination/` folders to hierarchical `orchestration/{run_id}/{pipeline_id}/{phase_id}/` scheme. Migrate all existing artifacts and update all references.
+- **Description:** Refactor orchestration output structure from flat `ps-pipeline/`, `nse-pipeline/`, `cross-pollination/` folders to hierarchical `orchestration/{workflow_id}/{pipeline_id}/{phase_id}/` scheme with **dynamic identifiers** (no hardcoded values).
 - **Rationale:** Current flat structure doesn't scale for multiple orchestration runs. New structure provides:
-  1. Run isolation via `{orchestration_run_id}`
-  2. Clear pipeline namespacing via `{skill_pipeline_id}`
+  1. Run isolation via dynamic `{workflow_id}` (user-specified or auto-generated)
+  2. Dynamic pipeline namespacing via `{pipeline_id}` from workflow configuration
   3. Phase progression visibility via `{phase_id}`
   4. Centralized cross-pollination within each run
+  5. Extensibility for future pipelines beyond ps-* and nse-*
+- **Key Requirements (Refined 2026-01-10):**
+  1. **NO hardcoded values** - all identifiers must be dynamic
+  2. **Stable identifier generation** - created when orchestration skill creates plan
+  3. **User choice** - user can specify identifier or accept auto-generated
+  4. **Dual storage** - identifier stored in ORCHESTRATION.yaml AND human-facing *.md artifacts
+  5. **Cross-pollination support** - must work with barrier sync patterns
+  6. **Future extensibility** - must support adding new pipeline families
 - **Target Structure:**
   ```
-  orchestration/{run_id}/
-  ├── ps/{phase}/           # Problem-solving pipeline phases
-  ├── nse/{phase}/          # NASA SE pipeline phases
-  └── cross-pollination/    # Sync barrier artifacts
+  orchestration/{workflow_id}/
+  ├── {pipeline_id_1}/{phase}/    # e.g., first pipeline phases
+  ├── {pipeline_id_2}/{phase}/    # e.g., second pipeline phases
+  └── cross-pollination/          # Sync barrier artifacts
       └── barrier-{n}/
+          ├── {source}-to-{target}/
   ```
+  Where `{workflow_id}`, `{pipeline_id_*}`, `{source}`, `{target}` are ALL dynamic.
 - **Acceptance Criteria:**
-  1. ✅ All 9 existing artifacts migrated to new structure
-  2. ✅ All cross-pollination barrier artifacts migrated
-  3. ✅ All references in ORCHESTRATION_PLAN.md updated
-  4. ✅ All references in ORCHESTRATION_WORKTRACKER.md updated
-  5. ✅ All references in synthesis documents updated
-  6. ✅ PLAN.md artifact paths updated
-  7. ✅ Orchestration skill updated to use new structure
-  8. ✅ Empty old folders removed
-- **Migration Strategy:** Option A - Migrate Everything
-  - Move all artifacts from old structure to new
-  - Update all file references across all documents
-  - Remove old empty directories
-  - Test reference integrity
-- **Blocking:** Must complete after cross-pollination phases 3-4
+  1. [ ] Research complete - identifier strategy documented with options
+  2. [ ] Existing tests analyzed for hardcoded paths
+  3. [ ] Archive created at `archive/v_initial/` with existing artifacts
+  4. [ ] Orchestration skill updated to use dynamic path scheme
+  5. [ ] ORCHESTRATION.yaml template updated with workflow_id field
+  6. [ ] Human-facing markdown templates updated with workflow_id
+  7. [ ] All existing E2E tests pass (no regressions)
+  8. [ ] New E2E test validates dynamic path generation
+  9. [ ] Orchestration skill runs end-to-end successfully
+- **Migration Strategy:** Archive + Migrate
+  1. Create `archive/v_initial/` folder
+  2. Move existing `ps-pipeline/`, `nse-pipeline/`, `cross-pollination/` to archive
+  3. Implement dynamic path scheme in orchestration skill
+  4. Run E2E validation
+- **Blocking:** Cross-pollination phases 3-4 ✅ COMPLETE
 - **Tasks:**
-  - [ ] **T-021.1:** Design run ID naming convention (semantic: `sao-001-YYYYMMDD`)
-  - [ ] **T-021.2:** Create new `orchestration/` directory structure
-  - [ ] **T-021.3:** Migrate ps-pipeline/* artifacts (5 files)
-  - [ ] **T-021.4:** Migrate nse-pipeline/* artifacts (4 files)
-  - [ ] **T-021.5:** Migrate cross-pollination/* artifacts (4 files)
-  - [ ] **T-021.6:** Update ORCHESTRATION_PLAN.md references
-  - [ ] **T-021.7:** Update ORCHESTRATION_WORKTRACKER.md references
-  - [ ] **T-021.8:** Update synthesis document references
-  - [ ] **T-021.9:** Update PLAN.md artifact paths
-  - [ ] **T-021.10:** Update orchestration skill to use new path scheme
-  - [ ] **T-021.11:** Remove old empty directories
-  - [ ] **T-021.12:** Verify all references resolve correctly
+  - [ ] **T-021.1:** Research identifier strategies (semantic, UUID, hash-based, user-specified)
+  - [ ] **T-021.2:** Analyze existing E2E tests for hardcoded paths
+  - [ ] **T-021.3:** Create `archive/v_initial/` and migrate existing artifacts
+  - [ ] **T-021.4:** Propose identifier strategy with trade-offs
+  - [ ] **T-021.5:** Update ORCHESTRATION.template.yaml with dynamic workflow_id
+  - [ ] **T-021.6:** Update orchestration skill templates for dynamic paths
+  - [ ] **T-021.7:** Update orch-planner agent for identifier generation
+  - [ ] **T-021.8:** Update orch-tracker agent for dynamic path references
+  - [ ] **T-021.9:** Run existing E2E tests to validate no regressions
+  - [ ] **T-021.10:** Create new E2E test for dynamic path validation
+  - [ ] **T-021.11:** Run orchestration skill end-to-end
+  - [ ] **T-021.12:** Update WORKTRACKER with final implementation details
+  - [ ] **T-021.13:** Commit and push all changes
 
 ---
 
