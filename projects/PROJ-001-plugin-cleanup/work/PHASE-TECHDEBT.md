@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: ⏳ PENDING (33% - 1/3 done)
+> **Status**: ⏳ PENDING (25% - 1/4 done)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -22,6 +22,7 @@
 | TD-001 | Update ps-* agent output paths | HIGH | ✅ DONE | Phase 7 |
 | TD-002 | Update ps-* agent reference paths | MEDIUM | ⏳ PENDING | BUG-001 |
 | TD-003 | Add hook decision value tests | LOW | ⏳ PENDING | BUG-002 |
+| TD-004 | pytest_bdd dependency missing | LOW | ⏳ PENDING | 008d.3 |
 
 ---
 
@@ -162,9 +163,54 @@ When adding new technical debt, use this template:
 
 ---
 
+## TD-004: pytest_bdd Dependency Missing ⏳
+
+> **Status**: PENDING
+> **Priority**: LOW
+> **Source**: ENFORCE-008d.3 testing
+
+### Description
+
+`tests/shared_kernel/test_snowflake_id_bdd.py` requires `pytest_bdd` which is not in the project dependencies. This causes test collection to fail when running the full test suite.
+
+### Root Cause
+
+Test file was created with BDD syntax but dependency not added to requirements.
+
+### Impact
+
+- Test collection errors when running `pytest tests/shared_kernel/`
+- Must use `--ignore` flag to skip this file
+- BDD tests for SnowflakeId are not executing
+
+### Proposed Solution
+
+Either:
+1. Add `pytest_bdd` to dev dependencies in `pyproject.toml`
+2. Or remove/refactor the BDD test file to use standard pytest
+
+### Files Affected
+
+| File | Change |
+|------|--------|
+| `pyproject.toml` | Add pytest_bdd to dev dependencies |
+| `tests/shared_kernel/test_snowflake_id_bdd.py` | Either enable or refactor |
+
+### Acceptance Criteria
+
+- [ ] Full test suite runs without collection errors
+- [ ] BDD tests execute or are properly refactored
+
+### Effort Estimate
+
+XS - Simple dependency addition or file removal
+
+---
+
 ## Document History
 
 | Date | Author | Changes |
 |------|--------|---------|
 | 2026-01-09 | Claude | Initial creation |
 | 2026-01-09 | Claude | Migrated to multi-file format |
+| 2026-01-10 | Claude | Added TD-004: pytest_bdd dependency |
