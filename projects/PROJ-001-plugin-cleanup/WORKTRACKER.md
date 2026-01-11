@@ -511,7 +511,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ADR-003 | Code Structure | `design/ADR-003-*.md` | ✅ |
 | ADR-004 | Session Management Alignment | `design/ADR-004-*.md` | ✅ |
 | ADR-013 | Shared Kernel | `decisions/e-013-*.md` | ✅ |
-| ADR-016 | CloudEvents SDK Architecture | `decisions/PROJ-001-e-016-v1-adr-cloudevents-sdk.md` | 🔄 |
+| ADR-016 | CloudEvents SDK Architecture | `decisions/PROJ-001-e-016-v1-adr-cloudevents-sdk.md` | ✅ |
 
 > **Note**: ADR-016 supersedes the CloudEvents section of ADR-013 (e-013-v2). The decision to use
 > the CloudEvents SDK in infrastructure (vs stdlib-only in shared_kernel) was made after deeper
@@ -623,3 +623,4 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | Research: CloudEvents Python SDK v1.12.0 supports HTTP+Kafka bindings (CNCF spec matrix) |
 | 2026-01-10 | Claude | Decision: Use SDK in infrastructure layer (hexagonal), JerryEvent in domain (stdlib-only) |
 | 2026-01-10 | Claude | Started ADR-016: Supersedes CloudEvents section of ADR-013 (e-013-v2) |
+| 2026-01-10 | Claude | **ADR-016 COMPLETE**: CloudEvents SDK architecture accepted (commit d6e187a) |
