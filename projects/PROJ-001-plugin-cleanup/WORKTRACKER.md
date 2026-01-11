@@ -199,6 +199,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 100% | - | - |
 | TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | ⏳ PENDING | 33% | - | - |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | - | - | - |
 
 ---
 
@@ -624,3 +625,7 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | Decision: Use SDK in infrastructure layer (hexagonal), JerryEvent in domain (stdlib-only) |
 | 2026-01-10 | Claude | Started ADR-016: Supersedes CloudEvents section of ADR-013 (e-013-v2) |
 | 2026-01-10 | Claude | **ADR-016 COMPLETE**: CloudEvents SDK architecture accepted (commit d6e187a) |
+| 2026-01-10 | Claude | ENFORCE-008d resumed: Found 008d.1 (ProjectId VertexId) already complete (36 tests) |
+| 2026-01-10 | Claude | DISC-001 logged: ProjectId already extends VertexId |
+| 2026-01-10 | Claude | DISC-002 logged: ProjectInfo EntityBase design tension → Option 2 selected |
+| 2026-01-10 | Claude | 008d.2 COMPLETE: ProjectInfo audit fields + IVersioned/IAuditable (35 tests) |
