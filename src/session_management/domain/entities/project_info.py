@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 
 from ..value_objects.project_id import ProjectId
 from ..value_objects.project_status import ProjectStatus
+from ..value_objects.session_id import SessionId
 
 
 def _utc_now() -> datetime:
@@ -44,6 +45,7 @@ class ProjectInfo:
         has_plan: Whether PLAN.md exists
         has_tracker: Whether WORKTRACKER.md exists
         path: Optional filesystem path to the project
+        session_id: Optional session ID linking to the active session
         version: Optimistic concurrency version (IVersioned)
         created_by: Who created this entity (IAuditable)
         created_at: When this entity was created (IAuditable)
@@ -56,6 +58,8 @@ class ProjectInfo:
     has_plan: bool = False
     has_tracker: bool = False
     path: str | None = None
+    # Session linking
+    session_id: str | None = None
     # IVersioned compliance
     version: int = 0
     # IAuditable compliance
@@ -72,6 +76,7 @@ class ProjectInfo:
         has_plan: bool = False,
         has_tracker: bool = False,
         path: str | None = None,
+        session_id: SessionId | str | None = None,
         version: int = 0,
         created_by: str = "System",
         created_at: datetime | None = None,
@@ -86,6 +91,7 @@ class ProjectInfo:
             has_plan: Whether PLAN.md exists
             has_tracker: Whether WORKTRACKER.md exists
             path: Filesystem path to the project
+            session_id: SessionId instance or string linking to active session
             version: Optimistic concurrency version (default 0)
             created_by: Who created this entity (default "System")
             created_at: When created (default now)
@@ -106,6 +112,14 @@ class ProjectInfo:
         if isinstance(status, str):
             status = ProjectStatus.from_string(status)
 
+        # Extract session_id value if SessionId instance
+        session_id_value: str | None = None
+        if session_id is not None:
+            if isinstance(session_id, SessionId):
+                session_id_value = session_id.value
+            else:
+                session_id_value = session_id
+
         # Default audit timestamps
         now = _utc_now()
         if created_at is None:
@@ -121,6 +135,7 @@ class ProjectInfo:
             has_plan=has_plan,
             has_tracker=has_tracker,
             path=path,
+            session_id=session_id_value,
             version=version,
             created_by=created_by,
             created_at=created_at,
@@ -161,7 +176,12 @@ class ProjectInfo:
 
     def __repr__(self) -> str:
         """Return detailed representation."""
-        return (
-            f"ProjectInfo(id={self.id!r}, status={self.status}, "
-            f"has_plan={self.has_plan}, has_tracker={self.has_tracker})"
-        )
+        parts = [
+            f"ProjectInfo(id={self.id!r}",
+            f"status={self.status}",
+            f"has_plan={self.has_plan}",
+            f"has_tracker={self.has_tracker}",
+        ]
+        if self.session_id is not None:
+            parts.append(f"session_id={self.session_id!r}")
+        return ", ".join(parts) + ")"

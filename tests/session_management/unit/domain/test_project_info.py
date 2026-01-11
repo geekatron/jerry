@@ -340,3 +340,62 @@ class TestProjectInfoStringRepresentation:
         repr_str = repr(project_info)
         assert "ProjectInfo" in repr_str
         assert "PROJ-001-test" in repr_str
+
+
+# =============================================================================
+# Session ID Reference Tests (I-008d.3.3)
+# =============================================================================
+
+
+class TestProjectInfoSessionIdReference:
+    """Tests for session_id reference on ProjectInfo.
+
+    This links ProjectInfo to the active Session working on it.
+    """
+
+    def test_has_session_id_property(self) -> None:
+        """ProjectInfo should have session_id property."""
+        project_id = ProjectId.parse("PROJ-001-test")
+        project_info = ProjectInfo.create(project_id)
+        assert hasattr(project_info, "session_id")
+
+    def test_session_id_defaults_to_none(self) -> None:
+        """session_id should default to None."""
+        project_id = ProjectId.parse("PROJ-001-test")
+        project_info = ProjectInfo.create(project_id)
+        assert project_info.session_id is None
+
+    def test_create_with_session_id(self) -> None:
+        """create() should accept optional session_id."""
+        from src.session_management.domain.value_objects.session_id import SessionId
+
+        project_id = ProjectId.parse("PROJ-001-test")
+        session_id = SessionId.generate()
+        project_info = ProjectInfo.create(project_id, session_id=session_id)
+        assert project_info.session_id == session_id.value
+
+    def test_create_with_session_id_string(self) -> None:
+        """create() should accept session_id as string."""
+        project_id = ProjectId.parse("PROJ-001-test")
+        project_info = ProjectInfo.create(project_id, session_id="SESS-a1b2c3d4")
+        assert project_info.session_id == "SESS-a1b2c3d4"
+
+    def test_session_id_is_immutable(self) -> None:
+        """session_id should be immutable on frozen dataclass."""
+        from src.session_management.domain.value_objects.session_id import SessionId
+
+        project_id = ProjectId.parse("PROJ-001-test")
+        session_id = SessionId.generate()
+        project_info = ProjectInfo.create(project_id, session_id=session_id)
+        with pytest.raises(Exception):  # FrozenInstanceError
+            project_info.session_id = "different"
+
+    def test_session_id_in_repr(self) -> None:
+        """session_id should appear in repr when set."""
+        from src.session_management.domain.value_objects.session_id import SessionId
+
+        project_id = ProjectId.parse("PROJ-001-test")
+        session_id = SessionId.generate()
+        project_info = ProjectInfo.create(project_id, session_id=session_id)
+        repr_str = repr(project_info)
+        assert "session_id=" in repr_str or session_id.value in repr_str
