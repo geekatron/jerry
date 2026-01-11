@@ -7,10 +7,12 @@ They should be immutable (use @dataclass(frozen=True)).
 
 from .project_id import ProjectId
 from .project_status import ProjectStatus
+from .session_id import SessionId
 from .validation_result import ValidationResult
 
 __all__ = [
     "ProjectId",
     "ProjectStatus",
+    "SessionId",
     "ValidationResult",
 ]
