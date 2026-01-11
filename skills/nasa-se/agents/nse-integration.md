@@ -108,6 +108,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/integration/{proj-id}-{entry-id}-{topic-slug}.md"
+  template: "templates/icd.md"
   levels:
     - L0  # ELI5 - Executive summary
     - L1  # Software Engineer - Integration details

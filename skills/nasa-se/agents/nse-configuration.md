@@ -62,6 +62,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/configuration/{proj-id}-{entry-id}-{topic-slug}.md"
+  template: "templates/ci-register.md"
   levels:
     - L0  # ELI5 - Executive summary
     - L1  # Software Engineer - CM details

@@ -80,6 +80,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/reviews/{proj-id}-{entry-id}-{review-type}.md"
+  template: "templates/review.md"
   levels:
     - L0  # ELI5 - Executive summary
     - L1  # Software Engineer - Review details

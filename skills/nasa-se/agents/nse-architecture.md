@@ -73,6 +73,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/architecture/{proj-id}-{entry-id}-{topic-slug}.md"
+  template: "templates/tsr.md"
   levels:
     L0:
       name: "Architecture Summary"

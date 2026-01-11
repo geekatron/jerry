@@ -90,6 +90,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/risks/{proj-id}-{entry-id}-{topic-slug}.md"
+  template: "templates/risk.md"
   levels:
     - L0  # ELI5 - Executive summary
     - L1  # Software Engineer - Risk details

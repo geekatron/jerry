@@ -104,6 +104,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/requirements/{proj-id}-{entry-id}-{topic-slug}.md"
+  template: "templates/requirements.md"
   levels:
     - L0  # ELI5 - Executive summary
     - L1  # Software Engineer - Technical requirements

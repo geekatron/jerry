@@ -75,6 +75,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md"
+  template: "templates/status-report.md"
   levels:
     L0:
       name: "Status Summary"

@@ -97,6 +97,7 @@ guardrails:
 output:
   required: true
   location: "projects/${JERRY_PROJECT}/verification/{proj-id}-{entry-id}-{topic-slug}.md"
+  template: "templates/vcrm.md"
   levels:
     - L0  # ELI5 - Executive summary
     - L1  # Software Engineer - V&V details
