@@ -483,9 +483,9 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 
 | ID | Title | Priority | Status | Discovered | Root Cause |
 |----|-------|----------|--------|------------|------------|
-| TD-006 | Restructure scripts/ to remove sys.path hacks | HIGH | ⏳ TODO | CI-001.V | 7 E402 errors from sys.path.insert before imports |
-| TD-007 | Add filelock as optional dev dependency | MEDIUM | ⏳ TODO | CI-001.V | pyright error: Import "filelock" could not be resolved |
-| TD-008 | Fix ruff code quality issues (10 remaining) | LOW | ⏳ TODO | CI-001.V | Pre-existing: F841 unused vars, B904 raise from, UP038 isinstance |
+| TD-006 | Restructure scripts/ to remove sys.path hacks | HIGH | ✅ DONE | CI-001.V | Moved to src/interface/cli/, added entry point |
+| TD-007 | Add filelock as optional dev dependency | MEDIUM | ✅ DONE | CI-001.V | Added to [dev], configured pyright venv |
+| TD-008 | Fix ruff code quality issues (11 fixed) | LOW | ✅ DONE | CI-001.V | F841, B904, UP038, UP028, C401 all resolved |
 | TD-009 | Fix pyright type annotation issues | LOW | ⏳ TODO | CI-001.V | DataclassInstance.to_dict attribute access, type variance |
 
 ---
@@ -682,3 +682,7 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | Added validation evidence: `reports/CI-001-validation-report.md` |
 | 2026-01-10 | Claude | DISCOVERY: CI revealed 17 pre-existing code quality issues → TD-006, TD-007, TD-008, TD-009 |
 | 2026-01-10 | Claude | Pushed commits 53d490f, 324caa6 to trigger GitHub Actions |
+| 2026-01-10 | Claude | TD-006 DONE: Moved session_start to src/interface/cli/, added jerry-session-start entry point |
+| 2026-01-10 | Claude | TD-007 DONE: Added filelock to dev deps, configured pyright venv |
+| 2026-01-10 | Claude | TD-008 DONE: Fixed 11 ruff errors (F841, B904, UP038, UP028, C401) |
+| 2026-01-10 | Claude | Pushed commit ab51e4a - all 1330 tests pass, ruff clean |
