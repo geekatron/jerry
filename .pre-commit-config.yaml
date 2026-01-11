@@ -1,0 +1,61 @@
+# Pre-commit configuration for Jerry Framework
+#
+# Installation:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Manual run:
+#   pre-commit run --all-files
+#
+# Skip a hook:
+#   SKIP=check-agent-conformance git commit -m "..."
+#
+# Work Item: WI-SAO-024
+# Created: 2026-01-11
+
+repos:
+  # Local hooks for Jerry-specific checks
+  - repo: local
+    hooks:
+      # Agent Template Conformance Check
+      - id: check-agent-conformance
+        name: Check Agent Template Conformance
+        description: Validates agent files conform to their templates
+        entry: python3 scripts/check_agent_conformance.py
+        language: python
+        pass_filenames: false
+        files: ^skills/.*/agents/.*\.md$
+        types: [markdown]
+        stages: [commit, push]
+
+      # YAML Frontmatter Validation (basic syntax check)
+      - id: check-yaml-frontmatter
+        name: Check YAML Frontmatter
+        description: Validates YAML frontmatter can be parsed
+        entry: python3 -c "import sys; import re; content=open(sys.argv[1]).read(); m=re.match(r'^---\s*\n(.*?)\n---', content, re.DOTALL); sys.exit(0 if m else 1)"
+        language: python
+        files: ^skills/.*/agents/.*\.md$
+        types: [markdown]
+
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(projects/|docs/schemas/types/)
+      - id: end-of-file-fixer
+        exclude: ^(projects/|docs/schemas/types/)
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: ^skills/.*/agents/.*\.md$
+      - id: check-json
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  # Python formatting and linting (when Python files are added)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format

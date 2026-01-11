@@ -16,8 +16,8 @@
 ### Skills & Agents Optimization Initiative (SAO)
 | Metric | Count |
 |--------|-------|
-| Total Work Items | 24 |
-| Completed | 7 |
+| Total Work Items | 25 |
+| Completed | 8 |
 | Open | 17 |
 | In Progress | 0 |
 | Status | **IN PROGRESS** |
@@ -33,10 +33,10 @@
 ### Current Focus
 | Initiative | Phase | Work Item | Status |
 |------------|-------|-----------|--------|
-| SAO | SAO-INIT-005: Debt Reduction | WI-SAO-024: Template Conformance Audit | NEXT |
+| SAO | SAO-INIT-005: Debt Reduction | WI-SAO-025: Fix NSE output.template | NEXT |
 
-**Last Completed:** WI-SAO-023 (NSE XML Parity) - 2026-01-11
-**Next Work Item:** WI-SAO-024 (Audit Agent Template Conformance) - MEDIUM P2
+**Last Completed:** WI-SAO-024 (Template Conformance Audit) - 2026-01-11
+**Next Work Item:** WI-SAO-025 (Fix NSE output.template) - LOW P3
 
 ### Gap Fix Backlog
 
@@ -762,9 +762,9 @@
 
 **Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO-INIT-001 COMPLETE | SAO-INIT-005 IN PROGRESS
 **Completed Initiative:** SAO-INIT-001: Foundation (5/5 work items complete, 100%) ✅
-**Last Work Item:** WI-SAO-023: Add session_context_validation XML to NSE agents ✅
-**Next Work Item:** WI-SAO-024: Audit Agent Template Conformance (MEDIUM P2)
-**Next Initiative:** SAO-INIT-005: Debt Reduction (2/6 work items complete, 33%)
+**Last Work Item:** WI-SAO-024: Audit Agent Template Conformance ✅
+**Next Work Item:** WI-SAO-025: Fix NSE Agents Missing output.template (LOW P3)
+**Current Initiative:** SAO-INIT-005: Debt Reduction (3/7 work items complete, 43%)
 **Plan Location:** `projects/PROJ-002-nasa-systems-engineering/PLAN.md` (repository-relative)
 **Plan Version:** 4.0 (Optimization Initiative)
 **Implementation Status:** NASA SE Skill COMPLETE - All 8 agents demonstrated with real artifacts
@@ -1543,21 +1543,77 @@ Where `{workflow_id}`, `{pipeline_alias_*}`, `{source}`, `{target}` are ALL dyna
 
 #### WI-SAO-024: Audit Agent Template Conformance
 - **Entry ID:** sao-024
-- **Status:** OPEN
+- **Status:** ✅ COMPLETE
+- **Started:** 2026-01-11
+- **Completed:** 2026-01-11
 - **Priority:** MEDIUM (P2)
 - **Estimated Effort:** 2h
+- **Actual Effort:** 1.5h
 - **Discovered:** 2026-01-11 during WI-SAO-002
 - **Description:** Create automated conformance check to detect agent template drift. Prevents future structural inconsistencies.
 - **Root Cause:** WI-SAO-022 gap exists because there was no automated check ensuring agents match their templates.
-- **Acceptance Criteria:**
-  1. Script to validate agent structure against template
-  2. Check runs as pre-commit or CI
-  3. Reports structural deviations with actionable output
+- **Completion Summary:**
+  - Created `scripts/check_agent_conformance.py` - validates all 16 agents against their templates
+  - Created `.pre-commit-config.yaml` - adds conformance check to pre-commit hooks
+  - Created `docs/governance/AGENT_CONFORMANCE_RULES.md` - documents all conformance rules
+  - Discovered tech debt: All 8 NSE agents missing `output.template` field (see WI-SAO-025)
+- **Acceptance Criteria:** ✅ ALL MET
+  1. ✅ Script to validate agent structure against template (`scripts/check_agent_conformance.py`)
+  2. ✅ Check runs as pre-commit or CI (`.pre-commit-config.yaml`)
+  3. ✅ Reports structural deviations with actionable output (text and JSON formats)
 - **Tasks:**
-  - [ ] **T-024.1:** Define required YAML sections per template
-  - [ ] **T-024.2:** Create conformance check script
-  - [ ] **T-024.3:** Add to pre-commit hooks or CI
-  - [ ] **T-024.4:** Document template conformance rules
+  - [x] **T-024.1:** Define required YAML sections per template
+  - [x] **T-024.2:** Create conformance check script
+  - [x] **T-024.3:** Add to pre-commit hooks or CI
+  - [x] **T-024.4:** Document template conformance rules
+
+#### WI-SAO-025: Fix NSE Agents Missing output.template Field
+- **Entry ID:** sao-025
+- **Status:** OPEN
+- **Priority:** LOW (P3)
+- **Estimated Effort:** 1h
+- **Discovered:** 2026-01-11 during WI-SAO-024 conformance check
+- **Discovery Context:** Conformance check revealed all 8 NSE agents fail on `output.template` field
+- **Description:** All 8 nse-* agents are missing the `output.template` field required by NSE_AGENT_TEMPLATE.md. This field specifies the template file used for output generation.
+- **Affected Agents:**
+  1. nse-requirements.md
+  2. nse-verification.md
+  3. nse-risk.md
+  4. nse-reviewer.md
+  5. nse-integration.md
+  6. nse-configuration.md
+  7. nse-architecture.md
+  8. nse-reporter.md
+- **Conformance Check Output:**
+  ```
+  Summary: 8/16 agents conformant
+  [FAIL] ✗ nse-*.md (nse)
+         ! output.template: Missing required field: output.template
+  ```
+- **Fix Pattern:**
+  ```yaml
+  output:
+    required: true
+    location: "projects/${JERRY_PROJECT}/{type}/{artifact}.md"
+    template: "templates/{agent-specific-template}.md"  # ADD THIS
+    levels:
+      - L0
+      - L1
+      - L2
+  ```
+- **Acceptance Criteria:**
+  1. All 8 NSE agents have `output.template` field
+  2. Conformance check shows 16/16 agents passing
+- **Tasks:**
+  - [ ] **T-025.1:** Add output.template to nse-requirements.md
+  - [ ] **T-025.2:** Add output.template to nse-verification.md
+  - [ ] **T-025.3:** Add output.template to nse-risk.md
+  - [ ] **T-025.4:** Add output.template to nse-reviewer.md
+  - [ ] **T-025.5:** Add output.template to nse-integration.md
+  - [ ] **T-025.6:** Add output.template to nse-configuration.md
+  - [ ] **T-025.7:** Add output.template to nse-architecture.md
+  - [ ] **T-025.8:** Add output.template to nse-reporter.md
+  - [ ] **T-025.9:** Run conformance check to verify 16/16 pass
 
 ---
 
@@ -1569,11 +1625,11 @@ Where `{workflow_id}`, `{pipeline_alias_*}`, `{source}`, `{target}` are ALL dyna
 | SAO-INIT-002: New Agents | 5 | 0 | 22 | 0 | OPEN |
 | SAO-INIT-003: Templates | 3 | 0 | 20 | 0 | OPEN |
 | SAO-INIT-004: Infrastructure | 5 | 0 | 34 | 0 | OPEN |
-| SAO-INIT-005: Debt Reduction | 6 | 2 | 28 | 14 | IN PROGRESS |
-| **TOTAL** | **24** | **7** | **125** | **35** | **IN PROGRESS** |
+| SAO-INIT-005: Debt Reduction | 7 | 3 | 37 | 18 | IN PROGRESS |
+| **TOTAL** | **25** | **8** | **134** | **39** | **IN PROGRESS** |
 
 **Foundation Progress:** 5/5 work items complete (100%) ✅
-**Debt Reduction Progress:** 2/6 work items complete (33%) - WI-SAO-022, WI-SAO-023 complete
+**Debt Reduction Progress:** 3/7 work items complete (43%) - WI-SAO-022, WI-SAO-023, WI-SAO-024 complete
 
 ### Implementation Priority (Risk-Informed)
 
@@ -1588,7 +1644,8 @@ Phase 1: Foundation ✅ COMPLETE
 Tech Debt (Before New Agents) ← CURRENT
   └── WI-SAO-022: Template migration [HIGH] ✅ COMPLETE
   └── WI-SAO-023: NSE XML parity [MEDIUM] ✅ COMPLETE
-  └── WI-SAO-024: Template conformance audit [MEDIUM] - NEXT UP
+  └── WI-SAO-024: Template conformance audit [MEDIUM] ✅ COMPLETE
+  └── WI-SAO-025: Fix NSE output.template [LOW] - NEXT UP
 
 Phase 2: New Agents
   └── WI-SAO-004: nse-explorer [CRITICAL]
@@ -1669,6 +1726,28 @@ WI-SAO-023 Completion (2026-01-11):
 - Verified all 8 agents with grep pattern: `<session_context_validation>`
 - Full parity achieved between ps-* and nse-* agent families
 - SAO-INIT-005: Debt Reduction now 2/6 work items complete (33%)
+
+Testing Gap Discovery (2026-01-11):
+- SESSION-CONTEXT-VALIDATION.md test suite has 24 tests DEFINED but PENDING execution
+- WI-SAO-022 and WI-SAO-023 used grep pattern verification (structural only)
+- Formal test execution not performed for schema validation behavior
+- Gap Categories:
+  - Input Validation (IV-001 to IV-008): 8 tests PENDING
+  - Output Validation (OV-001 to OV-006): 6 tests PENDING
+  - Cross-Skill Handoff (CS-001 to CS-005): 5 tests PENDING
+  - Error Handling (EH-001 to EH-005): 5 tests PENDING
+- Mitigation: WI-SAO-024 will add automated structural conformance checking
+- Future Action: Execute SESSION-CONTEXT-VALIDATION.md test suite (24 tests)
+
+WI-SAO-024 Completion (2026-01-11):
+- Created `scripts/check_agent_conformance.py` - Python script to validate all agents
+- Created `.pre-commit-config.yaml` - pre-commit hooks for automated validation
+- Created `docs/governance/AGENT_CONFORMANCE_RULES.md` - comprehensive documentation
+- Script checks 44 sections per NSE agent, 40 sections per PS agent
+- Current conformance: 8/16 agents pass (all 8 PS agents pass, all 8 NSE agents fail)
+- Discovered tech debt: All 8 NSE agents missing `output.template` field
+- Created WI-SAO-025 to track and fix the discovered gap
+- SAO-INIT-005: Debt Reduction now 3/7 work items complete (43%)
 
 ORCH-SKILL-005 Orchestration Tests (2026-01-10):
 - Pattern Tests: 4/4 PASS (Sequential, Fan-Out, Fan-In, Review Gate)
