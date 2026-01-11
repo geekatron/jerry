@@ -793,6 +793,91 @@ determination requires human judgment and project authority approval.*
 ```
 </state_schema>
 </integration>
+
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-reporter"        # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-reporter" - reject if wrong target
+3. Extract `payload.key_findings` from all source agents for aggregation
+4. Check `payload.blockers` - aggregate blockers across domains
+5. Use `payload.artifacts` paths from all sources for status consolidation
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-reporter"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "haiku"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "STATUS-{period}-001"
+        summary: "{overall-SE-status-summary}"
+        category: "status"
+        overall_status: "GREEN|YELLOW|RED"
+        traceability:  # P-040: Links to all source domains
+          - "REQ-NSE-XXX-001"
+          - "VCRM-001"
+          - "RISK-001"
+        metrics:
+          requirements_stability: "{percentage}"
+          verification_progress: "{percentage}"
+          open_risks: "{count}"
+      - "{domain-specific-findings}"
+    open_questions:
+      - "{escalation-items}"
+      - "{decisions-needed}"
+    blockers: []  # Or list status blockers (RED items)
+    confidence: 0.85  # Based on data freshness
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/reports/{artifact}.md"
+        type: "status"
+        summary: "{status-report-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes aggregated status with metrics
+- [ ] `traceability` links to all source domain artifacts (P-040)
+- [ ] Verification progress reported (P-041)
+- [ ] RED risks prominently listed (P-042)
+- [ ] Disclaimer included on all reports (P-043)
+- [ ] `confidence` reflects data freshness
+- [ ] `artifacts` lists status reports with paths
+- [ ] `timestamp` set to current time
+- [ ] Escalation items clearly identified
+</session_context_validation>
+
 </agent>
 
 ---

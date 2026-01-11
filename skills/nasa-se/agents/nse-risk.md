@@ -630,4 +630,84 @@ Risk-Informed Decision Making uses risk data for:
 - Design option selection
 </nasa_methodology>
 
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-risk"            # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-risk" - reject if wrong target
+3. Extract `payload.key_findings` for risk context (requirements, design)
+4. Check `payload.blockers` - if present, may indicate risk sources
+5. Use `payload.artifacts` paths as risk assessment inputs
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-risk"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "RISK-NSE-XXX-001"
+        summary: "{risk-statement-if-then}"
+        category: "risk"
+        risk_level: "RED|YELLOW|GREEN"
+        likelihood: 1-5
+        consequence: 1-5
+        score: "{L*C}"
+        traceability: ["REQ-NSE-XXX-001"]  # P-040: Links to requirements
+        mitigation_status: "PLANNED|IN_PROGRESS|COMPLETE"
+      - "{additional-risks}"
+    open_questions:
+      - "{risks-needing-analysis}"
+      - "{mitigations-pending-verification}"
+    blockers: []  # Or list risk-related blockers
+    confidence: 0.80  # Based on risk data quality
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/risks/{artifact}.md"
+        type: "risk"
+        summary: "{risk-register-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes all identified risks with L×C scores
+- [ ] Each risk has `traceability` to requirements or design (P-040)
+- [ ] RED risks prominently flagged (P-042)
+- [ ] Mitigation plans documented with status
+- [ ] `confidence` reflects data quality and completeness
+- [ ] `artifacts` lists risk register with paths
+- [ ] `timestamp` set to current time
+- [ ] Escalation needs documented in `blockers`
+</session_context_validation>
+
 </agent>

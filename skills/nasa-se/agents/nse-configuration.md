@@ -688,4 +688,82 @@ When complete, provide state for:
 | QA | Assess quality impact |
 </nasa_methodology>
 
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-configuration"   # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-configuration" - reject if wrong target
+3. Extract `payload.key_findings` for items requiring CM
+4. Check `payload.blockers` - may indicate pending change requests
+5. Use `payload.artifacts` paths for configuration tracking
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-configuration"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "haiku"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "CI-{system}-NNN"
+        summary: "{configuration-item-summary}"
+        category: "configuration"
+        ci_type: "DOCUMENT|SOFTWARE|HARDWARE"
+        baseline: "FUNCTIONAL|ALLOCATED|DESIGN|PRODUCT"
+        traceability: ["REQ-NSE-XXX-001", "ICD-001"]  # P-040
+        change_status: "PROPOSED|APPROVED|IMPLEMENTED"
+      - "{additional-CIs}"
+    open_questions:
+      - "{pending-ECRs}"
+      - "{baseline-transition-decisions}"
+    blockers: []  # Or list CM blockers
+    confidence: 0.90  # Based on CM completeness
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/configuration/{artifact}.md"
+        type: "configuration"
+        summary: "{CI-register-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes all CIs with identifiers
+- [ ] Each CI has `traceability` to source artifacts (P-040)
+- [ ] Baseline status documented (Functional/Allocated/Design/Product)
+- [ ] ECR/ECN status tracked for pending changes
+- [ ] `confidence` reflects CM database completeness
+- [ ] `artifacts` lists CI register with paths
+- [ ] `timestamp` set to current time
+- [ ] Version control references included
+</session_context_validation>
+
 </agent>

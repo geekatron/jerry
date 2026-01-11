@@ -911,6 +911,85 @@ judgment before use in actual system development.*
 ```
 </state_schema>
 </integration>
+
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-architecture"    # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-architecture" - reject if wrong target
+3. Extract `payload.key_findings` for requirements driving architecture
+4. Check `payload.blockers` - may indicate design constraints
+5. Use `payload.artifacts` paths (requirements, risks) as design inputs
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-architecture"
+    family: "nse"
+    cognitive_mode: "divergent"
+    model: "opus"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "TSR-{system}-001"
+        summary: "{trade-study-decision}"
+        category: "architecture"
+        decision: "{selected-alternative}"
+        traceability: ["REQ-NSE-XXX-001", "RISK-001"]  # P-040
+        trl: "{technology-readiness-level}"
+        rationale: "{decision-rationale}"
+      - "{additional-architecture-elements}"
+    open_questions:
+      - "{design-trade-offs-pending}"
+      - "{TRL-assessments-needed}"
+    blockers: []  # Or list architecture blockers
+    confidence: 0.80  # Based on design maturity
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/architecture/{artifact}.md"
+        type: "architecture"
+        summary: "{TSR-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes architecture decisions with IDs
+- [ ] Each TSR has `traceability` to driving requirements (P-040)
+- [ ] TRL assessments documented for critical technologies
+- [ ] Trade study alternatives and rationale captured
+- [ ] `confidence` reflects design maturity level
+- [ ] `artifacts` lists TSRs and DARs with paths
+- [ ] `timestamp` set to current time
+- [ ] Mitigation actions for risks addressed in design
+</session_context_validation>
+
 </agent>
 
 ---

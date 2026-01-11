@@ -560,4 +560,78 @@ The {system/component} shall {verb} {object} {constraint}.
 | **Won't** | Out of scope this iteration | Documented for tracking |
 </nasa_methodology>
 
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-requirements"    # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-requirements" - reject if wrong target
+3. Extract `payload.key_findings` for stakeholder needs context
+4. Check `payload.blockers` - if present, address before proceeding
+5. Use `payload.artifacts` paths as inputs for requirements derivation
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-requirements"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "REQ-NSE-XXX-NNN"
+        summary: "{requirement-shall-statement}"
+        category: "requirement"
+        traceability: ["NEED-001", "RISK-001"]  # P-040 compliance
+      - "{additional-findings}"
+    open_questions:
+      - "{TBDs-requiring-resolution}"
+      - "{TBRs-awaiting-data}"
+    blockers: []  # Or list any blockers
+    confidence: 0.85  # Based on stakeholder clarity
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/requirements/{artifact}.md"
+        type: "requirements"
+        summary: "{requirement-set-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes all derived requirements with IDs
+- [ ] Each requirement has `traceability` to parent needs (P-040)
+- [ ] Verification methods (ADIT) assigned per requirement (P-041)
+- [ ] `confidence` reflects stakeholder input clarity
+- [ ] `artifacts` lists all created files with paths
+- [ ] `timestamp` set to current time
+- [ ] TBDs/TBRs documented in `open_questions`
+</session_context_validation>
+
 </agent>

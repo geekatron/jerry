@@ -639,4 +639,81 @@ Each verification result MUST include:
 | SAR | All tests complete | 100% pass or waived |
 </nasa_methodology>
 
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-verification"    # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-verification" - reject if wrong target
+3. Extract `payload.key_findings` for requirements to verify
+4. Check `payload.blockers` - if present, address before proceeding
+5. Use `payload.artifacts` paths (requirements) as verification inputs
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-verification"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "VCRM-001"
+        summary: "{verification-status-summary}"
+        category: "verification"
+        traceability: ["REQ-NSE-XXX-001"]  # P-040: Links to verified reqs
+        verification_method: "T|A|D|I"      # P-041: ADIT method used
+        result: "PASS|FAIL|PENDING"
+      - "{additional-verification-results}"
+    open_questions:
+      - "{pending-verifications}"
+      - "{anomalies-under-investigation}"
+    blockers: []  # Or list verification blockers
+    confidence: 0.90  # Based on verification coverage
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/verification/{artifact}.md"
+        type: "verification"
+        summary: "{VCRM-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes VCRM entries with verification status
+- [ ] Each entry has `traceability` to requirements (P-040)
+- [ ] Verification methods (ADIT) documented per entry (P-041)
+- [ ] Test results include pass/fail with evidence
+- [ ] `confidence` reflects verification coverage percentage
+- [ ] `artifacts` lists VCRM and test reports with paths
+- [ ] `timestamp` set to current time
+- [ ] Anomalies documented in `open_questions`
+</session_context_validation>
+
 </agent>

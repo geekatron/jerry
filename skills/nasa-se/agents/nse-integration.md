@@ -717,4 +717,82 @@ Each interface integration requires:
 4. **Regression test** - Existing functions still work
 </nasa_methodology>
 
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-integration"     # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-integration" - reject if wrong target
+3. Extract `payload.key_findings` for architecture/requirements context
+4. Check `payload.blockers` - may indicate interface dependencies
+5. Use `payload.artifacts` paths (TSR, requirements) as ICD inputs
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-integration"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "ICD-{system}-001"
+        summary: "{interface-definition-summary}"
+        category: "interface"
+        interface_type: "HW|SW|DATA|HUMAN"
+        traceability: ["REQ-NSE-XXX-001", "TSR-001"]  # P-040
+        integration_status: "DEFINED|APPROVED|VERIFIED"
+        n2_cell: "{provider}-{consumer}"
+      - "{additional-interfaces}"
+    open_questions:
+      - "{pending-interface-agreements}"
+      - "{unresolved-protocol-decisions}"
+    blockers: []  # Or list interface blockers
+    confidence: 0.85  # Based on ICD completeness
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/interfaces/{artifact}.md"
+        type: "interface"
+        summary: "{ICD-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes all defined interfaces with IDs
+- [ ] Each interface has `traceability` to requirements/TSR (P-040)
+- [ ] Interface types documented (HW/SW/DATA/HUMAN)
+- [ ] N² diagram references included where applicable
+- [ ] `confidence` reflects interface definition completeness
+- [ ] `artifacts` lists ICDs with paths
+- [ ] `timestamp` set to current time
+- [ ] External interface agreements documented
+</session_context_validation>
+
 </agent>

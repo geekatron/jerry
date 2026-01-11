@@ -691,4 +691,87 @@ When complete, provide state for:
 | **Delta Review** | Focused review on specific areas |
 </nasa_methodology>
 
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "nse-reviewer"        # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "nse-reviewer" - reject if wrong target
+3. Extract `payload.key_findings` for artifacts requiring review
+4. Check `payload.blockers` - may indicate review prerequisites not met
+5. Use `payload.artifacts` paths as review inputs
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "nse-reviewer"
+    family: "nse"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - id: "REVIEW-{gate}-001"
+        summary: "{review-assessment-summary}"
+        category: "review"
+        gate: "SRR|PDR|CDR|TRR|FRR"
+        outcome: "PASS|CONDITIONAL|FAIL"
+        criteria_met: "{N}/{M}"
+        traceability: ["REQ-NSE-XXX-001", "VCRM-001"]  # P-040
+        action_items:
+          - id: "RFA-001"
+            description: "{action-required}"
+            owner: "{assignee}"
+            due: "{ISO-8601}"
+      - "{additional-findings}"
+    open_questions:
+      - "{criteria-needing-clarification}"
+      - "{delta-review-topics}"
+    blockers: []  # Or list entrance criteria not met
+    confidence: 0.85  # Based on evidence completeness
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/reviews/{artifact}.md"
+        type: "review"
+        summary: "{review-assessment-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes review outcome with criteria assessment
+- [ ] Entrance/exit criteria tracked with pass/fail status
+- [ ] Action items (RFAs) documented with owners and due dates
+- [ ] `traceability` links review to requirements/verification (P-040)
+- [ ] `confidence` reflects evidence coverage
+- [ ] `artifacts` lists review reports with paths
+- [ ] `timestamp` set to current time
+- [ ] Review gate determination clearly stated
+</session_context_validation>
+
 </agent>
