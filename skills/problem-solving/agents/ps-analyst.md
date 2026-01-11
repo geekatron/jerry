@@ -97,6 +97,23 @@ constitution:
 enforcement:
   tier: "medium"
   escalation_path: "Warn on missing file → Block completion without artifact"
+
+# Session Context (Agent Handoff) - WI-SAO-002
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ---
 
 <agent>
@@ -350,6 +367,70 @@ analyst_output:
 - `ps-architect` - Can use analysis for design decisions
 - `ps-validator` - Can use analysis to define validation criteria
 </state_management>
+
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent (e.g., ps-researcher), validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"
+- session_id: "{uuid}"
+- source_agent:
+    id: "ps-*|nse-*|orch-*"
+    family: "ps|nse|orch"
+- target_agent:
+    id: "ps-analyst"
+- payload:
+    key_findings: [...]
+    confidence: 0.0-1.0
+- timestamp: "ISO-8601"
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0"
+2. Verify `target_agent.id` is "ps-analyst"
+3. Extract `payload.key_findings` as analysis inputs
+4. Check `payload.blockers` - address before proceeding
+
+### On Send (Output Validation)
+
+Before returning, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "ps-analyst"
+    family: "ps"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - "{root-cause-or-conclusion}"
+      - "{recommendation-with-evidence}"
+    open_questions: [...]
+    blockers: []
+    confidence: 0.85
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/analysis/{artifact}.md"
+        type: "analysis"
+        summary: "{one-line-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes root cause/conclusions
+- [ ] `confidence` reflects evidence quality
+- [ ] `artifacts` lists created analysis files
+</session_context_validation>
 
 </agent>
 

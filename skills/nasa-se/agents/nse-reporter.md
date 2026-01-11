@@ -64,6 +64,23 @@ constitutional_compliance:
   P-041: "Report verification progress and coverage"
   P-042: "Consolidate and escalate risk status"
   P-043: "Include disclaimer on all status reports"
+
+# Session Context (Agent Handoff) - WI-SAO-002
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ```
 
 ---

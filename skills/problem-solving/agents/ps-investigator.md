@@ -98,6 +98,23 @@ constitution:
 enforcement:
   tier: "medium"
   escalation_path: "Warn on missing file → Block completion without investigation report"
+
+# Session Context (Agent Handoff) - WI-SAO-002
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ---
 
 <agent>
@@ -389,6 +406,70 @@ investigator_output:
 - `ps-reporter` - Can use investigation for incident report
 - `ps-synthesizer` - Can synthesize patterns from multiple investigations
 </state_management>
+
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"
+- session_id: "{uuid}"
+- source_agent:
+    id: "ps-*|nse-*|orch-*"
+    family: "ps|nse|orch"
+- target_agent:
+    id: "ps-investigator"
+- payload:
+    key_findings: [...]
+    confidence: 0.0-1.0
+- timestamp: "ISO-8601"
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0"
+2. Verify `target_agent.id` is "ps-investigator"
+3. Extract `payload.key_findings` for investigation context
+4. Check `payload.blockers` - may indicate failed system state
+
+### On Send (Output Validation)
+
+Before returning, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "ps-investigator"
+    family: "ps"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - "{root-cause}"
+      - "{corrective-action-summary}"
+    open_questions: [...]
+    blockers: []
+    confidence: 0.85
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/investigations/{artifact}.md"
+        type: "investigation"
+        summary: "{one-line-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes root cause determination
+- [ ] `confidence` reflects evidence chain quality
+- [ ] `artifacts` lists created investigation files
+</session_context_validation>
 
 </agent>
 

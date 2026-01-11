@@ -94,6 +94,23 @@ constitution:
 enforcement:
   tier: "medium"
   escalation_path: "Warn on missing file → Block completion without validation report"
+
+# Session Context (Agent Handoff) - WI-SAO-002
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ---
 
 <agent>
@@ -330,6 +347,70 @@ validator_output:
 - `ps-reporter` - Can use validation results for status reports
 - `ps-reviewer` - Can review validation methodology
 </state_management>
+
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"
+- session_id: "{uuid}"
+- source_agent:
+    id: "ps-*|nse-*|orch-*"
+    family: "ps|nse|orch"
+- target_agent:
+    id: "ps-validator"
+- payload:
+    key_findings: [...]
+    confidence: 0.0-1.0
+- timestamp: "ISO-8601"
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0"
+2. Verify `target_agent.id` is "ps-validator"
+3. Extract `payload.key_findings` for validation context
+4. Use `payload.artifacts` as validation targets
+
+### On Send (Output Validation)
+
+Before returning, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "ps-validator"
+    family: "ps"
+    cognitive_mode: "convergent"
+    model: "haiku"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - "{validation-pass-rate}"
+      - "{gap-summary}"
+    open_questions: []
+    blockers: []
+    confidence: 0.9
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/analysis/{artifact}.md"
+        type: "validation"
+        summary: "{one-line-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` includes pass rate and gaps
+- [ ] `confidence` reflects evidence completeness
+- [ ] `artifacts` lists created validation files
+</session_context_validation>
 
 </agent>
 

@@ -96,6 +96,23 @@ constitution:
 enforcement:
   tier: "medium"
   escalation_path: "Warn on missing file → Block completion without artifact"
+
+# Session Context (Agent Handoff) - WI-SAO-002
+session_context:
+  schema: "docs/schemas/session_context.json"
+  schema_version: "1.0.0"
+  input_validation: true
+  output_validation: true
+  on_receive:
+    - validate_session_id
+    - check_schema_version
+    - extract_key_findings
+    - process_blockers
+  on_send:
+    - populate_key_findings
+    - calculate_confidence
+    - list_artifacts
+    - set_timestamp
 ---
 
 <agent>
@@ -336,6 +353,73 @@ researcher_output:
 - `ps-architect` - Can use research for design decisions
 - `ps-synthesizer` - Can use research for pattern identification
 </state_management>
+
+<session_context_validation>
+## Session Context Validation (WI-SAO-002)
+
+When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
+
+### On Receive (Input Validation)
+
+If receiving context from another agent, validate:
+
+```yaml
+# Required fields (reject if missing)
+- schema_version: "1.0.0"    # Must match expected version
+- session_id: "{uuid}"        # Valid UUID format
+- source_agent:
+    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
+    family: "ps|nse|orch"     # Matching family
+- target_agent:
+    id: "ps-researcher"       # Must match this agent
+- payload:
+    key_findings: [...]       # Non-empty array required
+    confidence: 0.0-1.0       # Valid confidence score
+- timestamp: "ISO-8601"       # Valid timestamp
+```
+
+**Validation Actions:**
+1. Check `schema_version` matches "1.0.0" - warn if mismatch
+2. Verify `target_agent.id` is "ps-researcher" - reject if wrong target
+3. Extract `payload.key_findings` for research context
+4. Check `payload.blockers` - if present, address before proceeding
+5. Use `payload.artifacts` paths as research inputs
+
+### On Send (Output Validation)
+
+Before returning to orchestrator, structure output as:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"
+  session_id: "{inherit-from-input}"
+  source_agent:
+    id: "ps-researcher"
+    family: "ps"
+    cognitive_mode: "divergent"
+    model: "opus"
+  target_agent: "{next-agent-or-orchestrator}"
+  payload:
+    key_findings:
+      - "{finding-1-with-evidence}"
+      - "{finding-2-with-evidence}"
+    open_questions:
+      - "{questions-for-next-agent}"
+    blockers: []  # Or list any blockers
+    confidence: 0.85  # Calculated from source quality
+    artifacts:
+      - path: "projects/${JERRY_PROJECT}/research/{artifact}.md"
+        type: "research"
+        summary: "{one-line-summary}"
+  timestamp: "{ISO-8601-now}"
+```
+
+**Output Checklist:**
+- [ ] `key_findings` populated from research results
+- [ ] `confidence` reflects source credibility (HIGH→0.9, MEDIUM→0.7, LOW→0.5)
+- [ ] `artifacts` lists all created files with paths
+- [ ] `timestamp` set to current time
+</session_context_validation>
 
 </agent>
 

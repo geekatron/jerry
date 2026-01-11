@@ -18,9 +18,9 @@
 |--------|-------|
 | Total Work Items | 21 |
 | Completed | 5 |
-| Open | 16 |
-| In Progress | 0 |
-| Status | **READY FOR NEXT ITEM** |
+| Open | 15 |
+| In Progress | 1 |
+| Status | **IN PROGRESS** |
 
 ### Orchestration Validation (ORCH-SKILL Series)
 | Metric | Count |
@@ -33,7 +33,7 @@
 ### Current Focus
 | Initiative | Phase | Work Item | Status |
 |------------|-------|-----------|--------|
-| SAO | - | No work item currently in progress | READY |
+| SAO | SAO-INIT-001: Foundation | WI-SAO-002: Schema Validation | IN PROGRESS |
 
 **Last Completed:** WI-SAO-021 (Orchestration Folder Refactoring) - 2026-01-10
 
@@ -838,18 +838,19 @@ projects/PROJ-002-nasa-systems-engineering/
 
 #### WI-SAO-002: Add Schema Validation to All Agents
 - **Entry ID:** sao-002
-- **Status:** OPEN
+- **Status:** IN PROGRESS
+- **Started:** 2026-01-10
 - **Priority:** CRITICAL (P0)
 - **Estimated Effort:** 8h
-- **Depends On:** WI-SAO-001
+- **Depends On:** WI-SAO-001 ✅
 - **Description:** Implement schema validation at all agent boundaries to prevent silent handoff failures.
 - **Acceptance Criteria:**
   1. All 16 agents (8 ps-*, 8 nse-*) validate input/output against schema
   2. Validation errors logged with context
   3. Graceful degradation for missing optional fields
 - **Tasks:**
-  - [ ] **T-002.1:** Add input validation to ps-* agents (8)
-  - [ ] **T-002.2:** Add input validation to nse-* agents (8)
+  - [x] **T-002.1:** Add input validation to ps-* agents (8) - session_context YAML + XML sections added
+  - [x] **T-002.2:** Add input validation to nse-* agents (8) - session_context YAML sections added
   - [ ] **T-002.3:** Add output validation patterns to ORCHESTRATION.md
   - [ ] **T-002.4:** Create test cases for validation
 
