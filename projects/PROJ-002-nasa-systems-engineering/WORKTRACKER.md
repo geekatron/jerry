@@ -16,16 +16,24 @@
 ### Skills & Agents Optimization Initiative (SAO)
 | Metric | Count |
 |--------|-------|
-| Total Work Items | 19 |
-| Completed | 3 |
+| Total Work Items | 21 |
+| Completed | 4 |
 | Open | 16 |
-| In Progress | 0 |
+| In Progress | 1 |
 | Status | **IN PROGRESS** |
+
+### Orchestration Validation (ORCH-SKILL Series)
+| Metric | Count |
+|--------|-------|
+| Total Tests | 19 |
+| Passed | 19 |
+| Failed | 0 |
+| Status | ✅ COMPLETE |
 
 ### Current Focus
 | Initiative | Phase | Work Item | Status |
 |------------|-------|-----------|--------|
-| SAO | SAO-INIT-001: Foundation | WI-SAO-002: Schema Validation | NEXT UP |
+| SAO | SAO-INIT-001: Foundation | WI-SAO-002: Schema Validation | IN PROGRESS |
 
 ### Gap Fix Backlog
 
@@ -43,6 +51,69 @@
 ---
 
 ## Active Work Items
+
+### ORCH-SKILL-005: NASA SE Agent Orchestration Tests
+- **Entry ID:** e-039
+- **Status:** ✅ COMPLETE
+- **Started:** 2026-01-10
+- **Completed:** 2026-01-10
+- **Priority:** CRITICAL
+- **Source:** ORCHESTRATION-TEST-STRATEGY.md (19 test scenarios)
+- **Description:** Execute full TEST-ORCH series to validate orchestration patterns and workflows using actual nse-* agents (not synthetic test agents).
+- **Distinction:** ORCH-SKILL-004 tested skill infrastructure with synthetic agents. This tests real NASA SE agent orchestration.
+- **Test Matrix:**
+  | Suite | Tests | Status | Pass | Fail |
+  |-------|-------|--------|------|------|
+  | Pattern Tests | TEST-ORCH-001–004 | ✅ COMPLETE | 4 | 0 |
+  | Workflow Tests | TEST-ORCH-005–008 | ✅ COMPLETE | 4 | 0 |
+  | State Handoff Tests | TEST-ORCH-009–016 | ✅ COMPLETE | 8 | 0 |
+  | Error Handling Tests | TEST-ORCH-017–019 | ✅ COMPLETE | 3 | 0 |
+  | **TOTAL** | **19** | **19/19 (100%)** | **19** | **0** |
+- **Pattern Test Details:**
+  | Test ID | Pattern | Agents | Status |
+  |---------|---------|--------|--------|
+  | TEST-ORCH-001 | Sequential Chain | nse-req → nse-ver → nse-risk | ✅ PASS |
+  | TEST-ORCH-002 | Fan-Out Parallel | nse-ver, nse-arch, nse-risk parallel | ✅ PASS |
+  | TEST-ORCH-003 | Fan-In Aggregation | nse-reporter aggregates 5+ sources | ✅ PASS |
+  | TEST-ORCH-004 | Review Gate | nse-reviewer CDR assessment | ✅ PASS |
+- **Workflow Test Details:**
+  | Test ID | Workflow | Description | Status |
+  |---------|----------|-------------|--------|
+  | TEST-ORCH-005 | CDR Preparation | 4-phase workflow for CDR | ✅ PASS |
+  | TEST-ORCH-006 | Change Impact | Parallel impact assessment | ✅ PASS |
+  | TEST-ORCH-007 | Risk Escalation | RED risk immediate response | ✅ PASS |
+  | TEST-ORCH-008 | Project Bootstrap | Initialize SE templates | ✅ PASS |
+- **State Handoff Test Details:**
+  | Test ID | Handoff | Evidence | Status |
+  |---------|---------|----------|--------|
+  | TEST-ORCH-009 | req → ver | VCRM refs REQ-NSE-SKILL-001 | ✅ PASS |
+  | TEST-ORCH-010 | req → risk | Risk IF-THEN traces to reqs | ✅ PASS |
+  | TEST-ORCH-011 | req → arch | TSR driving reqs documented | ✅ PASS |
+  | TEST-ORCH-012 | arch → integ | ICD derives from TSR | ✅ PASS |
+  | TEST-ORCH-013 | integ → config | CI-007/008 interface CIs | ✅ PASS |
+  | TEST-ORCH-014 | all → reporter | 6 sources aggregated | ✅ PASS |
+  | TEST-ORCH-015 | all → reviewer | 10 criteria traced | ✅ PASS |
+  | TEST-ORCH-016 | risk → arch | Mitigation in TSR Section 6 | ✅ PASS |
+- **Error Handling Test Details:**
+  | Test ID | Scenario | Validation Method | Status |
+  |---------|----------|-------------------|--------|
+  | TEST-ORCH-017 | Missing Dependency | Prompt analysis: warn_and_retry | ✅ PASS |
+  | TEST-ORCH-018 | Invalid Schema | Guardrails: input_validation | ✅ PASS |
+  | TEST-ORCH-019 | Cascade Failure | Parallel isolation verified | ✅ PASS |
+- **Execution Reports:**
+  - `tests/orchestration-results/TEST-ORCH-001/` through `TEST-ORCH-008/`
+  - `tests/orchestration-results/HANDOFF-TESTS-001/EXECUTION-REPORT.md`
+  - `tests/orchestration-results/HANDOFF-TESTS-002/EXECUTION-REPORT.md`
+  - `tests/orchestration-results/ERROR-HANDLING-TESTS/EXECUTION-REPORT.md`
+- **Acceptance Criteria:** ✅ ALL MET
+  1. ✅ All 19 tests executed with documented results
+  2. ✅ Pattern tests validate agent handoffs work correctly
+  3. ✅ Workflow tests validate end-to-end scenarios
+  4. ✅ Error handling tests validate graceful degradation
+  5. ✅ All results documented in ORCHESTRATION-TEST-STRATEGY.md
+- **Exit Criteria:** ✅ MET - 100% tests executed; documented evidence for each; no open issues
+
+---
 
 ### ORCH-SKILL-004: Comprehensive E2E Validation Suite
 - **Entry ID:** e-038
@@ -686,12 +757,13 @@
 
 ## Resumption Context
 
-**Current State:** NASA SE SKILL COMPLETE | SAO INITIATIVE IN PROGRESS
-**Current Initiative:** SAO-INIT-001: Foundation (2/3 work items complete)
+**Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO IN PROGRESS
+**Current Initiative:** SAO-INIT-001: Foundation (4/5 work items complete, 80%)
 **Current Work Item:** WI-SAO-002: Add Schema Validation to All Agents
 **Plan Location:** `projects/PROJ-002-nasa-systems-engineering/PLAN.md` (repository-relative)
 **Plan Version:** 4.0 (Optimization Initiative)
 **Implementation Status:** NASA SE Skill COMPLETE - All 8 agents demonstrated with real artifacts
+**Orchestration Status:** ORCH-SKILL-005 COMPLETE - 19/19 tests passed (100%)
 
 **Cross-Session Portability:** All references in this document are repository-relative.
 Any Claude session (CLI, Web, other machines) can resume by reading PLAN.md and this WORKTRACKER.
@@ -1153,6 +1225,55 @@ projects/PROJ-002-nasa-systems-engineering/
   - [ ] **T-015.4:** Add hooks to agent templates
   - [ ] **T-015.5:** Create BDD tests for guardrails
 
+#### WI-SAO-021: Orchestration Folder Refactoring
+- **Entry ID:** sao-021
+- **Status:** OPEN
+- **Priority:** HIGH (P1)
+- **Estimated Effort:** 6h
+- **Source:** Cross-pollination pipeline architecture review (2026-01-10)
+- **Description:** Refactor orchestration output structure from flat `ps-pipeline/`, `nse-pipeline/`, `cross-pollination/` folders to hierarchical `orchestration/{run_id}/{pipeline_id}/{phase_id}/` scheme. Migrate all existing artifacts and update all references.
+- **Rationale:** Current flat structure doesn't scale for multiple orchestration runs. New structure provides:
+  1. Run isolation via `{orchestration_run_id}`
+  2. Clear pipeline namespacing via `{skill_pipeline_id}`
+  3. Phase progression visibility via `{phase_id}`
+  4. Centralized cross-pollination within each run
+- **Target Structure:**
+  ```
+  orchestration/{run_id}/
+  ├── ps/{phase}/           # Problem-solving pipeline phases
+  ├── nse/{phase}/          # NASA SE pipeline phases
+  └── cross-pollination/    # Sync barrier artifacts
+      └── barrier-{n}/
+  ```
+- **Acceptance Criteria:**
+  1. ✅ All 9 existing artifacts migrated to new structure
+  2. ✅ All cross-pollination barrier artifacts migrated
+  3. ✅ All references in ORCHESTRATION_PLAN.md updated
+  4. ✅ All references in ORCHESTRATION_WORKTRACKER.md updated
+  5. ✅ All references in synthesis documents updated
+  6. ✅ PLAN.md artifact paths updated
+  7. ✅ Orchestration skill updated to use new structure
+  8. ✅ Empty old folders removed
+- **Migration Strategy:** Option A - Migrate Everything
+  - Move all artifacts from old structure to new
+  - Update all file references across all documents
+  - Remove old empty directories
+  - Test reference integrity
+- **Blocking:** Must complete after cross-pollination phases 3-4
+- **Tasks:**
+  - [ ] **T-021.1:** Design run ID naming convention (semantic: `sao-001-YYYYMMDD`)
+  - [ ] **T-021.2:** Create new `orchestration/` directory structure
+  - [ ] **T-021.3:** Migrate ps-pipeline/* artifacts (5 files)
+  - [ ] **T-021.4:** Migrate nse-pipeline/* artifacts (4 files)
+  - [ ] **T-021.5:** Migrate cross-pollination/* artifacts (4 files)
+  - [ ] **T-021.6:** Update ORCHESTRATION_PLAN.md references
+  - [ ] **T-021.7:** Update ORCHESTRATION_WORKTRACKER.md references
+  - [ ] **T-021.8:** Update synthesis document references
+  - [ ] **T-021.9:** Update PLAN.md artifact paths
+  - [ ] **T-021.10:** Update orchestration skill to use new path scheme
+  - [ ] **T-021.11:** Remove old empty directories
+  - [ ] **T-021.12:** Verify all references resolve correctly
+
 ---
 
 ### SAO-INIT-005: Technical Debt Reduction
@@ -1215,9 +1336,9 @@ projects/PROJ-002-nasa-systems-engineering/
 | SAO-INIT-001: Foundation | 5 | 4 | 21 | 17 | **IN PROGRESS** |
 | SAO-INIT-002: New Agents | 5 | 0 | 22 | 0 | OPEN |
 | SAO-INIT-003: Templates | 3 | 0 | 20 | 0 | OPEN |
-| SAO-INIT-004: Infrastructure | 4 | 0 | 22 | 0 | OPEN |
+| SAO-INIT-004: Infrastructure | 5 | 0 | 34 | 0 | OPEN |
 | SAO-INIT-005: Debt Reduction | 3 | 0 | 10 | 0 | OPEN |
-| **TOTAL** | **20** | **4** | **95** | **17** | **IN PROGRESS** |
+| **TOTAL** | **21** | **4** | **107** | **17** | **IN PROGRESS** |
 
 **Foundation Progress:** 4/5 work items complete (80%), 17/21 tasks complete (81%)
 
@@ -1246,6 +1367,7 @@ Phase 4: Infrastructure (Week 6-8)
   └── WI-SAO-012: Parallel execution [HIGH]
   └── WI-SAO-013: Checkpointing [HIGH]
   └── WI-SAO-014: Generator-Critic [HIGH]
+  └── WI-SAO-021: Orchestration folder refactoring [HIGH] - After cross-poll phases 3-4
 
 Phase 5: Polish (Week 9+)
   └── WI-SAO-008: nse-qa [MEDIUM]
@@ -1267,10 +1389,80 @@ SAO-INIT-001 Foundation work:
 - WI-SAO-001 (session_context schema) ✅ COMPLETE
 - WI-SAO-003 (model field) ✅ COMPLETE
 - WI-SAO-019 (agent architecture research) ✅ COMPLETE - 700+ line research document
-- WI-SAO-002 (schema validation) NEXT UP
+- WI-SAO-020 (output conventions) ✅ COMPLETE - 8/8 agents validated
+- WI-SAO-002 (schema validation) IN PROGRESS
+
+ORCH-SKILL-005 Orchestration Tests (2026-01-10):
+- Pattern Tests: 4/4 PASS (Sequential, Fan-Out, Fan-In, Review Gate)
+- Workflow Tests: 4/4 PASS (CDR Prep, Change Impact, Risk Escalation, Bootstrap)
+- State Handoff Tests: 8/8 PASS (All agent-to-agent handoffs validated)
+- Error Handling Tests: 3/3 PASS (Missing dep, Invalid schema, Cascade failure)
+- Total: 19/19 PASS (100%)
 
 Key architectural finding from WI-SAO-019: Jerry agents ARE Claude Code subagents when invoked via Task tool. The main Claude thread uses Task tool with `subagent_type="general-purpose"` and passes the Jerry agent's content as the prompt.
 
+Agent output analysis (2026-01-10): Verified that all 16 ps-*/nse-* agents follow file-first output pattern. Agents persist full content to files and return structured summaries via `{agent-type}_output` schema. Background mode is SAFE for orchestration - no context flooding risk.
+
 ---
 
-*Last Updated: 2026-01-10*
+## Cross-Pollination Pipeline Execution (SAO-CROSSPOLL)
+
+> **Workflow ID:** WF-SAO-CROSSPOLL-001
+> **Started:** 2026-01-10
+> **Status:** IN PROGRESS
+
+### Execution Summary
+
+| Phase | Pipeline | Agents | Status | Artifacts |
+|-------|----------|--------|--------|-----------|
+| Phase 1 | ps-* Research | 3 | ✅ COMPLETE | research.md, industry-practices.md |
+| Phase 1 | nse-* Elicitation | 3 | ✅ COMPLETE | requirements.md, risks.md |
+| Barrier 1 | Cross-pollination | 2 | ✅ COMPLETE | barrier-1/ps-to-nse/, barrier-1/nse-to-ps/ |
+| Phase 2 | ps-* Analysis | 3 | ✅ COMPLETE | gap-analysis.md, trade-study.md |
+| Phase 2 | nse-* Validation | 3 | ✅ COMPLETE | requirements-validation.md, risks-update.md |
+| Barrier 2 | Cross-pollination | 2 | ✅ COMPLETE | barrier-2/ps-to-nse/, barrier-2/nse-to-ps/ |
+| Phase 3 | ps-* Design | 3 | ✅ COMPLETE | agent-design-specs.md, schema-contracts.md, arch-blueprints.md |
+| Phase 3 | nse-* Formal | 3 | ✅ COMPLETE | formal-requirements.md, formal-mitigations.md, verification-matrices.md |
+| Barrier 3 | Cross-pollination | 2 | ✅ COMPLETE | barrier-3/ps-to-nse/design-specs.md, barrier-3/nse-to-ps/formal-artifacts.md |
+| Phase 4 | ps-* Synthesis | 3 | PENDING | - |
+| Phase 4 | nse-* Review | 3 | PENDING | - |
+| Barrier 4 | Final Integration | 2 | PENDING | - |
+
+### Phase 3 Completion Details (2026-01-10)
+
+**ps-* Pipeline - Phase 3 Design:**
+| Agent ID | Role | Artifact | Lines |
+|----------|------|----------|-------|
+| ps-d-001 | ps-architect | agent-design-specs.md | 500+ |
+| ps-d-002 | ps-architect | schema-contracts.md | 400+ |
+| ps-d-003 | ps-architect | arch-blueprints.md | 967 |
+
+**nse-* Pipeline - Phase 3 Formal:**
+| Agent ID | Role | Artifact | Lines |
+|----------|------|----------|-------|
+| nse-f-001 | nse-requirements | formal-requirements.md | 400+ |
+| nse-f-002 | nse-risk | formal-mitigations.md | 400+ |
+| nse-f-003 | nse-verification | verification-matrices.md | 400+ |
+
+**Key Outputs:**
+- 5 new agents designed (nse-explorer, nse-orchestrator, nse-qa, ps-orchestrator, ps-critic)
+- 52 formal requirements (REQ-SAO-L1-*, REQ-SAO-SKL-*, REQ-SAO-AGT-*, REQ-SAO-ORCH-*)
+- 30 formal mitigations (184 engineering hours, 47% risk reduction)
+- 85 verification procedures (100% VP coverage)
+- Session context v1.1.0 schema with workflow_state extension
+
+### Barrier 3 Cross-Pollination (2026-01-10)
+
+**PS → NSE (design-specs.md):**
+- Summary of agent design specs, schema contracts, architecture blueprints
+- Open issue: Concurrent agents discrepancy (ps-* says 5, nse-* says 10)
+- Aligned elements: P-003 enforcement, session context, circuit breaker
+
+**NSE → PS (formal-artifacts.md):**
+- Summary of 52 requirements, 30 mitigations, 85 VPs
+- Gap identified: GAP-B3-001 (concurrent agent limit)
+- Key artifacts for Phase 4: MIT-SAO-001/002/003 (RED risk mitigations)
+
+---
+
+*Last Updated: 2026-01-10 (Barrier 3 complete, Phase 4 pending)*
