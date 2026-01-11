@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T16:30:00Z
+**Last Updated**: 2026-01-10T17:00:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -522,17 +522,20 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 
 | ID | Title | Location | Tests | Status |
 |----|-------|----------|-------|--------|
-| I-SK | Shared Kernel | `src/shared_kernel/` | 58 | ✅ |
+| I-SK | Shared Kernel | `src/shared_kernel/` | 130 | ✅ |
 | I-SM | Session Management | `src/session_management/` | 133 | 🔄 |
 
 ### Test Suites
 
 | Suite | Location | Count | Status |
 |-------|----------|-------|--------|
-| Shared Kernel Unit | `tests/shared_kernel/` | 58 | ✅ |
+| Shared Kernel Unit | `tests/shared_kernel/` | 130 | ✅ |
 | Session Mgmt Domain | `tests/session_management/unit/` | 133 | ✅ |
 | Session Mgmt Integration | `tests/session_management/integration/` | 0 | ⏳ |
 | Session Mgmt E2E | `tests/session_management/e2e/` | 0 | ⏳ |
+
+> **Note**: Shared Kernel count excludes `test_snowflake_id_bdd.py` (requires pytest_bdd - see TD-004).
+> Total verified: **263 tests passing** (130 SK + 133 SM)
 
 ---
 
