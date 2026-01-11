@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T20:15:00Z
+**Last Updated**: 2026-01-10T22:30:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -468,6 +468,16 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ENFORCE-015 | Update Manifest | 6 | ✅ | 014 | 016 |
 | ENFORCE-016 | Final Validation | 6 | ✅ | ALL | None |
 
+### CI Infrastructure Tasks (Active)
+
+| ID | Title | Phase | Status | Predecessors | Successors |
+|----|-------|-------|--------|--------------|------------|
+| CI-001 | CI/CD Pipeline Implementation | CI | 🔄 IN PROGRESS | Phase 6, TD-005 | None |
+| CI-001.R | Research: CI Best Practices | CI.001 | ⏳ PENDING | TD-005 | CI-001.A |
+| CI-001.A | Analysis: Findings Synthesis | CI.001 | ⏳ PENDING | CI-001.R | CI-001.D |
+| CI-001.D | Decision: ADR-CI-001 | CI.001 | ⏳ PENDING | CI-001.A | CI-001.I |
+| CI-001.I | Implementation: Pre-commit + GHA | CI.001 | ⏳ PENDING | CI-001.D | None |
+
 ---
 
 ## Cross-Reference Index
@@ -503,6 +513,8 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ES-SYN | ES Synthesis | `synthesis/impl-es-synthesis.md` | ✅ |
 | ES-REV | ES Review | `reviews/impl-es-synthesis-design.md` | ✅ |
 | ES-RPT | ES Knowledge Summary | `reports/impl-es-knowledge-summary.md` | ✅ |
+| CI-R-001 | CI/CD Best Practices Research | `research/PROJ-001-CI-001-research.md` | ⏳ |
+| CI-A-001 | CI/CD Analysis | `analysis/PROJ-001-CI-001-analysis.md` | ⏳ |
 
 ### Decision Artifacts
 
@@ -513,6 +525,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ADR-004 | Session Management Alignment | `design/ADR-004-*.md` | ✅ |
 | ADR-013 | Shared Kernel | `decisions/e-013-*.md` | ✅ |
 | ADR-016 | CloudEvents SDK Architecture | `decisions/PROJ-001-e-016-v1-adr-cloudevents-sdk.md` | ✅ |
+| ADR-CI-001 | CI/CD Pipeline Architecture | `decisions/ADR-CI-001-cicd-pipeline.md` | ⏳ |
 
 > **Note**: ADR-016 supersedes the CloudEvents section of ADR-013 (e-013-v2). The decision to use
 > the CloudEvents SDK in infrastructure (vs stdlib-only in shared_kernel) was made after deeper
@@ -644,3 +657,4 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | TD-005 logged: Misplaced tests in projects/ directory (MEDIUM priority) |
 | 2026-01-10 | Claude | ENFORCE-012 COMPLETE: Contract tests for hook output (16 tests) - Total: 380 tests |
 | 2026-01-10 | Claude | ENFORCE-013 COMPLETE: Architecture tests for hexagonal constraints (13 tests) - Total: 393 tests |
+| 2026-01-10 | Claude | CI-001 started: CI/CD Pipeline Implementation (pre-commit + GitHub Actions) |
