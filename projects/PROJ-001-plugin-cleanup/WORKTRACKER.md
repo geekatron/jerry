@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-10T17:00:00Z
+**Last Updated**: 2026-01-10T18:30:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -195,7 +195,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 3 | [PHASE-03](work/PHASE-03-AGENT-UPDATES.md) | ✅ DONE | 100% | Phase 2 | Phase 4 |
 | 4 | [PHASE-04](work/PHASE-04-GOVERNANCE.md) | ✅ DONE | 100% | Phase 3 | Phase 5 |
 | 5 | [PHASE-05](work/PHASE-05-VALIDATION.md) | ✅ DONE | 100% | Phase 4 | Phase 6, 7 |
-| 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | 🔄 ACTIVE | 60% | Phase 5, 7 | None |
+| 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | 🔄 ACTIVE | 70% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 100% | - | - |
 | TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | ⏳ PENDING | 33% | - | - |
@@ -205,10 +205,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Active Initiative**: ENFORCE-008d - Refactor to Unified Design
-> **Active Phase**: Phase 6 Enforcement (60% complete)
-> **Status**: 🔄 RESUMING ENFORCE-008d after IMPL tasks completion
-> **Previous**: All 16 IMPL tasks complete (975 tests) - Domain layer fully implemented
+> **Active Initiative**: ENFORCE-009 - Application Layer Tests (NEXT)
+> **Active Phase**: Phase 6 Enforcement (70% complete)
+> **Status**: ✅ ENFORCE-008d COMPLETE - Ready for ENFORCE-009
+> **Previous**: ENFORCE-008d complete (291 tests: 130 SK + 161 SM)
 
 ### Active Initiative Details
 
@@ -441,7 +441,7 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 
 | ID | Title | Phase | Status | Predecessors | Successors |
 |----|-------|-------|--------|--------------|------------|
-| ENFORCE-008d | Refactor to Unified Design | 6 | 🔄 | Phase 7, SK | 009, 010, 013 |
+| ENFORCE-008d | Refactor to Unified Design (161 tests) | 6 | ✅ | Phase 7, SK | 009, 010, 013 |
 | 008d.0 | Research & Analysis | 6.008d | ✅ | Phase 7 | 008d.1 |
 | 008d.1 | Value Object Refactoring (36 tests) | 6.008d | ✅ | 008d.0 | 008d.2 |
 | 008d.1.1 | ProjectId → VertexId | 6.008d.1 | ✅ | 008d.0 | 008d.1.2 |
@@ -455,10 +455,10 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | 008d.3.1 | SessionId extends VertexId (20 tests) | 6.008d.3 | ✅ | 008d.0 | 008d.3.2 |
 | 008d.3.2 | Session aggregate (36 tests) | 6.008d.3 | ✅ | 008d.3.1 | 008d.3.3 |
 | 008d.3.3 | Add session_id to ProjectInfo (6 tests) | 6.008d.3 | ✅ | 008d.3.2 | 008d.4 |
-| 008d.4 | Infrastructure Updates | 6.008d | ⏳ | 008d.1-3 | 009 |
-| 008d.4.1 | Update adapters | 6.008d.4 | ⏳ | 008d.1-3 | 008d.4.2 |
-| 008d.4.2 | Migrate existing projects | 6.008d.4 | ⏳ | 008d.4.1 | 008d.4.3 |
-| 008d.4.3 | Update infra tests | 6.008d.4 | ⏳ | 008d.4.2 | 009 |
+| 008d.4 | Infrastructure Updates (28 tests) | 6.008d | ✅ | 008d.1-3 | 009 |
+| 008d.4.1 | Explore & verify adapters | 6.008d.4 | ✅ | 008d.1-3 | 008d.4.2 |
+| 008d.4.2 | Write infrastructure tests (28) | 6.008d.4 | ✅ | 008d.4.1 | 008d.4.3 |
+| 008d.4.3 | Verify compliance (all pass) | 6.008d.4 | ✅ | 008d.4.2 | 009 |
 | ENFORCE-009 | Application Layer Tests | 6 | ⏳ | 008d | 011 |
 | ENFORCE-010 | Infrastructure Tests | 6 | ⏳ | 008d | 011 |
 | ENFORCE-011 | E2E Tests | 6 | ⏳ | 009, 010 | 012 |
@@ -523,19 +523,20 @@ All 8 completed implementation tasks verified for Happy Path (HP), Negative (NEG
 | ID | Title | Location | Tests | Status |
 |----|-------|----------|-------|--------|
 | I-SK | Shared Kernel | `src/shared_kernel/` | 130 | ✅ |
-| I-SM | Session Management | `src/session_management/` | 133 | 🔄 |
+| I-SM | Session Management | `src/session_management/` | 161 | ✅ |
 
 ### Test Suites
 
 | Suite | Location | Count | Status |
 |-------|----------|-------|--------|
 | Shared Kernel Unit | `tests/shared_kernel/` | 130 | ✅ |
-| Session Mgmt Domain | `tests/session_management/unit/` | 133 | ✅ |
+| Session Mgmt Domain | `tests/session_management/unit/domain/` | 133 | ✅ |
+| Session Mgmt Infrastructure | `tests/session_management/unit/infrastructure/` | 28 | ✅ |
 | Session Mgmt Integration | `tests/session_management/integration/` | 0 | ⏳ |
 | Session Mgmt E2E | `tests/session_management/e2e/` | 0 | ⏳ |
 
 > **Note**: Shared Kernel count excludes `test_snowflake_id_bdd.py` (requires pytest_bdd - see TD-004).
-> Total verified: **263 tests passing** (130 SK + 133 SM)
+> Total verified: **291 tests passing** (130 SK + 161 SM)
 
 ---
 
@@ -632,3 +633,5 @@ Before marking ANY task complete:
 | 2026-01-10 | Claude | DISC-001 logged: ProjectId already extends VertexId |
 | 2026-01-10 | Claude | DISC-002 logged: ProjectInfo EntityBase design tension → Option 2 selected |
 | 2026-01-10 | Claude | 008d.2 COMPLETE: ProjectInfo audit fields + IVersioned/IAuditable (35 tests) |
+| 2026-01-10 | Claude | 008d.4 COMPLETE: Infrastructure tests for FilesystemProjectAdapter (28 tests) |
+| 2026-01-10 | Claude | **ENFORCE-008d COMPLETE**: Domain refactoring done (291 tests: 130 SK + 161 SM) |
