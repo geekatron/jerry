@@ -105,6 +105,120 @@ projects/PROJ-{nnn}-{slug}/
 
 ---
 
+## Project Enforcement (Hard Rule)
+
+> **Enforcement Level:** HARD
+> **Principle:** P-030 - Project Context Required
+> **See Also:** `docs/design/ADR-002-project-enforcement.md`
+
+Claude **MUST NOT** proceed with any substantial work without an active project context.
+This is a hard constraint enforced via the SessionStart hook.
+
+### Hook Output Format
+
+The `scripts/session_start.py` hook produces structured output that Claude parses:
+
+#### `<project-context>` - Valid Project Active
+
+```
+Jerry Framework initialized. See CLAUDE.md for context.
+<project-context>
+ProjectActive: PROJ-001-plugin-cleanup
+ProjectPath: projects/PROJ-001-plugin-cleanup/
+ValidationMessage: Project is properly configured
+</project-context>
+```
+
+**Action:** Proceed with work in the active project context.
+
+#### `<project-required>` - No Project Selected
+
+```
+Jerry Framework initialized.
+<project-required>
+ProjectRequired: true
+AvailableProjects:
+  - PROJ-001-plugin-cleanup [ACTIVE]
+  - PROJ-002-example [DRAFT]
+NextProjectNumber: 003
+ProjectsJson: [{"id": "PROJ-001-plugin-cleanup", "status": "IN_PROGRESS"}]
+</project-required>
+
+ACTION REQUIRED: No JERRY_PROJECT environment variable set.
+Claude MUST use AskUserQuestion to help the user select an existing project or create a new one.
+DO NOT proceed with any work until a project is selected.
+```
+
+**Action:** Use `AskUserQuestion` to help user select or create a project.
+
+#### `<project-error>` - Invalid Project Specified
+
+```
+Jerry Framework initialized with ERROR.
+<project-error>
+InvalidProject: bad-format
+Error: Project ID must match pattern PROJ-NNN-slug
+AvailableProjects:
+  - PROJ-001-plugin-cleanup [ACTIVE]
+NextProjectNumber: 002
+</project-error>
+
+ACTION REQUIRED: The specified JERRY_PROJECT is invalid.
+Claude MUST use AskUserQuestion to help the user select or create a valid project.
+```
+
+**Action:** Use `AskUserQuestion` to help user correct the error.
+
+### Required AskUserQuestion Flow
+
+When `<project-required>` or `<project-error>` is received, Claude **MUST**:
+
+1. **Parse** the available projects from the hook output
+2. **Present options** via `AskUserQuestion`:
+   - List available projects (from `AvailableProjects`)
+   - Offer "Create new project" option
+3. **Handle response**:
+   - If existing project selected → instruct user to set `JERRY_PROJECT`
+   - If new project → guide through creation flow
+4. **DO NOT** proceed with unrelated work until resolved
+
+Example AskUserQuestion structure:
+```yaml
+question: "Which project would you like to work on?"
+header: "Project"
+options:
+  - label: "PROJ-001-plugin-cleanup"
+    description: "[ACTIVE] Plugin system cleanup and refactoring"
+  - label: "Create new project"
+    description: "Start a new project workspace"
+```
+
+### Project Creation Flow
+
+When user selects "Create new project":
+
+1. **Get project details** via AskUserQuestion:
+   - Slug/name (required): e.g., "api-redesign"
+   - Description (optional)
+
+2. **Auto-generate ID** using `NextProjectNumber` from hook:
+   - Format: `PROJ-{NNN}-{slug}`
+   - Example: `PROJ-003-api-redesign`
+
+3. **Create project structure**:
+   ```
+   projects/PROJ-003-api-redesign/
+   ├── PLAN.md              # Implementation plan template
+   ├── WORKTRACKER.md       # Work tracking document
+   └── .jerry/data/items/   # Operational state
+   ```
+
+4. **Update registry**: Add entry to `projects/README.md`
+
+5. **Instruct user**: Set `JERRY_PROJECT=PROJ-003-api-redesign`
+
+---
+
 ## Skills Available
 
 | Skill | Purpose | Location |
@@ -177,7 +291,7 @@ Before finalizing significant outputs, agents SHOULD self-critique:
 ### Behavioral Validation
 
 Constitution compliance is validated via `docs/governance/BEHAVIOR_TESTS.md`:
-- 14 test scenarios (golden dataset)
+- 18 test scenarios (golden dataset)
 - LLM-as-a-Judge evaluation (industry standard per DeepEval, Datadog)
 - Happy path, edge case, and adversarial coverage
 
