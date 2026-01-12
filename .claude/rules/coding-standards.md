@@ -3,6 +3,12 @@
 > These rules are enforced across all Jerry framework development.
 > They are loaded at session start and apply to all agents.
 
+**Related Standards**:
+- [Architecture Standards](architecture-standards.md) - Hexagonal, CQRS, Event Sourcing
+- [File Organization](file-organization.md) - Directory structure, naming conventions
+- [Testing Standards](testing-standards.md) - Test pyramid, BDD cycle, coverage
+- [Pattern Catalog](../patterns/PATTERN-CATALOG.md) - Comprehensive pattern index
+
 ---
 
 ## Language: Python 3.11+

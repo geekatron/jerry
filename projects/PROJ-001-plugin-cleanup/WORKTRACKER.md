@@ -198,7 +198,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 70% (7/10) | - | TD-013, TD-014 |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 75% (9/12) | - | TD-015, TD-016 |
 | DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 7 items | - | DISC-005, DISC-006, DISC-007 |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
@@ -207,11 +207,118 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: ✅ v0.0.1 RELEASED - https://github.com/geekatron/jerry/releases/tag/v0.0.1
-> **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **Current Focus**: v0.0.1 released, ready for next initiative
+> **Status**: 🔴 TD-015 REMEDIATION REQUIRED - Design Canon Violations Found
+> **Active Initiative**: TD-015 - Remediate CLI Architecture Violation
+> **Current Focus**: TD-015 implementation started without approval; violations discovered
 > **Completed**: TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
-> **Test Count**: 1364 tests pass (34 CLI tests added)
+> **Test Count**: 1427 tests pass (63 TD-015 tests added - but architecture needs remediation)
+
+### TD-015: Architecture Remediation Status (CRITICAL)
+
+| Phase | Status | Tests | Issue |
+|-------|--------|-------|-------|
+| Phase 1: Application Layer | ⚠️ NEEDS REMEDIATION | 44 | Combined ports, wrong naming |
+| Phase 2: Composition Root | ⚠️ NEEDS REMEDIATION | 13 | Tests pass but structure wrong |
+| Phase 3: CLI Adapter | ⚠️ NEEDS REMEDIATION | 6 | Tests pass but uses wrong structure |
+| Phase 3: Entry Point | ⏳ BLOCKED | 0 | Awaiting plan approval |
+| Phase 4: CLI Namespaces | ⏳ BLOCKED | 0 | Awaiting plan approval |
+| Phase 5: TOON Format | ⏳ BLOCKED | 0 | Awaiting plan approval |
+
+#### Design Canon Violations Discovered
+
+| Violation | Design Canon Requirement | What Was Implemented |
+|-----------|-------------------------|---------------------|
+| **V-001** | Separate files per artifact | Combined `IQueryDispatcher` + `ICommandDispatcher` in one file |
+| **V-002** | Query data in `queries/` directory | Query data embedded in handler files |
+| **V-003** | Naming: `RetrieveProjectContextQuery` | Used `GetProjectContextQueryData` |
+| **V-004** | File names: `iquerydispatcher.py` | Used `dispatcher.py` for combined protocols |
+| **V-005** | Projections in `application/projections/` | Not implemented |
+| **V-006** | Read models in `infrastructure/read_models/` | Not implemented |
+
+**References to Design Canon:**
+- `docs/knowledge/exemplars/architecture/work_tracker_architecture_hexagonal_ddd_cqrs_layered_teaching_edition.md` (lines 750-785)
+- `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-011-v1-jerry-design-canon.md`
+
+**Process Violation:**
+> ⚠️ **CRITICAL**: Implementation started without presenting plan for user approval.
+> This violates the established process: Plan → Approval → Implementation.
+
+#### Remediation Plan (Awaiting Approval)
+
+1. **Split dispatcher protocols** into separate files:
+   - `src/application/ports/iquerydispatcher.py`
+   - `src/application/ports/icommanddispatcher.py`
+
+2. **Create queries directory** with separate query data files:
+   - `src/application/queries/retrieve_project_context_query.py`
+   - `src/application/queries/scan_projects_query.py`
+   - `src/application/queries/validate_project_query.py`
+
+3. **Rename handlers** with proper naming convention:
+   - `retrieve_project_context_query_handler.py`
+   - `scan_projects_query_handler.py`
+   - `validate_project_query_handler.py`
+
+4. **Add projections infrastructure** (if needed for current scope):
+   - `src/application/projections/` directory
+   - `src/application/ports/secondary/read_models.py`
+   - `src/infrastructure/read_models/`
+
+**Awaiting User Approval Before Proceeding**
+
+---
+
+### Execution Order (User Approved 2026-01-12)
+
+| Priority | Item | Description | Status |
+|----------|------|-------------|--------|
+| 1 | **TD-016** | Create Comprehensive Coding Standards & Pattern Catalog | ✅ COMPLETE |
+| 2 | **TD-015 Remediation** | Fix design canon violations (file structure, naming, events, projections) | ⏳ READY |
+| 3 | Phase 3 | Update main.py entry point to use bootstrap | ⏳ PENDING |
+| 4 | Phase 4 | CLI Namespaces per bounded context | ⏳ PENDING |
+| 5 | Phase 5 | TOON Format Integration | ⏳ PENDING |
+| 6 | Tech Debt | Address remaining clean architecture gaps | ⏳ PENDING |
+
+### TD-016: Coding Standards & Pattern Catalog (✅ COMPLETE)
+
+**Completed (2026-01-12):**
+
+| Task | Status | Description | Evidence |
+|------|--------|-------------|----------|
+| TD-016.R1 | ✅ COMPLETE | Compile all Jerry design patterns from design canon | 31 patterns, 6 lessons, 4 assumptions extracted |
+| TD-016.A1 | ✅ COMPLETE | Gap analysis of current `.claude/rules/` | Only `coding-standards.md` existed |
+| TD-016.I1 | ✅ COMPLETE | Create PATTERN-CATALOG.md | `.claude/patterns/PATTERN-CATALOG.md` |
+| TD-016.I2 | ✅ COMPLETE | Create architecture-standards.md | `.claude/rules/architecture-standards.md` |
+| TD-016.I3 | ✅ COMPLETE | Create file-organization.md | `.claude/rules/file-organization.md` |
+| TD-016.I4 | ✅ COMPLETE | Create testing-standards.md | `.claude/rules/testing-standards.md` |
+| TD-016.I5 | ✅ COMPLETE | Update coding-standards.md with references | Added links to related standards |
+
+**Pattern Catalog Summary:**
+- **31 patterns** across 9 categories (Identity, Entity, Aggregate, Event, CQRS, Repository, Graph, Architecture, Testing)
+- **6 lessons** learned (LES-001 to LES-006)
+- **4 assumptions** documented (ASM-001 to ASM-004)
+
+**Key Research Citations:**
+| Source | Key Finding |
+|--------|-------------|
+| [Anthropic Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) | CLAUDE.md as persistent memory |
+| [Claude Code Handbook](https://github.com/nikiforovall/claude-code-rules) | Separate files for standards, patterns |
+| [pytest-archon](https://github.com/jwbargsten/pytest-archon) | Architectural boundary enforcement |
+| [PyTestArch](https://pypi.org/project/PyTestArch/) | ArchUnit-inspired Python testing |
+
+**Implemented File Structure:**
+```
+.claude/
+├── rules/
+│   ├── coding-standards.md          # ✅ Updated with references
+│   ├── architecture-standards.md    # ✅ NEW (Hexagonal, CQRS, ES)
+│   ├── file-organization.md         # ✅ NEW (Directory structure, naming)
+│   └── testing-standards.md         # ✅ NEW (Test pyramid, BDD)
+└── patterns/
+    └── PATTERN-CATALOG.md           # ✅ NEW (31 patterns indexed)
+```
+
+**Architecture Tests**: Already exist in `tests/architecture/test_composition_root.py` - no additional enforcement tests needed for MVP.
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
 

@@ -1,11 +1,84 @@
 # Detailed Implementation Plan: TD-015 CLI Architecture Remediation
 
-> **Status**: SPECIFICATION COMPLETE - READY FOR IMPLEMENTATION
+> **Status**: 🔴 REMEDIATION REQUIRED - Design Canon Violations Found
 > **Priority**: CRITICAL
 > **Source**: BUG-006, DISC-011, DISC-012, DISC-013
 > **Created**: 2026-01-12
-> **Revised**: 2026-01-12
+> **Revised**: 2026-01-12 (Post-implementation review - AWAITING USER APPROVAL)
 > **Author**: Claude
+
+---
+
+## ⚠️ IMPLEMENTATION STATUS: REMEDIATION REQUIRED
+
+### Current State
+
+63 tests were created and pass, but the file structure violates the design canon.
+The implementation must be refactored before proceeding.
+
+### Design Canon-Compliant Target Structure
+
+Per user requirements and design canon, the correct structure is:
+
+```
+src/
+├── application/
+│   ├── __init__.py
+│   ├── dispatchers/
+│   │   ├── __init__.py
+│   │   └── query_dispatcher.py        # QueryDispatcher implementation
+│   ├── handlers/
+│   │   ├── __init__.py
+│   │   ├── retrieve_project_context_query_handler.py  # Handler ONLY
+│   │   ├── scan_projects_query_handler.py             # Handler ONLY
+│   │   └── validate_project_query_handler.py          # Handler ONLY
+│   ├── ports/
+│   │   ├── __init__.py
+│   │   ├── iquerydispatcher.py        # IQueryDispatcher protocol ONLY
+│   │   ├── icommanddispatcher.py      # ICommandDispatcher protocol ONLY
+│   │   └── secondary/
+│   │       ├── __init__.py
+│   │       └── read_models.py         # IReadModelStore port
+│   ├── queries/                        # NEW - Separate directory for queries
+│   │   ├── __init__.py
+│   │   ├── retrieve_project_context_query.py  # Query data object ONLY
+│   │   ├── scan_projects_query.py             # Query data object ONLY
+│   │   └── validate_project_query.py          # Query data object ONLY
+│   └── projections/                    # NEW - Materialized views
+│       ├── __init__.py
+│       └── project_dashboard.py       # Projection builder (if needed)
+├── bootstrap.py                        # Composition root (OK)
+├── infrastructure/
+│   └── read_models/                    # NEW - Read model storage
+│       ├── __init__.py
+│       └── in_memory_read_model_store.py
+└── interface/
+    └── cli/
+        └── adapter.py                  # CLIAdapter (OK structure, wrong imports)
+```
+
+### What Was Wrong (Current Implementation)
+
+| File | Issue | Correct Approach |
+|------|-------|------------------|
+| `dispatcher.py` | Contains both `IQueryDispatcher` AND `ICommandDispatcher` | Split into `iquerydispatcher.py` and `icommanddispatcher.py` |
+| `get_project_context_handler.py` | Contains handler AND `GetProjectContextQueryData` | Split: handler in handlers/, query in queries/ |
+| `scan_projects_handler.py` | Contains handler AND `ScanProjectsQueryData` | Split: handler in handlers/, query in queries/ |
+| `validate_project_handler.py` | Contains handler AND `ValidateProjectQueryData` | Split: handler in handlers/, query in queries/ |
+| Naming | Uses `Get*` prefix | Should use `Retrieve*` per convention |
+
+### Remediation Tasks
+
+| Task | Description | Status |
+|------|-------------|--------|
+| R-001 | Split `dispatcher.py` → `iquerydispatcher.py` + `icommanddispatcher.py` | ⏳ Pending Approval |
+| R-002 | Create `application/queries/` directory | ⏳ Pending Approval |
+| R-003 | Move query data objects from handlers to queries/ | ⏳ Pending Approval |
+| R-004 | Rename `Get*` → `Retrieve*` | ⏳ Pending Approval |
+| R-005 | Update all imports in tests | ⏳ Pending Approval |
+| R-006 | Update `bootstrap.py` imports | ⏳ Pending Approval |
+| R-007 | Update `adapter.py` imports | ⏳ Pending Approval |
+| R-008 | Add projections infrastructure (if in scope) | ⏳ Pending Scope Decision |
 
 ---
 

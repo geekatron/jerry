@@ -30,7 +30,8 @@
 | TD-012 | pip-audit fails on local package | MEDIUM | ✅ DONE | CI-002 |
 | TD-013 | Implement GitHub Releases pipeline | HIGH | ✅ DONE | DISC-005, DISC-007 |
 | TD-014 | Implement Jerry CLI (Primary Adapter) | **CRITICAL** | ✅ DONE | DISC-006 |
-| TD-015 | Remediate CLI Architecture Violation | **CRITICAL** | ⏳ TODO | BUG-006 |
+| TD-015 | Remediate CLI Architecture Violation | **CRITICAL** | 🔴 REMEDIATION REQ | BUG-006, Design Canon |
+| TD-016 | Create Comprehensive Coding Standards & Pattern Catalog | **HIGH** | ⏳ TODO | User Requirement, Design Canon |
 
 ---
 
@@ -902,9 +903,12 @@ L - Large (8-16 hours)
 
 ## TD-015: Remediate CLI Architecture Violation
 
-> **Status**: ⏳ TODO
+> **Status**: 🔴 REMEDIATION REQUIRED
 > **Priority**: **CRITICAL**
-> **Source**: BUG-006 (CLI Adapter Bypasses Application Layer)
+> **Source**: BUG-006 (CLI Adapter Bypasses Application Layer), Design Canon Violations
+> **Implementation Started**: 2026-01-12 (WITHOUT USER APPROVAL - process violation)
+> **Tests Created**: 63 tests (44 unit, 13 architecture/integration, 6 CLI integration)
+> **Issue**: Implementation structure does not follow design canon
 > **Blocks**: Future CLI expansion, bounded context isolation
 > **Detailed Plan**: `IMPL-TD-015-DETAILED.md` (BDD scenarios, edge cases, evidence criteria)
 > **Summary Plan**: `IMPL-TD-015-CLI-ARCHITECTURE-REMEDIATION.md`
@@ -1079,3 +1083,140 @@ L - Large (8-16 hours)
 - Phase 4 (Namespaces): 2-3 hours
 - Phase 5 (TOON): 2-3 hours
 - Testing: 2-4 hours
+
+---
+
+## TD-016: Create Comprehensive Coding Standards & Pattern Catalog
+
+> **Status**: ⏳ TODO
+> **Priority**: **HIGH**
+> **Source**: User Requirement (2026-01-12), Design Canon Violations in TD-015
+> **Blocks**: Reproducible architecture compliance, agent governance
+
+### Description
+
+Create a comprehensive coding standards file and pattern catalog for Claude Code that captures all architecture and design findings, guidelines, and standards. This ensures reproducible compliance rather than constant manual searching.
+
+### Root Cause
+
+The existing `.claude/rules/coding-standards.md` is thin and doesn't capture:
+- Jerry Design Canon patterns (34 patterns documented)
+- Hexagonal Architecture layer rules
+- CQRS/ES file organization standards
+- Event naming conventions
+- Architecture test enforcement patterns
+
+### Research Findings (2026-01-12)
+
+#### Claude Code Configuration Best Practices
+
+| Source | Key Finding | Citation |
+|--------|-------------|----------|
+| [Anthropic Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) | CLAUDE.md as persistent memory; keep concise and universal | Anthropic Engineering |
+| [Claude Code Handbook](https://github.com/nikiforovall/claude-code-rules) | Separate files: ADRs, coding standards, project context, team conventions | nikiforovall |
+| [Claude Code Templates](https://github.com/davila7/claude-code-templates) | Structured YAML frontmatter + markdown body for configuration | davila7 |
+| [Using CLAUDE.md Files](https://claude.com/blog/using-claude-md-files) | Multiple CLAUDE.md at different levels; auto-loaded at session start | Anthropic Blog |
+| [HumanLayer Blog](https://www.humanlayer.dev/blog/writing-a-good-claude-md) | CLAUDE.md is agent's "constitution"; primary source of truth | HumanLayer |
+
+#### Architecture Test Enforcement (Industry Best Practices)
+
+| Source | Key Finding | Citation |
+|--------|-------------|----------|
+| [pytest-archon](https://github.com/jwbargsten/pytest-archon) | Define architectural boundaries as forbidden dependencies | jwbargsten |
+| [PyTestArch](https://pypi.org/project/PyTestArch/) | Inspired by ArchUnit; codify rules as automated tests | PyPI |
+| [Medium: AI Agents for Architecture](https://medium.com/@dave-patten/using-ai-agents-to-enforce-architectural-standards-41d58af235a0) | AI agents validate architecture decisions in PRs | Dave Patten |
+| [Perforce Coding Standards](https://www.perforce.com/blog/sca/how-enforce-coding-standards) | Static analysis + coding standards reduce defects by 41% | Perforce |
+| [Sebastian Sigl](https://www.sebastiansigl.com/blog/type-safe-python-tests-in-the-age-of-ai/) | Architectural tests catch structural problems before tech debt | Sebastian Sigl |
+
+### Proposed Solution
+
+#### File Structure
+
+Per Claude Code best practices, create a hierarchy in `.claude/rules/`:
+
+```
+.claude/
+├── rules/
+│   ├── coding-standards.md          # EXPAND - Python, type hints, naming
+│   ├── architecture-standards.md    # NEW - Hexagonal, CQRS, ES patterns
+│   ├── file-organization.md         # NEW - One artifact per file rules
+│   └── testing-standards.md         # NEW - Test pyramid, BDD, coverage
+├── patterns/
+│   ├── PATTERN-CATALOG.md           # NEW - Comprehensive catalog with links
+│   ├── hexagonal-architecture.md    # Pattern details + examples
+│   ├── cqrs-event-sourcing.md       # Pattern details + examples
+│   └── dispatcher-pattern.md        # Pattern details + examples
+└── agents/                          # Existing agent definitions
+```
+
+#### Pattern Catalog Structure (PATTERN-CATALOG.md)
+
+```markdown
+# Jerry Pattern Catalog v1.0
+
+## Quick Reference
+
+| Pattern ID | Name | Category | Location | Status |
+|------------|------|----------|----------|--------|
+| PAT-ID-001 | VertexId | Identity | design-canon.md#pat-id-001 | MANDATORY |
+| PAT-ARCH-001 | Hexagonal Architecture | Architecture | hexagonal-architecture.md | MANDATORY |
+| PAT-CQRS-001 | Dispatcher Pattern | CQRS | dispatcher-pattern.md | MANDATORY |
+...
+
+## Pattern Categories
+
+### 1. Identity Patterns (PAT-ID-*)
+[Links to detailed patterns with examples]
+
+### 2. Architecture Patterns (PAT-ARCH-*)
+[Links to detailed patterns with examples]
+
+### 3. CQRS Patterns (PAT-CQRS-*)
+[Links to detailed patterns with examples]
+```
+
+#### Enforcement Mechanisms
+
+| Mechanism | Tool | Purpose |
+|-----------|------|---------|
+| Static Analysis | pytest-archon | Layer boundary enforcement |
+| Type Checking | pyright | Interface compliance |
+| Linting | ruff | Code style enforcement |
+| Architecture Tests | Custom pytest | Design canon validation |
+| Pre-commit Hooks | pre-commit | Automated checks |
+
+### Implementation Plan
+
+| Task | Description | Status |
+|------|-------------|--------|
+| TD-016.R1 | Research: Compile all Jerry design patterns from design canon | ⏳ TODO |
+| TD-016.R2 | Research: Industry best practices for coding standards docs | ⏳ TODO |
+| TD-016.R3 | Research: Architecture test frameworks for Python | ⏳ TODO |
+| TD-016.A1 | Analysis: Gap analysis of current `.claude/rules/` | ⏳ TODO |
+| TD-016.I1 | Implement: Expand `coding-standards.md` | ⏳ TODO |
+| TD-016.I2 | Implement: Create `architecture-standards.md` | ⏳ TODO |
+| TD-016.I3 | Implement: Create `file-organization.md` | ⏳ TODO |
+| TD-016.I4 | Implement: Create `testing-standards.md` | ⏳ TODO |
+| TD-016.I5 | Implement: Create `PATTERN-CATALOG.md` | ⏳ TODO |
+| TD-016.I6 | Implement: Create pattern detail files | ⏳ TODO |
+| TD-016.T1 | Tests: Architecture tests for standards enforcement | ⏳ TODO |
+| TD-016.V1 | Validation: Verify agents follow standards | ⏳ TODO |
+
+### Acceptance Criteria
+
+| ID | Criterion | Evidence |
+|----|-----------|----------|
+| AC-01 | `coding-standards.md` expanded with Jerry-specific rules | File exists, reviewed |
+| AC-02 | `architecture-standards.md` captures hexagonal/CQRS | File exists, reviewed |
+| AC-03 | `file-organization.md` specifies one-artifact-per-file | File exists, reviewed |
+| AC-04 | `PATTERN-CATALOG.md` has all 34+ patterns | Pattern count verified |
+| AC-05 | Architecture tests enforce layer boundaries | pytest-archon tests pass |
+| AC-06 | Standards are reproducible | Fresh agent follows them |
+
+### Effort Estimate
+
+M - Medium (4-8 hours)
+- Research: 1-2 hours
+- Standards creation: 2-3 hours
+- Pattern catalog: 1-2 hours
+- Verification: 1 hour

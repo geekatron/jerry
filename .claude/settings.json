@@ -109,10 +109,10 @@
   "context": {
     "always_load": [
       "CLAUDE.md",
-      "AGENTS.md"
+      "AGENTS.md",
+      "GOVERNANCE.md"
     ],
     "load_on_demand": [
-      "GOVERNANCE.md",
       "projects/README.md",
       "projects/*/PLAN.md",
       "projects/*/WORKTRACKER.md"
@@ -132,5 +132,10 @@
       "require_citations": true,
       "capture_learnings": true
     }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ~/.claude/statusline.py",
+    "padding": 0
   }
 }
