@@ -35,14 +35,14 @@ last_updated: "2026-01-12"
 source: "User request - Meta-improvement using own pipelines"
 rationale: "Use Jerry's own orchestration patterns to systematically enhance all agent definitions, skills, and playbooks using latest authoritative sources."
 work_items_total: 22
-work_items_complete: 18
+work_items_complete: 20
 work_items_in_progress: 0
 token_estimate: 2500
 ---
 
 # SAO-INIT-008: Agent & Skill Enhancement via Self-Orchestration
 
-> **Status:** 🔄 IN_PROGRESS (18/22 work items complete - Phase 3 P0: 4/4 ✅, P1: 4/4 ✅, Skills: 3/3 ✅)
+> **Status:** 🔄 IN_PROGRESS (20/22 work items complete - Phase 3 COMPLETE, Phase 4 next)
 > **Created:** 2026-01-12
 > **Detailed Plan:** [plan.md](plan.md)
 
@@ -164,12 +164,12 @@ Jerry has mature orchestration patterns (8 documented) and agent pipelines (ps-*
 | WI-SAO-059 | ✅ COMPLETE | P1 | Enhance nse-requirements agent (0.93→0.945) |
 | WI-SAO-060 | ✅ COMPLETE | P1 | Enhance nse-reviewer agent (0.93→0.945) |
 
-### Phase 3: Enhancement - P2 Agents (2 work items)
+### Phase 3: Enhancement - P2 Agents (2 work items) ✅ COMPLETE
 
 | Work Item | Status | Priority | Description |
 |-----------|--------|----------|-------------|
-| WI-SAO-061 | 📋 OPEN | P2 | Enhance remaining ps-* agents (4 agents) |
-| WI-SAO-062 | 📋 OPEN | P2 | Enhance remaining nse-* + orch-* agents (12 agents) |
+| WI-SAO-061 | ✅ COMPLETE | P2 | Enhance remaining ps-* agents (4 agents - all already ≥0.85) |
+| WI-SAO-062 | ✅ COMPLETE | P2 | Enhance remaining nse-* + orch-* + core agents (8 PASS + 5 enhanced to v2.1.0) |
 
 ### Phase 3: Enhancement - Skills & Patterns (3 work items) ✅ COMPLETE
 
