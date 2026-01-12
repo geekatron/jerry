@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: 🔄 IN PROGRESS (7/8 done - 87%)
+> **Status**: 🔄 IN PROGRESS (7/9 done - 78%)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -28,6 +28,7 @@
 | TD-010 | Implement link-artifact CLI command | HIGH | ⏳ TODO | DISC-003 |
 | TD-011 | CI missing test dependencies | **CRITICAL** | ✅ DONE | CI-002 |
 | TD-012 | pip-audit fails on local package | MEDIUM | ✅ DONE | CI-002 |
+| TD-013 | Implement GitHub Releases pipeline | HIGH | ⏳ TODO | DISC-005 |
 
 ---
 
@@ -564,6 +565,122 @@ XS - Extra Small (<1 hour)
 
 ---
 
+## TD-013: Implement GitHub Releases Pipeline
+
+> **Status**: ⏳ TODO
+> **Priority**: HIGH
+> **Source**: DISC-005 (User requirement 2026-01-11)
+
+### Description
+
+ADR-CI-001 states Jerry will be released publicly but no release mechanism exists. User requires:
+- GitHub Releases (not PyPI at this time)
+- Cross-platform binaries (macOS + Windows)
+- Distribution to friends without requiring Python installation
+
+### Root Cause
+
+ADR-CI-001 focused on CI quality gates (lint, type-check, test, security) but did not define Layer 3 (Release/Distribution). This was an oversight in the original CI/CD architecture.
+
+### Evidence (ADR-CI-001)
+
+| Line | Quote | Implication |
+|------|-------|-------------|
+| 72 | *"Jerry will be released for others to use"* | Justification for Python matrix testing |
+| 96 | *"Jerry will be released publicly; vulnerable dependencies are unacceptable"* | Security scanning rationale |
+| 109 | *"Portability assured - Matrix testing catches Python version issues"* | Cross-version compatibility |
+
+### User Requirements (2026-01-11)
+
+| Requirement | Description | Rationale |
+|-------------|-------------|-----------|
+| GitHub Releases | Version-tagged releases with downloadable artifacts | Simple distribution without PyPI |
+| macOS binary | Standalone executable for macOS | User's primary platform |
+| Windows binary | Standalone executable for Windows | Friends' platform |
+| No Python required | Bundled runtime in binary | Non-technical users |
+
+### Impact
+
+- Users cannot install Jerry without cloning the repo
+- No versioned releases for distribution
+- No cross-platform binaries for non-Python users
+- ADR-CI-001 stated intent unfulfilled
+
+### Proposed Solution
+
+#### Option Analysis (Pending User Decision)
+
+| Option | Approach | Pros | Cons | Complexity |
+|--------|----------|------|------|------------|
+| **A: PyInstaller** | Compile to standalone binary | No Python required, single file | Large binaries (~50MB), platform-specific builds | Medium |
+| **B: Shiv/PEX** | Python zip app | Smaller than PyInstaller, reproducible | Requires Python on target | Low |
+| **C: Wheel + script** | pip install from GitHub Release | Small size, standard Python packaging | Requires Python on target | Low |
+
+#### Recommended: Option A (PyInstaller)
+
+Based on user requirement "distribution to friends without requiring Python installation", PyInstaller is the appropriate choice. Friends on Windows should not need to install Python.
+
+#### Implementation Plan (Pending Approval)
+
+**Phase 1: Research (ADR-REL-001)**
+- [ ] Research PyInstaller GitHub Actions integration
+- [ ] Research cross-platform build matrix (macOS, Windows)
+- [ ] Document binary size and startup time trade-offs
+- [ ] Create ADR-REL-001 for Release Pipeline Architecture
+
+**Phase 2: Implementation**
+- [ ] Create `.github/workflows/release.yml`
+- [ ] Configure PyInstaller spec for Jerry CLI
+- [ ] Add build matrix: `macos-latest`, `windows-latest`
+- [ ] Configure GitHub Releases artifact upload
+
+**Phase 3: Verification**
+- [ ] Test macOS binary on fresh machine
+- [ ] Test Windows binary on fresh machine
+- [ ] Validate that all CLI commands work in binary form
+- [ ] Document installation instructions
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `.github/workflows/release.yml` | **CREATE** | Release workflow with PyInstaller |
+| `jerry.spec` | **CREATE** | PyInstaller configuration |
+| `pyproject.toml` | MODIFY | Add PyInstaller to dev dependencies |
+| `docs/INSTALLATION.md` | **CREATE** | Installation instructions |
+| `projects/.../decisions/ADR-REL-001-release-pipeline.md` | **CREATE** | Release architecture ADR |
+
+### Acceptance Criteria (Validatable)
+
+| ID | Criterion | Evidence Required |
+|----|-----------|-------------------|
+| AC-01 | Release workflow triggers on version tag | GitHub Actions run on `v*` tag push |
+| AC-02 | macOS binary built successfully | Artifact in GitHub Release |
+| AC-03 | Windows binary built successfully | Artifact in GitHub Release |
+| AC-04 | Binary runs without Python installed | Test on clean VM/container |
+| AC-05 | All CLI commands work in binary | Integration test pass |
+| AC-06 | GitHub Release created automatically | Release page with artifacts |
+| AC-07 | Binary size documented | Release notes include size |
+
+### References (Industry Prior Art)
+
+| Source | URL | Relevance |
+|--------|-----|-----------|
+| PyInstaller Docs | https://pyinstaller.org/en/stable/ | Binary bundling |
+| GitHub Actions Release | https://docs.github.com/en/actions/using-workflows/releasing-and-maintaining-actions | Release workflow patterns |
+| GitHub Releases API | https://docs.github.com/en/rest/releases | Artifact upload |
+| Shiv (LinkedIn) | https://github.com/linkedin/shiv | Alternative: Python zip apps |
+| PEX (Twitter/X) | https://github.com/pex-tool/pex | Alternative: Python executables |
+
+### Effort Estimate
+
+M - Medium (4-8 hours)
+- Research & ADR: 1-2 hours
+- Implementation: 2-4 hours
+- Verification: 1-2 hours
+
+---
+
 ## Document History
 
 | Date | Author | Changes |
@@ -573,3 +690,4 @@ XS - Extra Small (<1 hour)
 | 2026-01-11 | Claude | Added TD-010 (DISC-003) |
 | 2026-01-11 | Claude | Added TD-011, TD-012 (CI-002 failures) |
 | 2026-01-11 | Claude | Completed TD-011, TD-012 (CI-002 resolution) |
+| 2026-01-11 | Claude | Added TD-013: Implement GitHub Releases Pipeline (DISC-005) |

@@ -198,8 +198,8 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 87% (7/8) | - | CI-002 |
-| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 4 items | - | - |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 78% (7/9) | - | CI-002, TD-013 |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 5 items | - | DISC-005 |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
 
@@ -209,7 +209,8 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 > **Status**: ✅ CI-002 COMPLETE - All CI jobs passing
 > **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **Next Step**: v0.0.1 release unblocked - ready for PR merge
+> **New Discovery**: DISC-005 → TD-013: Release pipeline missing (GitHub Releases + cross-platform binaries)
+> **Next Step**: v0.0.1 release unblocked - ready for PR merge (then implement TD-013)
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
 
@@ -836,3 +837,5 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | CI-002 investigation complete: 4 issues identified (TD-011, TD-012, BUG-003, BUG-004) |
 | 2026-01-11 | Claude | CI-002 FIXED: All 4 issues resolved (pending CI verification) |
 | 2026-01-11 | Claude | **CI-002 COMPLETE**: All CI jobs passing (run 20904191996) - v0.0.1 unblocked |
+| 2026-01-11 | Claude | DISC-005: Release pipeline missing from CI/CD (user requirement: GitHub Releases + macOS/Windows binaries) |
+| 2026-01-11 | Claude | TD-013: Elevated DISC-005 to tech debt - implement GitHub Releases with PyInstaller binaries |

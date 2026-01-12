@@ -24,6 +24,7 @@
 | DISC-002 | ProjectInfo EntityBase Design Tension | ACTIONED | 008d.2 |
 | DISC-003 | link-artifact CLI Missing | ELEVATED | TD-010 |
 | DISC-004 | ps-* Orchestration Validates Composed Architecture | ACTIONED | INIT-WT-SKILLS |
+| DISC-005 | Release Pipeline Missing from CI/CD | ELEVATED | TD-013 |
 
 ---
 
@@ -164,6 +165,48 @@ docs/knowledge/dragonsbelurkin/**/*.md (5 files)
 
 ---
 
+### DISC-005: Release Pipeline Missing from CI/CD
+
+**Date**: 2026-01-11
+**Context**: User review of CI-002 completion; comparing ADR-CI-001 stated intent vs implementation
+**Finding**: ADR-CI-001 explicitly states intent to release Jerry publicly but defines no release mechanism:
+
+**Evidence from ADR-CI-001**:
+- Line 96: *"Jerry will be released publicly; vulnerable dependencies are unacceptable."*
+- Line 109: *"Portability assured - Matrix testing catches Python version issues"*
+- Line 72: Rationale for Python matrix: *"Jerry will be released for others to use"*
+
+**What Exists**:
+- Pre-commit hooks (Layer 1) ✅
+- GitHub Actions CI (Layer 2) ✅
+  - Lint & Format ✅
+  - Type Check ✅
+  - Security Scan ✅
+  - Test Matrix (3.11-3.14) ✅
+  - Coverage Report ✅
+
+**What is Missing**:
+- No release workflow in `.github/workflows/`
+- No artifact generation (binaries, wheels)
+- No GitHub Releases integration
+- No cross-platform distribution strategy (user requirement: macOS + Windows)
+
+**User Requirements** (2026-01-11):
+- GitHub Releases (not PyPI at this time)
+- Downloadable artifacts for macOS and Windows
+- Distribution to friends without requiring Python installation
+
+**Impact**:
+- Users cannot install Jerry without cloning the repo
+- No versioned releases for distribution
+- No cross-platform binaries for non-Python users
+- ADR-CI-001 stated intent unfulfilled
+
+**Action**: Created TD-013 to implement GitHub Releases pipeline
+**Status**: LOGGED → Elevated to TECHDEBT (TD-013)
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -177,3 +220,4 @@ docs/knowledge/dragonsbelurkin/**/*.md (5 files)
 | 2026-01-10 | Claude | Initial creation |
 | 2026-01-11 | Claude | Added DISC-003: link-artifact CLI missing |
 | 2026-01-11 | Claude | Added DISC-004: ps-* orchestration validates Composed Architecture |
+| 2026-01-11 | Claude | Added DISC-005: Release Pipeline Missing from CI/CD (elevated to TD-013) |
