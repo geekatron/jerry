@@ -201,15 +201,15 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 87% (7/8) | - | CI-002 |
 | DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 4 items | - | - |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
-| **CI-002** | CI/CD Pipeline Failures | ✅ FIXED | 4/4 resolved (pending CI verify) | CI-001 | v0.0.1 |
+| **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
 
 ---
 
 ## Current Focus
 
-> **Status**: ✅ CI-002 FIXED - Awaiting CI verification
+> **Status**: ✅ CI-002 COMPLETE - All CI jobs passing
 > **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **Next Step**: Commit and push CI-002 fixes, verify GitHub Actions pass
+> **Next Step**: v0.0.1 release unblocked - ready for PR merge
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
 
@@ -222,11 +222,18 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 **Resolution Summary (2026-01-11):**
 1. **TD-011**: Added `pytest-archon>=0.0.6` to pyproject.toml, updated ci.yml to use `pip install -e ".[test]"`
-2. **TD-012**: Added `--skip-editable` to pip-audit command
-3. **BUG-003**: Added `@runtime_checkable HasToDict Protocol` for type narrowing
-4. **BUG-004**: Changed `TId = TypeVar("TId")` to `TId = TypeVar("TId", contravariant=True)`
+2. **TD-012**: Changed security scan to install dev deps directly (not jerry package) - `pip install filelock mypy ruff && pip-audit --strict`
+3. **BUG-003**: Added `@runtime_checkable HasToDict Protocol` for type narrowing in `src/infrastructure/internal/serializer.py`
+4. **BUG-004**: Changed `TId = TypeVar("TId")` to `TId = TypeVar("TId", contravariant=True)` in `src/work_tracking/domain/ports/repository.py`
 
-**Verification**: `pyright src/` reports 0 errors, 0 warnings
+**Verification Evidence:**
+- Local: `pyright src/` reports 0 errors, 0 warnings
+- CI Run: [20904191996](https://github.com/geekatron/jerry/actions/runs/20904191996) - All 8 jobs passed ✓
+  - Lint & Format (9s) ✓
+  - Type Check (24s) ✓
+  - Security Scan (16s) ✓
+  - Test Python 3.11, 3.12, 3.13, 3.14 ✓
+  - CI Success ✓
 
 ---
 
@@ -828,3 +835,4 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | Phase 1 LAUNCHED: 4 ps-researcher agents in background (e-001, e-002, e-003, e-004) |
 | 2026-01-11 | Claude | CI-002 investigation complete: 4 issues identified (TD-011, TD-012, BUG-003, BUG-004) |
 | 2026-01-11 | Claude | CI-002 FIXED: All 4 issues resolved (pending CI verification) |
+| 2026-01-11 | Claude | **CI-002 COMPLETE**: All CI jobs passing (run 20904191996) - v0.0.1 unblocked |

@@ -172,7 +172,7 @@ This approach uses structural typing via Protocol, which pyright can use for typ
 ### Acceptance Criteria
 
 - [x] Pyright reports 0 errors for serializer.py
-- [ ] Type Check CI job passes - pending CI verification
+- [x] Type Check CI job passes (verified: run 20904191996)
 - [x] No loss of functionality (isinstance is semantically equivalent to hasattr)
 - [x] Existing tests still pass
 
