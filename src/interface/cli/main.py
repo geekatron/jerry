@@ -34,7 +34,7 @@ References:
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from src.bootstrap import (
     create_query_dispatcher,
@@ -42,10 +42,7 @@ from src.bootstrap import (
     get_projects_directory,
 )
 from src.interface.cli.adapter import CLIAdapter
-from src.interface.cli.parser import __version__, create_parser
-
-if TYPE_CHECKING:
-    import argparse
+from src.interface.cli.parser import create_parser
 
 
 def create_cli_adapter() -> CLIAdapter:

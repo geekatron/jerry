@@ -17,7 +17,7 @@ NO infrastructure imports are allowed in this module.
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
 from src.application.queries import (
@@ -35,13 +35,6 @@ from src.work_tracking.application.handlers.queries.get_work_item_query_handler 
     WorkItemNotFoundError,
 )
 from src.work_tracking.application.queries import GetWorkItemQuery, ListWorkItemsQuery
-
-if TYPE_CHECKING:
-    from src.session_management.application.handlers.commands import (
-        AbandonSessionCommandHandler,
-        CreateSessionCommandHandler,
-        EndSessionCommandHandler,
-    )
 
 
 class CLIAdapter:

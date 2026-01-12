@@ -14,9 +14,9 @@ Query Handlers:
 """
 
 from .commands import (
+    AbandonSessionCommandHandler,
     CreateSessionCommandHandler,
     EndSessionCommandHandler,
-    AbandonSessionCommandHandler,
 )
 from .queries import GetSessionStatusQueryHandler
 
