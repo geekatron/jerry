@@ -11,7 +11,6 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 
 from src.work_tracking.application.ports.work_item_repository import IWorkItemRepository
 from src.work_tracking.application.queries.list_work_items_query import ListWorkItemsQuery

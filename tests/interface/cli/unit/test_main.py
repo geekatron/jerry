@@ -19,8 +19,6 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock, Mock, patch
 
-import pytest
-
 from src.bootstrap import get_projects_directory
 from src.interface.cli.adapter import CLIAdapter
 from src.interface.cli.parser import __version__

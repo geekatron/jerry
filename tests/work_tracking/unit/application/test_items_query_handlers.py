@@ -24,7 +24,6 @@ Test Matrix:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
@@ -32,8 +31,8 @@ import pytest
 from src.work_tracking.application.handlers.queries import (
     GetWorkItemQueryHandler,
     ListWorkItemsQueryHandler,
-    WorkItemDTO,
     WorkItemDetailDTO,
+    WorkItemDTO,
     WorkItemListDTO,
 )
 from src.work_tracking.application.handlers.queries.get_work_item_query_handler import (
@@ -45,13 +44,11 @@ from src.work_tracking.application.queries import (
 )
 from src.work_tracking.domain.aggregates.work_item import WorkItem
 from src.work_tracking.domain.value_objects import (
-    Coverage,
     Priority,
     WorkItemId,
     WorkItemStatus,
     WorkType,
 )
-
 
 # =============================================================================
 # Test Fixtures
