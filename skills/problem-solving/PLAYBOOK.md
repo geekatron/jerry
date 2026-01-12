@@ -1,9 +1,9 @@
 # Problem-Solving Playbook
 
-> **Version:** 3.0.0
+> **Version:** 3.1.0
 > **Skill:** problem-solving
 > **Purpose:** Structured analysis, research, and decision-making through specialized agents
-> **Updated:** 2026-01-12 - Triple-lens refactoring (SAO-INIT-007)
+> **Updated:** 2026-01-12 - Added ps-critic and Generator-Critic pattern (WI-SAO-042)
 
 ---
 
@@ -126,6 +126,7 @@ Explore? Why?  What to Fix?  Check? Patterns? Quality? Status?
 | "validate", "check", "verify" | ps-validator |
 | "synthesize", "patterns", "lessons" | ps-synthesizer |
 | "review", "quality", "feedback" | ps-reviewer |
+| "critique", "improve", "iterate", "polish" | ps-critic |
 | "status", "report", "progress" | ps-reporter |
 
 ---
@@ -153,12 +154,12 @@ Explore? Why?  What to Fix?  Check? Patterns? Quality? Status?
 |    | Checks boxes  |    | Finds patterns|    | Gives feedback|          |
 |    +---------------+    +---------------+    +---------------+          |
 |                                                                         |
-|    +------------------+    +---------------+                            |
-|    | ps-investigator  |    | ps-reporter   |                            |
-|    | ---------------- |    | ------------- |                            |
-|    | The Forensic CSI |    | The Narrator  |                            |
-|    | Traces incidents |    | Tells status  |                            |
-|    +------------------+    +---------------+                            |
+|    +------------------+    +---------------+    +---------------+       |
+|    | ps-investigator  |    | ps-reporter   |    | ps-critic     |       |
+|    | ---------------- |    | ------------- |    | ------------- |       |
+|    | The Forensic CSI |    | The Narrator  |    | Writing Coach |       |
+|    | Traces incidents |    | Tells status  |    | Improves work |       |
+|    +------------------+    +---------------+    +---------------+       |
 |                                                                         |
 +=========================================================================+
 ```
@@ -171,6 +172,7 @@ Explore? Why?  What to Fix?  Check? Patterns? Quality? Status?
 | `ps-validator` | Building inspector | Checks if requirements are met | Convergent |
 | `ps-synthesizer` | Pattern analyst | Finds connections across documents | Convergent |
 | `ps-reviewer` | Editor/critic | Assesses quality, gives feedback | Convergent |
+| `ps-critic` | Writing coach | Evaluates outputs for iterative improvement | Convergent |
 | `ps-investigator` | Crime scene investigator | Debugs failures, traces timelines | Convergent |
 | `ps-reporter` | News anchor | Summarizes status, tracks progress | Convergent |
 
@@ -307,6 +309,7 @@ This will:
 | `ps-validator` | Requirements check | validate, check, verify, compliance | `docs/analysis/` | Validation report |
 | `ps-synthesizer` | Pattern extraction | synthesize, patterns, lessons | `docs/synthesis/` | Pattern catalog |
 | `ps-reviewer` | Quality assessment | review, quality, feedback, audit | `docs/reviews/` | Review findings |
+| `ps-critic` | Iterative refinement | critique, improve, iterate, polish | `projects/${JERRY_PROJECT}/critiques/` | Critique report |
 | `ps-investigator` | Debugging failures | investigate, debug, incident, failure | `docs/investigations/` | Investigation report |
 | `ps-reporter` | Status updates | status, report, progress, dashboard | `docs/reports/` | Status report |
 
@@ -408,6 +411,81 @@ User: "We need to choose a caching solution"
   Research: Redis,       ADR: Choose Redis     Validation:
   Memcached, etc.        with rationale        Constraints met
 ```
+
+### Pattern 6: Generator-Critic Loop (Iterative Refinement)
+
+For quality-sensitive outputs that benefit from iteration.
+
+```
+TOPOLOGY:
+---------
+
+User: "Create an ADR and polish it until it's excellent"
+
+  +------------------+         +---------------+
+  |  ps-architect    |-------->|  ps-critic    |
+  |  (generator)     |         |  (evaluator)  |
+  +------------------+         +---------------+
+         ^                            |
+         |     score < 0.85          |
+         |     + feedback            |
+         +---------------------------+
+                    |
+                    v (score >= 0.85)
+              [ACCEPT OUTPUT]
+
+CIRCUIT BREAKER: max 3 iterations, threshold 0.85
+```
+
+**When to Use Generator-Critic:**
+
+| Scenario | Use Generator-Critic? |
+|----------|----------------------|
+| ADR needs polish | YES - Quality improves with iteration |
+| Research synthesis | YES - Completeness matters |
+| API schema check | NO - Use ps-validator (binary check) |
+| Code review | NO - Use ps-reviewer (find defects) |
+| Time-critical task | NO - Iteration adds latency |
+
+**Key Distinctions:**
+
+| Agent | Purpose | Output Type | Iteration? |
+|-------|---------|-------------|------------|
+| ps-critic | Improve quality | Score (0.0-1.0) + recommendations | YES (loop) |
+| ps-validator | Verify constraints | Pass/Fail | NO (one-shot) |
+| ps-reviewer | Find defects | Severity ratings | NO (one-shot) |
+
+**Circuit Breaker Logic:**
+
+```
+IF score >= 0.85:
+    → ACCEPT (threshold met)
+ELIF iteration >= 3:
+    → ACCEPT_WITH_CAVEATS (max iterations)
+ELIF no_improvement for 2 iterations:
+    → ACCEPT_WITH_CAVEATS (diminishing returns)
+ELSE:
+    → REVISE (send feedback to generator)
+```
+
+**Example Invocation:**
+
+```
+Step 1: "Create an ADR for our authentication approach"
+[ps-architect produces ADR draft]
+
+Step 2: "Critique this ADR - score against completeness, clarity, alignment"
+[ps-critic evaluates: score=0.72, feedback: "missing security trade-offs"]
+
+Step 3: "Revise the ADR based on the critique"
+[ps-architect produces ADR v2]
+
+Step 4: "Critique again"
+[ps-critic evaluates: score=0.88 → ACCEPT]
+```
+
+**P-003 Compliance Note:**
+The MAIN CONTEXT (Claude session) orchestrates the loop. ps-critic only evaluates - it does NOT invoke the next iteration. Agents cannot orchestrate other agents.
 
 ---
 
@@ -766,6 +844,83 @@ Step 2: "Based on docs/research/caching-options.md, create an ADR"
 |                                                                   |
 +===================================================================+
 ```
+
+---
+
+### AP-005: Critic-Everything
+
+```
++===================================================================+
+| ANTI-PATTERN: Critic-Everything                                   |
++===================================================================+
+|                                                                   |
+| SYMPTOM:    Using ps-critic for every output regardless of need.  |
+|             All outputs go through critique loop even when not    |
+|             quality-sensitive.                                    |
+|                                                                   |
+| CAUSE:      Over-engineering. "More iteration = better quality."  |
+|             Not recognizing when one-shot is sufficient.          |
+|                                                                   |
+| IMPACT:     - Unnecessary latency (3x for each iteration)         |
+|             - Wasted tokens on trivial improvements               |
+|             - Decision fatigue from constant feedback             |
+|                                                                   |
+| FIX:        Only use Generator-Critic when:                       |
+|             - Output is quality-sensitive (ADRs, docs)            |
+|             - Iteration time is acceptable                        |
+|             - NOT for validation (use ps-validator)               |
+|             - NOT for defect detection (use ps-reviewer)          |
+|                                                                   |
++===================================================================+
+```
+
+**Example (Bad):**
+```
+"Research caching options, then critique the research"
+"Create status report, then critique the status report"
+# Over-critiquing non-quality-sensitive outputs
+```
+
+**Example (Good):**
+```
+"Research caching options"        # One-shot research is fine
+"Create ADR, critique until excellent"  # ADRs benefit from polish
+```
+
+---
+
+### AP-006: Infinite Critic Loop
+
+```
++===================================================================+
+| ANTI-PATTERN: Infinite Critic Loop                                |
++===================================================================+
+|                                                                   |
+| SYMPTOM:    Generator-Critic loop never terminates. Keeps         |
+|             iterating even when improvements are minimal.         |
+|                                                                   |
+| CAUSE:      No circuit breaker. Threshold too high (0.99).        |
+|             Not tracking consecutive no-improvement iterations.   |
+|                                                                   |
+| IMPACT:     - Infinite loop consuming resources                   |
+|             - User waiting forever for "perfect" output           |
+|             - Quality plateau not recognized                      |
+|                                                                   |
+| FIX:        Always use circuit breaker:                           |
+|             - max_iterations: 3 (hard limit)                      |
+|             - acceptance_threshold: 0.85 (not 0.99)               |
+|             - consecutive_no_improvement: 2 (detect plateau)      |
+|                                                                   |
++===================================================================+
+```
+
+**Circuit Breaker Parameters:**
+| Parameter | Value | Purpose |
+|-----------|-------|---------|
+| max_iterations | 3 | Hard stop after 3 iterations |
+| acceptance_threshold | 0.85 | Good enough, not perfect |
+| improvement_threshold | 0.10 | Must improve by 10% to continue |
+| no_improvement_limit | 2 | Stop after 2 flat iterations |
 
 ---
 

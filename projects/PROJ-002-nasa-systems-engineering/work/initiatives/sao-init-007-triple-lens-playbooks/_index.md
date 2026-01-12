@@ -25,14 +25,14 @@ last_updated: "2026-01-12"
 source: "/architect command - triple-lens cognitive framework"
 rationale: "Playbooks lack L0 (metaphors) and L2 (anti-patterns) documentation. Engineers struggle with WHAT and WHY, only have HOW."
 work_items_total: 13
-work_items_complete: 9
+work_items_complete: 10
 work_items_in_progress: 0
 token_estimate: 1200
 ---
 
 # SAO-INIT-007: Triple-Lens Playbook Refactoring
 
-> **Status:** 🔄 IN_PROGRESS (9/13 work items complete)
+> **Status:** 🔄 IN_PROGRESS (10/13 work items complete)
 > **Created:** 2026-01-12
 > **Reopened:** 2026-01-12 (DISCOVERY-012: Critical documentation gaps)
 > **Detailed Plan:** [plan.md](plan.md)
@@ -62,7 +62,7 @@ This creates a cognitive gap where newcomers struggle to understand intent and a
 | WI-SAO-039 | ✅ COMPLETE | P2 | Add workflow scenario compositions |
 | WI-SAO-040 | ✅ COMPLETE | P3 | Validate session context schema v1.0.0 |
 | WI-SAO-041 | ✅ COMPLETE | P2 | Create pattern selection decision tree visual |
-| WI-SAO-042 | 📋 OPEN | P1 | Research & document Generator-Critic patterns |
+| WI-SAO-042 | ✅ COMPLETE | P1 | Research & document Generator-Critic patterns |
 | WI-SAO-043 | 📋 OPEN | P1 | Add L0/L1/L2 concrete examples (5+ each domain) |
 | WI-SAO-044 | 📋 OPEN | P2 | Document @ symbol agent invocation |
 | WI-SAO-045 | 📋 OPEN | P1 | Verify nse-* Generator-Critic applicability |
@@ -147,7 +147,7 @@ The following gaps were discovered during user review:
 
 | Criterion | Target | Status |
 |-----------|--------|--------|
-| Generator-Critic documented | Full pattern with examples | 📋 Open |
+| Generator-Critic documented | Full pattern with examples | ✅ Complete |
 | L0/L1/L2 Examples | ≥5 per domain (SE, PM, UX) | 📋 Open |
 | @ Symbol documented | Usage guide with examples | 📋 Open |
 | nse-* Applicability | Research complete | 📋 Open |
