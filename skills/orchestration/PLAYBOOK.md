@@ -249,6 +249,38 @@ Pattern 5   Quality gates?
    (Review/Loop) (Diamond)
 ```
 
+### Pattern Selection (Mermaid)
+
+For rendering in GitHub/IDE:
+
+```mermaid
+flowchart TD
+    START[How many agents?] --> ONE[One]
+    START --> MULTIPLE[Multiple]
+
+    ONE --> P1[Pattern 1: Single Agent]
+
+    MULTIPLE --> DEPS{Dependencies?}
+
+    DEPS -->|Yes| P2[Pattern 2: Sequential Chain]
+    DEPS -->|No| P3P4[Pattern 3/4: Fan-Out/In]
+
+    P2 --> BIDIR{Bidirectional?}
+
+    BIDIR -->|Yes| P5[Pattern 5: Cross-Pollinated]
+    BIDIR -->|No| QUALITY{Quality gates?}
+
+    QUALITY -->|Yes| P7P8[Pattern 7/8: Review/Loop]
+    QUALITY -->|No| P6[Pattern 6: Diamond]
+
+    style P1 fill:#90EE90
+    style P2 fill:#87CEEB
+    style P3P4 fill:#FFB6C1
+    style P5 fill:#DDA0DD
+    style P6 fill:#F0E68C
+    style P7P8 fill:#FFA07A
+```
+
 ### Pattern Summary
 
 | # | Pattern | When to Use | Cognitive Mode |

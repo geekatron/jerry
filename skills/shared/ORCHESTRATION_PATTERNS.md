@@ -619,6 +619,46 @@ circuit_breaker:
 ╚═══════════════════════════════════════════════════════════════════════════════════════╝
 ```
 
+### Decision Tree (Mermaid)
+
+For rendering in GitHub/IDE:
+
+```mermaid
+flowchart TD
+    START[What type of task?] --> SINGLE[Single task?]
+    START --> MULTI[Multi-step?]
+    START --> AGENTS[Multi-agent?]
+
+    SINGLE --> P1[🟢 Pattern 1: Single Agent]
+
+    MULTI --> DEPS{Dependencies?}
+    DEPS -->|Yes| P2[🔵 Pattern 2: Sequential Chain]
+    DEPS -->|No| P3[🔴 Pattern 3: Fan-Out]
+
+    AGENTS --> INDEP{Independent?}
+    INDEP -->|Yes| P4[🟡 Pattern 4: Fan-In]
+    INDEP -->|No| P6[🟣 Pattern 6: Diamond]
+
+    P2 --> CROSS{Cross-skill needed?}
+    CROSS -->|Yes| P5[🟤 Pattern 5: Cross-Pollinated]
+    CROSS -->|No| GATE{Quality gate?}
+
+    GATE -->|Yes| P7[🟠 Pattern 7: Review Gate]
+    GATE -->|No| ITER{Iteration?}
+
+    ITER -->|Yes| P8[⚫ Pattern 8: Generator-Critic]
+    ITER -->|No| COMBINE[Combine patterns as needed]
+
+    style P1 fill:#90EE90
+    style P2 fill:#87CEEB
+    style P3 fill:#FFB6C1
+    style P4 fill:#F0E68C
+    style P5 fill:#DEB887
+    style P6 fill:#DDA0DD
+    style P7 fill:#FFA07A
+    style P8 fill:#A9A9A9
+```
+
 ---
 
 ## Agent State Output Keys
