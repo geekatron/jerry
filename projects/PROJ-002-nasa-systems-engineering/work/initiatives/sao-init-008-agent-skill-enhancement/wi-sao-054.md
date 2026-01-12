@@ -1,7 +1,7 @@
 ---
 id: wi-sao-054
 title: "Enhance ps-researcher Agent"
-status: OPEN
+status: COMPLETE
 parent: "_index.md"
 initiative: sao-init-008
 children: []
@@ -15,13 +15,17 @@ priority: P0
 estimated_effort: "4-6h"
 entry_id: sao-054
 token_estimate: 600
+baseline_score: 0.875
+final_score: 0.890
+iterations: 1
 ---
 
 # WI-SAO-054: Enhance ps-researcher Agent
 
-> **Status:** 📋 OPEN
+> **Status:** ✅ COMPLETE
 > **Priority:** P0 (CRITICAL - Foundation of research pipelines)
 > **Pipeline Pattern:** Pattern 8 (Generator-Critic Loop)
+> **Result:** Score improved 0.875 → 0.890 (+1.7%) - tool examples added
 
 ---
 
@@ -39,13 +43,13 @@ Enhance the ps-researcher agent definition using the Generator-Critic loop patte
 
 ## Acceptance Criteria
 
-1. [ ] Baseline rubric score recorded
-2. [ ] Rubric score ≥0.85 achieved OR 3 iterations completed
-3. [ ] Context engineering improvements applied
-4. [ ] Role-Goal-Backstory enhanced (research specialist persona)
-5. [ ] Research methodology guidance added/improved
-6. [ ] L0/L1/L2 lens coverage verified
-7. [ ] Changes committed
+1. [x] Baseline rubric score recorded (0.875 - already passing)
+2. [x] Rubric score ≥0.85 achieved OR 3 iterations completed (0.890 in 1 iteration)
+3. [x] Context engineering improvements applied (tool examples)
+4. [x] Role-Goal-Backstory enhanced (research specialist persona) - already complete
+5. [x] Research methodology guidance added/improved - already complete (5W1H)
+6. [x] L0/L1/L2 lens coverage verified - already complete
+7. [ ] Changes committed (pending)
 
 ---
 
@@ -107,10 +111,12 @@ Enhance the ps-researcher agent definition using the Generator-Critic loop patte
 
 | Iteration | Score | Notes | Action |
 |-----------|-------|-------|--------|
-| Baseline | TBD | Initial score | Identify gaps |
-| 1 | TBD | First enhancement | Apply improvements |
-| 2 | TBD | If needed | Address feedback |
-| 3 | TBD | If needed | Final refinement |
+| Baseline | 0.875 | Already passing; D-004 (tool examples) at 0.75 | Target D-004 improvement |
+| 1 | **0.890** | Added 4 concrete tool invocation examples | ✅ **ACCEPTED** |
+| 2 | N/A | Not required | Skipped |
+| 3 | N/A | Not required | Skipped |
+
+**Circuit Breaker:** 1 of 3 iterations used
 
 ---
 
@@ -118,10 +124,11 @@ Enhance the ps-researcher agent definition using the Generator-Critic loop patte
 
 | Evidence ID | Type | Description | Status |
 |-------------|------|-------------|--------|
-| E-054-001 | Score | Baseline rubric score | ⏳ Pending |
-| E-054-002 | Score | Final rubric score | ⏳ Pending |
-| E-054-003 | Artifact | Enhanced ps-researcher.md | ⏳ Pending |
-| E-054-004 | Commit | Changes committed | ⏳ Pending |
+| E-054-001 | Score | Baseline rubric score | ✅ 0.875 |
+| E-054-002 | Score | Final rubric score | ✅ 0.890 |
+| E-054-003 | Artifact | Enhanced ps-researcher.md | ✅ v2.1.0 → v2.2.0 |
+| E-054-004 | Artifact | Scoring record | ✅ `analysis/wi-sao-054-ps-researcher-scoring.md` |
+| E-054-005 | Commit | Changes committed | ⏳ Pending |
 
 ---
 

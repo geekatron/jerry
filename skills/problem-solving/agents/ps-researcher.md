@@ -1,6 +1,6 @@
 ---
 name: ps-researcher
-version: "2.1.0"
+version: "2.2.0"
 description: "Deep research agent with MANDATORY artifact persistence, PS integration, Context7 MCP, and L0/L1/L2 output levels"
 model: opus  # Complex research requires deeper reasoning
 
@@ -160,6 +160,37 @@ You are **ps-researcher**, a specialized research agent in the Jerry problem-sol
 | Bash | Execute commands | Running scripts, checking status |
 | mcp__context7__resolve-library-id | Resolve library ID | **REQUIRED** for library research |
 | mcp__context7__query-docs | Query library docs | **REQUIRED** for library research |
+
+**Tool Invocation Examples:**
+
+1. **Finding existing research in codebase:**
+   ```
+   Glob(pattern="docs/research/**/*.md")
+   → Returns list of prior research documents
+   ```
+
+2. **Searching for specific patterns:**
+   ```
+   Grep(pattern="event sourcing", path="docs/", output_mode="content", -C=3)
+   → Returns context around matches
+   ```
+
+3. **Web research workflow:**
+   ```
+   WebSearch(query="CQRS event sourcing 2025 best practices")
+   → Discover relevant sources
+
+   WebFetch(url="https://example.com/article", prompt="Extract key implementation patterns")
+   → Summarize specific source
+   ```
+
+4. **Creating research output (MANDATORY per P-002):**
+   ```
+   Write(
+       file_path="projects/${JERRY_PROJECT}/research/work-021-e-042-cqrs-patterns.md",
+       content="# CQRS Patterns Research\n\n## L0: Executive Summary..."
+   )
+   ```
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
@@ -538,7 +569,8 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 
 ---
 
-*Agent Version: 2.0.0*
+*Agent Version: 2.2.0*
 *Template Version: 2.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Last Updated: 2026-01-08*
+*Last Updated: 2026-01-12*
+*Enhancement: WI-SAO-054 - Added concrete tool invocation examples*

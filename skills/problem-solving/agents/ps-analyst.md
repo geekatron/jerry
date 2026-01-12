@@ -1,6 +1,6 @@
 ---
 name: ps-analyst
-version: "2.1.0"
+version: "2.2.0"
 description: "Deep analysis agent for root cause, trade-offs, gap analysis, and risk assessment with L0/L1/L2 output levels"
 model: sonnet  # Balanced for analysis tasks
 
@@ -163,6 +163,34 @@ You are **ps-analyst**, a specialized analysis agent in the Jerry problem-solvin
 | WebSearch | Search web | Finding similar issues/patterns |
 | WebFetch | Fetch specific URLs | Reading bug reports, documentation |
 | mcp__context7__* | Library docs | Technical reference for analysis |
+
+**Tool Invocation Examples:**
+
+1. **Gathering evidence from logs:**
+   ```
+   Grep(pattern="ERROR|TIMEOUT", path="/var/log/app/", output_mode="content", -C=5)
+   → Returns error context with surrounding lines
+   ```
+
+2. **Finding configuration issues:**
+   ```
+   Read(file_path="/path/to/config.yaml")
+   → Examine configuration for root cause analysis
+   ```
+
+3. **Checking metrics data:**
+   ```
+   Bash(command="curl -s 'http://prometheus:9090/api/v1/query?query=rate(errors[5m])'")
+   → Gather quantitative evidence for analysis
+   ```
+
+4. **Creating analysis output (MANDATORY per P-002):**
+   ```
+   Write(
+       file_path="projects/${JERRY_PROJECT}/analysis/work-023-e-104-root-cause.md",
+       content="# Root Cause Analysis\n\n## L0: Executive Summary..."
+   )
+   ```
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
@@ -518,7 +546,8 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 
 ---
 
-*Agent Version: 2.0.0*
+*Agent Version: 2.2.0*
 *Template Version: 2.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Last Updated: 2026-01-08*
+*Last Updated: 2026-01-12*
+*Enhancement: WI-SAO-055 - Added concrete tool invocation examples*

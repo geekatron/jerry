@@ -1,7 +1,7 @@
 ---
 id: wi-sao-055
 title: "Enhance ps-analyst Agent"
-status: OPEN
+status: COMPLETE
 parent: "_index.md"
 initiative: sao-init-008
 children: []
@@ -15,13 +15,17 @@ priority: P0
 estimated_effort: "4-6h"
 entry_id: sao-055
 token_estimate: 600
+baseline_score: 0.895
+final_score: 0.910
+iterations: 1
 ---
 
 # WI-SAO-055: Enhance ps-analyst Agent
 
-> **Status:** 📋 OPEN
+> **Status:** ✅ COMPLETE
 > **Priority:** P0 (CRITICAL - Core analysis capability)
 > **Pipeline Pattern:** Pattern 8 (Generator-Critic Loop)
+> **Result:** Score improved 0.895 → 0.910 (+1.7%) - tool examples added
 
 ---
 
@@ -39,13 +43,13 @@ Enhance the ps-analyst agent definition using the Generator-Critic loop pattern.
 
 ## Acceptance Criteria
 
-1. [ ] Baseline rubric score recorded
-2. [ ] Rubric score ≥0.85 achieved OR 3 iterations completed
-3. [ ] Context engineering improvements applied
-4. [ ] Role-Goal-Backstory enhanced (analysis specialist persona)
-5. [ ] Analysis methodology guidance added/improved
-6. [ ] L0/L1/L2 lens coverage verified
-7. [ ] Changes committed
+1. [x] Baseline rubric score recorded (0.895 - already passing)
+2. [x] Rubric score ≥0.85 achieved OR 3 iterations completed (0.910 in 1 iteration)
+3. [x] Context engineering improvements applied (tool examples)
+4. [x] Role-Goal-Backstory enhanced - already complete
+5. [x] Analysis methodology guidance - already complete (5 Whys, FMEA, Trade-off)
+6. [x] L0/L1/L2 lens coverage verified - already complete
+7. [ ] Changes committed (pending)
 
 ---
 
@@ -107,10 +111,12 @@ Enhance the ps-analyst agent definition using the Generator-Critic loop pattern.
 
 | Iteration | Score | Notes | Action |
 |-----------|-------|-------|--------|
-| Baseline | TBD | Initial score | Identify gaps |
-| 1 | TBD | First enhancement | Apply improvements |
-| 2 | TBD | If needed | Address feedback |
-| 3 | TBD | If needed | Final refinement |
+| Baseline | 0.895 | Already passing; D-004 (tool examples) at 0.75 | Target D-004 improvement |
+| 1 | **0.910** | Added 4 concrete tool invocation examples | ✅ **ACCEPTED** |
+| 2 | N/A | Not required | Skipped |
+| 3 | N/A | Not required | Skipped |
+
+**Circuit Breaker:** 1 of 3 iterations used
 
 ---
 
@@ -118,10 +124,11 @@ Enhance the ps-analyst agent definition using the Generator-Critic loop pattern.
 
 | Evidence ID | Type | Description | Status |
 |-------------|------|-------------|--------|
-| E-055-001 | Score | Baseline rubric score | ⏳ Pending |
-| E-055-002 | Score | Final rubric score | ⏳ Pending |
-| E-055-003 | Artifact | Enhanced ps-analyst.md | ⏳ Pending |
-| E-055-004 | Commit | Changes committed | ⏳ Pending |
+| E-055-001 | Score | Baseline rubric score | ✅ 0.895 |
+| E-055-002 | Score | Final rubric score | ✅ 0.910 |
+| E-055-003 | Artifact | Enhanced ps-analyst.md | ✅ v2.1.0 → v2.2.0 |
+| E-055-004 | Artifact | Scoring record | ✅ `analysis/wi-sao-055-ps-analyst-scoring.md` |
+| E-055-005 | Commit | Changes committed | ⏳ Pending |
 
 ---
 

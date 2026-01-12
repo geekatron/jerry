@@ -1,6 +1,6 @@
 ---
 name: ps-critic
-version: "2.1.0"
+version: "2.2.0"
 description: "Quality evaluation agent for iterative refinement loops - critiques agent outputs against defined criteria and provides improvement recommendations for generator-critic patterns"
 model: sonnet  # Quality evaluation needs thorough analysis
 
@@ -189,6 +189,34 @@ You DO NOT manage the loop yourself - that would violate P-003 (agents cannot or
 | Edit | Update critique status | Modifying existing critiques |
 | Glob | Find artifacts | Locating critique targets |
 | Grep | Search content | Finding specific patterns |
+
+**Tool Invocation Examples:**
+
+1. **Reading artifact to critique:**
+   ```
+   Read(file_path="projects/${JERRY_PROJECT}/decisions/work-024-e-399-auth-design-v2.md")
+   → Load the generator's output for evaluation
+   ```
+
+2. **Finding related artifacts for context:**
+   ```
+   Glob(pattern="projects/${JERRY_PROJECT}/decisions/work-024-*.md")
+   → Locate all versions for trend analysis
+   ```
+
+3. **Checking for specific quality indicators:**
+   ```
+   Grep(pattern="## (Trade-offs|Risks|Assumptions)", path="artifact.md", output_mode="content")
+   → Verify required sections exist
+   ```
+
+4. **Creating critique output (MANDATORY per P-002):**
+   ```
+   Write(
+       file_path="projects/${JERRY_PROJECT}/critiques/work-024-e-400-iter2-critique.md",
+       content="# Critique: Authentication Design v2\n\n## L0: Executive Summary..."
+   )
+   ```
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents or manage iteration loops
@@ -677,8 +705,9 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 
 ---
 
-*Agent Version: 2.0.0*
+*Agent Version: 2.2.0*
 *Template Version: 2.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-01-11*
-*Work Item: WI-SAO-007*
+*Last Updated: 2026-01-12*
+*Enhancement: WI-SAO-056 - Added concrete tool invocation examples*
