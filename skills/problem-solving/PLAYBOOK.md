@@ -1,9 +1,9 @@
 # Problem-Solving Playbook
 
-> **Version:** 3.1.0
+> **Version:** 3.2.0
 > **Skill:** problem-solving
 > **Purpose:** Structured analysis, research, and decision-making through specialized agents
-> **Updated:** 2026-01-12 - Added ps-critic and Generator-Critic pattern (WI-SAO-042)
+> **Updated:** 2026-01-12 - Added 15 L0/L1/L2 real-world examples (WI-SAO-043)
 
 ---
 
@@ -574,6 +574,573 @@ Content includes:
 - Lessons learned (LES-XXX)
 - Assumptions identified (ASM-XXX)
 ```
+
+---
+
+## Real-World Examples by Domain
+
+> *Concrete scenarios showing how to use each agent in practice. Each example shows L0 (what/why), L1 (how), and L2 (constraints).*
+
+### Software Engineering Examples
+
+#### SE-001: Production Incident Root Cause Analysis
+
+**Domain:** Software Engineering
+**Scenario:** Production database response times spiked to 30 seconds causing checkout failures. Need to identify root cause.
+
+##### L0 (ELI5) - What & Why
+> Imagine a highway suddenly getting jammed. ps-analyst is like a traffic engineer who rewinds time to find where the jam started. Was it an accident? Road construction? Rush hour? We need to find the bottleneck before it happens again.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Analyze why database queries are timing out using 5 Whys"
+
+Agent: ps-analyst
+Output: docs/analysis/work-XXX-db-timeout-rca.md
+```
+
+**Agent Sequence:** `ps-investigator` (timeline) → `ps-analyst` (root cause) → `ps-architect` (fix decision)
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Time pressure from outage | May skip evidence gathering | Set minimum evidence threshold |
+| Multiple potential causes | Analysis paralysis | Use 5 Whys to force convergence |
+
+**Anti-patterns to avoid:**
+- AP-003: Endless investigation without conclusion
+- AP-004: Starting fresh without referencing incident timeline
+
+---
+
+#### SE-002: Architecture Decision Record Creation
+
+**Domain:** Software Engineering
+**Scenario:** Team needs to choose between PostgreSQL and MongoDB for a new microservice. Both have advocates.
+
+##### L0 (ELI5) - What & Why
+> When the team disagrees on which tool to use, ps-architect is like a judge who weighs evidence and writes a verdict. The ADR explains WHAT we decided, WHY we chose it, and WHAT we gave up.
+
+##### L1 (Engineer) - How
+
+```
+Step 1: "Research PostgreSQL vs MongoDB for our event-driven microservice"
+Agent: ps-researcher → docs/research/db-selection-research.md
+
+Step 2: "Based on docs/research/db-selection-research.md, create ADR
+        recommending a database choice"
+Agent: ps-architect → docs/decisions/adr-003-database-selection.md
+
+Step 3: "Critique the ADR until it scores 0.85 or higher"
+Agent: ps-critic → [iterate until acceptance threshold]
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Stakeholder disagreement | ADR may be contested | Include dissenting opinions in rationale |
+| Reversibility concerns | Team hesitant to commit | Document reversal cost explicitly |
+
+**Anti-patterns to avoid:**
+- AP-002: Creating ADR without prior research reference
+- AP-003: Researching 10 databases when 3 are sufficient
+
+---
+
+#### SE-003: Code Review with Structured Feedback
+
+**Domain:** Software Engineering
+**Scenario:** PR has 2000 lines of changes across authentication module. Need thorough security-focused review.
+
+##### L0 (ELI5) - What & Why
+> ps-reviewer is like a book editor who reads your manuscript looking for plot holes. For code, it looks for security bugs, performance issues, and violations of team standards.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Review the authentication module PR against OWASP Top 10
+           and our security guidelines"
+
+Agent: ps-reviewer
+Output: docs/reviews/work-XXX-auth-security-review.md
+
+Content includes:
+- OWASP assessment checklist
+- Findings by severity (CRITICAL → INFO)
+- Code snippets with recommendations
+- Overall assessment: PASS/NEEDS_WORK/FAIL
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Large PR size | May miss subtle issues | Request author to split PR |
+| Security scope creep | Review becomes audit | Define explicit security boundaries |
+
+**Anti-patterns to avoid:**
+- AP-001: Mixing security review with architecture review
+- AP-005: Critiquing every finding (reviewer outputs don't iterate)
+
+---
+
+#### SE-004: Technical Debt Assessment
+
+**Domain:** Software Engineering
+**Scenario:** Legacy payment service has grown organically for 5 years. Need to assess technical debt before modernization.
+
+##### L0 (ELI5) - What & Why
+> Technical debt is like deferred home maintenance - skip painting this year, and next year you need the whole exterior redone. ps-researcher helps survey all the "unpainted walls" so we know how much work we're facing.
+
+##### L1 (Engineer) - How
+
+```
+Step 1: "Research technical debt in payment-service/ focusing on
+        code complexity, test coverage, and dependency health"
+Agent: ps-researcher → docs/research/payment-svc-tech-debt.md
+
+Step 2: "Analyze the research to prioritize debt by risk and effort"
+Agent: ps-analyst → docs/analysis/payment-svc-debt-priority.md
+
+Step 3: "Synthesize findings into actionable remediation roadmap"
+Agent: ps-synthesizer → docs/synthesis/payment-svc-roadmap.md
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Business pressure to ship | Debt postponed indefinitely | Quantify risk in business terms |
+| No single owner | Diffused accountability | Assign debt items to specific teams |
+
+**Anti-patterns to avoid:**
+- AP-002: Creating roadmap without debt inventory
+- AP-003: Cataloging every minor code smell
+
+---
+
+#### SE-005: API Design Review
+
+**Domain:** Software Engineering
+**Scenario:** New REST API for inventory service needs design review before implementation.
+
+##### L0 (ELI5) - What & Why
+> ps-reviewer for APIs is like a building inspector checking blueprints before construction. It's easier to fix a bad design on paper than after the walls are up.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Review the inventory API design against REST best practices,
+           naming conventions, and our API style guide"
+
+Agent: ps-reviewer
+Output: docs/reviews/work-XXX-inventory-api-design.md
+
+Content includes:
+- REST maturity assessment (Richardson Level)
+- Naming convention compliance
+- Error handling consistency
+- Pagination and filtering patterns
+- Security considerations (auth, rate limiting)
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Breaking changes expensive | Hesitancy to critique | Frame as "better now than later" |
+| Multiple consumers | Conflicting requirements | Identify primary consumer first |
+
+**Anti-patterns to avoid:**
+- AP-001: Reviewing design AND implementation in same pass
+- AP-004: Not referencing prior API designs for consistency
+
+---
+
+### Product Management Examples
+
+#### PM-001: Feature Prioritization Analysis
+
+**Domain:** Product Management
+**Scenario:** Three features requested (SSO, mobile app, API v2), budget for one. Need structured prioritization.
+
+##### L0 (ELI5) - What & Why
+> When you can only afford one thing, ps-analyst helps compare apples to oranges. It's like a shopping comparison site that scores options on what matters most to you - price, quality, time.
+
+##### L1 (Engineer) - How
+
+```
+Step 1: "Research effort estimates and market impact for SSO,
+        mobile app, and API v2"
+Agent: ps-researcher → docs/research/feature-comparison.md
+
+Step 2: "Analyze trade-offs using weighted scoring: customer impact (40%),
+        revenue potential (30%), implementation risk (30%)"
+Agent: ps-analyst → docs/analysis/feature-prioritization.md
+```
+
+**Output Structure:**
+| Feature | Customer Impact | Revenue | Risk | Weighted Score |
+|---------|----------------|---------|------|----------------|
+| SSO | 8/10 | 6/10 | 3/10 | 6.3 |
+| Mobile | 9/10 | 8/10 | 7/10 | 7.9 |
+| API v2 | 5/10 | 9/10 | 5/10 | 6.4 |
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Stakeholder bias | Weights manipulated to favor pet projects | Document weight rationale |
+| Estimation uncertainty | Scores feel arbitrary | Include confidence intervals |
+
+**Anti-patterns to avoid:**
+- AP-003: Researching 20 features when deciding between 3
+- AP-001: Mixing prioritization with detailed planning
+
+---
+
+#### PM-002: Stakeholder Requirements Elicitation
+
+**Domain:** Product Management
+**Scenario:** Five stakeholders have different visions for the new dashboard. Need to synthesize requirements.
+
+##### L0 (ELI5) - What & Why
+> When 5 people describe their dream house, ps-synthesizer finds the common themes: "Everyone wants natural light, 3 want a home office, 2 need wheelchair access." It turns chaos into clarity.
+
+##### L1 (Engineer) - How
+
+```
+Step 1: "Research stakeholder interview notes to extract
+        explicit and implicit requirements"
+Agent: ps-researcher → docs/research/dashboard-stakeholder-analysis.md
+
+Step 2: "Synthesize requirements across stakeholders,
+        identifying agreements, conflicts, and gaps"
+Agent: ps-synthesizer → docs/synthesis/dashboard-requirements.md
+
+Content includes:
+- Requirements matrix by stakeholder
+- Conflict resolution recommendations
+- Priority tiers (Must/Should/Could)
+- Assumptions requiring validation
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Political dynamics | Some voices louder than others | Weight by domain authority |
+| Implicit requirements | Missed until late | Use probing questions template |
+
+**Anti-patterns to avoid:**
+- AP-004: Not referencing interview notes in synthesis
+- AP-002: Requirements doc orphaned from stakeholder input
+
+---
+
+#### PM-003: Competitive Analysis Research
+
+**Domain:** Product Management
+**Scenario:** Competitor launched similar feature. Need rapid competitive intelligence.
+
+##### L0 (ELI5) - What & Why
+> ps-researcher for competitive analysis is like a scout who watches the opposing team's practice. You learn their plays so you can prepare counter-strategies.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Research competitor X's new feature focusing on:
+           functionality, pricing, user reviews, market positioning"
+
+Agent: ps-researcher
+Output: docs/research/competitor-x-analysis.md
+
+Content includes:
+- Feature capability matrix (Us vs. Them)
+- Pricing comparison
+- User sentiment from reviews
+- Market positioning analysis
+- Strategic recommendations
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Information asymmetry | May miss internal details | Note confidence level per finding |
+| Rapid market changes | Analysis stale quickly | Date-stamp all findings |
+
+**Anti-patterns to avoid:**
+- AP-003: Over-researching every competitor feature
+- AP-001: Mixing research with strategic response
+
+---
+
+#### PM-004: Sprint Risk Assessment
+
+**Domain:** Product Management
+**Scenario:** Sprint has aggressive commitments. PM needs risk visibility for stakeholder communication.
+
+##### L0 (ELI5) - What & Why
+> ps-analyst for risks is like a weather forecaster for your project. It spots storm clouds (blockers, dependencies, unknown tech) so you can bring an umbrella.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Analyze sprint risks including: technical uncertainties,
+           dependency risks, capacity concerns, external blockers"
+
+Agent: ps-analyst
+Output: docs/analysis/sprint-24-risk-assessment.md
+
+Content includes:
+- Risk registry with probability × impact scoring
+- Risk mitigation strategies
+- Escalation triggers
+- Contingency plans
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Team optimism bias | Risks understated | Use calibrated estimation |
+| Risk fatigue | Stakeholders ignore warnings | Focus on top 3 risks |
+
+**Anti-patterns to avoid:**
+- AP-003: Analyzing risks for 6 sprints ahead
+- AP-001: Mixing risk analysis with mitigation planning
+
+---
+
+#### PM-005: Product Roadmap Validation
+
+**Domain:** Product Management
+**Scenario:** Q3 roadmap drafted, need validation against strategy, resources, and dependencies.
+
+##### L0 (ELI5) - What & Why
+> ps-validator for roadmaps is like a pre-flight checklist for pilots. Before takeoff, verify everything is in place: fuel, weather, route. Before committing to a roadmap, verify strategy alignment, resource availability, and no blocking dependencies.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Validate Q3 roadmap against: strategic objectives,
+           team capacity, technical dependencies, customer commitments"
+
+Agent: ps-validator
+Output: docs/analysis/q3-roadmap-validation.md
+
+Content includes:
+- Strategic alignment assessment
+- Resource utilization check
+- Dependency analysis
+- Customer commitment verification
+- Overall: PASS / NEEDS_WORK / FAIL
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Moving goalposts | Strategy changes mid-quarter | Document strategy version |
+| Hidden dependencies | Late discovery of blockers | Explicit dependency mapping |
+
+**Anti-patterns to avoid:**
+- AP-005: Critiquing the validation (validator output is binary)
+- AP-002: Validating without referencing strategic docs
+
+---
+
+### User Experience Examples
+
+#### UX-001: Usability Heuristic Evaluation
+
+**Domain:** User Experience
+**Scenario:** New checkout flow redesigned. Need UX review before user testing.
+
+##### L0 (ELI5) - What & Why
+> ps-reviewer for UX is like a restaurant critic who evaluates ambiance, service, and food. For interfaces, it evaluates clarity, consistency, and error prevention using established UX principles (Nielsen's heuristics).
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Review checkout flow against Nielsen's 10 usability heuristics,
+           focusing on error prevention and user control"
+
+Agent: ps-reviewer
+Output: docs/reviews/work-XXX-checkout-ux-review.md
+
+Content includes:
+- Heuristic evaluation matrix (10 heuristics × pass/fail)
+- Severity ratings for issues (Cosmetic → Catastrophic)
+- Annotated screenshots
+- Recommendations with priority
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Evaluator bias | Findings reflect personal preference | Use multiple evaluators |
+| Heuristic gaps | Not all issues are heuristic violations | Supplement with user testing |
+
+**Anti-patterns to avoid:**
+- AP-005: Iterating on review findings (reviews don't loop)
+- AP-001: Mixing heuristic review with visual design review
+
+---
+
+#### UX-002: Design Critique with Feedback Loop
+
+**Domain:** User Experience
+**Scenario:** Dashboard mockup needs polish before development handoff. Iteration welcome.
+
+##### L0 (ELI5) - What & Why
+> ps-critic for design is like a writing coach who reads your draft and says "this is 70% there - here's how to reach 95%." Unlike a reviewer who finds bugs, the critic helps you improve quality through iteration.
+
+##### L1 (Engineer) - How
+
+```
+Step 1: "Critique the dashboard design against clarity,
+        information hierarchy, and visual consistency. Score 0-1."
+Agent: ps-critic → Score: 0.68, Feedback: "Data hierarchy unclear,
+                                           key metrics buried below fold"
+
+Step 2: [Designer revises based on feedback]
+
+Step 3: "Critique again"
+Agent: ps-critic → Score: 0.87 → ACCEPT
+
+Circuit breaker: max 3 iterations, threshold 0.85
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Subjective quality | Hard to define "excellent" | Agree on criteria upfront |
+| Designer ego | Feedback feels personal | Frame as "design" critique not "designer" |
+
+**Anti-patterns to avoid:**
+- AP-006: Infinite critique loop (use circuit breaker)
+- AP-005: Critiquing every mockup (reserve for key designs)
+
+---
+
+#### UX-003: Accessibility Compliance Review
+
+**Domain:** User Experience
+**Scenario:** Government contract requires WCAG 2.1 AA compliance. Need audit.
+
+##### L0 (ELI5) - What & Why
+> ps-validator for accessibility is like a building inspector checking wheelchair ramps and braille signs. It verifies your interface works for everyone, including users with visual, motor, or cognitive differences.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Validate checkout flow against WCAG 2.1 AA success criteria"
+
+Agent: ps-validator
+Output: docs/analysis/work-XXX-wcag-audit.md
+
+Content includes:
+- WCAG 2.1 AA checklist (pass/fail per criterion)
+- Violation inventory by type
+- Remediation guidance
+- Tools used (axe, WAVE, manual testing)
+- Overall: PASS / NEEDS_WORK / FAIL
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Automated tool limits | Some criteria need manual testing | Document test method per criterion |
+| Interpretation variance | "Meaningful sequence" is subjective | Reference authoritative interpretations |
+
+**Anti-patterns to avoid:**
+- AP-005: Critiquing accessibility findings (validator is binary)
+- AP-001: Mixing a11y audit with general UX review
+
+---
+
+#### UX-004: User Journey Mapping
+
+**Domain:** User Experience
+**Scenario:** Customer support tickets spike at onboarding. Need to map pain points.
+
+##### L0 (ELI5) - What & Why
+> ps-researcher for journeys is like following a customer through a store, noting where they pause, get confused, or ask for help. The journey map reveals friction points invisible from the inside.
+
+##### L1 (Engineer) - How
+
+```
+Step 1: "Research user journey for onboarding flow based on:
+        support tickets, session recordings, NPS comments"
+Agent: ps-researcher → docs/research/onboarding-journey.md
+
+Step 2: "Analyze friction points and categorize by severity and frequency"
+Agent: ps-analyst → docs/analysis/onboarding-friction.md
+
+Content includes:
+- Journey phases (Discover → Try → Buy → Use)
+- Touchpoint inventory
+- Pain points with evidence
+- Emotion mapping
+- Opportunity areas
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Sample bias | Power users over-represented | Stratify by user segment |
+| Memory decay | Users forget early friction | Use contemporaneous data |
+
+**Anti-patterns to avoid:**
+- AP-003: Mapping every possible journey variant
+- AP-002: Creating friction analysis without journey context
+
+---
+
+#### UX-005: A/B Test Results Synthesis
+
+**Domain:** User Experience
+**Scenario:** Three A/B tests completed. Need synthesis to inform design system update.
+
+##### L0 (ELI5) - What & Why
+> ps-synthesizer for A/B tests is like a meta-analysis doctor who reads 10 studies and finds what they agree on. Individual tests might be noisy, but patterns across tests reveal truth.
+
+##### L1 (Engineer) - How
+
+```
+Invocation: "Synthesize A/B test results for button placement,
+           color contrast, and copy length into actionable patterns"
+
+Agent: ps-synthesizer
+Output: docs/synthesis/ab-test-patterns.md
+
+Content includes:
+- Test summary matrix
+- Statistically significant findings
+- Pattern catalog (PAT-XXX)
+- Design system recommendations
+- Caveats and limitations
+```
+
+##### L2 (Architect) - Constraints
+
+| Constraint | Impact | Mitigation |
+|------------|--------|------------|
+| Statistical significance | Small effects may be noise | Report confidence intervals |
+| Context sensitivity | Results may not generalize | Note test population |
+
+**Anti-patterns to avoid:**
+- AP-002: Creating design system update without test synthesis
+- AP-001: Mixing synthesis with new test design
 
 ---
 

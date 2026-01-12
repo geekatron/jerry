@@ -1,7 +1,7 @@
 ---
 id: wi-sao-043
 title: "Add L0/L1/L2 concrete examples (5+ each domain)"
-status: OPEN
+status: IN_PROGRESS
 parent: "_index.md"
 initiative: sao-init-007
 children: []
@@ -18,7 +18,7 @@ token_estimate: 700
 
 # WI-SAO-043: Add L0/L1/L2 Concrete Examples
 
-> **Status:** 📋 OPEN
+> **Status:** 🔄 IN_PROGRESS
 > **Priority:** P1 (HIGH - User-facing documentation)
 > **Depends On:** WI-SAO-042 (Generator-Critic research)
 
@@ -38,42 +38,42 @@ Each example must demonstrate the L0 (ELI5), L1 (Engineer), and L2 (Architect) p
 
 ## Acceptance Criteria
 
-1. [ ] ≥5 Software Engineering examples across playbooks
-2. [ ] ≥5 Product Management examples across playbooks
-3. [ ] ≥5 User Experience examples across playbooks
-4. [ ] Each example shows L0 (what/why), L1 (how), L2 (constraints/anti-patterns)
-5. [ ] Examples are relatable and actionable
-6. [ ] Examples distributed appropriately across playbooks
+1. [x] ≥5 Software Engineering examples across playbooks (SE-001 to SE-005)
+2. [x] ≥5 Product Management examples across playbooks (PM-001 to PM-005)
+3. [x] ≥5 User Experience examples across playbooks (UX-001 to UX-005)
+4. [x] Each example shows L0 (what/why), L1 (how), L2 (constraints/anti-patterns)
+5. [x] Examples are relatable and actionable
+6. [ ] Examples distributed appropriately across playbooks (orchestration pending)
 
 ---
 
 ## Tasks
 
 ### T-043.1: Software Engineering Examples
-- [ ] **T-043.1.1:** Example: Debugging a production incident (root cause analysis)
-- [ ] **T-043.1.2:** Example: Architecture decision record (ADR) creation
-- [ ] **T-043.1.3:** Example: Code review with generator-critic loop
-- [ ] **T-043.1.4:** Example: Technical debt assessment
-- [ ] **T-043.1.5:** Example: API design review
+- [x] **T-043.1.1:** Example: SE-001 Production Incident Root Cause Analysis
+- [x] **T-043.1.2:** Example: SE-002 Architecture Decision Record Creation
+- [x] **T-043.1.3:** Example: SE-003 Code Review with Structured Feedback
+- [x] **T-043.1.4:** Example: SE-004 Technical Debt Assessment
+- [x] **T-043.1.5:** Example: SE-005 API Design Review
 
 ### T-043.2: Product Management Examples
-- [ ] **T-043.2.1:** Example: Feature prioritization with trade-off analysis
-- [ ] **T-043.2.2:** Example: Stakeholder requirement elicitation
-- [ ] **T-043.2.3:** Example: Competitive analysis research
-- [ ] **T-043.2.4:** Example: Sprint planning with risk assessment
-- [ ] **T-043.2.5:** Example: Product roadmap validation
+- [x] **T-043.2.1:** Example: PM-001 Feature Prioritization Analysis
+- [x] **T-043.2.2:** Example: PM-002 Stakeholder Requirements Elicitation
+- [x] **T-043.2.3:** Example: PM-003 Competitive Analysis Research
+- [x] **T-043.2.4:** Example: PM-004 Sprint Risk Assessment
+- [x] **T-043.2.5:** Example: PM-005 Product Roadmap Validation
 
 ### T-043.3: User Experience Examples
-- [ ] **T-043.3.1:** Example: Usability heuristic evaluation
-- [ ] **T-043.3.2:** Example: Design critique with feedback loop
-- [ ] **T-043.3.3:** Example: Accessibility compliance review
-- [ ] **T-043.3.4:** Example: User journey mapping
-- [ ] **T-043.3.5:** Example: A/B test analysis
+- [x] **T-043.3.1:** Example: UX-001 Usability Heuristic Evaluation
+- [x] **T-043.3.2:** Example: UX-002 Design Critique with Feedback Loop
+- [x] **T-043.3.3:** Example: UX-003 Accessibility Compliance Review
+- [x] **T-043.3.4:** Example: UX-004 User Journey Mapping
+- [x] **T-043.3.5:** Example: UX-005 A/B Test Results Synthesis
 
 ### T-043.4: Integration
-- [ ] **T-043.4.1:** Add SE examples to problem-solving PLAYBOOK.md
-- [ ] **T-043.4.2:** Add PM examples to problem-solving PLAYBOOK.md
-- [ ] **T-043.4.3:** Add UX examples to problem-solving PLAYBOOK.md
+- [x] **T-043.4.1:** Add SE examples to problem-solving PLAYBOOK.md
+- [x] **T-043.4.2:** Add PM examples to problem-solving PLAYBOOK.md
+- [x] **T-043.4.3:** Add UX examples to problem-solving PLAYBOOK.md
 - [ ] **T-043.4.4:** Add relevant examples to orchestration PLAYBOOK.md
 - [ ] **T-043.4.5:** Cross-reference with nasa-se PLAYBOOK.md where applicable
 
@@ -116,11 +116,12 @@ Each example MUST follow this structure:
 
 | Evidence ID | Type | Description | Status |
 |-------------|------|-------------|--------|
-| E-043-001 | Content | ≥5 SE examples documented | ⏳ |
-| E-043-002 | Content | ≥5 PM examples documented | ⏳ |
-| E-043-003 | Content | ≥5 UX examples documented | ⏳ |
-| E-043-004 | Quality | Examples follow template structure | ⏳ |
-| E-043-005 | Integration | Examples integrated into playbooks | ⏳ |
+| E-043-001 | Content | ≥5 SE examples documented (SE-001 to SE-005) | ✅ Complete |
+| E-043-002 | Content | ≥5 PM examples documented (PM-001 to PM-005) | ✅ Complete |
+| E-043-003 | Content | ≥5 UX examples documented (UX-001 to UX-005) | ✅ Complete |
+| E-043-004 | Quality | Examples follow L0/L1/L2 template structure | ✅ Complete |
+| E-043-005 | Integration | Examples integrated into problem-solving PLAYBOOK.md | ✅ Complete |
+| E-043-006 | Integration | Examples added to orchestration PLAYBOOK.md | ⏳ Pending |
 
 ---
 
