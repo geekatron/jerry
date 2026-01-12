@@ -149,9 +149,7 @@ class TestListWorkItemsQueryHandlerHappyPath:
         )
         assert len(result.items) == 1
 
-    def test_list_with_limit(
-        self, mock_repository: Mock, sample_work_item: WorkItem
-    ) -> None:
+    def test_list_with_limit(self, mock_repository: Mock, sample_work_item: WorkItem) -> None:
         """list should respect limit parameter."""
         mock_repository.list_all.return_value = [sample_work_item]
         mock_repository.count.return_value = 5  # More items exist
@@ -287,9 +285,7 @@ class TestGetWorkItemQueryHandlerNegative:
 class TestGetWorkItemQueryHandlerEdge:
     """Edge case tests for GetWorkItemQueryHandler."""
 
-    def test_get_completed_item_includes_completion_time(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_completed_item_includes_completion_time(self, mock_repository: Mock) -> None:
         """get should include completed_at for completed items."""
         item = WorkItem.create(
             id=WorkItemId.create(99999, 1),

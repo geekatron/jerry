@@ -534,7 +534,9 @@ class CLIAdapter:
 
         for item in items:
             title = item.title[:28] + ".." if len(item.title) > 30 else item.title
-            print(f"{item.id:<12} {title:<30} {item.status:<12} {item.priority:<10} {item.work_type:<8}")
+            print(
+                f"{item.id:<12} {title:<30} {item.status:<12} {item.priority:<10} {item.work_type:<8}"
+            )
 
     def cmd_items_show(
         self,

@@ -89,9 +89,7 @@ class TestSessionNamespace:
     def test_session_start_with_description(self) -> None:
         """session start --description parses correctly."""
         parser = create_parser()
-        args = parser.parse_args(
-            ["session", "start", "--description", "Working on feature X"]
-        )
+        args = parser.parse_args(["session", "start", "--description", "Working on feature X"])
         assert args.description == "Working on feature X"
 
     def test_session_end_command(self) -> None:
@@ -124,9 +122,7 @@ class TestSessionNamespace:
     def test_session_abandon_with_reason(self) -> None:
         """session abandon --reason parses correctly."""
         parser = create_parser()
-        args = parser.parse_args(
-            ["session", "abandon", "--reason", "Context compaction"]
-        )
+        args = parser.parse_args(["session", "abandon", "--reason", "Context compaction"])
         assert args.reason == "Context compaction"
 
 
@@ -176,17 +172,13 @@ class TestItemsNamespace:
     def test_items_create_with_type(self) -> None:
         """items create --type parses correctly."""
         parser = create_parser()
-        args = parser.parse_args(
-            ["items", "create", "Fix bug Y", "--type", "bug"]
-        )
+        args = parser.parse_args(["items", "create", "Fix bug Y", "--type", "bug"])
         assert args.type == "bug"
 
     def test_items_create_with_parent(self) -> None:
         """items create --parent parses correctly."""
         parser = create_parser()
-        args = parser.parse_args(
-            ["items", "create", "Subtask Z", "--parent", "WORK-001"]
-        )
+        args = parser.parse_args(["items", "create", "Subtask Z", "--parent", "WORK-001"])
         assert args.parent == "WORK-001"
 
     def test_items_start_command(self) -> None:
