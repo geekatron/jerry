@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 from src.application.dispatchers.command_dispatcher import CommandDispatcher
 from src.application.dispatchers.query_dispatcher import QueryDispatcher
@@ -41,6 +42,7 @@ from src.application.queries import (
     ScanProjectsQuery,
     ValidateProjectQuery,
 )
+from src.infrastructure.adapters.serialization.toon_serializer import ToonSerializer
 from src.session_management.application.commands import (
     AbandonSessionCommand,
     CreateSessionCommand,
@@ -104,6 +106,10 @@ _work_item_repository: EventSourcedWorkItemRepository | InMemoryWorkItemReposito
 # Module-level ID generator singleton
 # Phase 4.5: WorkItemIdGenerator for creating new work items
 _id_generator: WorkItemIdGenerator | None = None
+
+# Module-level serializer singleton
+# DISC-012: TOON Format for LLM context serialization
+_serializer: ToonSerializer | None = None
 
 
 def get_session_repository() -> InMemorySessionRepository:
@@ -242,6 +248,40 @@ def get_id_generator() -> WorkItemIdGenerator:
     return _id_generator
 
 
+def create_serializer(
+    indent: int = 2,
+    delimiter: str = ",",
+) -> ToonSerializer:
+    """Create a TOON serializer for LLM context formatting.
+
+    Args:
+        indent: Spaces per indentation level (default: 2)
+        delimiter: Column separator for tabular arrays (default: ,)
+
+    Returns:
+        ToonSerializer instance.
+
+    Note:
+        DISC-012: TOON format provides 30-60% token reduction vs JSON.
+    """
+    return ToonSerializer(indent=indent, delimiter=delimiter)
+
+
+def get_serializer() -> ToonSerializer:
+    """Get the shared serializer instance.
+
+    Returns:
+        ToonSerializer singleton instance.
+
+    Note:
+        DISC-012: Used by interface adapters for LLM-optimized output.
+    """
+    global _serializer
+    if _serializer is None:
+        _serializer = create_serializer()
+    return _serializer
+
+
 def get_projects_directory() -> str:
     """Determine the projects directory path.
 
@@ -311,7 +351,7 @@ def create_query_dispatcher() -> QueryDispatcher:
     return dispatcher
 
 
-def create_session_command_handlers() -> dict:
+def create_session_command_handlers() -> dict[str, Any]:
     """Create session command handlers.
 
     Returns a dictionary of command handlers for session management.
@@ -397,7 +437,9 @@ def reset_singletons() -> None:
     on next access. Useful for integration tests.
     """
     global _session_repository, _event_store, _work_item_repository, _id_generator
+    global _serializer
     _session_repository = None
     _event_store = None
     _work_item_repository = None
     _id_generator = None
+    _serializer = None

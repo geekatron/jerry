@@ -16,11 +16,11 @@ References:
     - PAT-CQRS-001: Command Pattern
 """
 
-from .create_work_item_command_handler import CreateWorkItemCommandHandler
-from .start_work_item_command_handler import StartWorkItemCommandHandler
-from .complete_work_item_command_handler import CompleteWorkItemCommandHandler
 from .block_work_item_command_handler import BlockWorkItemCommandHandler
 from .cancel_work_item_command_handler import CancelWorkItemCommandHandler
+from .complete_work_item_command_handler import CompleteWorkItemCommandHandler
+from .create_work_item_command_handler import CreateWorkItemCommandHandler
+from .start_work_item_command_handler import StartWorkItemCommandHandler
 
 __all__ = [
     "CreateWorkItemCommandHandler",

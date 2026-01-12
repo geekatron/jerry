@@ -20,7 +20,6 @@ import json
 from typing import TYPE_CHECKING, Any
 
 from src.application.ports.primary.icommanddispatcher import (
-    CommandHandlerNotFoundError,
     ICommandDispatcher,
 )
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
@@ -50,11 +49,7 @@ from src.work_tracking.application.queries import GetWorkItemQuery, ListWorkItem
 from src.work_tracking.domain.ports.repository import AggregateNotFoundError
 
 if TYPE_CHECKING:
-    from src.session_management.application.handlers.commands import (
-        AbandonSessionCommandHandler,
-        CreateSessionCommandHandler,
-        EndSessionCommandHandler,
-    )
+    pass
 
 
 class CLIAdapter:
@@ -246,7 +241,7 @@ class CLIAdapter:
 
         return 0 if validation.is_valid else 1
 
-    def _format_project_table(self, projects: list) -> str:
+    def _format_project_table(self, projects: list[Any]) -> str:
         """Format projects as a readable table.
 
         Args:
@@ -547,7 +542,7 @@ class CLIAdapter:
 
         return 0
 
-    def _format_items_table(self, items: list) -> None:
+    def _format_items_table(self, items: list[Any]) -> None:
         """Format work items as a readable table.
 
         Args:
@@ -558,7 +553,9 @@ class CLIAdapter:
 
         for item in items:
             title = item.title[:28] + ".." if len(item.title) > 30 else item.title
-            print(f"{item.id:<12} {title:<30} {item.status:<12} {item.priority:<10} {item.work_type:<8}")
+            print(
+                f"{item.id:<12} {title:<30} {item.status:<12} {item.priority:<10} {item.work_type:<8}"
+            )
 
     def cmd_items_show(
         self,

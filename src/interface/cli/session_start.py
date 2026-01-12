@@ -28,6 +28,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 from src.session_management.application import GetProjectContextQuery
 from src.session_management.infrastructure import FilesystemProjectAdapter, OsEnvironmentAdapter
@@ -48,7 +49,7 @@ def get_projects_directory() -> str:
     return str(Path.cwd() / "projects")
 
 
-def format_project_list(projects: list) -> str:
+def format_project_list(projects: list[Any]) -> str:
     """Format projects as a readable list for output.
 
     Args:
@@ -73,7 +74,7 @@ def format_project_list(projects: list) -> str:
     return "\n".join(lines)
 
 
-def output_project_active(context: dict) -> None:
+def output_project_active(context: dict[str, Any]) -> None:
     """Output structured message for active project.
 
     Args:
@@ -95,7 +96,7 @@ def output_project_active(context: dict) -> None:
     print("</project-context>")
 
 
-def output_project_required(context: dict) -> None:
+def output_project_required(context: dict[str, Any]) -> None:
     """Output structured message when project selection is required.
 
     Args:
@@ -123,7 +124,7 @@ def output_project_required(context: dict) -> None:
     print("DO NOT proceed with any work until a project is selected.")
 
 
-def output_project_error(context: dict) -> None:
+def output_project_error(context: dict[str, Any]) -> None:
     """Output structured message for invalid project.
 
     Args:

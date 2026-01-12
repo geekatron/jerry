@@ -185,8 +185,7 @@ class FileSystemEventStore:
                     )
                 if event.stream_id != stream_id:
                     raise ValueError(
-                        f"Event stream_id mismatch: expected '{stream_id}', "
-                        f"got '{event.stream_id}'"
+                        f"Event stream_id mismatch: expected '{stream_id}', got '{event.stream_id}'"
                     )
 
             # Append all events to file
@@ -238,8 +237,7 @@ class FileSystemEventStore:
             result = [
                 e
                 for e in events
-                if e.version >= from_version
-                and (to_version is None or e.version <= to_version)
+                if e.version >= from_version and (to_version is None or e.version <= to_version)
             ]
 
             return result

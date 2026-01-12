@@ -13,8 +13,14 @@ These are "driven" ports that the application layer uses to:
 
 from __future__ import annotations
 
+from src.application.ports.secondary.illm_context_serializer import (
+    ILlmContextSerializer,
+    OutputFormat,
+)
 from src.application.ports.secondary.iread_model_store import IReadModelStore
 
 __all__ = [
+    "ILlmContextSerializer",
     "IReadModelStore",
+    "OutputFormat",
 ]

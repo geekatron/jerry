@@ -42,10 +42,10 @@ from src.bootstrap import (
     get_projects_directory,
 )
 from src.interface.cli.adapter import CLIAdapter
-from src.interface.cli.parser import __version__, create_parser
+from src.interface.cli.parser import create_parser
 
 if TYPE_CHECKING:
-    import argparse
+    pass
 
 
 def create_cli_adapter() -> CLIAdapter:

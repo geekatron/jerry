@@ -14,8 +14,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from src.shared_kernel.domain_event import DomainEvent
-
 from src.session_management.application.commands.create_session_command import (
     CreateSessionCommand,
 )
@@ -23,6 +21,7 @@ from src.session_management.application.ports.session_repository import ISession
 from src.session_management.domain.aggregates.session import Session
 from src.session_management.domain.value_objects.project_id import ProjectId
 from src.session_management.domain.value_objects.session_id import SessionId
+from src.shared_kernel.domain_event import DomainEvent
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

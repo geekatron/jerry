@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import threading
 
-from src.session_management.application.ports.session_repository import ISessionRepository
 from src.session_management.domain.aggregates.session import Session, SessionStatus
 from src.session_management.domain.value_objects.session_id import SessionId
 

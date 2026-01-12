@@ -14,12 +14,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from src.shared_kernel.domain_event import DomainEvent
-
 from src.session_management.application.commands.end_session_command import (
     EndSessionCommand,
 )
 from src.session_management.application.ports.session_repository import ISessionRepository
+from src.shared_kernel.domain_event import DomainEvent
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

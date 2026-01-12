@@ -349,9 +349,7 @@ class EventSourcedWorkItemRepository:
             stream_ids = self._event_store.get_all_stream_ids()
 
             # Filter to only work_item streams
-            work_item_stream_ids = [
-                sid for sid in stream_ids if sid.startswith("work_item-")
-            ]
+            work_item_stream_ids = [sid for sid in stream_ids if sid.startswith("work_item-")]
 
             items: list[WorkItem] = []
 
@@ -424,6 +422,6 @@ def _assert_protocol_compliance() -> None:
         FileSystemEventStore,
     )
 
-    store: IEventStore = FileSystemEventStore("/tmp")
+    store: IEventStoreWithUtilities = FileSystemEventStore("/tmp")
     repository: IWorkItemRepository = EventSourcedWorkItemRepository(store)
     _ = repository  # Suppress unused variable warning
