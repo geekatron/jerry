@@ -34,11 +34,11 @@
 | DISC-012 | TOON Format Required as Primary Output | ACTIONED | ADR-CLI-001, TD-015 |
 | DISC-013 | CLI Namespaces per Bounded Context | ACTIONED | ADR-CLI-001, TD-015 |
 | DISC-014 | Domain Events Use aggregate_id Not Entity-Specific ID | ACTIONED | Phase 4.3.8 |
-| DISC-015 | Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability | ACTIONED | TD-018, Phase 4.6 |
-| DISC-016 | InMemoryWorkItemRepository is Simplified, Not Event-Sourced | LOGGED | TD-018 |
-| DISC-017 | RuntimeWarning When Running CLI with -m Flag | LOGGED | Phase 4.6.1 |
-| DISC-018 | CommandDispatcher Not Implemented - Dict-Based Workaround Used | LOGGED | Phase 4.6.2, TD-018 |
-| DISC-019 | InMemoryEventStore Not Persistent - Events Lost on Restart | ACTIONED | TD-018 (FileSystemEventStore), TD-019 (SQLite future) |
+| DISC-015 | Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability | ✅ RESOLVED | TD-018 complete (commit 79b4a94) |
+| DISC-016 | InMemoryWorkItemRepository is Simplified, Not Event-Sourced | ✅ RESOLVED | EventSourcedWorkItemRepository implemented |
+| DISC-017 | RuntimeWarning When Running CLI with -m Flag | LOGGED | Pending __main__.py fix |
+| DISC-018 | CommandDispatcher Not Implemented - Dict-Based Workaround Used | ✅ RESOLVED | CommandDispatcher implemented (TD-018 Phase 3) |
+| DISC-019 | InMemoryEventStore Not Persistent - Events Lost on Restart | ✅ RESOLVED | FileSystemEventStore implemented (TD-018 Phase 1) |
 | DISC-020 | CreateWorkItemCommandHandler Expects Numeric parent_id | LOGGED | Phase 4.5.5 |
 
 ---
@@ -589,10 +589,17 @@ class SessionCreated(DomainEvent):
 **Related**:
 - TD-018: Event Sourcing for Work Item Repository
 - Phase 4.4: Items Namespace (Queries) - COMPLETE
-- Phase 4.5: Items Namespace (Commands) - DEFERRED
+- Phase 4.5: Items Namespace (Commands) - COMPLETE
 
 **Action**: Proceed with Phase 4.6, defer Phase 4.5 until post-TD-018
-**Status**: ACTIONED
+**Status**: ✅ RESOLVED (2026-01-12)
+
+**Resolution**:
+- TD-018 Phases 1-4 implemented: FileSystemEventStore, EventSourcedWorkItemRepository, CommandDispatcher
+- Phase 4.5 Items Commands implemented with full event sourcing
+- 5 commands, 5 handlers, 19 integration tests
+- 1636 tests pass (0 regressions)
+- Commit: `79b4a94`
 
 ---
 
@@ -640,7 +647,17 @@ class EventSourcedWorkItemRepository:
 - No ability to replay/reconstruct state
 
 **Action**: Documented in TD-018 for post-Phase 4 remediation
-**Status**: LOGGED
+**Status**: ✅ RESOLVED (2026-01-12)
+
+**Resolution**:
+- `EventSourcedWorkItemRepository` implemented at `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py`
+- Uses `IEventStore` for persistence (FileSystemEventStore)
+- Implements full `IWorkItemRepository` protocol
+- Supports `get()` via `WorkItem.load_from_history()`
+- Supports `save()` returning persisted events
+- Optimistic concurrency via version checking
+- 29 unit tests for repository behavior
+- `InMemoryWorkItemRepository` retained for unit testing
 
 ---
 
@@ -733,10 +750,19 @@ class CommandDispatcher:
 **Related**:
 - ICommandDispatcher: `src/application/ports/primary/icommanddispatcher.py`
 - TD-018: Event Sourcing for Work Items (includes CommandDispatcher)
-- Phase 4.5: Items Commands (deferred)
+- Phase 4.5: Items Commands (COMPLETE)
 
 **Action**: Include CommandDispatcher implementation in TD-018 scope
-**Status**: LOGGED
+**Status**: ✅ RESOLVED (2026-01-12)
+
+**Resolution**:
+- `CommandDispatcher` implemented at `src/application/dispatchers/command_dispatcher.py`
+- Implements `ICommandDispatcher` protocol
+- Type-safe handler registration via `register(command_type, handler)`
+- Dispatch routing with `CommandHandlerNotFoundError`
+- 16 unit tests for dispatcher behavior
+- Symmetric with `QueryDispatcher` pattern
+- 5 work item command handlers registered in `bootstrap.py`
 
 ---
 
@@ -795,7 +821,18 @@ projects/PROJ-001/.jerry/data/events/
 2. Create TD-019 for SQLite Event Store (future)
 3. Create new worktracker: PHASE-TD018-EVENT-SOURCING.md
 
-**Status**: ACTIONED
+**Status**: ✅ RESOLVED (2026-01-12)
+
+**Resolution**:
+- `FileSystemEventStore` implemented at `src/work_tracking/infrastructure/persistence/filesystem_event_store.py`
+- Implements `IEventStore` protocol
+- Uses JSON Lines format (one event per line, append-only)
+- Stores in `projects/PROJ-XXX/.jerry/data/events/`
+- Thread-safe with file locking
+- Optimistic concurrency via version checking
+- 18 unit tests for event store behavior
+- Events now persist across process restarts
+- `InMemoryEventStore` retained for unit testing
 
 ---
 

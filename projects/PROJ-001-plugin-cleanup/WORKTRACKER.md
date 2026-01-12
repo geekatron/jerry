@@ -198,9 +198,9 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 75% (9/12) | - | TD-015, TD-016 |
-| **Phase 4** | [PHASE-04-CLI-NAMESPACES](work/PHASE-04-CLI-NAMESPACES.md) | 🔄 IN PROGRESS | Phase 4.1-4.3 ✅, 4.4 pending | TD-015 ✅ | v0.1.0 |
-| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 14 items | - | DISC-014 (Phase 4.3) |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 92% (12/13, TD-018 ✅) | - | TD-019 (future) |
+| **Phase 4** | [PHASE-04-CLI-NAMESPACES](work/PHASE-04-CLI-NAMESPACES.md) | ✅ COMPLETE | Phase 4.1-4.5 ✅ | TD-015 ✅, TD-018 ✅ | v0.1.0 |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 20 items (4 resolved) | - | DISC-017, DISC-012 |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
 
@@ -208,12 +208,12 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: ✅ Phase 4.5 Items Commands COMPLETE (1636 tests pass)
-> **Active Initiative**: Phase 4 - CLI Namespace Architecture
-> **Current Focus**: Awaiting next task or v0.1.0 release preparation
-> **Completed This Session**: Phase 4.5 Items Commands ✅ (19 integration tests, 50+ total new tests)
-> **Completed**: Phase 4.5 ✅ → TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
-> **Target Version**: v0.1.0 (breaking change - no backward compatibility)
+> **Status**: 🔄 Pre-v0.1.0 Cleanup (DISC-012, DISC-017)
+> **Active Initiative**: v0.1.0 Release Preparation
+> **Current Focus**: DISC-012 (TOON Format) → DISC-017 (RuntimeWarning Fix)
+> **Completed This Session**: TD-018 ✅ (Phase 1-4.5 complete), Phase 4.5 Items Commands ✅
+> **Completed**: TD-018 ✅ → Phase 4.5 ✅ → TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
+> **Target Version**: v0.1.0 (blocking: DISC-012, DISC-017)
 
 ### TD-015: Architecture Remediation Status (COMPLETE ✅)
 

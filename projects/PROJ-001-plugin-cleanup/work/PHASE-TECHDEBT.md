@@ -33,7 +33,7 @@
 | TD-015 | Remediate CLI Architecture Violation | **CRITICAL** | ✅ DONE | BUG-006, Design Canon |
 | TD-016 | Create Comprehensive Coding Standards & Pattern Catalog | **HIGH** | ✅ DONE | User Requirement, Design Canon |
 | TD-017 | Comprehensive Design Canon for Claude Code Rules/Patterns | **HIGH** | ✅ DONE | TD-016 gaps, User Requirement |
-| TD-018 | Event Sourcing for Work Item Repository | HIGH | ⏳ IN_PROGRESS | Phase 4.4, Design Canon, DISC-019 |
+| TD-018 | Event Sourcing for Work Item Repository | HIGH | ✅ COMPLETE (Phase 1-4.5) | Phase 4.4, Design Canon, DISC-019 |
 | TD-019 | SQLite Event Store (Future) | MEDIUM | ⏳ TODO | DISC-019 |
 
 ---
@@ -1351,12 +1351,13 @@ All files in `.claude/patterns/` and `.claude/rules/` directories.
 
 ## TD-018: Event Sourcing for Work Item Repository
 
-> **Status**: ⏳ IN_PROGRESS
+> **Status**: ✅ COMPLETE (Phase 1-4.5 done, Phase 5 deferred)
 > **Priority**: HIGH
 > **Source**: Phase 4.4 (Items Namespace Implementation), Design Canon, DISC-019
-> **Depends On**: Phase 4.4/4.5 completion
+> **Completed**: 2026-01-12
 > **Related**: PAT-REPO-002 (Event-Sourced Repository), PAT-EVT-001 (Domain Event)
 > **Worktracker**: `projects/PROJ-001-plugin-cleanup/work/PHASE-TD018-EVENT-SOURCING.md`
+> **Test Count**: 1636 tests pass (0 regressions)
 
 ### Description
 
@@ -1498,6 +1499,23 @@ M - Medium (6-10 hours)
 - Phase 3 (CommandDispatcher): 1-2 hours
 - Phase 4 (Wiring + Integration): 1-2 hours
 - Phase 5 (Snapshots): Deferred to future
+
+### Implementation Evidence (COMPLETE)
+
+| Phase | Status | Tests | Files Created |
+|-------|--------|-------|---------------|
+| Phase 1: FileSystemEventStore | ✅ DONE | 18 | `src/work_tracking/infrastructure/persistence/filesystem_event_store.py` |
+| Phase 2: EventSourcedWorkItemRepository | ✅ DONE | 29 | `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` |
+| Phase 3: CommandDispatcher | ✅ DONE | 16 | `src/application/dispatchers/command_dispatcher.py` |
+| Phase 4: Composition Root Wiring | ✅ DONE | 12 | `src/bootstrap.py` (modified) |
+| Phase 4.5: Items Commands | ✅ DONE | 50+ | 5 commands, 5 handlers, 19 integration tests |
+| Phase 5: Snapshot Support | ⏳ DEFERRED | 0 | Future optimization |
+
+**Bug Fixed During Implementation:**
+- BUG-006: `IWorkItemRepository.save()` changed to return `list[DomainEvent]` instead of `None`
+- Root cause: Double `collect_events()` call causing empty event returns
+
+**Commit**: `79b4a94` - feat(phase-4.5): implement items command handlers with event sourcing
 
 ---
 
