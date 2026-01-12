@@ -51,7 +51,7 @@ Enhance the problem-solving skill documentation (SKILL.md and PLAYBOOK.md) using
 3. [x] Context engineering improvements applied (tool examples, L0/L1/L2 table, YAML frontmatter)
 4. [x] All ps-* agents documented with updated capabilities - 9 agents covered
 5. [x] Invocation patterns updated per research - Tool Invocation Examples section
-6. [ ] Changes committed (pending)
+6. [x] Changes committed (f83cc16)
 
 ---
 
@@ -125,7 +125,7 @@ Enhance the problem-solving skill documentation (SKILL.md and PLAYBOOK.md) using
 | E-063-005 | Artifact | SKILL.md enhanced | v2.0.0 → v2.1.0 |
 | E-063-006 | Artifact | PLAYBOOK.md enhanced | v3.2.0 → v3.3.0 |
 | E-063-007 | Artifact | Scoring record | `analysis/wi-sao-063-problem-solving-skill-scoring.md` |
-| E-063-008 | Commit | Changes committed | Pending |
+| E-063-008 | Commit | Changes committed | f83cc16 |
 
 ---
 

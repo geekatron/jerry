@@ -49,7 +49,7 @@ Enhance the ps-architect agent definition. Responsible for system design, archit
 4. [x] Role-Goal-Backstory enhanced - already excellent
 5. [x] ADR format guidance - already complete
 6. [x] L0/L1/L2 lens coverage verified - already complete
-7. [ ] Changes committed (pending)
+7. [x] Changes committed (d3c6b63)
 
 ---
 

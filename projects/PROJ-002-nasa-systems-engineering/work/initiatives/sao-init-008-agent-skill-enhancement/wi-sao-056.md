@@ -51,7 +51,7 @@ Enhance the ps-critic agent definition using the Generator-Critic loop pattern. 
 5. [x] Scoring methodology documented - already complete
 6. [x] Circuit breaker awareness added - already complete
 7. [x] L0/L1/L2 lens coverage verified - already complete
-8. [ ] Changes committed (pending)
+8. [x] Changes committed (e778075)
 
 ---
 

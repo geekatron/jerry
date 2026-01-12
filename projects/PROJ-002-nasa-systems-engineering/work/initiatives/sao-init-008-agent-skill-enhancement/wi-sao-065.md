@@ -117,7 +117,7 @@ Enhance the ORCHESTRATION_PATTERNS.md reference document. This is the canonical 
 | E-065-003 | Review | All 8 patterns verified | ✅ Complete |
 | E-065-004 | Artifact | Enhanced document | v1.1.0 |
 | E-065-005 | Artifact | Scoring record | `analysis/wi-sao-065-orchestration-patterns-scoring.md` |
-| E-065-006 | Commit | Changes committed | Pending |
+| E-065-006 | Commit | Changes committed | b15e745 |
 
 ---
 

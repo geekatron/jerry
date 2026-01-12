@@ -49,7 +49,7 @@ Enhance the ps-analyst agent definition using the Generator-Critic loop pattern.
 4. [x] Role-Goal-Backstory enhanced - already complete
 5. [x] Analysis methodology guidance - already complete (5 Whys, FMEA, Trade-off)
 6. [x] L0/L1/L2 lens coverage verified - already complete
-7. [ ] Changes committed (pending)
+7. [x] Changes committed (e778075)
 
 ---
 
