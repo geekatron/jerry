@@ -5,8 +5,8 @@ Immutable objects defined by their attributes, not identity.
 
 Components:
     - WorkItemId: Hybrid identity (Snowflake + display ID)
-    - TestCoverage: Test coverage percentage
-    - TestRatio: Test type distribution (positive/negative/edge)
+    - Coverage: Code coverage percentage
+    - TypeRatio: Test type distribution (positive/negative/edge)
     - WorkItemStatus: Work item lifecycle state machine
     - QualityLevel: Quality gate levels (L0/L1/L2)
     - Priority: Work item priority (CRITICAL/HIGH/MEDIUM/LOW)
@@ -35,8 +35,8 @@ from .quality_gate import (
     Threshold,
     ThresholdType,
 )
-from .test_coverage import TestCoverage
-from .test_ratio import QualityLevel, TestRatio
+from .coverage import Coverage
+from .type_ratio import QualityLevel, TypeRatio
 from .work_item_id import WorkItemId
 from .work_item_status import InvalidStateTransitionError, WorkItemStatus
 from .work_type import WorkType
@@ -48,8 +48,8 @@ __all__ = [
     "Priority",
     "WorkType",
     # Quality Metrics
-    "TestCoverage",
-    "TestRatio",
+    "Coverage",
+    "TypeRatio",
     "QualityLevel",
     # Quality Gates
     "GateLevel",

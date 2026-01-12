@@ -12,6 +12,8 @@ Rules:
     3. Infrastructure may import from domain and application
     4. Shared Kernel is accessible to all layers
 
+Requires pytest-archon package. Tests are skipped if not installed.
+
 References:
     - IMPL-010: Architecture Tests
     - Hexagonal Architecture (Alistair Cockburn)
@@ -19,6 +21,11 @@ References:
 """
 
 from __future__ import annotations
+
+import pytest
+
+# Skip module if pytest-archon is not installed
+pytest.importorskip("pytest_archon", reason="pytest-archon not installed")
 
 from pytest_archon import archrule
 

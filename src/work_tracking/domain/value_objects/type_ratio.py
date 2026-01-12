@@ -1,8 +1,11 @@
 """
-TestRatio - Test type distribution value object.
+TypeRatio - Test type distribution value object.
 
 Represents the distribution of test types (positive/negative/edge cases)
 with quality level validation.
+
+Note: Renamed from TestRatio to TypeRatio to avoid pytest collection
+warnings (classes starting with "Test" are collected by pytest).
 
 References:
     - PAT-005-e006: Quality Gate Value Objects
@@ -30,7 +33,7 @@ class QualityLevel(Enum):
 
 
 @dataclass(frozen=True, slots=True)
-class TestRatio:
+class TypeRatio:
     """
     Distribution of test types (positive/negative/edge cases).
 
@@ -52,7 +55,7 @@ class TestRatio:
         - L2: Must have positive + negative + edge case tests
 
     Example:
-        >>> ratio = TestRatio(positive=5, negative=3, edge_case=2)
+        >>> ratio = TypeRatio(positive=5, negative=3, edge_case=2)
         >>> ratio.total
         10
         >>> ratio.positive_percent
@@ -118,7 +121,7 @@ class TestRatio:
             - L2: positive > 0 and negative > 0 and edge_case > 0
 
         Example:
-            >>> ratio = TestRatio(positive=5, negative=3, edge_case=0)
+            >>> ratio = TypeRatio(positive=5, negative=3, edge_case=0)
             >>> ratio.meets_level(QualityLevel.L1)
             True
             >>> ratio.meets_level(QualityLevel.L2)
@@ -148,7 +151,7 @@ class TestRatio:
             The highest QualityLevel that passes meets_level()
 
         Example:
-            >>> ratio = TestRatio(positive=5, negative=3, edge_case=0)
+            >>> ratio = TypeRatio(positive=5, negative=3, edge_case=0)
             >>> ratio.highest_met_level()
             <QualityLevel.L1: 'L1'>
         """
@@ -166,6 +169,6 @@ class TestRatio:
     def __repr__(self) -> str:
         """Return detailed representation for debugging."""
         return (
-            f"TestRatio(positive={self.positive}, "
+            f"TypeRatio(positive={self.positive}, "
             f"negative={self.negative}, edge_case={self.edge_case})"
         )

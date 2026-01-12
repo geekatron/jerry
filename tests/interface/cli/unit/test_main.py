@@ -1,28 +1,27 @@
-"""Unit tests for Jerry CLI main module.
+"""Unit tests for Jerry CLI main module and CLIAdapter.
 
 Tests cover:
-- Argument parsing
-- Output formatting
-- Command handler logic
+- Argument parsing (main.py)
+- CLIAdapter command methods (adapter.py)
+- Output formatting (adapter.py)
+- Bootstrap helpers (bootstrap.py)
+
+Note: After the TD-015 Clean Architecture refactoring:
+- Command handlers are now methods on CLIAdapter
+- CLIAdapter receives dispatcher via constructor injection
+- get_projects_directory() moved to src.bootstrap
 """
 
 from __future__ import annotations
 
-import argparse
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from src.interface.cli.main import (
-    __version__,
-    cmd_init,
-    cmd_projects_list,
-    cmd_projects_validate,
-    create_parser,
-    format_project_table,
-    get_projects_directory,
-)
+from src.bootstrap import get_projects_directory
+from src.interface.cli.adapter import CLIAdapter
+from src.interface.cli.main import __version__, create_parser
 from src.session_management.domain import ProjectId, ProjectStatus, ValidationResult
 
 
@@ -82,17 +81,21 @@ class TestCreateParser:
 
 
 class TestFormatProjectTable:
-    """Tests for format_project_table function."""
+    """Tests for CLIAdapter._format_project_table method."""
 
     def test_empty_list_returns_no_projects_message(self):
         """Empty project list should return appropriate message."""
-        result = format_project_table([])
+        mock_dispatcher = Mock()
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter._format_project_table([])
         assert result == "No projects found."
 
     def test_single_project_formats_correctly(self):
         """Single project should be formatted as table row."""
+        mock_dispatcher = Mock()
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
         projects = [MockProjectInfo("PROJ-001-test", "IN_PROGRESS")]
-        result = format_project_table(projects)
+        result = adapter._format_project_table(projects)
 
         assert "PROJ-001-test" in result
         assert "in_progress" in result
@@ -100,11 +103,13 @@ class TestFormatProjectTable:
 
     def test_multiple_projects_format_correctly(self):
         """Multiple projects should all appear in table."""
+        mock_dispatcher = Mock()
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
         projects = [
             MockProjectInfo("PROJ-001-alpha", "IN_PROGRESS"),
             MockProjectInfo("PROJ-002-beta", "COMPLETED"),
         ]
-        result = format_project_table(projects)
+        result = adapter._format_project_table(projects)
 
         assert "PROJ-001-alpha" in result
         assert "PROJ-002-beta" in result
@@ -134,123 +139,129 @@ class TestGetProjectsDirectory:
                 mock_cwd.assert_called()
 
 
-class TestCmdInit:
-    """Tests for cmd_init command handler."""
+class TestCLIAdapterCmdInit:
+    """Tests for CLIAdapter.cmd_init method.
+
+    Note: After TD-015 refactoring, command handlers are now
+    methods on CLIAdapter with injected dispatcher.
+    """
 
     def test_returns_zero_on_success(self):
         """cmd_init should return 0 on success."""
-        args = argparse.Namespace(json=False)
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = {
+            "jerry_project": None,
+            "project_id": None,
+            "validation": None,
+            "available_projects": [],
+            "next_number": 1,
+        }
 
-        with patch("src.interface.cli.main.GetProjectContextQuery") as mock_query:
-            mock_query.return_value.execute.return_value = {
-                "jerry_project": None,
-                "project_id": None,
-                "validation": None,
-                "available_projects": [],
-                "next_number": 1,
-            }
-
-            result = cmd_init(args)
-            assert result == 0
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_init(json_output=False)
+        assert result == 0
 
     def test_outputs_json_when_flag_set(self, capsys):
-        """cmd_init should output JSON when --json flag is set."""
-        args = argparse.Namespace(json=True)
+        """cmd_init should output JSON when json_output is True."""
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = {
+            "jerry_project": "PROJ-001-test",
+            "project_id": ProjectId.parse("PROJ-001-test"),
+            "validation": ValidationResult.success(),
+            "available_projects": [],
+            "next_number": 2,
+        }
 
-        with patch("src.interface.cli.main.GetProjectContextQuery") as mock_query:
-            mock_query.return_value.execute.return_value = {
-                "jerry_project": "PROJ-001-test",
-                "project_id": ProjectId.parse("PROJ-001-test"),
-                "validation": ValidationResult.success(),
-                "available_projects": [],
-                "next_number": 2,
-            }
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_init(json_output=True)
+        captured = capsys.readouterr()
 
-            result = cmd_init(args)
-            captured = capsys.readouterr()
-
-            assert result == 0
-            output = json.loads(captured.out)
-            assert output["jerry_project"] == "PROJ-001-test"
-            assert output["validation"]["is_valid"] is True
+        assert result == 0
+        output = json.loads(captured.out)
+        assert output["jerry_project"] == "PROJ-001-test"
+        assert output["validation"]["is_valid"] is True
 
 
-class TestCmdProjectsList:
-    """Tests for cmd_projects_list command handler."""
+class TestCLIAdapterCmdProjectsList:
+    """Tests for CLIAdapter.cmd_projects_list method."""
 
     def test_returns_zero_on_success(self):
         """cmd_projects_list should return 0 on success."""
-        args = argparse.Namespace(json=False)
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = []
 
-        with patch("src.interface.cli.main.ScanProjectsQuery") as mock_query:
-            mock_query.return_value.execute.return_value = []
-
-            result = cmd_projects_list(args)
-            assert result == 0
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_projects_list(json_output=False)
+        assert result == 0
 
     def test_outputs_json_when_flag_set(self, capsys):
-        """cmd_projects_list should output JSON when --json flag is set."""
-        args = argparse.Namespace(json=True)
+        """cmd_projects_list should output JSON when json_output is True."""
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = [
+            MockProjectInfo("PROJ-001-test"),
+        ]
 
-        with patch("src.interface.cli.main.ScanProjectsQuery") as mock_query:
-            mock_query.return_value.execute.return_value = [
-                MockProjectInfo("PROJ-001-test"),
-            ]
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_projects_list(json_output=True)
+        captured = capsys.readouterr()
 
-            result = cmd_projects_list(args)
-            captured = capsys.readouterr()
-
-            assert result == 0
-            output = json.loads(captured.out)
-            assert output["count"] == 1
-            assert len(output["projects"]) == 1
+        assert result == 0
+        output = json.loads(captured.out)
+        assert output["count"] == 1
+        assert len(output["projects"]) == 1
 
 
-class TestCmdProjectsValidate:
-    """Tests for cmd_projects_validate command handler."""
+class TestCLIAdapterCmdProjectsValidate:
+    """Tests for CLIAdapter.cmd_projects_validate method."""
 
     def test_returns_zero_for_valid_project(self):
         """cmd_projects_validate should return 0 for valid project."""
-        args = argparse.Namespace(json=False, project_id="PROJ-001-test")
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = (
+            ProjectId.parse("PROJ-001-test"),
+            ValidationResult.success(),
+        )
 
-        with patch("src.interface.cli.main.ValidateProjectQuery") as mock_query:
-            mock_query.return_value.execute.return_value = (
-                ProjectId.parse("PROJ-001-test"),
-                ValidationResult.success(),
-            )
-
-            result = cmd_projects_validate(args)
-            assert result == 0
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_projects_validate(
+            project_id_str="PROJ-001-test",
+            json_output=False,
+        )
+        assert result == 0
 
     def test_returns_one_for_invalid_project(self):
         """cmd_projects_validate should return 1 for invalid project."""
-        args = argparse.Namespace(json=False, project_id="INVALID-ID")
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = (
+            None,
+            ValidationResult.failure(["Invalid format"]),
+        )
 
-        with patch("src.interface.cli.main.ValidateProjectQuery") as mock_query:
-            mock_query.return_value.execute.return_value = (
-                None,
-                ValidationResult.failure(["Invalid format"]),
-            )
-
-            result = cmd_projects_validate(args)
-            assert result == 1
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_projects_validate(
+            project_id_str="INVALID-ID",
+            json_output=False,
+        )
+        assert result == 1
 
     def test_outputs_json_when_flag_set(self, capsys):
-        """cmd_projects_validate should output JSON when --json flag is set."""
-        args = argparse.Namespace(json=True, project_id="PROJ-001-test")
+        """cmd_projects_validate should output JSON when json_output is True."""
+        mock_dispatcher = Mock()
+        mock_dispatcher.dispatch.return_value = (
+            ProjectId.parse("PROJ-001-test"),
+            ValidationResult.success(),
+        )
 
-        with patch("src.interface.cli.main.ValidateProjectQuery") as mock_query:
-            mock_query.return_value.execute.return_value = (
-                ProjectId.parse("PROJ-001-test"),
-                ValidationResult.success(),
-            )
+        adapter = CLIAdapter(dispatcher=mock_dispatcher, projects_dir="/test")
+        result = adapter.cmd_projects_validate(
+            project_id_str="PROJ-001-test",
+            json_output=True,
+        )
+        captured = capsys.readouterr()
 
-            result = cmd_projects_validate(args)
-            captured = capsys.readouterr()
-
-            assert result == 0
-            output = json.loads(captured.out)
-            assert output["is_valid"] is True
+        assert result == 0
+        output = json.loads(captured.out)
+        assert output["is_valid"] is True
 
 
 class TestVersion:

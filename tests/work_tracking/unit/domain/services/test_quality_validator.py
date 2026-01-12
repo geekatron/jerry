@@ -22,10 +22,10 @@ from src.work_tracking.domain.services.quality_validator import (
     ValidationResult,
 )
 from src.work_tracking.domain.value_objects import (
+    Coverage,
     GateLevel,
     RiskTier,
-    TestCoverage,
-    TestRatio,
+    TypeRatio,
 )
 
 # =============================================================================
@@ -102,8 +102,8 @@ class TestL0Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L0,
-            coverage=TestCoverage.from_percent(10),
-            ratio=TestRatio(positive=1, negative=0, edge_case=0),
+            coverage=Coverage.from_percent(10),
+            ratio=TypeRatio(positive=1, negative=0, edge_case=0),
         )
         assert result.passed is True
 
@@ -123,8 +123,8 @@ class TestL0Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L0,
-            coverage=TestCoverage.from_percent(0),
-            ratio=TestRatio(positive=1, negative=0, edge_case=0),
+            coverage=Coverage.from_percent(0),
+            ratio=TypeRatio(positive=1, negative=0, edge_case=0),
         )
         assert result.passed is True
 
@@ -142,8 +142,8 @@ class TestL1Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L1,
-            coverage=TestCoverage.from_percent(80),
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            coverage=Coverage.from_percent(80),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         assert result.passed is True
 
@@ -152,8 +152,8 @@ class TestL1Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L1,
-            coverage=TestCoverage.from_percent(90),
-            ratio=TestRatio(positive=10, negative=0, edge_case=5),
+            coverage=Coverage.from_percent(90),
+            ratio=TypeRatio(positive=10, negative=0, edge_case=5),
         )
         assert result.passed is False
         assert any("negative" in f.lower() for f in result.failures)
@@ -163,8 +163,8 @@ class TestL1Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L1,
-            coverage=TestCoverage.from_percent(79),
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            coverage=Coverage.from_percent(79),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         assert result.passed is False
         assert any("80%" in f for f in result.failures)
@@ -174,8 +174,8 @@ class TestL1Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L1,
-            coverage=TestCoverage.from_percent(85),
-            ratio=TestRatio(positive=0, negative=3, edge_case=2),
+            coverage=Coverage.from_percent(85),
+            ratio=TypeRatio(positive=0, negative=3, edge_case=2),
         )
         assert result.passed is False
         assert any("positive" in f.lower() for f in result.failures)
@@ -194,8 +194,8 @@ class TestL2Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L2,
-            coverage=TestCoverage.from_percent(90),
-            ratio=TestRatio(positive=10, negative=5, edge_case=5),
+            coverage=Coverage.from_percent(90),
+            ratio=TypeRatio(positive=10, negative=5, edge_case=5),
         )
         assert result.passed is True
 
@@ -204,8 +204,8 @@ class TestL2Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L2,
-            coverage=TestCoverage.from_percent(95),
-            ratio=TestRatio(positive=10, negative=5, edge_case=0),
+            coverage=Coverage.from_percent(95),
+            ratio=TypeRatio(positive=10, negative=5, edge_case=0),
         )
         assert result.passed is False
         assert any("edge" in f.lower() for f in result.failures)
@@ -215,8 +215,8 @@ class TestL2Validation:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L2,
-            coverage=TestCoverage.from_percent(89),
-            ratio=TestRatio(positive=10, negative=5, edge_case=5),
+            coverage=Coverage.from_percent(89),
+            ratio=TypeRatio(positive=10, negative=5, edge_case=5),
         )
         assert result.passed is False
         assert any("90%" in f for f in result.failures)
@@ -299,7 +299,7 @@ class TestValidationEdgeCases:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L1,
-            coverage=TestCoverage.from_percent(90),
+            coverage=Coverage.from_percent(90),
             ratio=None,
         )
         assert result.passed is False
@@ -319,8 +319,8 @@ class TestValidationEdgeCases:
         validator = QualityGateValidator()
         result = validator.validate(
             gate_level=GateLevel.L2,
-            coverage=TestCoverage.from_percent(50),  # Fails 90%
-            ratio=TestRatio(positive=5, negative=0, edge_case=0),  # Fails negative + edge
+            coverage=Coverage.from_percent(50),  # Fails 90%
+            ratio=TypeRatio(positive=5, negative=0, edge_case=0),  # Fails negative + edge
         )
         assert result.passed is False
         assert len(result.failures) >= 2

@@ -3,6 +3,8 @@
 Enforces specific dependency rules within the work_tracking domain
 to ensure proper separation of concerns and avoid circular dependencies.
 
+Requires pytest-archon package. Tests are skipped if not installed.
+
 References:
     - IMPL-010: Architecture Tests
     - Clean Architecture dependency rule
@@ -10,6 +12,11 @@ References:
 """
 
 from __future__ import annotations
+
+import pytest
+
+# Skip module if pytest-archon is not installed
+pytest.importorskip("pytest_archon", reason="pytest-archon not installed")
 
 from pytest_archon import archrule
 

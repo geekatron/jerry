@@ -40,8 +40,8 @@ from src.work_tracking.domain.events.work_item_events import (
 )
 from src.work_tracking.domain.value_objects import (
     Priority,
-    TestCoverage,
-    TestRatio,
+    Coverage,
+    TypeRatio,
     WorkItemId,
     WorkItemStatus,
     WorkType,
@@ -118,7 +118,7 @@ class WorkItem(AggregateRoot):
         ...     priority=Priority.HIGH,
         ... )
         >>> item.start_work()
-        >>> item.update_quality_metrics(TestCoverage.from_percent(85), ...)
+        >>> item.update_quality_metrics(Coverage.from_percent(85), ...)
         >>> item.complete()
         >>> events = item.collect_events()
     """
@@ -131,8 +131,8 @@ class WorkItem(AggregateRoot):
     _work_type: WorkType
     _status: WorkItemStatus
     _priority: Priority
-    _test_coverage: TestCoverage | None
-    _test_ratio: TestRatio | None
+    _test_coverage: Coverage | None
+    _test_ratio: TypeRatio | None
     _parent_id: str | None
     _dependencies: list[str]
     _assignee: str | None
@@ -241,12 +241,12 @@ class WorkItem(AggregateRoot):
         return self._priority
 
     @property
-    def test_coverage(self) -> TestCoverage | None:
+    def test_coverage(self) -> Coverage | None:
         """Test coverage metrics, if recorded."""
         return self._test_coverage
 
     @property
-    def test_ratio(self) -> TestRatio | None:
+    def test_ratio(self) -> TypeRatio | None:
         """Test type distribution, if recorded."""
         return self._test_ratio
 
@@ -471,8 +471,8 @@ class WorkItem(AggregateRoot):
 
     def update_quality_metrics(
         self,
-        coverage: TestCoverage | None = None,
-        ratio: TestRatio | None = None,
+        coverage: Coverage | None = None,
+        ratio: TypeRatio | None = None,
     ) -> None:
         """
         Record test execution results.
@@ -600,13 +600,13 @@ class WorkItem(AggregateRoot):
 
         elif isinstance(event, QualityMetricsUpdated):
             if event.coverage_percent is not None:
-                self._test_coverage = TestCoverage.from_percent(event.coverage_percent)
+                self._test_coverage = Coverage.from_percent(event.coverage_percent)
             if (
                 event.positive_tests is not None
                 and event.negative_tests is not None
                 and event.edge_case_tests is not None
             ):
-                self._test_ratio = TestRatio(
+                self._test_ratio = TypeRatio(
                     positive=event.positive_tests,
                     negative=event.negative_tests,
                     edge_case=event.edge_case_tests,
@@ -650,8 +650,8 @@ class WorkItem(AggregateRoot):
 
     def _evaluate_quality_gate(
         self,
-        coverage: TestCoverage | None,
-        ratio: TestRatio | None,
+        coverage: Coverage | None,
+        ratio: TypeRatio | None,
     ) -> tuple[str | None, bool, list[str]]:
         """
         Evaluate quality gate requirements.

@@ -35,10 +35,10 @@ from src.work_tracking.domain.events.work_item_events import (
     WorkItemCreated,
 )
 from src.work_tracking.domain.value_objects import (
+    Coverage,
     InvalidStateTransitionError,
     Priority,
-    TestCoverage,
-    TestRatio,
+    TypeRatio,
     WorkItemId,
     WorkItemStatus,
     WorkType,
@@ -202,8 +202,8 @@ class TestStatusTransitionsHappyPath:
     def test_complete_from_in_progress_with_metrics(self, in_progress_item: WorkItem) -> None:
         """Can complete from IN_PROGRESS with quality metrics."""
         in_progress_item.update_quality_metrics(
-            coverage=TestCoverage.from_percent(80),
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            coverage=Coverage.from_percent(80),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         in_progress_item.complete()
         assert in_progress_item.status == WorkItemStatus.DONE
@@ -228,7 +228,7 @@ class TestStatusTransitionsHappyPath:
     def test_reopen_from_done(self, in_progress_item: WorkItem) -> None:
         """Can reopen from DONE."""
         in_progress_item.update_quality_metrics(
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         in_progress_item.complete()
         in_progress_item.reopen(reason="Need to fix bug")
@@ -263,7 +263,7 @@ class TestStatusTransitionsInvalid:
     def test_cannot_cancel_from_done(self, in_progress_item: WorkItem) -> None:
         """Cannot cancel from DONE."""
         in_progress_item.update_quality_metrics(
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         in_progress_item.complete()
         with pytest.raises(InvalidStateTransitionError):
@@ -297,14 +297,14 @@ class TestQualityGates:
 
     def test_update_quality_metrics_records_coverage(self, pending_item: WorkItem) -> None:
         """Quality metrics update records coverage."""
-        coverage = TestCoverage.from_percent(85.5)
+        coverage = Coverage.from_percent(85.5)
         pending_item.update_quality_metrics(coverage=coverage)
         assert pending_item.test_coverage is not None
         assert pending_item.test_coverage.percent == 85.5
 
     def test_update_quality_metrics_records_ratio(self, pending_item: WorkItem) -> None:
         """Quality metrics update records test ratio."""
-        ratio = TestRatio(positive=10, negative=5, edge_case=3)
+        ratio = TypeRatio(positive=10, negative=5, edge_case=3)
         pending_item.update_quality_metrics(ratio=ratio)
         assert pending_item.test_ratio is not None
         assert pending_item.test_ratio.positive == 10
@@ -313,8 +313,8 @@ class TestQualityGates:
         """Quality metrics update emits event."""
         pending_item.collect_events()  # Clear creation event
         pending_item.update_quality_metrics(
-            coverage=TestCoverage.from_percent(80),
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            coverage=Coverage.from_percent(80),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         events = pending_item.collect_events()
 
@@ -508,8 +508,8 @@ class TestEventSourcing:
         original.start_work()
         original.change_priority(Priority.HIGH)
         original.update_quality_metrics(
-            coverage=TestCoverage.from_percent(85),
-            ratio=TestRatio(positive=10, negative=5, edge_case=3),
+            coverage=Coverage.from_percent(85),
+            ratio=TypeRatio(positive=10, negative=5, edge_case=3),
         )
 
         # Collect events
@@ -542,7 +542,7 @@ class TestEventSourcing:
     def test_complete_emits_two_events(self, in_progress_item: WorkItem) -> None:
         """Complete emits StatusChanged and WorkItemCompleted."""
         in_progress_item.update_quality_metrics(
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         in_progress_item.collect_events()  # Clear previous
         in_progress_item.complete(reason="All done")
@@ -617,7 +617,7 @@ class TestEdgeCases:
         pending_item.block()
         pending_item.start_work()
         pending_item.update_quality_metrics(
-            ratio=TestRatio(positive=5, negative=3, edge_case=2),
+            ratio=TypeRatio(positive=5, negative=3, edge_case=2),
         )
         pending_item.complete()
         pending_item.reopen()

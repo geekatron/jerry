@@ -1,4 +1,7 @@
-"""BDD step definitions for Snowflake ID generation."""
+"""BDD step definitions for Snowflake ID generation.
+
+Requires pytest-bdd package. Tests are skipped if not installed.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +10,10 @@ import time
 from typing import Any
 
 import pytest
+
+# Skip module if pytest-bdd is not installed
+pytest_bdd = pytest.importorskip("pytest_bdd", reason="pytest-bdd not installed")
+
 from pytest_bdd import given, parsers, scenarios, then, when
 
 # Import the module under test (will fail until implemented - RED phase)

@@ -30,8 +30,8 @@ from typing import Protocol, runtime_checkable
 from src.work_tracking.domain.value_objects import (
     GateLevel,
     RiskTier,
-    TestCoverage,
-    TestRatio,
+    Coverage,
+    TypeRatio,
 )
 
 # =============================================================================
@@ -80,8 +80,8 @@ class IQualityGateValidator(Protocol):
     Example:
         >>> def check_ready_for_merge(
         ...     validator: IQualityGateValidator,
-        ...     coverage: TestCoverage,
-        ...     ratio: TestRatio,
+        ...     coverage: Coverage,
+        ...     ratio: TypeRatio,
         ... ) -> bool:
         ...     result = validator.validate(GateLevel.L1, coverage, ratio)
         ...     return result.passed
@@ -90,8 +90,8 @@ class IQualityGateValidator(Protocol):
     def validate(
         self,
         gate_level: GateLevel,
-        coverage: TestCoverage | None,
-        ratio: TestRatio | None,
+        coverage: Coverage | None,
+        ratio: TypeRatio | None,
     ) -> ValidationResult:
         """
         Validate quality metrics against gate requirements.
@@ -200,8 +200,8 @@ class QualityGateValidator(IQualityGateValidator):
         >>> validator = QualityGateValidator()
         >>> result = validator.validate(
         ...     gate_level=GateLevel.L1,
-        ...     coverage=TestCoverage.from_percent(85),
-        ...     ratio=TestRatio(positive=10, negative=5, edge_case=3),
+        ...     coverage=Coverage.from_percent(85),
+        ...     ratio=TypeRatio(positive=10, negative=5, edge_case=3),
         ... )
         >>> result.passed
         True
@@ -210,8 +210,8 @@ class QualityGateValidator(IQualityGateValidator):
     def validate(
         self,
         gate_level: GateLevel,
-        coverage: TestCoverage | None,
-        ratio: TestRatio | None,
+        coverage: Coverage | None,
+        ratio: TypeRatio | None,
     ) -> ValidationResult:
         """
         Validate quality metrics against gate requirements.
