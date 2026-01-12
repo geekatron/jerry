@@ -1,9 +1,30 @@
+---
+name: nasa-se-playbook
+description: Step-by-step guidance for using the NASA Systems Engineering skill, including review preparation, requirements engineering, risk management, and real-world examples with L0/L1/L2 output levels.
+version: "2.1.0"
+skill: nasa-se
+template: PLAYBOOK_TEMPLATE.md v1.0.0
+constitutional_compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043
+standards: NPR 7123.1D, NASA/SP-2016-6105 Rev2, NPR 8000.4C
+agents_covered:
+  - nse-requirements
+  - nse-verification
+  - nse-risk
+  - nse-architecture
+  - nse-reviewer
+  - nse-integration
+  - nse-configuration
+  - nse-explorer
+  - nse-qa
+  - nse-reporter
+---
+
 # NASA Systems Engineering Playbook
 
-> **Version:** 2.0.0
+> **Version:** 2.1.0
 > **Skill:** nasa-se
 > **Purpose:** Systems engineering guidance based on NASA NPR 7123.1D and SE Handbook
-> **Updated:** 2026-01-12 - Triple-lens refactoring (SAO-INIT-007)
+> **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-064), Triple-lens refactoring (SAO-INIT-007)
 
 ---
 
@@ -945,7 +966,9 @@ Internal References:
 
 ---
 
-*Playbook Version: 2.0.0*
+*Playbook Version: 2.1.0*
 *Skill: nasa-se*
-*Last Updated: 2026-01-12 - Triple-lens refactoring (SAO-INIT-007)*
+*Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*
+*Enhancement: WI-SAO-064 YAML frontmatter (0.835→0.895)*
+*Last Updated: 2026-01-12*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

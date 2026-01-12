@@ -1,9 +1,28 @@
+---
+name: problem-solving-playbook
+description: Step-by-step guidance for using the problem-solving skill, including agent selection, orchestration patterns, and real-world examples with L0/L1/L2 output levels.
+version: "3.3.0"
+skill: problem-solving
+template: PLAYBOOK_TEMPLATE.md v1.0.0
+constitutional_compliance: Jerry Constitution v1.0
+agents_covered:
+  - ps-researcher
+  - ps-analyst
+  - ps-architect
+  - ps-critic
+  - ps-validator
+  - ps-synthesizer
+  - ps-reviewer
+  - ps-investigator
+  - ps-reporter
+---
+
 # Problem-Solving Playbook
 
-> **Version:** 3.2.0
+> **Version:** 3.3.0
 > **Skill:** problem-solving
 > **Purpose:** Structured analysis, research, and decision-making through specialized agents
-> **Updated:** 2026-01-12 - Added 15 L0/L1/L2 real-world examples (WI-SAO-043)
+> **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-063), Added 15 L0/L1/L2 real-world examples (WI-SAO-043)
 
 ---
 
@@ -1678,7 +1697,9 @@ Problem-solving agents can hand off to NASA SE agents:
 
 ---
 
-*Playbook Version: 3.0.0*
+*Playbook Version: 3.3.0*
 *Skill: problem-solving*
-*Last Updated: 2026-01-12 - Triple-lens refactoring (SAO-INIT-007)*
+*Constitutional Compliance: Jerry Constitution v1.0*
+*Enhancement: WI-SAO-063 YAML frontmatter (0.8425→0.890)*
+*Last Updated: 2026-01-12*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

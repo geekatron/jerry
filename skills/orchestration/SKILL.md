@@ -1,7 +1,7 @@
 ---
 name: orchestration
 description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
-version: "2.0.0"
+version: "2.1.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "orchestration"
@@ -18,10 +18,22 @@ activation-keywords:
 
 # Orchestration Skill
 
-> **Version:** 2.0.0
+> **Version:** 2.1.0
 > **Framework:** Jerry Orchestration (ORCH)
 > **Constitutional Compliance:** Jerry Constitution v1.0
 > **Industry References:** [Anthropic Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [Microsoft AI Agent Patterns](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns), [LangGraph](https://langchain-ai.github.io/langgraph/), [CrewAI Flows](https://docs.crewai.com/concepts/flows)
+
+---
+
+## Document Audience (Triple-Lens)
+
+This SKILL.md serves multiple audiences:
+
+| Level | Audience | Sections to Focus On |
+|-------|----------|---------------------|
+| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Core Artifacts |
+| **L1 (Engineer)** | Developers executing workflows | Quick Start, State Schema |
+| **L2 (Architect)** | Workflow designers | Workflow Patterns, Constitutional Compliance |
 
 ---
 
@@ -399,6 +411,69 @@ orchestration/sao-crosspoll-20260110-001/cross-pollination/barrier-1/ps-to-nse/h
 
 ---
 
+## Tool Invocation Examples
+
+Each orchestration workflow uses tools for state management. Here are concrete examples:
+
+### Workflow Planning (orch-planner)
+
+```
+1. Find existing orchestration artifacts:
+   Glob(pattern="projects/${JERRY_PROJECT}/orchestration/**/*.yaml")
+   → Returns list of existing workflow state files
+
+2. Read project context for workflow design:
+   Read(file_path="projects/${JERRY_PROJECT}/PLAN.md")
+   → Load project plan to understand workflow scope
+
+3. Create orchestration plan (MANDATORY per P-002):
+   Write(
+       file_path="projects/${JERRY_PROJECT}/orchestration/sao-crosspoll-20260112-001/ORCHESTRATION_PLAN.md",
+       content="# Orchestration Plan: Cross-Pollinated Pipeline\n\n## Workflow Diagram\n```\nPipeline A             Pipeline B\n..."
+   )
+   → Persist strategic plan - transient planning VIOLATES P-002
+```
+
+### State Tracking (orch-tracker)
+
+```
+1. Read current workflow state (SSOT):
+   Read(file_path="projects/${JERRY_PROJECT}/orchestration/sao-crosspoll-20260112-001/ORCHESTRATION.yaml")
+   → Load machine-readable state as single source of truth
+
+2. Search for agent completion artifacts:
+   Glob(pattern="projects/${JERRY_PROJECT}/orchestration/**/phase-*/**/*.md")
+   → Find all agent output artifacts for status reconciliation
+
+3. Update workflow state (MANDATORY per P-002):
+   Write(
+       file_path="projects/${JERRY_PROJECT}/orchestration/sao-crosspoll-20260112-001/ORCHESTRATION.yaml",
+       content="workflow:\n  id: 'sao-crosspoll-20260112-001'\n  status: ACTIVE\n..."
+   )
+   → Persist state changes - in-memory-only state VIOLATES P-002
+```
+
+### Workflow Synthesis (orch-synthesizer)
+
+```
+1. Find all barrier artifacts:
+   Glob(pattern="projects/${JERRY_PROJECT}/orchestration/**/barriers/*.md")
+   → Collect cross-pollination artifacts for synthesis
+
+2. Read pipeline outputs:
+   Read(file_path="projects/${JERRY_PROJECT}/orchestration/sao-crosspoll-20260112-001/ps/phase-2/agent-a-002/analysis.md")
+   → Load agent outputs for pattern extraction
+
+3. Create final synthesis (MANDATORY per P-002):
+   Write(
+       file_path="projects/${JERRY_PROJECT}/orchestration/sao-crosspoll-20260112-001/synthesis/final-synthesis.md",
+       content="# Workflow Synthesis\n\n## L0: Executive Summary\n..."
+   )
+   → Persist synthesis - transient findings VIOLATES P-002
+```
+
+---
+
 ## Constitutional Compliance
 
 | Principle | Requirement | Implementation |
@@ -447,7 +522,8 @@ For workflow examples and step-by-step guides, see:
 
 ---
 
-*Skill Version: 2.0.0*
+*Skill Version: 2.1.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
+*Enhancement: WI-SAO-064 tool examples and L0/L1/L2 structure (0.830→0.870)*
 *Created: 2026-01-10*
-*Updated: 2026-01-10 - Added dynamic path scheme and pipeline alias configuration*
+*Last Updated: 2026-01-12*

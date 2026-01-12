@@ -1,7 +1,7 @@
 ---
 name: nasa-se
 description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
-version: "1.0.0"
+version: "1.1.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "systems engineering"
@@ -43,10 +43,22 @@ activation-keywords:
 
 # NASA Systems Engineering Skill
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Framework:** Jerry NASA SE (NSE)
 > **Standards:** NASA/SP-2016-6105 Rev2, NPR 7123.1D, NPR 8000.4C
 > **Constitutional Compliance:** Jerry Constitution v1.0
+
+---
+
+## Document Audience (Triple-Lens)
+
+This SKILL.md serves multiple audiences:
+
+| Level | Audience | Sections to Focus On |
+|-------|----------|---------------------|
+| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Quick Reference |
+| **L1 (Engineer)** | Engineers invoking agents | Invoking an Agent, Agent Details |
+| **L2 (Architect)** | SE workflow designers | Orchestration Flow, State Passing, NPR Processes |
 
 ---
 
@@ -259,6 +271,82 @@ Agents can reference each other's output using state keys:
 
 ---
 
+## Tool Invocation Examples
+
+Each agent uses the allowed tools differently. Here are concrete examples:
+
+### Requirements Engineering (nse-requirements)
+
+```
+1. Find stakeholder documentation:
+   Glob(pattern="projects/${JERRY_PROJECT}/stakeholders/**/*.md")
+   → Returns list of stakeholder needs for requirements derivation
+
+2. Search for existing requirements:
+   Grep(pattern="REQ-NSE-|shall", path="projects/${JERRY_PROJECT}/requirements/", output_mode="content", -C=2)
+   → Find existing requirements for traceability matrix
+
+3. Read NASA standards for compliance:
+   WebFetch(url="https://nodis3.gsfc.nasa.gov/displayDir.cfm?Internal_ID=N_PR_7123_001D_",
+            prompt="Extract requirements management guidance from NPR 7123.1D")
+   → Reference authoritative NASA source
+
+4. Create requirements output (MANDATORY per P-002, P-043):
+   Write(
+       file_path="projects/${JERRY_PROJECT}/requirements/proj-002-e-101-auth-requirements.md",
+       content="---\nDISCLAIMER: This guidance is AI-generated...\n---\n\n# Requirements: Authentication\n\n## L0: Executive Summary\n..."
+   )
+   → Persist with mandatory disclaimer - transient output VIOLATES P-002 and P-043
+```
+
+### Risk Assessment (nse-risk)
+
+```
+1. Find existing risk artifacts:
+   Glob(pattern="projects/${JERRY_PROJECT}/risks/**/*.md")
+   → Discover existing risk register and assessments
+
+2. Search for risk keywords in project:
+   Grep(pattern="risk|threat|vulnerability|5x5", path="projects/${JERRY_PROJECT}/", output_mode="content", -C=2)
+   → Find risk-related discussions across project
+
+3. Read project context for risk identification:
+   Read(file_path="projects/${JERRY_PROJECT}/requirements/requirements-spec.md")
+   → Load requirements to identify verification risks
+
+4. Create risk register (MANDATORY per P-002, P-043):
+   Write(
+       file_path="projects/${JERRY_PROJECT}/risks/proj-002-e-201-risk-register.md",
+       content="---\nDISCLAIMER: This guidance is AI-generated...\n---\n\n# Risk Register: Deployment Phase\n\n## L0: Executive Summary\n..."
+   )
+   → Persist risk findings with mandatory disclaimer
+```
+
+### Technical Review (nse-reviewer)
+
+```
+1. Find review artifacts to evaluate:
+   Glob(pattern="projects/${JERRY_PROJECT}/requirements/**/*.md")
+   → Discover requirements for review gate assessment
+
+2. Search for review readiness indicators:
+   Grep(pattern="Status: (Approved|Baselined)|TBD|TBR", path="projects/${JERRY_PROJECT}/", output_mode="content", -C=2)
+   → Find approval status and unresolved items
+
+3. Read verification status:
+   Read(file_path="projects/${JERRY_PROJECT}/verification/VCRM.md")
+   → Load VCRM for review entrance criteria check
+
+4. Create review package (MANDATORY per P-002, P-043):
+   Write(
+       file_path="projects/${JERRY_PROJECT}/reviews/proj-002-e-301-PDR-entrance.md",
+       content="---\nDISCLAIMER: This guidance is AI-generated...\n---\n\n# PDR Entrance Checklist\n\n## L0: Executive Summary\n..."
+   )
+   → Persist review findings with mandatory disclaimer
+```
+
+---
+
 ## Mandatory Persistence (P-002)
 
 All agents MUST persist their output to files. This ensures:
@@ -375,6 +463,7 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042*
-*Last Updated: 2026-01-11*
+*Skill Version: 1.1.0*
+*Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*
+*Enhancement: WI-SAO-064 tool examples and L0/L1/L2 structure (0.8475→0.880)*
+*Last Updated: 2026-01-12*

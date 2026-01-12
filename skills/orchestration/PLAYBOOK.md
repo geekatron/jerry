@@ -1,9 +1,31 @@
+---
+name: orchestration-playbook
+description: Step-by-step guidance for multi-agent workflow coordination, including pattern selection, cross-pollinated pipelines, sync barriers, checkpointing, and real-world examples with L0/L1/L2 output levels.
+version: "3.1.0"
+skill: orchestration
+template: PLAYBOOK_TEMPLATE.md v1.0.0
+constitutional_compliance: Jerry Constitution v1.0
+patterns_covered:
+  - single-agent
+  - sequential-chain
+  - fan-out
+  - fan-in
+  - cross-pollinated
+  - divergent-convergent
+  - review-gate
+  - generator-critic
+agents_covered:
+  - orch-planner
+  - orch-tracker
+  - orch-synthesizer
+---
+
 # Orchestration Playbook
 
-> **Version:** 3.0.0
+> **Version:** 3.1.0
 > **Skill:** orchestration
 > **Purpose:** Multi-agent workflow coordination with sync barriers and state checkpointing
-> **Updated:** 2026-01-12 - Triple-lens refactoring (SAO-INIT-007)
+> **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-064), Triple-lens refactoring (SAO-INIT-007)
 
 ---
 
@@ -968,7 +990,9 @@ CROSS-SKILL HANDOFF:
 
 ---
 
-*Playbook Version: 3.0.0*
+*Playbook Version: 3.1.0*
 *Skill: orchestration*
-*Last Updated: 2026-01-12 - Triple-lens refactoring (SAO-INIT-007)*
+*Constitutional Compliance: Jerry Constitution v1.0*
+*Enhancement: WI-SAO-064 YAML frontmatter (0.8375→0.8975)*
+*Last Updated: 2026-01-12*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

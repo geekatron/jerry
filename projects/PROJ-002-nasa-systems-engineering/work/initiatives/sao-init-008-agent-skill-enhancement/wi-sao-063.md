@@ -1,7 +1,7 @@
 ---
 id: wi-sao-063
 title: "Enhance problem-solving SKILL.md + PLAYBOOK.md"
-status: OPEN
+status: COMPLETE
 parent: "_index.md"
 initiative: sao-init-008
 children: []
@@ -15,13 +15,19 @@ priority: P1
 estimated_effort: "6-8h"
 entry_id: sao-063
 token_estimate: 600
+skill_baseline_score: 0.830
+skill_final_score: 0.860
+playbook_baseline_score: 0.8425
+playbook_final_score: 0.9025
+iterations: 1
 ---
 
 # WI-SAO-063: Enhance problem-solving SKILL.md + PLAYBOOK.md
 
-> **Status:** 📋 OPEN
+> **Status:** COMPLETE
 > **Priority:** P1 (High - Core skill documentation)
 > **Pipeline Pattern:** Pattern 8 (Generator-Critic Loop)
+> **Result:** SKILL.md 0.830→0.860 (+3.6%), PLAYBOOK.md 0.8425→0.9025 (+7.1%)
 
 ---
 
@@ -40,12 +46,12 @@ Enhance the problem-solving skill documentation (SKILL.md and PLAYBOOK.md) using
 
 ## Acceptance Criteria
 
-1. [ ] Both documents baseline scored
-2. [ ] Both documents enhanced (≥0.85 or 3 iterations)
-3. [ ] Context engineering improvements applied
-4. [ ] All ps-* agents documented with updated capabilities
-5. [ ] Invocation patterns updated per research
-6. [ ] Changes committed
+1. [x] Both documents baseline scored (SKILL.md: 0.830, PLAYBOOK.md: 0.8425)
+2. [x] Both documents enhanced (≥0.85 or 3 iterations) - SKILL.md: 0.860, PLAYBOOK.md: 0.9025
+3. [x] Context engineering improvements applied (tool examples, L0/L1/L2 table, YAML frontmatter)
+4. [x] All ps-* agents documented with updated capabilities - 9 agents covered
+5. [x] Invocation patterns updated per research - Tool Invocation Examples section
+6. [ ] Changes committed (pending)
 
 ---
 
@@ -95,14 +101,33 @@ Enhance the problem-solving skill documentation (SKILL.md and PLAYBOOK.md) using
 
 ---
 
+## Iteration Log
+
+| Iteration | Document | Score | Notes | Action |
+|-----------|----------|-------|-------|--------|
+| Baseline | SKILL.md | 0.830 | D-004 at 0.70, D-006 at 0.75 | Target improvements |
+| 1 | SKILL.md | **0.860** | Tool examples + L0/L1/L2 table added | ACCEPTED |
+| Baseline | PLAYBOOK.md | 0.8425 | D-001 at 0.30 (no frontmatter) | Target D-001 |
+| 1 | PLAYBOOK.md | **0.9025** | YAML frontmatter added | ACCEPTED |
+
+**Circuit Breaker:** 1 of 3 iterations used per document
+
+---
+
 ## Verification
 
 | Evidence ID | Type | Description | Status |
 |-------------|------|-------------|--------|
-| E-063-001 | Score | SKILL.md baseline and final scores | ⏳ Pending |
-| E-063-002 | Score | PLAYBOOK.md baseline and final scores | ⏳ Pending |
-| E-063-003 | Artifact | Both documents enhanced | ⏳ Pending |
+| E-063-001 | Score | SKILL.md baseline score | 0.830 |
+| E-063-002 | Score | SKILL.md final score | 0.860 |
+| E-063-003 | Score | PLAYBOOK.md baseline score | 0.8425 |
+| E-063-004 | Score | PLAYBOOK.md final score | 0.9025 |
+| E-063-005 | Artifact | SKILL.md enhanced | v2.0.0 → v2.1.0 |
+| E-063-006 | Artifact | PLAYBOOK.md enhanced | v3.2.0 → v3.3.0 |
+| E-063-007 | Artifact | Scoring record | `analysis/wi-sao-063-problem-solving-skill-scoring.md` |
+| E-063-008 | Commit | Changes committed | Pending |
 
 ---
 
 *Source: SAO-INIT-008 plan.md*
+*Created: 2026-01-12*

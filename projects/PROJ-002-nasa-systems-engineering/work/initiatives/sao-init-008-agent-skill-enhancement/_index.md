@@ -35,14 +35,14 @@ last_updated: "2026-01-12"
 source: "User request - Meta-improvement using own pipelines"
 rationale: "Use Jerry's own orchestration patterns to systematically enhance all agent definitions, skills, and playbooks using latest authoritative sources."
 work_items_total: 22
-work_items_complete: 15
+work_items_complete: 17
 work_items_in_progress: 0
 token_estimate: 2500
 ---
 
 # SAO-INIT-008: Agent & Skill Enhancement via Self-Orchestration
 
-> **Status:** 🔄 IN_PROGRESS (15/22 work items complete - Phase 3 P0: 4/4 ✅, P1: 4/4 ✅)
+> **Status:** 🔄 IN_PROGRESS (17/22 work items complete - Phase 3 P0: 4/4 ✅, P1: 4/4 ✅, Skills: 2/3 ✅)
 > **Created:** 2026-01-12
 > **Detailed Plan:** [plan.md](plan.md)
 
@@ -171,12 +171,12 @@ Jerry has mature orchestration patterns (8 documented) and agent pipelines (ps-*
 | WI-SAO-061 | 📋 OPEN | P2 | Enhance remaining ps-* agents (4 agents) |
 | WI-SAO-062 | 📋 OPEN | P2 | Enhance remaining nse-* + orch-* agents (12 agents) |
 
-### Phase 3: Enhancement - Skills & Patterns (3 work items)
+### Phase 3: Enhancement - Skills & Patterns (3 work items) - 2/3 COMPLETE
 
 | Work Item | Status | Priority | Description |
 |-----------|--------|----------|-------------|
-| WI-SAO-063 | 📋 OPEN | P1 | Enhance problem-solving SKILL.md + PLAYBOOK.md |
-| WI-SAO-064 | 📋 OPEN | P1 | Enhance nasa-se + orchestration SKILL.md + PLAYBOOK.md |
+| WI-SAO-063 | ✅ COMPLETE | P1 | Enhance problem-solving SKILL.md + PLAYBOOK.md (0.86, 0.9025) |
+| WI-SAO-064 | ✅ COMPLETE | P1 | Enhance nasa-se + orchestration (4 docs: 0.8775, 0.895, 0.8675, 0.8975) |
 | WI-SAO-065 | 📋 OPEN | P2 | Enhance ORCHESTRATION_PATTERNS.md |
 
 ### Phase 4: Validation (2 work items)
