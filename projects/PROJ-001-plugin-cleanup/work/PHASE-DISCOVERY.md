@@ -38,6 +38,8 @@
 | DISC-016 | InMemoryWorkItemRepository is Simplified, Not Event-Sourced | LOGGED | TD-018 |
 | DISC-017 | RuntimeWarning When Running CLI with -m Flag | LOGGED | Phase 4.6.1 |
 | DISC-018 | CommandDispatcher Not Implemented - Dict-Based Workaround Used | LOGGED | Phase 4.6.2, TD-018 |
+| DISC-019 | InMemoryEventStore Not Persistent - Events Lost on Restart | ACTIONED | TD-018 (FileSystemEventStore), TD-019 (SQLite future) |
+| DISC-020 | CreateWorkItemCommandHandler Expects Numeric parent_id | LOGGED | Phase 4.5.5 |
 
 ---
 
@@ -738,6 +740,65 @@ class CommandDispatcher:
 
 ---
 
+### DISC-019: InMemoryEventStore Not Persistent - Events Lost on Restart
+
+**Date**: 2026-01-12
+**Context**: TD-018 Event Sourcing implementation planning
+**Finding**: The only `IEventStore` implementation is `InMemoryEventStore`, which stores events in RAM. All events are lost when the process exits.
+
+**What Exists**:
+- `src/work_tracking/domain/ports/event_store.py` - IEventStore protocol ✅
+- `src/work_tracking/infrastructure/persistence/in_memory_event_store.py` - RAM-only storage ⚠️
+
+**Current Implementation**:
+```python
+class InMemoryEventStore:
+    def __init__(self) -> None:
+        self._streams: dict[str, list[StoredEvent]] = {}  # RAM only
+        self._lock = threading.RLock()
+```
+
+**Problem**:
+| Aspect | Current State | Impact |
+|--------|---------------|--------|
+| Persistence | None (RAM only) | Events lost on restart |
+| Durability | None | No disaster recovery |
+| Audit Trail | Lost on exit | Compliance risk |
+| Mission-Critical | NOT SUITABLE | Violates Jerry design principles |
+
+**Decision Made**:
+1. **TD-018 (NOW)**: Implement `FileSystemEventStore` using JSON Lines format
+   - Aligns with Jerry's "filesystem as infinite memory" philosophy
+   - Human-readable, git-friendly
+   - Events stored in `projects/PROJ-XXX/.jerry/data/events/`
+
+2. **TD-019 (FUTURE)**: SQLite Event Store for higher-volume scenarios
+   - Single file database
+   - ACID transactions
+   - Better for high-volume, concurrent access
+
+**FileSystemEventStore Design**:
+```
+projects/PROJ-001/.jerry/data/events/
+├── work_item-WORK-001.jsonl    # Append-only event log
+├── work_item-WORK-002.jsonl    # One event per line
+└── ...
+```
+
+**Related**:
+- TD-018: Event Sourcing for Work Items (revised to include FileSystemEventStore)
+- TD-019: SQLite Event Store (new, future work)
+- DISC-015: Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability
+
+**Action**:
+1. Revise TD-018 scope to include FileSystemEventStore
+2. Create TD-019 for SQLite Event Store (future)
+3. Create new worktracker: PHASE-TD018-EVENT-SOURCING.md
+
+**Status**: ACTIONED
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -764,3 +825,6 @@ class CommandDispatcher:
 | 2026-01-12 | Claude | Added DISC-014: Domain Events Use aggregate_id Not Entity-Specific ID (Phase 4.3) |
 | 2026-01-12 | Claude | Added DISC-015: Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability |
 | 2026-01-12 | Claude | Added DISC-016: InMemoryWorkItemRepository is Simplified, Not Event-Sourced |
+| 2026-01-12 | Claude | Added DISC-017: RuntimeWarning When Running CLI with -m Flag |
+| 2026-01-12 | Claude | Added DISC-018: CommandDispatcher Not Implemented |
+| 2026-01-12 | Claude | Added DISC-019: InMemoryEventStore Not Persistent - Events Lost on Restart |

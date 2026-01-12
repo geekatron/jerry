@@ -33,7 +33,8 @@
 | TD-015 | Remediate CLI Architecture Violation | **CRITICAL** | ✅ DONE | BUG-006, Design Canon |
 | TD-016 | Create Comprehensive Coding Standards & Pattern Catalog | **HIGH** | ✅ DONE | User Requirement, Design Canon |
 | TD-017 | Comprehensive Design Canon for Claude Code Rules/Patterns | **HIGH** | ✅ DONE | TD-016 gaps, User Requirement |
-| TD-018 | Event Sourcing for Work Item Repository | HIGH | ⏳ TODO | Phase 4.4, Design Canon |
+| TD-018 | Event Sourcing for Work Item Repository | HIGH | ⏳ IN_PROGRESS | Phase 4.4, Design Canon, DISC-019 |
+| TD-019 | SQLite Event Store (Future) | MEDIUM | ⏳ TODO | DISC-019 |
 
 ---
 
@@ -1343,131 +1344,139 @@ All files in `.claude/patterns/` and `.claude/rules/` directories.
 | 2026-01-12 | Claude | Completed implementation: 40+ pattern files, 5 rules files |
 | 2026-01-12 | Claude | **TD-017 COMPLETE** - All acceptance criteria met |
 | 2026-01-12 | Claude | Added TD-018: Event Sourcing for Work Item Repository |
+| 2026-01-12 | Claude | Revised TD-018: Added FileSystemEventStore scope (DISC-019) |
+| 2026-01-12 | Claude | Added TD-019: SQLite Event Store (Future) |
 
 ---
 
 ## TD-018: Event Sourcing for Work Item Repository
 
-> **Status**: ⏳ TODO
+> **Status**: ⏳ IN_PROGRESS
 > **Priority**: HIGH
-> **Source**: Phase 4.4 (Items Namespace Implementation), Design Canon
+> **Source**: Phase 4.4 (Items Namespace Implementation), Design Canon, DISC-019
 > **Depends On**: Phase 4.4/4.5 completion
 > **Related**: PAT-REPO-002 (Event-Sourced Repository), PAT-EVT-001 (Domain Event)
+> **Worktracker**: `projects/PROJ-001-plugin-cleanup/work/PHASE-TD018-EVENT-SOURCING.md`
 
 ### Description
 
-The current `InMemoryWorkItemRepository` is a simplified in-memory implementation that stores WorkItems directly as objects. The Jerry Design Canon specifies that WorkItem should be event-sourced, with state rebuilt from event history.
+Implement end-to-end event sourcing for WorkItem aggregates with **persistent storage**. This addresses:
+1. Current `InMemoryWorkItemRepository` stores aggregates directly (not event-sourced)
+2. Current `InMemoryEventStore` loses all events on process restart (DISC-019)
 
-### Current Implementation (Phase 4.4)
+### Critical Gap Identified (DISC-019)
 
-```python
-# src/work_tracking/infrastructure/adapters/in_memory_work_item_repository.py
-class InMemoryWorkItemRepository:
-    """Simple in-memory storage - NOT event-sourced."""
+The only `IEventStore` implementation (`InMemoryEventStore`) stores events in RAM only. For a mission-critical application, we need persistent storage.
 
-    def __init__(self) -> None:
-        self._items: dict[str, WorkItem] = {}  # Stores aggregates directly
+**Decision**: Implement `FileSystemEventStore` using JSON Lines format, aligning with Jerry's "filesystem as infinite memory" philosophy.
 
-    def save(self, work_item: WorkItem) -> None:
-        self._items[work_item.id] = work_item  # Overwrites entire aggregate
-```
+### Revised Scope
 
-### Required Implementation (Design Canon)
+#### Phase 1: FileSystemEventStore (DISC-019 Resolution)
 
-Per Jerry Design Canon PAT-REPO-002:
+| Task | Sub-tasks | Description |
+|------|-----------|-------------|
+| 1.1 | Create FileSystemEventStore | `src/work_tracking/infrastructure/persistence/filesystem_event_store.py` |
+| 1.1.1 | | Implement `IEventStore` protocol |
+| 1.1.2 | | Use JSON Lines format (one event per line) |
+| 1.1.3 | | Store in `projects/PROJ-XXX/.jerry/data/events/` |
+| 1.1.4 | | Thread-safe file operations with locking |
+| 1.1.5 | | Implement optimistic concurrency via version checking |
+| 1.2 | Unit tests for FileSystemEventStore | `tests/work_tracking/unit/infrastructure/test_filesystem_event_store.py` |
+| 1.2.1 | | Test append/read round-trip |
+| 1.2.2 | | Test concurrency error on version mismatch |
+| 1.2.3 | | Test stream isolation |
+| 1.2.4 | | Test persistence across "restarts" (reopen file) |
 
-```python
-# Event-sourced repository pattern
-class EventSourcedWorkItemRepository:
-    """Stores and retrieves WorkItems via event streams."""
+#### Phase 2: EventSourcedWorkItemRepository
 
-    def __init__(self, event_store: IEventStore) -> None:
-        self._event_store = event_store
+| Task | Sub-tasks | Description |
+|------|-----------|-------------|
+| 2.1 | Create EventSourcedWorkItemRepository | `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` |
+| 2.1.1 | | Implement `IWorkItemRepository` protocol |
+| 2.1.2 | | Use `IEventStore` for persistence (injected) |
+| 2.1.3 | | Implement `get()` via `WorkItem.load_from_history()` |
+| 2.1.4 | | Implement `save()` via `work_item.collect_events()` |
+| 2.1.5 | | Handle version for optimistic concurrency |
+| 2.2 | Unit tests for EventSourcedWorkItemRepository | `tests/work_tracking/unit/infrastructure/test_event_sourced_repository.py` |
+| 2.2.1 | | Test save and retrieve round-trip |
+| 2.2.2 | | Test WorkItem reconstitution from events |
+| 2.2.3 | | Test concurrency error handling |
+| 2.2.4 | | Test get_or_raise, exists, delete |
 
-    def get(self, id: str) -> WorkItem | None:
-        stream_id = f"work_item-{id}"
-        events = self._event_store.read(stream_id)
-        if not events:
-            return None
-        return WorkItem.load_from_history(events)
+#### Phase 3: CommandDispatcher (DISC-018 Resolution)
 
-    def save(self, work_item: WorkItem) -> None:
-        stream_id = f"work_item-{work_item.id}"
-        events = work_item.collect_events()
-        self._event_store.append(stream_id, events, work_item.version)
-```
+| Task | Sub-tasks | Description |
+|------|-----------|-------------|
+| 3.1 | Create CommandDispatcher | `src/application/dispatchers/command_dispatcher.py` |
+| 3.1.1 | | Implement `ICommandDispatcher` protocol |
+| 3.1.2 | | Type-safe handler registration |
+| 3.1.3 | | Dispatch with `CommandHandlerNotFoundError` |
+| 3.2 | Unit tests for CommandDispatcher | `tests/unit/application/dispatchers/test_command_dispatcher.py` |
+| 3.2.1 | | Test handler registration |
+| 3.2.2 | | Test dispatch routing |
+| 3.2.3 | | Test error on missing handler |
 
-### Root Cause
+#### Phase 4: Composition Root Wiring
 
-Phase 4.4 focused on CLI namespace implementation and needed a working repository quickly. Full event sourcing was deferred to avoid scope creep during CLI development.
+| Task | Sub-tasks | Description |
+|------|-----------|-------------|
+| 4.1 | Update bootstrap.py | Wire new components |
+| 4.1.1 | | Instantiate FileSystemEventStore with project path |
+| 4.1.2 | | Replace InMemoryWorkItemRepository with EventSourcedWorkItemRepository |
+| 4.1.3 | | Create CommandDispatcher and register handlers |
+| 4.1.4 | | Update CLIAdapter to use CommandDispatcher |
+| 4.2 | Integration tests | E2E verification |
+| 4.2.1 | | Test CLI → CommandDispatcher → Repository → EventStore → File |
+| 4.2.2 | | Test event persistence survives "restart" |
 
-### Impact
-
-| Impact | Description |
-|--------|-------------|
-| **No Event History** | Work item changes are not tracked as events |
-| **No Audit Trail** | Cannot replay history to see past states |
-| **Snapshot Optimization Not Possible** | Cannot implement PAT-REPO-003 (Snapshot Store) |
-| **Design Canon Violation** | Current implementation deviates from documented patterns |
-
-### Proposed Solution
-
-#### Phase 1: Create Event-Sourced Repository
-
-| Task | Description |
-|------|-------------|
-| 1.1 | Create `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` |
-| 1.2 | Implement `IWorkItemRepository` using `IEventStore` |
-| 1.3 | Use existing `InMemoryEventStore` for storage |
-| 1.4 | Implement version checking for optimistic concurrency |
-
-#### Phase 2: Add Snapshot Support (Optional)
-
-| Task | Description |
-|------|-------------|
-| 2.1 | Create `ISnapshotStore` port |
-| 2.2 | Implement `SnapshottingWorkItemRepository` decorator |
-| 2.3 | Configure snapshot frequency (default: every 10 events) |
-
-#### Phase 3: Update Composition Root
+#### Phase 5: Snapshot Support (Optional, Deferred)
 
 | Task | Description |
 |------|-------------|
-| 3.1 | Update `bootstrap.py` to use `EventSourcedWorkItemRepository` |
-| 3.2 | Configure event store injection |
-| 3.3 | Optionally enable snapshotting |
-| 3.4 | **CREATE** `CommandDispatcher` implementation (DISC-018) |
-| 3.5 | Wire command handlers through `CommandDispatcher` instead of dict |
-
-#### Phase 4: Testing
-
-| Task | Description |
-|------|-------------|
-| 4.1 | Unit tests for event stream storage/retrieval |
-| 4.2 | Integration tests for WorkItem reconstitution |
-| 4.3 | Property-based tests for event replay consistency |
+| 5.1 | Create SnapshottingWorkItemRepository decorator |
+| 5.2 | Configure snapshot frequency (every 10 events) |
+| 5.3 | Integration with FileSystemSnapshotStore |
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
+| `src/work_tracking/infrastructure/persistence/filesystem_event_store.py` | **CREATE** | Persistent event store (DISC-019) |
 | `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` | **CREATE** | Event-sourced repository |
-| `src/work_tracking/infrastructure/adapters/snapshotting_work_item_repository.py` | **CREATE** (Optional) | Snapshot decorator |
-| `src/application/dispatchers/command_dispatcher.py` | **CREATE** | CommandDispatcher implementation (DISC-018) |
-| `src/bootstrap.py` | **MODIFY** | Wire event-sourced repository + CommandDispatcher |
+| `src/application/dispatchers/command_dispatcher.py` | **CREATE** | CommandDispatcher (DISC-018) |
+| `src/bootstrap.py` | **MODIFY** | Wire all new components |
+| `tests/work_tracking/unit/infrastructure/test_filesystem_event_store.py` | **CREATE** | FileSystemEventStore tests |
 | `tests/work_tracking/unit/infrastructure/test_event_sourced_repository.py` | **CREATE** | Repository tests |
 | `tests/unit/application/dispatchers/test_command_dispatcher.py` | **CREATE** | CommandDispatcher tests |
+
+### FileSystemEventStore Design
+
+```
+projects/PROJ-001/.jerry/data/events/
+├── work_item-WORK-001.jsonl    # Append-only event log
+├── work_item-WORK-002.jsonl    # One JSON event per line
+└── ...
+
+# Each line is a StoredEvent serialized as JSON:
+{"event_id":"EVT-123","event_type":"WorkItemCreated","aggregate_id":"WORK-001",...}
+{"event_id":"EVT-124","event_type":"StatusChanged","aggregate_id":"WORK-001",...}
+```
 
 ### Acceptance Criteria
 
 | ID | Criterion | Evidence |
 |----|-----------|----------|
-| AC-01 | EventSourcedWorkItemRepository implements IWorkItemRepository | Code inspection |
-| AC-02 | WorkItems saved as event streams | Event store inspection |
-| AC-03 | WorkItems loaded via history replay | Unit tests pass |
-| AC-04 | Optimistic concurrency enforced | ConcurrencyError tests pass |
-| AC-05 | InMemoryWorkItemRepository remains for testing | Backward compatibility |
-| AC-06 | All existing tests pass | 1474+ tests pass |
+| AC-01 | FileSystemEventStore implements IEventStore | Code inspection |
+| AC-02 | Events persisted to disk as JSON Lines | File inspection |
+| AC-03 | Events survive process restart | Integration test |
+| AC-04 | EventSourcedWorkItemRepository implements IWorkItemRepository | Code inspection |
+| AC-05 | WorkItems saved as event streams | Event store inspection |
+| AC-06 | WorkItems loaded via history replay | Unit tests pass |
+| AC-07 | Optimistic concurrency enforced | ConcurrencyError tests pass |
+| AC-08 | CommandDispatcher implements ICommandDispatcher | Code inspection |
+| AC-09 | InMemoryEventStore/WorkItemRepository remain for unit testing | Backward compatibility |
+| AC-10 | All existing tests pass | 1521+ tests pass |
 
 ### References
 
@@ -1476,13 +1485,122 @@ Phase 4.4 focused on CLI namespace implementation and needed a working repositor
 | Event-Sourced Repository Pattern | `.claude/patterns/repository/event-sourced-repository.md` | Implementation guide |
 | Snapshot Store Pattern | `.claude/patterns/repository/snapshot-store.md` | Optimization |
 | Domain Event Pattern | `.claude/patterns/event/domain-event.md` | Event structure |
-| InMemoryEventStore | `src/work_tracking/infrastructure/persistence/in_memory_event_store.py` | Existing event store |
+| IEventStore Protocol | `src/work_tracking/domain/ports/event_store.py` | Port definition |
+| InMemoryEventStore | `src/work_tracking/infrastructure/persistence/in_memory_event_store.py` | Reference impl |
 | WorkItem Aggregate | `src/work_tracking/domain/aggregates/work_item.py` | Has `load_from_history()` |
+| DISC-019 | `work/PHASE-DISCOVERY.md` | Persistence gap discovery |
 
 ### Effort Estimate
 
-M - Medium (4-8 hours)
-- Phase 1 (Event-sourced repo): 2-3 hours
-- Phase 2 (Snapshots): 2 hours (optional)
-- Phase 3 (Wiring): 1 hour
-- Phase 4 (Testing): 2-3 hours
+M - Medium (6-10 hours)
+- Phase 1 (FileSystemEventStore): 2-3 hours
+- Phase 2 (EventSourcedWorkItemRepository): 2-3 hours
+- Phase 3 (CommandDispatcher): 1-2 hours
+- Phase 4 (Wiring + Integration): 1-2 hours
+- Phase 5 (Snapshots): Deferred to future
+
+---
+
+## TD-019: SQLite Event Store (Future)
+
+> **Status**: ⏳ TODO
+> **Priority**: MEDIUM
+> **Source**: DISC-019 (InMemoryEventStore Not Persistent)
+> **Depends On**: TD-018 completion
+> **Related**: PAT-REPO-002 (Event-Sourced Repository)
+
+### Description
+
+Implement a SQLite-based event store as an alternative to FileSystemEventStore for scenarios requiring:
+- Higher write throughput
+- ACID transactions
+- Concurrent access from multiple processes
+- Single-file database portability
+
+### Use Cases
+
+| Scenario | FileSystemEventStore | SQLiteEventStore |
+|----------|---------------------|------------------|
+| Simple projects | ✅ Recommended | Overkill |
+| High-volume events | May slow down | ✅ Recommended |
+| Multi-process access | Requires locking | ✅ Native support |
+| Human-readable logs | ✅ JSON Lines | ❌ Binary |
+| Git-friendly | ✅ Text diffs | ❌ Binary |
+
+### Proposed Solution
+
+#### Phase 1: SQLiteEventStore Implementation
+
+| Task | Description |
+|------|-------------|
+| 1.1 | Create `src/work_tracking/infrastructure/persistence/sqlite_event_store.py` |
+| 1.2 | Implement `IEventStore` protocol |
+| 1.3 | Schema: `events(stream_id, version, event_id, event_type, payload, timestamp)` |
+| 1.4 | Use version column for optimistic concurrency |
+| 1.5 | Thread-safe with SQLite WAL mode |
+
+#### Phase 2: Testing
+
+| Task | Description |
+|------|-------------|
+| 2.1 | Unit tests for append/read round-trip |
+| 2.2 | Concurrency tests (multi-thread) |
+| 2.3 | Performance comparison with FileSystemEventStore |
+
+#### Phase 3: Configuration
+
+| Task | Description |
+|------|-------------|
+| 3.1 | Add event store type configuration |
+| 3.2 | Factory pattern for event store selection |
+| 3.3 | Migration path from FileSystem to SQLite |
+
+### Files to Create
+
+| File | Description |
+|------|-------------|
+| `src/work_tracking/infrastructure/persistence/sqlite_event_store.py` | SQLite event store |
+| `tests/work_tracking/unit/infrastructure/test_sqlite_event_store.py` | Tests |
+
+### Schema Design
+
+```sql
+CREATE TABLE events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    stream_id TEXT NOT NULL,
+    version INTEGER NOT NULL,
+    event_id TEXT NOT NULL UNIQUE,
+    event_type TEXT NOT NULL,
+    aggregate_type TEXT NOT NULL,
+    payload TEXT NOT NULL,  -- JSON
+    timestamp TEXT NOT NULL,  -- ISO 8601
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(stream_id, version)
+);
+
+CREATE INDEX idx_events_stream ON events(stream_id, version);
+```
+
+### Acceptance Criteria
+
+| ID | Criterion | Evidence |
+|----|-----------|----------|
+| AC-01 | SQLiteEventStore implements IEventStore | Code inspection |
+| AC-02 | Events stored in SQLite database | DB inspection |
+| AC-03 | Optimistic concurrency via version constraint | Error tests |
+| AC-04 | Thread-safe with WAL mode | Concurrent tests |
+| AC-05 | Interchangeable with FileSystemEventStore | Factory pattern |
+
+### Effort Estimate
+
+S - Small (2-4 hours)
+- Phase 1: 1-2 hours
+- Phase 2: 1 hour
+- Phase 3: 1 hour
+
+### Deferral Reason
+
+FileSystemEventStore (TD-018) is sufficient for initial Jerry use cases. SQLite can be added when:
+- Performance becomes an issue
+- Multi-process access is required
+- Migration from FileSystem is needed

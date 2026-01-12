@@ -19,6 +19,10 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
+from src.application.ports.primary.icommanddispatcher import (
+    CommandHandlerNotFoundError,
+    ICommandDispatcher,
+)
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
 from src.application.queries import (
     RetrieveProjectContextQuery,
@@ -31,10 +35,19 @@ from src.session_management.application.commands import (
     EndSessionCommand,
 )
 from src.session_management.application.queries import GetSessionStatusQuery
+from src.shared_kernel.exceptions import InvalidStateTransitionError, ValidationError
+from src.work_tracking.application.commands import (
+    BlockWorkItemCommand,
+    CancelWorkItemCommand,
+    CompleteWorkItemCommand,
+    CreateWorkItemCommand,
+    StartWorkItemCommand,
+)
 from src.work_tracking.application.handlers.queries.get_work_item_query_handler import (
     WorkItemNotFoundError,
 )
 from src.work_tracking.application.queries import GetWorkItemQuery, ListWorkItemsQuery
+from src.work_tracking.domain.ports.repository import AggregateNotFoundError
 
 if TYPE_CHECKING:
     from src.session_management.application.handlers.commands import (
@@ -47,11 +60,12 @@ if TYPE_CHECKING:
 class CLIAdapter:
     """Clean Architecture CLI Adapter.
 
-    Receives a dispatcher via constructor injection and routes
-    all commands through it.
+    Receives dispatchers via constructor injection and routes
+    all queries and commands through them.
 
     Attributes:
         _dispatcher: The query dispatcher for routing queries
+        _command_dispatcher: The command dispatcher for routing commands
         _projects_dir: Path to projects directory
         _session_handlers: Optional dictionary of session command handlers
     """
@@ -61,6 +75,7 @@ class CLIAdapter:
         dispatcher: IQueryDispatcher,
         projects_dir: str | None = None,
         session_handlers: dict[str, Any] | None = None,
+        command_dispatcher: ICommandDispatcher | None = None,
     ) -> None:
         """Initialize the CLI adapter.
 
@@ -69,6 +84,7 @@ class CLIAdapter:
             projects_dir: Optional projects directory override
             session_handlers: Optional dict of session command handlers
                 Keys: "create", "end", "abandon"
+            command_dispatcher: Optional command dispatcher for work item commands
 
         Raises:
             ValueError: If dispatcher is None
@@ -77,6 +93,7 @@ class CLIAdapter:
             raise ValueError("dispatcher cannot be None")
 
         self._dispatcher = dispatcher
+        self._command_dispatcher = command_dispatcher
         self._session_handlers = session_handlers
 
         # Use bootstrap helper if not provided
@@ -611,6 +628,8 @@ class CLIAdapter:
         self,
         title: str,
         work_type: str = "task",
+        priority: str = "medium",
+        description: str = "",
         parent: str | None = None,
         json_output: bool = False,
     ) -> int:
@@ -618,67 +637,209 @@ class CLIAdapter:
 
         Args:
             title: Work item title
-            work_type: Work item type (task, bug, story, etc.)
+            work_type: Work item type (task, bug, story, spike)
+            priority: Priority level (low, medium, high, critical)
+            description: Optional description
             parent: Optional parent work item ID
             json_output: Whether to output as JSON
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.5.
         """
-        if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
-        else:
-            print("Error: Items commands not yet implemented (Phase 4.5)")
-        return 1
+        if self._command_dispatcher is None:
+            if json_output:
+                print(json.dumps({"error": "Command dispatcher not configured"}))
+            else:
+                print("Error: Command dispatcher not configured")
+            return 1
+
+        try:
+            command = CreateWorkItemCommand(
+                title=title,
+                work_type=work_type,
+                priority=priority,
+                description=description,
+                parent_id=parent,
+            )
+            events = self._command_dispatcher.dispatch(command)
+
+            # Get the created work item ID from the first event
+            work_item_id = events[0].aggregate_id if events else "unknown"
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "work_item_id": work_item_id,
+                    "title": title,
+                    "work_type": work_type,
+                    "priority": priority,
+                    "message": "Work item created",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Created work item: {work_item_id}")
+                print(f"Title: {title}")
+                print(f"Type: {work_type}")
+                print(f"Priority: {priority}")
+
+            return 0
+
+        except ValidationError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     def cmd_items_start(
         self,
         item_id: str,
+        reason: str | None = None,
         json_output: bool = False,
     ) -> int:
         """Start work on an item.
 
         Args:
             item_id: Work item ID to start
+            reason: Optional reason for starting
             json_output: Whether to output as JSON
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.5.
         """
-        if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
-        else:
-            print("Error: Items commands not yet implemented (Phase 4.5)")
-        return 1
+        if self._command_dispatcher is None:
+            if json_output:
+                print(json.dumps({"error": "Command dispatcher not configured"}))
+            else:
+                print("Error: Command dispatcher not configured")
+            return 1
+
+        try:
+            command = StartWorkItemCommand(
+                work_item_id=item_id,
+                reason=reason,
+            )
+            events = self._command_dispatcher.dispatch(command)
+
+            # Get the work item ID from the first event
+            work_item_id = events[0].aggregate_id if events else item_id
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "work_item_id": work_item_id,
+                    "status": "in_progress",
+                    "message": "Work item started",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Started work item: {work_item_id}")
+                print("Status: in_progress")
+                if reason:
+                    print(f"Reason: {reason}")
+
+            return 0
+
+        except AggregateNotFoundError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: Work item '{item_id}' not found")
+            return 1
+
+        except InvalidStateTransitionError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     def cmd_items_complete(
         self,
         item_id: str,
+        reason: str | None = None,
         json_output: bool = False,
     ) -> int:
         """Complete a work item.
 
         Args:
             item_id: Work item ID to complete
+            reason: Optional reason for completion
             json_output: Whether to output as JSON
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.5.
         """
-        if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
-        else:
-            print("Error: Items commands not yet implemented (Phase 4.5)")
-        return 1
+        if self._command_dispatcher is None:
+            if json_output:
+                print(json.dumps({"error": "Command dispatcher not configured"}))
+            else:
+                print("Error: Command dispatcher not configured")
+            return 1
+
+        try:
+            command = CompleteWorkItemCommand(
+                work_item_id=item_id,
+                reason=reason,
+            )
+            events = self._command_dispatcher.dispatch(command)
+
+            # Get the work item ID from the first event
+            work_item_id = events[0].aggregate_id if events else item_id
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "work_item_id": work_item_id,
+                    "status": "done",
+                    "message": "Work item completed",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Completed work item: {work_item_id}")
+                print("Status: done")
+                if reason:
+                    print(f"Reason: {reason}")
+
+            return 0
+
+        except AggregateNotFoundError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: Work item '{item_id}' not found")
+            return 1
+
+        except InvalidStateTransitionError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     def cmd_items_block(
         self,
@@ -690,20 +851,66 @@ class CLIAdapter:
 
         Args:
             item_id: Work item ID to block
-            reason: Reason for blocking
+            reason: Reason for blocking (required)
             json_output: Whether to output as JSON
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.5.
         """
-        if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
-        else:
-            print("Error: Items commands not yet implemented (Phase 4.5)")
-        return 1
+        if self._command_dispatcher is None:
+            if json_output:
+                print(json.dumps({"error": "Command dispatcher not configured"}))
+            else:
+                print("Error: Command dispatcher not configured")
+            return 1
+
+        try:
+            command = BlockWorkItemCommand(
+                work_item_id=item_id,
+                reason=reason,
+            )
+            events = self._command_dispatcher.dispatch(command)
+
+            # Get the work item ID from the first event
+            work_item_id = events[0].aggregate_id if events else item_id
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "work_item_id": work_item_id,
+                    "status": "blocked",
+                    "reason": reason,
+                    "message": "Work item blocked",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Blocked work item: {work_item_id}")
+                print("Status: blocked")
+                print(f"Reason: {reason}")
+
+            return 0
+
+        except AggregateNotFoundError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: Work item '{item_id}' not found")
+            return 1
+
+        except InvalidStateTransitionError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     def cmd_items_cancel(
         self,
@@ -720,12 +927,58 @@ class CLIAdapter:
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.5.
         """
-        if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
-        else:
-            print("Error: Items commands not yet implemented (Phase 4.5)")
-        return 1
+        if self._command_dispatcher is None:
+            if json_output:
+                print(json.dumps({"error": "Command dispatcher not configured"}))
+            else:
+                print("Error: Command dispatcher not configured")
+            return 1
+
+        try:
+            command = CancelWorkItemCommand(
+                work_item_id=item_id,
+                reason=reason,
+            )
+            events = self._command_dispatcher.dispatch(command)
+
+            # Get the work item ID from the first event
+            work_item_id = events[0].aggregate_id if events else item_id
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "work_item_id": work_item_id,
+                    "status": "cancelled",
+                    "message": "Work item cancelled",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Cancelled work item: {work_item_id}")
+                print("Status: cancelled")
+                if reason:
+                    print(f"Reason: {reason}")
+
+            return 0
+
+        except AggregateNotFoundError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: Work item '{item_id}' not found")
+            return 1
+
+        except InvalidStateTransitionError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1

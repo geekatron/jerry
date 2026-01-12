@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-11T23:30:00Z
+**Last Updated**: 2026-01-12T10:00:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -208,11 +208,11 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: 🔄 Phase 4 CLI Namespaces IN PROGRESS (Phase 4.4)
+> **Status**: ✅ Phase 4.5 Items Commands COMPLETE (1636 tests pass)
 > **Active Initiative**: Phase 4 - CLI Namespace Architecture
-> **Current Focus**: Implementing Items namespace (queries) - `jerry items list`, `jerry items show`
-> **Completed This Session**: Phase 4.3 Session Namespace ✅ (18 tests, 1462 total)
-> **Completed**: TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
+> **Current Focus**: Awaiting next task or v0.1.0 release preparation
+> **Completed This Session**: Phase 4.5 Items Commands ✅ (19 integration tests, 50+ total new tests)
+> **Completed**: Phase 4.5 ✅ → TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
 > **Target Version**: v0.1.0 (breaking change - no backward compatibility)
 
 ### TD-015: Architecture Remediation Status (COMPLETE ✅)
@@ -1117,3 +1117,13 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | TD-015.R-004: Cleaned up old handler files, updated all test imports |
 | 2026-01-11 | Claude | TD-015.R-005: Added projections infrastructure (IReadModelStore, InMemoryReadModelStore) |
 | 2026-01-11 | Claude | Phase 3: Updated main.py entry point to use bootstrap composition root |
+| 2026-01-12 | Claude | **PHASE 4.5 ITEMS COMMANDS STARTED**: Implementation for work item mutations |
+| 2026-01-12 | Claude | 4.5.1 COMPLETE: 5 command definitions (CreateWorkItemCommand, StartWorkItemCommand, CompleteWorkItemCommand, BlockWorkItemCommand, CancelWorkItemCommand) |
+| 2026-01-12 | Claude | 4.5.2 COMPLETE: 5 command handlers with CQRS pattern |
+| 2026-01-12 | Claude | 4.5.3 COMPLETE: CommandDispatcher wired in bootstrap.py composition root |
+| 2026-01-12 | Claude | 4.5.4 COMPLETE: CLIAdapter updated with 5 cmd_items_* methods |
+| 2026-01-12 | Claude | 4.5.5 COMPLETE: 31 unit tests for commands and handlers |
+| 2026-01-12 | Claude | BUG-006: Handlers returning empty event lists - save() double-collect_events() bug |
+| 2026-01-12 | Claude | BUG-006 FIX: IWorkItemRepository.save() now returns list[DomainEvent] |
+| 2026-01-12 | Claude | 4.5.6 COMPLETE: 19 integration tests (E2E, event persistence, lifecycle) |
+| 2026-01-12 | Claude | **PHASE 4.5 COMPLETE**: Items commands implemented (1636 tests pass, 0 regressions)

@@ -14,6 +14,7 @@ from __future__ import annotations
 import threading
 from typing import TYPE_CHECKING
 
+from src.shared_kernel.domain_event import DomainEvent
 from src.work_tracking.domain.ports.repository import AggregateNotFoundError
 
 if TYPE_CHECKING:
@@ -74,15 +75,21 @@ class InMemoryWorkItemRepository:
                 raise AggregateNotFoundError(id, "WorkItem")
             return item
 
-    def save(self, work_item: WorkItem) -> None:
+    def save(self, work_item: WorkItem) -> list[DomainEvent]:
         """
-        Persist a work item.
+        Persist a work item and return saved events.
 
         Args:
             work_item: The work item to persist
+
+        Returns:
+            List of domain events that were saved
         """
         with self._lock:
+            # Collect events before storing
+            events = list(work_item.collect_events())
             self._items[work_item.id] = work_item
+            return events
 
     def delete(self, id: str) -> bool:
         """

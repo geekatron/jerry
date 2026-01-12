@@ -15,6 +15,7 @@ Per Clean Architecture:
 """
 
 from src.application.ports.primary.icommanddispatcher import (
+    CommandHandlerNotFoundError,
     DuplicateHandlerError,
     ICommandDispatcher,
 )
@@ -24,6 +25,7 @@ from src.application.ports.primary.iquerydispatcher import (
 )
 
 __all__ = [
+    "CommandHandlerNotFoundError",
     "DuplicateHandlerError",
     "ICommandDispatcher",
     "IQueryDispatcher",
