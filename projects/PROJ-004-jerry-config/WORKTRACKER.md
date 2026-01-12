@@ -4,625 +4,153 @@
 > **Status**: IN_PROGRESS
 > **Created**: 2026-01-12
 > **Branch**: PROJ-004-jerry-config
+> **Last Updated**: 2026-01-12
 
 ---
 
-## Overview
+## Quick Reference
 
-Implement a configuration object for the Jerry framework to store framework and project state in `.jerry/` folders at both repository root and project levels.
-
-### Objectives
-
-1. Create configuration system for Jerry framework settings and state
-2. Support JSON (with json5 for comments if available) serialization
-3. Ensure runtime collision avoidance (file locking, atomic writes)
-4. Enable worktree-safe independent state that can be merged
-5. Implement env var override precedence (env > config file)
-6. Token-efficient loading based on active project
+| Metric | Value |
+|--------|-------|
+| Total Work Items | 18 |
+| Completed | 7 |
+| In Progress | 1 |
+| Pending | 10 |
+| Blocked | 0 |
 
 ---
 
 ## Phase Index
 
-| Phase | Title | Status | Work Items |
-|-------|-------|--------|------------|
-| PHASE-00 | Project Setup | COMPLETED | WI-001, WI-002 |
-| PHASE-01 | Research & Discovery | COMPLETED | WI-003, WI-004, WI-005, WI-006 |
-| PHASE-02 | Architecture & Design | IN_PROGRESS | WI-007, WI-008 |
-| PHASE-03 | Domain Implementation | PENDING | WI-009, WI-010, WI-011 |
-| PHASE-04 | Infrastructure Adapters | PENDING | WI-012, WI-013, WI-014 |
-| PHASE-05 | Integration & CLI | PENDING | WI-015, WI-016 |
-| PHASE-06 | Testing & Validation | PENDING | WI-017, WI-018 |
-| PHASE-BUGS | Bug Tracking | ONGOING | - |
-| PHASE-DISCOVERY | Discoveries | ONGOING | - |
-| PHASE-TECHDEBT | Technical Debt | ONGOING | - |
+| Phase | Title | Status | Work Items | Parallelizable |
+|-------|-------|--------|------------|----------------|
+| [PHASE-00](work/PHASE-00-project-setup.md) | Project Setup | COMPLETED | WI-001, WI-002 | No |
+| [PHASE-01](work/PHASE-01-research.md) | Research & Discovery | COMPLETED | WI-003, WI-004, WI-005, WI-006 | Yes (4 parallel) |
+| [PHASE-02](work/PHASE-02-architecture.md) | Architecture & Design | IN_PROGRESS | WI-007, WI-008 | No (sequential) |
+| [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | PENDING | WI-009, WI-010, WI-011 | Yes (after WI-008) |
+| [PHASE-04](work/PHASE-04-infrastructure.md) | Infrastructure Adapters | PENDING | WI-012, WI-013, WI-014 | Yes (parallel with PHASE-03) |
+| [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | PENDING | WI-015, WI-016 | No (needs 03+04) |
+| [PHASE-06](work/PHASE-06-testing.md) | Testing & Validation | PENDING | WI-017, WI-018 | Yes (after 05) |
+| [PHASE-BUGS](work/PHASE-BUGS.md) | Bug Tracking | ONGOING | - | - |
+| [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | Discoveries | ONGOING | - | - |
+| [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | Technical Debt | ONGOING | - | - |
 
 ---
 
-## PHASE-00: Project Setup
+## Work Item Index
 
-### WI-001: Create Project Structure
+### PHASE-00: Project Setup (COMPLETED)
 
-| Field | Value |
-|-------|-------|
-| ID | WI-001 |
-| Title | Create PROJ-004 folder structure |
-| Type | Task |
-| Status | COMPLETED |
-| Priority | HIGH |
-| Created | 2026-01-12 |
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-001 | Create PROJ-004 folder structure | COMPLETED | [wi-001-project-structure.md](work/wi-001-project-structure.md) | WT-Main |
+| WI-002 | Initialize WORKTRACKER.md | COMPLETED | [wi-002-init-worktracker.md](work/wi-002-init-worktracker.md) | WT-Main |
 
-#### Description
-Create the project directory structure following Jerry conventions.
+### PHASE-01: Research & Discovery (COMPLETED)
 
-#### Acceptance Criteria
-- [x] AC-001.1: Project folder exists at `projects/PROJ-004-jerry-config/`
-- [x] AC-001.2: `.jerry/data/items/` subdirectory created
-- [x] AC-001.3: Standard folders created (work, research, analysis, synthesis, decisions, reports, runbooks, reviews)
-- [x] AC-001.4: Git branch `PROJ-004-jerry-config` created
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-003 | JSON5 Python Support Investigation | COMPLETED | [wi-003-json5-research.md](work/wi-003-json5-research.md) | WT-Main |
+| WI-004 | Runtime Collision Avoidance Patterns | COMPLETED | [wi-004-collision-avoidance.md](work/wi-004-collision-avoidance.md) | WT-Main |
+| WI-005 | Worktree-Safe State Patterns | COMPLETED | [wi-005-worktree-patterns.md](work/wi-005-worktree-patterns.md) | WT-Main |
+| WI-006 | Configuration Precedence Model | COMPLETED | [wi-006-config-precedence.md](work/wi-006-config-precedence.md) | WT-Main |
 
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-001.1 | `mkdir -p projects/PROJ-004-jerry-config/` executed successfully | Bash tool output |
-| AC-001.2 | `mkdir -p .jerry/data/items` executed successfully | Bash tool output |
-| AC-001.3 | `mkdir -p {work,research,analysis,synthesis,decisions,reports,runbooks,reviews}` executed | Bash tool output |
-| AC-001.4 | `git checkout -b PROJ-004-jerry-config` returned "Switched to a new branch" | Bash tool output |
+### PHASE-02: Architecture & Design (IN_PROGRESS)
 
-#### Progress Log
-| Timestamp | Update | Actor |
-|-----------|--------|-------|
-| 2026-01-12T10:00:00Z | Work item created | Claude |
-| 2026-01-12T10:01:00Z | Branch created, directories created | Claude |
-| 2026-01-12T10:02:00Z | All acceptance criteria verified, WI-001 COMPLETED | Claude |
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-007 | Create PLAN.md | COMPLETED | [wi-007-create-plan.md](work/wi-007-create-plan.md) | WT-Main |
+| WI-008 | Domain Model Design | PENDING | [wi-008-domain-model.md](work/wi-008-domain-model.md) | WT-Main |
 
----
+### PHASE-03: Domain Implementation (PENDING - Parallelizable)
 
-### WI-002: Initialize WORKTRACKER.md
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-009 | Configuration Value Objects | PENDING | [wi-009-value-objects.md](work/wi-009-value-objects.md) | WT-Domain |
+| WI-010 | Configuration Aggregate | PENDING | [wi-010-aggregate.md](work/wi-010-aggregate.md) | WT-Domain |
+| WI-011 | Configuration Domain Events | PENDING | [wi-011-domain-events.md](work/wi-011-domain-events.md) | WT-Domain |
 
-| Field | Value |
-|-------|-------|
-| ID | WI-002 |
-| Title | Initialize WORKTRACKER.md with phases and work items |
-| Type | Task |
-| Status | COMPLETED |
-| Priority | HIGH |
-| Created | 2026-01-12 |
+### PHASE-04: Infrastructure Adapters (PENDING - Parallelizable)
 
-#### Description
-Create comprehensive WORKTRACKER.md with all phases, work items, tasks, and acceptance criteria.
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-012 | Atomic File Adapter | PENDING | [wi-012-atomic-file-adapter.md](work/wi-012-atomic-file-adapter.md) | WT-Infra |
+| WI-013 | Environment Variable Adapter | PENDING | [wi-013-env-adapter.md](work/wi-013-env-adapter.md) | WT-Infra |
+| WI-014 | Layered Config Adapter | PENDING | [wi-014-layered-config.md](work/wi-014-layered-config.md) | WT-Infra |
 
-#### Acceptance Criteria
-- [x] AC-002.1: WORKTRACKER.md exists in project root
-- [x] AC-002.2: All phases documented with status
-- [x] AC-002.3: Work items have acceptance criteria
-- [x] AC-002.4: Evidence sections included for traceability
+### PHASE-05: Integration & CLI (PENDING)
 
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-002.1 | File created at `projects/PROJ-004-jerry-config/WORKTRACKER.md` | Write tool output |
-| AC-002.2 | 9 phases documented (PHASE-00 through PHASE-06 plus BUGS/DISCOVERY/TECHDEBT) | This file, Phase Index section |
-| AC-002.3 | 18 work items (WI-001 through WI-018) with AC-* acceptance criteria | This file |
-| AC-002.4 | Every WI has Evidence table with Criterion/Evidence/Source columns | This file |
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-015 | Update session_start.py Hook | PENDING | [wi-015-session-hook.md](work/wi-015-session-hook.md) | WT-CLI |
+| WI-016 | CLI Config Commands | PENDING | [wi-016-cli-commands.md](work/wi-016-cli-commands.md) | WT-CLI |
 
-#### Progress Log
-| Timestamp | Update | Actor |
-|-----------|--------|-------|
-| 2026-01-12T10:02:00Z | Initial WORKTRACKER created with structure | Claude |
-| 2026-01-12T10:03:00Z | Projects README.md updated with PROJ-004 entry | Claude |
-| 2026-01-12T10:04:00Z | All acceptance criteria verified, WI-002 COMPLETED | Claude |
+### PHASE-06: Testing & Validation (PENDING)
+
+| ID | Title | Status | File | Assignee |
+|----|-------|--------|------|----------|
+| WI-017 | Architecture Tests | PENDING | [wi-017-arch-tests.md](work/wi-017-arch-tests.md) | WT-Test |
+| WI-018 | Integration & E2E Tests | PENDING | [wi-018-integration-tests.md](work/wi-018-integration-tests.md) | WT-Test |
 
 ---
 
-## PHASE-01: Research & Discovery
+## Dependency Graph
 
-### WI-003: JSON5 Python Support Investigation
-
-| Field | Value |
-|-------|-------|
-| ID | WI-003 |
-| Title | Research JSON5 support in Python ecosystem |
-| Type | Research |
-| Status | COMPLETED |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-| Completed | 2026-01-12 |
-
-#### Description
-Investigate JSON5 library support in Python 3.11+ for configuration files with comments.
-
-#### Acceptance Criteria
-- [x] AC-003.1: Identify available json5 Python libraries
-- [x] AC-003.2: Evaluate stdlib compatibility (no external deps for domain)
-- [x] AC-003.3: Assess read/write capability
-- [x] AC-003.4: Document recommendation with trade-offs
-
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-003.1 | `json5` (pure Python, zero deps) and `pyjson5` (Cython, fast) identified | PROJ-004-e-001, Section 1 |
-| AC-003.2 | `tomllib` is stdlib in Python 3.11+ (read-only TOML); no JSON5 stdlib | PROJ-004-e-001, Section 2.1-2.2 |
-| AC-003.3 | json5: read/write, pyjson5: read/write, tomllib: read-only (need tomli-w for write) | PROJ-004-e-001, Section 3 |
-| AC-003.4 | **Recommendation: TOML with tomllib** - zero deps, Python ecosystem aligned | PROJ-004-e-001, L2 Section |
-
-#### Sub-tasks
-- [x] ST-003.1: Search PyPI for json5 packages
-- [x] ST-003.2: Review pyjson5, json5 library docs
-- [x] ST-003.3: Check if tomllib (stdlib) is a viable alternative
-- [x] ST-003.4: Create research artifact with findings
-
-#### Research Artifact
-`projects/PROJ-004-jerry-config/research/PROJ-004-e-001-json5-python-support.md`
-
-#### Key Finding
-**TOML recommended over JSON5** for Jerry configuration:
-- `tomllib` is stdlib (zero dependencies)
-- Python ecosystem standard (pyproject.toml)
-- Native comment support
-- json5 is 200-6000x slower than stdlib json
-
----
-
-### WI-004: Runtime Collision Avoidance Patterns
-
-| Field | Value |
-|-------|-------|
-| ID | WI-004 |
-| Title | Research runtime collision avoidance patterns |
-| Type | Research |
-| Status | COMPLETED |
-| Priority | CRITICAL |
-| Created | 2026-01-12 |
-| Completed | 2026-01-12 |
-
-#### Description
-Research patterns for preventing runtime file collisions when multiple processes access config.
-
-#### Acceptance Criteria
-- [x] AC-004.1: Document file locking strategies (fcntl, portalocker)
-- [x] AC-004.2: Evaluate atomic write patterns (write-rename)
-- [x] AC-004.3: Assess lock file approaches
-- [x] AC-004.4: Recommend approach for Jerry
-
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-004.1 | `fcntl.flock()` (BSD), `fcntl.lockf()` (POSIX recommended), `msvcrt` (Windows) documented | PROJ-004-e-002, Section 1.1-1.2 |
-| AC-004.2 | Atomic write: `tempfile.mkstemp()` + `os.fsync()` + `os.replace()` pattern documented | PROJ-004-e-002, Section 1.3 |
-| AC-004.3 | Lock file pattern with `O_CREAT | O_EXCL` + PID tracking + stale detection | PROJ-004-e-002, Section 1.4, 3.2 |
-| AC-004.4 | **Phase 1: stdlib (fcntl.lockf + atomic writes)**, Phase 2: filelock library for Windows | PROJ-004-e-002, L2 Section |
-
-#### Sub-tasks
-- [x] ST-004.1: Research Python fcntl module
-- [x] ST-004.2: Research atomic file operations
-- [x] ST-004.3: Analyze existing Jerry file operations
-- [x] ST-004.4: Create research artifact with findings
-
-#### Research Artifact
-`projects/PROJ-004-jerry-config/research/PROJ-004-e-002-runtime-collision-avoidance.md`
-
-#### Key Findings
-1. **Separate lock files** - Never lock data file directly
-2. **Combine locking + atomic writes** - Belt and suspenders approach
-3. **Use `os.replace()` not `os.rename()`** - Cross-platform atomicity
-4. **OS-level locks auto-release** - On process crash, locks are freed
-5. **filelock library** - Best for cross-platform if external deps allowed
-
----
-
-### WI-005: Worktree-Safe State Patterns
-
-| Field | Value |
-|-------|-------|
-| ID | WI-005 |
-| Title | Research git worktree-safe state patterns |
-| Type | Research |
-| Status | COMPLETED |
-| Priority | CRITICAL |
-| Created | 2026-01-12 |
-| Completed | 2026-01-12 |
-
-#### Description
-Research how to maintain independent state per worktree that can be safely merged.
-
-#### Acceptance Criteria
-- [x] AC-005.1: Document worktree file isolation behavior
-- [x] AC-005.2: Identify merge conflict patterns for state files
-- [x] AC-005.3: Design state structure for safe merging
-- [x] AC-005.4: Recommend worktree-aware design
-
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-005.1 | Worktrees share `.git/` but have independent working trees; each has own HEAD, index | PROJ-004-e-003, Section 1 |
-| AC-005.2 | Single JSON files = HIGH conflict risk; One-file-per-entity = LOW risk | PROJ-004-e-003, Section 2 |
-| AC-005.3 | `.jerry/local/` (gitignored) for runtime state; `.jerry/data/events/` for committed | PROJ-004-e-003, L2 Section |
-| AC-005.4 | Jerry already uses one-file-per-entity with Snowflake IDs - already merge-safe! | PROJ-004-e-003, Appendix |
-
-#### Sub-tasks
-- [x] ST-005.1: Research git worktree documentation
-- [x] ST-005.2: Analyze .jerry/ placement in worktrees
-- [x] ST-005.3: Design mergeable state file format
-- [x] ST-005.4: Create research artifact with findings
-
-#### Research Artifact
-`projects/PROJ-004-jerry-config/research/PROJ-004-e-003-worktree-safe-state.md`
-
-#### Key Findings
-1. **Jerry already merge-safe** - Existing one-file-per-entity with Snowflake IDs
-2. **Add `.jerry/local/`** - Gitignored directory for worktree-specific runtime state
-3. **Separate committed vs local** - `config.json` (committed), `local/context.json` (gitignored)
-4. **Materialized views are regenerable** - Can rebuild from event streams if conflicts occur
-
-#### Recommended .jerry/ Structure
 ```
-.jerry/
-├── config.json              # Committed: shared settings
-├── data/events/{id}.jsonl   # Committed: event sourcing (merge-safe)
-├── data/items/{id}.json     # Committed: materialized views
-└── local/                   # GITIGNORED: worktree-local
-    ├── context.json         # Active project, session
-    ├── locks/               # File locks
-    └── cache/               # Regenerable data
+PHASE-00 ──► PHASE-01 ──► PHASE-02 ──┬──► PHASE-03 (WT-Domain) ──┬──► PHASE-05 ──► PHASE-06
+                                     │                           │
+                                     └──► PHASE-04 (WT-Infra)  ──┘
 ```
 
----
+### Work Item Dependencies
 
-### WI-006: Configuration Precedence Investigation
-
-| Field | Value |
-|-------|-------|
-| ID | WI-006 |
-| Title | Research configuration precedence patterns |
-| Type | Research |
-| Status | COMPLETED |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-| Completed | 2026-01-12 |
-
-#### Description
-Research best practices for layered configuration with environment variable overrides.
-
-#### Acceptance Criteria
-- [x] AC-006.1: Document precedence patterns (env > file > defaults)
-- [x] AC-006.2: Review existing Jerry env var usage
-- [x] AC-006.3: Design override mechanism
-- [x] AC-006.4: Document configuration loading order
-
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-006.1 | CLI > Env > Project Config > Root Config > Defaults (12-factor aligned) | PROJ-004-e-004, Section 1 |
-| AC-006.2 | `JERRY_PROJECT`, `CLAUDE_PROJECT_DIR`, `ECW_DEBUG` currently used via direct os.environ.get() | PROJ-004-e-004, Section 2 |
-| AC-006.3 | Double-underscore (`__`) for nested paths: `JERRY_LOGGING__LEVEL` → `logging.level` | PROJ-004-e-004, Section 4 |
-| AC-006.4 | Env vars → Project .jerry/config.json → Root .jerry/config.json → Code defaults | PROJ-004-e-004, L2 Section |
-
-#### Research Artifact
-`projects/PROJ-004-jerry-config/research/PROJ-004-e-004-config-precedence.md`
-
-#### Key Findings
-1. **12-factor app aligned** - Environment variables override config files
-2. **Existing port abstraction** - `IEnvironmentProvider` exists, extend to `IConfigurationProvider`
-3. **Nested override pattern** - Use `__` separator for nested config paths
-4. **Type conversion** - Auto-parse bool/int/float/JSON from string env vars
-5. **pydantic-settings compatible** - Design allows future upgrade if needed
+| Work Item | Depends On | Blocks |
+|-----------|------------|--------|
+| WI-008 | WI-007 | WI-009, WI-010, WI-011, WI-012, WI-013, WI-014 |
+| WI-009 | WI-008 | WI-015 |
+| WI-010 | WI-008 | WI-015 |
+| WI-011 | WI-008 | WI-015 |
+| WI-012 | WI-008 | WI-014, WI-015 |
+| WI-013 | WI-008 | WI-014 |
+| WI-014 | WI-012, WI-013 | WI-015 |
+| WI-015 | WI-009-014 | WI-017 |
+| WI-016 | WI-015 | WI-018 |
+| WI-017 | WI-015 | - |
+| WI-018 | WI-016, WI-017 | - |
 
 ---
 
-## PHASE-02: Architecture & Design
+## Parallelization Plan
 
-### WI-007: Create PLAN.md
+### Worktree Assignments
 
-| Field | Value |
-|-------|-------|
-| ID | WI-007 |
-| Title | Create comprehensive PLAN.md |
-| Type | Task |
-| Status | COMPLETED |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-| Completed | 2026-01-12 |
+| Worktree | Branch | Work Items | Files Modified |
+|----------|--------|------------|----------------|
+| **WT-Main** | `PROJ-004-jerry-config` | WI-001 to WI-008 | Interfaces, PLAN.md |
+| **WT-Domain** | `PROJ-004-config-domain` | WI-009, WI-010, WI-011 | `src/domain/**` |
+| **WT-Infra** | `PROJ-004-config-infra` | WI-012, WI-013, WI-014 | `src/infrastructure/**` |
+| **WT-CLI** | `PROJ-004-config-cli` | WI-015, WI-016 | `src/interface/**`, `scripts/**` |
+| **WT-Test** | `PROJ-004-config-tests` | WI-017, WI-018 | `tests/**` |
 
-#### Description
-Create implementation plan based on research findings.
+### Merge Order
 
-#### Acceptance Criteria
-- [x] AC-007.1: PLAN.md exists in project root
-- [x] AC-007.2: Architecture decisions documented
-- [x] AC-007.3: Implementation phases detailed
-- [x] AC-007.4: Risk mitigation addressed
-
-#### Evidence
-| Criterion | Evidence | Source |
-|-----------|----------|--------|
-| AC-007.1 | File created at `projects/PROJ-004-jerry-config/PLAN.md` | Write tool output |
-| AC-007.2 | Key Decisions table + Hexagonal Architecture diagram | PLAN.md, Architecture Overview |
-| AC-007.3 | 3 implementation phases with code examples | PLAN.md, Implementation Phases |
-| AC-007.4 | Risk table with probability/impact/mitigation | PLAN.md, Risk Mitigation |
-
-#### Key Deliverables
-- Research synthesis from 4 ps-researcher artifacts
-- Directory structure design for `.jerry/`
-- Configuration schema (TOML format)
-- Environment variable mapping
-- Hexagonal architecture diagram
-- Code examples for domain/infrastructure layers
-- Testing strategy with coverage targets
+1. **WT-Main** completes WI-008 → merge to main
+2. **WT-Domain** and **WT-Infra** branch from main → work in parallel
+3. Merge **WT-Domain** and **WT-Infra** to main
+4. **WT-CLI** branches from main → complete WI-015, WI-016
+5. Merge **WT-CLI** to main
+6. **WT-Test** branches from main → complete WI-017, WI-018
 
 ---
 
-### WI-008: Domain Model Design
-
-| Field | Value |
-|-------|-------|
-| ID | WI-008 |
-| Title | Design configuration domain model |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Design domain entities, value objects, and aggregates for configuration.
-
-#### Acceptance Criteria
-- [ ] AC-008.1: Configuration aggregate designed
-- [ ] AC-008.2: Value objects identified (ConfigPath, ConfigKey, etc.)
-- [ ] AC-008.3: Domain events defined
-- [ ] AC-008.4: Repository port interface defined
-
----
-
-## PHASE-03: Domain Implementation
-
-### WI-009: Configuration Value Objects
-
-| Field | Value |
-|-------|-------|
-| ID | WI-009 |
-| Title | Implement configuration value objects |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Implement immutable value objects for configuration domain.
-
-#### Acceptance Criteria
-- [ ] AC-009.1: ConfigPath value object implemented
-- [ ] AC-009.2: ConfigKey value object implemented
-- [ ] AC-009.3: ConfigValue value object implemented
-- [ ] AC-009.4: Unit tests pass at 90%+ coverage
-
----
-
-### WI-010: Configuration Aggregate
-
-| Field | Value |
-|-------|-------|
-| ID | WI-010 |
-| Title | Implement Configuration aggregate root |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Implement the Configuration aggregate with domain logic.
-
-#### Acceptance Criteria
-- [ ] AC-010.1: Configuration aggregate implemented
-- [ ] AC-010.2: Invariants enforced
-- [ ] AC-010.3: Domain events raised
-- [ ] AC-010.4: Unit tests pass
-
----
-
-### WI-011: Configuration Domain Events
-
-| Field | Value |
-|-------|-------|
-| ID | WI-011 |
-| Title | Implement configuration domain events |
-| Type | Task |
-| Status | PENDING |
-| Priority | MEDIUM |
-| Created | 2026-01-12 |
-
-#### Description
-Implement domain events for configuration changes.
-
-#### Acceptance Criteria
-- [ ] AC-011.1: ConfigurationLoaded event
-- [ ] AC-011.2: ConfigurationUpdated event
-- [ ] AC-011.3: ProjectActivated event
-- [ ] AC-011.4: Unit tests pass
-
----
-
-## PHASE-04: Infrastructure Adapters
-
-### WI-012: JSON File Adapter
-
-| Field | Value |
-|-------|-------|
-| ID | WI-012 |
-| Title | Implement JSON configuration file adapter |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Implement infrastructure adapter for JSON file persistence.
-
-#### Acceptance Criteria
-- [ ] AC-012.1: Read configuration from JSON file
-- [ ] AC-012.2: Write configuration with atomic operations
-- [ ] AC-012.3: File locking implemented
-- [ ] AC-012.4: Integration tests pass
-
----
-
-### WI-013: Environment Adapter
-
-| Field | Value |
-|-------|-------|
-| ID | WI-013 |
-| Title | Implement environment variable adapter |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Implement adapter for reading configuration from environment variables.
-
-#### Acceptance Criteria
-- [ ] AC-013.1: Read JERRY_* environment variables
-- [ ] AC-013.2: Parse values correctly
-- [ ] AC-013.3: Override config file values
-- [ ] AC-013.4: Integration tests pass
-
----
-
-### WI-014: Configuration Loader Service
-
-| Field | Value |
-|-------|-------|
-| ID | WI-014 |
-| Title | Implement configuration loader application service |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Implement application service that orchestrates configuration loading with precedence.
-
-#### Acceptance Criteria
-- [ ] AC-014.1: Load from default locations
-- [ ] AC-014.2: Apply environment overrides
-- [ ] AC-014.3: Return merged configuration
-- [ ] AC-014.4: Handle missing files gracefully
-
----
-
-## PHASE-05: Integration & CLI
-
-### WI-015: Update session_start.py Hook
-
-| Field | Value |
-|-------|-------|
-| ID | WI-015 |
-| Title | Update session_start.py to use configuration system |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Integrate configuration system into session start hook.
-
-#### Acceptance Criteria
-- [ ] AC-015.1: Load configuration at session start
-- [ ] AC-015.2: Use config for project resolution
-- [ ] AC-015.3: Maintain backward compatibility with JERRY_PROJECT
-- [ ] AC-015.4: E2E tests pass
-
----
-
-### WI-016: CLI Config Commands
-
-| Field | Value |
-|-------|-------|
-| ID | WI-016 |
-| Title | Implement jerry config CLI commands |
-| Type | Task |
-| Status | PENDING |
-| Priority | MEDIUM |
-| Created | 2026-01-12 |
-
-#### Description
-Add CLI commands for managing configuration.
-
-#### Acceptance Criteria
-- [ ] AC-016.1: `jerry config show` command
-- [ ] AC-016.2: `jerry config set` command
-- [ ] AC-016.3: `jerry config path` command
-- [ ] AC-016.4: CLI tests pass
-
----
-
-## PHASE-06: Testing & Validation
-
-### WI-017: Architecture Tests
-
-| Field | Value |
-|-------|-------|
-| ID | WI-017 |
-| Title | Add architecture tests for configuration module |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Ensure configuration follows hexagonal architecture boundaries.
-
-#### Acceptance Criteria
-- [ ] AC-017.1: Domain has no infrastructure imports
-- [ ] AC-017.2: Ports correctly defined
-- [ ] AC-017.3: Adapters implement ports
-- [ ] AC-017.4: All architecture tests pass
-
----
-
-### WI-018: Integration & E2E Tests
-
-| Field | Value |
-|-------|-------|
-| ID | WI-018 |
-| Title | Create integration and E2E test suite |
-| Type | Task |
-| Status | PENDING |
-| Priority | HIGH |
-| Created | 2026-01-12 |
-
-#### Description
-Comprehensive test coverage for configuration system.
-
-#### Acceptance Criteria
-- [ ] AC-018.1: Integration tests for file adapter
-- [ ] AC-018.2: Integration tests for env adapter
-- [ ] AC-018.3: E2E tests for CLI commands
-- [ ] AC-018.4: 90%+ code coverage
-
----
-
-## PHASE-BUGS: Bug Tracking
-
-| ID | Title | Status | Severity | Found In | Fixed In |
-|----|-------|--------|----------|----------|----------|
-| - | No bugs recorded yet | - | - | - | - |
-
----
-
-## PHASE-DISCOVERY: Discoveries
-
-| ID | Discovery | Impact | Found In | Action |
-|----|-----------|--------|----------|--------|
-| - | No discoveries yet | - | - | - |
-
----
-
-## PHASE-TECHDEBT: Technical Debt
-
-| ID | Description | Priority | Created | Resolved |
-|----|-------------|----------|---------|----------|
-| - | No tech debt recorded yet | - | - | - |
+## Research Artifacts
+
+| ID | Topic | Location |
+|----|-------|----------|
+| PROJ-004-e-001 | JSON5 Python Support | [research/PROJ-004-e-001-json5-python-support.md](research/PROJ-004-e-001-json5-python-support.md) |
+| PROJ-004-e-002 | Runtime Collision Avoidance | [research/PROJ-004-e-002-runtime-collision-avoidance.md](research/PROJ-004-e-002-runtime-collision-avoidance.md) |
+| PROJ-004-e-003 | Worktree-Safe State | [research/PROJ-004-e-003-worktree-safe-state.md](research/PROJ-004-e-003-worktree-safe-state.md) |
+| PROJ-004-e-004 | Config Precedence | [research/PROJ-004-e-004-config-precedence.md](research/PROJ-004-e-004-config-precedence.md) |
 
 ---
 
@@ -632,12 +160,16 @@ Comprehensive test coverage for configuration system.
 |------|--------|--------|
 | 2026-01-12 | Initial WORKTRACKER created | Claude |
 | 2026-01-12 | PHASE-00 completed (WI-001, WI-002) | Claude |
-| 2026-01-12 | Projects README.md updated with PROJ-004 registration | Claude |
 | 2026-01-12 | PHASE-01 research completed via ps-researcher agents | Claude |
-| 2026-01-12 | WI-003: JSON5 research complete - TOML recommended | Claude |
-| 2026-01-12 | WI-004: Runtime collision patterns documented | Claude |
-| 2026-01-12 | WI-005: Worktree-safe state patterns documented | Claude |
-| 2026-01-12 | WI-006: Config precedence patterns documented | Claude |
-| 2026-01-12 | 4 research artifacts created in research/ folder | Claude |
 | 2026-01-12 | WI-007: PLAN.md created with architecture synthesis | Claude |
-| 2026-01-12 | PHASE-02 started, WI-007 COMPLETED | Claude |
+| 2026-01-12 | Refactored WORKTRACKER to index format with WI file pointers | Claude |
+| 2026-01-12 | Added parallelization plan with worktree assignments | Claude |
+
+---
+
+## Navigation
+
+- [PLAN.md](PLAN.md) - Implementation plan
+- [work/](work/) - Individual work item files
+- [research/](research/) - Research artifacts
+- [decisions/](decisions/) - ADRs (Architecture Decision Records)
