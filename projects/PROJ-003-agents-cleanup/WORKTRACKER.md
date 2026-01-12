@@ -13,9 +13,9 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 24 |
-| Completed | 7 (Phase 0) |
+| Completed | 10 (Phase 0 + wi-01-001, wi-01-002, wi-01-003) |
 | In Progress | 0 |
-| Pending | 17 |
+| Pending | 14 |
 | Blocked | 0 |
 
 ---
@@ -25,7 +25,7 @@
 | Phase | Name | Status | Work Items | Duration Est. |
 |-------|------|--------|------------|---------------|
 | 0 | Research | COMPLETED | 7/7 | - |
-| 1 | Plugin Infrastructure | PENDING | 0/4 | 1-2 hours |
+| 1 | Plugin Infrastructure | IN_PROGRESS | 3/4 | 1-2 hours |
 | 2 | Skill Frontmatter | PENDING | 0/4 | 1-2 hours |
 | 3 | Agent Standardization | PENDING | 0/4 | 2-3 hours |
 | 4 | Hook System | PENDING | 0/4 | 1-2 hours |
@@ -47,13 +47,13 @@
 
 ---
 
-## Phase 1: Plugin Infrastructure (PENDING)
+## Phase 1: Plugin Infrastructure (IN_PROGRESS)
 
 | ID | Title | Status | File |
 |----|-------|--------|------|
-| wi-01-001 | Rename manifest.json to plugin.json | PENDING | [wi-01-001.md](work/wi-01-001.md) |
-| wi-01-002 | Update plugin.json schema and fields | PENDING | [wi-01-002.md](work/wi-01-002.md) |
-| wi-01-003 | Create commands directory and move files | PENDING | [wi-01-003.md](work/wi-01-003.md) |
+| wi-01-001 | Rename manifest.json to plugin.json | DONE | [wi-01-001.md](work/wi-01-001.md) |
+| wi-01-002 | Update plugin.json schema and fields | DONE | [wi-01-002.md](work/wi-01-002.md) |
+| wi-01-003 | Create commands directory and move files | DONE | [wi-01-003.md](work/wi-01-003.md) |
 | wi-01-004 | Cleanup and validate plugin structure | PENDING | [wi-01-004.md](work/wi-01-004.md) |
 
 ---
