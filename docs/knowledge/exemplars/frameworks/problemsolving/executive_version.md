@@ -15,15 +15,15 @@ software, security, science, operations, product, and even non-technical discipl
 
 ## The One-Slide Model (the operating system)
 
-1) **Frame** the problem (Who/What/Where/When/Why/How)  
-2) **Classify** the situation: Simple / Complicated / Complex / Chaotic  
-3) **Diagnose** with the right tool (root cause vs hypothesis)  
-4) **Generate options** (diverge)  
-5) **Decide** with explicit tradeoffs (converge)  
-6) **Act** with reversibility when uncertain  
+1) **Frame** the problem (Who/What/Where/When/Why/How)
+2) **Classify** the situation: Simple / Complicated / Complex / Chaotic
+3) **Diagnose** with the right tool (root cause vs hypothesis)
+4) **Generate options** (diverge)
+5) **Decide** with explicit tradeoffs (converge)
+6) **Act** with reversibility when uncertain
 7) **Verify & learn** (institutionalize improvements)
 
-This structure matches best practices across systems engineering, SRE operations, security incident handling, and scientific inquiry.  
+This structure matches best practices across systems engineering, SRE operations, security incident handling, and scientific inquiry.
 (Examples: NASA systems engineering guidance; Google SRE incident management & postmortems; NIST incident response lifecycle; National Academies on scientific inquiry.)
 
 ---
@@ -81,8 +81,8 @@ Are teams reducing uncertainty over time (better monitoring, better documentatio
 ---
 
 ## References (selected)
-- NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2): https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf  
-- Google SRE Incident Management Guide (PDF): https://sre.google/static/pdf/IncidentManagementGuide.pdf  
-- Google SRE Book – Postmortem culture: https://sre.google/sre-book/postmortem-culture/  
-- NIST SP 800-61r2 landing page (notes withdrawal; archived): https://csrc.nist.gov/pubs/sp/800/61/r2/final  
-- National Academies – Guiding principles for scientific inquiry: https://www.nationalacademies.org/read/10236/chapter/5  
+- NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2): https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf
+- Google SRE Incident Management Guide (PDF): https://sre.google/static/pdf/IncidentManagementGuide.pdf
+- Google SRE Book – Postmortem culture: https://sre.google/sre-book/postmortem-culture/
+- NIST SP 800-61r2 landing page (notes withdrawal; archived): https://csrc.nist.gov/pubs/sp/800/61/r2/final
+- National Academies – Guiding principles for scientific inquiry: https://www.nationalacademies.org/read/10236/chapter/5

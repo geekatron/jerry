@@ -2,74 +2,67 @@
 
 > **Version:** 1.0.0
 > **Created:** 2026-01-05
-> **Phase:** 38.17
+> **Project:** 38.17
 > **Purpose:** Master artifact defining the canonical directory structure for all documentation artifacts
 
 ---
 
 ## Planning Model
 
-We **CURRENTLY** operate on a **PHASE (aka. INITIATIVE) -> SUB-PHASE -> TASK -> SUB-TASK** planning model.
-
-NOTE: In the **FUTURE** we will move to an INITIATIVE -> PAHSE -> TASK -> SUB-TASK planning model.
+We operate on a **PROJECT (aka. INITIATIVE) -> PHASE -> TASK -> SUB-TASK** planning model.
 
 ---
 
 ## Directory Structure
 
 ```
-docs/                                                    # Root of the source repository
-├── analysis/                                            # Folder for ANALYSIS Artifacts/Documents
-│   └── phase-{phase_id}/                                # All ANALYSIS artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*.md          # Resultant artifacts from analysis
-│                                                        # Examples:
-│                                                        #   phase-38.17-e-051-root-cause-prevention.md
-│                                                        #   phase-38.17-verification-analysis.md
+projects/                                                # Root of the source repository
+├── ├──PROJ-{XXX}-project_id}/                             # ALL ARTIFACTS for PROJECT
+    └── analysis/                                        # All ANALYSIS artifacts for PROJECT - Resultant artifacts from analysis
+│       └── PROJ-{proj_id}.{X}-{X}.md          # Examples:
+│                                                        #   PROJ-001-e-007-implementation-gap.md
+│                                                        #   PROJ-001-e-009-alignment-validation.md
 │
-├── designs/                                             # DESIGNs may become large so creating folders per Phase
-│   └── phase-{phase_id}/                                # All design artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*.md          # Design docs (use cases, diagrams, etc.)
-│                                                        # Examples:
-│                                                        #   phase-38.17-e-191-signal-dispatcher-split-design.md
-│                                                        #   phase-38.17-c009-subagent-persistence-enforcement.md
 │
-├── investigations/                                      # Folder for INVESTIGATION Artifacts
-│   └── phase-{phase_id}/                                # All INVESTIGATION artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*-proof.md    # Evidence-linked artifacts
+├── designs/                                             # DESIGNs may become large so creating folders per Project # All design artifacts for PROJECT
+│       └── project-{project_id}.{subproject_id}-*.md          # Design docs (use cases, diagrams, etc.)
+│                                                        # Examples:
+│                                                        #   project-38.17-e-191-signal-dispatcher-split-design.md
+│                                                        #   project-38.17-c009-subagent-persistence-enforcement.md
+│
+├── investigations/                                      # All INVESTIGATION artifacts for PROJECT
+│       └── project-{project_id}.{subproject_id}-*-proof.md    # Evidence-linked artifacts
 │                                                        # SCOPE: Formal or systematic examination or research
 │                                                        # Examples:
-│                                                        #   phase-38.17-e-043-investigation.md
-│                                                        #   phase-38.17-e-045-investigation.md
+│                                                        #   project-38.17-e-043-investigation.md
+│                                                        #   project-38.17-e-045-investigation.md
 │
-├── plans/                                               # Folder for PLANS
-│   └── phase-{phase_id}/                                # All PLAN artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*-plan.md     # Refined plans from Claude Code Plans
-│                                                        # Examples:
-│                                                        #   phase-38.14-bidirectional-sync-plan.md
-│                                                        #   phase-38.17-debt-resolution-plan.md
+├── plans/                                                  # All PLAN artifacts for PROJECT
+│       └── project-{project_id}.{subproject_id}-*-plan.md  # Refined plans from Claude Code Plans
+│                                                           # Examples:
+│                                                           #   project-38.14-bidirectional-sync-plan.md
+│                                                           #   project-38.17-debt-resolution-plan.md
 │
-├── research/                                            # Folder for RESEARCH Artifacts
-│   └── phase-{phase_id}/                                # All RESEARCH artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*-RES.md      # Evidence-linked artifacts (suffix: -RES)
-│                                                        # Examples:
-│                                                        #   phase-38.17-e-165-documentation-audit-RES.md
-│                                                        #   phase-38.17-e-059-claudemd-triggers-RES.md
-│                                                        #   phase-38.17-high-fidelity-research-framework-RES.md
+├── research/                                               # All RESEARCH artifacts for PROJECT
+│       └── project-{project_id}.{subproject_id}-*-RES.md   # Evidence-linked artifacts (suffix: -RES)
+│                                                           # Examples:
+│                                                           #   project-38.17-e-165-documentation-audit-RES.md
+│                                                           #   project-38.17-e-059-claudemd-triggers-RES.md
+│                                                           #   project-38.17-high-fidelity-research-framework-RES.md
 │
-├── reviews/                                             # Folder for REVIEW Artifacts
-│   └── phase-{phase_id}/                                # All REVIEW artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*-REV.md      # REVIEW artifacts (suffix: -REV)
-│                                                        # Examples:
-│                                                        #   phase-38.17-e-047-code-REV.md
-│                                                        #   phase-38.17-e-054-research-REV.md
-│                                                        #   phase-38.17-e-056-analysis-REV.md
+├── reviews/                                                # All REVIEW artifacts for PROJECT
+│       └── project-{project_id}.{subproject_id}-*-REV.md   # REVIEW artifacts (suffix: -REV)
+│                                                           # Examples:
+│                                                           #   project-38.17-e-047-code-REV.md
+│                                                           #   project-38.17-e-054-research-REV.md
+│                                                           #   project-38.17-e-056-analysis-REV.md
 │
 ├── synthesis/                                           # Folder for SYNTHESIZED Artifacts
-│   └── phase-{phase_id}/                                # All SYNTHESIZED artifacts for PHASE
-│       └── phase-{phase_id}.{subphase_id}-*-SYN.md      # SYNTHESIZED artifacts (suffix: -SYN)
+│   └── project-{project_id}/                                # All SYNTHESIZED artifacts for PROJECT
+│       └── project-{project_id}.{subproject_id}-*-SYN.md      # SYNTHESIZED artifacts (suffix: -SYN)
 │                                                        # Examples:
-│                                                        #   phase-38.17-e-044-syntheses-SYN.md
-│                                                        #   phase-38.17-e-057-SYN.md
+│                                                        #   project-38.17-e-044-syntheses-SYN.md
+│                                                        #   project-38.17-e-057-SYN.md
 │
 ├── knowledge/
 │   ├── adrs/                                            # Architecture Decision Records (ADRs)
@@ -82,12 +75,12 @@ docs/                                                    # Root of the source re
 │   │   │                                                # MINIMUM KEY ELEMENTS:
 │   │   │                                                # - Problem, Options, Decision, Consequences
 │   │   │                                                # - Status (Proposed, Accepted, Rejected, Superseded)
-│   │   ├── phase-{phase_id}/                            # All ADR artifacts for PHASE
-│   │   │   └── phase-{phase_id}.{subphase_id}-*-ADR.md  # ADR artifacts (suffix: -ADR)
+│   │   ├── project-{project_id}/                            # All ADR artifacts for PROJECT
+│   │   │   └── project-{project_id}.{subproject_id}-*-ADR.md  # ADR artifacts (suffix: -ADR)
 │   │   │                                                # Examples:
-│   │   │                                                #   phase-38.17-e-165-documentation-audit-ADR.md
-│   │   │                                                #   phase-38.17-high-fidelity-research-framework-ADR.md
-│   │   └── ADR-{adr_id}-{adr_slug}.md                   # Promoted ADRs (phase -> repository)
+│   │   │                                                #   project-38.17-e-165-documentation-audit-ADR.md
+│   │   │                                                #   project-38.17-high-fidelity-research-framework-ADR.md
+│   │   └── ADR-{adr_id}-{adr_slug}.md                   # Promoted ADRs (project -> repository)
 │   │                                                    # Examples:
 │   │                                                    #   ADR-001-Use-Cockburn-Use-Case-Methodology.md
 │   │                                                    #   ADR-007-Port-Placement.md
@@ -99,11 +92,11 @@ docs/                                                    # Root of the source re
 │   │   │                                                # - Can be dangerous if unchecked
 │   │   │                                                # - Must be identified and tested
 │   │   │                                                # USE: Track assumptions Claude makes during implementation
-│   │   ├── phase-{phase_id}/                            # All ASSUMPTION artifacts for PHASE
-│   │   │   └── phase-{phase_id}.{subphase_id}-*-ASM.md  # ASSUMPTION artifacts (suffix: -ASM)
+│   │   ├── project-{project_id}/                            # All ASSUMPTION artifacts for PROJECT
+│   │   │   └── project-{project_id}.{subproject_id}-*-ASM.md  # ASSUMPTION artifacts (suffix: -ASM)
 │   │   │                                                # Examples:
-│   │   │                                                #   phase-38.17-ASM-e-099-confluence-is-primary-ASM.md
-│   │   └── ASM-{asm_id}-{asm_slug}.md                   # Promoted ASSUMPTIONS (phase -> repository)
+│   │   │                                                #   project-38.17-ASM-e-099-confluence-is-primary-ASM.md
+│   │   └── ASM-{asm_id}-{asm_slug}.md                   # Promoted ASSUMPTIONS (project -> repository)
 │   │                                                    # Examples:
 │   │                                                    #   ASM-001-Confluence-is-primary-authoring-tool.md
 │   │                                                    #   ASM-005-Engineers-may-add-technical-details.md
@@ -115,11 +108,11 @@ docs/                                                    # Root of the source re
 │   │   │                                                # WHAT: Any choice during software development
 │   │   │                                                # - High-level architecture to low-level code
 │   │   │                                                # ADR RELATIONSHIP: ADRs document KEY decisions
-│   │   ├── phase-{phase_id}/                            # All DECISION artifacts for PHASE
-│   │   │   └── phase-{phase_id}.{subphase_id}-*-DEC.md  # DECISION artifacts (suffix: -DEC)
+│   │   ├── project-{project_id}/                            # All DECISION artifacts for PROJECT
+│   │   │   └── project-{project_id}.{subproject_id}-*-DEC.md  # DECISION artifacts (suffix: -DEC)
 │   │   │                                                # Examples:
-│   │   │                                                #   phase-38.17-DEC-high-fidelity-research-framework.md
-│   │   └── DEC-{dec_id}-{dec_slug}.md                   # Promoted DECISIONS (phase -> repository)
+│   │   │                                                #   project-38.17-DEC-high-fidelity-research-framework.md
+│   │   └── DEC-{dec_id}-{dec_slug}.md                   # Promoted DECISIONS (project -> repository)
 │   │                                                    # Examples:
 │   │                                                    #   DEC-001-use-kebab-case.md
 │   │                                                    #   DEC-007-prefer-markdown-for-user.md
@@ -131,11 +124,11 @@ docs/                                                    # Root of the source re
 │   │   │                                                # - Avoid repeating mistakes
 │   │   │                                                # - Build on best practices
 │   │   │                                                # - Bridge theory and real-world application
-│   │   ├── phase-{phase_id}/                            # All LESSON artifacts for PHASE
-│   │   │   └── phase-{phase_id}.{subphase_id}-*-LES.md  # LESSON artifacts (suffix: -LES)
+│   │   ├── project-{project_id}/                            # All LESSON artifacts for PROJECT
+│   │   │   └── project-{project_id}.{subproject_id}-*-LES.md  # LESSON artifacts (suffix: -LES)
 │   │   │                                                # Examples:
-│   │   │                                                #   phase-38.17-LES-high-fidelity-research-framework.md
-│   │   └── LES-{les_id}-{les_slug}.md                   # Promoted LESSONS (phase -> repository)
+│   │   │                                                #   project-38.17-LES-high-fidelity-research-framework.md
+│   │   └── LES-{les_id}-{les_slug}.md                   # Promoted LESSONS (project -> repository)
 │   │                                                    # Examples:
 │   │                                                    #   LES-001-always-verify-before-claiming.md
 │   │                                                    #   LES-030-hook-subprocess-isolation.md
@@ -145,34 +138,34 @@ docs/                                                    # Root of the source re
 │       │                                                # PATTERNS: Proven, reusable solutions (good practices)
 │       │                                                # ANTI-PATTERNS: Common bad responses that seem right
 │       │                                                #   but lead to negative, counterproductive results
-│       ├── phase-{phase_id}/                            # All PATTERN/ANTI-PATTERN artifacts for PHASE
-│       │   ├── phase-{phase_id}.{subphase_id}-*-ANTI.md # ANTI-PATTERN artifacts (suffix: -ANTI)
-│       │   └── phase-{phase_id}.{subphase_id}-*-PAT.md  # PATTERN artifacts (suffix: -PAT)
+│       ├── project-{project_id}/                            # All PATTERN/ANTI-PATTERN artifacts for PROJECT
+│       │   ├── project-{project_id}.{subproject_id}-*-ANTI.md # ANTI-PATTERN artifacts (suffix: -ANTI)
+│       │   └── project-{project_id}.{subproject_id}-*-PAT.md  # PATTERN artifacts (suffix: -PAT)
 │       │                                                # Examples:
-│       │                                                #   phase-38.17-ANTI-high-fidelity-research-framework.md
-│       │                                                #   phase-38.17-PAT-defense-in-depth.md
-│       ├── ANTI-{anti_id}-{anti_slug}.md                # Promoted ANTI-PATTERNS (phase -> repository)
+│       │                                                #   project-38.17-ANTI-high-fidelity-research-framework.md
+│       │                                                #   project-38.17-PAT-defense-in-depth.md
+│       ├── ANTI-{anti_id}-{anti_slug}.md                # Promoted ANTI-PATTERNS (project -> repository)
 │       │                                                # Examples:
 │       │                                                #   ANTI-001-vague-extensions.md
 │       │                                                #   ANTI-002-missing-preconditions.md
-│       └── PAT-{pat_id}-{pat_slug}.md                   # Promoted PATTERNS (phase -> repository)
+│       └── PAT-{pat_id}-{pat_slug}.md                   # Promoted PATTERNS (project -> repository)
 │                                                        # Examples:
 │                                                        #   PAT-001-use-kebab-case.md
 │                                                        #   PAT-048-three-tier-enforcement.md
 │
 └── problems/
-    ├── phase-{phase_id}/                                # All PROBLEM STATEMENT artifacts for PHASE
+    ├── project-{project_id}/                                # All PROBLEM STATEMENT artifacts for PROJECT
     │   ├── ps-{ps_id}-{short_slug}.md                   # Problem Statement artifact
     │   │                                                # Examples:
-    │   │                                                #   ps-phase-38.17-debt-resolution.md
+    │   │                                                #   ps-project-38.17-debt-resolution.md
     │   │
-    │   ├── constraints/                                 # All CONSTRAINT artifacts for PHASE
+    │   ├── constraints/                                 # All CONSTRAINT artifacts for PROJECT
     │   │   └── c-{constraint_id}-{short_slug}.md        # Constraint artifacts
     │   │                                                # Examples:
     │   │                                                #   c-001-export-format-must-follow-spec.md
     │   │                                                #   c-002-all-domain-model-fields-exported.md
     │   │
-    │   ├── discoveries/                                 # All DISCOVERY artifacts for PHASE
+    │   ├── discoveries/                                 # All DISCOVERY artifacts for PROJECT
     │   │   │                                            # DISCOVERY sparks EXPLORATION
     │   │   │                                            # Definition: Finding something previously unknown
     │   │   │                                            # Outcome-Oriented: The "aha!" moment
@@ -180,7 +173,7 @@ docs/                                                    # Root of the source re
     │   │                                                # Examples:
     │   │                                                #   d-001-export-format-discrepancy.md
     │   │
-    │   ├── explorations/                                # All EXPLORATION artifacts for PHASE
+    │   ├── explorations/                                # All EXPLORATION artifacts for PROJECT
     │   │   │                                            # EXPLORATION enables DISCOVERY
     │   │   │                                            # Definition: Searching to learn about something
     │   │   │                                            # Action-Oriented: The act of investigating
@@ -188,38 +181,38 @@ docs/                                                    # Root of the source re
     │   │                                                # Examples:
     │   │                                                #   e-058-self-healing-hook.md
     │   │
-    │   ├── evidence/                                    # All EVIDENCE artifacts for PHASE
+    │   ├── evidence/                                    # All EVIDENCE artifacts for PROJECT
     │   │   └── ev-{evidence_id}-{short_slug}.md         # Evidence artifacts
     │   │                                                # Examples:
     │   │                                                #   ev-001-orchestration-proof.md
     │   │
-    │   └── questions/                                   # All QUESTION artifacts for PHASE
+    │   └── questions/                                   # All QUESTION artifacts for PROJECT
     │       └── q-{question_id}-{short_slug}.md          # Question artifacts
     │                                                    # Examples:
     │                                                    #   q-021-can-ps-orchestrator-be-skill.md
     │                                                    #   q-024-knowledge-only-stores-references.md
     │
-    ├── constraints/                                     # Promoted CONSTRAINTS (phase -> repository)
+    ├── constraints/                                     # Promoted CONSTRAINTS (project -> repository)
     │   └── CONS-{constraint_id}-{short_slug}.md         # Examples:
     │                                                    #   CONS-003-capture-decision-rationale.md
     │                                                    #   CONS-007-hard-enforcement-no-pipe-grep.md
     │
-    ├── discoveries/                                     # Promoted DISCOVERIES (phase -> repository)
+    ├── discoveries/                                     # Promoted DISCOVERIES (project -> repository)
     │   └── DISC-{discovery_id}-{short_slug}.md          # Examples:
     │                                                    #   DISC-001-enhanced-markdown-exporter.md
     │                                                    #   DISC-004-question-model-has-decisionitem.md
     │
-    ├── explorations/                                    # Promoted EXPLORATIONS (phase -> repository)
+    ├── explorations/                                    # Promoted EXPLORATIONS (project -> repository)
     │   └── EXPL-{exploration_id}-{short_slug}.md        # Examples:
     │                                                    #   EXPL-001-support-multiple-sub-agents.md
     │                                                    #   EXPL-004-industry-best-practices-cqrs.md
     │
-    ├── questions/                                       # Promoted QUESTIONS (phase -> repository)
+    ├── questions/                                       # Promoted QUESTIONS (project -> repository)
     │   └── QUES-{question_id}-{short_slug}.md           # Examples:
     │                                                    #   QUES-001-constraint-validation-fields.md
     │                                                    #   QUES-003-rejectedalternative-fields.md
     │
-    └── PS-{ps_id}-{short_slug}.md                       # Promoted PROBLEM STATEMENTS (phase -> repository)
+    └── PS-{ps_id}-{short_slug}.md                       # Promoted PROBLEM STATEMENTS (project -> repository)
                                                          # Examples:
                                                          #   PS-001-exploration-resolution-debt.md
                                                          #   PS-002-bidirectional-sync.md
@@ -233,17 +226,17 @@ docs/                                                    # Root of the source re
 
 | Artifact Type | Suffix | Example |
 |---------------|--------|---------|
-| Research | `-RES` | `phase-38.17-e-058-self-healing-hook-RES.md` |
-| Review | `-REV` | `phase-38.17-e-047-code-REV.md` |
-| Synthesis | `-SYN` | `phase-38.17-e-057-SYN.md` |
-| ADR | `-ADR` | `phase-38.17-event-sourcing-ADR.md` |
-| Assumption | `-ASM` | `phase-38.17-confluence-is-primary-ASM.md` |
-| Decision | `-DEC` | `phase-38.17-use-kebab-case-DEC.md` |
-| Lesson | `-LES` | `phase-38.17-verify-before-claiming-LES.md` |
-| Pattern | `-PAT` | `phase-38.17-defense-in-depth-PAT.md` |
-| Anti-Pattern | `-ANTI` | `phase-38.17-completion-theater-ANTI.md` |
-| Investigation | `-proof` | `phase-38.17-e-043-investigation-proof.md` |
-| Plan | `-plan` | `phase-38.17-debt-resolution-plan.md` |
+| Research | `-RES` | `project-38.17-e-058-self-healing-hook-RES.md` |
+| Review | `-REV` | `project-38.17-e-047-code-REV.md` |
+| Synthesis | `-SYN` | `project-38.17-e-057-SYN.md` |
+| ADR | `-ADR` | `project-38.17-event-sourcing-ADR.md` |
+| Assumption | `-ASM` | `project-38.17-confluence-is-primary-ASM.md` |
+| Decision | `-DEC` | `project-38.17-use-kebab-case-DEC.md` |
+| Lesson | `-LES` | `project-38.17-verify-before-claiming-LES.md` |
+| Pattern | `-PAT` | `project-38.17-defense-in-depth-PAT.md` |
+| Anti-Pattern | `-ANTI` | `project-38.17-completion-theater-ANTI.md` |
+| Investigation | `-proof` | `project-38.17-e-043-investigation-proof.md` |
+| Plan | `-plan` | `project-38.17-debt-resolution-plan.md` |
 
 ### Promotion Prefixes
 
@@ -269,8 +262,8 @@ docs/                                                    # Root of the source re
 
 This structure replaces the previous sidequest-nested structure. All documentation now lives at the repository root under `docs/`.
 
-**Previous Location:** `sidequests/evolving-claude-workflow/docs/proposals/phase-38/`
-**New Location:** `docs/plans/phase-38/`
+**Previous Location:** `sidequests/evolving-claude-workflow/docs/proposals/project-38/`
+**New Location:** `docs/plans/project-38/`
 
 ### Backward Compatibility
 

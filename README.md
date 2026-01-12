@@ -88,7 +88,7 @@ python scripts/invoke_use_case.py <command>
 | [CLAUDE.md](./CLAUDE.md) | Root context for Claude Code sessions |
 | [AGENTS.md](./AGENTS.md) | Registry of available sub-agents |
 | [GOVERNANCE.md](./GOVERNANCE.md) | Protocols for planning and handoffs |
-| [docs/research/](./docs/research/) | Research artifacts with citations |
+| [docs/research/](projects/archive/research/) | Research artifacts with citations |
 
 ## Technology Stack
 
@@ -98,7 +98,7 @@ python scripts/invoke_use_case.py <command>
 - **CLI**: argparse (stdlib)
 - **Testing**: unittest (stdlib)
 
-See [docs/research/TECHNOLOGY_STACK_ANALYSIS.md](./docs/research/TECHNOLOGY_STACK_ANALYSIS.md) for the full analysis.
+See [docs/research/TECHNOLOGY_STACK_ANALYSIS.md](projects/archive/research/TECHNOLOGY_STACK_ANALYSIS.md) for the full analysis.
 
 ## Contributing
 

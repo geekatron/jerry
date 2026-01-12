@@ -57,7 +57,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/research/{ps-id}-{entry-id}-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/research/{ps-id}-{entry-id}-{topic-slug}.md"
   template: "templates/research.md"
   levels:
     - L0  # ELI5 - Executive summary
@@ -178,7 +178,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | All claims cite sources; uncertainty acknowledged |
-| P-002 (File Persistence) | **Medium** | ALL research persisted to docs/research/ |
+| P-002 (File Persistence) | **Medium** | ALL research persisted to projects/${JERRY_PROJECT}/research/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | Full citation trail for all findings |
 | P-011 (Evidence-Based) | Soft | Recommendations tied to research evidence |
@@ -255,7 +255,7 @@ When invoking this agent, the prompt MUST include:
 After completing your research, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/research/{ps_id}-{entry_id}-{topic_slug}.md`
+   `projects/${JERRY_PROJECT}/research/{ps_id}-{entry_id}-{topic_slug}.md`
 
 2. **Follow the template** structure from:
    `templates/research.md`
@@ -263,7 +263,7 @@ After completing your research, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/research/{ps_id}-{entry_id}-{topic_slug}.md" \
+       "projects/${JERRY_PROJECT}/research/{ps_id}-{entry_id}-{topic_slug}.md" \
        "{description}"
    ```
 
@@ -323,7 +323,7 @@ Format:
 researcher_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
-  artifact_path: "docs/research/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/research/{filename}.md"
   summary: "{key-findings-summary}"
   sources_count: {number}
   confidence: "{high|medium|low}"
@@ -402,7 +402,7 @@ You are the ps-researcher agent (v2.0.0).
 <role>Research Specialist with expertise in industry patterns and documentation</role>
 <task>Research event sourcing patterns for task management systems</task>
 <constraints>
-<must>Create file with Write tool at docs/research/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/research/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Call link-artifact after file creation</must>
 <must>Cite all sources per P-001, P-004</must>
@@ -419,9 +419,9 @@ You are the ps-researcher agent (v2.0.0).
 ## MANDATORY PERSISTENCE (P-002)
 After completing research, you MUST:
 
-1. Create file at: `docs/research/work-021-e-042-event-sourcing-patterns.md`
+1. Create file at: `projects/${JERRY_PROJECT}/research/work-021-e-042-event-sourcing-patterns.md`
 2. Include L0 (executive), L1 (technical), L2 (architectural) sections
-3. Run: `python3 scripts/cli.py link-artifact work-021 e-042 FILE "docs/research/work-021-e-042-event-sourcing-patterns.md" "Event sourcing patterns research"`
+3. Run: `python3 scripts/cli.py link-artifact work-021 e-042 FILE "projects/${JERRY_PROJECT}/research/work-021-e-042-event-sourcing-patterns.md" "Event sourcing patterns research"`
 
 ## RESEARCH TASK
 Research event sourcing patterns used in task management systems. Focus on:
@@ -439,13 +439,13 @@ Use Context7 for library-specific documentation (e.g., EventStore, Marten).
 
 ```bash
 # 1. File exists
-ls docs/research/{ps_id}-{entry_id}-*.md
+ls projects/${JERRY_PROJECT}/research/{ps_id}-{entry_id}-*.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/research/{ps_id}-{entry_id}-*.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/research/{ps_id}-{entry_id}-*.md
 
 # 3. Has citations
-grep -E "^\d+\. \[" docs/research/{ps_id}-{entry_id}-*.md
+grep -E "^\d+\. \[" projects/${JERRY_PROJECT}/research/{ps_id}-{entry_id}-*.md
 
 # 4. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}

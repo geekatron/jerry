@@ -10,16 +10,27 @@ Forces creation of a PLAN.md file before implementation begins.
 /architect <task description>
 ```
 
+## Prerequisites
+
+**Active Project Required**: This command requires `JERRY_PROJECT` environment variable to be set.
+
+```bash
+export JERRY_PROJECT=PROJ-001-plugin-cleanup
+```
+
+If not set, prompt the user to specify which project to work on or create a new project.
+
 ## Behavior
 
 When invoked, this command:
 
-1. **Creates a PLAN file** in `docs/plans/PLAN_{slug}.md`
-2. **Analyzes the task** for scope, complexity, and risks
-3. **Identifies alternatives** and documents trade-offs
-4. **Defines implementation steps** with dependencies
-5. **Sets success criteria** for validation
-6. **Waits for approval** before proceeding
+1. **Verifies active project** via `JERRY_PROJECT` environment variable
+2. **Creates/updates PLAN.md** in `projects/${JERRY_PROJECT}/PLAN.md`
+3. **Analyzes the task** for scope, complexity, and risks
+4. **Identifies alternatives** and documents trade-offs
+5. **Defines implementation steps** with dependencies
+6. **Sets success criteria** for validation
+7. **Waits for approval** before proceeding
 
 ---
 
@@ -112,7 +123,9 @@ User: /architect Add a caching layer for database queries
 
 Claude: I'll create an architecture plan for adding a caching layer.
 
-[Creates docs/plans/PLAN_caching_layer.md]
+Checking JERRY_PROJECT environment variable... Found: PROJ-002-caching
+
+[Creates projects/PROJ-002-caching/PLAN.md]
 
 Here's the proposed plan:
 - Problem: Database queries are slow for repeated reads
@@ -124,5 +137,19 @@ Does this plan look correct? Should I proceed with implementation?
 
 User: Yes, proceed.
 
-Claude: [Creates Work Items, begins implementation]
+Claude: [Updates WORKTRACKER.md, begins implementation]
+```
+
+## Example (No Project Set)
+
+```
+User: /architect Add authentication
+
+Claude: JERRY_PROJECT environment variable not set.
+
+Please specify your project:
+1. Set environment variable: `export JERRY_PROJECT=PROJ-001-plugin-cleanup`
+2. Or create a new project (see projects/README.md for conventions)
+
+Which project should this plan belong to?
 ```

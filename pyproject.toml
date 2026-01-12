@@ -34,10 +34,18 @@ dependencies = []
 dev = [
     "mypy>=1.8.0",
     "ruff>=0.1.0",
+    "filelock>=3.12.0",
+]
+test = [
+    "pytest>=8.0.0",
+    "pytest-archon>=0.0.6",
+    "pytest-bdd>=8.0.0",
+    "pytest-cov>=4.0.0",
 ]
 
 [project.scripts]
 jerry = "src.interface.cli.main:main"
+jerry-session-start = "src.interface.cli.session_start:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -45,6 +53,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+[tool.pyright]
+pythonVersion = "3.11"
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "standard"
 
 [tool.mypy]
 python_version = "3.11"
@@ -56,6 +70,8 @@ disallow_untyped_defs = true
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -67,7 +83,18 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
+    "B017",  # pytest.raises(Exception) - used intentionally for frozen dataclass tests
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+    "happy-path: marks tests as happy path scenarios",
+    "negative: marks tests as negative/error scenarios",
+    "edge-case: marks tests as edge case scenarios",
+    "boundary: marks tests as boundary value scenarios",
+]

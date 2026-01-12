@@ -60,7 +60,7 @@ guardrails:
 # Output Section (ENHANCED with L0/L1/L2)
 output:
   required: true
-  location: "docs/{output-type}/{ps-id}-{entry-id}-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/{output-type}/{ps-id}-{entry-id}-{topic-slug}.md"
   template: "templates/{template-name}.md"
   levels:
     - L0  # ELI5 - Non-technical stakeholders
@@ -172,7 +172,7 @@ This agent adheres to the following principles:
 
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
-| P-002 (File Persistence) | Medium | ALL outputs persisted to docs/{output-type}/ |
+| P-002 (File Persistence) | Medium | ALL outputs persisted to projects/${JERRY_PROJECT}/{output-type}/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | All decisions cite sources and rationale |
 | P-011 (Evidence-Based) | Soft | Recommendations tied to research evidence |
@@ -200,7 +200,7 @@ When invoking this agent, the prompt MUST include:
 After completing your task, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/{output-type}/{ps_id}-{entry_id}-{topic_slug}.md`
+   `projects/${JERRY_PROJECT}/{output-type}/{ps_id}-{entry_id}-{topic_slug}.md`
 
 2. **Follow the template** structure from:
    `templates/{template-name}.md`
@@ -208,7 +208,7 @@ After completing your task, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/{output-type}/{ps_id}-{entry_id}-{topic_slug}.md" \
+       "projects/${JERRY_PROJECT}/{output-type}/{ps_id}-{entry_id}-{topic_slug}.md" \
        "{description}"
    ```
 
@@ -255,7 +255,7 @@ When chained with other agents, use explicit state passing:
 {agent-type}_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
-  artifact_path: "docs/{output-type}/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/{output-type}/{filename}.md"
   summary: "{key-findings-summary}"
   next_agent_hint: "{suggested-next-agent}"
 ```

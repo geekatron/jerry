@@ -1,0 +1,250 @@
+# Jerry Framework Release Pipeline
+# ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-RELEASE-001-github-releases.md
+#
+# Triggers: v* tags (e.g., v0.0.1, v1.0.0)
+# Artifacts: jerry-plugin-{version}.tar.gz, jerry-plugin-{version}.zip
+# Creates: GitHub Release with auto-generated notes
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  # ===========================================================================
+  # Validate Release
+  # ===========================================================================
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Validate version format
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "Error: Invalid version format '$VERSION'"
+            echo "Expected: X.Y.Z or X.Y.Z-suffix (e.g., 1.0.0, 1.0.0-beta.1)"
+            exit 1
+          fi
+          echo "Valid version format: $VERSION"
+
+      - name: Check version in pyproject.toml
+        run: |
+          TAG_VERSION=${{ steps.version.outputs.version }}
+          PYPROJECT_VERSION=$(grep -E '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+          echo "Tag version: $TAG_VERSION"
+          echo "pyproject.toml version: $PYPROJECT_VERSION"
+          if [[ "$TAG_VERSION" != "$PYPROJECT_VERSION" ]]; then
+            echo "Warning: Tag version ($TAG_VERSION) does not match pyproject.toml version ($PYPROJECT_VERSION)"
+            echo "Consider updating pyproject.toml before tagging"
+          fi
+
+  # ===========================================================================
+  # Run CI Checks
+  # ===========================================================================
+  ci:
+    name: CI Checks
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pyright
+          pip install -e ".[dev,test]"
+
+      - name: Run lint
+        run: ruff check . --config=pyproject.toml
+
+      - name: Run format check
+        run: ruff format --check . --config=pyproject.toml
+
+      - name: Run type check
+        run: pyright src/
+
+      - name: Run tests
+        run: pytest -v --tb=short
+
+  # ===========================================================================
+  # Build Plugin Archive
+  # ===========================================================================
+  build:
+    name: Build Plugin Archive
+    runs-on: ubuntu-latest
+    needs: [validate, ci]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Create plugin archive directory
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+          ARCHIVE_NAME="jerry-plugin-$VERSION"
+          mkdir -p dist/$ARCHIVE_NAME
+          echo "Creating archive: $ARCHIVE_NAME"
+
+      - name: Copy plugin files
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+          ARCHIVE_NAME="jerry-plugin-$VERSION"
+
+          # Core plugin structure (Claude Code Plugin)
+          cp -r .claude dist/$ARCHIVE_NAME/
+          cp -r .claude-plugin dist/$ARCHIVE_NAME/ 2>/dev/null || true
+          cp -r skills dist/$ARCHIVE_NAME/
+          cp -r src dist/$ARCHIVE_NAME/
+          cp -r docs dist/$ARCHIVE_NAME/
+          cp -r scripts dist/$ARCHIVE_NAME/
+          cp -r hooks dist/$ARCHIVE_NAME/ 2>/dev/null || true
+
+          # Essential files
+          cp CLAUDE.md dist/$ARCHIVE_NAME/
+          cp AGENTS.md dist/$ARCHIVE_NAME/
+          cp GOVERNANCE.md dist/$ARCHIVE_NAME/
+          cp README.md dist/$ARCHIVE_NAME/
+          cp pyproject.toml dist/$ARCHIVE_NAME/
+          cp pytest.ini dist/$ARCHIVE_NAME/
+          cp .gitignore dist/$ARCHIVE_NAME/
+
+          # List contents
+          echo "Archive contents:"
+          ls -la dist/$ARCHIVE_NAME/
+
+      - name: Create .tar.gz archive
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+          ARCHIVE_NAME="jerry-plugin-$VERSION"
+          cd dist
+          tar -czvf $ARCHIVE_NAME.tar.gz $ARCHIVE_NAME
+          echo "Created: $ARCHIVE_NAME.tar.gz"
+          ls -lh $ARCHIVE_NAME.tar.gz
+
+      - name: Create .zip archive
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+          ARCHIVE_NAME="jerry-plugin-$VERSION"
+          cd dist
+          zip -r $ARCHIVE_NAME.zip $ARCHIVE_NAME
+          echo "Created: $ARCHIVE_NAME.zip"
+          ls -lh $ARCHIVE_NAME.zip
+
+      - name: Generate checksums
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+          ARCHIVE_NAME="jerry-plugin-$VERSION"
+          cd dist
+          sha256sum $ARCHIVE_NAME.tar.gz $ARCHIVE_NAME.zip > checksums.sha256
+          cat checksums.sha256
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-archives
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.sha256
+
+  # ===========================================================================
+  # Create GitHub Release
+  # ===========================================================================
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate, build]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-archives
+          path: dist
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          VERSION=${{ needs.validate.outputs.version }}
+
+          # Get the previous tag for comparison
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [[ -n "$PREV_TAG" ]]; then
+            echo "Generating notes from $PREV_TAG to v$VERSION"
+            NOTES=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges | head -50)
+          else
+            echo "No previous tag found, using all commits"
+            NOTES=$(git log --pretty=format:"- %s (%h)" --no-merges | head -50)
+          fi
+
+          # Write to file for multiline support
+          cat > release-notes.md << 'NOTES_EOF'
+          ## Jerry Framework v${{ needs.validate.outputs.version }}
+
+          A Claude Code Plugin for behavior and workflow guardrails.
+
+          ### Installation
+
+          1. Download the plugin archive (`.tar.gz` or `.zip`)
+          2. Extract to your project directory
+          3. See `docs/INSTALLATION.md` for detailed instructions
+
+          ### What's Changed
+
+          NOTES_EOF
+
+          echo "$NOTES" >> release-notes.md
+
+          cat >> release-notes.md << 'FOOTER_EOF'
+
+          ### Verification
+
+          Verify the download integrity using the checksums:
+          ```bash
+          sha256sum -c checksums.sha256
+          ```
+
+          ---
+          *Released automatically via GitHub Actions*
+          FOOTER_EOF
+
+          cat release-notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Jerry Framework v${{ needs.validate.outputs.version }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.sha256
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

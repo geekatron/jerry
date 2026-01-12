@@ -265,10 +265,18 @@ Recommended Next:
 
 ### Storage
 
-Work items are stored in `data/worktracker/`:
-- `items/WORK-NNN.json` - Individual work item files
-- `index.json` - Quick lookup index
-- `sequences.json` - ID sequence tracking
+Work items are stored in the active project's `.jerry/data/` directory:
+
+```
+projects/${JERRY_PROJECT}/.jerry/data/
+├── items/
+│   └── WORK-NNN.json    # Individual work item files
+├── index.json           # Quick lookup index
+└── sequences.json       # ID sequence tracking
+```
+
+> **Note**: `JERRY_PROJECT` environment variable must be set to identify the active project.
+> If not set, the skill will prompt you to specify which project to use.
 
 ---
 

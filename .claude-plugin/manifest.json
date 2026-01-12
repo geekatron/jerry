@@ -81,6 +81,7 @@
     }
   ],
   "hooks": {
+    "session_start": "scripts/session_start.py",
     "pre_tool_use": ".claude/hooks/pre_tool_use.py",
     "subagent_stop": ".claude/hooks/subagent_stop.py"
   },

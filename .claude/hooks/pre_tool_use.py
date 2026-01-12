@@ -18,7 +18,6 @@ import os
 import sys
 from typing import Any
 
-
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
@@ -67,6 +66,7 @@ DANGEROUS_COMMANDS = [
 # HOOK LOGIC
 # =============================================================================
 
+
 def check_file_write(tool_input: dict[str, Any]) -> tuple[bool, str]:
     """Check if a file write operation is safe."""
     file_path = tool_input.get("file_path", "")
@@ -96,6 +96,18 @@ def check_bash_command(tool_input: dict[str, Any]) -> tuple[bool, str]:
     """Check if a bash command is safe."""
     command = tool_input.get("command", "")
 
+    # Block cd commands - maintain working directory using absolute paths
+    # This prevents scripts from having incorrect path assumptions
+    cmd_stripped = command.strip()
+    if (
+        cmd_stripped.startswith("cd ")
+        or cmd_stripped == "cd"
+        or " && cd " in command
+        or "; cd " in command
+        or "$(cd " in command
+    ):
+        return False, "cd command blocked: Use absolute paths instead of changing directories"
+
     # Check for dangerous commands
     for dangerous in DANGEROUS_COMMANDS:
         if dangerous in command:
@@ -105,10 +117,8 @@ def check_bash_command(tool_input: dict[str, Any]) -> tuple[bool, str]:
     if "| sh" in command or "| bash" in command:
         # Allow but log warning
         print(
-            json.dumps({
-                "warning": "Piping to shell detected - ensure source is trusted"
-            }),
-            file=sys.stderr
+            json.dumps({"warning": "Piping to shell detected - ensure source is trusted"}),
+            file=sys.stderr,
         )
 
     return True, ""
@@ -127,10 +137,8 @@ def check_git_operation(tool_input: dict[str, Any]) -> tuple[bool, str]:
     if "reset --hard" in command:
         # Allow but warn
         print(
-            json.dumps({
-                "warning": "git reset --hard will lose uncommitted changes"
-            }),
-            file=sys.stderr
+            json.dumps({"warning": "git reset --hard will lose uncommitted changes"}),
+            file=sys.stderr,
         )
 
     return True, ""
@@ -159,27 +167,18 @@ def main() -> int:
 
         # Output result
         if not allowed:
-            print(json.dumps({
-                "decision": "block",
-                "reason": reason
-            }))
+            print(json.dumps({"decision": "block", "reason": reason}))
             return 0
 
         # Allow by default
-        print(json.dumps({"decision": "allow"}))
+        print(json.dumps({"decision": "approve"}))
         return 0
 
     except json.JSONDecodeError as e:
-        print(json.dumps({
-            "decision": "block",
-            "reason": f"Hook error: Invalid JSON input - {e}"
-        }))
+        print(json.dumps({"decision": "block", "reason": f"Hook error: Invalid JSON input - {e}"}))
         return 2
     except Exception as e:
-        print(json.dumps({
-            "decision": "block",
-            "reason": f"Hook error: {e}"
-        }))
+        print(json.dumps({"decision": "block", "reason": f"Hook error: {e}"}))
         return 2
 
 

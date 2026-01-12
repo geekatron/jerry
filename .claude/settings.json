@@ -36,7 +36,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'Jerry Framework initialized. See CLAUDE.md for context.'"
+            "command": ".venv/bin/jerry-session-start",
+            "timeout": 10000
           }
         ]
       }
@@ -76,7 +77,7 @@
       {
         "name": "architect",
         "file": ".claude/commands/architect.md",
-        "description": "Create PLAN.md before implementation"
+        "description": "Create PLAN.md in active project (requires JERRY_PROJECT)"
       },
       {
         "name": "release",
@@ -108,11 +109,13 @@
   "context": {
     "always_load": [
       "CLAUDE.md",
-      "AGENTS.md"
+      "AGENTS.md",
+      "GOVERNANCE.md"
     ],
     "load_on_demand": [
-      "GOVERNANCE.md",
-      "docs/plans/*.md"
+      "projects/README.md",
+      "projects/*/PLAN.md",
+      "projects/*/WORKTRACKER.md"
     ]
   },
   "preferences": {
@@ -129,5 +132,10 @@
       "require_citations": true,
       "capture_learnings": true
     }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ~/.claude/statusline.py",
+    "padding": 0
   }
 }

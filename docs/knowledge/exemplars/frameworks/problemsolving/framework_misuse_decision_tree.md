@@ -4,7 +4,7 @@
 This is a **guardrail**. Its job is to prevent the most expensive class of mistakes:
 > **Using the right framework in the wrong context.**
 
-It’s heavily inspired by context-based decision making (Cynefin) and by the practical necessity of stabilizing chaotic systems before analysis.  
+It’s heavily inspired by context-based decision making (Cynefin) and by the practical necessity of stabilizing chaotic systems before analysis.
 See Snowden & Boone (2007).
 
 ---
@@ -49,21 +49,21 @@ Is there immediate danger / active damage / safety or security breach?
 ## Common misuse patterns (and what to do instead)
 
 ### 1) Root cause analysis during chaos
-**Symptom:** “Let’s do 5 Whys right now” while users are burning.  
-**Fix:** Stabilize first; then do analysis/postmortem.  
+**Symptom:** “Let’s do 5 Whys right now” while users are burning.
+**Fix:** Stabilize first; then do analysis/postmortem.
 (Aligns with incident handling lifecycles and SRE practice.)
 
 ### 2) “Best practices” in complex adaptive systems
-**Symptom:** Copying a template architecture without local probes.  
-**Fix:** Run small experiments; measure; iterate.  
+**Symptom:** Copying a template architecture without local probes.
+**Fix:** Run small experiments; measure; iterate.
 (Complex domain requires probe–sense–respond.)
 
 ### 3) Improvisation as a permanent solution
-**Symptom:** Heroics, tribal knowledge, no documentation.  
+**Symptom:** Heroics, tribal knowledge, no documentation.
 **Fix:** Convert improvisation into engineering: runbooks, automation, controls.
 
 ### 4) Brainstorming + judgment at the same time
-**Symptom:** Idea generation collapses and everyone converges early.  
+**Symptom:** Idea generation collapses and everyone converges early.
 **Fix:** Separate diverge from converge (two-phase thinking).
 
 ---
