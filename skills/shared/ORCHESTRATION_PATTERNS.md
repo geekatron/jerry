@@ -1,10 +1,48 @@
+---
+name: orchestration-patterns
+description: Canonical reference for 8 multi-agent orchestration patterns in Jerry, including topology diagrams, invocation examples, and anti-patterns for each pattern.
+version: "1.1.0"
+template: PATTERN_REFERENCE v1.0.0
+source: SAO-INIT-007 Deep Research (DISCOVERY-008)
+constitutional_compliance:
+  - P-002  # File Persistence (all pattern outputs)
+  - P-003  # No Recursive Subagents (single-level only)
+  - P-022  # No Deception (transparent limitations)
+patterns_covered:
+  - single-agent
+  - sequential-chain
+  - fan-out
+  - fan-in
+  - cross-pollinated
+  - divergent-convergent
+  - review-gate
+  - generator-critic
+related_skills:
+  - orchestration
+  - problem-solving
+  - nasa-se
+session_context_version: "1.0.0"
+---
+
 # Orchestration Patterns Reference
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Source:** SAO-INIT-007 Deep Research (DISCOVERY-008)
 > **Last Updated:** 2026-01-12
 
 This document defines the 8 canonical orchestration patterns for multi-agent workflows in Jerry.
+
+---
+
+## Document Audience (Triple-Lens)
+
+This reference serves multiple audiences:
+
+| Level | Audience | Sections to Focus On |
+|-------|----------|---------------------|
+| **L0 (ELI5)** | New users, project managers | Pattern Overview, L0 metaphors in each pattern |
+| **L1 (Engineer)** | Developers implementing workflows | Topology diagrams, Invocation examples, Use When |
+| **L2 (Architect)** | Workflow designers, system architects | L2 sections, Anti-patterns, Decision Tree, State Schema |
 
 ---
 
@@ -730,14 +768,50 @@ session_context:
 
 ---
 
+## Constitutional Compliance
+
+All orchestration patterns MUST comply with the Jerry Constitution.
+
+| Principle | Enforcement | Pattern Implications |
+|-----------|-------------|---------------------|
+| **P-002** | Medium | ALL pattern outputs must be persisted to filesystem. No transient-only results. |
+| **P-003** | **Hard** | Single-level nesting only. Orchestrator → Worker agents. No worker-spawns-worker. |
+| **P-010** | Medium | Pattern execution must be tracked in WORKTRACKER when part of a work item. |
+| **P-022** | **Hard** | Transparent about pattern limitations. No false promises about capabilities. |
+
+### Pattern-Specific Constitutional Guidance
+
+| Pattern | P-002 Notes | P-003 Notes |
+|---------|-------------|-------------|
+| **1. Single Agent** | Agent output persisted directly | N/A (no nesting) |
+| **2. Sequential Chain** | Each step output persisted | Chain is orchestrated, not recursive |
+| **3. Fan-Out** | All parallel outputs persisted after barrier | Each branch is single-level |
+| **4. Fan-In** | Synthesizer output persisted | Synthesizer cannot spawn sub-agents |
+| **5. Cross-Pollinated** | Both tracks' outputs persisted at barriers | Cross-reference is data, not agent calls |
+| **6. Divergent-Convergent** | All option outputs + final decision persisted | Options explored in parallel, single-level |
+| **7. Review Gate** | Review artifacts persisted | Reviewer is peer, not nested agent |
+| **8. Generator-Critic** | Each iteration persisted | Critic feedback is data, not agent call |
+
+### Self-Critique Checklist
+
+Before finalizing any pattern execution:
+
+- [ ] **P-002:** Are all outputs written to files?
+- [ ] **P-003:** Is there only ONE level of agent nesting?
+- [ ] **P-010:** Is WORKTRACKER updated with execution status?
+- [ ] **P-022:** Have I been transparent about any limitations?
+
+---
+
 ## References
 
 - **Source:** SAO-INIT-007 plan.md (extracted 2026-01-12)
 - **Discovery:** DISCOVERY-008 (8 patterns identified)
 - **Discovery:** DISCOVERY-009 (session context schema formalized)
-- **Constitution:** P-003 (No Recursive Subagents)
+- **Constitution:** Jerry Constitution v1.0 (P-002, P-003, P-010, P-022)
+- **Research:** `projects/PROJ-002-nasa-systems-engineering/research/` (23+ documents)
 
 ---
 
-*Version 1.0.0 - Created 2026-01-12*
-*Extracted from SAO-INIT-007 deep research*
+*Version 1.1.0 - Enhanced 2026-01-12 (SAO-INIT-008 WI-SAO-065)*
+*Original: SAO-INIT-007 deep research*
