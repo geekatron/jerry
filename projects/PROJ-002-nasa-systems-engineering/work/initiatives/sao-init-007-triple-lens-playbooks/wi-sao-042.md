@@ -1,7 +1,7 @@
 ---
 id: wi-sao-042
 title: "Research & document Generator-Critic patterns"
-status: OPEN
+status: IN_PROGRESS
 parent: "_index.md"
 initiative: sao-init-007
 children: []
@@ -51,16 +51,16 @@ The problem-solving PLAYBOOK.md is missing documentation for the Generator-Criti
 ## Tasks
 
 ### T-042.1: Research Phase (ps-researcher)
-- [ ] **T-042.1.1:** Invoke ps-researcher to gather information about generator-critic patterns
-- [ ] **T-042.1.2:** Research industry best practices (Google ADK, LangChain, etc.)
-- [ ] **T-042.1.3:** Document ps-critic agent capabilities from agent definition
-- [ ] **T-042.1.4:** Create research artifact: `research/sao-042-generator-critic-research.md`
+- [x] **T-042.1.1:** Invoke ps-researcher to gather information about generator-critic patterns
+- [x] **T-042.1.2:** Research industry best practices (Google ADK, AWS, Self-Refine paper)
+- [x] **T-042.1.3:** Document ps-critic agent capabilities from agent definition
+- [x] **T-042.1.4:** Create research artifact: `research/sao-042-generator-critic-research.md`
 
 ### T-042.2: Analysis Phase (ps-analyst)
-- [ ] **T-042.2.1:** Invoke ps-analyst to analyze when generator-critic is appropriate
-- [ ] **T-042.2.2:** Create decision matrix: critic vs validator vs reviewer
-- [ ] **T-042.2.3:** Identify optimal workflow compositions
-- [ ] **T-042.2.4:** Create analysis artifact: `analysis/sao-042-generator-critic-analysis.md`
+- [x] **T-042.2.1:** Invoke ps-analyst to analyze when generator-critic is appropriate
+- [x] **T-042.2.2:** Create decision matrix: critic vs validator vs reviewer
+- [x] **T-042.2.3:** Identify optimal workflow compositions
+- [x] **T-042.2.4:** Create analysis artifact: `research/sao-042-generator-critic-analysis.md`
 
 ### T-042.3: Critique Phase (ps-critic)
 - [ ] **T-042.3.1:** Invoke ps-critic to review research and analysis
@@ -82,11 +82,22 @@ The problem-solving PLAYBOOK.md is missing documentation for the Generator-Criti
 
 | Evidence ID | Type | Description | Status |
 |-------------|------|-------------|--------|
-| E-042-001 | Research | ps-researcher artifact created | ⏳ |
-| E-042-002 | Analysis | ps-analyst artifact created | ⏳ |
+| E-042-001 | Research | ps-researcher artifact created | ✅ Complete |
+| E-042-002 | Analysis | ps-analyst artifact created | ✅ Complete |
 | E-042-003 | Critique | ps-critic passed | ⏳ |
 | E-042-004 | Content | PLAYBOOK.md updated with generator-critic | ⏳ |
 | E-042-005 | Diagram | ASCII + Mermaid workflows present | ⏳ |
+
+## Research Phase Complete
+
+**Artifact:** `research/sao-042-generator-critic-research.md`
+
+**Key Findings:**
+1. Industry alignment: Jerry's implementation matches Google ADK, AWS patterns
+2. All 9 ps-* agents documented with cognitive modes
+3. ps-critic pairs with: ps-architect, ps-researcher, ps-analyst
+4. Circuit breaker: max_iterations=3, threshold=0.85
+5. P-003 compliance: MAIN CONTEXT orchestrates, not agents
 
 ---
 
