@@ -253,6 +253,66 @@ Quick reference:
 
 ---
 
+## CLI Commands (v0.1.0)
+
+> **Version**: 0.1.0 (Breaking changes from v0.0.1)
+> **Reference**: `ADR-CLI-002-namespace-implementation.md`
+
+Jerry CLI is organized into bounded-context-aligned namespaces:
+
+### Session Namespace
+
+Manage agent sessions for context tracking.
+
+```bash
+jerry session start [--name NAME] [--description DESC]  # Start new session
+jerry session end [--summary TEXT]                       # End current session
+jerry session status                                     # Show session status
+jerry session abandon [--reason TEXT]                    # Abandon without summary
+```
+
+### Items Namespace
+
+Manage work items (tasks, bugs, stories).
+
+```bash
+jerry items list [--status STATUS] [--type TYPE]        # List work items
+jerry items show <id>                                    # Show item details
+jerry items create <title> [--type TYPE]                # Create item (Phase 4.5)
+jerry items start <id>                                   # Start work (Phase 4.5)
+jerry items complete <id>                                # Complete item (Phase 4.5)
+```
+
+**Note**: `create`, `start`, `complete` commands are deferred to Phase 4.5 (Event Sourcing).
+
+### Projects Namespace
+
+Manage Jerry projects.
+
+```bash
+jerry projects context                                   # Show project context
+jerry projects list                                      # List all projects
+jerry projects validate <project-id>                     # Validate project
+```
+
+### Global Options
+
+```bash
+jerry --help                                             # Show help
+jerry --version                                          # Show version
+jerry --json <namespace> <command>                       # JSON output
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Error (validation failure, not found, etc.) |
+| 2 | Invalid usage (bad arguments) |
+
+---
+
 ## Agent Governance (Jerry Constitution)
 
 All agents operating within Jerry MUST adhere to the **Jerry Constitution v1.0**.

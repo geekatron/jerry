@@ -34,6 +34,10 @@
 | DISC-012 | TOON Format Required as Primary Output | ACTIONED | ADR-CLI-001, TD-015 |
 | DISC-013 | CLI Namespaces per Bounded Context | ACTIONED | ADR-CLI-001, TD-015 |
 | DISC-014 | Domain Events Use aggregate_id Not Entity-Specific ID | ACTIONED | Phase 4.3.8 |
+| DISC-015 | Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability | ACTIONED | TD-018, Phase 4.6 |
+| DISC-016 | InMemoryWorkItemRepository is Simplified, Not Event-Sourced | LOGGED | TD-018 |
+| DISC-017 | RuntimeWarning When Running CLI with -m Flag | LOGGED | Phase 4.6.1 |
+| DISC-018 | CommandDispatcher Not Implemented - Dict-Based Workaround Used | LOGGED | Phase 4.6.2, TD-018 |
 
 ---
 
@@ -556,6 +560,184 @@ class SessionCreated(DomainEvent):
 
 ---
 
+### DISC-015: Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability
+
+**Date**: 2026-01-12
+**Context**: Planning Phase 4.5 (Items Commands) after completing Phase 4.4 (Items Queries)
+**Finding**: Phase 4.5 implements write operations (`jerry items create`, `jerry items start`, `jerry items complete`) that mutate work item state. For mission-critical software, these operations require event sourcing to ensure:
+
+1. **Audit Trail**: Complete history of all state changes
+2. **Recoverability**: Ability to reconstruct state from events
+3. **Consistency**: Event-based state transitions prevent data corruption
+4. **Debugging**: Full visibility into what happened and when
+
+**Current State**:
+- Phase 4.4 completed with `InMemoryWorkItemRepository` (simplified, not event-sourced)
+- Read operations (list, show) work with current implementation
+- Write operations would create state without audit trail
+
+**User Decision (2026-01-12)**:
+> "Skip to Phase 4.6 and then we will circle back to Phase 4.5 and discussing tackling full blown event sourcing, which we need to have for this mission critical app"
+
+**Impact**:
+- Phase 4.5 deferred until TD-018 (Event Sourcing) is addressed
+- Phase 4.6 (Integration & Documentation) proceeds as next step
+- Ensures mission-critical reliability is not compromised
+
+**Related**:
+- TD-018: Event Sourcing for Work Item Repository
+- Phase 4.4: Items Namespace (Queries) - COMPLETE
+- Phase 4.5: Items Namespace (Commands) - DEFERRED
+
+**Action**: Proceed with Phase 4.6, defer Phase 4.5 until post-TD-018
+**Status**: ACTIONED
+
+---
+
+### DISC-016: InMemoryWorkItemRepository is Simplified, Not Event-Sourced
+
+**Date**: 2026-01-12
+**Context**: Phase 4.4 implementation of work tracking application layer
+**Finding**: The `InMemoryWorkItemRepository` created in Phase 4.4 is a simplified implementation that stores work items directly in a dictionary, not as event streams.
+
+**Current Implementation** (`src/work_tracking/infrastructure/adapters/in_memory_work_item_repository.py`):
+```python
+class InMemoryWorkItemRepository:
+    def __init__(self) -> None:
+        self._items: dict[str, WorkItem] = {}  # Direct storage, NOT event streams
+        self._lock = threading.RLock()
+```
+
+**What Event Sourcing Would Require**:
+```python
+class EventSourcedWorkItemRepository:
+    def __init__(self, event_store: IEventStore) -> None:
+        self._event_store = event_store
+
+    def get(self, id: WorkItemId) -> WorkItem | None:
+        events = self._event_store.read(f"work_item-{id}")
+        return WorkItem.reconstitute(events) if events else None
+
+    def save(self, work_item: WorkItem) -> None:
+        events = work_item.collect_events()
+        self._event_store.append(f"work_item-{work_item.id}", events, work_item.version)
+```
+
+**Gap Analysis**:
+| Feature | Current | Required |
+|---------|---------|----------|
+| State Storage | Direct dict | Event streams |
+| Audit Trail | None | Complete |
+| Version Control | None | Optimistic concurrency |
+| State Reconstruction | N/A | From events |
+
+**Impact**:
+- Read operations (Phase 4.4) work correctly
+- Write operations (Phase 4.5) would lose audit trail
+- Concurrency control not enforced
+- No ability to replay/reconstruct state
+
+**Action**: Documented in TD-018 for post-Phase 4 remediation
+**Status**: LOGGED
+
+---
+
+### DISC-017: RuntimeWarning When Running CLI with -m Flag
+
+**Date**: 2026-01-12
+**Context**: Phase 4.6.1 verification of main.py using new parser
+**Finding**: When running the CLI with `python3 -m src.interface.cli.main`, a RuntimeWarning is displayed:
+
+```
+<frozen runpy>:128: RuntimeWarning: 'src.interface.cli.main' found in sys.modules
+after import of package 'src.interface.cli', but prior to execution of
+'src.interface.cli.main'; this may result in unpredictable behaviour
+```
+
+**Root Cause**:
+- Python's `-m` flag executes a module as `__main__`
+- The `src.interface.cli` package is imported before `main.py` is executed
+- This is due to how Python handles relative imports within packages
+
+**Impact**:
+- WARNING ONLY - functionality is not affected
+- CLI commands work correctly
+- All namespaces route properly
+
+**Workarounds**:
+1. Run via entry point: `jerry <command>` (after pip install)
+2. Run directly: `python3 src/interface/cli/main.py`
+3. Suppress warning: `python3 -W ignore::RuntimeWarning -m src.interface.cli.main`
+
+**Priority**: LOW - cosmetic issue only
+
+**Action**: Logged for future cleanup, not blocking Phase 4.6
+**Status**: LOGGED
+
+---
+
+### DISC-018: CommandDispatcher Not Implemented - Dict-Based Workaround Used
+
+**Date**: 2026-01-12
+**Context**: Phase 4.6.2 verification of bootstrap.py dispatcher wiring
+**Finding**: The codebase has an `ICommandDispatcher` protocol defined but NO concrete `CommandDispatcher` implementation.
+
+**What Exists**:
+- `src/application/ports/primary/icommanddispatcher.py` - Protocol definition ✅
+- `src/application/dispatchers/query_dispatcher.py` - QueryDispatcher implementation ✅
+- `src/application/dispatchers/` - NO command_dispatcher.py ❌
+
+**Current Workaround**:
+Session commands use a dict-based approach in `bootstrap.py`:
+```python
+def create_session_command_handlers() -> dict:
+    return {
+        "create": CreateSessionCommandHandler(repository=session_repository),
+        "end": EndSessionCommandHandler(repository=session_repository),
+        "abandon": AbandonSessionCommandHandler(repository=session_repository),
+    }
+```
+
+**What Full CQRS Would Require**:
+```python
+# src/application/dispatchers/command_dispatcher.py
+class CommandDispatcher:
+    def __init__(self) -> None:
+        self._handlers: dict[type, Callable] = {}
+
+    def register(self, command_type: type, handler: Callable) -> None:
+        self._handlers[command_type] = handler
+
+    def dispatch(self, command: Any) -> list[DomainEvent]:
+        handler = self._handlers.get(type(command))
+        if handler is None:
+            raise CommandHandlerNotFoundError(type(command))
+        return handler(command)
+```
+
+**Impact Assessment**:
+| Aspect | Current (Dict) | Full CommandDispatcher |
+|--------|----------------|------------------------|
+| Type Safety | Weak (string keys) | Strong (type keys) |
+| Discoverability | Manual | Automatic via protocol |
+| Extensibility | Manual additions | Register pattern |
+| Consistency | Inconsistent with QueryDispatcher | Symmetric CQRS |
+
+**Why This is Acceptable for Now**:
+1. Phase 4.5 (Items Commands) is deferred until event sourcing
+2. Session commands are limited scope (3 commands)
+3. Full CommandDispatcher should be added with event sourcing (TD-018)
+
+**Related**:
+- ICommandDispatcher: `src/application/ports/primary/icommanddispatcher.py`
+- TD-018: Event Sourcing for Work Items (includes CommandDispatcher)
+- Phase 4.5: Items Commands (deferred)
+
+**Action**: Include CommandDispatcher implementation in TD-018 scope
+**Status**: LOGGED
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -580,3 +762,5 @@ class SessionCreated(DomainEvent):
 | 2026-01-12 | Claude | Added DISC-012: TOON Format Required as Primary Output |
 | 2026-01-12 | Claude | Added DISC-013: CLI Namespaces per Bounded Context |
 | 2026-01-12 | Claude | Added DISC-014: Domain Events Use aggregate_id Not Entity-Specific ID (Phase 4.3) |
+| 2026-01-12 | Claude | Added DISC-015: Phase 4.5 Requires Event Sourcing for Mission-Critical Reliability |
+| 2026-01-12 | Claude | Added DISC-016: InMemoryWorkItemRepository is Simplified, Not Event-Sourced |

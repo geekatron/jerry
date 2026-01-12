@@ -1436,6 +1436,8 @@ Phase 4.4 focused on CLI namespace implementation and needed a working repositor
 | 3.1 | Update `bootstrap.py` to use `EventSourcedWorkItemRepository` |
 | 3.2 | Configure event store injection |
 | 3.3 | Optionally enable snapshotting |
+| 3.4 | **CREATE** `CommandDispatcher` implementation (DISC-018) |
+| 3.5 | Wire command handlers through `CommandDispatcher` instead of dict |
 
 #### Phase 4: Testing
 
@@ -1451,8 +1453,10 @@ Phase 4.4 focused on CLI namespace implementation and needed a working repositor
 |------|--------|-------------|
 | `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` | **CREATE** | Event-sourced repository |
 | `src/work_tracking/infrastructure/adapters/snapshotting_work_item_repository.py` | **CREATE** (Optional) | Snapshot decorator |
-| `src/bootstrap.py` | **MODIFY** | Wire event-sourced repository |
+| `src/application/dispatchers/command_dispatcher.py` | **CREATE** | CommandDispatcher implementation (DISC-018) |
+| `src/bootstrap.py` | **MODIFY** | Wire event-sourced repository + CommandDispatcher |
 | `tests/work_tracking/unit/infrastructure/test_event_sourced_repository.py` | **CREATE** | Repository tests |
+| `tests/unit/application/dispatchers/test_command_dispatcher.py` | **CREATE** | CommandDispatcher tests |
 
 ### Acceptance Criteria
 
