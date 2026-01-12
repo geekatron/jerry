@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-11T12:00:00Z
+**Last Updated**: 2026-01-11T23:30:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -197,19 +197,38 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 5 | [PHASE-05](work/PHASE-05-VALIDATION.md) | ✅ DONE | 100% | Phase 4 | Phase 6, 7 |
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
-| BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 100% | - | - |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 83% (5/6) | - | - |
+| BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 87% (7/8) | - | CI-002 |
 | DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 4 items | - | - |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
+| **CI-002** | CI/CD Pipeline Failures | ✅ FIXED | 4/4 resolved (pending CI verify) | CI-001 | v0.0.1 |
 
 ---
 
 ## Current Focus
 
-> **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills
-> **Active Phase**: Research COMPLETE → Implementation PENDING
-> **Status**: ✅ RESEARCH COMPLETE
-> **Summary**: Research phase finished with 11 artifacts; Option C (Composed Architecture) selected
+> **Status**: ✅ CI-002 FIXED - Awaiting CI verification
+> **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
+> **Next Step**: Commit and push CI-002 fixes, verify GitHub Actions pass
+
+### CI-002: CI/CD Pipeline Failures (RESOLVED)
+
+| Issue ID | Type | Severity | Description | Status |
+|----------|------|----------|-------------|--------|
+| TD-011 | Tech Debt | **CRITICAL** | CI missing test dependencies (pytest-bdd, pytest-archon) | ✅ FIXED |
+| TD-012 | Tech Debt | MEDIUM | pip-audit fails on local jerry package | ✅ FIXED |
+| BUG-003 | Bug | HIGH | Pyright type errors in serializer.py | ✅ FIXED |
+| BUG-004 | Bug | LOW | Type variance warning in repository.py | ✅ FIXED |
+
+**Resolution Summary (2026-01-11):**
+1. **TD-011**: Added `pytest-archon>=0.0.6` to pyproject.toml, updated ci.yml to use `pip install -e ".[test]"`
+2. **TD-012**: Added `--skip-editable` to pip-audit command
+3. **BUG-003**: Added `@runtime_checkable HasToDict Protocol` for type narrowing
+4. **BUG-004**: Changed `TId = TypeVar("TId")` to `TId = TypeVar("TId", contravariant=True)`
+
+**Verification**: `pyright src/` reports 0 errors, 0 warnings
+
+---
 
 ### Active Initiative
 
@@ -807,3 +826,5 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | TD-010: Elevated DISC-003 to tech debt - must implement scripts/cli.py |
 | 2026-01-11 | Claude | Preparing ps-* agent orchestration for INIT-WT-SKILLS research phase |
 | 2026-01-11 | Claude | Phase 1 LAUNCHED: 4 ps-researcher agents in background (e-001, e-002, e-003, e-004) |
+| 2026-01-11 | Claude | CI-002 investigation complete: 4 issues identified (TD-011, TD-012, BUG-003, BUG-004) |
+| 2026-01-11 | Claude | CI-002 FIXED: All 4 issues resolved (pending CI verification) |

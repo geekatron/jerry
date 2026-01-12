@@ -30,7 +30,8 @@ from src.work_tracking.domain.aggregates.base import AggregateRoot
 TAggregate = TypeVar("TAggregate", bound=AggregateRoot)
 
 # Type variable for ID types (typically str, but could be value object)
-TId = TypeVar("TId")
+# Contravariant because TId appears only in input positions (get, delete, exists)
+TId = TypeVar("TId", contravariant=True)
 
 
 # =============================================================================

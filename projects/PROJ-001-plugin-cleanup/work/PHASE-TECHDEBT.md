@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: 🔄 IN PROGRESS (5/6 done - 83%)
+> **Status**: 🔄 IN PROGRESS (7/8 done - 87%)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -26,6 +26,8 @@
 | TD-004 | pytest_bdd dependency missing | LOW | ✅ DONE | 008d.3 |
 | TD-005 | Misplaced tests in projects/ | MEDIUM | ✅ DONE | ENFORCE-011 |
 | TD-010 | Implement link-artifact CLI command | HIGH | ⏳ TODO | DISC-003 |
+| TD-011 | CI missing test dependencies | **CRITICAL** | ✅ DONE | CI-002 |
+| TD-012 | pip-audit fails on local package | MEDIUM | ✅ DONE | CI-002 |
 
 ---
 
@@ -407,3 +409,167 @@ Implement `scripts/cli.py` with commands:
 ### Effort Estimate
 
 M - Medium (4-8 hours)
+
+---
+
+## TD-011: CI Missing Test Dependencies ✅
+
+> **Status**: COMPLETED (2026-01-11)
+> **Priority**: **CRITICAL**
+> **Source**: CI-002 (GitHub Actions failures)
+
+### Description
+
+The CI workflow installs `pytest pytest-cov` directly instead of using the `[test]` extras from `pyproject.toml`. Additionally, `pytest-archon` is used in architecture tests but never added to any dependency list.
+
+### Root Cause
+
+1. `.github/workflows/ci.yml` line 116: `pip install pytest pytest-cov` instead of `pip install -e ".[test]"`
+2. `pytest-archon` is imported in `tests/work_tracking/architecture/test_*.py` but not in `pyproject.toml`
+
+### Evidence
+
+GitHub Actions logs from run `20903651374`:
+```
+ERROR collecting tests/shared_kernel/test_snowflake_id_bdd.py
+ModuleNotFoundError: No module named 'pytest_bdd'
+
+ERROR collecting tests/work_tracking/architecture/test_dependency_rules.py
+ModuleNotFoundError: No module named 'pytest_archon'
+```
+
+### Impact
+
+- **All test jobs fail** on all Python versions (3.11, 3.12, 3.13, 3.14)
+- PR #3 cannot be merged
+- v0.0.1 release blocked
+
+### Proposed Solution
+
+#### Subtask 1: Add pytest-archon to test dependencies
+
+**File:** `pyproject.toml`
+```toml
+test = [
+    "pytest>=8.0.0",
+    "pytest-bdd>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-archon>=0.0.6",  # ADD THIS
+]
+```
+
+#### Subtask 2: Update CI workflow to use extras
+
+**File:** `.github/workflows/ci.yml` (line ~116)
+```yaml
+- name: Install dependencies
+  run: |
+    python -m pip install --upgrade pip
+    pip install -e ".[test]"  # CHANGE THIS
+```
+
+### Files to Modify
+
+| File | Action |
+|------|--------|
+| `pyproject.toml` | Add `pytest-archon>=0.0.6` to `[test]` extras |
+| `.github/workflows/ci.yml` | Change to `pip install -e ".[test]"` |
+
+### Resolution
+
+1. Added `pytest-archon>=0.0.6` to `[project.optional-dependencies].test` in `pyproject.toml`
+2. Updated `.github/workflows/ci.yml` line 116 to use `pip install -e ".[test]"`
+
+### Acceptance Criteria
+
+- [x] `pytest-archon` added to `[project.optional-dependencies].test`
+- [x] CI workflow uses `pip install -e ".[test]"` for all test jobs
+- [ ] All test jobs pass (Python 3.11, 3.12, 3.13, 3.14) - pending CI verification
+- [x] `test_snowflake_id_bdd.py` collection succeeds (verified locally)
+- [x] `test_dependency_rules.py` collection succeeds (verified locally)
+- [x] `test_layer_boundaries.py` collection succeeds (verified locally)
+
+### Effort Estimate
+
+S - Small (1-2 hours)
+
+---
+
+## TD-012: pip-audit Fails on Local Package ✅
+
+> **Status**: COMPLETED (2026-01-11)
+> **Priority**: MEDIUM
+> **Source**: CI-002 (GitHub Actions failures)
+
+### Description
+
+The `pip-audit --strict` command fails because it tries to audit the local `jerry (0.1.0)` package, which is not on PyPI.
+
+### Root Cause
+
+`pip-audit` audits all installed packages by default, including editable installs. Since `jerry` is a local package (not published to PyPI), audit fails.
+
+### Evidence
+
+GitHub Actions logs from run `20903651374`:
+```
+ERROR:pip_audit._cli:jerry: Dependency not found on PyPI and could not be audited: jerry (0.1.0)
+```
+
+### Impact
+
+- Security scan job fails
+- All CI runs fail
+- False positive: this is not a security vulnerability
+
+### Proposed Solution
+
+#### Option A: Skip local package (Recommended)
+
+**File:** `.github/workflows/ci.yml`
+```yaml
+- name: Run pip-audit
+  run: pip-audit --strict --skip-editable
+```
+
+#### Option B: Audit only requirements (Alternative)
+
+```yaml
+- name: Run pip-audit
+  run: pip-audit --strict -r requirements.txt
+```
+
+Option A is recommended because it still audits all production dependencies while skipping the local package.
+
+### Files to Modify
+
+| File | Action |
+|------|--------|
+| `.github/workflows/ci.yml` | Add `--skip-editable` flag to pip-audit |
+
+### Resolution
+
+Added `--skip-editable` flag to `pip-audit --strict` command in `.github/workflows/ci.yml` line 92.
+
+### Acceptance Criteria
+
+- [x] Security scan job configuration updated
+- [x] All production dependencies are still audited (--strict mode preserved)
+- [x] Local `jerry` package is skipped (--skip-editable flag)
+- [ ] No false positives in security scan - pending CI verification
+
+### Effort Estimate
+
+XS - Extra Small (<1 hour)
+
+---
+
+## Document History
+
+| Date | Author | Changes |
+|------|--------|---------|
+| 2026-01-09 | Claude | Initial creation |
+| 2026-01-10 | Claude | Added TD-001 through TD-005 |
+| 2026-01-11 | Claude | Added TD-010 (DISC-003) |
+| 2026-01-11 | Claude | Added TD-011, TD-012 (CI-002 failures) |
+| 2026-01-11 | Claude | Completed TD-011, TD-012 (CI-002 resolution) |

@@ -14,10 +14,24 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
-from typing import Any, Generic, Protocol, TypeVar, get_type_hints
+from typing import Any, Generic, Protocol, TypeVar, get_type_hints, runtime_checkable
 
 T = TypeVar("T")
 T_co = TypeVar("T_co", covariant=True)
+
+
+@runtime_checkable
+class HasToDict(Protocol):
+    """Protocol for objects with to_dict method.
+
+    Enables pyright to narrow types after isinstance() check.
+    This is necessary because hasattr() is a runtime check that
+    type checkers cannot use for narrowing.
+    """
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary representation."""
+        ...
 
 
 class SerializerError(Exception):
@@ -133,7 +147,7 @@ class JsonSerializer(Generic[T]):
         try:
             if is_dataclass(obj) and not isinstance(obj, type):
                 data = asdict(obj)
-            elif hasattr(obj, "to_dict"):
+            elif isinstance(obj, HasToDict):
                 data = obj.to_dict()
             else:
                 data = obj
@@ -172,7 +186,7 @@ class JsonSerializer(Generic[T]):
             return obj.isoformat()
         if is_dataclass(obj) and not isinstance(obj, type):
             return asdict(obj)
-        if hasattr(obj, "to_dict"):
+        if isinstance(obj, HasToDict):
             return obj.to_dict()
         if hasattr(obj, "__dict__"):
             return obj.__dict__

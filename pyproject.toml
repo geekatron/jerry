@@ -38,6 +38,7 @@ dev = [
 ]
 test = [
     "pytest>=8.0.0",
+    "pytest-archon>=0.0.6",
     "pytest-bdd>=8.0.0",
     "pytest-cov>=4.0.0",
 ]
