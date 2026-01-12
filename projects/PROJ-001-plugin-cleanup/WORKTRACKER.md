@@ -199,8 +199,8 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
 | TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 75% (9/12) | - | TD-015, TD-016 |
-| **Phase 4** | [PHASE-04-CLI-NAMESPACES](work/PHASE-04-CLI-NAMESPACES.md) | 🔄 IN PROGRESS | Research done, impl pending | TD-015 ✅ | v0.1.0 |
-| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 7 items | - | DISC-005, DISC-006, DISC-007 |
+| **Phase 4** | [PHASE-04-CLI-NAMESPACES](work/PHASE-04-CLI-NAMESPACES.md) | 🔄 IN PROGRESS | Phase 4.1-4.3 ✅, 4.4 pending | TD-015 ✅ | v0.1.0 |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 14 items | - | DISC-014 (Phase 4.3) |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
 
@@ -208,9 +208,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: 🔄 Phase 4 CLI Namespaces IN PROGRESS
+> **Status**: 🔄 Phase 4 CLI Namespaces IN PROGRESS (Phase 4.4)
 > **Active Initiative**: Phase 4 - CLI Namespace Architecture
-> **Current Focus**: Implementing CLI namespaces per bounded context (session, items, projects)
+> **Current Focus**: Implementing Items namespace (queries) - `jerry items list`, `jerry items show`
+> **Completed This Session**: Phase 4.3 Session Namespace ✅ (18 tests, 1462 total)
 > **Completed**: TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
 > **Target Version**: v0.1.0 (breaking change - no backward compatibility)
 

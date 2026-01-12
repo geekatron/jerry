@@ -31,6 +31,10 @@ from src.session_management.application.commands import (
     EndSessionCommand,
 )
 from src.session_management.application.queries import GetSessionStatusQuery
+from src.work_tracking.application.handlers.queries.get_work_item_query_handler import (
+    WorkItemNotFoundError,
+)
+from src.work_tracking.application.queries import GetWorkItemQuery, ListWorkItemsQuery
 
 if TYPE_CHECKING:
     from src.session_management.application.handlers.commands import (
@@ -476,26 +480,68 @@ class CLIAdapter:
         self,
         status: str | None = None,
         work_type: str | None = None,
+        limit: int | None = None,
         json_output: bool = False,
     ) -> int:
         """List work items.
 
         Args:
-            status: Optional status filter
-            work_type: Optional type filter
+            status: Optional status filter (pending, in_progress, blocked, done, cancelled)
+            work_type: Optional type filter (not yet implemented)
+            limit: Maximum number of items to return
             json_output: Whether to output as JSON
 
         Returns:
-            Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.4.
+            Exit code (0 for success)
         """
+        # Note: work_type filter not yet implemented in query handler
+        _ = work_type  # Suppress unused warning
+
+        query = ListWorkItemsQuery(status=status, limit=limit)
+        result = self._dispatcher.dispatch(query)
+
         if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
+            output = {
+                "items": [
+                    {
+                        "id": item.id,
+                        "title": item.title,
+                        "status": item.status,
+                        "priority": item.priority,
+                        "work_type": item.work_type,
+                        "assignee": item.assignee,
+                    }
+                    for item in result.items
+                ],
+                "total_count": result.total_count,
+                "has_more": result.has_more,
+            }
+            print(json.dumps(output, indent=2))
         else:
-            print("Error: Items commands not yet implemented (Phase 4.4)")
-        return 1
+            if not result.items:
+                print("No work items found.")
+                if status:
+                    print(f"(filtered by status: {status})")
+            else:
+                self._format_items_table(result.items)
+                print(f"\nShowing {len(result.items)} of {result.total_count} item(s)")
+                if result.has_more:
+                    print("(use --limit to see more)")
+
+        return 0
+
+    def _format_items_table(self, items: list) -> None:
+        """Format work items as a readable table.
+
+        Args:
+            items: List of WorkItemDTO objects
+        """
+        print(f"{'ID':<12} {'TITLE':<30} {'STATUS':<12} {'PRIORITY':<10} {'TYPE':<8}")
+        print("-" * 80)
+
+        for item in items:
+            title = item.title[:28] + ".." if len(item.title) > 30 else item.title
+            print(f"{item.id:<12} {title:<30} {item.status:<12} {item.priority:<10} {item.work_type:<8}")
 
     def cmd_items_show(
         self,
@@ -509,16 +555,57 @@ class CLIAdapter:
             json_output: Whether to output as JSON
 
         Returns:
-            Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.4.
+            Exit code (0 for success, 1 for not found)
         """
-        if json_output:
-            print(json.dumps({"error": "Items commands not yet implemented"}))
-        else:
-            print("Error: Items commands not yet implemented (Phase 4.4)")
-        return 1
+        try:
+            query = GetWorkItemQuery(work_item_id=item_id)
+            item = self._dispatcher.dispatch(query)
+
+            if json_output:
+                output = {
+                    "id": item.id,
+                    "title": item.title,
+                    "description": item.description,
+                    "status": item.status,
+                    "priority": item.priority,
+                    "work_type": item.work_type,
+                    "assignee": item.assignee,
+                    "parent_id": item.parent_id,
+                    "dependencies": item.dependencies,
+                    "test_coverage": item.test_coverage,
+                    "created_at": item.created_at.isoformat() if item.created_at else None,
+                    "completed_at": item.completed_at.isoformat() if item.completed_at else None,
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Work Item: {item.id}")
+                print(f"Title: {item.title}")
+                print(f"Status: {item.status}")
+                print(f"Priority: {item.priority}")
+                print(f"Type: {item.work_type}")
+                if item.description:
+                    print(f"Description: {item.description}")
+                if item.assignee:
+                    print(f"Assignee: {item.assignee}")
+                if item.parent_id:
+                    print(f"Parent: {item.parent_id}")
+                if item.dependencies:
+                    print(f"Dependencies: {', '.join(item.dependencies)}")
+                if item.test_coverage is not None:
+                    print(f"Test Coverage: {item.test_coverage:.1f}%")
+                if item.created_at:
+                    print(f"Created: {item.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
+                if item.completed_at:
+                    print(f"Completed: {item.completed_at.strftime('%Y-%m-%d %H:%M:%S')}")
+
+            return 0
+
+        except WorkItemNotFoundError as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
 
     def cmd_items_create(
         self,

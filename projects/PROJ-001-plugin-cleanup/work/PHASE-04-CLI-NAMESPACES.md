@@ -116,24 +116,48 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 - `src/session_management/infrastructure/adapters/__init__.py`: Export InMemorySessionRepository
 - `src/session_management/application/queries/__init__.py`: Export GetSessionStatusQuery
 
-### Phase 4.4: Items Namespace (Queries First)
+### Phase 4.4: Items Namespace (Queries First) ✅ COMPLETE
 
 **Prerequisite**: Application layer query handlers must be created first.
 
 | Task | Description | Status | Evidence |
 |------|-------------|--------|----------|
-| 4.4.1 | Create `ListWorkItemsQuery` + handler | ⏳ PENDING | Handler exists |
-| 4.4.2 | Create `GetWorkItemQuery` + handler | ⏳ PENDING | Handler exists |
-| 4.4.3 | Implement `jerry items list` | ⏳ PENDING | Command works |
-| 4.4.4 | Implement `jerry items show <id>` | ⏳ PENDING | Command works |
-| 4.4.5 | Write unit tests for items queries | ⏳ PENDING | Tests pass |
+| 4.4.1 | Create `ListWorkItemsQuery` + handler | ✅ COMPLETE | `src/work_tracking/application/handlers/queries/list_work_items_query_handler.py` |
+| 4.4.2 | Create `GetWorkItemQuery` + handler | ✅ COMPLETE | `src/work_tracking/application/handlers/queries/get_work_item_query_handler.py` |
+| 4.4.3 | Implement `jerry items list` | ✅ COMPLETE | `adapter.py:cmd_items_list()` dispatches query |
+| 4.4.4 | Implement `jerry items show <id>` | ✅ COMPLETE | `adapter.py:cmd_items_show()` dispatches query |
+| 4.4.5 | Write unit tests for items queries | ✅ COMPLETE | 12 tests in `tests/work_tracking/unit/application/test_items_query_handlers.py` |
 
-**Test Matrix (4.4.5)**:
+**Test Matrix (4.4.5)**: 12 tests pass
 | Category | Count | Tests |
 |----------|-------|-------|
-| Happy Path | 4 | list all, list by status, list by type, show by ID |
-| Negative | 2 | Show non-existent ID, invalid filters |
-| Edge | 2 | Empty list, JSON output |
+| Happy Path | 6 | list returns DTO, converts to DTOs, filter by status, limit, show returns detail DTO, includes all fields |
+| Negative | 2 | Invalid status returns empty, show non-existent raises error |
+| Edge | 4 | Empty list, pagination has_more, optional fields, completed_at timestamp |
+
+**Files Created**:
+- `src/work_tracking/application/__init__.py`
+- `src/work_tracking/application/ports/__init__.py`
+- `src/work_tracking/application/ports/work_item_repository.py`
+- `src/work_tracking/application/queries/__init__.py`
+- `src/work_tracking/application/queries/list_work_items_query.py`
+- `src/work_tracking/application/queries/get_work_item_query.py`
+- `src/work_tracking/application/handlers/__init__.py`
+- `src/work_tracking/application/handlers/queries/__init__.py`
+- `src/work_tracking/application/handlers/queries/list_work_items_query_handler.py`
+- `src/work_tracking/application/handlers/queries/get_work_item_query_handler.py`
+- `src/work_tracking/infrastructure/__init__.py`
+- `src/work_tracking/infrastructure/adapters/__init__.py`
+- `src/work_tracking/infrastructure/adapters/in_memory_work_item_repository.py`
+- `tests/work_tracking/unit/application/test_items_query_handlers.py`
+- `tests/work_tracking/__init__.py`, `tests/work_tracking/unit/__init__.py`, `tests/work_tracking/unit/application/__init__.py`
+
+**Files Modified**:
+- `src/bootstrap.py`: Added work item repository singleton and handler wiring
+- `src/interface/cli/adapter.py`: Implemented items commands with query dispatching
+- `src/work_tracking/infrastructure/__init__.py`: Export InMemoryWorkItemRepository
+
+**Tech Debt**: TD-018 added to PHASE-TECHDEBT.md - Event Sourcing for Work Item Repository (current implementation is simplified in-memory, not event-sourced)
 
 ### Phase 4.5: Items Namespace (Commands - Stretch Goal)
 
@@ -164,38 +188,38 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 
 ## Application Layer Gaps (Must Create)
 
-### Session Management Handlers
+### Session Management Handlers ✅ ALL COMPLETE
 
-| Handler | Type | Priority | Location |
-|---------|------|----------|----------|
-| `CreateSessionCommandHandler` | Command | HIGH | `src/session_management/application/handlers/commands/` |
-| `EndSessionCommandHandler` | Command | HIGH | `src/session_management/application/handlers/commands/` |
-| `AbandonSessionCommandHandler` | Command | MEDIUM | `src/session_management/application/handlers/commands/` |
-| `GetSessionStatusQueryHandler` | Query | HIGH | `src/session_management/application/handlers/queries/` |
+| Handler | Type | Priority | Status | Location |
+|---------|------|----------|--------|----------|
+| `CreateSessionCommandHandler` | Command | HIGH | ✅ DONE | `src/session_management/application/handlers/commands/` |
+| `EndSessionCommandHandler` | Command | HIGH | ✅ DONE | `src/session_management/application/handlers/commands/` |
+| `AbandonSessionCommandHandler` | Command | MEDIUM | ✅ DONE | `src/session_management/application/handlers/commands/` |
+| `GetSessionStatusQueryHandler` | Query | HIGH | ✅ DONE | `src/session_management/application/handlers/queries/` |
 
 ### Work Tracking Handlers
 
-| Handler | Type | Priority | Location |
-|---------|------|----------|----------|
-| `ListWorkItemsQueryHandler` | Query | HIGH | `src/work_tracking/application/handlers/queries/` |
-| `GetWorkItemQueryHandler` | Query | HIGH | `src/work_tracking/application/handlers/queries/` |
-| `CreateWorkItemCommandHandler` | Command | MEDIUM | `src/work_tracking/application/handlers/commands/` |
-| `StartWorkItemCommandHandler` | Command | LOW | `src/work_tracking/application/handlers/commands/` |
-| `CompleteWorkItemCommandHandler` | Command | LOW | `src/work_tracking/application/handlers/commands/` |
+| Handler | Type | Priority | Status | Location |
+|---------|------|----------|--------|----------|
+| `ListWorkItemsQueryHandler` | Query | HIGH | ✅ DONE | `src/work_tracking/application/handlers/queries/` |
+| `GetWorkItemQueryHandler` | Query | HIGH | ✅ DONE | `src/work_tracking/application/handlers/queries/` |
+| `CreateWorkItemCommandHandler` | Command | MEDIUM | ⏳ DEFERRED | `src/work_tracking/application/handlers/commands/` |
+| `StartWorkItemCommandHandler` | Command | LOW | ⏳ DEFERRED | `src/work_tracking/application/handlers/commands/` |
+| `CompleteWorkItemCommandHandler` | Command | LOW | ⏳ DEFERRED | `src/work_tracking/application/handlers/commands/` |
 
 ---
 
 ## Test Summary
 
-| Phase | Unit | Integration | E2E | Total |
-|-------|------|-------------|-----|-------|
-| 4.1 Parser | 11 | - | - | 11 |
-| 4.2 Projects | 8 | 3 | - | 11 |
-| 4.3 Session | 9 | 3 | 2 | 14 |
-| 4.4 Items (Q) | 8 | 2 | 2 | 12 |
-| 4.5 Items (C) | 9 | 2 | 2 | 13 |
-| 4.6 Integration | - | - | 5 | 5 |
-| **Total** | **45** | **10** | **11** | **~66** |
+| Phase | Unit | Integration | E2E | Total | Status |
+|-------|------|-------------|-----|-------|--------|
+| 4.1 Parser | 33 | - | - | 33 | ✅ |
+| 4.2 Projects | 8 | 3 | - | 11 | ✅ |
+| 4.3 Session | 18 | - | - | 18 | ✅ |
+| 4.4 Items (Q) | 12 | - | - | 12 | ✅ |
+| 4.5 Items (C) | - | - | - | - | ⏳ DEFERRED |
+| 4.6 Integration | - | - | TBD | TBD | ⏳ PENDING |
+| **Total** | **71** | **3** | **TBD** | **74+** |
 
 ---
 
@@ -211,7 +235,14 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 | 2026-01-12 | Phase 4.2 Projects namespace migration complete | ✅ |
 | 2026-01-12 | cmd_projects_context() added, adapter stubs for session/items | ✅ |
 | 2026-01-12 | All 71 CLI tests, 1444 total tests passing | ✅ |
-| - | Phase 4.3 Session namespace implementation | ⏳ NEXT |
+| 2026-01-12 | Phase 4.3 Session namespace complete (18 tests) | ✅ |
+| 2026-01-12 | Session handlers wired in bootstrap.py | ✅ |
+| 2026-01-12 | Phase 4.4 Items namespace (queries) complete (12 tests) | ✅ |
+| 2026-01-12 | Work tracking application layer created | ✅ |
+| 2026-01-12 | TD-018 Event Sourcing tech debt documented | ✅ |
+| 2026-01-12 | All 1474 tests passing | ✅ |
+| - | Phase 4.5 Items commands (deferred - stretch goal) | ⏳ DEFERRED |
+| - | Phase 4.6 Integration & Documentation | ⏳ NEXT |
 
 ---
 

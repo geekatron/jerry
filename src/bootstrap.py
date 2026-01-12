@@ -47,10 +47,24 @@ from src.session_management.infrastructure import (
     InMemorySessionRepository,
     OsEnvironmentAdapter,
 )
+from src.work_tracking.application.handlers.queries import (
+    GetWorkItemQueryHandler,
+    ListWorkItemsQueryHandler,
+)
+from src.work_tracking.application.queries import (
+    GetWorkItemQuery,
+    ListWorkItemsQuery,
+)
+from src.work_tracking.infrastructure.adapters import InMemoryWorkItemRepository
 
 # Module-level session repository singleton for session state persistence
 # In production, this would be replaced with a file-based or database repository
 _session_repository: InMemorySessionRepository | None = None
+
+# Module-level work item repository singleton
+# NOTE: TD-XXX - This is a simplified in-memory repository.
+# Full event sourcing implementation is deferred to post-Phase 4.
+_work_item_repository: InMemoryWorkItemRepository | None = None
 
 
 def get_session_repository() -> InMemorySessionRepository:
@@ -67,6 +81,22 @@ def get_session_repository() -> InMemorySessionRepository:
     if _session_repository is None:
         _session_repository = InMemorySessionRepository()
     return _session_repository
+
+
+def get_work_item_repository() -> InMemoryWorkItemRepository:
+    """Get the shared work item repository instance.
+
+    Returns:
+        InMemoryWorkItemRepository singleton instance
+
+    Note:
+        This is a simplified in-memory repository. Full event sourcing
+        implementation is deferred to post-Phase 4 (see TD-XXX).
+    """
+    global _work_item_repository
+    if _work_item_repository is None:
+        _work_item_repository = InMemoryWorkItemRepository()
+    return _work_item_repository
 
 
 def get_projects_directory() -> str:
@@ -117,12 +147,23 @@ def create_query_dispatcher() -> QueryDispatcher:
         repository=session_repository,
     )
 
+    # Create work-item-related handlers
+    work_item_repository = get_work_item_repository()
+    list_work_items_handler = ListWorkItemsQueryHandler(
+        repository=work_item_repository,
+    )
+    get_work_item_handler = GetWorkItemQueryHandler(
+        repository=work_item_repository,
+    )
+
     # Create and configure dispatcher
     dispatcher = QueryDispatcher()
     dispatcher.register(RetrieveProjectContextQuery, retrieve_project_context_handler.handle)
     dispatcher.register(ScanProjectsQuery, scan_projects_handler.handle)
     dispatcher.register(ValidateProjectQuery, validate_project_handler.handle)
     dispatcher.register(GetSessionStatusQuery, get_session_status_handler.handle)
+    dispatcher.register(ListWorkItemsQuery, list_work_items_handler.handle)
+    dispatcher.register(GetWorkItemQuery, get_work_item_handler.handle)
 
     return dispatcher
 

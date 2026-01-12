@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: ✅ COMPLETE (12/12 done - 100%)
+> **Status**: 🔄 IN PROGRESS (12/13 done - 92%)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -33,6 +33,7 @@
 | TD-015 | Remediate CLI Architecture Violation | **CRITICAL** | ✅ DONE | BUG-006, Design Canon |
 | TD-016 | Create Comprehensive Coding Standards & Pattern Catalog | **HIGH** | ✅ DONE | User Requirement, Design Canon |
 | TD-017 | Comprehensive Design Canon for Claude Code Rules/Patterns | **HIGH** | ✅ DONE | TD-016 gaps, User Requirement |
+| TD-018 | Event Sourcing for Work Item Repository | HIGH | ⏳ TODO | Phase 4.4, Design Canon |
 
 ---
 
@@ -1341,3 +1342,143 @@ All files in `.claude/patterns/` and `.claude/rules/` directories.
 | 2026-01-12 | Claude | Completed research phase (6 research documents) |
 | 2026-01-12 | Claude | Completed implementation: 40+ pattern files, 5 rules files |
 | 2026-01-12 | Claude | **TD-017 COMPLETE** - All acceptance criteria met |
+| 2026-01-12 | Claude | Added TD-018: Event Sourcing for Work Item Repository |
+
+---
+
+## TD-018: Event Sourcing for Work Item Repository
+
+> **Status**: ⏳ TODO
+> **Priority**: HIGH
+> **Source**: Phase 4.4 (Items Namespace Implementation), Design Canon
+> **Depends On**: Phase 4.4/4.5 completion
+> **Related**: PAT-REPO-002 (Event-Sourced Repository), PAT-EVT-001 (Domain Event)
+
+### Description
+
+The current `InMemoryWorkItemRepository` is a simplified in-memory implementation that stores WorkItems directly as objects. The Jerry Design Canon specifies that WorkItem should be event-sourced, with state rebuilt from event history.
+
+### Current Implementation (Phase 4.4)
+
+```python
+# src/work_tracking/infrastructure/adapters/in_memory_work_item_repository.py
+class InMemoryWorkItemRepository:
+    """Simple in-memory storage - NOT event-sourced."""
+
+    def __init__(self) -> None:
+        self._items: dict[str, WorkItem] = {}  # Stores aggregates directly
+
+    def save(self, work_item: WorkItem) -> None:
+        self._items[work_item.id] = work_item  # Overwrites entire aggregate
+```
+
+### Required Implementation (Design Canon)
+
+Per Jerry Design Canon PAT-REPO-002:
+
+```python
+# Event-sourced repository pattern
+class EventSourcedWorkItemRepository:
+    """Stores and retrieves WorkItems via event streams."""
+
+    def __init__(self, event_store: IEventStore) -> None:
+        self._event_store = event_store
+
+    def get(self, id: str) -> WorkItem | None:
+        stream_id = f"work_item-{id}"
+        events = self._event_store.read(stream_id)
+        if not events:
+            return None
+        return WorkItem.load_from_history(events)
+
+    def save(self, work_item: WorkItem) -> None:
+        stream_id = f"work_item-{work_item.id}"
+        events = work_item.collect_events()
+        self._event_store.append(stream_id, events, work_item.version)
+```
+
+### Root Cause
+
+Phase 4.4 focused on CLI namespace implementation and needed a working repository quickly. Full event sourcing was deferred to avoid scope creep during CLI development.
+
+### Impact
+
+| Impact | Description |
+|--------|-------------|
+| **No Event History** | Work item changes are not tracked as events |
+| **No Audit Trail** | Cannot replay history to see past states |
+| **Snapshot Optimization Not Possible** | Cannot implement PAT-REPO-003 (Snapshot Store) |
+| **Design Canon Violation** | Current implementation deviates from documented patterns |
+
+### Proposed Solution
+
+#### Phase 1: Create Event-Sourced Repository
+
+| Task | Description |
+|------|-------------|
+| 1.1 | Create `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` |
+| 1.2 | Implement `IWorkItemRepository` using `IEventStore` |
+| 1.3 | Use existing `InMemoryEventStore` for storage |
+| 1.4 | Implement version checking for optimistic concurrency |
+
+#### Phase 2: Add Snapshot Support (Optional)
+
+| Task | Description |
+|------|-------------|
+| 2.1 | Create `ISnapshotStore` port |
+| 2.2 | Implement `SnapshottingWorkItemRepository` decorator |
+| 2.3 | Configure snapshot frequency (default: every 10 events) |
+
+#### Phase 3: Update Composition Root
+
+| Task | Description |
+|------|-------------|
+| 3.1 | Update `bootstrap.py` to use `EventSourcedWorkItemRepository` |
+| 3.2 | Configure event store injection |
+| 3.3 | Optionally enable snapshotting |
+
+#### Phase 4: Testing
+
+| Task | Description |
+|------|-------------|
+| 4.1 | Unit tests for event stream storage/retrieval |
+| 4.2 | Integration tests for WorkItem reconstitution |
+| 4.3 | Property-based tests for event replay consistency |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` | **CREATE** | Event-sourced repository |
+| `src/work_tracking/infrastructure/adapters/snapshotting_work_item_repository.py` | **CREATE** (Optional) | Snapshot decorator |
+| `src/bootstrap.py` | **MODIFY** | Wire event-sourced repository |
+| `tests/work_tracking/unit/infrastructure/test_event_sourced_repository.py` | **CREATE** | Repository tests |
+
+### Acceptance Criteria
+
+| ID | Criterion | Evidence |
+|----|-----------|----------|
+| AC-01 | EventSourcedWorkItemRepository implements IWorkItemRepository | Code inspection |
+| AC-02 | WorkItems saved as event streams | Event store inspection |
+| AC-03 | WorkItems loaded via history replay | Unit tests pass |
+| AC-04 | Optimistic concurrency enforced | ConcurrencyError tests pass |
+| AC-05 | InMemoryWorkItemRepository remains for testing | Backward compatibility |
+| AC-06 | All existing tests pass | 1474+ tests pass |
+
+### References
+
+| Document | Path | Relevance |
+|----------|------|-----------|
+| Event-Sourced Repository Pattern | `.claude/patterns/repository/event-sourced-repository.md` | Implementation guide |
+| Snapshot Store Pattern | `.claude/patterns/repository/snapshot-store.md` | Optimization |
+| Domain Event Pattern | `.claude/patterns/event/domain-event.md` | Event structure |
+| InMemoryEventStore | `src/work_tracking/infrastructure/persistence/in_memory_event_store.py` | Existing event store |
+| WorkItem Aggregate | `src/work_tracking/domain/aggregates/work_item.py` | Has `load_from_history()` |
+
+### Effort Estimate
+
+M - Medium (4-8 hours)
+- Phase 1 (Event-sourced repo): 2-3 hours
+- Phase 2 (Snapshots): 2 hours (optional)
+- Phase 3 (Wiring): 1 hour
+- Phase 4 (Testing): 2-3 hours

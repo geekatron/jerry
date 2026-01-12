@@ -33,6 +33,7 @@
 | DISC-011 | Architecture Pattern Research Initiative | COMPLETED | BUG-006, TD-015 |
 | DISC-012 | TOON Format Required as Primary Output | ACTIONED | ADR-CLI-001, TD-015 |
 | DISC-013 | CLI Namespaces per Bounded Context | ACTIONED | ADR-CLI-001, TD-015 |
+| DISC-014 | Domain Events Use aggregate_id Not Entity-Specific ID | ACTIONED | Phase 4.3.8 |
 
 ---
 
@@ -524,6 +525,37 @@ jerry projects <command>     # Project Management BC
 
 ---
 
+### DISC-014: Domain Events Use aggregate_id Not Entity-Specific ID
+
+**Date**: 2026-01-12
+**Context**: Phase 4.3.8 CLI adapter integration, extracting session ID from events
+**Finding**: Domain events inherit from `DomainEvent` base class and store entity identity in `aggregate_id`, not entity-specific fields like `session_id`.
+
+**Evidence from session_events.py**:
+```python
+@dataclass(frozen=True)
+class SessionCreated(DomainEvent):
+    # Session ID is in aggregate_id, NOT a separate session_id field
+    description: str = ""
+    project_id: str | None = None
+```
+
+**Impact**:
+- CLI adapter initially tried `events[0].session_id` - AttributeError
+- Correct pattern: `events[0].aggregate_id`
+- This is consistent with event sourcing pattern (aggregate_id identifies the stream)
+- All CLI command outputs should use `aggregate_id` for entity identification
+
+**Pattern Documentation**:
+- `DomainEvent.aggregate_id` → The entity's identity (SessionId, WorkItemId, etc.)
+- `DomainEvent.aggregate_type` → The entity type ("Session", "WorkItem", etc.)
+- `DomainEvent.version` → Event version in the aggregate's stream
+
+**Action**: Fixed in adapter.py, documented pattern for future CLI integrations
+**Status**: ACTIONED
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -547,3 +579,4 @@ jerry projects <command>     # Project Management BC
 | 2026-01-12 | Claude | COMPLETED DISC-011: Research findings documented, TD-015 created |
 | 2026-01-12 | Claude | Added DISC-012: TOON Format Required as Primary Output |
 | 2026-01-12 | Claude | Added DISC-013: CLI Namespaces per Bounded Context |
+| 2026-01-12 | Claude | Added DISC-014: Domain Events Use aggregate_id Not Entity-Specific ID (Phase 4.3) |
