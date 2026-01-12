@@ -13,12 +13,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from src.shared_kernel.domain_event import DomainEvent
-
 from src.session_management.application.commands.abandon_session_command import (
     AbandonSessionCommand,
 )
 from src.session_management.application.ports.session_repository import ISessionRepository
+from src.shared_kernel.domain_event import DomainEvent
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
