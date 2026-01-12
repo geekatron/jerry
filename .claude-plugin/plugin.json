@@ -25,11 +25,6 @@
     "skills/architecture/SKILL.md",
     "skills/problem-solving/SKILL.md"
   ],
-  "agents": [
-    ".claude/agents/orchestrator.md",
-    ".claude/agents/qa-engineer.md",
-    ".claude/agents/security-auditor.md"
-  ],
   "commands": [
     "commands/architect.md",
     "commands/release.md"

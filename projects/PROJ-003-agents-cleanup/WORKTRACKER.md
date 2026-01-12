@@ -13,8 +13,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Work Items | 24 |
-| Completed | 24 (ALL PHASES COMPLETE) |
+| Total Work Items | 30 |
+| Completed | 30 (ALL PHASES COMPLETE) |
 | In Progress | 0 |
 | Pending | 0 |
 | Blocked | 0 |
@@ -31,6 +31,7 @@
 | 3 | Agent Standardization | COMPLETED | 4/4 | - |
 | 4 | Hook System | COMPLETED | 4/4 | - |
 | 5 | Registry Update | COMPLETED | 1/1 | - |
+| 6 | Framework Agent Removal | COMPLETED | 6/6 | - |
 
 ---
 
@@ -100,6 +101,19 @@
 
 ---
 
+## Phase 6: Framework Agent Removal (COMPLETED)
+
+| ID | Title | Status | File |
+|----|-------|--------|------|
+| wi-06-001 | Remove agents from .claude/settings.json | DONE | [wi-06-001.md](work/wi-06-001.md) |
+| wi-06-002 | Remove agents from plugin.json | DONE | [wi-06-002.md](work/wi-06-002.md) |
+| wi-06-003 | Update AGENTS.md to remove framework agents | DONE | [wi-06-003.md](work/wi-06-003.md) |
+| wi-06-004 | Update CLAUDE.md agents section | DONE | [wi-06-004.md](work/wi-06-004.md) |
+| wi-06-005 | Delete .claude/agents/ directory | DONE | [wi-06-005.md](work/wi-06-005.md) |
+| wi-06-006 | Validate and commit Phase 6 | DONE | [wi-06-006.md](work/wi-06-006.md) |
+
+---
+
 ## Bugs
 
 | ID | Title | Severity | Status | Related WI |
@@ -115,6 +129,7 @@
 | DISC-001 | Hybrid agent org is industry-aligned | Positive - no reorg needed | wi-00-003 |
 | DISC-002 | ps-* agents already compliant | Positive - only framework agents need update | wi-00-005 |
 | DISC-003 | Migration completed with all 23 gaps addressed | Positive - Jerry now Claude Code compliant | wi-05-001 |
+| DISC-004 | Framework agents (.claude/agents/) were half-baked | Corrective - removed in favor of skill agents | wi-06-001 |
 
 ---
 

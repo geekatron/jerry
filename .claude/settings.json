@@ -12,29 +12,6 @@
     ],
     "always_apply": true
   },
-  "agents": {
-    "default": "orchestrator",
-    "available": [
-      {
-        "name": "orchestrator",
-        "file": ".claude/agents/orchestrator.md",
-        "description": "Task decomposition and coordination",
-        "recommended_model": "opus-4-5"
-      },
-      {
-        "name": "qa-engineer",
-        "file": ".claude/agents/qa-engineer.md",
-        "description": "Test design and quality assurance",
-        "recommended_model": "sonnet"
-      },
-      {
-        "name": "security-auditor",
-        "file": ".claude/agents/security-auditor.md",
-        "description": "Security review and vulnerability assessment",
-        "recommended_model": "sonnet"
-      }
-    ]
-  },
   "commands": {
     "available": [
       {

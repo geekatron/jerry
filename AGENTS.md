@@ -7,8 +7,8 @@
 
 ## Agent Philosophy
 
-Jerry uses a **conductor pattern** where the Orchestrator agent coordinates
-specialized sub-agents for specific tasks. This provides:
+Jerry uses a **skill-based agent pattern** where specialized agents are scoped
+to specific skills. This provides:
 
 1. **Context Isolation** - Each agent has focused context
 2. **Expertise Depth** - Specialists know their domain deeply
@@ -21,27 +21,12 @@ specialized sub-agents for specific tasks. This provides:
 
 | Category | Count | Scope |
 |----------|-------|-------|
-| Framework Agents | 3 | Global (available in all contexts) |
-| Skill-Specific Agents | 8 | Local (problem-solving skill only) |
-| **Total** | **11** | |
+| Problem-Solving Agents | 8 | `/problem-solving` skill |
+| **Total** | **8** | |
 
 ---
 
-## Framework Agents (Global)
-
-These agents are available across all Jerry contexts.
-
-| Agent | File | Role |
-|-------|------|------|
-| Orchestrator | `.claude/agents/orchestrator.md` | Task decomposition, delegation, synthesis |
-| QA Engineer | `.claude/agents/qa-engineer.md` | Test design and quality assurance |
-| Security Auditor | `.claude/agents/security-auditor.md` | Security review and vulnerability assessment |
-
----
-
-## Skill-Specific Agents
-
-### Problem-Solving Skill Agents
+## Problem-Solving Skill Agents
 
 These agents are scoped to the `problem-solving` skill and invoked via `/problem-solving`.
 
@@ -58,62 +43,7 @@ These agents are scoped to the `problem-solving` skill and invoked via `/problem
 
 ---
 
-## Framework Agent Details
-
-### Orchestrator (Conductor)
-
-**File**: `.claude/agents/orchestrator.md`
-**Model**: Opus 4.5 (recommended)
-**Role**: Task decomposition, delegation, and synthesis
-
-**Responsibilities**:
-- Analyze incoming requests
-- Decompose into sub-tasks
-- Delegate to appropriate specialists
-- Synthesize results
-- Maintain coherent narrative
-
-**When to Use**: Complex multi-step tasks requiring coordination
-
----
-
-### QA Engineer
-
-**File**: `.claude/agents/qa-engineer.md`
-**Model**: Sonnet (recommended)
-**Role**: Test design, execution, and quality assurance
-
-**Responsibilities**:
-- Design test cases (unit, integration, e2e)
-- Review code for testability
-- Identify edge cases and failure modes
-- Validate acceptance criteria
-- Report defects with reproduction steps
-
-**When to Use**: Before merging code, after significant changes
-
----
-
-### Security Auditor
-
-**File**: `.claude/agents/security-auditor.md`
-**Model**: Sonnet (recommended)
-**Role**: Security review and vulnerability assessment
-
-**Responsibilities**:
-- Review code for OWASP Top 10 vulnerabilities
-- Assess authentication/authorization flows
-- Identify injection risks (SQL, command, XSS)
-- Review secrets management
-- Recommend security improvements
-
-**When to Use**: Before release, when handling sensitive data
-
----
-
-## Skill-Specific Agent Details
-
-### Problem-Solving Agents Overview
+## Problem-Solving Agents Overview
 
 The problem-solving skill provides 8 specialized agents for structured problem solving:
 
@@ -139,23 +69,23 @@ The problem-solving skill provides 8 specialized agents for structured problem s
 ### Triggering Handoffs
 
 Handoffs are triggered by:
-1. **Hook-based**: `subagent_stop.py` detects completion
-2. **Explicit**: Orchestrator delegates via Task tool
-3. **Rule-based**: Certain file types trigger specific agents
+1. **Hook-based**: `scripts/subagent_stop.py` detects completion
+2. **Explicit**: Parent agent delegates via Task tool
+3. **Skill-based**: Skill orchestrator routes to appropriate specialist
 
 ### Handoff Data
 
 When handing off between agents, include:
 ```json
 {
-  "from_agent": "orchestrator",
-  "to_agent": "qa-engineer",
+  "from_agent": "ps-researcher",
+  "to_agent": "ps-analyst",
   "context": {
     "task_id": "WORK-123",
-    "files_changed": ["src/domain/aggregates/work_item.py"],
-    "summary": "Implemented WorkItem.complete() method"
+    "artifacts": ["research/proj-001-e-001-research.md"],
+    "summary": "Completed initial research on architecture patterns"
   },
-  "request": "Design unit tests for the complete() method"
+  "request": "Analyze findings and identify gaps"
 }
 ```
 
@@ -163,15 +93,29 @@ When handing off between agents, include:
 
 ## Adding New Agents
 
-1. Create agent file in `.claude/agents/{name}.md`
+New agents should be added within their respective skill directory:
+
+1. Create agent file in `skills/{skill-name}/agents/{agent-name}.md`
 2. Define persona, responsibilities, and constraints
-3. Register in this file (AGENTS.md)
-4. Update orchestrator to know about the new agent
+3. Register in this file (AGENTS.md) under the skill section
+4. Update skill orchestrator to know about the new agent
 5. Add relevant hooks if needed
 
 ### Agent File Template
 
 ```markdown
+---
+name: {agent-name}
+description: |
+  Use this agent when {trigger conditions}.
+  <example>User: "{example prompt}"</example>
+model: sonnet
+tools:
+  - Read
+  - Grep
+  - Glob
+---
+
 # {Agent Name}
 
 ## Persona
@@ -198,11 +142,10 @@ When handing off between agents, include:
 
 ---
 
-## Future Agents (Planned)
+## Future Skills with Agents (Planned)
 
-| Agent | Role | Status |
-|-------|------|--------|
-| Documentation Writer | API docs, READMEs | Planned |
-| Performance Analyst | Profiling, optimization | Planned |
-| DevOps Engineer | CI/CD, deployment | Planned |
-| Domain Expert | Business rule validation | Planned |
+| Skill | Agents | Status |
+|-------|--------|--------|
+| documentation | doc-writer, api-documenter | Planned |
+| performance | profiler, optimizer | Planned |
+| devops | deployer, monitor | Planned |
