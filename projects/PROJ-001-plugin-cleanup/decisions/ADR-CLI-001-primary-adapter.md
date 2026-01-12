@@ -1,9 +1,23 @@
 # ADR-CLI-001: Jerry CLI Primary Adapter Architecture
 
-> **Status:** PROPOSED
+> **Status:** SUPERSEDED (D2 REJECTED - See Amendment 2026-01-12)
 > **Date:** 2026-01-12
 > **Decision Makers:** Claude, User
-> **Related:** TD-014, DISC-006, DISC-007
+> **Related:** TD-014, DISC-006, DISC-007, BUG-006
+
+---
+
+## Amendment (2026-01-12)
+
+**D2 (Factory Composition Root) is REJECTED.** The original decision used "Poor Man's DI" pattern where the adapter wires dependencies directly. This is NOT acceptable per user requirements.
+
+**Required Changes:**
+- Adapters MUST NOT instantiate infrastructure adapters
+- Adapters MUST receive pre-wired dispatcher via injection
+- Composition root MUST be external to adapters (e.g., `src/bootstrap.py`)
+- See `docs/design/PYTHON-ARCHITECTURE-STANDARDS.md` for correct patterns
+
+**Related:** BUG-006 (CLI Adapter Bypasses Application Layer) confirms this violation.
 
 ---
 
@@ -51,21 +65,57 @@ This blocks package installation and prevents Jerry from being used as intended.
 
 ### D2: Factory Composition Root
 
-**Use factory pattern for dependency wiring:**
+> **⚠️ REJECTED (2026-01-12)** - This decision is superseded. The pattern below is NOT acceptable.
+
+~~**Use factory pattern for dependency wiring:**~~
 
 ```python
+# WRONG - "Poor Man's DI" pattern (REJECTED)
 # src/interface/cli/main.py
 
 def create_project_context_query(base_path: str) -> GetProjectContextQuery:
     """Factory for GetProjectContextQuery with dependencies."""
     return GetProjectContextQuery(
-        repository=FilesystemProjectAdapter(),
-        environment=OsEnvironmentAdapter(),
+        repository=FilesystemProjectAdapter(),  # VIOLATION: Adapter wires dependencies
+        environment=OsEnvironmentAdapter(),      # VIOLATION: Direct instantiation
         base_path=base_path,
     )
 ```
 
-**Rationale:** Follows the pattern established in `session_start.py`. Centralizes dependency creation and enables testing via dependency injection.
+~~**Rationale:** Follows the pattern established in `session_start.py`. Centralizes dependency creation and enables testing via dependency injection.~~
+
+### D2-AMENDED: Dispatcher Pattern with External Composition Root
+
+**Use Dispatcher pattern with dependency injection:**
+
+```python
+# CORRECT - External composition root (src/bootstrap.py)
+def create_application() -> CLIAdapter:
+    """Wire all dependencies at application startup."""
+    repository = FilesystemProjectAdapter()
+    environment = OsEnvironmentAdapter()
+
+    handlers = {
+        GetProjectContextQuery: GetProjectContextHandler(repository, environment),
+        ScanProjectsQuery: ScanProjectsHandler(repository),
+    }
+
+    dispatcher = QueryDispatcher(handlers)
+    return CLIAdapter(dispatcher)
+
+
+# CORRECT - Adapter receives dispatcher (src/interface/cli/main.py)
+class CLIAdapter:
+    def __init__(self, dispatcher: IQueryDispatcher) -> None:
+        self._dispatcher = dispatcher
+
+    def cmd_init(self, args: argparse.Namespace) -> int:
+        query = GetProjectContextQuery(base_path=get_projects_directory())
+        context = self._dispatcher.dispatch(query)  # Via dispatcher, not direct
+        return format_output(args, context)
+```
+
+**Rationale:** Clean Architecture requires adapters to be thin and receive dependencies via injection. The composition root is external to all adapters.
 
 ### D3: Zero-Dependency Core
 
@@ -95,14 +145,57 @@ jerry
 
 ### D5: Output Format
 
-**Support two output modes:**
+> **⚠️ AMENDED (2026-01-12)** - Added TOON as primary format for LLM consumption.
 
-| Mode | Flag | Purpose |
-|------|------|---------|
-| Human | (default) | Readable terminal output |
-| Machine | `--json` | JSON for scripting/automation |
+**Support three output modes:**
 
-**Rationale:** Human mode for interactive use; JSON mode for integration with other tools and scripts.
+| Mode | Flag | Purpose | Priority |
+|------|------|---------|----------|
+| TOON | `--toon` (default) | Token-efficient for LLM consumption | PRIMARY |
+| JSON | `--json` | Machine-readable structured data | SECONDARY |
+| Human | `--human` | Readable terminal output | TERTIARY |
+
+**Rationale:** Token efficiency is paramount. TOON reduces token usage by 30-60% for tabular data. See `projects/archive/research/TOON_FORMAT_ANALYSIS.md` for benchmarks.
+
+**Implementation:**
+```bash
+jerry projects list              # Default: TOON output
+jerry --toon projects list       # Explicit TOON
+jerry --json projects list       # JSON output
+jerry --human projects list      # Human-readable tables
+```
+
+### D6: CLI Namespaces per Bounded Context (NEW)
+
+**Each bounded context gets its own CLI subcommand namespace:**
+
+```bash
+jerry session <command>          # Session Management bounded context
+jerry worktracker <command>      # Work Tracker bounded context
+jerry projects <command>         # Project Management bounded context
+```
+
+**Rationale:** This mirrors:
+- **Bounded Contexts**: Each namespace maps to a distinct domain
+- **Authorization Scopes**: Security boundaries align with namespaces
+- **Threat Models**: Attack surface isolation per bounded context
+- **Use Case Ports**: Each namespace routes to a distinct application service
+
+**Architecture:**
+```
+CLI Command → Use Case (Application Service) → Domain
+     │
+     ├── jerry session → ISessionManagementPort
+     ├── jerry worktracker → IWorkTrackerPort
+     └── jerry projects → IProjectManagementPort
+```
+
+**Rules:**
+1. CLI is a Primary Adapter - translates user intent to use case invocation
+2. CLI NEVER contains business logic
+3. CLI NEVER knows infrastructure details
+4. Routing is pure orchestration, not logic
+5. CLI structure reflects actor intent, not domain structure
 
 ---
 

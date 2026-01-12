@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: 🔄 IN PROGRESS (7/10 done - 70%)
+> **Status**: 🔄 IN PROGRESS (9/11 done - 82%)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -28,8 +28,9 @@
 | TD-010 | Implement link-artifact CLI command | HIGH | ⏳ TODO | DISC-003 |
 | TD-011 | CI missing test dependencies | **CRITICAL** | ✅ DONE | CI-002 |
 | TD-012 | pip-audit fails on local package | MEDIUM | ✅ DONE | CI-002 |
-| TD-013 | Implement GitHub Releases pipeline | HIGH | ⏳ TODO | DISC-005, DISC-007 |
-| TD-014 | Implement Jerry CLI (Primary Adapter) | **CRITICAL** | ⏳ TODO | DISC-006 |
+| TD-013 | Implement GitHub Releases pipeline | HIGH | ✅ DONE | DISC-005, DISC-007 |
+| TD-014 | Implement Jerry CLI (Primary Adapter) | **CRITICAL** | ✅ DONE | DISC-006 |
+| TD-015 | Remediate CLI Architecture Violation | **CRITICAL** | ⏳ TODO | BUG-006 |
 
 ---
 
@@ -894,3 +895,187 @@ L - Large (8-16 hours)
 | 2026-01-11 | Claude | Added TD-013: Implement GitHub Releases Pipeline (DISC-005) |
 | 2026-01-11 | Claude | REVISED TD-013: Changed from PyInstaller to Claude Code Plugin release (DISC-007) |
 | 2026-01-11 | Claude | Added TD-014: Implement Jerry CLI Primary Adapter (DISC-006) |
+| 2026-01-12 | Claude | Completed TD-013, TD-014 (v0.0.1 released) |
+| 2026-01-12 | Claude | Added TD-015: Remediate CLI Architecture Violation (BUG-006) |
+
+---
+
+## TD-015: Remediate CLI Architecture Violation
+
+> **Status**: ⏳ TODO
+> **Priority**: **CRITICAL**
+> **Source**: BUG-006 (CLI Adapter Bypasses Application Layer)
+> **Blocks**: Future CLI expansion, bounded context isolation
+> **Detailed Plan**: `IMPL-TD-015-DETAILED.md` (BDD scenarios, edge cases, evidence criteria)
+> **Summary Plan**: `IMPL-TD-015-CLI-ARCHITECTURE-REMEDIATION.md`
+
+### Description
+
+The current CLI implementation (TD-014) uses "Poor Man's DI" pattern where the adapter directly instantiates infrastructure adapters and query objects. This violates Clean Architecture principles and is NOT acceptable per user requirements.
+
+**Current Violation (from `src/interface/cli/main.py`)**:
+```python
+# WRONG - Adapter wires dependencies directly (Poor Man's DI)
+def cmd_init(args: argparse.Namespace) -> int:
+    query = GetProjectContextQuery(
+        repository=FilesystemProjectAdapter(),  # VIOLATION
+        environment=OsEnvironmentAdapter(),      # VIOLATION
+        base_path=get_projects_directory(),
+    )
+    result = query.execute()  # Direct execution, no dispatcher
+```
+
+### Root Cause
+
+TD-014 was implemented using the "Query Object" pattern where queries execute themselves. While this works, it:
+1. Couples adapters to infrastructure implementation details
+2. Bypasses the application layer handler pattern
+3. Prevents proper composition root isolation
+4. Violates hexagonal architecture boundaries
+
+### Required Architecture
+
+**Per `docs/design/PYTHON-ARCHITECTURE-STANDARDS.md`**:
+
+```python
+# CORRECT - External composition root (src/bootstrap.py)
+def create_application() -> CLIAdapter:
+    """Wire all dependencies at application startup."""
+    repository = FilesystemProjectAdapter()
+    environment = OsEnvironmentAdapter()
+
+    handlers = {
+        GetProjectContextQuery: GetProjectContextHandler(repository, environment),
+        ScanProjectsQuery: ScanProjectsHandler(repository),
+        ValidateProjectQuery: ValidateProjectHandler(repository),
+    }
+
+    dispatcher = QueryDispatcher(handlers)
+    return CLIAdapter(dispatcher)
+
+# CORRECT - Adapter receives dispatcher
+class CLIAdapter:
+    def __init__(self, dispatcher: IQueryDispatcher) -> None:
+        self._dispatcher = dispatcher
+
+    def cmd_init(self, args: argparse.Namespace) -> int:
+        query = GetProjectContextQuery(base_path=get_projects_directory())
+        context = self._dispatcher.dispatch(query)
+        return format_output(args, context)
+```
+
+### Impact
+
+| Impact | Description |
+|--------|-------------|
+| **Architecture Drift** | Sets precedent for bypassing application layer |
+| **Testing Difficulty** | Cannot mock infrastructure in tests |
+| **Bounded Context Violation** | No separation between CLI namespaces |
+| **TOON Integration Blocked** | Cannot implement TOON format without proper layer separation |
+
+### Implementation Plan
+
+**Phase 1: Create Application Layer Infrastructure**
+
+| Task | Description |
+|------|-------------|
+| 1.1 | Create `src/application/ports/dispatcher.py` with `IQueryDispatcher`, `ICommandDispatcher` |
+| 1.2 | Create `src/application/dispatchers/query_dispatcher.py` |
+| 1.3 | Create `src/application/handlers/` directory for query handlers |
+| 1.4 | Migrate query execution logic to handlers |
+
+**Phase 2: Create Composition Root**
+
+| Task | Description |
+|------|-------------|
+| 2.1 | Create `src/bootstrap.py` as external composition root |
+| 2.2 | Wire all handlers with their dependencies |
+| 2.3 | Create dispatcher with registered handlers |
+| 2.4 | Export factory function for CLI adapter |
+
+**Phase 3: Refactor CLI Adapter**
+
+| Task | Description |
+|------|-------------|
+| 3.1 | Modify `CLIAdapter` to receive dispatcher via constructor |
+| 3.2 | Remove all direct infrastructure instantiation from CLI |
+| 3.3 | Route all commands through dispatcher |
+| 3.4 | Update entry point to use bootstrap |
+
+**Phase 4: CLI Namespaces per Bounded Context**
+
+| Task | Description |
+|------|-------------|
+| 4.1 | Create `jerry session <cmd>` namespace for Session Management BC |
+| 4.2 | Create `jerry worktracker <cmd>` namespace for Work Tracker BC |
+| 4.3 | Create `jerry projects <cmd>` namespace for Project Management BC |
+| 4.4 | Each namespace routes to distinct application port |
+
+**Phase 5: TOON Format Integration**
+
+| Task | Description |
+|------|-------------|
+| 5.1 | Add `python-toon` dependency (or create if needed) |
+| 5.2 | Create `src/interface/cli/formatters/toon_formatter.py` |
+| 5.3 | Make TOON default output format (`--toon` flag) |
+| 5.4 | Support `--json` and `--human` as alternatives |
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/application/ports/dispatcher.py` | **CREATE** | Dispatcher port interfaces |
+| `src/application/dispatchers/query_dispatcher.py` | **CREATE** | Query dispatcher implementation |
+| `src/application/handlers/` | **CREATE** | Handler implementations |
+| `src/bootstrap.py` | **CREATE** | External composition root |
+| `src/interface/cli/main.py` | **MODIFY** | Receive dispatcher via injection |
+| `src/interface/cli/formatters/toon_formatter.py` | **CREATE** | TOON output formatter |
+| `tests/interface/cli/test_cli_architecture.py` | **CREATE** | Architecture boundary tests |
+| `tests/application/test_dispatcher.py` | **CREATE** | Dispatcher unit tests |
+
+### Acceptance Criteria (Validatable)
+
+| ID | Criterion | Evidence Required |
+|----|-----------|-------------------|
+| AC-01 | CLI adapter receives dispatcher via constructor | Code inspection |
+| AC-02 | No infrastructure imports in CLI adapter | Architecture test pass |
+| AC-03 | All queries routed through dispatcher | Code inspection |
+| AC-04 | Composition root external to all adapters | `src/bootstrap.py` exists |
+| AC-05 | Handler tests with mocked dependencies | pytest results |
+| AC-06 | `jerry session` namespace exists | CLI help output |
+| AC-07 | `jerry worktracker` namespace exists | CLI help output |
+| AC-08 | `jerry projects` namespace exists | CLI help output |
+| AC-09 | TOON is default output format | CLI default output |
+| AC-10 | `--json` flag works | CLI output |
+| AC-11 | `--human` flag works | CLI output |
+
+### Testing Strategy
+
+| Level | Scope | Example |
+|-------|-------|---------|
+| **Unit** | Dispatcher registration/dispatch | `test_dispatcher_routes_to_handler()` |
+| **Unit** | Handler execution logic | `test_handler_calls_repository()` |
+| **Integration** | CLI → Dispatcher → Handler | `test_cmd_init_uses_dispatcher()` |
+| **Architecture** | Layer boundary compliance | `test_cli_has_no_infrastructure_imports()` |
+| **Contract** | TOON output schema | `test_toon_output_is_valid()` |
+
+### References
+
+| Document | Path | Relevance |
+|----------|------|-----------|
+| Architecture Standards | `docs/design/PYTHON-ARCHITECTURE-STANDARDS.md` | Dispatcher pattern REQUIRED |
+| ADR-CLI-001 (Amended) | `projects/.../decisions/ADR-CLI-001-primary-adapter.md` | D2 REJECTED, D2-AMENDED |
+| TOON Research | `projects/archive/research/TOON_FORMAT_ANALYSIS.md` | TOON format spec |
+| TOON Implementation | `projects/.../research/impl-es-e-002-toon-serialization.md` | Implementation guide |
+| BUG-006 | `projects/.../work/PHASE-BUGS.md` | Original violation report |
+| Teaching Edition | `docs/knowledge/exemplars/architecture/work_tracker_architecture_hexagonal_ddd_cqrs_layered_teaching_edition.md` | Reference implementation |
+
+### Effort Estimate
+
+L - Large (8-16 hours)
+- Phase 1 (Application Layer): 2-4 hours
+- Phase 2 (Composition Root): 1-2 hours
+- Phase 3 (CLI Refactor): 2-3 hours
+- Phase 4 (Namespaces): 2-3 hours
+- Phase 5 (TOON): 2-3 hours
+- Testing: 2-4 hours

@@ -25,6 +25,7 @@
 | BUG-003 | Pyright type errors in serializer.py | HIGH | ✅ FIXED | CI-002 |
 | BUG-004 | Type variance warning in repository.py | LOW | ✅ FIXED | CI-002 |
 | BUG-005 | CLI integration tests hardcoded .venv paths | HIGH | ✅ FIXED | TD-013.6 |
+| BUG-006 | CLI adapter bypasses Application Layer (CQRS violation) | **CRITICAL** | 🐛 OPEN | v0.0.1 Review |
 
 ---
 
@@ -247,6 +248,135 @@ This is the correct fix because `TId` is only used in input parameter positions 
 
 ---
 
+## BUG-006: CLI Adapter Bypasses Application Layer (CQRS Violation) 🐛
+
+> **Status**: 🐛 OPEN (CONFIRMED - See Research Assessment)
+> **Severity**: **CRITICAL** (Architectural violation)
+> **Phase Found**: v0.0.1 Release Review
+
+### Research Assessment (2026-01-12)
+
+DISC-011 research initially suggested the "Query Object pattern" was compliant. **This assessment was INCORRECT**. The user has clarified that:
+- "Poor Man's DI" or "Composition Root in adapter" is NOT acceptable
+- Proper CQRS with Dispatcher → Handler → Query is REQUIRED
+- This is a HARD requirement - no shortcuts
+
+**Correct Assessment**: BUG-006 is a VALID CRITICAL violation.
+
+### Description
+
+The CLI adapter (`src/interface/cli/main.py`) directly calls domain-level queries without going through proper Application Layer use cases. This violates:
+- **Hexagonal Architecture**: Adapters must not contain business logic
+- **CQRS**: No proper Command/Query separation with handlers
+- **Clean Architecture**: Primary adapters bypass the Application Layer
+- **Dependency Injection**: Adapters wire dependencies directly ("Poor Man's DI")
+
+### Evidence
+
+From `src/interface/cli/main.py`:
+```python
+# WRONG - CLI directly imports and calls domain queries
+from src.session_management.application.queries import (
+    GetProjectContextQuery,
+    ScanProjectsQuery,
+    ValidateProjectQuery,
+)
+
+def cmd_init(args: argparse.Namespace) -> int:
+    query = GetProjectContextQuery(project_root=PROJECT_ROOT)
+    result = query.execute()  # Direct execution - no use case layer!
+```
+
+### Architectural Violation Analysis
+
+**What Adapters MAY Do**:
+- Parse input
+- Validate syntax
+- Map DTO → Command/Query
+- Handle transport errors
+- Format output
+
+**What Adapters MAY NOT Do** (violations found):
+- ❌ Contain business rules
+- ❌ Call repositories directly
+- ❌ Decide which aggregate to load
+- ❌ Execute queries directly (bypassing use cases)
+
+### Correct Architecture Pattern
+
+```
+CURRENT (WRONG):
+┌─────────────┐     ┌────────────────┐     ┌──────────────┐
+│ CLI Adapter │ ──▶ │ Domain Queries │ ──▶ │ Repositories │
+└─────────────┘     └────────────────┘     └──────────────┘
+                    (Application Layer BYPASSED!)
+
+CORRECT (Required):
+┌─────────────┐     ┌─────────────────┐     ┌────────────────┐     ┌──────────────┐
+│ CLI Adapter │ ──▶ │ Query Handler   │ ──▶ │ Domain Queries │ ──▶ │ Repositories │
+│             │     │ (Use Case)      │     │                │     │              │
+│ - Parse     │     │ - Orchestrate   │     │ - Business     │     │ - Persist    │
+│ - Map DTO   │     │ - Auth/Validate │     │   Logic        │     │              │
+│ - Format    │     │ - Dispatch      │     │                │     │              │
+└─────────────┘     └─────────────────┘     └────────────────┘     └──────────────┘
+```
+
+### Root Cause Analysis (5W1H)
+
+| Question | Answer |
+|----------|--------|
+| What | CLI adapter directly executes domain queries |
+| Why | Use Case layer and CQRS handlers not implemented |
+| Who | Affects all CLI commands (init, projects list, projects validate) |
+| Where | `src/interface/cli/main.py`, potentially `session_start.py` |
+| When | During TD-014 CLI implementation |
+| How | Queries were imported and called directly without handlers |
+
+### Impact
+
+- **Architectural Debt**: Clean patterns not established
+- **Maintainability**: Business logic leaked into adapter
+- **Testability**: Cannot mock use case layer independently
+- **Extensibility**: Cannot add cross-cutting concerns (auth, logging, caching)
+- **Consistency**: Sets bad precedent for future adapters
+
+### Scope of Audit Required
+
+1. `src/interface/cli/main.py` - Primary CLI adapter
+2. `src/interface/cli/session_start.py` - Session hook adapter
+3. Any other adapters in `src/interface/`
+
+### Required Remediation
+
+1. **Implement CQRS infrastructure**:
+   - Query objects (DTOs)
+   - Query handlers (Use Cases)
+   - Dispatcher pattern
+
+2. **Refactor adapters**:
+   - Remove direct domain query calls
+   - Use dispatcher to route queries to handlers
+   - Adapter only parses, maps, and formats
+
+3. **Create coding standards**:
+   - Document patterns for Python implementation
+   - Ensure patterns are followed in all code
+
+### Acceptance Criteria
+
+- [ ] No direct query execution in any adapter
+- [ ] All queries go through dispatcher → handler → domain
+- [ ] Coding standards document created
+- [ ] All 1364+ tests still pass (regression-free)
+- [ ] Architecture tests validate boundaries
+
+### Related Work Items
+
+- TD-015: Remediate CLI Adapter Architecture Violation (to be created)
+- DISC-011: Architecture pattern research (to be created)
+
+---
+
 ## BUG-005: CLI Integration Tests Hardcoded .venv Paths ✅
 
 > **Status**: FIXED (2026-01-12)
@@ -391,3 +521,4 @@ When reporting new bugs, use this template:
 | 2026-01-11 | Claude | Added BUG-003, BUG-004 (CI-002 failures) |
 | 2026-01-11 | Claude | Fixed BUG-003, BUG-004 (CI-002 resolution) |
 | 2026-01-12 | Claude | Added BUG-005: CLI tests hardcoded .venv paths (TD-013.6 verification) |
+| 2026-01-12 | Claude | Added BUG-006: CLI adapter bypasses Application Layer (CRITICAL) |

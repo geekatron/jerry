@@ -30,6 +30,9 @@
 | DISC-008 | System Python vs Venv Portability | ACTIONED | TD-014 |
 | DISC-009 | New Files Created Without Format Check | ACTIONED | TD-013.6 |
 | DISC-010 | Release Workflow Missing Dev Dependencies | ACTIONED | TD-013.6 |
+| DISC-011 | Architecture Pattern Research Initiative | COMPLETED | BUG-006, TD-015 |
+| DISC-012 | TOON Format Required as Primary Output | ACTIONED | ADR-CLI-001, TD-015 |
+| DISC-013 | CLI Namespaces per Bounded Context | ACTIONED | ADR-CLI-001, TD-015 |
 
 ---
 
@@ -409,6 +412,118 @@ pip install -e ".[dev,test]"
 
 ---
 
+### DISC-011: Architecture Pattern Research Initiative
+
+**Date**: 2026-01-12
+**Context**: BUG-006 identified critical CQRS/Hexagonal Architecture violation in CLI adapter
+**Finding**: Comprehensive research completed using 5 parallel agents.
+
+**Research Results**:
+
+| Agent | Focus | Key Finding |
+|-------|-------|-------------|
+| Dispatcher | `src/**/*.py` | **No Dispatcher exists** - queries execute themselves |
+| Architecture Docs | `projects/*/research/`, `decisions/` | 25+ patterns documented, extensive prior art |
+| Knowledge Patterns | `docs/knowledge/`, `docs/design/` | 14 pattern categories, Teaching Edition as reference |
+| Application Layer | `src/*/application/` | 4 Queries exist, 0 Handlers - queries are self-executing |
+| Adapter Violations | `src/interface/cli/` | CLI uses "Poor Man's DI" (Factory Composition Root) |
+
+**Critical Findings**:
+
+1. **No Dispatcher Pattern**: Current architecture uses "Query Object" pattern where queries instantiate their own dependencies and execute themselves.
+
+2. **"Poor Man's DI" Identified**: The current CLI implementation wires infrastructure adapters directly in the adapter layer. This was initially assessed as "compliant" but **user clarified this is NOT acceptable**.
+
+3. **Correct Pattern Required**: Adapter → Dispatcher → Handler → Query chain is MANDATORY per user requirements.
+
+**User Clarification (Verbatim)**:
+> "To us this is a shortcut. We will not take a 'Poor Man's DI' approach as that violates our principles of clean architecture. This is a hard requirement for us."
+
+**Synthesis Output**:
+Created `docs/design/PYTHON-ARCHITECTURE-STANDARDS.md` documenting:
+- CQRS Pattern (Dispatcher → Handler → Query/Command)
+- CLI Standards (thin adapter, receives dispatcher)
+- Port Design (Use Cases, not interfaces)
+- Adapter Boundaries (what MAY/MAY NOT do)
+
+**Related Documents Updated**:
+- `ADR-CLI-001-primary-adapter.md`: D2 REJECTED, D2-AMENDED added
+- `PHASE-BUGS.md`: BUG-006 Research Assessment added
+- `PHASE-TECHDEBT.md`: TD-015 created
+
+**Action**: Research complete, TD-015 created for remediation
+**Status**: COMPLETED
+
+---
+
+### DISC-012: TOON Format Required as Primary Output
+
+**Date**: 2026-01-12
+**Context**: User clarified output format priorities during DISC-011 research
+**Finding**: TOON (Token-Object Oriented Notation) is required as the PRIMARY output format for all CLI commands.
+
+**User Requirements**:
+- TOON default (`--toon` or no flag)
+- JSON secondary (`--json`)
+- Human-readable tertiary (`--human`)
+
+**Research Found**:
+| Location | Document |
+|----------|----------|
+| `projects/archive/research/TOON_FORMAT_ANALYSIS.md` | Comprehensive spec analysis |
+| `projects/PROJ-001-plugin-cleanup/research/impl-es-e-002-toon-serialization.md` | Implementation guide |
+| PyPI | `python-toon` package available |
+
+**Token Efficiency**:
+- 30-60% token reduction vs JSON
+- 4% accuracy improvement in LLM comprehension
+- Ideal for tabular/array data
+
+**Decision Matrix**:
+| Data Type | Format |
+|-----------|--------|
+| Tabular arrays | TOON |
+| Deeply nested objects | JSON |
+| Human readable | Human-formatted text |
+
+**Action**: Added TOON to ADR-CLI-001 D5 amendment, included in TD-015 Phase 5
+**Status**: ACTIONED
+
+---
+
+### DISC-013: CLI Namespaces per Bounded Context
+
+**Date**: 2026-01-12
+**Context**: User specified CLI architecture requirements during DISC-011 discussion
+**Finding**: Each bounded context MUST have its own CLI subcommand namespace.
+
+**User Requirements (Verbatim)**:
+> "It should have its own CLI subcommand namespace (aka Separate CLI Subcommand Namespaces). This mirrors: Bounded Contexts, Authorization scopes, Threat models"
+
+**Required Namespaces**:
+```
+jerry session <command>      # Session Management BC
+jerry worktracker <command>  # Work Tracker BC
+jerry projects <command>     # Project Management BC
+```
+
+**Architecture Rules**:
+1. **CLI is a Primary Adapter**: Translates user intent → use case invocation
+2. **CLI NEVER contains business logic**
+3. **CLI NEVER knows infrastructure details**
+4. **Ports represent Use Cases, NOT interfaces**
+5. **Each namespace routes to distinct application port**
+
+**Relationship to Authorization**:
+- Each bounded context = separate authorization boundary
+- CLI namespace structure mirrors security model
+- Future: role-based access per namespace
+
+**Action**: Added to ADR-CLI-001 D6 (NEW), included in TD-015 Phase 4
+**Status**: ACTIONED
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -428,3 +543,7 @@ pip install -e ".[dev,test]"
 | 2026-01-12 | Claude | Added DISC-008: System Python vs Venv Portability |
 | 2026-01-12 | Claude | Added DISC-009: New Files Created Without Format Check |
 | 2026-01-12 | Claude | Added DISC-010: Release Workflow Missing Dev Dependencies |
+| 2026-01-12 | Claude | Added DISC-011: Architecture Pattern Research Initiative |
+| 2026-01-12 | Claude | COMPLETED DISC-011: Research findings documented, TD-015 created |
+| 2026-01-12 | Claude | Added DISC-012: TOON Format Required as Primary Output |
+| 2026-01-12 | Claude | Added DISC-013: CLI Namespaces per Bounded Context |
