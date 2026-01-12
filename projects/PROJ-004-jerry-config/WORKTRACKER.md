@@ -12,11 +12,13 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Work Items | 18 |
+| Total Work Items | 26 |
 | Completed | 7 |
-| In Progress | 1 |
-| Pending | 10 |
+| In Progress | 1 (WI-008) |
+| Pending | 18 |
 | Blocked | 0 |
+
+**Note**: WI-008 has 8 sub-items (WI-008a through WI-008h) for hierarchical domain model design.
 
 ---
 
@@ -26,7 +28,7 @@
 |-------|-------|--------|------------|----------------|
 | [PHASE-00](work/PHASE-00-project-setup.md) | Project Setup | COMPLETED | WI-001, WI-002 | No |
 | [PHASE-01](work/PHASE-01-research.md) | Research & Discovery | COMPLETED | WI-003, WI-004, WI-005, WI-006 | Yes (4 parallel) |
-| [PHASE-02](work/PHASE-02-architecture.md) | Architecture & Design | IN_PROGRESS | WI-007, WI-008 | No (sequential) |
+| [PHASE-02](work/PHASE-02-architecture.md) | Architecture & Design | IN_PROGRESS | WI-007, WI-008 (+ 8 sub-items) | Yes (research parallel) |
 | [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | PENDING | WI-009, WI-010, WI-011 | Yes (after WI-008) |
 | [PHASE-04](work/PHASE-04-infrastructure.md) | Infrastructure Adapters | PENDING | WI-012, WI-013, WI-014 | Yes (parallel with PHASE-03) |
 | [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | PENDING | WI-015, WI-016 | No (needs 03+04) |
@@ -60,7 +62,20 @@
 | ID | Title | Status | File | Assignee |
 |----|-------|--------|------|----------|
 | WI-007 | Create PLAN.md | COMPLETED | [wi-007-create-plan.md](work/wi-007-create-plan.md) | WT-Main |
-| WI-008 | Domain Model Design | PENDING | [wi-008-domain-model.md](work/wi-008-domain-model.md) | WT-Main |
+| WI-008 | Hierarchical Domain Model Design | IN_PROGRESS | [wi-008-domain-model.md](work/wi-008-domain-model.md) | WT-Main |
+
+#### WI-008 Sub-Items (Hierarchical Domain Model)
+
+| Sub-ID | Title | Type | Agent | Status | File |
+|--------|-------|------|-------|--------|------|
+| WI-008a | Analyze existing Jerry codebase | Research | ps-researcher | PENDING | [wi-008a-codebase-analysis.md](work/wi-008a-codebase-analysis.md) |
+| WI-008b | Research DDD hierarchical patterns | Research | ps-researcher | PENDING | [wi-008b-ddd-patterns.md](work/wi-008b-ddd-patterns.md) |
+| WI-008c | Analyze skill/agent structure | Research | ps-researcher | PENDING | [wi-008c-skill-structure.md](work/wi-008c-skill-structure.md) |
+| WI-008d | Design JerryFramework aggregate | Design | ps-architect | PENDING | [wi-008d-framework-aggregate.md](work/wi-008d-framework-aggregate.md) |
+| WI-008e | Design JerryProject aggregate | Design | ps-architect | PENDING | [wi-008e-project-aggregate.md](work/wi-008e-project-aggregate.md) |
+| WI-008f | Design JerrySkill aggregate | Design | ps-architect | PENDING | [wi-008f-skill-aggregate.md](work/wi-008f-skill-aggregate.md) |
+| WI-008g | Design JerrySession context | Design | ps-architect | PENDING | [wi-008g-session-context.md](work/wi-008g-session-context.md) |
+| WI-008h | Validate domain design | Validation | ps-validator | PENDING | [wi-008h-design-validation.md](work/wi-008h-design-validation.md) |
 
 ### PHASE-03: Domain Implementation (PENDING - Parallelizable)
 
@@ -94,12 +109,84 @@
 
 ---
 
+## WI-008 Agent Execution Plan
+
+### Phase 1: Research (Parallel - ps-researcher)
+
+```
+┌────────────────┐  ┌────────────────┐  ┌────────────────┐
+│ ps-researcher  │  │ ps-researcher  │  │ ps-researcher  │
+│ WI-008a        │  │ WI-008b        │  │ WI-008c        │
+│ Codebase       │  │ DDD Patterns   │  │ Skill/Agent    │
+│ Analysis       │  │ Research       │  │ Structure      │
+└────────────────┘  └────────────────┘  └────────────────┘
+        │                   │                   │
+        └───────────────────┼───────────────────┘
+                            │
+                            ▼
+                    ┌──────────────┐
+                    │ ps-synthesizer│
+                    │ Combine       │
+                    │ Findings      │
+                    └──────────────┘
+```
+
+### Phase 2: Design (ps-architect)
+
+```
+                    Research Complete
+                            │
+            ┌───────────────┼───────────────┐
+            │               │               │
+            ▼               ▼               ▼
+    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+    │ ps-architect │ │ ps-architect │ │ ps-architect │
+    │ WI-008d      │ │ WI-008e      │ │ WI-008f      │
+    │ Framework    │ │ Project      │ │ Skill        │
+    │ ADR          │ │ ADR          │ │ ADR          │
+    └──────────────┘ └──────────────┘ └──────────────┘
+            │               │               │
+            └───────────────┼───────────────┘
+                            │
+                            ▼
+                    ┌──────────────┐
+                    │ ps-architect │
+                    │ WI-008g      │
+                    │ Session ADR  │
+                    └──────────────┘
+```
+
+### Phase 3: Validation (ps-validator)
+
+```
+                    All ADRs Complete
+                            │
+                            ▼
+                    ┌──────────────┐
+                    │ ps-validator │
+                    │ WI-008h      │
+                    │ Validate     │
+                    │ Against Use  │
+                    │ Cases        │
+                    └──────────────┘
+```
+
+---
+
 ## Dependency Graph
 
 ```
 PHASE-00 ──► PHASE-01 ──► PHASE-02 ──┬──► PHASE-03 (WT-Domain) ──┬──► PHASE-05 ──► PHASE-06
                                      │                           │
                                      └──► PHASE-04 (WT-Infra)  ──┘
+
+WI-008 Internal Dependencies:
+┌─────────────────────────────────────────────────────────────────────┐
+│  WI-008a ──┐                                                        │
+│  WI-008b ──┼──► (synthesize) ──► WI-008d ──┐                       │
+│  WI-008c ──┘                     WI-008e ──┼──► WI-008g ──► WI-008h │
+│                                  WI-008f ──┘                       │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Work Item Dependencies
@@ -107,11 +194,15 @@ PHASE-00 ──► PHASE-01 ──► PHASE-02 ──┬──► PHASE-03 (WT-D
 | Work Item | Depends On | Blocks |
 |-----------|------------|--------|
 | WI-008 | WI-007 | WI-009, WI-010, WI-011, WI-012, WI-013, WI-014 |
-| WI-009 | WI-008 | WI-015 |
-| WI-010 | WI-008 | WI-015 |
-| WI-011 | WI-008 | WI-015 |
-| WI-012 | WI-008 | WI-014, WI-015 |
-| WI-013 | WI-008 | WI-014 |
+| WI-008a,b,c | - | WI-008d, WI-008e, WI-008f |
+| WI-008d,e,f | WI-008a,b,c | WI-008g |
+| WI-008g | WI-008d,e,f | WI-008h |
+| WI-008h | WI-008g | WI-009 through WI-018 |
+| WI-009 | WI-008h | WI-015 |
+| WI-010 | WI-008h | WI-015 |
+| WI-011 | WI-008h | WI-015 |
+| WI-012 | WI-008h | WI-014, WI-015 |
+| WI-013 | WI-008h | WI-014 |
 | WI-014 | WI-012, WI-013 | WI-015 |
 | WI-015 | WI-009-014 | WI-017 |
 | WI-016 | WI-015 | WI-018 |
@@ -134,7 +225,7 @@ PHASE-00 ──► PHASE-01 ──► PHASE-02 ──┬──► PHASE-03 (WT-D
 
 ### Merge Order
 
-1. **WT-Main** completes WI-008 → merge to main
+1. **WT-Main** completes WI-008 (all sub-items) → merge to main
 2. **WT-Domain** and **WT-Infra** branch from main → work in parallel
 3. Merge **WT-Domain** and **WT-Infra** to main
 4. **WT-CLI** branches from main → complete WI-015, WI-016
@@ -145,12 +236,37 @@ PHASE-00 ──► PHASE-01 ──► PHASE-02 ──┬──► PHASE-03 (WT-D
 
 ## Research Artifacts
 
+### PHASE-01 Research (Completed)
+
 | ID | Topic | Location |
 |----|-------|----------|
 | PROJ-004-e-001 | JSON5 Python Support | [research/PROJ-004-e-001-json5-python-support.md](research/PROJ-004-e-001-json5-python-support.md) |
 | PROJ-004-e-002 | Runtime Collision Avoidance | [research/PROJ-004-e-002-runtime-collision-avoidance.md](research/PROJ-004-e-002-runtime-collision-avoidance.md) |
 | PROJ-004-e-003 | Worktree-Safe State | [research/PROJ-004-e-003-worktree-safe-state.md](research/PROJ-004-e-003-worktree-safe-state.md) |
 | PROJ-004-e-004 | Config Precedence | [research/PROJ-004-e-004-config-precedence.md](research/PROJ-004-e-004-config-precedence.md) |
+
+### WI-008 Research (Planned)
+
+| ID | Topic | Agent | Status |
+|----|-------|-------|--------|
+| PROJ-004-e-005 | Codebase Analysis | ps-researcher | PENDING |
+| PROJ-004-e-006 | DDD Hierarchical Patterns | ps-researcher | PENDING |
+| PROJ-004-e-007 | Skill/Agent Structure | ps-researcher | PENDING |
+
+### WI-008 ADRs (Planned)
+
+| ID | Topic | Agent | Status |
+|----|-------|-------|--------|
+| ADR-PROJ004-001 | JerryFramework Aggregate | ps-architect | PENDING |
+| ADR-PROJ004-002 | JerryProject Aggregate | ps-architect | PENDING |
+| ADR-PROJ004-003 | JerrySkill Aggregate | ps-architect | PENDING |
+| ADR-PROJ004-004 | JerrySession Context | ps-architect | PENDING |
+
+### WI-008 Validation (Planned)
+
+| ID | Topic | Agent | Status |
+|----|-------|-------|--------|
+| PROJ-004-e-012 | Domain Model Validation | ps-validator | PENDING |
 
 ---
 
@@ -164,12 +280,15 @@ PHASE-00 ──► PHASE-01 ──► PHASE-02 ──┬──► PHASE-03 (WT-D
 | 2026-01-12 | WI-007: PLAN.md created with architecture synthesis | Claude |
 | 2026-01-12 | Refactored WORKTRACKER to index format with WI file pointers | Claude |
 | 2026-01-12 | Added parallelization plan with worktree assignments | Claude |
+| 2026-01-12 | **REDESIGN**: WI-008 expanded to hierarchical domain model | Claude |
+| 2026-01-12 | Added WI-008a through WI-008h sub-items with ps-* agent assignments | Claude |
 
 ---
 
 ## Navigation
 
-- [PLAN.md](PLAN.md) - Implementation plan
+- [PLAN.md](PLAN.md) - Implementation plan (needs update after WI-008)
 - [work/](work/) - Individual work item files
 - [research/](research/) - Research artifacts
 - [decisions/](decisions/) - ADRs (Architecture Decision Records)
+- [analysis/](analysis/) - Analysis and validation reports
