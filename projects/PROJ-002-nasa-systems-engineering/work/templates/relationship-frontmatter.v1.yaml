@@ -1,0 +1,177 @@
+# Relationship Frontmatter Template v1.0
+# ======================================
+#
+# PURPOSE:
+# Standardized YAML frontmatter for all work tracking artifacts to enable
+# bidirectional traversal, status tracking, and session state retrieval.
+#
+# USAGE:
+# Copy the appropriate template section to the top of your .md file,
+# wrapped in --- delimiters.
+#
+# VERSION HISTORY:
+# - v1.0 (2026-01-11): Initial release
+#
+# PRINCIPLES:
+# - P-002: All state persisted to filesystem
+# - P-001: Accurate, truthful representation of state
+# - P-022: No deception about status or blockers
+
+---
+# TEMPLATE: Work Item
+work_item:
+  # Required fields
+  id: "wi-sao-XXX"                    # Unique identifier (lowercase, hyphenated)
+  title: "Human-Readable Title"       # Descriptive title
+  status: "OPEN"                      # OPEN | IN_PROGRESS | COMPLETE | CANCELLED
+
+  # Relationships (bidirectional traversal)
+  parent: "../_index.md"              # Relative path to parent (initiative index)
+  initiative: "sao-init-XXX"          # Initiative ID this belongs to
+  children: []                        # List of child work item IDs (if any)
+
+  # Dependencies
+  depends_on: []                      # Work items that must complete first
+  blocks: []                          # Work items blocked by this one
+  related: []                         # Related but not blocking
+
+  # Temporal tracking
+  created: "YYYY-MM-DD"               # Creation date
+  last_updated: "YYYY-MM-DD"          # Last modification date
+  completed: null                     # Completion date (null if not complete)
+
+  # Session state retrieval
+  priority: "P0"                      # P0 (CRITICAL) | P1 (HIGH) | P2 (MEDIUM) | P3 (LOW)
+  blockers: []                        # Current blockers (list of strings)
+  next_action: "Specific next step"   # What to do next
+
+  # Metrics
+  estimated_effort: "4h"              # Estimated effort
+  actual_effort: null                 # Actual effort (filled on completion)
+  token_estimate: 1500                # Approximate token count of this file
+
+---
+# TEMPLATE: Initiative Index
+initiative_index:
+  # Required fields
+  id: "sao-init-XXX"                  # Initiative ID
+  title: "Initiative Title"           # Human-readable title
+  status: "IN_PROGRESS"               # OPEN | IN_PROGRESS | COMPLETE | CANCELLED
+
+  # Relationships
+  parent: "../../WORKTRACKER.md"      # Path to dashboard
+  children: []                        # List of work item IDs in this initiative
+
+  # Temporal tracking
+  created: "YYYY-MM-DD"
+  last_updated: "YYYY-MM-DD"
+  completed: null
+
+  # Session state retrieval
+  priority: "P1"
+  blockers: []
+  next_action: "Current focus"
+
+  # Progress metrics
+  work_items_total: 5
+  work_items_complete: 0
+  tasks_total: 20
+  tasks_complete: 0
+  token_estimate: 800
+
+---
+# TEMPLATE: Reference Document
+reference_document:
+  # Required fields
+  id: "ref-XXX"                       # Reference document ID
+  title: "Document Title"
+  type: "reference"                   # reference | log | discovery
+
+  # Relationships
+  parent: "../../WORKTRACKER.md"
+  related_work_items: []              # Work items that reference this
+
+  # Temporal tracking
+  created: "YYYY-MM-DD"
+  last_updated: "YYYY-MM-DD"
+
+  # Metadata
+  token_estimate: 1000
+
+---
+# TEMPLATE: Dashboard (WORKTRACKER.md)
+dashboard:
+  id: "worktracker-dashboard"
+  title: "PROJ-002 Work Tracker Dashboard"
+  type: "dashboard"
+  version: "2.0"                      # Incremented on structural changes
+
+  # Children (all top-level directories)
+  children:
+    initiatives: []                   # Active initiative IDs
+    complete: []                      # Completed initiative IDs
+    wontdo: []                        # Cancelled/historical item IDs
+    reference: []                     # Reference document IDs
+    logs: []                          # Log document IDs
+
+  # Quick stats (updated on each modification)
+  stats:
+    total_work_items: 0
+    complete_work_items: 0
+    in_progress_work_items: 0
+    open_work_items: 0
+    cancelled_work_items: 0
+
+  last_updated: "YYYY-MM-DD"
+  token_estimate: 800
+
+---
+# VALIDATION RULES
+#
+# 1. Every file MUST have frontmatter matching one of these templates
+# 2. All paths MUST be relative from the file's location
+# 3. Bidirectional links MUST be consistent:
+#    - If A.parent = B, then B.children MUST include A
+#    - If A.depends_on includes B, then B.blocks SHOULD include A
+# 4. Status transitions:
+#    - OPEN → IN_PROGRESS → COMPLETE
+#    - Any status → CANCELLED
+# 5. last_updated MUST be updated on ANY change to the file
+# 6. token_estimate SHOULD be updated if content changes significantly
+
+---
+# PROCESS: Creating a New Work Item
+#
+# 1. Identify the parent initiative
+# 2. Create file: work/initiatives/{initiative-id}/wi-{id}.md
+# 3. Copy work_item template to frontmatter
+# 4. Fill in required fields
+# 5. Update parent _index.md:
+#    - Add work item ID to children[]
+#    - Increment work_items_total
+# 6. Update WORKTRACKER.md stats
+# 7. Validate bidirectional links
+
+---
+# PROCESS: Completing a Work Item
+#
+# 1. Update status: "COMPLETE"
+# 2. Set completed: "YYYY-MM-DD"
+# 3. Set actual_effort
+# 4. Clear blockers[]
+# 5. Update next_action: "N/A - Complete"
+# 6. Update parent _index.md:
+#    - Increment work_items_complete
+# 7. Update WORKTRACKER.md stats
+# 8. If all children complete, update parent status
+
+---
+# PROCESS: Moving Initiative to complete/
+#
+# 1. Verify all work items are COMPLETE or CANCELLED
+# 2. Move directory: initiatives/{id}/ → complete/{id}/
+# 3. Update all parent paths in moved files
+# 4. Update WORKTRACKER.md:
+#    - Remove from initiatives[]
+#    - Add to complete[]
+# 5. Validate all links still resolve
