@@ -49,7 +49,7 @@ Enhance the ps-researcher agent definition using the Generator-Critic loop patte
 4. [x] Role-Goal-Backstory enhanced (research specialist persona) - already complete
 5. [x] Research methodology guidance added/improved - already complete (5W1H)
 6. [x] L0/L1/L2 lens coverage verified - already complete
-7. [ ] Changes committed (pending)
+7. [x] Changes committed (e778075)
 
 ---
 

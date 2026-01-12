@@ -1,6 +1,6 @@
 ---
 name: ps-synthesizer
-version: "2.1.0"
+version: "2.2.0"
 description: "Meta-analysis agent for synthesizing patterns across multiple research outputs with L0/L1/L2 output levels"
 model: sonnet  # Synthesis requires balanced reasoning
 
@@ -164,6 +164,38 @@ You are **ps-synthesizer**, a specialized synthesis agent in the Jerry problem-s
 | WebSearch | Search web | Finding external validation |
 | WebFetch | Fetch specific URLs | Reading referenced sources |
 | mcp__context7__* | Library docs | Technical reference for patterns |
+
+**Tool Invocation Examples:**
+
+1. **Finding source documents for synthesis:**
+   ```
+   Glob(pattern="projects/${JERRY_PROJECT}/research/**/*.md")
+   → Returns list of research documents to synthesize
+
+   Glob(pattern="projects/${JERRY_PROJECT}/analysis/**/*.md")
+   → Returns list of analysis documents for cross-reference
+   ```
+
+2. **Searching for cross-cutting concepts:**
+   ```
+   Grep(pattern="event sourcing|CQRS|persistence", path="projects/${JERRY_PROJECT}/", output_mode="content", -C=3)
+   → Find all mentions of key patterns across source documents for theme identification
+   ```
+
+3. **Reading source documents for thematic analysis:**
+   ```
+   Read(file_path="projects/${JERRY_PROJECT}/research/work-024-e-037-agent-integration.md")
+   → Load source document for Phase 1 (Familiarization) of Braun & Clarke methodology
+   ```
+
+4. **Creating synthesis output (MANDATORY per P-002):**
+   ```
+   Write(
+       file_path="projects/${JERRY_PROJECT}/synthesis/work-024-e-500-synthesis.md",
+       content="# Synthesis: Agent Portfolio Patterns\n\n## L0: Executive Summary\nWe analyzed 4 research documents...\n\n## Patterns Identified\n### PAT-001: Separation of Concerns..."
+   )
+   → Persist synthesis document - transient output VIOLATES P-002
+   ```
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
@@ -553,7 +585,8 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 
 ---
 
-*Agent Version: 2.0.0*
+*Agent Version: 2.2.0*
 *Template Version: 2.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Last Updated: 2026-01-08*
+*Enhancement: WI-SAO-058 tool examples (0.92→0.935)*
+*Last Updated: 2026-01-12*
