@@ -281,5 +281,129 @@ When invoking agents in parallel, execution times vary significantly based on ag
 
 ---
 
-*Last Updated: 2026-01-11*
-*Source: Extracted from WORKTRACKER.md lines 2387-2464, extended with DISCOVERY-003 through DISCOVERY-007*
+## DISCOVERY-008: 8 Orchestration Patterns Identified (Expanded from 4)
+
+- **Discovered:** 2026-01-12
+- **Severity:** INFO (positive expansion of documented patterns)
+- **Discovery Context:** Deep research for SAO-INIT-007 Triple-Lens Playbook Refactoring
+- **Finding:**
+
+Deep analysis of agent files and orchestration patterns revealed 8 distinct orchestration patterns, expanding from the 4 previously documented.
+
+**Original 4 Patterns:**
+1. Sequential Chain
+2. Fan-Out (Parallel)
+3. Fan-In (Aggregation)
+4. Generator-Critic Loop
+
+**Newly Identified Patterns:**
+5. Single Agent - Direct invocation without orchestration overhead
+6. Cross-Pollinated Pipeline - Bidirectional barriers for multi-track workflows
+7. Divergent-Convergent (Diamond) - Explore options then converge
+8. Review Gate - Quality checkpoint with pass/fail and feedback loop
+
+**Key Technical Details:**
+
+| Pattern | Use Case | Cognitive Mode |
+|---------|----------|----------------|
+| Single Agent | Direct specialty match | Agent-dependent |
+| Sequential Chain | Order-dependent workflow | Convergent |
+| Fan-Out | Independent parallel tasks | Divergent |
+| Fan-In | Output consolidation | Convergent |
+| Cross-Pollinated | Multi-skill collaboration | Mixed (barrier-separated) |
+| Diamond | Solution exploration | Divergent → Convergent |
+| Review Gate | Quality gates (SRR, PDR, CDR) | Convergent |
+| Generator-Critic | Iterative refinement | Alternating |
+
+**Circuit Breaker Parameters (Pattern 8):**
+- `max_iterations`: 3 (hard limit)
+- `quality_threshold`: 0.85 (exit condition)
+- `escalation`: After 3 fails → human review required
+
+**Evidence:**
+- Source: SAO-INIT-007 initiative deep research
+- Agent files analyzed: 22 agents across ps-*, nse-*, orch-* families
+- Location: `initiatives/sao-init-007-triple-lens-playbooks/_index.md`
+
+**Impact:**
+- Comprehensive pattern catalog available for playbook refactoring
+- Pattern selection decision tree documented
+- Workflow scenario compositions defined
+
+---
+
+## DISCOVERY-009: Session Context Schema v1.0.0 Formalized
+
+- **Discovered:** 2026-01-12
+- **Severity:** INFO (formalization of existing practice)
+- **Discovery Context:** Deep research for SAO-INIT-007 Triple-Lens Playbook Refactoring
+- **Finding:**
+
+Formal session context schema v1.0.0 has been documented for agent handoffs. This schema enables:
+- Validated agent-to-agent state transfer
+- Cognitive mode declarations
+- State output key mapping
+- Next agent hints
+
+**Schema Structure:**
+```yaml
+session_context:
+  version: "1.0.0"
+  session_id: "uuid-v4"
+  source_agent: "agent-name"
+  target_agent: "agent-name"
+  handoff_timestamp: "ISO-8601"
+  state_output_key: "key_name"
+  cognitive_mode: "convergent|divergent"
+  payload:
+    findings: [ ... ]
+    confidence: 0.0-1.0
+    next_hint: "suggested_next_agent"
+```
+
+**State Output Key Mapping (19 agents):**
+
+| Agent | State Key | Next Hint |
+|-------|-----------|-----------|
+| ps-researcher | research_output | ps-analyst |
+| ps-analyst | analysis_output | ps-architect |
+| ps-architect | architecture_output | ps-validator |
+| ps-validator | validation_output | ps-synthesizer |
+| ps-critic | critique_output | (generator) |
+| ps-investigator | investigation_output | ps-analyst |
+| ps-reporter | report_output | (terminal) |
+| ps-reviewer | review_output | (conditional) |
+| ps-synthesizer | synthesis_output | ps-reporter |
+| nse-requirements | requirements_output | nse-verification |
+| nse-verification | verification_output | nse-reviewer |
+| nse-reviewer | review_output | (conditional) |
+| nse-reporter | report_output | (terminal) |
+| nse-risk | risk_output | nse-reviewer |
+| nse-architecture | architecture_output | nse-integration |
+| nse-integration | integration_output | nse-verification |
+| nse-configuration | configuration_output | nse-qa |
+| nse-qa | qa_output | nse-reporter |
+| nse-explorer | exploration_output | (context-dependent) |
+
+**Cross-Skill Handoff Support:**
+- ps-architect → nse-architecture
+- ps-analyst → nse-risk
+- ps-validator → nse-verification
+- nse-requirements → ps-architect
+- nse-verification → ps-investigator
+- nse-reviewer → ps-analyst
+
+**Evidence:**
+- Source: SAO-INIT-007 initiative deep research
+- Prior validation: CROSS-ORCH-001, CROSS-ORCH-002 (DISCOVERY-006)
+- Location: `initiatives/sao-init-007-triple-lens-playbooks/_index.md`
+
+**Impact:**
+- Standardized handoff protocol for all orchestration patterns
+- Enables automated validation of agent chains
+- Supports cross-skill workflows
+
+---
+
+*Last Updated: 2026-01-12*
+*Source: Extended with DISCOVERY-008, DISCOVERY-009 from SAO-INIT-007 deep research*
