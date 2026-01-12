@@ -71,11 +71,11 @@
 | WI-008a | Analyze existing Jerry codebase | Research | ps-researcher | COMPLETED | [wi-008a-codebase-analysis.md](work/wi-008a-codebase-analysis.md) |
 | WI-008b | Research DDD hierarchical patterns | Research | ps-researcher | COMPLETED | [wi-008b-ddd-patterns.md](work/wi-008b-ddd-patterns.md) |
 | WI-008c | Analyze skill/agent structure | Research | ps-researcher | COMPLETED | [wi-008c-skill-structure.md](work/wi-008c-skill-structure.md) |
-| WI-008d | Design JerryFramework aggregate | Design | ps-architect | PENDING | [wi-008d-framework-aggregate.md](work/wi-008d-framework-aggregate.md) |
-| WI-008e | Design JerryProject aggregate | Design | ps-architect | PENDING | [wi-008e-project-aggregate.md](work/wi-008e-project-aggregate.md) |
-| WI-008f | Design JerrySkill aggregate | Design | ps-architect | PENDING | [wi-008f-skill-aggregate.md](work/wi-008f-skill-aggregate.md) |
-| WI-008g | Design JerrySession context | Design | ps-architect | PENDING | [wi-008g-session-context.md](work/wi-008g-session-context.md) |
-| WI-008h | Validate domain design | Validation | ps-validator | PENDING | [wi-008h-design-validation.md](work/wi-008h-design-validation.md) |
+| WI-008d | Design JerryFramework aggregate | Design | ps-architect | COMPLETED | [wi-008d-framework-aggregate.md](work/wi-008d-framework-aggregate.md) |
+| WI-008e | Design JerryProject aggregate | Design | ps-architect | COMPLETED | [wi-008e-project-aggregate.md](work/wi-008e-project-aggregate.md) |
+| WI-008f | Design JerrySkill aggregate | Design | ps-architect | COMPLETED | [wi-008f-skill-aggregate.md](work/wi-008f-skill-aggregate.md) |
+| WI-008g | Design JerrySession context | Design | ps-architect | COMPLETED | [wi-008g-session-context.md](work/wi-008g-session-context.md) |
+| WI-008h | Validate domain design | Validation | ps-validator | IN_PROGRESS | [wi-008h-design-validation.md](work/wi-008h-design-validation.md) |
 
 ### PHASE-03: Domain Implementation (PENDING - Parallelizable)
 
@@ -253,20 +253,20 @@ WI-008 Internal Dependencies:
 | PROJ-004-e-006 | DDD Hierarchical Patterns | ps-researcher | COMPLETED |
 | PROJ-004-e-007 | Skill/Agent Structure | ps-researcher | COMPLETED |
 
-### WI-008 ADRs (Planned)
+### WI-008 ADRs (COMPLETED)
 
 | ID | Topic | Agent | Status |
 |----|-------|-------|--------|
-| ADR-PROJ004-001 | JerryFramework Aggregate | ps-architect | PENDING |
-| ADR-PROJ004-002 | JerryProject Aggregate | ps-architect | PENDING |
-| ADR-PROJ004-003 | JerrySkill Aggregate | ps-architect | PENDING |
-| ADR-PROJ004-004 | JerrySession Context | ps-architect | PENDING |
+| ADR-PROJ004-001 | JerryFramework Aggregate | ps-architect | ACCEPTED |
+| ADR-PROJ004-002 | JerryProject Aggregate | ps-architect | ACCEPTED |
+| ADR-PROJ004-003 | JerrySkill Aggregate | ps-architect | ACCEPTED |
+| ADR-PROJ004-004 | JerrySession Context | ps-architect | ACCEPTED |
 
-### WI-008 Validation (Planned)
+### WI-008 Validation (IN_PROGRESS)
 
 | ID | Topic | Agent | Status |
 |----|-------|-------|--------|
-| PROJ-004-e-012 | Domain Model Validation | ps-validator | PENDING |
+| PROJ-004-e-012 | Domain Model Validation | ps-validator | IN_PROGRESS |
 
 ---
 
@@ -283,6 +283,8 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **REDESIGN**: WI-008 expanded to hierarchical domain model | Claude |
 | 2026-01-12 | Added WI-008a through WI-008h sub-items with ps-* agent assignments | Claude |
 | 2026-01-12 | **RESEARCH COMPLETED**: WI-008a, WI-008b, WI-008c research artifacts created | Claude |
+| 2026-01-12 | **DESIGN COMPLETED**: WI-008d, WI-008e, WI-008f, WI-008g ADRs created and ACCEPTED | Claude |
+| 2026-01-12 | WI-008h validation phase started | Claude |
 
 ---
 
