@@ -112,7 +112,7 @@ Batch enhancement of remaining nse-* agents, orch-* agents, and core agents (.cl
 1. [x] All 13 agents baseline scored (2026-01-12)
 2. [x] All 13 agents ≥0.85 (8 already passed, 5 enhanced)
 3. [x] NASA SE terminology verified for nse-* agents (all v2.1.0)
-4. [ ] All changes committed
+4. [x] All changes committed (58f96fa)
 
 ---
 
@@ -140,10 +140,10 @@ Batch enhancement of remaining nse-* agents, orch-* agents, and core agents (.cl
 - [x] **T-062.3.1:** Enhance qa-engineer.md (0.600 → 0.910 ✅)
 - [x] **T-062.3.2:** Enhance security-auditor.md (0.610 → 0.912 ✅)
 
-### T-062.4: Commit Batch
+### T-062.4: Commit Batch ✅ COMPLETE
 
 - [x] **T-062.4.1:** Record baseline scores (DONE - 13 agents scored)
-- [ ] **T-062.4.2:** Commit all enhanced agents
+- [x] **T-062.4.2:** Commit all enhanced agents (58f96fa)
 
 ---
 
@@ -171,7 +171,7 @@ Batch enhancement of remaining nse-* agents, orch-* agents, and core agents (.cl
 | E-062-003 | Score | 3 orch-* final scored (0.905-0.908) | ✅ COMPLETE |
 | E-062-004 | Score | 2 core final scored (0.910-0.912) | ✅ COMPLETE |
 | E-062-005 | Artifact | 5 agents enhanced to v2.1.0 | ✅ COMPLETE |
-| E-062-006 | Commit | All enhanced agents committed | ⏳ Pending |
+| E-062-006 | Commit | All enhanced agents committed (58f96fa) | ✅ COMPLETE |
 
 ---
 
