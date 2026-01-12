@@ -17,7 +17,48 @@ specialized sub-agents for specific tasks. This provides:
 
 ---
 
-## Available Agents
+## Agent Summary
+
+| Category | Count | Scope |
+|----------|-------|-------|
+| Framework Agents | 3 | Global (available in all contexts) |
+| Skill-Specific Agents | 8 | Local (problem-solving skill only) |
+| **Total** | **11** | |
+
+---
+
+## Framework Agents (Global)
+
+These agents are available across all Jerry contexts.
+
+| Agent | File | Role |
+|-------|------|------|
+| Orchestrator | `.claude/agents/orchestrator.md` | Task decomposition, delegation, synthesis |
+| QA Engineer | `.claude/agents/qa-engineer.md` | Test design and quality assurance |
+| Security Auditor | `.claude/agents/security-auditor.md` | Security review and vulnerability assessment |
+
+---
+
+## Skill-Specific Agents
+
+### Problem-Solving Skill Agents
+
+These agents are scoped to the `problem-solving` skill and invoked via `/problem-solving`.
+
+| Agent | File | Role |
+|-------|------|------|
+| ps-researcher | `skills/problem-solving/agents/ps-researcher.md` | Research Specialist |
+| ps-analyst | `skills/problem-solving/agents/ps-analyst.md` | Analysis Specialist |
+| ps-synthesizer | `skills/problem-solving/agents/ps-synthesizer.md` | Synthesis Specialist |
+| ps-validator | `skills/problem-solving/agents/ps-validator.md` | Validation Specialist |
+| ps-architect | `skills/problem-solving/agents/ps-architect.md` | Architecture Specialist |
+| ps-reviewer | `skills/problem-solving/agents/ps-reviewer.md` | Review Specialist |
+| ps-investigator | `skills/problem-solving/agents/ps-investigator.md` | Investigation Specialist |
+| ps-reporter | `skills/problem-solving/agents/ps-reporter.md` | Reporting Specialist |
+
+---
+
+## Framework Agent Details
 
 ### Orchestrator (Conductor)
 
@@ -67,6 +108,29 @@ specialized sub-agents for specific tasks. This provides:
 - Recommend security improvements
 
 **When to Use**: Before release, when handling sensitive data
+
+---
+
+## Skill-Specific Agent Details
+
+### Problem-Solving Agents Overview
+
+The problem-solving skill provides 8 specialized agents for structured problem solving:
+
+| Agent | Cognitive Mode | Primary Use Case |
+|-------|---------------|------------------|
+| ps-researcher | Divergent | Literature review, web research, source validation |
+| ps-analyst | Convergent | Root cause analysis, trade-offs, gap analysis, risk |
+| ps-synthesizer | Integrative | Pattern synthesis across multiple research outputs |
+| ps-validator | Systematic | Constraint verification, design validation |
+| ps-architect | Strategic | Architecture decisions, ADR production |
+| ps-reviewer | Critical | Code review, design review, security review |
+| ps-investigator | Forensic | Failure analysis, debugging, 5 Whys |
+| ps-reporter | Communicative | Status reports, phase progress, summaries |
+
+**Invocation**: Use `/problem-solving` skill which orchestrates these agents.
+
+**Artifact Location**: `{project}/research/`, `{project}/analysis/`, `{project}/synthesis/`
 
 ---
 
