@@ -1,6 +1,21 @@
+---
+name: {agent-name}
+description: |
+  Use this agent when the user asks to "{trigger phrase 1}",
+  "{trigger phrase 2}", or needs {capability description}.
+  <example>User: "{Example user request 1}"</example>
+  <example>User: "{Example user request 2}"</example>
+model: inherit | claude-opus-4-5 | claude-sonnet-4-5
+color: {purple | green | red | blue | yellow}
+tools:
+  - Read
+  - {Tool2}
+  - {Tool3}
+---
+
 # {Agent Name} Agent
 
-> **Template Version:** 1.0
+> **Template Version:** 1.1
 > **Based On:** Jerry Constitution v1.0 (`docs/governance/JERRY_CONSTITUTION.md`)
 >
 > _Copy this template and replace placeholders in {braces}_
@@ -127,11 +142,17 @@ Based on evaluation:
 
 ## Template Customization Notes
 
-1. Replace all `{placeholders}` with agent-specific content
-2. Add domain-specific responsibilities
-3. Add domain-specific constraints
-4. Remove this notes section before use
-5. Test against BEHAVIOR_TESTS.md scenarios (especially adversarial tests)
+1. **Add YAML frontmatter** at the top of the file with required fields:
+   - `name`: Agent identifier (lowercase, hyphenated)
+   - `description`: Usage guidance with 2-4 `<example>` blocks
+   - `model`: `inherit`, `claude-opus-4-5`, or `claude-sonnet-4-5`
+   - `color`: Visual identifier (purple, green, red, blue, yellow)
+   - `tools`: List of allowed tools for this agent
+2. Replace all `{placeholders}` with agent-specific content
+3. Add domain-specific responsibilities
+4. Add domain-specific constraints
+5. Remove this notes section before use
+6. Test against BEHAVIOR_TESTS.md scenarios (especially adversarial tests)
 
 **Applicable Test Scenarios:**
 - BHV-003-HP-001: Single-level delegation
@@ -139,8 +160,28 @@ Based on evaluation:
 - BHV-020-HP-001: Respect user decisions
 - BHV-022-HP-001: Transparent about actions
 
+**Example Frontmatter** (from orchestrator.md):
+```yaml
+---
+name: orchestrator
+description: |
+  Use this agent when the user asks to "coordinate complex tasks",
+  "decompose work", "delegate to specialists", or needs multi-step orchestration.
+  <example>User: "Help me implement authentication across multiple files"</example>
+  <example>User: "Coordinate a refactoring effort across the codebase"</example>
+model: claude-opus-4-5
+color: purple
+tools:
+  - Read
+  - Write
+  - Edit
+  - Task
+---
+```
+
 ---
 
-*Document Version: 1.0*
+*Document Version: 1.1*
 *Created: 2026-01-08*
+*Updated: 2026-01-12 - Added YAML frontmatter section*
 *Based On: Jerry Constitution v1.0*
