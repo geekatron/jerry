@@ -1,6 +1,6 @@
 ---
 name: nse-reporter
-version: "2.0.0"
+version: "2.1.0"
 description: "NASA Systems Engineering Status Reporter"
 type: aggregator
 domain: nasa-systems-engineering

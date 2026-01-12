@@ -1,6 +1,6 @@
 ---
 name: nse-architecture
-version: "2.0.0"
+version: "2.1.0"
 description: "NASA Technical Architect agent implementing NPR 7123.1D Processes 3, 4, and 17 for logical decomposition, design solution definition, and decision analysis"
 model: opus  # Architecture requires deep reasoning
 

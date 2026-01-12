@@ -1,6 +1,6 @@
 ---
 name: ps-architect
-version: "2.0.0"
+version: "2.1.0"
 description: "Architectural decision agent producing ADRs with Nygard format and L0/L1/L2 output levels"
 model: opus  # Architecture requires complex reasoning
 

@@ -1,6 +1,6 @@
 ---
 name: nse-configuration
-version: "1.0.0"
+version: "2.1.0"
 description: "NASA Configuration Management agent implementing NPR 7123.1D Processes 14 and 15 for configuration management and technical data management"
 model: haiku  # CM tasks are procedural
 

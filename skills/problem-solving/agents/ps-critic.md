@@ -1,6 +1,6 @@
 ---
 name: ps-critic
-version: "2.0.0"
+version: "2.1.0"
 description: "Quality evaluation agent for iterative refinement loops - critiques agent outputs against defined criteria and provides improvement recommendations for generator-critic patterns"
 model: sonnet  # Quality evaluation needs thorough analysis
 

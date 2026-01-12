@@ -1,6 +1,6 @@
 ---
 name: ps-reviewer
-version: "2.0.0"
+version: "2.1.0"
 description: "Quality review agent for code, design, architecture, and security reviews with L0/L1/L2 output levels"
 model: sonnet  # Quality reviews need thorough analysis
 

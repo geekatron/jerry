@@ -1,6 +1,6 @@
 ---
 name: nse-qa
-version: "1.0.0"
+version: "2.1.0"
 description: "NASA SE Quality Assurance agent for artifact validation - validates SE work products against NPR 7123.1D, constitutional principles (P-040/P-041/P-042), and NASA work product standards"
 model: sonnet  # Thorough quality analysis
 

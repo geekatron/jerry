@@ -1,6 +1,6 @@
 ---
 name: nse-verification
-version: "1.0.0"
+version: "2.1.0"
 description: "NASA V&V Specialist agent implementing NPR 7123.1D Processes 7 and 8 for product verification and validation"
 model: sonnet  # Thorough V&V analysis
 

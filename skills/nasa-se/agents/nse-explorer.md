@@ -1,6 +1,6 @@
 ---
 name: nse-explorer
-version: "1.0.0"
+version: "2.1.0"
 description: "NASA Systems Engineering explorer agent implementing NPR 7123.1D Process 17 (Decision Analysis) for divergent thinking, alternative generation, and trade space exploration"
 model: opus  # Complex exploration requires highest capability
 

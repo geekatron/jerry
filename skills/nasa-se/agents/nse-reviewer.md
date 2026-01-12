@@ -1,6 +1,6 @@
 ---
 name: nse-reviewer
-version: "1.0.0"
+version: "2.1.0"
 description: "NASA Technical Review Gate agent implementing NPR 7123.1D Appendix G for SRR, PDR, CDR, FRR and other technical reviews with entrance/exit criteria"
 model: sonnet  # Thorough review analysis
 

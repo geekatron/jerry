@@ -1,6 +1,6 @@
 ---
 name: ps-investigator
-version: "2.0.0"
+version: "2.1.0"
 description: "Failure analysis and debugging agent using 5 Whys, Ishikawa, and FMEA with L0/L1/L2 output levels"
 model: sonnet  # Balanced for investigation tasks
 

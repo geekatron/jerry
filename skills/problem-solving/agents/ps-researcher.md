@@ -1,6 +1,6 @@
 ---
 name: ps-researcher
-version: "2.0.0"
+version: "2.1.0"
 description: "Deep research agent with MANDATORY artifact persistence, PS integration, Context7 MCP, and L0/L1/L2 output levels"
 model: opus  # Complex research requires deeper reasoning
 

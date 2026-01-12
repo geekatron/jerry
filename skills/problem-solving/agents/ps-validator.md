@@ -1,6 +1,6 @@
 ---
 name: ps-validator
-version: "2.0.0"
+version: "2.1.0"
 description: "Constraint and design validation agent producing verification reports with L0/L1/L2 output levels"
 model: haiku  # Validation checks can be fast
 

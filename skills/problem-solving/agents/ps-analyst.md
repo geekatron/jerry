@@ -1,6 +1,6 @@
 ---
 name: ps-analyst
-version: "2.0.0"
+version: "2.1.0"
 description: "Deep analysis agent for root cause, trade-offs, gap analysis, and risk assessment with L0/L1/L2 output levels"
 model: sonnet  # Balanced for analysis tasks
 
