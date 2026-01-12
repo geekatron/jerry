@@ -1,6 +1,6 @@
 # Phase TECHDEBT: Technical Debt Tracking
 
-> **Status**: 🔄 IN PROGRESS (7/9 done - 78%)
+> **Status**: 🔄 IN PROGRESS (7/10 done - 70%)
 > **Purpose**: Track technical debt for future resolution
 
 ---
@@ -28,7 +28,8 @@
 | TD-010 | Implement link-artifact CLI command | HIGH | ⏳ TODO | DISC-003 |
 | TD-011 | CI missing test dependencies | **CRITICAL** | ✅ DONE | CI-002 |
 | TD-012 | pip-audit fails on local package | MEDIUM | ✅ DONE | CI-002 |
-| TD-013 | Implement GitHub Releases pipeline | HIGH | ⏳ TODO | DISC-005 |
+| TD-013 | Implement GitHub Releases pipeline | HIGH | ⏳ TODO | DISC-005, DISC-007 |
+| TD-014 | Implement Jerry CLI (Primary Adapter) | **CRITICAL** | ⏳ TODO | DISC-006 |
 
 ---
 
@@ -565,119 +566,319 @@ XS - Extra Small (<1 hour)
 
 ---
 
-## TD-013: Implement GitHub Releases Pipeline
+## TD-013: Implement GitHub Releases Pipeline (Claude Code Plugin)
 
 > **Status**: ⏳ TODO
 > **Priority**: HIGH
-> **Source**: DISC-005 (User requirement 2026-01-11)
+> **Source**: DISC-005, DISC-007 (User requirement 2026-01-11, revised understanding)
+> **Depends On**: TD-014 (CLI must exist for full release)
 
 ### Description
 
-ADR-CI-001 states Jerry will be released publicly but no release mechanism exists. User requires:
-- GitHub Releases (not PyPI at this time)
-- Cross-platform binaries (macOS + Windows)
-- Distribution to friends without requiring Python installation
+~~Original: Distribute Jerry as standalone binaries via PyInstaller~~
+
+**REVISED (DISC-007)**: Jerry is a **Claude Code Plugin**, not a standalone application.
+Release mechanism should distribute the plugin structure for Claude Code users.
 
 ### Root Cause
 
-ADR-CI-001 focused on CI quality gates (lint, type-check, test, security) but did not define Layer 3 (Release/Distribution). This was an oversight in the original CI/CD architecture.
+1. ADR-CI-001 focused on CI quality gates but did not define Layer 3 (Release/Distribution)
+2. Initial TD-013 design incorrectly assumed Python package distribution model
 
-### Evidence (ADR-CI-001)
+### Evidence
 
+**ADR-CI-001 (stated intent)**:
 | Line | Quote | Implication |
 |------|-------|-------------|
-| 72 | *"Jerry will be released for others to use"* | Justification for Python matrix testing |
-| 96 | *"Jerry will be released publicly; vulnerable dependencies are unacceptable"* | Security scanning rationale |
-| 109 | *"Portability assured - Matrix testing catches Python version issues"* | Cross-version compatibility |
+| 72 | *"Jerry will be released for others to use"* | Public release intended |
+| 96 | *"Jerry will be released publicly"* | Public distribution |
 
-### User Requirements (2026-01-11)
+**DISC-007 (corrected understanding)**:
+- Jerry is a Claude Code Plugin
+- Distribution = plugin structure, not binaries
+- Users clone/install into their Claude Code environment
+
+### What is a Claude Code Plugin?
+
+A Claude Code Plugin consists of:
+```
+jerry/
+├── .claude/              # Hooks, agents, rules
+│   ├── hooks/            # Pre/post tool use hooks
+│   ├── agents/           # Agent definitions
+│   └── rules/            # Coding standards
+├── skills/               # Natural language interfaces
+├── CLAUDE.md             # Context for Claude
+├── src/                  # Hexagonal core (optional for users)
+└── pyproject.toml        # Python package metadata
+```
+
+### User Requirements (REVISED 2026-01-11)
 
 | Requirement | Description | Rationale |
 |-------------|-------------|-----------|
-| GitHub Releases | Version-tagged releases with downloadable artifacts | Simple distribution without PyPI |
-| macOS binary | Standalone executable for macOS | User's primary platform |
-| Windows binary | Standalone executable for Windows | Friends' platform |
-| No Python required | Bundled runtime in binary | Non-technical users |
+| GitHub Releases | Version-tagged releases with changelog | Simple distribution |
+| Plugin archive | `.tar.gz`/`.zip` of plugin structure | Easy download |
+| Installation docs | How to install in Claude Code | User onboarding |
+| Changelog | What changed in each version | Transparency |
 
 ### Impact
 
-- Users cannot install Jerry without cloning the repo
+- Users cannot easily install Jerry as a Claude Code Plugin
 - No versioned releases for distribution
-- No cross-platform binaries for non-Python users
+- No installation documentation
 - ADR-CI-001 stated intent unfulfilled
 
 ### Proposed Solution
 
-#### Option Analysis (Pending User Decision)
+#### Claude Code Plugin Release Workflow
 
-| Option | Approach | Pros | Cons | Complexity |
-|--------|----------|------|------|------------|
-| **A: PyInstaller** | Compile to standalone binary | No Python required, single file | Large binaries (~50MB), platform-specific builds | Medium |
-| **B: Shiv/PEX** | Python zip app | Smaller than PyInstaller, reproducible | Requires Python on target | Low |
-| **C: Wheel + script** | pip install from GitHub Release | Small size, standard Python packaging | Requires Python on target | Low |
+```yaml
+# Triggered on version tag (v*)
+on:
+  push:
+    tags: ['v*']
 
-#### Recommended: Option A (PyInstaller)
+jobs:
+  release:
+    steps:
+      - Checkout code
+      - Run CI checks (lint, type, test)
+      - Create plugin archive (.tar.gz, .zip)
+      - Generate changelog from commits
+      - Create GitHub Release with artifacts
+```
 
-Based on user requirement "distribution to friends without requiring Python installation", PyInstaller is the appropriate choice. Friends on Windows should not need to install Python.
+#### Implementation Plan
 
-#### Implementation Plan (Pending Approval)
-
-**Phase 1: Research (ADR-REL-001)**
-- [ ] Research PyInstaller GitHub Actions integration
-- [ ] Research cross-platform build matrix (macOS, Windows)
-- [ ] Document binary size and startup time trade-offs
-- [ ] Create ADR-REL-001 for Release Pipeline Architecture
-
-**Phase 2: Implementation**
+**Phase 1: Release Workflow**
 - [ ] Create `.github/workflows/release.yml`
-- [ ] Configure PyInstaller spec for Jerry CLI
-- [ ] Add build matrix: `macos-latest`, `windows-latest`
-- [ ] Configure GitHub Releases artifact upload
+- [ ] Configure trigger on `v*` tags
+- [ ] Add CI checks before release (must pass)
+- [ ] Create archive of plugin structure
 
-**Phase 3: Verification**
-- [ ] Test macOS binary on fresh machine
-- [ ] Test Windows binary on fresh machine
-- [ ] Validate that all CLI commands work in binary form
-- [ ] Document installation instructions
+**Phase 2: Artifact Generation**
+- [ ] Generate `jerry-v{version}.tar.gz`
+- [ ] Generate `jerry-v{version}.zip`
+- [ ] Exclude development files (`.git`, `__pycache__`, etc.)
+- [ ] Include essential plugin files only
+
+**Phase 3: GitHub Release**
+- [ ] Auto-generate release notes from commits
+- [ ] Upload artifacts to release
+- [ ] Tag release with version
+
+**Phase 4: Documentation**
+- [ ] Create `docs/INSTALLATION.md` for Claude Code Plugin
+- [ ] Document version upgrade process
+- [ ] Add troubleshooting section
 
 ### Files to Create/Modify
 
 | File | Action | Description |
 |------|--------|-------------|
-| `.github/workflows/release.yml` | **CREATE** | Release workflow with PyInstaller |
-| `jerry.spec` | **CREATE** | PyInstaller configuration |
-| `pyproject.toml` | MODIFY | Add PyInstaller to dev dependencies |
-| `docs/INSTALLATION.md` | **CREATE** | Installation instructions |
+| `.github/workflows/release.yml` | **CREATE** | Release workflow |
+| `docs/INSTALLATION.md` | **CREATE** | Plugin installation guide |
+| `CHANGELOG.md` | **CREATE** | Version history |
 | `projects/.../decisions/ADR-REL-001-release-pipeline.md` | **CREATE** | Release architecture ADR |
 
 ### Acceptance Criteria (Validatable)
 
 | ID | Criterion | Evidence Required |
 |----|-----------|-------------------|
-| AC-01 | Release workflow triggers on version tag | GitHub Actions run on `v*` tag push |
-| AC-02 | macOS binary built successfully | Artifact in GitHub Release |
-| AC-03 | Windows binary built successfully | Artifact in GitHub Release |
-| AC-04 | Binary runs without Python installed | Test on clean VM/container |
-| AC-05 | All CLI commands work in binary | Integration test pass |
-| AC-06 | GitHub Release created automatically | Release page with artifacts |
-| AC-07 | Binary size documented | Release notes include size |
+| AC-01 | Release workflow triggers on `v*` tag | GitHub Actions run log |
+| AC-02 | CI checks pass before release | All jobs green |
+| AC-03 | `.tar.gz` artifact created | Artifact in GitHub Release |
+| AC-04 | `.zip` artifact created | Artifact in GitHub Release |
+| AC-05 | Release notes auto-generated | Release page content |
+| AC-06 | Installation docs created | `docs/INSTALLATION.md` exists |
+| AC-07 | Plugin installable in Claude Code | Manual verification |
 
 ### References (Industry Prior Art)
 
 | Source | URL | Relevance |
 |--------|-----|-----------|
-| PyInstaller Docs | https://pyinstaller.org/en/stable/ | Binary bundling |
 | GitHub Actions Release | https://docs.github.com/en/actions/using-workflows/releasing-and-maintaining-actions | Release workflow patterns |
 | GitHub Releases API | https://docs.github.com/en/rest/releases | Artifact upload |
-| Shiv (LinkedIn) | https://github.com/linkedin/shiv | Alternative: Python zip apps |
-| PEX (Twitter/X) | https://github.com/pex-tool/pex | Alternative: Python executables |
+| actions/create-release | https://github.com/actions/create-release | Release action |
+| softprops/action-gh-release | https://github.com/softprops/action-gh-release | Alternative release action |
+| Claude Code Plugins | Internal knowledge | Plugin structure |
 
 ### Effort Estimate
 
-M - Medium (4-8 hours)
-- Research & ADR: 1-2 hours
-- Implementation: 2-4 hours
-- Verification: 1-2 hours
+S - Small (2-4 hours)
+- Workflow creation: 1-2 hours
+- Documentation: 1 hour
+- Verification: 1 hour
+
+---
+
+## TD-014: Implement Jerry CLI (Primary Adapter)
+
+> **Status**: ⏳ TODO (Research Phase)
+> **Priority**: **CRITICAL**
+> **Source**: DISC-006 (Broken pyproject.toml entry point)
+> **Blocks**: TD-010 (link-artifact), TD-013 (release)
+
+### Description
+
+`pyproject.toml` defines `jerry = "src.interface.cli.main:main"` but `src/interface/cli/main.py` does not exist. The package is fundamentally broken - cannot be installed.
+
+### Root Cause
+
+Interface layer (Primary Adapters) was never completed. The CLI entry point was defined aspirationally but never implemented.
+
+### Evidence
+
+**pyproject.toml (lines 46-48)**:
+```toml
+[project.scripts]
+jerry = "src.interface.cli.main:main"          # ← DOES NOT EXIST
+jerry-session-start = "src.interface.cli.session_start:main"  # ← EXISTS
+```
+
+**Verification**:
+```bash
+$ ls src/interface/cli/
+__init__.py  session_start.py  # NO main.py
+
+$ pip install -e .
+# Would FAIL when creating jerry console script
+```
+
+### Hexagonal Architecture Context
+
+The CLI is a **Primary Adapter** in hexagonal architecture:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    INTERFACE LAYER                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │   CLI       │  │   API       │  │   Hooks             │ │
+│  │  (PRIMARY)  │  │  (PRIMARY)  │  │   (PRIMARY)         │ │
+│  │  ❌ MISSING │  │             │  │   ✅ session_start  │ │
+│  └──────┬──────┘  └──────┬──────┘  └──────────┬──────────┘ │
+│         │                │                     │            │
+│         ▼                ▼                     ▼            │
+│  ┌─────────────────────────────────────────────────────────┐│
+│  │              APPLICATION LAYER (Use Cases)              ││
+│  │  Commands: CreateWorkItem, CompleteTask, ...            ││
+│  │  Queries: GetWorkItem, ListTasks, ...                   ││
+│  └─────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────┘
+```
+
+### First Principles (Non-Negotiable)
+
+Per user-provided architecture principles:
+
+| Principle | CLI Implication |
+|-----------|-----------------|
+| **Adapters are stupid** | CLI translates protocols, not business rules |
+| **Ports define capabilities** | CLI calls use cases through ports |
+| **Use Cases are the unit of behavior** | CLI maps commands → use cases |
+| **Domain owns invariants** | CLI does NOT validate business rules |
+| **Dependencies point inward** | CLI depends on application, never reverse |
+
+### What CLI Adapters MAY Do
+
+- ✅ Parse input (argparse, click)
+- ✅ Validate syntax (argument types, required fields)
+- ✅ Map DTO → Command
+- ✅ Handle transport errors (stdin/stdout issues)
+- ✅ Format output (JSON, table, human-readable)
+
+### What CLI Adapters MAY NOT Do
+
+- ❌ Contain business rules
+- ❌ Call repositories directly
+- ❌ Decide which aggregate to load
+- ❌ Perform authorization decisions
+
+### Research Required
+
+Before implementation, we need to understand:
+
+1. **What use cases exist?** What commands/queries are available in the application layer?
+2. **What commands are needed?** Based on domain capabilities and user needs
+3. **What patterns exist in knowledge base?** We have prior research on hexagonal architecture
+
+### Implementation Plan
+
+**Phase 1: Research (ps-* Agents)**
+- [ ] ps-researcher: Inventory existing use cases in `src/application/`
+- [ ] ps-researcher: Inventory domain capabilities in `src/domain/`
+- [ ] ps-researcher: Search knowledge base for CLI design patterns
+- [ ] ps-analyst: Analyze gap between domain capabilities and CLI exposure
+- [ ] ps-architect: Design CLI command structure following hexagonal principles
+
+**Phase 2: Design (ADR-CLI-001)**
+- [ ] Create ADR for CLI architecture
+- [ ] Define command groups and subcommands
+- [ ] Define input/output contracts
+- [ ] Select CLI framework (argparse vs click vs typer)
+
+**Phase 3: Implementation (BDD Red/Green/Refactor)**
+- [ ] Create `src/interface/cli/main.py` with entry point
+- [ ] Implement command groups with proper adapter pattern
+- [ ] Write unit tests for input parsing
+- [ ] Write integration tests for use case invocation
+- [ ] Write architecture tests for layer boundary compliance
+
+**Phase 4: Verification**
+- [ ] `pip install -e .` succeeds
+- [ ] `jerry --help` works
+- [ ] All commands invoke correct use cases
+- [ ] Architecture tests pass (no hexagonal violations)
+
+### Files to Create/Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/interface/cli/main.py` | **CREATE** | CLI entry point |
+| `src/interface/cli/commands/` | **CREATE** | Command group modules |
+| `src/interface/cli/formatters/` | **CREATE** | Output formatters |
+| `tests/interface/cli/` | **CREATE** | CLI tests |
+| `tests/architecture/test_cli_boundaries.py` | **CREATE** | Architecture tests |
+| `projects/.../decisions/ADR-CLI-001-cli-architecture.md` | **CREATE** | CLI ADR |
+
+### Acceptance Criteria (Validatable)
+
+| ID | Criterion | Evidence Required |
+|----|-----------|-------------------|
+| AC-01 | `pip install -e .` succeeds | Installation log |
+| AC-02 | `jerry --help` displays help | CLI output |
+| AC-03 | CLI calls use cases, not repositories | Architecture test pass |
+| AC-04 | No business logic in CLI | Code review / tests |
+| AC-05 | Unit tests for input parsing | pytest results |
+| AC-06 | Integration tests for use case invocation | pytest results |
+| AC-07 | TD-010 (link-artifact) unblocked | link-artifact command works |
+
+### Testing Strategy (BDD + Test Pyramid)
+
+| Level | Scope | Example |
+|-------|-------|---------|
+| **Unit** | Input parsing, output formatting | `test_parse_work_item_args()` |
+| **Integration** | CLI → Use Case invocation | `test_create_command_calls_use_case()` |
+| **Architecture** | Layer boundary compliance | `test_cli_does_not_import_repositories()` |
+| **Contract** | Input/output schema validation | `test_json_output_matches_schema()` |
+| **System** | End-to-end command execution | `test_full_workflow_via_cli()` |
+
+### References (Knowledge Base)
+
+| Document | Path | Relevance |
+|----------|------|-----------|
+| Hexagonal Architecture | `docs/knowledge/` (to be searched) | Adapter patterns |
+| CQRS Patterns | `docs/knowledge/` (to be searched) | Command/Query separation |
+| First Principles | User-provided (this session) | Architecture constraints |
+
+### Effort Estimate
+
+L - Large (8-16 hours)
+- Research phase: 2-4 hours (ps-* agents)
+- Design phase: 2-4 hours (ADR)
+- Implementation: 4-6 hours
+- Testing: 2-4 hours
 
 ---
 
@@ -691,3 +892,5 @@ M - Medium (4-8 hours)
 | 2026-01-11 | Claude | Added TD-011, TD-012 (CI-002 failures) |
 | 2026-01-11 | Claude | Completed TD-011, TD-012 (CI-002 resolution) |
 | 2026-01-11 | Claude | Added TD-013: Implement GitHub Releases Pipeline (DISC-005) |
+| 2026-01-11 | Claude | REVISED TD-013: Changed from PyInstaller to Claude Code Plugin release (DISC-007) |
+| 2026-01-11 | Claude | Added TD-014: Implement Jerry CLI Primary Adapter (DISC-006) |

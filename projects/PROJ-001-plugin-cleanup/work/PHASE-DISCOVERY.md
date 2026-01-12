@@ -25,6 +25,8 @@
 | DISC-003 | link-artifact CLI Missing | ELEVATED | TD-010 |
 | DISC-004 | ps-* Orchestration Validates Composed Architecture | ACTIONED | INIT-WT-SKILLS |
 | DISC-005 | Release Pipeline Missing from CI/CD | ELEVATED | TD-013 |
+| DISC-006 | Broken CLI Entry Point in pyproject.toml | ELEVATED | TD-014 |
+| DISC-007 | TD-013 Misunderstood Distribution Model | REVISED | TD-013 |
 
 ---
 
@@ -203,7 +205,81 @@ docs/knowledge/dragonsbelurkin/**/*.md (5 files)
 - ADR-CI-001 stated intent unfulfilled
 
 **Action**: Created TD-013 to implement GitHub Releases pipeline
-**Status**: LOGGED → Elevated to TECHDEBT (TD-013)
+**Status**: LOGGED → Elevated to TECHDEBT (TD-013) → REVISED by DISC-007
+
+---
+
+### DISC-006: Broken CLI Entry Point in pyproject.toml
+
+**Date**: 2026-01-11
+**Context**: Investigating TD-013 release pipeline; checked pyproject.toml for entry points
+**Finding**: pyproject.toml defines CLI entry points that do not exist:
+
+**Evidence from pyproject.toml (lines 46-48)**:
+```toml
+[project.scripts]
+jerry = "src.interface.cli.main:main"          # ← FILE DOES NOT EXIST
+jerry-session-start = "src.interface.cli.session_start:main"  # ← EXISTS
+```
+
+**Verification**:
+```bash
+$ ls src/interface/cli/
+__init__.py  session_start.py  # NO main.py
+```
+
+**Impact**:
+- `pip install jerry` or `pip install -e .` will **FAIL** when creating console scripts
+- Package is fundamentally broken - cannot be installed
+- Violates regression-free principle (P-REGRESS)
+- Interface layer (Primary Adapters) is architecturally incomplete
+
+**Hexagonal Architecture Violation**:
+The CLI is a **Primary Adapter** (drives the application). Its absence means:
+- Domain layer exists ✅
+- Application layer (Use Cases) exists ✅
+- Infrastructure layer (Secondary Adapters) exists ✅
+- **Interface layer (Primary Adapters) is INCOMPLETE** ❌
+
+**Relationship to DISC-003**:
+- DISC-003 identified `link-artifact` CLI command missing
+- DISC-006 identifies the **entire CLI entry point** missing
+- DISC-003 is a subset of DISC-006
+
+**Action**: Created TD-014 to implement CLI following Hexagonal Architecture
+**Status**: LOGGED → Elevated to TECHDEBT (TD-014)
+
+---
+
+### DISC-007: TD-013 Misunderstood Distribution Model
+
+**Date**: 2026-01-11
+**Context**: User clarification during TD-013 planning
+**Finding**: TD-013 was designed for Python package distribution (PyInstaller binaries), but Jerry is a **Claude Code Plugin**, not a standalone application.
+
+**Original (Incorrect) Understanding**:
+- Distribute standalone binaries via PyInstaller
+- Target macOS and Windows executables
+- Users download and run `jerry` CLI
+
+**Correct Understanding**:
+- Jerry is a **Claude Code Plugin**
+- Distribution is the plugin structure itself:
+  - `.claude/` (hooks, agents, rules)
+  - `skills/` (natural language interfaces)
+  - `CLAUDE.md` (context)
+  - `src/` (hexagonal core)
+- Users clone/install the plugin into their Claude Code environment
+- The `jerry` CLI is for **internal tooling**, not end-user distribution
+
+**Impact on TD-013**:
+- Remove PyInstaller approach
+- Focus on GitHub Releases with plugin archive
+- Release artifacts: `.tar.gz`/`.zip` of plugin structure
+- Documentation for Claude Code Plugin installation
+
+**Action**: Revise TD-013 to reflect Claude Code Plugin distribution model
+**Status**: REVISED
 
 ---
 
@@ -221,3 +297,5 @@ docs/knowledge/dragonsbelurkin/**/*.md (5 files)
 | 2026-01-11 | Claude | Added DISC-003: link-artifact CLI missing |
 | 2026-01-11 | Claude | Added DISC-004: ps-* orchestration validates Composed Architecture |
 | 2026-01-11 | Claude | Added DISC-005: Release Pipeline Missing from CI/CD (elevated to TD-013) |
+| 2026-01-11 | Claude | Added DISC-006: Broken CLI Entry Point in pyproject.toml (elevated to TD-014) |
+| 2026-01-11 | Claude | Added DISC-007: TD-013 Misunderstood Distribution Model (TD-013 revised) |

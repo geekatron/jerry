@@ -198,8 +198,8 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 78% (7/9) | - | CI-002, TD-013 |
-| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 5 items | - | DISC-005 |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 70% (7/10) | - | TD-013, TD-014 |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 7 items | - | DISC-005, DISC-006, DISC-007 |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
 
@@ -207,10 +207,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: ✅ CI-002 COMPLETE - All CI jobs passing
+> **Status**: 🔄 v0.0.1 RELEASE WORK - TD-014 (CLI) + TD-013 (Release Pipeline)
 > **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **New Discovery**: DISC-005 → TD-013: Release pipeline missing (GitHub Releases + cross-platform binaries)
-> **Next Step**: v0.0.1 release unblocked - ready for PR merge (then implement TD-013)
+> **Current Focus**: TD-014 Research Phase (ps-* agents investigating CLI architecture)
+> **Blocking Chain**: TD-014 (CLI) → TD-010 (link-artifact) → TD-013 (release)
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
 
@@ -235,6 +235,57 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
   - Security Scan (16s) ✓
   - Test Python 3.11, 3.12, 3.13, 3.14 ✓
   - CI Success ✓
+
+---
+
+### v0.0.1 Release Work (ACTIVE)
+
+**Objective**: Complete Jerry v0.0.1 release with working CLI and release pipeline
+
+**Dependency Chain**:
+```
+TD-014 (CLI)  ─────────────────────────────────────┐
+     │                                              │
+     ▼                                              ▼
+TD-010 (link-artifact) ───────────────────► TD-013 (Release Pipeline)
+```
+
+#### TD-014: Implement Jerry CLI (Primary Adapter)
+
+| Task | Status | Description |
+|------|--------|-------------|
+| TD-014.R1 | 🔄 IN PROGRESS | Research: Inventory use cases in `src/application/` |
+| TD-014.R2 | ⏳ PENDING | Research: Inventory domain capabilities |
+| TD-014.R3 | ⏳ PENDING | Research: Search knowledge base for patterns |
+| TD-014.A1 | ⏳ PENDING | Analysis: Gap between domain and CLI exposure |
+| TD-014.D1 | ⏳ PENDING | Design: CLI architecture (ADR-CLI-001) |
+| TD-014.I1 | ⏳ PENDING | Implement: `src/interface/cli/main.py` |
+| TD-014.I2 | ⏳ PENDING | Implement: Command groups |
+| TD-014.T1 | ⏳ PENDING | Tests: Unit, Integration, Architecture |
+| TD-014.V1 | ⏳ PENDING | Verify: `pip install -e .` + `jerry --help` |
+
+**Research Questions**:
+1. What use cases exist in `src/application/`?
+2. What domain capabilities need CLI exposure?
+3. What CLI patterns exist in the knowledge base?
+4. What commands should `jerry` CLI provide?
+
+**Discoveries During TD-014**:
+- DISC-006: `jerry` entry point in pyproject.toml broken
+- DISC-007: TD-013 originally misunderstood distribution model
+
+#### TD-013: GitHub Releases Pipeline (Claude Code Plugin)
+
+| Task | Status | Description |
+|------|--------|-------------|
+| TD-013.1 | ⏳ PENDING | Create `.github/workflows/release.yml` |
+| TD-013.2 | ⏳ PENDING | Configure `v*` tag trigger |
+| TD-013.3 | ⏳ PENDING | Generate plugin archive artifacts |
+| TD-013.4 | ⏳ PENDING | Auto-generate release notes |
+| TD-013.5 | ⏳ PENDING | Create `docs/INSTALLATION.md` |
+| TD-013.6 | ⏳ PENDING | Verify: Tag push creates release |
+
+**Blocked By**: TD-014 (CLI must work for full release)
 
 ---
 
@@ -839,3 +890,8 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | **CI-002 COMPLETE**: All CI jobs passing (run 20904191996) - v0.0.1 unblocked |
 | 2026-01-11 | Claude | DISC-005: Release pipeline missing from CI/CD (user requirement: GitHub Releases + macOS/Windows binaries) |
 | 2026-01-11 | Claude | TD-013: Elevated DISC-005 to tech debt - implement GitHub Releases with PyInstaller binaries |
+| 2026-01-11 | Claude | DISC-006: Broken CLI entry point in pyproject.toml (`jerry` script references non-existent file) |
+| 2026-01-11 | Claude | DISC-007: TD-013 misunderstood distribution model - Jerry is Claude Code Plugin, not Python package |
+| 2026-01-11 | Claude | TD-014: Elevated DISC-006 to CRITICAL tech debt - implement Jerry CLI Primary Adapter |
+| 2026-01-11 | Claude | **REVISED TD-013**: Changed from PyInstaller to Claude Code Plugin release workflow |
+| 2026-01-11 | Claude | v0.0.1 RELEASE WORK: TD-014 (CLI) + TD-013 (Release) - research phase starting |
