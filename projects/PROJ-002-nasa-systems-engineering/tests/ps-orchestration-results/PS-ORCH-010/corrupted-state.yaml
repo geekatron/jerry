@@ -1,0 +1,112 @@
+# ORCHESTRATION.yaml - Corrupted State (Simulating Failure)
+# PS-ORCH-010 Checkpoint Restore Validation Test
+#
+# CORRUPTION APPLIED:
+# - Phase 2 status: COMPLETE -> FAILED
+# - agent-2 status: COMPLETE -> FAILED
+# - agent-2 artifact: cleared (simulating partial write)
+# - metrics: regressed
+# - resumption: reflects failed state
+
+workflow:
+  id: "ps-orch-010-restore-test"
+  name: "Checkpoint Restore Validation"
+  project_id: "PROJ-002"
+  version: "2.0"
+  status: "FAILED"  # CORRUPTED: was ACTIVE
+  created_at: "2026-01-12T20:00:00Z"
+  updated_at: "2026-01-12T20:15:00Z"
+
+pipelines:
+  pipeline_a:
+    id: "pipeline-a"
+    name: "Test Pipeline"
+    short_alias: "test"
+    status: "PHASE_2_FAILED"  # CORRUPTED: was PHASE_3_PENDING
+    current_phase: 2
+    total_phases: 3
+    progress_percent: 33  # CORRUPTED: was 66
+
+    phases:
+      - id: 1
+        name: "Phase 1 - Initial"
+        path_id: "phase-1"
+        status: "COMPLETE"  # Preserved
+        started_at: "2026-01-12T20:00:00Z"
+        completed_at: "2026-01-12T20:02:00Z"
+        agents:
+          - id: "agent-1"
+            name: "Phase 1 Agent"
+            status: "COMPLETE"  # Preserved
+            artifact: "phase-1/agent-1/agent-1-output.md"
+
+      - id: 2
+        name: "Phase 2 - Processing"
+        path_id: "phase-2"
+        status: "FAILED"  # CORRUPTED: was COMPLETE
+        started_at: "2026-01-12T20:03:00Z"
+        completed_at: null  # CORRUPTED: was 2026-01-12T20:05:00Z
+        agents:
+          - id: "agent-2"
+            name: "Phase 2 Agent"
+            status: "FAILED"  # CORRUPTED: was COMPLETE
+            artifact: null  # CORRUPTED: was path to output
+
+      - id: 3
+        name: "Phase 3 - Final"
+        path_id: "phase-3"
+        status: "BLOCKED"  # CORRUPTED: was PENDING
+        blocked_by: "phase-2-failure"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "agent-3"
+            name: "Phase 3 Agent"
+            status: "BLOCKED"  # CORRUPTED: was PENDING
+            artifact: null
+
+checkpoints:
+  latest_id: "CP-TEST-001"  # Checkpoint preserved!
+  entries:
+    - id: "CP-TEST-001"
+      timestamp: "2026-01-12T20:05:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Checkpoint after Phase 2 completion"
+      recovery_point: "phase-3-start"
+      state_snapshot:
+        phases_complete: 2
+        phases_total: 3
+        agent_statuses:
+          agent-1: "COMPLETE"
+          agent-2: "COMPLETE"  # THIS IS THE RECOVERABLE STATE
+          agent-3: "PENDING"
+        artifact_paths:
+          - "phase-1/agent-1/agent-1-output.md"
+          - "phase-2/agent-2/agent-2-output.md"
+
+metrics:
+  execution:
+    phases_complete: 1  # CORRUPTED: was 2
+    phases_total: 3
+    phases_percent: 33  # CORRUPTED: was 66
+    agents_executed: 1  # CORRUPTED: was 2
+    agents_total: 3
+    agents_percent: 33  # CORRUPTED: was 66
+    artifacts_created: 1  # CORRUPTED: was 2
+    artifacts_total: 3
+    artifacts_percent: 33  # CORRUPTED: was 66
+
+blockers:
+  active:
+    - id: "BLK-001"
+      description: "Phase 2 agent-2 failed unexpectedly"
+      blocking: ["phase-3", "agent-3"]
+      severity: "HIGH"
+      created_at: "2026-01-12T20:10:00Z"
+
+resumption:
+  last_checkpoint: "CP-TEST-001"
+  current_state: "FAILED - Phase 2 agent-2 failed"
+  next_step: "RECOVERY REQUIRED - restore from CP-TEST-001"
+  cross_session_portable: true
+  ephemeral_references: false

@@ -355,8 +355,30 @@ All artifact paths are dynamically constructed using workflow and pipeline ident
 | Component | Path Pattern |
 |-----------|--------------|
 | Base Path | `orchestration/{workflow_id}/` |
-| Pipeline Artifacts | `orchestration/{workflow_id}/{pipeline_alias}/{phase_id}/` |
+| Pipeline Artifacts | `orchestration/{workflow_id}/{pipeline_alias}/{phase_id}/{agent_id}/` |
 | Cross-Pollination | `orchestration/{workflow_id}/cross-pollination/{barrier_id}/{source}-to-{target}/` |
+
+**Agent-Level Isolation (AC-012-004):**
+
+Each agent writes to its own subdirectory to prevent file collisions during parallel (fan-out) execution:
+
+```
+orchestration/{workflow_id}/{pipeline_alias}/phase-{N}/{agent_id}/
+```
+
+**Defense in Depth - Unique Filenames:**
+
+For mission-critical workflows, artifacts SHOULD use unique filenames that include the agent ID, providing two layers of protection:
+
+```
+orchestration/{workflow_id}/{pipeline_alias}/phase-{N}/{agent_id}/{agent_id}-{artifact_type}.md
+```
+
+This ensures:
+- **Primary protection:** Directory isolation (each agent has own directory)
+- **Secondary protection:** Unique filenames (safe even if flattened)
+- **Full provenance:** Agent ID in both path AND filename
+- **Safe synthesis:** Can merge to single directory without collision
 
 **Example Path Resolution:**
 
@@ -364,11 +386,12 @@ Given:
 - `workflow_id`: `sao-crosspoll-20260110-001`
 - `pipeline_a.short_alias`: `ps`
 - `pipeline_b.short_alias`: `nse`
+- `agent_id`: `agent-a-001`
 
-Resolved paths:
+Resolved paths (with defense in depth):
 ```
-orchestration/sao-crosspoll-20260110-001/ps/phase-1/artifact.md
-orchestration/sao-crosspoll-20260110-001/nse/phase-1/artifact.md
+orchestration/sao-crosspoll-20260110-001/ps/phase-1/agent-a-001/agent-a-001-research.md
+orchestration/sao-crosspoll-20260110-001/nse/phase-1/agent-b-001/agent-b-001-analysis.md
 orchestration/sao-crosspoll-20260110-001/cross-pollination/barrier-1/ps-to-nse/handoff.md
 ```
 

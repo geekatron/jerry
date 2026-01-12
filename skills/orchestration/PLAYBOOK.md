@@ -110,11 +110,11 @@ agents:
     status: "PENDING"
     artifact: null
 
-# After agent execution (resolved path)
+# After agent execution (resolved path with agent-level isolation - AC-012-004)
 agents:
   - id: "agent-a-001"
     status: "COMPLETE"
-    artifact: "orchestration/sao-crosspoll-20260110-001/ps/phase-1/research.md"
+    artifact: "orchestration/sao-crosspoll-20260110-001/ps/phase-1/agent-a-001/research.md"
 ```
 
 ### Phase 3: Cross Barriers

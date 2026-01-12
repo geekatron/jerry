@@ -48,10 +48,11 @@ paths:
   # Base path for all orchestration artifacts
   base: "orchestration/{workflow.id}/"
 
-  # Pipeline artifact path pattern
+  # Pipeline artifact path pattern (AC-012-004: Agent-level isolation)
   # {pipeline_alias} is derived from pipelines.{key}.short_alias
-  # {phase_id} is the phase identifier (e.g., "phase-1-research")
-  pipeline: "{base}{pipeline_alias}/{phase_id}/"
+  # {phase_id} is the phase identifier (e.g., "phase-1")
+  # {agent_id} provides isolation for parallel (fan-out) execution
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
 
   # Barrier artifact path pattern
   # {barrier_id} is the barrier number (e.g., "barrier-1")
@@ -59,8 +60,8 @@ paths:
   barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
 
   # Examples (with workflow.id = "sao-crosspoll-20260110-001"):
-  # - Pipeline: orchestration/sao-crosspoll-20260110-001/ps/phase-1-research/
-  # - Barrier:  orchestration/sao-crosspoll-20260110-001/cross-pollination/barrier-1/ps-to-nse/
+  # - Pipeline: orchestration/sao-crosspoll-20260110-001/ps/phase-1/agent-a-001/output.md
+  # - Barrier:  orchestration/sao-crosspoll-20260110-001/cross-pollination/barrier-1/ps-to-nse/handoff.md
 
 # =============================================================================
 # PIPELINE DEFINITIONS
@@ -93,9 +94,10 @@ pipelines:
           - id: "agent-a-001"
             name: "{AGENT_NAME}"
             status: "PENDING"
-            # Artifact path uses dynamic construction:
-            # {paths.pipeline} + artifact filename
-            artifact: "orchestration/{workflow.id}/{pipeline_a.short_alias}/phase-1/{artifact_name}.md"
+            # Artifact path uses dynamic construction with agent-level isolation (AC-012-004):
+            # {paths.pipeline} resolved with agent_id subdirectory
+            # Defense in depth: filename includes agent_id for safe flattening
+            artifact: "orchestration/{workflow.id}/{pipeline_a.short_alias}/phase-1/agent-a-001/agent-a-001-{artifact_type}.md"
             inputs: []
         artifacts: []
 
@@ -110,7 +112,7 @@ pipelines:
           - id: "agent-a-002"
             name: "{AGENT_NAME}"
             status: "BLOCKED"
-            artifact: "orchestration/{workflow.id}/{pipeline_a.short_alias}/phase-2/{artifact_name}.md"
+            artifact: "orchestration/{workflow.id}/{pipeline_a.short_alias}/phase-2/agent-a-002/{artifact_name}.md"
         artifacts: []
 
   # Pipeline B definition
@@ -139,7 +141,7 @@ pipelines:
           - id: "agent-b-001"
             name: "{AGENT_NAME}"
             status: "PENDING"
-            artifact: "orchestration/{workflow.id}/{pipeline_b.short_alias}/phase-1/{artifact_name}.md"
+            artifact: "orchestration/{workflow.id}/{pipeline_b.short_alias}/phase-1/agent-b-001/{artifact_name}.md"
         artifacts: []
 
       - id: 2
@@ -153,7 +155,7 @@ pipelines:
           - id: "agent-b-002"
             name: "{AGENT_NAME}"
             status: "BLOCKED"
-            artifact: "orchestration/{workflow.id}/{pipeline_b.short_alias}/phase-2/{artifact_name}.md"
+            artifact: "orchestration/{workflow.id}/{pipeline_b.short_alias}/phase-2/agent-b-002/{artifact_name}.md"
         artifacts: []
 
 # =============================================================================
