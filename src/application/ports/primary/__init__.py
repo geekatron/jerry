@@ -14,13 +14,13 @@ Per Clean Architecture:
     - They are IMPLEMENTED in the application layer
 """
 
-from src.application.ports.primary.iquerydispatcher import (
-    IQueryDispatcher,
-    QueryHandlerNotFoundError,
-)
 from src.application.ports.primary.icommanddispatcher import (
     DuplicateHandlerError,
     ICommandDispatcher,
+)
+from src.application.ports.primary.iquerydispatcher import (
+    IQueryDispatcher,
+    QueryHandlerNotFoundError,
 )
 
 __all__ = [

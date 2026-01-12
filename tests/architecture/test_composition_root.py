@@ -12,7 +12,6 @@ Test methodology: Inspect module imports using AST analysis.
 from __future__ import annotations
 
 import ast
-import importlib.util
 from pathlib import Path
 
 
@@ -71,9 +70,7 @@ class TestCompositionRootBoundaries:
         imports = get_imports_from_file(bootstrap_path)
 
         # Bootstrap SHOULD import infrastructure
-        assert has_infrastructure_import(imports), (
-            "Bootstrap must import infrastructure adapters"
-        )
+        assert has_infrastructure_import(imports), "Bootstrap must import infrastructure adapters"
 
     def test_application_dispatchers_have_no_infrastructure_imports(self) -> None:
         """Application dispatchers must not import infrastructure."""
@@ -120,9 +117,7 @@ class TestCleanArchitectureBoundaries:
 
             for imp in imports:
                 for pattern in interface_patterns:
-                    assert pattern not in imp, (
-                        f"{handler_file.name} imports from interface: {imp}"
-                    )
+                    assert pattern not in imp, f"{handler_file.name} imports from interface: {imp}"
 
     def test_application_layer_files_count(self) -> None:
         """Application layer has expected number of files."""

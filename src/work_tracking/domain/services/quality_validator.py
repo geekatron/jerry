@@ -28,9 +28,9 @@ from dataclasses import dataclass, field
 from typing import Protocol, runtime_checkable
 
 from src.work_tracking.domain.value_objects import (
+    Coverage,
     GateLevel,
     RiskTier,
-    Coverage,
     TypeRatio,
 )
 

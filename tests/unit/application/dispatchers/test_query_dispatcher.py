@@ -22,7 +22,6 @@ from src.application.ports import (
     QueryHandlerNotFoundError,
 )
 
-
 # === Test Fixtures ===
 
 

@@ -39,8 +39,8 @@ from src.work_tracking.domain.events.work_item_events import (
     WorkItemCreated,
 )
 from src.work_tracking.domain.value_objects import (
-    Priority,
     Coverage,
+    Priority,
     TypeRatio,
     WorkItemId,
     WorkItemStatus,

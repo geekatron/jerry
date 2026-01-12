@@ -14,10 +14,10 @@ import pytest
 # Skip module if pytest-bdd is not installed
 pytest_bdd = pytest.importorskip("pytest_bdd", reason="pytest-bdd not installed")
 
-from pytest_bdd import given, parsers, scenarios, then, when
+from pytest_bdd import given, parsers, scenarios, then, when  # noqa: E402
 
 # Import the module under test (will fail until implemented - RED phase)
-from src.shared_kernel.snowflake_id import SnowflakeIdGenerator
+from src.shared_kernel.snowflake_id import SnowflakeIdGenerator  # noqa: E402
 
 # Load all scenarios from the feature file
 scenarios("../features/shared_kernel/snowflake_id.feature")

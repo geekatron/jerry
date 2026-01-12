@@ -19,7 +19,6 @@ from src.application.handlers.queries import ScanProjectsQueryHandler
 from src.application.queries import ScanProjectsQuery
 from src.session_management.application.ports import RepositoryError
 
-
 # === Happy Path Tests (60%) ===
 
 

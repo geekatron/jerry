@@ -26,6 +26,7 @@ References:
 
 from __future__ import annotations
 
+from .coverage import Coverage
 from .priority import Priority
 from .quality_gate import (
     GateCheckDefinition,
@@ -35,7 +36,6 @@ from .quality_gate import (
     Threshold,
     ThresholdType,
 )
-from .coverage import Coverage
 from .type_ratio import QualityLevel, TypeRatio
 from .work_item_id import WorkItemId
 from .work_item_status import InvalidStateTransitionError, WorkItemStatus

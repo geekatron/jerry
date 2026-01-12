@@ -17,7 +17,8 @@ Example:
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from src.application.ports.primary.icommanddispatcher import DuplicateHandlerError
 from src.application.ports.primary.iquerydispatcher import QueryHandlerNotFoundError
@@ -48,7 +49,7 @@ class QueryDispatcher:
         self,
         query_type: type,
         handler: Callable[[Any], Any],
-    ) -> "QueryDispatcher":
+    ) -> QueryDispatcher:
         """Register a handler for a query type.
 
         Args:

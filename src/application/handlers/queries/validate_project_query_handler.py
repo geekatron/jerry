@@ -36,9 +36,7 @@ class ValidateProjectQueryHandler:
         """
         self._repository = repository
 
-    def handle(
-        self, query: ValidateProjectQuery
-    ) -> tuple[ProjectId | None, ValidationResult]:
+    def handle(self, query: ValidateProjectQuery) -> tuple[ProjectId | None, ValidationResult]:
         """Handle the ValidateProjectQuery.
 
         Args:

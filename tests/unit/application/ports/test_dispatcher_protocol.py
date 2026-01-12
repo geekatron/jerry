@@ -12,10 +12,6 @@ Test Distribution per impl-es-e-003:
 
 from __future__ import annotations
 
-from typing import Protocol, TypeVar, runtime_checkable
-
-import pytest
-
 
 class TestIQueryDispatcherProtocol:
     """Tests for IQueryDispatcher protocol definition."""

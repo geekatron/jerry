@@ -16,7 +16,6 @@ NO infrastructure imports are allowed in this module.
 from __future__ import annotations
 
 import json
-import sys
 from typing import Any
 
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
