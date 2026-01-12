@@ -405,5 +405,92 @@ session_context:
 
 ---
 
+## DISCOVERY-010: work-XXX Naming Convention is Valid Pattern
+
+- **Discovered:** 2026-01-12
+- **Severity:** LOW (false positive in test harness)
+- **Discovery Context:** WI-SAO-037 playbook validation test harness development
+- **Finding:**
+
+The playbook validation test harness initially flagged `work-XXX-topic.md` patterns as placeholders, but this is actually a valid naming convention for work item references.
+
+**Valid Patterns Identified:**
+- `work-XXX-topic.md` - Work item file naming convention
+- `XXX-\d+` - ID patterns (e.g., XXX-001)
+- `XXX-e-` - Evidence ID patterns
+
+**Resolution:**
+- Updated test harness exclude patterns to recognize these as valid
+- Test harness now passes all three playbooks
+
+**Impact:**
+- Test harness accuracy improved
+- No documentation changes needed
+
+---
+
+## DISCOVERY-011: nse-architecture Missing State Management Section
+
+- **Discovered:** 2026-01-12
+- **Severity:** LOW (documentation gap)
+- **Discovery Context:** WI-SAO-040 session context schema validation
+- **Finding:**
+
+The `nse-architecture.md` agent file is missing the explicit State Management section that defines the Output Key. All other 18 agents have this section.
+
+**Evidence:**
+```
+skills/nasa-se/agents/nse-architecture.md
+- Has session_context in frontmatter
+- Missing: State Management section with Output Key
+- Other agents have: `**Output Key:** `{type}_output``
+```
+
+**Resolution:**
+- Flagged as technical debt
+- Low priority as schema_version is correctly implemented
+
+**Impact:**
+- Minor documentation inconsistency
+- No functional impact (agent works correctly)
+
+---
+
+## DISCOVERY-012: Critical Documentation Gaps in Problem-Solving Playbook
+
+- **Discovered:** 2026-01-12
+- **Severity:** CRITICAL (user-reported gaps)
+- **Discovery Context:** User review of SAO-INIT-007 "complete" status
+- **Finding:**
+
+The problem-solving PLAYBOOK.md was marked complete but has critical gaps:
+
+**Gap Analysis:**
+
+| Gap ID | Severity | Description | Impact |
+|--------|----------|-------------|--------|
+| GAP-012-001 | **CRITICAL** | Generator-Critic loop not documented | Users can't use ps-critic effectively |
+| GAP-012-002 | **CRITICAL** | ps-critic agent usage not explained | Agent exists but undocumented |
+| GAP-012-003 | **HIGH** | No concrete L0/L1/L2 examples | Users lack real-world reference |
+| GAP-012-004 | **MEDIUM** | @ symbol invocation not documented | Users don't know invocation syntax |
+| GAP-012-005 | **HIGH** | nse-* Generator-Critic applicability unknown | NASA SE feedback loops unclear |
+
+**Root Cause:**
+Initial playbook refactoring focused on structural compliance (L0/L1/L2 lens) but missed functional completeness (all agent interactions, concrete examples, invocation methods).
+
+**Resolution:**
+- SAO-INIT-007 reopened (9/13 → 9/13 complete with 4 new work items)
+- WI-SAO-042: Research & document Generator-Critic patterns (P1)
+- WI-SAO-043: Add L0/L1/L2 concrete examples (P1)
+- WI-SAO-044: Document @ symbol agent invocation (P2)
+- WI-SAO-045: Verify nse-* Generator-Critic applicability (P1)
+
+**Impact:**
+- Initiative completion delayed
+- Additional ~13h estimated effort
+- Playbook quality will improve significantly
+
+---
+
 *Last Updated: 2026-01-12*
-*Source: Extended with DISCOVERY-008, DISCOVERY-009 from SAO-INIT-007 deep research*
+*Source: Extended with DISCOVERY-010, DISCOVERY-011, DISCOVERY-012 from SAO-INIT-007 validation*
