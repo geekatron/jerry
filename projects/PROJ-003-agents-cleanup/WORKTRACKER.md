@@ -13,9 +13,9 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 24 |
-| Completed | 10 (Phase 0 + wi-01-001, wi-01-002, wi-01-003) |
+| Completed | 15 (Phase 0, Phase 1, Phase 2) |
 | In Progress | 0 |
-| Pending | 14 |
+| Pending | 9 |
 | Blocked | 0 |
 
 ---
@@ -25,8 +25,8 @@
 | Phase | Name | Status | Work Items | Duration Est. |
 |-------|------|--------|------------|---------------|
 | 0 | Research | COMPLETED | 7/7 | - |
-| 1 | Plugin Infrastructure | IN_PROGRESS | 3/4 | 1-2 hours |
-| 2 | Skill Frontmatter | PENDING | 0/4 | 1-2 hours |
+| 1 | Plugin Infrastructure | COMPLETED | 4/4 | - |
+| 2 | Skill Frontmatter | COMPLETED | 4/4 | - |
 | 3 | Agent Standardization | PENDING | 0/4 | 2-3 hours |
 | 4 | Hook System | PENDING | 0/4 | 1-2 hours |
 | 5 | Registry Update | PENDING | 0/1 | 30 min |
@@ -47,25 +47,25 @@
 
 ---
 
-## Phase 1: Plugin Infrastructure (IN_PROGRESS)
+## Phase 1: Plugin Infrastructure (COMPLETED)
 
 | ID | Title | Status | File |
 |----|-------|--------|------|
 | wi-01-001 | Rename manifest.json to plugin.json | DONE | [wi-01-001.md](work/wi-01-001.md) |
 | wi-01-002 | Update plugin.json schema and fields | DONE | [wi-01-002.md](work/wi-01-002.md) |
 | wi-01-003 | Create commands directory and move files | DONE | [wi-01-003.md](work/wi-01-003.md) |
-| wi-01-004 | Cleanup and validate plugin structure | PENDING | [wi-01-004.md](work/wi-01-004.md) |
+| wi-01-004 | Cleanup and validate plugin structure | DONE | [wi-01-004.md](work/wi-01-004.md) |
 
 ---
 
-## Phase 2: Skill Frontmatter (PENDING)
+## Phase 2: Skill Frontmatter (COMPLETED)
 
 | ID | Title | Status | File |
 |----|-------|--------|------|
-| wi-02-001 | Add frontmatter to worktracker SKILL.md | PENDING | [wi-02-001.md](work/wi-02-001.md) |
-| wi-02-002 | Add frontmatter to architecture SKILL.md | PENDING | [wi-02-002.md](work/wi-02-002.md) |
-| wi-02-003 | Add frontmatter to worktracker-decomposition SKILL.md | PENDING | [wi-02-003.md](work/wi-02-003.md) |
-| wi-02-004 | Update problem-solving SKILL.md trigger phrases | PENDING | [wi-02-004.md](work/wi-02-004.md) |
+| wi-02-001 | Add frontmatter to worktracker SKILL.md | DONE | [wi-02-001.md](work/wi-02-001.md) |
+| wi-02-002 | Add frontmatter to architecture SKILL.md | DONE | [wi-02-002.md](work/wi-02-002.md) |
+| wi-02-003 | Add frontmatter to worktracker-decomposition SKILL.md | DONE | [wi-02-003.md](work/wi-02-003.md) |
+| wi-02-004 | Update problem-solving SKILL.md trigger phrases | DONE | [wi-02-004.md](work/wi-02-004.md) |
 
 ---
 
