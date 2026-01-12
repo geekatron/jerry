@@ -8,6 +8,7 @@ for the structured output.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from ...domain import InvalidProjectIdError, ProjectId, ValidationResult
 from ..ports import IEnvironmentProvider, IProjectRepository, RepositoryError
@@ -21,7 +22,7 @@ class GetProjectContextQuery:
     environment: IEnvironmentProvider
     base_path: str
 
-    def execute(self) -> dict:
+    def execute(self) -> dict[str, Any]:
         """Execute the get project context query.
 
         Returns:
@@ -34,7 +35,7 @@ class GetProjectContextQuery:
         """
         jerry_project = self.environment.get_env("JERRY_PROJECT")
 
-        result = {
+        result: dict[str, Any] = {
             "jerry_project": jerry_project,
             "project_id": None,
             "validation": None,

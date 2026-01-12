@@ -16,7 +16,7 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 from uuid import UUID, uuid4
 
 # =============================================================================
@@ -92,7 +92,7 @@ class StoredSnapshot:
     aggregate_id: str
     aggregate_type: str
     version: int
-    state: dict
+    state: dict[str, Any]
     timestamp: datetime = field(default_factory=_current_utc)
     snapshot_id: UUID = field(default_factory=uuid4)
 
@@ -107,7 +107,7 @@ class StoredSnapshot:
         if not isinstance(self.state, dict):
             raise TypeError(f"state must be a dict, got {type(self.state).__name__}")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """
         Serialize to dictionary for persistence.
 
@@ -124,7 +124,7 @@ class StoredSnapshot:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> StoredSnapshot:
+    def from_dict(cls, data: dict[str, Any]) -> StoredSnapshot:
         """
         Deserialize from dictionary.
 

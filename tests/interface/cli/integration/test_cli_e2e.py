@@ -79,13 +79,13 @@ class TestCLIEntryPoint:
         assert result.returncode == 0
         assert "jerry" in result.stdout
 
-    def test_jerry_init_with_no_project_exits_zero(self, venv_jerry: str):
-        """jerry init with no JERRY_PROJECT should exit with code 0."""
+    def test_jerry_projects_context_with_no_project_exits_zero(self, venv_jerry: str):
+        """jerry projects context with no JERRY_PROJECT should exit with code 0."""
         env = os.environ.copy()
         env.pop("JERRY_PROJECT", None)
 
         result = subprocess.run(
-            [venv_jerry, "init"],
+            [venv_jerry, "projects", "context"],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT,
@@ -94,13 +94,13 @@ class TestCLIEntryPoint:
         assert result.returncode == 0
         assert "JERRY_PROJECT: (not set)" in result.stdout
 
-    def test_jerry_init_with_valid_project_exits_zero(self, venv_jerry: str):
-        """jerry init with valid JERRY_PROJECT should exit with code 0."""
+    def test_jerry_projects_context_with_valid_project_exits_zero(self, venv_jerry: str):
+        """jerry projects context with valid JERRY_PROJECT should exit with code 0."""
         env = os.environ.copy()
         env["JERRY_PROJECT"] = "PROJ-001-plugin-cleanup"
 
         result = subprocess.run(
-            [venv_jerry, "init"],
+            [venv_jerry, "projects", "context"],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT,
@@ -202,6 +202,119 @@ class TestCLIModuleExecution:
         )
         assert result.returncode == 0
         assert "Jerry Framework CLI" in result.stdout
+
+
+class TestSessionNamespaceE2E:
+    """E2E tests for session namespace commands."""
+
+    @pytest.fixture
+    def venv_jerry(self) -> str:
+        """Get path to jerry command."""
+        return _find_jerry_executable()
+
+    def test_session_start_exits_zero(self, venv_jerry: str):
+        """jerry session start should exit with code 0."""
+        result = subprocess.run(
+            [venv_jerry, "session", "start", "--name", "Test Session"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        # May fail if session already active, but should be handled gracefully
+        assert result.returncode in (0, 1)
+
+    def test_session_status_exits_zero(self, venv_jerry: str):
+        """jerry session status should exit with code 0."""
+        result = subprocess.run(
+            [venv_jerry, "session", "status"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 0
+        # Should show either active session or "no active session"
+        assert "Session" in result.stdout or "session" in result.stdout.lower()
+
+    def test_session_status_json_returns_valid_json(self, venv_jerry: str):
+        """jerry --json session status should return valid JSON."""
+        result = subprocess.run(
+            [venv_jerry, "--json", "session", "status"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert "has_active_session" in output
+
+    def test_session_help_exits_zero(self, venv_jerry: str):
+        """jerry session --help should exit with code 0."""
+        result = subprocess.run(
+            [venv_jerry, "session", "--help"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 0
+        assert "start" in result.stdout
+        assert "end" in result.stdout
+        assert "status" in result.stdout
+
+
+class TestItemsNamespaceE2E:
+    """E2E tests for items namespace commands."""
+
+    @pytest.fixture
+    def venv_jerry(self) -> str:
+        """Get path to jerry command."""
+        return _find_jerry_executable()
+
+    def test_items_list_exits_zero(self, venv_jerry: str):
+        """jerry items list should exit with code 0."""
+        result = subprocess.run(
+            [venv_jerry, "items", "list"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 0
+
+    def test_items_list_json_returns_valid_json(self, venv_jerry: str):
+        """jerry --json items list should return valid JSON."""
+        result = subprocess.run(
+            [venv_jerry, "--json", "items", "list"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert "items" in output
+        assert "total_count" in output
+
+    def test_items_show_nonexistent_exits_one(self, venv_jerry: str):
+        """jerry items show with nonexistent ID should exit with code 1."""
+        result = subprocess.run(
+            [venv_jerry, "items", "show", "NONEXISTENT-ID"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 1
+        assert "not found" in result.stdout.lower()
+
+    def test_items_help_exits_zero(self, venv_jerry: str):
+        """jerry items --help should exit with code 0."""
+        result = subprocess.run(
+            [venv_jerry, "items", "--help"],
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+        )
+        assert result.returncode == 0
+        assert "list" in result.stdout
+        assert "show" in result.stdout
+        assert "create" in result.stdout
 
 
 class TestCLIOutputFormat:

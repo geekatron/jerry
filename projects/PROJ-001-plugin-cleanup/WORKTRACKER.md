@@ -2,7 +2,7 @@
 
 > Multi-Project Support Cleanup - Persistent work tracking for context compaction survival.
 
-**Last Updated**: 2026-01-11T23:30:00Z
+**Last Updated**: 2026-01-12T12:30:00Z
 **Project ID**: PROJ-001-plugin-cleanup
 **Branch**: cc/task-subtask
 **Environment Variable**: `JERRY_PROJECT=PROJ-001-plugin-cleanup`
@@ -198,8 +198,9 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 6 | [PHASE-06](work/PHASE-06-ENFORCEMENT.md) | ✅ DONE | 100% | Phase 5, 7 | None |
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
-| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 75% (9/12) | - | TD-015, TD-016 |
-| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 7 items | - | DISC-005, DISC-006, DISC-007 |
+| TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 92% (12/13, TD-018 ✅) | - | TD-019 (future) |
+| **Phase 4** | [PHASE-04-CLI-NAMESPACES](work/PHASE-04-CLI-NAMESPACES.md) | ✅ COMPLETE | Phase 4.1-4.5 ✅ | TD-015 ✅, TD-018 ✅ | v0.1.0 |
+| DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 20 items (8 resolved) | - | All blockers resolved |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
 
@@ -207,11 +208,12 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: ✅ TD-015 REMEDIATION COMPLETE - All Design Canon Violations Fixed
-> **Active Initiative**: TD-015 - CLI Architecture Remediation
-> **Current Focus**: All remediation tasks complete, ready for commit
-> **Completed**: TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
-> **Test Count**: 76 tests pass in TD-015 scope (all architecture violations fixed)
+> **Status**: ✅ Pre-v0.1.0 Cleanup COMPLETE
+> **Active Initiative**: v0.1.0 Release Preparation
+> **Current Focus**: Ready for v0.1.0 Release
+> **Completed This Session**: TD-018 ✅, Phase 4.5 ✅, DISC-012 ✅ (TOON, 47 tests), DISC-017 ✅ (__main__.py)
+> **Completed**: DISC-012 ✅ → DISC-017 ✅ → TD-018 ✅ → Phase 4.5 ✅ → TD-016 ✅ → TD-015 ✅ → v0.0.1 ✅
+> **Target Version**: v0.1.0 (blockers resolved)
 
 ### TD-015: Architecture Remediation Status (COMPLETE ✅)
 
@@ -223,7 +225,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | R-004: Clean up old files | ✅ COMPLETE | 21 | Old handler files deleted |
 | R-005: Add projections infra | ✅ COMPLETE | 19 | `projections/`, `read_models/` |
 | Phase 3: Entry Point | ✅ COMPLETE | - | `main.py` uses bootstrap |
-| Phase 4: CLI Namespaces | ⏳ FUTURE | 0 | Not in current scope |
+| Phase 4: CLI Namespaces | 🔄 IN PROGRESS | 0 | `research/phase4-cli-e-001-5w1h-namespaces.md` |
 | Phase 5: TOON Format | ⏳ FUTURE | 0 | Not in current scope |
 
 #### Design Canon Violations FIXED
@@ -280,7 +282,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 1 | **TD-016** | Create Comprehensive Coding Standards & Pattern Catalog | ✅ COMPLETE |
 | 2 | **TD-015 Remediation** | Fix design canon violations (file structure, naming, events, projections) | ✅ COMPLETE |
 | 3 | Phase 3 | Update main.py entry point to use bootstrap | ✅ COMPLETE |
-| 4 | Phase 4 | CLI Namespaces per bounded context | ⏳ FUTURE |
+| 4 | Phase 4 | CLI Namespaces per bounded context | 🔄 IN PROGRESS |
 | 5 | Phase 5 | TOON Format Integration | ⏳ FUTURE |
 | 6 | Tech Debt | Address remaining clean architecture gaps | ⏳ FUTURE |
 
@@ -1115,3 +1117,13 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | TD-015.R-004: Cleaned up old handler files, updated all test imports |
 | 2026-01-11 | Claude | TD-015.R-005: Added projections infrastructure (IReadModelStore, InMemoryReadModelStore) |
 | 2026-01-11 | Claude | Phase 3: Updated main.py entry point to use bootstrap composition root |
+| 2026-01-12 | Claude | **PHASE 4.5 ITEMS COMMANDS STARTED**: Implementation for work item mutations |
+| 2026-01-12 | Claude | 4.5.1 COMPLETE: 5 command definitions (CreateWorkItemCommand, StartWorkItemCommand, CompleteWorkItemCommand, BlockWorkItemCommand, CancelWorkItemCommand) |
+| 2026-01-12 | Claude | 4.5.2 COMPLETE: 5 command handlers with CQRS pattern |
+| 2026-01-12 | Claude | 4.5.3 COMPLETE: CommandDispatcher wired in bootstrap.py composition root |
+| 2026-01-12 | Claude | 4.5.4 COMPLETE: CLIAdapter updated with 5 cmd_items_* methods |
+| 2026-01-12 | Claude | 4.5.5 COMPLETE: 31 unit tests for commands and handlers |
+| 2026-01-12 | Claude | BUG-006: Handlers returning empty event lists - save() double-collect_events() bug |
+| 2026-01-12 | Claude | BUG-006 FIX: IWorkItemRepository.save() now returns list[DomainEvent] |
+| 2026-01-12 | Claude | 4.5.6 COMPLETE: 19 integration tests (E2E, event persistence, lifecycle) |
+| 2026-01-12 | Claude | **PHASE 4.5 COMPLETE**: Items commands implemented (1636 tests pass, 0 regressions)
