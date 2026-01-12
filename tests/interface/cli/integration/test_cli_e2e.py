@@ -79,13 +79,13 @@ class TestCLIEntryPoint:
         assert result.returncode == 0
         assert "jerry" in result.stdout
 
-    def test_jerry_init_with_no_project_exits_zero(self, venv_jerry: str):
-        """jerry init with no JERRY_PROJECT should exit with code 0."""
+    def test_jerry_projects_context_with_no_project_exits_zero(self, venv_jerry: str):
+        """jerry projects context with no JERRY_PROJECT should exit with code 0."""
         env = os.environ.copy()
         env.pop("JERRY_PROJECT", None)
 
         result = subprocess.run(
-            [venv_jerry, "init"],
+            [venv_jerry, "projects", "context"],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT,
@@ -94,13 +94,13 @@ class TestCLIEntryPoint:
         assert result.returncode == 0
         assert "JERRY_PROJECT: (not set)" in result.stdout
 
-    def test_jerry_init_with_valid_project_exits_zero(self, venv_jerry: str):
-        """jerry init with valid JERRY_PROJECT should exit with code 0."""
+    def test_jerry_projects_context_with_valid_project_exits_zero(self, venv_jerry: str):
+        """jerry projects context with valid JERRY_PROJECT should exit with code 0."""
         env = os.environ.copy()
         env["JERRY_PROJECT"] = "PROJ-001-plugin-cleanup"
 
         result = subprocess.run(
-            [venv_jerry, "init"],
+            [venv_jerry, "projects", "context"],
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT,

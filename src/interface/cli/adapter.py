@@ -65,7 +65,18 @@ class CLIAdapter:
         self._projects_dir = projects_dir
 
     def cmd_init(self, json_output: bool = False) -> int:
-        """Execute the init command.
+        """Execute the init command (deprecated, use cmd_projects_context).
+
+        Args:
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success)
+        """
+        return self.cmd_projects_context(json_output=json_output)
+
+    def cmd_projects_context(self, json_output: bool = False) -> int:
+        """Display project context (replaces 'init' in v0.1.0).
 
         Args:
             json_output: Whether to output as JSON
@@ -216,3 +227,271 @@ class CLIAdapter:
             lines.append(f"{str(p.id):<32}{status:<12}{path}")
 
         return "\n".join(lines)
+
+    # =========================================================================
+    # Session Namespace Commands (Phase 4.3 - Stub implementations)
+    # =========================================================================
+
+    def cmd_session_start(
+        self,
+        name: str | None = None,
+        description: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """Start a new session.
+
+        Args:
+            name: Optional session name
+            description: Optional session description
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.3.
+        """
+        if json_output:
+            print(json.dumps({"error": "Session commands not yet implemented"}))
+        else:
+            print("Error: Session commands not yet implemented (Phase 4.3)")
+        return 1
+
+    def cmd_session_end(
+        self,
+        summary: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """End the current session.
+
+        Args:
+            summary: Optional session summary
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.3.
+        """
+        if json_output:
+            print(json.dumps({"error": "Session commands not yet implemented"}))
+        else:
+            print("Error: Session commands not yet implemented (Phase 4.3)")
+        return 1
+
+    def cmd_session_status(self, json_output: bool = False) -> int:
+        """Show current session status.
+
+        Args:
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.3.
+        """
+        if json_output:
+            print(json.dumps({"error": "Session commands not yet implemented"}))
+        else:
+            print("Error: Session commands not yet implemented (Phase 4.3)")
+        return 1
+
+    def cmd_session_abandon(
+        self,
+        reason: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """Abandon the current session.
+
+        Args:
+            reason: Optional reason for abandonment
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.3.
+        """
+        if json_output:
+            print(json.dumps({"error": "Session commands not yet implemented"}))
+        else:
+            print("Error: Session commands not yet implemented (Phase 4.3)")
+        return 1
+
+    # =========================================================================
+    # Items Namespace Commands (Phase 4.4/4.5 - Stub implementations)
+    # =========================================================================
+
+    def cmd_items_list(
+        self,
+        status: str | None = None,
+        work_type: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """List work items.
+
+        Args:
+            status: Optional status filter
+            work_type: Optional type filter
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.4.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.4)")
+        return 1
+
+    def cmd_items_show(
+        self,
+        item_id: str,
+        json_output: bool = False,
+    ) -> int:
+        """Show work item details.
+
+        Args:
+            item_id: Work item ID to show
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.4.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.4)")
+        return 1
+
+    def cmd_items_create(
+        self,
+        title: str,
+        work_type: str = "task",
+        parent: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """Create a new work item.
+
+        Args:
+            title: Work item title
+            work_type: Work item type (task, bug, story, etc.)
+            parent: Optional parent work item ID
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.5.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.5)")
+        return 1
+
+    def cmd_items_start(
+        self,
+        item_id: str,
+        json_output: bool = False,
+    ) -> int:
+        """Start work on an item.
+
+        Args:
+            item_id: Work item ID to start
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.5.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.5)")
+        return 1
+
+    def cmd_items_complete(
+        self,
+        item_id: str,
+        json_output: bool = False,
+    ) -> int:
+        """Complete a work item.
+
+        Args:
+            item_id: Work item ID to complete
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.5.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.5)")
+        return 1
+
+    def cmd_items_block(
+        self,
+        item_id: str,
+        reason: str,
+        json_output: bool = False,
+    ) -> int:
+        """Block a work item.
+
+        Args:
+            item_id: Work item ID to block
+            reason: Reason for blocking
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.5.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.5)")
+        return 1
+
+    def cmd_items_cancel(
+        self,
+        item_id: str,
+        reason: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """Cancel a work item.
+
+        Args:
+            item_id: Work item ID to cancel
+            reason: Optional reason for cancellation
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        Note:
+            Stub implementation. Full implementation in Phase 4.5.
+        """
+        if json_output:
+            print(json.dumps({"error": "Items commands not yet implemented"}))
+        else:
+            print("Error: Items commands not yet implemented (Phase 4.5)")
+        return 1

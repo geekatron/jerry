@@ -1,7 +1,6 @@
-"""Unit tests for Jerry CLI main module and CLIAdapter.
+"""Unit tests for Jerry CLI adapter and bootstrap helpers.
 
 Tests cover:
-- Argument parsing (main.py)
 - CLIAdapter command methods (adapter.py)
 - Output formatting (adapter.py)
 - Bootstrap helpers (bootstrap.py)
@@ -10,6 +9,9 @@ Note: After the TD-015 Clean Architecture refactoring:
 - Command handlers are now methods on CLIAdapter
 - CLIAdapter receives dispatcher via constructor injection
 - get_projects_directory() moved to src.bootstrap
+
+Note: Parser tests are in test_parser.py (Phase 4.1)
+Note: Main routing tests are in test_main_v2.py (Phase 4.2)
 """
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ import pytest
 
 from src.bootstrap import get_projects_directory
 from src.interface.cli.adapter import CLIAdapter
-from src.interface.cli.main import __version__, create_parser
+from src.interface.cli.parser import __version__
 from src.session_management.domain import ProjectId, ProjectStatus, ValidationResult
 
 
@@ -34,50 +36,6 @@ class MockProjectInfo:
 
     def __str__(self) -> str:
         return str(self.id)
-
-
-class TestCreateParser:
-    """Tests for create_parser function."""
-
-    def test_parser_has_version_option(self):
-        """Parser should have --version option."""
-        parser = create_parser()
-        # Verify --version exists by checking it doesn't raise
-        with pytest.raises(SystemExit):  # --version exits
-            parser.parse_args(["--version"])
-
-    def test_parser_has_json_option(self):
-        """Parser should have --json option."""
-        parser = create_parser()
-        args = parser.parse_args(["--json", "init"])
-        assert args.json is True
-
-    def test_parser_has_init_command(self):
-        """Parser should have init command."""
-        parser = create_parser()
-        args = parser.parse_args(["init"])
-        assert args.command == "init"
-
-    def test_parser_has_projects_list_command(self):
-        """Parser should have projects list command."""
-        parser = create_parser()
-        args = parser.parse_args(["projects", "list"])
-        assert args.command == "projects"
-        assert args.projects_command == "list"
-
-    def test_parser_has_projects_validate_command(self):
-        """Parser should have projects validate command with project_id arg."""
-        parser = create_parser()
-        args = parser.parse_args(["projects", "validate", "PROJ-001-test"])
-        assert args.command == "projects"
-        assert args.projects_command == "validate"
-        assert args.project_id == "PROJ-001-test"
-
-    def test_parser_no_command_leaves_command_none(self):
-        """Parser with no command should leave args.command as None."""
-        parser = create_parser()
-        args = parser.parse_args([])
-        assert args.command is None
 
 
 class TestFormatProjectTable:

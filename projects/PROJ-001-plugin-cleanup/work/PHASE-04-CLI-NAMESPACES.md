@@ -50,11 +50,11 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 
 | Task | Description | Status | Evidence |
 |------|-------------|--------|----------|
-| 4.2.1 | Rename `init` to `projects context` | ⏳ PENDING | Command works |
-| 4.2.2 | Migrate `projects list` | ⏳ PENDING | Command works |
-| 4.2.3 | Migrate `projects validate` | ⏳ PENDING | Command works |
-| 4.2.4 | Update adapter methods | ⏳ PENDING | `adapter.py` updated |
-| 4.2.5 | Write regression tests | ⏳ PENDING | All existing functionality preserved |
+| 4.2.1 | Rename `init` to `projects context` | ✅ COMPLETE | `cmd_projects_context()` in adapter.py |
+| 4.2.2 | Migrate `projects list` | ✅ COMPLETE | Existing `cmd_projects_list()` works |
+| 4.2.3 | Migrate `projects validate` | ✅ COMPLETE | Existing `cmd_projects_validate()` works |
+| 4.2.4 | Update adapter methods | ✅ COMPLETE | `adapter.py` has all methods (stubs for session/items) |
+| 4.2.5 | Write regression tests | ✅ COMPLETE | All 71 CLI tests pass, 1444 total pass |
 
 **Test Matrix (4.2.5)**:
 | Category | Count | Tests |
@@ -62,6 +62,13 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 | Happy Path | 3 | context, list, validate work |
 | Negative | 2 | Invalid project ID, unknown command |
 | Regression | 3 | Output matches v0.0.1 format |
+
+**Files Changed**:
+- `src/interface/cli/adapter.py`: Added `cmd_projects_context()` + session/items stubs
+- `src/interface/cli/main.py`: Updated routing to use namespace handlers
+- `tests/interface/cli/unit/test_main.py`: Updated imports, removed obsolete parser tests
+- `tests/interface/cli/unit/test_main_v2.py`: NEW - routing tests for v0.1.0
+- `tests/interface/cli/integration/test_cli_e2e.py`: Updated `init` → `projects context`
 
 ### Phase 4.3: Session Namespace
 
@@ -178,7 +185,10 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 | 2026-01-12 | Work file created | ✅ |
 | 2026-01-12 | Phase 4.1 Parser Infrastructure complete | ✅ |
 | 2026-01-12 | 33 new parser tests written and passing | ✅ |
-| - | Phase 4.2 Projects namespace migration | ⏳ NEXT |
+| 2026-01-12 | Phase 4.2 Projects namespace migration complete | ✅ |
+| 2026-01-12 | cmd_projects_context() added, adapter stubs for session/items | ✅ |
+| 2026-01-12 | All 71 CLI tests, 1444 total tests passing | ✅ |
+| - | Phase 4.3 Session namespace implementation | ⏳ NEXT |
 
 ---
 
