@@ -8,6 +8,7 @@ and domain logic to fulfill a specific use case.
 
 from .get_next_number import GetNextProjectNumberQuery
 from .get_project_context import GetProjectContextQuery
+from .get_session_status_query import GetSessionStatusQuery
 from .scan_projects import ScanProjectsQuery
 from .validate_project import ValidateProjectQuery
 
@@ -16,4 +17,5 @@ __all__ = [
     "ValidateProjectQuery",
     "GetNextProjectNumberQuery",
     "GetProjectContextQuery",
+    "GetSessionStatusQuery",
 ]

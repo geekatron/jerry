@@ -36,7 +36,11 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any
 
-from src.bootstrap import create_query_dispatcher, get_projects_directory
+from src.bootstrap import (
+    create_query_dispatcher,
+    create_session_command_handlers,
+    get_projects_directory,
+)
 from src.interface.cli.adapter import CLIAdapter
 from src.interface.cli.parser import __version__, create_parser
 
@@ -51,11 +55,16 @@ def create_cli_adapter() -> CLIAdapter:
     All dependencies are wired here via the bootstrap module.
 
     Returns:
-        CLIAdapter with injected dispatcher and configuration
+        CLIAdapter with injected dispatcher, session handlers, and configuration
     """
     dispatcher = create_query_dispatcher()
     projects_dir = get_projects_directory()
-    return CLIAdapter(dispatcher=dispatcher, projects_dir=projects_dir)
+    session_handlers = create_session_command_handlers()
+    return CLIAdapter(
+        dispatcher=dispatcher,
+        projects_dir=projects_dir,
+        session_handlers=session_handlers,
+    )
 
 
 def main() -> int:

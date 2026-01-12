@@ -70,28 +70,51 @@ Reorganize Jerry's CLI commands into bounded-context-aligned namespaces:
 - `tests/interface/cli/unit/test_main_v2.py`: NEW - routing tests for v0.1.0
 - `tests/interface/cli/integration/test_cli_e2e.py`: Updated `init` → `projects context`
 
-### Phase 4.3: Session Namespace
+### Phase 4.3: Session Namespace ✅ COMPLETE
 
-**Prerequisite**: Application layer handlers must be created first.
+**Prerequisite**: Application layer handlers created.
 
 | Task | Description | Status | Evidence |
 |------|-------------|--------|----------|
-| 4.3.1 | Create `CreateSessionCommand` + handler | ⏳ PENDING | Handler exists |
-| 4.3.2 | Create `EndSessionCommand` + handler | ⏳ PENDING | Handler exists |
-| 4.3.3 | Create `AbandonSessionCommand` + handler | ⏳ PENDING | Handler exists |
-| 4.3.4 | Create `GetSessionStatusQuery` + handler | ⏳ PENDING | Handler exists |
-| 4.3.5 | Implement `jerry session start` | ⏳ PENDING | Command works |
-| 4.3.6 | Implement `jerry session end` | ⏳ PENDING | Command works |
-| 4.3.7 | Implement `jerry session status` | ⏳ PENDING | Command works |
-| 4.3.8 | Implement `jerry session abandon` | ⏳ PENDING | Command works |
-| 4.3.9 | Write unit tests for session commands | ⏳ PENDING | Tests pass |
+| 4.3.1 | Create `ISessionRepository` port | ✅ COMPLETE | `src/session_management/application/ports/session_repository.py` |
+| 4.3.2 | Create `CreateSessionCommand` + handler | ✅ COMPLETE | `src/session_management/application/commands/create_session_command.py` |
+| 4.3.3 | Create `EndSessionCommand` + handler | ✅ COMPLETE | `src/session_management/application/commands/end_session_command.py` |
+| 4.3.4 | Create `AbandonSessionCommand` + handler | ✅ COMPLETE | `src/session_management/application/commands/abandon_session_command.py` |
+| 4.3.5 | Create `GetSessionStatusQuery` + handler | ✅ COMPLETE | `src/session_management/application/queries/get_session_status_query.py` |
+| 4.3.6 | Create `InMemorySessionRepository` adapter | ✅ COMPLETE | `src/session_management/infrastructure/adapters/in_memory_session_repository.py` |
+| 4.3.7 | Wire session handlers in bootstrap.py | ✅ COMPLETE | `src/bootstrap.py` updated |
+| 4.3.8 | Update CLIAdapter session methods | ✅ COMPLETE | `src/interface/cli/adapter.py` (lines 250-469) |
+| 4.3.9 | Write unit tests for session handlers | ✅ COMPLETE | 18 tests in `tests/session_management/unit/application/test_session_handlers.py` |
 
-**Test Matrix (4.3.9)**:
+**Test Matrix (4.3.9)**: 18 tests pass
 | Category | Count | Tests |
 |----------|-------|-------|
-| Happy Path | 4 | start, end, status, abandon work |
-| Negative | 3 | start when active, end when none, abandon without reason |
-| Edge | 2 | JSON output, multiple sessions |
+| Happy Path | 11 | create, end, abandon, status - returns events and saves |
+| Negative | 4 | create when active, end when none, abandon when none |
+| Edge | 3 | JSON output, sequential sessions, repository injection |
+
+**Files Created**:
+- `src/session_management/application/ports/session_repository.py`
+- `src/session_management/application/commands/__init__.py`
+- `src/session_management/application/commands/create_session_command.py`
+- `src/session_management/application/commands/end_session_command.py`
+- `src/session_management/application/commands/abandon_session_command.py`
+- `src/session_management/application/handlers/commands/__init__.py`
+- `src/session_management/application/handlers/commands/create_session_command_handler.py`
+- `src/session_management/application/handlers/commands/end_session_command_handler.py`
+- `src/session_management/application/handlers/commands/abandon_session_command_handler.py`
+- `src/session_management/application/handlers/queries/__init__.py`
+- `src/session_management/application/handlers/queries/get_session_status_query_handler.py`
+- `src/session_management/infrastructure/adapters/in_memory_session_repository.py`
+- `tests/session_management/unit/application/test_session_handlers.py`
+
+**Files Modified**:
+- `src/bootstrap.py`: Added session repository singleton and handlers wiring
+- `src/interface/cli/adapter.py`: Implemented session commands with handler integration
+- `src/interface/cli/main.py`: Added session handler creation to CLI adapter factory
+- `src/session_management/infrastructure/__init__.py`: Export InMemorySessionRepository
+- `src/session_management/infrastructure/adapters/__init__.py`: Export InMemorySessionRepository
+- `src/session_management/application/queries/__init__.py`: Export GetSessionStatusQuery
 
 ### Phase 4.4: Items Namespace (Queries First)
 

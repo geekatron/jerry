@@ -11,9 +11,11 @@ to interact with external systems (filesystem, environment, etc.).
 from .environment import IEnvironmentProvider
 from .exceptions import RepositoryError
 from .project_repository import IProjectRepository
+from .session_repository import ISessionRepository
 
 __all__ = [
     "IProjectRepository",
     "IEnvironmentProvider",
+    "ISessionRepository",
     "RepositoryError",
 ]

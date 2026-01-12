@@ -35,10 +35,38 @@ from src.application.queries import (
     ScanProjectsQuery,
     ValidateProjectQuery,
 )
+from src.session_management.application.handlers.commands import (
+    AbandonSessionCommandHandler,
+    CreateSessionCommandHandler,
+    EndSessionCommandHandler,
+)
+from src.session_management.application.handlers.queries import GetSessionStatusQueryHandler
+from src.session_management.application.queries import GetSessionStatusQuery
 from src.session_management.infrastructure import (
     FilesystemProjectAdapter,
+    InMemorySessionRepository,
     OsEnvironmentAdapter,
 )
+
+# Module-level session repository singleton for session state persistence
+# In production, this would be replaced with a file-based or database repository
+_session_repository: InMemorySessionRepository | None = None
+
+
+def get_session_repository() -> InMemorySessionRepository:
+    """Get the shared session repository instance.
+
+    Returns:
+        InMemorySessionRepository singleton instance
+
+    Note:
+        This is a module-level singleton to preserve session state
+        across CLI invocations within the same process.
+    """
+    global _session_repository
+    if _session_repository is None:
+        _session_repository = InMemorySessionRepository()
+    return _session_repository
 
 
 def get_projects_directory() -> str:
@@ -68,19 +96,25 @@ def create_query_dispatcher() -> QueryDispatcher:
         QueryDispatcher with all handlers registered
     """
     # Create infrastructure adapters (secondary adapters)
-    repository = FilesystemProjectAdapter()
+    project_repository = FilesystemProjectAdapter()
     environment = OsEnvironmentAdapter()
+    session_repository = get_session_repository()
 
-    # Create handlers with injected dependencies
+    # Create project-related handlers
     retrieve_project_context_handler = RetrieveProjectContextQueryHandler(
-        repository=repository,
+        repository=project_repository,
         environment=environment,
     )
     scan_projects_handler = ScanProjectsQueryHandler(
-        repository=repository,
+        repository=project_repository,
     )
     validate_project_handler = ValidateProjectQueryHandler(
-        repository=repository,
+        repository=project_repository,
+    )
+
+    # Create session-related handlers
+    get_session_status_handler = GetSessionStatusQueryHandler(
+        repository=session_repository,
     )
 
     # Create and configure dispatcher
@@ -88,5 +122,23 @@ def create_query_dispatcher() -> QueryDispatcher:
     dispatcher.register(RetrieveProjectContextQuery, retrieve_project_context_handler.handle)
     dispatcher.register(ScanProjectsQuery, scan_projects_handler.handle)
     dispatcher.register(ValidateProjectQuery, validate_project_handler.handle)
+    dispatcher.register(GetSessionStatusQuery, get_session_status_handler.handle)
 
     return dispatcher
+
+
+def create_session_command_handlers() -> dict:
+    """Create session command handlers.
+
+    Returns a dictionary of command handlers for session management.
+
+    Returns:
+        Dictionary mapping command types to handler instances
+    """
+    session_repository = get_session_repository()
+
+    return {
+        "create": CreateSessionCommandHandler(repository=session_repository),
+        "end": EndSessionCommandHandler(repository=session_repository),
+        "abandon": AbandonSessionCommandHandler(repository=session_repository),
+    }

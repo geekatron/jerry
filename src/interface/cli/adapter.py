@@ -6,9 +6,10 @@ It does NOT instantiate any infrastructure adapters directly.
 
 The adapter's responsibility is to:
 1. Parse CLI arguments
-2. Create query data objects
+2. Create query/command data objects
 3. Dispatch queries through the injected dispatcher
-4. Format and display results
+4. Execute commands through injected handlers
+5. Format and display results
 
 NO infrastructure imports are allowed in this module.
 """
@@ -16,7 +17,7 @@ NO infrastructure imports are allowed in this module.
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
 from src.application.queries import (
@@ -24,6 +25,19 @@ from src.application.queries import (
     ScanProjectsQuery,
     ValidateProjectQuery,
 )
+from src.session_management.application.commands import (
+    AbandonSessionCommand,
+    CreateSessionCommand,
+    EndSessionCommand,
+)
+from src.session_management.application.queries import GetSessionStatusQuery
+
+if TYPE_CHECKING:
+    from src.session_management.application.handlers.commands import (
+        AbandonSessionCommandHandler,
+        CreateSessionCommandHandler,
+        EndSessionCommandHandler,
+    )
 
 
 class CLIAdapter:
@@ -35,18 +49,22 @@ class CLIAdapter:
     Attributes:
         _dispatcher: The query dispatcher for routing queries
         _projects_dir: Path to projects directory
+        _session_handlers: Optional dictionary of session command handlers
     """
 
     def __init__(
         self,
         dispatcher: IQueryDispatcher,
         projects_dir: str | None = None,
+        session_handlers: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the CLI adapter.
 
         Args:
             dispatcher: Query dispatcher for routing queries
             projects_dir: Optional projects directory override
+            session_handlers: Optional dict of session command handlers
+                Keys: "create", "end", "abandon"
 
         Raises:
             ValueError: If dispatcher is None
@@ -55,6 +73,7 @@ class CLIAdapter:
             raise ValueError("dispatcher cannot be None")
 
         self._dispatcher = dispatcher
+        self._session_handlers = session_handlers
 
         # Use bootstrap helper if not provided
         if projects_dir is None:
@@ -229,7 +248,7 @@ class CLIAdapter:
         return "\n".join(lines)
 
     # =========================================================================
-    # Session Namespace Commands (Phase 4.3 - Stub implementations)
+    # Session Namespace Commands (Phase 4.3)
     # =========================================================================
 
     def cmd_session_start(
@@ -247,15 +266,53 @@ class CLIAdapter:
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.3.
         """
-        if json_output:
-            print(json.dumps({"error": "Session commands not yet implemented"}))
-        else:
-            print("Error: Session commands not yet implemented (Phase 4.3)")
-        return 1
+        if self._session_handlers is None:
+            if json_output:
+                print(json.dumps({"error": "Session handlers not configured"}))
+            else:
+                print("Error: Session handlers not configured")
+            return 1
+
+        handler = self._session_handlers.get("create")
+        if handler is None:
+            if json_output:
+                print(json.dumps({"error": "CreateSession handler not available"}))
+            else:
+                print("Error: CreateSession handler not available")
+            return 1
+
+        try:
+            command = CreateSessionCommand(
+                name=name,
+                description=description,
+            )
+            events = handler.handle(command)
+
+            # Get the created session ID from the first event (uses aggregate_id)
+            session_id = events[0].aggregate_id if events else "unknown"
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "session_id": session_id,
+                    "message": "Session started",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Session started: {session_id}")
+                if description:
+                    print(f"Description: {description}")
+
+            return 0
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     def cmd_session_end(
         self,
@@ -270,15 +327,50 @@ class CLIAdapter:
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.3.
         """
-        if json_output:
-            print(json.dumps({"error": "Session commands not yet implemented"}))
-        else:
-            print("Error: Session commands not yet implemented (Phase 4.3)")
-        return 1
+        if self._session_handlers is None:
+            if json_output:
+                print(json.dumps({"error": "Session handlers not configured"}))
+            else:
+                print("Error: Session handlers not configured")
+            return 1
+
+        handler = self._session_handlers.get("end")
+        if handler is None:
+            if json_output:
+                print(json.dumps({"error": "EndSession handler not available"}))
+            else:
+                print("Error: EndSession handler not available")
+            return 1
+
+        try:
+            command = EndSessionCommand(summary=summary)
+            events = handler.handle(command)
+
+            # Get the session ID from the first event (uses aggregate_id)
+            session_id = events[0].aggregate_id if events else "unknown"
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "session_id": session_id,
+                    "message": "Session ended",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Session ended: {session_id}")
+                if summary:
+                    print(f"Summary: {summary}")
+
+            return 0
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     def cmd_session_status(self, json_output: bool = False) -> int:
         """Show current session status.
@@ -287,16 +379,36 @@ class CLIAdapter:
             json_output: Whether to output as JSON
 
         Returns:
-            Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.3.
+            Exit code (0 for success)
         """
+        query = GetSessionStatusQuery()
+        status = self._dispatcher.dispatch(query)
+
         if json_output:
-            print(json.dumps({"error": "Session commands not yet implemented"}))
+            output = {
+                "has_active_session": status.has_active_session,
+                "session_id": status.session_id,
+                "status": status.status,
+                "description": status.description,
+                "project_id": status.project_id,
+                "started_at": status.started_at.isoformat() if status.started_at else None,
+            }
+            print(json.dumps(output, indent=2))
         else:
-            print("Error: Session commands not yet implemented (Phase 4.3)")
-        return 1
+            if not status.has_active_session:
+                print("No active session.")
+                print("\nUse 'jerry session start' to begin a new session.")
+            else:
+                print(f"Session ID: {status.session_id}")
+                print(f"Status: {status.status}")
+                if status.description:
+                    print(f"Description: {status.description}")
+                if status.project_id:
+                    print(f"Project: {status.project_id}")
+                if status.started_at:
+                    print(f"Started: {status.started_at.strftime('%Y-%m-%d %H:%M:%S')}")
+
+        return 0
 
     def cmd_session_abandon(
         self,
@@ -311,15 +423,50 @@ class CLIAdapter:
 
         Returns:
             Exit code (0 for success, 1 for error)
-
-        Note:
-            Stub implementation. Full implementation in Phase 4.3.
         """
-        if json_output:
-            print(json.dumps({"error": "Session commands not yet implemented"}))
-        else:
-            print("Error: Session commands not yet implemented (Phase 4.3)")
-        return 1
+        if self._session_handlers is None:
+            if json_output:
+                print(json.dumps({"error": "Session handlers not configured"}))
+            else:
+                print("Error: Session handlers not configured")
+            return 1
+
+        handler = self._session_handlers.get("abandon")
+        if handler is None:
+            if json_output:
+                print(json.dumps({"error": "AbandonSession handler not available"}))
+            else:
+                print("Error: AbandonSession handler not available")
+            return 1
+
+        try:
+            command = AbandonSessionCommand(reason=reason)
+            events = handler.handle(command)
+
+            # Get the session ID from the first event (uses aggregate_id)
+            session_id = events[0].aggregate_id if events else "unknown"
+
+            if json_output:
+                output = {
+                    "success": True,
+                    "session_id": session_id,
+                    "message": "Session abandoned",
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                print(f"Session abandoned: {session_id}")
+                if reason:
+                    print(f"Reason: {reason}")
+
+            return 0
+
+        except Exception as e:
+            error_msg = str(e)
+            if json_output:
+                print(json.dumps({"error": error_msg}))
+            else:
+                print(f"Error: {error_msg}")
+            return 1
 
     # =========================================================================
     # Items Namespace Commands (Phase 4.4/4.5 - Stub implementations)
