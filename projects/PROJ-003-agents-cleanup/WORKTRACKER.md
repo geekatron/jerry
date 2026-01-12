@@ -13,9 +13,9 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 24 |
-| Completed | 19 (Phase 0, Phase 1, Phase 2, Phase 3) |
+| Completed | 23 (Phase 0-4 complete) |
 | In Progress | 0 |
-| Pending | 5 |
+| Pending | 1 (wi-05-001) |
 | Blocked | 0 |
 
 ---
@@ -28,7 +28,7 @@
 | 1 | Plugin Infrastructure | COMPLETED | 4/4 | - |
 | 2 | Skill Frontmatter | COMPLETED | 4/4 | - |
 | 3 | Agent Standardization | COMPLETED | 4/4 | - |
-| 4 | Hook System | PENDING | 0/4 | 1-2 hours |
+| 4 | Hook System | COMPLETED | 4/4 | - |
 | 5 | Registry Update | PENDING | 0/1 | 30 min |
 
 ---
@@ -80,14 +80,14 @@
 
 ---
 
-## Phase 4: Hook System (PENDING)
+## Phase 4: Hook System (COMPLETED)
 
 | ID | Title | Status | File |
 |----|-------|--------|------|
-| wi-04-001 | Update hooks.json paths to use CLAUDE_PLUGIN_ROOT | PENDING | [wi-04-001.md](work/wi-04-001.md) |
-| wi-04-002 | Add PreToolUse hook for Write/Edit validation | PENDING | [wi-04-002.md](work/wi-04-002.md) |
-| wi-04-003 | Migrate scripts from .claude/hooks/ | PENDING | [wi-04-003.md](work/wi-04-003.md) |
-| wi-04-004 | Cleanup and validate hook system | PENDING | [wi-04-004.md](work/wi-04-004.md) |
+| wi-04-001 | Update hooks.json paths to use CLAUDE_PLUGIN_ROOT | DONE | [wi-04-001.md](work/wi-04-001.md) |
+| wi-04-002 | Add PreToolUse hook for Write/Edit validation | DONE | [wi-04-002.md](work/wi-04-002.md) |
+| wi-04-003 | Migrate scripts from .claude/hooks/ | DONE | [wi-04-003.md](work/wi-04-003.md) |
+| wi-04-004 | Cleanup and validate hook system | DONE | [wi-04-004.md](work/wi-04-004.md) |
 
 ---
 
