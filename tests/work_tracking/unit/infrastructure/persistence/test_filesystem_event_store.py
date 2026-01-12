@@ -66,9 +66,7 @@ class TestFileSystemEventStoreAppend:
 
         assert store.get_version("WORK-001") == 1
 
-    def test_append_with_zero_expected_for_new_stream(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_append_with_zero_expected_for_new_stream(self, store: FileSystemEventStore) -> None:
         """Can use expected_version=0 for new streams."""
         event = create_event("WORK-001", version=1)
 
@@ -99,9 +97,7 @@ class TestFileSystemEventStoreAppend:
 
         assert store.get_version("WORK-001") == 2
 
-    def test_append_raises_on_wrong_expected_version(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_append_raises_on_wrong_expected_version(self, store: FileSystemEventStore) -> None:
         """append raises ConcurrencyError on version mismatch."""
         event1 = create_event("WORK-001", version=1)
         store.append("WORK-001", [event1], expected_version=-1)
@@ -119,9 +115,7 @@ class TestFileSystemEventStoreAppend:
         with pytest.raises(ValueError, match="empty"):
             store.append("WORK-001", [], expected_version=-1)
 
-    def test_append_wrong_event_version_raises(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_append_wrong_event_version_raises(self, store: FileSystemEventStore) -> None:
         """append raises ValueError if event versions are not sequential."""
         events = [
             create_event("WORK-001", version=1),
@@ -131,9 +125,7 @@ class TestFileSystemEventStoreAppend:
         with pytest.raises(ValueError, match="version mismatch"):
             store.append("WORK-001", events, expected_version=-1)
 
-    def test_append_wrong_stream_id_in_event_raises(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_append_wrong_stream_id_in_event_raises(self, store: FileSystemEventStore) -> None:
         """append raises ValueError if event stream_id doesn't match."""
         event = create_event("WORK-002", version=1)  # Wrong stream_id
 
@@ -200,9 +192,7 @@ class TestFileSystemEventStoreRead:
 class TestFileSystemEventStoreGetVersion:
     """Tests for FileSystemEventStore.get_version()."""
 
-    def test_returns_minus_one_for_nonexistent_stream(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_returns_minus_one_for_nonexistent_stream(self, store: FileSystemEventStore) -> None:
         """get_version returns -1 for non-existent stream."""
         assert store.get_version("NONEXISTENT") == -1
 
@@ -314,9 +304,7 @@ class TestFileSystemEventStorePersistence:
     when the store is destroyed and recreated.
     """
 
-    def test_events_persist_after_store_recreation(
-        self, temp_store_path: Path
-    ) -> None:
+    def test_events_persist_after_store_recreation(self, temp_store_path: Path) -> None:
         """Events survive store destruction and recreation (Task 1.2.4)."""
         # First store instance - write events
         store1 = FileSystemEventStore(temp_store_path)
@@ -423,9 +411,7 @@ class TestFileSystemEventStoreThreadSafety:
         assert len(errors) == 0
         assert all(r == 100 for r in results)
 
-    def test_concurrent_writes_to_different_streams(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_concurrent_writes_to_different_streams(self, store: FileSystemEventStore) -> None:
         """Concurrent writes to different streams succeed."""
         errors: list[Exception] = []
 
@@ -445,9 +431,7 @@ class TestFileSystemEventStoreThreadSafety:
         assert len(errors) == 0
         assert len(store.get_all_stream_ids()) == 20
 
-    def test_concurrent_writes_to_same_stream_some_fail(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_concurrent_writes_to_same_stream_some_fail(self, store: FileSystemEventStore) -> None:
         """Concurrent writes to same stream: one wins, others fail."""
         successes: list[bool] = []
         failures: list[bool] = []
@@ -504,9 +488,7 @@ class TestFileSystemEventStoreEdgeCases:
         result = store.read("WORK-001")
         assert result[0].data == large_data
 
-    def test_special_characters_in_stream_id_sanitized(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_special_characters_in_stream_id_sanitized(self, store: FileSystemEventStore) -> None:
         """Stream IDs with slashes are sanitized to underscores for filesystem."""
         stream_id = "namespace/project:entity-123"
         event = create_event(stream_id, 1)
@@ -589,9 +571,7 @@ class TestFileSystemEventStoreIsolation:
         assert store.get_version("WORK-002") == 1
         assert len(store.read("WORK-002")) == 1
 
-    def test_delete_stream_doesnt_affect_others(
-        self, store: FileSystemEventStore
-    ) -> None:
+    def test_delete_stream_doesnt_affect_others(self, store: FileSystemEventStore) -> None:
         """Deleting one stream doesn't affect others."""
         store.append("WORK-001", [create_event("WORK-001", 1)], expected_version=-1)
         store.append("WORK-002", [create_event("WORK-002", 1)], expected_version=-1)

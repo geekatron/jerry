@@ -210,16 +210,19 @@ class ToonSerializer:
         """Convert domain objects to serializable dicts."""
         if is_dataclass(data) and not isinstance(data, type):
             return asdict(data)
-        if hasattr(data, "to_dict") and callable(data.to_dict):
-            return data.to_dict()
+        to_dict_method = getattr(data, "to_dict", None)
+        if to_dict_method is not None and callable(to_dict_method):
+            return to_dict_method()
         if isinstance(data, datetime):
             return data.isoformat()
         if isinstance(data, list):
             return [self._normalize(item) for item in data]
         if isinstance(data, dict):
             return {k: self._normalize(v) for k, v in data.items()}
-        if hasattr(data, "value"):  # Enum support
-            return data.value
+        # Enum support - use getattr for pyright compatibility
+        value_attr = getattr(data, "value", None)
+        if value_attr is not None:
+            return value_attr
         return data
 
     # =========================================================================

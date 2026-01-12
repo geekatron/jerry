@@ -11,17 +11,15 @@ References:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
 from src.application.ports.secondary.illm_context_serializer import OutputFormat
 from src.infrastructure.adapters.serialization.toon_serializer import (
     DeserializationError,
-    SerializationError,
     ToonSerializer,
 )
-
 
 # =============================================================================
 # Test Fixtures
@@ -256,7 +254,7 @@ class TestToonSerialization:
         serializer: ToonSerializer,
     ) -> None:
         """Datetimes are normalized to ISO format."""
-        dt = datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
+        dt = datetime(2024, 1, 15, 10, 30, 0, tzinfo=UTC)
         data = {"created_at": dt}
         result = serializer.serialize(data, OutputFormat.TOON)
 
@@ -498,7 +496,7 @@ class TestFormatDetection:
         serializer: ToonSerializer,
     ) -> None:
         """JSON arrays are detected as JSON."""
-        text = '[1, 2, 3]'
+        text = "[1, 2, 3]"
         assert serializer.detect_format(text) == OutputFormat.JSON
 
     def test_detect_format_when_toon_tabular_then_returns_toon(

@@ -43,7 +43,6 @@ from src.work_tracking.domain.events import StatusChanged, WorkItemCreated
 from src.work_tracking.domain.ports.repository import AggregateNotFoundError
 from src.work_tracking.domain.value_objects import Coverage, TypeRatio
 
-
 # =============================================================================
 # Test Fixtures
 # =============================================================================
@@ -175,9 +174,7 @@ class TestCommandDispatcherIntegration:
 class TestEventPersistence:
     """Tests for event persistence to filesystem."""
 
-    def test_create_work_item_persists_event_to_filesystem(
-        self, tmp_path: Path
-    ) -> None:
+    def test_create_work_item_persists_event_to_filesystem(self, tmp_path: Path) -> None:
         """CreateWorkItemCommand persists WorkItemCreated event to file."""
         store = create_event_store(project_path=tmp_path)
         repo = create_work_item_repository(event_store=store)
@@ -213,9 +210,7 @@ class TestEventPersistence:
         # Event data is nested in "data" field
         assert event_data["data"]["title"] == "Persistent Task"
 
-    def test_start_work_item_persists_status_change_event(
-        self, tmp_path: Path
-    ) -> None:
+    def test_start_work_item_persists_status_change_event(self, tmp_path: Path) -> None:
         """StartWorkItemCommand persists StatusChanged event to file."""
         store = create_event_store(project_path=tmp_path)
         repo = create_work_item_repository(event_store=store)
@@ -261,9 +256,7 @@ class TestEventPersistence:
         assert event2["data"]["old_status"] == "pending"
         assert event2["data"]["new_status"] == "in_progress"
 
-    def test_work_item_survives_repository_recreation(
-        self, tmp_path: Path
-    ) -> None:
+    def test_work_item_survives_repository_recreation(self, tmp_path: Path) -> None:
         """Work item survives repository recreation (simulates app restart)."""
         from src.work_tracking.domain.aggregates.work_item import WorkItem
         from src.work_tracking.domain.services.id_generator import WorkItemIdGenerator
@@ -486,9 +479,7 @@ class TestCLIAdapterIntegration:
         assert "Created work item:" in captured.out
         assert "CLI Integration Test" in captured.out
 
-    def test_cli_create_work_item_json_output(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_cli_create_work_item_json_output(self, capsys: pytest.CaptureFixture) -> None:
         """CLIAdapter.cmd_items_create returns valid JSON."""
         query_dispatcher = create_query_dispatcher()
         command_dispatcher = create_command_dispatcher()
@@ -606,9 +597,7 @@ class TestCLIAdapterIntegration:
         output = json.loads(captured.out)
         assert output["status"] == "cancelled"
 
-    def test_cli_start_nonexistent_item_returns_error(
-        self, capsys: pytest.CaptureFixture
-    ) -> None:
+    def test_cli_start_nonexistent_item_returns_error(self, capsys: pytest.CaptureFixture) -> None:
         """CLIAdapter.cmd_items_start returns error for non-existent item."""
         query_dispatcher = create_query_dispatcher()
         command_dispatcher = create_command_dispatcher()

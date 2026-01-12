@@ -15,10 +15,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, Mock, patch
 
-import pytest
-
-from src.interface.cli.main import main, _handle_projects
-
+from src.interface.cli.main import _handle_projects, main
 
 # =============================================================================
 # Projects Namespace Routing Tests
@@ -79,7 +76,7 @@ class TestHandleProjects:
         args = MagicMock()
         args.command = "list"
 
-        result = _handle_projects(mock_adapter, args, json_output=True)
+        _handle_projects(mock_adapter, args, json_output=True)
 
         mock_adapter.cmd_projects_list.assert_called_once_with(json_output=True)
 

@@ -49,13 +49,11 @@ from src.work_tracking.domain.ports.repository import AggregateNotFoundError
 from src.work_tracking.domain.value_objects import (
     Priority,
     WorkItemId,
-    WorkItemStatus,
     WorkType,
 )
 from src.work_tracking.domain.value_objects.work_item_status import (
     InvalidStateTransitionError,
 )
-
 
 # =============================================================================
 # Test Fixtures

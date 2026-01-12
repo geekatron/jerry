@@ -37,7 +37,6 @@ from src.work_tracking.application.commands import (
     StartWorkItemCommand,
 )
 
-
 # =============================================================================
 # CreateWorkItemCommand Tests
 # =============================================================================

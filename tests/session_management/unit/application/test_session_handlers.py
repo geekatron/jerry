@@ -44,7 +44,6 @@ from src.session_management.domain.events.session_events import (
 )
 from src.session_management.domain.value_objects.session_id import SessionId
 
-
 # =============================================================================
 # Test Fixtures
 # =============================================================================

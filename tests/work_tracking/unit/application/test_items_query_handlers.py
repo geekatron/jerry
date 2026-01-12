@@ -24,7 +24,6 @@ Test Matrix:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from unittest.mock import Mock
 
 import pytest
@@ -32,8 +31,8 @@ import pytest
 from src.work_tracking.application.handlers.queries import (
     GetWorkItemQueryHandler,
     ListWorkItemsQueryHandler,
-    WorkItemDTO,
     WorkItemDetailDTO,
+    WorkItemDTO,
     WorkItemListDTO,
 )
 from src.work_tracking.application.handlers.queries.get_work_item_query_handler import (
@@ -45,13 +44,11 @@ from src.work_tracking.application.queries import (
 )
 from src.work_tracking.domain.aggregates.work_item import WorkItem
 from src.work_tracking.domain.value_objects import (
-    Coverage,
     Priority,
     WorkItemId,
     WorkItemStatus,
     WorkType,
 )
-
 
 # =============================================================================
 # Test Fixtures
@@ -152,9 +149,7 @@ class TestListWorkItemsQueryHandlerHappyPath:
         )
         assert len(result.items) == 1
 
-    def test_list_with_limit(
-        self, mock_repository: Mock, sample_work_item: WorkItem
-    ) -> None:
+    def test_list_with_limit(self, mock_repository: Mock, sample_work_item: WorkItem) -> None:
         """list should respect limit parameter."""
         mock_repository.list_all.return_value = [sample_work_item]
         mock_repository.count.return_value = 5  # More items exist
@@ -290,9 +285,7 @@ class TestGetWorkItemQueryHandlerNegative:
 class TestGetWorkItemQueryHandlerEdge:
     """Edge case tests for GetWorkItemQueryHandler."""
 
-    def test_get_completed_item_includes_completion_time(
-        self, mock_repository: Mock
-    ) -> None:
+    def test_get_completed_item_includes_completion_time(self, mock_repository: Mock) -> None:
         """get should include completed_at for completed items."""
         item = WorkItem.create(
             id=WorkItemId.create(99999, 1),

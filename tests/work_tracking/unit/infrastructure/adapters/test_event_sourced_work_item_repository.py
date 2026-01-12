@@ -80,9 +80,7 @@ def filesystem_repository(temp_store_path: Path) -> EventSourcedWorkItemReposito
 class TestEventSourcedRepositorySaveAndGet:
     """Tests for save and get operations."""
 
-    def test_save_and_get_work_item(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_save_and_get_work_item(self, repository: EventSourcedWorkItemRepository) -> None:
         """Can save and retrieve a work item."""
         work_item = create_work_item(internal_id=1, title="Test Task")
 
@@ -93,16 +91,12 @@ class TestEventSourcedRepositorySaveAndGet:
         assert loaded.id == work_item.id
         assert loaded.title == "Test Task"
 
-    def test_get_nonexistent_returns_none(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_get_nonexistent_returns_none(self, repository: EventSourcedWorkItemRepository) -> None:
         """get() returns None for non-existent item."""
         result = repository.get("nonexistent")
         assert result is None
 
-    def test_get_or_raise_returns_item(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_get_or_raise_returns_item(self, repository: EventSourcedWorkItemRepository) -> None:
         """get_or_raise() returns existing item."""
         work_item = create_work_item(internal_id=2)
         repository.save(work_item)
@@ -119,9 +113,7 @@ class TestEventSourcedRepositorySaveAndGet:
 
         assert exc_info.value.aggregate_id == "nonexistent"
 
-    def test_save_preserves_all_fields(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_save_preserves_all_fields(self, repository: EventSourcedWorkItemRepository) -> None:
         """save() preserves all work item fields."""
         work_item = create_work_item(
             internal_id=3,
@@ -197,9 +189,7 @@ class TestEventSourcedRepositoryReconstitution:
 class TestEventSourcedRepositoryDelete:
     """Tests for delete operation."""
 
-    def test_delete_existing_item(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_delete_existing_item(self, repository: EventSourcedWorkItemRepository) -> None:
         """delete() removes item and returns True."""
         work_item = create_work_item(internal_id=7)
         repository.save(work_item)
@@ -239,16 +229,12 @@ class TestEventSourcedRepositoryExists:
 class TestEventSourcedRepositoryListAll:
     """Tests for list_all operation."""
 
-    def test_list_all_empty_repository(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_list_all_empty_repository(self, repository: EventSourcedWorkItemRepository) -> None:
         """list_all() returns empty list for empty repository."""
         result = repository.list_all()
         assert result == []
 
-    def test_list_all_returns_all_items(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_list_all_returns_all_items(self, repository: EventSourcedWorkItemRepository) -> None:
         """list_all() returns all saved items."""
         item1 = create_work_item(internal_id=10, title="Item 1")
         item2 = create_work_item(internal_id=11, title="Item 2")
@@ -264,9 +250,7 @@ class TestEventSourcedRepositoryListAll:
         titles = {item.title for item in result}
         assert titles == {"Item 1", "Item 2", "Item 3"}
 
-    def test_list_all_filters_by_status(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_list_all_filters_by_status(self, repository: EventSourcedWorkItemRepository) -> None:
         """list_all() filters by status correctly."""
         pending_item = create_work_item(internal_id=13, title="Pending")
         in_progress_item = create_work_item(internal_id=14, title="In Progress")
@@ -283,9 +267,7 @@ class TestEventSourcedRepositoryListAll:
         assert len(in_progress_result) == 1
         assert in_progress_result[0].title == "In Progress"
 
-    def test_list_all_respects_limit(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_list_all_respects_limit(self, repository: EventSourcedWorkItemRepository) -> None:
         """list_all() respects limit parameter."""
         for i in range(5):
             item = create_work_item(internal_id=20 + i, title=f"Item {i}")
@@ -299,15 +281,11 @@ class TestEventSourcedRepositoryListAll:
 class TestEventSourcedRepositoryCount:
     """Tests for count operation."""
 
-    def test_count_empty_repository(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_count_empty_repository(self, repository: EventSourcedWorkItemRepository) -> None:
         """count() returns 0 for empty repository."""
         assert repository.count() == 0
 
-    def test_count_all_items(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_count_all_items(self, repository: EventSourcedWorkItemRepository) -> None:
         """count() returns total item count."""
         for i in range(3):
             item = create_work_item(internal_id=30 + i)
@@ -315,9 +293,7 @@ class TestEventSourcedRepositoryCount:
 
         assert repository.count() == 3
 
-    def test_count_filters_by_status(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_count_filters_by_status(self, repository: EventSourcedWorkItemRepository) -> None:
         """count() filters by status correctly."""
         pending_item = create_work_item(internal_id=33)
         in_progress_item = create_work_item(internal_id=34)
@@ -333,9 +309,7 @@ class TestEventSourcedRepositoryCount:
 class TestEventSourcedRepositoryClear:
     """Tests for clear operation."""
 
-    def test_clear_removes_all_items(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_clear_removes_all_items(self, repository: EventSourcedWorkItemRepository) -> None:
         """clear() removes all items."""
         for i in range(3):
             item = create_work_item(internal_id=40 + i)
@@ -350,9 +324,7 @@ class TestEventSourcedRepositoryClear:
 class TestEventSourcedRepositoryWithFileSystem:
     """Tests with FileSystemEventStore for persistence."""
 
-    def test_items_persist_across_repository_instances(
-        self, temp_store_path: Path
-    ) -> None:
+    def test_items_persist_across_repository_instances(self, temp_store_path: Path) -> None:
         """Items persist when repository is recreated."""
         store1 = FileSystemEventStore(temp_store_path)
         repo1 = EventSourcedWorkItemRepository(store1)
@@ -370,9 +342,7 @@ class TestEventSourcedRepositoryWithFileSystem:
         assert loaded is not None
         assert loaded.title == "Persistent Item"
 
-    def test_state_reconstitutes_after_persistence(
-        self, temp_store_path: Path
-    ) -> None:
+    def test_state_reconstitutes_after_persistence(self, temp_store_path: Path) -> None:
         """Full state reconstitutes correctly after persistence."""
         store1 = FileSystemEventStore(temp_store_path)
         repo1 = EventSourcedWorkItemRepository(store1)
@@ -397,44 +367,30 @@ class TestEventSourcedRepositoryWithFileSystem:
 class TestEventSourcedRepositoryProtocolCompliance:
     """Tests for IWorkItemRepository protocol compliance."""
 
-    def test_has_get_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_get_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has get method."""
         assert callable(repository.get)
 
-    def test_has_get_or_raise_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_get_or_raise_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has get_or_raise method."""
         assert callable(repository.get_or_raise)
 
-    def test_has_save_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_save_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has save method."""
         assert callable(repository.save)
 
-    def test_has_delete_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_delete_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has delete method."""
         assert callable(repository.delete)
 
-    def test_has_exists_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_exists_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has exists method."""
         assert callable(repository.exists)
 
-    def test_has_list_all_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_list_all_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has list_all method."""
         assert callable(repository.list_all)
 
-    def test_has_count_method(
-        self, repository: EventSourcedWorkItemRepository
-    ) -> None:
+    def test_has_count_method(self, repository: EventSourcedWorkItemRepository) -> None:
         """Repository has count method."""
         assert callable(repository.count)

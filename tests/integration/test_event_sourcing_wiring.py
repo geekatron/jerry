@@ -60,9 +60,7 @@ class TestBootstrapFactories:
 
         assert isinstance(store, InMemoryEventStore)
 
-    def test_create_event_store_returns_filesystem_with_project(
-        self, tmp_path: Path
-    ) -> None:
+    def test_create_event_store_returns_filesystem_with_project(self, tmp_path: Path) -> None:
         """With project path, creates filesystem store."""
         from src.bootstrap import create_event_store
         from src.work_tracking.infrastructure.persistence.filesystem_event_store import (
