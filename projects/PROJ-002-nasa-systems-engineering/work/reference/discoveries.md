@@ -6,9 +6,11 @@ parent: "../WORKTRACKER.md"
 related_work_items:
   - wi-sao-005  # DISCOVERY-001 caused cancellation
   - wi-sao-006  # DISCOVERY-001 caused cancellation
+  - wi-sao-030  # DISCOVERY-004, DISCOVERY-005 observed
+  - wi-sao-031  # DISCOVERY-005, DISCOVERY-006, DISCOVERY-007 observed
 created: "2026-01-11"
 last_updated: "2026-01-11"
-token_estimate: 1200
+token_estimate: 2800
 ---
 
 # Discoveries
@@ -152,5 +154,132 @@ The original WORKTRACKER_SOP.md v1.0.0 was created without evidence-based design
 
 ---
 
+## DISCOVERY-004: Agent Path Confusion in Multi-Test Sessions
+
+- **Discovered:** 2026-01-11
+- **Severity:** MEDIUM (causes incorrect test artifact locations)
+- **Discovery Context:** During PS-ORCH-005 Fan-Out test execution (WI-SAO-030)
+- **Finding:**
+
+When invoking multiple agents across different tests in the same session, agents occasionally wrote output to incorrect directories (previous test directories instead of current test directories).
+
+**Observed Behavior:**
+- ps-analyst and ps-researcher agents invoked for PS-ORCH-005 test
+- Output files appeared in `PS-ORCH-002/` directory instead of `PS-ORCH-005/`
+- Root cause: Agents may cache or confuse paths from prior context
+
+**Evidence:**
+- Source: WI-SAO-030 (DISCOVERY-030-001)
+- Execution Report: `tests/ps-orchestration-results/PS-ORCH-005/EXECUTION-REPORT.md`
+
+**Resolution:**
+- Re-invoked agents with explicit absolute paths
+- **Recommendation:** Always use absolute paths in agent prompts, not relative references
+
+**Impact:**
+- PS-ORCH-005 test required agent re-invocation
+- No data loss (files recoverable)
+- Process improvement identified for future test execution
+
+---
+
+## DISCOVERY-005: API Connection Errors During Agent Invocation (Transient)
+
+- **Discovered:** 2026-01-11
+- **Severity:** LOW (transient, recoverable with retry)
+- **Discovery Context:** Multiple occurrences during SAO-INIT-006 verification testing
+- **Finding:**
+
+API connection errors occurred sporadically during agent invocations. All were transient and recovered with retry.
+
+**Occurrences:**
+| Instance | Agent | Test | Resolution |
+|----------|-------|------|------------|
+| 1 | ps-reporter | PS-ORCH-006 | Retry succeeded |
+| 2 | nse-requirements | CROSS-ORCH-001 | Retry succeeded (2 attempts) |
+| 3 | ps-analyst | CROSS-ORCH-002 | First attempt succeeded |
+
+**Evidence:**
+- WI-SAO-030: DISCOVERY-030-002
+- WI-SAO-031: DISCOVERY-031-001
+- Execution Reports in `tests/ps-orchestration-results/*/EXECUTION-REPORT.md`
+
+**Resolution:**
+- Retry agent invocation on connection error
+- No architectural changes required
+
+**Impact:**
+- Minor execution delays (< 1 minute per retry)
+- No test failures attributable to connection errors
+- All tests completed successfully after retries
+
+---
+
+## DISCOVERY-006: Cross-Family Agent Interoperability Validated
+
+- **Discovered:** 2026-01-11
+- **Severity:** INFO (positive validation finding)
+- **Discovery Context:** CROSS-ORCH-001 and CROSS-ORCH-002 test execution (WI-SAO-031)
+- **Finding:**
+
+**POSITIVE VALIDATION:** ps-* and nse-* agent families successfully interoperate using shared session_context schema v1.0.0.
+
+**Validated Patterns:**
+| Pattern | Test | Agents | Result |
+|---------|------|--------|--------|
+| Sequential Cross-Family | CROSS-ORCH-001 | ps-researcher → nse-requirements | PASS |
+| Mixed Fan-In | CROSS-ORCH-002 | ps-analyst + nse-risk → ps-reporter | PASS |
+
+**Key Evidence:**
+- session_context schema_version "1.0.0" transfers between families
+- Key findings consumed and traced across family boundaries
+- 10 findings → 22 requirements (CROSS-ORCH-001)
+- 10 findings → 5 unified findings (CROSS-ORCH-002)
+- Convergence score: 0.92 (strong alignment)
+
+**Evidence Artifacts:**
+- `tests/ps-orchestration-results/CROSS-ORCH-001/` (2 files, 42,272 bytes)
+- `tests/ps-orchestration-results/CROSS-ORCH-002/` (3 files, 51,081 bytes)
+- Full execution reports with traceability matrices
+
+**Impact:**
+- Cross-family orchestration patterns ready for production use
+- Validates session_context schema design
+- Enables mixed ps-*/nse-* workflows for NASA SE domain
+
+---
+
+## DISCOVERY-007: Parallel Agent Execution Timing Variance
+
+- **Discovered:** 2026-01-11
+- **Severity:** INFO (informational, not a defect)
+- **Discovery Context:** CROSS-ORCH-002 parallel phase execution (WI-SAO-031)
+- **Finding:**
+
+When invoking agents in parallel, execution times vary significantly based on agent model selection and output complexity.
+
+**Observed:**
+- nse-risk: ~1 minute (produced 20,286 bytes)
+- ps-analyst: ~5 minutes (produced 13,585 bytes)
+
+**Analysis:**
+- Model selection (haiku vs sonnet) affects inference time
+- Output structure complexity varies by agent role
+- Larger output size does not correlate directly with longer execution time
+
+**Evidence:**
+- Source: WI-SAO-031 (DISCOVERY-031-002)
+- Execution Report: `tests/ps-orchestration-results/CROSS-ORCH-002/EXECUTION-REPORT.md`
+
+**Resolution:**
+- No action required - this is expected behavior
+- For time-critical workflows, consider model selection impact
+
+**Impact:**
+- Informational for workflow planning
+- Does not affect test validity
+
+---
+
 *Last Updated: 2026-01-11*
-*Source: Extracted from WORKTRACKER.md lines 2387-2464, extended with DISCOVERY-003*
+*Source: Extracted from WORKTRACKER.md lines 2387-2464, extended with DISCOVERY-003 through DISCOVERY-007*

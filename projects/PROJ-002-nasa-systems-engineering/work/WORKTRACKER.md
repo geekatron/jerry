@@ -63,11 +63,12 @@ current_tokens: ~2500
 | Complete Initiatives | 2 | ✅ |
 | In Progress Initiatives | 4 | 🔄 |
 | Total Work Items | 29 | - |
-| Completed | 18 | ✅ |
+| Completed | 20 | ✅ |
 | Cancelled | 2 | ❌ |
-| Open | 9 | 📋 |
+| Open | 7 | 📋 |
 | Conformance | 19/19 agents | ✅ |
-| ps-* Orchestration | 4/4 tests PASS | ✅ |
+| ps-* Orchestration | 6/6 tests PASS | ✅ |
+| Cross-Family | 2/2 tests PASS | ✅ |
 
 ### Initiative Progress
 
@@ -79,7 +80,7 @@ current_tokens: ~2500
 | SAO-INIT-003: Deferred | 📋 OPEN | 3 | 0 | `initiatives/sao-init-003-templates-deferred/` |
 | SAO-INIT-004: Infrastructure | 🔄 IN PROGRESS | 5 | 1 | `initiatives/sao-init-004-infrastructure/` |
 | SAO-INIT-005: Debt Reduction | 🔄 IN PROGRESS | 7 | 4 | `initiatives/sao-init-005-debt-reduction/` |
-| SAO-INIT-006: Verification | 🔄 IN PROGRESS | 4 | 1 | `initiatives/sao-init-006-verification/` |
+| SAO-INIT-006: Verification | 🔄 IN PROGRESS | 4 | 3 | `initiatives/sao-init-006-verification/` |
 
 ---
 
@@ -88,11 +89,12 @@ current_tokens: ~2500
 | Field | Value |
 |-------|-------|
 | **Active Initiative** | SAO-INIT-006: Verification Testing |
-| **Current Work Item** | WI-SAO-029: CRITICAL ps-* Orchestration Tests |
-| **Status** | COMPLETE |
-| **Priority** | P0 (CRITICAL) |
-| **Result** | ALL 4 TESTS PASSED |
-| **File** | `initiatives/sao-init-006-verification/wi-sao-029.md` |
+| **Current Work Item** | WI-SAO-032: MEDIUM Priority + Error Handling Tests |
+| **Status** | OPEN (next up) |
+| **Priority** | P2 (MEDIUM) |
+| **Tests** | PS-ORCH-007, PS-ORCH-008, PS-NEG-001, PS-NEG-002 |
+| **File** | `initiatives/sao-init-006-verification/wi-sao-032.md` |
+| **Progress** | 8/12 tests complete (67%) |
 
 ---
 
@@ -100,6 +102,8 @@ current_tokens: ~2500
 
 | Date | Work Item | Action | Evidence |
 |------|-----------|--------|----------|
+| 2026-01-11 | WI-SAO-031 | ✅ COMPLETE | CROSS-ORCH-001, CROSS-ORCH-002 PASS (93KB artifacts) |
+| 2026-01-11 | WI-SAO-030 | ✅ COMPLETE | PS-ORCH-005, PS-ORCH-006 PASS (122KB artifacts) |
 | 2026-01-11 | WI-SAO-029 | ✅ COMPLETE | ALL 4 ps-* orchestration tests PASSED |
 | 2026-01-11 | WI-SAO-009 | ✅ COMPLETE | Federated template architecture |
 | 2026-01-11 | WI-SAO-010 | ✅ COMPLETE | 9/9 ps-* agents v2.1.0 |
@@ -115,6 +119,10 @@ current_tokens: ~2500
 | DISCOVERY-001 | CRITICAL | Orchestrator agents violate P-003 | `reference/discoveries.md` |
 | DISCOVERY-002 | MEDIUM | "Mixed" cognitive mode not canonical | `reference/discoveries.md` |
 | DISCOVERY-003 | MEDIUM | SOP v1.0 missing Claude Code best practices (12 gaps) | `reference/discoveries.md` |
+| DISCOVERY-004 | MEDIUM | Agent path confusion in multi-test sessions | `reference/discoveries.md` |
+| DISCOVERY-005 | LOW | API connection errors (transient, recoverable) | `reference/discoveries.md` |
+| DISCOVERY-006 | INFO | Cross-family interoperability VALIDATED | `reference/discoveries.md` |
+| DISCOVERY-007 | INFO | Parallel agent timing variance (informational) | `reference/discoveries.md` |
 
 ---
 
@@ -177,9 +185,11 @@ work/
 ## Next Actions
 
 1. ✅ ~~Complete WI-SAO-029 (CRITICAL ps-* orchestration tests)~~ - ALL 4 TESTS PASSED
-2. Continue with remaining SAO-INIT-006 work items (WI-SAO-030, WI-SAO-031)
-3. Review and implement checkpoint/recovery system from PS-ORCH-003 design
-4. Formalize session_context v1.0.0 as official protocol
+2. ✅ ~~Complete WI-SAO-030 (HIGH priority ps-* orchestration tests)~~ - PS-ORCH-005, PS-ORCH-006 PASSED
+3. ✅ ~~Complete WI-SAO-031 (Cross-family interoperability tests)~~ - CROSS-ORCH-001, CROSS-ORCH-002 PASSED
+4. Continue with WI-SAO-032 (MEDIUM priority + error handling tests) - PS-ORCH-007, PS-ORCH-008, PS-NEG-001, PS-NEG-002
+5. Review and implement checkpoint/recovery system from PS-ORCH-003 design
+6. Formalize session_context v1.0.0 as official protocol
 
 ---
 
