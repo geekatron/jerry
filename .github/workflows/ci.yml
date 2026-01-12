@@ -82,15 +82,17 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Install dependencies
+      - name: Install pip-audit
         run: |
           python -m pip install --upgrade pip
           pip install pip-audit
-          # Install without editable mode to avoid pip-audit issues
-          pip install ".[dev]" || pip install .
 
-      - name: Run pip-audit
-        run: pip-audit --strict
+      - name: Install and audit dependencies
+        run: |
+          # Install dev dependencies directly (not the jerry package itself)
+          # This allows auditing only real PyPI dependencies
+          pip install filelock mypy ruff
+          pip-audit --strict
 
   # ===========================================================================
   # Test Suite (Python Matrix)
