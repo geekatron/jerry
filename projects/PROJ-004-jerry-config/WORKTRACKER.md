@@ -68,9 +68,9 @@
 
 | Sub-ID | Title | Type | Agent | Status | File |
 |--------|-------|------|-------|--------|------|
-| WI-008a | Analyze existing Jerry codebase | Research | ps-researcher | PENDING | [wi-008a-codebase-analysis.md](work/wi-008a-codebase-analysis.md) |
-| WI-008b | Research DDD hierarchical patterns | Research | ps-researcher | PENDING | [wi-008b-ddd-patterns.md](work/wi-008b-ddd-patterns.md) |
-| WI-008c | Analyze skill/agent structure | Research | ps-researcher | PENDING | [wi-008c-skill-structure.md](work/wi-008c-skill-structure.md) |
+| WI-008a | Analyze existing Jerry codebase | Research | ps-researcher | COMPLETED | [wi-008a-codebase-analysis.md](work/wi-008a-codebase-analysis.md) |
+| WI-008b | Research DDD hierarchical patterns | Research | ps-researcher | COMPLETED | [wi-008b-ddd-patterns.md](work/wi-008b-ddd-patterns.md) |
+| WI-008c | Analyze skill/agent structure | Research | ps-researcher | COMPLETED | [wi-008c-skill-structure.md](work/wi-008c-skill-structure.md) |
 | WI-008d | Design JerryFramework aggregate | Design | ps-architect | PENDING | [wi-008d-framework-aggregate.md](work/wi-008d-framework-aggregate.md) |
 | WI-008e | Design JerryProject aggregate | Design | ps-architect | PENDING | [wi-008e-project-aggregate.md](work/wi-008e-project-aggregate.md) |
 | WI-008f | Design JerrySkill aggregate | Design | ps-architect | PENDING | [wi-008f-skill-aggregate.md](work/wi-008f-skill-aggregate.md) |
@@ -245,13 +245,13 @@ WI-008 Internal Dependencies:
 | PROJ-004-e-003 | Worktree-Safe State | [research/PROJ-004-e-003-worktree-safe-state.md](research/PROJ-004-e-003-worktree-safe-state.md) |
 | PROJ-004-e-004 | Config Precedence | [research/PROJ-004-e-004-config-precedence.md](research/PROJ-004-e-004-config-precedence.md) |
 
-### WI-008 Research (Planned)
+### WI-008 Research (COMPLETED)
 
 | ID | Topic | Agent | Status |
 |----|-------|-------|--------|
-| PROJ-004-e-005 | Codebase Analysis | ps-researcher | PENDING |
-| PROJ-004-e-006 | DDD Hierarchical Patterns | ps-researcher | PENDING |
-| PROJ-004-e-007 | Skill/Agent Structure | ps-researcher | PENDING |
+| PROJ-004-e-005 | Codebase Analysis | ps-researcher | COMPLETED |
+| PROJ-004-e-006 | DDD Hierarchical Patterns | ps-researcher | COMPLETED |
+| PROJ-004-e-007 | Skill/Agent Structure | ps-researcher | COMPLETED |
 
 ### WI-008 ADRs (Planned)
 
@@ -282,6 +282,7 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | Added parallelization plan with worktree assignments | Claude |
 | 2026-01-12 | **REDESIGN**: WI-008 expanded to hierarchical domain model | Claude |
 | 2026-01-12 | Added WI-008a through WI-008h sub-items with ps-* agent assignments | Claude |
+| 2026-01-12 | **RESEARCH COMPLETED**: WI-008a, WI-008b, WI-008c research artifacts created | Claude |
 
 ---
 
