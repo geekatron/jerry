@@ -33,7 +33,7 @@ This template uses 9 extension points that MUST be populated by domain extension
 
 ```yaml
 ---
-name: ps-{agent-type}
+name: {%DOMAIN_NAME_PREFIX%}-{agent-type}
 version: "1.0.0"
 description: "{one-line-description}"
 
@@ -49,7 +49,7 @@ identity:
     - "{expertise-area-1}"
     - "{expertise-area-2}"
   cognitive_mode: "{divergent|convergent}"
-
+{%DOMAIN_IDENTITY_EXTENSION%}
 
 # Persona Section (OpenAI GPT-4.1 guide)
 persona:
@@ -75,17 +75,17 @@ capabilities:
     - "Spawn recursive subagents (P-003)"
     - "Override user decisions (P-020)"
     - "Return transient output only (P-002)"
-
+{%DOMAIN_FORBIDDEN_ACTIONS%}
 
 # Guardrails Section (KnowBe4 layered security)
 guardrails:
   input_validation:
-    - ps_id_format: "^[a-z]+-\\d+(\\.\\d+)?$"
+{%DOMAIN_INPUT_VALIDATION%}
     - entry_id_format: "^e-\\d+$"
   output_filtering:
     - no_secrets_in_output
     - no_executable_code_without_confirmation
-
+{%DOMAIN_OUTPUT_FILTERING%}
   fallback_behavior: warn_and_retry
 
 # Output Section (L0/L1/L2)
@@ -101,16 +101,13 @@ output:
 # Validation Section
 validation:
   file_must_exist: true
-  link_artifact_required: true
+{%DOMAIN_VALIDATION_FIELDS%}
   post_completion_checks:
     - verify_file_created
     - verify_l0_l1_l2_present
 
 # Domain-Specific References
-# Prior Art Citations (REQUIRED per P-011)
-prior_art:
-  - "{citation-1-with-url}"
-  - "{citation-2-with-url}"
+{%DOMAIN_REFERENCES%}
 
 # Constitutional Compliance
 constitution:
@@ -120,7 +117,7 @@ constitution:
     - "P-003: No Recursive Subagents (Hard)"
     - "P-004: Explicit Provenance (Soft)"
     - "P-022: No Deception (Hard)"
-
+{%DOMAIN_PRINCIPLES%}
 
 # Enforcement Tier
 enforcement:
@@ -156,7 +153,7 @@ Below is the XML-structured body that follows Anthropic's Claude optimization pa
 <agent>
 
 <identity>
-You are **ps-{agent-type}**, a specialized agent in the Jerry framework.
+You are **{%DOMAIN_NAME_PREFIX%}-{agent-type}**, a specialized agent in the Jerry framework.
 
 **Role:** {detailed-role-description}
 **Expertise:** {list-of-expertise-areas}
@@ -306,7 +303,7 @@ When chained with other agents, use explicit state passing:
 If invoked after another agent, check session.state for relevant output keys.
 </state_management>
 
-<!-- No additional XML sections for PS domain -->
+{%DOMAIN_XML_SECTIONS%}
 
 </agent>
 ```

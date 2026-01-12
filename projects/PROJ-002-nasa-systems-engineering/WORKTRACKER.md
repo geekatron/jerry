@@ -19,8 +19,8 @@
 | Total Work Items | 25 |
 | Completed | 12 |
 | Cancelled | 2 |
-| Open | 11 |
-| In Progress | 0 |
+| Open | 10 |
+| In Progress | 1 |
 | Status | **IN PROGRESS** |
 | Discoveries | 2 |
 
@@ -35,11 +35,13 @@
 ### Current Focus
 | Initiative | Phase | Work Item | Status |
 |------------|-------|-----------|--------|
-| SAO | SAO-INIT-003: Template Unification | WI-SAO-009: Unified Agent Template | NEXT UP |
+| SAO | SAO-INIT-003: Template Unification | WI-SAO-009: Federated Agent Template | ✅ COMPLETE |
 
-**Last Completed:** WI-SAO-008 (Create nse-qa Agent) - 2026-01-11
+**Last Completed:** WI-SAO-009 (Federated Agent Template) - 2026-01-11
 **Last Cancelled:** WI-SAO-005, WI-SAO-006 (orchestrator agents) - 2026-01-11 - See DISCOVERY-001
-**Next Work Item:** WI-SAO-009 (Unified Agent Template) - HIGH P1
+**Current Work Item:** None active - ready for next work item
+**ADR:** `decisions/wi-sao-009-adr-unified-template-architecture.md` (APPROVED)
+**Session:** `363ac053-6bfd-465e-8843-4f528ab5ecd1`
 
 ### Gap Fix Backlog
 
@@ -763,12 +765,13 @@
 
 ## Resumption Context
 
-**Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO-INIT-001 COMPLETE | SAO-INIT-002 COMPLETE | 19/19 AGENTS CONFORMANT
+**Current State:** NASA SE SKILL COMPLETE | ORCHESTRATION VALIDATED | SAO-INIT-001 COMPLETE | SAO-INIT-002 COMPLETE | SAO-INIT-003: 1/3 COMPLETE | 19/19 AGENTS CONFORMANT
 **Completed Initiative:** SAO-INIT-001: Foundation (5/5 work items complete, 100%) ✅
 **Completed Initiative:** SAO-INIT-002: New Agents (3/3 active complete, 2 cancelled) ✅
-**Last Work Item:** WI-SAO-008: Create nse-qa Agent ✅
-**Current Work Item:** WI-SAO-009: Unified Agent Template (HIGH P1) - NEXT UP
-**Current Initiative:** SAO-INIT-003: Template Unification (0/3 work items complete)
+**Last Work Item:** WI-SAO-009: Federated Agent Template ✅ (2026-01-11)
+**Current Work Item:** None active - ready for next work item
+**Current Initiative:** SAO-INIT-003: Template Unification (1/3 work items complete)
+**ADR Approved:** WI-SAO-009-ADR-001 (Federated Template Architecture) - 2026-01-11
 **Plan Location:** `projects/PROJ-002-nasa-systems-engineering/PLAN.md` (repository-relative)
 **Plan Version:** 4.0 (Optimization Initiative)
 **Agent Counts:** NASA SE: 10 agents | Problem-Solving: 9 agents | Orchestration: 3 agents
@@ -1138,32 +1141,276 @@ projects/PROJ-002-nasa-systems-engineering/
 
 ### SAO-INIT-003: Template Unification
 
-#### WI-SAO-009: Create Unified Agent Template (Superset Schema)
+#### WI-SAO-009: Create Federated Agent Template Architecture
 - **Entry ID:** sao-009
-- **Status:** OPEN
+- **Status:** ✅ COMPLETE
 - **Priority:** HIGH (P1)
-- **Estimated Effort:** 6h
-- **Source:** Trade Study TS-1 (Score: 3.8/5)
+- **Estimated Effort:** 13.5h (revised from 6h per ADR analysis)
+- **Started:** 2026-01-11
+- **Completed:** 2026-01-11
+- **Source:** ADR WI-SAO-009-ADR-001 (APPROVED)
 - **Blocks:** WI-SAO-010, WI-SAO-011
-- **Description:** Merge PS_AGENT_TEMPLATE v2.0 and NSE_AGENT_TEMPLATE v1.0 into unified superset.
-- **Acceptance Criteria (Validatable Evidence):**
-  1. UNIFIED_AGENT_TEMPLATE v1.0 created
-     - **Evidence:** `ls docs/templates/UNIFIED_AGENT_TEMPLATE.md` exists
-  2. Template includes all sections from both PS and NSE templates
-     - **Evidence:** `grep -c "^##" docs/templates/UNIFIED_AGENT_TEMPLATE.md` ≥ 15 sections
-  3. Optional nasa_se block documented
-     - **Evidence:** `grep "nasa_se:" docs/templates/UNIFIED_AGENT_TEMPLATE.md` found
-  4. Migration guide created
-     - **Evidence:** `ls docs/templates/AGENT_MIGRATION_GUIDE.md` exists
-  5. Conformance script updated for unified template
-     - **Evidence:** `python3 scripts/check_agent_conformance.py --help` shows unified option
-- **Tasks:**
-  - [ ] **T-009.1:** Audit PS_AGENT_TEMPLATE v2.0 sections (40 sections)
-  - [ ] **T-009.2:** Audit NSE_AGENT_TEMPLATE v1.0 sections (44 sections)
-  - [ ] **T-009.3:** Create superset schema (merge unique fields)
-  - [ ] **T-009.4:** Create UNIFIED_AGENT_TEMPLATE.md
-  - [ ] **T-009.5:** Document migration guide
-  - [ ] **T-009.6:** Update conformance check script
+- **ADR:** `decisions/wi-sao-009-adr-unified-template-architecture.md`
+- **Approval:** `decisions/wi-sao-009-approval-record.md`
+- **Session ID:** `363ac053-6bfd-465e-8843-4f528ab5ecd1`
+
+##### Description
+Create a federated agent template architecture with shared core (~73%) and domain-specific extensions. This replaces the original "unified superset" approach based on evidence-driven ADR analysis.
+
+**Architecture Decision:**
+```
+skills/
+├── shared/
+│   └── AGENT_TEMPLATE_CORE.md          # 73% shared content (v1.0)
+├── problem-solving/agents/
+│   └── PS_EXTENSION.md                 # PS-specific additions
+└── nasa-se/agents/
+    └── NSE_EXTENSION.md                # NSE-specific additions
+```
+
+##### Evidence Chain
+| Phase | Artifact | Evidence Type |
+|-------|----------|---------------|
+| Research | `analysis/wi-sao-009-e-001-template-comparison.md` | Quantitative analysis |
+| Research | `research/wi-sao-009-e-001-claude-engineer-patterns.md` | Industry patterns |
+| Decision | `decisions/wi-sao-009-adr-unified-template-architecture.md` | Architecture decision |
+| Approval | `decisions/wi-sao-009-approval-record.md` | HITL approval |
+
+##### Acceptance Criteria (Validatable Evidence)
+
+| AC# | Criterion | Validation Method | Evidence Source | Owner | Status |
+|-----|-----------|-------------------|-----------------|-------|--------|
+| AC-001 | AGENT_TEMPLATE_CORE.md v1.0 created | `ls skills/shared/AGENT_TEMPLATE_CORE.md` exists | File system | Claude | ✅ PASS |
+| AC-002 | Core contains ~73% shared content | `wc -l` ≥ 250 lines (73% of 340 avg) | Line count: 383 | Claude | ✅ PASS |
+| AC-003 | Core has 9 extension points | `grep -o "{%DOMAIN_[A-Z_]*%}" \| sort -u \| wc -l` = 9 | Pattern match: 9 | Claude | ✅ PASS |
+| AC-004 | PS_EXTENSION.md created | `ls skills/problem-solving/agents/PS_EXTENSION.md` exists | File system | Claude | ✅ PASS |
+| AC-005 | PS extension has prior_art section | `grep "prior_art:" PS_EXTENSION.md` found | Pattern match | Claude | ✅ PASS |
+| AC-006 | NSE_EXTENSION.md created | `ls skills/nasa-se/agents/NSE_EXTENSION.md` exists | File system | Claude | ✅ PASS |
+| AC-007 | NSE extension has disclaimer section | `grep "<disclaimer>" NSE_EXTENSION.md` found | Pattern match | Claude | ✅ PASS |
+| AC-008 | NSE extension has nasa_se_methodology | `grep "<nasa_se_methodology>" NSE_EXTENSION.md` found | Pattern match | Claude | ✅ PASS |
+| AC-009 | Composition script created | `ls scripts/compose_agent_template.py` exists (505 lines) | File system | Claude | ✅ PASS |
+| AC-010 | Composed PS template validates | `--domain ps --validate` SUCCESS, 10 replacements | Script output | Claude | ✅ PASS |
+| AC-011 | Composed NSE template validates | `--domain nse --validate` SUCCESS, 10 replacements | Script output | Claude | ✅ PASS |
+| AC-012 | Migration guide created | `ls docs/templates/AGENT_MIGRATION_GUIDE.md` exists (468 lines) | File system | Claude | ✅ PASS |
+| AC-013 | All 19 existing agents unaffected | Conformance check passes: 19/19 conformant | Script output | Claude | ✅ PASS |
+| AC-014 | No P-003 violations introduced | Templates have 6 P-003 refs each, agents pass conformance | Manual review | Claude | ✅ PASS |
+
+##### Tasks
+
+###### T-009.1: Extract AGENT_TEMPLATE_CORE.md (Estimated: 2h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Extract shared content (~73%) from PS_AGENT_TEMPLATE.md v2.0 into core template
+- **Sub-tasks:**
+  - [x] **ST-009.1.1:** Identify shared YAML frontmatter fields (13 identical)
+  - [x] **ST-009.1.2:** Identify shared XML body tags (7 shared)
+  - [x] **ST-009.1.3:** Define extension point syntax (`{%DOMAIN_*%}`)
+  - [x] **ST-009.1.4:** Create `skills/shared/` directory structure
+  - [x] **ST-009.1.5:** Write AGENT_TEMPLATE_CORE.md with extension points
+  - [x] **ST-009.1.6:** Validate core has 9 extension points
+- **Evidence Criteria:**
+  | Criterion | Method | Expected Value | Actual Value | Status |
+  |-----------|--------|----------------|--------------|--------|
+  | File exists | `ls skills/shared/AGENT_TEMPLATE_CORE.md` | File found | File found | ✅ PASS |
+  | Line count | `wc -l` | ≥ 250 lines | 383 lines | ✅ PASS |
+  | Extension points | `grep -o "{%DOMAIN_[A-Z_]*%}" \| sort -u \| wc -l` | = 9 | 9 | ✅ PASS |
+- **Source References:**
+  - `analysis/wi-sao-009-e-001-template-comparison.md` Section 2.2
+  - `skills/problem-solving/agents/PS_AGENT_TEMPLATE.md` (base)
+- **Artifact Created:** `skills/shared/AGENT_TEMPLATE_CORE.md` (383 lines)
+
+###### T-009.2: Create PS_EXTENSION.md (Estimated: 1h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Create PS domain-specific extension containing ps-only fields and sections
+- **Sub-tasks:**
+  - [x] **ST-009.2.1:** Extract `prior_art` YAML section
+  - [x] **ST-009.2.2:** Extract `link_artifact_required` validation
+  - [x] **ST-009.2.3:** Extract output directory conventions table
+  - [x] **ST-009.2.4:** Extract artifact naming patterns
+  - [x] **ST-009.2.5:** Extract industry references (Anthropic, Google ADK, KnowBe4)
+  - [x] **ST-009.2.6:** Write PS_EXTENSION.md with labeled sections
+- **Evidence Criteria:**
+  | Criterion | Method | Expected Value | Actual Value | Status |
+  |-----------|--------|----------------|--------------|--------|
+  | File exists | `ls skills/problem-solving/agents/PS_EXTENSION.md` | File found | File found (6775 bytes) | ✅ PASS |
+  | prior_art section | `grep "prior_art:"` | Found | Found | ✅ PASS |
+  | link_artifact field | `grep "link_artifact"` | Found | Found | ✅ PASS |
+  | Industry refs | `grep -c "http"` | ≥ 3 | 5 | ✅ PASS |
+- **Source References:**
+  - `analysis/wi-sao-009-e-001-template-comparison.md` Section 3.1
+  - PS-only fields: `prior_art`, `link_artifact_required`
+- **Artifact Created:** `skills/problem-solving/agents/PS_EXTENSION.md` (195 lines)
+
+###### T-009.3: Create NSE_EXTENSION.md (Estimated: 1.5h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Create NSE domain-specific extension containing nasa-only fields and sections
+- **Sub-tasks:**
+  - [x] **ST-009.3.1:** Extract `nasa_processes` identity field
+  - [x] **ST-009.3.2:** Extract `nasa_standards` YAML section
+  - [x] **ST-009.3.3:** Extract `disclaimer_required` validation
+  - [x] **ST-009.3.4:** Extract `<disclaimer>` XML section (mandatory)
+  - [x] **ST-009.3.5:** Extract `<nasa_se_methodology>` XML section
+  - [x] **ST-009.3.6:** Extract extended principles (P-040, P-041, P-042)
+  - [x] **ST-009.3.7:** Extract NASA references table
+  - [x] **ST-009.3.8:** Write NSE_EXTENSION.md with labeled sections
+- **Evidence Criteria:**
+  | Criterion | Method | Expected Value | Actual Value | Status |
+  |-----------|--------|----------------|--------------|--------|
+  | File exists | `ls skills/nasa-se/agents/NSE_EXTENSION.md` | File found | File found (7338 bytes) | ✅ PASS |
+  | nasa_processes | `grep "nasa_processes:"` | Found | Found | ✅ PASS |
+  | nasa_standards | `grep "nasa_standards:"` | Found | Found | ✅ PASS |
+  | disclaimer XML | `grep "<disclaimer>"` | Found | Found | ✅ PASS |
+  | methodology XML | `grep "<nasa_se_methodology>"` | Found | Found | ✅ PASS |
+  | P-040/41/42 | `grep -c "P-04"` | ≥ 3 | 9 | ✅ PASS |
+- **Source References:**
+  - `analysis/wi-sao-009-e-001-template-comparison.md` Section 3.1
+  - NSE-only fields: `nasa_processes`, `nasa_standards`, `disclaimer_required`
+  - NSE-only XML: `<disclaimer>`, `<nasa_se_methodology>`
+- **Artifact Created:** `skills/nasa-se/agents/NSE_EXTENSION.md` (262 lines)
+
+###### T-009.4: Create Composition Script (Estimated: 2h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Create Python script to merge core + extension into composed templates
+- **Sub-tasks:**
+  - [x] **ST-009.4.1:** Design script CLI interface (`--domain ps|nse`)
+  - [x] **ST-009.4.2:** Implement core template loading
+  - [x] **ST-009.4.3:** Implement extension file loading
+  - [x] **ST-009.4.4:** Implement placeholder replacement (`{%DOMAIN_*%}`)
+  - [x] **ST-009.4.5:** Implement composed template output
+  - [x] **ST-009.4.6:** Implement validation (no remaining placeholders)
+  - [x] **ST-009.4.7:** Add `--validate` mode for CI integration
+  - [x] **ST-009.4.8:** Add `--diff` mode to compare with original
+- **Evidence Criteria:**
+  | Criterion | Method | Expected | Actual | Status |
+  |-----------|--------|----------|--------|--------|
+  | File exists | `ls scripts/compose_agent_template.py` | File found | File exists (505 lines) | ✅ PASS |
+  | Executable | `python3 scripts/compose_agent_template.py --help` | Help text shown | Usage displayed with all options | ✅ PASS |
+  | PS compose | `--domain ps --write-default` | Exit code 0 | SUCCESS, 10 replacements | ✅ PASS |
+  | NSE compose | `--domain nse --write-default` | Exit code 0 | SUCCESS, 10 replacements | ✅ PASS |
+  | Validate mode | `--domain ps --validate` | All pass | SUCCESS, 0 remaining | ✅ PASS |
+  | Diff mode | `--domain ps --diff` | Diff output | No differences found | ✅ PASS |
+- **Implementation Notes:**
+  - Fixed Extension Points Reference table to use plain text (not replaced during composition)
+  - Script parses extension files using regex to extract code blocks
+  - Supports `--quiet`, `--output`, `--write-default` flags
+  - Reports statistics: extension points found, placeholders replaced
+- **Source References:**
+  - `research/wi-sao-009-e-001-claude-engineer-patterns.md` Section 5
+  - ADR Section "Proposed Architecture"
+- **Artifact Created:** `scripts/compose_agent_template.py` (505 lines)
+
+###### T-009.5: Create Migration Guide (Estimated: 1h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Document migration process for existing agents
+- **Sub-tasks:**
+  - [x] **ST-009.5.1:** Document core vs extension structure
+  - [x] **ST-009.5.2:** Document extension point syntax
+  - [x] **ST-009.5.3:** Document composition workflow
+  - [x] **ST-009.5.4:** Document validation commands
+  - [x] **ST-009.5.5:** Create migration checklist for ps-* agents
+  - [x] **ST-009.5.6:** Create migration checklist for nse-* agents
+  - [x] **ST-009.5.7:** Document backward compatibility notes
+- **Evidence Criteria:**
+  | Criterion | Method | Expected | Actual | Status |
+  |-----------|--------|----------|--------|--------|
+  | File exists | `ls docs/templates/AGENT_MIGRATION_GUIDE.md` | File found | File exists (468 lines) | ✅ PASS |
+  | Core structure | `grep "AGENT_TEMPLATE_CORE"` | Found | 5 matches | ✅ PASS |
+  | Extension syntax | `grep "{%DOMAIN_"` | Found | 13 matches | ✅ PASS |
+  | PS checklist | `grep -c "ps-" migration_guide` | ≥ 9 | 15 matches | ✅ PASS |
+  | NSE checklist | `grep -c "nse-" migration_guide` | ≥ 10 | 16 matches | ✅ PASS |
+- **Implementation Notes:**
+  - Comprehensive 10-section guide covering architecture, workflow, validation
+  - Includes ASCII diagram of federated architecture
+  - Per-agent checklists with cognitive_mode recommendations
+  - Troubleshooting section for common errors
+- **Source References:**
+  - ADR Section "Migration Effort Estimate"
+- **Artifact Created:** `docs/templates/AGENT_MIGRATION_GUIDE.md` (468 lines)
+
+###### T-009.6: Update Conformance Script (Estimated: 2h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Update conformance check to validate against federated templates
+- **Sub-tasks:**
+  - [x] **ST-009.6.1:** Add `--validate-composition` option (replaces --template-type)
+  - [x] **ST-009.6.2:** Implement core template existence check
+  - [x] **ST-009.6.3:** Implement extension file existence check
+  - [x] **ST-009.6.4:** Implement composition validation (calls compose script)
+  - [x] **ST-009.6.5:** Update help text and documentation
+  - [x] **ST-009.6.6:** Update EXCLUDE_FILES with new federated files
+- **Evidence Criteria:**
+  | Criterion | Method | Expected | Actual | Status |
+  |-----------|--------|----------|--------|--------|
+  | New option | `--help` output | Shows composition flag | `--validate-composition` shown | ✅ PASS |
+  | PS validation | `--family ps` | 9/9 pass | 9/9 agents conformant | ✅ PASS |
+  | NSE validation | `--family nse` | 10/10 pass | 10/10 agents conformant | ✅ PASS |
+  | Composition | `--validate-composition` | Both domains pass | PS + NSE validated | ✅ PASS |
+- **Implementation Notes:**
+  - Added `validate_composition()` function that runs compose script for both domains
+  - Checks core template and extension files exist before validation
+  - Updated docstring with federated architecture references
+  - Added NSE_EXTENSION.md, PS_EXTENSION.md, AGENT_TEMPLATE_CORE.md to EXCLUDE_FILES
+- **Source References:**
+  - Existing `scripts/check_agent_conformance.py`
+- **Artifact Updated:** `scripts/check_agent_conformance.py` (now 625 lines)
+
+###### T-009.7: Validation and Testing (Estimated: 4h)
+- **Status:** ✅ COMPLETE
+- **Completed:** 2026-01-11
+- **Description:** Comprehensive validation of federated architecture
+- **Sub-tasks:**
+  - [x] **ST-009.7.1:** Compose PS template and compare to original
+  - [x] **ST-009.7.2:** Compose NSE template and compare to original
+  - [x] **ST-009.7.3:** Validate no structural regressions
+  - [x] **ST-009.7.4:** Run conformance check on all 19 agents
+  - [x] **ST-009.7.5:** Verify P-003 compliance preserved
+  - [x] **ST-009.7.6:** Verify session_context schema identical
+  - [x] **ST-009.7.7:** Document test results
+  - [x] **ST-009.7.8:** Update WORKTRACKER with evidence
+- **Evidence Criteria:**
+  | Criterion | Method | Expected | Actual | Status |
+  |-----------|--------|----------|--------|--------|
+  | PS composition | `--domain ps --validate` | SUCCESS | 10 replacements, 0 remaining | ✅ PASS |
+  | NSE composition | `--domain nse --validate` | SUCCESS | 10 replacements, 0 remaining | ✅ PASS |
+  | All agents pass | Conformance script | 19/19 pass | 19/19 conformant | ✅ PASS |
+  | P-003 in templates | `grep -c "P-003"` | Present | 6 refs each template | ✅ PASS |
+  | session_context | Schema comparison | Identical | Schema fields match | ✅ PASS |
+- **Discoveries:**
+  - **D-001:** nse-reporter.md missing P-003 in principles_applied (not a violation, but inconsistency)
+    - Severity: LOW (informational)
+    - Recommended Action: Add P-003 to nse-reporter.md in future cleanup
+- **Source References:**
+  - ADR Section "Non-Negotiable Constraints"
+  - ADR Section "Risks and Mitigations"
+
+##### Risk Register
+
+| Risk ID | Description | Probability | Impact | Mitigation | Status |
+|---------|-------------|-------------|--------|------------|--------|
+| R-001 | Extension drift from core | Medium | Medium | Automated composition validation | OPEN |
+| R-002 | Version sync issues | Low | High | Semantic versioning + changelog | OPEN |
+| R-003 | Developer confusion | Low | Medium | Clear documentation + examples | OPEN |
+| R-004 | Breaking existing agents | Medium | High | Comprehensive test suite | OPEN |
+
+##### Progress Log
+
+| Date | Task | Update | Evidence |
+|------|------|--------|----------|
+| 2026-01-11 | ADR | Created and approved | `decisions/wi-sao-009-adr-unified-template-architecture.md` |
+| 2026-01-11 | Approval | User approved federated approach | `decisions/wi-sao-009-approval-record.md` |
+| 2026-01-11 | Planning | Detailed plan created | This WORKTRACKER entry |
+| 2026-01-11 | T-009.1 | ✅ COMPLETE - Core template extracted | `skills/shared/AGENT_TEMPLATE_CORE.md` (383 lines, 9 extension points) |
+| 2026-01-11 | T-009.2 | ✅ COMPLETE - PS extension created | `skills/problem-solving/agents/PS_EXTENSION.md` (195 lines) |
+| 2026-01-11 | T-009.3 | ✅ COMPLETE - NSE extension created | `skills/nasa-se/agents/NSE_EXTENSION.md` (262 lines) |
+| 2026-01-11 | T-009.4 | ✅ COMPLETE - Composition script created | `scripts/compose_agent_template.py` (505 lines), all modes tested |
+| 2026-01-11 | T-009.5 | ✅ COMPLETE - Migration guide created | `docs/templates/AGENT_MIGRATION_GUIDE.md` (468 lines), 10 sections |
+| 2026-01-11 | T-009.6 | ✅ COMPLETE - Conformance script updated | 19/19 agents pass, `--validate-composition` added |
+| 2026-01-11 | T-009.7 | ✅ COMPLETE - Validation and testing | P-003 verified (6 refs), session_context identical, D-001 documented |
+| 2026-01-11 | WI-SAO-009 | ✅ COMPLETE | All 14 acceptance criteria PASS, all 7 tasks complete |
 
 #### WI-SAO-010: Migrate ps-* Agents to Unified Template
 - **Entry ID:** sao-010

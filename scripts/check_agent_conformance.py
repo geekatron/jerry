@@ -5,6 +5,12 @@ Jerry Framework - Agent Template Conformance Checker
 This script validates that agent files conform to their respective templates.
 It checks for required YAML frontmatter sections and reports deviations.
 
+This script supports the Federated Template Architecture (ADR WI-SAO-009):
+- Core template: skills/shared/AGENT_TEMPLATE_CORE.md
+- PS extension: skills/problem-solving/agents/PS_EXTENSION.md
+- NSE extension: skills/nasa-se/agents/NSE_EXTENSION.md
+- Composition: scripts/compose_agent_template.py
+
 Exit Codes:
     0: All agents conform to templates
     1: One or more agents have conformance issues
@@ -16,8 +22,10 @@ Usage:
     python scripts/check_agent_conformance.py --family ps        # Check PS agents only
     python scripts/check_agent_conformance.py --json             # Output as JSON
     python scripts/check_agent_conformance.py --verbose          # Show all checks
+    python scripts/check_agent_conformance.py --validate-composition  # Validate template composition
 
 Work Item: WI-SAO-024
+Updated: WI-SAO-009 (Federated Template Architecture)
 Created: 2026-01-11
 """
 
@@ -111,10 +119,13 @@ AGENT_PATTERNS: dict[str, str] = {
     "ps": "skills/problem-solving/agents/ps-*.md",
 }
 
-# Files to exclude from checking
+# Files to exclude from checking (templates and extensions, not agents)
 EXCLUDE_FILES: list[str] = [
     "NSE_AGENT_TEMPLATE.md",
     "PS_AGENT_TEMPLATE.md",
+    "NSE_EXTENSION.md",
+    "PS_EXTENSION.md",
+    "AGENT_TEMPLATE_CORE.md",
 ]
 
 
@@ -447,6 +458,81 @@ def format_results_json(results: list[AgentConformanceResult]) -> str:
     return json.dumps(data, indent=2)
 
 
+def validate_composition(project_root: Path) -> tuple[bool, list[str]]:
+    """Validate federated template composition.
+
+    Runs composition script for both domains and verifies success.
+
+    Args:
+        project_root: Project root directory
+
+    Returns:
+        Tuple of (all_passed, messages)
+    """
+    import subprocess
+
+    messages: list[str] = []
+    all_passed = True
+
+    compose_script = project_root / "scripts" / "compose_agent_template.py"
+    if not compose_script.exists():
+        messages.append(f"ERROR: Composition script not found: {compose_script}")
+        return False, messages
+
+    # Check core template exists
+    core_template = project_root / "skills" / "shared" / "AGENT_TEMPLATE_CORE.md"
+    if not core_template.exists():
+        messages.append(f"ERROR: Core template not found: {core_template}")
+        all_passed = False
+
+    # Check extension files exist
+    extensions = {
+        "ps": project_root / "skills" / "problem-solving" / "agents" / "PS_EXTENSION.md",
+        "nse": project_root / "skills" / "nasa-se" / "agents" / "NSE_EXTENSION.md",
+    }
+
+    for domain, path in extensions.items():
+        if not path.exists():
+            messages.append(f"ERROR: {domain.upper()} extension not found: {path}")
+            all_passed = False
+
+    if not all_passed:
+        return False, messages
+
+    # Validate composition for each domain
+    for domain in ["ps", "nse"]:
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(compose_script),
+                    "--domain",
+                    domain,
+                    "--validate",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
+            if result.returncode == 0:
+                messages.append(f"[PASS] {domain.upper()} composition validated")
+            else:
+                messages.append(f"[FAIL] {domain.upper()} composition failed")
+                if result.stderr:
+                    messages.append(f"       {result.stderr.strip()}")
+                all_passed = False
+
+        except subprocess.TimeoutExpired:
+            messages.append(f"[FAIL] {domain.upper()} composition timed out")
+            all_passed = False
+        except Exception as e:
+            messages.append(f"[FAIL] {domain.upper()} composition error: {e}")
+            all_passed = False
+
+    return all_passed, messages
+
+
 def main() -> int:
     """Main entry point.
 
@@ -462,6 +548,7 @@ Examples:
   python scripts/check_agent_conformance.py --family nse
   python scripts/check_agent_conformance.py --json
   python scripts/check_agent_conformance.py --verbose
+  python scripts/check_agent_conformance.py --validate-composition
         """,
     )
     parser.add_argument(
@@ -480,12 +567,39 @@ Examples:
         action="store_true",
         help="Show all checks including passing",
     )
+    parser.add_argument(
+        "--validate-composition",
+        action="store_true",
+        help="Validate template composition (federated architecture)",
+    )
 
     args = parser.parse_args()
 
     # Determine project root
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
+
+    # Handle --validate-composition mode
+    if args.validate_composition:
+        print("=" * 60)
+        print("Federated Template Composition Validation")
+        print("=" * 60)
+        print()
+
+        passed, messages = validate_composition(project_root)
+
+        for msg in messages:
+            print(msg)
+
+        print()
+        print("=" * 60)
+
+        if passed:
+            print("All composition checks passed.")
+        else:
+            print("Composition validation FAILED.")
+
+        return 0 if passed else 1
 
     # Find agent files
     agent_files = find_agent_files(project_root, args.family)
