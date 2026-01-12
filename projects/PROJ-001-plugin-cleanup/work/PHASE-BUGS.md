@@ -24,6 +24,7 @@
 | BUG-002 | Hook decision value needs verification | N/A | ✅ CLOSED | Phase 6 |
 | BUG-003 | Pyright type errors in serializer.py | HIGH | ✅ FIXED | CI-002 |
 | BUG-004 | Type variance warning in repository.py | LOW | ✅ FIXED | CI-002 |
+| BUG-005 | CLI integration tests hardcoded .venv paths | HIGH | ✅ FIXED | TD-013.6 |
 
 ---
 
@@ -246,6 +247,98 @@ This is the correct fix because `TId` is only used in input parameter positions 
 
 ---
 
+## BUG-005: CLI Integration Tests Hardcoded .venv Paths ✅
+
+> **Status**: FIXED (2026-01-12)
+> **Severity**: HIGH
+> **Phase Found**: TD-013.6 (Release Verification)
+
+### Description
+
+CLI integration tests in `tests/interface/cli/integration/test_cli_e2e.py` used hardcoded paths to `.venv/bin/jerry` and `.venv/bin/python3`. These paths don't exist in CI environments where Python is installed system-wide via `actions/setup-python`.
+
+### Evidence
+
+GitHub Actions logs from release run `20906621545`:
+```
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/jerry/jerry/.venv/bin/jerry'
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/jerry/jerry/.venv/bin/python3'
+```
+
+14 tests failed with this error.
+
+### Root Cause Analysis (5W1H)
+
+| Question | Answer |
+|----------|--------|
+| What | Integration tests assume local venv structure exists |
+| Why | Tests were written for local development only, not CI portability |
+| Who | Affects CI pipeline, release verification |
+| Where | `tests/interface/cli/integration/test_cli_e2e.py` lines 28, 193, 213 |
+| When | During pytest execution in GitHub Actions |
+| How | Hardcoded `PROJECT_ROOT / ".venv" / "bin" / "jerry"` doesn't exist in CI |
+
+### Impact
+
+- 14 CLI integration tests fail in CI
+- Release workflow blocked
+- v0.0.1 release verification fails
+
+### Resolution
+
+Created helper functions that work in both environments:
+
+```python
+def _find_jerry_executable() -> str:
+    """Find the jerry executable - works in both venv and CI environments."""
+    # Try venv path first (local development)
+    venv_jerry = PROJECT_ROOT / ".venv" / "bin" / "jerry"
+    if venv_jerry.exists():
+        return str(venv_jerry)
+
+    # Try system path (CI environment with pip install -e .)
+    system_jerry = shutil.which("jerry")
+    if system_jerry:
+        return system_jerry
+
+    pytest.skip("jerry executable not found - run 'pip install -e .'")
+    return ""
+
+
+def _find_python_executable() -> str:
+    """Find the Python executable - works in both venv and CI environments."""
+    venv_python = PROJECT_ROOT / ".venv" / "bin" / "python3"
+    if venv_python.exists():
+        return str(venv_python)
+    return sys.executable
+```
+
+Updated all 3 fixtures to use these helpers instead of hardcoded paths.
+
+### Files Modified
+
+| File | Action |
+|------|--------|
+| `tests/interface/cli/integration/test_cli_e2e.py` | Added helper functions, updated fixtures |
+
+### Acceptance Criteria
+
+- [x] All 14 CLI integration tests pass locally
+- [x] Tests use dynamic executable discovery
+- [x] No hardcoded `.venv` paths remain in test fixtures
+- [ ] Tests pass in CI (pending release verification)
+
+### Lessons Learned
+
+**Pattern to avoid**: Hardcoding environment-specific paths in tests.
+
+**Pattern to follow**: Use dynamic discovery with fallbacks:
+1. Check local venv first (development)
+2. Fall back to system PATH (CI)
+3. Use `sys.executable` for Python interpreter
+
+---
+
 ## Bug Reporting Template
 
 When reporting new bugs, use this template:
@@ -297,3 +390,4 @@ When reporting new bugs, use this template:
 | 2026-01-09 | Claude | Migrated to multi-file format |
 | 2026-01-11 | Claude | Added BUG-003, BUG-004 (CI-002 failures) |
 | 2026-01-11 | Claude | Fixed BUG-003, BUG-004 (CI-002 resolution) |
+| 2026-01-12 | Claude | Added BUG-005: CLI tests hardcoded .venv paths (TD-013.6 verification) |

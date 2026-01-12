@@ -28,6 +28,8 @@
 | DISC-006 | Broken CLI Entry Point in pyproject.toml | ELEVATED | TD-014 |
 | DISC-007 | TD-013 Misunderstood Distribution Model | REVISED | TD-013 |
 | DISC-008 | System Python vs Venv Portability | ACTIONED | TD-014 |
+| DISC-009 | New Files Created Without Format Check | ACTIONED | TD-013.6 |
+| DISC-010 | Release Workflow Missing Dev Dependencies | ACTIONED | TD-013.6 |
 
 ---
 
@@ -319,6 +321,94 @@ source .venv/bin/activate && python3 -m src.interface.cli.main --help
 
 ---
 
+### DISC-009: New Files Created Without Format Check
+
+**Date**: 2026-01-12
+**Context**: TD-013.6 release verification - first release attempt failed at format check
+**Finding**: When creating `src/interface/cli/main.py` during TD-014, the file was not run through `ruff format` before committing. This caused the release workflow to fail at the "Run format check" step.
+
+**Evidence**:
+GitHub Actions logs from release run `20906566599`:
+```
+Would reformat: src/interface/cli/main.py
+1 file would be reformatted, 162 files already formatted
+##[error]Process completed with exit code 1.
+```
+
+**Root Cause**:
+- File was created using the Write tool
+- No automatic format check before commit
+- Pre-commit hooks exist but weren't run (direct commit)
+
+**Pattern Identified**:
+When creating new Python files, must run:
+```bash
+.venv/bin/ruff format <file>
+.venv/bin/ruff check <file> --fix
+```
+
+**Impact**:
+- Release workflow failed
+- Required tag deletion and recreation
+- Delayed v0.0.1 release
+
+**Action**: Fixed by running `ruff format src/interface/cli/main.py` and committing the formatted version.
+
+**Lesson Learned**: Always run format/lint checks on new files before committing, especially when bypassing pre-commit hooks.
+
+**Status**: ACTIONED
+
+---
+
+### DISC-010: Release Workflow Missing Dev Dependencies
+
+**Date**: 2026-01-12
+**Context**: TD-013.6 release verification - second release attempt failed at type check
+**Finding**: The release workflow's CI job installed `pip install -e ".[test]"` but pyright requires `filelock` which is in the `[dev]` dependencies, not `[test]`.
+
+**Evidence**:
+GitHub Actions logs from release run `20906593992`:
+```
+venv .venv subdirectory not found in venv path /home/runner/work/jerry/jerry.
+/home/runner/work/jerry/jerry/src/infrastructure/internal/file_store.py:24:10 - error: Import "filelock" could not be resolved (reportMissingImports)
+/home/runner/work/jerry/jerry/src/infrastructure/internal/file_store.py:25:10 - error: Import "filelock" could not be resolved (reportMissingImports)
+2 errors, 0 warnings, 0 informations
+```
+
+**Root Cause**:
+- `filelock` is in `[dev]` optional dependencies
+- Release workflow CI job only installed `[test]`
+- pyproject.toml dependency groups:
+  ```toml
+  [project.optional-dependencies]
+  dev = ["filelock>=3.18.0", "mypy>=1.14.0", "ruff>=0.9.2"]
+  test = ["pytest>=8.0", "pytest-cov>=7.0", ...]
+  ```
+
+**Impact**:
+- Type check job failed
+- Release workflow blocked
+- Required workflow fix and tag recreation
+
+**Fix Applied**:
+Changed line 77 in `.github/workflows/release.yml`:
+```yaml
+# From:
+pip install -e ".[test]"
+
+# To:
+pip install -e ".[dev,test]"
+```
+
+**Lesson Learned**: When creating CI workflows that run type checking, ensure all dependencies required by the type checker are installed. The main `ci.yml` already had this correct (`pip install -e ".[dev]"` on line 66), but the release workflow was written separately and didn't follow the same pattern.
+
+**Consistency Check Added to Checklist**:
+- [ ] New workflows should match dependency installation patterns from existing workflows
+
+**Status**: ACTIONED
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -336,3 +426,5 @@ source .venv/bin/activate && python3 -m src.interface.cli.main --help
 | 2026-01-11 | Claude | Added DISC-006: Broken CLI Entry Point in pyproject.toml (elevated to TD-014) |
 | 2026-01-11 | Claude | Added DISC-007: TD-013 Misunderstood Distribution Model (TD-013 revised) |
 | 2026-01-12 | Claude | Added DISC-008: System Python vs Venv Portability |
+| 2026-01-12 | Claude | Added DISC-009: New Files Created Without Format Check |
+| 2026-01-12 | Claude | Added DISC-010: Release Workflow Missing Dev Dependencies |
