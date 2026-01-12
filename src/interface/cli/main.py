@@ -202,8 +202,7 @@ def cmd_init(args: argparse.Namespace) -> int:
             if context["validation"]
             else None,
             "available_projects": [
-                {"id": str(p.id), "status": p.status.name}
-                for p in context["available_projects"]
+                {"id": str(p.id), "status": p.status.name} for p in context["available_projects"]
             ],
             "next_number": context["next_number"],
         }
