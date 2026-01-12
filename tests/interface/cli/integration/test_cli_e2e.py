@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -19,13 +21,41 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 
 
+def _find_jerry_executable() -> str:
+    """Find the jerry executable - works in both venv and CI environments."""
+    # Try venv path first (local development)
+    venv_jerry = PROJECT_ROOT / ".venv" / "bin" / "jerry"
+    if venv_jerry.exists():
+        return str(venv_jerry)
+
+    # Try system path (CI environment with pip install -e .)
+    system_jerry = shutil.which("jerry")
+    if system_jerry:
+        return system_jerry
+
+    # Fallback: use python -m src.interface.cli.main
+    pytest.skip("jerry executable not found - run 'pip install -e .'")
+    return ""  # Never reached
+
+
+def _find_python_executable() -> str:
+    """Find the Python executable - works in both venv and CI environments."""
+    # Try venv path first (local development)
+    venv_python = PROJECT_ROOT / ".venv" / "bin" / "python3"
+    if venv_python.exists():
+        return str(venv_python)
+
+    # Use the current Python interpreter (CI environment)
+    return sys.executable
+
+
 class TestCLIEntryPoint:
     """Tests for jerry entry point execution."""
 
     @pytest.fixture
     def venv_jerry(self) -> str:
-        """Get path to jerry command in venv."""
-        return str(PROJECT_ROOT / ".venv" / "bin" / "jerry")
+        """Get path to jerry command."""
+        return _find_jerry_executable()
 
     def test_jerry_help_exits_zero(self, venv_jerry: str):
         """jerry --help should exit with code 0."""
@@ -159,8 +189,8 @@ class TestCLIModuleExecution:
 
     @pytest.fixture
     def venv_python(self) -> str:
-        """Get path to python in venv."""
-        return str(PROJECT_ROOT / ".venv" / "bin" / "python3")
+        """Get path to python executable."""
+        return _find_python_executable()
 
     def test_module_execution_works(self, venv_python: str):
         """Running as python -m should work."""
@@ -179,8 +209,8 @@ class TestCLIOutputFormat:
 
     @pytest.fixture
     def venv_jerry(self) -> str:
-        """Get path to jerry command in venv."""
-        return str(PROJECT_ROOT / ".venv" / "bin" / "jerry")
+        """Get path to jerry command."""
+        return _find_jerry_executable()
 
     def test_projects_list_table_has_headers(self, venv_jerry: str):
         """projects list output should have column headers."""
