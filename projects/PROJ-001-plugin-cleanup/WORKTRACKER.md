@@ -207,10 +207,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: 🔄 v0.0.1 RELEASE WORK - TD-014 ✅ COMPLETE, TD-013 ✅ IMPLEMENTATION COMPLETE
+> **Status**: ✅ v0.0.1 RELEASED - https://github.com/geekatron/jerry/releases/tag/v0.0.1
 > **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **Current Focus**: TD-013 implementation done - pending verification via tag push
-> **Blocking Chain**: TD-014 ✅ → TD-013 ✅ (pending verification)
+> **Current Focus**: v0.0.1 released, ready for next initiative
+> **Completed**: TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
 > **Test Count**: 1364 tests pass (34 CLI tests added)
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
@@ -321,7 +321,7 @@ jerry --json <command>    # JSON output for scripting
 | TD-013.3 | ✅ COMPLETE | Generate plugin archive artifacts | `build` job creates `.tar.gz`, `.zip` |
 | TD-013.4 | ✅ COMPLETE | Auto-generate release notes | `release` job uses git log |
 | TD-013.5 | ✅ COMPLETE | Create `docs/INSTALLATION.md` | `docs/INSTALLATION.md` (250 lines) |
-| TD-013.6 | ⏳ PENDING | Verify: Tag push creates release | Pending v0.0.1 tag |
+| TD-013.6 | ✅ COMPLETE | Verify: Tag push creates release | Run 20906706213, release URL below |
 
 **ADR**: `decisions/ADR-RELEASE-001-github-releases.md`
 
@@ -348,11 +348,23 @@ validate → ci → build → release
 - `CLAUDE.md`, `AGENTS.md`, `GOVERNANCE.md`, `README.md`
 - `pyproject.toml`, `pytest.ini`, `.gitignore`
 
-**Verification (Pending)**:
-- [ ] Create tag: `git tag v0.0.1 && git push origin v0.0.1`
-- [ ] Verify workflow triggers and passes
-- [ ] Verify release appears on GitHub
-- [ ] Verify artifacts downloadable and valid
+**Verification (COMPLETE)**:
+- [x] Create tag: `git tag v0.0.1 && git push origin v0.0.1`
+- [x] Verify workflow triggers and passes (run 20906706213)
+- [x] Verify release appears on GitHub
+- [x] Verify artifacts downloadable and valid
+
+**Release URL**: https://github.com/geekatron/jerry/releases/tag/v0.0.1
+
+**Release Artifacts**:
+- `jerry-plugin-0.0.1.tar.gz`
+- `jerry-plugin-0.0.1.zip`
+- `checksums.sha256`
+
+**Issues Fixed During Verification**:
+- BUG-005: CLI integration tests hardcoded .venv paths
+- DISC-009: New files created without format check
+- DISC-010: Release workflow missing dev dependencies
 
 ---
 
@@ -981,3 +993,6 @@ Before marking ANY task complete:
 | 2026-01-12 | Claude | TD-013.1-5 COMPLETE: Release workflow, INSTALLATION.md, ADR-RELEASE-001 |
 | 2026-01-12 | Claude | Release pipeline artifacts: `.github/workflows/release.yml`, `docs/INSTALLATION.md`, ADR |
 | 2026-01-12 | Claude | **TD-013 IMPLEMENTATION COMPLETE**: Pending verification via v0.0.1 tag push |
+| 2026-01-12 | Claude | BUG-005, DISC-009, DISC-010: Issues found and fixed during release verification |
+| 2026-01-12 | Claude | **v0.0.1 RELEASED**: Run 20906706213, artifacts: tar.gz, zip, checksums |
+| 2026-01-12 | Claude | **TD-013.6 COMPLETE**: Release pipeline verified end-to-end |
