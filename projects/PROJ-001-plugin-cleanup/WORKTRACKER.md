@@ -207,10 +207,10 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: 🔄 v0.0.1 RELEASE WORK - TD-014 (CLI) ✅ COMPLETE, TD-013 (Release Pipeline) NEXT
+> **Status**: 🔄 v0.0.1 RELEASE WORK - TD-014 ✅ COMPLETE, TD-013 ✅ IMPLEMENTATION COMPLETE
 > **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **Current Focus**: TD-014 COMPLETE - proceed to TD-013 (release pipeline)
-> **Blocking Chain**: TD-014 ✅ → TD-010 (link-artifact) → TD-013 (release)
+> **Current Focus**: TD-013 implementation done - pending verification via tag push
+> **Blocking Chain**: TD-014 ✅ → TD-013 ✅ (pending verification)
 > **Test Count**: 1364 tests pass (34 CLI tests added)
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
@@ -314,16 +314,45 @@ jerry --json <command>    # JSON output for scripting
 
 #### TD-013: GitHub Releases Pipeline (Claude Code Plugin)
 
-| Task | Status | Description |
-|------|--------|-------------|
-| TD-013.1 | ⏳ PENDING | Create `.github/workflows/release.yml` |
-| TD-013.2 | ⏳ PENDING | Configure `v*` tag trigger |
-| TD-013.3 | ⏳ PENDING | Generate plugin archive artifacts |
-| TD-013.4 | ⏳ PENDING | Auto-generate release notes |
-| TD-013.5 | ⏳ PENDING | Create `docs/INSTALLATION.md` |
-| TD-013.6 | ⏳ PENDING | Verify: Tag push creates release |
+| Task | Status | Description | Evidence |
+|------|--------|-------------|----------|
+| TD-013.1 | ✅ COMPLETE | Create `.github/workflows/release.yml` | `.github/workflows/release.yml` |
+| TD-013.2 | ✅ COMPLETE | Configure `v*` tag trigger | Line 14: `tags: ["v*"]` |
+| TD-013.3 | ✅ COMPLETE | Generate plugin archive artifacts | `build` job creates `.tar.gz`, `.zip` |
+| TD-013.4 | ✅ COMPLETE | Auto-generate release notes | `release` job uses git log |
+| TD-013.5 | ✅ COMPLETE | Create `docs/INSTALLATION.md` | `docs/INSTALLATION.md` (250 lines) |
+| TD-013.6 | ⏳ PENDING | Verify: Tag push creates release | Pending v0.0.1 tag |
 
-**Blocked By**: TD-014 (CLI must work for full release)
+**ADR**: `decisions/ADR-RELEASE-001-github-releases.md`
+
+**Implementation Summary (2026-01-12)**:
+
+| Artifact | Location | Description |
+|----------|----------|-------------|
+| Release Workflow | `.github/workflows/release.yml` | 4 jobs: validate, ci, build, release |
+| Installation Guide | `docs/INSTALLATION.md` | 250 lines, covers installation/upgrade/uninstall |
+| ADR | `decisions/ADR-RELEASE-001-github-releases.md` | 7 design decisions documented |
+
+**Release Workflow Jobs**:
+```
+validate → ci → build → release
+   │        │      │        │
+   │        │      │        └── Create GitHub Release
+   │        │      └── Create .tar.gz, .zip, checksums
+   │        └── Run lint, type-check, tests
+   └── Extract and validate version from tag
+```
+
+**Plugin Archive Contents**:
+- `.claude/`, `.claude-plugin/`, `skills/`, `src/`, `docs/`, `scripts/`, `hooks/`
+- `CLAUDE.md`, `AGENTS.md`, `GOVERNANCE.md`, `README.md`
+- `pyproject.toml`, `pytest.ini`, `.gitignore`
+
+**Verification (Pending)**:
+- [ ] Create tag: `git tag v0.0.1 && git push origin v0.0.1`
+- [ ] Verify workflow triggers and passes
+- [ ] Verify release appears on GitHub
+- [ ] Verify artifacts downloadable and valid
 
 ---
 
@@ -949,3 +978,6 @@ Before marking ANY task complete:
 | 2026-01-12 | Claude | TD-014.T1 COMPLETE: 34 tests (20 unit, 14 integration) |
 | 2026-01-12 | Claude | TD-014.V1 COMPLETE: `pip install -e .` + `jerry --help` verified |
 | 2026-01-12 | Claude | **TD-014 COMPLETE**: CLI implementation done (1364 tests pass, no regressions) |
+| 2026-01-12 | Claude | TD-013.1-5 COMPLETE: Release workflow, INSTALLATION.md, ADR-RELEASE-001 |
+| 2026-01-12 | Claude | Release pipeline artifacts: `.github/workflows/release.yml`, `docs/INSTALLATION.md`, ADR |
+| 2026-01-12 | Claude | **TD-013 IMPLEMENTATION COMPLETE**: Pending verification via v0.0.1 tag push |
