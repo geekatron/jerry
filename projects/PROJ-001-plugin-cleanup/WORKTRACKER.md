@@ -207,10 +207,11 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: 🔄 v0.0.1 RELEASE WORK - TD-014 (CLI) + TD-013 (Release Pipeline)
+> **Status**: 🔄 v0.0.1 RELEASE WORK - TD-014 (CLI) ✅ COMPLETE, TD-013 (Release Pipeline) NEXT
 > **Active Initiative**: INIT-WT-SKILLS - Shore Up Worktracker Skills (PAUSED)
-> **Current Focus**: TD-014 Research Phase (ps-* agents investigating CLI architecture)
-> **Blocking Chain**: TD-014 (CLI) → TD-010 (link-artifact) → TD-013 (release)
+> **Current Focus**: TD-014 COMPLETE - proceed to TD-013 (release pipeline)
+> **Blocking Chain**: TD-014 ✅ → TD-010 (link-artifact) → TD-013 (release)
+> **Test Count**: 1364 tests pass (34 CLI tests added)
 
 ### CI-002: CI/CD Pipeline Failures (RESOLVED)
 
@@ -252,27 +253,64 @@ TD-010 (link-artifact) ───────────────────
 
 #### TD-014: Implement Jerry CLI (Primary Adapter)
 
-| Task | Status | Description |
-|------|--------|-------------|
-| TD-014.R1 | 🔄 IN PROGRESS | Research: Inventory use cases in `src/application/` |
-| TD-014.R2 | ⏳ PENDING | Research: Inventory domain capabilities |
-| TD-014.R3 | ⏳ PENDING | Research: Search knowledge base for patterns |
-| TD-014.A1 | ⏳ PENDING | Analysis: Gap between domain and CLI exposure |
-| TD-014.D1 | ⏳ PENDING | Design: CLI architecture (ADR-CLI-001) |
-| TD-014.I1 | ⏳ PENDING | Implement: `src/interface/cli/main.py` |
-| TD-014.I2 | ⏳ PENDING | Implement: Command groups |
-| TD-014.T1 | ⏳ PENDING | Tests: Unit, Integration, Architecture |
-| TD-014.V1 | ⏳ PENDING | Verify: `pip install -e .` + `jerry --help` |
+| Task | Status | Description | Evidence |
+|------|--------|-------------|----------|
+| TD-014.R1 | ✅ COMPLETE | Research: Inventory use cases in `src/application/` | `research/td-014-e-011-use-case-inventory.md` |
+| TD-014.R2 | ✅ COMPLETE | Research: Inventory domain capabilities | `research/td-014-e-012-domain-capabilities.md` |
+| TD-014.R3 | ✅ COMPLETE | Research: Search knowledge base for patterns | `research/td-014-e-013-knowledge-base-patterns.md` |
+| TD-014.A1 | ✅ COMPLETE | Analysis: Gap between domain and CLI exposure | `analysis/td-014-a-001-cli-gap-analysis.md` |
+| TD-014.D1 | ✅ COMPLETE | Design: CLI architecture (ADR-CLI-001) | `decisions/ADR-CLI-001-primary-adapter.md` |
+| TD-014.I1 | ✅ COMPLETE | Implement: `src/interface/cli/main.py` | `src/interface/cli/main.py` (280 lines) |
+| TD-014.I2 | ✅ COMPLETE | Implement: Command groups | init, projects list, projects validate |
+| TD-014.T1 | ✅ COMPLETE | Tests: Unit, Integration, Architecture | 34 tests (`tests/interface/cli/`) |
+| TD-014.V1 | ✅ COMPLETE | Verify: `pip install -e .` + `jerry --help` | All commands working |
 
-**Research Questions**:
-1. What use cases exist in `src/application/`?
-2. What domain capabilities need CLI exposure?
-3. What CLI patterns exist in the knowledge base?
-4. What commands should `jerry` CLI provide?
+**Research Findings Summary (2026-01-12)**:
+
+| Research | Key Findings |
+|----------|--------------|
+| **R1: Use Cases** | 4 Queries (GetProjectContextQuery, ScanProjectsQuery, ValidateProjectQuery, GetNextProjectNumberQuery), 0 Commands |
+| **R2: Domain** | 2 Aggregates (WorkItem, Session), 14+ Value Objects, 15+ Domain Events, 2 Domain Services |
+| **R3: Patterns** | Teaching edition found, factory composition root, CLI as primary adapter validated |
+
+**Research Questions** (ANSWERED):
+1. What use cases exist in `src/application/`? → 4 Queries, 0 Commands
+2. What domain capabilities need CLI exposure? → WorkItem lifecycle, Session management, Project validation
+3. What CLI patterns exist in the knowledge base? → Factory composition, thin adapter, hexagonal boundaries
+4. What commands should `jerry` CLI provide? → `jerry init`, `jerry projects list/validate`, `jerry session *`, `jerry items *`
 
 **Discoveries During TD-014**:
 - DISC-006: `jerry` entry point in pyproject.toml broken
 - DISC-007: TD-013 originally misunderstood distribution model
+- DISC-008: System Python vs Venv Portability (use `.venv/bin/python3`)
+
+**Implementation Summary (2026-01-12)**:
+
+| Artifact | Location | Description |
+|----------|----------|-------------|
+| CLI Entry Point | `src/interface/cli/main.py` | 280 lines, argparse-based, factory composition |
+| Unit Tests | `tests/interface/cli/unit/test_main.py` | 20 tests for parser, formatters, handlers |
+| Integration Tests | `tests/interface/cli/integration/test_cli_e2e.py` | 14 tests for subprocess execution |
+| ADR | `decisions/ADR-CLI-001-primary-adapter.md` | Design decisions documented |
+
+**CLI Commands Available (v0.0.1)**:
+```
+jerry --help              # Show help
+jerry --version           # Show version (0.0.1)
+jerry init                # Display project context
+jerry projects list       # List all projects
+jerry projects validate   # Validate a project
+jerry --json <command>    # JSON output for scripting
+```
+
+**Verification Evidence**:
+- `pip install -e .` succeeds ✓
+- `jerry --help` displays correctly ✓
+- All 5 commands work ✓
+- JSON output valid ✓
+- Exit codes correct (0=success, 1=error) ✓
+- 34 tests pass ✓
+- 1364 total tests pass (no regressions) ✓
 
 #### TD-013: GitHub Releases Pipeline (Claude Code Plugin)
 
@@ -707,6 +745,9 @@ PHASE 3: DELIVERABLES (Sequential)
 | DOC-001-R2 | Session Transcript Analysis | `research/DOC-001-R2-session-analysis.md` | ✅ |
 | DOC-001-R3 | Work File Pattern Analysis | `research/DOC-001-R3-file-analysis.md` | ✅ |
 | DOC-001-S | WORKTRACKER Decomposition Synthesis | `synthesis/DOC-001-synthesis.md` | ✅ |
+| TD-014-E-011 | CLI Use Case Inventory | `research/td-014-e-011-use-case-inventory.md` | ✅ |
+| TD-014-E-012 | CLI Domain Capabilities | `research/td-014-e-012-domain-capabilities.md` | ✅ |
+| TD-014-E-013 | CLI Knowledge Base Patterns | `research/td-014-e-013-knowledge-base-patterns.md` | ✅ |
 
 ### Decision Artifacts
 
@@ -895,3 +936,16 @@ Before marking ANY task complete:
 | 2026-01-11 | Claude | TD-014: Elevated DISC-006 to CRITICAL tech debt - implement Jerry CLI Primary Adapter |
 | 2026-01-11 | Claude | **REVISED TD-013**: Changed from PyInstaller to Claude Code Plugin release workflow |
 | 2026-01-11 | Claude | v0.0.1 RELEASE WORK: TD-014 (CLI) + TD-013 (Release) - research phase starting |
+| 2026-01-12 | Claude | TD-014.R1 COMPLETE: Use case inventory (4 Queries, 0 Commands found) |
+| 2026-01-12 | Claude | TD-014.R2 COMPLETE: Domain capabilities (2 Aggregates, 14+ VOs, 15+ Events) |
+| 2026-01-12 | Claude | TD-014.R3 COMPLETE: Knowledge base patterns (teaching edition, factory composition) |
+| 2026-01-12 | Claude | Research artifacts persisted: `research/td-014-e-01{1,2,3}-*.md` |
+| 2026-01-12 | Claude | TD-014.A1 STARTED: Analysis phase - synthesizing for CLI design |
+| 2026-01-12 | Claude | TD-014.A1 COMPLETE: Gap analysis created (`analysis/td-014-a-001-cli-gap-analysis.md`) |
+| 2026-01-12 | Claude | TD-014.D1 COMPLETE: ADR-CLI-001 created (`decisions/ADR-CLI-001-primary-adapter.md`) |
+| 2026-01-12 | Claude | DISC-008: System Python vs Venv Portability (use `.venv/bin/python3`) |
+| 2026-01-12 | Claude | TD-014.I1 COMPLETE: CLI main.py implemented (280 lines, argparse, factory composition) |
+| 2026-01-12 | Claude | TD-014.I2 COMPLETE: Command groups (init, projects list, projects validate) |
+| 2026-01-12 | Claude | TD-014.T1 COMPLETE: 34 tests (20 unit, 14 integration) |
+| 2026-01-12 | Claude | TD-014.V1 COMPLETE: `pip install -e .` + `jerry --help` verified |
+| 2026-01-12 | Claude | **TD-014 COMPLETE**: CLI implementation done (1364 tests pass, no regressions) |

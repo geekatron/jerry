@@ -27,6 +27,7 @@
 | DISC-005 | Release Pipeline Missing from CI/CD | ELEVATED | TD-013 |
 | DISC-006 | Broken CLI Entry Point in pyproject.toml | ELEVATED | TD-014 |
 | DISC-007 | TD-013 Misunderstood Distribution Model | REVISED | TD-013 |
+| DISC-008 | System Python vs Venv Portability | ACTIONED | TD-014 |
 
 ---
 
@@ -283,6 +284,41 @@ The CLI is a **Primary Adapter** (drives the application). Its absence means:
 
 ---
 
+### DISC-008: System Python vs Venv Portability
+
+**Date**: 2026-01-12
+**Context**: Testing TD-014 CLI implementation, using `python3` directly instead of venv
+**Finding**: Testing and development must use the project venv at `.venv/bin/python3` to ensure:
+- Consistent Python version (macOS system Python may differ)
+- All dependencies available (project deps installed in venv)
+- Portability across macOS/Linux/Windows
+- Reproducible CI behavior
+
+**Evidence**:
+- Project uses `.venv/` for virtual environment
+- `pyproject.toml` specifies `requires-python = ">=3.11"`
+- macOS system Python may be different version
+- CI/CD runs in isolated environments with installed deps
+
+**Impact**:
+- Using `python3` directly may work but is not portable
+- Dependencies may be missing in system Python
+- Tests may behave differently than CI
+
+**Correct Commands**:
+```bash
+# Use venv Python
+.venv/bin/python3 -m src.interface.cli.main --help
+
+# Or activate venv first
+source .venv/bin/activate && python3 -m src.interface.cli.main --help
+```
+
+**Action**: Always use `.venv/bin/python3` for testing and development
+**Status**: ACTIONED (using venv for TD-014 testing)
+
+---
+
 ## Archived Discoveries
 
 *None yet*
@@ -299,3 +335,4 @@ The CLI is a **Primary Adapter** (drives the application). Its absence means:
 | 2026-01-11 | Claude | Added DISC-005: Release Pipeline Missing from CI/CD (elevated to TD-013) |
 | 2026-01-11 | Claude | Added DISC-006: Broken CLI Entry Point in pyproject.toml (elevated to TD-014) |
 | 2026-01-11 | Claude | Added DISC-007: TD-013 Misunderstood Distribution Model (TD-013 revised) |
+| 2026-01-12 | Claude | Added DISC-008: System Python vs Venv Portability |
