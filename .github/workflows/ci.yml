@@ -86,10 +86,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pip-audit
-          pip install -e ".[dev]" || pip install -e .
+          # Install without editable mode to avoid pip-audit issues
+          pip install ".[dev]" || pip install .
 
       - name: Run pip-audit
-        run: pip-audit --strict --skip-editable
+        run: pip-audit --strict
 
   # ===========================================================================
   # Test Suite (Python Matrix)

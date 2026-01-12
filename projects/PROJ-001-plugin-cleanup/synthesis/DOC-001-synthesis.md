@@ -522,11 +522,12 @@ Structure:
 
 **Skill Invocation Examples**:
 
-```
-/worktracker-decompose analyze projects/PROJ-002/WORKTRACKER.md
-/worktracker-decompose execute projects/PROJ-002/WORKTRACKER.md
-/worktracker-decompose validate projects/PROJ-002/
-/worktracker-decompose add-phase projects/PROJ-002/ --name "Phase 8: Deployment"
+```bash
+# Uses JERRY_PROJECT environment variable to determine target project
+/worktracker-decompose analyze projects/${JERRY_PROJECT}/WORKTRACKER.md
+/worktracker-decompose execute projects/${JERRY_PROJECT}/WORKTRACKER.md
+/worktracker-decompose validate projects/${JERRY_PROJECT}/
+/worktracker-decompose add-phase projects/${JERRY_PROJECT}/ --name "Phase 8: Deployment"
 ```
 
 **Key Implementation Constraints**:
