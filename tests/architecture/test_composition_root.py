@@ -133,28 +133,36 @@ class TestCleanArchitectureBoundaries:
 
 
 class TestCLIAdapterBoundaries:
-    """Tests for CLI adapter architecture compliance.
+    """Tests for CLI adapter architecture compliance."""
 
-    NOTE: These tests will initially FAIL because the CLI adapter
-    currently imports infrastructure directly. They serve as
-    acceptance criteria for Phase 3.
-    """
+    def test_cli_adapter_has_no_infrastructure_imports(self) -> None:
+        """CLIAdapter must not import infrastructure directly.
 
-    def test_cli_main_current_state(self) -> None:
-        """Document current state - CLI imports infrastructure.
+        This is the key acceptance criterion for TD-015:
+        The CLI adapter receives the dispatcher via injection and
+        does NOT instantiate any infrastructure adapters.
+        """
+        adapter_path = Path("src/interface/cli/adapter.py")
+        assert adapter_path.exists(), "CLIAdapter must exist"
 
-        This test documents the CURRENT (violating) state.
-        After Phase 3, this should be changed to verify no imports.
+        imports = get_imports_from_file(adapter_path)
+
+        # New adapter should NOT import infrastructure
+        assert not has_infrastructure_import(imports), (
+            f"CLIAdapter imports infrastructure directly: {imports}"
+        )
+
+    def test_cli_main_has_infrastructure_imports(self) -> None:
+        """Document current state - main.py still imports infrastructure.
+
+        NOTE: main.py still has the old implementation for backwards
+        compatibility. Once fully migrated, this should be updated.
         """
         cli_path = Path("src/interface/cli/main.py")
         assert cli_path.exists()
 
         imports = get_imports_from_file(cli_path)
 
-        # CURRENT STATE: CLI imports infrastructure (violation)
-        # This documents the problem that Phase 3 will fix
-        current_has_infra = has_infrastructure_import(imports)
-
-        # This is informational - after Phase 3 refactor, change assertion
-        # For now, we just verify the file exists and can be parsed
+        # main.py currently still has infrastructure imports
+        # This documents the transitional state
         assert len(imports) > 0, "CLI should have imports"
