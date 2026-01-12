@@ -199,6 +199,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 7 | [PHASE-07](work/PHASE-07-DESIGN-SYNTHESIS.md) | ✅ DONE | 100% | Phase 5 | Phase 6 |
 | BUGS | [PHASE-BUGS](work/PHASE-BUGS.md) | ✅ RESOLVED | 4/4 fixed | - | CI-002 |
 | TECHDEBT | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | 🔄 IN PROGRESS | 75% (9/12) | - | TD-015, TD-016 |
+| **Phase 4** | [PHASE-04-CLI-NAMESPACES](work/PHASE-04-CLI-NAMESPACES.md) | 🔄 IN PROGRESS | Research done, impl pending | TD-015 ✅ | v0.1.0 |
 | DISCOVERY | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | 🔄 ONGOING | 7 items | - | DISC-005, DISC-006, DISC-007 |
 | **INIT-WT-SKILLS** | [INITIATIVE-WORKTRACKER-SKILLS](work/INITIATIVE-WORKTRACKER-SKILLS.md) | ✅ RESEARCH | 100% research, 0% impl | DOC-001 | - |
 | **CI-002** | CI/CD Pipeline Failures | ✅ COMPLETE | 4/4 resolved (verified run 20904191996) | CI-001 | v0.0.1 |
@@ -207,11 +208,11 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: ✅ TD-015 REMEDIATION COMPLETE - All Design Canon Violations Fixed
-> **Active Initiative**: TD-015 - CLI Architecture Remediation
-> **Current Focus**: All remediation tasks complete, ready for commit
+> **Status**: 🔄 Phase 4 CLI Namespaces IN PROGRESS
+> **Active Initiative**: Phase 4 - CLI Namespace Architecture
+> **Current Focus**: Implementing CLI namespaces per bounded context (session, items, projects)
 > **Completed**: TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
-> **Test Count**: 76 tests pass in TD-015 scope (all architecture violations fixed)
+> **Target Version**: v0.1.0 (breaking change - no backward compatibility)
 
 ### TD-015: Architecture Remediation Status (COMPLETE ✅)
 
@@ -223,7 +224,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | R-004: Clean up old files | ✅ COMPLETE | 21 | Old handler files deleted |
 | R-005: Add projections infra | ✅ COMPLETE | 19 | `projections/`, `read_models/` |
 | Phase 3: Entry Point | ✅ COMPLETE | - | `main.py` uses bootstrap |
-| Phase 4: CLI Namespaces | ⏳ FUTURE | 0 | Not in current scope |
+| Phase 4: CLI Namespaces | 🔄 IN PROGRESS | 0 | `research/phase4-cli-e-001-5w1h-namespaces.md` |
 | Phase 5: TOON Format | ⏳ FUTURE | 0 | Not in current scope |
 
 #### Design Canon Violations FIXED
@@ -280,7 +281,7 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | 1 | **TD-016** | Create Comprehensive Coding Standards & Pattern Catalog | ✅ COMPLETE |
 | 2 | **TD-015 Remediation** | Fix design canon violations (file structure, naming, events, projections) | ✅ COMPLETE |
 | 3 | Phase 3 | Update main.py entry point to use bootstrap | ✅ COMPLETE |
-| 4 | Phase 4 | CLI Namespaces per bounded context | ⏳ FUTURE |
+| 4 | Phase 4 | CLI Namespaces per bounded context | 🔄 IN PROGRESS |
 | 5 | Phase 5 | TOON Format Integration | ⏳ FUTURE |
 | 6 | Tech Debt | Address remaining clean architecture gaps | ⏳ FUTURE |
 
