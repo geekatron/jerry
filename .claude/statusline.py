@@ -42,7 +42,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # =============================================================================
 # VERSION
@@ -54,7 +54,7 @@ __version__ = "2.1.0"
 # DEFAULT CONFIGURATION (embedded - no external file required)
 # =============================================================================
 
-DEFAULT_CONFIG: Dict[str, Any] = {
+DEFAULT_CONFIG: dict[str, Any] = {
     # Display settings
     "display": {
         "compact_mode": False,
@@ -73,8 +73,8 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "model": True,
         "context": True,
         "cost": True,
-        "tokens": True,      # Renamed from 'cache' - shows fresh/cached breakdown
-        "session": True,     # Now shows duration + total tokens
+        "tokens": True,  # Renamed from 'cache' - shows fresh/cached breakdown
+        "session": True,  # Now shows duration + total tokens
         "compaction": True,  # NEW: Shows token delta after compaction
         "tools": True,
         "git": True,
@@ -133,7 +133,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "green": 82,
         "yellow": 220,
         "red": 196,
-        "cyan": 87,      # For informational displays
+        "cyan": 87,  # For informational displays
         "opus": 75,
         "sonnet": 141,
         "haiku": 84,
@@ -142,9 +142,9 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "git_clean": 82,
         "git_dirty": 220,
         "tools": 147,
-        "tokens_fresh": 214,   # Orange for fresh tokens
-        "tokens_cached": 81,   # Cyan for cached tokens
-        "compaction": 213,     # Pink for compaction indicator
+        "tokens_fresh": 214,  # Orange for fresh tokens
+        "tokens_cached": 81,  # Cyan for cached tokens
+        "compaction": 213,  # Pink for compaction indicator
     },
     # Advanced settings
     "advanced": {
@@ -163,22 +163,22 @@ CONFIG_PATHS = [
     Path.home() / ".claude" / "ecw-statusline-config.json",
 ]
 
-_transcript_cache: Dict[str, Tuple[float, Dict[str, int]]] = {}
+_transcript_cache: dict[str, tuple[float, dict[str, int]]] = {}
 
 
-def load_config() -> Dict[str, Any]:
+def load_config() -> dict[str, Any]:
     """Load configuration from embedded defaults with optional file override."""
     config = deep_copy(DEFAULT_CONFIG)
 
     for config_path in CONFIG_PATHS:
         if config_path.exists():
             try:
-                with open(config_path, "r", encoding="utf-8") as f:
+                with open(config_path, encoding="utf-8") as f:
                     user_config = json.load(f)
                 config = deep_merge(config, user_config)
                 debug_log(f"Loaded config from {config_path}")
                 break
-            except (json.JSONDecodeError, IOError) as e:
+            except (json.JSONDecodeError, OSError) as e:
                 debug_log(f"Config load error from {config_path}: {e}")
 
     return config
@@ -193,7 +193,7 @@ def deep_copy(obj: Any) -> Any:
     return obj
 
 
-def deep_merge(base: Dict, override: Dict) -> Dict:
+def deep_merge(base: dict, override: dict) -> dict:
     """Recursively merge override into base dict."""
     result = base.copy()
     for key, value in override.items():
@@ -215,21 +215,21 @@ def debug_log(message: str) -> None:
 # =============================================================================
 
 
-def load_state(config: Dict) -> Dict[str, Any]:
+def load_state(config: dict) -> dict[str, Any]:
     """Load previous state for compaction detection."""
     state_file = Path(os.path.expanduser(config["compaction"]["state_file"]))
 
     if state_file.exists():
         try:
-            with open(state_file, "r", encoding="utf-8") as f:
+            with open(state_file, encoding="utf-8") as f:
                 return json.load(f)
-        except (json.JSONDecodeError, IOError) as e:
+        except (json.JSONDecodeError, OSError) as e:
             debug_log(f"State load error: {e}")
 
     return {"previous_context_tokens": 0, "last_compaction_from": 0, "last_compaction_to": 0}
 
 
-def save_state(config: Dict, state: Dict[str, Any]) -> None:
+def save_state(config: dict, state: dict[str, Any]) -> None:
     """Save current state for next invocation."""
     state_file = Path(os.path.expanduser(config["compaction"]["state_file"]))
 
@@ -237,7 +237,7 @@ def save_state(config: Dict, state: Dict[str, Any]) -> None:
         state_file.parent.mkdir(parents=True, exist_ok=True)
         with open(state_file, "w", encoding="utf-8") as f:
             json.dump(state, f)
-    except IOError as e:
+    except OSError as e:
         debug_log(f"State save error: {e}")
 
 
@@ -271,7 +271,7 @@ def get_terminal_width() -> int:
 # =============================================================================
 
 
-def safe_get(data: Dict, *keys, default: Any = None) -> Any:
+def safe_get(data: dict, *keys, default: Any = None) -> Any:
     """Safely navigate nested dict keys."""
     current = data
     for key in keys:
@@ -287,7 +287,7 @@ def safe_get(data: Dict, *keys, default: Any = None) -> Any:
 # =============================================================================
 
 
-def parse_transcript_for_tools(transcript_path: str, config: Dict) -> Dict[str, int]:
+def parse_transcript_for_tools(transcript_path: str, config: dict) -> dict[str, int]:
     """Parse transcript JSONL file to extract per-tool token usage."""
     tools_config = config["tools"]
 
@@ -308,10 +308,10 @@ def parse_transcript_for_tools(transcript_path: str, config: Dict) -> Dict[str, 
             debug_log("Using cached transcript data")
             return cached_data
 
-    tool_tokens: Dict[str, int] = {}
+    tool_tokens: dict[str, int] = {}
 
     try:
-        with open(transcript_path, "r", encoding="utf-8") as f:
+        with open(transcript_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -325,14 +325,14 @@ def parse_transcript_for_tools(transcript_path: str, config: Dict) -> Dict[str, 
         _transcript_cache[cache_key] = (now, tool_tokens)
         debug_log(f"Parsed transcript: {tool_tokens}")
 
-    except IOError as e:
+    except OSError as e:
         debug_log(f"Transcript read error: {e}")
         return {}
 
     return tool_tokens
 
 
-def _extract_tool_usage(entry: Dict, tool_tokens: Dict[str, int]) -> None:
+def _extract_tool_usage(entry: dict, tool_tokens: dict[str, int]) -> None:
     """Extract tool usage from a transcript entry."""
     message = entry.get("message", {})
     content = message.get("content", [])
@@ -376,7 +376,7 @@ def _estimate_tokens(data: Any) -> int:
 # =============================================================================
 
 
-def extract_model_info(data: Dict) -> Tuple[str, str]:
+def extract_model_info(data: dict) -> tuple[str, str]:
     """Extract model display name and tier."""
     display_name = safe_get(data, "model", "display_name", default="Unknown")
     model_id = safe_get(data, "model", "id", default="").lower()
@@ -391,7 +391,7 @@ def extract_model_info(data: Dict) -> Tuple[str, str]:
     return display_name, tier
 
 
-def extract_context_info(data: Dict, config: Dict) -> Tuple[float, int, int, bool]:
+def extract_context_info(data: dict, config: dict) -> tuple[float, int, int, bool]:
     """Extract context window usage."""
     context_window_size = safe_get(data, "context_window", "context_window_size", default=200000)
     current_usage = safe_get(data, "context_window", "current_usage")
@@ -414,14 +414,14 @@ def extract_context_info(data: Dict, config: Dict) -> Tuple[float, int, int, boo
     return percentage, used_tokens, context_window_size, is_estimated
 
 
-def extract_cost_info(data: Dict) -> Tuple[float, int]:
+def extract_cost_info(data: dict) -> tuple[float, int]:
     """Extract cost and duration info."""
     cost = safe_get(data, "cost", "total_cost_usd", default=0.0)
     duration_ms = safe_get(data, "cost", "total_duration_ms", default=0)
     return cost, duration_ms
 
 
-def extract_token_breakdown(data: Dict) -> Tuple[int, int]:
+def extract_token_breakdown(data: dict) -> tuple[int, int]:
     """
     Extract fresh vs cached token breakdown.
     Returns: (fresh_tokens, cached_tokens)
@@ -437,7 +437,7 @@ def extract_token_breakdown(data: Dict) -> Tuple[int, int]:
     return fresh_tokens, cached_tokens
 
 
-def extract_session_info(data: Dict) -> Tuple[int, int, int]:
+def extract_session_info(data: dict) -> tuple[int, int, int]:
     """
     Extract session duration and total tokens consumed.
     Returns: (elapsed_seconds, total_input_tokens, total_output_tokens)
@@ -451,7 +451,7 @@ def extract_session_info(data: Dict) -> Tuple[int, int, int]:
     return elapsed_seconds, total_input, total_output
 
 
-def extract_compaction_info(data: Dict, config: Dict) -> Tuple[bool, int, int]:
+def extract_compaction_info(data: dict, config: dict) -> tuple[bool, int, int]:
     """
     Detect compaction by comparing current context to previous.
     Returns: (compaction_detected, from_tokens, to_tokens)
@@ -497,7 +497,7 @@ def extract_compaction_info(data: Dict, config: Dict) -> Tuple[bool, int, int]:
     return False, 0, 0
 
 
-def extract_workspace_info(data: Dict, config: Dict) -> str:
+def extract_workspace_info(data: dict, config: dict) -> str:
     """Extract and format workspace directory."""
     current_dir = safe_get(data, "workspace", "current_dir", default="")
 
@@ -509,19 +509,19 @@ def extract_workspace_info(data: Dict, config: Dict) -> str:
     if dir_config["abbreviate_home"]:
         home = os.path.expanduser("~")
         if current_dir.startswith(home):
-            current_dir = "~" + current_dir[len(home):]
+            current_dir = "~" + current_dir[len(home) :]
 
     if dir_config["basename_only"]:
         current_dir = os.path.basename(current_dir) or current_dir
 
     max_len = dir_config["max_length"]
     if len(current_dir) > max_len:
-        current_dir = "..." + current_dir[-(max_len - 3):]
+        current_dir = "..." + current_dir[-(max_len - 3) :]
 
     return current_dir
 
 
-def extract_tools_info(data: Dict, config: Dict) -> List[Tuple[str, int]]:
+def extract_tools_info(data: dict, config: dict) -> list[tuple[str, int]]:
     """Extract top tools by token usage from transcript."""
     transcript_path = safe_get(data, "transcript_path", default="")
     tool_tokens = parse_transcript_for_tools(transcript_path, config)
@@ -541,7 +541,7 @@ def extract_tools_info(data: Dict, config: Dict) -> List[Tuple[str, int]]:
 # =============================================================================
 
 
-def get_git_info(data: Dict, config: Dict) -> Optional[Tuple[str, bool, int]]:
+def get_git_info(data: dict, config: dict) -> tuple[str, bool, int] | None:
     """Get git branch, status, and uncommitted file count."""
     git_config = config["git"]
     timeout = config["advanced"]["git_timeout"]
@@ -592,7 +592,7 @@ def get_git_info(data: Dict, config: Dict) -> Optional[Tuple[str, bool, int]]:
 # =============================================================================
 
 
-def format_progress_bar(percentage: float, config: Dict, color_code: int) -> str:
+def format_progress_bar(percentage: float, config: dict, color_code: int) -> str:
     """Format a progress bar with color."""
     bar_config = config["display"]["progress_bar"]
     width = bar_config["width"]
@@ -639,7 +639,7 @@ def get_threshold_color(
     value: float,
     green_max: float,
     yellow_max: float,
-    colors: Dict,
+    colors: dict,
     invert: bool = False,
 ) -> int:
     """Get color code based on threshold."""
@@ -664,7 +664,7 @@ def get_threshold_color(
 # =============================================================================
 
 
-def build_model_segment(data: Dict, config: Dict) -> str:
+def build_model_segment(data: dict, config: dict) -> str:
     """Build the model display segment."""
     display_name, tier = extract_model_info(data)
     colors = config["colors"]
@@ -681,7 +681,7 @@ def build_model_segment(data: Dict, config: Dict) -> str:
         return f"{color}{display_name}{reset}"
 
 
-def build_context_segment(data: Dict, config: Dict) -> str:
+def build_context_segment(data: dict, config: dict) -> str:
     """Build the context window usage segment."""
     percentage, used, total, is_estimated = extract_context_info(data, config)
     colors = config["colors"]
@@ -702,7 +702,7 @@ def build_context_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{estimate_marker}{bar}"
 
 
-def build_cost_segment(data: Dict, config: Dict) -> str:
+def build_cost_segment(data: dict, config: dict) -> str:
     """Build the cost display segment with configurable currency."""
     cost, _ = extract_cost_info(data)
     colors = config["colors"]
@@ -720,7 +720,7 @@ def build_cost_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{color}{currency}{cost:.2f}{reset}"
 
 
-def build_tokens_segment(data: Dict, config: Dict) -> str:
+def build_tokens_segment(data: dict, config: dict) -> str:
     """
     Build the token breakdown segment.
     Format: ⚡ 500→ 45.2k↺
@@ -740,7 +740,7 @@ def build_tokens_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{fresh_color}{fresh_str}→{reset} {cached_color}{cached_str}↺{reset}"
 
 
-def build_session_segment(data: Dict, config: Dict) -> str:
+def build_session_segment(data: dict, config: dict) -> str:
     """
     Build the session segment showing duration + total tokens consumed.
     Format: ⏱️ 44h05m 1.2M tokens
@@ -760,7 +760,7 @@ def build_session_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{color}{duration_str} {tokens_str}tok{reset}"
 
 
-def build_compaction_segment(data: Dict, config: Dict) -> str:
+def build_compaction_segment(data: dict, config: dict) -> str:
     """
     Build the compaction indicator segment.
     Shows token delta when compaction is detected.
@@ -782,7 +782,7 @@ def build_compaction_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{color}{from_str}→{to_str}{reset}"
 
 
-def build_tools_segment(data: Dict, config: Dict) -> str:
+def build_tools_segment(data: dict, config: dict) -> str:
     """Build the dominant tools segment."""
     if not config["tools"]["enabled"]:
         return ""
@@ -803,7 +803,7 @@ def build_tools_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{color}{tools_display}{reset}"
 
 
-def build_git_segment(data: Dict, config: Dict) -> str:
+def build_git_segment(data: dict, config: dict) -> str:
     """Build the git status segment."""
     git_info = get_git_info(data, config)
 
@@ -833,7 +833,7 @@ def build_git_segment(data: Dict, config: Dict) -> str:
     return f"{icon}{color}{branch} {status_icon}{reset}".strip()
 
 
-def build_directory_segment(data: Dict, config: Dict) -> str:
+def build_directory_segment(data: dict, config: dict) -> str:
     """Build the directory display segment."""
     directory = extract_workspace_info(data, config)
     colors = config["colors"]
@@ -850,7 +850,7 @@ def build_directory_segment(data: Dict, config: Dict) -> str:
 # =============================================================================
 
 
-def build_status_line(data: Dict, config: Dict) -> str:
+def build_status_line(data: dict, config: dict) -> str:
     """Build the complete status line from all segments."""
     segments_config = config["segments"]
     display_config = config["display"]
