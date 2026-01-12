@@ -25,13 +25,15 @@ import os
 from pathlib import Path
 
 from src.application.dispatchers.query_dispatcher import QueryDispatcher
-from src.application.handlers import (
-    GetProjectContextHandler,
-    GetProjectContextQueryData,
-    ScanProjectsHandler,
-    ScanProjectsQueryData,
-    ValidateProjectHandler,
-    ValidateProjectQueryData,
+from src.application.handlers.queries import (
+    RetrieveProjectContextQueryHandler,
+    ScanProjectsQueryHandler,
+    ValidateProjectQueryHandler,
+)
+from src.application.queries import (
+    RetrieveProjectContextQuery,
+    ScanProjectsQuery,
+    ValidateProjectQuery,
 )
 from src.session_management.infrastructure import (
     FilesystemProjectAdapter,
@@ -70,21 +72,21 @@ def create_query_dispatcher() -> QueryDispatcher:
     environment = OsEnvironmentAdapter()
 
     # Create handlers with injected dependencies
-    get_project_context_handler = GetProjectContextHandler(
+    retrieve_project_context_handler = RetrieveProjectContextQueryHandler(
         repository=repository,
         environment=environment,
     )
-    scan_projects_handler = ScanProjectsHandler(
+    scan_projects_handler = ScanProjectsQueryHandler(
         repository=repository,
     )
-    validate_project_handler = ValidateProjectHandler(
+    validate_project_handler = ValidateProjectQueryHandler(
         repository=repository,
     )
 
     # Create and configure dispatcher
     dispatcher = QueryDispatcher()
-    dispatcher.register(GetProjectContextQueryData, get_project_context_handler.handle)
-    dispatcher.register(ScanProjectsQueryData, scan_projects_handler.handle)
-    dispatcher.register(ValidateProjectQueryData, validate_project_handler.handle)
+    dispatcher.register(RetrieveProjectContextQuery, retrieve_project_context_handler.handle)
+    dispatcher.register(ScanProjectsQuery, scan_projects_handler.handle)
+    dispatcher.register(ValidateProjectQuery, validate_project_handler.handle)
 
     return dispatcher

@@ -88,14 +88,18 @@ class TestCompositionRootBoundaries:
 
     def test_application_ports_have_no_infrastructure_imports(self) -> None:
         """Application ports must not import infrastructure."""
-        ports_path = Path("src/application/ports/dispatcher.py")
-        assert ports_path.exists()
+        primary_ports_dir = Path("src/application/ports/primary")
+        assert primary_ports_dir.exists(), "primary ports directory must exist"
 
-        imports = get_imports_from_file(ports_path)
+        for port_file in primary_ports_dir.glob("*.py"):
+            if port_file.name == "__init__.py":
+                continue
 
-        assert not has_infrastructure_import(imports), (
-            f"Ports import infrastructure: {imports}"
-        )
+            imports = get_imports_from_file(port_file)
+
+            assert not has_infrastructure_import(imports), (
+                f"{port_file.name} imports infrastructure: {imports}"
+            )
 
 
 class TestCleanArchitectureBoundaries:

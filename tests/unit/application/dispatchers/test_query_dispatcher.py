@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from src.application.ports.dispatcher import (
+from src.application.ports import (
     DuplicateHandlerError,
     IQueryDispatcher,
     QueryHandlerNotFoundError,

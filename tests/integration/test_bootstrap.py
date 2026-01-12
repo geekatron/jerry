@@ -28,12 +28,7 @@ class TestBootstrapHappyPath:
 
     def test_create_query_dispatcher_returns_configured_dispatcher(self) -> None:
         """create_query_dispatcher returns a dispatcher with registered handlers."""
-        from src.application.handlers import (
-            GetProjectContextQueryData,
-            ScanProjectsQueryData,
-            ValidateProjectQueryData,
-        )
-        from src.application.ports.dispatcher import IQueryDispatcher
+        from src.application.ports import IQueryDispatcher
         from src.bootstrap import create_query_dispatcher
 
         # Act
@@ -42,30 +37,24 @@ class TestBootstrapHappyPath:
         # Assert - should be a dispatcher
         assert isinstance(dispatcher, IQueryDispatcher)
 
-        # Verify handlers are registered by attempting dispatch with a query
-        # This will raise QueryHandlerNotFoundError if not registered
-        # We just verify it doesn't raise QueryHandlerNotFoundError
-        from src.application.ports.dispatcher import QueryHandlerNotFoundError
-
-        # GetProjectContextQueryData should be registered
         # We can't fully dispatch without proper setup, but we can verify structure
         assert hasattr(dispatcher, "_handlers")
 
     def test_dispatcher_has_all_query_handlers(self) -> None:
         """Dispatcher has handlers for all expected query types."""
-        from src.application.handlers import (
-            GetProjectContextQueryData,
-            ScanProjectsQueryData,
-            ValidateProjectQueryData,
+        from src.application.queries import (
+            RetrieveProjectContextQuery,
+            ScanProjectsQuery,
+            ValidateProjectQuery,
         )
         from src.bootstrap import create_query_dispatcher
 
         dispatcher = create_query_dispatcher()
 
         # Check all query types are registered
-        assert GetProjectContextQueryData in dispatcher._handlers
-        assert ScanProjectsQueryData in dispatcher._handlers
-        assert ValidateProjectQueryData in dispatcher._handlers
+        assert RetrieveProjectContextQuery in dispatcher._handlers
+        assert ScanProjectsQuery in dispatcher._handlers
+        assert ValidateProjectQuery in dispatcher._handlers
 
 
 # === Negative Tests (30%) ===
@@ -105,11 +94,11 @@ class TestBootstrapEdgeCases:
 
         This is an integration test that exercises the full path.
         """
-        from src.application.handlers import ScanProjectsQueryData
+        from src.application.queries import ScanProjectsQuery
         from src.bootstrap import create_query_dispatcher, get_projects_directory
 
         dispatcher = create_query_dispatcher()
-        query = ScanProjectsQueryData(base_path=get_projects_directory())
+        query = ScanProjectsQuery(base_path=get_projects_directory())
 
         # Act - this exercises the full path
         # Note: may return empty list if no projects, but should not error

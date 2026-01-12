@@ -1,5 +1,5 @@
 """
-Unit tests for GetProjectContextHandler.
+Unit tests for RetrieveProjectContextQueryHandler.
 
 Tests the handler with mocked dependencies.
 
@@ -11,47 +11,28 @@ Test Distribution per impl-es-e-003:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
 
-
-# === Query Data Object ===
-
-
-@dataclass
-class GetProjectContextQueryData:
-    """Query data for getting project context.
-
-    This is a pure data object - no dependencies, no behavior.
-    Used by the dispatcher to route to the handler.
-    """
-
-    base_path: str
+from src.application.handlers.queries import RetrieveProjectContextQueryHandler
+from src.application.queries import RetrieveProjectContextQuery
 
 
 # === Happy Path Tests (60%) ===
 
 
 class TestGetProjectContextHandlerHappyPath:
-    """Happy path tests for GetProjectContextHandler."""
+    """Happy path tests for RetrieveProjectContextQueryHandler."""
 
     def test_handler_is_importable(self) -> None:
-        """GetProjectContextHandler can be imported."""
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
+        """RetrieveProjectContextQueryHandler can be imported."""
+        from src.application.handlers.queries import RetrieveProjectContextQueryHandler
 
-        assert GetProjectContextHandler is not None
+        assert RetrieveProjectContextQueryHandler is not None
 
     def test_handler_returns_context_when_project_set(self) -> None:
         """Handler returns full context when JERRY_PROJECT is set."""
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
-
         # Arrange - mock dependencies
         mock_repository = Mock()
         mock_environment = Mock()
@@ -66,12 +47,12 @@ class TestGetProjectContextHandlerHappyPath:
         mock_validation.is_valid = True
         mock_repository.validate_project.return_value = mock_validation
 
-        handler = GetProjectContextHandler(
+        handler = RetrieveProjectContextQueryHandler(
             repository=mock_repository,
             environment=mock_environment,
         )
 
-        query = GetProjectContextQueryData(base_path="/projects")
+        query = RetrieveProjectContextQuery(base_path="/projects")
 
         # Act
         result = handler.handle(query)
@@ -83,10 +64,6 @@ class TestGetProjectContextHandlerHappyPath:
 
     def test_handler_returns_context_when_project_not_set(self) -> None:
         """Handler returns context with available projects when JERRY_PROJECT not set."""
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_environment = Mock()
@@ -97,12 +74,12 @@ class TestGetProjectContextHandlerHappyPath:
         mock_project_info.id.number = 1
         mock_repository.scan_projects.return_value = [mock_project_info]
 
-        handler = GetProjectContextHandler(
+        handler = RetrieveProjectContextQueryHandler(
             repository=mock_repository,
             environment=mock_environment,
         )
 
-        query = GetProjectContextQueryData(base_path="/projects")
+        query = RetrieveProjectContextQuery(base_path="/projects")
 
         # Act
         result = handler.handle(query)
@@ -114,24 +91,21 @@ class TestGetProjectContextHandlerHappyPath:
     def test_handler_can_be_registered_with_dispatcher(self) -> None:
         """Handler.handle can be registered with QueryDispatcher."""
         from src.application.dispatchers.query_dispatcher import QueryDispatcher
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
 
         mock_repository = Mock()
         mock_environment = Mock()
         mock_environment.get_env.return_value = None
         mock_repository.scan_projects.return_value = []
 
-        handler = GetProjectContextHandler(
+        handler = RetrieveProjectContextQueryHandler(
             repository=mock_repository,
             environment=mock_environment,
         )
 
         dispatcher = QueryDispatcher()
-        dispatcher.register(GetProjectContextQueryData, handler.handle)
+        dispatcher.register(RetrieveProjectContextQuery, handler.handle)
 
-        result = dispatcher.dispatch(GetProjectContextQueryData(base_path="/test"))
+        result = dispatcher.dispatch(RetrieveProjectContextQuery(base_path="/test"))
 
         assert isinstance(result, dict)
 
@@ -140,14 +114,10 @@ class TestGetProjectContextHandlerHappyPath:
 
 
 class TestGetProjectContextHandlerNegative:
-    """Negative tests for GetProjectContextHandler."""
+    """Negative tests for RetrieveProjectContextQueryHandler."""
 
     def test_invalid_project_format_returns_error(self) -> None:
         """Invalid project ID format returns validation failure."""
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_environment = Mock()
@@ -155,12 +125,12 @@ class TestGetProjectContextHandlerNegative:
         mock_environment.get_env.return_value = "invalid-format"
         mock_repository.scan_projects.return_value = []
 
-        handler = GetProjectContextHandler(
+        handler = RetrieveProjectContextQueryHandler(
             repository=mock_repository,
             environment=mock_environment,
         )
 
-        query = GetProjectContextQueryData(base_path="/projects")
+        query = RetrieveProjectContextQuery(base_path="/projects")
 
         # Act
         result = handler.handle(query)
@@ -173,9 +143,6 @@ class TestGetProjectContextHandlerNegative:
 
     def test_repository_error_returns_empty_projects(self) -> None:
         """Repository error during scan returns empty available projects."""
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
         from src.session_management.application.ports import RepositoryError
 
         # Arrange
@@ -185,12 +152,12 @@ class TestGetProjectContextHandlerNegative:
         mock_environment.get_env.return_value = None
         mock_repository.scan_projects.side_effect = RepositoryError("Access denied")
 
-        handler = GetProjectContextHandler(
+        handler = RetrieveProjectContextQueryHandler(
             repository=mock_repository,
             environment=mock_environment,
         )
 
-        query = GetProjectContextQueryData(base_path="/projects")
+        query = RetrieveProjectContextQuery(base_path="/projects")
 
         # Act
         result = handler.handle(query)
@@ -204,14 +171,10 @@ class TestGetProjectContextHandlerNegative:
 
 
 class TestGetProjectContextHandlerEdgeCases:
-    """Edge case tests for GetProjectContextHandler."""
+    """Edge case tests for RetrieveProjectContextQueryHandler."""
 
     def test_empty_projects_directory(self) -> None:
         """Empty projects directory returns empty list."""
-        from src.application.handlers.get_project_context_handler import (
-            GetProjectContextHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_environment = Mock()
@@ -219,12 +182,12 @@ class TestGetProjectContextHandlerEdgeCases:
         mock_environment.get_env.return_value = None
         mock_repository.scan_projects.return_value = []
 
-        handler = GetProjectContextHandler(
+        handler = RetrieveProjectContextQueryHandler(
             repository=mock_repository,
             environment=mock_environment,
         )
 
-        query = GetProjectContextQueryData(base_path="/empty")
+        query = RetrieveProjectContextQuery(base_path="/empty")
 
         # Act
         result = handler.handle(query)

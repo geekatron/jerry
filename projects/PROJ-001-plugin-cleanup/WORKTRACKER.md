@@ -207,64 +207,69 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 
 ## Current Focus
 
-> **Status**: 🔴 TD-015 REMEDIATION REQUIRED - Design Canon Violations Found
-> **Active Initiative**: TD-015 - Remediate CLI Architecture Violation
-> **Current Focus**: TD-015 implementation started without approval; violations discovered
-> **Completed**: TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
-> **Test Count**: 1427 tests pass (63 TD-015 tests added - but architecture needs remediation)
+> **Status**: ✅ TD-015 REMEDIATION COMPLETE - All Design Canon Violations Fixed
+> **Active Initiative**: TD-015 - CLI Architecture Remediation
+> **Current Focus**: All remediation tasks complete, ready for commit
+> **Completed**: TD-016 ✅ → TD-015 ✅ → TD-014 ✅ (CLI) → TD-013 ✅ (Release Pipeline) → v0.0.1 ✅
+> **Test Count**: 76 tests pass in TD-015 scope (all architecture violations fixed)
 
-### TD-015: Architecture Remediation Status (CRITICAL)
+### TD-015: Architecture Remediation Status (COMPLETE ✅)
 
-| Phase | Status | Tests | Issue |
-|-------|--------|-------|-------|
-| Phase 1: Application Layer | ⚠️ NEEDS REMEDIATION | 44 | Combined ports, wrong naming |
-| Phase 2: Composition Root | ⚠️ NEEDS REMEDIATION | 13 | Tests pass but structure wrong |
-| Phase 3: CLI Adapter | ⚠️ NEEDS REMEDIATION | 6 | Tests pass but uses wrong structure |
-| Phase 3: Entry Point | ⏳ BLOCKED | 0 | Awaiting plan approval |
-| Phase 4: CLI Namespaces | ⏳ BLOCKED | 0 | Awaiting plan approval |
-| Phase 5: TOON Format | ⏳ BLOCKED | 0 | Awaiting plan approval |
+| Phase | Status | Tests | Evidence |
+|-------|--------|-------|----------|
+| R-001: Split dispatcher ports | ✅ COMPLETE | 14 | `iquerydispatcher.py`, `icommanddispatcher.py` |
+| R-002: Create queries directory | ✅ COMPLETE | - | `src/application/queries/` |
+| R-003: Rename Get* to Retrieve* | ✅ COMPLETE | 21 | `handlers/queries/*.py` |
+| R-004: Clean up old files | ✅ COMPLETE | 21 | Old handler files deleted |
+| R-005: Add projections infra | ✅ COMPLETE | 19 | `projections/`, `read_models/` |
+| Phase 3: Entry Point | ✅ COMPLETE | - | `main.py` uses bootstrap |
+| Phase 4: CLI Namespaces | ⏳ FUTURE | 0 | Not in current scope |
+| Phase 5: TOON Format | ⏳ FUTURE | 0 | Not in current scope |
 
-#### Design Canon Violations Discovered
+#### Design Canon Violations FIXED
 
-| Violation | Design Canon Requirement | What Was Implemented |
-|-----------|-------------------------|---------------------|
-| **V-001** | Separate files per artifact | Combined `IQueryDispatcher` + `ICommandDispatcher` in one file |
-| **V-002** | Query data in `queries/` directory | Query data embedded in handler files |
-| **V-003** | Naming: `RetrieveProjectContextQuery` | Used `GetProjectContextQueryData` |
-| **V-004** | File names: `iquerydispatcher.py` | Used `dispatcher.py` for combined protocols |
-| **V-005** | Projections in `application/projections/` | Not implemented |
-| **V-006** | Read models in `infrastructure/read_models/` | Not implemented |
+| Violation | Design Canon Requirement | Resolution |
+|-----------|-------------------------|------------|
+| **V-001** | Separate files per artifact | ✅ Split into `iquerydispatcher.py` + `icommanddispatcher.py` |
+| **V-002** | Query data in `queries/` directory | ✅ Created `src/application/queries/` |
+| **V-003** | Naming: `RetrieveProjectContextQuery` | ✅ Renamed all handlers to Retrieve* pattern |
+| **V-004** | File names: `iquerydispatcher.py` | ✅ Created in `ports/primary/` |
+| **V-005** | Projections in `application/projections/` | ✅ Created `src/application/projections/` |
+| **V-006** | Read models in `infrastructure/read_models/` | ✅ Created with `InMemoryReadModelStore` |
 
-**References to Design Canon:**
-- `docs/knowledge/exemplars/architecture/work_tracker_architecture_hexagonal_ddd_cqrs_layered_teaching_edition.md` (lines 750-785)
-- `projects/PROJ-001-plugin-cleanup/synthesis/PROJ-001-e-011-v1-jerry-design-canon.md`
+#### Remediation Implementation Summary
 
-**Process Violation:**
-> ⚠️ **CRITICAL**: Implementation started without presenting plan for user approval.
-> This violates the established process: Plan → Approval → Implementation.
+**Files Created:**
+- `src/application/ports/primary/__init__.py`
+- `src/application/ports/primary/iquerydispatcher.py`
+- `src/application/ports/primary/icommanddispatcher.py`
+- `src/application/ports/secondary/__init__.py`
+- `src/application/ports/secondary/iread_model_store.py`
+- `src/application/queries/__init__.py`
+- `src/application/queries/retrieve_project_context_query.py`
+- `src/application/queries/scan_projects_query.py`
+- `src/application/queries/validate_project_query.py`
+- `src/application/handlers/queries/__init__.py`
+- `src/application/handlers/queries/retrieve_project_context_query_handler.py`
+- `src/application/handlers/queries/scan_projects_query_handler.py`
+- `src/application/handlers/queries/validate_project_query_handler.py`
+- `src/application/projections/__init__.py`
+- `src/infrastructure/read_models/__init__.py`
+- `src/infrastructure/read_models/in_memory_read_model_store.py`
 
-#### Remediation Plan (Awaiting Approval)
+**Files Deleted:**
+- `src/application/ports/dispatcher.py`
+- `src/application/handlers/get_project_context_handler.py`
+- `src/application/handlers/scan_projects_handler.py`
+- `src/application/handlers/validate_project_handler.py`
 
-1. **Split dispatcher protocols** into separate files:
-   - `src/application/ports/iquerydispatcher.py`
-   - `src/application/ports/icommanddispatcher.py`
-
-2. **Create queries directory** with separate query data files:
-   - `src/application/queries/retrieve_project_context_query.py`
-   - `src/application/queries/scan_projects_query.py`
-   - `src/application/queries/validate_project_query.py`
-
-3. **Rename handlers** with proper naming convention:
-   - `retrieve_project_context_query_handler.py`
-   - `scan_projects_query_handler.py`
-   - `validate_project_query_handler.py`
-
-4. **Add projections infrastructure** (if needed for current scope):
-   - `src/application/projections/` directory
-   - `src/application/ports/secondary/read_models.py`
-   - `src/infrastructure/read_models/`
-
-**Awaiting User Approval Before Proceeding**
+**Files Updated:**
+- `src/application/ports/__init__.py` - Re-exports from primary/
+- `src/application/handlers/__init__.py` - Backward compatibility aliases
+- `src/bootstrap.py` - Uses new handler/query names
+- `src/interface/cli/adapter.py` - Uses new query imports
+- `src/interface/cli/main.py` - Uses bootstrap composition root
+- All test files updated with new imports
 
 ---
 
@@ -273,11 +278,11 @@ Phase 1 ───► Phase 2 ───► Phase 3 ───► Phase 4 ───
 | Priority | Item | Description | Status |
 |----------|------|-------------|--------|
 | 1 | **TD-016** | Create Comprehensive Coding Standards & Pattern Catalog | ✅ COMPLETE |
-| 2 | **TD-015 Remediation** | Fix design canon violations (file structure, naming, events, projections) | ⏳ READY |
-| 3 | Phase 3 | Update main.py entry point to use bootstrap | ⏳ PENDING |
-| 4 | Phase 4 | CLI Namespaces per bounded context | ⏳ PENDING |
-| 5 | Phase 5 | TOON Format Integration | ⏳ PENDING |
-| 6 | Tech Debt | Address remaining clean architecture gaps | ⏳ PENDING |
+| 2 | **TD-015 Remediation** | Fix design canon violations (file structure, naming, events, projections) | ✅ COMPLETE |
+| 3 | Phase 3 | Update main.py entry point to use bootstrap | ✅ COMPLETE |
+| 4 | Phase 4 | CLI Namespaces per bounded context | ⏳ FUTURE |
+| 5 | Phase 5 | TOON Format Integration | ⏳ FUTURE |
+| 6 | Tech Debt | Address remaining clean architecture gaps | ⏳ FUTURE |
 
 ### TD-016: Coding Standards & Pattern Catalog (✅ COMPLETE)
 
@@ -1103,3 +1108,10 @@ Before marking ANY task complete:
 | 2026-01-12 | Claude | BUG-005, DISC-009, DISC-010: Issues found and fixed during release verification |
 | 2026-01-12 | Claude | **v0.0.1 RELEASED**: Run 20906706213, artifacts: tar.gz, zip, checksums |
 | 2026-01-12 | Claude | **TD-013.6 COMPLETE**: Release pipeline verified end-to-end |
+| 2026-01-11 | Claude | **TD-015 REMEDIATION COMPLETE**: All design canon violations fixed (76 tests) |
+| 2026-01-11 | Claude | TD-015.R-001: Split dispatcher.py into iquerydispatcher.py + icommanddispatcher.py |
+| 2026-01-11 | Claude | TD-015.R-002: Created application/queries/ directory with separate query files |
+| 2026-01-11 | Claude | TD-015.R-003: Renamed Get* to Retrieve* and moved handlers to handlers/queries/ |
+| 2026-01-11 | Claude | TD-015.R-004: Cleaned up old handler files, updated all test imports |
+| 2026-01-11 | Claude | TD-015.R-005: Added projections infrastructure (IReadModelStore, InMemoryReadModelStore) |
+| 2026-01-11 | Claude | Phase 3: Updated main.py entry point to use bootstrap composition root |

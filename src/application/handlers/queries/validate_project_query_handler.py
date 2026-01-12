@@ -1,5 +1,5 @@
 """
-ValidateProjectHandler - Handler for ValidateProjectQuery.
+ValidateProjectQueryHandler - Handler for ValidateProjectQuery.
 
 This handler validates a specific project:
 - Parses and validates the project ID format
@@ -10,8 +10,7 @@ Dependencies are injected via constructor, query data via handle().
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
+from src.application.queries.validate_project_query import ValidateProjectQuery
 from src.session_management.application.ports import IProjectRepository
 from src.session_management.domain import (
     InvalidProjectIdError,
@@ -20,18 +19,7 @@ from src.session_management.domain import (
 )
 
 
-@dataclass
-class ValidateProjectQueryData:
-    """Query data for validating a project.
-
-    This is a pure data object - no dependencies, no behavior.
-    """
-
-    base_path: str
-    project_id_str: str
-
-
-class ValidateProjectHandler:
+class ValidateProjectQueryHandler:
     """Handler for ValidateProjectQuery.
 
     Validates a project by ID and returns the validation result.
@@ -49,7 +37,7 @@ class ValidateProjectHandler:
         self._repository = repository
 
     def handle(
-        self, query: ValidateProjectQueryData
+        self, query: ValidateProjectQuery
     ) -> tuple[ProjectId | None, ValidationResult]:
         """Handle the ValidateProjectQuery.
 

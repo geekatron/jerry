@@ -19,12 +19,12 @@ import json
 import sys
 from typing import Any
 
-from src.application.handlers import (
-    GetProjectContextQueryData,
-    ScanProjectsQueryData,
-    ValidateProjectQueryData,
+from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
+from src.application.queries import (
+    RetrieveProjectContextQuery,
+    ScanProjectsQuery,
+    ValidateProjectQuery,
 )
-from src.application.ports.dispatcher import IQueryDispatcher
 
 
 class CLIAdapter:
@@ -74,7 +74,7 @@ class CLIAdapter:
         Returns:
             Exit code (0 for success)
         """
-        query = GetProjectContextQueryData(base_path=self._projects_dir)
+        query = RetrieveProjectContextQuery(base_path=self._projects_dir)
         context = self._dispatcher.dispatch(query)
 
         if json_output:
@@ -131,7 +131,7 @@ class CLIAdapter:
         Returns:
             Exit code (0 for success)
         """
-        query = ScanProjectsQueryData(base_path=self._projects_dir)
+        query = ScanProjectsQuery(base_path=self._projects_dir)
         projects = self._dispatcher.dispatch(query)
 
         if json_output:
@@ -167,7 +167,7 @@ class CLIAdapter:
         Returns:
             Exit code (0 for valid, 1 for invalid)
         """
-        query = ValidateProjectQueryData(
+        query = ValidateProjectQuery(
             base_path=self._projects_dir,
             project_id_str=project_id_str,
         )

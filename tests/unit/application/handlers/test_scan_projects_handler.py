@@ -1,5 +1,5 @@
 """
-Unit tests for ScanProjectsHandler.
+Unit tests for ScanProjectsQueryHandler.
 
 Tests the handler with mocked dependencies.
 
@@ -11,47 +11,29 @@ Test Distribution per impl-es-e-003:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from unittest.mock import Mock
 
 import pytest
 
+from src.application.handlers.queries import ScanProjectsQueryHandler
+from src.application.queries import ScanProjectsQuery
 from src.session_management.application.ports import RepositoryError
-
-
-# === Query Data Object ===
-
-
-@dataclass
-class ScanProjectsQueryData:
-    """Query data for scanning projects.
-
-    This is a pure data object - no dependencies, no behavior.
-    """
-
-    base_path: str
 
 
 # === Happy Path Tests (60%) ===
 
 
 class TestScanProjectsHandlerHappyPath:
-    """Happy path tests for ScanProjectsHandler."""
+    """Happy path tests for ScanProjectsQueryHandler."""
 
     def test_handler_is_importable(self) -> None:
-        """ScanProjectsHandler can be imported."""
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
+        """ScanProjectsQueryHandler can be imported."""
+        from src.application.handlers.queries import ScanProjectsQueryHandler
 
-        assert ScanProjectsHandler is not None
+        assert ScanProjectsQueryHandler is not None
 
     def test_handler_returns_projects(self) -> None:
         """Handler returns list of projects from repository."""
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_project1 = Mock()
@@ -60,8 +42,8 @@ class TestScanProjectsHandlerHappyPath:
         mock_project2.id.number = 2
         mock_repository.scan_projects.return_value = [mock_project1, mock_project2]
 
-        handler = ScanProjectsHandler(repository=mock_repository)
-        query = ScanProjectsQueryData(base_path="/projects")
+        handler = ScanProjectsQueryHandler(repository=mock_repository)
+        query = ScanProjectsQuery(base_path="/projects")
 
         # Act
         result = handler.handle(query)
@@ -72,10 +54,6 @@ class TestScanProjectsHandlerHappyPath:
 
     def test_handler_returns_sorted_by_number(self) -> None:
         """Handler returns projects sorted by project number."""
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
-
         # Arrange - mock repository returns sorted list
         mock_repository = Mock()
         mock_project1 = Mock()
@@ -84,8 +62,8 @@ class TestScanProjectsHandlerHappyPath:
         mock_project2.id.number = 2
         mock_repository.scan_projects.return_value = [mock_project1, mock_project2]
 
-        handler = ScanProjectsHandler(repository=mock_repository)
-        query = ScanProjectsQueryData(base_path="/projects")
+        handler = ScanProjectsQueryHandler(repository=mock_repository)
+        query = ScanProjectsQuery(base_path="/projects")
 
         # Act
         result = handler.handle(query)
@@ -96,19 +74,16 @@ class TestScanProjectsHandlerHappyPath:
     def test_handler_can_be_registered_with_dispatcher(self) -> None:
         """Handler.handle can be registered with QueryDispatcher."""
         from src.application.dispatchers.query_dispatcher import QueryDispatcher
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
 
         mock_repository = Mock()
         mock_repository.scan_projects.return_value = []
 
-        handler = ScanProjectsHandler(repository=mock_repository)
+        handler = ScanProjectsQueryHandler(repository=mock_repository)
 
         dispatcher = QueryDispatcher()
-        dispatcher.register(ScanProjectsQueryData, handler.handle)
+        dispatcher.register(ScanProjectsQuery, handler.handle)
 
-        result = dispatcher.dispatch(ScanProjectsQueryData(base_path="/test"))
+        result = dispatcher.dispatch(ScanProjectsQuery(base_path="/test"))
 
         assert isinstance(result, list)
 
@@ -117,20 +92,16 @@ class TestScanProjectsHandlerHappyPath:
 
 
 class TestScanProjectsHandlerNegative:
-    """Negative tests for ScanProjectsHandler."""
+    """Negative tests for ScanProjectsQueryHandler."""
 
     def test_repository_error_propagates(self) -> None:
         """Repository error during scan propagates to caller."""
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_repository.scan_projects.side_effect = RepositoryError("Access denied")
 
-        handler = ScanProjectsHandler(repository=mock_repository)
-        query = ScanProjectsQueryData(base_path="/projects")
+        handler = ScanProjectsQueryHandler(repository=mock_repository)
+        query = ScanProjectsQuery(base_path="/projects")
 
         # Act & Assert
         with pytest.raises(RepositoryError) as exc_info:
@@ -140,16 +111,12 @@ class TestScanProjectsHandlerNegative:
 
     def test_invalid_path_raises_error(self) -> None:
         """Invalid base path raises RepositoryError."""
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_repository.scan_projects.side_effect = RepositoryError("Path not found")
 
-        handler = ScanProjectsHandler(repository=mock_repository)
-        query = ScanProjectsQueryData(base_path="/nonexistent")
+        handler = ScanProjectsQueryHandler(repository=mock_repository)
+        query = ScanProjectsQuery(base_path="/nonexistent")
 
         # Act & Assert
         with pytest.raises(RepositoryError):
@@ -160,20 +127,16 @@ class TestScanProjectsHandlerNegative:
 
 
 class TestScanProjectsHandlerEdgeCases:
-    """Edge case tests for ScanProjectsHandler."""
+    """Edge case tests for ScanProjectsQueryHandler."""
 
     def test_empty_projects_directory(self) -> None:
         """Empty projects directory returns empty list."""
-        from src.application.handlers.scan_projects_handler import (
-            ScanProjectsHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_repository.scan_projects.return_value = []
 
-        handler = ScanProjectsHandler(repository=mock_repository)
-        query = ScanProjectsQueryData(base_path="/empty")
+        handler = ScanProjectsQueryHandler(repository=mock_repository)
+        query = ScanProjectsQuery(base_path="/empty")
 
         # Act
         result = handler.handle(query)

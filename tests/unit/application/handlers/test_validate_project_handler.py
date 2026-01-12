@@ -1,5 +1,5 @@
 """
-Unit tests for ValidateProjectHandler.
+Unit tests for ValidateProjectQueryHandler.
 
 Tests the handler with mocked dependencies.
 
@@ -11,46 +11,28 @@ Test Distribution per impl-es-e-003:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from unittest.mock import Mock
 
 import pytest
 
-
-# === Query Data Object ===
-
-
-@dataclass
-class ValidateProjectQueryData:
-    """Query data for validating a project.
-
-    This is a pure data object - no dependencies, no behavior.
-    """
-
-    base_path: str
-    project_id_str: str
+from src.application.handlers.queries import ValidateProjectQueryHandler
+from src.application.queries import ValidateProjectQuery
 
 
 # === Happy Path Tests (60%) ===
 
 
 class TestValidateProjectHandlerHappyPath:
-    """Happy path tests for ValidateProjectHandler."""
+    """Happy path tests for ValidateProjectQueryHandler."""
 
     def test_handler_is_importable(self) -> None:
-        """ValidateProjectHandler can be imported."""
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
+        """ValidateProjectQueryHandler can be imported."""
+        from src.application.handlers.queries import ValidateProjectQueryHandler
 
-        assert ValidateProjectHandler is not None
+        assert ValidateProjectQueryHandler is not None
 
     def test_handler_returns_valid_for_existing_project(self) -> None:
         """Handler returns valid result for existing project."""
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_validation = Mock()
@@ -58,8 +40,8 @@ class TestValidateProjectHandlerHappyPath:
         mock_validation.messages = []
         mock_repository.validate_project.return_value = mock_validation
 
-        handler = ValidateProjectHandler(repository=mock_repository)
-        query = ValidateProjectQueryData(
+        handler = ValidateProjectQueryHandler(repository=mock_repository)
+        query = ValidateProjectQuery(
             base_path="/projects",
             project_id_str="PROJ-001-test",
         )
@@ -74,18 +56,14 @@ class TestValidateProjectHandlerHappyPath:
 
     def test_handler_returns_tuple(self) -> None:
         """Handler returns tuple of (ProjectId, ValidationResult)."""
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_validation = Mock()
         mock_validation.is_valid = True
         mock_repository.validate_project.return_value = mock_validation
 
-        handler = ValidateProjectHandler(repository=mock_repository)
-        query = ValidateProjectQueryData(
+        handler = ValidateProjectQueryHandler(repository=mock_repository)
+        query = ValidateProjectQuery(
             base_path="/projects",
             project_id_str="PROJ-002-another",
         )
@@ -100,22 +78,19 @@ class TestValidateProjectHandlerHappyPath:
     def test_handler_can_be_registered_with_dispatcher(self) -> None:
         """Handler.handle can be registered with QueryDispatcher."""
         from src.application.dispatchers.query_dispatcher import QueryDispatcher
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
 
         mock_repository = Mock()
         mock_validation = Mock()
         mock_validation.is_valid = True
         mock_repository.validate_project.return_value = mock_validation
 
-        handler = ValidateProjectHandler(repository=mock_repository)
+        handler = ValidateProjectQueryHandler(repository=mock_repository)
 
         dispatcher = QueryDispatcher()
-        dispatcher.register(ValidateProjectQueryData, handler.handle)
+        dispatcher.register(ValidateProjectQuery, handler.handle)
 
         result = dispatcher.dispatch(
-            ValidateProjectQueryData(base_path="/test", project_id_str="PROJ-001-x")
+            ValidateProjectQuery(base_path="/test", project_id_str="PROJ-001-x")
         )
 
         assert isinstance(result, tuple)
@@ -125,19 +100,15 @@ class TestValidateProjectHandlerHappyPath:
 
 
 class TestValidateProjectHandlerNegative:
-    """Negative tests for ValidateProjectHandler."""
+    """Negative tests for ValidateProjectQueryHandler."""
 
     def test_invalid_project_id_format_returns_none(self) -> None:
         """Invalid project ID format returns None for project_id."""
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
 
-        handler = ValidateProjectHandler(repository=mock_repository)
-        query = ValidateProjectQueryData(
+        handler = ValidateProjectQueryHandler(repository=mock_repository)
+        query = ValidateProjectQuery(
             base_path="/projects",
             project_id_str="invalid-format",
         )
@@ -151,10 +122,6 @@ class TestValidateProjectHandlerNegative:
 
     def test_project_not_found_returns_invalid(self) -> None:
         """Non-existent project returns invalid validation."""
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_validation = Mock()
@@ -162,8 +129,8 @@ class TestValidateProjectHandlerNegative:
         mock_validation.messages = ["Project directory not found"]
         mock_repository.validate_project.return_value = mock_validation
 
-        handler = ValidateProjectHandler(repository=mock_repository)
-        query = ValidateProjectQueryData(
+        handler = ValidateProjectQueryHandler(repository=mock_repository)
+        query = ValidateProjectQuery(
             base_path="/projects",
             project_id_str="PROJ-999-nonexistent",
         )
@@ -180,14 +147,10 @@ class TestValidateProjectHandlerNegative:
 
 
 class TestValidateProjectHandlerEdgeCases:
-    """Edge case tests for ValidateProjectHandler."""
+    """Edge case tests for ValidateProjectQueryHandler."""
 
     def test_project_with_warnings_returns_valid(self) -> None:
         """Project with warnings still returns valid but includes messages."""
-        from src.application.handlers.validate_project_handler import (
-            ValidateProjectHandler,
-        )
-
         # Arrange
         mock_repository = Mock()
         mock_validation = Mock()
@@ -196,8 +159,8 @@ class TestValidateProjectHandlerEdgeCases:
         mock_validation.messages = ["Optional file WORKTRACKER.md not found"]
         mock_repository.validate_project.return_value = mock_validation
 
-        handler = ValidateProjectHandler(repository=mock_repository)
-        query = ValidateProjectQueryData(
+        handler = ValidateProjectQueryHandler(repository=mock_repository)
+        query = ValidateProjectQuery(
             base_path="/projects",
             project_id_str="PROJ-003-warnings",
         )

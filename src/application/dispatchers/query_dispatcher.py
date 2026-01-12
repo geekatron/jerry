@@ -19,10 +19,8 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from src.application.ports.dispatcher import (
-    DuplicateHandlerError,
-    QueryHandlerNotFoundError,
-)
+from src.application.ports.primary.icommanddispatcher import DuplicateHandlerError
+from src.application.ports.primary.iquerydispatcher import QueryHandlerNotFoundError
 
 
 class QueryDispatcher:

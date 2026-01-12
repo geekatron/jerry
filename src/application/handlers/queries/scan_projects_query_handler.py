@@ -1,5 +1,5 @@
 """
-ScanProjectsHandler - Handler for ScanProjectsQuery.
+ScanProjectsQueryHandler - Handler for ScanProjectsQuery.
 
 This handler retrieves all available projects from the repository.
 Returns a sorted list of ProjectInfo objects.
@@ -9,23 +9,12 @@ Dependencies are injected via constructor, query data via handle().
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
+from src.application.queries.scan_projects_query import ScanProjectsQuery
 from src.session_management.application.ports import IProjectRepository
 from src.session_management.domain import ProjectInfo
 
 
-@dataclass
-class ScanProjectsQueryData:
-    """Query data for scanning projects.
-
-    This is a pure data object - no dependencies, no behavior.
-    """
-
-    base_path: str
-
-
-class ScanProjectsHandler:
+class ScanProjectsQueryHandler:
     """Handler for ScanProjectsQuery.
 
     Scans the projects directory and returns all valid projects.
@@ -42,7 +31,7 @@ class ScanProjectsHandler:
         """
         self._repository = repository
 
-    def handle(self, query: ScanProjectsQueryData) -> list[ProjectInfo]:
+    def handle(self, query: ScanProjectsQuery) -> list[ProjectInfo]:
         """Handle the ScanProjectsQuery.
 
         Args:

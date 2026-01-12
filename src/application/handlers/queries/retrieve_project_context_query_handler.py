@@ -1,5 +1,5 @@
 """
-GetProjectContextHandler - Handler for GetProjectContextQuery.
+RetrieveProjectContextQueryHandler - Handler for RetrieveProjectContextQuery.
 
 This handler retrieves the full project context including:
 - Current JERRY_PROJECT environment variable
@@ -12,9 +12,11 @@ Dependencies are injected via constructor, query data via handle().
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any
 
+from src.application.queries.retrieve_project_context_query import (
+    RetrieveProjectContextQuery,
+)
 from src.session_management.application.ports import (
     IEnvironmentProvider,
     IProjectRepository,
@@ -23,19 +25,8 @@ from src.session_management.application.ports import (
 from src.session_management.domain import InvalidProjectIdError, ProjectId, ValidationResult
 
 
-@dataclass
-class GetProjectContextQueryData:
-    """Query data for getting project context.
-
-    This is a pure data object - no dependencies, no behavior.
-    Used by the dispatcher to route to the handler.
-    """
-
-    base_path: str
-
-
-class GetProjectContextHandler:
-    """Handler for GetProjectContextQuery.
+class RetrieveProjectContextQueryHandler:
+    """Handler for RetrieveProjectContextQuery.
 
     Retrieves the full context for the current project configuration.
     Uses injected dependencies to access filesystem and environment.
@@ -59,8 +50,8 @@ class GetProjectContextHandler:
         self._repository = repository
         self._environment = environment
 
-    def handle(self, query: GetProjectContextQueryData) -> dict[str, Any]:
-        """Handle the GetProjectContextQuery.
+    def handle(self, query: RetrieveProjectContextQuery) -> dict[str, Any]:
+        """Handle the RetrieveProjectContextQuery.
 
         Args:
             query: Query data containing base_path
