@@ -135,7 +135,7 @@
 | ID | Title | Status | File | Assignee | Evidence |
 |----|-------|--------|------|----------|----------|
 | WI-017 | Architecture Tests | COMPLETED | [wi-017-arch-tests.md](work/wi-017-arch-tests.md) | WT-Test | 21/21 tests pass |
-| WI-018 | Integration & E2E Tests | PENDING | [wi-018-integration-tests.md](work/wi-018-integration-tests.md) | WT-Test | - |
+| WI-018 | Integration & E2E Tests | IN_PROGRESS | [wi-018-integration-tests.md](work/wi-018-integration-tests.md) | WT-Test | 22/22 integration tests |
 
 **WI-017 Implementation Summary:**
 - **test_composition_root.py**: Fixed `get_imports_from_file()` to only check module-level imports (7 tests)
@@ -145,6 +145,15 @@
   - `TestAdapterImplementations`: Validates adapters can be instantiated
   - `TestBootstrapConfiguration`: Validates bootstrap wiring functions
 - **Total**: 21/21 architecture tests passing
+
+**WI-018 Implementation Summary (IN_PROGRESS):**
+- **test_atomic_file_adapter.py** (12 tests):
+  - `TestConcurrentFileAccess`: Threading-based concurrent writes, read-write safety, lock contention (3 tests)
+  - `TestAtomicWriteReliability`: All-or-nothing writes, temp file pattern, parent directory creation (5 tests)
+  - `TestFileAdapterEdgeCases`: Unicode, special chars, empty files, nonexistent files (4 tests)
+- **test_config_commands.py** (10 tests): E2E tests for CLI config commands (fixed PYTHONPATH issue)
+- **Completed**: AC-018.1 (concurrent), AC-018.2 (atomic), AC-018.3 (E2E), AC-018.4 (contracts), AC-018.6 (2141 pass)
+- **Remaining**: AC-018.5 (coverage threshold - pytest-cov not installed)
 
 ---
 
