@@ -89,6 +89,7 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 |----|-------------|--------|--------|
 | [DISC-006](./disc-006.md) | Duplicate tests/ folders investigation | DOCUMENTED | Low - out of scope |
 | [DISC-007](./disc-007.md) | Existing session_start.py tests broken after BUG-007 | REQUIRES ACTION | High - EN-004 scope change |
+| [DISC-008](./disc-008.md) | Test execution must use uv, not python3 | REQUIRES ACTION | High - process enforcement |
 
 ---
 
@@ -110,3 +111,4 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | 2026-01-13 | Added EN-004, EN-005, EN-006, WI-001 | Claude |
 | 2026-01-13 | Added DISC-006 (duplicate tests folders) | Claude |
 | 2026-01-13 | Added DISC-007 (broken session_start tests) - EN-004 scope change | Claude |
+| 2026-01-13 | Added DISC-008 (must use uv, not python3 for tests) | Claude |
