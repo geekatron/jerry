@@ -17,6 +17,8 @@ NO infrastructure imports are allowed in this module.
 from __future__ import annotations
 
 import json
+import os
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from src.application.ports.primary.icommanddispatcher import (
@@ -979,3 +981,342 @@ class CLIAdapter:
             else:
                 print(f"Error: {error_msg}")
             return 1
+
+    # =========================================================================
+    # Config Namespace Commands (WI-016)
+    # =========================================================================
+
+    def _get_project_root(self) -> Path:
+        """Get the project root directory.
+
+        Returns:
+            Path to project root
+        """
+        project_dir = os.environ.get("CLAUDE_PROJECT_DIR")
+        if project_dir:
+            return Path(project_dir)
+        return Path.cwd()
+
+    def _create_config_adapter(self) -> Any:
+        """Create a LayeredConfigAdapter for config commands.
+
+        Note: This is a local import to avoid infrastructure imports at module level.
+
+        Returns:
+            LayeredConfigAdapter instance
+        """
+        from src.infrastructure.adapters.configuration.layered_config_adapter import (
+            LayeredConfigAdapter,
+        )
+
+        root = self._get_project_root()
+        jerry_project = os.environ.get("JERRY_PROJECT")
+
+        project_config_path = None
+        if jerry_project:
+            project_config_path = root / "projects" / jerry_project / ".jerry" / "config.toml"
+
+        return LayeredConfigAdapter(
+            env_prefix="JERRY_",
+            root_config_path=root / ".jerry" / "config.toml",
+            project_config_path=project_config_path,
+            defaults={
+                "logging.level": "INFO",
+                "work_tracking.auto_snapshot_interval": 10,
+                "work_tracking.quality_gate_enabled": True,
+                "session.auto_start": True,
+                "session.max_duration_hours": 8,
+            },
+        )
+
+    def cmd_config_show(
+        self,
+        show_source: bool = False,
+        json_output: bool = False,
+    ) -> int:
+        """Show current configuration.
+
+        Args:
+            show_source: Whether to show the source of each value
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success)
+
+        References:
+            - AC-016.1: jerry config show displays merged configuration
+            - AC-016.2: jerry config show --json outputs JSON format
+        """
+        try:
+            config = self._create_config_adapter()
+            all_keys = config.all_keys()
+
+            if json_output:
+                output: dict[str, Any] = {}
+                for key in sorted(all_keys):
+                    value = config.get(key)
+                    if show_source:
+                        source = config.get_source(key)
+                        output[key] = {"value": value, "source": source}
+                    else:
+                        output[key] = value
+                print(json.dumps(output, indent=2))
+            else:
+                if not all_keys:
+                    print("No configuration values found.")
+                else:
+                    if show_source:
+                        print(f"{'KEY':<40} {'VALUE':<20} {'SOURCE':<10}")
+                        print("-" * 70)
+                        for key in sorted(all_keys):
+                            value = config.get(key)
+                            source = config.get_source(key)
+                            value_str = str(value)[:18] if len(str(value)) > 20 else str(value)
+                            print(f"{key:<40} {value_str:<20} {source:<10}")
+                    else:
+                        print(f"{'KEY':<40} {'VALUE':<30}")
+                        print("-" * 70)
+                        for key in sorted(all_keys):
+                            value = config.get(key)
+                            value_str = str(value)[:28] if len(str(value)) > 30 else str(value)
+                            print(f"{key:<40} {value_str:<30}")
+
+            return 0
+
+        except Exception as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+    def cmd_config_get(
+        self,
+        key: str,
+        json_output: bool = False,
+    ) -> int:
+        """Get a configuration value.
+
+        Args:
+            key: Configuration key to retrieve
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for not found)
+
+        References:
+            - AC-016.3: jerry config get <key> retrieves specific value
+        """
+        try:
+            config = self._create_config_adapter()
+            value = config.get(key)
+
+            if value is None:
+                if json_output:
+                    print(json.dumps({"error": f"Key '{key}' not found"}))
+                else:
+                    print(f"Error: Key '{key}' not found")
+                return 1
+
+            if json_output:
+                source = config.get_source(key)
+                print(json.dumps({"key": key, "value": value, "source": source}))
+            else:
+                print(value)
+
+            return 0
+
+        except Exception as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+    def cmd_config_set(
+        self,
+        key: str,
+        value: str,
+        scope: str = "project",
+        json_output: bool = False,
+    ) -> int:
+        """Set a configuration value.
+
+        Args:
+            key: Configuration key to set
+            value: Value to set
+            scope: Scope to write to (project, root, or local)
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        References:
+            - AC-016.4: jerry config set <key> <value> --scope writes to appropriate file
+        """
+        try:
+            from src.infrastructure.adapters.persistence.atomic_file_adapter import (
+                AtomicFileAdapter,
+            )
+
+            import tomllib
+
+            root = self._get_project_root()
+            jerry_project = os.environ.get("JERRY_PROJECT")
+
+            # Determine target file based on scope
+            if scope == "project":
+                if not jerry_project:
+                    if json_output:
+                        print(json.dumps({"error": "No active project. Set JERRY_PROJECT first."}))
+                    else:
+                        print("Error: No active project. Set JERRY_PROJECT first.")
+                    return 1
+                config_path = root / "projects" / jerry_project / ".jerry" / "config.toml"
+            elif scope == "root":
+                config_path = root / ".jerry" / "config.toml"
+            elif scope == "local":
+                config_path = root / ".jerry" / "local" / "context.toml"
+            else:
+                if json_output:
+                    print(json.dumps({"error": f"Invalid scope: {scope}"}))
+                else:
+                    print(f"Error: Invalid scope: {scope}")
+                return 1
+
+            # Ensure parent directory exists
+            config_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Load existing config or start fresh
+            file_adapter = AtomicFileAdapter()
+            existing: dict[str, Any] = {}
+            if config_path.exists():
+                content = file_adapter.read_with_lock(config_path)
+                if content.strip():
+                    existing = tomllib.loads(content)
+
+            # Parse key into nested structure
+            parts = key.split(".")
+            current = existing
+            for part in parts[:-1]:
+                if part not in current:
+                    current[part] = {}
+                current = current[part]
+
+            # Coerce value type
+            coerced_value: Any = value
+            if value.lower() in ("true", "false"):
+                coerced_value = value.lower() == "true"
+            elif value.isdigit():
+                coerced_value = int(value)
+            else:
+                try:
+                    coerced_value = float(value)
+                except ValueError:
+                    pass
+
+            current[parts[-1]] = coerced_value
+
+            # Write back using TOML format
+            def format_toml(d: dict[str, Any], prefix: str = "") -> str:
+                """Simple TOML formatter for nested dicts."""
+                lines: list[str] = []
+                simple_items = []
+                nested_items = []
+
+                for k, v in d.items():
+                    if isinstance(v, dict):
+                        nested_items.append((k, v))
+                    else:
+                        simple_items.append((k, v))
+
+                # Write simple key-value pairs first
+                for k, v in simple_items:
+                    if isinstance(v, bool):
+                        lines.append(f"{k} = {str(v).lower()}")
+                    elif isinstance(v, (int, float)):
+                        lines.append(f"{k} = {v}")
+                    else:
+                        lines.append(f'{k} = "{v}"')
+
+                # Write nested sections
+                for k, v in nested_items:
+                    section_key = f"{prefix}.{k}" if prefix else k
+                    lines.append(f"\n[{section_key}]")
+                    lines.append(format_toml(v, section_key))
+
+                return "\n".join(lines)
+
+            toml_content = format_toml(existing)
+            file_adapter.write_atomic(config_path, toml_content + "\n")
+
+            if json_output:
+                print(
+                    json.dumps(
+                        {
+                            "success": True,
+                            "key": key,
+                            "value": coerced_value,
+                            "scope": scope,
+                            "path": str(config_path),
+                        }
+                    )
+                )
+            else:
+                print(f"Set {key} = {coerced_value}")
+                print(f"Scope: {scope}")
+                print(f"Path: {config_path}")
+
+            return 0
+
+        except Exception as e:
+            if json_output:
+                print(json.dumps({"error": str(e)}))
+            else:
+                print(f"Error: {e}")
+            return 1
+
+    def cmd_config_path(self, json_output: bool = False) -> int:
+        """Show configuration file paths.
+
+        Args:
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success)
+
+        References:
+            - AC-016.5: jerry config path shows config file locations
+        """
+        root = self._get_project_root()
+        jerry_project = os.environ.get("JERRY_PROJECT")
+
+        paths = {
+            "root": str(root / ".jerry" / "config.toml"),
+            "local": str(root / ".jerry" / "local" / "context.toml"),
+        }
+
+        if jerry_project:
+            paths["project"] = str(
+                root / "projects" / jerry_project / ".jerry" / "config.toml"
+            )
+
+        if json_output:
+            output = {
+                "paths": paths,
+                "project_root": str(root),
+                "active_project": jerry_project,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            print(f"Project Root: {root}")
+            if jerry_project:
+                print(f"Active Project: {jerry_project}")
+            print()
+            print("Configuration Files:")
+            print(f"  Root:    {paths['root']}")
+            if jerry_project:
+                print(f"  Project: {paths['project']}")
+            print(f"  Local:   {paths['local']}")
+
+        return 0

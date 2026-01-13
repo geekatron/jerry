@@ -5,12 +5,12 @@
 | **ID** | WI-016 |
 | **Title** | CLI Config Commands |
 | **Type** | Task |
-| **Status** | PENDING |
+| **Status** | COMPLETED |
 | **Priority** | MEDIUM |
 | **Phase** | PHASE-05 |
 | **Assignee** | WT-CLI |
 | **Created** | 2026-01-12 |
-| **Completed** | - |
+| **Completed** | 2026-01-12 |
 
 ---
 
@@ -22,23 +22,23 @@ Implement CLI commands for viewing and managing configuration: `jerry config sho
 
 ## Acceptance Criteria
 
-- [ ] AC-016.1: `jerry config show` displays merged configuration
-- [ ] AC-016.2: `jerry config show --json` outputs JSON format
-- [ ] AC-016.3: `jerry config get <key>` retrieves specific value
-- [ ] AC-016.4: `jerry config set <key> <value> --scope` writes to appropriate file
-- [ ] AC-016.5: `jerry config path` shows config file locations
-- [ ] AC-016.6: E2E tests for all commands
+- [x] AC-016.1: `jerry config show` displays merged configuration
+- [x] AC-016.2: `jerry config show --json` outputs JSON format
+- [x] AC-016.3: `jerry config get <key>` retrieves specific value
+- [x] AC-016.4: `jerry config set <key> <value> --scope` writes to appropriate file
+- [x] AC-016.5: `jerry config path` shows config file locations
+- [x] AC-016.6: E2E tests for all commands
 
 ---
 
 ## Sub-tasks
 
-- [ ] ST-016.1: Create `src/interface/cli/commands/config_commands.py`
-- [ ] ST-016.2: Implement `show` command with table/JSON output
-- [ ] ST-016.3: Implement `get` command
-- [ ] ST-016.4: Implement `set` command with scope selection
-- [ ] ST-016.5: Implement `path` command
-- [ ] ST-016.6: Write E2E tests
+- [x] ST-016.1: Add config namespace to parser.py
+- [x] ST-016.2: Implement `show` command with table/JSON output
+- [x] ST-016.3: Implement `get` command
+- [x] ST-016.4: Implement `set` command with scope selection
+- [x] ST-016.5: Implement `path` command
+- [x] ST-016.6: Write E2E tests (10 tests)
 
 ---
 
@@ -46,12 +46,19 @@ Implement CLI commands for viewing and managing configuration: `jerry config sho
 
 | Criterion | Evidence | Source |
 |-----------|----------|--------|
-| AC-016.1 | - | - |
-| AC-016.2 | - | - |
-| AC-016.3 | - | - |
-| AC-016.4 | - | - |
-| AC-016.5 | - | - |
-| AC-016.6 | - | - |
+| AC-016.1 | `cmd_config_show()` displays merged config via LayeredConfigAdapter | `src/interface/cli/adapter.py:1032-1091` |
+| AC-016.2 | `--json` flag outputs valid JSON with `json.dumps()` | `src/interface/cli/adapter.py:1054-1063` |
+| AC-016.3 | `cmd_config_get()` retrieves value via `config.get(key)` | `src/interface/cli/adapter.py:1093-1134` |
+| AC-016.4 | `cmd_config_set()` writes to project/root/local based on scope | `src/interface/cli/adapter.py:1136-1277` |
+| AC-016.5 | `cmd_config_path()` shows all config file paths | `src/interface/cli/adapter.py:1279-1322` |
+| AC-016.6 | 10/10 E2E tests pass | `tests/e2e/test_config_commands.py` |
+
+### Test Results
+
+| Test Suite | Count | Status |
+|------------|-------|--------|
+| CLI unit tests | 15 | PASSED |
+| Config E2E tests | 10 | PASSED |
 
 ---
 
@@ -152,6 +159,16 @@ def path():
 | Timestamp | Update | Actor |
 |-----------|--------|-------|
 | 2026-01-12T11:00:00Z | Work item created | Claude |
+| 2026-01-12T21:00:00Z | Started WI-016 implementation | Claude |
+| 2026-01-12T21:05:00Z | Added config namespace to parser.py | Claude |
+| 2026-01-12T21:10:00Z | Added `_handle_config()` to main.py | Claude |
+| 2026-01-12T21:20:00Z | Implemented `cmd_config_show()` with table/JSON output | Claude |
+| 2026-01-12T21:25:00Z | Implemented `cmd_config_get()` with source info | Claude |
+| 2026-01-12T21:35:00Z | Implemented `cmd_config_set()` with scope selection | Claude |
+| 2026-01-12T21:40:00Z | Implemented `cmd_config_path()` | Claude |
+| 2026-01-12T21:45:00Z | Created 10 E2E tests | Claude |
+| 2026-01-12T21:50:00Z | All tests pass (10/10 E2E, 15/15 unit) | Claude |
+| 2026-01-12T21:55:00Z | Updated evidence table and marked COMPLETED | Claude |
 
 ---
 
