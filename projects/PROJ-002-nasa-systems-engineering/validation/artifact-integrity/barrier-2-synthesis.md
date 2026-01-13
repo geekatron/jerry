@@ -10,7 +10,7 @@
 
 | Workstream | Agent | Status | Key Finding |
 |------------|-------|--------|-------------|
-| INV-004: Cross-Artifact | ps-investigator | ⚠️ PARTIAL | Agent count discrepancy, AGENTS.md incomplete |
+| INV-004: Cross-Artifact | ps-investigator | ✅ PASS | Agent count clarified; F-002 WITHDRAWN (see addendum) |
 | INV-005: Placeholders | ps-validator | ✅ PASS | 0 unprocessed placeholders |
 | INV-006: Capabilities | qa-engineer | ✅ PASS | 6/6 agents have real implementation |
 
@@ -20,16 +20,19 @@
 
 ### INV-004: Cross-Artifact Consistency
 
-**Status:** PARTIAL PASS
+**Status:** ✅ PASS (Corrected 2026-01-12)
 
-**Issues Found:**
-1. **Agent Count Discrepancy:** TOOL_REGISTRY claims 25 agents, but 30 files exist (includes TEMPLATE.md and EXTENSION.md files)
-2. **AGENTS.md Incomplete:** Only documents 3 core agents, missing 22+ skill agents
+**Original Issues (CORRECTED):**
+1. **Agent Count Discrepancy:** TOOL_REGISTRY claims 25 agents, 30 files exist → **EXPECTED** (includes TEMPLATE.md/EXTENSION.md)
+2. **AGENTS.md Incomplete:** ~~Only documents 3 core agents~~ → **FINDING WITHDRAWN**
+   - Skill agents ARE documented in their respective `SKILL.md` files (proper separation of concerns)
+   - All 22 agents have full documentation in appropriate locations
 
-**No Issues With:**
+**Verified:**
 - Version numbers are consistent across all schemas (all 1.0.0)
 - Tool counts are accurate (14/14)
 - Skill contract agent lists match functional agent files
+- **All agents documented** (3 in AGENTS.md, 9 in PS/SKILL.md, 10 in NSE/SKILL.md)
 
 ### INV-005: Placeholder Detection
 
@@ -63,10 +66,12 @@
 
 ### Documentation Gaps Identified
 
-| Gap | Severity | Remediation |
-|-----|----------|-------------|
-| AGENTS.md only covers core agents | MEDIUM | Add skill agent documentation or reference skill contracts |
-| Agent count metrics ambiguous | LOW | Clarify functional vs template file distinction |
+| Gap | Severity | Remediation | Status |
+|-----|----------|-------------|--------|
+| ~~AGENTS.md only covers core agents~~ | ~~MEDIUM~~ | ~~Add skill agent documentation~~ | **WITHDRAWN** - By design |
+| Agent count metrics ambiguous | LOW | Clarify functional vs template file distinction | OPTIONAL |
+
+> **Note:** The AGENTS.md finding was WITHDRAWN after human review confirmed proper separation of concerns.
 
 ---
 
@@ -86,10 +91,11 @@
 
 ## Carry Forward to Final Report
 
-1. **2 documentation debt items** from INV-004 (non-blocking)
+1. ~~**2 documentation debt items** from INV-004~~ → **1 OPTIONAL item** (F-002 withdrawn)
 2. **0 structural integrity issues** (Phase 1 + Phase 2)
 3. **0 capability claim issues** (INV-006)
 4. **Strong positive patterns** for future agent development
+5. **Correction:** WI-SAO-068 (AGENTS.md update) is WITHDRAWN - not needed
 
 ---
 

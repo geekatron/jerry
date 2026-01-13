@@ -22,7 +22,7 @@
 | Open | 8 |
 | In Progress | 0 |
 | Status | ✅ **SAO-INIT-005: COMPLETE (7/7)** |
-| Discoveries | 6 |
+| Discoveries | 7 |
 
 ### SAO-INIT-008: Agent & Skill Enhancement (Self-Orchestration)
 | Metric | Count |
@@ -54,6 +54,20 @@
 
 **SAO-INIT-005 Status:** ✅ COMPLETE (7/7 work items)
 **Branch:** `cc/proj-nasa-subagent`
+
+### INV-004 Correction (2026-01-12)
+
+| Item | Original Finding | Correction |
+|------|------------------|------------|
+| F-002: AGENTS.md incomplete | MEDIUM severity | **WITHDRAWN** |
+| WI-SAO-068: Update AGENTS.md | Recommended | **WITHDRAWN** |
+
+**Reason:** Human review confirmed skill agents ARE documented in their respective `SKILL.md` files:
+- Core agents (3) → `AGENTS.md`
+- PS agents (9) → `skills/problem-solving/SKILL.md`
+- NSE agents (10) → `skills/nasa-se/SKILL.md`
+
+This is **proper separation of concerns**, not a documentation gap. All 22 agents are fully documented.
 
 #### Parallel Execution Results (WI-SAO-016 + WI-SAO-017)
 | Work Item | Artifacts Created | Size |
@@ -2570,6 +2584,40 @@ The cognitive mode "mixed" used in WI-SAO-005/006 acceptance criteria is NOT a f
 - Calling something "mixed" is imprecise and loses the benefit of mode-specific behaviors
 
 **Resolution:** Future agents should use one of the canonical modes (divergent, convergent, lateral) or explicitly document iterative alternation between modes. The term "mixed" should not be used.
+
+---
+
+### DISCOVERY-003: INV-004 F-002 Finding WITHDRAWN (Agent Documentation)
+
+- **Discovered:** 2026-01-12
+- **Severity:** LOW (finding correction)
+- **Discovery Context:** Human review of INV-004 finding during WI-SAO-068 planning
+- **Finding:**
+
+The INV-004 finding F-002 ("AGENTS.md Incomplete") was **INCORRECT**.
+
+**Original Finding (WRONG):**
+- AGENTS.md only documents 3 core agents
+- Missing 22+ skill agents (ps-*, nse-*)
+- Recommended: WI-SAO-068 to update AGENTS.md
+
+**Correction (CORRECT):**
+| Agent Location | Count | Documentation Location |
+|----------------|-------|------------------------|
+| `.claude/agents/` | 3 | `AGENTS.md` ✓ |
+| `skills/problem-solving/agents/` | 9 | `skills/problem-solving/SKILL.md` ✓ |
+| `skills/nasa-se/agents/` | 10 | `skills/nasa-se/SKILL.md` ✓ |
+
+**All 22 agents are fully documented** in their appropriate locations. This is **proper separation of concerns**:
+- Core framework agents → root `AGENTS.md`
+- Skill-specific agents → skill's `SKILL.md`
+
+**Evidence:**
+- `skills/problem-solving/SKILL.md` lines 76-88: Full table of all 9 PS agents
+- `skills/nasa-se/SKILL.md` lines 108-121: Full table of all 10 NSE agents
+- `AGENTS.md` lines 39-70: Full documentation of 3 core agents
+
+**Resolution:** WI-SAO-068 WITHDRAWN. F-002 finding WITHDRAWN. INV-004 upgraded to PASS.
 
 ---
 

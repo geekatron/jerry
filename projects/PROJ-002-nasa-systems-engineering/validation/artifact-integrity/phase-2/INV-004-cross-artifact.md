@@ -121,6 +121,40 @@ Cross-artifact consistency is **mostly good**:
 
 ---
 
+## CORRECTION ADDENDUM (2026-01-12)
+
+> **Status: F-002 FINDING WITHDRAWN**
+> **Reviewer:** Human + Claude Opus 4.5
+> **Date:** 2026-01-12
+
+### F-002 Correction: AGENTS.md is NOT Incomplete
+
+The original finding F-002 was **INCORRECT**. Upon manual review:
+
+**Actual Architecture (By Design):**
+
+| Agent Location | Count | Documentation Location |
+|----------------|-------|------------------------|
+| `.claude/agents/` | 3 (orchestrator, qa-engineer, security-auditor) | `AGENTS.md` ✓ |
+| `skills/problem-solving/agents/` | 9 (ps-*) | `skills/problem-solving/SKILL.md` ✓ |
+| `skills/nasa-se/agents/` | 10 (nse-*) | `skills/nasa-se/SKILL.md` ✓ |
+
+**All 22 agents are fully documented** - just in their appropriate locations:
+- Core framework agents → root `AGENTS.md`
+- Skill-specific agents → skill's `SKILL.md`
+
+This is **proper separation of concerns**, not a documentation gap.
+
+**Evidence:**
+- `skills/problem-solving/SKILL.md` lines 76-88: Full table of all 9 PS agents
+- `skills/nasa-se/SKILL.md` lines 108-121: Full table of all 10 NSE agents
+- `AGENTS.md` lines 39-70: Full documentation of 3 core agents
+
+**Recommended Action:** NONE - WI-SAO-068 is **WITHDRAWN**
+
+---
+
 *Report Date: 2026-01-12*
 *Investigation: INV-004*
 *Agent: ps-investigator v2.1.0*
+*Correction Added: 2026-01-12 by Claude Opus 4.5*

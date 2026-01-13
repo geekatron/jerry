@@ -16,8 +16,10 @@ This investigation validated that all recently created artifacts (WI-SAO-016, 01
 | Phase | Workstreams | Pass | Partial | Fail |
 |-------|-------------|------|---------|------|
 | Phase 1: Priority Tier | 3 | 3 | 0 | 0 |
-| Phase 2: Deep Dive | 3 | 2 | 1 | 0 |
-| **Total** | **6** | **5** | **1** | **0** |
+| Phase 2: Deep Dive | 3 | 3 | 0 | 0 |
+| **Total** | **6** | **6** | **0** | **0** |
+
+> **Note:** INV-004 upgraded from PARTIAL to PASS after human review (see correction addendum).
 
 ### Key Metrics
 
@@ -70,12 +72,12 @@ This investigation validated that all recently created artifacts (WI-SAO-016, 01
 │ps-investigator│          │ ps-validator │          │  qa-engineer │
 │ INV-004      │          │ INV-005      │          │ INV-006      │
 │ Cross-Artfct │          │ Placeholders │          │ Capabilities │
-│ ⚠️ PARTIAL   │          │ ✅ PASS      │          │ ✅ PASS      │
+│ ✅ PASS      │          │ ✅ PASS      │          │ ✅ PASS      │
 └──────────────┘          └──────────────┘          └──────────────┘
                                   │
     ╔═════════════════════════════╧═════════════════════════════╗
     ║                    BARRIER 2: SYNTHESIS                    ║
-    ║               (2 PASS, 1 PARTIAL)                          ║
+    ║               (3 PASS - Corrected 2026-01-12)              ║
     ╚═════════════════════════════════════════════════════════════╝
 ```
 
@@ -118,20 +120,26 @@ This investigation validated that all recently created artifacts (WI-SAO-016, 01
 
 ---
 
-## Phase 2: Content Quality (2 PASS, 1 PARTIAL)
+## Phase 2: Content Quality (3 PASS)
 
-### INV-004: Cross-Artifact Consistency ⚠️ PARTIAL
+### INV-004: Cross-Artifact Consistency ✅ PASS (Corrected)
 
-**Issues Found:**
+**Original Issues (CORRECTED 2026-01-12):**
 
-| Issue | Severity | Impact |
+| Issue | Severity | Status |
 |-------|----------|--------|
-| Agent count discrepancy (25 claimed, 30 files) | LOW | Metrics clarity |
-| AGENTS.md incomplete (3/25+ documented) | MEDIUM | Discoverability |
+| Agent count discrepancy (25 claimed, 30 files) | LOW | **EXPECTED** - includes templates |
+| ~~AGENTS.md incomplete (3/25+ documented)~~ | ~~MEDIUM~~ | **WITHDRAWN** |
 
-**Root Cause:** File counts include TEMPLATE.md and EXTENSION.md files.
+**Correction:** F-002 (AGENTS.md incomplete) was WITHDRAWN after human review:
+- Skill agents ARE documented in their respective `SKILL.md` files
+- This is **proper separation of concerns**, not a documentation gap
+- All 22 agents have full documentation in appropriate locations
 
-**Recommendation:** Update AGENTS.md or clarify metrics scope.
+**Evidence:**
+- `AGENTS.md` documents 3 core agents (orchestrator, qa-engineer, security-auditor)
+- `skills/problem-solving/SKILL.md` documents 9 ps-* agents
+- `skills/nasa-se/SKILL.md` documents 10 nse-* agents
 
 ### INV-005: Placeholder Detection ✅ PASS
 
@@ -189,10 +197,12 @@ All variable tokens (`{ps_id}`, `${JERRY_PROJECT}`, etc.) are intentional runtim
 
 ## Documentation Debt Identified
 
-| Item | Source | Severity | Recommended Work Item |
-|------|--------|----------|----------------------|
-| AGENTS.md incomplete | INV-004 | MEDIUM | WI-SAO-028 |
-| Agent count metrics ambiguous | INV-004 | LOW | WI-SAO-029 |
+| Item | Source | Severity | Recommended Work Item | Status |
+|------|--------|----------|----------------------|--------|
+| ~~AGENTS.md incomplete~~ | INV-004 | ~~MEDIUM~~ | ~~WI-SAO-028~~ | **WITHDRAWN** |
+| Agent count metrics ambiguous | INV-004 | LOW | WI-SAO-029 (OPTIONAL) | Open |
+
+> **Note:** WI-SAO-068 (update AGENTS.md) has been WITHDRAWN after human review.
 
 ---
 
@@ -202,16 +212,16 @@ All variable tokens (`{ps_id}`, `${JERRY_PROJECT}`, etc.) are intentional runtim
 
 The investigation confirms that all recently created artifacts and pre-existing definitions are **properly integrated, functional, and not hollow shells**.
 
-**Confidence Level:** HIGH (0.95)
+**Confidence Level:** HIGH (0.98)
 - 6 workstreams executed across 2 phases
-- 5 PASS, 1 PARTIAL (documentation only)
+- **6 PASS** (F-002 finding corrected after human review)
 - Zero structural integrity issues
 - Zero capability claim issues
 
 ### Recommended Actions
 
-1. **Close Investigation:** No blocking issues found
-2. **Create Work Items:** For documentation debt (AGENTS.md, metrics clarity)
+1. **Close Investigation:** No blocking issues found ✅
+2. ~~**Create Work Items:** For documentation debt~~ → **WITHDRAWN** (F-002 corrected)
 3. **Adopt Patterns:** Use positive patterns discovered for future development
 
 ---
