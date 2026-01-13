@@ -16,6 +16,7 @@
 | TD-001 | TOML write needs tomli-w | LOW | PHASE-02 | 2026-01-12 | - |
 | TD-002 | Windows locking needs filelock | MEDIUM | PHASE-02 | 2026-01-12 | - |
 | TD-003 | pytest-cov not installed | LOW | PHASE-06 | 2026-01-12 | - |
+| TD-004 | Ruff unpinned in CI | HIGH | PHASE-08 | 2026-01-13 | 2026-01-13 |
 
 ---
 
@@ -93,6 +94,48 @@ Cannot automatically enforce coverage thresholds in CI.
 
 ---
 
+### TD-004: Ruff Unpinned in CI (RESOLVED)
+
+| Field | Value |
+|-------|-------|
+| **Severity** | HIGH |
+| **Phase** | PHASE-08 (Release Prep) |
+| **Added** | 2026-01-13 |
+| **Resolved** | 2026-01-13 |
+| **Owner** | Claude |
+| **Resolution** | Pinned ruff==0.14.11 in CI |
+
+**Description**:
+The CI workflow at `.github/workflows/ci.yml` used `pip install ruff` without a version pin. This caused version drift between local development (ruff 0.14.11 via uv) and CI (latest ruff), resulting in formatting check failures even though local checks passed.
+
+**Symptoms**:
+- Local `ruff format --check .` passed
+- CI `ruff format --check .` failed with "10 files would be reformatted"
+- Same code, different results due to version mismatch
+
+**Root Cause**:
+Ruff formatting rules changed between versions. Specifically:
+- Slice spacing rules differed
+- Multi-line expression collapse thresholds differed
+
+**Resolution Applied**:
+```yaml
+# Changed from:
+run: pip install ruff
+
+# Changed to:
+run: pip install "ruff==0.14.11"
+```
+
+**Commits**:
+- `0c6ee80`: Pinned ruff version in CI
+- `ac96baa`: Applied consistent formatting to all files
+
+**Lesson Learned**:
+All linter/formatter versions in CI must be pinned to match local development environment to ensure deterministic results.
+
+---
+
 ## Technical Debt Template
 
 When adding technical debt, use this template:
@@ -138,12 +181,12 @@ When adding technical debt, use this template:
 
 | Metric | Value |
 |--------|-------|
-| Total Debt Items | 3 |
+| Total Debt Items | 4 |
 | Critical | 0 |
-| High | 0 |
+| High | 0 (1 resolved) |
 | Medium | 1 |
 | Low | 2 |
-| Resolved | 0 |
+| Resolved | 1 |
 
 ---
 
