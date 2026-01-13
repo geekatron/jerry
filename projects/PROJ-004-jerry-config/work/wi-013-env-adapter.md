@@ -5,12 +5,12 @@
 | **ID** | WI-013 |
 | **Title** | Environment Variable Adapter |
 | **Type** | Task |
-| **Status** | PENDING |
+| **Status** | COMPLETED |
 | **Priority** | HIGH |
 | **Phase** | PHASE-04 |
 | **Assignee** | WT-Infra |
 | **Created** | 2026-01-12 |
-| **Completed** | - |
+| **Completed** | 2026-01-12 |
 
 ---
 
@@ -22,22 +22,22 @@ Implement an environment variable adapter that reads configuration from environm
 
 ## Acceptance Criteria
 
-- [ ] AC-013.1: Maps env vars with `JERRY_` prefix to config keys
-- [ ] AC-013.2: Uses `__` for nested keys (e.g., `JERRY_LOGGING__LEVEL`)
-- [ ] AC-013.3: Auto-converts string values to bool/int/float/list
-- [ ] AC-013.4: Implements `IConfigurationProvider` port interface
-- [ ] AC-013.5: Unit tests for all type conversions
-- [ ] AC-013.6: Unit tests for key mapping edge cases
+- [x] AC-013.1: Maps env vars with `JERRY_` prefix to config keys
+- [x] AC-013.2: Uses `__` for nested keys (e.g., `JERRY_LOGGING__LEVEL`)
+- [x] AC-013.3: Auto-converts string values to bool/int/float/list
+- [x] AC-013.4: Implements `IConfigurationProvider` port interface
+- [x] AC-013.5: Unit tests for all type conversions
+- [x] AC-013.6: Unit tests for key mapping edge cases
 
 ---
 
 ## Sub-tasks
 
-- [ ] ST-013.1: Create `src/infrastructure/adapters/configuration/env_config_adapter.py`
-- [ ] ST-013.2: Implement env var scanning with prefix filter
-- [ ] ST-013.3: Implement key mapping (env → config key)
-- [ ] ST-013.4: Implement type coercion logic
-- [ ] ST-013.5: Write comprehensive unit tests
+- [x] ST-013.1: Create `src/infrastructure/adapters/configuration/env_config_adapter.py`
+- [x] ST-013.2: Implement env var scanning with prefix filter
+- [x] ST-013.3: Implement key mapping (env → config key)
+- [x] ST-013.4: Implement type coercion logic
+- [x] ST-013.5: Write comprehensive unit tests (24/24 passed)
 
 ---
 
@@ -45,12 +45,12 @@ Implement an environment variable adapter that reads configuration from environm
 
 | Criterion | Evidence | Source |
 |-----------|----------|--------|
-| AC-013.1 | - | - |
-| AC-013.2 | - | - |
-| AC-013.3 | - | - |
-| AC-013.4 | - | - |
-| AC-013.5 | - | - |
-| AC-013.6 | - | - |
+| AC-013.1 | `_load_from_env()` filters by `self._prefix` (default: "JERRY_") | `env_config_adapter.py:66-71` |
+| AC-013.2 | `_env_to_config_key()` converts `__` to `.` (e.g., JERRY_LOGGING__LEVEL → logging.level) | `env_config_adapter.py:73-85` |
+| AC-013.3 | `_parse_value()` handles bool, int, float, JSON, CSV conversions | `env_config_adapter.py:99-134` |
+| AC-013.4 | Implements `get`, `get_string`, `get_bool`, `get_int`, `get_list`, `has` methods | `env_config_adapter.py:136-212` |
+| AC-013.5 | **24/24 unit tests passed**: TestEnvConfigAdapterInit (2), TestEnvConfigAdapterKeyMapping (5), TestEnvConfigAdapterTypeConversion (10), TestEnvConfigAdapterTypedGetters (4), TestEnvConfigAdapterHas (2), TestEnvConfigAdapterRefresh (1), TestEnvConfigAdapterKeys (1) | `test_env_config_adapter.py` |
+| AC-013.6 | Unit tests verify: simple key, nested key (JERRY_A__B__C__D→a.b.c.d), non-prefixed ignored, _env_to_config_key method | `test_env_config_adapter.py:44-84` |
 
 ---
 
@@ -143,6 +143,14 @@ class EnvConfigAdapter:
 | Timestamp | Update | Actor |
 |-----------|--------|-------|
 | 2026-01-12T11:00:00Z | Work item created | Claude |
+| 2026-01-12T14:00:00Z | Status changed to IN_PROGRESS - starting implementation in WT-Infra worktree | Claude |
+| 2026-01-12T14:35:00Z | Created `src/infrastructure/adapters/configuration/` directory structure | Claude |
+| 2026-01-12T14:40:00Z | Implemented EnvConfigAdapter with prefix filtering, key mapping, type coercion | Claude |
+| 2026-01-12T14:45:00Z | Functional tests passed (3/3): key mapping (JERRY_TEST__LEVEL→test.level), bool (true→True), int (42→42) | Claude |
+| 2026-01-12T14:50:00Z | Added `refresh()` and `keys()` methods for reload capability | Claude |
+| 2026-01-12T15:10:00Z | Created unit tests in `tests/unit/infrastructure/adapters/configuration/test_env_config_adapter.py` | Claude |
+| 2026-01-12T15:15:00Z | **TESTS PASSED**: 24/24 unit tests passed covering init, key mapping, type conversion, typed getters, has, refresh, keys | Claude |
+| 2026-01-12T15:20:00Z | **COMPLETED**: All acceptance criteria verified with evidence, all sub-tasks done, 24/24 unit tests | Claude |
 
 ---
 
