@@ -28,7 +28,6 @@ from typing import Any
 
 from src.shared_kernel.domain_event import DomainEvent, _current_timestamp, _generate_event_id
 
-
 # =============================================================================
 # Configuration Loading Event
 # =============================================================================

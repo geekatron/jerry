@@ -24,7 +24,6 @@ from src.configuration.domain.events.configuration_events import (
 )
 from src.shared_kernel.domain_event import DomainEvent
 
-
 # =============================================================================
 # ConfigurationLoaded Tests
 # =============================================================================

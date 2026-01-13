@@ -180,7 +180,7 @@ class ConfigSource(IntEnum):
             valid = ", ".join(s.name for s in cls)
             raise ValueError(
                 f"Invalid configuration source: '{value}'. Valid sources: {valid}"
-            )
+            ) from None
 
     def __str__(self) -> str:
         """Return lowercase name for display."""

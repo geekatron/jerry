@@ -26,7 +26,6 @@ from src.configuration.domain.events.configuration_events import (
 from src.configuration.domain.value_objects import ConfigSource, ConfigValue
 from src.shared_kernel.exceptions import ValidationError
 
-
 # =============================================================================
 # Factory Method Tests
 # =============================================================================

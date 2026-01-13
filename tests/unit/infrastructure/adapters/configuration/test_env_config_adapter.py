@@ -18,8 +18,6 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-import pytest
-
 from src.infrastructure.adapters.configuration.env_config_adapter import (
     EnvConfigAdapter,
 )

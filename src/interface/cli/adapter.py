@@ -1155,11 +1155,11 @@ class CLIAdapter:
             - AC-016.4: jerry config set <key> <value> --scope writes to appropriate file
         """
         try:
+            import tomllib
+
             from src.infrastructure.adapters.persistence.atomic_file_adapter import (
                 AtomicFileAdapter,
             )
-
-            import tomllib
 
             root = self._get_project_root()
             jerry_project = os.environ.get("JERRY_PROJECT")

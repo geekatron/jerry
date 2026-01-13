@@ -23,10 +23,10 @@ Exports:
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from datetime import UTC, datetime
-from typing import Any
 import uuid
+from collections.abc import Sequence
+from datetime import datetime
+from typing import Any
 
 from src.configuration.domain.events.configuration_events import (
     ConfigurationError,
@@ -399,8 +399,8 @@ class Configuration:
             >>> config.set("logging.level", "INFO")
             >>> config.set("debug", True, reason="Enabling debug mode")
         """
-        # Validate key
-        config_key = ConfigKey(key)
+        # Validate key (raises ValidationError if invalid)
+        ConfigKey(key)
 
         # Get old value
         old_value = self.get(key)

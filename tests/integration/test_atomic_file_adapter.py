@@ -16,8 +16,6 @@ import threading
 import time
 from pathlib import Path
 
-import pytest
-
 from src.infrastructure.adapters.persistence.atomic_file_adapter import AtomicFileAdapter
 
 

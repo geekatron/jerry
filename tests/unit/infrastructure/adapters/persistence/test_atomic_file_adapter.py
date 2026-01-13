@@ -14,10 +14,7 @@ References:
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
-
-import pytest
 
 from src.infrastructure.adapters.persistence.atomic_file_adapter import (
     AtomicFileAdapter,

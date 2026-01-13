@@ -20,10 +20,8 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
-
 
 # Capture project root before any chdir happens
 PROJECT_ROOT = Path(__file__).parent.parent.parent
