@@ -246,6 +246,7 @@ class ConfigPath:
             directory exists and new files can be created
         """
         import os
+
         return os.access(self.path, os.W_OK)
 
     def child(self, name: str) -> ConfigPath:

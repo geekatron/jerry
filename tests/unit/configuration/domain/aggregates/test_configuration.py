@@ -181,16 +181,12 @@ class TestNestedKeyResolution:
 
     def test_get_nested_three_levels(self) -> None:
         """Get value with three-level nesting."""
-        config = Configuration.create(
-            data={"database": {"connection": {"timeout": 30}}}
-        )
+        config = Configuration.create(data={"database": {"connection": {"timeout": 30}}})
         assert config.get("database.connection.timeout") == 30
 
     def test_get_nested_four_levels(self) -> None:
         """Get value with four-level deep nesting."""
-        config = Configuration.create(
-            data={"a": {"b": {"c": {"d": "deep"}}}}
-        )
+        config = Configuration.create(data={"a": {"b": {"c": {"d": "deep"}}}})
         assert config.get("a.b.c.d") == "deep"
 
     def test_get_missing_key_returns_default(self) -> None:
@@ -210,9 +206,7 @@ class TestNestedKeyResolution:
 
     def test_get_namespace_returns_dict(self) -> None:
         """Get namespace prefix returns dictionary."""
-        config = Configuration.create(
-            data={"logging": {"level": "DEBUG", "format": "json"}}
-        )
+        config = Configuration.create(data={"logging": {"level": "DEBUG", "format": "json"}})
         namespace = config.get_namespace("logging")
         assert namespace == {"level": "DEBUG", "format": "json"}
 
@@ -459,9 +453,7 @@ class TestConfigurationLoadedEvent:
 
     def test_loaded_event_counts_keys(self) -> None:
         """Loaded event counts keys correctly."""
-        config = Configuration.create(
-            data={"a": 1, "b": {"c": 2, "d": 3}}
-        )
+        config = Configuration.create(data={"a": 1, "b": {"c": 2, "d": 3}})
         events = config.collect_events()
         assert events[0].keys_loaded == 3  # a, b.c, b.d
 

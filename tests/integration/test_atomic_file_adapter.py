@@ -41,10 +41,7 @@ class TestConcurrentFileAccess:
                         results.append((thread_id, False))
 
         # Spawn multiple threads
-        threads = [
-            threading.Thread(target=write_task, args=(t, 20))
-            for t in range(4)
-        ]
+        threads = [threading.Thread(target=write_task, args=(t, 20)) for t in range(4)]
 
         for t in threads:
             t.start()

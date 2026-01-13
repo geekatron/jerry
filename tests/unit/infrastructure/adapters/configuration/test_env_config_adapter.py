@@ -56,9 +56,7 @@ class TestEnvConfigAdapterKeyMapping:
 
     def test_deeply_nested_key_mapping(self) -> None:
         """Multiple __ map to multiple dots."""
-        with patch.dict(
-            os.environ, {"JERRY_A__B__C__D": "value"}, clear=True
-        ):
+        with patch.dict(os.environ, {"JERRY_A__B__C__D": "value"}, clear=True):
             adapter = EnvConfigAdapter()
             assert adapter.get("a.b.c.d") == "value"
 
@@ -122,17 +120,13 @@ class TestEnvConfigAdapterTypeConversion:
 
     def test_json_array_conversion(self) -> None:
         """JSON array values are converted."""
-        with patch.dict(
-            os.environ, {"JERRY_LIST": '["a", "b", "c"]'}, clear=True
-        ):
+        with patch.dict(os.environ, {"JERRY_LIST": '["a", "b", "c"]'}, clear=True):
             adapter = EnvConfigAdapter()
             assert adapter.get("list") == ["a", "b", "c"]
 
     def test_json_object_conversion(self) -> None:
         """JSON object values are converted."""
-        with patch.dict(
-            os.environ, {"JERRY_CONFIG": '{"key": "value"}'}, clear=True
-        ):
+        with patch.dict(os.environ, {"JERRY_CONFIG": '{"key": "value"}'}, clear=True):
             adapter = EnvConfigAdapter()
             assert adapter.get("config") == {"key": "value"}
 

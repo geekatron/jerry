@@ -42,9 +42,7 @@ class TestLoadLocalContext:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text(
-            '[context]\nactive_project = "PROJ-001-test"\n'
-        )
+        context_file.write_text('[context]\nactive_project = "PROJ-001-test"\n')
 
         with patch(
             "src.interface.cli.session_start.get_local_context_path",

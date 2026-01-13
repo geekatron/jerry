@@ -61,9 +61,7 @@ class ConfigKey:
     value: str
 
     # Pattern for valid key segments: alphanumeric with underscores, hyphens allowed
-    _SEGMENT_PATTERN: ClassVar[Pattern[str]] = re.compile(
-        r"^[a-zA-Z][a-zA-Z0-9_-]*$"
-    )
+    _SEGMENT_PATTERN: ClassVar[Pattern[str]] = re.compile(r"^[a-zA-Z][a-zA-Z0-9_-]*$")
 
     # Full key pattern: segments separated by dots
     _KEY_PATTERN: ClassVar[Pattern[str]] = re.compile(
@@ -214,7 +212,7 @@ class ConfigKey:
             )
 
         # Remove prefix and convert format
-        key_part = env_key[len(prefix):]
+        key_part = env_key[len(prefix) :]
         # Single underscores in env vars become hyphens in keys
         # Double underscores become dots
         key = key_part.lower().replace("__", ".").replace("_", "-")
@@ -291,7 +289,7 @@ class ConfigKey:
             return None
         if self.value == prefix_str:
             return None
-        relative = self.value[len(prefix_str) + 1:]  # +1 for the dot
+        relative = self.value[len(prefix_str) + 1 :]  # +1 for the dot
         return ConfigKey(relative) if relative else None
 
     def __str__(self) -> str:

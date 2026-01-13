@@ -359,9 +359,7 @@ class LayeredConfigAdapter:
 
         return keys
 
-    def _flatten_keys(
-        self, data: dict[str, Any], prefix: str = ""
-    ) -> set[str]:
+    def _flatten_keys(self, data: dict[str, Any], prefix: str = "") -> set[str]:
         """Flatten nested dict keys to dot notation.
 
         Args:

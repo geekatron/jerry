@@ -30,7 +30,9 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 class TestConfigShow:
     """Tests for jerry config show command."""
 
-    def test_config_show_displays_defaults(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_show_displays_defaults(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config show displays default configuration values."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
@@ -47,7 +49,9 @@ class TestConfigShow:
         # Should show defaults
         assert "logging.level" in result.stdout or "KEY" in result.stdout
 
-    def test_config_show_json_outputs_valid_json(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_show_json_outputs_valid_json(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config show --json outputs valid JSON."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
@@ -69,7 +73,9 @@ class TestConfigShow:
 class TestConfigGet:
     """Tests for jerry config get command."""
 
-    def test_config_get_returns_default_value(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_get_returns_default_value(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config get returns default value for known key."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
@@ -85,7 +91,9 @@ class TestConfigGet:
         assert result.returncode == 0
         assert "INFO" in result.stdout
 
-    def test_config_get_returns_error_for_unknown_key(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_get_returns_error_for_unknown_key(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config get returns error for unknown key."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
@@ -101,13 +109,23 @@ class TestConfigGet:
         assert result.returncode == 1
         assert "not found" in result.stdout.lower() or "not found" in result.stderr.lower()
 
-    def test_config_get_json_outputs_with_source(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_get_json_outputs_with_source(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config get --json outputs value with source."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
 
         result = subprocess.run(
-            [sys.executable, "-m", "src.interface.cli.main", "--json", "config", "get", "logging.level"],
+            [
+                sys.executable,
+                "-m",
+                "src.interface.cli.main",
+                "--json",
+                "config",
+                "get",
+                "logging.level",
+            ],
             capture_output=True,
             text=True,
             cwd=tmp_path,
@@ -142,7 +160,9 @@ class TestConfigPath:
         assert "Local:" in result.stdout
         assert "config.toml" in result.stdout
 
-    def test_config_path_shows_project_path_when_set(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_path_shows_project_path_when_set(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config path shows project path when JERRY_PROJECT is set."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.setenv("JERRY_PROJECT", "PROJ-001-test")
@@ -159,7 +179,9 @@ class TestConfigPath:
         assert "Project:" in result.stdout
         assert "PROJ-001-test" in result.stdout
 
-    def test_config_path_json_outputs_all_paths(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_path_json_outputs_all_paths(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config path --json outputs all paths."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.setenv("JERRY_PROJECT", "PROJ-001-test")
@@ -184,7 +206,9 @@ class TestConfigPath:
 class TestConfigSet:
     """Tests for jerry config set command."""
 
-    def test_config_set_requires_project_for_project_scope(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_set_requires_project_for_project_scope(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config set with project scope requires JERRY_PROJECT."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
@@ -200,7 +224,9 @@ class TestConfigSet:
         assert result.returncode == 1
         assert "No active project" in result.stdout or "No active project" in result.stderr
 
-    def test_config_set_writes_to_root_scope(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_config_set_writes_to_root_scope(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Config set with root scope writes to root config."""
         monkeypatch.chdir(tmp_path)
         monkeypatch.delenv("JERRY_PROJECT", raising=False)

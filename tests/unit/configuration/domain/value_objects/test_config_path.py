@@ -299,6 +299,7 @@ class TestConfigPathStringRepresentation:
     def test_fspath_protocol(self) -> None:
         """ConfigPath supports os.fspath() protocol."""
         import os
+
         path = ConfigPath(Path("/home/user/config.toml"))
         fspath = os.fspath(path)
         assert isinstance(fspath, str)

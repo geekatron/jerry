@@ -1297,9 +1297,7 @@ class CLIAdapter:
         }
 
         if jerry_project:
-            paths["project"] = str(
-                root / "projects" / jerry_project / ".jerry" / "config.toml"
-            )
+            paths["project"] = str(root / "projects" / jerry_project / ".jerry" / "config.toml")
 
         if json_output:
             output = {
