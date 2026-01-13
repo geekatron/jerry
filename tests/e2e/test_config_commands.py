@@ -25,6 +25,10 @@ from typing import Any
 import pytest
 
 
+# Capture project root before any chdir happens
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+
 class TestConfigShow:
     """Tests for jerry config show command."""
 
@@ -38,7 +42,7 @@ class TestConfigShow:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 0
@@ -55,7 +59,7 @@ class TestConfigShow:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 0
@@ -77,7 +81,7 @@ class TestConfigGet:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 0
@@ -93,7 +97,7 @@ class TestConfigGet:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 1
@@ -109,7 +113,7 @@ class TestConfigGet:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 0
@@ -132,7 +136,7 @@ class TestConfigPath:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 0
@@ -150,7 +154,7 @@ class TestConfigPath:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd()), "JERRY_PROJECT": "PROJ-001-test"},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT), "JERRY_PROJECT": "PROJ-001-test"},
         )
 
         assert result.returncode == 0
@@ -167,7 +171,7 @@ class TestConfigPath:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd()), "JERRY_PROJECT": "PROJ-001-test"},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT), "JERRY_PROJECT": "PROJ-001-test"},
         )
 
         assert result.returncode == 0
@@ -192,7 +196,7 @@ class TestConfigSet:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 1
@@ -218,7 +222,7 @@ class TestConfigSet:
             capture_output=True,
             text=True,
             cwd=tmp_path,
-            env={**os.environ, "PYTHONPATH": str(Path.cwd())},
+            env={**os.environ, "PYTHONPATH": str(PROJECT_ROOT)},
         )
 
         assert result.returncode == 0
