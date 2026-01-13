@@ -5,12 +5,12 @@
 | **ID** | WI-011 |
 | **Title** | Configuration Domain Events |
 | **Type** | Task |
-| **Status** | PENDING |
+| **Status** | COMPLETED |
 | **Priority** | MEDIUM |
 | **Phase** | PHASE-03 |
 | **Assignee** | WT-Domain |
 | **Created** | 2026-01-12 |
-| **Completed** | - |
+| **Completed** | 2026-01-12 |
 
 ---
 
@@ -22,22 +22,22 @@ Define domain events for configuration lifecycle: loading, changes, and errors. 
 
 ## Acceptance Criteria
 
-- [ ] AC-011.1: `ConfigurationLoaded` event with source and key count
-- [ ] AC-011.2: `ConfigurationValueChanged` event with key, old value, new value
-- [ ] AC-011.3: `ConfigurationError` event for parsing/loading failures
-- [ ] AC-011.4: All events are immutable (`@dataclass(frozen=True)`)
-- [ ] AC-011.5: Events extend `DomainEvent` base class
-- [ ] AC-011.6: Unit tests for event creation and serialization
+- [x] AC-011.1: `ConfigurationLoaded` event with source, key count, source_path, load_time_ms
+- [x] AC-011.2: `ConfigurationValueChanged` event with key, old_value, new_value, source, reason
+- [x] AC-011.3: `ConfigurationError` event with error_type, error_message, recoverable, failed_keys
+- [x] AC-011.4: All events are immutable (`@dataclass(frozen=True)`)
+- [x] AC-011.5: Events extend `DomainEvent` base class with to_dict(), from_dict()
+- [x] AC-011.6: Unit tests for event creation and serialization (40 tests)
 
 ---
 
 ## Sub-tasks
 
-- [ ] ST-011.1: Create `src/domain/events/configuration_events.py`
-- [ ] ST-011.2: Define `ConfigurationLoaded` event
-- [ ] ST-011.3: Define `ConfigurationValueChanged` event
-- [ ] ST-011.4: Define `ConfigurationError` event
-- [ ] ST-011.5: Write unit tests for all events
+- [x] ST-011.1: Create `src/configuration/domain/events/configuration_events.py`
+- [x] ST-011.2: Define `ConfigurationLoaded` event with factory, serialization
+- [x] ST-011.3: Define `ConfigurationValueChanged` event with is_addition, is_removal, is_update
+- [x] ST-011.4: Define `ConfigurationError` event with severity levels
+- [x] ST-011.5: Write unit tests for all events (40 tests)
 
 ---
 
@@ -45,12 +45,12 @@ Define domain events for configuration lifecycle: loading, changes, and errors. 
 
 | Criterion | Evidence | Source |
 |-----------|----------|--------|
-| AC-011.1 | - | - |
-| AC-011.2 | - | - |
-| AC-011.3 | - | - |
-| AC-011.4 | - | - |
-| AC-011.5 | - | - |
-| AC-011.6 | - | - |
+| AC-011.1 | ConfigurationLoaded with `source`, `keys_loaded`, `source_path`, `load_time_ms` | `configuration_events.py:lines 63-134` |
+| AC-011.2 | ConfigurationValueChanged with `key`, `old_value`, `new_value`, `source`, `reason`, `is_addition`, `is_removal`, `is_update` | `configuration_events.py:lines 138-253` |
+| AC-011.3 | ConfigurationError with `error_type`, `error_message`, `recoverable`, `failed_keys`, severity | `configuration_events.py:lines 261-380` |
+| AC-011.4 | All events use `@dataclass(frozen=True)` | All event class definitions |
+| AC-011.5 | Events extend `DomainEvent` with `_payload()`, `to_dict()`, `from_dict()` | All event classes |
+| AC-011.6 | 40 unit tests passing | `pytest tests/unit/configuration/domain/events/ -v` |
 
 ---
 
@@ -112,6 +112,12 @@ class ConfigurationValueChanged(DomainEvent):
 | Timestamp | Update | Actor |
 |-----------|--------|-------|
 | 2026-01-12T11:00:00Z | Work item created | Claude |
+| 2026-01-12T16:00:00Z | Domain events implementation started | Claude |
+| 2026-01-12T16:30:00Z | ConfigurationLoaded event defined with factory and serialization | Claude |
+| 2026-01-12T17:00:00Z | ConfigurationValueChanged event with change detection properties | Claude |
+| 2026-01-12T17:30:00Z | ConfigurationError event with severity and recoverability | Claude |
+| 2026-01-12T18:00:00Z | Unit tests written (40 tests) | Claude |
+| 2026-01-12T18:30:00Z | Tests passing, work item COMPLETED | Claude |
 
 ---
 
