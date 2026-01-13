@@ -231,13 +231,13 @@ When user selects "Create new project":
 
 ## Agents Available
 
-See `AGENTS.md` for the full registry. Key agents:
+See `AGENTS.md` for the full registry. Agents are scoped to skills:
 
-| Agent | Role | File |
-|-------|------|------|
-| Orchestrator | Conductor (Opus 4.5) | `.claude/agents/orchestrator.md` |
-| QA Engineer | Test specialist | `.claude/agents/qa-engineer.md` |
-| Security Auditor | Security review | `.claude/agents/security-auditor.md` |
+| Skill | Agents | Location |
+|-------|--------|----------|
+| problem-solving | 8 specialists (researcher, analyst, synthesizer, etc.) | `skills/problem-solving/agents/` |
+
+Invoke agents via the `/problem-solving` skill.
 
 ---
 

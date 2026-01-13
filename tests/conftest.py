@@ -1,19 +1,22 @@
-"""Pytest configuration for Jerry Framework tests."""
+"""Pytest configuration for Jerry Framework tests.
+
+Note: Path manipulation removed - the editable install (`pip install -e .` or
+`uv pip install -e .`) makes the `src` package available. No additional sys.path
+manipulation is needed.
+
+See: BUG-001 in projects/PROJ-003-agents-cleanup/WORKTRACKER.md
+"""
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 
-# Add src to Python path for imports - this runs at module load time,
-# before pytest_configure, which should help with early imports
-_src_path = str(Path(__file__).parent.parent / "src")
-if _src_path not in sys.path:
-    sys.path.insert(0, _src_path)
+def pytest_configure(config):  # noqa: ARG001
+    """Configure pytest for Jerry Framework tests.
 
+    Note: Previously manipulated sys.path here, but this conflicted with
+    --import-mode=importlib. The editable install handles package resolution.
 
-def pytest_configure(config):
-    """Ensure src is in Python path before test collection."""
-    src_path = str(Path(__file__).parent.parent / "src")
-    if src_path not in sys.path:
-        sys.path.insert(0, src_path)
+    Args:
+        config: pytest Config object (unused, but required by pytest hook signature)
+    """
+    pass  # Placeholder for future configuration needs

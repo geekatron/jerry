@@ -1,3 +1,15 @@
+---
+name: worktracker-decomposition
+description: |
+  This skill should be used when the user asks to "decompose task",
+  "break down work", "create subtasks", or mentions task breakdown.
+version: 1.0.0
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+---
+
 # WORKTRACKER Decomposition Skill
 
 > Transform monolithic WORKTRACKER files into multi-file hub-and-spoke architectures for surviving context rot.

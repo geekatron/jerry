@@ -128,6 +128,11 @@ jobs:
           cp pytest.ini dist/$ARCHIVE_NAME/
           cp .gitignore dist/$ARCHIVE_NAME/
 
+          # Requirements files for pip fallback
+          cp requirements.txt dist/$ARCHIVE_NAME/
+          cp requirements-dev.txt dist/$ARCHIVE_NAME/
+          cp requirements-test.txt dist/$ARCHIVE_NAME/
+
           # List contents
           echo "Archive contents:"
           ls -la dist/$ARCHIVE_NAME/
