@@ -27,8 +27,8 @@ try:
     HAS_FILELOCK = True
 except ImportError:
     HAS_FILELOCK = False
-    FileLock = None  # type: ignore[assignment, misc]
-    FileLockTimeout = Exception  # type: ignore[assignment, misc]
+    FileLock = None
+    FileLockTimeout = Exception
 
 
 T = TypeVar("T")
