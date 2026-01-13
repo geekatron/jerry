@@ -12,14 +12,14 @@ Architecture:
 """
 
 from .domain import (
-    ProjectId,
-    ProjectStatus,
-    ProjectInfo,
-    ValidationResult,
-    InvalidProjectIdError,
-    ProjectNotFoundError,
-    ProjectValidationError,
     DomainError,
+    InvalidProjectIdError,
+    ProjectId,
+    ProjectInfo,
+    ProjectNotFoundError,
+    ProjectStatus,
+    ProjectValidationError,
+    ValidationResult,
 )
 
 __all__ = [

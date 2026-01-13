@@ -1,4 +1,6 @@
 # Pre-commit configuration for Jerry Framework
+# See: https://pre-commit.com
+# ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-CI-001-cicd-pipeline.md
 #
 # Installation:
 #   pip install pre-commit
@@ -7,55 +9,86 @@
 # Manual run:
 #   pre-commit run --all-files
 #
-# Skip a hook:
-#   SKIP=check-agent-conformance git commit -m "..."
-#
-# Work Item: WI-SAO-024
-# Created: 2026-01-11
+# Escape hatches:
+#   SKIP=pytest git commit -m "message"     # Skip tests only
+#   git commit --no-verify -m "message"     # Skip all hooks (emergency)
+
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
 
 repos:
-  # Local hooks for Jerry-specific checks
-  - repo: local
-    hooks:
-      # Agent Template Conformance Check
-      - id: check-agent-conformance
-        name: Check Agent Template Conformance
-        description: Validates agent files conform to their templates
-        entry: python3 scripts/check_agent_conformance.py
-        language: python
-        pass_filenames: false
-        files: ^skills/.*/agents/.*\.md$
-        types: [markdown]
-        stages: [commit, push]
-
-      # YAML Frontmatter Validation (basic syntax check)
-      - id: check-yaml-frontmatter
-        name: Check YAML Frontmatter
-        description: Validates YAML frontmatter can be parsed
-        entry: python3 -c "import sys; import re; content=open(sys.argv[1]).read(); m=re.match(r'^---\s*\n(.*?)\n---', content, re.DOTALL); sys.exit(0 if m else 1)"
-        language: python
-        files: ^skills/.*/agents/.*\.md$
-        types: [markdown]
-
-  # Standard pre-commit hooks
+  # =============================================================================
+  # Basic File Hygiene
+  # =============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^(projects/|docs/schemas/types/)
+        exclude: ^\.claude/
       - id: end-of-file-fixer
-        exclude: ^(projects/|docs/schemas/types/)
+        exclude: ^\.claude/
       - id: check-yaml
-        args: [--allow-multiple-documents]
-        exclude: ^skills/.*/agents/.*\.md$
-      - id: check-json
+        args: [--unsafe]  # Allow custom tags
+      - id: check-added-large-files
+        args: [--maxkb=1000]
       - id: check-merge-conflict
+      - id: check-case-conflict
       - id: detect-private-key
 
-  # Python formatting and linting (when Python files are added)
+  # =============================================================================
+  # Ruff: Fast Linting and Formatting (replaces flake8, black, isort)
+  # =============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+    rev: v0.9.2
     hooks:
+      # Linter - runs first, can auto-fix
       - id: ruff
-        args: [--fix]
+        args: [--fix, --config=pyproject.toml]
+      # Formatter - runs after linter
       - id: ruff-format
+        args: [--config=pyproject.toml]
+
+  # =============================================================================
+  # Type Checking (pyright via local hook)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright type checking
+        entry: .venv/bin/pyright
+        language: system
+        types: [python]
+        pass_filenames: false
+        # Only check src/ to avoid test type issues
+        args: [src/]
+
+  # =============================================================================
+  # Test Suite (configurable stage)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (full suite)
+        entry: .venv/bin/python -m pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+        # Default: run on commit. Change to 'pre-push' for faster iteration.
+        # To skip: SKIP=pytest git commit -m "message"
+        stages: [pre-commit]
+        # Verbose output with short traceback
+        args: [--tb=short, -q]
+
+  # =============================================================================
+  # Security Scanning (pip-audit)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: pip-audit
+        name: pip-audit security scan
+        entry: .venv/bin/pip-audit
+        language: system
+        pass_filenames: false
+        # Only run on push to avoid slowdown on every commit
+        stages: [pre-push]
+        args: [--strict, --progress-spinner=off]

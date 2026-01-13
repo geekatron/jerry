@@ -6,9 +6,10 @@ Returns detailed validation results with warnings for missing optional files.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
-from ...domain import ProjectId, ValidationResult, InvalidProjectIdError
+from ...domain import InvalidProjectIdError, ProjectId, ValidationResult
 from ..ports import IProjectRepository
 
 

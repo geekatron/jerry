@@ -1,12 +1,7 @@
 """
-Jerry Framework - Session Start Hook Tests
+Guardrail Hook Tests
 
-Test suite for the project enforcement mechanism.
+Work Item: WI-SAO-015
 
-Test Categories:
-    - unit/: Pure unit tests (no I/O, fast)
-    - integration/: Tests against real filesystem (temp dirs)
-    - e2e/: Full script execution tests
-    - contract/: Output format verification
-    - architecture/: Dependency boundary tests
+This package contains BDD tests for the guardrail hook system.
 """

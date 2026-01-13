@@ -6,10 +6,12 @@ for the structured output.
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
 
-from ...domain import ProjectId, ValidationResult, InvalidProjectIdError
-from ..ports import IProjectRepository, IEnvironmentProvider, RepositoryError
+from dataclasses import dataclass
+from typing import Any
+
+from ...domain import InvalidProjectIdError, ProjectId, ValidationResult
+from ..ports import IEnvironmentProvider, IProjectRepository, RepositoryError
 
 
 @dataclass
@@ -20,7 +22,7 @@ class GetProjectContextQuery:
     environment: IEnvironmentProvider
     base_path: str
 
-    def execute(self) -> dict:
+    def execute(self) -> dict[str, Any]:
         """Execute the get project context query.
 
         Returns:
@@ -33,7 +35,7 @@ class GetProjectContextQuery:
         """
         jerry_project = self.environment.get_env("JERRY_PROJECT")
 
-        result = {
+        result: dict[str, Any] = {
             "jerry_project": jerry_project,
             "project_id": None,
             "validation": None,
@@ -56,9 +58,7 @@ class GetProjectContextQuery:
             try:
                 project_id = ProjectId.parse(jerry_project)
                 result["project_id"] = project_id
-                result["validation"] = self.repository.validate_project(
-                    self.base_path, project_id
-                )
+                result["validation"] = self.repository.validate_project(self.base_path, project_id)
             except InvalidProjectIdError as e:
                 result["validation"] = ValidationResult.failure([e.message])
 

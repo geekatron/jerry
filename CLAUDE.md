@@ -105,6 +105,120 @@ projects/PROJ-{nnn}-{slug}/
 
 ---
 
+## Project Enforcement (Hard Rule)
+
+> **Enforcement Level:** HARD
+> **Principle:** P-030 - Project Context Required
+> **See Also:** `docs/design/ADR-002-project-enforcement.md`
+
+Claude **MUST NOT** proceed with any substantial work without an active project context.
+This is a hard constraint enforced via the SessionStart hook.
+
+### Hook Output Format
+
+The `scripts/session_start.py` hook produces structured output that Claude parses:
+
+#### `<project-context>` - Valid Project Active
+
+```
+Jerry Framework initialized. See CLAUDE.md for context.
+<project-context>
+ProjectActive: PROJ-001-plugin-cleanup
+ProjectPath: projects/PROJ-001-plugin-cleanup/
+ValidationMessage: Project is properly configured
+</project-context>
+```
+
+**Action:** Proceed with work in the active project context.
+
+#### `<project-required>` - No Project Selected
+
+```
+Jerry Framework initialized.
+<project-required>
+ProjectRequired: true
+AvailableProjects:
+  - PROJ-001-plugin-cleanup [ACTIVE]
+  - PROJ-002-example [DRAFT]
+NextProjectNumber: 003
+ProjectsJson: [{"id": "PROJ-001-plugin-cleanup", "status": "IN_PROGRESS"}]
+</project-required>
+
+ACTION REQUIRED: No JERRY_PROJECT environment variable set.
+Claude MUST use AskUserQuestion to help the user select an existing project or create a new one.
+DO NOT proceed with any work until a project is selected.
+```
+
+**Action:** Use `AskUserQuestion` to help user select or create a project.
+
+#### `<project-error>` - Invalid Project Specified
+
+```
+Jerry Framework initialized with ERROR.
+<project-error>
+InvalidProject: bad-format
+Error: Project ID must match pattern PROJ-NNN-slug
+AvailableProjects:
+  - PROJ-001-plugin-cleanup [ACTIVE]
+NextProjectNumber: 002
+</project-error>
+
+ACTION REQUIRED: The specified JERRY_PROJECT is invalid.
+Claude MUST use AskUserQuestion to help the user select or create a valid project.
+```
+
+**Action:** Use `AskUserQuestion` to help user correct the error.
+
+### Required AskUserQuestion Flow
+
+When `<project-required>` or `<project-error>` is received, Claude **MUST**:
+
+1. **Parse** the available projects from the hook output
+2. **Present options** via `AskUserQuestion`:
+   - List available projects (from `AvailableProjects`)
+   - Offer "Create new project" option
+3. **Handle response**:
+   - If existing project selected → instruct user to set `JERRY_PROJECT`
+   - If new project → guide through creation flow
+4. **DO NOT** proceed with unrelated work until resolved
+
+Example AskUserQuestion structure:
+```yaml
+question: "Which project would you like to work on?"
+header: "Project"
+options:
+  - label: "PROJ-001-plugin-cleanup"
+    description: "[ACTIVE] Plugin system cleanup and refactoring"
+  - label: "Create new project"
+    description: "Start a new project workspace"
+```
+
+### Project Creation Flow
+
+When user selects "Create new project":
+
+1. **Get project details** via AskUserQuestion:
+   - Slug/name (required): e.g., "api-redesign"
+   - Description (optional)
+
+2. **Auto-generate ID** using `NextProjectNumber` from hook:
+   - Format: `PROJ-{NNN}-{slug}`
+   - Example: `PROJ-003-api-redesign`
+
+3. **Create project structure**:
+   ```
+   projects/PROJ-003-api-redesign/
+   ├── PLAN.md              # Implementation plan template
+   ├── WORKTRACKER.md       # Work tracking document
+   └── .jerry/data/items/   # Operational state
+   ```
+
+4. **Update registry**: Add entry to `projects/README.md`
+
+5. **Instruct user**: Set `JERRY_PROJECT=PROJ-003-api-redesign`
+
+---
+
 ## Skills Available
 
 | Skill | Purpose | Location |
@@ -130,13 +244,13 @@ See `skills/orchestration/PLAYBOOK.md` for step-by-step workflow guidance.
 
 ## Agents Available
 
-See `AGENTS.md` for the full registry. Key agents:
+See `AGENTS.md` for the full registry. Agents are scoped to skills:
 
-| Agent | Role | File |
-|-------|------|------|
-| Orchestrator | Conductor (Opus 4.5) | `.claude/agents/orchestrator.md` |
-| QA Engineer | Test specialist | `.claude/agents/qa-engineer.md` |
-| Security Auditor | Security review | `.claude/agents/security-auditor.md` |
+| Skill | Agents | Location |
+|-------|--------|----------|
+| problem-solving | 8 specialists (researcher, analyst, synthesizer, etc.) | `skills/problem-solving/agents/` |
+
+Invoke agents via the `/problem-solving` skill.
 
 ---
 
@@ -149,6 +263,66 @@ Quick reference:
 - 100 character line limit
 - Domain layer: NO external imports
 - All public functions: docstrings required
+
+---
+
+## CLI Commands (v0.1.0)
+
+> **Version**: 0.1.0 (Breaking changes from v0.0.1)
+> **Reference**: `ADR-CLI-002-namespace-implementation.md`
+
+Jerry CLI is organized into bounded-context-aligned namespaces:
+
+### Session Namespace
+
+Manage agent sessions for context tracking.
+
+```bash
+jerry session start [--name NAME] [--description DESC]  # Start new session
+jerry session end [--summary TEXT]                       # End current session
+jerry session status                                     # Show session status
+jerry session abandon [--reason TEXT]                    # Abandon without summary
+```
+
+### Items Namespace
+
+Manage work items (tasks, bugs, stories).
+
+```bash
+jerry items list [--status STATUS] [--type TYPE]        # List work items
+jerry items show <id>                                    # Show item details
+jerry items create <title> [--type TYPE]                # Create item (Phase 4.5)
+jerry items start <id>                                   # Start work (Phase 4.5)
+jerry items complete <id>                                # Complete item (Phase 4.5)
+```
+
+**Note**: `create`, `start`, `complete` commands are deferred to Phase 4.5 (Event Sourcing).
+
+### Projects Namespace
+
+Manage Jerry projects.
+
+```bash
+jerry projects context                                   # Show project context
+jerry projects list                                      # List all projects
+jerry projects validate <project-id>                     # Validate project
+```
+
+### Global Options
+
+```bash
+jerry --help                                             # Show help
+jerry --version                                          # Show version
+jerry --json <namespace> <command>                       # JSON output
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | Error (validation failure, not found, etc.) |
+| 2 | Invalid usage (bad arguments) |
 
 ---
 
@@ -190,7 +364,7 @@ Before finalizing significant outputs, agents SHOULD self-critique:
 ### Behavioral Validation
 
 Constitution compliance is validated via `docs/governance/BEHAVIOR_TESTS.md`:
-- 14 test scenarios (golden dataset)
+- 18 test scenarios (golden dataset)
 - LLM-as-a-Judge evaluation (industry standard per DeepEval, Datadog)
 - Happy path, edge case, and adversarial coverage
 

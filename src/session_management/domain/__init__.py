@@ -18,10 +18,6 @@ Rules:
 """
 
 # Value Objects
-from .value_objects.project_id import ProjectId
-from .value_objects.project_status import ProjectStatus
-from .value_objects.validation_result import ValidationResult
-
 # Entities
 from .entities.project_info import ProjectInfo
 
@@ -32,6 +28,9 @@ from .exceptions import (
     ProjectNotFoundError,
     ProjectValidationError,
 )
+from .value_objects.project_id import ProjectId
+from .value_objects.project_status import ProjectStatus
+from .value_objects.validation_result import ValidationResult
 
 __all__ = [
     # Value Objects

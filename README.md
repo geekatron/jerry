@@ -51,17 +51,24 @@ jerry/
 
 ## Installation
 
+**Requirements:** Python 3.11+ ([why?](docs/INSTALLATION.md#python-version-requirements))
+
 ```bash
 # Clone the repository
 git clone https://github.com/geekatron/jerry.git
 cd jerry
 
-# Install with uv (recommended)
-uv pip install -e .
+# Option 1: Using uv (recommended - 10-100x faster)
+uv sync
+uv run pytest  # verify
 
-# Or with pip
-pip install -e .
+# Option 2: Using pip
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-test.txt && pip install -e .
+pytest  # verify
 ```
+
+See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions.
 
 ## Quick Start
 

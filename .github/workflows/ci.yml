@@ -1,0 +1,295 @@
+# Jerry Framework CI Pipeline
+# ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-CI-001-cicd-pipeline.md
+#
+# Triggers: All pushes + PRs to main/master/claude/* branches
+# Jobs: lint, type-check, security, test (matrix), coverage-report
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main, master, "claude/**"]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # Lint & Format Check
+  # ===========================================================================
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install ruff
+        run: pip install "ruff==0.14.11"
+
+      - name: Check linting
+        run: ruff check . --config=pyproject.toml
+
+      - name: Check formatting
+        run: ruff format --check . --config=pyproject.toml
+
+  # ===========================================================================
+  # Type Checking
+  # ===========================================================================
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyright
+          pip install -e ".[dev]" || pip install -e .
+
+      - name: Run pyright
+        run: pyright src/
+
+  # ===========================================================================
+  # Security Scanning
+  # ===========================================================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+
+      - name: Install and audit dependencies
+        run: |
+          # Install dev dependencies directly (not the jerry package itself)
+          # This allows auditing only real PyPI dependencies
+          pip install filelock mypy ruff
+          pip-audit --strict
+
+  # ===========================================================================
+  # Test Suite - pip (Python Matrix)
+  # ===========================================================================
+  # Uses standard pip/venv for maximum portability
+  # See: docs/INSTALLATION.md for pip installation instructions
+  test-pip:
+    name: Test pip (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies (pip)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+          pip install -e .
+
+      - name: Run tests with coverage
+        run: |
+          pytest \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            --junitxml=junit-pip-${{ matrix.python-version }}.xml \
+            -v
+        # Skip coverage check for refactoring PRs
+        if: ${{ !contains(github.event.head_commit.message, '[skip-coverage]') }}
+        continue-on-error: ${{ contains(github.event.head_commit.message, '[skip-coverage]') }}
+
+      - name: Run tests without coverage threshold (skip-coverage)
+        if: ${{ contains(github.event.head_commit.message, '[skip-coverage]') }}
+        run: |
+          pytest \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --junitxml=junit-pip-${{ matrix.python-version }}.xml \
+            -v
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.14'
+        with:
+          name: coverage-report-pip
+          path: |
+            coverage.xml
+            htmlcov/
+            junit-pip-${{ matrix.python-version }}.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-pip-${{ matrix.python-version }}
+          path: junit-pip-${{ matrix.python-version }}.xml
+
+  # ===========================================================================
+  # Test Suite - uv (Python Matrix)
+  # ===========================================================================
+  # Uses uv for fast dependency resolution (10-100x faster than pip)
+  # See: https://docs.astral.sh/uv/guides/integration/github/
+  test-uv:
+    name: Test uv (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies (uv)
+        run: uv sync --extra test
+
+      - name: Run tests with coverage
+        run: |
+          uv run pytest \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            --junitxml=junit-uv-${{ matrix.python-version }}.xml \
+            -v
+        # Skip coverage check for refactoring PRs
+        if: ${{ !contains(github.event.head_commit.message, '[skip-coverage]') }}
+        continue-on-error: ${{ contains(github.event.head_commit.message, '[skip-coverage]') }}
+
+      - name: Run tests without coverage threshold (skip-coverage)
+        if: ${{ contains(github.event.head_commit.message, '[skip-coverage]') }}
+        run: |
+          uv run pytest \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --junitxml=junit-uv-${{ matrix.python-version }}.xml \
+            -v
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: matrix.python-version == '3.14'
+        with:
+          name: coverage-report-uv
+          path: |
+            coverage.xml
+            htmlcov/
+            junit-uv-${{ matrix.python-version }}.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-uv-${{ matrix.python-version }}
+          path: junit-uv-${{ matrix.python-version }}.xml
+
+  # ===========================================================================
+  # Coverage Report on PR
+  # ===========================================================================
+  # Uses uv coverage report (primary) for PR comments
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: [test-pip, test-uv]
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download uv coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report-uv
+
+      - name: Add coverage comment to PR
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-xml-coverage-path: coverage.xml
+          junitxml-path: junit-uv-3.14.xml
+          title: "Coverage Report (uv)"
+          badge-title: "Coverage"
+          hide-badge: false
+          hide-report: false
+          create-new-comment: false
+          hide-comment: false
+
+  # ===========================================================================
+  # Final Status Check
+  # ===========================================================================
+  # Both pip and uv test jobs must pass for CI to succeed
+  # This ensures compatibility with both installation methods
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, security, test-pip, test-uv]
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" ]] || \
+             [[ "${{ needs.type-check.result }}" != "success" ]] || \
+             [[ "${{ needs.security.result }}" != "success" ]] || \
+             [[ "${{ needs.test-pip.result }}" != "success" ]] || \
+             [[ "${{ needs.test-uv.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            echo "  lint: ${{ needs.lint.result }}"
+            echo "  type-check: ${{ needs.type-check.result }}"
+            echo "  security: ${{ needs.security.result }}"
+            echo "  test-pip: ${{ needs.test-pip.result }}"
+            echo "  test-uv: ${{ needs.test-uv.result }}"
+            exit 1
+          fi
+          echo "All CI checks passed!"
+          echo "  - Linting: OK"
+          echo "  - Type checking: OK"
+          echo "  - Security scan: OK"
+          echo "  - Tests (pip): OK"
+          echo "  - Tests (uv): OK"

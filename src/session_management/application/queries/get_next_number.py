@@ -6,6 +6,7 @@ If no projects exist, returns 1.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
 from ..ports import IProjectRepository
@@ -37,8 +38,7 @@ class GetNextProjectNumberQuery:
 
         if max_number >= 999:
             raise ValueError(
-                "Maximum project number (999) reached. "
-                "Archive or delete old projects to continue."
+                "Maximum project number (999) reached. Archive or delete old projects to continue."
             )
 
         return max_number + 1

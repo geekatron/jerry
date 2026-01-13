@@ -9,7 +9,8 @@
 | Project ID | Name | Status | Branch | Created |
 |------------|------|--------|--------|---------|
 | `PROJ-001-plugin-cleanup` | Multi-Project Support | 🔄 IN PROGRESS | `cc/task-subtask` | 2026-01-09 |
-| `PROJ-002-nasa-systems-engineering` | NASA Systems Engineering | 🆕 PLANNING | `cc/proj-nasa-systems-engineering` | 2026-01-09 |
+| `PROJ-002-nasa-systems-engineering` | NASA Systems Engineering | 🔄 IN PROGRESS | *(other worktree)* | 2026-01-12 |
+| `PROJ-003-agents-cleanup` | Agent and Skill Structure Cleanup | 📋 PLANNING | `cc/clean-up-agents` | 2026-01-12 |
 
 ---
 

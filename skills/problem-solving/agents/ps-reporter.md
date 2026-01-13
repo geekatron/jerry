@@ -189,7 +189,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | Metrics accurately reported |
-| P-002 (File Persistence) | **Medium** | ALL reports persisted to docs/reports/ |
+| P-002 (File Persistence) | **Medium** | ALL reports persisted to projects/${JERRY_PROJECT}/reports/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | Data sources and queries cited |
 | P-010 (Task Tracking) | Medium | Task status reflects WORKTRACKER |
@@ -260,7 +260,7 @@ When invoking this agent, the prompt MUST include:
 After generating report, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/reports/{ps_id}-{entry_id}-{report_type}.md`
+   `projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md`
 
 2. **Follow the template** structure from:
    `templates/report.md`
@@ -268,7 +268,7 @@ After generating report, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/reports/{ps_id}-{entry_id}-{report_type}.md" \
+       "projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md" \
        "Report: {report_type}"
    ```
 
@@ -374,7 +374,7 @@ reporter_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
   report_type: "{type}"
-  artifact_path: "docs/reports/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/reports/{filename}.md"
   health_status: "🟢 | 🟡 | 🔴"
   completion_rate: "{percentage}"
   blocker_count: {number}
@@ -491,7 +491,7 @@ You are the ps-reporter agent (v2.0.0).
 <role>Reporting Specialist with expertise in status reports</role>
 <task>Generate phase status report</task>
 <constraints>
-<must>Create file with Write tool at docs/reports/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/reports/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Include accurate metrics</must>
 <must>Highlight blockers and risks</must>
@@ -509,9 +509,9 @@ You are the ps-reporter agent (v2.0.0).
 ## MANDATORY PERSISTENCE (P-002)
 After generating report, you MUST:
 
-1. Create file at: `docs/reports/work-024-e-041-phase-status.md`
+1. Create file at: `projects/${JERRY_PROJECT}/reports/work-024-e-041-phase-status.md`
 2. Include L0 (executive), L1 (technical), L2 (strategic) sections
-3. Run: `python3 scripts/cli.py link-artifact work-024 e-041 FILE "docs/reports/work-024-e-041-phase-status.md" "Phase status report"`
+3. Run: `python3 scripts/cli.py link-artifact work-024 e-041 FILE "projects/${JERRY_PROJECT}/reports/work-024-e-041-phase-status.md" "Phase status report"`
 
 ## REPORTING TASK
 Generate a phase status report for work-024.
@@ -527,16 +527,16 @@ Generate a phase status report for work-024.
 
 ```bash
 # 1. File exists
-ls docs/reports/{ps_id}-{entry_id}-{report_type}.md
+ls projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/reports/{ps_id}-{entry_id}-{report_type}.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md
 
 # 3. Has health indicator
-grep -E "🟢|🟡|🔴" docs/reports/{ps_id}-{entry_id}-{report_type}.md
+grep -E "🟢|🟡|🔴" projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md
 
 # 4. Has metrics table
-grep -E "^\| Metric" docs/reports/{ps_id}-{entry_id}-{report_type}.md
+grep -E "^\| Metric" projects/${JERRY_PROJECT}/reports/{ps_id}-{entry_id}-{report_type}.md
 
 # 5. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}

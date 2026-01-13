@@ -228,7 +228,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | Conclusions cite evidence; uncertainty acknowledged |
-| P-002 (File Persistence) | **Medium** | ALL analysis persisted to docs/analysis/ |
+| P-002 (File Persistence) | **Medium** | ALL analysis persisted to projects/${JERRY_PROJECT}/analysis/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | Methods and frameworks documented |
 | P-011 (Evidence-Based) | Soft | Recommendations tied to analysis evidence |
@@ -312,7 +312,7 @@ When invoking this agent, the prompt MUST include:
 After completing your analysis, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/analysis/{ps_id}-{entry_id}-{analysis_type}.md`
+   `projects/${JERRY_PROJECT}/analysis/{ps_id}-{entry_id}-{analysis_type}.md`
 
 2. **Follow the template** structure from:
    `templates/deep-analysis.md`
@@ -320,7 +320,7 @@ After completing your analysis, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/analysis/{ps_id}-{entry_id}-{analysis_type}.md" \
+       "projects/${JERRY_PROJECT}/analysis/{ps_id}-{entry_id}-{analysis_type}.md" \
        "{description}"
    ```
 
@@ -381,7 +381,7 @@ analyst_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
   analysis_type: "{type}"
-  artifact_path: "docs/analysis/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/analysis/{filename}.md"
   root_cause: "{summary if root-cause}"
   recommendation: "{primary recommendation}"
   confidence: "{high|medium|low}"
@@ -498,7 +498,7 @@ You are the ps-analyst agent (v2.0.0).
 <role>Analysis Specialist with expertise in root cause analysis and FMEA</role>
 <task>Identify root cause of database query timeouts</task>
 <constraints>
-<must>Create file with Write tool at docs/analysis/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/analysis/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Use 5 Whys framework with evidence</must>
 <must>Call link-artifact after file creation</must>
@@ -516,9 +516,9 @@ You are the ps-analyst agent (v2.0.0).
 ## MANDATORY PERSISTENCE (P-002)
 After completing analysis, you MUST:
 
-1. Create file at: `docs/analysis/work-023-e-104-root-cause.md`
+1. Create file at: `projects/${JERRY_PROJECT}/analysis/work-023-e-104-root-cause.md`
 2. Include L0 (executive), L1 (technical), L2 (architectural) sections
-3. Run: `python3 scripts/cli.py link-artifact work-023 e-104 FILE "docs/analysis/work-023-e-104-root-cause.md" "Root cause analysis of database timeouts"`
+3. Run: `python3 scripts/cli.py link-artifact work-023 e-104 FILE "projects/${JERRY_PROJECT}/analysis/work-023-e-104-root-cause.md" "Root cause analysis of database timeouts"`
 
 ## ANALYSIS TASK
 Apply 5 Whys methodology to identify the root cause of database query timeouts.
@@ -532,13 +532,13 @@ Provide actionable recommendations with success criteria.
 
 ```bash
 # 1. File exists
-ls docs/analysis/{ps_id}-{entry_id}-*.md
+ls projects/${JERRY_PROJECT}/analysis/{ps_id}-{entry_id}-*.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/analysis/{ps_id}-{entry_id}-*.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/analysis/{ps_id}-{entry_id}-*.md
 
 # 3. Has evidence table
-grep -E "^\| E-\d+" docs/analysis/{ps_id}-{entry_id}-*.md
+grep -E "^\| E-\d+" projects/${JERRY_PROJECT}/analysis/{ps_id}-{entry_id}-*.md
 
 # 4. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}

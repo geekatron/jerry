@@ -10,12 +10,12 @@ Components:
     - commands/: Write operations (future)
 """
 
-from .ports import IProjectRepository, IEnvironmentProvider, RepositoryError
+from .ports import IEnvironmentProvider, IProjectRepository, RepositoryError
 from .queries import (
-    ScanProjectsQuery,
-    ValidateProjectQuery,
     GetNextProjectNumberQuery,
     GetProjectContextQuery,
+    ScanProjectsQuery,
+    ValidateProjectQuery,
 )
 
 __all__ = [

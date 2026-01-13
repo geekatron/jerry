@@ -5,6 +5,7 @@ This is a simple enumeration with no external dependencies.
 """
 
 from __future__ import annotations
+
 from enum import Enum, auto
 
 

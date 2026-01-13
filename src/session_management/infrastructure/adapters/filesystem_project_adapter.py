@@ -6,18 +6,18 @@ Handles scanning directories, reading files, and validating project structure.
 """
 
 from __future__ import annotations
+
 import re
 from pathlib import Path
 
+from ...application.ports import RepositoryError
 from ...domain import (
+    InvalidProjectIdError,
     ProjectId,
     ProjectInfo,
     ProjectStatus,
     ValidationResult,
-    InvalidProjectIdError,
 )
-from ...application.ports import RepositoryError
-
 
 # Pattern to match valid project directory names
 PROJECT_DIR_PATTERN = re.compile(r"^PROJ-\d{3}-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
@@ -80,14 +80,10 @@ class FilesystemProjectAdapter:
 
         except PermissionError as e:
             raise RepositoryError(
-                f"Permission denied accessing projects directory: {base_path}",
-                cause=e
-            )
+                f"Permission denied accessing projects directory: {base_path}", cause=e
+            ) from e
         except OSError as e:
-            raise RepositoryError(
-                f"Error accessing projects directory: {e}",
-                cause=e
-            )
+            raise RepositoryError(f"Error accessing projects directory: {e}", cause=e) from e
 
         # Sort by project number
         projects.sort(key=lambda p: p.id.number)
@@ -110,9 +106,7 @@ class FilesystemProjectAdapter:
 
         return self._read_project_info(project_path, project_id)
 
-    def validate_project(
-        self, base_path: str, project_id: ProjectId
-    ) -> ValidationResult:
+    def validate_project(self, base_path: str, project_id: ProjectId) -> ValidationResult:
         """Validate that a project exists and is properly configured.
 
         Args:
@@ -126,14 +120,10 @@ class FilesystemProjectAdapter:
 
         # Check if directory exists
         if not project_path.exists():
-            return ValidationResult.failure([
-                f"Project directory does not exist: {project_path}"
-            ])
+            return ValidationResult.failure([f"Project directory does not exist: {project_path}"])
 
         if not project_path.is_dir():
-            return ValidationResult.failure([
-                f"Project path is not a directory: {project_path}"
-            ])
+            return ValidationResult.failure([f"Project path is not a directory: {project_path}"])
 
         # Check for required files and collect warnings
         warnings: list[str] = []
@@ -167,9 +157,7 @@ class FilesystemProjectAdapter:
         project_path = Path(base_path) / str(project_id)
         return project_path.exists() and project_path.is_dir()
 
-    def _read_project_info(
-        self, project_path: Path, project_id: ProjectId
-    ) -> ProjectInfo:
+    def _read_project_info(self, project_path: Path, project_id: ProjectId) -> ProjectInfo:
         """Read project information from the filesystem.
 
         Args:

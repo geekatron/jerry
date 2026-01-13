@@ -6,6 +6,7 @@ along with any messages (warnings for success, errors for failure).
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 
@@ -31,10 +32,7 @@ class ValidationResult:
         Returns:
             A ValidationResult with is_valid=True
         """
-        return cls(
-            is_valid=True,
-            messages=tuple(warnings) if warnings else ()
-        )
+        return cls(is_valid=True, messages=tuple(warnings) if warnings else ())
 
     @classmethod
     def failure(cls, errors: list[str]) -> ValidationResult:
