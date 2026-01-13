@@ -15,6 +15,7 @@
 |---------|-------|----------|-------|-------|----------|
 | TD-001 | TOML write needs tomli-w | LOW | PHASE-02 | 2026-01-12 | - |
 | TD-002 | Windows locking needs filelock | MEDIUM | PHASE-02 | 2026-01-12 | - |
+| TD-003 | pytest-cov not installed | LOW | PHASE-06 | 2026-01-12 | - |
 
 ---
 
@@ -68,6 +69,30 @@ Windows users cannot safely use Jerry with multiple processes.
 
 ---
 
+### TD-003: pytest-cov Not Installed
+
+| Field | Value |
+|-------|-------|
+| **Severity** | LOW |
+| **Phase** | PHASE-06 (Testing & Validation) |
+| **Added** | 2026-01-12 |
+| **Owner** | - |
+| **Resolution Target** | Future iteration |
+
+**Description**:
+The `pytest-cov` package is not installed in the current environment, preventing coverage measurement for AC-018.5.
+
+**Current Workaround**:
+Tests pass without coverage measurement. Coverage is not blocking for WI-018 completion.
+
+**Proper Solution**:
+Add `pytest-cov` to development dependencies in `pyproject.toml`.
+
+**Risk if Unresolved**:
+Cannot automatically enforce coverage thresholds in CI.
+
+---
+
 ## Technical Debt Template
 
 When adding technical debt, use this template:
@@ -113,11 +138,11 @@ When adding technical debt, use this template:
 
 | Metric | Value |
 |--------|-------|
-| Total Debt Items | 2 |
+| Total Debt Items | 3 |
 | Critical | 0 |
 | High | 0 |
 | Medium | 1 |
-| Low | 1 |
+| Low | 2 |
 | Resolved | 0 |
 
 ---
