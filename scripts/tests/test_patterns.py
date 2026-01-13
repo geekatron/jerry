@@ -44,13 +44,15 @@ def patterns() -> PatternLibrary:
 @pytest.fixture
 def empty_patterns() -> PatternLibrary:
     """Create empty pattern library."""
-    return PatternLibrary({
-        "schema_version": "1.0.0",
-        "validation_modes": {},
-        "input_patterns": {},
-        "output_patterns": {},
-        "tool_rules": {},
-    })
+    return PatternLibrary(
+        {
+            "schema_version": "1.0.0",
+            "validation_modes": {},
+            "input_patterns": {},
+            "output_patterns": {},
+            "tool_rules": {},
+        }
+    )
 
 
 # =============================================================================
@@ -94,15 +96,12 @@ class TestInputValidation:
     def test_validate_email_in_webfetch(self, patterns: PatternLibrary) -> None:
         """Given email in WebFetch URL, when validated, then warns about PII."""
         result = patterns.validate_input(
-            "WebFetch",
-            {"url": "https://api.example.com/users/test@example.com"}
+            "WebFetch", {"url": "https://api.example.com/users/test@example.com"}
         )
         # PII detection may warn about email
         assert result.decision in ("approve", "warn")
 
-    def test_validate_returns_validation_result(
-        self, patterns: PatternLibrary
-    ) -> None:
+    def test_validate_returns_validation_result(self, patterns: PatternLibrary) -> None:
         """Given any input, when validated, then returns ValidationResult."""
         result = patterns.validate_input("Bash", {"command": "echo test"})
         assert isinstance(result, ValidationResult)
@@ -125,10 +124,7 @@ class TestPatternMatching:
     def test_pattern_match_includes_position(self, patterns: PatternLibrary) -> None:
         """Given input with PII, when matched, then includes position info."""
         # Create input with email
-        result = patterns.validate_input(
-            "WebFetch",
-            {"url": "Contact: user@example.com for info"}
-        )
+        result = patterns.validate_input("WebFetch", {"url": "Contact: user@example.com for info"})
         if result.matches:
             match = result.matches[0]
             assert isinstance(match, PatternMatch)
@@ -163,16 +159,12 @@ class TestInvalidInputHandling:
 class TestEmptyPatternLibrary:
     """Test behavior with empty pattern library."""
 
-    def test_empty_library_approves_all(
-        self, empty_patterns: PatternLibrary
-    ) -> None:
+    def test_empty_library_approves_all(self, empty_patterns: PatternLibrary) -> None:
         """Given empty pattern library, when validating, then approves all."""
         result = empty_patterns.validate_input("Bash", {"command": "rm -rf /"})
         assert result.decision == "approve"
 
-    def test_empty_library_has_no_matches(
-        self, empty_patterns: PatternLibrary
-    ) -> None:
+    def test_empty_library_has_no_matches(self, empty_patterns: PatternLibrary) -> None:
         """Given empty pattern library, when validating, then no matches."""
         result = empty_patterns.validate_output("Bash", "secret-key-12345")
         assert len(result.matches) == 0
@@ -194,10 +186,7 @@ class TestEdgeCases:
 
     def test_unicode_in_input(self, patterns: PatternLibrary) -> None:
         """Given unicode input, when validated, then handles correctly."""
-        result = patterns.validate_input(
-            "Bash",
-            {"command": "echo '日本語 テスト 🎯'"}
-        )
+        result = patterns.validate_input("Bash", {"command": "echo '日本語 テスト 🎯'"})
         assert result.decision in ("approve", "warn", "block")
 
     def test_validation_result_to_json(self, patterns: PatternLibrary) -> None:
@@ -212,9 +201,7 @@ class TestEdgeCases:
 class TestTimeoutBehavior:
     """Test timeout behavior (AC-015-002)."""
 
-    def test_validation_completes_within_timeout(
-        self, patterns: PatternLibrary
-    ) -> None:
+    def test_validation_completes_within_timeout(self, patterns: PatternLibrary) -> None:
         """Given normal input, when validated, then completes under 100ms."""
         result = patterns.validate_input("Bash", {"command": "ls -la"})
         # Allow some margin for slow systems

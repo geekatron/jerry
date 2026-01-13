@@ -29,12 +29,14 @@ from typing import Any
 # Import pattern library (relative import from same directory)
 try:
     from patterns import PatternLibrary, load_patterns
+
     PATTERNS_AVAILABLE = True
 except ImportError:
     # Fallback: try absolute import
     try:
         sys.path.insert(0, str(Path(__file__).parent))
         from patterns import PatternLibrary, load_patterns
+
         PATTERNS_AVAILABLE = True
     except ImportError:
         PATTERNS_AVAILABLE = False
@@ -47,6 +49,7 @@ except ImportError:
 
 # Load patterns once at module level for performance
 _patterns: PatternLibrary | None = None
+
 
 def get_patterns() -> PatternLibrary | None:
     """Get cached pattern library instance."""
@@ -106,6 +109,7 @@ DANGEROUS_COMMANDS = [
 # =============================================================================
 # HOOK LOGIC
 # =============================================================================
+
 
 def check_file_write(tool_input: dict[str, Any]) -> tuple[bool, str]:
     """Check if a file write operation is safe."""
@@ -184,10 +188,7 @@ def check_git_operation(tool_input: dict[str, Any]) -> tuple[bool, str]:
     return True, ""
 
 
-def check_patterns(
-    tool_name: str,
-    tool_input: dict[str, Any]
-) -> tuple[str, str, list[dict]]:
+def check_patterns(tool_name: str, tool_input: dict[str, Any]) -> tuple[str, str, list[dict]]:
     """
     Check tool input against pattern library.
 
@@ -226,11 +227,8 @@ def check_patterns(
         # Pattern validation failure should not block operations
         # Log error and approve (AC-015-003: warn mode)
         print(
-            json.dumps({
-                "warning": f"Pattern validation error: {e}",
-                "fallback": "approve"
-            }),
-            file=sys.stderr
+            json.dumps({"warning": f"Pattern validation error: {e}", "fallback": "approve"}),
+            file=sys.stderr,
         )
         return "approve", "", []
 
@@ -260,46 +258,37 @@ def main() -> int:
 
         # If rule-based check blocks, return immediately
         if not allowed:
-            print(json.dumps({
-                "decision": "block",
-                "reason": reason
-            }))
+            print(json.dumps({"decision": "block", "reason": reason}))
             return 0
 
         # =================================================================
         # PHASE 2: Pattern-based validation (AC-015-004)
         # =================================================================
-        pattern_decision, pattern_reason, pattern_matches = check_patterns(
-            tool_name, tool_input
-        )
+        pattern_decision, pattern_reason, pattern_matches = check_patterns(tool_name, tool_input)
 
         # Handle pattern validation result
         if pattern_decision == "block":
-            print(json.dumps({
-                "decision": "block",
-                "reason": pattern_reason,
-                "matches": pattern_matches
-            }))
+            print(
+                json.dumps(
+                    {"decision": "block", "reason": pattern_reason, "matches": pattern_matches}
+                )
+            )
             return 0
 
         if pattern_decision == "warn":
             # Log warning to stderr, but approve (AC-015-003)
             print(
-                json.dumps({
-                    "warning": pattern_reason,
-                    "matches": pattern_matches
-                }),
-                file=sys.stderr
+                json.dumps({"warning": pattern_reason, "matches": pattern_matches}), file=sys.stderr
             )
             # Continue to approve below
 
         if pattern_decision == "ask":
             # Ask user for confirmation
-            print(json.dumps({
-                "decision": "ask",
-                "reason": pattern_reason,
-                "matches": pattern_matches
-            }))
+            print(
+                json.dumps(
+                    {"decision": "ask", "reason": pattern_reason, "matches": pattern_matches}
+                )
+            )
             return 0
 
         # =================================================================
@@ -309,16 +298,10 @@ def main() -> int:
         return 0
 
     except json.JSONDecodeError as e:
-        print(json.dumps({
-            "decision": "block",
-            "reason": f"Hook error: Invalid JSON input - {e}"
-        }))
+        print(json.dumps({"decision": "block", "reason": f"Hook error: Invalid JSON input - {e}"}))
         return 2
     except Exception as e:
-        print(json.dumps({
-            "decision": "block",
-            "reason": f"Hook error: {e}"
-        }))
+        print(json.dumps({"decision": "block", "reason": f"Hook error: {e}"}))
         return 2
 
 

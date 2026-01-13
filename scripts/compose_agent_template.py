@@ -124,7 +124,7 @@ def parse_extension_file(content: str) -> dict[str, ExtensionPoint]:
         raw_content = match.group(2)
 
         # Find line number for debugging
-        line_number = content[:match.start()].count("\n") + 1
+        line_number = content[: match.start()].count("\n") + 1
 
         # Clean up the content
         # - Remove leading/trailing whitespace from each line while preserving indentation
@@ -190,17 +190,13 @@ def compose_template(
                 )
             else:
                 # Perform replacement
-                result.composed_content = result.composed_content.replace(
-                    placeholder, content
-                )
+                result.composed_content = result.composed_content.replace(placeholder, content)
                 result.extension_points_replaced += occurrences
         else:
             # Check if placeholder exists in template
             if placeholder in result.composed_content:
                 result.remaining_placeholders.append(point_name)
-                result.errors.append(
-                    f"Extension point '{point_name}' not found in extension file"
-                )
+                result.errors.append(f"Extension point '{point_name}' not found in extension file")
                 result.success = False
 
     # Check for any remaining placeholders (including custom ones)
@@ -468,9 +464,7 @@ Examples:
         default_output = project_root / config["output_file"]
         if default_output.exists():
             original = default_output.read_text()
-            diff_output = generate_diff(
-                original, result.composed_content, config["output_file"]
-            )
+            diff_output = generate_diff(original, result.composed_content, config["output_file"])
             if diff_output:
                 print("\nDiff against existing template:")
                 print(diff_output)

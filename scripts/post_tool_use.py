@@ -28,12 +28,14 @@ from typing import Any
 # Import pattern library (relative import from same directory)
 try:
     from patterns import PatternLibrary, load_patterns
+
     PATTERNS_AVAILABLE = True
 except ImportError:
     # Fallback: try absolute import
     try:
         sys.path.insert(0, str(Path(__file__).parent))
         from patterns import PatternLibrary, load_patterns
+
         PATTERNS_AVAILABLE = True
     except ImportError:
         PATTERNS_AVAILABLE = False
@@ -105,14 +107,16 @@ def redact_output(
                 replacement = group.replacement
 
             # Replace the matched text
-            filtered = filtered[:match.start_pos] + replacement + filtered[match.end_pos:]
+            filtered = filtered[: match.start_pos] + replacement + filtered[match.end_pos :]
 
-            redactions.append({
-                "rule_id": match.rule_id,
-                "description": match.description,
-                "severity": match.severity,
-                "original_length": len(match.matched_text),
-            })
+            redactions.append(
+                {
+                    "rule_id": match.rule_id,
+                    "description": match.description,
+                    "severity": match.severity,
+                    "original_length": len(match.matched_text),
+                }
+            )
 
         return filtered, redactions
 
@@ -120,11 +124,8 @@ def redact_output(
         # Output filtering failure should not block output
         # Log error and return original output (AC-015-003: warn mode)
         print(
-            json.dumps({
-                "warning": f"Output filtering error: {e}",
-                "fallback": "pass_through"
-            }),
-            file=sys.stderr
+            json.dumps({"warning": f"Output filtering error: {e}", "fallback": "pass_through"}),
+            file=sys.stderr,
         )
         return tool_output, []
 
@@ -183,11 +184,13 @@ def main() -> int:
         # =================================================================
         filtered_output, inline_count = apply_inline_redactions(filtered_output)
         if inline_count > 0:
-            redactions.append({
-                "rule_id": "inline-safety-net",
-                "description": f"Inline redaction applied {inline_count} times",
-                "severity": "high",
-            })
+            redactions.append(
+                {
+                    "rule_id": "inline-safety-net",
+                    "description": f"Inline redaction applied {inline_count} times",
+                    "severity": "high",
+                }
+            )
 
         # =================================================================
         # PHASE 3: Output result
@@ -197,12 +200,14 @@ def main() -> int:
         if redactions:
             # Log redactions to stderr for visibility
             print(
-                json.dumps({
-                    "info": "Output redacted",
-                    "redactions": len(redactions),
-                    "details": redactions,
-                }),
-                file=sys.stderr
+                json.dumps(
+                    {
+                        "info": "Output redacted",
+                        "redactions": len(redactions),
+                        "details": redactions,
+                    }
+                ),
+                file=sys.stderr,
             )
             # Return modified output
             result["output"] = filtered_output
@@ -214,14 +219,10 @@ def main() -> int:
         return 0
 
     except json.JSONDecodeError as e:
-        print(json.dumps({
-            "error": f"Hook error: Invalid JSON input - {e}"
-        }))
+        print(json.dumps({"error": f"Hook error: Invalid JSON input - {e}"}))
         return 2
     except Exception as e:
-        print(json.dumps({
-            "error": f"Hook error: {e}"
-        }))
+        print(json.dumps({"error": f"Hook error: {e}"}))
         return 2
 
 

@@ -92,7 +92,7 @@ def _simple_yaml_parse(content: str) -> dict:
         if ":" in stripped:
             colon_pos = stripped.find(":")
             key = stripped[:colon_pos].strip()
-            value_str = stripped[colon_pos + 1:].strip()
+            value_str = stripped[colon_pos + 1 :].strip()
 
             if isinstance(current_container, dict):
                 if value_str:
@@ -112,12 +112,10 @@ def _parse_yaml_value(s: str) -> str | int | float | bool | dict | list:
 
     # Remove comments
     if " #" in s:
-        s = s[:s.find(" #")].strip()
+        s = s[: s.find(" #")].strip()
 
     # Handle quoted strings
-    if (s.startswith('"') and s.endswith('"')) or (
-        s.startswith("'") and s.endswith("'")
-    ):
+    if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
         return s[1:-1]
 
     # Handle booleans
@@ -240,17 +238,11 @@ class PatternLibrary:
         """Initialize from parsed YAML data."""
         self.schema_version = data.get("schema_version", "1.0.0")
         self.validation_modes = data.get("validation_modes", {})
-        self.input_patterns = self._parse_pattern_groups(
-            data.get("input_patterns", {})
-        )
-        self.output_patterns = self._parse_pattern_groups(
-            data.get("output_patterns", {})
-        )
+        self.input_patterns = self._parse_pattern_groups(data.get("input_patterns", {}))
+        self.output_patterns = self._parse_pattern_groups(data.get("output_patterns", {}))
         self.tool_rules = data.get("tool_rules", {})
 
-    def _parse_pattern_groups(
-        self, groups_data: dict[str, Any]
-    ) -> dict[str, PatternGroup]:
+    def _parse_pattern_groups(self, groups_data: dict[str, Any]) -> dict[str, PatternGroup]:
         """Parse pattern groups from YAML data."""
         groups = {}
         for name, group_data in groups_data.items():
@@ -285,9 +277,7 @@ class PatternLibrary:
         pattern_key = f"{pattern_type}_patterns"
         pattern_names = tool_config.get(pattern_key, [])
 
-        patterns = (
-            self.input_patterns if pattern_type == "input" else self.output_patterns
-        )
+        patterns = self.input_patterns if pattern_type == "input" else self.output_patterns
         return [patterns[name] for name in pattern_names if name in patterns]
 
     def validate_text(
@@ -368,9 +358,7 @@ class PatternLibrary:
             elapsed_ms=elapsed_ms,
         )
 
-    def validate_input(
-        self, tool_name: str, tool_input: dict[str, Any]
-    ) -> ValidationResult:
+    def validate_input(self, tool_name: str, tool_input: dict[str, Any]) -> ValidationResult:
         """
         Validate tool input against applicable patterns.
 
@@ -389,9 +377,7 @@ class PatternLibrary:
             pattern_groups = list(self.input_patterns.values())
 
         # Get tool fallback mode
-        fallback_mode = self.tool_rules.get(tool_name, {}).get(
-            "fallback_mode", "warn"
-        )
+        fallback_mode = self.tool_rules.get(tool_name, {}).get("fallback_mode", "warn")
 
         # Convert input to searchable text
         text = json.dumps(tool_input, default=str)

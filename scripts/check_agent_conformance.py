@@ -199,7 +199,7 @@ def parse_yaml_frontmatter(content: str) -> dict[str, Any] | None:
 
                 if value:
                     # Inline value
-                    result[current_key] = value.strip('"\'')
+                    result[current_key] = value.strip("\"'")
                 else:
                     # Start of nested structure
                     result[current_key] = {}
@@ -216,7 +216,7 @@ def parse_yaml_frontmatter(content: str) -> dict[str, Any] | None:
                 # Array item
                 if not isinstance(result.get(current_key), list):
                     result[current_key] = []
-                item = stripped[2:].strip().strip('"\'')
+                item = stripped[2:].strip().strip("\"'")
                 result[current_key].append(item)
 
         i += 1
@@ -402,7 +402,9 @@ def format_results_text(results: list[AgentConformanceResult], verbose: bool = F
                 lines.append(f"       {severity_icon} {issue.section}: {issue.message}")
 
         if verbose and result.is_conformant:
-            lines.append(f"       ✓ {result.sections_passed}/{result.sections_checked} sections passed")
+            lines.append(
+                f"       ✓ {result.sections_passed}/{result.sections_checked} sections passed"
+            )
 
         lines.append("")
 

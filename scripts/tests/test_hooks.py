@@ -68,34 +68,39 @@ class TestPreToolUseHappyPath:
 
     def test_safe_bash_command_approved(self, pre_tool_use_hook: Path) -> None:
         """Given safe bash command, when hook runs, then approved."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_input": {"command": "ls -la"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook, {"tool_name": "Bash", "tool_input": {"command": "ls -la"}}
+        )
         result = json.loads(stdout)
         assert result["decision"] == "approve"
         assert code == 0
 
     def test_safe_write_approved(self, pre_tool_use_hook: Path) -> None:
         """Given safe file write, when hook runs, then approved."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Write",
-            "tool_input": {"file_path": "/tmp/test.txt", "content": "hello"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook,
+            {
+                "tool_name": "Write",
+                "tool_input": {"file_path": "/tmp/test.txt", "content": "hello"},
+            },
+        )
         result = json.loads(stdout)
         assert result["decision"] == "approve"
         assert code == 0
 
     def test_safe_edit_approved(self, pre_tool_use_hook: Path) -> None:
         """Given safe file edit, when hook runs, then approved."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Edit",
-            "tool_input": {
-                "file_path": "/tmp/test.txt",
-                "old_string": "hello",
-                "new_string": "world"
-            }
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook,
+            {
+                "tool_name": "Edit",
+                "tool_input": {
+                    "file_path": "/tmp/test.txt",
+                    "old_string": "hello",
+                    "new_string": "world",
+                },
+            },
+        )
         result = json.loads(stdout)
         assert result["decision"] == "approve"
         assert code == 0
@@ -106,38 +111,36 @@ class TestPreToolUseSecurityBlocking:
 
     def test_blocked_ssh_path(self, pre_tool_use_hook: Path) -> None:
         """Given write to ~/.ssh, when hook runs, then blocked."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Write",
-            "tool_input": {"file_path": "~/.ssh/authorized_keys"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook,
+            {"tool_name": "Write", "tool_input": {"file_path": "~/.ssh/authorized_keys"}},
+        )
         result = json.loads(stdout)
         assert result["decision"] == "block"
         assert "blocked" in result["reason"].lower()
 
     def test_blocked_etc_path(self, pre_tool_use_hook: Path) -> None:
         """Given write to /etc, when hook runs, then blocked."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Write",
-            "tool_input": {"file_path": "/etc/passwd"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook, {"tool_name": "Write", "tool_input": {"file_path": "/etc/passwd"}}
+        )
         result = json.loads(stdout)
         assert result["decision"] == "block"
 
     def test_blocked_dangerous_command(self, pre_tool_use_hook: Path) -> None:
         """Given dangerous rm command, when hook runs, then blocked."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_input": {"command": "rm -rf /"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook, {"tool_name": "Bash", "tool_input": {"command": "rm -rf /"}}
+        )
         result = json.loads(stdout)
         assert result["decision"] == "block"
 
     def test_blocked_force_push_main(self, pre_tool_use_hook: Path) -> None:
         """Given force push to main, when hook runs, then blocked."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_input": {"command": "git push --force origin main"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook,
+            {"tool_name": "Bash", "tool_input": {"command": "git push --force origin main"}},
+        )
         result = json.loads(stdout)
         assert result["decision"] == "block"
 
@@ -160,9 +163,7 @@ class TestPreToolUseNegativeCases:
 
     def test_missing_tool_name(self, pre_tool_use_hook: Path) -> None:
         """Given missing tool_name, when hook runs, then approves."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_input": {"command": "ls"}
-        })
+        stdout, stderr, code = run_hook(pre_tool_use_hook, {"tool_input": {"command": "ls"}})
         result = json.loads(stdout)
         # Should approve since no specific checks apply
         assert result["decision"] == "approve"
@@ -179,10 +180,9 @@ class TestPreToolUseEdgeCases:
 
     def test_unknown_tool(self, pre_tool_use_hook: Path) -> None:
         """Given unknown tool, when hook runs, then approves."""
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "UnknownTool",
-            "tool_input": {"data": "test"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook, {"tool_name": "UnknownTool", "tool_input": {"data": "test"}}
+        )
         result = json.loads(stdout)
         assert result["decision"] == "approve"
 
@@ -197,20 +197,18 @@ class TestPostToolUseHappyPath:
 
     def test_safe_output_unchanged(self, post_tool_use_hook: Path) -> None:
         """Given safe output, when hook runs, then output unchanged."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_output": "Build completed successfully"
-        })
+        stdout, stderr, code = run_hook(
+            post_tool_use_hook, {"tool_name": "Bash", "tool_output": "Build completed successfully"}
+        )
         result = json.loads(stdout)
         assert result["output"] == "Build completed successfully"
         assert code == 0
 
     def test_json_output_handled(self, post_tool_use_hook: Path) -> None:
         """Given JSON output, when hook runs, then handled correctly."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_output": {"status": "ok", "count": 5}
-        })
+        stdout, stderr, code = run_hook(
+            post_tool_use_hook, {"tool_name": "Bash", "tool_output": {"status": "ok", "count": 5}}
+        )
         result = json.loads(stdout)
         assert "output" in result
         assert code == 0
@@ -221,19 +219,18 @@ class TestPostToolUseRedaction:
 
     def test_bearer_token_redacted(self, post_tool_use_hook: Path) -> None:
         """Given Bearer token in output, when hook runs, then redacted."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_output": "Auth: Bearer eyJhbGciOiJIUzI1NiJ9.test.sig"
-        })
+        stdout, stderr, code = run_hook(
+            post_tool_use_hook,
+            {"tool_name": "Bash", "tool_output": "Auth: Bearer eyJhbGciOiJIUzI1NiJ9.test.sig"},
+        )
         result = json.loads(stdout)
         assert "Bearer" not in result["output"] or "REDACTED" in result["output"]
 
     def test_redaction_logged_to_stderr(self, post_tool_use_hook: Path) -> None:
         """Given redactable output, when hook runs, then logs to stderr."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_output": "Token: Bearer abc123xyz789"
-        })
+        stdout, stderr, code = run_hook(
+            post_tool_use_hook, {"tool_name": "Bash", "tool_output": "Token: Bearer abc123xyz789"}
+        )
         if "REDACTED" in json.loads(stdout)["output"]:
             assert "redact" in stderr.lower() or len(stderr) > 0
 
@@ -255,9 +252,7 @@ class TestPostToolUseNegativeCases:
 
     def test_missing_tool_output(self, post_tool_use_hook: Path) -> None:
         """Given missing tool_output, when hook runs, then handles gracefully."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash"
-        })
+        stdout, stderr, code = run_hook(post_tool_use_hook, {"tool_name": "Bash"})
         result = json.loads(stdout)
         assert "output" in result
         assert code == 0
@@ -268,19 +263,17 @@ class TestPostToolUseEdgeCases:
 
     def test_empty_output(self, post_tool_use_hook: Path) -> None:
         """Given empty output, when hook runs, then returns empty."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_output": ""
-        })
+        stdout, stderr, code = run_hook(
+            post_tool_use_hook, {"tool_name": "Bash", "tool_output": ""}
+        )
         result = json.loads(stdout)
         assert result["output"] == ""
 
     def test_unicode_output(self, post_tool_use_hook: Path) -> None:
         """Given unicode output, when hook runs, then preserved."""
-        stdout, stderr, code = run_hook(post_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_output": "日本語テスト 🎯"
-        })
+        stdout, stderr, code = run_hook(
+            post_tool_use_hook, {"tool_name": "Bash", "tool_output": "日本語テスト 🎯"}
+        )
         result = json.loads(stdout)
         assert "日本語" in result["output"]
 
@@ -293,29 +286,24 @@ class TestPostToolUseEdgeCases:
 class TestAcceptanceCriteria:
     """Test acceptance criteria for WI-SAO-015."""
 
-    def test_ac_015_001_subprocess_model(
-        self, pre_tool_use_hook: Path
-    ) -> None:
+    def test_ac_015_001_subprocess_model(self, pre_tool_use_hook: Path) -> None:
         """AC-015-001: Verify hook runs as subprocess."""
         # Running the hook as subprocess proves AC-015-001
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_input": {"command": "echo test"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook, {"tool_name": "Bash", "tool_input": {"command": "echo test"}}
+        )
         assert code == 0
         # Output should be valid JSON
         result = json.loads(stdout)
         assert "decision" in result
 
-    def test_ac_015_003_warn_mode_logs_warning(
-        self, pre_tool_use_hook: Path
-    ) -> None:
+    def test_ac_015_003_warn_mode_logs_warning(self, pre_tool_use_hook: Path) -> None:
         """AC-015-003: Verify warn mode logs but doesn't block."""
         # git reset --hard should warn but not block
-        stdout, stderr, code = run_hook(pre_tool_use_hook, {
-            "tool_name": "Bash",
-            "tool_input": {"command": "git reset --hard HEAD~1"}
-        })
+        stdout, stderr, code = run_hook(
+            pre_tool_use_hook,
+            {"tool_name": "Bash", "tool_input": {"command": "git reset --hard HEAD~1"}},
+        )
         result = json.loads(stdout)
         # Should warn (stderr) but approve
         assert result["decision"] == "approve"
