@@ -13,10 +13,9 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
-
 
 # ============================================================================
 # Enums
@@ -294,7 +293,7 @@ def create_session_context(
         session_id=session_id,
         source_agent=source_agent,
         target_agent=target_agent,
-        timestamp=datetime.now(tz=timezone.utc).isoformat().replace("+00:00", "Z"),
+        timestamp=datetime.now(tz=UTC).isoformat().replace("+00:00", "Z"),
         payload=payload,
         workflow_id=workflow_id,
     )

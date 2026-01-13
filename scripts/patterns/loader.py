@@ -44,7 +44,6 @@ def _simple_yaml_parse(content: str) -> dict:
     Note: This is NOT a full YAML parser. It's a fallback for
     environments without PyYAML installed.
     """
-    import re as _re
 
     result: dict = {}
     stack: list[tuple[int, dict | list, str | None]] = [(0, result, None)]

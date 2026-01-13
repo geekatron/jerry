@@ -38,7 +38,6 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-
 # Extension point names (order matters for documentation)
 EXTENSION_POINTS: list[str] = [
     "DOMAIN_NAME_PREFIX",
@@ -351,7 +350,7 @@ def format_report(
     if validate_only:
         lines.append("Mode: Validate only (no output written)")
     else:
-        lines.append(f"Output: Composed template ready")
+        lines.append("Output: Composed template ready")
 
     lines.append("=" * 60)
 

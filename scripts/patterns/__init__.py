@@ -15,8 +15,8 @@ Usage:
 """
 
 from .loader import (
-    PatternLibrary,
     PatternGroup,
+    PatternLibrary,
     PatternMatch,
     PatternRule,
     ValidationResult,

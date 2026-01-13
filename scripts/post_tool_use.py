@@ -27,13 +27,13 @@ from typing import Any
 
 # Import pattern library (relative import from same directory)
 try:
-    from patterns import load_patterns, PatternLibrary
+    from patterns import PatternLibrary, load_patterns
     PATTERNS_AVAILABLE = True
 except ImportError:
     # Fallback: try absolute import
     try:
         sys.path.insert(0, str(Path(__file__).parent))
-        from patterns import load_patterns, PatternLibrary
+        from patterns import PatternLibrary, load_patterns
         PATTERNS_AVAILABLE = True
     except ImportError:
         PATTERNS_AVAILABLE = False

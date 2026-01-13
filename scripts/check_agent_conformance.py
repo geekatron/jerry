@@ -39,7 +39,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 # Required YAML sections per template family
 # Source: NSE_AGENT_TEMPLATE.md v1.0, PS_AGENT_TEMPLATE.md v2.0
 REQUIRED_SECTIONS: dict[str, dict[str, list[str]]] = {
