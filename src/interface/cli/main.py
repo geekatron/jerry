@@ -93,6 +93,8 @@ def main() -> int:
         return _handle_items(adapter, args, json_output)
     elif args.namespace == "projects":
         return _handle_projects(adapter, args, json_output)
+    elif args.namespace == "config":
+        return _handle_config(adapter, args, json_output)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -223,6 +225,48 @@ def _handle_projects(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
         )
 
     print(f"Error: Unknown projects command '{args.command}'")
+    return 1
+
+
+def _handle_config(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
+    """Route config namespace commands.
+
+    Args:
+        adapter: CLI adapter instance
+        args: Parsed arguments
+        json_output: Whether to output JSON
+
+    Returns:
+        Exit code
+
+    References:
+        - WI-016: CLI Config Commands
+    """
+    if args.command is None:
+        print("Error: No config command specified. Use 'jerry config --help'")
+        return 1
+
+    if args.command == "show":
+        return adapter.cmd_config_show(
+            show_source=getattr(args, "source", False),
+            json_output=json_output,
+        )
+    elif args.command == "get":
+        return adapter.cmd_config_get(
+            key=args.key,
+            json_output=json_output,
+        )
+    elif args.command == "set":
+        return adapter.cmd_config_set(
+            key=args.key,
+            value=args.value,
+            scope=getattr(args, "scope", "project"),
+            json_output=json_output,
+        )
+    elif args.command == "path":
+        return adapter.cmd_config_path(json_output=json_output)
+
+    print(f"Error: Unknown config command '{args.command}'")
     return 1
 
 

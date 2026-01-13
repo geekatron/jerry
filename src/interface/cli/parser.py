@@ -76,6 +76,9 @@ Examples:
     # Projects namespace
     _add_projects_namespace(subparsers)
 
+    # Config namespace
+    _add_config_namespace(subparsers)
+
     return parser
 
 
@@ -317,4 +320,82 @@ def _add_projects_namespace(
         "context",
         help="Show current project context",
         description="Display the current project context including JERRY_PROJECT setting.",
+    )
+
+
+def _add_config_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add config namespace commands.
+
+    Commands:
+        - show: Display all configuration values
+        - get: Get a specific configuration value
+        - set: Set a configuration value
+        - path: Show configuration file paths
+
+    References:
+        - WI-016: CLI Config Commands
+    """
+    config_parser = subparsers.add_parser(
+        "config",
+        help="Configuration management commands",
+        description="View and manage Jerry configuration.",
+    )
+
+    config_subparsers = config_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # config show
+    show_parser = config_subparsers.add_parser(
+        "show",
+        help="Show current configuration",
+        description="Display all configuration values with their sources.",
+    )
+    show_parser.add_argument(
+        "--source",
+        action="store_true",
+        help="Show the source of each value (env, project, root, default)",
+    )
+
+    # config get
+    get_parser = config_subparsers.add_parser(
+        "get",
+        help="Get a configuration value",
+        description="Get the value of a specific configuration key.",
+    )
+    get_parser.add_argument(
+        "key",
+        help="Configuration key (e.g., logging.level)",
+    )
+
+    # config set
+    set_parser = config_subparsers.add_parser(
+        "set",
+        help="Set a configuration value",
+        description="Set a configuration value in the specified scope.",
+    )
+    set_parser.add_argument(
+        "key",
+        help="Configuration key (e.g., logging.level)",
+    )
+    set_parser.add_argument(
+        "value",
+        help="Configuration value to set",
+    )
+    set_parser.add_argument(
+        "--scope",
+        choices=["project", "root", "local"],
+        default="project",
+        help="Scope to write to (default: project)",
+    )
+
+    # config path
+    config_subparsers.add_parser(
+        "path",
+        help="Show configuration file paths",
+        description="Display paths to all configuration files.",
     )

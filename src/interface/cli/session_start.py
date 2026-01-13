@@ -20,6 +20,16 @@ Usage:
 Environment Variables:
     JERRY_PROJECT: The project ID to use (optional)
     CLAUDE_PROJECT_DIR: The project root directory (set by Claude Code)
+
+Configuration Precedence (WI-015):
+    1. JERRY_PROJECT environment variable (highest priority)
+    2. Local context: .jerry/local/context.toml (worktree-specific)
+    3. Project discovery (prompts user)
+
+References:
+    - WI-015: Update session_start.py Hook
+    - ADR-PROJ004-004: JerrySession Context (5-level precedence)
+    - PROJ-004-e-004: Configuration Precedence research
 """
 
 from __future__ import annotations
@@ -27,11 +37,33 @@ from __future__ import annotations
 import json
 import os
 import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 
+from src.infrastructure.adapters.configuration.layered_config_adapter import (
+    LayeredConfigAdapter,
+)
+from src.infrastructure.adapters.persistence.atomic_file_adapter import (
+    AtomicFileAdapter,
+)
 from src.session_management.application import GetProjectContextQuery
 from src.session_management.infrastructure import FilesystemProjectAdapter, OsEnvironmentAdapter
+
+
+def get_project_root() -> Path:
+    """Determine the project root directory.
+
+    Returns:
+        Path to the project root directory
+    """
+    # Try CLAUDE_PROJECT_DIR first (set by Claude Code)
+    project_root = os.environ.get("CLAUDE_PROJECT_DIR")
+    if project_root:
+        return Path(project_root)
+
+    # Fallback: current working directory (assumes run from project root)
+    return Path.cwd()
 
 
 def get_projects_directory() -> str:
@@ -40,13 +72,79 @@ def get_projects_directory() -> str:
     Returns:
         Absolute path to the projects directory
     """
-    # Try CLAUDE_PROJECT_DIR first (set by Claude Code)
-    project_root = os.environ.get("CLAUDE_PROJECT_DIR")
-    if project_root:
-        return str(Path(project_root) / "projects")
+    return str(get_project_root() / "projects")
 
-    # Fallback: current working directory (assumes run from project root)
-    return str(Path.cwd() / "projects")
+
+def get_local_context_path() -> Path:
+    """Get the path to the worktree-local context file.
+
+    Returns:
+        Path to .jerry/local/context.toml
+    """
+    return get_project_root() / ".jerry" / "local" / "context.toml"
+
+
+def load_local_context() -> dict[str, Any]:
+    """Load worktree-local context from .jerry/local/context.toml.
+
+    Uses AtomicFileAdapter for safe concurrent access.
+
+    Returns:
+        Parsed context dict, or empty dict if file missing/invalid
+
+    References:
+        - AC-015.2: Reads context.active_project from local config
+        - ADR-PROJ004-004: WorktreeInfo and local context
+    """
+    path = get_local_context_path()
+    if not path.exists():
+        return {}
+
+    try:
+        file_adapter = AtomicFileAdapter()
+        content = file_adapter.read_with_lock(path)
+        if not content.strip():
+            return {}
+        return tomllib.loads(content)
+    except (tomllib.TOMLDecodeError, OSError):
+        return {}
+
+
+def get_active_project_from_local_context() -> str | None:
+    """Get the active project ID from local context.
+
+    Returns:
+        Project ID if set in local context, None otherwise
+
+    References:
+        - AC-015.2: Reads context.active_project from local config
+    """
+    context = load_local_context()
+    return context.get("context", {}).get("active_project")
+
+
+def create_config_provider() -> LayeredConfigAdapter:
+    """Create a configuration provider with proper precedence.
+
+    Returns:
+        LayeredConfigAdapter configured with root and project paths
+
+    References:
+        - AC-015.1: Uses LayeredConfigAdapter to load configuration
+        - ADR-PROJ004-004: 5-level configuration precedence
+    """
+    root = get_project_root()
+    return LayeredConfigAdapter(
+        env_prefix="JERRY_",
+        root_config_path=root / ".jerry" / "config.toml",
+        defaults={
+            "logging.level": "INFO",
+            "work_tracking.auto_snapshot_interval": 10,
+            "work_tracking.quality_gate_enabled": True,
+            "session.auto_start": True,
+            "session.max_duration_hours": 8,
+        },
+    )
 
 
 def format_project_list(projects: list[Any]) -> str:
@@ -156,13 +254,43 @@ def output_project_error(context: dict[str, Any]) -> None:
 def main() -> int:
     """Main entry point for the session start hook.
 
+    Configuration Precedence (WI-015):
+        1. JERRY_PROJECT environment variable (highest priority)
+        2. Local context: .jerry/local/context.toml (worktree-specific)
+        3. Project discovery (prompts user)
+
     Returns:
         Exit code (always 0 - we want Claude to handle issues)
+
+    References:
+        - AC-015.1: Uses LayeredConfigAdapter to load configuration
+        - AC-015.2: Reads JERRY_PROJECT from env or context.active_project
+        - AC-015.3: Falls back to project discovery if no active project
+        - AC-015.5: Backward compatible with existing env var workflow
     """
     # Wire up dependencies
     repository = FilesystemProjectAdapter()
-    environment = OsEnvironmentAdapter()
     projects_dir = get_projects_directory()
+
+    # Priority 1: Check JERRY_PROJECT environment variable (AC-015.5: backward compatible)
+    jerry_project_env = os.environ.get("JERRY_PROJECT")
+
+    # Priority 2: Check local context if env var not set (AC-015.2)
+    effective_jerry_project = jerry_project_env
+    project_source = "environment"
+
+    if not effective_jerry_project:
+        local_project = get_active_project_from_local_context()
+        if local_project:
+            effective_jerry_project = local_project
+            project_source = "local_context"
+
+    # Create environment adapter that respects our precedence
+    # If we found project in local context, temporarily set it in env for the query
+    if effective_jerry_project and project_source == "local_context":
+        os.environ["JERRY_PROJECT"] = effective_jerry_project
+
+    environment = OsEnvironmentAdapter()
 
     # Execute the query
     query = GetProjectContextQuery(
@@ -183,6 +311,13 @@ def main() -> int:
         print("ACTION REQUIRED: Could not access projects directory.")
         print("Check that the projects/ directory exists and is accessible.")
         return 0
+    finally:
+        # Clean up: restore original env if we modified it
+        if project_source == "local_context":
+            if jerry_project_env is None:
+                os.environ.pop("JERRY_PROJECT", None)
+            else:
+                os.environ["JERRY_PROJECT"] = jerry_project_env
 
     # Determine output based on context
     jerry_project = context["jerry_project"]
@@ -190,7 +325,7 @@ def main() -> int:
     validation = context["validation"]
 
     if jerry_project is None:
-        # No project set - require selection
+        # No project set - require selection (AC-015.3)
         output_project_required(context)
     elif project_id is not None and validation is not None and validation.is_valid:
         # Valid project set

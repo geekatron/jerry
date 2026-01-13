@@ -1,0 +1,154 @@
+---
+id: wi-sao-056
+title: "Enhance ps-critic Agent"
+status: COMPLETE
+parent: "_index.md"
+initiative: sao-init-008
+children: []
+depends_on:
+  - wi-sao-052
+blocks:
+  - wi-sao-061
+  - wi-sao-066
+created: "2026-01-12"
+last_updated: "2026-01-12"
+priority: P0
+estimated_effort: "4-6h"
+entry_id: sao-056
+token_estimate: 600
+baseline_score: 0.919
+final_score: 0.939
+iterations: 1
+---
+
+# WI-SAO-056: Enhance ps-critic Agent
+
+> **Status:** ✅ COMPLETE
+> **Priority:** P0 (CRITICAL - Quality gatekeeper for Generator-Critic)
+> **Pipeline Pattern:** Pattern 8 (Generator-Critic Loop)
+> **Result:** Score improved 0.919 → 0.939 (+2.2%) - tool examples added
+
+---
+
+## Description
+
+Enhance the ps-critic agent definition using the Generator-Critic loop pattern. The critic is essential for Pattern 8 (Generator-Critic Loop) - it evaluates generator output and provides actionable feedback for refinement.
+
+---
+
+## Target File
+
+`skills/problem-solving/agents/ps-critic.md`
+
+---
+
+## Acceptance Criteria
+
+1. [x] Baseline rubric score recorded (0.919 - already excellent)
+2. [x] Rubric score ≥0.85 achieved OR 3 iterations completed (0.939 in 1 iteration)
+3. [x] Context engineering improvements applied (tool examples)
+4. [x] Role-Goal-Backstory enhanced - already complete (Belbin role)
+5. [x] Scoring methodology documented - already complete
+6. [x] Circuit breaker awareness added - already complete
+7. [x] L0/L1/L2 lens coverage verified - already complete
+8. [x] Changes committed (e778075)
+
+---
+
+## Tasks
+
+### T-056.1: Baseline Assessment
+
+- [ ] **T-056.1.1:** Read current ps-critic.md
+- [ ] **T-056.1.2:** Score against rubric (record baseline)
+- [ ] **T-056.1.3:** Identify specific enhancement opportunities
+- [ ] **T-056.1.4:** Document baseline in work item
+
+### T-056.2: Enhancement Iteration 1
+
+- [ ] **T-056.2.1:** Apply context engineering improvements
+- [ ] **T-056.2.2:** Enhance persona (critical evaluator, not adversarial)
+- [ ] **T-056.2.3:** Add scoring methodology (0.0-1.0 scale)
+- [ ] **T-056.2.4:** Add feedback structure (specific, actionable)
+- [ ] **T-056.2.5:** Add circuit breaker awareness
+- [ ] **T-056.2.6:** Add L0/L1/L2 lens if missing
+- [ ] **T-056.2.7:** Add orchestration metadata
+  - state_output_key: "critique_output"
+  - cognitive_mode: "convergent"
+  - next_hint: "(generator)" - returns to generator
+- [ ] **T-056.2.8:** Critique against rubric - record score
+
+### T-056.3: Enhancement Iteration 2-3 (if needed)
+
+- [ ] **T-056.3.1:** Address critique feedback
+- [ ] **T-056.3.2:** Re-evaluate against rubric
+- [ ] **T-056.3.3:** Continue until threshold or circuit breaker
+
+### T-056.4: Commit
+
+- [ ] **T-056.4.1:** Record final rubric score
+- [ ] **T-056.4.2:** Document changes summary
+- [ ] **T-056.4.3:** Commit enhanced agent
+
+---
+
+## Critic-Specific Enhancements
+
+### Scoring Methodology Section
+
+```yaml
+output_format:
+  score: 0.0-1.0  # Overall quality score
+  dimensions:
+    - name: "Completeness"
+      score: 0.0-1.0
+      feedback: "..."
+    - name: "Accuracy"
+      score: 0.0-1.0
+      feedback: "..."
+    - name: "Clarity"
+      score: 0.0-1.0
+      feedback: "..."
+  recommendations:
+    - priority: HIGH
+      action: "..."
+    - priority: MEDIUM
+      action: "..."
+  iteration_guidance: "..."  # For generator to improve
+```
+
+### Circuit Breaker Awareness
+
+- Recognize iteration count context
+- Provide diminishing returns signal
+- Know when to recommend escalation
+
+---
+
+## Iteration Log
+
+| Iteration | Score | Notes | Action |
+|-----------|-------|-------|--------|
+| Baseline | 0.919 | Already excellent; D-004 (tool examples) at 0.70 | Target D-004 improvement |
+| 1 | **0.939** | Added 4 concrete tool invocation examples | ✅ **ACCEPTED** |
+| 2 | N/A | Not required | Skipped |
+| 3 | N/A | Not required | Skipped |
+
+**Circuit Breaker:** 1 of 3 iterations used
+
+---
+
+## Verification
+
+| Evidence ID | Type | Description | Status |
+|-------------|------|-------------|--------|
+| E-056-001 | Score | Baseline rubric score | ✅ 0.919 |
+| E-056-002 | Score | Final rubric score | ✅ 0.939 |
+| E-056-003 | Artifact | Enhanced ps-critic.md | ✅ v2.1.0 → v2.2.0 |
+| E-056-004 | Artifact | Scoring record | ✅ `analysis/wi-sao-056-ps-critic-scoring.md` |
+| E-056-005 | Commit | Changes committed | ⏳ Pending |
+
+---
+
+*Source: SAO-INIT-008 plan.md*
+*Created: 2026-01-12*
