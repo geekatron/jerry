@@ -13,9 +13,9 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 29 |
-| Completed | 27 |
+| Completed | 28 |
 | In Progress | 0 |
-| Pending | 2 |
+| Pending | 1 |
 | Blocked | 0 |
 
 **Completed Phases**: PHASE-00 through PHASE-06 (26 work items)
@@ -161,7 +161,7 @@
 | ID | Title | Status | File | Assignee | Evidence |
 |----|-------|--------|------|----------|----------|
 | WI-019 | Update PLAN.md with Completion Status | COMPLETED | [wi-019-plan-completion.md](work/wi-019-plan-completion.md) | WT-Docs | 6/6 success criteria validated |
-| WI-020 | ADR Documentation Review | PENDING | [wi-020-adr-review.md](work/wi-020-adr-review.md) | WT-Docs | - |
+| WI-020 | ADR Documentation Review | COMPLETED | [wi-020-adr-review.md](work/wi-020-adr-review.md) | WT-Docs | 4 ADRs verified, index created |
 | WI-021 | Final Project Documentation | PENDING | [wi-021-final-documentation.md](work/wi-021-final-documentation.md) | WT-Docs | - |
 
 **WI-019 Implementation Summary (COMPLETED):**
@@ -171,6 +171,13 @@
 - Key Deliverables table added with file locations
 - Test Statistics table added (2180 total tests, 91% coverage)
 - Changelog updated with 7 entries including PROJECT COMPLETED
+
+**WI-020 Implementation Summary (COMPLETED):**
+- Verified all 4 ADRs from WI-008 sub-items are complete (ADR-001 through ADR-004)
+- All ADRs have required sections: Context, Decision (L0/L1/L2), Consequences, Related
+- All ADR status indicators are ACCEPTED (correct, all designs implemented)
+- Cross-references validated: all inter-ADR and work item references are accurate
+- Created `decisions/README.md` with ADR index, status legend, aggregate diagram, cross-reference matrix
 
 ---
 
@@ -386,6 +393,11 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **TESTS**: Created `tests/architecture/test_config_boundaries.py` with 14 tests | Claude |
 | 2026-01-12 | **VALIDATION**: TestDomainLayerBoundaries, TestPortAdapterContracts, TestAdapterImplementations, TestBootstrapConfiguration | Claude |
 | 2026-01-12 | **WI-017 COMPLETED**: All 21/21 architecture tests pass | Claude |
+| 2026-01-12 | **WI-018 COMPLETED**: Integration tests (91% coverage, 2180 total tests) | Claude |
+| 2026-01-12 | **PHASE-06 COMPLETED**: Testing & Validation phase finished | Claude |
+| 2026-01-12 | **PHASE-07 STARTED**: Documentation & Polish phase | Claude |
+| 2026-01-12 | **WI-019 COMPLETED**: PLAN.md updated with completion status (6/6 criteria validated) | Claude |
+| 2026-01-13 | **WI-020 COMPLETED**: ADR review (4 ADRs verified, index created at `decisions/README.md`) | Claude |
 
 ---
 
