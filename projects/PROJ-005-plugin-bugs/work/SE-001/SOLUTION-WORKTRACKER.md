@@ -35,7 +35,7 @@ This Solution Epic addresses critical bugs preventing the Jerry Framework plugin
 | ID | Name | Status | Progress | Tracker |
 |----|------|--------|----------|---------|
 | [FT-001](./FT-001/FEATURE-WORKTRACKER.md) | Manifest Validation Fixes | COMPLETED | 2/2 Enablers | [FEATURE-WORKTRACKER.md](./FT-001/FEATURE-WORKTRACKER.md) |
-| [FT-002](./FT-002/FEATURE-WORKTRACKER.md) | SessionStart Hook Fix | IN PROGRESS | 0/1 Enablers | [FEATURE-WORKTRACKER.md](./FT-002/FEATURE-WORKTRACKER.md) |
+| [FT-002](./FT-002/FEATURE-WORKTRACKER.md) | SessionStart Hook Fix | VERIFICATION PENDING | 1/1 Enablers | [FEATURE-WORKTRACKER.md](./FT-002/FEATURE-WORKTRACKER.md) |
 
 ---
 
@@ -45,7 +45,7 @@ This Solution Epic addresses critical bugs preventing the Jerry Framework plugin
 |----|------|---------|--------|----------------|
 | [EN-001](./FT-001/en-001.md) | Fix plugin.json | FT-001 | COMPLETED | BUG-001, BUG-002, BUG-003 |
 | [EN-002](./FT-001/en-002.md) | Fix marketplace.json | FT-001 | COMPLETED | BUG-004, BUG-005, BUG-006 |
-| [EN-003](./FT-002/en-003.md) | Fix session_start.py | FT-002 | IN PROGRESS | BUG-007 |
+| [EN-003](./FT-002/en-003.md) | Fix session_start.py | FT-002 | COMPLETED | BUG-007 |
 
 ---
 
@@ -81,3 +81,4 @@ This Solution Epic addresses critical bugs preventing the Jerry Framework plugin
 |------|--------|--------|
 | 2026-01-13 | Created Solution Epic tracker | Claude |
 | 2026-01-13 | Linked FT-001 (completed), FT-002 (in progress) | Claude |
+| 2026-01-13 | EN-003 completed, FT-002 verification pending | Claude |

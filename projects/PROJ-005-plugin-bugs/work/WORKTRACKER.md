@@ -35,9 +35,9 @@
 | Level | Total | Completed | In Progress | Pending |
 |-------|-------|-----------|-------------|---------|
 | Solution Epics | 1 | 0 | 1 | 0 |
-| Features | 2 | 1 | 1 | 0 |
-| Enablers | 3 | 2 | 1 | 0 |
-| Tasks | 19 | 16 | 3 | 0 |
+| Features | 2 | 1 | 1 (verification) | 0 |
+| Enablers | 3 | 3 | 0 | 0 |
+| Tasks | 19 | 19 | 0 | 0 |
 
 ---
 
@@ -51,11 +51,12 @@
 | BUG-004 | Bug | marketplace.json invalid 'skills' field | FIXED | FT-001 | EN-002 |
 | BUG-005 | Bug | marketplace.json invalid 'strict' field | FIXED | FT-001 | EN-002 |
 | BUG-006 | Bug | marketplace.json email typo | FIXED | FT-001 | EN-002 |
-| **BUG-007** | **Bug** | **session_start.py requires pip** | **OPEN** | **FT-002** | **EN-003** |
+| BUG-007 | Bug | session_start.py requires pip | FIXED | FT-002 | EN-003 |
 | DISC-001 | Discovery | skills field needs directory format | NOTED | FT-001 | EN-001 |
 | DISC-002 | Discovery | marketplace vs plugin.json schema differs | NOTED | FT-001 | EN-002 |
 | DISC-003 | Discovery | Other hook scripts are standalone | NOTED | FT-002 | EN-003 |
 | DISC-004 | Discovery | ps-* artifact naming violation | OPEN | FT-002 | EN-003 |
+| [DISC-005](./SE-001/FT-002/disc-005.md) | Discovery | PYTHONPATH required for uv run | RESOLVED | FT-002 | EN-003 |
 
 ---
 
@@ -80,3 +81,4 @@
 | 2026-01-13 | Restructured to ontology-based hierarchy | Claude |
 | 2026-01-13 | Created SE-001, FT-001, FT-002, EN-001 to EN-003 | Claude |
 | 2026-01-13 | Migrated from flat WORKTRACKER.md | Claude |
+| 2026-01-13 | BUG-007 FIXED, DISC-005 added, EN-003 completed | Claude |
