@@ -60,6 +60,8 @@
 | [DISC-003](./work/SE-001/FT-002/en-003.md) | Discovery | Other hook scripts are standalone | NOTED | FT-002 | EN-003 |
 | DISC-004 | Discovery | ps-* artifact naming violation | DOCUMENTED | FT-002 | - |
 | [DISC-005](./work/SE-001/FT-002/disc-005.md) | Discovery | PYTHONPATH required for uv run | RESOLVED | FT-002 | EN-003 |
+| [DISC-006](./work/SE-002/FT-003/disc-006.md) | Discovery | Duplicate tests/ folders (root vs scripts/) | DOCUMENTED | FT-003 | - |
+| [DISC-007](./work/SE-002/FT-003/disc-007.md) | Discovery | Existing session_start.py tests broken | REQUIRES ACTION | FT-003 | EN-004 |
 
 ---
 

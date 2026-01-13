@@ -35,9 +35,9 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 
 | ID | Name | Status | Tasks | Description |
 |----|------|--------|-------|-------------|
-| [EN-004](./en-004.md) | Automated tests for session_start.py | PENDING | 0/? | Unit tests for all output scenarios |
-| [EN-005](./en-005.md) | Pre-commit/CI hooks | PENDING | 0/? | Validation hooks for plugin artifacts |
-| [EN-006](./en-006.md) | CLI integration test suite | PENDING | 0/? | Integration tests for jerry CLI |
+| [EN-004](./en-004.md) | Fix and enhance session_start.py tests | IN PROGRESS | 0/9 | Fix broken tests after BUG-007 |
+| [EN-005](./en-005.md) | Pre-commit/CI hooks | PENDING | 0/9 | Validation hooks for plugin artifacts |
+| [EN-006](./en-006.md) | CLI integration test suite | PENDING | 0/9 | Integration tests for jerry CLI |
 
 ---
 
@@ -83,12 +83,22 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 
 ---
 
+## Discoveries
+
+| ID | Description | Status | Impact |
+|----|-------------|--------|--------|
+| [DISC-006](./disc-006.md) | Duplicate tests/ folders investigation | DOCUMENTED | Low - out of scope |
+| [DISC-007](./disc-007.md) | Existing session_start.py tests broken after BUG-007 | REQUIRES ACTION | High - EN-004 scope change |
+
+---
+
 ## Related Artifacts
 
 | Type | Location | Description |
 |------|----------|-------------|
-| BUG-007 | [../SE-001/FT-002/bug-007.md](../SE-001/FT-002/bug-007.md) | Root cause analysis |
-| ADR e-010 | [../../decisions/PROJ-005-e-010-adr-uv-session-start.md](../../decisions/PROJ-005-e-010-adr-uv-session-start.md) | Decision record |
+| BUG-007 | [../../SE-001/FT-002/bug-007.md](../../SE-001/FT-002/bug-007.md) | Root cause analysis |
+| ADR e-010 | [../../../decisions/PROJ-005-e-010-adr-uv-session-start.md](../../../decisions/PROJ-005-e-010-adr-uv-session-start.md) | Decision record |
+| Existing Tests | `tests/session_management/e2e/test_session_start.py` | 23 E2E tests (broken) |
 
 ---
 
@@ -98,3 +108,5 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 |------|--------|--------|
 | 2026-01-13 | Created FT-003 for testing infrastructure | Claude |
 | 2026-01-13 | Added EN-004, EN-005, EN-006, WI-001 | Claude |
+| 2026-01-13 | Added DISC-006 (duplicate tests folders) | Claude |
+| 2026-01-13 | Added DISC-007 (broken session_start tests) - EN-004 scope change | Claude |
