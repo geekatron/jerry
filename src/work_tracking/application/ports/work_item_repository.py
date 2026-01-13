@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol
 
+from src.shared_kernel.domain_event import DomainEvent
+
 if TYPE_CHECKING:
     from src.work_tracking.domain.aggregates.work_item import WorkItem
     from src.work_tracking.domain.value_objects.work_item_status import WorkItemStatus
@@ -64,12 +66,15 @@ class IWorkItemRepository(Protocol):
         """
         ...
 
-    def save(self, work_item: WorkItem) -> None:
+    def save(self, work_item: WorkItem) -> list[DomainEvent]:
         """
-        Persist a work item.
+        Persist a work item and return saved events.
 
         Args:
             work_item: The work item to persist
+
+        Returns:
+            List of domain events that were saved
 
         Raises:
             ConcurrencyError: If version mismatch detected

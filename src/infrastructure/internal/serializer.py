@@ -171,9 +171,9 @@ class JsonSerializer(Generic[T]):
             if is_dataclass(target_type):
                 return self._from_dict(json_data, target_type)
             elif hasattr(target_type, "from_dict"):
-                return target_type.from_dict(json_data)  # type: ignore[return-value]
+                return target_type.from_dict(json_data)  # type: ignore[attr-defined, no-any-return]
             else:
-                return json_data  # type: ignore[return-value]
+                return json_data  # type: ignore[no-any-return]
 
         except (json.JSONDecodeError, UnicodeDecodeError) as e:
             raise DeserializeError(target_type, str(e)) from e

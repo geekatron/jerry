@@ -11,11 +11,13 @@ Structure:
 Exports:
     IQueryDispatcher: Protocol for query dispatchers
     ICommandDispatcher: Protocol for command dispatchers
+    CommandHandlerNotFoundError: Exception for missing command handlers
     QueryHandlerNotFoundError: Exception for missing query handlers
     DuplicateHandlerError: Exception for duplicate handlers
 """
 
 from src.application.ports.primary import (
+    CommandHandlerNotFoundError,
     DuplicateHandlerError,
     ICommandDispatcher,
     IQueryDispatcher,
@@ -23,6 +25,7 @@ from src.application.ports.primary import (
 )
 
 __all__ = [
+    "CommandHandlerNotFoundError",
     "DuplicateHandlerError",
     "ICommandDispatcher",
     "IQueryDispatcher",

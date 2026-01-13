@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Protocol
+from typing import Any, Protocol
 from uuid import UUID, uuid4
 
 # =============================================================================
@@ -119,7 +119,7 @@ class StoredEvent:
     stream_id: str
     version: int
     event_type: str
-    data: dict
+    data: dict[str, Any]
     timestamp: datetime = field(default_factory=_current_utc)
     event_id: UUID = field(default_factory=uuid4)
 
@@ -134,7 +134,7 @@ class StoredEvent:
         if not isinstance(self.data, dict):
             raise TypeError(f"data must be a dict, got {type(self.data).__name__}")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """
         Serialize to dictionary for persistence.
 
@@ -151,7 +151,7 @@ class StoredEvent:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> StoredEvent:
+    def from_dict(cls, data: dict[str, Any]) -> StoredEvent:
         """
         Deserialize from dictionary.
 

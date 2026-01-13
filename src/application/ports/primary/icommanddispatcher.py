@@ -24,20 +24,41 @@ class DuplicateHandlerError(Exception):
     """Raised when attempting to register a duplicate handler.
 
     Attributes:
-        query_type: The type that already has a handler registered
+        handler_type: The type that already has a handler registered
         message: Human-readable error message
     """
 
-    def __init__(self, query_type: type, message: str | None = None) -> None:
+    def __init__(self, handler_type: type, message: str | None = None) -> None:
         """Initialize the exception.
 
         Args:
-            query_type: The type that already has a handler
+            handler_type: The type that already has a handler
             message: Optional custom message
         """
-        self.query_type = query_type
+        self.handler_type = handler_type
         if message is None:
-            message = f"Handler already registered for type: {query_type.__name__}"
+            message = f"Handler already registered for type: {handler_type.__name__}"
+        super().__init__(message)
+
+
+class CommandHandlerNotFoundError(Exception):
+    """Raised when no handler is registered for a command type.
+
+    Attributes:
+        command_type: The type of command that had no handler
+        message: Human-readable error message
+    """
+
+    def __init__(self, command_type: type, message: str | None = None) -> None:
+        """Initialize the exception.
+
+        Args:
+            command_type: The type of command that had no handler
+            message: Optional custom message
+        """
+        self.command_type = command_type
+        if message is None:
+            message = f"No handler registered for command type: {command_type.__name__}"
         super().__init__(message)
 
 

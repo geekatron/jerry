@@ -79,7 +79,7 @@ Examples:
     return parser
 
 
-def _add_session_namespace(subparsers: argparse._SubParsersAction) -> None:
+def _add_session_namespace(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     """Add session namespace commands.
 
     Commands:
@@ -145,7 +145,7 @@ def _add_session_namespace(subparsers: argparse._SubParsersAction) -> None:
     )
 
 
-def _add_items_namespace(subparsers: argparse._SubParsersAction) -> None:
+def _add_items_namespace(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     """Add items namespace commands.
 
     Commands:
@@ -272,7 +272,9 @@ def _add_items_namespace(subparsers: argparse._SubParsersAction) -> None:
     )
 
 
-def _add_projects_namespace(subparsers: argparse._SubParsersAction) -> None:
+def _add_projects_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     """Add projects namespace commands.
 
     Commands:

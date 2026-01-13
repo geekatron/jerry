@@ -27,7 +27,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import Any, ClassVar
 
 
 @dataclass
@@ -146,7 +146,7 @@ class SnowflakeIdGenerator:
         return timestamp
 
     @staticmethod
-    def parse(snowflake_id: int) -> dict:
+    def parse(snowflake_id: int) -> dict[str, Any]:
         """
         Extract components from a Snowflake ID.
 

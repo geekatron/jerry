@@ -205,7 +205,7 @@ class TestQueryDispatcherNegative:
         with pytest.raises(DuplicateHandlerError) as exc_info:
             dispatcher.register(SampleQuery, SampleHandler().handle)
 
-        assert exc_info.value.query_type is SampleQuery
+        assert exc_info.value.handler_type is SampleQuery
 
 
 # === Edge Case Tests (10%) ===

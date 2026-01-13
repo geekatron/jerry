@@ -34,7 +34,7 @@ References:
 from __future__ import annotations
 
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from src.bootstrap import (
     create_query_dispatcher,
@@ -43,6 +43,9 @@ from src.bootstrap import (
 )
 from src.interface.cli.adapter import CLIAdapter
 from src.interface.cli.parser import create_parser
+
+if TYPE_CHECKING:
+    pass
 
 
 def create_cli_adapter() -> CLIAdapter:
