@@ -13,13 +13,13 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 26 |
-| Completed | 22 |
+| Completed | 23 |
 | In Progress | 0 |
-| Pending | 4 |
+| Pending | 3 |
 | Blocked | 0 |
 
-**Completed Phases**: PHASE-00 through PHASE-04 (22 work items including WI-008 sub-items)
-**Remaining**: PHASE-05 (WI-015, WI-016), PHASE-06 (WI-017, WI-018)
+**Completed Phases**: PHASE-00 through PHASE-04 (22 work items), PHASE-05 partially (WI-015)
+**Remaining**: PHASE-05 (WI-016), PHASE-06 (WI-017, WI-018)
 
 ---
 
@@ -32,7 +32,7 @@
 | [PHASE-02](work/PHASE-02-architecture.md) | Architecture & Design | COMPLETED | WI-007, WI-008 (+ 8 sub-items) | Yes (research parallel) |
 | [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | COMPLETED | WI-009, WI-010, WI-011 | Yes (after WI-008) |
 | [PHASE-04](work/PHASE-04-infrastructure.md) | Infrastructure Adapters | COMPLETED | WI-012, WI-013, WI-014 | Yes (parallel with PHASE-03) |
-| [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | PENDING | WI-015, WI-016 | No (needs 03+04) |
+| [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | IN_PROGRESS | WI-015, WI-016 | No (needs 03+04) |
 | [PHASE-06](work/PHASE-06-testing.md) | Testing & Validation | PENDING | WI-017, WI-018 | Yes (after 05) |
 | [PHASE-BUGS](work/PHASE-BUGS.md) | Bug Tracking | ONGOING | - | - |
 | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | Discoveries | ONGOING | - | - |
@@ -106,12 +106,21 @@
 - **LayeredConfigAdapter**: TOML loading via tomllib, 4-level precedence (env > project > root > defaults) (27 tests)
 - **Total**: 72 unit tests passing
 
-### PHASE-05: Integration & CLI (PENDING)
+### PHASE-05: Integration & CLI (IN_PROGRESS)
 
-| ID | Title | Status | File | Assignee |
-|----|-------|--------|------|----------|
-| WI-015 | Update session_start.py Hook | PENDING | [wi-015-session-hook.md](work/wi-015-session-hook.md) | WT-CLI |
-| WI-016 | CLI Config Commands | PENDING | [wi-016-cli-commands.md](work/wi-016-cli-commands.md) | WT-CLI |
+| ID | Title | Status | File | Assignee | Evidence |
+|----|-------|--------|------|----------|----------|
+| WI-015 | Update session_start.py Hook | COMPLETED | [wi-015-session-hook.md](work/wi-015-session-hook.md) | WT-CLI | 15 unit tests, commit `bc48b9f` |
+| WI-016 | CLI Config Commands | PENDING | [wi-016-cli-commands.md](work/wi-016-cli-commands.md) | WT-CLI | - |
+
+**WI-015 Implementation Summary (commit `bc48b9f`):**
+- **LayeredConfigAdapter Integration**: `create_config_provider()` creates adapter with 4-level precedence
+- **Local Context Support**: `load_local_context()` reads `.jerry/local/context.toml` with AtomicFileAdapter
+- **Project Resolution**: `get_active_project_from_local_context()` provides fallback between env and discovery
+- **Precedence**: JERRY_PROJECT env → local_context → project discovery
+- **Backward Compatibility**: 23/23 existing e2e tests pass unchanged
+- **New Tests**: 15 unit tests for local context functionality
+- **AC-015.4 Deferred**: Update local context on selection moved to WI-016
 
 ### PHASE-06: Testing & Validation (PENDING)
 
@@ -317,6 +326,11 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **PHASE-04 COMPLETED**: All infrastructure adapters implemented with 72/72 tests passing (commit `1094a53`) | Claude |
 | 2026-01-12 | **WORKTREE MERGE**: PROJ-004-config-domain merged into PROJ-004-jerry-config (commit `d7cfce1`) | Claude |
 | 2026-01-12 | **TOTAL TESTS**: 407 unit tests (335 domain + 72 infrastructure) | Claude |
+| 2026-01-12 | **PHASE-05 STARTED**: WI-015 marked IN_PROGRESS | Claude |
+| 2026-01-12 | **WI-015 COMPLETED**: session_start.py hook updated with LayeredConfigAdapter + local context (commit `bc48b9f`) | Claude |
+| 2026-01-12 | **IMPLEMENTATION**: Added `load_local_context()`, `get_active_project_from_local_context()`, `create_config_provider()` | Claude |
+| 2026-01-12 | **TESTS**: Created 15 unit tests in `tests/unit/interface/cli/test_session_start_local_context.py` | Claude |
+| 2026-01-12 | **BACKWARD COMPAT**: 23/23 existing e2e tests pass, 296 total session tests pass | Claude |
 
 ---
 
