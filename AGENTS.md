@@ -7,8 +7,8 @@
 
 ## Agent Philosophy
 
-Jerry uses a **conductor pattern** where the Orchestrator agent coordinates
-specialized sub-agents for specific tasks. This provides:
+Jerry uses a **skill-based agent pattern** where specialized agents are scoped
+to specific skills. This provides:
 
 1. **Context Isolation** - Each agent has focused context
 2. **Expertise Depth** - Specialists know their domain deeply
@@ -17,56 +17,50 @@ specialized sub-agents for specific tasks. This provides:
 
 ---
 
-## Available Agents
+## Agent Summary
 
-### Orchestrator (Conductor)
-
-**File**: `.claude/agents/orchestrator.md`
-**Model**: Opus 4.5 (recommended)
-**Role**: Task decomposition, delegation, and synthesis
-
-**Responsibilities**:
-- Analyze incoming requests
-- Decompose into sub-tasks
-- Delegate to appropriate specialists
-- Synthesize results
-- Maintain coherent narrative
-
-**When to Use**: Complex multi-step tasks requiring coordination
+| Category | Count | Scope |
+|----------|-------|-------|
+| Problem-Solving Agents | 8 | `/problem-solving` skill |
+| **Total** | **8** | |
 
 ---
 
-### QA Engineer
+## Problem-Solving Skill Agents
 
-**File**: `.claude/agents/qa-engineer.md`
-**Model**: Sonnet (recommended)
-**Role**: Test design, execution, and quality assurance
+These agents are scoped to the `problem-solving` skill and invoked via `/problem-solving`.
 
-**Responsibilities**:
-- Design test cases (unit, integration, e2e)
-- Review code for testability
-- Identify edge cases and failure modes
-- Validate acceptance criteria
-- Report defects with reproduction steps
-
-**When to Use**: Before merging code, after significant changes
+| Agent | File | Role |
+|-------|------|------|
+| ps-researcher | `skills/problem-solving/agents/ps-researcher.md` | Research Specialist |
+| ps-analyst | `skills/problem-solving/agents/ps-analyst.md` | Analysis Specialist |
+| ps-synthesizer | `skills/problem-solving/agents/ps-synthesizer.md` | Synthesis Specialist |
+| ps-validator | `skills/problem-solving/agents/ps-validator.md` | Validation Specialist |
+| ps-architect | `skills/problem-solving/agents/ps-architect.md` | Architecture Specialist |
+| ps-reviewer | `skills/problem-solving/agents/ps-reviewer.md` | Review Specialist |
+| ps-investigator | `skills/problem-solving/agents/ps-investigator.md` | Investigation Specialist |
+| ps-reporter | `skills/problem-solving/agents/ps-reporter.md` | Reporting Specialist |
 
 ---
 
-### Security Auditor
+## Problem-Solving Agents Overview
 
-**File**: `.claude/agents/security-auditor.md`
-**Model**: Sonnet (recommended)
-**Role**: Security review and vulnerability assessment
+The problem-solving skill provides 8 specialized agents for structured problem solving:
 
-**Responsibilities**:
-- Review code for OWASP Top 10 vulnerabilities
-- Assess authentication/authorization flows
-- Identify injection risks (SQL, command, XSS)
-- Review secrets management
-- Recommend security improvements
+| Agent | Cognitive Mode | Primary Use Case |
+|-------|---------------|------------------|
+| ps-researcher | Divergent | Literature review, web research, source validation |
+| ps-analyst | Convergent | Root cause analysis, trade-offs, gap analysis, risk |
+| ps-synthesizer | Integrative | Pattern synthesis across multiple research outputs |
+| ps-validator | Systematic | Constraint verification, design validation |
+| ps-architect | Strategic | Architecture decisions, ADR production |
+| ps-reviewer | Critical | Code review, design review, security review |
+| ps-investigator | Forensic | Failure analysis, debugging, 5 Whys |
+| ps-reporter | Communicative | Status reports, phase progress, summaries |
 
-**When to Use**: Before release, when handling sensitive data
+**Invocation**: Use `/problem-solving` skill which orchestrates these agents.
+
+**Artifact Location**: `{project}/research/`, `{project}/analysis/`, `{project}/synthesis/`
 
 ---
 
@@ -75,23 +69,23 @@ specialized sub-agents for specific tasks. This provides:
 ### Triggering Handoffs
 
 Handoffs are triggered by:
-1. **Hook-based**: `subagent_stop.py` detects completion
-2. **Explicit**: Orchestrator delegates via Task tool
-3. **Rule-based**: Certain file types trigger specific agents
+1. **Hook-based**: `scripts/subagent_stop.py` detects completion
+2. **Explicit**: Parent agent delegates via Task tool
+3. **Skill-based**: Skill orchestrator routes to appropriate specialist
 
 ### Handoff Data
 
 When handing off between agents, include:
 ```json
 {
-  "from_agent": "orchestrator",
-  "to_agent": "qa-engineer",
+  "from_agent": "ps-researcher",
+  "to_agent": "ps-analyst",
   "context": {
     "task_id": "WORK-123",
-    "files_changed": ["src/domain/aggregates/work_item.py"],
-    "summary": "Implemented WorkItem.complete() method"
+    "artifacts": ["research/proj-001-e-001-research.md"],
+    "summary": "Completed initial research on architecture patterns"
   },
-  "request": "Design unit tests for the complete() method"
+  "request": "Analyze findings and identify gaps"
 }
 ```
 
@@ -99,15 +93,29 @@ When handing off between agents, include:
 
 ## Adding New Agents
 
-1. Create agent file in `.claude/agents/{name}.md`
+New agents should be added within their respective skill directory:
+
+1. Create agent file in `skills/{skill-name}/agents/{agent-name}.md`
 2. Define persona, responsibilities, and constraints
-3. Register in this file (AGENTS.md)
-4. Update orchestrator to know about the new agent
+3. Register in this file (AGENTS.md) under the skill section
+4. Update skill orchestrator to know about the new agent
 5. Add relevant hooks if needed
 
 ### Agent File Template
 
 ```markdown
+---
+name: {agent-name}
+description: |
+  Use this agent when {trigger conditions}.
+  <example>User: "{example prompt}"</example>
+model: sonnet
+tools:
+  - Read
+  - Grep
+  - Glob
+---
+
 # {Agent Name}
 
 ## Persona
@@ -134,11 +142,10 @@ When handing off between agents, include:
 
 ---
 
-## Future Agents (Planned)
+## Future Skills with Agents (Planned)
 
-| Agent | Role | Status |
-|-------|------|--------|
-| Documentation Writer | API docs, READMEs | Planned |
-| Performance Analyst | Profiling, optimization | Planned |
-| DevOps Engineer | CI/CD, deployment | Planned |
-| Domain Expert | Business rule validation | Planned |
+| Skill | Agents | Status |
+|-------|--------|--------|
+| documentation | doc-writer, api-documenter | Planned |
+| performance | profiler, optimizer | Planned |
+| devops | deployer, monitor | Planned |

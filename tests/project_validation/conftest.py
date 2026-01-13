@@ -42,17 +42,67 @@ def discover_projects(root: Path) -> list[Path]:
 
 
 # =============================================================================
+# ROOT DETECTION
+# =============================================================================
+
+# Marker files that indicate the Jerry framework root directory
+_ROOT_MARKERS = ("pyproject.toml", "CLAUDE.md")
+
+
+def _find_project_root(start: Path) -> Path:
+    """
+    Find the Jerry framework root directory by looking for marker files.
+
+    This function walks up from the starting directory until it finds a directory
+    containing one of the marker files (pyproject.toml or CLAUDE.md). This approach
+    works regardless of what the repository directory is named (jerry, jerry-agent-cleanup,
+    my-fork, etc.).
+
+    Args:
+        start: The starting directory to search from.
+
+    Returns:
+        Path to the Jerry framework root directory.
+
+    Raises:
+        RuntimeError: If no root directory can be found.
+
+    References:
+        - TD-001: Project validation tests use incorrect absolute paths
+        - https://docs.python.org/3/library/pathlib.html
+    """
+    current = start.resolve()
+
+    while current != current.parent:
+        for marker in _ROOT_MARKERS:
+            if (current / marker).exists():
+                return current
+        current = current.parent
+
+    # If we reach here, we've hit the filesystem root without finding a marker
+    raise RuntimeError(
+        f"Could not find Jerry framework root directory. "
+        f"Searched from {start} looking for: {_ROOT_MARKERS}. "
+        f"Ensure you are running tests from within the Jerry repository."
+    )
+
+
+# =============================================================================
 # CORE FIXTURES
 # =============================================================================
 
 
 @pytest.fixture(scope="session")
 def project_root() -> Path:
-    """Return the Jerry framework root directory."""
-    current = Path(__file__).parent
-    while current.name != "jerry" and current.parent != current:
-        current = current.parent
-    return current
+    """
+    Return the Jerry framework root directory.
+
+    Uses marker file detection (pyproject.toml, CLAUDE.md) to find the root,
+    making the fixture work regardless of the repository directory name.
+
+    See TD-001 for details on why this approach is used.
+    """
+    return _find_project_root(Path(__file__).parent)
 
 
 @pytest.fixture(scope="session")

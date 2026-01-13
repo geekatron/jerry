@@ -1,3 +1,16 @@
+---
+name: worktracker
+description: |
+  This skill should be used when the user asks to "create work item",
+  "track task", "list tasks", "update work status", or mentions work/task management.
+version: 1.0.0
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+---
+
 # Work Tracker Skill
 
 > Local Azure DevOps/JIRA alternative for surviving context rot in long-running sessions.

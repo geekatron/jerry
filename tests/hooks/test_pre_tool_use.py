@@ -16,8 +16,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# Path to the hook script
-HOOK_SCRIPT = Path(__file__).parent.parent.parent / ".claude" / "hooks" / "pre_tool_use.py"
+# Path to the hook script (moved from .claude/hooks/ to scripts/ in Phase 4)
+HOOK_SCRIPT = Path(__file__).parent.parent.parent / "scripts" / "pre_tool_use.py"
 
 
 def run_hook(tool_name: str, tool_input: dict[str, Any]) -> tuple[int, dict[str, Any]]:

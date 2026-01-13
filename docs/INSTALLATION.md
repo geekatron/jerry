@@ -7,8 +7,45 @@
 ## Prerequisites
 
 - **Claude Code** (CLI) installed and configured
-- **Python 3.11+** (for development/testing)
+- **Python 3.11+** (required - see [Python Version Requirements](#python-version-requirements))
 - **Git** (for version control integration)
+- **uv** (recommended) or **pip** (fallback) for package management
+
+### Python Version Requirements
+
+Jerry requires **Python 3.11 or later**. This is enforced in `pyproject.toml`:
+
+```toml
+requires-python = ">=3.11"
+```
+
+**Why Python 3.11+?**
+- Enhanced type hints (Self, TypeVarTuple)
+- Performance improvements (10-60% faster)
+- Better error messages
+- tomllib in stdlib (PEP 680)
+
+**Verify your Python version:**
+
+```bash
+python3 --version
+# Should show Python 3.11.x or later
+
+# On macOS, system Python is 3.9.6 (too old)
+# Install via Homebrew or uv:
+brew install python@3.14
+# or
+uv python install 3.14
+```
+
+**Supported versions:**
+| Version | Status | Notes |
+|---------|--------|-------|
+| 3.14 | Supported | Latest, recommended |
+| 3.13 | Supported | Stable |
+| 3.12 | Supported | LTS-like stability |
+| 3.11 | Supported | Minimum version |
+| 3.10 | Not supported | Missing required features |
 
 ---
 
@@ -52,25 +89,72 @@
 
 ### Method 2: Git Clone (Development)
 
-For development or contributing:
+For development or contributing, you have two options: **uv (recommended)** or **standard pip**.
+
+#### Option A: Using uv (Recommended)
+
+[uv](https://docs.astral.sh/uv/) is a fast Python package manager that creates standard virtual environments.
 
 ```bash
 # Clone the repository
 git clone https://github.com/geekatron/jerry.git
 cd jerry
 
-# Create virtual environment
+# Install uv if you don't have it
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Sync dependencies (creates .venv automatically)
+uv sync
+
+# Run tests
+uv run pytest
+
+# Run Jerry CLI
+uv run jerry --help
+```
+
+**Why uv?**
+- 10-100x faster than pip ([benchmark](https://realpython.com/uv-vs-pip/))
+- Creates PEP 405 compliant virtual environments
+- Built-in Python version management
+- Single binary, no Python dependency to install uv itself
+
+#### Option B: Using Standard pip/venv
+
+If you prefer the standard Python tools or don't have uv:
+
+```bash
+# Clone the repository
+git clone https://github.com/geekatron/jerry.git
+cd jerry
+
+# Create virtual environment (Python 3.11+ required)
 python3 -m venv .venv
+
+# Activate the environment
 source .venv/bin/activate  # Linux/macOS
 # or
 .venv\Scripts\activate  # Windows
 
-# Install in development mode
-pip install -e ".[dev,test]"
+# Install dependencies
+pip install -r requirements-test.txt  # Test dependencies
+pip install -e .                       # Install jerry in editable mode
 
 # Verify installation
+pytest
 jerry --help
 ```
+
+**Requirements files available:**
+| File | Contents |
+|------|----------|
+| `requirements.txt` | Core dependencies (minimal) |
+| `requirements-dev.txt` | Development tools (mypy, ruff) |
+| `requirements-test.txt` | Testing tools (pytest, coverage) |
 
 ---
 
@@ -196,20 +280,65 @@ Agents handle specialized tasks:
    mkdir -p projects/PROJ-XXX-name/.jerry/data/items
    ```
 
-3. **"Python version mismatch"**
+3. **"Python version mismatch" or "requires-python>=3.11"**
 
    Jerry requires Python 3.11+. Check your version:
 
    ```bash
    python3 --version
+   # If below 3.11, install a newer version:
+
+   # macOS (Homebrew)
+   brew install python@3.14
+
+   # Or using uv
+   uv python install 3.14
    ```
 
-4. **"Dependencies not found"**
+4. **"Dependencies not found" (pip)**
 
-   Install development dependencies:
+   Install dependencies using requirements files:
 
    ```bash
-   pip install -e ".[dev,test]"
+   pip install -r requirements-test.txt
+   pip install -e .
+   ```
+
+5. **"uv: command not found"**
+
+   Install uv:
+
+   ```bash
+   # macOS/Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Add to PATH (if needed)
+   export PATH="$HOME/.cargo/bin:$PATH"
+   ```
+
+6. **"ModuleNotFoundError: No module named 'src'"**
+
+   The package isn't installed in editable mode. Fix:
+
+   ```bash
+   # With uv
+   uv pip install -e .
+
+   # With pip
+   pip install -e .
+   ```
+
+7. **Tests fail with import errors**
+
+   Ensure you're using the virtual environment:
+
+   ```bash
+   # Check which Python is being used
+   which python
+   # Should show .venv/bin/python
+
+   # If not, activate the environment
+   source .venv/bin/activate
    ```
 
 ### Getting Help
