@@ -3,6 +3,13 @@
 These tests validate the complete flow from script invocation to output,
 including real filesystem operations and environment variable handling.
 
+IMPORTANT: Tests MUST be run via uv to validate plugin execution model:
+
+    uv run pytest tests/session_management/e2e/test_session_start.py
+
+Do NOT use: python -m pytest (bypasses uv dependency management)
+See: DISC-008 for rationale.
+
 Test Categories:
     - Happy Path: Valid project scenarios
     - Edge Cases: Boundary conditions and special cases
@@ -12,7 +19,9 @@ Test Categories:
 
 References:
     - ENFORCE-011: E2E Tests
-    - scripts/session_start.py: Entry point
+    - src/interface/cli/session_start.py: Entry point (PEP 723 inline deps)
+    - DISC-007: Tests updated after BUG-007 fix
+    - DISC-008: Must use uv run for test execution
 """
 
 from __future__ import annotations
@@ -55,8 +64,12 @@ def project_root() -> Path:
 
 @pytest.fixture
 def session_start_script(project_root: Path) -> Path:
-    """Get path to the session_start.py script."""
-    return project_root / "scripts" / "session_start.py"
+    """Get path to the session_start.py script.
+
+    Note: After BUG-007 fix, script moved from scripts/ to src/interface/cli/
+    and now uses PEP 723 inline metadata for dependency management.
+    """
+    return project_root / "src" / "interface" / "cli" / "session_start.py"
 
 
 def create_project(
