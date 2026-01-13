@@ -1,0 +1,1572 @@
+# NASA Systems Engineering Skill Interface Contract
+# OpenAPI 3.0-inspired schema for NSE agent handoffs
+#
+# Version: 1.0.0
+# Skill: nasa-se
+# Reference: skills/nasa-se/SKILL.md v1.1.0
+# Standards: NASA/SP-2016-6105 Rev2, NPR 7123.1D, NPR 8000.4C
+
+openapi: "3.0.3"
+info:
+  title: NASA Systems Engineering Skill Contract
+  version: "1.0.0"
+  description: |
+    Interface contract for the NASA Systems Engineering skill defining input/output
+    schemas for all nse-* agents. This contract enables reliable agent orchestration
+    and cross-skill handoffs following NASA SE standards.
+
+    DISCLAIMER: This contract is for AI-generated guidance based on NASA standards.
+    It does not constitute official NASA guidance and requires human SME review.
+  contact:
+    name: Jerry Framework
+    url: https://github.com/jerry-framework
+
+# =============================================================================
+# NASA STANDARDS REFERENCE
+# =============================================================================
+
+nasa_standards:
+  primary:
+    - id: "NPR 7123.1D"
+      title: "NASA Systems Engineering Processes and Requirements"
+      processes:
+        - { id: 1, name: "Stakeholder Expectations Definition" }
+        - { id: 2, name: "Technical Requirements Definition" }
+        - { id: 3, name: "Logical Decomposition" }
+        - { id: 4, name: "Design Solution Definition" }
+        - { id: 5, name: "Product Implementation" }
+        - { id: 6, name: "Product Integration" }
+        - { id: 7, name: "Product Verification" }
+        - { id: 8, name: "Product Validation" }
+        - { id: 9, name: "Product Transition" }
+        - { id: 10, name: "Technical Planning" }
+        - { id: 11, name: "Requirements Management" }
+        - { id: 12, name: "Interface Management" }
+        - { id: 13, name: "Technical Risk Management" }
+        - { id: 14, name: "Configuration Management" }
+        - { id: 15, name: "Technical Data Management" }
+        - { id: 16, name: "Technical Assessment" }
+        - { id: 17, name: "Decision Analysis" }
+  supporting:
+    - id: "NPR 8000.4C"
+      title: "Agency Risk Management Procedural Requirements"
+    - id: "NASA-HDBK-1009A"
+      title: "NASA Systems Engineering Work Products Handbook"
+
+# =============================================================================
+# AGENTS
+# =============================================================================
+
+agents:
+  nse-requirements:
+    description: "Requirements Engineer - Stakeholder needs and technical requirements"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [1, 2, 11]
+    input_schema:
+      $ref: "#/components/schemas/RequirementsInput"
+    output_schema:
+      $ref: "#/components/schemas/RequirementsOutput"
+    output_location: "projects/${JERRY_PROJECT}/requirements/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-verification:
+    description: "V&V Specialist - Verification and validation planning"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [7, 8]
+    input_schema:
+      $ref: "#/components/schemas/VerificationInput"
+    output_schema:
+      $ref: "#/components/schemas/VerificationOutput"
+    output_location: "projects/${JERRY_PROJECT}/verification/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-risk:
+    description: "Risk Manager - Technical risk identification and mitigation"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [13]
+    input_schema:
+      $ref: "#/components/schemas/RiskInput"
+    output_schema:
+      $ref: "#/components/schemas/RiskOutput"
+    output_location: "projects/${JERRY_PROJECT}/risks/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-reviewer:
+    description: "Technical Review Gate - SRR/PDR/CDR/FRR review packages"
+    cognitive_mode: convergent
+    model: opus
+    nasa_processes: [1, 2, 3, 4, 5, 6, 7, 8]  # All processes for assessment
+    input_schema:
+      $ref: "#/components/schemas/ReviewerInput"
+    output_schema:
+      $ref: "#/components/schemas/ReviewerOutput"
+    output_location: "projects/${JERRY_PROJECT}/reviews/{proj_id}-{entry_id}-{review_type}.md"
+
+  nse-integration:
+    description: "System Integration - Interface control and integration"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [6, 12]
+    input_schema:
+      $ref: "#/components/schemas/IntegrationInput"
+    output_schema:
+      $ref: "#/components/schemas/IntegrationOutput"
+    output_location: "projects/${JERRY_PROJECT}/integration/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-configuration:
+    description: "Config Management - Baseline control and change management"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [14, 15]
+    input_schema:
+      $ref: "#/components/schemas/ConfigurationInput"
+    output_schema:
+      $ref: "#/components/schemas/ConfigurationOutput"
+    output_location: "projects/${JERRY_PROJECT}/configuration/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-architecture:
+    description: "Technical Architect - Trade studies and design decisions"
+    cognitive_mode: convergent
+    model: opus
+    nasa_processes: [3, 4, 17]
+    input_schema:
+      $ref: "#/components/schemas/ArchitectureInput"
+    output_schema:
+      $ref: "#/components/schemas/ArchitectureOutput"
+    output_location: "projects/${JERRY_PROJECT}/architecture/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-explorer:
+    description: "Exploration Engineer - Divergent concept exploration"
+    cognitive_mode: divergent
+    model: opus
+    nasa_processes: [5, 17]
+    input_schema:
+      $ref: "#/components/schemas/ExplorerInput"
+    output_schema:
+      $ref: "#/components/schemas/ExplorerOutput"
+    output_location: "projects/${JERRY_PROJECT}/exploration/{proj_id}-{entry_id}-{topic_slug}.md"
+
+  nse-qa:
+    description: "Quality Assurance Specialist - Artifact validation and compliance"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [14, 15, 16]
+    input_schema:
+      $ref: "#/components/schemas/QAInput"
+    output_schema:
+      $ref: "#/components/schemas/QAOutput"
+    output_location: "projects/${JERRY_PROJECT}/qa/{proj_id}-{entry_id}-qa-report.md"
+
+  nse-reporter:
+    description: "SE Status Reporter - Technical assessment and metrics"
+    cognitive_mode: convergent
+    model: sonnet
+    nasa_processes: [16]
+    input_schema:
+      $ref: "#/components/schemas/ReporterInput"
+    output_schema:
+      $ref: "#/components/schemas/ReporterOutput"
+    output_location: "projects/${JERRY_PROJECT}/reports/{proj_id}-{entry_id}-{report_type}.md"
+
+# =============================================================================
+# COMPONENT SCHEMAS
+# =============================================================================
+
+components:
+  schemas:
+    # -------------------------------------------------------------------------
+    # Common Types
+    # -------------------------------------------------------------------------
+    NSEContext:
+      type: object
+      required:
+        - project_id
+        - entry_id
+        - topic
+      properties:
+        project_id:
+          type: string
+          pattern: "^PROJ-\\d{3}$"
+          description: "Project identifier (e.g., PROJ-002)"
+          example: "PROJ-002"
+        entry_id:
+          type: string
+          pattern: "^e-\\d+$"
+          description: "Entry identifier within the NSE workflow"
+          example: "e-101"
+        topic:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: "Topic or subject of the work"
+          example: "Propulsion Requirements"
+        lifecycle_phase:
+          type: string
+          enum: [pre_phase_a, phase_a, phase_b, phase_c, phase_d, phase_e, phase_f]
+          description: "NASA project lifecycle phase"
+
+    MandatoryDisclaimer:
+      type: string
+      const: |
+        DISCLAIMER: This guidance is AI-generated based on NASA Systems Engineering
+        standards. It is advisory only and does not constitute official NASA guidance.
+        All SE decisions require human review and professional engineering judgment.
+        Not for use in mission-critical decisions without SME validation.
+      description: "Required disclaimer for all NSE outputs (P-043)"
+
+    OutputLevels:
+      type: object
+      required:
+        - L0
+        - L1
+        - L2
+      properties:
+        L0:
+          type: string
+          description: "Executive Summary (ELI5) - Plain language for stakeholders"
+        L1:
+          type: string
+          description: "Technical Details - Implementation specifics for engineers"
+        L2:
+          type: string
+          description: "Systems Perspective - Strategic implications for architects"
+
+    ConfidenceScore:
+      type: object
+      required:
+        - overall
+      properties:
+        overall:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          description: "Overall confidence score (0.0-1.0)"
+        reasoning:
+          type: string
+          description: "Explanation for the confidence level"
+
+    UpstreamArtifact:
+      type: object
+      required:
+        - path
+        - type
+      properties:
+        path:
+          type: string
+          description: "Relative path to the artifact"
+        type:
+          type: string
+          enum: [requirement, verification, risk, review, integration, configuration, architecture, exploration, qa, report]
+        summary:
+          type: string
+          description: "Brief summary of the artifact"
+
+    VerificationMethod:
+      type: string
+      enum: [Analysis, Demonstration, Inspection, Test]
+      description: "ADIT verification methods per NASA-HDBK-1009A"
+
+    Priority:
+      type: string
+      enum: [Must, Should, Could, Wont]
+      description: "MoSCoW prioritization"
+
+    # -------------------------------------------------------------------------
+    # nse-requirements Input/Output
+    # -------------------------------------------------------------------------
+    RequirementsInput:
+      type: object
+      required:
+        - context
+        - stakeholder_needs
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        stakeholder_needs:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - stakeholder
+              - need
+            properties:
+              id:
+                type: string
+                pattern: "^STK-\\d{3}$"
+              stakeholder:
+                type: string
+              need:
+                type: string
+              priority:
+                $ref: "#/components/schemas/Priority"
+              source:
+                type: string
+          minItems: 1
+          description: "Stakeholder needs to derive requirements from"
+        constraints:
+          type: array
+          items:
+            type: string
+          description: "System constraints"
+        upstream_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+
+    RequirementsOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - requirements
+        - traceability
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        requirements:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - requirement
+              - rationale
+              - parent
+              - verification_method
+              - priority
+              - status
+            properties:
+              id:
+                type: string
+                pattern: "^REQ-NSE-[A-Z]{3}-\\d{3}$"
+                example: "REQ-NSE-PRO-001"
+              requirement:
+                type: string
+                description: "Shall statement"
+                pattern: "^The (system|component|\\w+) shall .+"
+              rationale:
+                type: string
+              parent:
+                type: string
+                pattern: "^STK-\\d{3}$"
+                description: "Parent stakeholder need (P-040 traceability)"
+              verification_method:
+                $ref: "#/components/schemas/VerificationMethod"
+              priority:
+                $ref: "#/components/schemas/Priority"
+              status:
+                type: string
+                enum: [Draft, Baselined, Approved, Deprecated]
+              allocated_to:
+                type: string
+                description: "Component or subsystem"
+          minItems: 1
+        traceability:
+          type: object
+          required:
+            - forward
+            - backward
+          properties:
+            forward:
+              type: string
+              description: "Needs -> Requirements -> Design summary"
+            backward:
+              type: string
+              description: "Tests -> Requirements -> Needs summary"
+            orphan_analysis:
+              type: object
+              properties:
+                requirements_without_parent:
+                  type: array
+                  items:
+                    type: string
+                requirements_without_verification:
+                  type: array
+                  items:
+                    type: string
+        quality_checklist:
+          type: object
+          properties:
+            complete:
+              type: boolean
+            consistent:
+              type: boolean
+            verifiable:
+              type: boolean
+            traceable:
+              type: boolean
+            unambiguous:
+              type: boolean
+            necessary:
+              type: boolean
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 1", "Process 2", "Process 11"]
+        next_agent_hint:
+          type: string
+          default: "nse-verification"
+        state_key:
+          type: string
+          const: "requirements_output"
+
+    # -------------------------------------------------------------------------
+    # nse-verification Input/Output
+    # -------------------------------------------------------------------------
+    VerificationInput:
+      type: object
+      required:
+        - context
+        - requirements
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        requirements:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - requirement
+              - verification_method
+            properties:
+              id:
+                type: string
+              requirement:
+                type: string
+              verification_method:
+                $ref: "#/components/schemas/VerificationMethod"
+          minItems: 1
+          description: "Requirements to create verification for"
+        upstream_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+
+    VerificationOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - vcrm
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        vcrm:
+          type: object
+          description: "Verification Cross-Reference Matrix"
+          required:
+            - entries
+            - summary
+          properties:
+            entries:
+              type: array
+              items:
+                type: object
+                required:
+                  - requirement_id
+                  - verification_method
+                  - verification_id
+                  - success_criteria
+                  - status
+                properties:
+                  requirement_id:
+                    type: string
+                  verification_method:
+                    $ref: "#/components/schemas/VerificationMethod"
+                  verification_id:
+                    type: string
+                    pattern: "^VER-\\d{3}$"
+                  success_criteria:
+                    type: string
+                  status:
+                    type: string
+                    enum: [Not Started, In Progress, Pass, Fail, Waived]
+                  evidence:
+                    type: string
+            summary:
+              type: object
+              properties:
+                total:
+                  type: integer
+                verified:
+                  type: integer
+                pending:
+                  type: integer
+                coverage_percent:
+                  type: number
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 7", "Process 8"]
+        state_key:
+          type: string
+          const: "verification_output"
+
+    # -------------------------------------------------------------------------
+    # nse-risk Input/Output
+    # -------------------------------------------------------------------------
+    RiskInput:
+      type: object
+      required:
+        - context
+        - scope
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        scope:
+          type: string
+          description: "Scope of risk assessment (e.g., 'Deployment Phase', 'API Integration')"
+        risk_categories:
+          type: array
+          items:
+            type: string
+            enum: [technical, schedule, cost, safety, programmatic]
+          description: "Categories to assess"
+        upstream_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+
+    RiskOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - risk_register
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        risk_register:
+          type: object
+          required:
+            - risks
+            - summary
+          properties:
+            risks:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - title
+                  - description
+                  - likelihood
+                  - consequence
+                  - score
+                  - category
+                  - status
+                properties:
+                  id:
+                    type: string
+                    pattern: "^RISK-\\d{3}$"
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  likelihood:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                    description: "1=Remote, 5=Near Certainty"
+                  consequence:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                    description: "1=Minimal, 5=Catastrophic"
+                  score:
+                    type: integer
+                    minimum: 1
+                    maximum: 25
+                    description: "L x C score (5x5 matrix)"
+                  category:
+                    type: string
+                    enum: [technical, schedule, cost, safety, programmatic]
+                  status:
+                    type: string
+                    enum: [Open, Mitigating, Watch, Closed, Accepted]
+                  mitigation:
+                    type: object
+                    properties:
+                      strategy:
+                        type: string
+                        enum: [Accept, Avoid, Mitigate, Transfer]
+                      actions:
+                        type: array
+                        items:
+                          type: string
+                      owner:
+                        type: string
+                      target_date:
+                        type: string
+                        format: date
+                  traceability:
+                    type: array
+                    items:
+                      type: string
+                    description: "Related requirement IDs (P-042)"
+            summary:
+              type: object
+              properties:
+                total:
+                  type: integer
+                high_risks:
+                  type: integer
+                  description: "Score >= 15"
+                medium_risks:
+                  type: integer
+                  description: "Score 6-14"
+                low_risks:
+                  type: integer
+                  description: "Score 1-5"
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 13"]
+        state_key:
+          type: string
+          const: "risk_output"
+
+    # -------------------------------------------------------------------------
+    # nse-reviewer Input/Output
+    # -------------------------------------------------------------------------
+    ReviewerInput:
+      type: object
+      required:
+        - context
+        - review_type
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        review_type:
+          type: string
+          enum: [SRR, SDR, PDR, CDR, TRR, FRR, ORR, Peer]
+          description: "NASA lifecycle review type"
+        artifacts_to_review:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+        entrance_criteria:
+          type: array
+          items:
+            type: string
+          description: "Custom entrance criteria (optional, uses NPR 7123.1D Appendix G defaults)"
+
+    ReviewerOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - review_package
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        review_package:
+          type: object
+          required:
+            - review_type
+            - entrance_checklist
+            - findings
+            - recommendation
+          properties:
+            review_type:
+              type: string
+            entrance_checklist:
+              type: array
+              items:
+                type: object
+                required:
+                  - criterion
+                  - status
+                properties:
+                  criterion:
+                    type: string
+                  status:
+                    type: string
+                    enum: [Met, Not Met, Partial, N/A]
+                  evidence:
+                    type: string
+                  notes:
+                    type: string
+            findings:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - category
+                  - severity
+                  - description
+                properties:
+                  id:
+                    type: string
+                    pattern: "^RID-\\d{3}$"
+                  category:
+                    type: string
+                    enum: [technical, process, documentation, safety]
+                  severity:
+                    type: string
+                    enum: [critical, major, minor, observation]
+                  description:
+                    type: string
+                  affected_artifact:
+                    type: string
+                  recommendation:
+                    type: string
+                  disposition:
+                    type: string
+                    enum: [Open, Closed, Deferred]
+            exit_criteria_status:
+              type: array
+              items:
+                type: object
+                properties:
+                  criterion:
+                    type: string
+                  status:
+                    type: string
+                    enum: [Met, Not Met, Conditional]
+            recommendation:
+              type: string
+              enum: [Proceed, Proceed with Actions, Repeat Review, Stop]
+            action_items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    pattern: "^AI-\\d{3}$"
+                  description:
+                    type: string
+                  owner:
+                    type: string
+                  due_date:
+                    type: string
+                    format: date
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        state_key:
+          type: string
+          const: "review_output"
+
+    # -------------------------------------------------------------------------
+    # nse-integration Input/Output
+    # -------------------------------------------------------------------------
+    IntegrationInput:
+      type: object
+      required:
+        - context
+        - interfaces
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        interfaces:
+          type: array
+          items:
+            type: object
+            required:
+              - provider
+              - consumer
+            properties:
+              provider:
+                type: string
+              consumer:
+                type: string
+              interface_type:
+                type: string
+                enum: [data, control, physical, electrical, software]
+          minItems: 1
+        upstream_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+
+    IntegrationOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - icd
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        icd:
+          type: object
+          description: "Interface Control Document"
+          required:
+            - interfaces
+          properties:
+            interfaces:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - provider
+                  - consumer
+                  - interface_type
+                  - protocol
+                  - data_format
+                  - status
+                properties:
+                  id:
+                    type: string
+                    pattern: "^ICD-\\d{3}$"
+                  provider:
+                    type: string
+                  consumer:
+                    type: string
+                  interface_type:
+                    type: string
+                  protocol:
+                    type: string
+                  data_format:
+                    type: string
+                  constraints:
+                    type: array
+                    items:
+                      type: string
+                  status:
+                    type: string
+                    enum: [Draft, Agreed, Baselined, Deprecated]
+                  traceability:
+                    type: array
+                    items:
+                      type: string
+        integration_verification:
+          type: array
+          items:
+            type: object
+            properties:
+              interface_id:
+                type: string
+              verification_status:
+                type: string
+                enum: [Not Tested, Pass, Fail, Partial]
+              evidence:
+                type: string
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 6", "Process 12"]
+        state_key:
+          type: string
+          const: "integration_output"
+
+    # -------------------------------------------------------------------------
+    # nse-configuration Input/Output
+    # -------------------------------------------------------------------------
+    ConfigurationInput:
+      type: object
+      required:
+        - context
+        - scope
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        scope:
+          type: string
+          description: "Scope of configuration management"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+                enum: [document, code, hardware, interface]
+              version:
+                type: string
+
+    ConfigurationOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - baseline
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        baseline:
+          type: object
+          required:
+            - id
+            - name
+            - items
+            - status
+          properties:
+            id:
+              type: string
+              pattern: "^BL-\\d{3}$"
+            name:
+              type: string
+            established_date:
+              type: string
+              format: date
+            items:
+              type: array
+              items:
+                type: object
+                required:
+                  - ci_id
+                  - name
+                  - version
+                properties:
+                  ci_id:
+                    type: string
+                    pattern: "^CI-\\d{3}$"
+                  name:
+                    type: string
+                  version:
+                    type: string
+                  status:
+                    type: string
+                    enum: [Controlled, Pending, Superseded]
+            status:
+              type: string
+              enum: [Draft, Established, Frozen, Archived]
+        change_log:
+          type: array
+          items:
+            type: object
+            properties:
+              change_id:
+                type: string
+                pattern: "^CR-\\d{3}$"
+              description:
+                type: string
+              date:
+                type: string
+                format: date
+              status:
+                type: string
+                enum: [Proposed, Approved, Implemented, Rejected]
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 14", "Process 15"]
+        state_key:
+          type: string
+          const: "configuration_output"
+
+    # -------------------------------------------------------------------------
+    # nse-architecture Input/Output
+    # -------------------------------------------------------------------------
+    ArchitectureInput:
+      type: object
+      required:
+        - context
+        - decision_topic
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        decision_topic:
+          type: string
+          description: "Architectural decision topic"
+        alternatives:
+          type: array
+          items:
+            type: string
+          description: "Pre-identified alternatives"
+        evaluation_criteria:
+          type: array
+          items:
+            type: object
+            properties:
+              criterion:
+                type: string
+              weight:
+                type: number
+                minimum: 0.0
+                maximum: 1.0
+        upstream_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+
+    ArchitectureOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - trade_study
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        trade_study:
+          type: object
+          required:
+            - id
+            - topic
+            - alternatives
+            - evaluation
+            - recommendation
+          properties:
+            id:
+              type: string
+              pattern: "^TSR-\\d{3}$"
+            topic:
+              type: string
+            alternatives:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - name
+                  - description
+                properties:
+                  id:
+                    type: string
+                    pattern: "^ALT-\\d{2}$"
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  pros:
+                    type: array
+                    items:
+                      type: string
+                  cons:
+                    type: array
+                    items:
+                      type: string
+            evaluation:
+              type: object
+              properties:
+                criteria:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      criterion:
+                        type: string
+                      weight:
+                        type: number
+                scores:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      alternative_id:
+                        type: string
+                      criterion_scores:
+                        type: object
+                        additionalProperties:
+                          type: number
+                      weighted_total:
+                        type: number
+            recommendation:
+              type: object
+              required:
+                - selected_alternative
+                - rationale
+              properties:
+                selected_alternative:
+                  type: string
+                rationale:
+                  type: string
+                risks:
+                  type: array
+                  items:
+                    type: string
+                implementation_notes:
+                  type: string
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 3", "Process 4", "Process 17"]
+        state_key:
+          type: string
+          const: "architecture_output"
+
+    # -------------------------------------------------------------------------
+    # nse-explorer Input/Output
+    # -------------------------------------------------------------------------
+    ExplorerInput:
+      type: object
+      required:
+        - context
+        - exploration_question
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        exploration_question:
+          type: string
+          description: "What are we exploring? (e.g., 'What are our options for authentication?')"
+        constraints:
+          type: array
+          items:
+            type: string
+          description: "Constraints to consider"
+        divergence_level:
+          type: string
+          enum: [conservative, moderate, aggressive]
+          default: moderate
+          description: "How far afield to explore"
+
+    ExplorerOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - exploration_results
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        exploration_results:
+          type: object
+          required:
+            - concepts
+            - summary
+          properties:
+            concepts:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - name
+                  - description
+                  - feasibility
+                properties:
+                  id:
+                    type: string
+                    pattern: "^CON-\\d{3}$"
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  feasibility:
+                    type: string
+                    enum: [high, medium, low, unknown]
+                  novelty:
+                    type: string
+                    enum: [incremental, evolutionary, revolutionary]
+                  pros:
+                    type: array
+                    items:
+                      type: string
+                  cons:
+                    type: array
+                    items:
+                      type: string
+                  open_questions:
+                    type: array
+                    items:
+                      type: string
+              minItems: 3
+              description: "Minimum 3 concepts for divergent exploration"
+            summary:
+              type: object
+              properties:
+                total_concepts:
+                  type: integer
+                high_feasibility:
+                  type: integer
+                recommended_for_trade_study:
+                  type: array
+                  items:
+                    type: string
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 5", "Process 17"]
+        next_agent_hint:
+          type: string
+          default: "nse-architecture for trade study"
+        state_key:
+          type: string
+          const: "exploration_output"
+
+    # -------------------------------------------------------------------------
+    # nse-qa Input/Output
+    # -------------------------------------------------------------------------
+    QAInput:
+      type: object
+      required:
+        - context
+        - artifacts_to_audit
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        artifacts_to_audit:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+          minItems: 1
+        compliance_standards:
+          type: array
+          items:
+            type: string
+          default: ["NPR 7123.1D", "NASA-HDBK-1009A"]
+
+    QAOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - qa_report
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        qa_report:
+          type: object
+          required:
+            - audited_artifacts
+            - compliance_score
+            - findings
+          properties:
+            audited_artifacts:
+              type: array
+              items:
+                type: object
+                required:
+                  - path
+                  - type
+                  - score
+                properties:
+                  path:
+                    type: string
+                  type:
+                    type: string
+                  score:
+                    type: number
+                    minimum: 0.0
+                    maximum: 1.0
+                  issues:
+                    type: array
+                    items:
+                      type: string
+            compliance_score:
+              type: object
+              required:
+                - overall
+              properties:
+                overall:
+                  type: number
+                  minimum: 0.0
+                  maximum: 1.0
+                by_standard:
+                  type: object
+                  additionalProperties:
+                    type: number
+            findings:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - type
+                  - description
+                  - severity
+                properties:
+                  id:
+                    type: string
+                    pattern: "^QA-\\d{3}$"
+                  type:
+                    type: string
+                    enum: [non_conformance, observation, improvement]
+                  description:
+                    type: string
+                  severity:
+                    type: string
+                    enum: [critical, major, minor]
+                  affected_artifact:
+                    type: string
+                  recommendation:
+                    type: string
+                  standard_reference:
+                    type: string
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 14", "Process 15", "Process 16"]
+        state_key:
+          type: string
+          const: "qa_output"
+
+    # -------------------------------------------------------------------------
+    # nse-reporter Input/Output
+    # -------------------------------------------------------------------------
+    ReporterInput:
+      type: object
+      required:
+        - context
+        - report_type
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        report_type:
+          type: string
+          enum: [status, technical_assessment, metrics, health]
+        scope:
+          type: string
+          description: "Report scope (e.g., 'Phase 2', 'Sprint 5')"
+        upstream_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamArtifact"
+
+    ReporterOutput:
+      type: object
+      required:
+        - context
+        - disclaimer
+        - artifact_path
+        - output_levels
+        - report
+        - confidence
+      properties:
+        context:
+          $ref: "#/components/schemas/NSEContext"
+        disclaimer:
+          $ref: "#/components/schemas/MandatoryDisclaimer"
+        artifact_path:
+          type: string
+        output_levels:
+          $ref: "#/components/schemas/OutputLevels"
+        report:
+          type: object
+          required:
+            - type
+            - summary
+            - metrics
+          properties:
+            type:
+              type: string
+            summary:
+              type: string
+            metrics:
+              type: object
+              properties:
+                requirements:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                    baselined:
+                      type: integer
+                    tbd_count:
+                      type: integer
+                verification:
+                  type: object
+                  properties:
+                    coverage:
+                      type: number
+                    pass_rate:
+                      type: number
+                risks:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                    high:
+                      type: integer
+                    mitigating:
+                      type: integer
+            health_status:
+              type: string
+              enum: [GREEN, YELLOW, RED]
+            key_accomplishments:
+              type: array
+              items:
+                type: string
+            issues_and_risks:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    type: string
+                  severity:
+                    type: string
+                  mitigation:
+                    type: string
+            next_period_plans:
+              type: array
+              items:
+                type: string
+        confidence:
+          $ref: "#/components/schemas/ConfidenceScore"
+        nasa_processes_applied:
+          type: array
+          items:
+            type: string
+          default: ["Process 16"]
+        state_key:
+          type: string
+          const: "reporter_output"
+
+# =============================================================================
+# TESTING APPROACH
+# =============================================================================
+
+testing:
+  description: |
+    Validation approach for NSE skill contracts using behavioral tests.
+    Reference: skills/nasa-se/tests/BEHAVIOR_TESTS.md
+
+  unit_tests:
+    - name: "Input validation - NSEContext"
+      test: "Validate project_id pattern matching"
+      valid_examples:
+        - { project_id: "PROJ-002", entry_id: "e-101", topic: "Propulsion" }
+        - { project_id: "PROJ-999", entry_id: "e-001", topic: "Integration" }
+      invalid_examples:
+        - { project_id: "proj-002", entry_id: "e-101", topic: "Propulsion" }  # lowercase
+        - { project_id: "PROJ-2", entry_id: "e-101", topic: "Propulsion" }    # not 3 digits
+
+    - name: "Output validation - Disclaimer presence"
+      test: "Verify P-043 compliance - mandatory disclaimer"
+      assertion: "All outputs must include the NASA disclaimer at the top"
+
+    - name: "Output validation - Requirements format"
+      test: "Verify shall statement format"
+      assertion: "requirement field must match 'The {system} shall...' pattern"
+
+    - name: "Traceability validation - P-040"
+      test: "Verify bidirectional traceability"
+      assertion: "All requirements must have parent STK-* reference"
+
+    - name: "Verification method - P-041"
+      test: "Verify ADIT method assigned"
+      assertion: "All requirements must have verification_method in [Analysis, Demonstration, Inspection, Test]"
+
+  integration_tests:
+    - name: "Requirements to Verification chain"
+      test: "nse-requirements -> nse-verification chain"
+      steps:
+        - invoke: nse-requirements
+          input: { stakeholder_needs: [{ id: "STK-001", stakeholder: "User", need: "Fast login" }] }
+          expect: requirements_output with requirements array
+        - invoke: nse-verification
+          input: { requirements: "{requirements_output.requirements}" }
+          expect: verification_output with VCRM
+
+    - name: "Technical Review preparation"
+      test: "Multi-agent review package"
+      steps:
+        - invoke: nse-requirements
+        - invoke: nse-verification
+        - invoke: nse-risk
+        - invoke: nse-reviewer
+          input: { review_type: "PDR", artifacts_to_review: [upstream outputs] }
+          expect: review_output with entrance_checklist
+
+  contract_tests:
+    - name: "Cross-skill handoff ps -> nse"
+      test: "ps-researcher output consumed by nse-requirements"
+      scenarios:
+        - source: ps-researcher
+          target: nse-requirements
+          expected: "Research findings transformed to stakeholder needs"

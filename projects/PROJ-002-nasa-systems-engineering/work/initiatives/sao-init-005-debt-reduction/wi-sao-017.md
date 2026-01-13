@@ -1,8 +1,9 @@
 ---
 id: wi-sao-017
 title: "Centralize Tool Registry"
-status: IN_PROGRESS
+status: COMPLETE
 started: "2026-01-12"
+completed: "2026-01-12"
 parent: "_index.md"
 initiative: sao-init-005
 children: []
@@ -18,8 +19,9 @@ token_estimate: 400
 
 # WI-SAO-017: Centralize Tool Registry
 
-> **Status:** 🔄 IN PROGRESS
+> **Status:** ✅ COMPLETE
 > **Started:** 2026-01-12
+> **Completed:** 2026-01-12
 > **Priority:** HIGH (P1)
 
 ---
