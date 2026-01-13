@@ -2,11 +2,11 @@
 
 > **Project:** Agent and Skill Structure Cleanup + Python Environment Standardization
 > **Status:** COMPLETED
-> **Branch:** `cc/clean-up-agents`
+> **Branch:** `fix/td-001-project-validation-paths`
 > **Created:** 2026-01-12
-> **Reopened:** 2026-01-12 (Phase 7 added)
-> **Last Updated:** 2026-01-12
-> **Completed:** 2026-01-12
+> **Reopened:** 2026-01-12 (Phase 7 added), 2026-01-13 (TD-001 fix)
+> **Last Updated:** 2026-01-13
+> **Completed:** 2026-01-13
 
 ---
 
@@ -187,22 +187,90 @@ E    +  where exists = PosixPath('/projects/PROJ-001-plugin-cleanup/PLAN.md').ex
 
 ## Technical Debt
 
-| ID | Title | Priority | Related WI |
-|----|-------|----------|------------|
-| TD-001 | Project validation tests use incorrect absolute paths | MEDIUM | wi-07-001 |
+| ID | Title | Priority | Status | Related WI |
+|----|-------|----------|--------|------------|
+| TD-001 | Project validation tests use incorrect absolute paths | MEDIUM | DONE | [wi-td-001.md](work/wi-td-001.md) |
 
-### TD-001: Project validation test path issue
+### TD-001: Fix project_root fixture path resolution
 
 **Identified:** 2026-01-12
+**Branch:** `fix/td-001-project-validation-paths`
 **Related Discovery:** DISC-005
 **Effort:** ~1 hour
 **Impact:** 5 tests permanently fail in CI and locally
 
-**Description:** Tests in `tests/project_validation/` construct paths as `/projects/...` (absolute from root) instead of relative to project root. This means:
-1. Tests fail on every machine
-2. CI may be ignoring these failures or they're new
+---
 
-**Suggested Fix:** Update test fixtures to use relative paths or `Path(__file__).parent.parent.parent / "projects"`
+#### Root Cause Analysis
+
+The `project_root` fixture in `tests/project_validation/conftest.py` assumes the repository is cloned with the exact name `"jerry"`:
+
+```python
+@pytest.fixture(scope="session")
+def project_root() -> Path:
+    """Return the Jerry framework root directory."""
+    current = Path(__file__).parent
+    while current.name != "jerry" and current.parent != current:
+        current = current.parent
+    return current
+```
+
+When the directory is named differently (e.g., `jerry-agent-cleanup`, `jerry-framework`, or any fork name), the loop walks all the way to the filesystem root `/`, causing tests to look for `/projects/...` instead of `{repo_root}/projects/...`.
+
+**Evidence:**
+```
+E   AssertionError: Missing required file: PLAN.md
+E   assert False
+E    +  where exists = PosixPath('/projects/PROJ-001-plugin-cleanup/PLAN.md').exists
+```
+
+---
+
+#### Tasks
+
+| Task | Description | Status |
+|------|-------------|--------|
+| T1 | Update `project_root` fixture to use marker file detection | DONE |
+| T2 | Verify all 5 failing tests pass | DONE |
+| T3 | Run full test suite to ensure no regressions | DONE |
+| T4 | Update WORKTRACKER with completion status | DONE |
+
+---
+
+#### Sub-tasks
+
+**T1: Update project_root fixture**
+- [x] T1.1: Modify fixture to look for `pyproject.toml` or `CLAUDE.md` marker
+- [x] T1.2: Add `_find_project_root()` helper with clear error message
+- [x] T1.3: Raise RuntimeError if root cannot be determined
+
+**T2: Verify failing tests pass**
+- [x] T2.1: Run `pytest tests/project_validation/ -v`
+- [x] T2.2: Confirm all 5 previously failing tests now pass
+- [x] T2.3: Document test results: **69 passed in 0.36s**
+
+**T3: Regression testing**
+- [x] T3.1: Run full test suite `uv run pytest`
+- [x] T3.2: Confirm no new failures: **1722 passed, 0 failed**
+
+---
+
+#### Acceptance Criteria
+
+| Criterion | Verification Method | Result |
+|-----------|---------------------|--------|
+| Fixture finds root regardless of directory name | Tested in `jerry-agent-cleanup/` (not `jerry/`) | ✅ PASS |
+| All 5 project_validation tests pass | `pytest tests/project_validation/ -v` | ✅ 69 passed |
+| No regressions in other tests | `uv run pytest` | ✅ 1722 passed |
+| Clear error if root not found | RuntimeError with helpful message | ✅ Implemented |
+
+---
+
+#### Evidence/Sources
+
+- [Python pathlib documentation](https://docs.python.org/3/library/pathlib.html)
+- [pytest fixtures documentation](https://docs.pytest.org/en/stable/explanation/fixtures.html)
+- [Git rev-parse documentation](https://git-scm.com/docs/git-rev-parse)
 
 ---
 
