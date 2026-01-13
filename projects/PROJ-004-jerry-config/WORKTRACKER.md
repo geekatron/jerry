@@ -13,12 +13,13 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 26 |
-| Completed | 19 |
+| Completed | 22 |
 | In Progress | 0 |
-| Pending | 7 |
+| Pending | 4 |
 | Blocked | 0 |
 
-**Note**: WI-008 had 8 sub-items (WI-008a through WI-008h) for hierarchical domain model design - all now COMPLETED.
+**Completed Phases**: PHASE-00 through PHASE-04 (22 work items including WI-008 sub-items)
+**Remaining**: PHASE-05 (WI-015, WI-016), PHASE-06 (WI-017, WI-018)
 
 ---
 
@@ -29,7 +30,7 @@
 | [PHASE-00](work/PHASE-00-project-setup.md) | Project Setup | COMPLETED | WI-001, WI-002 | No |
 | [PHASE-01](work/PHASE-01-research.md) | Research & Discovery | COMPLETED | WI-003, WI-004, WI-005, WI-006 | Yes (4 parallel) |
 | [PHASE-02](work/PHASE-02-architecture.md) | Architecture & Design | COMPLETED | WI-007, WI-008 (+ 8 sub-items) | Yes (research parallel) |
-| [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | PENDING | WI-009, WI-010, WI-011 | Yes (after WI-008) |
+| [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | COMPLETED | WI-009, WI-010, WI-011 | Yes (after WI-008) |
 | [PHASE-04](work/PHASE-04-infrastructure.md) | Infrastructure Adapters | COMPLETED | WI-012, WI-013, WI-014 | Yes (parallel with PHASE-03) |
 | [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | PENDING | WI-015, WI-016 | No (needs 03+04) |
 | [PHASE-06](work/PHASE-06-testing.md) | Testing & Validation | PENDING | WI-017, WI-018 | Yes (after 05) |
@@ -57,7 +58,7 @@
 | WI-005 | Worktree-Safe State Patterns | COMPLETED | [wi-005-worktree-patterns.md](work/wi-005-worktree-patterns.md) | WT-Main |
 | WI-006 | Configuration Precedence Model | COMPLETED | [wi-006-config-precedence.md](work/wi-006-config-precedence.md) | WT-Main |
 
-### PHASE-02: Architecture & Design (IN_PROGRESS)
+### PHASE-02: Architecture & Design (COMPLETED)
 
 | ID | Title | Status | File | Assignee |
 |----|-------|--------|------|----------|
@@ -77,21 +78,33 @@
 | WI-008g | Design JerrySession context | Design | ps-architect | COMPLETED | [wi-008g-session-context.md](work/wi-008g-session-context.md) |
 | WI-008h | Validate domain design | Validation | ps-validator | COMPLETED | [wi-008h-design-validation.md](work/wi-008h-design-validation.md) |
 
-### PHASE-03: Domain Implementation (PENDING - Parallelizable)
+### PHASE-03: Domain Implementation (COMPLETED)
 
-| ID | Title | Status | File | Assignee |
-|----|-------|--------|------|----------|
-| WI-009 | Configuration Value Objects | PENDING | [wi-009-value-objects.md](work/wi-009-value-objects.md) | WT-Domain |
-| WI-010 | Configuration Aggregate | PENDING | [wi-010-aggregate.md](work/wi-010-aggregate.md) | WT-Domain |
-| WI-011 | Configuration Domain Events | PENDING | [wi-011-domain-events.md](work/wi-011-domain-events.md) | WT-Domain |
+| ID | Title | Status | File | Assignee | Evidence |
+|----|-------|--------|------|----------|----------|
+| WI-009 | Configuration Value Objects | COMPLETED | [wi-009-value-objects.md](work/wi-009-value-objects.md) | WT-Domain | 221 unit tests, commit `9f2bc63` |
+| WI-010 | Configuration Aggregate | COMPLETED | [wi-010-aggregate.md](work/wi-010-aggregate.md) | WT-Domain | 74 unit tests, commit `9f2bc63` |
+| WI-011 | Configuration Domain Events | COMPLETED | [wi-011-domain-events.md](work/wi-011-domain-events.md) | WT-Domain | 40 unit tests, commit `9f2bc63` |
+
+**Implementation Summary (commit `9f2bc63`):**
+- **Value Objects**: ConfigKey, ConfigPath, ConfigValue, ConfigSource (221 tests)
+- **Domain Events**: ConfigurationLoaded, ConfigurationValueChanged, ConfigurationError (40 tests)
+- **Aggregate**: Event-sourced Configuration with version tracking, nested keys, type coercion (74 tests)
+- **Total**: 335 unit tests passing
 
 ### PHASE-04: Infrastructure Adapters (COMPLETED)
 
-| ID | Title | Status | File | Assignee |
-|----|-------|--------|------|----------|
-| WI-012 | Atomic File Adapter | COMPLETED | [wi-012-atomic-file-adapter.md](work/wi-012-atomic-file-adapter.md) | WT-Infra |
-| WI-013 | Environment Variable Adapter | COMPLETED | [wi-013-env-adapter.md](work/wi-013-env-adapter.md) | WT-Infra |
-| WI-014 | Layered Config Adapter | COMPLETED | [wi-014-layered-config.md](work/wi-014-layered-config.md) | WT-Infra |
+| ID | Title | Status | File | Assignee | Evidence |
+|----|-------|--------|------|----------|----------|
+| WI-012 | Atomic File Adapter | COMPLETED | [wi-012-atomic-file-adapter.md](work/wi-012-atomic-file-adapter.md) | WT-Infra | 21 unit tests, commit `1094a53` |
+| WI-013 | Environment Variable Adapter | COMPLETED | [wi-013-env-adapter.md](work/wi-013-env-adapter.md) | WT-Infra | 24 unit tests, commit `1094a53` |
+| WI-014 | Layered Config Adapter | COMPLETED | [wi-014-layered-config.md](work/wi-014-layered-config.md) | WT-Infra | 27 unit tests, commit `1094a53` |
+
+**Implementation Summary (commit `1094a53`):**
+- **AtomicFileAdapter**: POSIX fcntl locking (LOCK_SH/LOCK_EX) + atomic writes via tempfile+os.replace (21 tests)
+- **EnvConfigAdapter**: JERRY_ prefix mapping, type coercion (bool/int/float/JSON/CSV) (24 tests)
+- **LayeredConfigAdapter**: TOML loading via tomllib, 4-level precedence (env > project > root > defaults) (27 tests)
+- **Total**: 72 unit tests passing
 
 ### PHASE-05: Integration & CLI (PENDING)
 
@@ -286,6 +299,11 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **DESIGN COMPLETED**: WI-008d, WI-008e, WI-008f, WI-008g ADRs created and ACCEPTED | Claude |
 | 2026-01-12 | **VALIDATION PASSED**: WI-008h domain model validation completed (19/19 checks) | Claude |
 | 2026-01-12 | **PHASE-02 COMPLETED**: All architecture & design work items finished | Claude |
+| 2026-01-12 | **PARALLEL EXECUTION**: PHASE-03 (WT-Domain) and PHASE-04 (WT-Infra) started in git worktrees | Claude |
+| 2026-01-12 | **WI-009 COMPLETED**: ConfigKey, ConfigPath, ConfigValue, ConfigSource value objects (221 tests) | Claude |
+| 2026-01-12 | **WI-010 COMPLETED**: Event-sourced Configuration aggregate with version tracking (74 tests) | Claude |
+| 2026-01-12 | **WI-011 COMPLETED**: ConfigurationLoaded, ConfigurationValueChanged, ConfigurationError events (40 tests) | Claude |
+| 2026-01-12 | **PHASE-03 COMPLETED**: Domain implementation with 335/335 tests passing (commit `9f2bc63`) | Claude |
 | 2026-01-12 | **PHASE-04 STARTED**: WI-012, WI-013, WI-014 marked IN_PROGRESS (WT-Infra worktree) | Claude |
 | 2026-01-12 | **WI-012 IMPLEMENTED**: AtomicFileAdapter with fcntl locking + atomic writes (4/4 tests pass) | Claude |
 | 2026-01-12 | **WI-013 IMPLEMENTED**: EnvConfigAdapter with prefix filtering + type coercion (3/3 tests pass) | Claude |
@@ -296,7 +314,9 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **WI-012 COMPLETED**: AtomicFileAdapter with 21/21 tests passed (fcntl locking + atomic writes) | Claude |
 | 2026-01-12 | **WI-013 COMPLETED**: EnvConfigAdapter with 24/24 tests passed (prefix filter + type coercion) | Claude |
 | 2026-01-12 | **WI-014 COMPLETED**: LayeredConfigAdapter with 27/27 tests passed (TOML + precedence) | Claude |
-| 2026-01-12 | **PHASE-04 COMPLETED**: All infrastructure adapters implemented with 72/72 tests passing | Claude |
+| 2026-01-12 | **PHASE-04 COMPLETED**: All infrastructure adapters implemented with 72/72 tests passing (commit `1094a53`) | Claude |
+| 2026-01-12 | **WORKTREE MERGE**: PROJ-004-config-domain merged into PROJ-004-jerry-config (commit `d7cfce1`) | Claude |
+| 2026-01-12 | **TOTAL TESTS**: 407 unit tests (335 domain + 72 infrastructure) | Claude |
 
 ---
 
