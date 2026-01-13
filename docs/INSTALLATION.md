@@ -9,7 +9,7 @@
 - **Claude Code** (CLI) installed and configured
 - **Python 3.11+** (required - see [Python Version Requirements](#python-version-requirements))
 - **Git** (for version control integration)
-- **uv** (recommended) or **pip** (fallback) for package management
+- **uv** (required for plugin mode - see [uv Requirements](#uv-requirements))
 
 ### Python Version Requirements
 
@@ -46,6 +46,31 @@ uv python install 3.14
 | 3.12 | Supported | LTS-like stability |
 | 3.11 | Supported | Minimum version |
 | 3.10 | Not supported | Missing required features |
+
+### uv Requirements
+
+Jerry's plugin hooks use [uv](https://docs.astral.sh/uv/) to run Python scripts with automatic dependency resolution. This is **required** for plugin mode (when installed via Claude Code's plugin system).
+
+**Why uv is required:**
+- The SessionStart hook uses `uv run` to execute Python scripts
+- uv automatically resolves dependencies using PEP 723 inline script metadata
+- No manual `pip install -e .` required after installation
+- Works immediately on fresh clones
+
+**Install uv:**
+
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Verify installation
+uv --version
+```
+
+**Note:** For development (git clone), you can use either uv or pip. For plugin mode (installed via Claude Code marketplace), uv is required.
 
 ---
 
