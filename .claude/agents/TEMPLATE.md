@@ -1,3 +1,10 @@
+---
+# Agent Template Schema (machine-readable)
+schema_version: "1.0.0"
+template_id: "jerry-agent-template-v1"
+schema_evolution: "docs/schemas/SCHEMA_VERSIONING.md"
+---
+
 # {Agent Name} Agent
 
 > **Template Version:** 1.0

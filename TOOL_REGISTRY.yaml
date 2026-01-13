@@ -5,8 +5,13 @@
 # Document ID: JERRY-TOOL-REG-001
 # Last Updated: 2026-01-12
 # Created By: WI-SAO-017 (Centralize Tool Registry)
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
 
 ---
+
+# Schema version for evolution support (semver format)
+# Increment MAJOR for breaking changes, MINOR for additions, PATCH for fixes
+schema_version: "1.0.0"
 
 # ============================================================================
 # TOOL DEFINITIONS
