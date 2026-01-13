@@ -38,11 +38,19 @@ After successful plugin installation, the SessionStart hook fails silently:
 
 ---
 
+## Bugs
+
+| ID | Description | Status | Enabler |
+|----|-------------|--------|---------|
+| [BUG-007](./bug-007.md) | session_start.py requires pip installation | FIXED | EN-003 |
+
+---
+
 ## Enablers
 
 | ID | Name | Status | Bugs | Tasks |
 |----|------|--------|------|-------|
-| [EN-003](./en-003.md) | Fix session_start.py pip dependency | COMPLETED | BUG-007 | 7/7 |
+| [EN-003](./en-003.md) | Fix session_start.py pip dependency | COMPLETED | [BUG-007](./bug-007.md) | 7/7 |
 
 ---
 
@@ -56,12 +64,12 @@ After successful plugin installation, the SessionStart hook fails silently:
 
 | Entry ID | Type | Description | Location |
 |----------|------|-------------|----------|
-| e-006 | Investigation | Functional Requirements (12 FRs) | [../../investigations/PROJ-005-e-006-functional-requirements.md](../../investigations/PROJ-005-e-006-functional-requirements.md) |
-| e-007 | Research | Plugin Patterns (10 patterns) | [../../research/PROJ-005-e-007-plugin-patterns.md](../../research/PROJ-005-e-007-plugin-patterns.md) |
-| e-008 | Research | uv + PEP 723 Dependency Management | [../../research/PROJ-005-e-008-uv-dependency-management.md](../../research/PROJ-005-e-008-uv-dependency-management.md) |
-| e-009 | Analysis | Trade-off Analysis (Option A: 44/50) | [../../analysis/PROJ-005-e-009-tradeoffs.md](../../analysis/PROJ-005-e-009-tradeoffs.md) |
-| e-010 | Decision | ADR: uv Session Start (Accepted) | [../../decisions/PROJ-005-e-010-adr-uv-session-start.md](../../decisions/PROJ-005-e-010-adr-uv-session-start.md) |
-| e-011 | Validation | Validation Report (GO, 92%) | [../../analysis/PROJ-005-e-011-validation.md](../../analysis/PROJ-005-e-011-validation.md) |
+| e-006 | Investigation | Functional Requirements (12 FRs) | [../../../investigations/PROJ-005-e-006-functional-requirements.md](../../../investigations/PROJ-005-e-006-functional-requirements.md) |
+| e-007 | Research | Plugin Patterns (10 patterns) | [../../../research/PROJ-005-e-007-plugin-patterns.md](../../../research/PROJ-005-e-007-plugin-patterns.md) |
+| e-008 | Research | uv + PEP 723 Dependency Management | [../../../research/PROJ-005-e-008-uv-dependency-management.md](../../../research/PROJ-005-e-008-uv-dependency-management.md) |
+| e-009 | Analysis | Trade-off Analysis (Option A: 44/50) | [../../../analysis/PROJ-005-e-009-tradeoffs.md](../../../analysis/PROJ-005-e-009-tradeoffs.md) |
+| e-010 | Decision | ADR: uv Session Start (Accepted) | [../../../decisions/PROJ-005-e-010-adr-uv-session-start.md](../../../decisions/PROJ-005-e-010-adr-uv-session-start.md) |
+| e-011 | Validation | Validation Report (GO, 92%) | [../../../analysis/PROJ-005-e-011-validation.md](../../../analysis/PROJ-005-e-011-validation.md) |
 
 ---
 
@@ -70,7 +78,8 @@ After successful plugin installation, the SessionStart hook fails silently:
 | ID | Description | Status |
 |----|-------------|--------|
 | DISC-003 | pre_tool_use.py, subagent_stop.py, post_tool_use.py are properly standalone | NOTED |
-| DISC-004 | ps-* artifact naming convention violated (e-006 vs e-001) | OPEN |
+| DISC-004 | ps-* artifact naming convention violated (e-006 vs e-001) | DOCUMENTED |
+| [DISC-005](./disc-005.md) | PYTHONPATH required for uv run to access local src/ imports | RESOLVED |
 
 ---
 
@@ -81,3 +90,5 @@ After successful plugin installation, the SessionStart hook fails silently:
 | 2026-01-13 | Created feature tracker | Claude |
 | 2026-01-13 | Linked research artifacts e-006 through e-011 | Claude |
 | 2026-01-13 | ADR approved - ready for implementation | Claude |
+| 2026-01-13 | EN-003 completed, BUG-007 fixed, DISC-005 resolved | Claude |
+| 2026-01-13 | Added bug-007.md per ontology cleanup | Claude |
