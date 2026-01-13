@@ -53,7 +53,7 @@ guardrails:
 # Output Section
 output:
   required: true
-  location: "docs/reviews/{ps-id}-{entry-id}-{review-type}.md"
+  location: "projects/${JERRY_PROJECT}/reviews/{ps-id}-{entry-id}-{review-type}.md"
   template: "templates/review.md"
   levels:
     - L0  # ELI5 - Executive summary
@@ -176,7 +176,7 @@ This agent adheres to the following principles:
 | Principle | Enforcement | Agent Behavior |
 |-----------|-------------|----------------|
 | P-001 (Truth/Accuracy) | Soft | Findings based on actual evidence |
-| P-002 (File Persistence) | **Medium** | ALL reviews persisted to docs/reviews/ |
+| P-002 (File Persistence) | **Medium** | ALL reviews persisted to projects/${JERRY_PROJECT}/reviews/ |
 | P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
 | P-004 (Provenance) | Soft | Standards and best practices cited |
 | P-011 (Evidence-Based) | Soft | All findings cite code/documentation |
@@ -257,7 +257,7 @@ When invoking this agent, the prompt MUST include:
 After completing review, you MUST:
 
 1. **Create a file** using the Write tool at:
-   `docs/reviews/{ps_id}-{entry_id}-{review_type}.md`
+   `projects/${JERRY_PROJECT}/reviews/{ps_id}-{entry_id}-{review_type}.md`
 
 2. **Follow the template** structure from:
    `templates/review.md`
@@ -265,7 +265,7 @@ After completing review, you MUST:
 3. **Link the artifact** by running:
    ```bash
    python3 scripts/cli.py link-artifact {ps_id} {entry_id} FILE \
-       "docs/reviews/{ps_id}-{entry_id}-{review_type}.md" \
+       "projects/${JERRY_PROJECT}/reviews/{ps_id}-{entry_id}-{review_type}.md" \
        "Review: {subject}"
    ```
 
@@ -333,7 +333,7 @@ reviewer_output:
   ps_id: "{ps_id}"
   entry_id: "{entry_id}"
   review_type: "{type}"
-  artifact_path: "docs/reviews/{filename}.md"
+  artifact_path: "projects/${JERRY_PROJECT}/reviews/{filename}.md"
   overall_assessment: "PASS | PASS_WITH_CONCERNS | NEEDS_WORK | FAIL"
   critical_count: {number}
   high_count: {number}
@@ -388,7 +388,7 @@ You are the ps-reviewer agent (v2.0.0).
 <role>Review Specialist with expertise in code quality</role>
 <task>Review CLI command handlers</task>
 <constraints>
-<must>Create file with Write tool at docs/reviews/</must>
+<must>Create file with Write tool at projects/${JERRY_PROJECT}/reviews/</must>
 <must>Include L0/L1/L2 output levels</must>
 <must>Categorize findings by severity</must>
 <must>Provide actionable recommendations</must>
@@ -407,9 +407,9 @@ You are the ps-reviewer agent (v2.0.0).
 ## MANDATORY PERSISTENCE (P-002)
 After completing review, you MUST:
 
-1. Create file at: `docs/reviews/work-024-e-300-code.md`
+1. Create file at: `projects/${JERRY_PROJECT}/reviews/work-024-e-300-code.md`
 2. Include L0 (executive), L1 (technical), L2 (strategic) sections
-3. Run: `python3 scripts/cli.py link-artifact work-024 e-300 FILE "docs/reviews/work-024-e-300-code.md" "Code review: CLI handlers"`
+3. Run: `python3 scripts/cli.py link-artifact work-024 e-300 FILE "projects/${JERRY_PROJECT}/reviews/work-024-e-300-code.md" "Code review: CLI handlers"`
 
 ## REVIEW TASK
 Review the CLI command handlers in scripts/cli.py.
@@ -423,16 +423,16 @@ Apply Google code review practices and SOLID principles.
 
 ```bash
 # 1. File exists
-ls docs/reviews/{ps_id}-{entry_id}-{review_type}.md
+ls projects/${JERRY_PROJECT}/reviews/{ps_id}-{entry_id}-{review_type}.md
 
 # 2. Has L0/L1/L2 sections
-grep -E "^### L[012]:" docs/reviews/{ps_id}-{entry_id}-{review_type}.md
+grep -E "^### L[012]:" projects/${JERRY_PROJECT}/reviews/{ps_id}-{entry_id}-{review_type}.md
 
 # 3. Has severity sections
-grep -E "^## (CRITICAL|HIGH|MEDIUM|LOW|INFO)" docs/reviews/{ps_id}-{entry_id}-{review_type}.md
+grep -E "^## (CRITICAL|HIGH|MEDIUM|LOW|INFO)" projects/${JERRY_PROJECT}/reviews/{ps_id}-{entry_id}-{review_type}.md
 
 # 4. Has metrics table
-grep -E "^\| Overall Assessment" docs/reviews/{ps_id}-{entry_id}-{review_type}.md
+grep -E "^\| Overall Assessment" projects/${JERRY_PROJECT}/reviews/{ps_id}-{entry_id}-{review_type}.md
 
 # 5. Artifact linked
 python3 scripts/cli.py view {ps_id} | grep {entry_id}

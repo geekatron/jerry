@@ -1,3 +1,16 @@
+---
+name: worktracker
+description: |
+  This skill should be used when the user asks to "create work item",
+  "track task", "list tasks", "update work status", or mentions work/task management.
+version: 1.0.0
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+---
+
 # Work Tracker Skill
 
 > Local Azure DevOps/JIRA alternative for surviving context rot in long-running sessions.
@@ -265,10 +278,18 @@ Recommended Next:
 
 ### Storage
 
-Work items are stored in `data/worktracker/`:
-- `items/WORK-NNN.json` - Individual work item files
-- `index.json` - Quick lookup index
-- `sequences.json` - ID sequence tracking
+Work items are stored in the active project's `.jerry/data/` directory:
+
+```
+projects/${JERRY_PROJECT}/.jerry/data/
+├── items/
+│   └── WORK-NNN.json    # Individual work item files
+├── index.json           # Quick lookup index
+└── sequences.json       # ID sequence tracking
+```
+
+> **Note**: `JERRY_PROJECT` environment variable must be set to identify the active project.
+> If not set, the skill will prompt you to specify which project to use.
 
 ---
 
@@ -306,15 +327,44 @@ Closes: WORK-001, WORK-002"
 
 ## Execution
 
-This skill invokes the domain use cases via CLI shim:
+### CLI Interface (v0.1.0)
+
+The `jerry items` CLI namespace provides work item management:
 
 ```bash
-python scripts/invoke_use_case.py worktracker <command> [args]
+# List work items
+jerry items list [--status STATUS] [--type TYPE]
+
+# Show work item details
+jerry items show <id>
+
+# Create work item (Phase 4.5 - deferred for Event Sourcing)
+jerry items create <title> [--type TYPE]
+
+# Start/complete work (Phase 4.5 - deferred)
+jerry items start <id>
+jerry items complete <id>
 ```
 
-The script routes to:
-- `src/application/use_cases/commands/` for mutations
-- `src/application/use_cases/queries/` for reads
+**JSON Output**: Add `--json` for scripting/AI consumption:
+```bash
+jerry --json items list
+jerry --json items show WORK-001
+```
+
+### Skill Interface
+
+The skill interface translates natural language to CLI commands:
+
+| Skill Command | Maps To |
+|--------------|---------|
+| `@worktracker list` | `jerry items list` |
+| `@worktracker show <id>` | `jerry items show <id>` |
+| `@worktracker create <title>` | `jerry items create <title>` |
+
+The skill routes to:
+- `src/application/handlers/queries/` for reads (via QueryDispatcher)
+- `src/application/handlers/commands/` for mutations (Phase 4.5)
 
 ---
 

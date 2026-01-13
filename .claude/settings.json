@@ -5,78 +5,19 @@
     "name": "jerry",
     "description": "Framework for behavior and workflow guardrails with knowledge accrual"
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 .claude/hooks/pre_tool_use.py",
-            "timeout": 5000
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 .claude/hooks/subagent_stop.py",
-            "timeout": 5000
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo 'Jerry Framework initialized. See CLAUDE.md for context.'"
-          }
-        ]
-      }
-    ]
-  },
+
   "rules": {
     "files": [
       ".claude/rules/coding-standards.md"
     ],
     "always_apply": true
   },
-  "agents": {
-    "default": "orchestrator",
-    "available": [
-      {
-        "name": "orchestrator",
-        "file": ".claude/agents/orchestrator.md",
-        "description": "Task decomposition and coordination",
-        "recommended_model": "opus-4-5"
-      },
-      {
-        "name": "qa-engineer",
-        "file": ".claude/agents/qa-engineer.md",
-        "description": "Test design and quality assurance",
-        "recommended_model": "sonnet"
-      },
-      {
-        "name": "security-auditor",
-        "file": ".claude/agents/security-auditor.md",
-        "description": "Security review and vulnerability assessment",
-        "recommended_model": "sonnet"
-      }
-    ]
-  },
   "commands": {
     "available": [
       {
         "name": "architect",
         "file": ".claude/commands/architect.md",
-        "description": "Create PLAN.md before implementation"
+        "description": "Create PLAN.md in active project (requires JERRY_PROJECT)"
       },
       {
         "name": "release",
@@ -108,11 +49,13 @@
   "context": {
     "always_load": [
       "CLAUDE.md",
-      "AGENTS.md"
+      "AGENTS.md",
+      "GOVERNANCE.md"
     ],
     "load_on_demand": [
-      "GOVERNANCE.md",
-      "docs/plans/*.md"
+      "projects/README.md",
+      "projects/*/PLAN.md",
+      "projects/*/WORKTRACKER.md"
     ]
   },
   "preferences": {
@@ -129,5 +72,10 @@
       "require_citations": true,
       "capture_learnings": true
     }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ~/.claude/statusline.py",
+    "padding": 0
   }
 }

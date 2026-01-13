@@ -304,6 +304,7 @@ semver          = 1*DIGIT "." 1*DIGIT "." 1*DIGIT
 | `knowledge` | Knowledge capture (Wisdom, Experience) |
 | `governance` | Agent governance and enforcement |
 | `identity` | Identity and access management |
+| `session-management` | Session and project workspace management |
 
 ### C. Entity Types (Core)
 
@@ -317,6 +318,8 @@ semver          = 1*DIGIT "." 1*DIGIT "." 1*DIGIT
 | `exploration` | work-tracker | PS Exploration |
 | `wisdom` | knowledge | Synthesized wisdom |
 | `experience` | knowledge | Captured experience |
+| `session` | session-management | Claude Code working session |
+| `project` | session-management | Project workspace |
 
 ---
 

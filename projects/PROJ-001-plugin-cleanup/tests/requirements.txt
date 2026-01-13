@@ -1,0 +1,5 @@
+# Test dependencies for PROJ-001 test suite
+pytest>=8.0.0
+pytest-cov>=4.0.0
+pytest-bdd>=8.0.0
+pytest-archon>=0.0.7

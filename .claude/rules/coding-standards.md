@@ -3,6 +3,19 @@
 > These rules are enforced across all Jerry framework development.
 > They are loaded at session start and apply to all agents.
 
+**Related Standards**:
+- [Architecture Standards](architecture-standards.md) - Hexagonal, CQRS, Event Sourcing
+- [File Organization](file-organization.md) - Directory structure, naming conventions
+- [Testing Standards](testing-standards.md) - Test pyramid, BDD cycle, coverage
+- [Tool Configuration](tool-configuration.md) - pytest, mypy, ruff configuration
+- [Error Handling Standards](error-handling-standards.md) - Exception hierarchy
+- [Pattern Catalog](../patterns/PATTERN-CATALOG.md) - Comprehensive pattern index
+
+**Key Patterns**:
+- [One-Class-Per-File](../patterns/architecture/one-class-per-file.md) (PAT-ARCH-004)
+- [Immutable Value Object](../patterns/value-object/immutable-value-object.md) (PAT-VO-001)
+- [Domain Event](../patterns/event/domain-event.md) (PAT-EVT-001)
+
 ---
 
 ## Language: Python 3.11+
@@ -78,6 +91,48 @@ from src.domain.aggregates.work_item import WorkItem
 from src.domain.ports.repository import IRepository
 ```
 
+### TYPE_CHECKING Pattern
+
+Use `TYPE_CHECKING` to avoid circular imports:
+
+```python
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.application.ports.secondary.ieventstore import IEventStore
+    from src.domain.aggregates.work_item import WorkItem
+
+
+class WorkItemRepository:
+    def __init__(self, event_store: IEventStore) -> None:
+        self._event_store = event_store
+
+    def get(self, id: str) -> WorkItem | None:
+        ...
+```
+
+### Protocol Pattern
+
+Use `Protocol` for interface definitions:
+
+```python
+from typing import Protocol, TypeVar
+
+TAggregate = TypeVar("TAggregate")
+TId = TypeVar("TId")
+
+
+class IRepository(Protocol[TAggregate, TId]):
+    """Port interface for aggregate persistence."""
+
+    def get(self, id: TId) -> TAggregate | None: ...
+    def get_or_raise(self, id: TId) -> TAggregate: ...
+    def save(self, aggregate: TAggregate) -> None: ...
+    def exists(self, id: TId) -> bool: ...
+```
+
 ---
 
 ## Architecture Rules
@@ -109,6 +164,144 @@ from src.domain.ports.repository import IRepository
 - **MAY import from** all inner layers
 - Handles translation between external and internal formats
 - No business logic—delegate to application layer
+
+---
+
+## Value Object Coding
+
+### Immutable Dataclass Pattern
+
+```python
+from dataclasses import dataclass
+
+from src.shared_kernel.exceptions import ValidationError
+
+
+@dataclass(frozen=True, slots=True)
+class Priority:
+    """Value object representing task priority."""
+
+    value: str
+
+    def __post_init__(self) -> None:
+        valid_priorities = {"low", "medium", "high", "critical"}
+        if self.value not in valid_priorities:
+            raise ValidationError(
+                field="priority",
+                message=f"Must be one of: {valid_priorities}",
+            )
+
+    def is_urgent(self) -> bool:
+        """Check if priority requires immediate attention."""
+        return self.value in {"high", "critical"}
+```
+
+### Enum Value Object Pattern
+
+```python
+from enum import Enum, auto
+
+
+class WorkItemStatus(Enum):
+    """Enumeration of work item statuses with state machine."""
+
+    PENDING = auto()
+    IN_PROGRESS = auto()
+    BLOCKED = auto()
+    DONE = auto()
+    CANCELLED = auto()
+
+    def can_transition_to(self, target: "WorkItemStatus") -> bool:
+        """Check if transition to target status is allowed."""
+        transitions = {
+            WorkItemStatus.PENDING: {WorkItemStatus.IN_PROGRESS, WorkItemStatus.CANCELLED},
+            WorkItemStatus.IN_PROGRESS: {WorkItemStatus.BLOCKED, WorkItemStatus.DONE},
+            WorkItemStatus.BLOCKED: {WorkItemStatus.IN_PROGRESS, WorkItemStatus.CANCELLED},
+            WorkItemStatus.DONE: set(),
+            WorkItemStatus.CANCELLED: set(),
+        }
+        return target in transitions.get(self, set())
+```
+
+**See Also**: [Value Object Patterns](../patterns/value-object/immutable-value-object.md)
+
+---
+
+## CQRS Naming Conventions
+
+### File Naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Command | `{verb}_{noun}_command.py` | `create_work_item_command.py` |
+| Query | `{verb}_{noun}_query.py` | `retrieve_project_context_query.py` |
+| Command Handler | `{verb}_{noun}_command_handler.py` | `create_work_item_command_handler.py` |
+| Query Handler | `{verb}_{noun}_query_handler.py` | `retrieve_project_context_query_handler.py` |
+| Event | `{noun}_events.py` | `work_item_events.py` |
+
+### Class Naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Command | `{Verb}{Noun}Command` | `CreateWorkItemCommand` |
+| Query | `{Verb}{Noun}Query` | `RetrieveProjectContextQuery` |
+| Handler | `{CommandOrQuery}Handler` | `CreateWorkItemCommandHandler` |
+| Event | `{Noun}{PastVerb}` | `WorkItemCreated`, `TaskCompleted` |
+| DTO | `{Noun}DTO` or `{Noun}Result` | `ProjectContextDTO` |
+
+### Query Verbs
+
+| Scenario | Verb | Example |
+|----------|------|---------|
+| Single by ID | `Get` or `Retrieve` | `RetrieveProjectContextQuery` |
+| Collection | `List` | `ListWorkItemsQuery` |
+| Discovery | `Scan` | `ScanProjectsQuery` |
+| Validation | `Validate` | `ValidateProjectQuery` |
+| Search | `Find` or `Search` | `FindTasksByStatusQuery` |
+
+**See Also**: [Command Pattern](../patterns/cqrs/command-pattern.md), [Query Pattern](../patterns/cqrs/query-pattern.md)
+
+---
+
+## Domain Event Coding
+
+### Event Structure
+
+```python
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import ClassVar
+
+from src.shared_kernel.events.domain_event import DomainEvent
+
+
+@dataclass(frozen=True)
+class WorkItemCompleted(DomainEvent):
+    """Event raised when a work item is completed."""
+
+    EVENT_TYPE: ClassVar[str] = "work_item.completed"
+
+    work_item_id: str
+    completed_at: datetime
+    quality_passed: bool
+
+    @classmethod
+    def create(cls, work_item_id: str, quality_passed: bool = True) -> "WorkItemCompleted":
+        """Factory method with automatic timestamp."""
+        return cls(
+            work_item_id=work_item_id,
+            completed_at=datetime.now(timezone.utc),
+            quality_passed=quality_passed,
+        )
+```
+
+### Event Naming Rules
+
+- Use **past tense** verbs: `Created`, `Updated`, `Completed`, `Cancelled`
+- Include **aggregate type** in name: `WorkItemCreated`, `TaskStarted`
+- Event type string: `{aggregate}.{verb}` → `work_item.created`
+
+**See Also**: [Domain Event Pattern](../patterns/event/domain-event.md)
 
 ---
 
@@ -192,19 +385,48 @@ Closes: WORK-042
 
 ## Error Handling
 
-### Domain Exceptions
+### Exception Hierarchy
 
-Define specific exceptions in `src/domain/exceptions.py`:
+```
+Exception
+└── DomainError (base for all domain exceptions)
+    ├── ValidationError (input validation failures)
+    ├── NotFoundError (entity/aggregate not found)
+    │   ├── WorkItemNotFoundError
+    │   └── ProjectNotFoundError
+    ├── InvalidStateError (state machine violations)
+    │   └── InvalidStateTransitionError
+    ├── ConcurrencyError (optimistic locking failures)
+    └── BusinessRuleViolationError (domain rule violations)
+```
+
+### Exception Pattern
 
 ```python
-class DomainError(Exception):
-    """Base class for domain errors."""
+from dataclasses import dataclass
 
-class WorkItemNotFoundError(DomainError):
-    """Raised when a work item cannot be found."""
 
-class InvalidStateError(DomainError):
-    """Raised when an operation is invalid for the current state."""
+@dataclass
+class NotFoundError(DomainError):
+    """Raised when an entity cannot be found."""
+
+    entity_type: str
+    entity_id: str
+
+    def __str__(self) -> str:
+        return f"{self.entity_type} '{self.entity_id}' not found"
+
+
+@dataclass
+class ValidationError(DomainError):
+    """Raised when input validation fails."""
+
+    field: str
+    message: str
+    value: str | None = None
+
+    def __str__(self) -> str:
+        return f"Validation failed for '{self.field}': {self.message}"
 ```
 
 ### Error Messages
@@ -215,14 +437,16 @@ class InvalidStateError(DomainError):
 
 ```python
 # Good
-raise WorkItemNotFoundError(
-    f"Work item '{item_id}' not found. "
-    f"Check that the ID is correct and the item has not been deleted."
+raise NotFoundError(
+    entity_type="WorkItem",
+    entity_id=item_id,
 )
 
 # Bad
 raise Exception("Not found")
 ```
+
+**See Also**: [Error Handling Standards](error-handling-standards.md)
 
 ---
 

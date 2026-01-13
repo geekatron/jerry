@@ -3,17 +3,17 @@
 *(Designed for Principal & Distinguished practitioners; still teachable to ELI5)*
 
 > **How to use these playbooks**
-> 1) **Frame** with 5W1H (Who/What/Where/When/Why/How)  
-> 2) **Classify** the situation (Simple / Complicated / Complex / Chaotic) using the misuse tree in this pack  
-> 3) Apply the domain playbook as a **specialized overlay**  
+> 1) **Frame** with 5W1H (Who/What/Where/When/Why/How)
+> 2) **Classify** the situation (Simple / Complicated / Complex / Chaotic) using the misuse tree in this pack
+> 3) Apply the domain playbook as a **specialized overlay**
 > 4) Close the loop: **verify + learn + institutionalize**
 
 These playbooks are grounded in widely adopted prior art:
-- **NASA systems engineering lifecycle thinking and disciplined technical processes** (NASA Systems Engineering Handbook, NASA/SP-2016-6105 Rev 2) [NASA PDF]  
-- **SRE/operations incident response and blameless postmortems** (Google SRE Book & Workbook; Incident Management Guide) [Google SRE]  
-- **Security incident handling guidance** (NIST SP 800-61r2 archived but still widely referenced; also CSRC landing page notes withdrawal/supersession) [NIST CSRC]  
-- **Scientific inquiry principles** (National Academies; NIH/NCBI) [National Academies, NIH]  
-- **Skill acquisition research** (Ericsson deliberate practice; Dreyfus model; Fitts & Posner stages) [Ericsson; Dreyfus; APA/other academic]  
+- **NASA systems engineering lifecycle thinking and disciplined technical processes** (NASA Systems Engineering Handbook, NASA/SP-2016-6105 Rev 2) [NASA PDF]
+- **SRE/operations incident response and blameless postmortems** (Google SRE Book & Workbook; Incident Management Guide) [Google SRE]
+- **Security incident handling guidance** (NIST SP 800-61r2 archived but still widely referenced; also CSRC landing page notes withdrawal/supersession) [NIST CSRC]
+- **Scientific inquiry principles** (National Academies; NIH/NCBI) [National Academies, NIH]
+- **Skill acquisition research** (Ericsson deliberate practice; Dreyfus model; Fitts & Posner stages) [Ericsson; Dreyfus; APA/other academic]
 - **Food safety and cooking controls** (USDA FSIS safe temps; FDA Food Code & HACCP guidelines; Codex General Principles of Food Hygiene) [USDA; FDA; Codex/FAO]
 
 References are at the end with links.
@@ -25,9 +25,9 @@ References are at the end with links.
 - Debugging, incidents, performance regressions, architecture decisions, migrations, operational readiness.
 
 ### Core evidence-based prior art
-- **Incident management & learning**: structured response, clear roles, and post-incident learning loops (Google SRE).  
-  - Google describes incidents as inevitable in complex systems and emphasizes defined incident processes plus learning via postmortems.  
-  - Postmortems: written record of incident, impact, actions, root cause(s), follow-ups; blameless culture improves learning.  
+- **Incident management & learning**: structured response, clear roles, and post-incident learning loops (Google SRE).
+  - Google describes incidents as inevitable in complex systems and emphasizes defined incident processes plus learning via postmortems.
+  - Postmortems: written record of incident, impact, actions, root cause(s), follow-ups; blameless culture improves learning.
   Sources: Google SRE Incident Management Guide (PDF) + SRE Book/Workbook postmortem chapters.
 
 ### Software-specific loop (ASCII)
@@ -86,7 +86,7 @@ Artifacts:
 - Security incidents, suspected compromise, vulnerability response, threat modeling.
 
 ### Core evidence-based prior art
-- **Incident handling lifecycle**: preparation; detection & analysis; containment, eradication & recovery; post-incident activity (NIST SP 800-61r2 – archived).  
+- **Incident handling lifecycle**: preparation; detection & analysis; containment, eradication & recovery; post-incident activity (NIST SP 800-61r2 – archived).
 - **Preventive systems thinking**: HACCP-like hazard/control thinking is analogous in spirit—identify hazards, define controls, monitor, verify, document (FDA HACCP; Codex/FAO).
 
 ### Security incident lifecycle (ASCII)
@@ -237,8 +237,8 @@ Review: what changed? what stuck?
 
 ### Core evidence-based prior art
 - **Food safety critical limits**:
-  - Safe internal temperatures (USDA FSIS; foodsafety.gov).  
-  - “Danger zone” and time/temperature controls (FDA Food Code resources).  
+  - Safe internal temperatures (USDA FSIS; foodsafety.gov).
+  - “Danger zone” and time/temperature controls (FDA Food Code resources).
 - **Preventive control mindset**: HACCP principles and Codex General Principles of Food Hygiene (Codex/FAO; FDA HACCP).
 
 ### Cooking control system (ASCII)
@@ -283,33 +283,33 @@ Document (recipe as a spec)
 
 ## References (authoritative sources)
 ### Systems engineering / decision contexts
-- NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) PDF: https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf  
-- NASA NTRS entry for the handbook: https://ntrs.nasa.gov/citations/20170001761  
-- Cynefin (ordered vs unordered contexts): Snowden & Boone, “A Leader’s Framework for Decision Making” (2007) PDF mirror: https://www.systemswisdom.com/sites/default/files/Snowdon-and-Boone-A-Leader%27s-Framework-for-Decision-Making_0.pdf  
+- NASA Systems Engineering Handbook (NASA/SP-2016-6105 Rev 2) PDF: https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf
+- NASA NTRS entry for the handbook: https://ntrs.nasa.gov/citations/20170001761
+- Cynefin (ordered vs unordered contexts): Snowden & Boone, “A Leader’s Framework for Decision Making” (2007) PDF mirror: https://www.systemswisdom.com/sites/default/files/Snowdon-and-Boone-A-Leader%27s-Framework-for-Decision-Making_0.pdf
 
 ### Software reliability / operations
-- Google SRE Incident Management Guide (PDF): https://sre.google/static/pdf/IncidentManagementGuide.pdf  
-- Google SRE Book – Postmortem culture: https://sre.google/sre-book/postmortem-culture/  
-- Google SRE Workbook – Postmortem culture: https://sre.google/workbook/postmortem-culture/  
+- Google SRE Incident Management Guide (PDF): https://sre.google/static/pdf/IncidentManagementGuide.pdf
+- Google SRE Book – Postmortem culture: https://sre.google/sre-book/postmortem-culture/
+- Google SRE Workbook – Postmortem culture: https://sre.google/workbook/postmortem-culture/
 
 ### Security incident response
-- NIST CSRC landing page for SP 800-61r2 (notes withdrawal): https://csrc.nist.gov/pubs/sp/800/61/r2/final  
-- Archived PDF of NIST SP 800-61r2: https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-61r2.pdf  
+- NIST CSRC landing page for SP 800-61r2 (notes withdrawal): https://csrc.nist.gov/pubs/sp/800/61/r2/final
+- Archived PDF of NIST SP 800-61r2: https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-61r2.pdf
 
 ### Scientific inquiry
-- National Academies – Guiding principles for scientific inquiry: https://www.nationalacademies.org/read/10236/chapter/5  
-- National Academies – Scientific methods and knowledge: https://www.nationalacademies.org/read/25303/chapter/5  
-- NIH/NCBI – Scientific methods and knowledge (book chapter): https://www.ncbi.nlm.nih.gov/books/NBK547541/  
-- NIH/NCBI – Scientific principles & research practices: https://www.ncbi.nlm.nih.gov/books/NBK234526/  
+- National Academies – Guiding principles for scientific inquiry: https://www.nationalacademies.org/read/10236/chapter/5
+- National Academies – Scientific methods and knowledge: https://www.nationalacademies.org/read/25303/chapter/5
+- NIH/NCBI – Scientific methods and knowledge (book chapter): https://www.ncbi.nlm.nih.gov/books/NBK547541/
+- NIH/NCBI – Scientific principles & research practices: https://www.ncbi.nlm.nih.gov/books/NBK234526/
 
 ### Skill acquisition
-- Ericsson (expertise overview PDF referencing 1993 deliberate practice work): https://cseweb.ucsd.edu/classes/fa08/cse599/Papers/Ericsson.pdf  
-- MIT-hosted “Expert Performance” PDF with Ericsson references: https://web.mit.edu/6.969/www/readings/expertise.pdf  
-- Dreyfus (2004) five-stage model PDF: https://www.bumc.bu.edu/facdev-medicine/files/2012/03/Dreyfus-skill-level.pdf  
+- Ericsson (expertise overview PDF referencing 1993 deliberate practice work): https://cseweb.ucsd.edu/classes/fa08/cse599/Papers/Ericsson.pdf
+- MIT-hosted “Expert Performance” PDF with Ericsson references: https://web.mit.edu/6.969/www/readings/expertise.pdf
+- Dreyfus (2004) five-stage model PDF: https://www.bumc.bu.edu/facdev-medicine/files/2012/03/Dreyfus-skill-level.pdf
 
 ### Cooking safety & preventive controls
-- USDA FSIS Safe Temperature Chart: https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart  
-- foodsafety.gov Safe Minimum Internal Temperatures: https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures  
-- FDA Food Code 2022 (landing): https://www.fda.gov/food/fda-food-code/food-code-2022  
-- FDA HACCP Principles & Application Guidelines: https://www.fda.gov/food/hazard-analysis-critical-control-point-haccp/haccp-principles-application-guidelines  
-- Codex/FAO General Principles of Food Hygiene (includes HACCP system): https://openknowledge.fao.org/server/api/core/bitstreams/6866dc55-d2c0-48dd-a528-a4d634f1b0b4/content  
+- USDA FSIS Safe Temperature Chart: https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart
+- foodsafety.gov Safe Minimum Internal Temperatures: https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures
+- FDA Food Code 2022 (landing): https://www.fda.gov/food/fda-food-code/food-code-2022
+- FDA HACCP Principles & Application Guidelines: https://www.fda.gov/food/hazard-analysis-critical-control-point-haccp/haccp-principles-application-guidelines
+- Codex/FAO General Principles of Food Hygiene (includes HACCP system): https://openknowledge.fao.org/server/api/core/bitstreams/6866dc55-d2c0-48dd-a528-a4d634f1b0b4/content

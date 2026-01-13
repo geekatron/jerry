@@ -51,17 +51,24 @@ jerry/
 
 ## Installation
 
+**Requirements:** Python 3.11+ ([why?](docs/INSTALLATION.md#python-version-requirements))
+
 ```bash
 # Clone the repository
 git clone https://github.com/geekatron/jerry.git
 cd jerry
 
-# Install with uv (recommended)
-uv pip install -e .
+# Option 1: Using uv (recommended - 10-100x faster)
+uv sync
+uv run pytest  # verify
 
-# Or with pip
-pip install -e .
+# Option 2: Using pip
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-test.txt && pip install -e .
+pytest  # verify
 ```
+
+See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions.
 
 ## Quick Start
 
@@ -88,7 +95,7 @@ python scripts/invoke_use_case.py <command>
 | [CLAUDE.md](./CLAUDE.md) | Root context for Claude Code sessions |
 | [AGENTS.md](./AGENTS.md) | Registry of available sub-agents |
 | [GOVERNANCE.md](./GOVERNANCE.md) | Protocols for planning and handoffs |
-| [docs/research/](./docs/research/) | Research artifacts with citations |
+| [docs/research/](projects/archive/research/) | Research artifacts with citations |
 
 ## Technology Stack
 
@@ -98,7 +105,7 @@ python scripts/invoke_use_case.py <command>
 - **CLI**: argparse (stdlib)
 - **Testing**: unittest (stdlib)
 
-See [docs/research/TECHNOLOGY_STACK_ANALYSIS.md](./docs/research/TECHNOLOGY_STACK_ANALYSIS.md) for the full analysis.
+See [docs/research/TECHNOLOGY_STACK_ANALYSIS.md](projects/archive/research/TECHNOLOGY_STACK_ANALYSIS.md) for the full analysis.
 
 ## Contributing
 
