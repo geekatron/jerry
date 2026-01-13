@@ -13,13 +13,13 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 26 |
-| Completed | 24 |
+| Completed | 25 |
 | In Progress | 0 |
-| Pending | 2 |
+| Pending | 1 |
 | Blocked | 0 |
 
-**Completed Phases**: PHASE-00 through PHASE-05 (24 work items)
-**Remaining**: PHASE-06 (WI-017, WI-018)
+**Completed Phases**: PHASE-00 through PHASE-05 (24 work items) + WI-017
+**Remaining**: PHASE-06 (WI-018)
 
 ---
 
@@ -33,7 +33,7 @@
 | [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | COMPLETED | WI-009, WI-010, WI-011 | Yes (after WI-008) |
 | [PHASE-04](work/PHASE-04-infrastructure.md) | Infrastructure Adapters | COMPLETED | WI-012, WI-013, WI-014 | Yes (parallel with PHASE-03) |
 | [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | COMPLETED | WI-015, WI-016 | No (needs 03+04) |
-| [PHASE-06](work/PHASE-06-testing.md) | Testing & Validation | PENDING | WI-017, WI-018 | Yes (after 05) |
+| [PHASE-06](work/PHASE-06-testing.md) | Testing & Validation | IN_PROGRESS | WI-017 (done), WI-018 | Yes (after 05) |
 | [PHASE-BUGS](work/PHASE-BUGS.md) | Bug Tracking | ONGOING | - | - |
 | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | Discoveries | ONGOING | - | - |
 | [PHASE-TECHDEBT](work/PHASE-TECHDEBT.md) | Technical Debt | ONGOING | - | - |
@@ -130,12 +130,21 @@
 - **`cmd_config_path()`**: Shows configuration file paths
 - **E2E Tests**: 10/10 tests covering all commands
 
-### PHASE-06: Testing & Validation (PENDING)
+### PHASE-06: Testing & Validation (IN_PROGRESS)
 
-| ID | Title | Status | File | Assignee |
-|----|-------|--------|------|----------|
-| WI-017 | Architecture Tests | PENDING | [wi-017-arch-tests.md](work/wi-017-arch-tests.md) | WT-Test |
-| WI-018 | Integration & E2E Tests | PENDING | [wi-018-integration-tests.md](work/wi-018-integration-tests.md) | WT-Test |
+| ID | Title | Status | File | Assignee | Evidence |
+|----|-------|--------|------|----------|----------|
+| WI-017 | Architecture Tests | COMPLETED | [wi-017-arch-tests.md](work/wi-017-arch-tests.md) | WT-Test | 21/21 tests pass |
+| WI-018 | Integration & E2E Tests | PENDING | [wi-018-integration-tests.md](work/wi-018-integration-tests.md) | WT-Test | - |
+
+**WI-017 Implementation Summary:**
+- **test_composition_root.py**: Fixed `get_imports_from_file()` to only check module-level imports (7 tests)
+- **test_config_boundaries.py**: New architecture tests for configuration module (14 tests)
+  - `TestDomainLayerBoundaries`: Validates work_tracking, session_management domains have no infra/app imports
+  - `TestPortAdapterContracts`: Validates LayeredConfigAdapter, AtomicFileAdapter, EnvConfigAdapter methods
+  - `TestAdapterImplementations`: Validates adapters can be instantiated
+  - `TestBootstrapConfiguration`: Validates bootstrap wiring functions
+- **Total**: 21/21 architecture tests passing
 
 ---
 
@@ -346,6 +355,11 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **E2E TESTS**: Created 10 E2E tests in `tests/e2e/test_config_commands.py` | Claude |
 | 2026-01-12 | **WI-016 COMPLETED**: All 10/10 E2E tests pass (commit `2b3e023`) | Claude |
 | 2026-01-12 | **PHASE-05 COMPLETED**: Both WI-015 and WI-016 finished | Claude |
+| 2026-01-12 | **PHASE-06 STARTED**: WI-017 Architecture Tests implementation | Claude |
+| 2026-01-12 | **FIX**: Updated `get_imports_from_file()` to only check module-level imports (local imports allowed) | Claude |
+| 2026-01-12 | **TESTS**: Created `tests/architecture/test_config_boundaries.py` with 14 tests | Claude |
+| 2026-01-12 | **VALIDATION**: TestDomainLayerBoundaries, TestPortAdapterContracts, TestAdapterImplementations, TestBootstrapConfiguration | Claude |
+| 2026-01-12 | **WI-017 COMPLETED**: All 21/21 architecture tests pass | Claude |
 
 ---
 
