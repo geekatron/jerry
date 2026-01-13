@@ -1,0 +1,236 @@
+# TEST-003-CROSSPOLL-WORKFLOW.yaml
+# E2E Test: Cross-Pollinated Pipeline with Barrier Sync
+# Pattern: Two pipelines with bidirectional handoff
+# Purpose: Verify barrier synchronization and cross-pollination
+
+workflow:
+  id: "TEST-003-CROSSPOLL"
+  name: "E2E Test: Cross-Pollinated Pipeline"
+  project_id: "TEST-E2E-003"
+  version: "1.0"
+  created_at: "2026-01-10T12:00:00Z"
+  updated_at: "2026-01-10T13:36:30Z"
+  status: "COMPLETE"
+
+  patterns:
+    - SEQUENTIAL
+    - CONCURRENT
+    - BARRIER_SYNC
+    - HIERARCHICAL
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 2
+    max_barrier_retries: 2
+    checkpoint_frequency: "BARRIER"
+
+pipelines:
+  alpha:
+    id: "alpha-pipeline"
+    name: "Alpha Pipeline"
+    description: "First parallel stream"
+    status: "COMPLETE"
+    current_phase: 2
+    total_phases: 2
+    progress_percent: 100
+
+    phases:
+      - id: 1
+        name: "Alpha Phase 1"
+        status: "COMPLETE"
+        started_at: "2026-01-10T13:35:00Z"
+        completed_at: "2026-01-10T13:35:00Z"
+        agents:
+          - id: "alpha-agent-1"
+            name: "Alpha Worker 1"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/alpha-phase1-output.md"
+            inputs: []
+        artifacts:
+          - "tests/e2e/artifacts/alpha-phase1-output.md"
+
+      - id: 2
+        name: "Alpha Phase 2"
+        status: "COMPLETE"
+        blocked_by: "barrier-1"
+        started_at: "2026-01-10T13:36:00Z"
+        completed_at: "2026-01-10T13:36:00Z"
+        agents:
+          - id: "alpha-agent-2"
+            name: "Alpha Worker 2"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/alpha-phase2-output.md"
+            inputs:
+              - "tests/e2e/artifacts/alpha-phase1-output.md"
+              - "tests/e2e/artifacts/crosspoll/beta-to-alpha.md"
+        artifacts:
+          - "tests/e2e/artifacts/alpha-phase2-output.md"
+
+  beta:
+    id: "beta-pipeline"
+    name: "Beta Pipeline"
+    description: "Second parallel stream"
+    status: "COMPLETE"
+    current_phase: 2
+    total_phases: 2
+    progress_percent: 100
+
+    phases:
+      - id: 1
+        name: "Beta Phase 1"
+        status: "COMPLETE"
+        started_at: "2026-01-10T13:35:00Z"
+        completed_at: "2026-01-10T13:35:00Z"
+        agents:
+          - id: "beta-agent-1"
+            name: "Beta Worker 1"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/beta-phase1-output.md"
+            inputs: []
+        artifacts:
+          - "tests/e2e/artifacts/beta-phase1-output.md"
+
+      - id: 2
+        name: "Beta Phase 2"
+        status: "COMPLETE"
+        blocked_by: "barrier-1"
+        started_at: "2026-01-10T13:36:00Z"
+        completed_at: "2026-01-10T13:36:00Z"
+        agents:
+          - id: "beta-agent-2"
+            name: "Beta Worker 2"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/beta-phase2-output.md"
+            inputs:
+              - "tests/e2e/artifacts/beta-phase1-output.md"
+              - "tests/e2e/artifacts/crosspoll/alpha-to-beta.md"
+        artifacts:
+          - "tests/e2e/artifacts/beta-phase2-output.md"
+
+barriers:
+  - id: "barrier-1"
+    name: "Alpha ↔ Beta Cross-Pollination"
+    status: "COMPLETE"
+    completed_at: "2026-01-10T13:35:30Z"
+    depends_on:
+      - "alpha-pipeline.phase.1"
+      - "beta-pipeline.phase.1"
+    artifacts:
+      alpha_to_beta:
+        path: "tests/e2e/artifacts/crosspoll/alpha-to-beta.md"
+        status: "TRANSMITTED"
+        key_content: "Constraint Analysis Findings - Hard Constraints (P-003, P-020, P-022)"
+      beta_to_alpha:
+        path: "tests/e2e/artifacts/crosspoll/beta-to-alpha.md"
+        status: "TRANSMITTED"
+        key_content: "Workflow Pattern Analysis - SEQUENTIAL, CONCURRENT, BARRIER_SYNC, HIERARCHICAL"
+
+execution_queue:
+  current_group: 3
+  groups:
+    - id: 1
+      name: "Phase 1 Parallel"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      agents:
+        - "alpha-agent-1"
+        - "beta-agent-1"
+
+    - id: 2
+      name: "Barrier 1 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: "group-1"
+      tasks:
+        - "create-alpha-to-beta-artifact"
+        - "create-beta-to-alpha-artifact"
+
+    - id: 3
+      name: "Phase 2 Parallel"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: "group-2"
+      agents:
+        - "alpha-agent-2"
+        - "beta-agent-2"
+
+checkpoints:
+  latest_id: "CP-T003-PHASE2"
+  entries:
+    - id: "CP-T003-PHASE1"
+      name: "Phase 1 Completion"
+      created_at: "2026-01-10T13:35:00Z"
+      description: "Alpha Phase 1 and Beta Phase 1 completed"
+      artifacts:
+        - "tests/e2e/artifacts/alpha-phase1-output.md"
+        - "tests/e2e/artifacts/beta-phase1-output.md"
+    - id: "CP-T003-BARRIER1"
+      name: "Barrier 1 Completion"
+      created_at: "2026-01-10T13:35:30Z"
+      description: "Cross-pollination exchange completed"
+      artifacts:
+        - "tests/e2e/artifacts/crosspoll/alpha-to-beta.md"
+        - "tests/e2e/artifacts/crosspoll/beta-to-alpha.md"
+    - id: "CP-T003-PHASE2"
+      name: "Phase 2 Completion"
+      created_at: "2026-01-10T13:36:00Z"
+      description: "Alpha Phase 2 and Beta Phase 2 completed with cross-pollination inputs"
+      artifacts:
+        - "tests/e2e/artifacts/alpha-phase2-output.md"
+        - "tests/e2e/artifacts/beta-phase2-output.md"
+
+metrics:
+  execution:
+    phases_complete: 4
+    phases_total: 4
+    phases_percent: 100
+    barriers_complete: 1
+    barriers_total: 1
+    barriers_percent: 100
+    agents_executed: 4
+    agents_total: 4
+    agents_percent: 100
+    artifacts_created: 6
+    artifacts_total: 6
+    artifacts_percent: 100
+
+  quality:
+    agent_success_rate: 100
+    barrier_validation_pass_rate: 100
+    checkpoint_recovery_tested: true
+
+  timing:
+    workflow_started: "2026-01-10T13:35:00Z"
+    last_activity: "2026-01-10T13:36:00Z"
+    estimated_completion: "2026-01-10T13:36:00Z"
+
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+next_actions:
+  immediate:
+    - action: "Execute Phase 1 agents in parallel"
+      agents: ["alpha-agent-1", "beta-agent-1"]
+      execution_mode: "PARALLEL"
+
+  subsequent:
+    - action: "Complete Barrier 1 cross-pollination"
+      depends_on: "Phase 1 complete"
+    - action: "Execute Phase 2 agents in parallel"
+      depends_on: "Barrier 1 complete"
+
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow not started"
+  next_step: "Execute Phase 1 agents (alpha-agent-1, beta-agent-1)"
+
+  files_to_read:
+    - "tests/e2e/TEST-003-CROSSPOLL-WORKFLOW.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false

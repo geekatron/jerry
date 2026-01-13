@@ -1,0 +1,71 @@
+PS-NEG-002: Invalid Schema Test Execution Summary
+==================================================
+
+Test ID:           PS-NEG-002
+Test Name:         Invalid Schema Validation Test (Negative Test)
+Agent:             ps-analyst v2.1.0
+Execution Date:    2026-01-12
+Test Status:       PASSED (Expected validation failure occurred)
+
+Test Purpose:
+  Verify that ps-analyst agent properly validates incoming session_context
+  and gracefully rejects malformed input per WI-SAO-002 requirements.
+
+Input Provided:
+  - Malformed session_context with 7 schema violations
+  - Invalid schema version (9.9.9 instead of 1.0.0)
+  - Invalid session_id format (not UUID v4)
+  - Unknown source agent (unknown-agent)
+  - Target agent mismatch (ps-wrong-target instead of ps-analyst)
+  - Missing required payload.key_findings
+  - Missing required payload.confidence
+  - Missing required timestamp
+
+Expected Agent Behavior:
+  1. VALIDATE incoming session_context against schema
+  2. IDENTIFY all schema violations
+  3. REJECT invalid input
+  4. DOCUMENT violations with specificity
+  5. DO NOT execute analysis on invalid context
+
+Actual Agent Behavior:
+  ✅ Validation performed - All 7 violations identified
+  ✅ Invalid context rejected - Analysis not executed
+  ✅ Errors documented - Detailed error messages provided
+  ✅ Recovery path provided - Correction steps documented
+  ✅ Session_context response - Validation failure response included
+
+Validation Errors Identified (7 total):
+  1. schema_version "9.9.9" not supported (expected 1.0.0)
+  2. session_id not valid UUID format
+  3. source_agent.id "unknown-agent" not recognized
+  4. target_agent.id mismatch (expected ps-analyst)
+  5. payload.key_findings required but missing
+  6. payload.confidence required but missing
+  7. timestamp required but missing
+
+WI-SAO-002 Compliance:
+  ✅ Schema validation requirement met
+  ✅ Schema violation identification met
+  ✅ Invalid input rejection met
+  ✅ Error documentation met
+  ✅ No execution on invalid context met
+
+Output Artifacts:
+  - schema-validation-report.md (341 lines)
+    - Malformed input documentation
+    - Detailed violation analysis
+    - Required schema definition
+    - Step-by-step recovery instructions
+    - Valid example for reference
+    - Agent validation rejection response
+    - WI-SAO-002 compliance matrix
+
+Test Result: PASSED
+  The ps-analyst agent correctly implements WI-SAO-002 schema validation
+  requirements and properly rejects invalid session_context input.
+
+Next Steps:
+  - PS-NEG-002 test execution complete
+  - Ready for additional orchestration tests
+  - Agent validation passed for negative test scenario

@@ -126,6 +126,130 @@ When multiple keywords match, priority is:
 
 ---
 
+## Session Context Validation (WI-SAO-002)
+
+All agent handoffs MUST use the session context schema for reliable chaining.
+
+### Schema Reference
+
+- **Schema:** `docs/schemas/session_context.json`
+- **Version:** 1.0.0
+- **Scope:** All ps-* agents and cross-skill handoffs
+
+### Required Fields
+
+Every session context MUST include:
+
+```yaml
+session_context:
+  schema_version: "1.0.0"       # REQUIRED: For evolution support
+  session_id: "{uuid}"          # REQUIRED: Detect session mismatch
+  source_agent:                 # REQUIRED: Sender identification
+    id: "ps-{type}"
+    family: "ps"
+  target_agent:                 # REQUIRED: Receiver identification
+    id: "{target-agent-id}"
+    family: "ps|nse|orch"
+  payload:                      # REQUIRED: Handoff data
+    key_findings: [...]         # REQUIRED: Primary outputs
+    confidence:                 # REQUIRED: Confidence score
+      overall: 0.0-1.0
+  timestamp: "ISO-8601"         # REQUIRED: Creation time
+```
+
+### Input Validation (On Receive)
+
+Before processing, target agents MUST validate:
+
+```
+1. Schema Version Check
+   ├── IF schema_version != "1.0.0"
+   │   └── WARN "Potential schema mismatch" + attempt processing
+   └── IF schema_version missing
+       └── REJECT "Invalid handoff: missing schema_version"
+
+2. Session Identity Check
+   ├── IF session_id matches current session
+   │   └── CONTINUE normally
+   └── IF session_id differs
+       └── WARN "State from different session" + prompt user (see FIX-NEG-008)
+
+3. Source Agent Validation
+   ├── IF source_agent.id matches pattern ^(ps|nse|orch)-[a-z]+$
+   │   └── CONTINUE
+   └── ELSE
+       └── REJECT "Invalid source agent ID format"
+
+4. Payload Validation
+   ├── IF payload.key_findings is array
+   │   └── CONTINUE
+   ├── IF payload.confidence.overall is number 0.0-1.0
+   │   └── CONTINUE
+   └── ELSE
+       └── REJECT "Malformed payload"
+```
+
+### Output Validation (On Send)
+
+Before returning, source agents MUST:
+
+```
+1. Populate Key Findings
+   └── key_findings array with at least summary for each finding
+
+2. Calculate Confidence
+   └── confidence.overall between 0.0 and 1.0 with reasoning
+
+3. List Artifacts
+   └── artifacts array with paths to all created files (P-002)
+
+4. Set Timestamp
+   └── ISO-8601 timestamp at completion time
+
+5. Verify Target
+   └── target_agent.id matches expected downstream agent
+```
+
+### Validation Error Handling
+
+| Error Type | Severity | Action |
+|------------|----------|--------|
+| Missing required field | CRITICAL | Reject handoff, alert orchestrator |
+| Invalid schema_version | WARNING | Log warning, attempt processing |
+| Session mismatch | WARNING | Prompt user for decision (FIX-NEG-008) |
+| Malformed payload | CRITICAL | Reject handoff, request retry |
+| Invalid agent ID | CRITICAL | Reject handoff, halt workflow |
+
+### Cross-Skill Handoff (ps ↔ nse)
+
+When handing off between skill families:
+
+```yaml
+# ps-researcher → nse-requirements example
+session_context:
+  source_agent:
+    id: "ps-researcher"
+    family: "ps"
+    cognitive_mode: "divergent"
+  target_agent:
+    id: "nse-requirements"
+    family: "nse"              # Different family - cross-skill handoff
+    cognitive_mode: "convergent"
+  payload:
+    key_findings:
+      - id: "F-001"
+        summary: "Research finding for requirements elaboration"
+        category: "insight"
+        traceability: ["REQ-NSE-001"]  # Pre-link to target domain
+```
+
+**Cross-Skill Considerations:**
+1. Map cognitive modes (divergent → convergent translation may be needed)
+2. Include traceability links in source domain format
+3. Explicitly document handoff rationale in payload.context
+
+---
+
 ## State Management
 
 ### Output Keys

@@ -1,0 +1,134 @@
+# ORCHESTRATION.yaml - Restored State (After Recovery from CP-TEST-001)
+# PS-ORCH-010 Checkpoint Restore Validation Test
+#
+# RESTORE OPERATION PERFORMED:
+# 1. Read checkpoint CP-TEST-001
+# 2. Validated artifacts exist (phase-1, phase-2)
+# 3. Applied state_snapshot from checkpoint
+# 4. Updated resumption context
+# 5. Logged restore event
+
+workflow:
+  id: "ps-orch-010-restore-test"
+  name: "Checkpoint Restore Validation"
+  project_id: "PROJ-002"
+  version: "2.0"
+  status: "ACTIVE"  # RESTORED from FAILED
+  created_at: "2026-01-12T20:00:00Z"
+  updated_at: "2026-01-12T20:20:00Z"  # Updated at restore time
+
+pipelines:
+  pipeline_a:
+    id: "pipeline-a"
+    name: "Test Pipeline"
+    short_alias: "test"
+    status: "PHASE_3_PENDING"  # RESTORED from PHASE_2_FAILED
+    current_phase: 3
+    total_phases: 3
+    progress_percent: 66  # RESTORED from 33
+
+    phases:
+      - id: 1
+        name: "Phase 1 - Initial"
+        path_id: "phase-1"
+        status: "COMPLETE"  # Preserved (matches checkpoint)
+        started_at: "2026-01-12T20:00:00Z"
+        completed_at: "2026-01-12T20:02:00Z"
+        agents:
+          - id: "agent-1"
+            name: "Phase 1 Agent"
+            status: "COMPLETE"  # Preserved (matches checkpoint)
+            artifact: "phase-1/agent-1/agent-1-output.md"
+
+      - id: 2
+        name: "Phase 2 - Processing"
+        path_id: "phase-2"
+        status: "COMPLETE"  # RESTORED from FAILED (from checkpoint state_snapshot)
+        started_at: "2026-01-12T20:03:00Z"
+        completed_at: "2026-01-12T20:05:00Z"  # RESTORED from checkpoint
+        agents:
+          - id: "agent-2"
+            name: "Phase 2 Agent"
+            status: "COMPLETE"  # RESTORED from FAILED
+            artifact: "phase-2/agent-2/agent-2-output.md"  # RESTORED from checkpoint
+
+      - id: 3
+        name: "Phase 3 - Final"
+        path_id: "phase-3"
+        status: "PENDING"  # RESTORED from BLOCKED
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "agent-3"
+            name: "Phase 3 Agent"
+            status: "PENDING"  # RESTORED from BLOCKED
+            artifact: null
+
+checkpoints:
+  latest_id: "CP-TEST-001"
+  entries:
+    - id: "CP-TEST-001"
+      timestamp: "2026-01-12T20:05:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Checkpoint after Phase 2 completion"
+      recovery_point: "phase-3-start"
+      state_snapshot:
+        phases_complete: 2
+        phases_total: 3
+        agent_statuses:
+          agent-1: "COMPLETE"
+          agent-2: "COMPLETE"
+          agent-3: "PENDING"
+        artifact_paths:
+          - "phase-1/agent-1/agent-1-output.md"
+          - "phase-2/agent-2/agent-2-output.md"
+      # NEW: Restore log
+      restore_events:
+        - timestamp: "2026-01-12T20:20:00Z"
+          reason: "Recovery from simulated failure"
+          restored_from: "corrupted-state.yaml"
+
+metrics:
+  execution:
+    phases_complete: 2  # RESTORED from 1
+    phases_total: 3
+    phases_percent: 66  # RESTORED from 33
+    agents_executed: 2  # RESTORED from 1
+    agents_total: 3
+    agents_percent: 66  # RESTORED from 33
+    artifacts_created: 2  # RESTORED from 1
+    artifacts_total: 3
+    artifacts_percent: 66  # RESTORED from 33
+
+blockers:
+  active: []  # CLEARED after successful restore
+
+issues:
+  resolved:
+    - id: "ISS-001"
+      description: "Phase 2 agent-2 failed unexpectedly"
+      resolution: "Restored from checkpoint CP-TEST-001"
+      resolved_at: "2026-01-12T20:20:00Z"
+
+resumption:
+  last_checkpoint: "CP-TEST-001"
+  current_state: "Restored from CP-TEST-001 - Phase 2 complete"
+  next_step: "Execute Phase 3 agent-3"  # RESTORED from "RECOVERY REQUIRED"
+  cross_session_portable: true
+  ephemeral_references: false
+
+# RESTORE VALIDATION
+restore_validation:
+  checkpoint_id: "CP-TEST-001"
+  restore_timestamp: "2026-01-12T20:20:00Z"
+  artifacts_validated:
+    - path: "phase-1/agent-1/agent-1-output.md"
+      status: "EXISTS"
+    - path: "phase-2/agent-2/agent-2-output.md"
+      status: "EXISTS"
+  state_restored:
+    workflow_status: "ACTIVE"
+    phase_2_status: "COMPLETE"
+    agent_2_status: "COMPLETE"
+    agent_2_artifact: "RESTORED"
+  validation_result: "PASS"

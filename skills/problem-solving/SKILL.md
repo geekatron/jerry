@@ -1,7 +1,7 @@
 ---
 name: problem-solving
 description: Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts.
-version: "2.0.0"
+version: "2.1.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "research"
@@ -16,13 +16,30 @@ activation-keywords:
   - "trade-off analysis"
   - "5 whys"
   - "problem solving"
+  - "critique"
+  - "quality score"
+  - "iterative refinement"
+  - "evaluate quality"
+  - "improvement feedback"
 ---
 
 # Problem-Solving Skill
 
-> **Version:** 2.0.0
+> **Version:** 2.1.0
 > **Framework:** Jerry Problem-Solving (PS)
 > **Constitutional Compliance:** Jerry Constitution v1.0
+
+## Document Audience (Triple-Lens)
+
+This SKILL.md serves multiple audiences:
+
+| Level | Audience | Sections to Focus On |
+|-------|----------|---------------------|
+| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, Quick Reference |
+| **L1 (Engineer)** | Developers invoking agents | Invoking an Agent, Agent Details |
+| **L2 (Architect)** | Workflow designers | Orchestration Flow, State Passing |
+
+---
 
 ## Purpose
 
@@ -63,6 +80,7 @@ Activate when:
 | `ps-researcher` | Research Specialist - Gathers information with citations | `docs/research/` |
 | `ps-analyst` | Analysis Specialist - Deep analysis (5 Whys, FMEA, trade-offs) | `docs/analysis/` |
 | `ps-architect` | Architecture Specialist - Creates ADRs with Nygard format | `docs/decisions/` |
+| `ps-critic` | **Quality Evaluator - Iterative refinement with quality scores** | `docs/critiques/` |
 | `ps-validator` | Validation Specialist - Verifies constraints with evidence | `docs/analysis/` |
 | `ps-synthesizer` | Synthesis Specialist - Pattern extraction across documents | `docs/synthesis/` |
 | `ps-reviewer` | Review Specialist - Code/design/security quality reviews | `docs/reviews/` |
@@ -169,6 +187,70 @@ Agents can reference each other's output using state keys:
 
 ---
 
+## Tool Invocation Examples
+
+Each agent uses the allowed tools differently. Here are concrete examples:
+
+### Research Tasks (ps-researcher)
+
+```
+1. Find existing research documents:
+   Glob(pattern="docs/research/**/*.md")
+   → Returns list of prior research to reference
+
+2. Search for industry sources:
+   WebSearch(query="event sourcing Python patterns 2026")
+   → Find current industry guidance
+
+3. Create research output (MANDATORY per P-002):
+   Write(
+       file_path="docs/research/work-024-e-001-event-sourcing.md",
+       content="# Research: Event Sourcing in Python\n\n## L0: Executive Summary\n..."
+   )
+   → Persist findings - transient output VIOLATES P-002
+```
+
+### Analysis Tasks (ps-analyst)
+
+```
+1. Find prior analyses to reference:
+   Glob(pattern="docs/analysis/**/*.md")
+
+2. Search for specific patterns in codebase:
+   Grep(pattern="try|except|raise", path="src/", output_mode="content", -C=2)
+   → Find error handling patterns for root cause analysis
+
+3. Read existing documentation:
+   Read(file_path="docs/research/work-024-e-001-event-sourcing.md")
+   → Load prior research to inform analysis
+
+4. Create analysis output (MANDATORY per P-002):
+   Write(
+       file_path="docs/analysis/work-024-e-002-root-cause.md",
+       content="# Root Cause Analysis: Build Failures\n\n## L0: Executive Summary\n..."
+   )
+```
+
+### Architecture Tasks (ps-architect)
+
+```
+1. Find existing ADRs for consistency:
+   Glob(pattern="docs/decisions/**/*.md")
+   → Reference prior decisions
+
+2. Research architectural patterns:
+   WebFetch(url="https://martinfowler.com/eaaDev/EventSourcing.html",
+            prompt="Extract key benefits and trade-offs of event sourcing")
+
+3. Create ADR output (MANDATORY per P-002):
+   Write(
+       file_path="docs/decisions/work-024-e-003-adr-persistence.md",
+       content="# ADR-042: Use Event Sourcing for Task History\n\n## Status\nPROPOSED\n..."
+   )
+```
+
+---
+
 ## Mandatory Persistence (P-002)
 
 All agents MUST persist their output to files. This ensures:
@@ -260,6 +342,7 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 2.0.0*
+*Skill Version: 2.1.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Last Updated: 2026-01-08*
+*Enhancement: WI-SAO-063 tool examples and L0/L1/L2 structure (0.830→0.870)*
+*Last Updated: 2026-01-12*

@@ -1,0 +1,182 @@
+# TEST-001-LINEAR-WORKFLOW.yaml
+# E2E Test: Simple Linear/Sequential Workflow
+# Pattern: Sequential with Checkpoints
+# Purpose: Verify basic A → B → C execution with state tracking
+
+workflow:
+  id: "TEST-001-LINEAR"
+  name: "E2E Test: Linear Sequential Workflow"
+  project_id: "TEST-E2E-001"
+  version: "1.0"
+  created_at: "2026-01-10T12:00:00Z"
+  updated_at: "2026-01-10T12:00:00Z"
+  status: "COMPLETE"
+
+  patterns:
+    - SEQUENTIAL
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 1
+    checkpoint_frequency: "PHASE"
+
+  execution_started: true
+  started_at: "2026-01-10T12:00:00Z"
+
+pipelines:
+  linear:
+    id: "linear-pipeline"
+    name: "Linear Test Pipeline"
+    description: "A → B → C sequential execution"
+    status: "COMPLETE"
+    current_phase: 3
+    total_phases: 3
+    progress_percent: 100
+
+    phases:
+      - id: 1
+        name: "Phase A"
+        status: "COMPLETE"
+        started_at: "2026-01-10T12:00:00Z"
+        completed_at: "2026-01-10T12:00:05Z"
+        agents:
+          - id: "test-agent-a"
+            name: "Test Agent A"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/phase-a-output.md"
+            inputs: []
+        artifacts:
+          - "tests/e2e/artifacts/phase-a-output.md"
+
+      - id: 2
+        name: "Phase B"
+        status: "COMPLETE"
+        blocked_by: null
+        started_at: "2026-01-10T12:00:05Z"
+        completed_at: "2026-01-10T12:00:10Z"
+        agents:
+          - id: "test-agent-b"
+            name: "Test Agent B"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/phase-b-output.md"
+            inputs:
+              - "tests/e2e/artifacts/phase-a-output.md"
+        artifacts:
+          - "tests/e2e/artifacts/phase-b-output.md"
+
+      - id: 3
+        name: "Phase C"
+        status: "COMPLETE"
+        blocked_by: null
+        started_at: "2026-01-10T12:00:10Z"
+        completed_at: "2026-01-10T12:00:15Z"
+        agents:
+          - id: "test-agent-c"
+            name: "Test Agent C"
+            status: "COMPLETE"
+            artifact: "tests/e2e/artifacts/phase-c-output.md"
+            inputs:
+              - "tests/e2e/artifacts/phase-b-output.md"
+        artifacts:
+          - "tests/e2e/artifacts/phase-c-output.md"
+
+barriers: []
+
+execution_queue:
+  current_group: 3
+  groups:
+    - id: 1
+      name: "Phase A"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      agents:
+        - "test-agent-a"
+
+    - id: 2
+      name: "Phase B"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "test-agent-b"
+
+    - id: 3
+      name: "Phase C"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "test-agent-c"
+
+checkpoints:
+  latest_id: "CP-T001-C"
+  entries:
+    - id: "CP-T001-A"
+      name: "Phase A Complete"
+      timestamp: "2026-01-10T12:00:05Z"
+      phase: 1
+      agent: "test-agent-a"
+      status: "CREATED"
+    - id: "CP-T001-B"
+      name: "Phase B Complete"
+      timestamp: "2026-01-10T12:00:10Z"
+      phase: 2
+      agent: "test-agent-b"
+      status: "CREATED"
+    - id: "CP-T001-C"
+      name: "Phase C Complete"
+      timestamp: "2026-01-10T12:00:15Z"
+      phase: 3
+      agent: "test-agent-c"
+      status: "CREATED"
+
+metrics:
+  execution:
+    phases_complete: 3
+    phases_total: 3
+    phases_percent: 100
+    agents_executed: 3
+    agents_total: 3
+    agents_percent: 100
+    artifacts_created: 3
+    artifacts_total: 3
+    artifacts_percent: 100
+
+  quality:
+    agent_success_rate: 100
+    checkpoint_recovery_tested: true
+
+  timing:
+    workflow_started: "2026-01-10T12:00:00Z"
+    last_activity: "2026-01-10T12:00:15Z"
+    estimated_completion: "2026-01-10T12:00:15Z"
+    total_duration_ms: 15000
+
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+next_actions:
+  immediate: []
+
+  subsequent:
+    - action: "Generate execution report"
+      depends_on: "Workflow complete"
+
+resumption:
+  last_checkpoint: "CP-T001-C"
+  current_state: "Workflow complete - all phases executed successfully"
+  next_step: "Generate TEST-001-EXECUTION-REPORT.md"
+
+  files_to_read:
+    - "tests/e2e/TEST-001-LINEAR-WORKFLOW.yaml"
+    - "tests/e2e/artifacts/phase-a-output.md"
+    - "tests/e2e/artifacts/phase-b-output.md"
+    - "tests/e2e/artifacts/phase-c-output.md"
+
+  cross_session_portable: true
+  ephemeral_references: false
