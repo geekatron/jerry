@@ -1,7 +1,8 @@
 ---
 id: wi-sao-016
 title: "Define Skill Interface Contracts"
-status: OPEN
+status: IN_PROGRESS
+started: "2026-01-12"
 parent: "_index.md"
 initiative: sao-init-005
 children: []
@@ -17,7 +18,8 @@ token_estimate: 400
 
 # WI-SAO-016: Define Skill Interface Contracts
 
-> **Status:** OPEN
+> **Status:** 🔄 IN PROGRESS
+> **Started:** 2026-01-12
 > **Priority:** HIGH (P1)
 
 ---
