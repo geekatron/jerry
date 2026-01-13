@@ -13,13 +13,13 @@
 | Metric | Value |
 |--------|-------|
 | Total Work Items | 26 |
-| Completed | 23 |
+| Completed | 24 |
 | In Progress | 0 |
-| Pending | 3 |
+| Pending | 2 |
 | Blocked | 0 |
 
-**Completed Phases**: PHASE-00 through PHASE-04 (22 work items), PHASE-05 partially (WI-015)
-**Remaining**: PHASE-05 (WI-016), PHASE-06 (WI-017, WI-018)
+**Completed Phases**: PHASE-00 through PHASE-05 (24 work items)
+**Remaining**: PHASE-06 (WI-017, WI-018)
 
 ---
 
@@ -32,7 +32,7 @@
 | [PHASE-02](work/PHASE-02-architecture.md) | Architecture & Design | COMPLETED | WI-007, WI-008 (+ 8 sub-items) | Yes (research parallel) |
 | [PHASE-03](work/PHASE-03-domain.md) | Domain Implementation | COMPLETED | WI-009, WI-010, WI-011 | Yes (after WI-008) |
 | [PHASE-04](work/PHASE-04-infrastructure.md) | Infrastructure Adapters | COMPLETED | WI-012, WI-013, WI-014 | Yes (parallel with PHASE-03) |
-| [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | IN_PROGRESS | WI-015, WI-016 | No (needs 03+04) |
+| [PHASE-05](work/PHASE-05-integration.md) | Integration & CLI | COMPLETED | WI-015, WI-016 | No (needs 03+04) |
 | [PHASE-06](work/PHASE-06-testing.md) | Testing & Validation | PENDING | WI-017, WI-018 | Yes (after 05) |
 | [PHASE-BUGS](work/PHASE-BUGS.md) | Bug Tracking | ONGOING | - | - |
 | [PHASE-DISCOVERY](work/PHASE-DISCOVERY.md) | Discoveries | ONGOING | - | - |
@@ -106,12 +106,12 @@
 - **LayeredConfigAdapter**: TOML loading via tomllib, 4-level precedence (env > project > root > defaults) (27 tests)
 - **Total**: 72 unit tests passing
 
-### PHASE-05: Integration & CLI (IN_PROGRESS)
+### PHASE-05: Integration & CLI (COMPLETED)
 
 | ID | Title | Status | File | Assignee | Evidence |
 |----|-------|--------|------|----------|----------|
 | WI-015 | Update session_start.py Hook | COMPLETED | [wi-015-session-hook.md](work/wi-015-session-hook.md) | WT-CLI | 15 unit tests, commit `bc48b9f` |
-| WI-016 | CLI Config Commands | PENDING | [wi-016-cli-commands.md](work/wi-016-cli-commands.md) | WT-CLI | - |
+| WI-016 | CLI Config Commands | COMPLETED | [wi-016-cli-commands.md](work/wi-016-cli-commands.md) | WT-CLI | 10 E2E tests, commit `2b3e023` |
 
 **WI-015 Implementation Summary (commit `bc48b9f`):**
 - **LayeredConfigAdapter Integration**: `create_config_provider()` creates adapter with 4-level precedence
@@ -121,6 +121,14 @@
 - **Backward Compatibility**: 23/23 existing e2e tests pass unchanged
 - **New Tests**: 15 unit tests for local context functionality
 - **AC-015.4 Deferred**: Update local context on selection moved to WI-016
+
+**WI-016 Implementation Summary (commit `2b3e023`):**
+- **Config Namespace**: `jerry config show|get|set|path` commands in parser.py
+- **`cmd_config_show()`**: Displays merged config with optional `--source` flag
+- **`cmd_config_get()`**: Retrieves specific value with source info
+- **`cmd_config_set()`**: Writes to project/root/local scope with type coercion
+- **`cmd_config_path()`**: Shows configuration file paths
+- **E2E Tests**: 10/10 tests covering all commands
 
 ### PHASE-06: Testing & Validation (PENDING)
 
@@ -331,6 +339,13 @@ WI-008 Internal Dependencies:
 | 2026-01-12 | **IMPLEMENTATION**: Added `load_local_context()`, `get_active_project_from_local_context()`, `create_config_provider()` | Claude |
 | 2026-01-12 | **TESTS**: Created 15 unit tests in `tests/unit/interface/cli/test_session_start_local_context.py` | Claude |
 | 2026-01-12 | **BACKWARD COMPAT**: 23/23 existing e2e tests pass, 296 total session tests pass | Claude |
+| 2026-01-12 | **WI-016 STARTED**: CLI config commands implementation | Claude |
+| 2026-01-12 | **PARSER**: Added config namespace with show/get/set/path commands | Claude |
+| 2026-01-12 | **MAIN**: Added `_handle_config()` router for config namespace | Claude |
+| 2026-01-12 | **ADAPTER**: Added `cmd_config_show/get/set/path()` methods (lines 985-1322) | Claude |
+| 2026-01-12 | **E2E TESTS**: Created 10 E2E tests in `tests/e2e/test_config_commands.py` | Claude |
+| 2026-01-12 | **WI-016 COMPLETED**: All 10/10 E2E tests pass (commit `2b3e023`) | Claude |
+| 2026-01-12 | **PHASE-05 COMPLETED**: Both WI-015 and WI-016 finished | Claude |
 
 ---
 
