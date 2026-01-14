@@ -25,7 +25,7 @@ Fix Jerry plugin not loading when started via `claude --plugin-dir`. The plugin 
 | ID | Name | Status | Tasks |
 |----|------|--------|-------|
 | EN-002 | Investigate plugin loading failure | COMPLETE | Done via orchestration |
-| [EN-003](./en-003-validate-solution.md) | Validate Solution Hypothesis | IN PROGRESS | 4 tasks |
+| [EN-003](./en-003-validate-solution.md) | Validate Solution Hypothesis | COMPLETE ✅ | 4/4 tasks done |
 
 ---
 
@@ -42,12 +42,12 @@ Fix Jerry plugin not loading when started via `claude --plugin-dir`. The plugin 
 
 | ID | Title | Status | Blocks |
 |----|-------|--------|--------|
-| [disc-001](./disc-001-uv-portability-requirement.md) | uv Portability Requirement | OPEN | UoW-001 |
+| [disc-001](./disc-001-uv-portability-requirement.md) | uv Portability Requirement | RESOLVED ✅ | ~~UoW-001~~ (unblocked) |
 | disc-002 | CI vs Hook Environment Discrepancy | OPEN | → TD-002 |
 | disc-003 | Hooks Inconsistency (uv vs python3) | DOCUMENTED | → TD-003 |
 
-### disc-001: uv Portability Requirement [OPEN]
-ADR-PROJ007-002 proposed `python -m` but this violates portability requirement (must use `uv`). Solution: Remove PEP 723 metadata. Being validated via EN-003.
+### disc-001: uv Portability Requirement [RESOLVED ✅]
+**Solution validated via EN-003:** Remove PEP 723 inline metadata from session_start.py. This allows `uv run` to use the project's pyproject.toml instead of creating an isolated environment.
 
 ### disc-002: CI vs Hook Environment Discrepancy [CRITICAL → TD-002]
 **Root Cause for CI Passing but Hook Failing:**
@@ -66,7 +66,7 @@ ADR-PROJ007-002 proposed `python -m` but this violates portability requirement (
 
 | ID | Title | Status | Tasks | Blocked By |
 |----|-------|--------|-------|------------|
-| [UoW-001](./uow-001-implement-plugin-loading-fix.md) | Implement Plugin Loading Fix | BLOCKED | 12 tasks (TDD/BDD) | EN-003 |
+| [UoW-001](./uow-001-implement-plugin-loading-fix.md) | Implement Plugin Loading Fix | READY ✅ | 12 tasks (TDD/BDD) | ~~EN-003~~ (unblocked) |
 
 ### UoW-001: TDD/BDD Task Summary
 
@@ -145,3 +145,6 @@ ADR-PROJ007-002 proposed `python -m` but this violates portability requirement (
 | 2026-01-14 | TD-002 created from disc-002 | Claude |
 | 2026-01-14 | TD-003 created from disc-003 | Claude |
 | 2026-01-14 | UoW-001 detailed with TDD/BDD tasks (12 tasks) | Claude |
+| 2026-01-14 | EN-003 COMPLETE: Solution validated (all 4 tests passed) | Claude |
+| 2026-01-14 | disc-001 RESOLVED: PEP 723 removal confirmed as solution | Claude |
+| 2026-01-14 | UoW-001 UNBLOCKED: Ready for TDD/BDD implementation | Claude |

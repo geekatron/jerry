@@ -31,12 +31,15 @@ References:
     - ADR-PROJ004-004: JerrySession Context (5-level precedence)
     - PROJ-004-e-004: Configuration Precedence research
     - ADR e-010: uv Session Start solution
-"""
 
-# /// script
-# requires-python = ">=3.11"
-# dependencies = []
-# ///
+Note on PEP 723:
+    This script previously had PEP 723 inline metadata (dependencies = []),
+    which caused uv to create an isolated environment. This broke imports
+    from src.* because the isolated env ignores PYTHONPATH.
+
+    The metadata was removed so uv uses the project's pyproject.toml instead.
+    See: PROJ-007 disc-001, EN-003 validation.
+"""
 
 from __future__ import annotations
 

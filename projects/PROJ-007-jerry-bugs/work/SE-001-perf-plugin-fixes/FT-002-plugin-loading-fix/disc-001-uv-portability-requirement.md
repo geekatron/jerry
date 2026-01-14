@@ -3,7 +3,8 @@
 > **Discovery ID:** disc-001
 > **Date:** 2026-01-14
 > **Feature:** FT-002-plugin-loading-fix
-> **Status:** OPEN (Iterating)
+> **Status:** RESOLVED ✅
+> **Resolution:** Remove PEP 723 metadata (validated via EN-003)
 > **Author:** Adam Nowak, Claude
 
 ---
@@ -336,12 +337,35 @@ All hooks and CLI invocations must:
 
 ---
 
+## Validation Results (EN-003) ✅
+
+**Date:** 2026-01-14
+
+### Option B Validated: Remove PEP 723 Metadata
+
+| Test | Command | Result |
+|------|---------|--------|
+| Plugin Root | `PYTHONPATH="." uv run src/.../session_start.py` | ✅ PASSED |
+| Arbitrary Dir | `cd /tmp && CLAUDE_PROJECT_DIR=... PYTHONPATH=... uv run .../session_start.py` | ✅ PASSED |
+
+### Conclusion
+
+**HYPOTHESIS CONFIRMED:** Removing PEP 723 inline metadata fixes the plugin loading issue.
+
+Without `dependencies = []`:
+- uv uses project's `pyproject.toml` instead of isolated environment
+- PYTHONPATH is respected
+- `from src.infrastructure.*` imports resolve correctly
+- Works from any working directory when CLAUDE_PROJECT_DIR is set
+
+---
+
 ## Next Steps
 
-1. **Validate Option B** - Test removing PEP 723 metadata
-2. **Update CI** - Add test that mimics actual hook environment
-3. **Update ADR-PROJ007-002** - After validation, correct the solution
-4. **Consistency pass** - Consider updating all hooks to use `uv run`
+1. ~~**Validate Option B**~~ - ✅ DONE (EN-003)
+2. **Proceed with UoW-001** - TDD/BDD implementation
+3. **Update CI** - Add test that mimics actual hook environment (TD-002)
+4. **Update ADR-PROJ007-002** - Correct the solution
 
 ---
 
@@ -379,9 +403,11 @@ All hooks and CLI invocations must:
 | 2026-01-14 | Documented CI vs Hook discrepancy | Claude |
 | 2026-01-14 | Identified hooks inconsistency (uv vs python3) | Claude |
 | 2026-01-14 | User rejected hybrid approach - uv-only required | Adam Nowak |
+| 2026-01-14 | EN-003 validation completed - Option B confirmed | Claude |
+| 2026-01-14 | Status changed to RESOLVED | Claude |
 
 ---
 
 *Discovery created: 2026-01-14*
 *Last Updated: 2026-01-14*
-*Status: OPEN - Iterating on solution validation*
+*Status: RESOLVED - Solution validated, proceed with UoW-001*

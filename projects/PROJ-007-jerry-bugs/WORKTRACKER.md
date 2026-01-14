@@ -57,7 +57,7 @@
 
 | ID | Type | Description | Status | Feature |
 |----|------|-------------|--------|---------|
-| disc-001 | Requirement Gap | uv portability requirement missed in ADR-PROJ007-002 | OPEN | FT-002 |
+| disc-001 | Requirement Gap | uv portability requirement missed in ADR-PROJ007-002 | RESOLVED ✅ | FT-002 |
 | disc-002 | Test Gap | CI vs Hook environment discrepancy - CI passes but hook fails | OPEN | FT-002 |
 | disc-003 | Inconsistency | Hooks use mixed execution (SessionStart=uv, others=python3) | DOCUMENTED | FT-002 |
 
