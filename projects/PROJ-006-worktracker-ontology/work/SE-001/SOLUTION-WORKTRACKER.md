@@ -2,10 +2,11 @@
 
 > **Solution Epic ID:** SE-001
 > **Name:** Work Tracker Domain Understanding
-> **Status:** IN PROGRESS (57%)
+> **Status:** IN PROGRESS (57%) - Critic Review Pending at SYNC-3
 > **Project:** [PROJ-006-worktracker-ontology](../../ORCHESTRATION_PLAN.md)
 > **Created:** 2026-01-13
-> **Last Updated:** 2026-01-13
+> **Last Updated:** 2026-01-14
+> **Current Barrier:** SYNC-3 (CL-003 Critic Review Pending)
 
 ---
 
@@ -59,15 +60,26 @@ Work tracking systems have overlapping but inconsistent domain models. To build 
 │  ├── EN-001: ADO Scrum Analysis ─────┐                          │
 │  ├── EN-002: SAFe Analysis ──────────┼──► EN-004: Synthesis     │
 │  ├── EN-003: JIRA Analysis ──────────┘         │                │
-│  │                                              │                │
 │  │                                              ▼                │
-│  ├── WI-001: Ontology Design ◄─────────────────┘                │
+│  │                              ═══ SYNC-3 ═══ [CURRENT]        │
+│  │                                     │                        │
+│  │                              ┌──────┴──────┐                 │
+│  │                              │   CL-003    │ ◄── PENDING     │
+│  │                              └──────┬──────┘                 │
+│  │                                     ▼                        │
+│  ├── WI-001: Ontology Design ◄─────────┘                        │
+│  │         │                                                     │
+│  │         ▼                                                     │
+│  │  ═══ SYNC-4 ═══ ──► CL-004                                   │
 │  │         │                                                     │
 │  │         ▼                                                     │
 │  ├── WI-002: Template Generation                                 │
 │  │         │                                                     │
 │  │         ▼                                                     │
-│  └── WI-003: Review & Validation                                 │
+│  │  ═══ SYNC-5 ═══ ──► CL-005                                   │
+│  │         │                                                     │
+│  │         ▼                                                     │
+│  └── WI-003: Review & Validation (Final Gate)                    │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -94,17 +106,41 @@ Work tracking systems have overlapping but inconsistent domain models. To build 
 | Templates | BUG.md | `templates/BUG.md` | Not started |
 | Templates | SPIKE.md | `templates/SPIKE.md` | Not started |
 | Templates | ENABLER.md | `templates/ENABLER.md` | Not started |
+| Critic | CL-003 Synthesis Review | `reviews/CL-003-synthesis-review.md` | PENDING |
+| Critic | CL-004 Ontology Review | `reviews/CL-004-ontology-review.md` | Not started |
+| Critic | CL-005 Templates Review | `reviews/CL-005-templates-review.md` | Not started |
 | Review | Final Review | `reviews/FT-001-review.md` | Not started |
+
+---
+
+## Critic Loops
+
+Quality feedback loops ensure artifact integrity before proceeding to next phase.
+
+| ID | Name | Reviews | Status | Iteration | Gate |
+|----|------|---------|--------|-----------|------|
+| CL-003 | Synthesis Review | EN-004 | PENDING | 0/2 | SYNC-3 |
+| CL-004 | Ontology Review | WI-001 | BLOCKED | 0/2 | SYNC-4 |
+| CL-005 | Templates Review | WI-002 | BLOCKED | 0/2 | SYNC-5 |
+
+### Critic Decision Outcomes
+
+| Decision | Action |
+|----------|--------|
+| **APPROVED** | Proceed to next phase |
+| **REVISE** | Return to producer for corrections (up to max iterations) |
+| **DOCUMENT_PROCEED** | Accept with documented issues; proceed with risk acceptance |
 
 ---
 
 ## Orchestration State
 
-**State File:** `work/SE-001/FT-001/ORCHESTRATION.yaml`
+**State File:** `work/SE-001/FT-001/ORCHESTRATION.yaml` (v2.0)
 
 The ORCHESTRATION.yaml file is the single source of truth for:
 - Task status (pending, in_progress, completed)
 - Sync barrier status
+- **Critic loop status** (pending, in_progress, approved, revise, document_proceed)
 - Recovery instructions
 
 ---
@@ -119,3 +155,6 @@ The ORCHESTRATION.yaml file is the single source of truth for:
 | 2026-01-13 | Reached SYNC BARRIER 1 - awaiting approval for Phase 3 | Claude |
 | 2026-01-13 | EN-004 completed - Cross-domain synthesis | Claude (ps-synthesizer) |
 | 2026-01-13 | All enablers complete (4/4); awaiting SYNC BARRIER 3 approval | Claude |
+| 2026-01-14 | Added Critic Loops section; CL-003, CL-004, CL-005 defined | Claude |
+| 2026-01-14 | Updated dependency graph to show critic loops at sync barriers | Claude |
+| 2026-01-14 | Updated Orchestration State to reference YAML v2.0 | Claude |

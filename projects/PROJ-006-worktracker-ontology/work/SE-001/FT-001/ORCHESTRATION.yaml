@@ -1,28 +1,157 @@
 # ORCHESTRATION.yaml - Machine-readable state for session recovery
 # If Claude loses context, read this file to resume work
 #
+# Version: 2.0 - Added critic loop architecture
+#
 # Usage: On session start, if working on PROJ-006/FT-001:
 #   1. Read this file
-#   2. Find first task with status: in_progress or pending
-#   3. Resume from that task
-#   4. Update this file after each task completion
+#   2. Check if any critic_loops have status: pending or in_progress
+#   3. If critic pending, execute critic review before proceeding
+#   4. Find first task with status: in_progress or pending
+#   5. Resume from that task
+#   6. Update this file after each task/critic completion
 
 meta:
   project: PROJ-006-worktracker-ontology
   feature: FT-001
   feature_name: Domain Discovery
-  last_updated: "2026-01-13T23:45:00Z"
-  last_commit: null
+  schema_version: "2.0"
+  last_updated: "2026-01-14T00:00:00Z"
+  last_commit: "115a5ac"
   pr_url: null
 
 # Current overall status
 status: IN_PROGRESS
 completion: 57%
 current_phase: "SYNC_BARRIER_3"
-current_phase_name: "Awaiting Approval - Synthesis Complete"
+current_phase_name: "Critic Review CL-003 Pending"
 phase_1_completed: "2026-01-13T21:17:00Z"
 phase_2_completed: "2026-01-13T22:30:00Z"
 phase_3_completed: "2026-01-13T23:45:00Z"
+
+# Critic Loop Configuration (NEW in v2.0)
+critic_config:
+  enabled: true
+  default_max_iterations: 2
+  escalation_policy: human_on_max_iterations
+  timeout_minutes: 30
+  criteria_types:
+    lightweight:
+      - consistency_check
+      - completeness_check
+    full:
+      - completeness
+      - accuracy
+      - consistency
+      - coverage
+      - traceability
+
+# Critic Loops (NEW in v2.0)
+critic_loops:
+  - id: CL-003
+    name: "Synthesis Review"
+    reviews: EN-004
+    artifact_under_review: "synthesis/CROSS-DOMAIN-SYNTHESIS.md"
+    validation_sources:
+      - "analysis/ADO-SCRUM-MODEL.md"
+      - "analysis/SAFE-MODEL.md"
+      - "analysis/JIRA-MODEL.md"
+    critic_type: full
+    primary_agent: ps-reviewer
+    secondary_agent: nse-reviews
+    status: pending  # pending | in_progress | approved | revise | document_proceed
+    iteration: 0
+    max_iterations: 2
+    review_artifact: "reviews/CL-003-synthesis-review.md"
+    criteria:
+      - id: completeness
+        weight: high
+        check: "All entities from source models mapped"
+        status: pending
+      - id: accuracy
+        weight: critical
+        check: "Mappings reflect source semantics"
+        status: pending
+      - id: consistency
+        weight: high
+        check: "No contradictions in canonical definitions"
+        status: pending
+      - id: coverage
+        weight: medium
+        check: "All properties, relationships, states addressed"
+        status: pending
+    findings: []
+    decision: null
+    decision_reason: null
+    human_approved: false
+
+  - id: CL-004
+    name: "Ontology Review"
+    reviews: WI-001
+    artifact_under_review: "synthesis/ONTOLOGY-v1.md"
+    validation_sources:
+      - "synthesis/CROSS-DOMAIN-SYNTHESIS.md"
+    critic_type: full
+    primary_agent: ps-architect
+    secondary_agent: nse-reviews
+    status: blocked
+    blocked_by: [CL-003, WI-001]
+    iteration: 0
+    max_iterations: 2
+    review_artifact: "reviews/CL-004-ontology-review.md"
+    criteria:
+      - id: completeness
+        weight: high
+        check: "All canonical entities defined"
+        status: pending
+      - id: accuracy
+        weight: critical
+        check: "Entity schemas match synthesis"
+        status: pending
+      - id: consistency
+        weight: high
+        check: "State machine valid"
+        status: pending
+      - id: coverage
+        weight: medium
+        check: "All system mappings complete"
+        status: pending
+    findings: []
+    decision: null
+    decision_reason: null
+    human_approved: false
+
+  - id: CL-005
+    name: "Templates Review"
+    reviews: WI-002
+    artifact_under_review: "templates/*.md"
+    validation_sources:
+      - "synthesis/ONTOLOGY-v1.md"
+    critic_type: full
+    primary_agent: ps-reviewer
+    secondary_agent: null
+    status: blocked
+    blocked_by: [CL-004, WI-002]
+    iteration: 0
+    max_iterations: 2
+    review_artifact: "reviews/CL-005-templates-review.md"
+    criteria:
+      - id: completeness
+        weight: high
+        check: "All template types created"
+        status: pending
+      - id: accuracy
+        weight: high
+        check: "Templates match ontology"
+        status: pending
+      - id: consistency
+        weight: medium
+        check: "Consistent format across templates"
+        status: pending
+    findings: []
+    decision: null
+    decision_reason: null
+    human_approved: false
 
 # Enablers (technical prerequisites)
 enablers:
@@ -34,6 +163,7 @@ enablers:
     phase: 2
     agent: ps-researcher, ps-analyst
     blocked_by: []
+    critic: skipped  # retroactive - infrastructure added after execution
     research_output: "research/ADO-SCRUM-RAW.md"
     analysis_output: "analysis/ADO-SCRUM-MODEL.md"
     tasks:
@@ -76,6 +206,7 @@ enablers:
     phase: 2
     agent: ps-researcher, ps-analyst
     blocked_by: []
+    critic: skipped
     research_output: "research/SAFE-RAW.md"
     analysis_output: "analysis/SAFE-MODEL.md"
     tasks:
@@ -118,6 +249,7 @@ enablers:
     phase: 2
     agent: ps-researcher, ps-analyst
     blocked_by: []
+    critic: skipped
     research_output: "research/JIRA-RAW.md"
     analysis_output: "analysis/JIRA-MODEL.md"
     tasks:
@@ -160,6 +292,8 @@ enablers:
     phase: 3
     agent: ps-synthesizer
     blocked_by: [EN-001, EN-002, EN-003]
+    critic: CL-003  # Pending critic review
+    critic_status: pending
     synthesis_output: "synthesis/CROSS-DOMAIN-SYNTHESIS.md"
     completed_at: "2026-01-13T23:45:00Z"
     tasks:
@@ -189,7 +323,9 @@ work_items:
     tasks_total: 5
     phase: 4
     agent: nse-architecture, ps-architect
-    blocked_by: [EN-004]
+    blocked_by: [EN-004, CL-003]  # Now also blocked by critic
+    critic: CL-004
+    critic_status: blocked
     tasks:
       - id: 1
         name: "Design entity hierarchy"
@@ -214,7 +350,9 @@ work_items:
     tasks_total: 7
     phase: 5
     agent: ps-synthesizer
-    blocked_by: [WI-001]
+    blocked_by: [WI-001, CL-004]
+    critic: CL-005
+    critic_status: blocked
     tasks:
       - id: 1
         name: "Generate EPIC.md template"
@@ -245,7 +383,9 @@ work_items:
     tasks_total: 4
     phase: 6
     agent: nse-reviews
-    blocked_by: [WI-002]
+    blocked_by: [WI-002, CL-005]
+    critic: final_gate  # WI-003 is itself the final critic
+    critic_status: blocked
     tasks:
       - id: 1
         name: "Review ontology completeness"
@@ -260,17 +400,19 @@ work_items:
         name: "Final approval"
         status: pending
 
-# Sync barriers
+# Sync barriers (updated with critic gates)
 sync_barriers:
   - id: SYNC-1
     name: "All research complete"
     requires: [EN-001-research, EN-002-research, EN-003-research]
+    critic: null  # skipped retroactively
     status: completed
     completed_at: "2026-01-13T21:17:00Z"
 
   - id: SYNC-2
     name: "All analysis complete"
     requires: [EN-001, EN-002, EN-003]
+    critic: null  # skipped retroactively
     status: completed
     ready_at: "2026-01-13T22:30:00Z"
     completed_at: "2026-01-13T23:00:00Z"
@@ -282,22 +424,67 @@ sync_barriers:
   - id: SYNC-3
     name: "Synthesis complete"
     requires: [EN-004]
-    status: awaiting_approval
+    critic: CL-003
+    critic_status: pending
+    human_approval: pending
+    status: awaiting_critic
     ready_at: "2026-01-13T23:45:00Z"
     artifacts:
       - "synthesis/CROSS-DOMAIN-SYNTHESIS.md"
 
-# Recovery instructions
+  - id: SYNC-4
+    name: "Ontology approved"
+    requires: [WI-001]
+    critic: CL-004
+    critic_status: blocked
+    human_approval: pending
+    status: blocked
+    artifacts:
+      - "synthesis/ONTOLOGY-v1.md"
+      - "decisions/ADR-001-ontology-design.md"
+
+  - id: SYNC-5
+    name: "Templates ready"
+    requires: [WI-002]
+    critic: CL-005
+    critic_status: blocked
+    human_approval: pending
+    status: blocked
+    artifacts:
+      - "templates/*.md"
+
+# Loop history (tracks revision iterations)
+loop_history: []
+  # Example entry:
+  # - id: LB-001
+  #   critic_loop: CL-003
+  #   from_phase: SYNC-3
+  #   to_enabler: EN-004
+  #   iteration: 1
+  #   reason: "Accuracy issues found"
+  #   initiated_at: "2026-01-14T..."
+  #   resolved_at: null
+  #   resolution: null
+
+# Recovery instructions (updated for v2.0)
 recovery:
   if_session_lost: |
     1. Read this file: projects/PROJ-006-worktracker-ontology/work/SE-001/FT-001/ORCHESTRATION.yaml
-    2. Check 'status' field - if PENDING_APPROVAL, wait for user approval
-    3. If APPROVED/IN_PROGRESS, find first enabler/work_item with status: in_progress or pending
-    4. Check blocked_by dependencies are complete
-    5. Resume that task
-    6. After completion, update this file
+    2. Check critic_loops section for any status: pending or in_progress
+       - If CL-003 pending: Execute synthesis review before Phase 4
+       - If CL-004 pending: Execute ontology review before Phase 5
+       - If CL-005 pending: Execute templates review before Phase 6
+    3. Check sync_barriers for current barrier status
+    4. If critic approved/document_proceed AND human_approval: proceed to next phase
+    5. Find first enabler/work_item with status: in_progress or pending
+    6. Check blocked_by dependencies (including critic loops) are complete
+    7. Resume that task
+    8. After completion, update this file AND the corresponding *.md artifacts
 
   resume_command: |
     # To sync YAML state to TodoWrite:
-    # Parse this YAML and create todo items for any pending/in_progress tasks
-    # Respect blocked_by dependencies
+    # 1. Parse this YAML
+    # 2. Create META items for project context
+    # 3. Create todo for current critic loop if pending
+    # 4. Create todos for enabler/work_item tasks
+    # 5. Respect blocked_by dependencies including critic loops

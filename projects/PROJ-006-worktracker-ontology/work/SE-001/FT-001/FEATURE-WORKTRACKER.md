@@ -2,13 +2,14 @@
 
 > **Feature ID:** FT-001
 > **Name:** Domain Discovery
-> **Status:** IN PROGRESS (SYNC BARRIER 3 - Awaiting Approval)
+> **Status:** IN PROGRESS (SYNC BARRIER 3 - Critic Review Pending)
 > **Parent:** [SE-001](../SOLUTION-WORKTRACKER.md)
 > **Created:** 2026-01-13
-> **Last Updated:** 2026-01-13
+> **Last Updated:** 2026-01-14
 > **Phase 1 Completed:** 2026-01-13
 > **Phase 2 Completed:** 2026-01-13
 > **Phase 3 Completed:** 2026-01-13
+> **Current Barrier:** SYNC-3 (Awaiting CL-003 Critic Review)
 
 ---
 
@@ -36,29 +37,29 @@ Work tracking systems have overlapping but inconsistent domain models. To build 
 
 ## Enablers
 
-| ID | Name | Status | Tasks | Description |
-|----|------|--------|-------|-------------|
-| [EN-001](./en-001.md) | ADO Scrum Domain Analysis | COMPLETED | 6/6 | Research and analyze ADO Scrum domain |
-| [EN-002](./en-002.md) | SAFe Domain Analysis | COMPLETED | 6/6 | Research and analyze SAFe domain |
-| [EN-003](./en-003.md) | JIRA Domain Analysis | COMPLETED | 6/6 | Research and analyze JIRA domain |
-| [EN-004](./en-004.md) | Cross-Domain Synthesis | COMPLETED | 4/4 | Synthesize patterns across domains |
+| ID | Name | Status | Tasks | Critic | Description |
+|----|------|--------|-------|--------|-------------|
+| [EN-001](./en-001.md) | ADO Scrum Domain Analysis | COMPLETED | 6/6 | Skipped | Research and analyze ADO Scrum domain |
+| [EN-002](./en-002.md) | SAFe Domain Analysis | COMPLETED | 6/6 | Skipped | Research and analyze SAFe domain |
+| [EN-003](./en-003.md) | JIRA Domain Analysis | COMPLETED | 6/6 | Skipped | Research and analyze JIRA domain |
+| [EN-004](./en-004.md) | Cross-Domain Synthesis | COMPLETED | 4/4 | [CL-003](./reviews/CL-003-synthesis-review.md) PENDING | Synthesize patterns across domains |
 
 ---
 
 ## Units of Work
 
-| ID | Name | Status | Tasks | Description |
-|----|------|--------|-------|-------------|
-| [WI-001](./wi-001.md) | Parent Ontology Design | BLOCKED | 0/5 | Design canonical ontology |
-| [WI-002](./wi-002.md) | Markdown Template Generation | BLOCKED | 0/7 | Generate skill templates |
-| [WI-003](./wi-003.md) | Design Review & Validation | BLOCKED | 0/4 | Final review and quality gate |
+| ID | Name | Status | Tasks | Critic | Description |
+|----|------|--------|-------|--------|-------------|
+| [WI-001](./wi-001.md) | Parent Ontology Design | BLOCKED | 0/5 | [CL-004](./reviews/CL-004-ontology-review.md) BLOCKED | Design canonical ontology |
+| [WI-002](./wi-002.md) | Markdown Template Generation | BLOCKED | 0/7 | [CL-005](./reviews/CL-005-templates-review.md) BLOCKED | Generate skill templates |
+| [WI-003](./wi-003.md) | Design Review & Validation | BLOCKED | 0/4 | Final Gate | Final review and quality gate |
 
 ---
 
 ## Orchestration Pipeline
 
 ```
-PHASE 1: Parallel Research
+PHASE 1: Parallel Research (COMPLETED)
 ┌─────────────┬─────────────┬─────────────┐
 │   EN-001    │   EN-002    │   EN-003    │
 │  ADO Scrum  │    SAFe     │    JIRA     │
@@ -66,10 +67,10 @@ PHASE 1: Parallel Research
 └──────┬──────┴──────┬──────┴──────┬──────┘
        │             │             │
        └─────────────┼─────────────┘
-                     │
-          ═══ SYNC BARRIER 1 ═══
+                     ▼
+          ═══ SYNC BARRIER 1 ═══ [PASSED]
 
-PHASE 2: Parallel Analysis
+PHASE 2: Parallel Analysis (COMPLETED)
 ┌─────────────┬─────────────┬─────────────┐
 │   EN-001    │   EN-002    │   EN-003    │
 │  ADO Model  │ SAFe Model  │ JIRA Model  │
@@ -77,30 +78,57 @@ PHASE 2: Parallel Analysis
 └──────┬──────┴──────┬──────┴──────┬──────┘
        │             │             │
        └─────────────┼─────────────┘
-                     │
-          ═══ SYNC BARRIER 2 ═══
+                     ▼
+          ═══ SYNC BARRIER 2 ═══ [PASSED]
 
-PHASE 3: Cross-Domain Synthesis
+PHASE 3: Cross-Domain Synthesis (COMPLETED)
               ┌─────────────┐
               │   EN-004    │
               │ ps-synthesi │
               └──────┬──────┘
+                     ▼
+          ═══ SYNC BARRIER 3 ═══ [CURRENT]
                      │
-          ═══ SYNC BARRIER 3 ═══
-
-PHASE 4: Ontology Design
+              ┌──────┴──────┐
+              │   CL-003    │ ◄── PENDING
+              │  ps-review  │
+              └──────┬──────┘
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+   [APPROVE]    [REVISE]    [DOC+PROCEED]
+        │            │            │
+        ▼            ▼            │
+                ▲    │            │
+                └────┘            │
+                                  ▼
+PHASE 4: Ontology Design (BLOCKED)
               ┌─────────────┐
               │   WI-001    │
               │nse-architect│
               └──────┬──────┘
+                     ▼
+          ═══ SYNC BARRIER 4 ═══ [BLOCKED]
                      │
-PHASE 5: Template Generation
+              ┌──────┴──────┐
+              │   CL-004    │
+              │  ps-archit  │
+              └──────┬──────┘
+                     ▼
+PHASE 5: Template Generation (BLOCKED)
               ┌─────────────┐
               │   WI-002    │
               │ ps-synthesi │
               └──────┬──────┘
+                     ▼
+          ═══ SYNC BARRIER 5 ═══ [BLOCKED]
                      │
-PHASE 6: Review
+              ┌──────┴──────┐
+              │   CL-005    │
+              │  ps-review  │
+              └──────┬──────┘
+                     ▼
+PHASE 6: Final Review (BLOCKED)
               ┌─────────────┐
               │   WI-003    │
               │ nse-reviews │
@@ -111,16 +139,58 @@ PHASE 6: Review
 
 ## Progress Tracking
 
-| Phase | Status | Completion |
-|-------|--------|------------|
-| Phase 1: Research | COMPLETED | 100% |
-| Phase 2: Analysis | COMPLETED | 100% |
-| Phase 3: Synthesis | COMPLETED (awaiting SYNC-3 approval) | 100% |
-| Phase 4: Design | BLOCKED | 0% |
-| Phase 5: Templates | BLOCKED | 0% |
-| Phase 6: Review | BLOCKED | 0% |
+| Phase | Status | Completion | Critic |
+|-------|--------|------------|--------|
+| Phase 1: Research | COMPLETED | 100% | Skipped |
+| Phase 2: Analysis | COMPLETED | 100% | Skipped |
+| Phase 3: Synthesis | COMPLETED (Critic Review Pending) | 100% | CL-003 PENDING |
+| Phase 4: Design | BLOCKED | 0% | CL-004 BLOCKED |
+| Phase 5: Templates | BLOCKED | 0% | CL-005 BLOCKED |
+| Phase 6: Review | BLOCKED | 0% | Final Gate |
 
 **Overall Completion:** 57% (4/4 enablers complete + 0/3 work items)
+
+---
+
+## Critic Loops
+
+Quality feedback loops ensure artifact integrity before proceeding to next phase.
+
+| ID | Name | Reviews | Status | Iteration | Max | Artifact |
+|----|------|---------|--------|-----------|-----|----------|
+| CL-003 | Synthesis Review | EN-004 | PENDING | 0 | 2 | `reviews/CL-003-synthesis-review.md` |
+| CL-004 | Ontology Review | WI-001 | BLOCKED | 0 | 2 | `reviews/CL-004-ontology-review.md` |
+| CL-005 | Templates Review | WI-002 | BLOCKED | 0 | 2 | `reviews/CL-005-templates-review.md` |
+
+### Critic Loop Pattern
+
+```
+Producer ──► Artifact ──► Critic ──► Decision
+                              │
+             ┌────────────────┼────────────────┐
+             ▼                ▼                ▼
+          APPROVE          REVISE       DOCUMENT+PROCEED
+             │                │                │
+             │         ┌──────┘                │
+             │         ▼                       │
+             │    Return to                    │
+             │    Producer                     │
+             │         │                       │
+             │    ┌────┴────┐                  │
+             │    │ max_iter│                  │
+             │    │ reached?│                  │
+             │    └────┬────┘                  │
+             │         │                       │
+             │    Yes  │  No                   │
+             │    ▼    │  ▼                    │
+             │  Human  │  Loop                 │
+             │  Review │                       │
+             │    │    │                       │
+             │    ▼    │                       │
+             └────┼────┴───────────────────────┘
+                  ▼
+           Next Phase
+```
 
 ---
 
@@ -138,6 +208,9 @@ PHASE 6: Review
 | Ontology | `synthesis/ONTOLOGY-v1.md` | Not started |
 | ADR | `decisions/ADR-001-ontology-design.md` | Not started |
 | Templates | `templates/*.md` | Not started |
+| Review: CL-003 | `reviews/CL-003-synthesis-review.md` | PENDING |
+| Review: CL-004 | `reviews/CL-004-ontology-review.md` | Not started |
+| Review: CL-005 | `reviews/CL-005-templates-review.md` | Not started |
 
 ---
 
@@ -154,3 +227,6 @@ PHASE 6: Review
 | 2026-01-13 | Reached SYNC BARRIER 1 - awaiting approval | Claude |
 | 2026-01-13 | Phase 3 (Synthesis) completed - EN-004 cross-domain synthesis | Claude (ps-synthesizer) |
 | 2026-01-13 | EN-004 marked COMPLETED; awaiting SYNC BARRIER 3 approval | Claude |
+| 2026-01-14 | Added Critic Loop infrastructure: CL-003, CL-004, CL-005 | Claude |
+| 2026-01-14 | Updated tables with Critic columns; added Critic Loops section | Claude |
+| 2026-01-14 | Updated pipeline diagram with critic nodes at sync barriers | Claude |
