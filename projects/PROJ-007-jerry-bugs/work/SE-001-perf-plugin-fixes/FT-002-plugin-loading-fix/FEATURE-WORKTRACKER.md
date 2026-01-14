@@ -188,3 +188,5 @@ Session Start Tests:  33 passed
 | 2026-01-14 | disc-002 ADDRESSED: Hook uses entry point now | Claude |
 | 2026-01-14 | disc-004 DOCUMENTED: CLI Entry Point Pattern | Claude |
 | 2026-01-14 | FT-002 STATUS: RELEASED ✅ (v0.2.0) | Claude |
+| 2026-01-14 | CI-001: GitHub billing failure (NOT code bug) | Claude |
+| 2026-01-14 | Local validation: 2178 tests pass, code verified | Claude |
