@@ -55,7 +55,9 @@
 
 | ID | Type | Description | Status | Feature |
 |----|------|-------------|--------|---------|
-| *(none yet)* | - | - | - | - |
+| disc-001 | Requirement Gap | uv portability requirement missed in ADR-PROJ007-002 | OPEN | FT-002 |
+| disc-002 | Test Gap | CI vs Hook environment discrepancy - CI passes but hook fails | OPEN | FT-002 |
+| disc-003 | Inconsistency | Hooks use mixed execution (SessionStart=uv, others=python3) | DOCUMENTED | FT-002 |
 
 ---
 
@@ -83,3 +85,6 @@
 |------|--------|--------|
 | 2026-01-14 | Project created for performance and plugin bugs | Claude |
 | 2026-01-14 | Initial investigation started for BUG-001 (lock files) | Claude |
+| 2026-01-14 | disc-001 created: uv portability requirement gap | Claude |
+| 2026-01-14 | disc-002 identified: CI vs Hook environment discrepancy | Claude |
+| 2026-01-14 | disc-003 documented: Hooks use inconsistent execution methods | Claude |

@@ -25,7 +25,20 @@ Address lock file accumulation causing performance degradation. The `AtomicFileA
 
 ## Units of Work
 
-*None yet - to be created after investigation.*
+| ID | Title | Status | Tasks | ADR |
+|----|-------|--------|-------|-----|
+| UoW-001 | Implement Lock File Lifecycle Management | READY | 3 phases | ADR-PROJ007-001 |
+
+### UoW-001: Lock File Lifecycle Management
+
+**Based on:** ADR-PROJ007-001 (Hybrid cleanup approach)
+
+| Task | Description | Status |
+|------|-------------|--------|
+| T-001 | Implement `_cleanup_lock_file()` in AtomicFileAdapter | PENDING |
+| T-002 | Implement `LockFileGarbageCollector` service | PENDING |
+| T-003 | Add unit/integration tests for cleanup | PENDING |
+| T-004 | Integrate GC with session_start | PENDING |
 
 ---
 
