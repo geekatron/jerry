@@ -24,6 +24,67 @@ Jerry addresses this through:
 
 ---
 
+## Worktracker
+
+<worktracker>
+
+| Generic Term (Ontology) | Definition                                 | Relationship (Parent of...)    | SAFe Terminology          | Azure DevOps (Scrum)       | Jira (Standard) | Jira (Adv. Roadmaps) |
+|-------------------------|--------------------------------------------|--------------------------------|---------------------------|----------------------------|-----------------|----------------------|
+| Strategic Theme         | High-level business goal or category.      | Tags/Labels (Non-hierarchical) | Strategic Theme           | Tag / Value Area           | Label           | Theme                |
+| Initiative              | Large-scale endeavor spanning teams/years. | Solution Epic                  | Solution / Large Solution | Custom Initiative          | N/A             | Initiative           |
+| Solution Epic           | Major solution capability (6+ months).     | Feature                        | Portfolio Epic            | Epic                       | N/A             | Legend / High Epic   |
+| Feature                 | Distinct functionality (1-3 months).       | Story (Unit of Work)           | Feature                   | Feature                    | Epic            | Epic                 | 
+| Unit of Work            | Atomic value deliverable (INVEST).         | Task (Effort)                  | User Story                | Product Backlog Item (PBI) | Story           | Story                |
+| Enabler                 | Technical work item (non-user value).      | Task (Effort)                  | Enabler Story             | PBI (tagged Arch)          | Task            | Task                 |
+| Task (Effort)           | Atomic unit of labor/effort.               | None (Leaf Node)               | Task                      | Task                       | Sub-task        | Sub-task             |
+
+We use the Generic Term (Ontology) for all work items in our project documentation and tracking artifacts. The SAFe Terminology, Azure DevOps (Scrum) and Jira (Standard/Adv. Roadmaps) columns are provided for reference to map our ontology to common frameworks and tools.
+`WORKTRACKER.md` is the Global Manifest tracking all Initiatives, Solution Epic, Feature, Unit of Work, Enabler and Task (Effort). It exists in the root of the project folder ({ProjectId} e.g. `PROJ-005-plugin-bugs`). It is a pointer with relationships to all decomposed work items in `work/` folder. 
+A folder is created for each Solution Epic (`{SolutionEpicId}-{slug}`) in the `work/` folder. Each Solution Epic folder contains its own `SOLUTION-WORKTRACKER.md` tracking Features, Unit of Work, Enablers and Tasks (Effort) for that Strategic Theme. It is a pointer with relationships to all respective artifacts of the Solution Epic. 
+A folder is created for each Feature in the `work/{SolutionEpicId}-{slug}/` folder. Each Feature folder contains its own `FEATURE-WORKTRACKER.md` tracking Unit of Work, Enablers and Tasks (Effort) for that Feature. Each `FEATURE-WORKTRACKER.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Feature. 
+A file is created for each Unit of Work and Enabler in the `work/{SolutionEpicId}-{slug}/{FeatureId}-{slug}/` folder. Each Unit of Work and Enabler file contains its own `wi-{UnitOfWorkId}.md` or `en-{EnablerId}.md` tracking Tasks (Effort) for that Unit of Work or Enabler. All Tasks must have verifiable evidence before a Unit of Work or Enabler can be Closed.
+Each Unit of Work and Enabler File must be broken down into detailed tasks with verifiable acceptance criteria. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task. Each Unit of Work or Enabler must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
+Task must be broken down into detailed tasks with verifiable acceptance criteria. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task. Each Unit of Work or Enabler must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
+
+Each Task must be broken down into detailed tasks with verifiable acceptance criteria. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task. Each Unit of Work or Enabler must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
+Technical Debut, Bugs and Discoveries must be documented as individual `td-{UnitOfWorkId}-{slug}.md`, `bug-{UnitOfWorkId}-{slug}.md`, `disc-{UnitOfWorkId}-{slug}.md` files in the `work/{SolutionEpicId}/{FeatureId}/` folder as they are discovered. Each Technical Debut, Bug or Discovery file must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you. Each discovery, bug or technical debut must have verifiable evidence before it can be Closed.
+
+Use MCP Memory-Keeper to help you remember and maintain the structure and relationships of the Worktracker system. You don't have to remember everything, just remember to use MCP Memory-Keeper to help you keep track of everything. Try MCP Memory-Keeper first before searching the repository.
+
+Worktracker Directory Structure:
+```
+projects/
+└── {ProjectId} e.g. PROJ-005-plugin-bugs                                                       # Project Context Folder
+    ├── PLAN.md                                                                                 # Initial Project Plan and Overview. 
+    ├── WORKTRACKER.md                                                                          # Global Manifest tracking all work items. Pointer with relationships to all decomposed work items.
+    └── work/                                                                                   # Project Worktracker Decomposition Folder      
+        └── {SolutionEpicId}-{slug} e.g. SE-001-plugin-installation-fixes                       # Solution Epic Folder
+            ├── SOLUTION-WORKTRACKER.md                                                         # Solution Epic Worktracker tracking Features, Unit of Work, Enablers and Tasks. Pointer with relationships to all respective artifacts of the Solution Epic.
+            ├── plans/                                                                          # Folder for plans that we generate while working in the Solution Epic. As we work through the project and enouncter complexity we generate plans to help us navigate the complexity.
+            │   └── PLAN-{PlanId}-{slug}.md e.g. PLAN-001-holy-lazer-cats.md                    # Plan that we generate anytime we have to do something complicated. References the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task. Also referenced by the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task to easily and effectively traverse.
+            └── {FeatureId}-{slug} e.g. FT-001-manifest-validation-fixes                        # Feature Folder
+                ├── FEATURE-WORKTRACKER.md                                                      # Feature Worktracker tracking Unit of Work, Enablers and Tasks. Pointer with relationships to all respective artifacts of the Feature.
+                ├── en-{EnablerId}.md e.g. en-001-fix-plugin-json.md                            # Enabler File tracking Tasks. Must have verifiable evidence before Enabler can be Closed. Contains relationships to related artifacts.
+                ├── wi-{UnitOfWorkId}.md e.g. wi-001-detection-playbook.md                      # Unit of Work File tracking Tasks. Must have verifiable evidence before Unit of Work can be Closed. Contains relationships to related artifacts.
+                ├── bug-{UnitOfWorkId}-{slug}.md e.g. bug-001-plugin-json-errors.md             # Bug File documenting identified bugs. Enablers or Units of Work MUST be created to address documented bugs. Contains relationships to related artifacts.
+                ├── disc-{UnitOfWorkId}-{slug}.md e.g. disc-001-manifest-validation-insights.md # Discovery File documenting discoveries made. Discoveries MAY lead to creation of Enablers or Units of Work. Contains relationships to related artifacts.
+                └── td-{UnitOfWorkId}-{slug}.md e.g. td-001-lack-of-tests.md                    # Technical Debt File documenting technical debt identified. Enablers or Units of Work MUST be created to address documented technical debt. Contains relationships to related artifacts.
+```
+</worktracker>
+
+<todo>
+Required Behavior:
+- todo.1. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you are in project {JerryProjectId}
+- todo.2. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update the `*-WORKTRACKER.md` files.                                                                                                                                                                                                                              
+- todo.3. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update your respective Unit of Work and Enabler `*.md` files with detailed updates as you are working/progressing through them.
+- todo.4. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to document detailed bugs, discoveries and technical debut as they are discovered in their respective `*.md` files.
+- todo.5. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list up to date.                                                                                                                                                                                                                                                
+- todo.6. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with your `*-WORKTRACKER.md` and Units of Work.  You MUST keep your TODO in sync with the work-tracker.                                                                                                                                                     
+- todo.7. -> You MUST keep your TODO in sync with the work-tracker showing the previous Features, current Feature and next Feature -> the current Feature MUST show all Units of Work || Enablers -> the current Unit of Work || Enabler must show all Tasks. TODO List MUST survive compaction and provide high fidelity.
+- todo.8. -> You MUST keep your TODO in sync with the orchestration plan showing the previous phase, current phase and next phase -> current phase must show all tasks/subagents
+<todo>
+
+
 ## Architecture
 
 ```

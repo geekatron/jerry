@@ -13,6 +13,8 @@
 | `PROJ-003-agents-cleanup` | Agent and Skill Structure Cleanup | 📋 PLANNING | `cc/clean-up-agents` | 2026-01-12 |
 | `PROJ-004-jerry-config` | Jerry Configuration System | 🔄 IN PROGRESS | `PROJ-004-jerry-config` | 2026-01-12 |
 | `PROJ-005-plugin-bugs` | Plugin Installation Bugs | 🔄 IN PROGRESS | `cc/jerry-plugin-bugs` | 2026-01-13 |
+| `PROJ-006-worktracker-ontology` | Work Tracker Ontology | 🔄 IN PROGRESS | *(other worktree)* | 2026-01-13 |
+| `PROJ-007-jerry-bugs` | Jerry Performance and Plugin Bugs | 🔄 IN PROGRESS | `bugs/bugs-20260114-performance` | 2026-01-14 |
 
 ---
 

@@ -1,0 +1,259 @@
+# ORCHESTRATION.yaml - Single Source of Truth (SSOT)
+# Workflow: perf-plugin-investigation-20260114-001
+# Pattern: Fan-Out → Review Gate → Generator-Critic → Architecture → Synthesis
+# Version: 2.0.0
+# Created: 2026-01-14
+
+workflow:
+  id: "perf-plugin-investigation-20260114-001"
+  id_source: "user"
+  name: "Performance and Plugin Bug Investigations"
+  pattern: "fan-out-review-gate-generator-critic-architecture-synthesis"
+  project_id: "PROJ-007-jerry-bugs"
+  status: "COMPLETE"
+  version: "2.0.0"
+  created: "2026-01-14T00:00:00Z"
+  updated: "2026-01-14T12:40:00Z"
+
+phases:
+  phase_1:
+    id: 1
+    name: "Investigation"
+    description: "Root cause analysis for both bugs using 5 Whys, Ishikawa, and FMEA"
+    execution_mode: "PARALLEL"
+    status: "COMPLETED"
+    agents:
+      - id: "ps-investigator-bug-001"
+        bug_id: "BUG-001"
+        topic: "Lock file accumulation"
+        severity: "MEDIUM"
+        status: "COMPLETED"
+        artifact: "investigations/bug-001-e-001-investigation.md"
+        output_path: "investigations/bug-001-e-001-investigation.md"
+        started_at: "2026-01-14T12:00:00Z"
+        completed_at: "2026-01-14T12:05:00Z"
+
+      - id: "ps-investigator-bug-002"
+        bug_id: "BUG-002"
+        topic: "Plugin not loading"
+        severity: "HIGH"
+        status: "COMPLETED"
+        artifact: "investigations/bug-002-e-001-investigation.md"
+        output_path: "investigations/bug-002-e-001-investigation.md"
+        started_at: "2026-01-14T12:00:00Z"
+        completed_at: "2026-01-14T12:05:00Z"
+
+  phase_2:
+    id: 2
+    name: "Review Gate"
+    description: "Quality assessment of investigations before proceeding"
+    execution_mode: "PARALLEL"
+    status: "COMPLETED"
+    blocked_by: []
+    quality_threshold: 0.85
+    agents:
+      - id: "ps-reviewer-bug-001"
+        reviews: "ps-investigator-bug-001"
+        status: "COMPLETED"
+        artifact: "reviews/bug-001-review.md"
+        output_path: "reviews/bug-001-review.md"
+        quality_score: 0.91
+        started_at: "2026-01-14T12:10:00Z"
+        completed_at: "2026-01-14T12:15:00Z"
+
+      - id: "ps-reviewer-bug-002"
+        reviews: "ps-investigator-bug-002"
+        status: "COMPLETED"
+        artifact: "reviews/bug-002-review.md"
+        output_path: "reviews/bug-002-review.md"
+        quality_score: 0.91
+        started_at: "2026-01-14T12:10:00Z"
+        completed_at: "2026-01-14T12:15:00Z"
+
+  phase_2b:
+    id: "2b"
+    name: "Generator-Critic Loop"
+    description: "Conditional iteration if review quality < 0.85"
+    execution_mode: "CONDITIONAL"
+    status: "SKIPPED"
+    condition: "any review quality_score < 0.85"
+    skip_reason: "Both reviews passed threshold (0.91 >= 0.85)"
+    circuit_breaker:
+      max_iterations: 2
+      quality_threshold: 0.85
+      escalation: "human_review"
+    iterations: []
+
+  phase_3:
+    id: 3
+    name: "Architecture Proposals"
+    description: "Design architectural solutions (ADRs) for both bug fixes"
+    execution_mode: "PARALLEL"
+    status: "COMPLETED"
+    blocked_by: []
+    agents:
+      - id: "ps-architect-bug-001"
+        bug_id: "BUG-001"
+        deliverable: "Lock file cleanup ADR"
+        status: "COMPLETED"
+        artifact: "../../decisions/ADR-PROJ007-001-lock-file-cleanup.md"
+        output_path: "decisions/ADR-PROJ007-001-lock-file-cleanup.md"
+        started_at: "2026-01-14T12:20:00Z"
+        completed_at: "2026-01-14T12:25:00Z"
+
+      - id: "ps-architect-bug-002"
+        bug_id: "BUG-002"
+        deliverable: "Plugin loading fix ADR"
+        status: "COMPLETED"
+        artifact: "../../decisions/ADR-PROJ007-002-plugin-loading-fix.md"
+        output_path: "decisions/ADR-PROJ007-002-plugin-loading-fix.md"
+        started_at: "2026-01-14T12:20:00Z"
+        completed_at: "2026-01-14T12:25:00Z"
+
+  phase_4:
+    id: 4
+    name: "Cross-Validation"
+    description: "Validate both proposed solutions meet requirements and don't conflict"
+    execution_mode: "SEQUENTIAL"
+    status: "COMPLETED"
+    blocked_by: []
+    agents:
+      - id: "ps-validator"
+        validates: ["ps-architect-bug-001", "ps-architect-bug-002"]
+        status: "COMPLETED"
+        artifact: "validation/cross-validation-report.md"
+        output_path: "validation/cross-validation-report.md"
+        validation_score: 0.93
+        validation_status: "PASS"
+        started_at: "2026-01-14T12:30:00Z"
+        completed_at: "2026-01-14T12:35:00Z"
+
+  phase_5:
+    id: 5
+    name: "Final Synthesis"
+    description: "Combine all findings into comprehensive synthesis"
+    execution_mode: "SEQUENTIAL"
+    status: "COMPLETED"
+    blocked_by: []
+    agents:
+      - id: "ps-synthesizer"
+        inputs:
+          - "investigations/bug-001-e-001-investigation.md"
+          - "investigations/bug-002-e-001-investigation.md"
+          - "reviews/bug-001-review.md"
+          - "reviews/bug-002-review.md"
+          - "decisions/ADR-PROJ007-001-lock-file-cleanup.md"
+          - "decisions/ADR-PROJ007-002-plugin-loading-fix.md"
+          - "validation/cross-validation-report.md"
+        status: "COMPLETED"
+        artifact: "synthesis/final-synthesis.md"
+        output_path: "synthesis/final-synthesis.md"
+        started_at: "2026-01-14T12:35:00Z"
+        completed_at: "2026-01-14T12:40:00Z"
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Investigation"
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-investigator-bug-001"
+        - "ps-investigator-bug-002"
+      status: "COMPLETED"
+
+    - id: 2
+      name: "Review Gate"
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-reviewer-bug-001"
+        - "ps-reviewer-bug-002"
+      status: "COMPLETED"
+      blocked_by: []
+
+    - id: "2b"
+      name: "Generator-Critic Loop"
+      execution_mode: "CONDITIONAL"
+      agents: []
+      status: "SKIPPED"
+      condition: "review quality < 0.85"
+
+    - id: 3
+      name: "Architecture Proposals"
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-architect-bug-001"
+        - "ps-architect-bug-002"
+      status: "COMPLETED"
+      blocked_by: []
+
+    - id: 4
+      name: "Cross-Validation"
+      execution_mode: "SEQUENTIAL"
+      agents:
+        - "ps-validator"
+      status: "COMPLETED"
+      blocked_by: []
+
+    - id: 5
+      name: "Final Synthesis"
+      execution_mode: "SEQUENTIAL"
+      agents:
+        - "ps-synthesizer"
+      status: "COMPLETED"
+      blocked_by: []
+
+checkpoints:
+  latest_id: null
+  entries:
+    - id: "CP-001"
+      after_phase: 1
+      description: "Both investigations done"
+      created_at: null
+      state_snapshot: null
+    - id: "CP-002"
+      after_phase: 2
+      description: "Reviews done, critic loops complete"
+      created_at: null
+      state_snapshot: null
+    - id: "CP-003"
+      after_phase: 3
+      description: "ADRs created"
+      created_at: null
+      state_snapshot: null
+    - id: "CP-004"
+      after_phase: 4
+      description: "Validation done"
+      created_at: null
+      state_snapshot: null
+    - id: "CP-005"
+      after_phase: 5
+      description: "Synthesis done, workflow complete"
+      created_at: null
+      state_snapshot: null
+
+blockers:
+  active: []
+  resolved: []
+
+metrics:
+  phases_complete: 5
+  phases_total: 5
+  agents_executed: 8
+  agents_total: 8
+  agent_success_rate: 1.0
+  started_at: "2026-01-14T12:00:00Z"
+  completed_at: "2026-01-14T12:40:00Z"
+
+constitutional_compliance:
+  P-002: "All outputs persisted to files"
+  P-003: "Only main context spawns agents; agents do NOT spawn subagents"
+  P-010: "ORCHESTRATION_WORKTRACKER.md updated after each phase"
+  P-022: "Honest quality scores and progress reporting"
+
+resumption:
+  last_checkpoint_id: null
+  files_to_read:
+    - "orchestration/perf-plugin-investigation-20260114-001/ORCHESTRATION.yaml"
+    - "orchestration/perf-plugin-investigation-20260114-001/ORCHESTRATION_PLAN.md"
+    - "orchestration/perf-plugin-investigation-20260114-001/ORCHESTRATION_WORKTRACKER.md"
