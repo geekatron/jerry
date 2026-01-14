@@ -26,7 +26,7 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 
 | Feature | Enablers | Units of Work | Tasks | Status |
 |---------|----------|---------------|-------|--------|
-| FT-001 | 0 | 1 | TBD | IN PROGRESS |
+| FT-001 | 2 | 1 | 7 | IN PROGRESS |
 
 ---
 
@@ -38,13 +38,30 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 
 ## Enablers Summary
 
-*None required yet.*
+| ID | Name | Status | Feature | Orchestration |
+|----|------|--------|---------|---------------|
+| [EN-001](./FT-001-ascii-splash-screen/en-001-research-jerry-of-the-day.md) | Research Spike - Jerry of the Day | IN PROGRESS | FT-001 | ps-researcher |
+| [EN-002](./FT-001-ascii-splash-screen/en-002-research-shane-mcconkey.md) | Research Spike - Shane McConkey | PENDING | FT-001 | nse-explorer |
 
 ---
 
 ## Discoveries Summary
 
-*None documented yet.*
+| ID | Title | Feature | Status | Notes |
+|----|-------|---------|--------|-------|
+| disc-001 | Saucer Boy Connection | FT-001 | DOCUMENTED | Bot account `saucer-boy` is named after Shane McConkey's alter ego |
+
+---
+
+## Orchestration
+
+| Workflow ID | Pattern | Feature | Status |
+|-------------|---------|---------|--------|
+| [jerry-persona-20260114](../../orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md) | Cross-Pollinated Pipeline | FT-001 | ACTIVE |
+
+**Pipelines:**
+- **ps (Problem-Solving):** Jerry of the Day research → analysis → synthesis
+- **nse (NASA SE):** Shane McConkey exploration → architecture → QA
 
 ---
 
@@ -62,6 +79,9 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 |------|----------|-------------|
 | Global Manifest | [../../WORKTRACKER.md](../../WORKTRACKER.md) | Project work tracker |
 | Session Start Hook | `src/interface/cli/session_start.py` | Where splash will display |
+| Orchestration Plan | `orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md` | Workflow plan |
+| Orchestration State | `orchestration/jerry-persona-20260114/ORCHESTRATION.yaml` | SSOT |
+| Bot Account | GitHub `saucer-boy` | Named after Shane McConkey's alter ego |
 
 ---
 
@@ -71,3 +91,8 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 |------|--------|--------|
 | 2026-01-14 | SE-002 created for fun enhancements | Claude |
 | 2026-01-14 | FT-001 ASCII Splash Screen feature created | Claude |
+| 2026-01-14 | EN-001 created: Jerry of the Day research spike | Claude |
+| 2026-01-14 | EN-002 created: Shane McConkey research spike | Claude |
+| 2026-01-14 | disc-001 documented: Saucer Boy connection | Claude |
+| 2026-01-14 | Orchestration jerry-persona-20260114 initiated | Claude |
+| 2026-01-14 | Cross-pollinated pipeline designed (ps + nse) | Claude |

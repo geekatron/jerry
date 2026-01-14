@@ -1,0 +1,162 @@
+# ORCHESTRATION STATE (SSOT)
+# Workflow: Jerry Persona Development
+# Pattern: Cross-Pollinated Pipeline
+# Generated: 2026-01-14
+
+workflow:
+  id: "jerry-persona-20260114"
+  name: "Jerry Persona Development"
+  project_id: "PROJ-007-jerry-bugs"
+  feature_id: "FT-001"
+  pattern: "cross-pollinated-pipeline"
+  status: "ACTIVE"
+  created: "2026-01-14T00:00:00Z"
+  updated: "2026-01-14T00:00:00Z"
+
+pipelines:
+  pipeline_a:
+    name: "Problem-Solving Track"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    current_phase: 1
+    phases:
+      - id: 1
+        name: "Research"
+        status: "PENDING"
+        agents:
+          - id: "ps-researcher-001"
+            name: "Jerry of the Day Research"
+            status: "PENDING"
+            artifact: null
+            enabler: "EN-001"
+      - id: 2
+        name: "Analysis"
+        status: "PENDING"
+        agents:
+          - id: "ps-analyst-001"
+            name: "Framework Application Analysis"
+            status: "PENDING"
+            artifact: null
+      - id: 3
+        name: "Synthesis"
+        status: "PENDING"
+        agents:
+          - id: "ps-synthesizer-001"
+            name: "Persona Voice Guide"
+            status: "PENDING"
+            artifact: null
+
+  pipeline_b:
+    name: "NASA SE Track"
+    short_alias: "nse"
+    skill_source: "nasa-se"
+    current_phase: 1
+    phases:
+      - id: 1
+        name: "Exploration"
+        status: "PENDING"
+        agents:
+          - id: "nse-explorer-001"
+            name: "Shane McConkey Exploration"
+            status: "PENDING"
+            artifact: null
+            enabler: "EN-002"
+      - id: 2
+        name: "Architecture"
+        status: "PENDING"
+        agents:
+          - id: "nse-architect-001"
+            name: "Persona Integration Design"
+            status: "PENDING"
+            artifact: null
+      - id: 3
+        name: "Quality Assurance"
+        status: "PENDING"
+        agents:
+          - id: "nse-qa-001"
+            name: "Persona Validation"
+            status: "PENDING"
+            artifact: null
+
+barriers:
+  - id: "barrier-1"
+    name: "Research Exchange"
+    after_phases: ["ps-phase-1", "nse-phase-1"]
+    status: "PENDING"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/jerry-persona-20260114/barriers/barrier-1/ps-to-nse-handoff.md"
+        status: "PENDING"
+      nse_to_ps:
+        path: "orchestration/jerry-persona-20260114/barriers/barrier-1/nse-to-ps-handoff.md"
+        status: "PENDING"
+
+  - id: "barrier-2"
+    name: "Analysis Exchange"
+    after_phases: ["ps-phase-2", "nse-phase-2"]
+    status: "PENDING"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/jerry-persona-20260114/barriers/barrier-2/ps-to-nse-handoff.md"
+        status: "PENDING"
+      nse_to_ps:
+        path: "orchestration/jerry-persona-20260114/barriers/barrier-2/nse-to-ps-handoff.md"
+        status: "PENDING"
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Research Phase"
+      execution_mode: "PARALLEL"
+      status: "PENDING"
+      agents:
+        - "ps-researcher-001"
+        - "nse-explorer-001"
+    - id: 2
+      name: "Analysis Phase"
+      execution_mode: "PARALLEL"
+      status: "PENDING"
+      depends_on: "barrier-1"
+      agents:
+        - "ps-analyst-001"
+        - "nse-architect-001"
+    - id: 3
+      name: "Synthesis Phase"
+      execution_mode: "PARALLEL"
+      status: "PENDING"
+      depends_on: "barrier-2"
+      agents:
+        - "ps-synthesizer-001"
+        - "nse-qa-001"
+    - id: 4
+      name: "Final Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "PENDING"
+      depends_on: "group-3"
+      agents:
+        - "orch-synthesizer"
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+metrics:
+  phases_complete: 0
+  phases_total: 6
+  barriers_complete: 0
+  barriers_total: 2
+  agents_executed: 0
+  agents_total: 7
+  progress_percentage: 0
+
+blockers:
+  active: []
+  resolved: []
+
+resumption:
+  files_to_read:
+    - "orchestration/jerry-persona-20260114/ORCHESTRATION.yaml"
+    - "orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md"
+  last_checkpoint: null
+  next_action: "Execute Group 1 (Research Phase)"

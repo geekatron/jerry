@@ -32,7 +32,16 @@ Add a visually appealing ASCII art splash screen when Jerry initializes via the 
 
 ## Enablers
 
-*None required - straightforward implementation.*
+| ID | Name | Status | Tasks | Orchestration |
+|----|------|--------|-------|---------------|
+| [EN-001](./en-001-research-jerry-of-the-day.md) | Research Spike - Jerry of the Day | IN PROGRESS | 3 | ps-researcher |
+| [EN-002](./en-002-research-shane-mcconkey.md) | Research Spike - Shane McConkey | PENDING | 4 | nse-explorer |
+
+### EN-001: Jerry of the Day Research
+Research the skiing/snowboarding "Jerry" culture phenomenon. Extract insights for creating Jerry Framework's personality - the framework helps prevent "Jerry of the Day" moments caused by context rot.
+
+### EN-002: Shane McConkey Research
+Research Shane McConkey and his "Saucer Boy" persona. Shane embodies the "wise fool" archetype - appearing foolish while being brilliant. Perfect inspiration for Jerry Framework's voice. Note: Our bot account `saucer-boy` is named after Shane's alter ego.
 
 ---
 
@@ -52,7 +61,25 @@ Add a visually appealing ASCII art splash screen when Jerry initializes via the 
 
 | ID | Title | Status | Tasks | Blocked By |
 |----|-------|--------|-------|------------|
-| [UoW-001](./uow-001-implement-ascii-splash.md) | Implement ASCII Splash Screen | PENDING | TBD | - |
+| [UoW-001](./uow-001-implement-ascii-splash.md) | Implement ASCII Splash Screen | PENDING | TBD | EN-001, EN-002 |
+
+---
+
+## Orchestration
+
+This feature uses a cross-pollinated pipeline for research:
+
+| Workflow ID | Pattern | Status |
+|-------------|---------|--------|
+| `jerry-persona-20260114` | Cross-Pollinated Pipeline | IN PROGRESS |
+
+**Pipelines:**
+- **Pipeline A (ps)**: Problem-Solving - Jerry of the Day research and synthesis
+- **Pipeline B (nse)**: NASA SE - Shane McConkey exploration and architecture
+
+**Artifacts:** `orchestration/jerry-persona-20260114/`
+
+See: [ORCHESTRATION_PLAN.md](../../../orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md)
 
 ---
 
@@ -101,6 +128,9 @@ JERRY_SPLASH=1  # Enable splash screen (default)
 | Solution Tracker | [../SOLUTION-WORKTRACKER.md](../SOLUTION-WORKTRACKER.md) | Parent SE-002 |
 | Session Start | `src/interface/cli/session_start.py` | Target file for splash |
 | Hook Config | `hooks/hooks.json` | Hook configuration |
+| Orchestration Plan | `orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md` | Workflow plan |
+| Orchestration State | `orchestration/jerry-persona-20260114/ORCHESTRATION.yaml` | SSOT |
+| Bot Account | GitHub `saucer-boy` | Named after Shane's alter ego |
 
 ---
 
@@ -110,3 +140,7 @@ JERRY_SPLASH=1  # Enable splash screen (default)
 |------|--------|--------|
 | 2026-01-14 | FT-001 created | Claude |
 | 2026-01-14 | Initial design considerations documented | Claude |
+| 2026-01-14 | EN-001 created: Jerry of the Day research spike | Claude |
+| 2026-01-14 | EN-002 created: Shane McConkey research spike | Claude |
+| 2026-01-14 | Orchestration workflow jerry-persona-20260114 initiated | Claude |
+| 2026-01-14 | UoW-001 blocked by enablers until research complete | Claude |
