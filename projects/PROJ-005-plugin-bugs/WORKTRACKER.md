@@ -61,8 +61,9 @@
 | DISC-004 | Discovery | ps-* artifact naming violation | DOCUMENTED | FT-002 | - |
 | [DISC-005](./work/SE-001/FT-002/disc-005.md) | Discovery | PYTHONPATH required for uv run | RESOLVED | FT-002 | EN-003 |
 | [DISC-006](./work/SE-002/FT-003/disc-006.md) | Discovery | Duplicate tests/ folders (root vs scripts/) | DOCUMENTED | FT-003 | - |
-| [DISC-007](./work/SE-002/FT-003/disc-007.md) | Discovery | Existing session_start.py tests broken | REQUIRES ACTION | FT-003 | EN-004 |
-| [DISC-008](./work/SE-002/FT-003/disc-008.md) | Discovery | Test execution must use uv, not python3 | REQUIRES ACTION | FT-003 | EN-005 |
+| [DISC-007](./work/SE-002/FT-003/disc-007.md) | Discovery | Existing session_start.py tests broken | RESOLVED | FT-003 | EN-004 |
+| [DISC-008](./work/SE-002/FT-003/disc-008.md) | Discovery | Test execution must use uv, not python3 | RESOLVED | FT-003 | EN-005 |
+| [DISC-009](./work/SE-002/FT-003/disc-009.md) | Discovery | Duplicate pytest config (pytest.ini vs pyproject.toml) | DOCUMENTED | FT-003 | - |
 
 ---
 
