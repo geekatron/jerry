@@ -54,20 +54,27 @@ This Solution Epic addresses two critical bugs affecting Jerry Framework usabili
 
 ---
 
-## Enablers (Cross-Feature)
+## Enablers Summary
 
 | ID | Name | Status | Feature | Tracker |
 |----|------|--------|---------|---------|
-| [EN-004](./en-004-bot-account-setup.md) | Bot Account Setup | **COMPLETE ✅** | (all) | [en-004-bot-account-setup.md](./en-004-bot-account-setup.md) |
+| EN-001 | Investigate lock file issue | PENDING | FT-001 | TBD |
+| EN-002 | Investigate plugin loading failure | COMPLETE | FT-002 | (orchestration) |
+| EN-003 | Validate solution hypothesis | COMPLETE ✅ | FT-002 | [en-003](./FT-002-plugin-loading-fix/en-003-validate-solution.md) |
+| [EN-004](./FT-002-plugin-loading-fix/en-004-bot-account-setup.md) | Bot Account Setup | **COMPLETE ✅** | FT-002 | [en-004](./FT-002-plugin-loading-fix/en-004-bot-account-setup.md) |
 
 ---
 
-## Discoveries
+## Discoveries Summary
 
-| ID | Title | Status | Resolution |
-|----|-------|--------|------------|
-| [disc-005](./disc-005-pr-author-cannot-approve.md) | PR Author Cannot Approve | RESOLVED ✅ | EN-004 (bot account) |
-| [disc-006](./disc-006-origin-head-misconfiguration.md) | origin/HEAD Misconfiguration | RESOLVED ✅ | git remote set-head |
+| ID | Title | Feature | Status | Resolution |
+|----|-------|---------|--------|------------|
+| disc-001 | uv Portability Requirement | FT-002 | RESOLVED ✅ | Remove PEP 723 |
+| disc-002 | CI vs Hook Environment | FT-002 | ADDRESSED ✅ | Entry point |
+| disc-003 | Hooks Inconsistency | FT-002 | DOCUMENTED | → TD-003 |
+| [disc-004](./FT-002-plugin-loading-fix/disc-004-cli-entry-point-pattern.md) | CLI Entry Point Pattern | FT-002 | DOCUMENTED ✅ | Informational |
+| [disc-005](./FT-002-plugin-loading-fix/disc-005-pr-author-cannot-approve.md) | PR Author Cannot Approve | FT-002 | RESOLVED ✅ | EN-004 |
+| [disc-006](./FT-002-plugin-loading-fix/disc-006-origin-head-misconfiguration.md) | origin/HEAD Misconfiguration | FT-002 | RESOLVED ✅ | git config |
 
 ---
 
