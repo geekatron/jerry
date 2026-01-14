@@ -46,7 +46,7 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | ID | Name | Status | Tasks | Description |
 |----|------|--------|-------|-------------|
 | [WI-002](./wi-002.md) | GitHub CI Build Verification | COMPLETED | 14/14 | Verify all CI jobs pass after EN-004/005/006 |
-| [WI-001](./wi-001.md) | Detection/prevention/mitigation playbook | PENDING | 0/? | Operational runbook for regression handling |
+| [WI-001](./wi-001.md) | Detection/prevention/mitigation playbook | IN PROGRESS | 8/9 | Operational runbook for regression handling |
 
 ---
 
@@ -56,7 +56,7 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 |----|-------------|--------|--------------|
 | TD-001 | No automated tests for plugin hooks | RESOLVED | EN-004 |
 | TD-002 | No CI validation of standalone execution | RESOLVED | EN-005 |
-| TD-003 | No documented regression prevention | OPEN | WI-001 |
+| TD-003 | No documented regression prevention | RESOLVED | WI-001 (RUNBOOK-001) |
 
 ---
 
@@ -121,3 +121,4 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | 2026-01-13 | All 3 enablers complete (EN-004, EN-005, EN-006), WI-001 pending | Claude |
 | 2026-01-13 | Added WI-002: GitHub CI Build Verification (14 tasks) - gate before WI-001 | Claude |
 | 2026-01-13 | WI-002 COMPLETED: All CI jobs pass (run 20978895829) | Claude |
+| 2026-01-13 | WI-001 8/9 tasks done: RUNBOOK-001 published, TD-003 RESOLVED | Claude |
