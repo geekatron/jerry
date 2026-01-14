@@ -1,0 +1,192 @@
+# ORCHESTRATION.yaml - Machine-readable state for session recovery
+# If Claude loses context, read this file to resume work
+#
+# Usage: On session start, if working on PROJ-005/FT-003:
+#   1. Read this file
+#   2. Find first task with status: in_progress or pending
+#   3. Resume from that task
+#   4. Update this file after each task completion
+
+meta:
+  project: PROJ-005-plugin-bugs
+  feature: FT-003
+  feature_name: SessionStart & CLI Integration Testing
+  last_updated: "2026-01-13T02:30:00Z"
+  last_commit: 98a1aaf
+  pr_url: https://github.com/geekatron/jerry/pull/11
+
+# Current overall status
+status: COMPLETED
+completion: 100%
+
+# Enablers (technical prerequisites)
+enablers:
+  - id: EN-004
+    name: Fix session_start.py tests
+    status: COMPLETED
+    tasks_done: 9
+    tasks_total: 9
+    evidence: "23 E2E tests pass with uv execution model"
+
+  - id: EN-005
+    name: Pre-commit/CI hooks for plugin validation
+    status: COMPLETED
+    tasks_done: 9
+    tasks_total: 9
+    evidence: "plugin-validation CI job passes"
+
+  - id: EN-006
+    name: CLI integration test suite
+    status: COMPLETED
+    tasks_done: 9
+    tasks_total: 9
+    evidence: "27 subprocess tests, cli-integration CI job"
+
+# Work Items (deliverables)
+work_items:
+  - id: WI-002
+    name: GitHub CI Build Verification
+    status: COMPLETED
+    tasks_done: 14
+    tasks_total: 14
+    evidence: "CI run 20978895829 all green"
+    tasks:
+      - id: 1
+        name: "Run local lint check"
+        status: COMPLETED
+
+      - id: 2
+        name: "Run local type check"
+        status: COMPLETED
+
+      - id: 3
+        name: "Verify plugin-validation locally"
+        status: COMPLETED
+
+      - id: 4
+        name: "Verify cli-integration locally"
+        status: COMPLETED
+
+      - id: 5
+        name: "Push branch and trigger CI"
+        status: COMPLETED
+        evidence: "Commit 08a40ef"
+
+      - id: 6
+        name: "Monitor CI job: lint"
+        status: COMPLETED
+
+      - id: 7
+        name: "Monitor CI job: type-check"
+        status: COMPLETED
+
+      - id: 8
+        name: "Monitor CI job: security"
+        status: COMPLETED
+
+      - id: 9
+        name: "Monitor CI job: plugin-validation"
+        status: COMPLETED
+
+      - id: 10
+        name: "Monitor CI job: cli-integration"
+        status: COMPLETED
+        evidence: "Fixed with commit a8af425"
+
+      - id: 11
+        name: "Monitor CI job: test-pip"
+        status: COMPLETED
+        evidence: "Fixed with commits f0cbde7, d0f15a8"
+
+      - id: 12
+        name: "Monitor CI job: test-uv"
+        status: COMPLETED
+
+      - id: 13
+        name: "Fix any failures discovered"
+        status: COMPLETED
+        evidence: "3 fixes: a8af425, f0cbde7, d0f15a8"
+
+      - id: 14
+        name: "Verify ci-success job passes"
+        status: COMPLETED
+        evidence: "Run 20978895829"
+
+  - id: WI-001
+    name: Detection/prevention/mitigation playbook
+    status: COMPLETED
+    tasks_done: 9
+    tasks_total: 9
+    evidence: "runbooks/RUNBOOK-001-plugin-regression-playbook.md"
+    tasks:
+      - id: 1
+        name: "Document BUG-007 as case study"
+        status: COMPLETED
+        evidence: "RUNBOOK-001 Case Study section"
+
+      - id: 2
+        name: "Write detection strategies section"
+        status: COMPLETED
+        evidence: "ELI5 + L1 + L2 sections"
+
+      - id: 3
+        name: "Write prevention strategies section"
+        status: COMPLETED
+        evidence: "L3 prevention checklist"
+
+      - id: 4
+        name: "Write mitigation strategies section"
+        status: COMPLETED
+        evidence: "L3 resolution patterns"
+
+      - id: 5
+        name: "Create pre-release validation checklist"
+        status: COMPLETED
+        evidence: "Pre-Release Checklist section"
+
+      - id: 6
+        name: "Create troubleshooting flowchart"
+        status: COMPLETED
+        evidence: "ASCII flowchart"
+
+      - id: 7
+        name: "Document rollback procedures"
+        status: COMPLETED
+        evidence: "Rollback Procedures section"
+
+      - id: 8
+        name: "Review with team"
+        status: COMPLETED
+        evidence: "User approved, PR #11 created"
+
+      - id: 9
+        name: "Publish to runbooks/"
+        status: COMPLETED
+        evidence: "runbooks/RUNBOOK-001-plugin-regression-playbook.md"
+
+# Technical debt resolved
+tech_debt_resolved:
+  - id: TD-001
+    description: "No automated tests for plugin hooks"
+    resolved_by: EN-004
+
+  - id: TD-002
+    description: "No CI validation of standalone execution"
+    resolved_by: EN-005
+
+  - id: TD-003
+    description: "No documented regression prevention"
+    resolved_by: WI-001
+
+# Recovery instructions
+recovery:
+  if_session_lost: |
+    1. Read this file: projects/PROJ-005-plugin-bugs/work/SE-002/FT-003/ORCHESTRATION.yaml
+    2. Check 'status' field - if COMPLETED, no action needed
+    3. If IN_PROGRESS, find first task with status: pending or in_progress
+    4. Resume that task
+    5. After completion, update this file and commit
+
+  resume_command: |
+    # To sync YAML state to TodoWrite:
+    # Parse this YAML and create todo items for any pending/in_progress tasks
