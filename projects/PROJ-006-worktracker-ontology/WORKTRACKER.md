@@ -1,0 +1,97 @@
+# WORKTRACKER: PROJ-006 Work Tracker Ontology
+
+> **Project ID:** PROJ-006-worktracker-ontology
+> **Status:** IN PROGRESS
+> **Created:** 2026-01-13
+> **Last Updated:** 2026-01-13
+
+---
+
+## Global Manifest
+
+This document is the root pointer tracking all Solution Epics, Features, Units of Work, and Enablers for PROJ-006.
+
+---
+
+## Solution Epics
+
+| ID | Name | Status | Progress | Location |
+|----|------|--------|----------|----------|
+| [SE-001](./work/SE-001/SOLUTION-WORKTRACKER.md) | Work Tracker Domain Understanding | IN PROGRESS | 50% | `work/SE-001/` |
+
+---
+
+## Quick Navigation
+
+### Active Work
+
+| Type | ID | Name | Status | Parent |
+|------|-----|------|--------|--------|
+| Feature | [FT-001](./work/SE-001/FT-001/FEATURE-WORKTRACKER.md) | Domain Discovery | IN PROGRESS | SE-001 |
+
+### Completed Work
+
+| Type | ID | Name | Completed | Parent |
+|------|-----|------|-----------|--------|
+| Enabler | [EN-001](./work/SE-001/FT-001/en-001.md) | ADO Scrum Domain Analysis | 2026-01-13 | FT-001 |
+| Enabler | [EN-002](./work/SE-001/FT-001/en-002.md) | SAFe Domain Analysis | 2026-01-13 | FT-001 |
+| Enabler | [EN-003](./work/SE-001/FT-001/en-003.md) | JIRA Domain Analysis | 2026-01-13 | FT-001 |
+| Enabler | [EN-004](./work/SE-001/FT-001/en-004.md) | Cross-Domain Synthesis | 2026-01-13 | FT-001 |
+
+### Blocked Work
+
+| Type | ID | Name | Blocked By | Parent |
+|------|-----|------|------------|--------|
+| Unit of Work | [WI-001](./work/SE-001/FT-001/wi-001.md) | Parent Ontology Design | EN-004 | FT-001 |
+| Unit of Work | [WI-002](./work/SE-001/FT-001/wi-002.md) | Markdown Template Generation | WI-001 | FT-001 |
+| Unit of Work | [WI-003](./work/SE-001/FT-001/wi-003.md) | Design Review & Validation | WI-002 | FT-001 |
+
+---
+
+## Progress Summary
+
+| Component | Done | Total | Completion |
+|-----------|------|-------|------------|
+| Solution Epics | 0 | 1 | 0% |
+| Features | 0 | 1 | 0% |
+| Enablers | 4 | 4 | 100% |
+| Units of Work | 0 | 3 | 0% |
+| **Overall** | - | - | **57%** |
+
+---
+
+## Artifact Registry
+
+| Category | Artifact | Location | Status |
+|----------|----------|----------|--------|
+| Research | ADO Scrum Raw | `research/ADO-SCRUM-RAW.md` | COMPLETED |
+| Research | SAFe Raw | `research/SAFE-RAW.md` | COMPLETED |
+| Research | JIRA Raw | `research/JIRA-RAW.md` | COMPLETED |
+| Analysis | ADO Model | `analysis/ADO-SCRUM-MODEL.md` | COMPLETED |
+| Analysis | SAFe Model | `analysis/SAFE-MODEL.md` | COMPLETED |
+| Analysis | JIRA Model | `analysis/JIRA-MODEL.md` | COMPLETED |
+| Synthesis | Cross-Domain | `synthesis/CROSS-DOMAIN-SYNTHESIS.md` | COMPLETED |
+| Synthesis | Ontology v1 | `synthesis/ONTOLOGY-v1.md` | Not started |
+| Decision | ADR-001 | `decisions/ADR-001-ontology-design.md` | Not started |
+| Templates | All templates | `templates/*.md` | Not started |
+
+---
+
+## Orchestration State
+
+**Current Phase:** Phase 3 - Cross-Domain Synthesis (COMPLETED)
+**Current Barrier:** Awaiting Sync Barrier 3 Approval
+**Next Phase:** Phase 4 - Ontology Design (Blocked until SYNC-3 approved)
+**State File:** `work/SE-001/FT-001/ORCHESTRATION.yaml`
+
+---
+
+## Change Log
+
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-01-13 | Created WORKTRACKER.md | Claude |
+| 2026-01-13 | EN-001, EN-002, EN-003 completed | Claude |
+| 2026-01-13 | Phase 3 approved, EN-004 started | Claude |
+| 2026-01-13 | EN-004 completed; synthesis report generated | Claude (ps-synthesizer) |
+| 2026-01-13 | All enablers complete (4/4); awaiting SYNC-3 approval | Claude |
