@@ -35,6 +35,12 @@ from pathlib import Path
 
 import pytest
 
+# Mark entire module as subprocess tests (requires uv)
+# These tests run session_start.py via subprocess using uv run
+pytestmark = [
+    pytest.mark.subprocess,
+]
+
 # =============================================================================
 # Test Fixtures
 # =============================================================================
