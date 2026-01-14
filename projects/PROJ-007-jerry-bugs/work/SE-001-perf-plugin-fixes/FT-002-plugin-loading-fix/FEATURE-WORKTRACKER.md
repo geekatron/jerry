@@ -190,3 +190,7 @@ Session Start Tests:  33 passed
 | 2026-01-14 | FT-002 STATUS: RELEASED ✅ (v0.2.0) | Claude |
 | 2026-01-14 | CI-001: GitHub billing failure (NOT code bug) | Claude |
 | 2026-01-14 | Local validation: 2178 tests pass, code verified | Claude |
+| 2026-01-14 | Billing resolved by Adam Nowak | Adam Nowak |
+| 2026-01-14 | Ruff formatting fixed (83b5c57) | Claude |
+| 2026-01-14 | **CI PASSED: Run 21007707358 (14/14 jobs green)** | Claude |
+| 2026-01-14 | FT-002 v0.2.0 FULLY VALIDATED ✅ | Claude |

@@ -3,7 +3,7 @@
 > **Investigation ID:** CI-001
 > **Project:** PROJ-007-jerry-bugs
 > **Severity:** HIGH (blocks CI validation)
-> **Status:** ROOT CAUSE IDENTIFIED
+> **Status:** ✅ RESOLVED
 > **Investigator:** Claude (ps-investigator methodology)
 > **Date:** 2026-01-14
 
@@ -159,10 +159,13 @@ RPN > 100 indicates this should be addressed, but **by the repository owner, not
 | 2026-01-14 19:35 | Investigation created | ROOT CAUSE IDENTIFIED |
 | 2026-01-14 19:40 | User resolved billing issue | ✅ RESOLVED |
 | 2026-01-14 19:42 | Secondary issue found: ruff formatting | Fixed in 83b5c57 |
+| 2026-01-14 19:51 | **CI PASSED: Run 21007707358** | ✅ 14/14 jobs green |
 
 **Billing Issue:** ✅ RESOLVED by Adam Nowak
 
 **Secondary Issue Found:** `test_session_start.py` needed ruff formatting (quote style, assertion parentheses). Fixed in commit `83b5c57`.
+
+**Final Status:** ✅ ALL RESOLVED - CI passing, FT-002 v0.2.0 fully validated.
 
 ---
 
