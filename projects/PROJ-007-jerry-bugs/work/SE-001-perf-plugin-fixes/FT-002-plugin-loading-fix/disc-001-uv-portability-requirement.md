@@ -348,15 +348,33 @@ All hooks and CLI invocations must:
 | Plugin Root | `PYTHONPATH="." uv run src/.../session_start.py` | ✅ PASSED |
 | Arbitrary Dir | `cd /tmp && CLAUDE_PROJECT_DIR=... PYTHONPATH=... uv run .../session_start.py` | ✅ PASSED |
 
+### User Verification (Acceptance Gate) ✅
+
+**Date:** 2026-01-14
+**Verified by:** Adam Nowak
+
+```bash
+$ JERRY_PROJECT=PROJ-007-jerry-bugs CLAUDE_CONFIG_DIR=~/.claude-geek \
+  claude --plugin-dir=/path/to/bugs_20260114_performance
+
+⎿  SessionStart:startup hook succeeded: Jerry Framework initialized. See CLAUDE.md for context.
+   <project-context>
+   ProjectActive: PROJ-007-jerry-bugs
+   ProjectPath: projects/PROJ-007-jerry-bugs/
+   ValidationMessage: Project is properly configured
+   </project-context>
+```
+
 ### Conclusion
 
-**HYPOTHESIS CONFIRMED:** Removing PEP 723 inline metadata fixes the plugin loading issue.
+**HYPOTHESIS CONFIRMED AND USER VERIFIED:** Removing PEP 723 inline metadata fixes the plugin loading issue.
 
 Without `dependencies = []`:
 - uv uses project's `pyproject.toml` instead of isolated environment
 - PYTHONPATH is respected
 - `from src.infrastructure.*` imports resolve correctly
 - Works from any working directory when CLAUDE_PROJECT_DIR is set
+- **User manually verified via `claude --plugin-dir`** ✅
 
 ---
 
@@ -405,6 +423,7 @@ Without `dependencies = []`:
 | 2026-01-14 | User rejected hybrid approach - uv-only required | Adam Nowak |
 | 2026-01-14 | EN-003 validation completed - Option B confirmed | Claude |
 | 2026-01-14 | Status changed to RESOLVED | Claude |
+| 2026-01-14 | USER VERIFICATION PASSED: `claude --plugin-dir` works | Adam Nowak |
 
 ---
 

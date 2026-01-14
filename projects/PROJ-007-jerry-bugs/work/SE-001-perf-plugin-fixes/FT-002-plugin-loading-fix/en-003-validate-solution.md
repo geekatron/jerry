@@ -79,14 +79,31 @@ ValidationMessage: Project is properly configured
 
 **Result:** PASSED - Works from arbitrary directory with CLAUDE_PROJECT_DIR set.
 
+### Test 3: User Manual Verification ✅ (Acceptance Gate)
+
+```bash
+$ JERRY_PROJECT=PROJ-007-jerry-bugs CLAUDE_CONFIG_DIR=~/.claude-geek \
+  claude --plugin-dir=/path/to/bugs_20260114_performance
+
+⎿  SessionStart:startup hook succeeded: Jerry Framework initialized. See CLAUDE.md for context.
+   <project-context>
+   ProjectActive: PROJ-007-jerry-bugs
+   ProjectPath: projects/PROJ-007-jerry-bugs/
+   ValidationMessage: Project is properly configured
+   </project-context>
+```
+
+**Result:** PASSED - User confirmed `claude --plugin-dir` works correctly.
+
 ### Conclusion
 
-**HYPOTHESIS CONFIRMED:** Removing PEP 723 inline metadata fixes the plugin loading issue.
+**HYPOTHESIS CONFIRMED AND USER VERIFIED:** Removing PEP 723 inline metadata fixes the plugin loading issue.
 
 - Without PEP 723 `dependencies = []`, uv uses the project's `pyproject.toml`
 - PYTHONPATH is respected
 - `from src.infrastructure.*` imports resolve correctly
 - Works from any working directory when CLAUDE_PROJECT_DIR is set
+- **User manually verified via `claude --plugin-dir`** ✅
 
 ---
 
@@ -156,3 +173,4 @@ PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" uv run ${CLAUDE_PLUGIN_ROOT}/src/interface/cl
 | 2026-01-14 | T-003 COMPLETE: Arbitrary directory test PASSED | Claude |
 | 2026-01-14 | T-004 COMPLETE: Results documented | Claude |
 | 2026-01-14 | EN-003 COMPLETE: Hypothesis confirmed, UoW-001 unblocked | Claude |
+| 2026-01-14 | USER VERIFICATION PASSED: `claude --plugin-dir` works | Adam Nowak |

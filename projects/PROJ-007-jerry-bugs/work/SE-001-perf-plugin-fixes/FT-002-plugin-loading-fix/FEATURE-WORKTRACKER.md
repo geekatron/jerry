@@ -148,3 +148,4 @@ Fix Jerry plugin not loading when started via `claude --plugin-dir`. The plugin 
 | 2026-01-14 | EN-003 COMPLETE: Solution validated (all 4 tests passed) | Claude |
 | 2026-01-14 | disc-001 RESOLVED: PEP 723 removal confirmed as solution | Claude |
 | 2026-01-14 | UoW-001 UNBLOCKED: Ready for TDD/BDD implementation | Claude |
+| 2026-01-14 | USER VERIFICATION PASSED: `claude --plugin-dir` works | Adam Nowak |
