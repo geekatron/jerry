@@ -106,10 +106,12 @@ Work tracking systems have overlapping but inconsistent domain models. To build 
 | Templates | BUG.md | `templates/BUG.md` | Not started |
 | Templates | SPIKE.md | `templates/SPIKE.md` | Not started |
 | Templates | ENABLER.md | `templates/ENABLER.md` | Not started |
-| Critic | CL-003 Synthesis Review | `reviews/CL-003-synthesis-review.md` | PENDING |
+| Critic | CL-003 Synthesis Review | `reviews/CL-003-synthesis-review.md` | COMPLETED (APPROVED) |
 | Critic | CL-004 Ontology Review | `reviews/CL-004-ontology-review.md` | Not started |
 | Critic | CL-005 Templates Review | `reviews/CL-005-templates-review.md` | Not started |
 | Review | Final Review | `reviews/FT-001-review.md` | Not started |
+| Discovery | DISC-004 Critic Loops | `discoveries/disc-004-critic-loops.md` | COMPLETED |
+| Bug | BUG-001 Incorrect Artifact Paths | `bugs/BUG-001-incorrect-artifact-paths.md` | RESOLVED |
 
 ---
 
@@ -159,3 +161,5 @@ The ORCHESTRATION.yaml file is the single source of truth for:
 | 2026-01-14 | Updated dependency graph to show critic loops at sync barriers | Claude |
 | 2026-01-14 | Updated Orchestration State to reference YAML v2.0 | Claude |
 | 2026-01-14 | CL-003 critic review executed; APPROVED with 5 LOW/INFO issues | Claude (ps-reviewer) |
+| 2026-01-14 | BUG-001: Fixed artifact paths (reviews/, discoveries/ moved to project root) | Claude |
+| 2026-01-14 | Added artifact_paths section to ORCHESTRATION.yaml v2.1 for prevention | Claude |

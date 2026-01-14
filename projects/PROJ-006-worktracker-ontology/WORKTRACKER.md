@@ -75,9 +75,11 @@ This document is the root pointer tracking all Solution Epics, Features, Units o
 | Synthesis | Ontology v1 | `synthesis/ONTOLOGY-v1.md` | Not started |
 | Decision | ADR-001 | `decisions/ADR-001-ontology-design.md` | Not started |
 | Templates | All templates | `templates/*.md` | Not started |
-| Critic | CL-003 Review | `work/SE-001/FT-001/reviews/CL-003-synthesis-review.md` | COMPLETED (APPROVED) |
-| Critic | CL-004 Review | `work/SE-001/FT-001/reviews/CL-004-ontology-review.md` | Not started |
-| Critic | CL-005 Review | `work/SE-001/FT-001/reviews/CL-005-templates-review.md` | Not started |
+| Critic | CL-003 Review | `reviews/CL-003-synthesis-review.md` | COMPLETED (APPROVED) |
+| Critic | CL-004 Review | `reviews/CL-004-ontology-review.md` | Not started |
+| Critic | CL-005 Review | `reviews/CL-005-templates-review.md` | Not started |
+| Discovery | DISC-004 Critic Loops | `discoveries/disc-004-critic-loops.md` | COMPLETED |
+| Bug | BUG-001 Incorrect Artifact Paths | `bugs/BUG-001-incorrect-artifact-paths.md` | RESOLVED |
 
 ---
 
@@ -116,3 +118,5 @@ Quality feedback loops at sync barriers ensure artifact integrity.
 | 2026-01-14 | Updated Orchestration State to reference YAML v2.0 | Claude |
 | 2026-01-14 | CL-003 critic review executed; APPROVED with 5 LOW/INFO issues | Claude (ps-reviewer) |
 | 2026-01-14 | SYNC-3 awaiting human approval to proceed to Phase 4 | Claude |
+| 2026-01-14 | BUG-001: Fixed artifact paths (reviews/, discoveries/ moved to project root) | Claude |
+| 2026-01-14 | Added artifact_paths section to ORCHESTRATION.yaml v2.1 for prevention | Claude |

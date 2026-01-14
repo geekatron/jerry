@@ -15,10 +15,36 @@ meta:
   project: PROJ-006-worktracker-ontology
   feature: FT-001
   feature_name: Domain Discovery
-  schema_version: "2.0"
-  last_updated: "2026-01-14T00:00:00Z"
-  last_commit: "115a5ac"
+  schema_version: "2.1"  # Bumped for artifact_paths addition
+  last_updated: "2026-01-14T01:30:00Z"
+  last_commit: "d2021a6"
   pr_url: null
+
+# Artifact Paths Configuration (NEW in v2.1)
+# All paths are relative to PROJECT ROOT (projects/PROJ-006-worktracker-ontology/)
+# NOT relative to this file's location (work/SE-001/FT-001/)
+#
+# RULE: Pipeline artifacts (research, analysis, synthesis, reviews, discoveries, etc.)
+#       go at PROJECT ROOT. Work tracking documents (enablers, work items, orchestration)
+#       go in work/ hierarchy.
+artifact_paths:
+  # Pipeline artifacts at project root
+  research: "research/"
+  analysis: "analysis/"
+  synthesis: "synthesis/"
+  decisions: "decisions/"
+  templates: "templates/"
+  reviews: "reviews/"           # Critic review artifacts
+  discoveries: "discoveries/"   # Discovery documents
+  bugs: "bugs/"                 # Bug tracking documents
+  reports: "reports/"
+  runbooks: "runbooks/"
+
+  # Work tracking documents in work/ hierarchy
+  work_tracking: "work/"
+  solution_epic: "work/SE-{id}/"
+  feature: "work/SE-{se_id}/FT-{id}/"
+  orchestration: "work/SE-{se_id}/FT-{ft_id}/ORCHESTRATION.yaml"
 
 # Current overall status
 status: IN_PROGRESS

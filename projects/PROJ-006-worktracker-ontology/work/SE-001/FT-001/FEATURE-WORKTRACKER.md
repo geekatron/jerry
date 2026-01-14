@@ -9,7 +9,7 @@
 > **Phase 1 Completed:** 2026-01-13
 > **Phase 2 Completed:** 2026-01-13
 > **Phase 3 Completed:** 2026-01-13
-> **Current Barrier:** SYNC-3 (Awaiting CL-003 Critic Review)
+> **Current Barrier:** SYNC-3 (CL-003 APPROVED - Awaiting Human Approval)
 
 ---
 
@@ -42,7 +42,7 @@ Work tracking systems have overlapping but inconsistent domain models. To build 
 | [EN-001](./en-001.md) | ADO Scrum Domain Analysis | COMPLETED | 6/6 | Skipped | Research and analyze ADO Scrum domain |
 | [EN-002](./en-002.md) | SAFe Domain Analysis | COMPLETED | 6/6 | Skipped | Research and analyze SAFe domain |
 | [EN-003](./en-003.md) | JIRA Domain Analysis | COMPLETED | 6/6 | Skipped | Research and analyze JIRA domain |
-| [EN-004](./en-004.md) | Cross-Domain Synthesis | COMPLETED | 4/4 | [CL-003](./reviews/CL-003-synthesis-review.md) APPROVED | Synthesize patterns across domains |
+| [EN-004](./en-004.md) | Cross-Domain Synthesis | COMPLETED | 4/4 | [CL-003](../../../reviews/CL-003-synthesis-review.md) APPROVED | Synthesize patterns across domains |
 
 ---
 
@@ -50,8 +50,8 @@ Work tracking systems have overlapping but inconsistent domain models. To build 
 
 | ID | Name | Status | Tasks | Critic | Description |
 |----|------|--------|-------|--------|-------------|
-| [WI-001](./wi-001.md) | Parent Ontology Design | BLOCKED | 0/5 | [CL-004](./reviews/CL-004-ontology-review.md) BLOCKED | Design canonical ontology |
-| [WI-002](./wi-002.md) | Markdown Template Generation | BLOCKED | 0/7 | [CL-005](./reviews/CL-005-templates-review.md) BLOCKED | Generate skill templates |
+| [WI-001](./wi-001.md) | Parent Ontology Design | BLOCKED | 0/5 | [CL-004](../../../reviews/CL-004-ontology-review.md) BLOCKED | Design canonical ontology |
+| [WI-002](./wi-002.md) | Markdown Template Generation | BLOCKED | 0/7 | [CL-005](../../../reviews/CL-005-templates-review.md) BLOCKED | Generate skill templates |
 | [WI-003](./wi-003.md) | Design Review & Validation | BLOCKED | 0/4 | Final Gate | Final review and quality gate |
 
 ---
@@ -90,7 +90,7 @@ PHASE 3: Cross-Domain Synthesis (COMPLETED)
           ═══ SYNC BARRIER 3 ═══ [CURRENT]
                      │
               ┌──────┴──────┐
-              │   CL-003    │ ◄── PENDING
+              │   CL-003    │ ◄── APPROVED
               │  ps-review  │
               └──────┬──────┘
                      │
@@ -211,6 +211,8 @@ Producer ──► Artifact ──► Critic ──► Decision
 | Review: CL-003 | `reviews/CL-003-synthesis-review.md` | COMPLETED (APPROVED) |
 | Review: CL-004 | `reviews/CL-004-ontology-review.md` | Not started |
 | Review: CL-005 | `reviews/CL-005-templates-review.md` | Not started |
+| Discovery: DISC-004 | `discoveries/disc-004-critic-loops.md` | COMPLETED |
+| Bug: BUG-001 | `bugs/BUG-001-incorrect-artifact-paths.md` | RESOLVED |
 
 ---
 
@@ -231,3 +233,5 @@ Producer ──► Artifact ──► Critic ──► Decision
 | 2026-01-14 | Updated tables with Critic columns; added Critic Loops section | Claude |
 | 2026-01-14 | Updated pipeline diagram with critic nodes at sync barriers | Claude |
 | 2026-01-14 | CL-003 critic review executed; APPROVED with 5 LOW/INFO issues | Claude (ps-reviewer) |
+| 2026-01-14 | BUG-001: Fixed artifact paths (reviews/, discoveries/ moved to project root) | Claude |
+| 2026-01-14 | Added artifact_paths section to ORCHESTRATION.yaml v2.1 for prevention | Claude |
