@@ -23,11 +23,11 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 
 ### Success Criteria
 
-- [ ] Unit tests cover all 3 SessionStart output tag types (`<project-context>`, `<project-required>`, `<project-error>`)
-- [ ] Tests verify script executes without `pip install -e .`
-- [ ] Pre-commit hook validates plugin.json and hooks.json
-- [ ] CI pipeline includes plugin integration tests
-- [ ] Playbook documents regression detection/prevention/mitigation
+- [x] Unit tests cover all 3 SessionStart output tag types (`<project-context>`, `<project-required>`, `<project-error>`) (EN-004)
+- [x] Tests verify script executes without `pip install -e .` (EN-004, EN-005)
+- [x] Pre-commit hook validates plugin.json and hooks.json (EN-005)
+- [x] CI pipeline includes plugin integration tests (EN-005)
+- [ ] Playbook documents regression detection/prevention/mitigation (WI-001)
 
 ---
 
@@ -36,8 +36,8 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | ID | Name | Status | Tasks | Description |
 |----|------|--------|-------|-------------|
 | [EN-004](./en-004.md) | Fix and enhance session_start.py tests | COMPLETED | 9/9 | Fix broken tests after BUG-007 |
-| [EN-005](./en-005.md) | Pre-commit/CI hooks | IN PROGRESS | 0/9 | Validation hooks for plugin artifacts |
-| [EN-006](./en-006.md) | CLI integration test suite | PENDING | 0/9 | Integration tests for jerry CLI |
+| [EN-005](./en-005.md) | Pre-commit/CI hooks | COMPLETED | 9/9 | Validation hooks for plugin artifacts |
+| [EN-006](./en-006.md) | CLI integration test suite | COMPLETED | 9/9 | Integration tests for jerry CLI (27 subprocess tests) |
 
 ---
 
@@ -45,6 +45,7 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 
 | ID | Name | Status | Tasks | Description |
 |----|------|--------|-------|-------------|
+| [WI-002](./wi-002.md) | GitHub CI Build Verification | IN PROGRESS | 4/14 | Verify all CI jobs pass after EN-004/005/006 |
 | [WI-001](./wi-001.md) | Detection/prevention/mitigation playbook | PENDING | 0/? | Operational runbook for regression handling |
 
 ---
@@ -53,8 +54,8 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 
 | ID | Description | Status | Addressed By |
 |----|-------------|--------|--------------|
-| TD-001 | No automated tests for plugin hooks | OPEN | EN-004 |
-| TD-002 | No CI validation of standalone execution | OPEN | EN-005 |
+| TD-001 | No automated tests for plugin hooks | RESOLVED | EN-004 |
+| TD-002 | No CI validation of standalone execution | RESOLVED | EN-005 |
 | TD-003 | No documented regression prevention | OPEN | WI-001 |
 
 ---
@@ -113,3 +114,9 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | 2026-01-13 | Added DISC-006 (duplicate tests folders) | Claude |
 | 2026-01-13 | Added DISC-007 (broken session_start tests) - EN-004 scope change | Claude |
 | 2026-01-13 | Added DISC-008 (must use uv, not python3 for tests) | Claude |
+| 2026-01-13 | EN-004 COMPLETED (9/9 tasks): session_start.py tests fixed | Claude |
+| 2026-01-13 | EN-005 COMPLETED (9/9 tasks): pre-commit hooks and CI validation | Claude |
+| 2026-01-13 | TD-001, TD-002 RESOLVED; 4/5 success criteria met | Claude |
+| 2026-01-13 | EN-006 COMPLETED (9/9 tasks): 27 CLI subprocess tests, CI job added | Claude |
+| 2026-01-13 | All 3 enablers complete (EN-004, EN-005, EN-006), WI-001 pending | Claude |
+| 2026-01-13 | Added WI-002: GitHub CI Build Verification (14 tasks) - gate before WI-001 | Claude |

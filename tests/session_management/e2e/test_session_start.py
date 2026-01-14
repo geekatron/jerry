@@ -128,7 +128,9 @@ def run_session_start(
     # Script uses absolute imports like "from src.infrastructure..."
     if project_root:
         existing_pythonpath = env.get("PYTHONPATH", "")
-        env["PYTHONPATH"] = f"{project_root}:{existing_pythonpath}" if existing_pythonpath else str(project_root)
+        env["PYTHONPATH"] = (
+            f"{project_root}:{existing_pythonpath}" if existing_pythonpath else str(project_root)
+        )
 
     result = subprocess.run(
         ["uv", "run", str(script_path)],
@@ -197,7 +199,9 @@ class TestSessionStartHappyPath:
         env = {"CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent)}
         env["JERRY_PROJECT"] = ""  # Explicitly clear
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "<project-required>" in stdout
@@ -213,7 +217,9 @@ class TestSessionStartHappyPath:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "(no projects found)" in stdout
@@ -232,7 +238,9 @@ class TestSessionStartHappyPath:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "PROJ-001-first" in stdout
@@ -254,7 +262,9 @@ class TestSessionStartHappyPath:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "NextProjectNumber: 011" in stdout
@@ -316,7 +326,9 @@ class TestSessionStartEdgeCases:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         # Next number should cap at 999
@@ -337,7 +349,9 @@ class TestSessionStartEdgeCases:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "PROJ-001-active" in stdout
@@ -358,7 +372,9 @@ class TestSessionStartEdgeCases:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "PROJ-001-visible" in stdout
@@ -494,7 +510,9 @@ class TestSessionStartFailures:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         # Should list project even with corrupt file
@@ -514,7 +532,9 @@ class TestSessionStartFailures:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert "PROJ-001-empty" in stdout
@@ -532,7 +552,9 @@ class TestSessionStartFailures:
         ]
 
         for env_vars in test_cases:
-            exit_code, _, _ = run_session_start(session_start_script, env_vars, project_root=project_root)
+            exit_code, _, _ = run_session_start(
+                session_start_script, env_vars, project_root=project_root
+            )
             assert exit_code == 0, f"Expected exit 0 for {env_vars}"
 
 
@@ -581,7 +603,9 @@ class TestSessionStartOutputFormat:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
         assert stdout.count("<project-required>") == 1
@@ -623,7 +647,9 @@ class TestSessionStartOutputFormat:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
+        exit_code, stdout, _ = run_session_start(
+            session_start_script, env, project_root=project_root
+        )
 
         assert exit_code == 0
 
@@ -700,6 +726,6 @@ class TestSessionStartPEP723:
         assert exit_code == 0, f"Script failed with exit code {exit_code}. stderr: {stderr}"
 
         # Must produce valid output (either project-required or project-context)
-        assert (
-            "<project-required>" in stdout or "<project-context>" in stdout
-        ), f"Script did not produce expected output tags. stdout: {stdout}"
+        assert "<project-required>" in stdout or "<project-context>" in stdout, (
+            f"Script did not produce expected output tags. stdout: {stdout}"
+        )

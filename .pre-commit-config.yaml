@@ -64,12 +64,13 @@ repos:
 
   # =============================================================================
   # Test Suite (configurable stage)
+  # Uses uv run to ensure correct dependency management (DISC-008)
   # =============================================================================
   - repo: local
     hooks:
       - id: pytest
-        name: pytest (full suite)
-        entry: .venv/bin/python -m pytest
+        name: pytest (full suite via uv)
+        entry: uv run pytest
         language: system
         types: [python]
         pass_filenames: false
@@ -78,6 +79,20 @@ repos:
         stages: [pre-commit]
         # Verbose output with short traceback
         args: [--tb=short, -q]
+
+  # =============================================================================
+  # Plugin Manifest Validation (EN-005)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: validate-plugin-manifests
+        name: Validate plugin manifests
+        entry: uv run python scripts/validate_plugin_manifests.py
+        language: system
+        # Trigger on any manifest file change
+        files: (plugin\.json|marketplace\.json|hooks\.json)$
+        pass_filenames: false
+        stages: [pre-commit]
 
   # =============================================================================
   # Security Scanning (pip-audit)

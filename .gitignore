@@ -57,3 +57,7 @@ htmlcov/
 # Misc
 *.tgz
 *.bak
+
+# Jerry local data (locks, sessions)
+.jerry/local/
+projects/*/.jerry/
