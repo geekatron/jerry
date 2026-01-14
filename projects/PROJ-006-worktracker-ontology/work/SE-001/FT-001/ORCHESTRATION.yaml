@@ -1,0 +1,258 @@
+# ORCHESTRATION.yaml - Machine-readable state for session recovery
+# If Claude loses context, read this file to resume work
+#
+# Usage: On session start, if working on PROJ-006/FT-001:
+#   1. Read this file
+#   2. Find first task with status: in_progress or pending
+#   3. Resume from that task
+#   4. Update this file after each task completion
+
+meta:
+  project: PROJ-006-worktracker-ontology
+  feature: FT-001
+  feature_name: Domain Discovery
+  last_updated: "2026-01-13T12:00:00Z"
+  last_commit: null
+  pr_url: null
+
+# Current overall status
+status: PENDING_APPROVAL
+completion: 0%
+
+# Enablers (technical prerequisites)
+enablers:
+  - id: EN-001
+    name: ADO Scrum Domain Analysis
+    status: PENDING
+    tasks_done: 0
+    tasks_total: 6
+    phase: 1
+    agent: ps-researcher, ps-analyst
+    blocked_by: []
+    tasks:
+      - id: 1
+        name: "Research ADO Scrum work item types"
+        status: pending
+        phase: research
+      - id: 2
+        name: "Research ADO Scrum properties and fields"
+        status: pending
+        phase: research
+      - id: 3
+        name: "Research ADO Scrum states and transitions"
+        status: pending
+        phase: research
+      - id: 4
+        name: "Extract entity catalog"
+        status: pending
+        phase: analysis
+      - id: 5
+        name: "Extract relationships and behaviors"
+        status: pending
+        phase: analysis
+      - id: 6
+        name: "Document state machine"
+        status: pending
+        phase: analysis
+
+  - id: EN-002
+    name: SAFe Domain Analysis
+    status: PENDING
+    tasks_done: 0
+    tasks_total: 6
+    phase: 1
+    agent: ps-researcher, ps-analyst
+    blocked_by: []
+    tasks:
+      - id: 1
+        name: "Research SAFe hierarchy levels"
+        status: pending
+        phase: research
+      - id: 2
+        name: "Research SAFe work item types"
+        status: pending
+        phase: research
+      - id: 3
+        name: "Research SAFe PI concepts"
+        status: pending
+        phase: research
+      - id: 4
+        name: "Extract entity catalog"
+        status: pending
+        phase: analysis
+      - id: 5
+        name: "Extract relationships and behaviors"
+        status: pending
+        phase: analysis
+      - id: 6
+        name: "Document state machine"
+        status: pending
+        phase: analysis
+
+  - id: EN-003
+    name: JIRA Domain Analysis
+    status: PENDING
+    tasks_done: 0
+    tasks_total: 6
+    phase: 1
+    agent: ps-researcher, ps-analyst
+    blocked_by: []
+    tasks:
+      - id: 1
+        name: "Research JIRA issue types"
+        status: pending
+        phase: research
+      - id: 2
+        name: "Research JIRA fields and custom fields"
+        status: pending
+        phase: research
+      - id: 3
+        name: "Research JIRA workflows"
+        status: pending
+        phase: research
+      - id: 4
+        name: "Extract entity catalog"
+        status: pending
+        phase: analysis
+      - id: 5
+        name: "Extract relationships and behaviors"
+        status: pending
+        phase: analysis
+      - id: 6
+        name: "Document state machine"
+        status: pending
+        phase: analysis
+
+  - id: EN-004
+    name: Cross-Domain Synthesis
+    status: BLOCKED
+    tasks_done: 0
+    tasks_total: 4
+    phase: 3
+    agent: ps-synthesizer
+    blocked_by: [EN-001, EN-002, EN-003]
+    tasks:
+      - id: 1
+        name: "Create entity alignment matrix"
+        status: pending
+      - id: 2
+        name: "Create property alignment matrix"
+        status: pending
+      - id: 3
+        name: "Analyze relationship patterns"
+        status: pending
+      - id: 4
+        name: "Compare state machines"
+        status: pending
+
+# Work Items (deliverables)
+work_items:
+  - id: WI-001
+    name: Parent Ontology Design
+    status: BLOCKED
+    tasks_done: 0
+    tasks_total: 5
+    phase: 4
+    agent: nse-architecture, ps-architect
+    blocked_by: [EN-004]
+    tasks:
+      - id: 1
+        name: "Design entity hierarchy"
+        status: pending
+      - id: 2
+        name: "Define entity schemas"
+        status: pending
+      - id: 3
+        name: "Design relationship types"
+        status: pending
+      - id: 4
+        name: "Design canonical state machine"
+        status: pending
+      - id: 5
+        name: "Document system mappings"
+        status: pending
+
+  - id: WI-002
+    name: Markdown Template Generation
+    status: BLOCKED
+    tasks_done: 0
+    tasks_total: 7
+    phase: 5
+    agent: ps-synthesizer
+    blocked_by: [WI-001]
+    tasks:
+      - id: 1
+        name: "Generate EPIC.md template"
+        status: pending
+      - id: 2
+        name: "Generate FEATURE.md template"
+        status: pending
+      - id: 3
+        name: "Generate STORY.md template"
+        status: pending
+      - id: 4
+        name: "Generate TASK.md template"
+        status: pending
+      - id: 5
+        name: "Generate BUG.md template"
+        status: pending
+      - id: 6
+        name: "Generate SPIKE.md template"
+        status: pending
+      - id: 7
+        name: "Generate ENABLER.md template"
+        status: pending
+
+  - id: WI-003
+    name: Design Review & Validation
+    status: BLOCKED
+    tasks_done: 0
+    tasks_total: 4
+    phase: 6
+    agent: nse-reviews
+    blocked_by: [WI-002]
+    tasks:
+      - id: 1
+        name: "Review ontology completeness"
+        status: pending
+      - id: 2
+        name: "Validate template accuracy"
+        status: pending
+      - id: 3
+        name: "Check system mappings"
+        status: pending
+      - id: 4
+        name: "Final approval"
+        status: pending
+
+# Sync barriers
+sync_barriers:
+  - id: SYNC-1
+    name: "All research complete"
+    requires: [EN-001-research, EN-002-research, EN-003-research]
+    status: pending
+
+  - id: SYNC-2
+    name: "All analysis complete"
+    requires: [EN-001, EN-002, EN-003]
+    status: pending
+
+  - id: SYNC-3
+    name: "Synthesis complete"
+    requires: [EN-004]
+    status: pending
+
+# Recovery instructions
+recovery:
+  if_session_lost: |
+    1. Read this file: projects/PROJ-006-worktracker-ontology/work/SE-001/FT-001/ORCHESTRATION.yaml
+    2. Check 'status' field - if PENDING_APPROVAL, wait for user approval
+    3. If APPROVED/IN_PROGRESS, find first enabler/work_item with status: in_progress or pending
+    4. Check blocked_by dependencies are complete
+    5. Resume that task
+    6. After completion, update this file
+
+  resume_command: |
+    # To sync YAML state to TodoWrite:
+    # Parse this YAML and create todo items for any pending/in_progress tasks
+    # Respect blocked_by dependencies
