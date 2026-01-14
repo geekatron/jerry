@@ -45,7 +45,7 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 
 | ID | Name | Status | Tasks | Description |
 |----|------|--------|-------|-------------|
-| [WI-002](./wi-002.md) | GitHub CI Build Verification | IN PROGRESS | 4/14 | Verify all CI jobs pass after EN-004/005/006 |
+| [WI-002](./wi-002.md) | GitHub CI Build Verification | COMPLETED | 14/14 | Verify all CI jobs pass after EN-004/005/006 |
 | [WI-001](./wi-001.md) | Detection/prevention/mitigation playbook | PENDING | 0/? | Operational runbook for regression handling |
 
 ---
@@ -120,3 +120,4 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | 2026-01-13 | EN-006 COMPLETED (9/9 tasks): 27 CLI subprocess tests, CI job added | Claude |
 | 2026-01-13 | All 3 enablers complete (EN-004, EN-005, EN-006), WI-001 pending | Claude |
 | 2026-01-13 | Added WI-002: GitHub CI Build Verification (14 tasks) - gate before WI-001 | Claude |
+| 2026-01-13 | WI-002 COMPLETED: All CI jobs pass (run 20978895829) | Claude |
