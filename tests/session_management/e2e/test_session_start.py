@@ -677,43 +677,72 @@ class TestSessionStartOutputFormat:
 
 
 # =============================================================================
-# PEP 723 Metadata Tests (2 tests) - Added for EN-004
+# No PEP 723 Metadata Tests - Updated for FT-002 v0.2.0
 # =============================================================================
+# The PEP 723 inline metadata was REMOVED because it caused uv to create an
+# isolated environment, which broke src.* imports (PYTHONPATH ignored).
+# See: PROJ-007 disc-001, EN-003 validation.
 
 
-class TestSessionStartPEP723:
-    """Tests for PEP 723 inline script metadata.
+class TestSessionStartNoPEP723:
+    """Tests validating absence of PEP 723 inline script metadata.
 
-    These tests validate that the session_start.py script contains proper
-    PEP 723 inline metadata, enabling standalone execution via `uv run`
-    without requiring pip install.
+    These tests validate that the session_start.py script does NOT contain
+    PEP 723 inline metadata. The metadata was removed because it caused uv
+    to create an isolated environment, ignoring PYTHONPATH and breaking
+    imports from src.*.
+
+    The script now uses pyproject.toml dependencies via `uv run` without
+    inline metadata, which respects PYTHONPATH.
 
     References:
-        - PEP 723: https://peps.python.org/pep-0723/
-        - BUG-007: SessionStart hook required pip install
-        - ADR e-010: Decision to use uv + PEP 723
+        - PROJ-007 disc-001: uv Portability Discovery
+        - PROJ-007 EN-003: Validate Solution (user verified)
+        - PROJ-007 FT-002: Plugin Loading Fix v0.2.0
     """
 
-    def test_pep723_metadata_present(self, session_start_script: Path) -> None:
-        """Script contains valid PEP 723 inline script metadata block."""
+    def test_pep723_metadata_absent(self, session_start_script: Path) -> None:
+        """Script must NOT contain PEP 723 inline metadata.
+
+        PEP 723 inline metadata (# /// script) causes uv to create an
+        isolated environment. This breaks imports from src.* because
+        the isolated env ignores PYTHONPATH.
+
+        The fix: Remove PEP 723 metadata so uv uses pyproject.toml.
+        """
         content = session_start_script.read_text()
 
-        # Verify PEP 723 opening marker
-        assert "# /// script" in content, "Missing PEP 723 opening marker '# /// script'"
+        # Verify PEP 723 markers are ABSENT (this is the fix)
+        assert "# /// script" not in content, (
+            "PEP 723 marker '# /// script' found but should be absent. "
+            "Remove inline metadata to fix plugin loading."
+        )
 
-        # Verify PEP 723 closing marker (standalone line)
-        assert "# ///" in content, "Missing PEP 723 closing marker '# ///'"
+        # Verify dependencies= line is also absent (part of PEP 723 block)
+        # Note: Just checking for the pattern that was in the metadata
+        assert 'dependencies = [' not in content or "pyproject.toml" in content, (
+            "PEP 723 dependencies block found. Use pyproject.toml instead."
+        )
 
-        # Verify required sections in metadata
-        assert "requires-python" in content, "Missing 'requires-python' in PEP 723 metadata"
+    def test_docstring_explains_no_pep723(self, session_start_script: Path) -> None:
+        """Script docstring explains why PEP 723 metadata is absent."""
+        content = session_start_script.read_text()
 
-    def test_pep723_script_executes_standalone(
+        # Verify the docstring contains explanation
+        assert "Note on PEP 723" in content, (
+            "Missing 'Note on PEP 723' in docstring explaining the design decision"
+        )
+        assert "isolated environment" in content.lower(), (
+            "Docstring should explain that PEP 723 caused isolated environment issues"
+        )
+
+    def test_script_executes_standalone(
         self, session_start_script: Path, project_root: Path
     ) -> None:
         """Script executes via uv run without pip install.
 
-        This is the key test that validates BUG-007 is fixed - the script
-        must work without `pip install -e .` being run first.
+        This validates that the script works WITHOUT PEP 723 metadata,
+        using pyproject.toml dependencies instead.
         """
         # Run in a clean environment (no JERRY_PROJECT set)
         # This should succeed and produce <project-required> output
@@ -734,4 +763,185 @@ class TestSessionStartPEP723:
         # Must produce valid output (either project-required or project-context)
         assert "<project-required>" in stdout or "<project-context>" in stdout, (
             f"Script did not produce expected output tags. stdout: {stdout}"
+        )
+
+
+# =============================================================================
+# Integration Tests - Hook Execution from Arbitrary Directory (T-001)
+# =============================================================================
+
+
+class TestSessionStartArbitraryDirectory:
+    """Integration tests for hook execution from arbitrary working directories.
+
+    These tests validate that the session_start.py hook works correctly
+    regardless of the current working directory - a critical requirement
+    for Claude Code plugin loading.
+
+    References:
+        - PROJ-007 FT-002: Plugin Loading Fix v0.2.0
+        - PROJ-007 UoW-001 T-001: Integration test requirement
+    """
+
+    def test_hook_works_from_project_root(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
+        """Hook executes correctly when cwd is project root."""
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=project_root,
+        )
+
+        assert exit_code == 0, f"Failed from project root. stderr: {stderr}"
+        assert "<project-required>" in stdout or "<project-context>" in stdout
+
+    def test_hook_works_from_home_directory(
+        self, session_start_script: Path, project_root: Path, tmp_path: Path
+    ) -> None:
+        """Hook executes correctly when cwd is a different directory (simulating ~/)."""
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        # Run from tmp_path (simulating running from home directory)
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=tmp_path,  # Different working directory
+        )
+
+        assert exit_code == 0, f"Failed from arbitrary directory. stderr: {stderr}"
+        # Should still produce output (may be project-required since CLAUDE_PROJECT_DIR is set)
+        assert "Jerry Framework" in stdout or "<project" in stdout, (
+            f"No expected output from arbitrary directory. stdout: {stdout}"
+        )
+
+    def test_hook_works_with_spaces_in_path(
+        self, session_start_script: Path, project_root: Path, tmp_path: Path
+    ) -> None:
+        """Hook executes correctly when path contains spaces."""
+        # Create directory with spaces
+        dir_with_spaces = tmp_path / "path with spaces"
+        dir_with_spaces.mkdir()
+
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=dir_with_spaces,
+        )
+
+        assert exit_code == 0, f"Failed with spaces in path. stderr: {stderr}"
+
+
+# =============================================================================
+# Contract Tests - Hook Output Format (T-002)
+# =============================================================================
+
+
+class TestSessionStartOutputContract:
+    """Contract tests for hook output format compliance.
+
+    These tests validate that the session_start.py hook produces output
+    in the expected format that Claude Code can parse.
+
+    References:
+        - PROJ-007 FT-002: Plugin Loading Fix v0.2.0
+        - PROJ-007 UoW-001 T-002: Contract test requirement
+        - CLAUDE.md: Hook output format specification
+    """
+
+    def test_output_contains_initialization_message(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
+        """Output starts with Jerry Framework initialization message."""
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=project_root,
+        )
+
+        assert exit_code == 0
+        assert "Jerry Framework initialized" in stdout, (
+            "Missing 'Jerry Framework initialized' message"
+        )
+
+    def test_output_contains_project_tag(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
+        """Output contains one of the required project tags."""
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=project_root,
+        )
+
+        assert exit_code == 0
+        valid_tags = ["<project-context>", "<project-required>", "<project-error>"]
+        has_valid_tag = any(tag in stdout for tag in valid_tags)
+        assert has_valid_tag, (
+            f"Output must contain one of {valid_tags}. Got: {stdout[:200]}"
+        )
+
+    def test_project_required_tag_format(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
+        """<project-required> tag contains expected fields."""
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=project_root,
+        )
+
+        assert exit_code == 0
+        if "<project-required>" in stdout:
+            assert "ProjectRequired: true" in stdout, "Missing ProjectRequired field"
+            assert "AvailableProjects:" in stdout, "Missing AvailableProjects field"
+            assert "</project-required>" in stdout, "Missing closing tag"
+
+    def test_exit_code_always_zero(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
+        """Hook always exits with code 0 (errors handled internally)."""
+        # Test with invalid project
+        env = {
+            "JERRY_PROJECT": "INVALID-PROJECT-999",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=project_root,
+        )
+
+        # Always exits 0 - errors are communicated via output
+        assert exit_code == 0, (
+            f"Hook should always exit 0. Got {exit_code}. stderr: {stderr}"
         )
