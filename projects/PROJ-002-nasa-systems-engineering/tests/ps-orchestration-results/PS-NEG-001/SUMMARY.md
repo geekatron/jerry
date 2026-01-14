@@ -17,7 +17,7 @@
 
 **Scenario:** Agent invoked with NO inputs:
 - ❌ `session_context` - MISSING
-- ❌ `ps_id` - MISSING  
+- ❌ `ps_id` - MISSING
 - ❌ `entry_id` - MISSING
 - ❌ `validation_scope` - MISSING
 

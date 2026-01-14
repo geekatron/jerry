@@ -43,12 +43,17 @@ from __future__ import annotations
 import json
 import re
 import subprocess
-import sys
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
 
 import pytest
+
+# Mark entire module as subprocess tests (requires uv)
+# These tests run session_start.py via subprocess using uv run
+pytestmark = [
+    pytest.mark.subprocess,
+]
 
 # =============================================================================
 # Contract Schema Definitions
@@ -113,8 +118,8 @@ def project_root() -> Path:
 
 @pytest.fixture
 def session_start_script(project_root: Path) -> Path:
-    """Get path to the session_start.py script."""
-    return project_root / "scripts" / "session_start.py"
+    """Get path to the session_start.py script (BUG-007 moved to src/interface/cli/)."""
+    return project_root / "src" / "interface" / "cli" / "session_start.py"
 
 
 def create_project(base_path: str, project_id: str) -> Path:
@@ -126,18 +131,32 @@ def create_project(base_path: str, project_id: str) -> Path:
     return proj_dir
 
 
-def run_hook(script_path: Path, env_vars: dict) -> tuple[int, str]:
-    """Run the session start hook and return exit code and stdout."""
+def run_hook(
+    script_path: Path, env_vars: dict, project_root: Path | None = None
+) -> tuple[int, str]:
+    """Run the session start hook via uv run and return exit code and stdout.
+
+    Uses uv run to ensure correct dependency management (DISC-008, EN-004).
+    Sets PYTHONPATH for local src/ imports (DISC-005).
+    """
     import os
 
     env = os.environ.copy()
     env.update(env_vars)
 
+    # Set PYTHONPATH to project root for "from src.X" imports (DISC-005)
+    if project_root:
+        existing_pythonpath = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = (
+            f"{project_root}:{existing_pythonpath}" if existing_pythonpath else str(project_root)
+        )
+
     result = subprocess.run(
-        [sys.executable, str(script_path)],
+        ["uv", "run", str(script_path)],
         capture_output=True,
         text=True,
         env=env,
+        cwd=str(project_root) if project_root else None,
     )
     return result.returncode, result.stdout
 
@@ -158,7 +177,11 @@ class TestProjectContextTagContract:
     """Contract tests for <project-context> tag structure."""
 
     def test_output_contains_required_project_context_tag(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """When project is valid, output MUST contain <project-context> tag."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -166,6 +189,7 @@ class TestProjectContextTagContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "PROJ-001-test", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: Tag must exist
@@ -178,7 +202,11 @@ class TestProjectContextTagContract:
         assert open_idx < close_idx, "Tags not properly nested"
 
     def test_project_context_contains_required_fields(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """<project-context> tag MUST contain all required fields."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -186,6 +214,7 @@ class TestProjectContextTagContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "PROJ-001-test", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         content = extract_tag_content(stdout, "project-context")
@@ -200,7 +229,11 @@ class TestProjectContextTagContract:
         assert has_validation, "Missing validation field (Message or Warnings)"
 
     def test_project_active_field_format(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """ProjectActive field MUST contain the project ID."""
         create_project(temp_projects_dir, "PROJ-042-example")
@@ -208,13 +241,18 @@ class TestProjectContextTagContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "PROJ-042-example", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: ProjectActive contains exact project ID
         assert "ProjectActive: PROJ-042-example" in stdout
 
     def test_project_path_field_format(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """ProjectPath field MUST follow projects/{id}/ format."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -222,6 +260,7 @@ class TestProjectContextTagContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "PROJ-001-test", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: ProjectPath follows specific format
@@ -237,7 +276,11 @@ class TestProjectRequiredTagContract:
     """Contract tests for <project-required> tag structure."""
 
     def test_output_contains_required_project_required_tag(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """When no project set, output MUST contain <project-required> tag."""
         create_project(temp_projects_dir, "PROJ-001-available")
@@ -245,6 +288,7 @@ class TestProjectRequiredTagContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: Tag must exist
@@ -252,7 +296,11 @@ class TestProjectRequiredTagContract:
         assert "</project-required>" in stdout, "Missing </project-required> tag"
 
     def test_project_required_contains_required_fields(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """<project-required> tag MUST contain all required fields."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -260,6 +308,7 @@ class TestProjectRequiredTagContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         content = extract_tag_content(stdout, "project-required")
@@ -270,24 +319,32 @@ class TestProjectRequiredTagContract:
             assert field in content or field in stdout, f"Missing required field: {field}"
 
     def test_output_action_required_message_present_when_needed(
-        self, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """ACTION REQUIRED message MUST appear when project selection needed."""
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: ACTION REQUIRED must be present
         assert "ACTION REQUIRED" in stdout, "Missing ACTION REQUIRED message"
 
     def test_next_project_number_format(
-        self, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """NextProjectNumber MUST be 3-digit zero-padded format."""
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: NextProjectNumber format is NNN (3 digits)
@@ -305,12 +362,16 @@ class TestProjectErrorTagContract:
     """Contract tests for <project-error> tag structure."""
 
     def test_output_contains_project_error_tag_on_invalid(
-        self, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """When project invalid, output MUST contain <project-error> tag."""
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "invalid-format", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: Tag must exist
@@ -318,12 +379,16 @@ class TestProjectErrorTagContract:
         assert "</project-error>" in stdout, "Missing </project-error> tag"
 
     def test_project_error_contains_required_fields(
-        self, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """<project-error> tag MUST contain all required fields."""
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "bad-id", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         content = extract_tag_content(stdout, "project-error")
@@ -333,11 +398,17 @@ class TestProjectErrorTagContract:
         for field in PROJECT_ERROR_SCHEMA["required_fields"]:
             assert field in content or field in stdout, f"Missing required field: {field}"
 
-    def test_action_required_on_error(self, temp_root_dir: str, session_start_script: Path) -> None:
+    def test_action_required_on_error(
+        self,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
+    ) -> None:
         """ACTION REQUIRED message MUST appear on error."""
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "invalid", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Contract: ACTION REQUIRED must be present
@@ -353,7 +424,11 @@ class TestJsonSchemaContract:
     """Contract tests for JSON output format."""
 
     def test_output_json_matches_schema(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """ProjectsJson MUST be valid JSON array with id and status fields."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -362,6 +437,7 @@ class TestJsonSchemaContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         # Extract JSON from output
@@ -385,7 +461,11 @@ class TestJsonSchemaContract:
             assert "status" in proj, "Project item missing 'status' field"
 
     def test_json_id_matches_project_id_format(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """JSON id field MUST match PROJ-NNN-slug format."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -393,6 +473,7 @@ class TestJsonSchemaContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         json_match = re.search(r"ProjectsJson: (.+)", stdout)
@@ -406,7 +487,11 @@ class TestJsonSchemaContract:
             )
 
     def test_json_status_is_valid_enum(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """JSON status field MUST be a valid ProjectStatus enum value."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -414,6 +499,7 @@ class TestJsonSchemaContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         json_match = re.search(r"ProjectsJson: (.+)", stdout)
@@ -437,7 +523,11 @@ class TestExitCodeContract:
     """Contract tests for exit code semantics."""
 
     def test_output_exit_code_semantics_match_hook_spec(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """Exit code MUST always be 0 (Claude handles errors via output)."""
         test_cases = [
@@ -455,7 +545,7 @@ class TestExitCodeContract:
         create_project(temp_projects_dir, "PROJ-001-test")
 
         for env_vars in test_cases:
-            exit_code, _ = run_hook(session_start_script, env_vars)
+            exit_code, _ = run_hook(session_start_script, env_vars, project_root=project_root)
 
             # Contract: Exit code is ALWAYS 0
             assert exit_code == 0, (
@@ -463,7 +553,11 @@ class TestExitCodeContract:
             )
 
     def test_exactly_one_tag_type_per_output(
-        self, temp_projects_dir: str, temp_root_dir: str, session_start_script: Path
+        self,
+        temp_projects_dir: str,
+        temp_root_dir: str,
+        session_start_script: Path,
+        project_root: Path,
     ) -> None:
         """Output MUST contain exactly one of the three tag types."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -472,6 +566,7 @@ class TestExitCodeContract:
         _, stdout = run_hook(
             session_start_script,
             {"JERRY_PROJECT": "PROJ-001-test", "CLAUDE_PROJECT_DIR": temp_root_dir},
+            project_root=project_root,
         )
 
         tag_count = sum(

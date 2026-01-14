@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "jerry",
   "version": "0.1.0",
   "description": "Framework for behavior and workflow guardrails with knowledge accrual",
@@ -10,43 +9,18 @@
   "license": "MIT",
   "repository": "https://github.com/geekatron/jerry",
   "keywords": [
+    "jerry",
     "workflow",
     "guardrails",
     "knowledge-management",
+    "problem-solving",
     "work-tracker",
     "hexagonal-architecture"
   ],
-  "engines": {
-    "claude-code": ">=1.0.0"
-  },
-  "main": "src/interface/cli/main.py",
-  "skills": [
-    "skills/worktracker/SKILL.md",
-    "skills/architecture/SKILL.md",
-    "skills/problem-solving/SKILL.md"
-  ],
+  "skills": "./skills/",
   "commands": [
-    "commands/architect.md",
-    "commands/release.md"
+    "./commands/architect.md",
+    "./commands/release.md"
   ],
-  "hooks": "hooks/hooks.json",
-  "configuration": {
-    "settings_file": ".claude/settings.json",
-    "rules_directory": ".claude/rules"
-  },
-  "dependencies": {
-    "runtime": {
-      "python": ">=3.11"
-    },
-    "optional": {
-      "typescript": ">=5.0"
-    }
-  },
-  "capabilities": {
-    "context_management": true,
-    "work_tracking": true,
-    "knowledge_capture": true,
-    "agent_orchestration": true,
-    "security_guardrails": true
-  }
+  "hooks": "./hooks/hooks.json"
 }

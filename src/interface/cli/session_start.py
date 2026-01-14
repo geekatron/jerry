@@ -14,8 +14,8 @@ Output Format:
     - <project-error>: When JERRY_PROJECT is set but invalid
 
 Usage:
-    jerry-session-start  # Via entry point (preferred)
-    python -m src.interface.cli.session_start  # Via module
+    uv run src/interface/cli/session_start.py  # Via uv run (preferred)
+    python -m src.interface.cli.session_start  # Via module (requires pip install -e .)
 
 Environment Variables:
     JERRY_PROJECT: The project ID to use (optional)
@@ -30,7 +30,13 @@ References:
     - WI-015: Update session_start.py Hook
     - ADR-PROJ004-004: JerrySession Context (5-level precedence)
     - PROJ-004-e-004: Configuration Precedence research
+    - ADR e-010: uv Session Start solution
 """
+
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 
 from __future__ import annotations
 
