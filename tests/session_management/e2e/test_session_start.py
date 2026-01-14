@@ -29,7 +29,6 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-import sys
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -106,12 +105,17 @@ def create_project(
 def run_session_start(
     script_path: Path,
     env_vars: dict | None = None,
+    project_root: Path | None = None,
 ) -> tuple[int, str, str]:
-    """Run the session_start.py script with given environment.
+    """Run the session_start.py script via uv run.
+
+    IMPORTANT: Uses uv run to validate plugin execution model (DISC-008).
+    Never use sys.executable directly - bypasses uv dependency management.
 
     Args:
         script_path: Path to the session_start.py script
         env_vars: Additional environment variables to set
+        project_root: Project root for PYTHONPATH (required for local imports)
 
     Returns:
         Tuple of (exit_code, stdout, stderr)
@@ -120,11 +124,18 @@ def run_session_start(
     if env_vars:
         env.update(env_vars)
 
+    # Set PYTHONPATH to project root for "from src.X" imports (DISC-005)
+    # Script uses absolute imports like "from src.infrastructure..."
+    if project_root:
+        existing_pythonpath = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = f"{project_root}:{existing_pythonpath}" if existing_pythonpath else str(project_root)
+
     result = subprocess.run(
-        [sys.executable, str(script_path)],
+        ["uv", "run", str(script_path)],
         capture_output=True,
         text=True,
         env=env,
+        cwd=str(project_root) if project_root else None,
     )
 
     return result.returncode, result.stdout, result.stderr
@@ -139,7 +150,7 @@ class TestSessionStartHappyPath:
     """Happy path E2E tests for session start hook."""
 
     def test_valid_project_outputs_project_context(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Valid JERRY_PROJECT should output <project-context> tag."""
         create_project(temp_projects_dir, "PROJ-001-test")
@@ -150,6 +161,7 @@ class TestSessionStartHappyPath:
                 "JERRY_PROJECT": "PROJ-001-test",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
@@ -158,7 +170,7 @@ class TestSessionStartHappyPath:
         assert "</project-context>" in stdout
 
     def test_valid_project_shows_validation_success(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Valid project with all files shows success validation."""
         create_project(temp_projects_dir, "PROJ-002-complete")
@@ -169,13 +181,14 @@ class TestSessionStartHappyPath:
                 "JERRY_PROJECT": "PROJ-002-complete",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
         assert "ValidationMessage: Project is properly configured" in stdout
 
     def test_no_project_set_shows_project_required(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """No JERRY_PROJECT should output <project-required> tag."""
         create_project(temp_projects_dir, "PROJ-001-available")
@@ -184,7 +197,7 @@ class TestSessionStartHappyPath:
         env = {"CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent)}
         env["JERRY_PROJECT"] = ""  # Explicitly clear
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "<project-required>" in stdout
@@ -192,7 +205,7 @@ class TestSessionStartHappyPath:
         assert "</project-required>" in stdout
 
     def test_no_projects_available_shows_empty_list(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Empty projects directory shows no projects message."""
         env = {
@@ -200,14 +213,14 @@ class TestSessionStartHappyPath:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "(no projects found)" in stdout
         assert "NextProjectNumber: 001" in stdout
 
     def test_multiple_projects_lists_all(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Multiple projects are listed with status icons."""
         create_project(temp_projects_dir, "PROJ-001-first", status="IN_PROGRESS")
@@ -219,7 +232,7 @@ class TestSessionStartHappyPath:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "PROJ-001-first" in stdout
@@ -230,7 +243,7 @@ class TestSessionStartHappyPath:
         assert "[DRAFT]" in stdout
 
     def test_next_project_number_increments(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Next project number is max + 1."""
         create_project(temp_projects_dir, "PROJ-005-existing")
@@ -241,7 +254,7 @@ class TestSessionStartHappyPath:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "NextProjectNumber: 011" in stdout
@@ -256,7 +269,7 @@ class TestSessionStartEdgeCases:
     """Edge case E2E tests for session start hook."""
 
     def test_project_with_long_slug(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Project with long slug is handled correctly."""
         long_slug = "this-is-a-very-long-project-slug"
@@ -268,13 +281,14 @@ class TestSessionStartEdgeCases:
                 "JERRY_PROJECT": f"PROJ-001-{long_slug}",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
         assert f"PROJ-001-{long_slug}" in stdout
 
     def test_project_number_boundary_001(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Project number 001 is valid."""
         create_project(temp_projects_dir, "PROJ-001-boundary-low")
@@ -285,13 +299,14 @@ class TestSessionStartEdgeCases:
                 "JERRY_PROJECT": "PROJ-001-boundary-low",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
         assert "<project-context>" in stdout
 
     def test_project_number_boundary_999(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Project number 999 is valid and next number caps at 999."""
         create_project(temp_projects_dir, "PROJ-999-boundary-high")
@@ -301,14 +316,14 @@ class TestSessionStartEdgeCases:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         # Next number should cap at 999
         assert "NextProjectNumber: 999" in stdout
 
     def test_archive_directory_is_ignored(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Archive directory is not included in project list."""
         create_project(temp_projects_dir, "PROJ-001-active")
@@ -322,14 +337,14 @@ class TestSessionStartEdgeCases:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "PROJ-001-active" in stdout
         assert "PROJ-002-archived" not in stdout
 
     def test_hidden_directories_ignored(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Hidden directories are not scanned."""
         create_project(temp_projects_dir, "PROJ-001-visible")
@@ -343,14 +358,14 @@ class TestSessionStartEdgeCases:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "PROJ-001-visible" in stdout
         assert ".hidden" not in stdout
 
     def test_project_with_hyphenated_slug(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Project with multiple hyphens in slug is valid."""
         create_project(temp_projects_dir, "PROJ-001-multi-word-slug-name")
@@ -361,6 +376,7 @@ class TestSessionStartEdgeCases:
                 "JERRY_PROJECT": "PROJ-001-multi-word-slug-name",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
@@ -376,7 +392,7 @@ class TestSessionStartNegative:
     """Negative E2E tests for session start hook."""
 
     def test_invalid_project_id_format(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Invalid project ID format shows error."""
         exit_code, stdout, _ = run_session_start(
@@ -385,6 +401,7 @@ class TestSessionStartNegative:
                 "JERRY_PROJECT": "invalid-format",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0  # Always 0
@@ -392,7 +409,9 @@ class TestSessionStartNegative:
         assert "InvalidProject: invalid-format" in stdout
         assert "ACTION REQUIRED" in stdout
 
-    def test_nonexistent_project(self, temp_projects_dir: str, session_start_script: Path) -> None:
+    def test_nonexistent_project(
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
+    ) -> None:
         """Non-existent project shows error with available alternatives."""
         create_project(temp_projects_dir, "PROJ-001-exists")
 
@@ -402,6 +421,7 @@ class TestSessionStartNegative:
                 "JERRY_PROJECT": "PROJ-999-nonexistent",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0  # Always 0
@@ -411,7 +431,7 @@ class TestSessionStartNegative:
         assert "PROJ-001-exists" in stdout
 
     def test_project_missing_required_files(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Project missing PLAN.md or WORKTRACKER.md shows validation warnings."""
         # Create project with only PLAN.md (missing WORKTRACKER)
@@ -426,6 +446,7 @@ class TestSessionStartNegative:
                 "JERRY_PROJECT": "PROJ-001-incomplete",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
@@ -441,7 +462,9 @@ class TestSessionStartNegative:
 class TestSessionStartFailures:
     """Failure scenario E2E tests for session start hook."""
 
-    def test_projects_directory_not_found(self, session_start_script: Path) -> None:
+    def test_projects_directory_not_found(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
         """Non-existent projects directory handles gracefully."""
         exit_code, stdout, _ = run_session_start(
             session_start_script,
@@ -449,6 +472,7 @@ class TestSessionStartFailures:
                 "JERRY_PROJECT": "",
                 "CLAUDE_PROJECT_DIR": "/nonexistent/path",
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0  # Always 0
@@ -456,7 +480,7 @@ class TestSessionStartFailures:
         assert "(no projects found)" in stdout or "<project-error>" in stdout
 
     def test_corrupt_worktracker_handled(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Corrupt WORKTRACKER.md is handled gracefully."""
         proj_dir = Path(temp_projects_dir) / "PROJ-001-corrupt"
@@ -470,14 +494,14 @@ class TestSessionStartFailures:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         # Should list project even with corrupt file
         assert "PROJ-001-corrupt" in stdout
 
     def test_empty_worktracker_shows_unknown_status(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Empty WORKTRACKER.md shows unknown status."""
         proj_dir = Path(temp_projects_dir) / "PROJ-001-empty"
@@ -490,14 +514,14 @@ class TestSessionStartFailures:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert "PROJ-001-empty" in stdout
         assert "[?]" in stdout  # Unknown status icon
 
     def test_always_returns_exit_code_zero(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """Script always returns exit code 0 for Claude to handle."""
         # Test various error conditions all return 0
@@ -508,7 +532,7 @@ class TestSessionStartFailures:
         ]
 
         for env_vars in test_cases:
-            exit_code, _, _ = run_session_start(session_start_script, env_vars)
+            exit_code, _, _ = run_session_start(session_start_script, env_vars, project_root=project_root)
             assert exit_code == 0, f"Expected exit 0 for {env_vars}"
 
 
@@ -521,7 +545,7 @@ class TestSessionStartOutputFormat:
     """Output format validation E2E tests for session start hook."""
 
     def test_project_context_tag_structure(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """<project-context> tag has required fields."""
         create_project(temp_projects_dir, "PROJ-001-format-test")
@@ -532,6 +556,7 @@ class TestSessionStartOutputFormat:
                 "JERRY_PROJECT": "PROJ-001-format-test",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
@@ -546,7 +571,7 @@ class TestSessionStartOutputFormat:
         assert open_idx < close_idx
 
     def test_project_required_tag_structure(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """<project-required> tag has required fields."""
         create_project(temp_projects_dir, "PROJ-001-available")
@@ -556,7 +581,7 @@ class TestSessionStartOutputFormat:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
         assert stdout.count("<project-required>") == 1
@@ -567,7 +592,7 @@ class TestSessionStartOutputFormat:
         assert "ProjectsJson:" in stdout
 
     def test_project_error_tag_structure(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """<project-error> tag has required fields."""
         exit_code, stdout, _ = run_session_start(
@@ -576,6 +601,7 @@ class TestSessionStartOutputFormat:
                 "JERRY_PROJECT": "invalid-id",
                 "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
             },
+            project_root=project_root,
         )
 
         assert exit_code == 0
@@ -586,7 +612,7 @@ class TestSessionStartOutputFormat:
         assert "AvailableProjects:" in stdout
 
     def test_projects_json_is_valid_json(
-        self, temp_projects_dir: str, session_start_script: Path
+        self, temp_projects_dir: str, session_start_script: Path, project_root: Path
     ) -> None:
         """ProjectsJson field contains valid JSON."""
         create_project(temp_projects_dir, "PROJ-001-json-test", status="IN_PROGRESS")
@@ -597,7 +623,7 @@ class TestSessionStartOutputFormat:
             "CLAUDE_PROJECT_DIR": str(Path(temp_projects_dir).parent),
         }
 
-        exit_code, stdout, _ = run_session_start(session_start_script, env)
+        exit_code, stdout, _ = run_session_start(session_start_script, env, project_root=project_root)
 
         assert exit_code == 0
 
@@ -616,3 +642,64 @@ class TestSessionStartOutputFormat:
                 break
         else:
             pytest.fail("ProjectsJson not found in output")
+
+
+# =============================================================================
+# PEP 723 Metadata Tests (2 tests) - Added for EN-004
+# =============================================================================
+
+
+class TestSessionStartPEP723:
+    """Tests for PEP 723 inline script metadata.
+
+    These tests validate that the session_start.py script contains proper
+    PEP 723 inline metadata, enabling standalone execution via `uv run`
+    without requiring pip install.
+
+    References:
+        - PEP 723: https://peps.python.org/pep-0723/
+        - BUG-007: SessionStart hook required pip install
+        - ADR e-010: Decision to use uv + PEP 723
+    """
+
+    def test_pep723_metadata_present(self, session_start_script: Path) -> None:
+        """Script contains valid PEP 723 inline script metadata block."""
+        content = session_start_script.read_text()
+
+        # Verify PEP 723 opening marker
+        assert "# /// script" in content, "Missing PEP 723 opening marker '# /// script'"
+
+        # Verify PEP 723 closing marker (standalone line)
+        assert "# ///" in content, "Missing PEP 723 closing marker '# ///'"
+
+        # Verify required sections in metadata
+        assert "requires-python" in content, "Missing 'requires-python' in PEP 723 metadata"
+
+    def test_pep723_script_executes_standalone(
+        self, session_start_script: Path, project_root: Path
+    ) -> None:
+        """Script executes via uv run without pip install.
+
+        This is the key test that validates BUG-007 is fixed - the script
+        must work without `pip install -e .` being run first.
+        """
+        # Run in a clean environment (no JERRY_PROJECT set)
+        # This should succeed and produce <project-required> output
+        env = {
+            "JERRY_PROJECT": "",
+            "CLAUDE_PROJECT_DIR": str(project_root),
+        }
+
+        exit_code, stdout, stderr = run_session_start(
+            session_start_script,
+            env,
+            project_root=project_root,
+        )
+
+        # Must exit with 0 (script handles all errors internally)
+        assert exit_code == 0, f"Script failed with exit code {exit_code}. stderr: {stderr}"
+
+        # Must produce valid output (either project-required or project-context)
+        assert (
+            "<project-required>" in stdout or "<project-context>" in stdout
+        ), f"Script did not produce expected output tags. stdout: {stdout}"
