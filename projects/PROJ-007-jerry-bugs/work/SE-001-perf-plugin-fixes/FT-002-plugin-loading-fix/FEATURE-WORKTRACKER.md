@@ -3,11 +3,11 @@
 > **Feature ID:** FT-002
 > **Solution Epic:** SE-001
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** COMPLETE ✅ (All TDD/BDD phases done)
+> **Status:** RELEASED ✅
 > **Target Version:** v0.2.0
-> **Version Released:** v0.2.0 (version bump applied)
+> **Version Released:** v0.2.0 (commit e6fadeb)
 > **Created:** 2026-01-14
-> **Last Updated:** 2026-01-14T16:00:00Z
+> **Last Updated:** 2026-01-14T17:30:00Z
 
 ---
 
@@ -17,7 +17,12 @@ Fix Jerry plugin not loading when started via `claude --plugin-dir`. The plugin 
 
 **Root Cause:** PEP 723 inline metadata (`dependencies = []`) causes `uv run` to create an isolated environment that ignores PYTHONPATH, breaking `from src.infrastructure.*` imports.
 
-**Proposed Solution:** Remove PEP 723 metadata so `uv run` uses project's `pyproject.toml`.
+**Final Solution (uv-native):**
+1. Remove PEP 723 metadata from `session_start.py`
+2. Use entry point `jerry-session-start` instead of direct module execution
+3. Hook command: `uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry-session-start`
+
+This is the proper uv-native approach - no PYTHONPATH hacks required.
 
 ---
 
@@ -44,22 +49,32 @@ Fix Jerry plugin not loading when started via `claude --plugin-dir`. The plugin 
 | ID | Title | Status | Blocks |
 |----|-------|--------|--------|
 | [disc-001](./disc-001-uv-portability-requirement.md) | uv Portability Requirement | RESOLVED ✅ | ~~UoW-001~~ (unblocked) |
-| disc-002 | CI vs Hook Environment Discrepancy | OPEN | → TD-002 |
+| disc-002 | CI vs Hook Environment Discrepancy | ADDRESSED ✅ | → TD-002 |
 | disc-003 | Hooks Inconsistency (uv vs python3) | DOCUMENTED | → TD-003 |
+| [disc-004](./disc-004-cli-entry-point-pattern.md) | CLI Entry Point Pattern | DOCUMENTED ✅ | (informational) |
 
 ### disc-001: uv Portability Requirement [RESOLVED ✅]
 **Solution validated via EN-003:** Remove PEP 723 inline metadata from session_start.py. This allows `uv run` to use the project's pyproject.toml instead of creating an isolated environment.
 
-### disc-002: CI vs Hook Environment Discrepancy [CRITICAL → TD-002]
+### disc-002: CI vs Hook Environment Discrepancy [ADDRESSED → TD-002]
 **Root Cause for CI Passing but Hook Failing:**
 - CI uses: `PYTHONPATH="." uv run src/interface/cli/session_start.py`
 - Hook uses: `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" uv run ${CLAUDE_PLUGIN_ROOT}/src/.../session_start.py`
 - PEP 723 `dependencies = []` creates isolated env that ignores PYTHONPATH
 
+**Resolution:** Hook now uses entry point (`jerry-session-start`) with `--directory` flag - no PYTHONPATH required.
+**Note:** CI still uses PYTHONPATH pattern; TD-002 tracks unifying this.
+
 ### disc-003: Hooks Inconsistency [DOCUMENTED → TD-003]
-- SessionStart: uses `uv run` (FAILS due to PEP 723)
+- SessionStart: uses `uv run` with entry point ✅ FIXED
 - PreToolUse: uses `python3` (WORKS - stdlib only)
 - Stop: uses `python3` (WORKS - stdlib only)
+
+### disc-004: CLI Entry Point Pattern [DOCUMENTED ✅]
+**Key insight:** When using uv, prefer registered entry points over direct module execution.
+- Entry points auto-install the package, ensuring PYTHONPATH is correct
+- Use `uv run --directory <project> <entry-point>` for portability
+- See [disc-004-cli-entry-point-pattern.md](./disc-004-cli-entry-point-pattern.md) for full documentation
 
 ---
 
@@ -167,3 +182,9 @@ Session Start Tests:  33 passed
 | 2026-01-14 | UoW-001 ALL COMPLETE: 12/12 TDD/BDD tasks done | Claude |
 | 2026-01-14 | BUG-002 RESOLVED | Claude |
 | 2026-01-14 | FT-002 STATUS: COMPLETE ✅ | Claude |
+| 2026-01-14 | Commit e6fadeb: uv-native entry point solution | Claude |
+| 2026-01-14 | Build verified: 2178 tests pass | Claude |
+| 2026-01-14 | Hook verified from /tmp (arbitrary directory) | Claude |
+| 2026-01-14 | disc-002 ADDRESSED: Hook uses entry point now | Claude |
+| 2026-01-14 | disc-004 DOCUMENTED: CLI Entry Point Pattern | Claude |
+| 2026-01-14 | FT-002 STATUS: RELEASED ✅ (v0.2.0) | Claude |
