@@ -35,10 +35,12 @@
 | Level | Total | Completed | In Progress | Pending |
 |-------|-------|-----------|-------------|---------|
 | Solution Epics | 1 | 0 | 1 | 0 |
-| Features | 2 | 0 | 0 | 2 |
-| Enablers | 2 | 0 | 1 | 1 |
-| Units of Work | 0 | 0 | 0 | 0 |
-| Tasks | 0 | 0 | 0 | 0 |
+| Features | 2 | 0 | 1 | 1 |
+| Enablers | 3 | 1 | 1 | 1 |
+| Units of Work | 2 | 0 | 0 | 2 |
+| Tasks | 16 | 0 | 0 | 16 |
+| Technical Debt | 3 | 0 | 0 | 3 |
+| Discoveries | 3 | 0 | 2 | 1 |
 
 ---
 
@@ -66,6 +68,8 @@
 | ID | Type | Description | Status | Feature |
 |----|------|-------------|--------|---------|
 | TD-001 | Tech Debt | Lock file cleanup never implemented (ADR-006) | DOCUMENTED | FT-001 |
+| TD-002 | Test Gap | CI tests don't match hook execution environment | DOCUMENTED | FT-002 |
+| TD-003 | Inconsistency | Hooks use mixed execution (uv vs python3) | DOCUMENTED | FT-002 |
 
 ---
 
@@ -88,3 +92,7 @@
 | 2026-01-14 | disc-001 created: uv portability requirement gap | Claude |
 | 2026-01-14 | disc-002 identified: CI vs Hook environment discrepancy | Claude |
 | 2026-01-14 | disc-003 documented: Hooks use inconsistent execution methods | Claude |
+| 2026-01-14 | TD-002 created: CI test coverage gap | Claude |
+| 2026-01-14 | TD-003 created: Hooks execution inconsistency | Claude |
+| 2026-01-14 | EN-003 created: Validate solution hypothesis | Claude |
+| 2026-01-14 | UoW-001 detailed: 12 TDD/BDD tasks for plugin fix | Claude |
