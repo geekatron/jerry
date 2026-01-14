@@ -205,7 +205,9 @@ jobs:
 
       - name: Run tests with coverage
         run: |
+          # Exclude subprocess tests (require uv) - they run in cli-integration job
           pytest \
+            -m "not subprocess" \
             --cov=src \
             --cov-report=xml \
             --cov-report=html \
@@ -220,7 +222,9 @@ jobs:
       - name: Run tests without coverage threshold (skip-coverage)
         if: ${{ contains(github.event.head_commit.message, '[skip-coverage]') }}
         run: |
+          # Exclude subprocess tests (require uv) - they run in cli-integration job
           pytest \
+            -m "not subprocess" \
             --cov=src \
             --cov-report=xml \
             --cov-report=html \
