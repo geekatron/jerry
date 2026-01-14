@@ -36,7 +36,7 @@ BUG-007 (SessionStart hook silent failure) was only discovered manually after de
 | ID | Name | Status | Tasks | Description |
 |----|------|--------|-------|-------------|
 | [EN-004](./en-004.md) | Fix and enhance session_start.py tests | COMPLETED | 9/9 | Fix broken tests after BUG-007 |
-| [EN-005](./en-005.md) | Pre-commit/CI hooks | PENDING | 0/9 | Validation hooks for plugin artifacts |
+| [EN-005](./en-005.md) | Pre-commit/CI hooks | IN PROGRESS | 0/9 | Validation hooks for plugin artifacts |
 | [EN-006](./en-006.md) | CLI integration test suite | PENDING | 0/9 | Integration tests for jerry CLI |
 
 ---
