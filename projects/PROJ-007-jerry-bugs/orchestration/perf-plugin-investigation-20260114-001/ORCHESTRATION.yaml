@@ -1,0 +1,92 @@
+# ORCHESTRATION.yaml - Single Source of Truth (SSOT)
+# Workflow: perf-plugin-investigation-20260114-001
+# Pattern: Fan-Out / Fan-In
+# Created: 2026-01-14
+
+workflow:
+  id: "perf-plugin-investigation-20260114-001"
+  id_source: "user"
+  name: "Performance and Plugin Bug Investigations"
+  pattern: "fan-out-fan-in"
+  project_id: "PROJ-007-jerry-bugs"
+  status: "ACTIVE"
+  created: "2026-01-14T00:00:00Z"
+  updated: "2026-01-14T00:00:00Z"
+
+phases:
+  phase_1:
+    id: 1
+    name: "Parallel Investigations"
+    execution_mode: "PARALLEL"
+    status: "PENDING"
+    agents:
+      - id: "ps-investigator-bug-001"
+        bug_id: "BUG-001"
+        topic: "Lock file accumulation"
+        severity: "MEDIUM"
+        status: "PENDING"
+        artifact: null
+        started_at: null
+        completed_at: null
+
+      - id: "ps-investigator-bug-002"
+        bug_id: "BUG-002"
+        topic: "Plugin not loading"
+        severity: "HIGH"
+        status: "PENDING"
+        artifact: null
+        started_at: null
+        completed_at: null
+
+  phase_2:
+    id: 2
+    name: "Synthesis"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    blocked_by: ["phase_1"]
+    agents:
+      - id: "orch-synthesizer"
+        status: "PENDING"
+        artifact: null
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Parallel Investigations"
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-investigator-bug-001"
+        - "ps-investigator-bug-002"
+      status: "PENDING"
+
+    - id: 2
+      name: "Synthesis"
+      execution_mode: "SEQUENTIAL"
+      agents:
+        - "orch-synthesizer"
+      status: "BLOCKED"
+      blocked_by: [1]
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+blockers:
+  active: []
+  resolved: []
+
+metrics:
+  phases_complete: 0
+  phases_total: 2
+  agents_executed: 0
+  agents_total: 3
+  agent_success_rate: 0.0
+  started_at: null
+  completed_at: null
+
+resumption:
+  last_checkpoint_id: null
+  files_to_read:
+    - "orchestration/perf-plugin-investigation-20260114-001/ORCHESTRATION.yaml"
+    - "orchestration/perf-plugin-investigation-20260114-001/ORCHESTRATION_PLAN.md"
