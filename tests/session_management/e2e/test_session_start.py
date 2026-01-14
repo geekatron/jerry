@@ -720,7 +720,7 @@ class TestSessionStartNoPEP723:
 
         # Verify dependencies= line is also absent (part of PEP 723 block)
         # Note: Just checking for the pattern that was in the metadata
-        assert 'dependencies = [' not in content or "pyproject.toml" in content, (
+        assert "dependencies = [" not in content or "pyproject.toml" in content, (
             "PEP 723 dependencies block found. Use pyproject.toml instead."
         )
 
@@ -900,9 +900,7 @@ class TestSessionStartOutputContract:
         assert exit_code == 0
         valid_tags = ["<project-context>", "<project-required>", "<project-error>"]
         has_valid_tag = any(tag in stdout for tag in valid_tags)
-        assert has_valid_tag, (
-            f"Output must contain one of {valid_tags}. Got: {stdout[:200]}"
-        )
+        assert has_valid_tag, f"Output must contain one of {valid_tags}. Got: {stdout[:200]}"
 
     def test_project_required_tag_format(
         self, session_start_script: Path, project_root: Path
@@ -925,9 +923,7 @@ class TestSessionStartOutputContract:
             assert "AvailableProjects:" in stdout, "Missing AvailableProjects field"
             assert "</project-required>" in stdout, "Missing closing tag"
 
-    def test_exit_code_always_zero(
-        self, session_start_script: Path, project_root: Path
-    ) -> None:
+    def test_exit_code_always_zero(self, session_start_script: Path, project_root: Path) -> None:
         """Hook always exits with code 0 (errors handled internally)."""
         # Test with invalid project
         env = {
@@ -942,6 +938,4 @@ class TestSessionStartOutputContract:
         )
 
         # Always exits 0 - errors are communicated via output
-        assert exit_code == 0, (
-            f"Hook should always exit 0. Got {exit_code}. stderr: {stderr}"
-        )
+        assert exit_code == 0, f"Hook should always exit 0. Got {exit_code}. stderr: {stderr}"
