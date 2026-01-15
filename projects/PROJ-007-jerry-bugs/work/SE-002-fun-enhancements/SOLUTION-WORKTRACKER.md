@@ -40,8 +40,8 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 
 | ID | Name | Status | Feature | Orchestration |
 |----|------|--------|---------|---------------|
-| [EN-001](./FT-001-ascii-splash-screen/en-001-research-jerry-of-the-day.md) | Research Spike - Jerry of the Day | IN PROGRESS | FT-001 | ps-researcher |
-| [EN-002](./FT-001-ascii-splash-screen/en-002-research-shane-mcconkey.md) | Research Spike - Shane McConkey | PENDING | FT-001 | nse-explorer |
+| [EN-001](./FT-001-ascii-splash-screen/en-001-research-jerry-of-the-day.md) | Research Spike - Jerry of the Day | **COMPLETE** ✅ | FT-001 | ps-researcher |
+| [EN-002](./FT-001-ascii-splash-screen/en-002-research-shane-mcconkey.md) | Research Spike - Shane McConkey | **COMPLETE** ✅ | FT-001 | nse-explorer |
 
 ---
 
@@ -57,7 +57,7 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 
 | Workflow ID | Pattern | Feature | Status |
 |-------------|---------|---------|--------|
-| [jerry-persona-20260114](../../orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md) | Cross-Pollinated Pipeline | FT-001 | ACTIVE |
+| [jerry-persona-20260114](../../orchestration/jerry-persona-20260114/ORCHESTRATION_PLAN.md) | Cross-Pollinated Pipeline | FT-001 | **COMPLETE** ✅ |
 
 **Pipelines:**
 - **ps (Problem-Solving):** Jerry of the Day research → analysis → synthesis
@@ -96,3 +96,6 @@ Fun enhancements to improve the Jerry user experience with visual flair and pers
 | 2026-01-14 | disc-001 documented: Saucer Boy connection | Claude |
 | 2026-01-14 | Orchestration jerry-persona-20260114 initiated | Claude |
 | 2026-01-14 | Cross-pollinated pipeline designed (ps + nse) | Claude |
+| 2026-01-14 | EN-001, EN-002 COMPLETE via orchestration | Claude |
+| 2026-01-14 | jerry-persona-20260114 COMPLETE (7/7 agents, 100%) | Claude |
+| 2026-01-14 | Final synthesis ready for UoW-001 implementation | Claude |
