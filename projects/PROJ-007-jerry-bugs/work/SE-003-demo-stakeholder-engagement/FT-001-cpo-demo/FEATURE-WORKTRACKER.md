@@ -25,17 +25,25 @@ Create a comprehensive demonstration package for showcasing Jerry Framework to e
 
 | ID | Name | Status | Tasks | Tracker |
 |----|------|--------|-------|---------|
-| [UoW-001](./uow-001-demo-planning-execution.md) | Demo Planning and Execution | IN PROGRESS | TBD | [uow-001-demo-planning-execution.md](./uow-001-demo-planning-execution.md) |
+| [UoW-001](./uow-001-demo-planning-execution.md) | Demo Planning and Execution | IN PROGRESS | 21 | [uow-001-demo-planning-execution.md](./uow-001-demo-planning-execution.md) |
+| [UoW-002](./uow-002-anthropic-plan-request.md) | Anthropic Plan Enhancement Request | IN PROGRESS | 4 | [uow-002-anthropic-plan-request.md](./uow-002-anthropic-plan-request.md) |
 
 ---
 
 ## Enablers
 
-*None yet - research enablers may be created during planning phase.*
-
 | ID | Name | Status | Tasks | Tracker |
 |----|------|--------|-------|---------|
-| *(pending)* | TBD | - | - | - |
+| [EN-001](./en-001-demo-orchestration-planning.md) | Demo Orchestration Planning | IN PROGRESS | 13 agents | [en-001](./en-001-demo-orchestration-planning.md) |
+
+### EN-001: Demo Orchestration Planning
+
+3-pipeline cross-pollinated workflow with critic loops to produce all demo materials:
+- **Pipeline A (ps):** Value & ROI research, analysis, synthesis
+- **Pipeline B (nse):** Technical depth exploration, architecture, validation
+- **Pipeline C (synth):** Presentation materials synthesis
+
+**Workflow ID:** `cpo-demo-20260114`
 
 ---
 
