@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry-session-start",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/session_start_hook.py",
             "timeout": 10000
           }
         ]

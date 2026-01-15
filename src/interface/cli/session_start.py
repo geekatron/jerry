@@ -60,6 +60,38 @@ from src.session_management.application import GetProjectContextQuery
 from src.session_management.infrastructure import FilesystemProjectAdapter, OsEnvironmentAdapter
 
 
+class OutputCollector:
+    """Collects output lines for JSON formatting.
+
+    SessionStart hooks must return JSON in the format:
+    {
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": "..."
+        }
+    }
+
+    This class collects print() calls and formats them as proper hook JSON.
+    """
+
+    def __init__(self) -> None:
+        self.lines: list[str] = []
+
+    def print(self, text: str = "") -> None:
+        """Collect a line of output."""
+        self.lines.append(text)
+
+    def to_json(self) -> str:
+        """Format collected output as SessionStart hook JSON."""
+        content = "\n".join(self.lines)
+        return json.dumps({
+            "hookSpecificOutput": {
+                "hookEventName": "SessionStart",
+                "additionalContext": content
+            }
+        })
+
+
 def get_project_root() -> Path:
     """Determine the project root directory.
 
@@ -181,33 +213,35 @@ def format_project_list(projects: list[Any]) -> str:
     return "\n".join(lines)
 
 
-def output_project_active(context: dict[str, Any]) -> None:
+def output_project_active(context: dict[str, Any], out: OutputCollector) -> None:
     """Output structured message for active project.
 
     Args:
         context: Project context dictionary
+        out: OutputCollector to collect output for JSON formatting
     """
     project_id = context["project_id"]
     validation = context["validation"]
 
-    print("Jerry Framework initialized. See CLAUDE.md for context.")
-    print("<project-context>")
-    print(f"ProjectActive: {project_id}")
-    print(f"ProjectPath: projects/{project_id}/")
+    out.print("Jerry Framework initialized. See CLAUDE.md for context.")
+    out.print("<project-context>")
+    out.print(f"ProjectActive: {project_id}")
+    out.print(f"ProjectPath: projects/{project_id}/")
 
     if validation and validation.is_valid:
         if validation.has_warnings:
-            print(f"ValidationWarnings: {'; '.join(validation.messages)}")
+            out.print(f"ValidationWarnings: {'; '.join(validation.messages)}")
         else:
-            print("ValidationMessage: Project is properly configured")
-    print("</project-context>")
+            out.print("ValidationMessage: Project is properly configured")
+    out.print("</project-context>")
 
 
-def output_project_required(context: dict[str, Any]) -> None:
+def output_project_required(context: dict[str, Any], out: OutputCollector) -> None:
     """Output structured message when project selection is required.
 
     Args:
         context: Project context dictionary
+        out: OutputCollector to collect output for JSON formatting
     """
     projects = context["available_projects"]
     next_num = context["next_number"]
@@ -215,49 +249,50 @@ def output_project_required(context: dict[str, Any]) -> None:
     # Create JSON representation for parsing
     projects_json = json.dumps([{"id": str(p.id), "status": p.status.name} for p in projects])
 
-    print("Jerry Framework initialized.")
-    print("<project-required>")
-    print("ProjectRequired: true")
-    print("AvailableProjects:")
-    print(format_project_list(projects))
-    print(f"NextProjectNumber: {next_num:03d}")
-    print(f"ProjectsJson: {projects_json}")
-    print("</project-required>")
-    print()
-    print("ACTION REQUIRED: No JERRY_PROJECT environment variable set.")
-    print(
+    out.print("Jerry Framework initialized.")
+    out.print("<project-required>")
+    out.print("ProjectRequired: true")
+    out.print("AvailableProjects:")
+    out.print(format_project_list(projects))
+    out.print(f"NextProjectNumber: {next_num:03d}")
+    out.print(f"ProjectsJson: {projects_json}")
+    out.print("</project-required>")
+    out.print()
+    out.print("ACTION REQUIRED: No JERRY_PROJECT environment variable set.")
+    out.print(
         "Claude MUST use AskUserQuestion to help the user select an existing project or create a new one."
     )
-    print("DO NOT proceed with any work until a project is selected.")
+    out.print("DO NOT proceed with any work until a project is selected.")
 
 
-def output_project_error(context: dict[str, Any]) -> None:
+def output_project_error(context: dict[str, Any], out: OutputCollector) -> None:
     """Output structured message for invalid project.
 
     Args:
         context: Project context dictionary
+        out: OutputCollector to collect output for JSON formatting
     """
     jerry_project = context["jerry_project"]
     validation = context["validation"]
     projects = context["available_projects"]
     next_num = context["next_number"]
 
-    print("Jerry Framework initialized with ERROR.")
-    print("<project-error>")
-    print(f"InvalidProject: {jerry_project}")
+    out.print("Jerry Framework initialized with ERROR.")
+    out.print("<project-error>")
+    out.print(f"InvalidProject: {jerry_project}")
 
     if validation:
-        print(f"Error: {validation.first_message or 'Unknown validation error'}")
+        out.print(f"Error: {validation.first_message or 'Unknown validation error'}")
     else:
-        print("Error: Project validation failed")
+        out.print("Error: Project validation failed")
 
-    print("AvailableProjects:")
-    print(format_project_list(projects))
-    print(f"NextProjectNumber: {next_num:03d}")
-    print("</project-error>")
-    print()
-    print("ACTION REQUIRED: The specified JERRY_PROJECT is invalid.")
-    print("Claude MUST use AskUserQuestion to help the user select or create a valid project.")
+    out.print("AvailableProjects:")
+    out.print(format_project_list(projects))
+    out.print(f"NextProjectNumber: {next_num:03d}")
+    out.print("</project-error>")
+    out.print()
+    out.print("ACTION REQUIRED: The specified JERRY_PROJECT is invalid.")
+    out.print("Claude MUST use AskUserQuestion to help the user select or create a valid project.")
 
 
 def main() -> int:
@@ -277,6 +312,9 @@ def main() -> int:
         - AC-015.3: Falls back to project discovery if no active project
         - AC-015.5: Backward compatible with existing env var workflow
     """
+    # Create output collector for JSON-formatted hook output
+    out = OutputCollector()
+
     # Wire up dependencies
     repository = FilesystemProjectAdapter()
     projects_dir = get_projects_directory()
@@ -312,13 +350,14 @@ def main() -> int:
         context = query.execute()
     except Exception as e:
         # If we can't even execute the query, output minimal info
-        print("Jerry Framework initialized with ERROR.")
-        print("<project-error>")
-        print(f"Error: Failed to scan projects: {e}")
-        print("</project-error>")
-        print()
-        print("ACTION REQUIRED: Could not access projects directory.")
-        print("Check that the projects/ directory exists and is accessible.")
+        out.print("Jerry Framework initialized with ERROR.")
+        out.print("<project-error>")
+        out.print(f"Error: Failed to scan projects: {e}")
+        out.print("</project-error>")
+        out.print()
+        out.print("ACTION REQUIRED: Could not access projects directory.")
+        out.print("Check that the projects/ directory exists and is accessible.")
+        print(out.to_json())
         return 0
     finally:
         # Clean up: restore original env if we modified it
@@ -335,14 +374,16 @@ def main() -> int:
 
     if jerry_project is None:
         # No project set - require selection (AC-015.3)
-        output_project_required(context)
+        output_project_required(context, out)
     elif project_id is not None and validation is not None and validation.is_valid:
         # Valid project set
-        output_project_active(context)
+        output_project_active(context, out)
     else:
         # Invalid project set
-        output_project_error(context)
+        output_project_error(context, out)
 
+    # Output as JSON for SessionStart hook
+    print(out.to_json())
     return 0
 
 
