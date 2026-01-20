@@ -3,7 +3,7 @@
 > **Project:** Jerry Performance and Plugin Bugs
 > **Status:** IN PROGRESS
 > **Created:** 2026-01-14
-> **Last Updated:** 2026-01-14
+> **Last Updated:** 2026-01-15
 
 ---
 
@@ -15,6 +15,7 @@
 | `plugin-reliability` | Plugin loading and initialization correctness |
 | `user-experience` | Fun enhancements and visual improvements |
 | `stakeholder-engagement` | Demo, presentations, and executive buy-in |
+| `developer-experience` | Developer workflow, CLI tooling, and Claude Code integration |
 
 ---
 
@@ -31,6 +32,7 @@
 | [SE-001](./work/SE-001-perf-plugin-fixes/SOLUTION-WORKTRACKER.md) | Performance and Plugin Bug Fixes | IN PROGRESS | 1/2 Features | [SOLUTION-WORKTRACKER.md](./work/SE-001-perf-plugin-fixes/SOLUTION-WORKTRACKER.md) |
 | [SE-002](./work/SE-002-fun-enhancements/SOLUTION-WORKTRACKER.md) | Fun Enhancements | IN PROGRESS | 0/1 Features | [SOLUTION-WORKTRACKER.md](./work/SE-002-fun-enhancements/SOLUTION-WORKTRACKER.md) |
 | [SE-003](./work/SE-003-demo-stakeholder-engagement/SOLUTION-WORKTRACKER.md) | Demo and Stakeholder Engagement | IN PROGRESS | 0/1 Features | [SOLUTION-WORKTRACKER.md](./work/SE-003-demo-stakeholder-engagement/SOLUTION-WORKTRACKER.md) |
+| [SE-004](./work/SE-004-cli-claude-integration/SOLUTION-WORKTRACKER.md) | CLI and Claude Code Integration | IN PROGRESS | 0/1 Features | [SOLUTION-WORKTRACKER.md](./work/SE-004-cli-claude-integration/SOLUTION-WORKTRACKER.md) |
 
 ---
 
@@ -38,13 +40,13 @@
 
 | Level | Total | Completed | In Progress | Pending |
 |-------|-------|-----------|-------------|---------|
-| Solution Epics | 3 | 0 | 3 | 0 |
-| Features | 4 | 1 | 3 | 0 |
-| Enablers | 4 | 4 | 0 | 0 |
+| Solution Epics | 4 | 0 | 4 | 0 |
+| Features | 5 | 1 | 4 | 0 |
+| Enablers | 5 | 4 | 1 | 0 |
 | Units of Work | 3 | 1 | 1 | 1 |
-| Tasks | 37 | 12 | 0 | 25 |
-| Technical Debt | 3 | 0 | 0 | 3 |
-| Discoveries | 6 | 4 | 0 | 2 |
+| Tasks | 70 | 12 | 0 | 58 |
+| Technical Debt | 6 | 0 | 0 | 6 |
+| Discoveries | 8 | 6 | 0 | 2 |
 
 ---
 
@@ -61,9 +63,11 @@
 
 | ID | Type | Description | Status | Feature |
 |----|------|-------------|--------|---------|
-| disc-001 | Requirement Gap | uv portability requirement missed in ADR-PROJ007-002 | RESOLVED ✅ | FT-002 |
-| disc-002 | Test Gap | CI vs Hook environment discrepancy - CI passes but hook fails | OPEN | FT-002 |
-| disc-003 | Inconsistency | Hooks use mixed execution (SessionStart=uv, others=python3) | DOCUMENTED | FT-002 |
+| disc-001 | Requirement Gap | uv portability requirement missed in ADR-PROJ007-002 | RESOLVED ✅ | SE-001/FT-002 |
+| disc-002 | Test Gap | CI vs Hook environment discrepancy - CI passes but hook fails | OPEN | SE-001/FT-002 |
+| disc-003 | Inconsistency | Hooks use mixed execution (SessionStart=uv, others=python3) | DOCUMENTED | SE-001/FT-002 |
+| disc-004 | Functional Gap | cli/main.py missing hook output format, local context, status icons | DOCUMENTED | SE-004/FT-001 |
+| disc-005 | Architectural Drift | cli/session_start.py created as shortcut violating hexagonal architecture | DOCUMENTED | SE-004/FT-001 |
 
 ---
 
@@ -71,9 +75,12 @@
 
 | ID | Type | Description | Status | Feature |
 |----|------|-------------|--------|---------|
-| TD-001 | Tech Debt | Lock file cleanup never implemented (ADR-006) | DOCUMENTED | FT-001 |
-| TD-002 | Test Gap | CI tests don't match hook execution environment | DOCUMENTED | FT-002 |
-| TD-003 | Inconsistency | Hooks use mixed execution (uv vs python3) | DOCUMENTED | FT-002 |
+| TD-001 | Tech Debt | Lock file cleanup never implemented (ADR-006) | DOCUMENTED | SE-001/FT-001 |
+| TD-002 | Test Gap | CI tests don't match hook execution environment | DOCUMENTED | SE-001/FT-002 |
+| TD-003 | Inconsistency | Hooks use mixed execution (uv vs python3) | DOCUMENTED | SE-001/FT-002 |
+| TD-004 | Architecture Violation | cli/session_start.py imports infrastructure directly (violates hexagonal) | DOCUMENTED | SE-004/FT-001 |
+| TD-005 | Duplicate Entry Points | pyproject.toml has both `jerry` and `jerry-session-start` | DOCUMENTED | SE-004/FT-001 |
+| TD-006 | Missing Functionality | cli/main.py lacks local context support (.jerry/local/context.toml) | DOCUMENTED | SE-004/FT-001 |
 
 ---
 
@@ -108,3 +115,11 @@
 | 2026-01-14 | SE-003 created: Demo and Stakeholder Engagement | Claude |
 | 2026-01-14 | FT-001 (SE-003) created: CPO Demo and Stakeholder Presentation | Claude |
 | 2026-01-14 | UoW-001 (SE-003/FT-001) created: Demo Planning and Execution | Claude |
+| 2026-01-15 | SE-004 created: CLI and Claude Code Integration | Claude |
+| 2026-01-15 | Added `developer-experience` strategic theme | Claude |
+| 2026-01-15 | FT-001 (SE-004) created: Session Hook Architecture Cleanup | Claude |
+| 2026-01-15 | EN-001 (SE-004/FT-001) created: Session Start Hook TDD Cleanup (21 tasks) | Claude |
+| 2026-01-15 | **RCA COMPLETED**: cli/session_start.py identified as rogue file | Claude |
+| 2026-01-15 | TD-004, TD-005, TD-006 documented (SE-004/FT-001 architecture violations) | Claude |
+| 2026-01-15 | disc-004, disc-005 documented (SE-004/FT-001 gap analysis & RCA) | Claude |
+| 2026-01-15 | EN-001 (SE-004/FT-001) REVISED: 33 tasks across 8 TDD phases | Claude |
