@@ -4,13 +4,28 @@
 > **Feature:** [FT-001](./FEATURE-WORKTRACKER.md) Session Hook Cleanup
 > **Solution Epic:** [SE-004](../SOLUTION-WORKTRACKER.md) CLI and Claude Code Integration
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** DOCUMENTED
+> **Status:** ~~DOCUMENTED~~ **SUPERSEDED**
 > **Created:** 2026-01-20
 > **Last Updated:** 2026-01-20
 
 ---
 
-## Discovery Summary
+## CORRECTION NOTICE
+
+> **This discovery contains incorrect conclusions.**
+>
+> Deep research with authoritative sources (official Anthropic docs at code.claude.com/docs/en/hooks)
+> revealed that `hookSpecificOutput.additionalContext` IS the official Advanced JSON format
+> for SessionStart hooks.
+>
+> **See:** [DISC-004](./disc-004-hook-format-correction.md) for corrected understanding with evidence.
+>
+> The conclusions below about "phantom syntax" were based on incomplete evidence
+> (Hook SDK TypeScript types, which are incomplete).
+
+---
+
+## Discovery Summary (SUPERSEDED)
 
 Investigation revealed that the XML-like tags (`<project-context>`, `<project-required>`, `<project-error>`) and the `hookSpecificOutput` JSON structure used in Jerry's SessionStart hook are **not part of the Claude Code API**. They are phantom conventions that were introduced without basis in the official specification.
 

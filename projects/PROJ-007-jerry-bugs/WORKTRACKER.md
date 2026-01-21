@@ -44,9 +44,9 @@
 | Features | 5 | 1 | 4 | 0 |
 | Enablers | 5 | 4 | 1 | 0 |
 | Units of Work | 3 | 1 | 1 | 1 |
-| Tasks | 70 | 12 | 0 | 58 |
+| Tasks | 55 | 0 | 0 | 55 |
 | Technical Debt | 6 | 0 | 0 | 6 |
-| Discoveries | 8 | 6 | 0 | 2 |
+| Discoveries | 10 | 8 | 0 | 2 |
 
 ---
 
@@ -68,6 +68,8 @@
 | disc-003 | Inconsistency | Hooks use mixed execution (SessionStart=uv, others=python3) | DOCUMENTED | SE-001/FT-002 |
 | disc-004 | Functional Gap | cli/main.py missing hook output format, local context, status icons | DOCUMENTED | SE-004/FT-001 |
 | disc-005 | Architectural Drift | cli/session_start.py created as shortcut violating hexagonal architecture | DOCUMENTED | SE-004/FT-001 |
+| disc-006 | Correction | Hook format correction - `hookSpecificOutput.additionalContext` IS official (supersedes disc-003 in SE-004) | DOCUMENTED ✅ | SE-004/FT-001 |
+| disc-007 | Empirical Test | Combined `systemMessage` + `additionalContext` works for SessionStart | CONFIRMED ✅ | SE-004/FT-001 |
 
 ---
 
@@ -123,3 +125,7 @@
 | 2026-01-15 | TD-004, TD-005, TD-006 documented (SE-004/FT-001 architecture violations) | Claude |
 | 2026-01-15 | disc-004, disc-005 documented (SE-004/FT-001 gap analysis & RCA) | Claude |
 | 2026-01-15 | EN-001 (SE-004/FT-001) REVISED: 33 tasks across 8 TDD phases | Claude |
+| 2026-01-20 | disc-006 created: Hook format correction (supersedes disc-003 in SE-004/FT-001) | Claude |
+| 2026-01-20 | EN-001 (SE-004/FT-001) MAJOR REVISION: Corrected per DISC-004, 55 BDD tasks | Claude |
+| 2026-01-21 | disc-007 CONFIRMED: Combined systemMessage + additionalContext works (DISC-005) | Claude |
+| 2026-01-21 | EN-001 updated with verified combined hook output format | Claude |

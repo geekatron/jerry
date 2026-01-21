@@ -11,69 +11,85 @@
 
 ---
 
-## Problem Statement (Revised via RCA + Discovery)
+## Problem Statement (Revised via DISC-004)
 
-Root Cause Analysis and subsequent discovery revealed multiple issues:
+**IMPORTANT**: This enabler was revised based on [DISC-004](./disc-004-hook-format-correction.md) which corrected earlier misunderstandings.
 
-1. **`cli/session_start.py` shouldn't exist** - It's a rogue entry point that violates hexagonal architecture
-2. **Phantom XML syntax** - The `<project-context>` tags and `hookSpecificOutput` structure are not part of Claude Code API
-3. **`cli/main.py` is missing functionality** - Features implemented in session_start.py are not in main.py
-4. **`session_start_hook.py` should transform CLI output** - Not call a separate entry point
+### What We Now Know
 
-### Related Technical Debt
+1. **Hook output format IS CORRECT** - `hookSpecificOutput.additionalContext` is the official Claude Code Advanced JSON format
+2. **XML tags ARE VALID** - Anthropic recommends XML for structuring prompts for Claude
+3. **Architecture violation remains** - `cli/session_start.py` still violates hexagonal architecture
+
+### Actual Problems to Fix
+
+1. **`cli/session_start.py` violates hexagonal architecture** - Direct infrastructure imports in interface layer
+2. **Duplicate entry points** - Both `jerry` and `jerry-session-start` in pyproject.toml
+3. **Missing local context support** - `.jerry/local/context.toml` not read by main CLI
+4. **Missing separation of concerns** - CLI should output generic JSON, hook adapter transforms to hook format
+
+### Related Artifacts
+- [DISC-001](./disc-001-functional-gap-analysis.md): Functional gap analysis
+- [DISC-002](./disc-002-architectural-drift-rca.md): Architectural drift RCA
+- [DISC-003](./disc-003-phantom-xml-syntax.md): ~~Phantom XML syntax~~ **SUPERSEDED**
+- [DISC-004](./disc-004-hook-format-correction.md): **Hook format correction (authoritative)**
+- [DISC-005](./disc-005-combined-hook-output-test.md): **Combined output empirical test (CONFIRMED)**
 - [TD-001](./td-001-session-start-violates-hexagonal.md): Hexagonal architecture violation
 - [TD-002](./td-002-duplicate-entry-points.md): Duplicate entry points
 - [TD-003](./td-003-missing-local-context-support.md): Missing local context support
 
-### Related Discoveries
-- [DISC-001](./disc-001-functional-gap-analysis.md): Functional gap analysis
-- [DISC-002](./disc-002-architectural-drift-rca.md): Architectural drift RCA
-- [DISC-003](./disc-003-phantom-xml-syntax.md): **Phantom XML syntax discovery**
-
 ---
 
-## Key Discovery: Phantom XML Syntax
+## Correct Hook Output Format
 
-Investigation via Context7 revealed that the XML-like tags and `hookSpecificOutput` structure are **not part of the Claude Code API**:
+Per official Claude Code documentation and **empirically verified** via [DISC-005](./disc-005-combined-hook-output-test.md):
 
-### Official Claude Code Hook Output
-
-```json
-{
-  "continue": true,
-  "suppressOutput": false,
-  "systemMessage": "Message for Claude"
-}
-```
-
-### What Jerry Incorrectly Uses
+### SessionStart Combined Format (VERIFIED)
 
 ```json
 {
+  "systemMessage": "Jerry Framework initialized.\n\nProject: PROJ-007-jerry-bugs\nPath: projects/PROJ-007-jerry-bugs/\nStatus: Valid and configured",
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "<project-context>...</project-context>"
+    "additionalContext": "Jerry Framework initialized.\n<project-context>\nProjectActive: PROJ-007-jerry-bugs\nProjectPath: projects/PROJ-007-jerry-bugs/\nValidationMessage: Project is properly configured\n</project-context>"
   }
 }
 ```
 
-**Action:** Remove phantom syntax. Use standard `systemMessage` format.
+### Field Definitions (Empirically Verified)
 
-See [DISC-003](./disc-003-phantom-xml-syntax.md) for full investigation.
+| Field | Type | Purpose | Who Sees It |
+|-------|------|---------|-------------|
+| `systemMessage` | string | User notification in terminal | **User (terminal)** |
+| `additionalContext` | string | Content added to Claude's context | **Claude (LLM)** |
+
+**Verified:** Both fields work together. User requested detailed `systemMessage` for visibility into hook execution.
+
+### XML Tags Inside `additionalContext` (KEEP)
+
+```xml
+<project-context>
+ProjectActive: PROJ-007-jerry-bugs
+ProjectPath: projects/PROJ-007-jerry-bugs/
+ValidationMessage: Project is properly configured
+</project-context>
+```
+
+These are valid per Anthropic's prompt engineering best practices for structuring data for LLMs.
 
 ---
 
-## Acceptance Criteria (Revised)
+## Acceptance Criteria (Revised per DISC-004 + DISC-005)
 
 - [ ] **AC-001**: `jerry projects context --json` outputs clean JSON with project data
-- [ ] **AC-002**: `session_start_hook.py` calls CLI and transforms output to standard hook format
-- [ ] **AC-003**: Hook output uses `systemMessage` field (not `hookSpecificOutput`)
-- [ ] **AC-004**: No XML-like tags in output - use plain text or structured content
+- [ ] **AC-002**: `session_start_hook.py` calls CLI and transforms output to combined format
+- [ ] **AC-003**: Hook output includes BOTH `systemMessage` (user visibility) AND `hookSpecificOutput.additionalContext` (Claude context) - **verified via DISC-005**
+- [ ] **AC-004**: XML tags preserved in `additionalContext` for Claude parsing
 - [ ] **AC-005**: Local context reading (`.jerry/local/context.toml`) works via main CLI
-- [ ] **AC-006**: `cli/session_start.py` is deleted
+- [ ] **AC-006**: `cli/session_start.py` is deleted (architecture violation)
 - [ ] **AC-007**: `jerry-session-start` entry point removed from pyproject.toml
-- [ ] **AC-008**: CLAUDE.md updated to document actual hook output format
-- [ ] **AC-009**: All existing E2E and contract tests pass (migrated or updated)
+- [ ] **AC-008**: CLAUDE.md updated to clarify hook output format with citations
+- [ ] **AC-009**: All tests pass: Unit, Integration, System, E2E, Contract, Architecture
 
 ---
 
@@ -87,26 +103,29 @@ See [DISC-003](./disc-003-phantom-xml-syntax.md) for full investigation.
                                     ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              scripts/session_start_hook.py                       │
-│  ADAPTER LAYER - Transforms CLI output for Claude                │
+│  ADAPTER LAYER - Transforms CLI output to Advanced JSON          │
 │                                                                  │
 │  Responsibilities:                                               │
 │  - Bootstrap uv environment                                      │
 │  - Call: jerry projects context --json                           │
-│  - Transform JSON → standard hook output format                  │
-│  - Format systemMessage with project info (plain text)           │
+│  - Transform JSON → hookSpecificOutput.additionalContext         │
+│  - Format additionalContext with XML tags for Claude             │
 │  - Handle errors gracefully                                      │
 │                                                                  │
-│  Output Format (Standard Claude Code):                           │
+│  Output Format (Verified Combined - DISC-005):                   │
 │  {                                                               │
-│    "continue": true,                                             │
-│    "systemMessage": "Jerry Framework initialized.\n\n..."        │
+│    "systemMessage": "Jerry Framework initialized...",            │
+│    "hookSpecificOutput": {                                       │
+│      "hookEventName": "SessionStart",                            │
+│      "additionalContext": "<project-context>...</project-context>"│
+│    }                                                             │
 │  }                                                               │
 └───────────────────────────────────┬─────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                   jerry projects context --json                  │
-│  GENERIC CLI - Clean JSON output                                 │
+│  GENERIC CLI - Clean JSON output (no hook-specific format)       │
 │                                                                  │
 │  {                                                               │
 │    "project_id": "PROJ-007-jerry-bugs",                         │
@@ -132,114 +151,178 @@ See [DISC-003](./disc-003-phantom-xml-syntax.md) for full investigation.
 
 ---
 
-## Tasks (TDD Cycle - Revised)
+## BDD Test Pyramid
 
-### Phase 1: RED - Write Failing Tests for CLI JSON Output
+Per testing-standards.md, all features require comprehensive test coverage:
 
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-001 | Write test: `jerry projects context --json` returns valid JSON | PENDING | - |
-| T-002 | Write test: JSON includes `project_id` when JERRY_PROJECT set | PENDING | - |
-| T-003 | Write test: JSON includes `validation` object | PENDING | - |
-| T-004 | Write test: JSON includes `available_projects` array | PENDING | - |
-| T-005 | Write test: JSON includes `next_number` for project creation | PENDING | - |
-
-### Phase 2: RED - Write Failing Tests for Local Context Support
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-006 | Write test: CLI reads project from `.jerry/local/context.toml` | PENDING | - |
-| T-007 | Write test: env var `JERRY_PROJECT` takes precedence over local context | PENDING | - |
-| T-008 | Write test: local context file missing is handled gracefully | PENDING | - |
-
-### Phase 3: RED - Write Failing Tests for Hook Adapter
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-009 | Write test: hook adapter calls `jerry projects context --json` | PENDING | - |
-| T-010 | Write test: hook adapter outputs standard format `{"continue": true, "systemMessage": "..."}` | PENDING | - |
-| T-011 | Write test: hook adapter formats project info as plain text (no XML tags) | PENDING | - |
-| T-012 | Write test: hook adapter handles CLI error gracefully | PENDING | - |
-| T-013 | Write test: hook adapter handles CLI timeout | PENDING | - |
-| T-014 | Write test: hook adapter handles missing uv | PENDING | - |
-
-### Phase 4: GREEN - Implement/Verify CLI JSON Output
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-015 | Verify `--json` flag exists on `projects context` command | PENDING | - |
-| T-016 | Implement/update `cmd_projects_context` to return full context as JSON | PENDING | - |
-| T-017 | Ensure JSON output includes all required fields | PENDING | - |
-
-### Phase 5: GREEN - Implement Local Context Support
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-018 | Add local context reading to bootstrap or query handler | PENDING | - |
-| T-019 | Implement configuration precedence (env > local > discovery) | PENDING | - |
-| T-020 | Update `RetrieveProjectContextQuery` to support precedence | PENDING | - |
-
-### Phase 6: GREEN - Rewrite Hook Adapter
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-021 | Refactor hook adapter for testability (DI for subprocess) | PENDING | - |
-| T-022 | Implement CLI call: `jerry projects context --json` | PENDING | - |
-| T-023 | Implement JSON transformation to standard hook format | PENDING | - |
-| T-024 | Format `systemMessage` with project info (plain text, no XML) | PENDING | - |
-| T-025 | Implement error handling with graceful fallback | PENDING | - |
-
-### Phase 7: CLEANUP - Remove Rogue Components
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-026 | Delete `src/interface/cli/session_start.py` | PENDING | - |
-| T-027 | Remove `jerry-session-start` from pyproject.toml | PENDING | - |
-| T-028 | Migrate relevant tests to proper locations | PENDING | - |
-| T-029 | Update CLAUDE.md hook output documentation | PENDING | - |
-| T-030 | Remove XML-tag references from all documentation | PENDING | - |
-
-### Phase 8: Validation
-
-| ID | Task | Status | Evidence |
-|----|------|--------|----------|
-| T-031 | Run all E2E tests - verify they pass | PENDING | - |
-| T-032 | Run all contract tests - verify they pass | PENDING | - |
-| T-033 | Run architecture tests - verify no layer violations | PENDING | - |
-| T-034 | Manual smoke test: start Claude Code session | PENDING | - |
+```
+                    ┌─────────────┐
+                    │    E2E      │ ← Full workflow (5%)
+                   ┌┴─────────────┴┐
+                   │    System     │ ← Component interaction (10%)
+                  ┌┴───────────────┴┐
+                  │   Integration   │ ← Adapter/port testing (15%)
+                 ┌┴─────────────────┴┐
+                 │       Unit        │ ← Domain logic (60%)
+                ┌┴───────────────────┴┐
+                │ Contract+Architecture│ ← Interface compliance (10%)
+                └─────────────────────┘
+```
 
 ---
 
-## Hook Output Format (Corrected)
+## Tasks (BDD Red/Green/Refactor)
 
-### Before (Phantom Syntax)
+### Phase 1: UNIT TESTS (60%) - Domain and Application Layer
 
-```json
-{
-  "hookSpecificOutput": {
-    "hookEventName": "SessionStart",
-    "additionalContext": "Jerry Framework initialized.\n<project-context>\nProjectActive: PROJ-007\n</project-context>"
-  }
-}
-```
+#### RED: Write Failing Tests
 
-### After (Standard Claude Code Format)
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-001 | Write unit test: ProjectContextDTO contains all required fields | PENDING | - |
+| T-002 | Write unit test: RetrieveProjectContextQuery with env var set | PENDING | - |
+| T-003 | Write unit test: RetrieveProjectContextQuery with local context | PENDING | - |
+| T-004 | Write unit test: RetrieveProjectContextQuery precedence (env > local > discovery) | PENDING | - |
+| T-005 | Write unit test: RetrieveProjectContextQuery with no project returns available list | PENDING | - |
+| T-006 | Write unit test: RetrieveProjectContextQuery with invalid project returns error | PENDING | - |
+| T-007 | Write unit test: LocalContextReader reads .jerry/local/context.toml | PENDING | - |
+| T-008 | Write unit test: LocalContextReader handles missing file gracefully | PENDING | - |
 
-```json
-{
-  "continue": true,
-  "systemMessage": "Jerry Framework initialized. See CLAUDE.md for context.\n\nProject: PROJ-007-jerry-bugs\nPath: projects/PROJ-007-jerry-bugs/\nStatus: Valid and configured\n\nReady to proceed with work in the active project context."
-}
-```
+#### GREEN: Implement to Pass
 
-Or when no project is selected:
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-009 | Implement LocalContextReader port and adapter | PENDING | - |
+| T-010 | Update RetrieveProjectContextQueryHandler to use LocalContextReader | PENDING | - |
+| T-011 | Implement configuration precedence logic | PENDING | - |
+| T-012 | Run unit tests - all pass | PENDING | - |
 
-```json
-{
-  "continue": true,
-  "systemMessage": "Jerry Framework initialized.\n\nNo active project selected.\n\nAvailable Projects:\n- PROJ-001-plugin-cleanup [ACTIVE]\n- PROJ-007-jerry-bugs [ACTIVE]\n\nPlease select a project or create a new one using AskUserQuestion."
-}
-```
+---
+
+### Phase 2: INTEGRATION TESTS (15%) - Adapter Layer
+
+#### RED: Write Failing Tests
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-013 | Write integration test: FilesystemLocalContextAdapter reads TOML | PENDING | - |
+| T-014 | Write integration test: CLIAdapter.cmd_projects_context returns valid JSON | PENDING | - |
+| T-015 | Write integration test: CLIAdapter.cmd_projects_context includes all fields | PENDING | - |
+
+#### GREEN: Implement to Pass
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-016 | Implement FilesystemLocalContextAdapter | PENDING | - |
+| T-017 | Update CLIAdapter.cmd_projects_context for full JSON output | PENDING | - |
+| T-018 | Register adapter in bootstrap.py | PENDING | - |
+| T-019 | Run integration tests - all pass | PENDING | - |
+
+---
+
+### Phase 3: CONTRACT TESTS (5%) - Hook Output Compliance
+
+#### RED: Write Failing Tests
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-020 | Write contract test: Hook output is valid JSON | PENDING | - |
+| T-021 | Write contract test: Hook output has `hookSpecificOutput` object | PENDING | - |
+| T-022 | Write contract test: Hook output has `hookEventName: "SessionStart"` | PENDING | - |
+| T-023 | Write contract test: Hook output has `additionalContext` string | PENDING | - |
+| T-024 | Write contract test: `additionalContext` contains project XML tags | PENDING | - |
+
+#### GREEN: Verify or Fix
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-025 | Verify current hook output matches contract | PENDING | - |
+| T-026 | Run contract tests - all pass | PENDING | - |
+
+---
+
+### Phase 4: ARCHITECTURE TESTS (5%) - Layer Boundaries
+
+#### RED: Write Failing Tests
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-027 | Write arch test: cli/adapter.py has no infrastructure imports | PENDING | - |
+| T-028 | Write arch test: session_start_hook.py only imports subprocess/json | PENDING | - |
+| T-029 | Write arch test: No duplicate entry points in pyproject.toml | PENDING | - |
+| T-030 | Write arch test: cli/session_start.py does not exist | PENDING | - |
+
+#### GREEN: Refactor to Pass
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-031 | Delete cli/session_start.py | PENDING | - |
+| T-032 | Remove jerry-session-start from pyproject.toml | PENDING | - |
+| T-033 | Refactor session_start_hook.py to call jerry CLI | PENDING | - |
+| T-034 | Run architecture tests - all pass | PENDING | - |
+
+---
+
+### Phase 5: SYSTEM TESTS (10%) - Component Interaction
+
+#### RED: Write Failing Tests
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-035 | Write system test: CLI + LocalContext → correct project | PENDING | - |
+| T-036 | Write system test: CLI + EnvVar + LocalContext → env var wins | PENDING | - |
+| T-037 | Write system test: Hook script calls CLI and transforms output | PENDING | - |
+
+#### GREEN: Implement and Verify
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-038 | Wire all components together | PENDING | - |
+| T-039 | Run system tests - all pass | PENDING | - |
+
+---
+
+### Phase 6: E2E TESTS (5%) - Full Workflow
+
+#### RED: Write Failing Tests
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-040 | Write E2E test: Start Claude Code session with JERRY_PROJECT set | PENDING | - |
+| T-041 | Write E2E test: Start Claude Code session with local context | PENDING | - |
+| T-042 | Write E2E test: Start Claude Code session with no project | PENDING | - |
+| T-043 | Write E2E test: Hook output appears in Claude context | PENDING | - |
+
+#### GREEN: Verify Full Stack
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-044 | Run E2E tests - all pass | PENDING | - |
+| T-045 | Manual smoke test: start Claude Code session | PENDING | - |
+
+---
+
+### Phase 7: CLEANUP - Documentation and Migration
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-046 | Update CLAUDE.md: Document correct hook format with citations | PENDING | - |
+| T-047 | Update testing-standards.md: Fix contract test example | PENDING | - |
+| T-048 | Update BEHAVIOR_TESTS.md: Fix XML tag expectations | PENDING | - |
+| T-049 | Update runbooks: Fix hook output expectations | PENDING | - |
+| T-050 | Migrate existing tests to correct locations | PENDING | - |
+
+---
+
+### Phase 8: VALIDATION - Final Checks
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| T-051 | Run full test suite: pytest --cov=src | PENDING | - |
+| T-052 | Verify coverage >= 90% | PENDING | - |
+| T-053 | Run ruff check src/ tests/ | PENDING | - |
+| T-054 | Run mypy src/ | PENDING | - |
+| T-055 | Final manual smoke test | PENDING | - |
 
 ---
 
@@ -248,27 +331,26 @@ Or when no project is selected:
 | File | Action | Changes |
 |------|--------|---------|
 | `src/interface/cli/adapter.py` | MODIFY | Ensure `cmd_projects_context` supports full JSON output |
-| `src/bootstrap.py` | MODIFY | Add local context support if needed |
-| `scripts/session_start_hook.py` | REWRITE | Transform CLI JSON → standard hook format |
+| `src/application/ports/secondary/` | ADD | `ilocal_context_reader.py` port |
+| `src/infrastructure/adapters/persistence/` | ADD | `filesystem_local_context_adapter.py` |
+| `src/bootstrap.py` | MODIFY | Wire LocalContextReader |
+| `scripts/session_start_hook.py` | REWRITE | Call jerry CLI, transform to Advanced JSON |
 | `pyproject.toml` | MODIFY | Remove `jerry-session-start` entry |
-| `CLAUDE.md` | MODIFY | Update hook output documentation |
-| `src/interface/cli/session_start.py` | DELETE | Rogue file |
-| Various test files | MODIFY | Migrate and update |
+| `CLAUDE.md` | MODIFY | Update hook output documentation with citations |
+| `.claude/rules/testing-standards.md` | MODIFY | Fix contract test example |
+| `docs/governance/BEHAVIOR_TESTS.md` | MODIFY | Fix XML tag scenarios |
+| `runbooks/RUNBOOK-001-plugin-regression-playbook.md` | MODIFY | Fix hook output expectations |
+| `src/interface/cli/session_start.py` | DELETE | Rogue file violating hexagonal architecture |
 
 ---
 
-## CLAUDE.md Update Required
+## Evidence Sources (Citations)
 
-The "Project Enforcement" section needs to be updated to document the actual hook output format:
-
-**Remove:**
-- XML-like tag documentation (`<project-context>`, etc.)
-- References to parsing structured tags
-
-**Add:**
-- Standard `systemMessage` format
-- Plain text project information
-- Clear separation between CLI output (JSON) and hook output (systemMessage)
+| Source | URL | What It Proves |
+|--------|-----|----------------|
+| Official Claude Code Docs | https://code.claude.com/docs/en/hooks#advanced:-json-output | `hookSpecificOutput.additionalContext` is official format |
+| GitHub Issue #13650 | https://github.com/anthropics/claude-code/issues/13650 | Bug that was fixed in v2.0.76 |
+| Anthropic Prompt Engineering | https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching#structuring-your-prompt | XML tags recommended for Claude |
 
 ---
 
@@ -277,7 +359,7 @@ The "Project Enforcement" section needs to be updated to document the actual hoo
 - Python 3.11+
 - uv package manager
 - pytest for testing
-- Context7 research for Claude Code API verification
+- Claude Code v2.0.76+ (bug fix for SessionStart stdout)
 
 ---
 
@@ -287,6 +369,9 @@ The "Project Enforcement" section needs to be updated to document the actual hoo
 |------|--------|--------|
 | 2026-01-15 | Enabler created with 21 TDD tasks | Claude |
 | 2026-01-15 | REVISED: Scope updated based on RCA (33 tasks) | Claude |
-| 2026-01-20 | **REVISED**: Architecture changed based on DISC-003 (34 tasks) | Claude |
-| 2026-01-20 | Removed `--format hook` from CLI - hook adapter handles formatting | Claude |
-| 2026-01-20 | Removed XML-like tags - using standard systemMessage format | Claude |
+| 2026-01-20 | REVISED: Architecture changed based on DISC-003 (34 tasks) | Claude |
+| 2026-01-20 | **MAJOR REVISION**: Corrected per DISC-004 - keep hookSpecificOutput format | Claude |
+| 2026-01-20 | Added comprehensive BDD test pyramid (55 tasks across 8 phases) | Claude |
+| 2026-01-20 | Added evidence sources with citations | Claude |
+| 2026-01-21 | **DISC-005 CONFIRMED**: Combined `systemMessage` + `additionalContext` works | Claude |
+| 2026-01-21 | Updated AC-003 and architecture to use combined format | Claude |
