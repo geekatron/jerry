@@ -21,22 +21,37 @@ import sys
 from pathlib import Path
 
 
-def output_json(message: str) -> None:
-    """Output a message as valid SessionStart hook JSON."""
+def output_json(system_message: str, additional_context: str) -> None:
+    """Output combined format with BOTH systemMessage AND additionalContext.
+
+    Per DISC-005 and AC-002/AC-003:
+    - systemMessage: Shown to user in terminal at session start
+    - additionalContext: Added to Claude's context window
+
+    Both fields MUST be present for proper user and Claude visibility.
+    """
     print(json.dumps({
+        "systemMessage": system_message,
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": message
+            "additionalContext": additional_context
         }
     }))
 
 
 def output_error(message: str, log_file: Path | None = None) -> None:
-    """Output an error as valid SessionStart hook JSON."""
-    error_msg = f"Jerry Framework hook error.\n<hook-error>\n{message}\n</hook-error>"
+    """Output an error as valid SessionStart hook JSON with both fields."""
+    # User-visible system message (concise)
+    system_msg = f"Jerry Framework: Error - {message[:80]}"
     if log_file:
-        error_msg += f"\n\nCheck {log_file} for details."
-    output_json(error_msg)
+        system_msg += f" (see {log_file.name})"
+
+    # Claude context (detailed with XML tags)
+    additional_context = f"Jerry Framework hook error.\n<hook-error>\n{message}\n</hook-error>"
+    if log_file:
+        additional_context += f"\n\nCheck {log_file} for details."
+
+    output_json(system_msg, additional_context)
 
 
 def get_log_file(plugin_root: Path) -> Path:
@@ -84,11 +99,15 @@ def find_uv() -> str | None:
     return None
 
 
-def format_additional_context(cli_data: dict) -> str:
-    """Transform CLI JSON output to additionalContext string with XML tags.
+def format_hook_output(cli_data: dict) -> tuple[str, str]:
+    """Transform CLI JSON output to (systemMessage, additionalContext) tuple.
 
-    This formats the context for Claude to parse, using XML tags as per
-    Anthropic's prompt engineering best practices.
+    Per DISC-005 and AC-002/AC-003:
+    - systemMessage: Concise message shown to user in terminal
+    - additionalContext: Detailed XML-tagged context for Claude
+
+    Returns:
+        tuple[str, str]: (system_message, additional_context)
     """
     project_id = cli_data.get("jerry_project") or cli_data.get("project_id")
     project_path = cli_data.get("project_path", "")
@@ -97,7 +116,8 @@ def format_additional_context(cli_data: dict) -> str:
 
     # Case 1: Active project with valid configuration
     if project_id and validation and validation.get("is_valid"):
-        return (
+        system_msg = f"Jerry Framework: Project {project_id} active"
+        additional = (
             f"Jerry Framework initialized. See CLAUDE.md for context.\n"
             f"<project-context>\n"
             f"ProjectActive: {project_id}\n"
@@ -105,26 +125,32 @@ def format_additional_context(cli_data: dict) -> str:
             f"ValidationMessage: Project is properly configured\n"
             f"</project-context>"
         )
+        return (system_msg, additional)
 
     # Case 2: Project set but invalid
     if project_id and validation and not validation.get("is_valid"):
         messages = validation.get("messages", ["Unknown validation error"])
-        return (
+        error_msg = messages[0] if messages else "Invalid project"
+        system_msg = f"Jerry Framework: ERROR - {project_id} invalid ({error_msg[:40]})"
+        additional = (
             f"Jerry Framework initialized with ERROR.\n"
             f"<project-error>\n"
             f"InvalidProject: {project_id}\n"
-            f"Error: {messages[0] if messages else 'Invalid project'}\n"
+            f"Error: {error_msg}\n"
             f"AvailableProjects:\n"
             + "\n".join(f"  - {p['id']}" for p in available[:5])
             + f"\n</project-error>\n\n"
             f"ACTION REQUIRED: The specified project is invalid.\n"
             f"Use AskUserQuestion to help the user select a valid project."
         )
+        return (system_msg, additional)
 
     # Case 3: No project set - prompt user selection
     projects_json = json.dumps([{"id": p["id"], "status": p.get("status", "UNKNOWN")} for p in available[:10]])
     next_num = cli_data.get("next_number", 1)
-    return (
+    project_count = len(available)
+    system_msg = f"Jerry Framework: No project set ({project_count} available)"
+    additional = (
         f"Jerry Framework initialized.\n"
         f"<project-required>\n"
         f"ProjectRequired: true\n"
@@ -137,6 +163,7 @@ def format_additional_context(cli_data: dict) -> str:
         f"Claude MUST use AskUserQuestion to help the user select an existing project or create a new one.\n"
         f"DO NOT proceed with any work until a project is selected."
     )
+    return (system_msg, additional)
 
 
 def main() -> int:
@@ -200,9 +227,9 @@ def main() -> int:
             output_error(f"Invalid JSON from jerry CLI: {e}", log_file)
             return 0
 
-        # Transform to hook format
-        additional_context = format_additional_context(cli_data)
-        output_json(additional_context)
+        # Transform to hook format with BOTH systemMessage and additionalContext
+        system_message, additional_context = format_hook_output(cli_data)
+        output_json(system_message, additional_context)
 
         # Log any stderr
         stderr = result.stderr.decode("utf-8", errors="replace")

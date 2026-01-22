@@ -3,7 +3,7 @@
 > **Project:** Jerry Performance and Plugin Bugs
 > **Status:** IN PROGRESS
 > **Created:** 2026-01-14
-> **Last Updated:** 2026-01-21
+> **Last Updated:** 2026-01-21 (EN-001 systemMessage fix complete)
 
 ---
 
@@ -144,3 +144,6 @@
 | 2026-01-21 | EN-001 Phase 4 COMPLETE: Architecture tests, deleted cli/session_start.py, removed jerry-session-start entry point | Claude |
 | 2026-01-21 | EN-001 Phase 5-8 COMPLETE: System tests covered, E2E verified, validation passed (50/50 tests) | Claude |
 | 2026-01-21 | **EN-001 COMPLETE**: Session Start Hook TDD Cleanup - all 8 phases done | Claude |
+| 2026-01-21 | **EN-001 FIX**: Added missing systemMessage to hook output (AC-002/AC-003), 5 contract tests added | Claude |
+| 2026-01-21 | Cleaned up obsolete tests for deleted src/interface/cli/session_start.py (64 tests → proper contract tests) | Claude |
+| 2026-01-21 | CLAUDE.md updated with complete hook output format per DISC-005 (AC-008) | Claude |

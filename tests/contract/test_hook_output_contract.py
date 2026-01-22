@@ -413,6 +413,180 @@ class TestXmlTagsInAdditionalContext:
 
 
 # =============================================================================
+# T-025: systemMessage Field for User Terminal Output (AC-002, AC-003)
+# =============================================================================
+
+
+class TestSystemMessage:
+    """Contract: Hook output MUST have systemMessage for user visibility.
+
+    Per DISC-005 and AC-002/AC-003, the hook output MUST include BOTH:
+    - systemMessage: Shown to user in terminal
+    - hookSpecificOutput.additionalContext: Added to Claude's context
+
+    This ensures users see project context at session start, not just
+    the generic "SessionStart:startup hook succeeded: Success" message.
+    """
+
+    def test_hook_output_has_system_message(
+        self,
+        hook_script_path: Path,
+        project_root: Path,
+        temp_project_with_context: Path,
+    ) -> None:
+        """T-025a: Hook output has systemMessage field.
+
+        Contract: Per AC-003, the hook MUST include systemMessage field
+        so users see project context in their terminal.
+        """
+        # Act
+        result = run_hook_script(
+            hook_script_path,
+            project_root,
+            project_dir=temp_project_with_context,
+        )
+
+        # Assert
+        data = parse_hook_output(result.stdout)
+
+        assert "systemMessage" in data, (
+            "Hook output must contain 'systemMessage' field (AC-003).\n"
+            f"Actual keys: {list(data.keys())}\n"
+            "Without systemMessage, users only see:\n"
+            "  'SessionStart:startup hook succeeded: Success'\n"
+            "instead of useful project context."
+        )
+
+    def test_system_message_is_string(
+        self,
+        hook_script_path: Path,
+        project_root: Path,
+        temp_project_with_context: Path,
+    ) -> None:
+        """T-025b: systemMessage is a string.
+
+        Contract: systemMessage must be a string that will be displayed
+        to the user in their terminal at session start.
+        """
+        # Act
+        result = run_hook_script(
+            hook_script_path,
+            project_root,
+            project_dir=temp_project_with_context,
+        )
+
+        # Assert
+        data = parse_hook_output(result.stdout)
+
+        assert "systemMessage" in data, "Missing systemMessage field"
+        assert isinstance(data["systemMessage"], str), (
+            f"systemMessage must be a string, got: {type(data['systemMessage'])}"
+        )
+
+    def test_system_message_contains_jerry_context(
+        self,
+        hook_script_path: Path,
+        project_root: Path,
+        temp_project_with_context: Path,
+    ) -> None:
+        """T-025c: systemMessage contains meaningful Jerry context.
+
+        Contract: systemMessage should indicate Jerry Framework status
+        to help users understand the session context.
+        """
+        # Act
+        result = run_hook_script(
+            hook_script_path,
+            project_root,
+            project_dir=temp_project_with_context,
+        )
+
+        # Assert
+        data = parse_hook_output(result.stdout)
+
+        assert "systemMessage" in data, "Missing systemMessage field"
+        system_message = data["systemMessage"]
+
+        # Should contain Jerry-related content
+        assert "Jerry" in system_message or "jerry" in system_message.lower(), (
+            "systemMessage should mention Jerry Framework.\n"
+            f"Actual message: {system_message}"
+        )
+
+    def test_system_message_not_empty(
+        self,
+        hook_script_path: Path,
+        project_root: Path,
+        temp_project_with_context: Path,
+    ) -> None:
+        """T-025d: systemMessage must not be empty."""
+        # Act
+        result = run_hook_script(
+            hook_script_path,
+            project_root,
+            project_dir=temp_project_with_context,
+        )
+
+        # Assert
+        data = parse_hook_output(result.stdout)
+
+        assert "systemMessage" in data, "Missing systemMessage field"
+        assert data["systemMessage"].strip(), "systemMessage must not be empty"
+
+
+# =============================================================================
+# T-026: Combined Output Format (AC-002, AC-003)
+# =============================================================================
+
+
+class TestCombinedOutputFormat:
+    """Contract: Hook MUST output BOTH systemMessage AND additionalContext.
+
+    Per DISC-005 empirical testing and AC-002/AC-003:
+    - systemMessage: What user sees in terminal
+    - hookSpecificOutput.additionalContext: What Claude sees in context
+
+    Both fields serve different purposes and MUST both be present.
+    """
+
+    def test_hook_has_both_system_message_and_additional_context(
+        self,
+        hook_script_path: Path,
+        project_root: Path,
+        temp_project_with_context: Path,
+    ) -> None:
+        """T-026a: Hook has BOTH systemMessage AND additionalContext.
+
+        Contract: Per AC-003, hook must include BOTH fields for proper
+        user and Claude visibility.
+        """
+        # Act
+        result = run_hook_script(
+            hook_script_path,
+            project_root,
+            project_dir=temp_project_with_context,
+        )
+
+        # Assert
+        data = parse_hook_output(result.stdout)
+
+        # Verify both fields exist
+        assert "systemMessage" in data, (
+            "Missing systemMessage - user won't see project context"
+        )
+        assert "hookSpecificOutput" in data, "Missing hookSpecificOutput"
+        assert "additionalContext" in data.get("hookSpecificOutput", {}), (
+            "Missing additionalContext - Claude won't see project context"
+        )
+
+        # Verify neither is empty
+        assert data["systemMessage"].strip(), "systemMessage is empty"
+        assert data["hookSpecificOutput"]["additionalContext"].strip(), (
+            "additionalContext is empty"
+        )
+
+
+# =============================================================================
 # Error Handling Contract Tests
 # =============================================================================
 

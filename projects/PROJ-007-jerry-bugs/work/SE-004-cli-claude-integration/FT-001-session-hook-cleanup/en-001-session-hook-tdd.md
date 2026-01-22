@@ -4,7 +4,7 @@
 > **Feature:** [FT-001](./FEATURE-WORKTRACKER.md) Session Hook Cleanup
 > **Solution Epic:** [SE-004](../SOLUTION-WORKTRACKER.md) CLI and Claude Code Integration
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** COMPLETE ✅ (All 8 Phases Done - 50 tests pass)
+> **Status:** COMPLETE ✅ (All 8 Phases Done - 2169 tests pass, systemMessage fix included)
 > **Type:** Enabler (Technical Work)
 > **Created:** 2026-01-15
 > **Last Updated:** 2026-01-21
@@ -81,15 +81,15 @@ These are valid per Anthropic's prompt engineering best practices for structurin
 
 ## Acceptance Criteria (Revised per DISC-004 + DISC-005)
 
-- [ ] **AC-001**: `jerry projects context --json` outputs clean JSON with project data
-- [ ] **AC-002**: `session_start_hook.py` calls CLI and transforms output to combined format
-- [ ] **AC-003**: Hook output includes BOTH `systemMessage` (user visibility) AND `hookSpecificOutput.additionalContext` (Claude context) - **verified via DISC-005**
-- [ ] **AC-004**: XML tags preserved in `additionalContext` for Claude parsing
-- [ ] **AC-005**: Local context reading (`.jerry/local/context.toml`) works via main CLI
-- [ ] **AC-006**: `cli/session_start.py` is deleted (architecture violation)
-- [ ] **AC-007**: `jerry-session-start` entry point removed from pyproject.toml
-- [ ] **AC-008**: CLAUDE.md updated to clarify hook output format with citations
-- [ ] **AC-009**: All tests pass: Unit, Integration, System, E2E, Contract, Architecture
+- [x] **AC-001**: `jerry projects context --json` outputs clean JSON with project data ✅
+- [x] **AC-002**: `session_start_hook.py` calls CLI and transforms output to combined format ✅
+- [x] **AC-003**: Hook output includes BOTH `systemMessage` (user visibility) AND `hookSpecificOutput.additionalContext` (Claude context) ✅
+- [x] **AC-004**: XML tags preserved in `additionalContext` for Claude parsing ✅
+- [x] **AC-005**: Local context reading (`.jerry/local/context.toml`) works via main CLI ✅
+- [x] **AC-006**: `cli/session_start.py` is deleted (architecture violation) ✅
+- [x] **AC-007**: `jerry-session-start` entry point removed from pyproject.toml ✅
+- [x] **AC-008**: CLAUDE.md updated to clarify hook output format with citations ✅
+- [x] **AC-009**: All tests pass: Unit, Integration, System, E2E, Contract, Architecture ✅ (2169 pass)
 
 ---
 

@@ -180,9 +180,23 @@ This is a hard constraint enforced via the SessionStart hook.
 
 ### Hook Output Format
 
-The `scripts/session_start.py` hook produces structured output that Claude parses:
+The `scripts/session_start_hook.py` hook produces JSON output with BOTH `systemMessage` (shown to user in terminal) and `additionalContext` (added to Claude's context window):
 
-#### `<project-context>` - Valid Project Active
+```json
+{
+  "systemMessage": "Jerry Framework: Project PROJ-001-plugin-cleanup active",
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "Jerry Framework initialized. See CLAUDE.md for context.\n<project-context>...\n</project-context>"
+  }
+}
+```
+
+**Key fields:**
+- `systemMessage`: User-visible terminal message (what you see at session start)
+- `additionalContext`: Claude's context window content (parsed via XML tags)
+
+#### `<project-context>` - Valid Project Active (in additionalContext)
 
 ```
 Jerry Framework initialized. See CLAUDE.md for context.
@@ -193,9 +207,10 @@ ValidationMessage: Project is properly configured
 </project-context>
 ```
 
+**systemMessage:** `Jerry Framework: Project PROJ-001-plugin-cleanup active`
 **Action:** Proceed with work in the active project context.
 
-#### `<project-required>` - No Project Selected
+#### `<project-required>` - No Project Selected (in additionalContext)
 
 ```
 Jerry Framework initialized.
@@ -213,9 +228,10 @@ Claude MUST use AskUserQuestion to help the user select an existing project or c
 DO NOT proceed with any work until a project is selected.
 ```
 
+**systemMessage:** `Jerry Framework: No project set (2 available)`
 **Action:** Use `AskUserQuestion` to help user select or create a project.
 
-#### `<project-error>` - Invalid Project Specified
+#### `<project-error>` - Invalid Project Specified (in additionalContext)
 
 ```
 Jerry Framework initialized with ERROR.
@@ -231,6 +247,7 @@ ACTION REQUIRED: The specified JERRY_PROJECT is invalid.
 Claude MUST use AskUserQuestion to help the user select or create a valid project.
 ```
 
+**systemMessage:** `Jerry Framework: ERROR - bad-format invalid (Project ID must...)`
 **Action:** Use `AskUserQuestion` to help user correct the error.
 
 ### Required AskUserQuestion Flow
