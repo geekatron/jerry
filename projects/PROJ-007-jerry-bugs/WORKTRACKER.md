@@ -3,7 +3,7 @@
 > **Project:** Jerry Performance and Plugin Bugs
 > **Status:** IN PROGRESS
 > **Created:** 2026-01-14
-> **Last Updated:** 2026-01-15
+> **Last Updated:** 2026-01-21
 
 ---
 
@@ -129,3 +129,6 @@
 | 2026-01-20 | EN-001 (SE-004/FT-001) MAJOR REVISION: Corrected per DISC-004, 55 BDD tasks | Claude |
 | 2026-01-21 | disc-007 CONFIRMED: Combined systemMessage + additionalContext works (DISC-005) | Claude |
 | 2026-01-21 | EN-001 updated with verified combined hook output format | Claude |
+| 2026-01-21 | DEC-001 created: Local Context Test Strategy (Option 1 - new tests) | Claude |
+| 2026-01-21 | EN-001 Phase 1 RED complete: 19 failing tests written | Claude |
+| 2026-01-21 | EN-001 Phase 1 GREEN complete: ILocalContextReader port/adapter, 20/20 tests pass | Claude |

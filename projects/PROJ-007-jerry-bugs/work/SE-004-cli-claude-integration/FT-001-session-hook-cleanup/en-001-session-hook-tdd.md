@@ -4,10 +4,10 @@
 > **Feature:** [FT-001](./FEATURE-WORKTRACKER.md) Session Hook Cleanup
 > **Solution Epic:** [SE-004](../SOLUTION-WORKTRACKER.md) CLI and Claude Code Integration
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** IN PROGRESS
+> **Status:** IN PROGRESS (Phase 1 GREEN Complete)
 > **Type:** Enabler (Technical Work)
 > **Created:** 2026-01-15
-> **Last Updated:** 2026-01-20
+> **Last Updated:** 2026-01-21
 
 ---
 
@@ -179,23 +179,31 @@ Per testing-standards.md, all features require comprehensive test coverage:
 
 | ID | Task | Status | Evidence |
 |----|------|--------|----------|
-| T-001 | Write unit test: ProjectContextDTO contains all required fields | PENDING | - |
-| T-002 | Write unit test: RetrieveProjectContextQuery with env var set | PENDING | - |
-| T-003 | Write unit test: RetrieveProjectContextQuery with local context | PENDING | - |
-| T-004 | Write unit test: RetrieveProjectContextQuery precedence (env > local > discovery) | PENDING | - |
-| T-005 | Write unit test: RetrieveProjectContextQuery with no project returns available list | PENDING | - |
-| T-006 | Write unit test: RetrieveProjectContextQuery with invalid project returns error | PENDING | - |
-| T-007 | Write unit test: LocalContextReader reads .jerry/local/context.toml | PENDING | - |
-| T-008 | Write unit test: LocalContextReader handles missing file gracefully | PENDING | - |
+| T-001 | Write unit test: ProjectContextDTO contains all required fields | **DONE** ✅ | `test_project_context_with_local.py::test_result_contains_all_required_fields` |
+| T-002 | Write unit test: RetrieveProjectContextQuery with env var set | **DONE** ✅ | `test_project_context_with_local.py::test_env_var_takes_precedence` |
+| T-003 | Write unit test: RetrieveProjectContextQuery with local context | **DONE** ✅ | `test_project_context_with_local.py::test_local_context_used_when_env_not_set` |
+| T-004 | Write unit test: RetrieveProjectContextQuery precedence (env > local > discovery) | **DONE** ✅ | `test_project_context_with_local.py::TestProjectContextPrecedence` (3 tests) |
+| T-005 | Write unit test: RetrieveProjectContextQuery with no project returns available list | **DONE** ✅ | `test_project_context_with_local.py::test_discovery_used_when_env_and_local_not_set` |
+| T-006 | Write unit test: RetrieveProjectContextQuery with invalid project returns error | **DONE** ✅ | `test_project_context_with_local.py::test_invalid_local_context_project_returns_validation_error` |
+| T-007 | Write unit test: LocalContextReader reads .jerry/local/context.toml | **DONE** ✅ | `test_local_context_reader.py::TestLocalContextReaderHappyPath` (3 tests) |
+| T-008 | Write unit test: LocalContextReader handles missing file gracefully | **DONE** ✅ | `test_local_context_reader.py::TestLocalContextReaderNegative` + `EdgeCases` (5 tests) |
+
+**RED Phase Evidence**: 19 tests failing as expected (2026-01-21)
 
 #### GREEN: Implement to Pass
 
 | ID | Task | Status | Evidence |
 |----|------|--------|----------|
-| T-009 | Implement LocalContextReader port and adapter | PENDING | - |
-| T-010 | Update RetrieveProjectContextQueryHandler to use LocalContextReader | PENDING | - |
-| T-011 | Implement configuration precedence logic | PENDING | - |
-| T-012 | Run unit tests - all pass | PENDING | - |
+| T-009 | Implement LocalContextReader port and adapter | **DONE** ✅ | `src/application/ports/secondary/ilocal_context_reader.py` |
+| T-010 | Update RetrieveProjectContextQueryHandler to use LocalContextReader | **DONE** ✅ | `src/application/handlers/queries/retrieve_project_context_query_handler.py` |
+| T-011 | Implement configuration precedence logic | **DONE** ✅ | Handler implements env > local > discovery precedence |
+| T-012 | Run unit tests - all pass | **DONE** ✅ | 20/20 tests passing (2026-01-21) |
+
+**GREEN Phase Evidence**:
+- Port: `src/application/ports/secondary/ilocal_context_reader.py`
+- Adapter: `src/infrastructure/adapters/persistence/filesystem_local_context_adapter.py`
+- Handler updated with optional `local_context_reader` dependency (backward compatible)
+- All 20 tests pass, no regressions in existing 30 handler tests
 
 ---
 

@@ -4,5 +4,8 @@ Provides adapters for safe concurrent file access with locking and atomic writes
 """
 
 from src.infrastructure.adapters.persistence.atomic_file_adapter import AtomicFileAdapter
+from src.infrastructure.adapters.persistence.filesystem_local_context_adapter import (
+    FilesystemLocalContextAdapter,
+)
 
-__all__ = ["AtomicFileAdapter"]
+__all__ = ["AtomicFileAdapter", "FilesystemLocalContextAdapter"]
