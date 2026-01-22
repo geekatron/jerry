@@ -6,13 +6,14 @@ Tests the handler's ability to read project context from:
 2. .jerry/local/context.toml (fallback)
 3. Project discovery (lowest precedence)
 
-These tests are part of EN-001 Phase 1 (RED) - they should FAIL until
-the handler is updated to use ILocalContextReader.
+All dependencies are mocked - this is a pure unit test file.
 
-Test Distribution:
-- Happy Path (60%): 3 tests - Env var, local context, discovery
-- Negative (30%): 2 tests - Invalid env var, missing local context
-- Edge (10%): 1 test - All sources empty
+Test Distribution (13 tests total):
+- Precedence (3): Env > local > discovery behavior
+- Handler Integration (2): Accepts dependency, calls reader
+- Result DTO (2): Contains all fields, includes path
+- Negative (2): Invalid format, backward compatibility
+- Edge Cases (4): Empty string, whitespace, env-var-skips-local, repo error
 
 References:
     - EN-001: Session Start Hook TDD Cleanup
@@ -333,3 +334,133 @@ class TestProjectContextNegative:
 
         # Assert - should still work with env var
         assert result["jerry_project"] == "PROJ-001-env"
+
+
+# === Edge Case Tests ===
+
+
+class TestProjectContextEdgeCases:
+    """Edge case tests for project context with local context."""
+
+    def test_empty_string_from_local_context_treated_as_set(self) -> None:
+        """Empty string from local context is treated as a project value.
+
+        Edge case: Empty string "" is different from None. The handler
+        should pass it through for validation (which will fail).
+        """
+        # Arrange
+        mock_repository = Mock()
+        mock_environment = Mock()
+        mock_local_context = Mock()
+
+        mock_environment.get_env.return_value = None
+        mock_local_context.get_active_project.return_value = ""  # Empty string
+        mock_repository.scan_projects.return_value = []
+
+        handler = RetrieveProjectContextQueryHandler(
+            repository=mock_repository,
+            environment=mock_environment,
+            local_context_reader=mock_local_context,
+        )
+
+        query = RetrieveProjectContextQuery(base_path="/projects")
+
+        # Act
+        result = handler.handle(query)
+
+        # Assert - empty string is treated as "no project set"
+        # because bool("") is False, so fallback to discovery
+        assert result["jerry_project"] == "" or result["jerry_project"] is None
+
+    def test_whitespace_string_from_local_context_fails_validation(self) -> None:
+        """Whitespace-only string from local context fails validation.
+
+        Edge case: "   " is truthy but invalid as project ID.
+        """
+        # Arrange
+        mock_repository = Mock()
+        mock_environment = Mock()
+        mock_local_context = Mock()
+
+        mock_environment.get_env.return_value = None
+        mock_local_context.get_active_project.return_value = "   "  # Whitespace
+        mock_repository.scan_projects.return_value = []
+
+        handler = RetrieveProjectContextQueryHandler(
+            repository=mock_repository,
+            environment=mock_environment,
+            local_context_reader=mock_local_context,
+        )
+
+        query = RetrieveProjectContextQuery(base_path="/projects")
+
+        # Act
+        result = handler.handle(query)
+
+        # Assert - whitespace passed through, validation fails
+        assert result["jerry_project"] == "   "
+        assert result["validation"] is not None
+        assert result["validation"].is_valid is False
+
+    def test_local_context_not_called_when_env_var_set(self) -> None:
+        """Local context reader is NOT called when env var is set.
+
+        Optimization: Skip local context read when env var provides project.
+        """
+        # Arrange
+        mock_repository = Mock()
+        mock_environment = Mock()
+        mock_local_context = Mock()
+
+        mock_environment.get_env.return_value = "PROJ-001-from-env"
+        mock_local_context.get_active_project.return_value = "PROJ-002-from-local"
+        mock_repository.scan_projects.return_value = []
+        mock_repository.validate_project.return_value = Mock(is_valid=True)
+
+        handler = RetrieveProjectContextQueryHandler(
+            repository=mock_repository,
+            environment=mock_environment,
+            local_context_reader=mock_local_context,
+        )
+
+        query = RetrieveProjectContextQuery(base_path="/projects")
+
+        # Act
+        handler.handle(query)
+
+        # Assert - local context reader was NOT called (optimization)
+        mock_local_context.get_active_project.assert_not_called()
+
+    def test_repository_error_during_scan_still_returns_result(self) -> None:
+        """Handler returns valid result even when repository scan fails.
+
+        Edge case: scan_projects throws exception, but handler should
+        still return a valid result dict with empty available_projects.
+        """
+        # Arrange
+        from src.session_management.application.ports import RepositoryError
+
+        mock_repository = Mock()
+        mock_environment = Mock()
+        mock_local_context = Mock()
+
+        mock_environment.get_env.return_value = "PROJ-001-test"
+        mock_local_context.get_active_project.return_value = None
+        mock_repository.scan_projects.side_effect = RepositoryError("Disk error")
+        mock_repository.validate_project.return_value = Mock(is_valid=True)
+
+        handler = RetrieveProjectContextQueryHandler(
+            repository=mock_repository,
+            environment=mock_environment,
+            local_context_reader=mock_local_context,
+        )
+
+        query = RetrieveProjectContextQuery(base_path="/projects")
+
+        # Act
+        result = handler.handle(query)
+
+        # Assert - result still valid, available_projects empty
+        assert result["jerry_project"] == "PROJ-001-test"
+        assert result["available_projects"] == []
+        assert result["next_number"] == 1

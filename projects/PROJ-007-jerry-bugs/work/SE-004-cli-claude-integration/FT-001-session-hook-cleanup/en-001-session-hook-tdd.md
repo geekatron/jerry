@@ -4,7 +4,7 @@
 > **Feature:** [FT-001](./FEATURE-WORKTRACKER.md) Session Hook Cleanup
 > **Solution Epic:** [SE-004](../SOLUTION-WORKTRACKER.md) CLI and Claude Code Integration
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** IN PROGRESS (Phase 1 GREEN Complete)
+> **Status:** IN PROGRESS (Phase 1 Complete - RED/GREEN/REFACTOR)
 > **Type:** Enabler (Technical Work)
 > **Created:** 2026-01-15
 > **Last Updated:** 2026-01-21
@@ -185,10 +185,10 @@ Per testing-standards.md, all features require comprehensive test coverage:
 | T-004 | Write unit test: RetrieveProjectContextQuery precedence (env > local > discovery) | **DONE** ✅ | `test_project_context_with_local.py::TestProjectContextPrecedence` (3 tests) |
 | T-005 | Write unit test: RetrieveProjectContextQuery with no project returns available list | **DONE** ✅ | `test_project_context_with_local.py::test_discovery_used_when_env_and_local_not_set` |
 | T-006 | Write unit test: RetrieveProjectContextQuery with invalid project returns error | **DONE** ✅ | `test_project_context_with_local.py::test_invalid_local_context_project_returns_validation_error` |
-| T-007 | Write unit test: LocalContextReader reads .jerry/local/context.toml | **DONE** ✅ | `test_local_context_reader.py::TestLocalContextReaderHappyPath` (3 tests) |
-| T-008 | Write unit test: LocalContextReader handles missing file gracefully | **DONE** ✅ | `test_local_context_reader.py::TestLocalContextReaderNegative` + `EdgeCases` (5 tests) |
+| T-007 | Write unit test: LocalContextReader reads .jerry/local/context.toml | **RECLASSIFIED** | Moved to integration tests (uses real filesystem) |
+| T-008 | Write unit test: LocalContextReader handles missing file gracefully | **RECLASSIFIED** | Moved to integration tests (uses real filesystem) |
 
-**RED Phase Evidence**: 19 tests failing as expected (2026-01-21)
+**RED Phase Evidence**: Tests written and failed as expected (2026-01-21)
 
 #### GREEN: Implement to Pass
 
@@ -197,13 +197,27 @@ Per testing-standards.md, all features require comprehensive test coverage:
 | T-009 | Implement LocalContextReader port and adapter | **DONE** ✅ | `src/application/ports/secondary/ilocal_context_reader.py` |
 | T-010 | Update RetrieveProjectContextQueryHandler to use LocalContextReader | **DONE** ✅ | `src/application/handlers/queries/retrieve_project_context_query_handler.py` |
 | T-011 | Implement configuration precedence logic | **DONE** ✅ | Handler implements env > local > discovery precedence |
-| T-012 | Run unit tests - all pass | **DONE** ✅ | 20/20 tests passing (2026-01-21) |
+| T-012 | Run unit tests - all pass | **DONE** ✅ | 13 handler unit tests passing (2026-01-21) |
 
 **GREEN Phase Evidence**:
 - Port: `src/application/ports/secondary/ilocal_context_reader.py`
 - Adapter: `src/infrastructure/adapters/persistence/filesystem_local_context_adapter.py`
 - Handler updated with optional `local_context_reader` dependency (backward compatible)
-- All 20 tests pass, no regressions in existing 30 handler tests
+- 13 handler unit tests pass (with mocks), no regressions in existing handler tests
+
+#### REFACTOR: Test Reclassification
+
+| ID | Task | Status | Evidence |
+|----|------|--------|----------|
+| R-001 | Reclassify adapter tests as integration | **DONE** ✅ | Moved to `tests/integration/test_filesystem_local_context_adapter.py` |
+| R-002 | Add missing adapter edge cases | **DONE** ✅ | 5 new tests: wrong type, unicode, whitespace, comments |
+| R-003 | Add missing handler edge cases | **DONE** ✅ | 4 new tests: empty string, whitespace, skip-local, repo error |
+| R-004 | Verify all tests pass | **DONE** ✅ | 49/49 tests pass (34 unit + 15 integration) |
+
+**REFACTOR Phase Evidence**:
+- Adapter tests moved from `tests/unit/` to `tests/integration/` (uses real filesystem = integration)
+- Handler tests remain in `tests/unit/` (uses mocks = unit)
+- Total: 13 handler unit tests + 15 adapter integration tests + existing tests = 49 passing
 
 ---
 
@@ -213,15 +227,17 @@ Per testing-standards.md, all features require comprehensive test coverage:
 
 | ID | Task | Status | Evidence |
 |----|------|--------|----------|
-| T-013 | Write integration test: FilesystemLocalContextAdapter reads TOML | PENDING | - |
+| T-013 | Write integration test: FilesystemLocalContextAdapter reads TOML | **DONE** ✅ | `tests/integration/test_filesystem_local_context_adapter.py` (15 tests) |
 | T-014 | Write integration test: CLIAdapter.cmd_projects_context returns valid JSON | PENDING | - |
 | T-015 | Write integration test: CLIAdapter.cmd_projects_context includes all fields | PENDING | - |
+
+**Note**: T-013 completed via Phase 1 REFACTOR - adapter tests reclassified from unit to integration.
 
 #### GREEN: Implement to Pass
 
 | ID | Task | Status | Evidence |
 |----|------|--------|----------|
-| T-016 | Implement FilesystemLocalContextAdapter | PENDING | - |
+| T-016 | Implement FilesystemLocalContextAdapter | **DONE** ✅ | Completed in Phase 1 GREEN |
 | T-017 | Update CLIAdapter.cmd_projects_context for full JSON output | PENDING | - |
 | T-018 | Register adapter in bootstrap.py | PENDING | - |
 | T-019 | Run integration tests - all pass | PENDING | - |
