@@ -140,3 +140,5 @@
 | 2026-01-21 | DISC-008 created: Bootstrap missing local_context_reader wiring | Claude |
 | 2026-01-21 | BUG-003 FIXED: ValidationResult.__bool__ serialization issue in CLI | Claude |
 | 2026-01-21 | EN-001 Phase 2 COMPLETE: Bootstrap wiring + CLI fix (40/40 tests pass) | Claude |
+| 2026-01-21 | EN-001 Phase 3 COMPLETE: Contract tests (9/9 pass) | Claude |
+| 2026-01-21 | EN-001 Phase 4 COMPLETE: Architecture tests, deleted cli/session_start.py, removed jerry-session-start entry point | Claude |

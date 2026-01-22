@@ -2,11 +2,14 @@
 """
 SessionStart hook wrapper for Jerry Framework.
 
-This script handles uv environment setup and invokes jerry-session-start,
-ensuring valid JSON output even when errors occur.
+This script handles uv environment setup and invokes the main Jerry CLI,
+transforming the output to Claude Code's Advanced JSON format for hooks.
 
 This wrapper is invoked directly by Claude's hook system and does NOT
 require uv to run - it bootstraps the uv environment itself.
+
+EN-001: Refactored to call 'jerry --json projects context' instead of
+the deprecated 'jerry-session-start' entry point (TD-005).
 """
 
 from __future__ import annotations
@@ -81,6 +84,61 @@ def find_uv() -> str | None:
     return None
 
 
+def format_additional_context(cli_data: dict) -> str:
+    """Transform CLI JSON output to additionalContext string with XML tags.
+
+    This formats the context for Claude to parse, using XML tags as per
+    Anthropic's prompt engineering best practices.
+    """
+    project_id = cli_data.get("jerry_project") or cli_data.get("project_id")
+    project_path = cli_data.get("project_path", "")
+    validation = cli_data.get("validation", {})
+    available = cli_data.get("available_projects", [])
+
+    # Case 1: Active project with valid configuration
+    if project_id and validation and validation.get("is_valid"):
+        return (
+            f"Jerry Framework initialized. See CLAUDE.md for context.\n"
+            f"<project-context>\n"
+            f"ProjectActive: {project_id}\n"
+            f"ProjectPath: {project_path}\n"
+            f"ValidationMessage: Project is properly configured\n"
+            f"</project-context>"
+        )
+
+    # Case 2: Project set but invalid
+    if project_id and validation and not validation.get("is_valid"):
+        messages = validation.get("messages", ["Unknown validation error"])
+        return (
+            f"Jerry Framework initialized with ERROR.\n"
+            f"<project-error>\n"
+            f"InvalidProject: {project_id}\n"
+            f"Error: {messages[0] if messages else 'Invalid project'}\n"
+            f"AvailableProjects:\n"
+            + "\n".join(f"  - {p['id']}" for p in available[:5])
+            + f"\n</project-error>\n\n"
+            f"ACTION REQUIRED: The specified project is invalid.\n"
+            f"Use AskUserQuestion to help the user select a valid project."
+        )
+
+    # Case 3: No project set - prompt user selection
+    projects_json = json.dumps([{"id": p["id"], "status": p.get("status", "UNKNOWN")} for p in available[:10]])
+    next_num = cli_data.get("next_number", 1)
+    return (
+        f"Jerry Framework initialized.\n"
+        f"<project-required>\n"
+        f"ProjectRequired: true\n"
+        f"AvailableProjects:\n"
+        + "\n".join(f"  - {p['id']} [{p.get('status', 'UNKNOWN')}]" for p in available[:5])
+        + f"\nNextProjectNumber: {next_num:03d}\n"
+        f"ProjectsJson: {projects_json}\n"
+        f"</project-required>\n\n"
+        f"ACTION REQUIRED: No JERRY_PROJECT environment variable set.\n"
+        f"Claude MUST use AskUserQuestion to help the user select an existing project or create a new one.\n"
+        f"DO NOT proceed with any work until a project is selected."
+    )
+
+
 def main() -> int:
     """Main entry point for the hook wrapper."""
     # Resolve plugin root from script location
@@ -118,27 +176,38 @@ def main() -> int:
             log_error(log_file, f"WARNING: uv sync failed: {stderr}")
             # Continue anyway - deps might already be installed
 
-        # Run the actual session start command
+        # EN-001: Call main CLI instead of deprecated jerry-session-start
         result = subprocess.run(
-            [uv_path, "run", "jerry-session-start"],
+            [uv_path, "run", "jerry", "--json", "projects", "context"],
             capture_output=True,
             timeout=30
         )
 
-        # Output stdout (the JSON from jerry-session-start)
         stdout = result.stdout.decode("utf-8", errors="replace")
-        if stdout.strip():
-            print(stdout, end="")
-        else:
-            # No output - something went wrong
+
+        if result.returncode != 0 or not stdout.strip():
+            # CLI failed - output error in hook format
             stderr = result.stderr.decode("utf-8", errors="replace")
-            log_error(log_file, f"ERROR: jerry-session-start produced no output. stderr: {stderr}")
-            output_error("jerry-session-start produced no output", log_file)
+            log_error(log_file, f"ERROR: jerry CLI failed. rc={result.returncode}, stderr: {stderr}")
+            output_error(f"jerry CLI failed: {stderr or 'no output'}", log_file)
+            return 0
+
+        # Parse CLI JSON output
+        try:
+            cli_data = json.loads(stdout)
+        except json.JSONDecodeError as e:
+            log_error(log_file, f"ERROR: Invalid JSON from CLI: {e}")
+            output_error(f"Invalid JSON from jerry CLI: {e}", log_file)
+            return 0
+
+        # Transform to hook format
+        additional_context = format_additional_context(cli_data)
+        output_json(additional_context)
 
         # Log any stderr
         stderr = result.stderr.decode("utf-8", errors="replace")
         if stderr.strip():
-            log_error(log_file, f"jerry-session-start stderr: {stderr}")
+            log_error(log_file, f"jerry CLI stderr: {stderr}")
 
         return 0
 
