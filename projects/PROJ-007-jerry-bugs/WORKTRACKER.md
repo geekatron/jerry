@@ -44,9 +44,10 @@
 | Features | 5 | 1 | 4 | 0 |
 | Enablers | 5 | 4 | 1 | 0 |
 | Units of Work | 3 | 1 | 1 | 1 |
-| Tasks | 55 | 0 | 0 | 55 |
+| Tasks | 55 | 19 | 0 | 36 |
 | Technical Debt | 6 | 0 | 0 | 6 |
-| Discoveries | 10 | 8 | 0 | 2 |
+| Discoveries | 11 | 9 | 0 | 2 |
+| Bugs | 3 | 2 | 1 | 0 |
 
 ---
 
@@ -56,6 +57,7 @@
 |----|------|-------------|--------|---------|---------|
 | BUG-001 | Bug | Lock files accumulating without cleanup | INVESTIGATING | FT-001 | EN-001 |
 | BUG-002 | Bug | Jerry plugin not loading/interacting | **RESOLVED** ✅ | FT-002 | EN-002 |
+| BUG-003 | Bug | ValidationResult.__bool__ causes CLI validation null | **RESOLVED** ✅ | SE-004/FT-001 | EN-001 |
 
 ---
 
@@ -70,6 +72,7 @@
 | disc-005 | Architectural Drift | cli/session_start.py created as shortcut violating hexagonal architecture | DOCUMENTED | SE-004/FT-001 |
 | disc-006 | Correction | Hook format correction - `hookSpecificOutput.additionalContext` IS official (supersedes disc-003 in SE-004) | DOCUMENTED ✅ | SE-004/FT-001 |
 | disc-007 | Empirical Test | Combined `systemMessage` + `additionalContext` works for SessionStart | CONFIRMED ✅ | SE-004/FT-001 |
+| disc-008 | Integration Gap | Bootstrap.py missing local_context_reader wiring | RESOLVED ✅ | SE-004/FT-001 |
 
 ---
 
@@ -134,3 +137,6 @@
 | 2026-01-21 | EN-001 Phase 1 GREEN complete: ILocalContextReader port/adapter, 20/20 tests pass | Claude |
 | 2026-01-21 | EN-001 Phase 1 REFACTOR: Reclassified adapter tests to integration, added 9 edge cases | Claude |
 | 2026-01-21 | EN-001 Phase 1 COMPLETE: 49/49 tests pass (13 unit + 15 integration + 21 existing) | Claude |
+| 2026-01-21 | DISC-008 created: Bootstrap missing local_context_reader wiring | Claude |
+| 2026-01-21 | BUG-003 FIXED: ValidationResult.__bool__ serialization issue in CLI | Claude |
+| 2026-01-21 | EN-001 Phase 2 COMPLETE: Bootstrap wiring + CLI fix (40/40 tests pass) | Claude |

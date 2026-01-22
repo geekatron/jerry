@@ -4,7 +4,7 @@
 > **Feature:** [FT-001](./FEATURE-WORKTRACKER.md) Session Hook Cleanup
 > **Solution Epic:** [SE-004](../SOLUTION-WORKTRACKER.md) CLI and Claude Code Integration
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** IN PROGRESS (Phase 1 Complete - RED/GREEN/REFACTOR)
+> **Status:** IN PROGRESS (Phase 2 Complete - Bootstrap Wiring + CLI Fix)
 > **Type:** Enabler (Technical Work)
 > **Created:** 2026-01-15
 > **Last Updated:** 2026-01-21
@@ -221,26 +221,34 @@ Per testing-standards.md, all features require comprehensive test coverage:
 
 ---
 
-### Phase 2: INTEGRATION TESTS (15%) - Adapter Layer
+### Phase 2: INTEGRATION TESTS (15%) - Bootstrap Wiring + CLI
 
 #### RED: Write Failing Tests
 
 | ID | Task | Status | Evidence |
 |----|------|--------|----------|
 | T-013 | Write integration test: FilesystemLocalContextAdapter reads TOML | **DONE** ✅ | `tests/integration/test_filesystem_local_context_adapter.py` (15 tests) |
-| T-014 | Write integration test: CLIAdapter.cmd_projects_context returns valid JSON | PENDING | - |
-| T-015 | Write integration test: CLIAdapter.cmd_projects_context includes all fields | PENDING | - |
+| T-014 | Write integration test: CLI JSON output has all required fields | **DONE** ✅ | `tests/integration/cli/test_cli_local_context_integration.py::test_cli_json_output_has_all_required_fields` |
+| T-015 | Write integration test: CLI reads from local context when env not set | **DONE** ✅ | `tests/integration/cli/test_cli_local_context_integration.py::test_cli_reads_project_from_local_context_when_env_not_set` |
 
-**Note**: T-013 completed via Phase 1 REFACTOR - adapter tests reclassified from unit to integration.
+**RED Phase Evidence**: 3 tests failing initially (2026-01-21):
+- T-015 failed: handler not wired with adapter (DISC-008)
+- T-014 failed: project_source field not implemented
+- Invalid project test failed: validation null due to BUG-003
 
 #### GREEN: Implement to Pass
 
 | ID | Task | Status | Evidence |
 |----|------|--------|----------|
 | T-016 | Implement FilesystemLocalContextAdapter | **DONE** ✅ | Completed in Phase 1 GREEN |
-| T-017 | Update CLIAdapter.cmd_projects_context for full JSON output | PENDING | - |
-| T-018 | Register adapter in bootstrap.py | PENDING | - |
-| T-019 | Run integration tests - all pass | PENDING | - |
+| T-017 | Fix CLI validation serialization | **DONE** ✅ | Fixed `if context["validation"]` → `if context["validation"] is not None` (BUG-003) |
+| T-018 | Register adapter in bootstrap.py | **DONE** ✅ | `src/bootstrap.py` - Added `FilesystemLocalContextAdapter` wiring |
+| T-019 | Run integration tests - all pass | **DONE** ✅ | 40/40 tests pass (13 unit + 15 adapter + 6 CLI + 6 dispatcher) |
+
+**GREEN Phase Evidence**:
+- DISC-008: Bootstrap missing wiring - RESOLVED
+- BUG-003: ValidationResult.__bool__ serialization issue - RESOLVED
+- All 6 CLI local context integration tests pass
 
 ---
 

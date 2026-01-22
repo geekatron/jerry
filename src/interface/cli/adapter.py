@@ -128,11 +128,13 @@ class CLIAdapter:
             output: dict[str, Any] = {
                 "jerry_project": context["jerry_project"],
                 "project_id": str(context["project_id"]) if context["project_id"] else None,
-                "validation": {
+                # Note: Use 'is not None' because ValidationResult.__bool__ returns is_valid
+            # which would be False for invalid results
+            "validation": {
                     "is_valid": context["validation"].is_valid,
-                    "messages": context["validation"].messages,
+                    "messages": list(context["validation"].messages),
                 }
-                if context["validation"]
+                if context["validation"] is not None
                 else None,
                 "available_projects": [
                     {"id": str(p.id), "status": p.status.name}
