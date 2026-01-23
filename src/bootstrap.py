@@ -42,6 +42,11 @@ from src.application.queries import (
     ScanProjectsQuery,
     ValidateProjectQuery,
 )
+
+# EN-001: Local context support for session hook
+from src.infrastructure.adapters.persistence.filesystem_local_context_adapter import (
+    FilesystemLocalContextAdapter,
+)
 from src.infrastructure.adapters.serialization.toon_serializer import ToonSerializer
 from src.session_management.application.commands import (
     AbandonSessionCommand,
@@ -92,11 +97,6 @@ from src.work_tracking.infrastructure.persistence.filesystem_event_store import 
 )
 from src.work_tracking.infrastructure.persistence.in_memory_event_store import (
     InMemoryEventStore,
-)
-
-# EN-001: Local context support for session hook
-from src.infrastructure.adapters.persistence.filesystem_local_context_adapter import (
-    FilesystemLocalContextAdapter,
 )
 
 # Module-level session repository singleton for session state persistence
