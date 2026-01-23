@@ -32,9 +32,11 @@ if TYPE_CHECKING:
     pass
 
 
-# Mark as integration tests
+# Mark as integration tests that require uv subprocess
+# These run only in cli-integration job, excluded from pip test jobs via -m "not subprocess"
 pytestmark = [
     pytest.mark.integration,
+    pytest.mark.subprocess,
 ]
 
 
