@@ -31,13 +31,17 @@ def output_json(system_message: str, additional_context: str) -> None:
 
     Both fields MUST be present for proper user and Claude visibility.
     """
-    print(json.dumps({
-        "systemMessage": system_message,
-        "hookSpecificOutput": {
-            "hookEventName": "SessionStart",
-            "additionalContext": additional_context
-        }
-    }))
+    print(
+        json.dumps(
+            {
+                "systemMessage": system_message,
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart",
+                    "additionalContext": additional_context,
+                },
+            }
+        )
+    )
 
 
 def output_error(message: str, log_file: Path | None = None) -> None:
@@ -70,6 +74,7 @@ def log_error(log_file: Path, message: str) -> None:
         log_file.parent.mkdir(parents=True, exist_ok=True)
         with open(log_file, "a") as f:
             from datetime import datetime
+
             timestamp = datetime.now(UTC).isoformat()
             f.write(f"[{timestamp}] {message}\n")
     except OSError:
@@ -87,11 +92,7 @@ def find_uv() -> str | None:
 
     for candidate in candidates:
         try:
-            result = subprocess.run(
-                [candidate, "--version"],
-                capture_output=True,
-                timeout=5
-            )
+            result = subprocess.run([candidate, "--version"], capture_output=True, timeout=5)
             if result.returncode == 0:
                 return candidate
         except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
@@ -147,7 +148,9 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
         return (system_msg, additional)
 
     # Case 3: No project set - prompt user selection
-    projects_json = json.dumps([{"id": p["id"], "status": p.get("status", "UNKNOWN")} for p in available[:10]])
+    projects_json = json.dumps(
+        [{"id": p["id"], "status": p.get("status", "UNKNOWN")} for p in available[:10]]
+    )
     next_num = cli_data.get("next_number", 1)
     project_count = len(available)
     system_msg = f"Jerry Framework: No project set ({project_count} available)"
@@ -194,11 +197,7 @@ def main() -> int:
 
     try:
         # Sync dependencies (quiet mode)
-        sync_result = subprocess.run(
-            [uv_path, "sync", "--quiet"],
-            capture_output=True,
-            timeout=30
-        )
+        sync_result = subprocess.run([uv_path, "sync", "--quiet"], capture_output=True, timeout=30)
         if sync_result.returncode != 0:
             stderr = sync_result.stderr.decode("utf-8", errors="replace")
             log_error(log_file, f"WARNING: uv sync failed: {stderr}")
@@ -208,7 +207,7 @@ def main() -> int:
         result = subprocess.run(
             [uv_path, "run", "jerry", "--json", "projects", "context"],
             capture_output=True,
-            timeout=30
+            timeout=30,
         )
 
         stdout = result.stdout.decode("utf-8", errors="replace")
@@ -216,7 +215,9 @@ def main() -> int:
         if result.returncode != 0 or not stdout.strip():
             # CLI failed - output error in hook format
             stderr = result.stderr.decode("utf-8", errors="replace")
-            log_error(log_file, f"ERROR: jerry CLI failed. rc={result.returncode}, stderr: {stderr}")
+            log_error(
+                log_file, f"ERROR: jerry CLI failed. rc={result.returncode}, stderr: {stderr}"
+            )
             output_error(f"jerry CLI failed: {stderr or 'no output'}", log_file)
             return 0
 

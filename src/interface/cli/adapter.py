@@ -129,8 +129,8 @@ class CLIAdapter:
                 "jerry_project": context["jerry_project"],
                 "project_id": str(context["project_id"]) if context["project_id"] else None,
                 # Note: Use 'is not None' because ValidationResult.__bool__ returns is_valid
-            # which would be False for invalid results
-            "validation": {
+                # which would be False for invalid results
+                "validation": {
                     "is_valid": context["validation"].is_valid,
                     "messages": list(context["validation"].messages),
                 }

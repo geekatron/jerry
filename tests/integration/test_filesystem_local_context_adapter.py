@@ -120,11 +120,11 @@ class TestLocalContextReaderHappyPath:
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
         context_file.write_text(
-            '[context]\n'
+            "[context]\n"
             'active_project = "PROJ-001-test"\n'
-            '\n'
-            '[preferences]\n'
-            'auto_save = true\n'
+            "\n"
+            "[preferences]\n"
+            "auto_save = true\n"
             'theme = "dark"\n'
         )
 
@@ -180,9 +180,7 @@ class TestLocalContextReaderNegative:
         # Assert
         assert result == {}
 
-    def test_get_active_project_returns_none_when_not_set(
-        self, tmp_path: Path
-    ) -> None:
+    def test_get_active_project_returns_none_when_not_set(self, tmp_path: Path) -> None:
         """get_active_project() returns None when active_project not in context."""
         from src.infrastructure.adapters.persistence.filesystem_local_context_adapter import (
             FilesystemLocalContextAdapter,
@@ -229,9 +227,7 @@ class TestLocalContextReaderEdgeCases:
         # Assert
         assert result == {}
 
-    def test_get_active_project_returns_none_when_file_missing(
-        self, tmp_path: Path
-    ) -> None:
+    def test_get_active_project_returns_none_when_file_missing(self, tmp_path: Path) -> None:
         """get_active_project() returns None when file doesn't exist."""
         from src.infrastructure.adapters.persistence.filesystem_local_context_adapter import (
             FilesystemLocalContextAdapter,
@@ -246,9 +242,7 @@ class TestLocalContextReaderEdgeCases:
         # Assert
         assert result is None
 
-    def test_get_active_project_returns_none_when_wrong_type(
-        self, tmp_path: Path
-    ) -> None:
+    def test_get_active_project_returns_none_when_wrong_type(self, tmp_path: Path) -> None:
         """get_active_project() returns None when active_project is not a string.
 
         Edge case: TOML allows integers, arrays, etc. Adapter should handle
@@ -296,9 +290,7 @@ class TestLocalContextReaderEdgeCases:
         # Assert - adapter reads it, validation happens elsewhere
         assert result == "PROJ-001-日本語"
 
-    def test_get_active_project_returns_whitespace_string(
-        self, tmp_path: Path
-    ) -> None:
+    def test_get_active_project_returns_whitespace_string(self, tmp_path: Path) -> None:
         """get_active_project() returns whitespace string as-is.
 
         Edge case: Whitespace-only values should be returned, letting

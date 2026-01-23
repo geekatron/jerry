@@ -92,7 +92,9 @@ def get_imports_from_file(file_path: Path) -> list[str]:
 class TestCLIAdapterLayerBoundaries:
     """Architecture: CLI adapter must not import infrastructure directly."""
 
-    @pytest.mark.skip(reason="TD-007: Pre-existing tech debt - adapter.py has dynamic infra imports")
+    @pytest.mark.skip(
+        reason="TD-007: Pre-existing tech debt - adapter.py has dynamic infra imports"
+    )
     def test_cli_adapter_has_no_infrastructure_imports(
         self,
         src_root: Path,
@@ -228,8 +230,7 @@ class TestSessionHookIsolation:
             # Get top-level module name
             top_level = imp.split(".")[0]
             assert top_level in allowed_modules or imp.startswith("src.") is False, (
-                f"Hook script imports unexpected module: {imp}\n"
-                f"Allowed: {allowed_modules}"
+                f"Hook script imports unexpected module: {imp}\nAllowed: {allowed_modules}"
             )
 
 
@@ -275,8 +276,7 @@ class TestEntryPoints:
 
         # The main jerry entry point should exist
         assert 'jerry = "' in content or "jerry = '" in content, (
-            "pyproject.toml missing 'jerry' entry point.\n"
-            "This is the main CLI entry point."
+            "pyproject.toml missing 'jerry' entry point.\nThis is the main CLI entry point."
         )
 
 
@@ -342,7 +342,9 @@ class TestLayerBoundaries:
             f"This file should be deleted (T-030/T-031)."
         )
 
-    @pytest.mark.skip(reason="TD-007: Pre-existing tech debt - adapter.py has dynamic infra imports")
+    @pytest.mark.skip(
+        reason="TD-007: Pre-existing tech debt - adapter.py has dynamic infra imports"
+    )
     def test_interface_layer_does_not_import_infrastructure_adapters(
         self,
         src_root: Path,
@@ -376,6 +378,5 @@ class TestLayerBoundaries:
                     violations.append(f"{py_file.name}: {imp}")
 
         assert not violations, (
-            "Interface layer files import infrastructure adapters:\n"
-            + "\n".join(violations)
+            "Interface layer files import infrastructure adapters:\n" + "\n".join(violations)
         )

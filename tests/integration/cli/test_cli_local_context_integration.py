@@ -288,9 +288,7 @@ class TestCLILocalContextNegative:
         assert data["jerry_project"] is None, (
             f"Expected no active project, got: {data['jerry_project']}"
         )
-        assert len(data["available_projects"]) >= 1, (
-            "Expected available_projects to be populated"
-        )
+        assert len(data["available_projects"]) >= 1, "Expected available_projects to be populated"
 
     def test_invalid_project_in_local_context_returns_validation_error(
         self,
@@ -321,7 +319,9 @@ class TestCLILocalContextNegative:
         )
 
         # Assert - should indicate validation failure
-        assert result.returncode == 0, f"stderr: {result.stderr}"  # CLI succeeds but validation fails
+        assert result.returncode == 0, (
+            f"stderr: {result.stderr}"
+        )  # CLI succeeds but validation fails
         data = json.loads(result.stdout)
 
         assert data["jerry_project"] == "invalid-format", (

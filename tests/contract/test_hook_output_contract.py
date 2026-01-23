@@ -323,9 +323,7 @@ class TestAdditionalContext:
         hook_output = data.get("hookSpecificOutput", {})
         additional_context = hook_output.get("additionalContext", "")
 
-        assert additional_context.strip(), (
-            "additionalContext must not be empty"
-        )
+        assert additional_context.strip(), "additionalContext must not be empty"
 
 
 # =============================================================================
@@ -509,8 +507,7 @@ class TestSystemMessage:
 
         # Should contain Jerry-related content
         assert "Jerry" in system_message or "jerry" in system_message.lower(), (
-            "systemMessage should mention Jerry Framework.\n"
-            f"Actual message: {system_message}"
+            f"systemMessage should mention Jerry Framework.\nActual message: {system_message}"
         )
 
     def test_system_message_not_empty(
@@ -571,9 +568,7 @@ class TestCombinedOutputFormat:
         data = parse_hook_output(result.stdout)
 
         # Verify both fields exist
-        assert "systemMessage" in data, (
-            "Missing systemMessage - user won't see project context"
-        )
+        assert "systemMessage" in data, "Missing systemMessage - user won't see project context"
         assert "hookSpecificOutput" in data, "Missing hookSpecificOutput"
         assert "additionalContext" in data.get("hookSpecificOutput", {}), (
             "Missing additionalContext - Claude won't see project context"
@@ -581,9 +576,7 @@ class TestCombinedOutputFormat:
 
         # Verify neither is empty
         assert data["systemMessage"].strip(), "systemMessage is empty"
-        assert data["hookSpecificOutput"]["additionalContext"].strip(), (
-            "additionalContext is empty"
-        )
+        assert data["hookSpecificOutput"]["additionalContext"].strip(), "additionalContext is empty"
 
 
 # =============================================================================

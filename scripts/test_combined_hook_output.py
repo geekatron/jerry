@@ -62,8 +62,8 @@ If Claude can see this, additionalContext works alongside systemMessage."""
         "systemMessage": system_message,
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": additional_context
-        }
+            "additionalContext": additional_context,
+        },
     }
 
     print(json.dumps(output, indent=2))
