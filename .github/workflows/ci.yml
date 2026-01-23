@@ -98,7 +98,7 @@ jobs:
   # Plugin Validation (EN-005)
   # ===========================================================================
   # Validates plugin manifests and hook scripts
-  # Ensures session_start.py runs standalone without pip install
+  # Ensures session_start_hook.py runs standalone without pip install
   plugin-validation:
     name: Plugin Validation
     runs-on: ubuntu-latest
@@ -119,11 +119,11 @@ jobs:
       - name: Validate plugin manifests
         run: uv run python scripts/validate_plugin_manifests.py
 
-      - name: Validate session_start.py standalone
+      - name: Validate session_start_hook.py standalone
         run: |
-          # Test that session_start.py runs without pip install -e .
-          # Uses uv run for PEP 723 inline metadata (BUG-007, ADR e-010)
-          PYTHONPATH="." uv run src/interface/cli/session_start.py
+          # Test that session_start_hook.py runs without pip install -e .
+          # EN-001: Hook wrapper calls jerry CLI instead of deprecated entry point
+          python3 scripts/session_start_hook.py
         env:
           JERRY_PROJECT: ""
           CLAUDE_PROJECT_DIR: ${{ github.workspace }}

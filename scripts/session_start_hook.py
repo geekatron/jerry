@@ -18,6 +18,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import UTC
 from pathlib import Path
 
 
@@ -68,8 +69,8 @@ def log_error(log_file: Path, message: str) -> None:
     try:
         log_file.parent.mkdir(parents=True, exist_ok=True)
         with open(log_file, "a") as f:
-            from datetime import datetime, timezone
-            timestamp = datetime.now(timezone.utc).isoformat()
+            from datetime import datetime
+            timestamp = datetime.now(UTC).isoformat()
             f.write(f"[{timestamp}] {message}\n")
     except OSError:
         pass  # Best effort logging
@@ -139,9 +140,9 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
             f"Error: {error_msg}\n"
             f"AvailableProjects:\n"
             + "\n".join(f"  - {p['id']}" for p in available[:5])
-            + f"\n</project-error>\n\n"
-            f"ACTION REQUIRED: The specified project is invalid.\n"
-            f"Use AskUserQuestion to help the user select a valid project."
+            + "\n</project-error>\n\n"
+            "ACTION REQUIRED: The specified project is invalid.\n"
+            "Use AskUserQuestion to help the user select a valid project."
         )
         return (system_msg, additional)
 
@@ -151,10 +152,10 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
     project_count = len(available)
     system_msg = f"Jerry Framework: No project set ({project_count} available)"
     additional = (
-        f"Jerry Framework initialized.\n"
-        f"<project-required>\n"
-        f"ProjectRequired: true\n"
-        f"AvailableProjects:\n"
+        "Jerry Framework initialized.\n"
+        "<project-required>\n"
+        "ProjectRequired: true\n"
+        "AvailableProjects:\n"
         + "\n".join(f"  - {p['id']} [{p.get('status', 'UNKNOWN')}]" for p in available[:5])
         + f"\nNextProjectNumber: {next_num:03d}\n"
         f"ProjectsJson: {projects_json}\n"
