@@ -376,6 +376,6 @@ class TestLayerBoundaries:
                     violations.append(f"{py_file.name}: {imp}")
 
         assert not violations, (
-            f"Interface layer files import infrastructure adapters:\n"
+            "Interface layer files import infrastructure adapters:\n"
             + "\n".join(violations)
         )

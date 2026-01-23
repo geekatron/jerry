@@ -29,13 +29,13 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def main() -> int:
     """Output combined JSON for testing."""
 
-    timestamp = datetime.now(timezone.utc).isoformat()
+    timestamp = datetime.now(UTC).isoformat()
     project = os.environ.get("JERRY_PROJECT", "NOT_SET")
 
     # The systemMessage should appear in the user's terminal
