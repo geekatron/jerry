@@ -6,10 +6,10 @@ These are primary adapters that drive the application.
 
 Modules:
     - main: Main CLI entry point (jerry command)
-    - session_start: Hook for Claude Code session initialization
+
+EN-001: Removed session_start module (TD-004). Session hook now calls main CLI.
 """
 
 from src.interface.cli.main import main
-from src.interface.cli.session_start import main as session_start_main
 
-__all__ = ["main", "session_start_main"]
+__all__ = ["main"]

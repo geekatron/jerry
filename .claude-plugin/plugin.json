@@ -21,6 +21,5 @@
   "commands": [
     "./commands/architect.md",
     "./commands/release.md"
-  ],
-  "hooks": "./hooks/hooks.json"
+    ]
 }

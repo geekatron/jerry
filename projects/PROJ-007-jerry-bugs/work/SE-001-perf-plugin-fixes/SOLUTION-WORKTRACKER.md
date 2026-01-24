@@ -2,9 +2,9 @@
 
 > **Solution Epic ID:** SE-001
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** IN PROGRESS (1/2 Features Released)
+> **Status:** IN PROGRESS (1/2 Features Merged)
 > **Created:** 2026-01-14
-> **Last Updated:** 2026-01-14T17:30:00Z
+> **Last Updated:** 2026-01-14T20:30:00Z
 
 ---
 
@@ -22,7 +22,7 @@ This Solution Epic addresses two critical bugs affecting Jerry Framework usabili
 | ID | Name | Status | Progress | Tracker |
 |----|------|--------|----------|---------|
 | [FT-001](./FT-001-lock-file-cleanup/FEATURE-WORKTRACKER.md) | Lock File Cleanup | IN PROGRESS | 0/1 Enablers | [FEATURE-WORKTRACKER.md](./FT-001-lock-file-cleanup/FEATURE-WORKTRACKER.md) |
-| [FT-002](./FT-002-plugin-loading-fix/FEATURE-WORKTRACKER.md) | Plugin Loading Fix | **RELEASED ✅** | v0.2.0 | [FEATURE-WORKTRACKER.md](./FT-002-plugin-loading-fix/FEATURE-WORKTRACKER.md) |
+| [FT-002](./FT-002-plugin-loading-fix/FEATURE-WORKTRACKER.md) | Plugin Loading Fix | **MERGED ✅** | v0.2.0 (PR #13) | [FEATURE-WORKTRACKER.md](./FT-002-plugin-loading-fix/FEATURE-WORKTRACKER.md) |
 
 ---
 
@@ -51,6 +51,38 @@ This Solution Epic addresses two critical bugs affecting Jerry Framework usabili
 | TD-001 | Lock file cleanup never implemented per ADR-006 | FT-001 | DOCUMENTED |
 | [TD-002](./FT-002-plugin-loading-fix/td-002-ci-test-coverage-gap.md) | CI Test Coverage Gap | FT-002 | DOCUMENTED (v0.3.0+) |
 | [TD-003](./FT-002-plugin-loading-fix/td-003-hooks-execution-inconsistency.md) | Hooks Execution Inconsistency | FT-002 | DOCUMENTED (v0.3.0+) |
+
+---
+
+## Enablers Summary
+
+| ID | Name | Status | Feature | Tracker |
+|----|------|--------|---------|---------|
+| EN-001 | Investigate lock file issue | PENDING | FT-001 | TBD |
+| EN-002 | Investigate plugin loading failure | COMPLETE | FT-002 | (orchestration) |
+| EN-003 | Validate solution hypothesis | COMPLETE ✅ | FT-002 | [en-003](./FT-002-plugin-loading-fix/en-003-validate-solution.md) |
+| [EN-004](./FT-002-plugin-loading-fix/en-004-bot-account-setup.md) | Bot Account Setup | **COMPLETE ✅** | FT-002 | [en-004](./FT-002-plugin-loading-fix/en-004-bot-account-setup.md) |
+
+---
+
+## Discoveries Summary
+
+| ID | Title | Feature | Status | Resolution |
+|----|-------|---------|--------|------------|
+| disc-001 | uv Portability Requirement | FT-002 | RESOLVED ✅ | Remove PEP 723 |
+| disc-002 | CI vs Hook Environment | FT-002 | ADDRESSED ✅ | Entry point |
+| disc-003 | Hooks Inconsistency | FT-002 | DOCUMENTED | → TD-003 |
+| [disc-004](./FT-002-plugin-loading-fix/disc-004-cli-entry-point-pattern.md) | CLI Entry Point Pattern | FT-002 | DOCUMENTED ✅ | Informational |
+| [disc-005](./FT-002-plugin-loading-fix/disc-005-pr-author-cannot-approve.md) | PR Author Cannot Approve | FT-002 | RESOLVED ✅ | EN-004 |
+| [disc-006](./FT-002-plugin-loading-fix/disc-006-origin-head-misconfiguration.md) | origin/HEAD Misconfiguration | FT-002 | RESOLVED ✅ | git config |
+
+---
+
+## Investigations
+
+| ID | Title | Status | Finding |
+|----|-------|--------|---------|
+| [CI-001](../../investigations/ci-001-github-actions-billing-failure.md) | GitHub Actions Billing Failure | RESOLVED ✅ | External billing issue |
 
 ---
 
@@ -84,3 +116,9 @@ This Solution Epic addresses two critical bugs affecting Jerry Framework usabili
 | 2026-01-14 | BUG-002 RESOLVED | Claude |
 | 2026-01-14 | ADR-PROJ007-002 ACCEPTED | Claude |
 | 2026-01-14 | TD-002, TD-003 documented for v0.3.0+ | Claude |
+| 2026-01-14 | CI-001: GitHub billing issue investigated | Claude |
+| 2026-01-14 | PR #13 merged to main | Adam Nowak |
+| 2026-01-14 | disc-005: PR author cannot approve discovered | Claude |
+| 2026-01-14 | EN-004: Bot account setup completed | Claude |
+| 2026-01-14 | disc-006: origin/HEAD misconfiguration fixed | Claude |
+| 2026-01-14 | FT-002 STATUS: MERGED ✅ | Claude |

@@ -17,10 +17,12 @@ from src.application.ports.secondary.illm_context_serializer import (
     ILlmContextSerializer,
     OutputFormat,
 )
+from src.application.ports.secondary.ilocal_context_reader import ILocalContextReader
 from src.application.ports.secondary.iread_model_store import IReadModelStore
 
 __all__ = [
     "ILlmContextSerializer",
+    "ILocalContextReader",
     "IReadModelStore",
     "OutputFormat",
 ]

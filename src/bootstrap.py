@@ -42,6 +42,11 @@ from src.application.queries import (
     ScanProjectsQuery,
     ValidateProjectQuery,
 )
+
+# EN-001: Local context support for session hook
+from src.infrastructure.adapters.persistence.filesystem_local_context_adapter import (
+    FilesystemLocalContextAdapter,
+)
 from src.infrastructure.adapters.serialization.toon_serializer import ToonSerializer
 from src.session_management.application.commands import (
     AbandonSessionCommand,
@@ -313,10 +318,17 @@ def create_query_dispatcher() -> QueryDispatcher:
     environment = OsEnvironmentAdapter()
     session_repository = get_session_repository()
 
+    # EN-001: Create local context reader for .jerry/local/context.toml
+    # The adapter reads from CLAUDE_PROJECT_DIR (or cwd) for local context
+    projects_dir = get_projects_directory()
+    base_path = Path(projects_dir).parent  # Parent of projects/ is the workspace root
+    local_context_reader = FilesystemLocalContextAdapter(base_path=base_path)
+
     # Create project-related handlers
     retrieve_project_context_handler = RetrieveProjectContextQueryHandler(
         repository=project_repository,
         environment=environment,
+        local_context_reader=local_context_reader,  # EN-001: Wire local context support
     )
     scan_projects_handler = ScanProjectsQueryHandler(
         repository=project_repository,

@@ -46,7 +46,7 @@ test = [
 
 [project.scripts]
 jerry = "src.interface.cli.main:main"
-jerry-session-start = "src.interface.cli.session_start:main"
+# EN-001: Removed deprecated session entry point (TD-005). Hook now calls main CLI
 
 [build-system]
 requires = ["hatchling"]

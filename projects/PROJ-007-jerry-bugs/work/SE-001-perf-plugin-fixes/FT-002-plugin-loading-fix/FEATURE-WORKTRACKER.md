@@ -3,7 +3,7 @@
 > **Feature ID:** FT-002
 > **Solution Epic:** SE-001
 > **Project:** PROJ-007-jerry-bugs
-> **Status:** RELEASED ✅
+> **Status:** MERGED ✅
 > **Target Version:** v0.2.0
 > **Version Released:** v0.2.0 (commit e6fadeb)
 > **Created:** 2026-01-14
@@ -32,6 +32,7 @@ This is the proper uv-native approach - no PYTHONPATH hacks required.
 |----|------|--------|-------|
 | EN-002 | Investigate plugin loading failure | COMPLETE | Done via orchestration |
 | [EN-003](./en-003-validate-solution.md) | Validate Solution Hypothesis | COMPLETE ✅ | 4/4 tasks done |
+| [EN-004](./en-004-bot-account-setup.md) | Bot Account Setup | COMPLETE ✅ | 7/7 tasks done |
 
 ---
 
@@ -52,6 +53,8 @@ This is the proper uv-native approach - no PYTHONPATH hacks required.
 | disc-002 | CI vs Hook Environment Discrepancy | ADDRESSED ✅ | → TD-002 |
 | disc-003 | Hooks Inconsistency (uv vs python3) | DOCUMENTED | → TD-003 |
 | [disc-004](./disc-004-cli-entry-point-pattern.md) | CLI Entry Point Pattern | DOCUMENTED ✅ | (informational) |
+| [disc-005](./disc-005-pr-author-cannot-approve.md) | PR Author Cannot Approve | RESOLVED ✅ | → EN-004 |
+| [disc-006](./disc-006-origin-head-misconfiguration.md) | origin/HEAD Misconfiguration | RESOLVED ✅ | (configuration) |
 
 ### disc-001: uv Portability Requirement [RESOLVED ✅]
 **Solution validated via EN-003:** Remove PEP 723 inline metadata from session_start.py. This allows `uv run` to use the project's pyproject.toml instead of creating an isolated environment.
@@ -75,6 +78,18 @@ This is the proper uv-native approach - no PYTHONPATH hacks required.
 - Entry points auto-install the package, ensuring PYTHONPATH is correct
 - Use `uv run --directory <project> <entry-point>` for portability
 - See [disc-004-cli-entry-point-pattern.md](./disc-004-cli-entry-point-pattern.md) for full documentation
+
+### disc-005: PR Author Cannot Approve [RESOLVED ✅]
+**Problem:** GitHub does not allow PR authors to approve their own PRs.
+- When Claude commits using user credentials, user cannot approve resulting PRs
+- **Solution:** EN-004 - Configure bot account (`saucer-boy`) for Claude commits
+- See [disc-005-pr-author-cannot-approve.md](./disc-005-pr-author-cannot-approve.md) for details
+
+### disc-006: origin/HEAD Misconfiguration [RESOLVED ✅]
+**Problem:** Local `origin/HEAD` was pointing to `claude/create-code-plugin-skill-MG1nh` instead of `main`.
+- Causes incorrect default branch resolution in git commands
+- **Solution:** `git remote set-head origin main`
+- See [disc-006-origin-head-misconfiguration.md](./disc-006-origin-head-misconfiguration.md) for details
 
 ---
 
@@ -194,3 +209,8 @@ Session Start Tests:  33 passed
 | 2026-01-14 | Ruff formatting fixed (83b5c57) | Claude |
 | 2026-01-14 | **CI PASSED: Run 21007707358 (14/14 jobs green)** | Claude |
 | 2026-01-14 | FT-002 v0.2.0 FULLY VALIDATED ✅ | Claude |
+| 2026-01-14 | **PR #13 MERGED to main** | Adam Nowak |
+| 2026-01-14 | EN-004 Bot Account Setup COMPLETE | Claude |
+| 2026-01-14 | disc-005 PR author limitation documented | Claude |
+| 2026-01-14 | disc-006 origin/HEAD misconfiguration fixed | Claude |
+| 2026-01-14 | SOP fix: moved EN-004, disc-005, disc-006 to FT-002 folder | Claude |

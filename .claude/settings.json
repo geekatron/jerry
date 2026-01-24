@@ -5,41 +5,7 @@
     "name": "jerry",
     "description": "Framework for behavior and workflow guardrails with knowledge accrual"
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "matcher": "*",
-        "hooks": [
-
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-        
-        ]
-      }
-    ]
-  },
-  "rules": {
+    "rules": {
     "files": [
       ".claude/rules/coding-standards.md"
     ],
