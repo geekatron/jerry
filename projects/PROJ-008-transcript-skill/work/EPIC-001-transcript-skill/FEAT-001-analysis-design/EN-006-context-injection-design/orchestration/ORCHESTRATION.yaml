@@ -1,10 +1,10 @@
 # ORCHESTRATION.yaml
 # Machine-readable orchestration state for EN-006 Context Injection Design
 # Document ID: EN-006-ORCH-STATE
-# Version: 5.0
-# Last Updated: 2026-01-26T23:30:00Z
+# Version: 6.0
+# Last Updated: 2026-01-27T01:00:00Z
 
-schema_version: "5.0.0"
+schema_version: "6.0.0"
 
 # =============================================================================
 # WORKFLOW METADATA
@@ -14,9 +14,9 @@ workflow:
   name: "EN-006 Context Injection Design"
   project_id: "PROJ-008-transcript-skill"
   enabler_id: "EN-006"
-  version: "5.0"
+  version: "6.0"
   created_at: "2026-01-26T15:00:00Z"
-  updated_at: "2026-01-26T23:30:00Z"
+  updated_at: "2026-01-27T01:00:00Z"
   status: "ACTIVE"
 
   id_source: "auto"
@@ -43,6 +43,17 @@ workflow:
       status: "ACCEPTED"
       impact: "FEAT-002 uses Claude Code Skills (SKILL.md, AGENT.md, contexts/*.yaml), NOT Python CLI"
       decision_type: "ONE_WAY_DOOR"
+
+  # Discoveries
+  discoveries:
+    - id: "DISC-001"
+      title: "FEAT-002 Implementation Scope - Domain Context Implementation Tasks"
+      path: "EN-006--DISC-001-feat002-implementation-scope.md"
+      status: "DOCUMENTED"
+      impact: "FEAT-002 requires tasks for 6 domain context files, test transcripts, and validation"
+      created_at: "2026-01-27T00:30:00Z"
+      finding_type: "GAP"
+      affects: ["FEAT-002", "TASK-038"]
 
   constraints:
     max_agent_nesting: 1
@@ -242,24 +253,25 @@ phases:
     ps_agents:
       - agent_id: "ps-architect"
         task_id: "TASK-036"
-        status: "BLOCKED"
+        status: "READY"  # BARRIER-2 complete
         deliverable: "docs/design/en006-orchestration-integration.md"
       - agent_id: "ps-architect"
         task_id: "TASK-038"
-        status: "BLOCKED"
-        deliverable: "docs/examples/context-injection/"
+        status: "READY"  # BARRIER-2 complete
+        deliverable: "docs/specs/domain-contexts/"
+        scope: "6 transcript analysis domain specifications"
       - agent_id: "ps-validator"
         task_id: "TASK-038"
-        status: "BLOCKED"
+        status: "READY"  # BARRIER-2 complete
         role: "schema_validator"
     nse_agents:
       - agent_id: "nse-risk"
         task_id: "TASK-037"
-        status: "BLOCKED"
+        status: "READY"  # BARRIER-2 complete
         deliverable: "docs/analysis/en006-fmea-context-injection.md"
       - agent_id: "nse-verification"
         task_id: "TASK-038"
-        status: "BLOCKED"
+        status: "READY"  # BARRIER-2 complete
         role: "verification"
 
   - id: 4
@@ -491,13 +503,13 @@ execution_queue:
         - "docs/critiques/en006-spec-critique-v1.md"
       note: "DEC-002: Focus on Claude Code Skills mapping, NOT Python CLI"
 
-    # Phase 3 (after BARRIER-2)
+    # Phase 3 (after BARRIER-2) - ALL READY (BARRIER-2 complete)
     - id: 7
       task_id: "TASK-036"
       name: "Orchestration Integration"
       phase: 3
-      status: "BLOCKED"
-      blocked_by: "BARRIER-2"
+      status: "READY"  # BARRIER-2 complete
+      blocked_by: null
       ps_agent: "ps-architect"
       execution_mode: "PARALLEL_WITH_TASK_037_038"
 
@@ -505,20 +517,30 @@ execution_queue:
       task_id: "TASK-037"
       name: "FMEA & Risk Assessment"
       phase: 3
-      status: "BLOCKED"
-      blocked_by: "BARRIER-2"
+      status: "READY"  # BARRIER-2 complete
+      blocked_by: null
       nse_agent: "nse-risk"
       execution_mode: "PARALLEL_WITH_TASK_036_038"
 
     - id: 9
       task_id: "TASK-038"
-      name: "Example Plans"
+      name: "Domain Context Specifications"
       phase: 3
-      status: "BLOCKED"
-      blocked_by: "BARRIER-2"
+      status: "READY"  # BARRIER-2 complete
+      blocked_by: null
       ps_agent: "ps-architect"
       nse_agent: "nse-verification"
       execution_mode: "PARALLEL_WITH_TASK_036_037"
+      scope_update: "2026-01-27 - Changed from 4 generic to 6 transcript analysis domains"
+      domains:
+        - "software-engineering"
+        - "software-architecture"
+        - "product-management"
+        - "user-experience"
+        - "cloud-engineering"
+        - "security-engineering"
+      related_discovery: "DISC-001"
+      note: "Design artifacts only. Implementation deferred to FEAT-002."
 
     # Phase 4 (after Phase 3)
     - id: 10
@@ -605,12 +627,13 @@ metrics:
 
   timing:
     workflow_started: "2026-01-26T17:00:00Z"
-    last_activity: "2026-01-26T23:30:00Z"
+    last_activity: "2026-01-27T01:00:00Z"
     phase_0_completed: "2026-01-26T19:00:00Z"
     phase_1_completed: "2026-01-26T20:30:00Z"
     phase_2_completed: "2026-01-26T23:30:00Z"
     task_034_completed: "2026-01-26T21:30:00Z"
     task_035_completed: "2026-01-26T23:30:00Z"
+    task_038_scope_updated: "2026-01-27T01:00:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -689,9 +712,16 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "phase-2-complete"
-  current_state: "Phase 0, 1, 2 COMPLETE. Phase 3 ready. TDD score: 0.93, SPEC score: 0.96. BARRIER-2 satisfied."
+  last_checkpoint: "task-038-scope-updated"
+  current_state: "Phase 0, 1, 2 COMPLETE. Phase 3 ready. TDD score: 0.93, SPEC score: 0.96. BARRIER-2 satisfied. TASK-038 updated to 6 transcript analysis domains with per-domain AC."
   next_step: "Execute Phase 3 tasks (TASK-036, 037, 038) in parallel"
+  recent_changes:
+    - change: "TASK-038 scope updated"
+      date: "2026-01-27T01:00:00Z"
+      details: "Changed from 4 generic domains to 6 transcript analysis domains (SE, SA, PM, UX, CE, SEC) with per-domain acceptance criteria"
+    - change: "DISC-001 created"
+      date: "2026-01-27T00:30:00Z"
+      details: "Documents FEAT-002 implementation tasks for context files, test transcripts, and validation"
 
   phase_2_progress:
     task_034:
@@ -721,11 +751,13 @@ resumption:
   files_to_read:
     - "EN-006-context-injection-design.md"
     - "EN-006--DEC-002-implementation-approach.md"
+    - "EN-006--DISC-001-feat002-implementation-scope.md"
     - "orchestration/ORCHESTRATION_PLAN.md"
     - "orchestration/ORCHESTRATION.yaml"
     - "docs/design/TDD-context-injection.md"
     - "docs/specs/SPEC-context-injection.md"
     - "docs/critiques/en006-spec-critique-v1.md"
+    - "TASK-038-example-plans.md"
 
   cross_session_portable: true
   ephemeral_references: false
