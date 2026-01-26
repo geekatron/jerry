@@ -7,14 +7,15 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.7
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** blocked
 > **Priority:** high
 > **Created:** 2026-01-25T00:00:00Z
 > **Due:** TBD
-> **Completed:**
+> **Completed:** Partial (requires web access for verification)
 > **Parent:** EN-001
 > **Owner:** ps-researcher
 > **Effort Points:** 2
+> **Blocker:** WebSearch and WebFetch permissions denied - research based on training data only
 
 ---
 
@@ -28,13 +29,13 @@ Conduct comprehensive research on Fireflies.ai - an AI notetaker that transcribe
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | Research document created at `research/FIREFLIES-analysis.md` | [ ] |
-| AC-2 | L0/L1/L2 summaries completed | [ ] |
-| AC-3 | Core features documented with evidence | [ ] |
-| AC-4 | Entity extraction capabilities documented | [ ] |
-| AC-5 | Integrations catalogued | [ ] |
-| AC-6 | Transcript format support documented | [ ] |
-| AC-7 | All claims have citations (URLs with access dates) | [ ] |
+| AC-1 | Research document created at `research/FIREFLIES-analysis.md` | [x] |
+| AC-2 | L0/L1/L2 summaries completed | [x] |
+| AC-3 | Core features documented with evidence | [~] Partial - based on training data |
+| AC-4 | Entity extraction capabilities documented | [~] Partial - based on training data |
+| AC-5 | Integrations catalogued | [~] Partial - based on training data |
+| AC-6 | Transcript format support documented | [~] Partial - VTT/SRT unconfirmed |
+| AC-7 | All claims have citations (URLs with access dates) | [ ] BLOCKED - No live web access |
 
 ---
 
@@ -135,3 +136,4 @@ tools:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-25 | Claude | pending | Task created |
+| 2026-01-25 | ps-researcher | blocked | Research document created at `research/FIREFLIES-analysis.md`. WebSearch and WebFetch permissions denied - research based on training data (cutoff May 2025). Document marked as requiring verification. L0/L1/L2 summaries completed. Entity extraction, integrations, and features documented but marked as unverified. VTT/SRT format support could not be confirmed. Requires re-execution with web access for proper citation and verification. |
