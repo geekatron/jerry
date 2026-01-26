@@ -1,0 +1,292 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for EN-006 Context Injection Design
+# Document ID: EN-006-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-01-26T15:00:00Z
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "en006-ctxinj-20260126-001"
+  name: "EN-006 Context Injection Design"
+  project_id: "PROJ-008-transcript-skill"
+  enabler_id: "EN-006"
+  version: "2.0"
+  created_at: "2026-01-26T15:00:00Z"
+  updated_at: "2026-01-26T15:00:00Z"
+  status: "ACTIVE"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+    - HIERARCHICAL
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    quality_threshold: 0.90
+    max_iterations: 2
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-006-context-injection-design/"
+  deliverables:
+    analysis: "docs/analysis/"
+    specs: "docs/specs/"
+    design: "docs/design/"
+    examples: "docs/examples/context-injection/"
+    review: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/"
+
+# =============================================================================
+# PIPELINE DEFINITION (Single Sequential Pipeline)
+# =============================================================================
+pipeline:
+  id: "en006-design-pipeline"
+  name: "Context Injection Design Pipeline"
+  status: "PHASE_1_PENDING"
+  current_phase: 1
+  total_phases: 5
+  progress_percent: 0
+
+  phases:
+    - id: 1
+      name: "Analysis"
+      task_id: "TASK-030"
+      status: "PENDING"
+      started_at: null
+      completed_at: null
+      agent:
+        id: "ps-analyst"
+        name: "5W2H Analysis Agent"
+        status: "PENDING"
+      deliverables:
+        - path: "docs/analysis/en006-5w2h-context-injection.md"
+          status: "PENDING"
+          type: "analysis"
+
+    - id: 2
+      name: "Specification"
+      task_id: "TASK-031"
+      status: "BLOCKED"
+      blocked_by: "phase-1"
+      started_at: null
+      completed_at: null
+      agent:
+        id: "ps-architect"
+        name: "Specification Agent"
+        status: "BLOCKED"
+      deliverables:
+        - path: "docs/specs/SPEC-context-injection.md"
+          status: "PENDING"
+          type: "specification"
+        - path: "docs/specs/schemas/context-injection-schema.json"
+          status: "PENDING"
+          type: "schema"
+
+    - id: 3
+      name: "Integration Design"
+      task_id: "TASK-032"
+      status: "BLOCKED"
+      blocked_by: "phase-2"
+      started_at: null
+      completed_at: null
+      agent:
+        id: "ps-architect"
+        name: "Integration Design Agent"
+        status: "BLOCKED"
+      deliverables:
+        - path: "docs/design/en006-orchestration-integration.md"
+          status: "PENDING"
+          type: "design"
+
+    - id: 4
+      name: "Examples"
+      task_id: "TASK-033"
+      status: "BLOCKED"
+      blocked_by: "phase-3"
+      started_at: null
+      completed_at: null
+      agent:
+        id: "ps-architect"
+        name: "Examples Agent"
+        status: "BLOCKED"
+      deliverables:
+        - path: "docs/examples/context-injection/README.md"
+          status: "PENDING"
+          type: "documentation"
+        - path: "docs/examples/context-injection/01-generic-baseline/"
+          status: "PENDING"
+          type: "example"
+        - path: "docs/examples/context-injection/02-legal-domain/"
+          status: "PENDING"
+          type: "example"
+        - path: "docs/examples/context-injection/03-sales-domain/"
+          status: "PENDING"
+          type: "example"
+        - path: "docs/examples/context-injection/04-engineering-domain/"
+          status: "PENDING"
+          type: "example"
+
+    - id: 5
+      name: "Quality Review"
+      task_id: "TASK-034"
+      status: "BLOCKED"
+      blocked_by: "phase-4"
+      started_at: null
+      completed_at: null
+      agent:
+        id: "ps-critic"
+        name: "Quality Review Agent"
+        status: "BLOCKED"
+      deliverables:
+        - path: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/FEAT-001--CRIT-EN006-review.md"
+          status: "PENDING"
+          type: "review"
+
+# =============================================================================
+# QUALITY GATE
+# =============================================================================
+quality_gate:
+  id: "GATE-4"
+  name: "Design Review"
+  status: "PENDING"
+  depends_on: "phase-5"
+  threshold: 0.90
+  current_score: null
+  approved_by: null
+  approved_at: null
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_task: 1
+  tasks:
+    - id: 1
+      task_id: "TASK-030"
+      name: "5W2H Analysis"
+      status: "READY"
+      agent: "ps-analyst"
+
+    - id: 2
+      task_id: "TASK-031"
+      name: "Context Injection Specification"
+      status: "BLOCKED"
+      blocked_by: "task-1"
+      agent: "ps-architect"
+
+    - id: 3
+      task_id: "TASK-032"
+      name: "Orchestration Integration Design"
+      status: "BLOCKED"
+      blocked_by: "task-2"
+      agent: "ps-architect"
+
+    - id: 4
+      task_id: "TASK-033"
+      name: "Example Orchestration Plans"
+      status: "BLOCKED"
+      blocked_by: "task-3"
+      agent: "ps-architect"
+
+    - id: 5
+      task_id: "TASK-034"
+      name: "ps-critic Review"
+      status: "BLOCKED"
+      blocked_by: "task-4"
+      agent: "ps-critic"
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 5
+    phases_percent: 0
+    tasks_complete: 0
+    tasks_total: 5
+    tasks_percent: 0
+    deliverables_created: 0
+    deliverables_total: 10
+    deliverables_percent: 0
+
+  quality:
+    current_score: null
+    threshold: 0.90
+    review_iterations: 0
+    max_iterations: 2
+
+  timing:
+    workflow_started: null
+    last_activity: "2026-01-26T15:00:00Z"
+    estimated_completion: null
+
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+dependencies:
+  external:
+    - id: "EN-003"
+      name: "Requirements Synthesis"
+      status: "COMPLETE"
+    - id: "EN-004"
+      name: "Architecture Decisions"
+      status: "COMPLETE"
+    - id: "EN-005"
+      name: "Design Documentation"
+      status: "COMPLETE"
+
+  blocks:
+    - id: "EN-013"
+      name: "Context Injection Implementation (FEAT-002)"
+      status: "BLOCKED_BY_THIS"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute TASK-030 5W2H Analysis"
+      agent: "ps-analyst"
+      inputs:
+        - "EN-003 REQUIREMENTS-SPECIFICATION.md"
+        - "ADR-001 Agent Architecture"
+      output: "docs/analysis/en006-5w2h-context-injection.md"
+
+  subsequent:
+    - action: "Execute TASK-031 after TASK-030 completes"
+      depends_on: "TASK-030"
+    - action: "Execute TASK-032 after TASK-031 completes"
+      depends_on: "TASK-031"
+    - action: "Execute TASK-033 after TASK-032 completes"
+      depends_on: "TASK-032"
+    - action: "Execute TASK-034 after TASK-033 completes"
+      depends_on: "TASK-033"
+    - action: "Request GATE-4 approval after quality score >= 0.90"
+      depends_on: "TASK-034"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow configured, not started"
+  next_step: "Execute TASK-030 (5W2H Analysis) using ps-analyst"
+
+  files_to_read:
+    - "EN-006-context-injection-design.md"
+    - "orchestration/ORCHESTRATION_PLAN.md"
+    - "orchestration/ORCHESTRATION.yaml"
+    - "TASK-030-5w2h-analysis.md"
+
+  cross_session_portable: true
+  ephemeral_references: false

@@ -77,12 +77,46 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 
 ### Task Inventory
 
-| ID | Title | Status | Owner | Effort | Blocked By |
-|----|-------|--------|-------|--------|------------|
-| TASK-030 | 5W2H Analysis: Context Injection | pending | ps-analyst | 1 | EN-003 |
-| TASK-031 | Context Injection Specification | pending | ps-architect | 2 | TASK-030 |
-| TASK-032 | Orchestration Integration Design | pending | ps-architect | 1 | TASK-031 |
-| TASK-033 | Example Orchestration Plans | pending | ps-architect | 1 | TASK-032 |
+| ID | Title | Status | Owner | Effort | Blocked By | Link |
+|----|-------|--------|-------|--------|------------|------|
+| TASK-030 | 5W2H Analysis: Context Injection | pending | ps-analyst | 1 | EN-003 | [TASK-030](./TASK-030-5w2h-analysis.md) |
+| TASK-031 | Context Injection Specification | pending | ps-architect | 2 | TASK-030 | [TASK-031](./TASK-031-context-injection-spec.md) |
+| TASK-032 | Orchestration Integration Design | pending | ps-architect | 1 | TASK-031 | [TASK-032](./TASK-032-orchestration-integration.md) |
+| TASK-033 | Example Orchestration Plans | pending | ps-architect | 1 | TASK-032 | [TASK-033](./TASK-033-example-plans.md) |
+| TASK-034 | ps-critic Review & GATE-4 Prep | pending | ps-critic | 1 | TASK-033 | [TASK-034](./TASK-034-critic-review.md) |
+
+### Workflow Phases
+
+```
+PHASE 1: Analysis
+├── TASK-030: 5W2H Analysis (ps-analyst)
+│   └── Deliverable: docs/analysis/en006-5w2h-context-injection.md
+
+PHASE 2: Specification
+├── TASK-031: Context Injection Specification (ps-architect)
+│   └── Deliverables:
+│       ├── docs/specs/SPEC-context-injection.md
+│       └── docs/specs/schemas/context-injection-schema.json
+
+PHASE 3: Integration Design
+├── TASK-032: Orchestration Integration Design (ps-architect)
+│   └── Deliverable: docs/design/en006-orchestration-integration.md
+
+PHASE 4: Examples & Validation
+├── TASK-033: Example Orchestration Plans (ps-architect)
+│   └── Deliverables: docs/examples/context-injection/
+└── TASK-034: ps-critic Review & GATE-4 Prep (ps-critic)
+    └── Deliverable: FEAT-001--CRIT-EN006-review.md
+
+GATE-4: Human Approval
+```
+
+### Orchestration Artifacts
+
+| Artifact | Purpose | Location |
+|----------|---------|----------|
+| ORCHESTRATION_PLAN.md | Workflow strategy | [ORCHESTRATION_PLAN.md](./orchestration/ORCHESTRATION_PLAN.md) |
+| ORCHESTRATION.yaml | Machine-readable state | [ORCHESTRATION.yaml](./orchestration/ORCHESTRATION.yaml) |
 
 ---
 
@@ -243,6 +277,7 @@ pipeline:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created |
+| 2026-01-26 | Claude | pending | Task files created (TASK-030..034), orchestration artifacts added |
 
 ---
 
