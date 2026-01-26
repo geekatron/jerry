@@ -51,25 +51,55 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 
 ### Definition of Done
 
+**Phase 0 (Research):**
+- [ ] Deep research synthesis with citations and sources
+- [ ] Trade space analysis documented
+- [ ] Context7 and web research completed
+
+**Phase 1 (Requirements & Analysis):**
 - [ ] 5W2H analysis for context injection use cases
-- [ ] Context injection specification created
-- [ ] Orchestration plan integration designed
-- [ ] Agent prompt template mechanism designed
-- [ ] Example orchestration plans created
-- [ ] ps-critic review passed
+- [ ] Ishikawa (root cause) analysis for failure modes
+- [ ] Pareto (80/20) prioritization of use cases
+- [ ] Formal requirements documented (NASA SE Process 2)
+
+**Phase 2 (Design & Architecture):**
+- [ ] TDD-context-injection.md created with quality >= 0.90
+- [ ] SPEC-context-injection.md created with quality >= 0.90
+- [ ] JSON schema for context injection payload validated
+
+**Phase 3 (Integration, Risk & Examples):**
+- [ ] Orchestration integration design complete
+- [ ] FMEA risk assessment with RPN scores
+- [ ] 8D problem-solving for high-RPN items
+- [ ] 4 domain example orchestration plans created
+
+**Phase 4 (Quality & Synthesis):**
+- [ ] ps-critic + nse-qa quality review passed (>= 0.90)
+- [ ] Final synthesis with patterns and themes
 - [ ] Human approval at GATE-4
 
-### Technical Criteria
+### Technical Criteria (5W2H)
 
-| # | Criterion | Verified |
-|---|-----------|----------|
-| AC-1 | Who: Target users identified | [ ] |
-| AC-2 | What: Mechanism clearly defined | [ ] |
-| AC-3 | When: Trigger conditions specified | [ ] |
-| AC-4 | Where: Integration points documented | [ ] |
-| AC-5 | Why: Value proposition articulated | [ ] |
-| AC-6 | How: Implementation approach designed | [ ] |
-| AC-7 | How much: Performance impact assessed | [ ] |
+| # | Criterion | Framework | Verified |
+|---|-----------|-----------|----------|
+| AC-1 | Who: Target users identified with personas | 5W2H | [ ] |
+| AC-2 | What: Mechanism clearly defined with schema | 5W2H | [ ] |
+| AC-3 | When: Trigger conditions with decision tree | 5W2H | [ ] |
+| AC-4 | Where: Integration points with diagrams | 5W2H | [ ] |
+| AC-5 | Why: Value proposition with evidence | 5W2H | [ ] |
+| AC-6 | How: Implementation approach with TDD | 5W2H | [ ] |
+| AC-7 | How much: Performance impact assessed | 5W2H | [ ] |
+
+### Quality Criteria
+
+| # | Criterion | Threshold | Verified |
+|---|-----------|-----------|----------|
+| QC-1 | TDD quality score | >= 0.90 | [ ] |
+| QC-2 | Specification quality score | >= 0.90 | [ ] |
+| QC-3 | Overall deliverable quality | >= 0.90 | [ ] |
+| QC-4 | EN-003 requirements traceability | 100% | [ ] |
+| QC-5 | ADR compliance (ADR-001..ADR-005) | 100% | [ ] |
+| QC-6 | NASA SE process compliance | P1,2,3,4,7,8,11,13-17 | [ ] |
 
 ---
 
@@ -77,39 +107,130 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 
 ### Task Inventory
 
-| ID | Title | Status | Owner | Effort | Blocked By | Link |
-|----|-------|--------|-------|--------|------------|------|
-| TASK-030 | 5W2H Analysis: Context Injection | pending | ps-analyst | 1 | EN-003 | [TASK-030](./TASK-030-5w2h-analysis.md) |
-| TASK-031 | Context Injection Specification | pending | ps-architect | 2 | TASK-030 | [TASK-031](./TASK-031-context-injection-spec.md) |
-| TASK-032 | Orchestration Integration Design | pending | ps-architect | 1 | TASK-031 | [TASK-032](./TASK-032-orchestration-integration.md) |
-| TASK-033 | Example Orchestration Plans | pending | ps-architect | 1 | TASK-032 | [TASK-033](./TASK-033-example-plans.md) |
-| TASK-034 | ps-critic Review & GATE-4 Prep | pending | ps-critic | 1 | TASK-033 | [TASK-034](./TASK-034-critic-review.md) |
+| ID | Title | Phase | Status | Owner | Effort | Blocked By | Link |
+|----|-------|-------|--------|-------|--------|------------|------|
+| TASK-030 | Deep Research & Exploration | 0 | BACKLOG | ps-researcher + nse-explorer | 2 | EN-003 | [TASK-030](./TASK-030-deep-research.md) |
+| TASK-031 | 5W2H Analysis | 1 | BACKLOG | ps-analyst | 1 | BARRIER-0 | [TASK-031](./TASK-031-5w2h-analysis.md) |
+| TASK-032 | Ishikawa & Pareto Analysis | 1 | BACKLOG | ps-analyst | 1 | BARRIER-0 | [TASK-032](./TASK-032-ishikawa-pareto.md) |
+| TASK-033 | Formal Requirements | 1 | BACKLOG | nse-requirements | 1 | BARRIER-0 | [TASK-033](./TASK-033-formal-requirements.md) |
+| TASK-034 | TDD Creation (Iterative) | 2 | BACKLOG | ps-architect + nse-architecture + ps-critic | 2 | BARRIER-1 | [TASK-034](./TASK-034-tdd-creation.md) |
+| TASK-035 | Specification Creation (Iterative) | 2 | BACKLOG | ps-architect + nse-architecture + ps-critic | 2 | TASK-034 | [TASK-035](./TASK-035-spec-creation.md) |
+| TASK-036 | Orchestration Integration Design | 3 | BACKLOG | ps-architect | 2 | BARRIER-2 | [TASK-036](./TASK-036-orchestration-integration.md) |
+| TASK-037 | FMEA & Risk Assessment | 3 | BACKLOG | nse-risk | 2 | BARRIER-2 | [TASK-037](./TASK-037-fmea-risk.md) |
+| TASK-038 | Example Orchestration Plans | 3 | BACKLOG | ps-architect + ps-validator + nse-verification | 2 | BARRIER-2 | [TASK-038](./TASK-038-example-plans.md) |
+| TASK-039 | Quality Review | 4 | BACKLOG | ps-critic + nse-qa | 2 | TASK-036,037,038 | [TASK-039](./TASK-039-quality-review.md) |
+| TASK-040 | Final Synthesis & GATE-4 Prep | 4 | BACKLOG | ps-synthesizer | 2 | BARRIER-3 | [TASK-040](./TASK-040-synthesis-gate4.md) |
 
-### Workflow Phases
+### Workflow Architecture
+
+**Pattern:** Cross-Pollinated Pipeline + Generator-Critic
+**Quality Threshold:** >= 0.90
 
 ```
-PHASE 1: Analysis
-├── TASK-030: 5W2H Analysis (ps-analyst)
-│   └── Deliverable: docs/analysis/en006-5w2h-context-injection.md
+CROSS-POLLINATED PIPELINE ARCHITECTURE
+══════════════════════════════════════
 
-PHASE 2: Specification
-├── TASK-031: Context Injection Specification (ps-architect)
-│   └── Deliverables:
-│       ├── docs/specs/SPEC-context-injection.md
-│       └── docs/specs/schemas/context-injection-schema.json
+Pipeline A (PS)                                    Pipeline B (NSE)
+═══════════════                                    ════════════════
 
-PHASE 3: Integration Design
-├── TASK-032: Orchestration Integration Design (ps-architect)
-│   └── Deliverable: docs/design/en006-orchestration-integration.md
-
-PHASE 4: Examples & Validation
-├── TASK-033: Example Orchestration Plans (ps-architect)
-│   └── Deliverables: docs/examples/context-injection/
-└── TASK-034: ps-critic Review & GATE-4 Prep (ps-critic)
-    └── Deliverable: FEAT-001--CRIT-EN006-review.md
-
-GATE-4: Human Approval
+PHASE 0: Deep Research
+┌───────────────────┐                              ┌───────────────────┐
+│ TASK-030:         │                              │ TASK-030:         │
+│ ps-researcher     │◄────── BARRIER-0 ──────────►│ nse-explorer      │
+│ Context7 + Web    │        (Research)            │ NASA SE Process 1 │
+└───────────────────┘                              └───────────────────┘
+        │                                                  │
+        └──────────────────────┬───────────────────────────┘
+                               ▼
+PHASE 1: Requirements & Analysis
+┌───────────────────┐                              ┌───────────────────┐
+│ TASK-031: 5W2H    │                              │ TASK-033:         │
+│ TASK-032: Ishikawa│◄────── BARRIER-1 ──────────►│ nse-requirements  │
+│         + Pareto  │        (Requirements)        │ NASA SE Process 2 │
+└───────────────────┘                              └───────────────────┘
+        │                                                  │
+        └──────────────────────┬───────────────────────────┘
+                               ▼
+PHASE 2: Design & Architecture (Iterative Loops)
+┌─────────────────────────────────────────────────────────────────────────┐
+│ TASK-034: TDD Creation                                                   │
+│ ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                  │
+│ │ps-architect │───►│nse-architect│───►│ ps-critic   │──► Quality       │
+│ │ (Generate)  │◄───│ (Validate)  │◄───│ (Score)     │    >= 0.90?      │
+│ └─────────────┘    └─────────────┘    └─────────────┘    Max 3 iter    │
+├─────────────────────────────────────────────────────────────────────────┤
+│ TASK-035: Spec Creation                                                  │
+│ ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                  │
+│ │ps-architect │───►│nse-architect│───►│ ps-critic   │──► Quality       │
+│ │ (Generate)  │◄───│ (Validate)  │◄───│ (Score)     │    >= 0.90?      │
+│ └─────────────┘    └─────────────┘    └─────────────┘    Max 3 iter    │
+└─────────────────────────────────────────────────────────────────────────┘
+        │                                                  │
+        └──────────────────────┬───────────────────────────┘
+                               ▼
+                        ╔═══════════════╗
+                        ║   BARRIER-2   ║
+                        ║    (Design)   ║
+                        ╚═══════════════╝
+                               │
+        ┌──────────────────────┼───────────────────────────┐
+        ▼                      ▼                           ▼
+PHASE 3: Integration, Risk & Examples (Parallel)
+┌───────────────┐      ┌───────────────┐      ┌───────────────┐
+│ TASK-036:     │      │ TASK-037:     │      │ TASK-038:     │
+│ Orchestration │      │ FMEA + 8D     │      │ Examples      │
+│ Integration   │      │ nse-risk      │      │ ps-arch +     │
+│ ps-architect  │      │ Process 13    │      │ nse-verify    │
+└───────┬───────┘      └───────┬───────┘      └───────┬───────┘
+        │                      │                       │
+        └──────────────────────┼───────────────────────┘
+                               ▼
+                        ╔═══════════════╗
+                        ║   BARRIER-3   ║
+                        ║   (Quality)   ║
+                        ╚═══════════════╝
+                               │
+                               ▼
+PHASE 4: Quality Review & Synthesis
+┌───────────────────────────────────────────────────────────────────────────┐
+│ TASK-039: Quality Review (parallel)                                        │
+│ ┌───────────────────┐                  ┌───────────────────┐              │
+│ │ ps-critic         │   Cross-         │ nse-qa            │              │
+│ │ Quality Scoring   │   Pollination    │ NASA SE P14,15,16 │              │
+│ └───────────────────┘                  └───────────────────┘              │
+├───────────────────────────────────────────────────────────────────────────┤
+│ TASK-040: Final Synthesis (ps-synthesizer)                                 │
+│ - Pattern extraction                                                       │
+│ - Knowledge crystallization                                                │
+│ - GATE-4 approval request                                                  │
+└───────────────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+                        ╔═══════════════╗
+                        ║    GATE-4     ║
+                        ║Human Approval ║
+                        ╚═══════════════╝
 ```
+
+### Frameworks Applied
+
+| Framework | Applied In | Purpose |
+|-----------|-----------|---------|
+| 5W2H | TASK-031 | Comprehensive use case analysis |
+| Ishikawa | TASK-032 | Root cause analysis for failure modes |
+| Pareto (80/20) | TASK-032 | Prioritize high-impact use cases |
+| FMEA | TASK-037 | Failure mode risk assessment |
+| 8D | TASK-037 | Problem-solving for high RPN items |
+| NASA SE NPR 7123.1D | All NSE tasks | Process 1,2,3,4,7,8,11,13,14,15,16,17 |
+
+### Barrier Definitions
+
+| Barrier | Name | Entry Criteria | Exit Criteria |
+|---------|------|----------------|---------------|
+| BARRIER-0 | Research | Phase 0 agents complete | Research synthesis created, trade space documented |
+| BARRIER-1 | Requirements | Phase 1 agents complete | 5W2H done, Ishikawa done, Pareto done, Requirements mapped |
+| BARRIER-2 | Design | Phase 2 agents complete, quality >= 0.90 | TDD validated, Spec validated, schemas valid |
+| BARRIER-3 | Quality | Phase 3 agents complete | Integration designed, FMEA done, examples created |
 
 ### Orchestration Artifacts
 
@@ -278,6 +399,7 @@ pipeline:
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created |
 | 2026-01-26 | Claude | pending | Task files created (TASK-030..034), orchestration artifacts added |
+| 2026-01-26 | Claude | BACKLOG | **Major redesign:** Cross-pollinated pipeline (PS + NSE), 11 tasks (TASK-030..040), 4 barriers, Generator-Critic loops, full framework rigor (5W2H, Ishikawa, Pareto, FMEA, 8D, NASA SE) |
 
 ---
 

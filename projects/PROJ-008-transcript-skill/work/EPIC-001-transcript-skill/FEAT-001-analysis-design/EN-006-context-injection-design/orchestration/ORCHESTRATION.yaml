@@ -1,10 +1,10 @@
 # ORCHESTRATION.yaml
 # Machine-readable orchestration state for EN-006 Context Injection Design
 # Document ID: EN-006-ORCH-STATE
-# Version: 2.0
-# Last Updated: 2026-01-26T15:00:00Z
+# Version: 3.0
+# Last Updated: 2026-01-26T16:00:00Z
 
-schema_version: "2.0.0"
+schema_version: "3.0.0"
 
 # =============================================================================
 # WORKFLOW METADATA
@@ -14,24 +14,64 @@ workflow:
   name: "EN-006 Context Injection Design"
   project_id: "PROJ-008-transcript-skill"
   enabler_id: "EN-006"
-  version: "2.0"
+  version: "3.0"
   created_at: "2026-01-26T15:00:00Z"
-  updated_at: "2026-01-26T15:00:00Z"
+  updated_at: "2026-01-26T16:00:00Z"
   status: "ACTIVE"
 
   id_source: "auto"
   id_format: "semantic-date-seq"
 
   patterns:
+    - CROSS_POLLINATED
     - SEQUENTIAL
     - HIERARCHICAL
+    - GENERATOR_CRITIC
 
   constraints:
     max_agent_nesting: 1
     file_persistence: true
     user_authority: true
     quality_threshold: 0.90
-    max_iterations: 2
+    max_iterations: 3
+
+  frameworks:
+    - "5W2H"
+    - "Ishikawa"
+    - "Pareto"
+    - "FMEA"
+    - "8D"
+    - "NASA_SE"
+
+# =============================================================================
+# PIPELINE CONFIGURATION
+# =============================================================================
+pipelines:
+  pipeline_a:
+    id: "ps-pipeline"
+    name: "Problem-Solving Pipeline"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    agents:
+      - "ps-researcher"
+      - "ps-analyst"
+      - "ps-architect"
+      - "ps-critic"
+      - "ps-validator"
+      - "ps-synthesizer"
+
+  pipeline_b:
+    id: "nse-pipeline"
+    name: "NASA Systems Engineering Pipeline"
+    short_alias: "nse"
+    skill_source: "nasa-se"
+    agents:
+      - "nse-explorer"
+      - "nse-requirements"
+      - "nse-architecture"
+      - "nse-risk"
+      - "nse-verification"
+      - "nse-qa"
 
 # =============================================================================
 # PATH CONFIGURATION
@@ -39,117 +79,350 @@ workflow:
 paths:
   base: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-006-context-injection-design/"
   deliverables:
+    research: "docs/research/"
     analysis: "docs/analysis/"
     specs: "docs/specs/"
     design: "docs/design/"
     examples: "docs/examples/context-injection/"
+    synthesis: "docs/synthesis/"
     review: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/"
 
 # =============================================================================
-# PIPELINE DEFINITION (Single Sequential Pipeline)
+# PHASE DEFINITIONS (Cross-Pollinated)
 # =============================================================================
-pipeline:
-  id: "en006-design-pipeline"
-  name: "Context Injection Design Pipeline"
-  status: "PHASE_1_PENDING"
-  current_phase: 1
-  total_phases: 5
-  progress_percent: 0
-
-  phases:
-    - id: 1
-      name: "Analysis"
-      task_id: "TASK-030"
-      status: "PENDING"
-      started_at: null
-      completed_at: null
-      agent:
-        id: "ps-analyst"
-        name: "5W2H Analysis Agent"
+phases:
+  - id: 0
+    name: "Deep Research"
+    status: "PENDING"
+    started_at: null
+    completed_at: null
+    barrier: "BARRIER-0"
+    ps_agents:
+      - agent_id: "ps-researcher"
+        task_id: "TASK-030"
         status: "PENDING"
-      deliverables:
-        - path: "docs/analysis/en006-5w2h-context-injection.md"
-          status: "PENDING"
-          type: "analysis"
+        deliverable: "docs/research/en006-research-synthesis.md"
+    nse_agents:
+      - agent_id: "nse-explorer"
+        task_id: "TASK-030"
+        status: "PENDING"
+        deliverable: "docs/research/en006-trade-space.md"
 
-    - id: 2
-      name: "Specification"
-      task_id: "TASK-031"
-      status: "BLOCKED"
-      blocked_by: "phase-1"
-      started_at: null
-      completed_at: null
-      agent:
-        id: "ps-architect"
-        name: "Specification Agent"
+  - id: 1
+    name: "Requirements & Analysis"
+    status: "BLOCKED"
+    blocked_by: "phase-0"
+    started_at: null
+    completed_at: null
+    barrier: "BARRIER-1"
+    ps_agents:
+      - agent_id: "ps-analyst"
+        task_id: "TASK-031"
         status: "BLOCKED"
-      deliverables:
-        - path: "docs/specs/SPEC-context-injection.md"
-          status: "PENDING"
-          type: "specification"
-        - path: "docs/specs/schemas/context-injection-schema.json"
-          status: "PENDING"
-          type: "schema"
+        deliverable: "docs/analysis/en006-5w2h-context-injection.md"
+      - agent_id: "ps-analyst"
+        task_id: "TASK-032"
+        status: "BLOCKED"
+        deliverables:
+          - "docs/analysis/en006-ishikawa-failure-modes.md"
+          - "docs/analysis/en006-pareto-use-cases.md"
+    nse_agents:
+      - agent_id: "nse-requirements"
+        task_id: "TASK-033"
+        status: "BLOCKED"
+        deliverable: "docs/specs/REQUIREMENTS-context-injection.md"
+
+  - id: 2
+    name: "Design & Architecture"
+    status: "BLOCKED"
+    blocked_by: "phase-1"
+    started_at: null
+    completed_at: null
+    barrier: "BARRIER-2"
+    iterative_loops:
+      - artifact: "TDD-context-injection.md"
+        generator: "ps-architect"
+        validator: "nse-architecture"
+        critic: "ps-critic"
+        task_id: "TASK-034"
+        max_iterations: 3
+        current_iteration: 0
+        quality_score: null
+      - artifact: "SPEC-context-injection.md"
+        generator: "ps-architect"
+        validator: "nse-architecture"
+        critic: "ps-critic"
+        task_id: "TASK-035"
+        max_iterations: 3
+        current_iteration: 0
+        quality_score: null
+    ps_agents:
+      - agent_id: "ps-architect"
+        task_id: "TASK-034"
+        status: "BLOCKED"
+        deliverable: "docs/design/TDD-context-injection.md"
+      - agent_id: "ps-architect"
+        task_id: "TASK-035"
+        status: "BLOCKED"
+        deliverables:
+          - "docs/specs/SPEC-context-injection.md"
+          - "docs/specs/schemas/context-injection-schema.json"
+    nse_agents:
+      - agent_id: "nse-architecture"
+        task_id: "TASK-034"
+        status: "BLOCKED"
+        role: "validator"
+      - agent_id: "nse-architecture"
+        task_id: "TASK-035"
+        status: "BLOCKED"
+        role: "validator"
+
+  - id: 3
+    name: "Integration, Risk & Examples"
+    status: "BLOCKED"
+    blocked_by: "phase-2"
+    started_at: null
+    completed_at: null
+    barrier: null
+    ps_agents:
+      - agent_id: "ps-architect"
+        task_id: "TASK-036"
+        status: "BLOCKED"
+        deliverable: "docs/design/en006-orchestration-integration.md"
+      - agent_id: "ps-architect"
+        task_id: "TASK-038"
+        status: "BLOCKED"
+        deliverable: "docs/examples/context-injection/"
+      - agent_id: "ps-validator"
+        task_id: "TASK-038"
+        status: "BLOCKED"
+        role: "schema_validator"
+    nse_agents:
+      - agent_id: "nse-risk"
+        task_id: "TASK-037"
+        status: "BLOCKED"
+        deliverable: "docs/analysis/en006-fmea-context-injection.md"
+      - agent_id: "nse-verification"
+        task_id: "TASK-038"
+        status: "BLOCKED"
+        role: "verification"
+
+  - id: 4
+    name: "Quality Review & Synthesis"
+    status: "BLOCKED"
+    blocked_by: "phase-3"
+    started_at: null
+    completed_at: null
+    barrier: "BARRIER-3"
+    ps_agents:
+      - agent_id: "ps-critic"
+        task_id: "TASK-039"
+        status: "BLOCKED"
+        deliverable: "FEAT-001--CRIT-EN006-review.md"
+      - agent_id: "ps-synthesizer"
+        task_id: "TASK-040"
+        status: "BLOCKED"
+        deliverable: "docs/synthesis/en006-final-synthesis.md"
+    nse_agents:
+      - agent_id: "nse-qa"
+        task_id: "TASK-039"
+        status: "BLOCKED"
+        deliverable: "docs/analysis/en006-nse-qa-report.md"
+
+# =============================================================================
+# BARRIERS (Cross-Pollination Points)
+# =============================================================================
+barriers:
+  - id: "BARRIER-0"
+    name: "Research Cross-Pollination"
+    after_phase: 0
+    status: "PENDING"
+    entry_criteria:
+      - "ps-researcher TASK-030 complete"
+      - "nse-explorer TASK-030 complete"
+    exit_criteria:
+      - "Research synthesis includes NSE trade space"
+      - "Trade space enriched with PS research findings"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/barriers/barrier-0/ps-to-nse.md"
+        status: "PENDING"
+      nse_to_ps:
+        path: "orchestration/barriers/barrier-0/nse-to-ps.md"
+        status: "PENDING"
+
+  - id: "BARRIER-1"
+    name: "Requirements Cross-Pollination"
+    after_phase: 1
+    status: "BLOCKED"
+    entry_criteria:
+      - "TASK-031 (5W2H) complete"
+      - "TASK-032 (Ishikawa/Pareto) complete"
+      - "TASK-033 (Requirements) complete"
+    exit_criteria:
+      - "PS analysis incorporates NASA SE requirements"
+      - "NSE requirements incorporate PS analysis"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/barriers/barrier-1/ps-to-nse.md"
+        status: "PENDING"
+      nse_to_ps:
+        path: "orchestration/barriers/barrier-1/nse-to-ps.md"
+        status: "PENDING"
+
+  - id: "BARRIER-2"
+    name: "Design Cross-Pollination"
+    after_phase: 2
+    status: "BLOCKED"
+    entry_criteria:
+      - "TDD quality score >= 0.90"
+      - "Spec quality score >= 0.90"
+      - "JSON schema validates"
+    exit_criteria:
+      - "TDD validated by nse-architecture"
+      - "Spec validated by nse-architecture"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/barriers/barrier-2/ps-to-nse.md"
+        status: "PENDING"
+      nse_to_ps:
+        path: "orchestration/barriers/barrier-2/nse-to-ps.md"
+        status: "PENDING"
+
+  - id: "BARRIER-3"
+    name: "Quality Cross-Pollination"
+    after_phase: 4
+    status: "BLOCKED"
+    entry_criteria:
+      - "ps-critic review complete"
+      - "nse-qa review complete"
+    exit_criteria:
+      - "Overall quality score >= 0.90"
+      - "GATE-4 approval request prepared"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/barriers/barrier-3/ps-to-nse.md"
+        status: "PENDING"
+      nse_to_ps:
+        path: "orchestration/barriers/barrier-3/nse-to-ps.md"
+        status: "PENDING"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_phase: 0
+  current_task: "TASK-030"
+  tasks:
+    # Phase 0
+    - id: 1
+      task_id: "TASK-030"
+      name: "Deep Research & Exploration"
+      phase: 0
+      status: "READY"
+      ps_agent: "ps-researcher"
+      nse_agent: "nse-explorer"
+      execution_mode: "PARALLEL"
+
+    # Phase 1 (after BARRIER-0)
+    - id: 2
+      task_id: "TASK-031"
+      name: "5W2H Analysis"
+      phase: 1
+      status: "BLOCKED"
+      blocked_by: "BARRIER-0"
+      ps_agent: "ps-analyst"
+      execution_mode: "PARALLEL_WITH_TASK_032_033"
 
     - id: 3
-      name: "Integration Design"
       task_id: "TASK-032"
+      name: "Ishikawa & Pareto Analysis"
+      phase: 1
       status: "BLOCKED"
-      blocked_by: "phase-2"
-      started_at: null
-      completed_at: null
-      agent:
-        id: "ps-architect"
-        name: "Integration Design Agent"
-        status: "BLOCKED"
-      deliverables:
-        - path: "docs/design/en006-orchestration-integration.md"
-          status: "PENDING"
-          type: "design"
+      blocked_by: "BARRIER-0"
+      ps_agent: "ps-analyst"
+      execution_mode: "PARALLEL_WITH_TASK_031_033"
 
     - id: 4
-      name: "Examples"
       task_id: "TASK-033"
+      name: "Formal Requirements"
+      phase: 1
       status: "BLOCKED"
-      blocked_by: "phase-3"
-      started_at: null
-      completed_at: null
-      agent:
-        id: "ps-architect"
-        name: "Examples Agent"
-        status: "BLOCKED"
-      deliverables:
-        - path: "docs/examples/context-injection/README.md"
-          status: "PENDING"
-          type: "documentation"
-        - path: "docs/examples/context-injection/01-generic-baseline/"
-          status: "PENDING"
-          type: "example"
-        - path: "docs/examples/context-injection/02-legal-domain/"
-          status: "PENDING"
-          type: "example"
-        - path: "docs/examples/context-injection/03-sales-domain/"
-          status: "PENDING"
-          type: "example"
-        - path: "docs/examples/context-injection/04-engineering-domain/"
-          status: "PENDING"
-          type: "example"
+      blocked_by: "BARRIER-0"
+      nse_agent: "nse-requirements"
+      execution_mode: "PARALLEL_WITH_TASK_031_032"
 
+    # Phase 2 (after BARRIER-1)
     - id: 5
-      name: "Quality Review"
       task_id: "TASK-034"
+      name: "TDD Creation (iterative)"
+      phase: 2
       status: "BLOCKED"
-      blocked_by: "phase-4"
-      started_at: null
-      completed_at: null
-      agent:
-        id: "ps-critic"
-        name: "Quality Review Agent"
-        status: "BLOCKED"
-      deliverables:
-        - path: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/FEAT-001--CRIT-EN006-review.md"
-          status: "PENDING"
-          type: "review"
+      blocked_by: "BARRIER-1"
+      ps_agent: "ps-architect"
+      nse_agent: "nse-architecture"
+      critic: "ps-critic"
+      execution_mode: "ITERATIVE"
+
+    - id: 6
+      task_id: "TASK-035"
+      name: "Specification Creation (iterative)"
+      phase: 2
+      status: "BLOCKED"
+      blocked_by: "TASK-034"
+      ps_agent: "ps-architect"
+      nse_agent: "nse-architecture"
+      critic: "ps-critic"
+      execution_mode: "ITERATIVE"
+
+    # Phase 3 (after BARRIER-2)
+    - id: 7
+      task_id: "TASK-036"
+      name: "Orchestration Integration"
+      phase: 3
+      status: "BLOCKED"
+      blocked_by: "BARRIER-2"
+      ps_agent: "ps-architect"
+      execution_mode: "PARALLEL_WITH_TASK_037_038"
+
+    - id: 8
+      task_id: "TASK-037"
+      name: "FMEA & Risk Assessment"
+      phase: 3
+      status: "BLOCKED"
+      blocked_by: "BARRIER-2"
+      nse_agent: "nse-risk"
+      execution_mode: "PARALLEL_WITH_TASK_036_038"
+
+    - id: 9
+      task_id: "TASK-038"
+      name: "Example Plans"
+      phase: 3
+      status: "BLOCKED"
+      blocked_by: "BARRIER-2"
+      ps_agent: "ps-architect"
+      nse_agent: "nse-verification"
+      execution_mode: "PARALLEL_WITH_TASK_036_037"
+
+    # Phase 4 (after Phase 3)
+    - id: 10
+      task_id: "TASK-039"
+      name: "Quality Review"
+      phase: 4
+      status: "BLOCKED"
+      blocked_by: "TASK-036,TASK-037,TASK-038"
+      ps_agent: "ps-critic"
+      nse_agent: "nse-qa"
+      execution_mode: "PARALLEL"
+
+    - id: 11
+      task_id: "TASK-040"
+      name: "Final Synthesis & GATE-4 Prep"
+      phase: 4
+      status: "BLOCKED"
+      blocked_by: "BARRIER-3"
+      ps_agent: "ps-synthesizer"
+      execution_mode: "SEQUENTIAL"
 
 # =============================================================================
 # QUALITY GATE
@@ -158,51 +431,23 @@ quality_gate:
   id: "GATE-4"
   name: "Design Review"
   status: "PENDING"
-  depends_on: "phase-5"
+  depends_on: "TASK-040"
   threshold: 0.90
   current_score: null
   approved_by: null
   approved_at: null
 
-# =============================================================================
-# EXECUTION QUEUE
-# =============================================================================
-execution_queue:
-  current_task: 1
-  tasks:
-    - id: 1
-      task_id: "TASK-030"
-      name: "5W2H Analysis"
-      status: "READY"
-      agent: "ps-analyst"
-
-    - id: 2
-      task_id: "TASK-031"
-      name: "Context Injection Specification"
-      status: "BLOCKED"
-      blocked_by: "task-1"
-      agent: "ps-architect"
-
-    - id: 3
-      task_id: "TASK-032"
-      name: "Orchestration Integration Design"
-      status: "BLOCKED"
-      blocked_by: "task-2"
-      agent: "ps-architect"
-
-    - id: 4
-      task_id: "TASK-033"
-      name: "Example Orchestration Plans"
-      status: "BLOCKED"
-      blocked_by: "task-3"
-      agent: "ps-architect"
-
-    - id: 5
-      task_id: "TASK-034"
-      name: "ps-critic Review"
-      status: "BLOCKED"
-      blocked_by: "task-4"
-      agent: "ps-critic"
+  per_artifact_scores:
+    tdd:
+      artifact: "TDD-context-injection.md"
+      score: null
+      iterations: 0
+    spec:
+      artifact: "SPEC-context-injection.md"
+      score: null
+      iterations: 0
+    overall:
+      score: null
 
 # =============================================================================
 # METRICS
@@ -213,21 +458,35 @@ metrics:
     phases_total: 5
     phases_percent: 0
     tasks_complete: 0
-    tasks_total: 5
+    tasks_total: 11
     tasks_percent: 0
+    barriers_complete: 0
+    barriers_total: 4
+    barriers_percent: 0
     deliverables_created: 0
-    deliverables_total: 10
+    deliverables_total: 15
     deliverables_percent: 0
 
   quality:
     current_score: null
     threshold: 0.90
-    review_iterations: 0
-    max_iterations: 2
+    tdd_score: null
+    tdd_iterations: 0
+    spec_score: null
+    spec_iterations: 0
+    max_iterations: 3
+
+  frameworks:
+    "5W2H": "PENDING"
+    "Ishikawa": "PENDING"
+    "Pareto": "PENDING"
+    "FMEA": "PENDING"
+    "8D": "PENDING"
+    "NASA_SE": "PENDING"
 
   timing:
     workflow_started: null
-    last_activity: "2026-01-26T15:00:00Z"
+    last_activity: "2026-01-26T16:00:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -255,38 +514,53 @@ dependencies:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute TASK-030 5W2H Analysis"
-      agent: "ps-analyst"
+    - action: "Execute TASK-030 Deep Research"
+      agents:
+        ps: "ps-researcher"
+        nse: "nse-explorer"
+      execution_mode: "PARALLEL"
       inputs:
         - "EN-003 REQUIREMENTS-SPECIFICATION.md"
-        - "ADR-001 Agent Architecture"
-      output: "docs/analysis/en006-5w2h-context-injection.md"
+        - "ADR-001 through ADR-005"
+        - "Context7 library research"
+        - "Web search for industry best practices"
+      outputs:
+        ps: "docs/research/en006-research-synthesis.md"
+        nse: "docs/research/en006-trade-space.md"
 
   subsequent:
-    - action: "Execute TASK-031 after TASK-030 completes"
+    - action: "Complete BARRIER-0 cross-pollination"
       depends_on: "TASK-030"
-    - action: "Execute TASK-032 after TASK-031 completes"
-      depends_on: "TASK-031"
-    - action: "Execute TASK-033 after TASK-032 completes"
-      depends_on: "TASK-032"
-    - action: "Execute TASK-034 after TASK-033 completes"
-      depends_on: "TASK-033"
-    - action: "Request GATE-4 approval after quality score >= 0.90"
+    - action: "Execute Phase 1 tasks in parallel (TASK-031, 032, 033)"
+      depends_on: "BARRIER-0"
+    - action: "Complete BARRIER-1 cross-pollination"
+      depends_on: "TASK-031,TASK-032,TASK-033"
+    - action: "Execute TASK-034 (TDD) with iterative loop"
+      depends_on: "BARRIER-1"
+    - action: "Execute TASK-035 (Spec) with iterative loop"
       depends_on: "TASK-034"
+    - action: "Complete BARRIER-2 cross-pollination"
+      depends_on: "TASK-035"
+    - action: "Execute Phase 3 tasks in parallel (TASK-036, 037, 038)"
+      depends_on: "BARRIER-2"
+    - action: "Execute Phase 4 tasks (TASK-039, 040)"
+      depends_on: "Phase 3"
+    - action: "Complete BARRIER-3 and request GATE-4 approval"
+      depends_on: "TASK-040"
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Workflow configured, not started"
-  next_step: "Execute TASK-030 (5W2H Analysis) using ps-analyst"
+  current_state: "Workflow redesigned with cross-pollinated pipelines, not started"
+  next_step: "Execute TASK-030 (Deep Research) using ps-researcher + nse-explorer in parallel"
 
   files_to_read:
     - "EN-006-context-injection-design.md"
     - "orchestration/ORCHESTRATION_PLAN.md"
     - "orchestration/ORCHESTRATION.yaml"
-    - "TASK-030-5w2h-analysis.md"
+    - "TASK-030-deep-research.md"
 
   cross_session_portable: true
   ephemeral_references: false
