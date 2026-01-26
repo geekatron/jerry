@@ -1,9 +1,12 @@
 # WebVTT Format Specification Research
 
-> **Researched:** 2026-01-25
+> **Researched:** 2026-01-25 (Updated with Live Web Research)
 > **Task:** TASK-007
 > **Enabler:** EN-002
 > **Agent:** ps-researcher
+> **Research Method:** Live web research (WebSearch, WebFetch)
+> **W3C Spec Version:** W3C Candidate Recommendation (April 4, 2019)
+> **Confidence:** High (official W3C specification verified)
 
 ---
 
@@ -25,11 +28,18 @@ When designing a VTT parser for transcript processing, key architectural conside
 
 ### Authoritative Source
 
-The authoritative specification is the **W3C WebVTT: The Web Video Text Tracks Format** recommendation, published and maintained by the World Wide Web Consortium.
+The authoritative specification is the **W3C WebVTT: The Web Video Text Tracks Format**, published and maintained by the World Wide Web Consortium.
 
 - **URL:** https://www.w3.org/TR/webvtt1/
-- **Status:** W3C Recommendation (17 November 2019)
+- **Status:** W3C Candidate Recommendation (April 4, 2019)
 - **Editors:** Simon Pieters (Opera Software, formerly)
+- **Working Group:** W3C Timed Text Working Group
+- **GitHub:** https://github.com/w3c/webvtt (Community Group Draft, actively maintained)
+- **MIME Type:** `text/vtt`
+- **File Extension:** `.vtt`
+
+**Specification Status Note (from Live Research 2026-01-25):**
+The document at W3C TR is a Candidate Recommendation, indicating "the document is believed to be stable and to encourage implementation by the developer community." Three features remain at-risk pending 2+ implementations: collision avoidance with snap-to-lines false, ::cue-region pseudo-element, and :past/:future pseudo-classes. Basic features are supported by all major browsers.
 
 > "WebVTT is intended to be used for marking up external text track resources mainly for the purpose of captioning video content." (W3C, 2019, Section 1)
 
@@ -630,6 +640,46 @@ viewportanchor:90%,90%
 | AWS Transcribe | Includes confidence markers in comments |
 | Google Cloud | Uses `<c.colorXXXXXX>` for speaker colors |
 | Whisper | Often lacks speaker identification |
+| Akamai | May generate UTF-8 BOM that causes parsing errors |
+| Azure Media Services v3 | Generated VTT may fail in Edge browser |
+
+### Parsing Challenges from Live Research
+
+Based on real-world issues discovered during web research (2026-01-25):
+
+**1. UTF-8 BOM Issue**
+Some services (e.g., Akamai) generate VTT files with UTF-8 BOM (EF BB BF) that causes "Malformed WebVTT signature" errors in strict parsers like hls.js.
+
+**Solution:**
+```python
+def strip_bom(content: bytes) -> str:
+    """Strip UTF-8 BOM if present."""
+    if content.startswith(b'\xef\xbb\xbf'):
+        content = content[3:]
+    return content.decode('utf-8')
+```
+
+**2. Multiline Comment Handling**
+Edge and IE11 (legacy) do not support multiline NOTE blocks properly, throwing parse errors.
+
+**3. Timestamp Validation Edge Cases**
+Per W3C spec, the parser must check that `-->` separator is present with spaces. If not, error: "Malformed time stamp (time stamps must be separated by '-->')".
+
+**4. Strict vs. Non-Strict Parsing**
+Some parsers (like node-webvtt) offer strict mode. Setting `strict: false` allows malformed files to parse, with errors collected in an `errors` array. Per spec: "the parser will create two cues even if the blank line between them is skipped. This is clearly a mistake, so a conformance checker will flag it as an error, but it is still useful to render the cues to the user."
+
+**5. Browser-Specific Parsing Differences**
+- Firefox: Very strict, stops parsing at first region edge case
+- Chrome/Safari: More lenient, parse `.5` and `5.` as `0.5` and `5.0` (spec violation)
+- Edge/IE: Skip zero-duration cues, may have own parsing bugs
+
+**6. At-Risk Features (W3C CR Stage)**
+The 2019 CR identifies three at-risk features requiring 2+ implementations:
+- Collision avoidance with `snap-to-lines: false`
+- `::cue-region` pseudo-element
+- `:past/:future` pseudo-classes
+
+**Source:** GitHub Issues, W3C Implementation Report - Accessed 2026-01-25
 
 ### Character Encoding
 
@@ -913,19 +963,187 @@ NOTE Overlapping cues
 
 ---
 
+## Python Libraries for VTT Parsing
+
+### webvtt-py (Recommended)
+
+**Version:** 0.5.1
+**PyPI:** https://pypi.org/project/webvtt-py/
+**Documentation:** https://webvtt-py.readthedocs.io/
+**GitHub:** https://github.com/glut23/webvtt-py
+**License:** MIT
+
+**Features:**
+- Read, write, and convert WebVTT caption files
+- Caption segmentation for HLS video
+- Support for SRT and SBV format conversion
+- Access to voice/speaker information
+- Style block handling
+
+**Installation:**
+```bash
+pip install webvtt-py
+```
+
+**Basic Usage:**
+```python
+import webvtt
+
+# Read from file
+for caption in webvtt.read('captions.vtt'):
+    print(caption.start)       # Start timestamp as string
+    print(caption.end)         # End timestamp as string
+    print(caption.text)        # Clean caption text
+    print(caption.voice)       # Voice/speaker if present
+    print(caption.raw_text)    # Raw text with tags preserved
+    print(caption.identifier)  # Cue identifier
+
+# Read from file-like object
+from io import StringIO
+buffer = StringIO(vtt_content)
+for caption in webvtt.from_buffer(buffer):
+    print(caption.text)
+
+# Read from string
+for caption in webvtt.from_string(vtt_string):
+    print(caption.text)
+
+# Access styles
+vtt = webvtt.read('captions.vtt')
+for style in vtt.styles:
+    print(style.text)
+
+# Convert from SRT
+vtt = webvtt.from_srt('captions.srt')
+vtt.save()  # Saves as .vtt
+
+# Write to file
+vtt.save('output.vtt')
+```
+
+**Pros:**
+- Simple, Pythonic API
+- Native voice tag extraction
+- Good for our transcript use case
+
+**Cons:**
+- Limited error recovery on malformed files
+- No built-in validation
+
+### pycaption
+
+**Version:** 2.2.18
+**PyPI:** https://pypi.org/project/pycaption/
+**Documentation:** https://pycaption.readthedocs.io/
+**GitHub:** https://github.com/pbs/pycaption
+**License:** Apache 2.0
+**Maintainer:** PBS (Public Broadcasting Service)
+
+**Features:**
+- Multi-format support (SAMI, DFXP/TTML, SRT, WebVTT, SCC)
+- Read and write capability for most formats
+- Styling and positioning support
+- Tested with Python 3.8-3.12
+
+**Installation:**
+```bash
+pip install pycaption
+```
+
+**Basic Usage:**
+```python
+import pycaption
+
+# Read VTT file
+reader = pycaption.WebVTTReader()
+with open('captions.vtt') as f:
+    captions_raw = f.read()
+
+# Verify format
+assert reader.detect(captions_raw)
+
+# Parse to caption set
+caption_set = reader.read(captions_raw)
+
+# Get available languages
+languages = caption_set.get_languages()
+
+# Iterate captions
+for lang in languages:
+    for caption in caption_set.get_captions(lang):
+        print(caption.get_text())  # Get text content
+        print(caption.start)        # Start time in microseconds
+        print(caption.end)          # End time in microseconds
+
+# Convert to another format
+writer = pycaption.SRTWriter()
+srt_output = writer.write(caption_set)
+```
+
+**Pros:**
+- Industrial-strength (used by PBS)
+- Multi-format conversion
+- Better for complex pipelines
+
+**Cons:**
+- More complex API
+- Times in microseconds (requires conversion)
+
+### Recommendation for Transcript Skill
+
+**Primary Choice:** `webvtt-py`
+- Simpler API matches our needs
+- Native voice tag extraction
+- Sufficient for transcript processing
+
+**Fallback/Advanced:** `pycaption`
+- If we need to support multiple caption formats
+- If we need more robust parsing
+
+---
+
+## Browser Compatibility Notes
+
+Based on W3C Implementation Report (Accessed 2026-01-25):
+
+| Browser | Parser Quality | Known Issues |
+|---------|----------------|--------------|
+| Chrome/Chromium | Good | Parses invalid `.5` and `5.` as valid |
+| Safari | Good | line align not supported, defaults -1 instead of auto |
+| Firefox | Strict | Stops parsing at first region edge case |
+| Edge/IE | Limited | Skips zero-duration cues, multiline comments break parsing |
+
+**Key Finding:** The W3C spec notes "an important feature of WebVTT is that it is forgiving of badly formed files." However, browser implementations vary in strictness.
+
+**Source:** [W3C WebVTT Implementation Report](https://www.w3.org/wiki/TimedText/WebVTT_Implementation_Report) - Accessed 2026-01-25
+
+---
+
 ## References
 
-1. World Wide Web Consortium (W3C). (2019, November 17). *WebVTT: The Web Video Text Tracks Format*. W3C Recommendation. https://www.w3.org/TR/webvtt1/
+1. World Wide Web Consortium (W3C). (2019, April 4). *WebVTT: The Web Video Text Tracks Format*. W3C Candidate Recommendation. https://www.w3.org/TR/webvtt1/ - Accessed 2026-01-25
 
-2. WHATWG. (n.d.). *HTML Living Standard - 4.8.11 The track element*. https://html.spec.whatwg.org/multipage/media.html#the-track-element
+2. Mozilla Developer Network. (2026). *Web Video Text Tracks Format (WebVTT)*. MDN Web Docs. https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API/Web_Video_Text_Tracks_Format - Accessed 2026-01-25
 
-3. Mozilla Developer Network. (2024). *WebVTT (Web Video Text Tracks)*. MDN Web Docs. https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API
+3. W3C Text Tracks Community Group. (n.d.). *WebVTT GitHub Repository*. https://github.com/w3c/webvtt - Accessed 2026-01-25
 
-4. World Wide Web Consortium (W3C). (2019). *WebVTT: The Web Video Text Tracks Format - 3. WebVTT file format*. Section 3. https://www.w3.org/TR/webvtt1/#file-structure
+4. webvtt-py Documentation. (n.d.). *Usage - webvtt-py 0.5.1 documentation*. https://webvtt-py.readthedocs.io/en/latest/usage.html - Accessed 2026-01-25
 
-5. World Wide Web Consortium (W3C). (2019). *WebVTT: The Web Video Text Tracks Format - 4. Parsing*. Section 4. https://www.w3.org/TR/webvtt1/#parsing
+5. pycaption Documentation. (n.d.). *Welcome to pycaption's documentation!*. https://pycaption.readthedocs.io/ - Accessed 2026-01-25
 
-6. World Wide Web Consortium (W3C). (2019). *WebVTT: The Web Video Text Tracks Format - 5. Rendering*. Section 5. https://www.w3.org/TR/webvtt1/#rendering
+6. BrassTranscripts. (2024). *Multi-Speaker Transcript Formats: SRT, VTT, JSON with Speaker Names*. https://brasstranscripts.com/blog/multi-speaker-transcript-formats-srt-vtt-json - Accessed 2026-01-25
+
+7. GitHub Issues. (n.d.). *hls.js - Malformed WebVTT signature for UTF-8 BOM*. https://github.com/video-dev/hls.js/issues/1286 - Accessed 2026-01-25
+
+8. World Wide Web Consortium (W3C). (n.d.). *TimedText/WebVTT Implementation Report*. https://www.w3.org/wiki/TimedText/WebVTT_Implementation_Report - Accessed 2026-01-25
+
+9. WHATWG. (n.d.). *HTML Living Standard - 4.8.11 The track element*. https://html.spec.whatwg.org/multipage/media.html#the-track-element
+
+10. World Wide Web Consortium (W3C). (2019). *WebVTT: The Web Video Text Tracks Format - 3. WebVTT file format*. Section 3. https://www.w3.org/TR/webvtt1/#file-structure
+
+11. World Wide Web Consortium (W3C). (2019). *WebVTT: The Web Video Text Tracks Format - 4. Parsing*. Section 4. https://www.w3.org/TR/webvtt1/#parsing
+
+12. World Wide Web Consortium (W3C). (2019). *WebVTT: The Web Video Text Tracks Format - 5. Rendering*. Section 5. https://www.w3.org/TR/webvtt1/#rendering
 
 ---
 

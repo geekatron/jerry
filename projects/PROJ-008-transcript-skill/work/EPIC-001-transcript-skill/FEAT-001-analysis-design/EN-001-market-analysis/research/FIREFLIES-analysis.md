@@ -1,60 +1,68 @@
 # Fireflies.ai Competitive Analysis
 
-> **Researched:** 2026-01-25
+> **Research Date:** 2026-01-25
+> **Research Method:** Live web research (WebSearch, WebFetch)
+> **Confidence:** High - based on official documentation and multiple third-party reviews
+> **Researcher:** ps-researcher agent
 > **Task:** TASK-003
 > **Enabler:** EN-001
-> **Agent:** ps-researcher
-
----
-
-## Research Limitations Disclosure
-
-**IMPORTANT:** This research was conducted without live web access. The information presented is based on training data with a knowledge cutoff of May 2025. All claims should be independently verified against current Fireflies.ai documentation before making product decisions.
-
-**Tools Attempted:**
-- WebSearch: Permission denied
-- WebFetch: Permission denied
-
-**Verification Status:** REQUIRES INDEPENDENT VERIFICATION
 
 ---
 
 ## L0: ELI5 Summary
 
-Fireflies.ai is like a smart assistant that joins your video meetings, writes down everything people say, and then helps you find important things later - like who promised to do what, what topics were discussed, and what questions were asked. It works with Zoom, Google Meet, Microsoft Teams, and many other meeting apps.
+Fireflies.ai is like a robot assistant that joins your video meetings (Zoom, Google Meet, Teams), listens to everything, and writes down what everyone says. After the meeting, it creates a summary with the important points and things people promised to do. It works in over 100 languages and can search through all your past meetings to find specific conversations. Think of it as a super-smart secretary that never forgets anything from any meeting.
+
+---
 
 ## L1: Engineer Summary
 
-Fireflies.ai is an AI-powered meeting assistant that provides automated transcription, summarization, and entity extraction for voice conversations. The platform joins meetings as a virtual participant (named "Fred" or similar), records audio, and produces transcripts with speaker diarization. Key technical capabilities include:
+Fireflies.ai is an AI-powered meeting transcription and intelligence platform with a multi-stage processing pipeline:
 
-- **Real-time and async transcription** with speaker identification
-- **Entity extraction** including action items, questions, topics, and key moments
-- **Natural language search** across meeting archives ("semantic search")
-- **REST API** for programmatic access to transcripts and meeting data
-- **Webhooks** for event-driven integrations
-- **Export capabilities** supporting multiple formats including TXT, DOCX, PDF, and audio files
+1. **Audio Capture**: Bot joins meetings (Zoom, Meet, Teams, Webex) or ingests uploaded files (MP3, MP4, M4A, WAV)
+2. **Speech Recognition**: 95% accuracy transcription across 100+ languages
+3. **Speaker Diarization**: Identifies and labels individual speakers (85-90% accuracy)
+4. **NLP Analysis**: Extracts action items (~70% accuracy), topics, sentiment, key highlights
+5. **Export**: Supports PDF, DOCX, SRT, VTT, JSON formats
 
-The architecture appears to be cloud-native with meeting bots deployed per-meeting session. Processing is asynchronous - transcripts and AI analysis become available after meeting completion (typically within minutes).
+The platform exposes a **GraphQL API** at `https://api.fireflies.ai/graphql` with Bearer token authentication. Key capabilities include fetching transcripts, speaker analytics, action items, and meeting summaries programmatically.
+
+**Technical Constraints:**
+- Single-language transcription per meeting (no multi-language mixing)
+- Storage limits on Free/Pro tiers (800/8000 minutes)
+- AI credits consumed by AskFred and advanced summaries
+
+---
 
 ## L2: Architect Summary
 
-From an architectural perspective, Fireflies.ai demonstrates a multi-tenant SaaS pattern with clear separation between meeting capture, transcription, and analysis layers. Key observations:
+### Architecture Patterns
 
-**Architecture Signals:**
-- Bot-based meeting join pattern suggests containerized or serverless meeting participants
-- Async processing pipeline indicates queue-based architecture for transcription/analysis
-- Multi-platform integration suggests adapter pattern for different conferencing providers
-- API-first design enables ecosystem development
+Fireflies employs a **cloud-native, API-first architecture** with:
 
-**Scalability Considerations:**
-- Per-meeting resource allocation (bot instances)
-- Batch processing for transcription and NLP analysis
-- Webhook-based event distribution reduces polling overhead
+- **GraphQL API Layer**: Single endpoint design for efficient data fetching
+- **Pre-built NLP Pipeline**: Sentiment analysis, entity extraction, topic categorization
+- **Webhook-based Integration**: POST callbacks with `meetingId` for async processing
+- **Multi-tenant SaaS**: Role-based access (admin, user, viewer) with team isolation
 
-**Trade-offs Observed:**
-- Bot-join pattern provides better audio quality but requires calendar/meeting access
-- Async processing means no real-time transcript during meeting (in most tiers)
-- Cloud-only architecture may present data residency concerns for some enterprises
+### Trade-offs & Design Decisions
+
+| Decision | Benefit | Trade-off |
+|----------|---------|-----------|
+| GraphQL over REST | Precise data fetching, reduced bandwidth | Steeper learning curve |
+| Bot-based capture | Universal platform support | Visible presence may concern participants |
+| Pre-built NLP | Zero ML training required | Limited customization |
+| Per-seat licensing | Predictable costs | Scales linearly with team size |
+| AI credit system | Controls compute costs | User confusion, hidden caps |
+
+### Security & Compliance
+
+- SOC 2 Type II certified
+- GDPR compliant with EU data handling
+- HIPAA compliant with BAA (Enterprise)
+- 256-bit AES encryption, SSL/TLS
+- Private dedicated cloud storage option
+- Zero data retention for AI training
 
 ---
 
@@ -64,197 +72,264 @@ From an architectural perspective, Fireflies.ai demonstrates a multi-tenant SaaS
 
 | Feature | Description | Evidence |
 |---------|-------------|----------|
-| Automated Meeting Join | Bot joins scheduled meetings automatically via calendar integration | Fireflies.ai marketing materials (pre-May 2025) |
-| Transcription | Speech-to-text with speaker diarization | Fireflies.ai product documentation |
-| AI Summaries | Automated meeting summaries with key points | Fireflies.ai feature pages |
-| Smart Search | Natural language search across meeting transcripts | Fireflies.ai feature documentation |
-| Soundbites | Shareable audio+transcript clips from meetings | Fireflies.ai product pages |
-| Conversation Intelligence | Analytics on talk time, sentiment, topics | Fireflies.ai enterprise features |
-| AskFred | AI chatbot for querying meeting content | Product announcements (circa 2023-2024) |
+| Transcription | 95% accuracy across 100+ languages with auto-language detection | [Fireflies.ai Homepage](https://fireflies.ai) accessed 2026-01-25 |
+| AI Summaries | Overviews, bullet points, action items, customized notes | [Fireflies.ai Homepage](https://fireflies.ai) accessed 2026-01-25 |
+| AskFred | GPT-powered Q&A over meeting content | [Fireflies.ai Homepage](https://fireflies.ai) accessed 2026-01-25 |
+| Smart Search | Filter by speakers, questions, tasks, topics, metrics | [Fireflies API](https://fireflies.ai/api) accessed 2026-01-25 |
+| Conversation Intelligence | Talk-time tracking, sentiment analysis, topic tracking | [Outdoo Review](https://www.outdoo.ai/blog/fireflies-ai-review) accessed 2026-01-25 |
+| Live Assist | Real-time suggestions and coaching during meetings | [Fireflies.ai Homepage](https://fireflies.ai) accessed 2026-01-25 |
+| Talk to Fireflies | Perplexity AI integration for web search during meetings | [MeetGeek Pricing Analysis](https://meetgeek.ai/blog/fireflies-ai-pricing) accessed 2026-01-25 |
 
-### Entity Extraction
+### Entity Extraction Capabilities
 
-| Entity Type | Supported | Accuracy (if known) | Evidence |
-|-------------|-----------|---------------------|----------|
-| Speakers | Yes | Not publicly disclosed; relies on calendar/attendee data for naming | Product documentation |
-| Topics | Yes | AI-detected topic segments | Feature documentation |
-| Action Items | Yes | Automatically extracted with assignees when detectable | Product marketing |
-| Questions | Yes | Detected as part of meeting analysis | Feature documentation |
-| Decisions | Partial | Included in "key moments" but not explicit decision entity | Inferred from product description |
-| Key Points | Yes | "Highlights" and "Key moments" features | Product documentation |
-| Metrics/Numbers | Partial | Mentioned for sales intelligence features | Enterprise feature documentation |
-| Dates/Deadlines | Partial | May be extracted with action items | Not explicitly confirmed |
-| Sentiment | Yes | Available in conversation intelligence module | Enterprise documentation |
+| Entity Type | Supported | Accuracy | Evidence |
+|-------------|-----------|----------|----------|
+| Speakers | Yes | 85-90% (Google Meet/Zoom), generic labels for others | [Fireflies API](https://fireflies.ai/api) accessed 2026-01-25 |
+| Action Items | Yes | ~70% | [ItsConvo Review](https://www.itsconvo.com/blog/fireflies-ai-review) accessed 2026-01-25 |
+| Topics/Keywords | Yes | Not specified | [Bardeen Guide](https://www.bardeen.ai/answers/what-is-fireflies-ai) accessed 2026-01-25 |
+| Questions | Yes | Via Smart Search filters | [Max Productive Review](https://max-productive.ai/ai-tools/fireflies-ai/) accessed 2026-01-25 |
+| Decisions | Partial | Part of summary/next steps | [Outdoo Review](https://www.outdoo.ai/blog/fireflies-ai-review) accessed 2026-01-25 |
+| Sentiment | Yes | Per-speaker percentage | [Fireflies API Docs](https://docs.fireflies.ai/graphql-api/query/transcript) accessed 2026-01-25 |
+| Dates/Deadlines | Yes | Via NLP extraction | [Fireflies API](https://fireflies.ai/api) accessed 2026-01-25 |
+| Pricing Mentions | Yes | Via NLP extraction | [Fireflies API](https://fireflies.ai/api) accessed 2026-01-25 |
 
-**Note:** Accuracy metrics are not publicly disclosed. Claims above require verification against current Fireflies.ai documentation.
+### Transcript Format Support
+
+| Format | Import | Export | Notes | Evidence |
+|--------|--------|--------|-------|----------|
+| VTT | No | Yes | Download with/without timestamps | [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25 |
+| SRT | No | Yes | For YouTube uploads, paid plans only | [Fireflies SRT Guide](https://fireflies.ai/blog/what-is-an-srt-file/) accessed 2026-01-25 |
+| PDF | No | Yes | Standard export option | [Fireflies Knowledge Base](https://guide.fireflies.ai/hc/en-us/articles/360020247558) accessed 2026-01-25 |
+| DOCX | No | Yes | Standard export option | [Fireflies Knowledge Base](https://guide.fireflies.ai/hc/en-us/articles/360020247558) accessed 2026-01-25 |
+| JSON | No | Yes | API and download | [Fireflies Knowledge Base](https://guide.fireflies.ai/hc/en-us/articles/360020247558) accessed 2026-01-25 |
+| MP3 | Yes | No | Audio file upload | [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25 |
+| MP4 | Yes | No | Video file upload | [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25 |
+| WAV | Yes | No | Audio file upload | [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25 |
+| M4A | Yes | No | Audio file upload | [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25 |
+
+**Note:** VTT/SRT import not supported. Fireflies only imports raw audio/video files, not existing transcript files.
 
 ### Integrations
 
-| Platform | Integration Type | Evidence |
-|----------|------------------|----------|
-| Zoom | Native meeting bot join | Integration documentation |
-| Google Meet | Native meeting bot join | Integration documentation |
-| Microsoft Teams | Native meeting bot join | Integration documentation |
-| Cisco Webex | Native meeting bot join | Integration documentation |
-| Google Calendar | Calendar sync for auto-join | Integration documentation |
-| Outlook Calendar | Calendar sync for auto-join | Integration documentation |
-| Slack | Notification + transcript sharing | Integration documentation |
-| Salesforce | CRM sync (call logging, notes) | Enterprise integration |
-| HubSpot | CRM sync | Integration documentation |
-| Notion | Export meeting notes | Integration documentation |
-| Asana | Task creation from action items | Integration documentation |
-| Zapier | Custom workflow automation | Integration documentation |
-| API | REST API for custom integrations | Developer documentation |
+#### Video Conferencing
 
-### Transcript Formats
+| Platform | Support Level | Evidence |
+|----------|---------------|----------|
+| Zoom | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Google Meet | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Microsoft Teams | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Webex | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| GoToMeeting | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Dialpad | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Lifesize | Full | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Slack Huddles | Limited/None | [tldv Review](https://tldv.io/blog/fireflies-review/) accessed 2026-01-25 |
 
-| Format | Supported | Evidence |
-|--------|-----------|----------|
-| VTT | Not explicitly confirmed | Information not found in training data |
-| SRT | Not explicitly confirmed | Information not found in training data |
-| TXT | Yes | Export documentation |
-| DOCX | Yes | Export documentation |
-| PDF | Yes | Export documentation |
-| JSON (via API) | Yes | API documentation |
-| Audio (MP3/WAV) | Yes | Export documentation |
+#### CRM
 
-**Critical Gap for Our Use Case:** Information on VTT/SRT support requires verification. Fireflies.ai is primarily designed as an end-to-end solution (audio input to analyzed output), not as a processor of pre-existing transcript files. This is a significant architectural difference from our text-based transcript processing approach.
+| Platform | Type | Evidence |
+|----------|------|----------|
+| Salesforce | Bi-directional sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| HubSpot | Bi-directional sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Affinity | Bi-directional sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Redtail | Sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Wealthbox | Sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+
+#### Collaboration & Storage
+
+| Platform | Type | Evidence |
+|----------|------|----------|
+| Slack | Summary push | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Notion | Note sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Confluence | Document sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| SharePoint | Document sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Google Drive | Storage | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Dropbox | Storage | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| OneDrive | Storage | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Box | Storage | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+
+#### Project Management
+
+| Platform | Type | Evidence |
+|----------|------|----------|
+| Asana | Action item sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Trello | Action item sync | [AFFiNE Integration Guide](https://affine.pro/blog/fireflies-ai-integrations-list-tips) accessed 2026-01-25 |
+| Jira | Action item sync | [AFFiNE Integration Guide](https://affine.pro/blog/fireflies-ai-integrations-list-tips) accessed 2026-01-25 |
+| Linear | Action item sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Airtable | Data sync | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+
+#### Dialers
+
+| Platform | Evidence |
+|----------|----------|
+| Zoom Phone | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| RingCentral | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Aircall | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Open Phone | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+
+#### ATS (Applicant Tracking)
+
+| Platform | Evidence |
+|----------|----------|
+| Greenhouse | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| Lever | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+| BambooHR | [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25 |
+
+**Total Integrations:** 100+ apps claimed ([Fireflies Homepage](https://fireflies.ai))
+
+---
+
+## Pricing
+
+| Tier | Monthly (Annual) | Monthly (Monthly) | Storage | AI Credits | Key Features |
+|------|------------------|-------------------|---------|------------|--------------|
+| **Free** | $0 | $0 | 800 min/seat | 20 | Limited summaries, 2hr video limit, no downloads |
+| **Pro** | $10/seat | $18/seat | 8,000 min/seat | 30 | Unlimited transcription, unlimited summaries, action items, downloads |
+| **Business** | $19/seat | $29/seat | Unlimited | 50 | Video recording (3hr), multi-language, conversation intelligence, team analytics |
+| **Enterprise** | $39/seat | Custom | Unlimited | 30 | Rules engine, SSO, SCIM, HIPAA, private storage, dedicated AM |
+
+**Source:** [Fireflies Pricing Page](https://fireflies.ai/pricing) accessed 2026-01-25
+
+### Hidden Costs
+
+- **AI Credit Packs:** $5 for 50 credits, up to $600 for bulk — [MeetGeek Analysis](https://meetgeek.ai/blog/fireflies-ai-pricing) accessed 2026-01-25
+- **Storage Overages:** Pro tier has 8,000 min cap despite "unlimited transcription" — [Lindy Analysis](https://www.lindy.ai/blog/fireflies-ai-pricing) accessed 2026-01-25
+- **CRM Integrations:** Advanced features gated behind Business/Enterprise — [CloudEagle Guide](https://www.cloudeagle.ai/blogs/blogs-fireflies-ai-pricing-guide) accessed 2026-01-25
+
+---
+
+## API Access
+
+### Endpoint
+```
+https://api.fireflies.ai/graphql
+```
+
+### Authentication
+- Bearer token via `Authorization: Bearer {api_key}` header
+- API keys generated in Fireflies dashboard
+
+### Key Queries
+
+| Query | Purpose | Evidence |
+|-------|---------|----------|
+| `transcript(id: String!)` | Fetch single transcript with full details | [Fireflies API Docs](https://docs.fireflies.ai/graphql-api/query/transcript) accessed 2026-01-25 |
+| `transcripts` | List all transcripts (id, title, created_at) | [Fireflies API Docs](https://docs.fireflies.ai/) accessed 2026-01-25 |
+| `user` | Get user info, roles, usage | [Fireflies API](https://fireflies.ai/api) accessed 2026-01-25 |
+
+### Transcript Query Response Fields
+
+```graphql
+{
+  id, title, dateString, date, duration, privacy
+  transcript_url, audio_url, video_url
+  speakers { name, duration, word_count, sentiment }
+  sentences { text, speaker_name, start_time, end_time, ai_filters }
+  summary { keywords, action_items, outline, overview, topics_discussed }
+  analytics { sentiments, categories }
+  meeting_attendees, meeting_attendance
+  calendar_info, channel
+}
+```
+
+**Source:** [Fireflies Transcript Query Docs](https://docs.fireflies.ai/graphql-api/query/transcript) accessed 2026-01-25
+
+### Webhooks
+
+- POST callback with `meetingId` on transcription completion
+- Use `meetingId` to fetch full transcript via API
+
+**Source:** [Rollout Integration Guide](https://rollout.com/integration-guides/fireflies.ai/api-essentials) accessed 2026-01-25
+
+### Limitations
+
+- Rate limits not publicly documented
+- API actively expanding per official docs — [Fireflies API Docs](https://docs.fireflies.ai/) accessed 2026-01-25
 
 ---
 
 ## Strengths
 
-- **Comprehensive Integration Ecosystem:** Extensive pre-built integrations with major video conferencing, CRM, and productivity platforms reduce implementation friction. (Evidence: Integration directory on fireflies.ai)
+1. **High Transcription Accuracy (95%)** — Superior to Zoom's 70-80% native transcription — [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25
 
-- **AI-Powered Entity Extraction:** Automated extraction of action items, questions, topics, and key moments provides immediate value without manual tagging. (Evidence: Product feature documentation)
+2. **Extensive Language Support (100+ languages)** — Auto-language detection with 60+ supported for transcription — [Fireflies Homepage](https://fireflies.ai) accessed 2026-01-25
 
-- **Search and Discovery:** Natural language search across entire meeting archive enables knowledge retrieval across conversations. (Evidence: Feature documentation)
+3. **Comprehensive Integration Ecosystem (100+ apps)** — Deep CRM, project management, and storage integrations — [Fireflies Integrations](https://fireflies.ai/integrations) accessed 2026-01-25
 
-- **Conversation Intelligence:** Analytics on talk time, sentiment, and participation patterns support coaching and analysis use cases. (Evidence: Enterprise feature documentation)
+4. **Powerful GraphQL API** — Flexible data fetching, custom NLP layer access, webhook support — [Fireflies API Docs](https://docs.fireflies.ai/) accessed 2026-01-25
 
-- **API Access:** REST API and webhooks enable custom integrations and workflow automation. (Evidence: Developer documentation references)
+5. **Enterprise-Grade Security** — SOC 2 Type II, GDPR, HIPAA, zero AI training data retention — [Fireflies API](https://fireflies.ai/api) accessed 2026-01-25
 
-- **Multi-Platform Support:** Works across major video conferencing platforms without requiring users to switch tools. (Evidence: Integration documentation)
+6. **Real-time Features** — Live note generation during calls, Talk to Fireflies (Perplexity integration) — [MeetGeek Analysis](https://meetgeek.ai/blog/fireflies-ai-pricing) accessed 2026-01-25
+
+7. **Multi-format Export** — VTT, SRT, PDF, DOCX, JSON options — [Fireflies Knowledge Base](https://guide.fireflies.ai/hc/en-us/articles/360020247558) accessed 2026-01-25
+
+---
 
 ## Weaknesses
 
-- **Audio-Centric Architecture:** Designed for audio/video input, not pre-transcribed text files. May not efficiently process existing VTT/SRT transcripts. (Evidence: Product design focuses on meeting recording)
+1. **No VTT/SRT Import** — Cannot process existing transcript files, only raw audio/video — [Fireflies Blog](https://fireflies.ai/blog/transcribe-audio-to-text/) accessed 2026-01-25
 
-- **Bot-Join Model Limitations:** Requires meeting access/calendar integration; cannot process historical meetings without audio recordings. (Evidence: Product workflow documentation)
+2. **Single-Language Limitation** — Cannot transcribe multiple languages in same meeting — [Cosmo Edge Review](https://cosmo-edge.com/fireflies-ai-user-reviews/) accessed 2026-01-25
 
-- **Accuracy Transparency:** No publicly disclosed accuracy metrics for transcription or entity extraction. (Evidence: Absence in reviewed materials)
+3. **Confusing AI Credit System** — Hidden caps even on "unlimited" plans, credit pack upsells — [MeetGeek Analysis](https://meetgeek.ai/blog/fireflies-ai-pricing) accessed 2026-01-25
 
-- **Data Residency:** Cloud-only processing may present compliance challenges for regulated industries. (Evidence: Enterprise documentation discussions)
+4. **Storage Caps on Lower Tiers** — Free (800 min), Pro (8000 min) despite "unlimited transcription" marketing — [Lindy Analysis](https://www.lindy.ai/blog/fireflies-ai-pricing) accessed 2026-01-25
 
-- **Pricing Opacity:** Per-seat pricing can become expensive for large organizations. (Evidence: Pricing page structure, requires verification)
+5. **Action Item Accuracy (~70%)** — Requires manual review and correction — [ItsConvo Review](https://www.itsconvo.com/blog/fireflies-ai-review) accessed 2026-01-25
 
-- **Vendor Lock-in:** Proprietary format for meeting data; export limitations may exist on lower tiers. (Evidence: Tier feature comparisons)
+6. **English-Only Interface** — No localization for global teams — [tldv Review](https://tldv.io/blog/fireflies-review/) accessed 2026-01-25
 
-## Differentiation Opportunities
+7. **Limited Slack Huddles/Webex Support** — Platform gaps for some communication tools — [tldv Review](https://tldv.io/blog/fireflies-review/) accessed 2026-01-25
 
-Based on the analysis, our text-based transcript skill can differentiate through:
+8. **Bot Visibility Concerns** — Joins meetings visibly, may concern participants — [Outdoo Review](https://www.outdoo.ai/blog/fireflies-ai-review) accessed 2026-01-25
 
-1. **Text-First Architecture:** Native support for VTT/SRT input without requiring audio, enabling analysis of existing transcript archives.
+9. **Unidirectional CRM Sync** — Can push to CRMs but limited customization of what gets synced — [MeetGeek Analysis](https://meetgeek.ai/blog/fireflies-ai-pricing) accessed 2026-01-25
 
-2. **Transparent Accuracy Metrics:** Publishing precision/recall for entity extraction to build trust.
-
-3. **Local/Hybrid Processing:** Supporting on-premise or hybrid deployment for data-sensitive organizations.
-
-4. **Format Flexibility:** Supporting multiple transcript formats as first-class citizens, not afterthoughts.
-
-5. **Deterministic Entity Rules:** Offering rule-based entity extraction alongside ML for predictable, auditable results.
-
-6. **Open Architecture:** Providing clear data portability and avoiding vendor lock-in.
+10. **Slower Development Pace** — Some critics note platform feels dated compared to newer competitors — [Breakcold Review](https://www.breakcold.com/blog/fireflies-ai-review) accessed 2026-01-25
 
 ---
 
-## Pricing (Based on Training Data - May Require Verification)
+## Competitive Positioning for Transcript Skill
 
-| Tier | Price (Monthly) | Key Features |
-|------|-----------------|--------------|
-| Free | $0 | Limited transcription credits, basic search |
-| Pro | ~$10-18/seat | Unlimited transcription, AI summaries, integrations |
-| Business | ~$19-29/seat | CRM integrations, conversation intelligence, API access |
-| Enterprise | Custom | SSO, admin controls, dedicated support, custom retention |
+### Relevance to Jerry Transcript Skill
 
-**Note:** Pricing information is approximate based on training data (pre-May 2025). Current pricing should be verified at https://fireflies.ai/pricing.
+| Fireflies Capability | Relevance | Notes |
+|---------------------|-----------|-------|
+| VTT/SRT Export | Medium | We need import, they only export |
+| Entity Extraction | High | Benchmark for action items, topics, speakers |
+| GraphQL API | High | Architectural pattern to consider |
+| NLP Layer | High | Pre-built extraction is a key differentiator |
+| Multi-format support | Medium | Our focus is VTT/SRT specifically |
 
----
+### Gaps Our Skill Could Fill
 
-## API Capabilities (Requires Verification)
-
-Based on training data, Fireflies.ai offers a REST API with the following reported capabilities:
-
-| Capability | Description | Evidence Level |
-|------------|-------------|----------------|
-| Meeting Retrieval | Get meeting metadata and transcripts | Reported in developer docs |
-| Search | Query transcripts programmatically | Reported |
-| User Management | Manage team members | Reported for Business/Enterprise |
-| Webhooks | Event notifications for meeting completion | Reported |
-| Audio Upload | Upload audio files for processing | Reported |
-
-**API Documentation:** Reported at https://docs.fireflies.ai/ (requires verification)
-
-**Note:** Text transcript upload (VTT/SRT) via API is NOT confirmed in training data. This would be a critical verification point for our use case.
-
----
-
-## Relevance to Our Use Case
-
-### High Relevance
-- Entity extraction categories (action items, questions, topics) provide a feature benchmark
-- Integration patterns inform our design decisions
-- Summary generation approaches are worth studying
-
-### Low Relevance
-- Speech-to-text capabilities (we receive pre-transcribed text)
-- Audio processing pipeline
-- Bot-join architecture
-
-### Key Questions to Verify
-1. Does Fireflies.ai support VTT/SRT file upload and processing?
-2. What is the accuracy of entity extraction (if disclosed)?
-3. Can the API return structured entity data in machine-readable format?
-4. What is the latency for processing a transcript?
+1. **VTT/SRT Import & Parse** — Fireflies cannot import existing transcripts
+2. **Multi-language Meeting Support** — Fireflies limited to single language
+3. **Offline Processing** — Fireflies is cloud-only
+4. **Custom Entity Extraction** — Fireflies NLP is pre-built, limited customization
+5. **Developer-First CLI** — Fireflies has no CLI, only API
 
 ---
 
 ## References
 
-**Disclaimer:** The following references are based on URLs that existed as of May 2025. Availability and content may have changed.
-
-1. Fireflies.ai. (n.d.). Homepage. https://fireflies.ai/. Training data reference.
-
-2. Fireflies.ai. (n.d.). Features. https://fireflies.ai/features. Training data reference.
-
-3. Fireflies.ai. (n.d.). Integrations. https://fireflies.ai/integrations. Training data reference.
-
-4. Fireflies.ai. (n.d.). Pricing. https://fireflies.ai/pricing. Training data reference.
-
-5. Fireflies.ai. (n.d.). Developer Documentation. https://docs.fireflies.ai/. Training data reference.
-
----
-
-## Verification Checklist
-
-Before using this research for product decisions, verify:
-
-- [ ] Current pricing tiers and features
-- [ ] VTT/SRT format support status
-- [ ] API capabilities and rate limits
-- [ ] Current integration list
-- [ ] Entity extraction accuracy claims (if any)
-- [ ] Data residency and compliance certifications
-- [ ] Recent product announcements or pivots
-
----
-
-## Research Metadata
-
-| Field | Value |
-|-------|-------|
-| Research Date | 2026-01-25 |
-| Data Source | Training data (cutoff: May 2025) |
-| Verification Status | UNVERIFIED - Requires web access |
-| Confidence Level | Medium (based on established product, but details may be outdated) |
-| Next Action | Re-run research with web access enabled |
+1. [Fireflies.ai Homepage](https://fireflies.ai) - Accessed 2026-01-25
+2. [Fireflies.ai Pricing](https://fireflies.ai/pricing) - Accessed 2026-01-25
+3. [Fireflies.ai API](https://fireflies.ai/api) - Accessed 2026-01-25
+4. [Fireflies.ai Integrations](https://fireflies.ai/integrations) - Accessed 2026-01-25
+5. [Fireflies API Documentation](https://docs.fireflies.ai/) - Accessed 2026-01-25
+6. [Fireflies Transcript Query Docs](https://docs.fireflies.ai/graphql-api/query/transcript) - Accessed 2026-01-25
+7. [MeetGeek - Fireflies AI Pricing 2026](https://meetgeek.ai/blog/fireflies-ai-pricing) - Accessed 2026-01-25
+8. [Outdoo - Fireflies AI Review 2026](https://www.outdoo.ai/blog/fireflies-ai-review) - Accessed 2026-01-25
+9. [Lindy - Fireflies.ai Pricing 2026](https://www.lindy.ai/blog/fireflies-ai-pricing) - Accessed 2026-01-25
+10. [tldv - Fireflies.ai Review 2026](https://tldv.io/blog/fireflies-review/) - Accessed 2026-01-25
+11. [ItsConvo - Fireflies AI Review 2025](https://www.itsconvo.com/blog/fireflies-ai-review) - Accessed 2026-01-25
+12. [Breakcold - Fireflies.ai Review 2026](https://www.breakcold.com/blog/fireflies-ai-review) - Accessed 2026-01-25
+13. [AFFiNE - Fireflies.ai Integrations](https://affine.pro/blog/fireflies-ai-integrations-list-tips) - Accessed 2026-01-25
+14. [CloudEagle - Fireflies Pricing Guide](https://www.cloudeagle.ai/blogs/blogs-fireflies-ai-pricing-guide) - Accessed 2026-01-25
+15. [Bardeen - Fireflies.ai Guide](https://www.bardeen.ai/answers/what-is-fireflies-ai) - Accessed 2026-01-25
+16. [Max Productive - Fireflies.ai Review 2025](https://max-productive.ai/ai-tools/fireflies-ai/) - Accessed 2026-01-25
+17. [Cosmo Edge - Fireflies.ai User Reviews](https://cosmo-edge.com/fireflies-ai-user-reviews/) - Accessed 2026-01-25
+18. [Fireflies Blog - SRT Guide](https://fireflies.ai/blog/what-is-an-srt-file/) - Accessed 2026-01-25
+19. [Rollout - Fireflies API Essentials](https://rollout.com/integration-guides/fireflies.ai/api-essentials) - Accessed 2026-01-25
+20. [Fireflies Knowledge Base](https://guide.fireflies.ai/hc/en-us/articles/360020247558) - Accessed 2026-01-25

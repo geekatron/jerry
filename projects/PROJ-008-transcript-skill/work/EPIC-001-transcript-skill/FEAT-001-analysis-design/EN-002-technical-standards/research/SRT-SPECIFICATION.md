@@ -1,9 +1,14 @@
 # SRT (SubRip) Format Specification Research
 
 > **Researched:** 2026-01-25
+> **Last Updated:** 2026-01-25 (Live Web Research)
 > **Task:** TASK-008
 > **Enabler:** EN-002
 > **Agent:** ps-researcher
+> **Research Method:** Live web research (WebSearch, WebFetch)
+> **PRONOM PUID:** fmt/1218 [1]
+> **Wikidata IDs:** Q105852434, Q9332294 [1]
+> **Confidence Level:** Medium-High (widely documented but informal de facto standard)
 
 ---
 
@@ -552,6 +557,107 @@ Since SRT has no native speaker support, transcript parsers must extract speaker
 
 ---
 
+## Python Libraries for SRT Processing
+
+### Recommended: `srt` Library [3][4]
+
+**Installation:** `pip install srt`
+
+**Characteristics:**
+- ~200 lines of code, no external dependencies
+- ~30% faster than alternatives on typical workloads
+- Handles many malformed files other parsers fail on
+- Full Unicode support including Asian fullwidth arrow variants
+- Includes CLI tools for filtering, time-shifting, multiplexing
+- PyPy compatible
+
+**Usage Example:**
+```python
+import srt
+from datetime import timedelta
+
+# Parse SRT content
+with open('subtitles.srt', encoding='utf-8') as f:
+    subtitles = list(srt.parse(f.read()))
+
+# Access subtitle data
+for sub in subtitles:
+    print(f"{sub.index}: {sub.start} --> {sub.end}")
+    print(sub.content)
+    # sub.start and sub.end are datetime.timedelta objects
+    # Example: timedelta(0, 1897, 894000) = 0 days, 1897 seconds, 894000 microseconds
+
+# Compose back to SRT format
+srt_text = srt.compose(subtitles)
+```
+
+**Subtitle object attributes:**
+- `index` (int): Sequence number
+- `start` (timedelta): Start time
+- `end` (timedelta): End time
+- `content` (str): Text content
+- `proprietary` (str): Extra metadata field
+
+### Alternative: `pysrt` Library [5][6]
+
+**Installation:** `pip install pysrt`
+
+**Characteristics:**
+- Object-oriented SubRipFile/SubRipItem interface
+- Advanced time manipulation (shifting, rate conversion)
+- SAX-like streaming parser for large files
+- CLI tools for shift/split/rescale operations
+- Explicit encoding support with fallback
+
+**Usage Example:**
+```python
+import pysrt
+
+# Parse with encoding detection
+subs = pysrt.open('subtitles.srt')
+# Or with explicit encoding
+subs = pysrt.open('subtitles.srt', encoding='iso-8859-1')
+
+# Time manipulation
+subs.shift(seconds=-2)  # Move all subs 2 seconds earlier
+subs.shift(minutes=1)   # Move all subs 1 minute later
+subs.shift(ratio=25/23.9)  # Convert 23.9fps to 25fps subtitle timing
+
+# Access individual subtitle
+first_sub = subs[0]
+first_sub.start += {'seconds': -1}  # Adjust start time
+
+# Save modifications
+subs.save('output.srt')
+```
+
+**SubRipItem attributes:**
+- `index` (int): Sequence number
+- `start`, `end` (SubRipTime): Time objects with arithmetic support
+- `text` (str): Content
+- `position` (str): Raw positioning coordinates
+
+### Library Comparison Table
+
+| Feature | `srt` | `pysrt` |
+|---------|-------|---------|
+| Dependencies | None | None |
+| Code size | ~200 lines | Larger |
+| Performance | Faster (~30%) | Standard |
+| Error tolerance | High | High |
+| Time arithmetic | Basic (timedelta) | Advanced (SubRipTime) |
+| FPS conversion | Manual | Built-in (`ratio`) |
+| Streaming parser | No | Yes |
+| CLI tools | Yes | Yes |
+| Encoding handling | Manual | Built-in options |
+
+**Recommendation for Transcript Skill:**
+- Use `srt` for parsing/composing in most cases
+- Use `pysrt` if time manipulation (shifting, fps conversion) is needed
+- Both handle real-world malformed files well
+
+---
+
 ## Historical Context
 
 | Year | Event |
@@ -570,21 +676,84 @@ Since SRT has no native speaker support, transcript parsers must extract speaker
 
 ## References
 
-**Note:** SRT has no official RFC or W3C specification. References are to community documentation and implementations.
+**Note:** SRT has no official RFC or W3C specification. References are to community documentation, implementations, and authoritative sources. All URLs accessed 2026-01-25 via live web research.
 
-1. VideoLAN. (n.d.). SubRip. VideoLAN Wiki. Retrieved January 25, 2026, from https://wiki.videolan.org/SubRip/
+### Authoritative Format Documentation
 
-2. Matroska.org. (n.d.). Subtitle Specifications. Matroska Technical Specifications. Retrieved January 25, 2026, from https://www.matroska.org/technical/subtitles.html
+1. **Library of Congress.** (n.d.). SubRip Subtitle format (SRT). Sustainability of Digital Formats: Planning for Library of Congress Collections. Retrieved January 25, 2026, from https://loc.gov/preservation/digital/formats/fdd/fdd000569.shtml
+   - *Official format description document; PRONOM PUID: fmt/1218*
 
-3. Wikipedia contributors. (2025, December). SubRip. In Wikipedia, The Free Encyclopedia. Retrieved January 25, 2026, from https://en.wikipedia.org/wiki/SubRip
+2. **Wikipedia contributors.** (2025, December). SubRip. In Wikipedia, The Free Encyclopedia. Retrieved January 25, 2026, from https://en.wikipedia.org/wiki/SubRip
+   - *Comprehensive community documentation; historical context*
 
-4. FFmpeg Project. (n.d.). Subtitles. FFmpeg Documentation. Retrieved January 25, 2026, from https://ffmpeg.org/ffmpeg-formats.html#Subtitles
+### Python Libraries
 
-5. Aegisub. (n.d.). Subtitle Formats. Aegisub Manual. Retrieved January 25, 2026, from https://aegisub.org/docs/latest/
+3. **cdown/srt.** (n.d.). A tiny library for parsing, modifying, and composing SRT files. GitHub. Retrieved January 25, 2026, from https://github.com/cdown/srt
+   - *Recommended library; ~200 lines, no dependencies, handles malformed files*
 
-6. SubRip. (Original Software). (c. 1998). SubRip - DVD Subtitle Ripper. [Software documentation, no longer maintained].
+4. **srt Documentation.** (2023, March 28). srt 3.5.3 documentation - Quickstart. Read the Docs. Retrieved January 25, 2026, from https://srt.readthedocs.io/en/latest/quickstart.html
+   - *Official documentation for srt library*
 
-7. W3C. (2019, April 4). WebVTT: The Web Video Text Tracks Format. W3C Recommendation. Retrieved January 25, 2026, from https://www.w3.org/TR/webvtt1/ (Referenced for comparison purposes)
+5. **byroot/pysrt.** (n.d.). Python parser for SubRip (srt) files. GitHub. Retrieved January 25, 2026, from https://github.com/byroot/pysrt
+   - *Alternative library with time manipulation features*
+
+6. **pysrt.** (n.d.). pysrt - SubRip (.srt) file parser. PyPI. Retrieved January 25, 2026, from https://pypi.org/project/pysrt/
+   - *PyPI package page*
+
+### Format Comparison (SRT vs VTT)
+
+7. **Ditto Transcripts.** (n.d.). SRT vs. VTT: Understanding the Difference Between Subtitle Formats for Captions. Ditto Blog. Retrieved January 25, 2026, from https://www.dittotranscripts.com/blog/srt-vs-vtt-understanding-the-difference-between-subtitle-formats-for-captions/
+   - *Detailed feature comparison*
+
+8. **Happy Scribe.** (n.d.). VTT vs. SRT: Key Differences and When to Use Each Format. Happy Scribe Blog. Retrieved January 25, 2026, from https://www.happyscribe.com/blog/vtt-vs-srt-key-differences-and-when-to-use-each-format
+   - *Use case recommendations* (403 on fetch)
+
+9. **Subly.** (n.d.). SRT vs VTT? Which Subtitle Format Should You Use? Subly Blog. Retrieved January 25, 2026, from https://www.getsubly.com/post/srt-vtt
+   - *Platform compatibility analysis*
+
+### Troubleshooting & Edge Cases
+
+10. **CheckSub.** (n.d.). Common SRT file errors and how to solve them. CheckSub Blog. Retrieved January 25, 2026, from https://www.checksub.com/blog/how-do-solve-problems-with-srt-files-troubleshooting-with-srt-files
+    - *Comprehensive error documentation*
+
+11. **Kaltura.** (n.d.). Troubleshooting SRT Files. Kaltura Knowledge Center. Retrieved January 25, 2026, from https://knowledge.kaltura.com/troubleshooting-srt-files
+    - *Platform-specific error handling*
+
+12. **cdown/srt Issue #55.** (n.d.). Error parsing subtitles with (incorrect) single digit second timestamp. GitHub Issues. Retrieved January 25, 2026, from https://github.com/cdown/srt/issues/55
+    - *Real-world parsing edge case*
+
+### Speaker Diarization & Multi-Speaker
+
+13. **BrassTranscripts.** (n.d.). Multi-Speaker Transcript Formats: SRT, VTT, JSON with Speaker Names. BrassTranscripts Blog. Retrieved January 25, 2026, from https://brasstranscripts.com/blog/multi-speaker-transcript-formats-srt-vtt-json
+    - *Speaker identification conventions*
+
+14. **granludo/diarize_srt.** (n.d.). Identifies the different speakers in a recording and labels them on a SRT file. GitHub. Retrieved January 25, 2026, from https://github.com/granludo/diarize_srt
+    - *Diarization integration example*
+
+15. **OpenAI/whisper Discussion #264.** (n.d.). Transcription and diarization (speaker identification). GitHub Discussions. Retrieved January 25, 2026, from https://github.com/openai/whisper/discussions/264
+    - *Whisper + diarization approaches*
+
+### Character Encoding
+
+16. **Kence.** (2019, November 27). Detecting Windows-1252 encoding. Digital Ramblings. Retrieved January 25, 2026, from https://kence.org/2019/11/27/detecting-windows-1252-encoding/
+    - *Encoding detection strategies*
+
+17. **Wikipedia contributors.** (n.d.). Byte order mark. In Wikipedia, The Free Encyclopedia. Retrieved January 25, 2026, from https://en.wikipedia.org/wiki/Byte_order_mark
+    - *BOM detection reference*
+
+### Additional Resources
+
+18. **VideoLAN.** (n.d.). SubRip. VideoLAN Wiki. Retrieved January 25, 2026, from https://wiki.videolan.org/SubRip/
+    - *VLC implementation details*
+
+19. **Matroska.org.** (n.d.). Subtitle Specifications. Matroska Technical Specifications. Retrieved January 25, 2026, from https://www.matroska.org/technical/subtitles.html
+    - *Container format integration*
+
+20. **FFmpeg Project.** (n.d.). Subtitles. FFmpeg Documentation. Retrieved January 25, 2026, from https://ffmpeg.org/ffmpeg-formats.html#Subtitles
+    - *FFmpeg subtitle handling*
+
+21. **W3C.** (2019, April 4). WebVTT: The Web Video Text Tracks Format. W3C Recommendation. Retrieved January 25, 2026, from https://www.w3.org/TR/webvtt1/
+    - *VTT specification for comparison*
 
 ---
 

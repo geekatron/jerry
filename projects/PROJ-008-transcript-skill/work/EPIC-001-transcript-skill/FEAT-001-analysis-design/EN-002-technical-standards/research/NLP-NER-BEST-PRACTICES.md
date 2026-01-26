@@ -1,10 +1,13 @@
 # NLP/NER Best Practices for Transcript Processing
 
 > **Researched:** 2026-01-25
+> **Last Updated:** 2026-01-25 (Live Web Research Enhancement)
 > **Task:** TASK-009
 > **Enabler:** EN-002
 > **Agent:** ps-researcher
 > **Status:** COMPLETE
+> **Research Method:** Live web research (WebSearch, WebFetch)
+> **Confidence:** High (authoritative library documentation + academic papers)
 
 ---
 
@@ -941,3 +944,258 @@ Based on the research above, the recommended architecture for transcript entity 
 | OntoNotes 5.0 | NER | 92.4% (Yu et al., 2020) |
 | WNUT 2017 | Emerging entities | 59.5% (challenging) |
 | AMI Corpus | Meeting acts | ~75% (varies by act type) |
+| Brazilian Earnings Calls | Transcript NER | 98.52% (PTT5), 98.85% (mT5) |
+
+---
+
+## Appendix C: Live Web Research Findings (2026-01-25)
+
+### Updated NLP Pipeline Best Practices
+
+Based on live web research conducted on 2026-01-25:
+
+#### Modern Preprocessing and Tokenization
+
+> "Tokenization strategies have evolved significantly with transformer-based models that require subword tokenization approaches. Modern tokenizers like Byte-Pair Encoding (BPE) and SentencePiece break text into smaller units that balance vocabulary size with semantic representation."
+>
+> Source: [Airbyte NLP Pipeline Guide](https://airbyte.com/data-engineering-resources/natural-language-processing-pipeline) - Accessed 2026-01-25
+
+#### Conversation Intelligence Capabilities
+
+Modern NLP platforms for transcripts provide:
+- **Topic Detection**: Automatic tagging of keywords like pricing, contract terms
+- **Intent Analysis**: Understanding purpose (question, complaint, buying signal)
+- **Sentiment Analysis**: Detecting emotional tone and frustration
+
+> "An industry survey found that for 76% of companies, conversation intelligence is embedded in more than half of their customer interactions."
+>
+> Source: [AssemblyAI Text Summarization Guide](https://www.assemblyai.com/blog/text-summarization-nlp-5-best-apis) - Accessed 2026-01-25
+
+### NER for Meeting Transcripts - Updated Approaches
+
+#### Two Main NER Approaches (2025 Best Practice)
+
+| Approach | Description | Best For |
+|----------|-------------|----------|
+| **Ontology-based NER** | Knowledge-based recognition using predefined lists and rules (database of company names, common names, locations) | Known entity dictionaries |
+| **Machine Learning NER** | Statistical models including CRF, BERT transformers | Generalizable extraction |
+
+> "State of the art systems may incorporate multiple approaches."
+>
+> Source: [Wikipedia - Named Entity Recognition](https://en.wikipedia.org/wiki/Named-entity_recognition) - Accessed 2026-01-25
+
+#### End-to-End NER from Speech
+
+> "Researchers have introduced end-to-end approaches which jointly optimize the ASR and NER tagger components. Experimental results show that the proposed E2E approach outperforms the classical two-step approach."
+>
+> Source: [Yadav et al., Interspeech 2020](https://www.isca-archive.org/interspeech_2020/yadav20b_interspeech.pdf) - Accessed 2026-01-25
+
+### Action Item Detection - Research Update
+
+#### Context-Drop Approach (2023)
+
+> "A Context-Drop approach has been proposed to utilize both local and global contexts by contrastive learning, achieving better accuracy and robustness for action item detection."
+>
+> Source: [arXiv:2303.16763 - Meeting Action Item Detection](https://arxiv.org/pdf/2303.16763) - Accessed 2026-01-25
+
+#### Action-Item-Driven Summarization
+
+> "The system achieved a BERTScore of 64.98, representing approximately 4.98% improvement over the previous state-of-the-art baseline established by a fine-tuned BART model."
+>
+> Source: [arXiv:2312.17581](https://arxiv.org/abs/2312.17581) - Accessed 2026-01-25
+
+#### Linguistic Pattern Detection
+
+Key patterns for action item detection from live research:
+
+| Pattern Type | Examples | Detection Method |
+|--------------|----------|------------------|
+| Modal verbs | will, should, must, need to | POS tagging + pattern matching |
+| Future tense | "I will send", "We're going to" | Tense analysis |
+| Imperative phrases | "Please send", "Make sure to" | Sentence-initial verb detection |
+| Commitment phrases | "I'll handle that", "Let me take care of" | First-person + action verb |
+
+> "Modal verbs are a special type of verbs in an English sentence that give additional information about the function of the main verb that follows it."
+>
+> Source: [Modal Verbs Analysis with Regex](https://medium.com/nerd-for-tech/extracting-words-from-english-sentences-using-python-regex-modal-verbs-analysis-e89233e498a9) - Accessed 2026-01-25
+
+### Topic Modeling - BERTopic vs Traditional Methods
+
+#### Why BERTopic Excels for Transcripts
+
+> "BERTopic excels in analyzing short or noisy datasets such as tweets, chat logs, and social media posts... leveraging semantic embeddings, which capture the deeper meaning of texts, resulting in more coherent and contextually accurate topics."
+>
+> Source: [BERTopic Official Documentation](https://bertopic.com/what-is-bertopic/) - Accessed 2026-01-25
+
+#### c-TF-IDF Explained
+
+> "What if we instead treat all documents in a single category (e.g., a cluster) as a single document and then apply TF-IDF? The result would be a very long document per category and the resulting TF-IDF score would demonstrate the important words in a topic."
+>
+> Source: [BERTopic GitHub](https://github.com/MaartenGr/BERTopic) - Accessed 2026-01-25
+
+#### Comparison Study for Interview Transcripts
+
+> "The BERT+UMAP+HDBSCAN algorithm was selected as the most suitable for semi-structured interviews... combining LDA with BERT embeddings was used to enhance contextual understanding of topics."
+>
+> Source: [PMC Article on Topic Modeling](https://pmc.ncbi.nlm.nih.gov/articles/PMC9120935/) - Accessed 2026-01-25
+
+### spaCy EntityRuler - Rule-Based NER
+
+#### Combining Statistical and Rule-Based NER
+
+> "The EntityRuler is functioning before the 'ner' pipe and is, therefore, prefinding entities and labeling them before the NER gets to them. Because it comes earlier in the pipeline, its metadata holds primacy over the later 'ner' pipe."
+>
+> Source: [spaCy Rule-Based Matching](https://spacy.io/usage/rule-based-matching) - Accessed 2026-01-25
+
+#### Pattern Operators in spaCy Matcher
+
+| Operator | Meaning | Example Use |
+|----------|---------|-------------|
+| `!` | Match exactly 0 times | Negation |
+| `?` | Match 0 or 1 times | Optional token |
+| `+` | Match 1 or more times | Repeated tokens |
+| `*` | Match 0 or more times | Any occurrence |
+| `{n}` | Match exactly n times | Fixed count |
+| `{n,m}` | Match n to m times | Range |
+
+> Source: [spaCy Matcher API](https://spacy.io/api/matcher) - Accessed 2026-01-25
+
+### Confidence Scoring for NER
+
+#### Best Practices for Thresholds
+
+> "The ideal threshold value changes based on the model being used and the text being processed. A common pitfall is to set a static threshold value and use it for all models and text."
+>
+> Source: [UpslopeNLP - Confidence Values](https://upslopenlp.com/confidence-values-and-entity-extraction/) - Accessed 2026-01-25
+
+#### LLM Confidence Estimation
+
+> "Token-level generation probabilities (commonly referred to as 'logprobs') are by far the most accurate technique for estimating LLM confidence. Explicitly prompting the LLM to output a confidence score, while popular, is highly unreliable."
+>
+> Source: [LLM Confidence Estimation](https://medium.com/@vatvenger/confidence-unlocked-a-method-to-measure-certainty-in-llm-outputs-1d921a4ca43c) - Accessed 2026-01-25
+
+#### spaCy Confidence Limitation
+
+> "The model is trained on 0/1 loss, so it wasn't trained to be well calibrated."
+>
+> Source: [spaCy GitHub Issue #831](https://github.com/explosion/spaCy/issues/831) - Accessed 2026-01-25
+
+### Question Detection Methods
+
+#### Sentence Boundary Detection Comparison
+
+| Tool | Speed | Accuracy | Notes |
+|------|-------|----------|-------|
+| NLTK | 0.53s | Lower | Punkt algorithm |
+| spaCy | 54.63s | Medium | Dependency-based |
+| DeepSegment | 139.57s | 73.35% | Deep learning |
+
+> "DeepSegment achieved an average absolute accuracy of 73.35% outperforming both Spacy and NLTK by a wide margin."
+>
+> Source: [pySBD GitHub](https://github.com/nipunsadvilkar/pySBD) - Accessed 2026-01-25
+
+#### Question Classification
+
+> "Training data from nps_chat includes labels: WH for WH questions, and YN for Yes/No questions. The model gave an accuracy of 67%."
+>
+> Source: [NLP Question Detection](https://github.com/kartikn27/nlp-question-detection) - Accessed 2026-01-25
+
+### Decision Detection in Transcripts
+
+#### Text Mining for Decision Elements
+
+> "Using C99 and TextTiling algorithms as comparators, one method was able to identify and extract the needs and actions of decision making with a high recall of 85-95% at a precision of 54-68%."
+>
+> Source: [ResearchGate - Decision Element Extraction](https://www.researchgate.net/publication/44259639_Text_Mining_for_Meeting_Transcript_Analysis_to_Extract_Key_Decision_Elements) - Accessed 2026-01-25
+
+### HuggingFace Token Classification
+
+#### Pre-trained NER Models Available
+
+| Model | Parameters | Entity Types | Downloads |
+|-------|------------|--------------|-----------|
+| dslim/bert-base-NER | 0.1B | PER, LOC, ORG, MISC | ~2.98M |
+| xlm-roberta-large-finetuned-conll03 | 0.6B | Multilingual | ~90.3k |
+| blaze999/Medical-NER | 0.2B | Medical entities | - |
+
+> "bert-base-NER is a fine-tuned BERT model that is ready to use for Named Entity Recognition and achieves state-of-the-art performance for the NER task."
+>
+> Source: [HuggingFace dslim/bert-base-NER](https://huggingface.co/dslim/bert-base-NER) - Accessed 2026-01-25
+
+#### BIO Tagging Scheme
+
+> "The letter that prefixes each ner_tag indicates the token position: B- indicates the beginning of an entity, I- indicates a token is contained inside the same entity, and O indicates the token doesn't correspond to any entity."
+>
+> Source: [HuggingFace Token Classification Docs](https://huggingface.co/docs/transformers/main/tasks/token_classification) - Accessed 2026-01-25
+
+### NER Evaluation Best Practices
+
+#### Entity-Level vs Token-Level Evaluation
+
+> "When training a NER system, the most typical evaluation method is to measure precision, recall, and F1-score at a token level. These metrics are useful to tune a NER system, but when using predicted named-entities for downstream tasks, it is more useful to evaluate with metrics at a full named-entity level."
+>
+> Source: [Named Entity Evaluation Blog](https://www.davidsbatista.net/blog/2018/05/09/Named_Entity_Evaluation/) - Accessed 2026-01-25
+
+#### nervaluate Library
+
+> "Various evaluation methods include Strict, Exact, Partial, and Type Evaluation. Each method offers unique insights into model performance."
+>
+> Source: [nervaluate GitHub](https://github.com/MantisAI/nervaluate) - Accessed 2026-01-25
+
+### Transcript-Specific NER Benchmarks
+
+#### Brazilian Earnings Call Study
+
+> "T5-based models achieved impressive macro F1-scores of 98.52% (PTT5) and 98.85% (mT5) on this transcript data... BERT-based models consistently outperform T5-based models."
+>
+> Source: [arXiv:2403.12212](https://arxiv.org/html/2403.12212v1) - Accessed 2026-01-25
+
+---
+
+## Appendix D: Additional Live Research References
+
+### Web Sources Accessed 2026-01-25
+
+22. Airbyte. (2025). NLP Pipeline: Key Steps to Process Text Data. https://airbyte.com/data-engineering-resources/natural-language-processing-pipeline
+
+23. AssemblyAI. (2025). 6 Best Named Entity Recognition APIs. https://www.assemblyai.com/blog/6-best-named-entity-recognition-apis-entity-detection
+
+24. ScienceDirect. (2023). A survey on Named Entity Recognition - datasets, tools, and methodologies. https://www.sciencedirect.com/science/article/pii/S2949719123000146
+
+25. arXiv. (2023). Meeting Action Item Detection with Regularized Context Modeling. https://arxiv.org/pdf/2303.16763
+
+26. arXiv. (2023). Action-Item-Driven Summarization of Long Meeting Transcripts. https://arxiv.org/abs/2312.17581
+
+27. AWS. (2024). Meeting summarization and action item extraction with Amazon Nova. https://aws.amazon.com/blogs/machine-learning/meeting-summarization-and-action-item-extraction-with-amazon-nova/
+
+28. GitHub. (2024). BERTopic: Leveraging BERT and c-TF-IDF. https://github.com/MaartenGr/BERTopic
+
+29. GitHub. (2024). KeyBERT: Minimal keyword extraction with BERT. https://github.com/MaartenGr/KeyBERT
+
+30. KDnuggets. (2020). Topic Modeling with BERT. https://www.kdnuggets.com/2020/11/topic-modeling-bert.html
+
+31. HuggingFace. (2024). Token Classification Documentation. https://huggingface.co/docs/transformers/main/tasks/token_classification
+
+32. HuggingFace. (2024). What is Token Classification? https://huggingface.co/tasks/token-classification
+
+33. spaCy. (2024). Rule-based matching. https://spacy.io/usage/rule-based-matching
+
+34. spaCy. (2024). EntityRuler API Documentation. https://spacy.io/api/entityruler
+
+35. spaCy. (2024). Matcher API Documentation. https://spacy.io/api/matcher
+
+36. NewsCatcher. (2024). Train Custom NER Model with spaCy v3. https://www.newscatcherapi.com/blog-posts/train-custom-named-entity-recognition-ner-model-with-spacy-v3
+
+37. Analytics Vidhya. (2022). Custom Named Entity Recognition using spaCy v3. https://www.analyticsvidhya.com/blog/2022/06/custom-named-entity-recognition-using-spacy-v3/
+
+38. ThatWare. (2024). F1 Score for NER: A Metric To Evaluate Precision And Recall. https://thatware.co/f1-score-for-ner/
+
+39. Microsoft Learn. (2024). Custom NER evaluation metrics. https://learn.microsoft.com/en-us/azure/ai-services/language-service/custom-named-entity-recognition/concepts/evaluation-metrics
+
+40. arXiv. (2024). Evaluating NER on Brazilian Corporate Earnings Call Transcriptions. https://arxiv.org/html/2403.12212v1
+
+41. Mindee. (2024). Understanding Confidence Scores in Machine Learning. https://www.mindee.com/blog/how-use-confidence-scores-ml-models
+
+42. pySBD. (2024). Python Sentence Boundary Disambiguation. https://github.com/nipunsadvilkar/pySBD
+
+43. spaCy Universe. (2024). pySBD - python Sentence Boundary Disambiguation. https://spacy.io/universe/project/python-sentence-boundary-disambiguation

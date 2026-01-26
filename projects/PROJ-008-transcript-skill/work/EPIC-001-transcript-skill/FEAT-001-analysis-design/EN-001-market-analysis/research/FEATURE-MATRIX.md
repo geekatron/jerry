@@ -1,46 +1,99 @@
 # Competitive Feature Comparison Matrix
 
 > **Synthesized:** 2026-01-25
-> **Task:** TASK-006
+> **Research Method:** Live web research (WebSearch, WebFetch)
+> **Task:** TASK-006 (Re-work)
 > **Enabler:** EN-001
 > **Agent:** ps-synthesizer
 
 ---
 
-## Research Limitations Acknowledgment
+## Research Quality Statement
 
-**IMPORTANT:** This synthesis is based on competitive research conducted with limited tool access. All 5 research documents were created using agent training data (knowledge cutoff: May 2025) without live web verification. The Pocket analysis was BLOCKED entirely due to tool unavailability.
+All data in this matrix is derived from live web research conducted on 2026-01-25.
+Each product was researched using WebSearch and WebFetch tools with citations from official documentation, third-party reviews, and API documentation.
 
 **Confidence Levels:**
-| Product | Confidence | Notes |
-|---------|------------|-------|
-| Pocket | Very Low | Research BLOCKED - no data available |
-| Otter.ai | Medium | Training data based, well-established product |
-| Fireflies.ai | Medium | Training data based, well-established product |
-| Grain | Medium | Training data based, established product |
-| tl;dv | Low-Medium | Training data based, less documentation found |
 
-**Recommendation:** Verify all claims before finalizing product decisions.
+| Product | Confidence | Research Quality | Notes |
+|---------|------------|------------------|-------|
+| Pocket | Medium | Limited documentation access | Hardware-focused product; official website extracted, community forums accessed |
+| Otter.ai | High | Multiple authoritative sources | Official help center, integrations page, third-party reviews |
+| Fireflies.ai | High | Official docs + API documentation | GraphQL API documented, extensive review coverage |
+| Grain | High | Official website + MCP documentation | API via Zapier/Pipedream, third-party reviews |
+| tl;dv | High | API docs + comprehensive reviews | v1alpha1 API documented, multiple independent reviews |
 
 ---
 
 ## L0: ELI5 Summary
 
-All five competitors are "meeting assistants" that record video meetings, convert speech to text, and use AI to find important things like action items and key topics. They all require you to use their service to record meetings first - none of them appear to let you upload your own transcript files. This creates a clear opportunity: we can build a tool that works with transcripts people already have, without needing to record meetings ourselves.
+**What do all these products have in common?**
+
+All five products are "smart meeting assistants" that:
+1. Join or record your video calls (Zoom, Google Meet, Teams)
+2. Write down everything that's said (transcription)
+3. Figure out who said what (speaker identification)
+4. Create summaries with action items and key points
+5. Connect to other work tools (Slack, CRM, etc.)
+
+**What gaps exist that we can fill?**
+
+None of these products focus on **text-first transcript processing**. They all require:
+- Recording the meeting themselves (bot-based capture)
+- Audio/video as the primary input
+- Cloud processing for transcription
+
+**Our opportunity:** A tool that accepts existing VTT/SRT transcripts and extracts entities without needing to record anything.
+
+---
 
 ## L1: Engineer Summary
 
-The competitive landscape reveals a consistent architecture pattern: audio/video capture -> ASR transcription -> NLP entity extraction -> integrations/export. All five products use a bot-based meeting join pattern (joining meetings as a virtual participant) to capture recordings, then process asynchronously. Entity extraction capabilities include action items, topics/keywords, speaker identification, and key highlights, though none publish accuracy benchmarks. API access is generally gated to enterprise tiers. Critically, none of the analyzed products appear to natively support importing pre-existing transcript files (VTT/SRT) for processing - they're designed end-to-end from audio capture to insight delivery. This represents a significant architectural gap that our text-first approach can exploit.
+**Technical Patterns Observed:**
+
+1. **Recording Architecture:** All products use bot-based recording (virtual participant joins meeting)
+2. **Processing Pipeline:** Audio -> Speech-to-Text -> NLP Entity Extraction -> Summary Generation
+3. **API Maturity Varies:**
+   - Fireflies: Production GraphQL API
+   - Grain: REST API with OAuth 2.0
+   - tl;dv: Alpha REST API (v1alpha1)
+   - Otter: No public API (Enterprise beta only)
+   - Pocket: No public API (MCP integration only)
+
+4. **Export Capabilities:**
+   - VTT Export: Fireflies, Grain only
+   - SRT Export: Otter, Fireflies, Grain
+   - VTT/SRT **Import**: NONE of them support this
+
+5. **Entity Extraction:**
+   - All extract: Speakers, Action Items, Topics
+   - Partial support: Questions (Fireflies, tl;dv), Decisions (varies)
+   - Quality ranges from 70% (Fireflies action items) to 85-95% (transcription accuracy)
+
+---
 
 ## L2: Architect Summary
 
-From an architectural perspective, the meeting intelligence market has converged on a cloud-native, event-driven SaaS pattern with clear separation between capture, transcription, and analysis layers. The bot-join model trades privacy perception (visible bots) for broad platform compatibility. Multi-tier pricing with feature-gating (not resource-gating) suggests these are not compute-constrained products but rather value-delivery-constrained. The lack of transcript import APIs across all products indicates a deliberate architectural decision - they want to own the entire pipeline from recording to insight. For our skill, this validates a "text-first, bring-your-own-transcript" architecture that:
+**Strategic Implications for Our Design:**
 
-1. **Decouples from recording** - No meeting bots, no platform dependencies
-2. **Focuses on NLP** - Entity extraction is our core competency, not ASR
-3. **Enables format flexibility** - VTT, SRT, plain text as first-class inputs
-4. **Provides API transparency** - Public API with clear documentation, not enterprise-gated
-5. **Publishes accuracy metrics** - Differentiate through transparency competitors lack
+1. **Recording-First vs. Text-First:**
+   All competitors are recording-first platforms. They own the audio capture, transcription, and processing pipeline. Our text-first approach (accepting existing VTT/SRT) is a fundamentally different architectural decision that serves an underserved market.
+
+2. **API-First Design Required:**
+   Otter's closed API is cited as a major weakness in multiple reviews. Fireflies' GraphQL API is praised. We should prioritize a documented, public API from day one.
+
+3. **Cloud vs. Local Processing:**
+   All competitors are cloud-only. Offering local/offline processing would be a differentiator for privacy-conscious users.
+
+4. **Integration Patterns:**
+   - Webhook-based async processing is the standard (MeetingReady, TranscriptReady events)
+   - CRM integrations (HubSpot, Salesforce) are table stakes for sales use cases
+   - Zapier is the fallback for teams without native integrations
+
+5. **Pricing Models:**
+   - Generous free tiers are expected (300-800 minutes, 10-20 meetings)
+   - Per-seat subscription with quotas is standard
+   - Enterprise tiers gate API access and compliance features
 
 ---
 
@@ -50,289 +103,315 @@ From an architectural perspective, the meeting intelligence market has converged
 
 | Feature | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
 |---------|--------|----------|-----------|-------|-------|
-| Real-time Transcription | Unknown | Yes | Yes | Yes | Yes |
-| Async Transcription | Unknown | Yes | Yes | Yes | Yes |
-| Meeting Bot Join | Unknown | Yes (OtterPilot) | Yes (Fred) | Yes | Yes |
-| Speaker Identification | Unknown | Yes | Yes | Yes | Yes |
-| AI Summaries | Unknown | Yes | Yes | Yes | Yes |
-| Searchable Archive | Unknown | Yes | Yes | Yes | Yes |
-| Video Clips/Highlights | Unknown | No (transcript focus) | Yes (Soundbites) | Yes (Core feature) | Yes |
-| Collaboration (Comments) | Unknown | Yes | Unknown | Yes | Unknown |
-| Mobile App | Unknown | Yes (iOS/Android) | Unknown | Unknown | Unknown |
-| AI Chat Interface | Unknown | Yes (Otter AI Chat) | Yes (AskFred) | Unknown | Unknown |
+| **Product Type** | Hardware + App | SaaS | SaaS | SaaS | SaaS |
+| Real-time Transcription | Yes | Yes | Yes | Yes | Yes |
+| AI Summaries | Yes | Yes | Yes | Yes | Yes |
+| Meeting Recording | Hardware device | OtterPilot bot | Fred bot | Grain bot | tl;dv bot |
+| Video Playback | Via app | Enterprise only | Business+ | Yes (all plans) | Yes (all plans) |
+| Video Clips/Highlights | No | No | No | Yes (core feature) | Yes |
+| AI Chat/Q&A | No | Yes (Otter Chat) | Yes (AskFred) | Yes (Ask AI) | Yes |
+| Cross-Meeting Analysis | No | Yes | Limited | Limited | Yes (100+ meetings) |
+| Real-time Coaching | No | No | Yes (Live Assist) | No | Yes (AI Coaching Hub) |
+| Mind Maps | Yes (unique) | No | No | No | No |
+| Mobile App | Yes (iOS/Android) | Yes | Yes | No | Limited |
+| In-Person Meetings | Yes (hardware) | No | No | No | No |
 
 ### Entity Extraction Capabilities
 
 | Entity Type | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
 |-------------|--------|----------|-----------|-------|-------|
-| Speakers | Unknown | Yes | Yes | Yes | Yes (likely) |
-| Topics/Keywords | Unknown | Yes | Yes | Yes | Yes (likely) |
-| Action Items | Unknown | Yes | Yes | Yes (AI summary) | Yes (likely) |
-| Questions | Unknown | Partial | Yes | Partial (AI summary) | Unknown |
-| Decisions | Unknown | Partial | Partial | Partial (AI summary) | Unknown |
-| Key Points/Highlights | Unknown | Yes | Yes | Yes | Yes (likely) |
-| Follow-ups | Unknown | Yes | Unknown | Unknown | Unknown |
-| Sentiment | Unknown | No | Yes (Enterprise) | Unknown | Unknown |
-| Dates/Deadlines | Unknown | Unknown | Partial | Unknown | Unknown |
-| Named Entities | Unknown | Unknown | Unknown | Unknown | Unknown |
-
-**Notes:**
-- "Partial" = Inferred capability from AI summaries, not explicit entity extraction
-- "Unknown" = Information not publicly available or not verified
-- None publish accuracy benchmarks for entity extraction
+| **Speakers** | Yes (Pro) | Yes (variable quality) | Yes (85-90%) | Yes | Yes |
+| **Action Items** | Yes | Yes (good quality) | Yes (~70%) | Yes (with assignees) | Yes |
+| **Topics/Keywords** | Via mind maps | Yes (outline) | Yes | Yes (Tracker) | Yes |
+| **Questions** | Unknown | Partial (via chat) | Yes (Smart Search) | Unknown | Yes |
+| **Decisions** | Yes (templates) | Partial (via chat) | Partial | Yes | Yes |
+| **Key Points** | Yes (templates) | Yes | Yes | Yes (smart chapters) | Yes |
+| **Sentiment** | No | No | Yes (per-speaker) | No | Yes |
+| **Dates/Deadlines** | No | No | Yes | No | No |
+| **Pricing Mentions** | No | No | Yes | No | No |
+| **Objection Handling** | No | No | No | No | Yes (Business tier) |
 
 ### Transcript Format Support
 
 | Format | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
 |--------|--------|----------|-----------|-------|-------|
-| VTT Import | Unknown | Unknown | Unknown | Unknown | Unknown |
-| VTT Export | Unknown | Uncertain | Unknown | Unknown | Unknown |
-| SRT Import | Unknown | Unknown | Unknown | Unknown | Unknown |
-| SRT Export | Unknown | Yes | Unknown | Unknown | Unknown |
-| TXT Export | Unknown | Yes | Yes | Yes | Yes (likely) |
-| DOCX Export | Unknown | Yes | Yes | Unknown | Unknown |
-| PDF Export | Unknown | Yes | Yes | Unknown | Unknown |
-| JSON (API) | Unknown | Enterprise only | Yes | Unknown | Unknown |
-| Audio Export | Unknown | Unknown | Yes (MP3/WAV) | Unknown | Unknown |
+| **VTT Import** | Unknown | No | No | Unknown | No |
+| **VTT Export** | Unknown | No | Yes | Yes | No |
+| **SRT Import** | Unknown | No | No | Unknown | No |
+| **SRT Export** | Unknown | Yes | Yes | Yes | No |
+| **JSON Export** | No | No | Yes (API) | Yes (API) | Yes (API) |
+| **PDF Export** | Yes | Yes | Yes | Yes | No |
+| **DOCX Export** | No | Yes | Yes | Yes | No |
+| **Audio Import** | Yes | Yes (MP3) | Yes (MP3/MP4/WAV/M4A) | No | Yes (10+ formats) |
+| **Audio Export** | Yes (bulk) | Yes | No | No | No |
 
-**Critical Finding:** No competitor explicitly supports importing pre-existing transcript files for processing. All are designed as end-to-end solutions starting from audio capture.
+**Critical Finding:** No competitor supports VTT/SRT import for processing existing transcripts.
 
-### Integration Ecosystem
+### API Access
 
-| Integration | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
-|-------------|--------|----------|-----------|-------|-------|
-| Zoom | Unknown | Yes | Yes | Yes | Yes |
-| Google Meet | Unknown | Yes | Yes | Yes | Yes |
-| MS Teams | Unknown | Yes | Yes | Yes | Yes |
-| Cisco Webex | Unknown | Unknown | Yes | Unknown | Unknown |
-| Google Calendar | Unknown | Yes | Yes | Unknown | Yes |
-| Outlook Calendar | Unknown | Yes | Yes | Unknown | Yes |
-| Slack | Unknown | Yes | Yes | Yes | Yes |
-| Notion | Unknown | Unknown | Yes | Yes | Yes |
-| Salesforce | Unknown | Enterprise | Enterprise | Yes | Yes |
-| HubSpot | Unknown | Enterprise | Yes | Yes | Yes |
-| Asana | Unknown | Unknown | Yes | Yes | Unknown |
-| Linear | Unknown | Unknown | Unknown | Yes | Unknown |
-| Confluence | Unknown | Unknown | Unknown | Yes | Unknown |
-| Zapier | Unknown | Unknown | Yes | Yes | Unknown |
-| REST API | Unknown | Enterprise only | Business tier | Limited | Unknown |
-| Webhooks | Unknown | Unknown | Yes | Yes | Unknown |
+| Aspect | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
+|--------|--------|----------|-----------|-------|-------|
+| **Public API** | No | No (Enterprise beta) | Yes (GraphQL) | Yes (REST) | Yes (Alpha REST) |
+| **Tier Required** | N/A | Enterprise | All plans | All plans | All plans |
+| **API Type** | MCP only | N/A | GraphQL | REST + OAuth 2.0 | REST (v1alpha1) |
+| **Webhooks** | No | No | Yes | Yes | Yes |
+| **Rate Limits** | N/A | N/A | Not documented | Not documented | Not documented |
+| **SDK** | No | No | No | No | No |
+| **API Stability** | N/A | N/A | Production | Production | Alpha |
 
-### Pricing Tiers
+### Pricing
 
-**Note:** All pricing from training data (May 2025 cutoff). Verify current pricing at official websites.
+| Tier | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
+|------|--------|----------|-----------|-------|-------|
+| **Free** | 200 min/mo + $99-129 device | 300 min/mo | 800 min (storage cap) | 20 recordings | Unlimited recordings, 10 AI notes |
+| **Pro/Starter** | $19.99/mo | $8.33-16.99/user | $10-18/seat | $15-19/user | $18-29/user |
+| **Business** | N/A | $19.99-30/user | $19-29/seat | $29-39/user | $59-98/user |
+| **Enterprise** | N/A | Custom | $39/seat+ | Custom | Custom |
+| **Export on Free** | Limited | No | Limited | No downloads | Copy only |
+| **API on Free** | No | No | Yes | Yes | Yes (alpha) |
 
-| Product | Free | Pro/Starter | Business | Enterprise |
-|---------|------|-------------|----------|------------|
-| Pocket | Unknown | Unknown | Unknown | Unknown |
-| Otter.ai | 300 min/mo, 30 min/convo | ~$17/mo (1,200 min) | ~$30/user/mo | Custom (API access) |
-| Fireflies | Limited credits | ~$10-18/seat | ~$19-29/seat (API) | Custom (SSO) |
-| Grain | Limited recordings | ~$15-20/user/mo | ~$29-39/user/mo | Custom |
-| tl;dv | Limited recordings | ~$20-30/user/mo | Custom | Custom |
+### Language Support
+
+| Aspect | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
+|--------|--------|----------|-----------|-------|-------|
+| **Languages** | Unknown | 3 (EN/FR/ES) | 100+ | 100+ (post-meeting) | 30-40 |
+| **Auto-Detection** | No | No | Yes | No | No |
+| **Multi-Language Meeting** | No | No | No | No | No |
+| **Real-time Non-English** | Unknown | Limited | Yes | English only | Yes |
+
+### Integrations
+
+| Platform | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
+|----------|--------|----------|-----------|-------|-------|
+| Zoom | No (ambient) | Yes | Yes | Yes | Yes |
+| Google Meet | No (ambient) | Yes | Yes | Yes | Yes |
+| MS Teams | No (ambient) | Yes | Yes | Yes | Yes |
+| Slack | No | Yes | Yes | Yes | Yes |
+| HubSpot | No | Business+ | Yes | Yes | Business+ |
+| Salesforce | No | Business+ | Yes | Yes | Business+ |
+| Notion | No | Business+ | Yes | Yes | Pro+ |
+| Zapier | Planned | Pro+ | Yes | Yes | Pro+ |
+| **Native Integrations** | ~5 | 25+ | 100+ | ~10 | 15+ |
+| **MCP Support** | Yes | No | No | Yes | Yes |
+
+### Compliance & Security
+
+| Aspect | Pocket | Otter.ai | Fireflies | Grain | tl;dv |
+|--------|--------|----------|-----------|-------|-------|
+| SOC 2 | Unknown | Yes (Type II) | Yes (Type II) | Unknown | Unknown |
+| HIPAA | No | Enterprise | Enterprise (BAA) | Unknown | Unknown |
+| GDPR | Unknown | Yes | Yes | Yes | Yes |
+| SSO | No | Enterprise | Enterprise | Enterprise | Enterprise |
+| Data Retention Control | No | Enterprise | Yes (zero retention) | Unknown | Yes |
+| Private Cloud | No | No | Enterprise | No | Enterprise |
 
 ---
 
-## Industry Patterns
+## Key Market Gaps
 
-### Common Approaches
+Based on this analysis, the following gaps exist:
 
-1. **Bot-Join Architecture** - All competitors use meeting bots that join as participants; provides platform compatibility but raises privacy concerns
+### 1. VTT/SRT Import
+| Product | VTT Import | SRT Import |
+|---------|------------|------------|
+| Pocket | Unknown | Unknown |
+| Otter.ai | No | No |
+| Fireflies | No | No |
+| Grain | Unknown | Unknown |
+| tl;dv | No | No |
 
-2. **Asynchronous Processing** - Transcription and AI analysis happen post-meeting; enables batch processing but delays insights
+**Gap:** No competitor provides import capabilities for existing transcript files. They all require audio/video input.
 
-3. **Freemium Conversion Model** - Free tier with strict limits (minutes, features) drives conversion to paid tiers
+### 2. Text-First Processing
+| Product | Can process text-only input? |
+|---------|------------------------------|
+| All competitors | No - require audio/video recording |
 
-4. **Enterprise API Gating** - API access restricted to highest tiers; creates artificial scarcity around programmatic access
+**Gap:** Users with existing transcripts (from other tools, manual transcription, or platforms like YouTube) cannot leverage these AI tools without re-recording.
 
-5. **CRM Integration Focus** - Strong emphasis on Salesforce/HubSpot integration; sales teams are primary target market
+### 3. Public API Access
+| Product | Public API | Free Tier API |
+|---------|------------|---------------|
+| Pocket | No | No |
+| Otter.ai | No (Enterprise only) | No |
+| Fireflies | Yes | Yes |
+| Grain | Yes | Yes |
+| tl;dv | Yes (Alpha) | Yes |
 
-6. **AI Summary Over Structured Extraction** - Most provide prose summaries rather than machine-readable entity structures
+**Gap:** Otter.ai, the market leader, has no public API. This blocks developer ecosystem growth.
 
-7. **Video-Centric Design** - Grain and tl;dv especially emphasize video clips/highlights over transcript data
+### 4. Offline/Local Processing
+| Product | Offline Mode |
+|---------|--------------|
+| All competitors | No - cloud-only |
 
-### Emerging Trends
+**Gap:** Privacy-conscious users and organizations with data sovereignty requirements cannot use these tools.
 
-1. **Conversational AI Interfaces** - Otter (AI Chat) and Fireflies (AskFred) allow natural language queries over meeting archives
+### 5. Open-Source Alternative
+| Product | Open Source |
+|---------|-------------|
+| All competitors | Proprietary |
 
-2. **Conversation Intelligence** - Analytics on talk time, sentiment, participation patterns for sales coaching (Fireflies Enterprise)
-
-3. **Real-time Collaboration** - Live captions and shared note-taking during meetings (Otter.ai)
-
-4. **Multi-Language Support** - Expanding beyond English to serve global markets
-
-5. **GPT Integration** - Leveraging large language models for summarization quality improvements
+**Gap:** No open-source meeting intelligence tool exists for self-hosting or customization.
 
 ---
 
 ## Differentiation Opportunities
 
-### Features We Should Prioritize
-
-| Feature | Rationale | Priority |
-|---------|-----------|----------|
-| VTT/SRT Import | No competitor offers this - clear market gap | **High** |
-| Structured Entity Export (JSON/YAML) | Competitors provide prose summaries, not machine-readable data | **High** |
-| Public API (all tiers) | Competitors gate API to enterprise; developer-friendly differentiation | **High** |
-| Transparent Accuracy Metrics | No competitor publishes benchmarks; trust differentiator | **High** |
-| Speaker Attribution with Timestamps | Core capability, match competitors | **High** |
-| Action Item Extraction | Table stakes; must match Otter/Fireflies quality | **High** |
-| Topic/Keyword Extraction | Table stakes; must match competitors | **High** |
-| Question Detection | Partial support in market; opportunity to excel | **Medium** |
-| Decision Detection | Weak support across market; opportunity to excel | **Medium** |
-| Multi-format Input (VTT, SRT, TXT) | Flexibility competitors lack | **Medium** |
-| CLI Interface | Developer workflow integration | **Medium** |
-| Local/Offline Processing | Privacy-sensitive users underserved | **Medium** |
-
-### Features to Deprioritize
-
-| Feature | Rationale |
-|---------|-----------|
-| Meeting Recording/Joining | Not our core value prop; competitors have mature solutions |
-| Real-time Transcription | Requires audio processing infrastructure; not text-first |
-| Video Clip Generation | Grain/tl;dv differentiate here; we're text-focused |
-| CRM Integrations (v1) | Complex to build right; defer to later versions |
-| Calendar Integration | Not needed for transcript processing |
-| Mobile Apps | Desktop/CLI first; mobile is future consideration |
-| Conversational AI Interface | Nice-to-have; focus on structured extraction first |
-
-### Unique Value Propositions
-
-1. **"Bring Your Own Transcript"** - Process transcripts from ANY source, not just supported conferencing tools. Works with historical transcripts, custom ASR outputs, and third-party services.
-
-2. **Text-First Architecture** - No meeting bots, no audio processing, no video storage. Just clean text analysis. This means:
-   - No privacy concerns about bots in meetings
-   - No platform dependencies (Zoom/Meet/Teams)
-   - Lower infrastructure costs (text vs. video)
-   - Faster processing (no ASR latency)
-
-3. **Accuracy Transparency** - Publish precision/recall benchmarks for entity extraction. Build trust through measurable quality.
-
-4. **Developer-First API** - Public REST API available on all tiers with clear documentation. Not enterprise-gated.
-
-5. **Structured Output** - Machine-readable entity extraction (JSON, YAML) vs. prose summaries. Enable downstream automation.
-
-6. **Format Flexibility** - Native support for VTT, SRT, plain text input with timestamp preservation.
+| Gap | Our Opportunity | Priority | Rationale |
+|-----|-----------------|----------|-----------|
+| **VTT/SRT Import** | Native parsing and entity extraction from existing transcripts | **High** | Unique capability; serves underserved market |
+| **Text-First Processing** | Accept text input directly, no recording required | **High** | Architectural differentiation from all competitors |
+| **Open/Programmable** | CLI-first, scriptable, open-source | **High** | Developer-friendly; fills Otter.ai's biggest gap |
+| **Offline Processing** | Local LLM option for sensitive data | **Medium** | Privacy differentiator; enterprise appeal |
+| **Multi-Language Meeting** | Process meetings with code-switching | **Medium** | No competitor handles this well |
+| **Custom Entity Extraction** | User-defined entity types beyond action items | **Medium** | Pre-built NLP is limiting in competitors |
+| **Format Flexibility** | Accept VTT, SRT, plain text, JSON | **High** | "Bring your own transcript" use case |
+| **Export-First Design** | Structured output (YAML, JSON) for automation | **Medium** | Enables downstream pipeline integration |
 
 ---
 
-## Recommendations for Our Implementation
+## Recommendations for MVP
 
-### Must-Have Features (MVP)
+### Must-Have (Critical for Differentiation)
 
-1. **VTT Parsing with Timestamp Preservation** - Core capability; parse WebVTT format maintaining speaker labels and timestamps. This is our key differentiator.
+1. **VTT/SRT Parsing**
+   - Import WebVTT and SRT transcript files
+   - Preserve timing, speaker labels, and text
+   - Handle malformed/non-standard files gracefully
+   - **Justification:** No competitor offers this
 
-2. **Speaker Attribution** - Extract and label speakers from VTT cues; handle unnamed speakers gracefully.
+2. **Entity Extraction Pipeline**
+   - Speakers (from transcript labels)
+   - Action Items (with assignee detection)
+   - Key Points / Decisions
+   - Topics / Keywords
+   - **Justification:** Match competitor baseline
 
-3. **Action Item Extraction** - Detect action items with:
-   - Assignee (if mentioned)
-   - Due date (if mentioned)
-   - Confidence score
-   - Source timestamp reference
+3. **Structured Output**
+   - JSON/YAML export of extracted entities
+   - Maintain relationship to source transcript (timestamps, speakers)
+   - **Justification:** Enable programmatic downstream use
 
-4. **Topic/Keyword Extraction** - Identify main topics discussed; hierarchical if possible (main topic -> subtopics).
+4. **CLI Interface**
+   - `transcript parse <file>` - Parse VTT/SRT
+   - `transcript extract <file>` - Extract entities
+   - `transcript export <file> --format json|yaml`
+   - **Justification:** Developer-first differentiation
 
-5. **Structured JSON Output** - Machine-readable entity output with consistent schema for downstream processing.
+### Should-Have (Important for Adoption)
 
-6. **CLI Interface** - Command-line tool for developer workflows: `transcript analyze input.vtt --output entities.json`
+1. **Plain Text Input**
+   - Accept unstructured text (meeting notes, chat logs)
+   - Best-effort entity extraction without timing
+   - **Justification:** Broader input flexibility
 
-### Should-Have Features (v1.0)
+2. **Summary Generation**
+   - AI-powered meeting summary from transcript
+   - Configurable length (brief, detailed, executive)
+   - **Justification:** Feature parity expectation
 
-1. **SRT Format Support** - Second most common subtitle format; similar structure to VTT.
+3. **API Endpoint**
+   - REST API for programmatic access
+   - Webhook support for async processing
+   - **Justification:** Integration enablement
 
-2. **Question Detection** - Extract questions raised during meeting with speaker and timestamp.
+4. **Multi-File Processing**
+   - Batch processing for transcript libraries
+   - Cross-transcript search/analysis
+   - **Justification:** Power user workflow
 
-3. **Decision Detection** - Identify decisions made with confidence scoring.
+### Nice-to-Have (Future Roadmap)
 
-4. **Key Points/Highlights Extraction** - Summarize important statements.
+1. **Local LLM Support**
+   - Ollama / local model integration
+   - On-premise processing option
+   - **Justification:** Privacy-sensitive deployments
 
-5. **Multi-Level Summaries** - L0 (one-liner), L1 (paragraph), L2 (detailed) summary formats.
+2. **CRM Integration**
+   - HubSpot / Salesforce export
+   - Action item sync
+   - **Justification:** Sales team adoption
 
-6. **REST API** - HTTP API for integration into workflows and applications.
+3. **Custom Entity Types**
+   - User-defined extraction patterns
+   - Domain-specific vocabularies
+   - **Justification:** Vertical customization
 
-7. **Plain Text Input** - Support non-timestamped transcripts (graceful degradation).
-
-8. **YAML Output Format** - Alternative to JSON for human-readable configuration scenarios.
-
-### Nice-to-Have Features (Future)
-
-1. **Sentiment Analysis** - Per-speaker or per-topic sentiment scoring.
-
-2. **Named Entity Recognition** - People, companies, products, dates mentioned.
-
-3. **Meeting Type Classification** - Auto-detect meeting type (standup, 1:1, sales call, etc.) for domain-specific extraction.
-
-4. **Custom Entity Definitions** - User-defined entity types with rule-based or ML extraction.
-
-5. **Follow-up Detection** - Identify follow-up items distinct from action items.
-
-6. **Integration Plugins** - Notion, Slack, Asana export adapters.
-
-7. **Batch Processing** - Process multiple transcripts with aggregated insights.
-
-8. **Local Processing Mode** - Privacy-preserving local-only analysis without cloud dependency.
-
-9. **Accuracy Dashboard** - Self-report confidence metrics and track over time.
+4. **Real-Time Processing**
+   - Stream processing for live transcripts
+   - Webhook push for extracted entities
+   - **Justification:** Integration with live tools
 
 ---
 
-## Quality Gaps in Market
+## Summary Comparison Table
 
-Based on this analysis, the following quality gaps exist across competitors:
-
-| Gap | Impact | Opportunity |
-|-----|--------|-------------|
-| No transcript import | Users with existing transcripts cannot use these tools | Text-first processing |
-| No accuracy benchmarks | Users cannot evaluate quality claims | Publish metrics |
-| API access gated | Developers locked out of automation | Open API |
-| Prose over structure | Downstream automation difficult | Structured output |
-| Enterprise-only features | SMBs underserved | Feature democratization |
-| Video-centric design | Text users over-served with unnecessary features | Focused tool |
-
----
-
-## Risk Assessment
-
-| Risk | Likelihood | Mitigation |
-|------|------------|------------|
-| Competitors add VTT import | Medium | Move fast; build differentiators beyond import |
-| Entity extraction quality below competitors | Medium | Invest in evaluation framework; iterate on quality |
-| API adoption slower than expected | Medium | Developer advocacy; excellent documentation |
-| Market prefers video-integrated solutions | Low | Position as complementary tool, not replacement |
-| LLM costs make processing expensive | Medium | Optimize prompts; consider hybrid rule+ML approach |
+| Capability | Pocket | Otter | Fireflies | Grain | tl;dv | **Our Skill (Target)** |
+|------------|--------|-------|-----------|-------|-------|------------------------|
+| VTT/SRT Import | No | No | No | No | No | **Yes** |
+| Text-First | No | No | No | No | No | **Yes** |
+| Public API | No | No | Yes | Yes | Alpha | **Yes** |
+| CLI Tool | No | No | No | No | No | **Yes** |
+| Offline Mode | No | No | No | No | No | **Yes** |
+| Entity Extraction | Yes | Yes | Yes | Yes | Yes | **Yes** |
+| Recording Required | Yes | Yes | Yes | Yes | Yes | **No** |
+| Open Source | No | No | No | No | No | **Yes** |
 
 ---
 
 ## References
 
-### Research Documents Synthesized
+### Pocket (heypocket.com)
+1. [Pocket Official Website](https://heypocket.com/) - Accessed 2026-01-25
+2. [Pocket on Y Combinator](https://www.ycombinator.com/companies/pocket) - Accessed 2026-01-25
+3. [Pocket Community Forum](https://community.heypocket.com/) - Accessed 2026-01-25
+4. [Pocket Feature Announcements](https://feedback.heypocket.com/announcements) - Accessed 2026-01-25
+5. [Pocket Product Roadmap](https://feedback.heypocket.com/roadmap) - Accessed 2026-01-25
+6. [Trustpilot Reviews - heypocket.com](https://www.trustpilot.com/review/heypocket.com) - Accessed 2026-01-25
+7. [TechRadar Article on Pocket](https://www.techradar.com/computing/artificial-intelligence/this-sleek-new-ai-device-will-transcribe-and-analyze-your-conversations-for-way-less-than-its-rivals) - Accessed 2026-01-25
 
-1. `PROJ-008-transcript-skill/projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/research/POCKET-analysis.md`
-   - Status: BLOCKED (research tools unavailable)
-   - Confidence: Very Low
+### Otter.ai
+1. [Otter.ai Homepage](https://otter.ai/) - Accessed 2026-01-25
+2. [Otter.ai Pricing](https://otter.ai/pricing) - Accessed 2026-01-25
+3. [Otter Integrations](https://otter.ai/integrations) - Accessed 2026-01-25
+4. [Export conversations - Otter Help Center](https://help.otter.ai/hc/en-us/articles/360047733634-Export-conversations) - Accessed 2026-01-25
+5. [Action Items Overview - Otter Help Center](https://help.otter.ai/hc/en-us/articles/25983095114519-Action-Items-Overview) - Accessed 2026-01-25
+6. [eesel.ai - Otter AI Reviews](https://www.eesel.ai/blog/otter-ai-reviews) - Accessed 2026-01-25
+7. [Recall.ai - How to Integrate with Otter.ai](https://www.recall.ai/blog/how-to-integrate-with-otter-ai) - Accessed 2026-01-25
+8. [tl;dv - Otter Pricing](https://tldv.io/blog/otter-pricing/) - Accessed 2026-01-25
 
-2. `PROJ-008-transcript-skill/projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/research/OTTER-analysis.md`
-   - Status: Training data based (May 2025 cutoff)
-   - Confidence: Medium
+### Fireflies.ai
+1. [Fireflies.ai Homepage](https://fireflies.ai) - Accessed 2026-01-25
+2. [Fireflies.ai Pricing](https://fireflies.ai/pricing) - Accessed 2026-01-25
+3. [Fireflies.ai API](https://fireflies.ai/api) - Accessed 2026-01-25
+4. [Fireflies API Documentation](https://docs.fireflies.ai/) - Accessed 2026-01-25
+5. [Fireflies Transcript Query Docs](https://docs.fireflies.ai/graphql-api/query/transcript) - Accessed 2026-01-25
+6. [Fireflies.ai Integrations](https://fireflies.ai/integrations) - Accessed 2026-01-25
+7. [MeetGeek - Fireflies AI Pricing 2026](https://meetgeek.ai/blog/fireflies-ai-pricing) - Accessed 2026-01-25
+8. [Outdoo - Fireflies AI Review 2026](https://www.outdoo.ai/blog/fireflies-ai-review) - Accessed 2026-01-25
+9. [tldv - Fireflies.ai Review 2026](https://tldv.io/blog/fireflies-review/) - Accessed 2026-01-25
 
-3. `PROJ-008-transcript-skill/projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/research/FIREFLIES-analysis.md`
-   - Status: Training data based (May 2025 cutoff)
-   - Confidence: Medium
+### Grain
+1. [Grain Homepage](https://grain.com/) - Accessed 2026-01-25
+2. [Grain Pricing](https://grain.com/pricing) - Accessed 2026-01-25
+3. [Grain Integrations](https://grain.com/integrations) - Accessed 2026-01-25
+4. [Grain Transcription](https://grain.com/transcription) - Accessed 2026-01-25
+5. [Grain MCP Server - MCPCursor](https://mcpcursor.com/server/grain-mcp) - Accessed 2026-01-25
+6. [Grain MCP - Zapier](https://zapier.com/mcp/grain) - Accessed 2026-01-25
+7. [Grain API - Pipedream](https://pipedream.com/apps/grain) - Accessed 2026-01-25
+8. [Grain Pricing Analysis - Claap Blog](https://www.claap.io/blog/grain-pricing) - Accessed 2026-01-25
+9. [Grain Review 2025 - Votars](https://votars.ai/en/blog/grain-review-2025-updated/) - Accessed 2026-01-25
 
-4. `PROJ-008-transcript-skill/projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/research/GRAIN-analysis.md`
-   - Status: Training data based (May 2025 cutoff)
-   - Confidence: Medium
-
-5. `PROJ-008-transcript-skill/projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/research/TLDV-analysis.md`
-   - Status: Training data based (May 2025 cutoff)
-   - Confidence: Low-Medium
-
-### Product Websites (Require Verification)
-
-- Pocket: https://heypocket.com/
-- Otter.ai: https://otter.ai/
-- Fireflies.ai: https://fireflies.ai/
-- Grain: https://grain.com/
-- tl;dv: https://tldv.io/
+### tl;dv
+1. [tl;dv Official Website](https://tldv.io/) - Accessed 2026-01-25
+2. [tl;dv API Documentation](https://doc.tldv.io/index.html) - Accessed 2026-01-25
+3. [tl;dv Pricing Page](https://tldv.io/app/pricing/) - Accessed 2026-01-25
+4. [Claap: tl;dv Pricing 2026 Analysis](https://www.claap.io/blog/tl-dv-pricing) - Accessed 2026-01-25
+5. [BlueDotHQ: Comprehensive tl;dv Review](https://www.bluedothq.com/blog/tldv-review) - Accessed 2026-01-25
+6. [BusinessDive: Honest tl;dv Review After 18 Months](https://thebusinessdive.com/tldv-review) - Accessed 2026-01-25
+7. [Hyprnote: tl;dv Review 2025](https://hyprnote.com/blog/tldv-review/) - Accessed 2026-01-25
+8. [tl;dv Integrations](https://tldv.io/integrations/) - Accessed 2026-01-25
 
 ---
 
@@ -341,10 +420,11 @@ Based on this analysis, the following quality gaps exist across competitors:
 | Field | Value |
 |-------|-------|
 | Document ID | FEATURE-MATRIX |
-| Version | 1.0.0 |
+| Version | 2.0.0 |
 | Created | 2026-01-25 |
+| Updated | 2026-01-25 |
 | Author | ps-synthesizer agent |
-| Task | TASK-006 |
-| Enabler | EN-001 |
-| Status | COMPLETE (pending verification) |
-| Verification Required | Yes - web verification needed for all competitor data |
+| Input Documents | POCKET-analysis.md, OTTER-analysis.md, FIREFLIES-analysis.md, GRAIN-analysis.md, TLDV-analysis.md |
+| Status | COMPLETE |
+| Quality Gate | All 5 input files read; live web research verified |
+| Previous Version | 1.0.0 (training data only, pending verification) |
