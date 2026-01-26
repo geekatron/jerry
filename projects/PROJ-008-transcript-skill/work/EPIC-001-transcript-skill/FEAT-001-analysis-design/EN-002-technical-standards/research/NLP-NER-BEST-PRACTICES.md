@@ -1199,3 +1199,379 @@ Key patterns for action item detection from live research:
 42. pySBD. (2024). Python Sentence Boundary Disambiguation. https://github.com/nipunsadvilkar/pySBD
 
 43. spaCy Universe. (2024). pySBD - python Sentence Boundary Disambiguation. https://spacy.io/universe/project/python-sentence-boundary-disambiguation
+
+---
+
+## Python Libraries (Context7)
+
+> **Source:** Context7 MCP - Library documentation
+> **Access Date:** 2026-01-25
+
+### spaCy
+
+> **Library ID:** `/websites/spacy_io`
+> **Description:** spaCy is an open-source library for industrial-strength Natural Language Processing (NLP) in Python, designed for efficient large-scale information extraction, offering support for over 75 languages, pretrained pipelines, and an extensive ecosystem for building real-world applications.
+> **Code Snippets:** 5,182 | **Source Reputation:** High | **Benchmark Score:** 69.3
+
+#### Installation
+
+```bash
+pip install spacy
+python -m spacy download en_core_web_trf  # Transformer-based (best accuracy)
+python -m spacy download en_core_web_sm   # Small model (faster)
+```
+
+#### NER Pipeline Configuration
+
+Add a Named Entity Recognition (NER) component to a spaCy NLP pipeline with custom configuration:
+
+```python
+from spacy.pipeline.ner import DEFAULT_NER_MODEL
+
+config = {
+   "moves": None,
+   "update_with_oracle_cut_size": 100,
+   "model": DEFAULT_NER_MODEL,
+   "incorrect_spans_key": "incorrect_spans",
+}
+nlp.add_pipe("ner", config=config)
+```
+
+#### Custom Entity Recognition Pipeline Component
+
+Create a spaCy pipeline component that wraps a custom entity recognizer:
+
+```python
+import your_custom_entity_recognizer
+from spacy.training import biluo_tags_to_spans
+from spacy.language import Language
+
+@Language.component("custom_ner_wrapper")
+def custom_ner_wrapper(doc):
+    words = [token.text for token in doc]
+    custom_entities = your_custom_entity_recognizer(words)
+    doc.ents = biluo_tags_to_spans(doc, custom_entities)
+    return doc
+```
+
+#### Expanding Named Entities with Custom Pipeline Component
+
+Example of creating a custom spaCy pipeline component to expand existing named entities (e.g., checking for titles before 'PERSON' entities):
+
+```python
+import spacy
+from spacy.language import Language
+from spacy.tokens import Span
+
+nlp = spacy.load("en_core_web_sm")
+
+@Language.component("expand_person_entities")
+def expand_person_entities(doc):
+    new_ents = []
+    for ent in doc.ents:
+        if ent.label_ == "PERSON" and ent.start != 0:
+            prev_token = doc[ent.start - 1]
+            if prev_token.text in ("Dr", "Dr.", "Mr", "Mr.", "Ms", "Ms."):
+                new_ent = Span(doc, ent.start - 1, ent.end, label=ent.label)
+                new_ents.append(new_ent)
+            else:
+                new_ents.append(ent)
+        else:
+            new_ents.append(ent)
+    doc.ents = new_ents
+    return doc
+
+# Add the component after the named entity recognizer
+nlp.add_pipe("expand_person_entities", after="ner")
+
+doc = nlp("Dr. Alex Smith chaired first board meeting of Acme Corp Inc.")
+print([(ent.text, ent.label_) for ent in doc.ents])
+```
+
+#### Zero-Shot NER with spaCy (Zshot)
+
+Demonstrates how to set up and use the Zshot pipeline for zero-shot named entity recognition (NER) with spaCy:
+
+```python
+import spacy
+from zshot import PipelineConfig, displacy
+from zshot.linker import LinkerRegen
+from zshot.mentions_extractor import MentionsExtractorSpacy
+from zshot.utils.data_models import Entity
+
+nlp = spacy.load('en_core_web_sm')
+
+# Zero-shot definition of entities
+nlp_config = PipelineConfig(
+    mentions_extractor=MentionsExtractorSpacy(),
+    linker=LinkerRegen(),
+    entities=[
+        Entity(name='Paris',
+               description='Paris is located in northern central France'),
+        Entity(name='IBM',
+               description='International Business Machines Corporation'),
+        Entity(name='New York',
+               description='New York is a city in U.S. state'),
+    ]
+)
+nlp.add_pipe('zshot', config=nlp_config, last=True)
+
+text = 'International Business Machines Corporation (IBM) is an American ' \
+       'multinational technology corporation headquartered in New York.'
+
+doc = nlp(text)
+displacy.serve(doc, style='ent')
+```
+
+### Hugging Face Transformers
+
+> **Library ID:** `/huggingface/transformers`
+> **Description:** State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX.
+> **Code Snippets:** 5,621 | **Source Reputation:** High | **Benchmark Score:** 72.3
+
+#### Installation
+
+```bash
+pip install transformers torch
+```
+
+#### Token Classification Pipeline (NER Inference)
+
+Use the high-level pipeline API to perform Named Entity Recognition inference on input text:
+
+```python
+from transformers import pipeline
+
+# Using pre-trained NER model
+classifier = pipeline("ner", model="stevhliu/my_awesome_wnut_model")
+results = classifier(text)
+# Returns: [{'entity_group': 'PER', 'word': 'John', 'start': 0, 'end': 4, 'score': 0.99}, ...]
+```
+
+#### Pre-trained NER Models
+
+**BrosForTokenClassification** - BROS model fine-tuned for token classification tasks:
+
+```python
+from transformers import BrosForTokenClassification
+
+model = BrosForTokenClassification.from_pretrained("model-name")
+outputs = model(input_ids=input_ids, labels=labels)
+loss = outputs.loss
+logits = outputs.logits
+```
+
+**Glm4ForTokenClassification** - GLM-4 model with a token classification head for sequence labeling tasks:
+
+```python
+from transformers import Glm4ForTokenClassification, AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("THUDM/glm-4-32b-0414")
+model = Glm4ForTokenClassification.from_pretrained("THUDM/glm-4-32b-0414", num_labels=9)
+
+inputs = tokenizer("John Doe works at Google", return_tensors="pt")
+outputs = model(**inputs)
+logits = outputs.logits
+predictions = logits.argmax(-1)
+```
+
+**XLNetForTokenClassification** - XLNet model with a token classification head:
+
+```python
+from transformers import XLNetForTokenClassification
+
+model = XLNetForTokenClassification.from_pretrained("xlnet-model")
+# Returns XLNetForTokenClassificationOutput containing:
+# - loss (optional): Token classification loss when labels provided
+# - logits: Classification scores for each token and label (batch_size, sequence_length, num_labels)
+# - hidden_states (optional): Hidden states of all layers
+# - attentions (optional): Attention weights from all layers
+```
+
+#### Token Classification Overview
+
+Token classification assigns a label to individual tokens in a sentence. One of the most common token classification tasks is Named Entity Recognition (NER). NER attempts to find a label for each entity in a sentence, such as a person, location, or organization. This approach is fundamental for extracting structured information from unstructured text.
+
+**Key Parameters for Token Classification Models:**
+- **input_ids** (`torch.LongTensor` of shape `(batch_size, sequence_length)`) - Tokenized input IDs
+- **attention_mask** (`torch.FloatTensor`, optional) - Attention mask for padding tokens
+- **token_type_ids** (`torch.LongTensor`, optional) - Token type IDs
+- **labels** (`torch.LongTensor`, optional) - Token classification labels for training
+
+**Returns:**
+- **loss** (`torch.FloatTensor`, optional) - Classification loss if labels provided
+- **logits** (`torch.FloatTensor`) - Classification logits for each token
+
+### BERTopic
+
+> **Library ID:** `/maartengr/bertopic`
+> **Description:** BERTopic is a topic modeling technique that leverages transformers and c-TF-IDF to create easily interpretable topics with important words in their descriptions.
+> **Code Snippets:** 475 | **Source Reputation:** High | **Benchmark Score:** 85.6
+
+#### Installation
+
+```bash
+pip install bertopic
+pip install sentence-transformers  # For embeddings
+```
+
+#### Basic Topic Modeling
+
+Extract topics from a text dataset using BERTopic:
+
+```python
+from bertopic import BERTopic
+from sklearn.datasets import fetch_20newsgroups
+
+docs = fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))['data']
+
+topic_model = BERTopic()
+topics, probs = topic_model.fit_transform(docs)
+```
+
+#### Topic Modeling with Verbose Output
+
+Initialize and fit a BERTopic model with verbose output for monitoring:
+
+```python
+from bertopic import BERTopic
+
+topic_model = BERTopic(verbose=True)
+topics, probs = topic_model.fit_transform(tweets)
+```
+
+#### Loading Datasets from Hugging Face
+
+Load datasets for topic modeling (e.g., ArXiv papers):
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset("CShorten/ML-ArXiv-Papers")["train"]
+
+# Extract abstracts to train on and corresponding titles
+abstracts = dataset["abstract"]
+titles = dataset["title"]
+```
+
+#### Topic Modeling Per Class
+
+Prepare data for topic modeling with class labels:
+
+```python
+from bertopic import BERTopic
+from sklearn.datasets import fetch_20newsgroups
+
+data = fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))
+docs = data["data"]
+targets = data["target"]
+target_names = data["target_names"]
+classes = [data["target_names"][i] for i in data["target"]]
+```
+
+#### Extracting Topics from Meeting Transcripts
+
+For meeting transcripts, use aggregated segments and conversational embeddings:
+
+```python
+from bertopic import BERTopic
+from sentence_transformers import SentenceTransformer
+
+# Use embedding model optimized for conversational text
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# Configure for short texts (meeting utterances)
+topic_model = BERTopic(
+    embedding_model=embedding_model,
+    min_topic_size=3,       # Smaller clusters for meetings
+    nr_topics="auto",       # Let algorithm determine
+    calculate_probabilities=True
+)
+
+# Aggregate utterances into segments (e.g., 2-minute windows)
+segments = aggregate_by_time_window(utterances, window_seconds=120)
+topics, probs = topic_model.fit_transform(segments)
+```
+
+### Library Selection Guide
+
+| Use Case | Recommended Library | Rationale |
+|----------|---------------------|-----------|
+| **Speaker identification** | spaCy | Fast regex-based pattern matching with custom pipeline components for expanding PERSON entities to include titles |
+| **Standard NER (PERSON, ORG, DATE)** | spaCy (`en_core_web_trf`) | Production-ready, fast inference, excellent Python API, pre-trained on OntoNotes 5.0 |
+| **Custom NER training** | HuggingFace Transformers | State-of-the-art accuracy, huge model hub, extensive fine-tuning infrastructure |
+| **Action item extraction** | HuggingFace Transformers | Token classification pipeline with sequence labeling for B-ACTION, I-ACTION, O tagging |
+| **Zero-shot NER** | spaCy + Zshot | Define custom entities with descriptions without training data |
+| **Topic clustering** | BERTopic | Excellent for short/noisy text (transcripts), semantic embeddings, c-TF-IDF for interpretable topics |
+| **Real-time requirements** | spaCy (`en_core_web_sm`) | Optimized for speed, ~50ms per cue |
+| **Highest accuracy** | HuggingFace Transformers + LLM | Ensemble approach combining ML with LLM validation |
+| **Multi-lingual transcripts** | HuggingFace Transformers | XLM-RoBERTa and multilingual models available |
+
+### Code Example: Complete NER Pipeline
+
+```python
+import spacy
+from transformers import pipeline as hf_pipeline
+from bertopic import BERTopic
+from sentence_transformers import SentenceTransformer
+
+# 1. Load spaCy for structural extraction and standard NER
+nlp = spacy.load("en_core_web_trf")
+
+# 2. HuggingFace pipeline for custom NER (fine-tuned model)
+ner_pipeline = hf_pipeline(
+    "ner",
+    model="dslim/bert-base-NER",
+    aggregation_strategy="simple"
+)
+
+# 3. BERTopic for topic modeling
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+topic_model = BERTopic(
+    embedding_model=embedding_model,
+    min_topic_size=3,
+    calculate_probabilities=True
+)
+
+def process_transcript(transcript_text: str, segments: list[str]) -> dict:
+    """Process transcript through complete NER pipeline."""
+
+    # Stage 1: spaCy for standard entities
+    doc = nlp(transcript_text)
+    standard_entities = [
+        {"text": ent.text, "label": ent.label_, "start": ent.start_char, "end": ent.end_char}
+        for ent in doc.ents
+    ]
+
+    # Stage 2: HuggingFace for detailed NER
+    hf_entities = ner_pipeline(transcript_text)
+
+    # Stage 3: BERTopic for topic extraction
+    topics, probs = topic_model.fit_transform(segments)
+    topic_info = topic_model.get_topic_info()
+
+    return {
+        "standard_entities": standard_entities,
+        "detailed_entities": hf_entities,
+        "topics": topic_info.to_dict('records'),
+        "topic_assignments": list(zip(segments, topics))
+    }
+```
+
+### Performance Comparison
+
+| Library | Task | Latency (per 1K tokens) | Accuracy (F1) | Memory |
+|---------|------|-------------------------|---------------|--------|
+| spaCy `en_core_web_sm` | Standard NER | ~10ms | ~85% | Low |
+| spaCy `en_core_web_trf` | Standard NER | ~50ms | ~92% | Medium |
+| HuggingFace BERT-NER | Standard NER | ~100ms | ~94% | High |
+| HuggingFace Token Classification | Custom NER | ~150ms | ~85-90%* | High |
+| BERTopic | Topic Modeling | ~500ms | N/A (unsupervised) | High |
+
+*Accuracy depends on training data quality and quantity
+
+### Context7 Library References
+
+- spaCy Official Documentation: https://spacy.io/
+- HuggingFace Transformers Documentation: https://huggingface.co/docs/transformers/
+- BERTopic Documentation: https://maartengr.github.io/BERTopic/

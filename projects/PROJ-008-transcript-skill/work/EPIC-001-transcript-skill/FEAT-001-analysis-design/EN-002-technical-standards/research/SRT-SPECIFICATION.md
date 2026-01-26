@@ -802,3 +802,168 @@ HH:MM:SS,mmm
 | Integer sequence required | Cue ID optional |
 | No metadata | NOTE, STYLE, REGION |
 | No speaker tags | `<v Speaker>` |
+
+---
+
+## Python Libraries (Context7)
+
+> **Source:** Context7 MCP - Library documentation
+> **Access Date:** 2026-01-25
+> **Note:** Only `pysrt` was indexed in Context7. The `srt` library by cdown was not available.
+
+### pysrt Library
+
+> **Context7 Library ID:** `/byroot/pysrt`
+> **Description:** Python parser for SubRip (srt) files
+> **Code Snippets Available:** 15
+> **Source Reputation:** High
+
+#### Installation
+
+```bash
+pip install pysrt
+```
+
+#### Basic Import
+
+```python
+>>> import pysrt
+```
+
+#### Parsing SRT Files
+
+Parse an SRT file using `pysrt.open()`. Handle encoding issues by specifying the encoding parameter:
+
+```python
+>>> subs = pysrt.open('some/file.srt')
+# If you get a UnicodeDecodeError try to specify the encoding
+>>> subs = pysrt.open('some/file.srt', encoding='iso-8859-1')
+```
+
+#### Accessing Subtitles
+
+`SubRipFile` objects are list-like containers of `SubRipItem` instances:
+
+```python
+>>> len(subs)
+>>> first_sub = subs[0]
+```
+
+#### Editing Subtitle Properties
+
+Modify text, start time, and end time properties directly:
+
+```python
+>>> first_sub.text = "Hello World !"
+>>> first_sub.start.seconds = 20
+>>> first_sub.end.minutes = 5
+```
+
+#### Time Manipulation (Shifting)
+
+Shift subtitles by seconds, minutes, or a ratio (for frame rate conversion):
+
+```python
+>>> subs.shift(seconds=-2) # Move all subs 2 seconds earlier
+>>> subs.shift(minutes=1)  # Move all subs 1 minutes later
+>>> subs.shift(ratio=25/23.9) # convert a 23.9 fps subtitle in 25 fps
+>>> first_sub.shift(seconds=1) # Move the first sub 1 second later
+>>> first_sub.start += {'seconds': -1} # Make the first sub start 1 second earlier
+```
+
+#### Slicing by Time Range
+
+Extract a portion of subtitles based on start and end times:
+
+```python
+>>> part = subs.slice(starts_after={'minutes': 2, 'seconds': 30}, ends_before={'minutes': 3, 'seconds': 40})
+>>> part.shift(seconds=-2)
+```
+
+#### Saving Modified Files
+
+Save changes to a new file with specified encoding:
+
+```python
+>>> subs.save('other/path.srt', encoding='utf-8')
+```
+
+### srt Library
+
+> **Note:** The `srt` library by cdown was not indexed in Context7 at the time of this research.
+> See the main "Python Libraries for SRT Processing" section above for `srt` library documentation
+> obtained via direct web research.
+
+### Library Comparison (Context7 + Web Research)
+
+| Feature | pysrt (Context7) | srt (Web Research) |
+|---------|------------------|-------------------|
+| **Context7 Available** | Yes | No |
+| **Source Reputation** | High | N/A |
+| **Dependencies** | None | None |
+| **Code size** | Larger | ~200 lines |
+| **Performance** | Standard | Faster (~30%) |
+| **Error tolerance** | High | High |
+| **Time arithmetic** | Advanced (SubRipTime) | Basic (timedelta) |
+| **FPS conversion** | Built-in (`ratio`) | Manual |
+| **Streaming parser** | Yes | No |
+| **CLI tools** | Yes | Yes |
+| **Encoding handling** | Built-in options | Manual |
+| **Documentation quality** | High (Context7) | High (ReadTheDocs) |
+
+### pysrt Code Examples Summary (Context7)
+
+#### Complete Workflow Example
+
+```python
+import pysrt
+
+# 1. Load SRT file with encoding fallback
+try:
+    subs = pysrt.open('video.srt')
+except UnicodeDecodeError:
+    subs = pysrt.open('video.srt', encoding='iso-8859-1')
+
+# 2. Inspect subtitles
+print(f"Total subtitles: {len(subs)}")
+first = subs[0]
+print(f"First subtitle: {first.text}")
+
+# 3. Edit content
+first.text = "Modified text"
+first.start.seconds = 10
+
+# 4. Shift timing for frame rate conversion
+# (e.g., 23.976 fps source to 25 fps target)
+subs.shift(ratio=25/23.976)
+
+# 5. Extract a time range
+segment = subs.slice(
+    starts_after={'minutes': 5},
+    ends_before={'minutes': 10}
+)
+
+# 6. Save to new file
+subs.save('video_modified.srt', encoding='utf-8')
+```
+
+#### Key Classes (pysrt)
+
+| Class | Description |
+|-------|-------------|
+| `SubRipFile` | List-like container of subtitles; supports `open()`, `save()`, `shift()`, `slice()` |
+| `SubRipItem` | Individual subtitle; has `index`, `start`, `end`, `text` properties |
+| `SubRipTime` | Time object with arithmetic support; millisecond precision |
+
+#### pysrt vs srt Decision Matrix
+
+| Use Case | Recommended Library |
+|----------|---------------------|
+| Simple parse/compose | `srt` |
+| Frame rate conversion | `pysrt` (built-in ratio) |
+| Time shifting | `pysrt` (rich API) |
+| Minimal dependencies | Either (both zero-dep) |
+| Maximum performance | `srt` (~30% faster) |
+| Large file streaming | `pysrt` (streaming parser) |
+| Encoding auto-detection | `pysrt` (built-in) |
+| Handling malformed files | Either (both tolerant) |
