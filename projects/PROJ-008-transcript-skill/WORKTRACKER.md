@@ -19,12 +19,12 @@
 | PROJ-008: Transcript Skill                                        |
 |                                                                    |
 | Phase: ANALYSIS & DESIGN                                          |
-| Overall: [##..................] 10%                               |
+| Overall: [####................] 20%                               |
 |                                                                    |
 | Epics:    [##..................] 10% (1/1 in_progress)           |
 | Features: [....................] 0%  (0/2 completed)             |
-| Enablers: [....................] 0%  (0/13 completed)            |
-| Gates:    [....................] 0%  (0/6 passed)                |
+| Enablers: [######..............] 23% (3/13 completed)            |
+| Gates:    [######..............] 29% (2/7 passed)                |
 +------------------------------------------------------------------+
 ```
 
@@ -41,7 +41,7 @@ This worktracker manages the Transcript Skill project - a Jerry framework capabi
 - Three-tier documentation (ELI5, Engineer, Architect)
 - Phased implementation starting with prompt-based agents
 - Token-managed artifacts (<35K tokens) with bidirectional deep linking
-- Semi-supervised workflow with 6 human approval gates
+- Semi-supervised workflow with 7 human approval gates (CLI at GATE-7 - LAST)
 
 ---
 
@@ -78,22 +78,22 @@ PROJ-008-transcript-skill
     │   │
     │   │   ★ GATE-1: Research Review ★
     │   │
-    │   ├── EN-003: Requirements Synthesis [PENDING]
-    │   │   ├── TASK-010: 5W2H Analysis
-    │   │   ├── TASK-011: Ishikawa Diagram
-    │   │   ├── TASK-012: FMEA Analysis
-    │   │   ├── TASK-013: Requirements Document
-    │   │   └── TASK-014: ps-critic Review
+    │   ├── EN-003: Requirements Synthesis [COMPLETE ✓]
+    │   │   ├── EN-003--TASK-001: 5W2H Analysis [COMPLETE ✓]
+    │   │   ├── EN-003--TASK-002: Ishikawa Diagram [COMPLETE ✓]
+    │   │   ├── EN-003--TASK-003: FMEA Analysis [COMPLETE ✓]
+    │   │   ├── EN-003--TASK-004: Requirements Document [COMPLETE ✓]
+    │   │   └── EN-003--TASK-005: ps-critic Review [COMPLETE ✓]
     │   │
-    │   │   ★ GATE-2: Requirements Review ★
+    │   │   ★ GATE-2: Requirements Review [PASSED ✓] ★
     │   │
-    │   ├── EN-004: Architecture Decision Records [PENDING]
-    │   │   ├── TASK-016: ADR-001 Agent Architecture
-    │   │   ├── TASK-017: ADR-002 Artifact Structure
-    │   │   ├── TASK-018: ADR-003 Bidirectional Linking
-    │   │   ├── TASK-019: ADR-004 File Splitting
-    │   │   ├── TASK-020: ADR-005 Agent Implementation
-    │   │   └── TASK-021: ps-critic ADR Review
+    │   ├── EN-004: Architecture Decision Records [IN_PROGRESS]
+    │   │   ├── EN-004--TASK-001: ADR-001 Agent Architecture [PENDING]
+    │   │   ├── EN-004--TASK-002: ADR-002 Artifact Structure [PENDING]
+    │   │   ├── EN-004--TASK-003: ADR-003 Bidirectional Linking [PENDING]
+    │   │   ├── EN-004--TASK-004: ADR-004 File Splitting [PENDING]
+    │   │   ├── EN-004--TASK-005: ADR-005 Agent Implementation [PENDING]
+    │   │   └── EN-004--TASK-006: ps-critic ADR Review [BLOCKED]
     │   │
     │   │   ★ GATE-3: Architecture Review ★
     │   │
@@ -154,19 +154,25 @@ PROJ-008-transcript-skill
         │   ├── TASK-057: Implement Story Creation Flow
         │   └── TASK-058: Implement Decision Record Flow
         │
-        ├── EN-012: Skill CLI Interface [PENDING]
-        │   ├── TASK-059: Create SKILL.md Definition
-        │   ├── TASK-060: Implement Command Handler
-        │   ├── TASK-061: Implement Progress Reporting
-        │   └── TASK-062: Implement Error Handling
-        │
         └── EN-013: Context Injection Implementation [PENDING]
             ├── TASK-063: Implement Context Loader
             ├── TASK-064: Implement Prompt Merger
             ├── TASK-065: Implement Metadata Passing
             └── TASK-066: Create Example Context Files
 
-            ★ GATE-6: Final Review ★
+            ★ GATE-6: Core Functionality Review ★
+
+        ┌──────────────────────────────────────────────────────────────────────┐
+        │  PHASE 7: CLI (ABOVE AND BEYOND) - LITERALLY LAST                    │
+        └──────────────────────────────────────────────────────────────────────┘
+
+        └── EN-012: Skill CLI Interface [PENDING] ← **LAST** (Above and Beyond)
+            ├── TASK-059: Create SKILL.md Definition
+            ├── TASK-060: Implement Command Handler
+            ├── TASK-061: Implement Progress Reporting
+            └── TASK-062: Implement Error Handling
+
+            ★ GATE-7: CLI Final Review (Above and Beyond) ★
 ```
 
 ---
@@ -175,12 +181,13 @@ PROJ-008-transcript-skill
 
 | Gate | After | Approval For | Status |
 |------|-------|--------------|--------|
-| GATE-1 | EN-001, EN-002 | Research completeness | PENDING |
-| GATE-2 | EN-003 | Requirements validity | PENDING |
+| GATE-1 | EN-001, EN-002 | Research completeness | PASSED ✓ |
+| GATE-2 | EN-003 | Requirements validity | PASSED ✓ |
 | GATE-3 | EN-004 | Architecture decisions | PENDING |
 | GATE-4 | EN-005, EN-006 | Design completeness | PENDING |
 | GATE-5 | EN-007, EN-008 | Core implementation | PENDING |
-| GATE-6 | EN-009..EN-013 | Final review | PENDING |
+| GATE-6 | EN-009, EN-010, EN-011, EN-013 | Core output generation & integration | PENDING |
+| GATE-7 | EN-012 | CLI Interface (**Above and Beyond** - LITERALLY LAST) | PENDING |
 
 ---
 
@@ -192,9 +199,9 @@ PROJ-008-transcript-skill
 |----------|-------|-----------|-------------|---------|------------|
 | Epics | 1 | 0 | 1 | 0 | 0% |
 | Features | 2 | 0 | 1 | 1 | 0% |
-| Enablers | 13 | 2 | 0 | 11 | 15% |
-| Tasks | 66 | 10 | 0 | 56 | 15% |
-| Gates | 6 | 0 | 1 | 5 | 0% |
+| Enablers | 13 | 3 | 1 | 9 | 23% |
+| Tasks | 66 | 15 | 0 | 51 | 23% |
+| Gates | 7 | 2 | 1 | 4 | 29% |
 
 ### By Feature
 
@@ -212,7 +219,8 @@ PROJ-008-transcript-skill
 | Architecture Complete | TBD | PENDING | GATE-3 |
 | Design Complete | TBD | PENDING | GATE-4 |
 | Core Implementation Complete | TBD | PENDING | GATE-5 |
-| Full Release | TBD | PENDING | GATE-6 |
+| Core Functionality Complete | TBD | PENDING | GATE-6 |
+| CLI Complete (Above and Beyond) | TBD | PENDING | GATE-7 |
 
 ---
 
@@ -221,17 +229,32 @@ PROJ-008-transcript-skill
 ### Active Work
 - **Epic:** EPIC-001 - Transcript Skill Foundation
 - **Feature:** FEAT-001 - Analysis & Design
-- **Phase Status:** PHASE 1 COMPLETE - AWAITING GATE-1 HUMAN REVIEW
-- **Next Gate:** GATE-1 (Research Review - Human Approval Required)
+- **Phase Status:** PHASE 3 IN PROGRESS - EN-004 Architecture Decisions
+- **Next Gate:** GATE-3 (Architecture Review - Human Approval Required)
 
-### Completed (Phase 1)
+### Completed (Phases 1-2)
 - [x] EN-001: Market Analysis Research (6/6 tasks) - COMPLETE
 - [x] EN-002: Technical Standards Research (4/4 tasks) - COMPLETE
+- [x] GATE-1: Research Review - PASSED ✓
+- [x] EN-003: Requirements Synthesis (5/5 tasks) - COMPLETE
+- [x] GATE-2: Requirements Review - PASSED ✓
 
-### Next Actions (Blocked by GATE-1)
-1. **AWAITING GATE-1 HUMAN APPROVAL** - Review research findings
-2. After GATE-1: Execute EN-003 Requirements Synthesis (5W2H, Ishikawa, FMEA)
-3. After EN-003: Request GATE-2 human approval
+### In Progress (Phase 3)
+- [ ] EN-004: Architecture Decision Records (0/6 tasks)
+  - [ ] EN-004--TASK-001: ADR-001 Agent Architecture
+  - [ ] EN-004--TASK-002: ADR-002 Artifact Structure
+  - [ ] EN-004--TASK-003: ADR-003 Bidirectional Linking
+  - [ ] EN-004--TASK-004: ADR-004 File Splitting
+  - [ ] EN-004--TASK-005: ADR-005 Agent Implementation
+  - [ ] EN-004--TASK-006: ps-critic ADR Review (blocked by TASK-001-005)
+
+### Next Actions
+1. Execute EN-004--TASK-001 using @orchestration + @problem-solving
+2. Deep research with ps-researcher, draft with ps-architect
+3. Feedback loop with ps-critic until quality >= 0.90
+4. Repeat for TASK-002 through TASK-005
+5. Final ps-critic review (TASK-006)
+6. Request GATE-3 human approval
 
 ---
 
@@ -245,8 +268,9 @@ PROJ-008-transcript-skill
 | Feature | FEAT-002 | [work/EPIC-001-transcript-skill/FEAT-002-implementation/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/) | PENDING |
 | Enabler | EN-001 | [FEAT-001-analysis-design/EN-001-market-analysis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/) | COMPLETE |
 | Enabler | EN-002 | [FEAT-001-analysis-design/EN-002-technical-standards/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-002-technical-standards/) | COMPLETE |
-| Enabler | EN-003 | [FEAT-001-analysis-design/EN-003-requirements-synthesis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-003-requirements-synthesis/) | PENDING |
-| Enabler | EN-004 | [FEAT-001-analysis-design/EN-004-architecture-decisions/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/) | PENDING |
+| Enabler | EN-003 | [FEAT-001-analysis-design/EN-003-requirements-synthesis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-003-requirements-synthesis/) | COMPLETE |
+| Enabler | EN-004 | [FEAT-001-analysis-design/EN-004-architecture-decisions/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/) | IN_PROGRESS |
+| ADRs | docs/adrs/ | [docs/adrs/](../../../docs/adrs/) | IN_PROGRESS |
 | Enabler | EN-005 | [FEAT-001-analysis-design/EN-005-design-documentation/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/) | PENDING |
 | Enabler | EN-006 | [FEAT-001-analysis-design/EN-006-context-injection-design/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-006-context-injection-design/) | PENDING |
 | Enabler | EN-007 | [FEAT-002-implementation/EN-007-vtt-parser/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/) | PENDING |
@@ -270,7 +294,7 @@ PROJ-008-transcript-skill
 | DEC-005 | Token limit: 35K per artifact | 2026-01-26 | DOCUMENTED |
 | DEC-006 | Phased agents: Prompt-based first, Python later | 2026-01-26 | DOCUMENTED |
 | DEC-007 | Two features: Analysis & Design + Implementation | 2026-01-26 | DOCUMENTED |
-| DEC-008 | Six human approval gates | 2026-01-26 | DOCUMENTED |
+| DEC-008 | Seven human approval gates (CLI at GATE-7 - LAST) | 2026-01-26 | DOCUMENTED |
 
 ---
 
@@ -296,7 +320,7 @@ PROJ-008-transcript-skill
 | EN-009 | GATE-5 | GATE-6 |
 | EN-010 | EN-008 | GATE-6 |
 | EN-011 | EN-010 | GATE-6 |
-| EN-012 | EN-007, EN-010 | GATE-6 |
+| EN-012 | GATE-6 | GATE-7 | ← **LAST** (Above and Beyond)
 | EN-013 | EN-006 | GATE-6 |
 
 ---
@@ -304,44 +328,57 @@ PROJ-008-transcript-skill
 ## Orchestration State
 
 ### Current Phase
-- **Phase:** 1 - Research & Analysis
+- **Phase:** 3 - Architecture Decision Records
 - **Feature:** FEAT-001
-- **Status:** COMPLETE - AWAITING_GATE_1_APPROVAL
-- **Next Gate:** GATE-1 (Human Review Required)
-- **Orchestration Plan:** [ORCHESTRATION_PLAN.md](./work/EPIC-001-transcript-skill/plans/ORCHESTRATION_PLAN.md)
+- **Enabler:** EN-004
+- **Status:** IN_PROGRESS
+- **Next Gate:** GATE-3 (Architecture Review - Human Approval Required)
+- **Orchestration Plan:** TBD (will use @orchestration skill)
 
 ### Agent Queue
 
 | Agent | Task | Status |
 |-------|------|--------|
-| ps-researcher | TASK-001: Research Pocket | COMPLETE |
-| ps-researcher | TASK-002: Research Otter.ai | COMPLETE |
-| ps-researcher | TASK-003: Research Fireflies.ai | COMPLETE |
-| ps-researcher | TASK-004: Research Grain | COMPLETE |
-| ps-researcher | TASK-005: Research tl;dv | COMPLETE |
-| ps-researcher | TASK-007: VTT Specification | COMPLETE |
-| ps-researcher | TASK-008: SRT Specification | COMPLETE |
-| ps-researcher | TASK-009: NLP/NER Best Practices | COMPLETE |
-| ps-researcher | TASK-010: Academic Literature | COMPLETE |
-| ps-synthesizer | TASK-006: Feature Matrix | COMPLETE |
+| ps-researcher | EN-001: Research Pocket | COMPLETE |
+| ps-researcher | EN-001: Research Otter.ai | COMPLETE |
+| ps-researcher | EN-001: Research Fireflies.ai | COMPLETE |
+| ps-researcher | EN-001: Research Grain | COMPLETE |
+| ps-researcher | EN-001: Research tl;dv | COMPLETE |
+| ps-researcher | EN-002: VTT Specification | COMPLETE |
+| ps-researcher | EN-002: SRT Specification | COMPLETE |
+| ps-researcher | EN-002: NLP/NER Best Practices | COMPLETE |
+| ps-researcher | EN-002: Academic Literature | COMPLETE |
+| ps-synthesizer | EN-001: Feature Matrix | COMPLETE |
+| ps-analyst | EN-003: 5W2H Analysis | COMPLETE |
+| ps-analyst | EN-003: Ishikawa Diagram | COMPLETE |
+| ps-analyst | EN-003: FMEA Analysis | COMPLETE |
+| ps-synthesizer | EN-003: Requirements Spec | COMPLETE |
+| ps-critic | EN-003: Quality Review (0.903) | COMPLETE |
+| TBD | EN-004--TASK-001: ADR-001 Agent Architecture | PENDING |
+| TBD | EN-004--TASK-002: ADR-002 Artifact Structure | PENDING |
+| TBD | EN-004--TASK-003: ADR-003 Bidirectional Linking | PENDING |
+| TBD | EN-004--TASK-004: ADR-004 File Splitting | PENDING |
+| TBD | EN-004--TASK-005: ADR-005 Agent Implementation | PENDING |
+| ps-critic | EN-004--TASK-006: ADR Review | BLOCKED |
 
 ---
 
 ## Quality Gates
 
-### Research Phase Gates (GATE-1)
+### Research Phase Gates (GATE-1) ✓ PASSED
 - [x] 5 competitive products analyzed
 - [x] VTT specification research complete
 - [x] NLP/NER best practices documented
 - [x] Feature matrix synthesized
-- [ ] ps-critic review passed (optional - GATE-1 human review)
+- [x] Human approval granted
 
-### Requirements Phase Gates (GATE-2)
-- [ ] 5W2H analysis complete
-- [ ] Ishikawa diagram created
-- [ ] FMEA analysis complete
-- [ ] Requirements spec created
-- [ ] ps-critic review passed
+### Requirements Phase Gates (GATE-2) ✓ PASSED
+- [x] 5W2H analysis complete
+- [x] Ishikawa diagram created
+- [x] FMEA analysis complete
+- [x] Requirements spec created (quality score: 0.903)
+- [x] ps-critic review passed
+- [x] Human approval granted
 
 ### Architecture Phase Gates (GATE-3)
 - [ ] ADR-001: Agent Architecture accepted
@@ -363,13 +400,20 @@ PROJ-008-transcript-skill
 - [ ] Unit tests passing
 - [ ] Integration tests passing
 
-### Final Gates (GATE-6)
+### Core Functionality Gates (GATE-6)
 - [ ] Mind map generation working
 - [ ] Artifact packaging working
 - [ ] Deep linking working
 - [ ] Worktracker integration working
+- [ ] Context injection working
+- [ ] End-to-end tests passing (core functionality)
+
+### CLI Gates (GATE-7) - ABOVE AND BEYOND - LITERALLY LAST
+- [ ] SKILL.md definition created
 - [ ] CLI interface working
-- [ ] End-to-end tests passing
+- [ ] Progress reporting working
+- [ ] Error handling working
+- [ ] CLI tests passing
 
 ---
 
@@ -394,3 +438,11 @@ PROJ-008-transcript-skill
 | 2026-01-26 | Claude | Added 13 enablers with 66 tasks |
 | 2026-01-26 | Claude | Added 6 human approval gates |
 | 2026-01-26 | Claude | Phase 1 complete: EN-001 (6 tasks), EN-002 (4 tasks) - AWAITING GATE-1 |
+| 2026-01-26 | Claude | Phase ordering adjustment: CLI (EN-012) moved to Phase 7 (GATE-7) - "Above and Beyond" - LITERALLY LAST |
+| 2026-01-26 | Claude | GATE-1 passed (human approval granted) |
+| 2026-01-26 | Claude | Phase 2 complete: EN-003 (5 tasks) - quality score 0.903 |
+| 2026-01-26 | Claude | GATE-2 passed (human approval granted) |
+| 2026-01-26 | Claude | Created docs/adrs/ directory for ADR storage |
+| 2026-01-26 | Claude | Updated to composite IDs for EN-004 tasks (format: EN-004--TASK-NNN-slug) |
+| 2026-01-26 | Claude | EN-004 Architecture Decisions: created 6 task files using TASK.md template |
+| 2026-01-26 | Claude | EN-004 Architecture Decisions: updated enabler to full ENABLER.md template |

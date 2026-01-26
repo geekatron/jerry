@@ -93,7 +93,8 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | Gate | After | Approval Required For |
 |------|-------|----------------------|
 | GATE-5 | EN-007, EN-008 | Core parsing & extraction |
-| GATE-6 | EN-009, EN-010, EN-011 | Output generation |
+| GATE-6 | EN-009, EN-010, EN-011, EN-013 | Core output generation & integration |
+| GATE-7 | EN-012 | CLI Interface (**Above and Beyond** - LITERALLY LAST) |
 
 ---
 
@@ -108,7 +109,7 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | [EN-009](./EN-009-mindmap-generator/EN-009-mindmap-generator.md) | Enabler | Mind Map Generator | pending | high | 8 | 6 |
 | [EN-010](./EN-010-artifact-packaging/EN-010-artifact-packaging.md) | Enabler | Artifact Packaging & Deep Linking | pending | high | 8 | 6 |
 | [EN-011](./EN-011-worktracker-integration/EN-011-worktracker-integration.md) | Enabler | Worktracker Integration | pending | medium | 5 | 6 |
-| [EN-012](./EN-012-skill-interface/EN-012-skill-interface.md) | Enabler | Skill CLI Interface | pending | medium | 5 | 6 |
+| [EN-012](./EN-012-skill-interface/EN-012-skill-interface.md) | Enabler | Skill CLI Interface | pending | low | 5 | 7 | ← **LAST** (Above and Beyond)
 | [EN-013](./EN-013-context-injection/EN-013-context-injection.md) | Enabler | Context Injection Implementation | pending | low | 5 | 6 |
 
 ### Work Item Links
@@ -189,25 +190,41 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 |  │  │   Generator   │  │   Packaging   │  │  Integration  │              │ |
 |  │  └───────┬───────┘  └───────┬───────┘  └───────┬───────┘              │ |
 |  │          │                  │                  │                       │ |
-|  │  ┌───────────────┐  ┌───────────────┐                                 │ |
-|  │  │    EN-012     │  │    EN-013     │                                 │ |
-|  │  │ Skill CLI     │  │   Context     │                                 │ |
-|  │  │ Interface     │  │  Injection    │                                 │ |
-|  │  └───────┬───────┘  └───────┬───────┘                                 │ |
-|  │          │                  │                                          │ |
-|  │          └──────────────────┴──────────────────────────────┐          │ |
-|  │                                                             │          │ |
-|  │  ┌──────────────────────────────────────────────────────────┴────┐    │ |
-|  │  │              ★ GATE 6: Final Review ★                         │    │ |
-|  │  │              (Human Approval Required)                        │    │ |
-|  │  └──────────────────────────────────────────────────────────┬────┘    │ |
-|  └─────────────────────────────────────────────────────────────┼─────────┘ |
-|                                                                 │          |
-|                                                                 ▼          |
-|                              ┌────────────────────────────────────┐        |
-|                              │      TRANSCRIPT SKILL COMPLETE      │        |
-|                              │      Ready for Release/Testing      │        |
-|                              └────────────────────────────────────┘        |
+|  │          │          ┌───────────────┐         │                       │ |
+|  │          │          │    EN-013     │         │                       │ |
+|  │          │          │   Context     │         │                       │ |
+|  │          │          │  Injection    │         │                       │ |
+|  │          │          └───────┬───────┘         │                       │ |
+|  │          │                  │                 │                        │ |
+|  │          └──────────────────┴─────────────────┘                       │ |
+|  │                             │                                          │ |
+|  │  ┌──────────────────────────┴────────────────────────────────────┐    │ |
+|  │  │              ★ GATE 6: Core Functionality Review ★             │    │ |
+|  │  │              (Human Approval Required)                         │    │ |
+|  │  └──────────────────────────┬────────────────────────────────────┘    │ |
+|  └─────────────────────────────┼─────────────────────────────────────────┘ |
+|                                │                                            |
+|                                ▼                                            |
+|  PHASE 7: CLI (ABOVE AND BEYOND) - LITERALLY LAST                          |
+|  ┌─────────────────────────────────────────────────────────────────────────┐ |
+|  │                                                                          │ |
+|  │  ┌───────────────────────────────────────────────────────────────────┐  │ |
+|  │  │                          EN-012                                    │  │ |
+|  │  │                    Skill CLI Interface                            │  │ |
+|  │  │                 (Optional Enhancement)                            │  │ |
+|  │  └───────────────────────────┬───────────────────────────────────────┘  │ |
+|  │                              │                                          │ |
+|  │  ┌───────────────────────────┴───────────────────────────────────────┐  │ |
+|  │  │          ★ GATE 7: CLI Final Review (Above and Beyond) ★          │  │ |
+|  │  │                    (Human Approval Required)                       │  │ |
+|  │  └───────────────────────────┬───────────────────────────────────────┘  │ |
+|  └──────────────────────────────┼──────────────────────────────────────────┘ |
+|                                 │                                            |
+|                                 ▼                                            |
+|                              ┌────────────────────────────────────┐         |
+|                              │      TRANSCRIPT SKILL COMPLETE      │         |
+|                              │      Ready for Release/Testing      │         |
+|                              └────────────────────────────────────┘         |
 +==============================================================================+
 ```
 

@@ -12,14 +12,54 @@ orchestration:
 
 # Current execution state
 state:
-  current_phase: 1
-  current_phase_name: "Parallel Research"
+  current_phase: 2
+  current_phase_name: "Requirements Synthesis"
   current_feature: FEAT-001
-  next_gate: GATE-1
-  execution_status: AWAITING_GATE_APPROVAL
+  next_gate: GATE-2
+  execution_status: IN_PROGRESS
   phase_1_complete: true
-  en002_augmentation_completed: "2026-01-25T06:30:00Z"
+  phase_2_started: "2026-01-25T07:00:00Z"
+  gate_1_approved: "2026-01-25T06:45:00Z"
   research_quality: "Live web research + Context7 library documentation"
+  phase_2_waves:
+    wave_1:
+      status: COMPLETE
+      completed_at: "2026-01-25T08:00:00Z"
+      parallel: true
+      tasks: ["5W2H", "Ishikawa", "8D", "Pareto"]
+      artifacts:
+        - "analysis/5W2H-ANALYSIS.md"
+        - "analysis/ISHIKAWA-DIAGRAM.md"
+        - "analysis/8D-PROBLEM-SOLVING.md"
+        - "analysis/PARETO-ANALYSIS.md"
+    wave_2:
+      status: COMPLETE
+      started_at: "2026-01-25T08:00:00Z"
+      completed_at: "2026-01-25T10:00:00Z"
+      sequential: true
+      tasks: ["FMEA", "NASA_SE"]
+      artifacts:
+        - "analysis/FMEA-ANALYSIS.md"
+        - "requirements/NASA-SE-REQUIREMENTS.md"
+    wave_3:
+      status: COMPLETE
+      started_at: "2026-01-25T10:00:00Z"
+      completed_at: "2026-01-25T11:00:00Z"
+      tasks: ["Requirements_Synthesis", "ps-critic_Review"]
+      artifacts:
+        - "requirements/REQUIREMENTS-SPECIFICATION.md"
+        - "reviews/EN-003-CRITIC-REVIEW.md"
+      quality_score: 0.903
+
+# Implementation Priority Order (from research)
+# =============================================
+# Phase 1: Skill Architecture & Prompts    [CRITICAL] - SKILL.md, Agent definitions
+# Phase 2: Output Formats & Templates      [HIGH]     - Markdown, JSON, L0/L1/L2
+# Phase 3: Core Extraction Logic           [HIGH]     - Parsing, Entity extraction
+# Phase 4: Validation & Multi-Model Testing [HIGH]    - Quality assurance, Benchmarks
+# Phase 5: CLI (Above and Beyond)          [MEDIUM]   - LITERALLY LAST - optional CLI
+#
+# Note: Orchestration phases below map to this priority order
 
 # Phase definitions
 phases:
@@ -39,11 +79,20 @@ phases:
     name: "Requirements Synthesis"
     feature: FEAT-001
     gate: GATE-2
-    status: BLOCKED
-    blocked_by: GATE-1
+    status: IN_PROGRESS
+    started_at: "2026-01-25T07:00:00Z"
     enablers:
       - EN-003
     parallel: false
+    execution_waves:
+      - wave: 1
+        parallel: true
+        tasks: [TASK-W1-01, TASK-W1-02, TASK-W1-03, TASK-W1-04]
+      - wave: 2
+        sequential: true
+        tasks: [TASK-W2-01, TASK-W2-02]
+      - wave: 3
+        tasks: [TASK-W3-01, TASK-W3-02]
 
   - id: 3
     name: "Architecture Decisions"
@@ -88,10 +137,21 @@ phases:
       - EN-009
       - EN-010
       - EN-011
-      - EN-012
       - EN-013
     parallel: true  # Most can run in parallel
     sync_barrier: true
+    note: "CLI (EN-012) moved to Phase 7 - 'Above and Beyond'"
+
+  - id: 7
+    name: "CLI Interface (Above and Beyond)"
+    feature: FEAT-002
+    gate: GATE-7
+    status: BLOCKED
+    blocked_by: GATE-6
+    enablers:
+      - EN-012
+    parallel: false
+    note: "CLI is literally the LAST priority - optional enhancement"
 
 # Gate definitions
 gates:
@@ -99,7 +159,8 @@ gates:
     name: "Research Review"
     after_phase: 1
     approval_for: "Research completeness"
-    status: PENDING
+    status: PASSED
+    approved_at: "2026-01-25T06:45:00Z"
     requires_human: true
     prerequisites:
       - EN-001_COMPLETE
@@ -110,7 +171,9 @@ gates:
     name: "Requirements Review"
     after_phase: 2
     approval_for: "Requirements validity"
-    status: BLOCKED
+    status: READY_FOR_REVIEW
+    quality_score: 0.903
+    recommendation: "ACCEPT WITH MINOR OBSERVATIONS"
     requires_human: true
     prerequisites:
       - EN-003_COMPLETE
@@ -149,18 +212,29 @@ gates:
       - INTEGRATION_TESTS_PASS
 
   - id: GATE-6
-    name: "Final Review"
+    name: "Core Functionality Review"
     after_phase: 6
-    approval_for: "Final review and release"
+    approval_for: "Core output generation and integration"
     status: BLOCKED
     requires_human: true
     prerequisites:
       - EN-009_COMPLETE
       - EN-010_COMPLETE
       - EN-011_COMPLETE
-      - EN-012_COMPLETE
       - EN-013_COMPLETE
       - E2E_TESTS_PASS
+    note: "EN-012 (CLI) moved to Phase 7 - not a prerequisite for core functionality"
+
+  - id: GATE-7
+    name: "CLI Final Review (Above and Beyond)"
+    after_phase: 7
+    approval_for: "CLI interface completion - optional enhancement"
+    status: BLOCKED
+    requires_human: true
+    prerequisites:
+      - EN-012_COMPLETE
+      - CLI_TESTS_PASS
+    note: "LITERALLY the last gate - CLI is 'Above and Beyond'"
 
 # Enabler tracking
 enablers:
@@ -237,30 +311,83 @@ enablers:
     name: "Requirements Synthesis"
     feature: FEAT-001
     phase: 2
-    status: BLOCKED
-    blocked_by: [GATE-1]
-    effort_points: 8
+    status: COMPLETE
+    started_at: "2026-01-25T07:00:00Z"
+    completed_at: "2026-01-25T11:00:00Z"
+    quality_score: 0.903
+    effort_points: 21  # Expanded from 8 to include all frameworks
+    frameworks_applied:
+      - "5W2H (What, Why, Where, When, Who, How, How Much)"
+      - "Ishikawa (Fishbone/Cause-Effect)"
+      - "8D (Eight Disciplines Problem Solving)"
+      - "Pareto (80/20 Analysis)"
+      - "FMEA (Failure Mode and Effects Analysis)"
+      - "NASA SE (NPR 7123.1D Processes 1, 2, 11)"
     tasks:
-      - id: TASK-010
+      # Wave 1: Parallel Analysis
+      - id: TASK-W1-01
         name: "5W2H Analysis"
-        status: BLOCKED
+        wave: 1
+        status: PENDING
         agent: ps-analyst
-      - id: TASK-011
+        model: opus
+        output: "analysis/5W2H-ANALYSIS.md"
+      - id: TASK-W1-02
         name: "Ishikawa Diagram"
-        status: BLOCKED
+        wave: 1
+        status: PENDING
         agent: ps-analyst
-      - id: TASK-012
+        model: opus
+        output: "analysis/ISHIKAWA-DIAGRAM.md"
+      - id: TASK-W1-03
+        name: "8D Problem Solving"
+        wave: 1
+        status: PENDING
+        agent: ps-analyst
+        model: opus
+        output: "analysis/8D-PROBLEM-SOLVING.md"
+      - id: TASK-W1-04
+        name: "Pareto Analysis"
+        wave: 1
+        status: PENDING
+        agent: ps-analyst
+        model: opus
+        output: "analysis/PARETO-ANALYSIS.md"
+      # Wave 2: Sequential (depends on Wave 1)
+      - id: TASK-W2-01
         name: "FMEA Analysis"
+        wave: 2
         status: BLOCKED
-        agent: ps-analyst
-      - id: TASK-013
-        name: "Requirements Document"
+        blocked_by: [TASK-W1-01, TASK-W1-02, TASK-W1-03, TASK-W1-04]
+        agent: nse-risk
+        model: opus
+        output: "analysis/FMEA-ANALYSIS.md"
+      - id: TASK-W2-02
+        name: "NASA SE Requirements"
+        wave: 2
         status: BLOCKED
+        blocked_by: [TASK-W2-01]
+        agent: nse-requirements
+        model: opus
+        nasa_processes: ["Process 1", "Process 2", "Process 11"]
+        output: "requirements/NASA-SE-REQUIREMENTS.md"
+      # Wave 3: Synthesis
+      - id: TASK-W3-01
+        name: "Requirements Synthesis"
+        wave: 3
+        status: BLOCKED
+        blocked_by: [TASK-W2-02]
         agent: ps-synthesizer
-      - id: TASK-014
+        model: opus
+        output: "requirements/REQUIREMENTS-SPECIFICATION.md"
+      - id: TASK-W3-02
         name: "ps-critic Review"
+        wave: 3
         status: BLOCKED
+        blocked_by: [TASK-W3-01]
         agent: ps-critic
+        model: opus
+        output: "reviews/EN-003-CRITIC-REVIEW.md"
 
   EN-004:
     name: "Architecture Decision Records"
@@ -510,9 +637,9 @@ enablers:
   EN-012:
     name: "Skill CLI Interface"
     feature: FEAT-002
-    phase: 6
+    phase: 7  # Moved to Phase 7 - CLI is "Above and Beyond" - LITERALLY LAST
     status: BLOCKED
-    blocked_by: [EN-007, EN-010]
+    blocked_by: [GATE-6]  # Blocked by all core functionality completing
     effort_points: 5
     tasks:
       - id: TASK-059
@@ -562,18 +689,45 @@ agents:
   problem_solving:
     - id: ps-researcher
       role: "Research and gather information"
+      model: sonnet
       available: true
     - id: ps-analyst
-      role: "Analyze and apply frameworks"
+      role: "Analyze and apply frameworks (5W2H, Ishikawa, 8D, Pareto, FMEA, Gap, Trade-off)"
+      model: sonnet
       available: true
     - id: ps-synthesizer
       role: "Combine and synthesize findings"
+      model: sonnet
       available: true
     - id: ps-architect
       role: "Design architecture and systems"
+      model: sonnet
       available: true
     - id: ps-critic
       role: "Review and provide adversarial feedback"
+      model: sonnet
+      available: true
+
+  nasa_se:
+    - id: nse-requirements
+      role: "NPR 7123.1D Processes 1, 2, 11 - Requirements engineering"
+      model: sonnet
+      available: true
+    - id: nse-risk
+      role: "NPR 8000.4C, Process 13 - Risk management with FMEA"
+      model: opus
+      available: true
+    - id: nse-architecture
+      role: "Architecture decisions"
+      model: sonnet
+      available: true
+    - id: nse-verification
+      role: "Verification and validation"
+      model: sonnet
+      available: true
+    - id: nse-reviewer
+      role: "Technical reviews"
+      model: sonnet
       available: true
 
   custom:
@@ -616,11 +770,12 @@ artifacts:
 # Metrics tracking
 metrics:
   total_enablers: 13
-  total_tasks: 66
-  total_effort_points: 107
+  total_tasks: 71  # Added 5 new tasks for expanded EN-003 (8D, Pareto, NASA SE + wave structure)
+  total_effort_points: 120  # EN-003 increased from 8 to 21 (+13)
   completed_enablers: 2
   completed_tasks: 10
   completed_effort_points: 21  # EN-001: 13 + EN-002: 8
-  gates_passed: 0
-  gates_pending: 1  # GATE-1 awaiting human approval
-  gates_total: 6
+  in_progress_enablers: 1  # EN-003
+  gates_passed: 1  # GATE-1 approved
+  gates_pending: 1  # GATE-2 awaiting completion
+  gates_total: 7  # Added GATE-7 for CLI (Above and Beyond)

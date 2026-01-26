@@ -68,7 +68,7 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 | ID | Title | Status | Priority | Progress | Gates |
 |----|-------|--------|----------|----------|-------|
 | [FEAT-001](./FEAT-001-analysis-design/FEAT-001-analysis-design.md) | Analysis & Design | pending | high | 0% | 1-4 |
-| [FEAT-002](./FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | pending | high | 0% | 5-6 |
+| [FEAT-002](./FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | pending | high | 0% | 5-7 |
 
 ### Feature Links
 
@@ -77,7 +77,8 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
   - 6 enablers, 4 human approval gates
 - [FEAT-002: Implementation](./FEAT-002-implementation/FEAT-002-implementation.md)
   - VTT parser, entity extraction, mind maps, artifact packaging, worktracker integration
-  - 7 enablers, 2 human approval gates
+  - 7 enablers, 3 human approval gates (GATE-5, GATE-6, GATE-7)
+  - Note: CLI (EN-012) is "Above and Beyond" at GATE-7 - LITERALLY LAST
 
 ---
 
@@ -90,7 +91,8 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 | GATE-3 | FEAT-001 | EN-004 | Architecture decisions |
 | GATE-4 | FEAT-001 | EN-005, EN-006 | Design completeness |
 | GATE-5 | FEAT-002 | EN-007, EN-008 | Core implementation |
-| GATE-6 | FEAT-002 | EN-009..EN-013 | Final review |
+| GATE-6 | FEAT-002 | EN-009, EN-010, EN-011, EN-013 | Core output generation & integration |
+| GATE-7 | FEAT-002 | EN-012 | CLI Interface (**Above and Beyond** - LAST) |
 
 ---
 
@@ -181,11 +183,17 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 |  │                              │                                           │ |
 |  │                    ★ GATE 5: Core Review ★                              │ |
 |  │                              │                                           │ |
-|  │  PHASE 6: Output Generation (EN-009..EN-013)                            │ |
-|  │  ──────────────────────────────────────────────                         │ |
-|  │  Mind Maps + Artifact Packaging + Worktracker + CLI + Context Injection │ |
+|  │  PHASE 6: Output Generation (EN-009, EN-010, EN-011, EN-013)            │ |
+|  │  ──────────────────────────────────────────────────────────              │ |
+|  │  Mind Maps + Artifact Packaging + Worktracker + Context Injection       │ |
 |  │                              │                                           │ |
-|  │                    ★ GATE 6: Final Review ★                             │ |
+|  │                    ★ GATE 6: Core Functionality Review ★                │ |
+|  │                              │                                           │ |
+|  │  PHASE 7: CLI (EN-012) - ABOVE AND BEYOND                               │ |
+|  │  ────────────────────────────────────────────                           │ |
+|  │  Skill CLI Interface - LITERALLY LAST                                   │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 7: CLI Final Review ★                         │ |
 |  └──────────────────────────────┼──────────────────────────────────────────┘ |
 |                                 │                                            |
 |                                 ▼                                            |
@@ -235,7 +243,7 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 | DEC-005 | Token limit: 35K per artifact | 2026-01-26 | DOCUMENTED |
 | DEC-006 | Phased agents: Prompt-based first, Python later | 2026-01-26 | DOCUMENTED |
 | DEC-007 | Two features: Analysis & Design + Implementation | 2026-01-26 | DOCUMENTED |
-| DEC-008 | 6 human approval gates | 2026-01-26 | DOCUMENTED |
+| DEC-008 | 7 human approval gates (CLI at GATE-7 - LAST) | 2026-01-26 | DOCUMENTED |
 
 ---
 

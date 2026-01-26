@@ -28,65 +28,381 @@ Jerry addresses this through:
 
 <worktracker>
 
-| Generic Term (Ontology) | Definition                                 | Relationship (Parent of...)    | SAFe Terminology          | Azure DevOps (Scrum)       | Jira (Standard) | Jira (Adv. Roadmaps) |
-|-------------------------|--------------------------------------------|--------------------------------|---------------------------|----------------------------|-----------------|----------------------|
-| Strategic Theme         | High-level business goal or category.      | Tags/Labels (Non-hierarchical) | Strategic Theme           | Tag / Value Area           | Label           | Theme                |
-| Initiative              | Large-scale endeavor spanning teams/years. | Solution Epic                  | Solution / Large Solution | Custom Initiative          | N/A             | Initiative           |
-| Solution Epic           | Major solution capability (6+ months).     | Feature                        | Portfolio Epic            | Epic                       | N/A             | Legend / High Epic   |
-| Feature                 | Distinct functionality (1-3 months).       | Story (Unit of Work)           | Feature                   | Feature                    | Epic            | Epic                 | 
-| Unit of Work            | Atomic value deliverable (INVEST).         | Task (Effort)                  | User Story                | Product Backlog Item (PBI) | Story           | Story                |
-| Enabler                 | Technical work item (non-user value).      | Task (Effort)                  | Enabler Story             | PBI (tagged Arch)          | Task            | Task                 |
-| Task (Effort)           | Atomic unit of labor/effort.               | None (Leaf Node)               | Task                      | Task                       | Sub-task        | Sub-task             |
+## 1: Entity Hierarchy
 
-We use the Generic Term (Ontology) for all work items in our project documentation and tracking artifacts. The SAFe Terminology, Azure DevOps (Scrum) and Jira (Standard/Adv. Roadmaps) columns are provided for reference to map our ontology to common frameworks and tools.
-`WORKTRACKER.md` is the Global Manifest tracking all Initiatives, Solution Epic, Feature, Unit of Work, Enabler and Task (Effort). It exists in the root of the project folder ({ProjectId} e.g. `PROJ-005-plugin-bugs`). It is a pointer with relationships to all decomposed work items in `work/` folder. 
-A folder is created for each Solution Epic (`{SolutionEpicId}-{slug}`) in the `work/` folder. Each Solution Epic folder contains its own `SOLUTION-WORKTRACKER.md` tracking Features, Unit of Work, Enablers and Tasks (Effort) for that Strategic Theme. It is a pointer with relationships to all respective artifacts of the Solution Epic. 
-A folder is created for each Feature in the `work/{SolutionEpicId}-{slug}/` folder. Each Feature folder contains its own `FEATURE-WORKTRACKER.md` tracking Unit of Work, Enablers and Tasks (Effort) for that Feature. Each `FEATURE-WORKTRACKER.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Feature. 
-A file is created for each Unit of Work and Enabler in the `work/{SolutionEpicId}-{slug}/{FeatureId}-{slug}/` folder. Each Unit of Work and Enabler file contains its own `wi-{UnitOfWorkId}.md` or `en-{EnablerId}.md` tracking Tasks (Effort) for that Unit of Work or Enabler. All Tasks must have verifiable evidence before a Unit of Work or Enabler can be Closed.
-A file is created for each Bug, Discovery, Decision and Tech Debt in the `work/{SolutionEpicId}-{slug}/{FeatureId}-{slug}/` folder. Each artifact plays a critical role and must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you. We need detailed artifacts in-order at act as evidence in supporting the decision-making process before closing out Tasks, Units of work and Enablers.
-Each Unit of Work and Enabler File must be broken down into detailed tasks with verifiable acceptance criteria. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task. Each Unit of Work or Enabler must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
-Task must be broken down into detailed tasks with verifiable acceptance criteria. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task. Each Unit of Work or Enabler must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
+### 1.1 Complete Hierarchy Tree
+```
+WorkItem (abstract)
+│
+├── StrategicItem (abstract) ─────────────────── Long-term planning horizon
+│   │
+│   ├── Initiative ──────────────────────────── Portfolio-level strategic theme
+│   │   └── Contains: Epic[]
+│   │
+│   ├── Epic ────────────────────────────────── Large initiative (weeks/months)
+│   │   └── Contains: Capability[] | Feature[]
+│   │
+│   ├── Capability [OPTIONAL] ───────────────── SAFe Solution level (large solutions)
+│   │   └── Contains: Feature[]
+│   │
+│   └── Feature ─────────────────────────────── Program-level feature (sprints)
+│       └── Contains: Story[]
+│
+├── DeliveryItem (abstract) ─────────────────── Sprint-level execution
+│   │
+│   ├── Story ───────────────────────────────── User-valuable increment (days)
+│   │   └── Contains: Task[]
+│   │
+│   ├── Task ────────────────────────────────── Atomic work unit (hours)
+│   │   └── Contains: Subtask[]
+│   │
+│   ├── Subtask ─────────────────────────────── Indivisible work (hours)
+│   │   └── Contains: (none - leaf node)
+│   │
+│   ├── Spike ───────────────────────────────── Timeboxed research/exploration
+│   │   └── Contains: (none - leaf node)
+│   │
+│   └── Enabler ─────────────────────────────── Technical/infrastructure work
+│       └── Contains: Task[]
+│
+├── QualityItem (abstract) ──────────────────── Defect and quality tracking
+│   │
+│   └── Bug ─────────────────────────────────── Defect requiring fix
+│       └── Contains: Task[]
+│
+└── FlowControlItem (abstract) ──────────────── Workflow impediments
+    │
+    └── Impediment ──────────────────────────── Blocker requiring resolution
+        └── Contains: (none - references blocked items)
+```
 
-Each Task must be broken down into detailed tasks with verifiable acceptance criteria. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task. Each Unit of Work or Enabler must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
-Technical Debut, Bugs and Discoveries must be documented as individual `td-{UnitOfWorkId}-{slug}.md`, `bug-{UnitOfWorkId}-{slug}.md`, `disc-{UnitOfWorkId}-{slug}.md` files in the `work/{SolutionEpicId}/{FeatureId}/` folder as they are discovered. Each Technical Debut, Bug or Discovery file must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you. Each discovery, bug or technical debut must have verifiable evidence before it can be Closed.
+### 1.2 Hierarchy Levels
+
+| Level | Category  | Entities              | Planning Horizon | Typical Owner     |
+|-------|-----------|-----------------------|------------------|-------------------|
+| L0    | Portfolio | Initiative            | Quarters/Years   | Portfolio Manager |
+| L1    | Strategic | Epic                  | Weeks/Months     | Product Manager   |
+| L2    | Solution  | Capability (optional) | PIs              | Solution Manager  |
+| L3    | Program   | Feature               | Sprints          | Product Owner     |
+| L4    | Delivery  | Story, Enabler        | Days             | Development Team  |
+| L5    | Execution | Task, Subtask, Spike  | Hours            | Individual        |
+| -     | Quality   | Bug                   | Variable         | QA/Dev            |
+| -     | Flow      | Impediment            | Immediate        | Scrum Master      |
+
+---
+
+## 2: Entity Classification and Properties
+
+### 2.1 Classification Matrix
+
+| Entity     | Category  | Level | Container | Atomic | Quality Gates | Optional |
+|------------|-----------|-------|-----------|--------|---------------|----------|
+| Initiative | Strategic | L0    | Yes       | No     | No            | Yes      |
+| Epic       | Strategic | L1    | Yes       | No     | No            | No       |
+| Capability | Strategic | L2    | Yes       | No     | No            | Yes      |
+| Feature    | Strategic | L3    | Yes       | No     | No            | No       |
+| Story      | Delivery  | L4    | Yes       | No     | Yes           | No       |
+| Task       | Delivery  | L5    | Yes       | No     | Yes           | No       |
+| Subtask    | Delivery  | L5    | No        | Yes    | Yes           | No       |
+| Spike      | Delivery  | L5    | No        | Yes    | **No**        | No       |
+| Enabler    | Delivery  | L4    | Yes       | No     | Yes           | No       |
+| Bug        | Quality   | -     | Yes       | No     | Yes           | No       |
+| Impediment | Flow      | -     | No        | Yes    | No            | No       |
+
+### 2.2 Containment Rules Matrix
+
+| Parent Type | Allowed Children            |
+|-------------|-----------------------------|
+| Initiative  | Epic                        |
+| Epic        | Capability, Feature         |
+| Capability  | Feature                     |
+| Feature     | Story, Enabler              |
+| Story       | Task, Subtask               |
+| Task        | Subtask                     |
+| Subtask     | (none)                      |
+| Spike       | (none)                      |
+| Enabler     | Task                        |
+| Bug         | Task                        |
+| Impediment  | (none - uses relationships) |
+
+---
+
+## 3: System Mapping Summary
+
+### 3.1 Entity Mapping Table
+
+| Canonical  | ADO Scrum            | SAFe                        | JIRA                  |
+|------------|----------------------|-----------------------------|-----------------------|
+| Initiative | (Epic + tag)         | Strategic Theme             | Initiative (Premium)  |
+| Epic       | Epic                 | Epic                        | Epic                  |
+| Capability | (Feature + tag)      | Capability                  | (Epic or custom)      |
+| Feature    | Feature              | Feature                     | Epic (or custom)      |
+| Story      | Product Backlog Item | Story                       | Story                 |
+| Task       | Task                 | Task                        | Task                  |
+| Subtask    | Task (child)         | Task (subtask)              | Sub-task              |
+| Spike      | Task + spike tag     | Enabler Story (Exploration) | Task + spike label    |
+| Enabler    | PBI (ValueArea=Arch) | Enabler                     | Story + enabler label |
+| Bug        | Bug                  | Defect                      | Bug                   |
+| Impediment | Impediment           | (blocking links)            | (blocking links)      |
+
+### 3.2 Mapping Complexity
+
+| Direction         | Complexity | Notes                                     |
+|-------------------|------------|-------------------------------------------|
+| Canonical to ADO  | Medium     | PBI naming; Impediment direct             |
+| Canonical to SAFe | High       | 4 Kanban systems; WSJF calculation        |
+| Canonical to JIRA | Medium     | Resolution separation; flexible hierarchy |
+| ADO to Canonical  | Low        | Direct mapping for most entities          |
+| SAFe to Canonical | Medium     | May flatten Capability; preserve WSJF     |
+| JIRA to Canonical | Low        | Derive status from Resolution+Status      |
+
+## 4. System Mappings
+
+### 4.1 Complete Entity Mapping
+
+| Canonical Entity | ADO Scrum                     | SAFe                          | JIRA                         |   Native    | Notes                                          |
+|------------------|-------------------------------|-------------------------------|------------------------------|:-----------:|------------------------------------------------|
+| **Initiative**   | Epic (with tag)               | Strategic Theme               | Initiative (Premium)         |   Partial   | ADO: use Epic with "initiative" tag            |
+| **Epic**         | Epic                          | Epic (Portfolio Backlog)      | Epic                         |     Yes     | Universal - direct mapping                     |
+| **Capability**   | Feature (with tag)            | Capability (Solution Backlog) | Epic or Feature              |  SAFe-only  | ADO/JIRA: map to Feature with metadata         |
+| **Feature**      | Feature                       | Feature (Program Backlog)     | Epic (or custom)             |   Partial   | JIRA: use Epic or create custom type           |
+| **Story**        | Product Backlog Item (PBI)    | Story                         | Story                        |     Yes     | ADO uses "PBI" terminology                     |
+| **Task**         | Task                          | Task                          | Task, Sub-task               |     Yes     | Universal - direct mapping                     |
+| **Subtask**      | Task (child of Task)          | Task (subtask)                | Sub-task                     |     Yes     | Hierarchical placement determines type         |
+| **Spike**        | Task (with "spike" tag)       | Enabler Story (Exploration)   | Task (with "spike" label)    |   Labeled   | Use tagging/labeling conventions               |
+| **Enabler**      | PBI (ValueArea=Architectural) | Enabler                       | Story (with "enabler" label) | SAFe-native | ADO: use ValueArea field                       |
+| **Bug**          | Bug                           | Defect                        | Bug                          |     Yes     | SAFe uses "Defect" terminology                 |
+| **Impediment**   | Impediment                    | (blocking links)              | (blocking links)             |  ADO-only   | SAFe/JIRA: synthesize from blocks relationship |
+
+### 4.1. Entity Mapping by System
+
+#### 4.1.1 ADO Scrum Entity Types
+
+| ADO Type             | Canonical Mapping       | Notes                      |
+|----------------------|-------------------------|----------------------------|
+| Epic                 | Epic or Initiative      | Check for "initiative" tag |
+| Feature              | Feature or Capability   | Check for "capability" tag |
+| Product Backlog Item | Story or Enabler        | Check ValueArea field      |
+| Task                 | Task, Subtask, or Spike | Check parent and tags      |
+| Bug                  | Bug                     | Direct mapping             |
+| Impediment           | Impediment              | Direct mapping             |
+
+#### 4.1.2 SAFe Entity Types
+
+| SAFe Type                   | Canonical Mapping | Notes                  |
+|-----------------------------|-------------------|------------------------|
+| Strategic Theme             | Initiative        | Portfolio level        |
+| Epic                        | Epic              | Direct mapping         |
+| Capability                  | Capability        | Solution level         |
+| Feature                     | Feature           | Program level          |
+| Story                       | Story             | Team level             |
+| Enabler                     | Enabler           | Check enabler_type     |
+| Enabler Story (Exploration) | Spike             | Research type          |
+| Task                        | Task or Subtask   | Based on parent        |
+| Defect                      | Bug               | Terminology difference |
+
+#### 4.1.3 JIRA Entity Types
+
+| JIRA Type  | Canonical Mapping | Notes                    |
+|------------|-------------------|--------------------------|
+| Initiative | Initiative        | JIRA Premium only        |
+| Epic       | Epic or Feature   | Depends on org hierarchy |
+| Story      | Story or Enabler  | Check labels             |
+| Task       | Task or Spike     | Check labels             |
+| Sub-task   | Subtask           | Direct mapping           |
+| Bug        | Bug               | Direct mapping           |
+
+---
+
+## Work tracker (worktracker) Behavior
+We use the Canonical model for all work items in our project documentation and tracking artifacts. The ADO Scrum, SAFe Terminology and Jira (Standard/Adv. Roadmaps) columns are provided for reference to map our canonical model to common frameworks and tools. If users use terminology from ADO Scrum, SAFe or JIRA, we should map it to our canonical model for consistency.
+
+`WORKTRACKER.md` is the Global Manifest tracking all Initiatives and Epics, Bugs, Decisions, Discoveries and Impediments. It exists in the root of the project folder ({ProjectId} e.g. `PROJ-005-plugin-bugs`). It is a pointer with relationships to to the items it is tracking. 
+
+A folder is created for each Epic (`{EpicId}-{slug}`) in the `work/` folder. 
+Each Epic folder contains its own `{EpicId}-{slug}.md` tracking Features, Enablers, Stories and Tasks (Effort) for that Strategic Theme. This file also acts as a pointer with relationships to all respective artifacts of the Epic. 
+
+A folder (`{FeatureId}-{slug}`) is created for each Feature in the `work/{EpicId}-{slug}/` folder. 
+Each Feature folder contains its own `{FeatureId}-{slug}.md` tracking Unit of Work, Enablers and Tasks (Effort) for that Feature. Each `FEATURE-WORKTRACKER.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Feature.
+
+A folder (`{EnablerId}-{slug}`) is created for each Enabler in the `work/{EpicId}-{slug}/{FeatureId}-{slug}/` folder. 
+Each Enabler folder contains its own `{EnablerId}-{slug}.md` tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries for that Enabler. Each `{EnablerId}-{slug}.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Enabler.
+
+A folder (`{EnablerId}-{slug}`) is created for each Story in the `work/{EpicId}-{slug}/{FeatureId}-{slug}/` folder. 
+Each Story folder contains its own `{Story}-{slug}.md` tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries for that Story. Each `{Story}-{slug}.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Story.
+
+
+A file is created for each Task, Sub-Task, Spike, Bug, Impediment and Discovery in the respective `{EnablerId}-{slug}` or `{StoryId}-{slug}` following the scheme outlined in the Directory Structure. Each Task, Sub-Task, Spike, Bug, Impediment and Discovery file must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you. 
+Each Enabler and Story must contain verifiable acceptance criteria. 
+Each Enabler and Story must be broken down into detailed Tasks with verifiable evidence. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task.
 
 Use MCP Memory-Keeper to help you remember and maintain the structure and relationships of the Worktracker system. You don't have to remember everything, just remember to use MCP Memory-Keeper to help you keep track of everything. Try MCP Memory-Keeper first before searching the repository.
 
-Worktracker Directory Structure:
+---
+
+## Templates (MANDATORY)
+
+> **CRITICAL:** You MUST use the repository templates when creating ANY work items or artifacts.
+> **DO NOT** make up your own formats. Always check for existing templates first.
+
+### Work Tracker Templates
+
+**Location:** `.context/templates/worktracker/`
+
+Work tracker templates provide standardized structure for all work item types:
+
+| Template | Use For | Path |
+|----------|---------|------|
+| `ENABLER.md` | EN-* files | `.context/templates/worktracker/ENABLER.md` |
+| `TASK.md` | TASK-* files | `.context/templates/worktracker/TASK.md` |
+| `BUG.md` | BUG-* files | `.context/templates/worktracker/BUG.md` |
+| `DISCOVERY.md` | DISC-* files | `.context/templates/worktracker/DISCOVERY.md` |
+| `DECISION.md` | DEC-* files | `.context/templates/worktracker/DECISION.md` |
+| `SPIKE.md` | SPIKE-* files | `.context/templates/worktracker/SPIKE.md` |
+| `EPIC.md` | EPIC-* files | `.context/templates/worktracker/EPIC.md` |
+| `FEATURE.md` | FEAT-* files | `.context/templates/worktracker/FEATURE.md` |
+| `STORY.md` | STORY-* files | `.context/templates/worktracker/STORY.md` |
+| `IMPEDIMENT.md` | IMP-* files | `.context/templates/worktracker/IMPEDIMENT.md` |
+
+### Problem-Solving & Knowledge Templates
+
+**Location:** `docs/knowledge/exemplars/templates/`
+
+Templates for problem-solving artifacts and knowledge documents:
+
+| Template | Use For | Path |
+|----------|---------|------|
+| `adr.md` | Architecture Decision Records | `docs/knowledge/exemplars/templates/adr.md` |
+| `research.md` | Research artifacts | `docs/knowledge/exemplars/templates/research.md` |
+| `analysis.md` | Analysis artifacts | `docs/knowledge/exemplars/templates/analysis.md` |
+| `deep-analysis.md` | Deep analysis | `docs/knowledge/exemplars/templates/deep-analysis.md` |
+| `synthesis.md` | Synthesis documents | `docs/knowledge/exemplars/templates/synthesis.md` |
+| `review.md` | Review artifacts | `docs/knowledge/exemplars/templates/review.md` |
+| `investigation.md` | Investigation reports | `docs/knowledge/exemplars/templates/investigation.md` |
+| `jrn.md` | Journal entries | `docs/knowledge/exemplars/templates/jrn.md` |
+| `use-case-template.md` | Use case specifications | `docs/knowledge/exemplars/templates/use-case-template.md` |
+
+### Template Usage Rules
+
+1. **ALWAYS** read the template before creating a new file
+2. **NEVER** make up your own format - use the existing templates
+3. **INCLUDE** all required sections from the template
+4. **REFERENCE** the template in the file's HTML comment header
+5. **ASK** the user if unsure which template to use
+
+### Directory Structure
+
+```
+.context/                                                                      # Repository level context
+└── templates/                                                                 # Repository level Templates
+    └── worktracker/                                                           # Templates for Worktracker Artifacts
+        ├── BUG.md                                                             # Template for Bug
+        ├── DECISION.md                                                        # Template for Decision
+        ├── DISCOVERY.md                                                       # Template for Discovery
+        ├── ENABLER.md                                                         # Template for Enabler
+        ├── EPIC.md                                                            # Template for Epic
+        ├── FEATURE.md                                                         # Template for Feature
+        ├── IMPEDIMENT.md                                                      # Template for Impediment
+        ├── SPIKE.md                                                           # Template for Spike
+        ├── STORY.md                                                           # Template for Story
+        └── TASK.md                                                            # Template for Task
+
+docs/knowledge/exemplars/templates/                                            # Problem-solving templates
+├── adr.md                                                                     # ADR (Michael Nygard format)
+├── analysis.md                                                                # Analysis artifacts
+├── deep-analysis.md                                                           # Deep analysis
+├── investigation.md                                                           # Investigation reports
+├── jrn.md                                                                     # Journal entries
+├── research.md                                                                # Research artifacts
+├── review.md                                                                  # Review artifacts
+├── synthesis.md                                                               # Synthesis documents
+└── use-case-template.md                                                       # Use case specifications
+```
+
+---
+
+## Work tracker (worktracker) Directory Structure
+
 ```
 projects/
-└── {ProjectId} e.g. PROJ-005-plugin-bugs                                                       # Project Context Folder
-    ├── PLAN.md                                                                                 # Initial Project Plan and Overview. 
-    ├── WORKTRACKER.md                                                                          # Global Manifest tracking all work items. Pointer with relationships to all decomposed work items.
-    └── work/                                                                                   # Project Worktracker Decomposition Folder      
-        └── {SolutionEpicId}-{slug} e.g. SE-001-plugin-installation-fixes                       # Solution Epic Folder
-            ├── SOLUTION-WORKTRACKER.md                                                         # Solution Epic Worktracker tracking Features, Unit of Work, Enablers and Tasks. Pointer with relationships to all respective artifacts of the Solution Epic.
-            ├── plans/                                                                          # Folder for plans that we generate while working in the Solution Epic. As we work through the project and enouncter complexity we generate plans to help us navigate the complexity.
-            │   └── PLAN-{PlanId}-{slug}.md e.g. PLAN-001-holy-lazer-cats.md                    # Plan that we generate anytime we have to do something complicated. References the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task. Also referenced by the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task to easily and effectively traverse.
-            └── {FeatureId}-{slug} e.g. FT-001-manifest-validation-fixes                        # Feature Folder
-                ├── FEATURE-WORKTRACKER.md                                                      # Feature Worktracker tracking Unit of Work, Enablers and Tasks. Pointer with relationships to all respective artifacts of the Feature.
-                ├── dec-{DecisionId}.md e.g. en-001-fix-plugin-json.md                          # Decision File tracking Q&A sessions verbatim + your summaries (what you extract). Acts as Glue for our session to know what we have decided on. Contains relationships to related artifacts.
-                ├── en-{EnablerId}.md e.g. en-001-fix-plugin-json.md                            # Enabler File tracking Tasks. Must have verifiable evidence before Enabler can be Closed. Contains relationships to related artifacts.
-                ├── wi-{UnitOfWorkId}.md e.g. wi-001-detection-playbook.md                      # Unit of Work File tracking Tasks. Must have verifiable evidence before Unit of Work can be Closed. Contains relationships to related artifacts.
-                ├── bug-{BugId}-{slug}.md e.g. bug-001-plugin-json-errors.md                    # Bug File documenting identified bugs. Enablers or Units of Work MUST be created to address documented bugs. Contains relationships to related artifacts.
-                ├── disc-{DiscoveryId}-{slug}.md e.g. disc-001-manifest-validation-insights.md  # Discovery File documenting discoveries made. Discoveries MAY lead to creation of Enablers or Units of Work. Contains relationships to related artifacts.
-                └── td-{TechDebtWorkId}-{slug}.md e.g. td-001-lack-of-tests.md                  # Technical Debt File documenting technical debt identified. Enablers or Units of Work MUST be created to address documented technical debt. Contains relationships to related artifacts.
+└── {ProjectId}/ e.g. PROJ-005-plugin-bugs                                                                      # Project Context Folder                                                      
+    ├── PLAN.md                                                                                                 # Initial Project Plan and Overview. 
+    ├── WORKTRACKER.md                                                                                          # Global Manifest tracking all work items. Also a pointer with relationships to all decomposed work items.
+    └── work/                                                                                                   # Project Worktracker Decomposition Folder
+        └── {EpicId}-{slug}/ e.g. EPIC-001-forge-developer-experience                                           # Epic Folder. Large body of work spanning multiple sprints or months.
+            ├── {EpicId}-{slug}.md                                                                              # Epic tracking Features. Also a pointer with relationships to all respective Feature artifacts of the Epic.
+            ├── {EpicId}--{BugId}-{slug}.md           e.g. EPIC-001:BUG-001-slugs-too-long.md                    # Bug File documenting identified bugs. Discovered at the Epic Level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+            ├── {EpicId}--{DiscoveryId}-{slug}.md     e.g. EPIC-001:DISC-001-need-claude-md.md                   # Discovery File documenting discoveries made. Discovered at the Epic Level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts..
+            ├── {EpicId}--{ImpedimentId}-{slug}.md    e.g. EPIC-001:IMP-001-missing-claude.md                    # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Epic Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+            ├── {EpicId}--{DecisionId}-{slug}.md    e.g. EPIC-001:DEC-001-worktracker-planning.md                # Decision File documenting decisions between the User and Claude. Discovered at the Epic Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+            ├── plans/                                                                                          # Folder for plans that we generate while working in the Epic. As we work through the project and enouncter complexity we generate plans to help us navigate the complexity.
+            │   └── PLAN-{PlanId}-{slug}.md e.g. PLAN-001-holy-lazer-cats.md                                    # Plan that we generate anytime we have to do something complicated. References the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task. Also referenced by the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task to easily and effectively traverse.
+            └── {FeatureId}-{slug}/         e.g. FEAT-001-worktracker                                           # Feature Folder. Program-level functionality deliverable within 1-3 sprints. Primary decomposition target for Stories.
+                ├── {FeatureId}-{slug}.md                                                                       # Feature tracking Stories, Enablers, Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries. Also a pointer with relationships to all respective artifacts of the Feature.
+                ├── {FeatureId}--{BugId}-{slug}.md           e.g. FEAT-001:BUG-001-id-bad-casing.md              # Bug File documenting identified bugs. Discovered at the Feature Level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+                ├── {FeatureId}--{DiscoveryId}-{slug}.md     e.g. FEAT-001:DISC-001-missing-templates.md         # Discovery File documenting discoveries made. Discovered at the Feature Level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts.
+                ├── {FeatureId}--{ImpedimentId}-{slug}.md    e.g. FEAT-001:IMP-001-need-impediment-template.md   # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Feature Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+                ├── {FeatureId}--{DecisionId}-{slug}.md    e.g. FEAT-001:DEC-001-id-scheme.md                    # Decision File documenting decisions between the User and Claude. Discovered at the Feature Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+                ├── {EnablerId}-{slug}/     e.g. EN-001-claude-md-debt-fixes                                    # Enabler Folder - Technical/infrastructure work that enables future value delivery. SAFe concept for architectural runway, tech debt, etc.
+                │   ├── {EnablerId}-{slug}.md                                                                   # Enabler tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries. Also a pointer with relationships to all respective artifacts of the Enabler.
+                │   ├── {TaskId}-{slug}.md          e.g. TASK-001-tests-for-session-hooks.md                    # Task file. Must have verifiable evidence before Task can be Closed. Contains relationships to related artifacts.
+                │   ├── {BugId}-{slug}.md           e.g. BUG-001-session-hook-failure.md                        # Bug File documenting identified bugs. Discovered at the Enabler level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+                │   ├── {DiscoveryId}-{slug}.md     e.g. DISC-001-insufficient-coverage.md                      # Discovery File documenting discoveries made. Discovered at the Enabler level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts.
+                │   ├── {ImpedimentId}-{slug}.md    e.g. IMP-001-missing-cli-implementation.md                  # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Enabler Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+                │   ├── {DecisionId}-{slug}.md      e.g. DEC-001-cli-hook.md                                    # Decision File documenting decisions between the User and Claude. Discovered at the Enabler Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+                │   └── {SpikeId}-{slug}.md         e.g. SPIKE-001-multiple-claude-md-files.md                  # Spike file representing timeboxed research or exploration activity. Does NOT require quality gates (unlike other work types). Outputs knowledge/decisions, not production code. Contains relationships to related artifacts.
+                └── {StoryId}-{slug}/       e.g. STORY-001-worktracker-todo-integration                         # Story Folder - User-valuable increment deliverable within a sprint.
+                    ├── {StoryId}-{slug}.md                                                                     # Story tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries. Also a pointer with relationships to all respective artifacts of the Story.
+                    ├── {TaskId}-{slug}.md          e.g. TASK-001-tests-for-worktracker.md                      # Task file. Must have verifiable evidence before Task can be Closed. Contains relationships to related artifacts.
+                    ├── {BugId}-{slug}.md           e.g. BUG-001-missing-work-items.md                          # Bug File documenting identified bugs. Discovered at the Story level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+                    ├── {DiscoveryId}-{slug}.md     e.g. DISC-001-missing-worktracker-instructions.md           # Discovery File documenting discoveries made. Discovered at the Story level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts..
+                    ├── {ImpedimentId}-{slug}.md    e.g. IMP-001-missing-templates.md                           # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Story Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+                    ├── {DecisionId}-{slug}.md      e.g. DEC-001-template-fidelity.md                           # Decision File documenting decisions between the User and Claude. Discovered at the Story Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+                    └── {SpikeId}-{slug}.md         e.g. SPIKE-001-templates-for-work-items.md                  # Spike file representing timeboxed research or exploration activity. Does NOT require quality gates (unlike other work types). Outputs knowledge/decisions, not production code. Contains relationships to related artifacts.
 ```
+
 </worktracker>
 
-<todo>
-Required Behavior:
-- todo.1. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you are in project {JerryProjectId}
-- todo.2. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update the `*-WORKTRACKER.md` files.
-- todo.3. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to capture and update decisions in the `dec-*.md` files with detailed updates as YOU and I go through Questions and Answers.
-- todo.4. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update your respective Unit of Work and Enabler `*.md` files with detailed updates as you are working/progressing through them.
-- todo.5. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to document detailed bugs, discoveries and technical debut as they are discovered in their respective `*.md` files.
-- todo.6. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list up to date.                                                                                                                                                                                                                                                
-- todo.7. -> Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with your `*-WORKTRACKER.md` and Units of Work.  You MUST keep your TODO in sync with the work-tracker.                                                                                                                                                     
-- todo.8. -> You MUST keep your TODO in sync with the work-tracker showing the previous Features, current Feature and next Feature -> the current Feature MUST show all Units of Work || Enablers -> the current Unit of Work || Enabler must show all Tasks. TODO List MUST survive compaction and provide high fidelity.
-- todo.9. -> You MUST keep your TODO in sync with the orchestration plan showing the previous phase, current phase and next phase -> current phase must show all tasks/subagents
+---
+
 <todo>
 
+Use the task management tools (e.g. TaskCreate, TaskUpdate, TaskList, TaskGet) to manage your TODO list effectively.
+
+REQUIRED BEHAVIOR:
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you are in project {JerryProjectId} | Workflow Id: {WorkflowId}
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update the respective work tracker `*.md` files.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to capture and update decisions in the respective `*.md` files with detailed updates as YOU and I go through Questions and Answers.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update your respective `*.md` files with detailed updates as you are working/progressing through them.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to document detailed bugs, discoveries and impediments as they are arise in their respective `*.md` files.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list up to date.                                                                                                                                                                                                                                                
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with your respective work tracker `*.md` files.  You MUST keep your TODO in sync with the work-tracker.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with work tracker. You MUST keep your work tracker entities up to date with detailed updates so they are truthful, accurate and honest representation of the current state. 
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your orchestration artifacts up to date with detailed updates so they are truthful, accurate and honest representation of the current state.
+
+
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Do NOT take shortcuts. Do NOT use hacks to solve problems. If you are about to take a shortcut or apply a hack, ask yourself is there a better way? If you are about to answer no, try again. If you are truly blocked and want to take a shortcut or apply a hack, ask me first? We are building mission-critical software and quality is king!
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Ask questions. Push back if something doesn't make sense or is misaligned. 
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Be truthful, accurate, evidence based (citations, sources, references) and honest. 
+
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS document your work so that it is understandable by yourself and three different personas: (1) ELI5 <- Explain it to me like I'm Five - i.e. Simple analogy explanations. (2) Engineer - Deep Technical explanation with context (3) 🧠 Architect - Performance implications, tradeoffs, one-way door decisions and design rationale
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS perform any kind of research and analysis using at minimum the following Problem-Solving frameworks 5W2H + Ishikawa + Pareto Analysis (80/20) + Failure Mode and Effects Analysis (FMEA) + 8D (Eight Disciplines) and NASA Systems Engineering Handbook framework and other before starting any implementation work.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST perform research and analysis using Context7 and search the internet for industry best practices, industry standards, innovative work and prior art on the topics you are working through.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make data + evidence driven decisions based on industry best practices and prior art from authoritative sources such as but not limited to Industry Experts, Industry Innovators, Industry Leaders, Community Experts, Community Innovators, Community Leaders and Community experts ensuring you provide citations, references and sources. 
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST persist your detailed analysis, discoveries, explorations, findings, research and synthesis in the repository.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make all decisions in an evidence based process with citations, references and sources using industry best practices from industry leaders, industry experts, community leaders and community experts.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make ascii art and mermaid diagrams to illustrate your points wherever applicable including activity diagrams, state diagrams, flow charts, sequence diagrams, class diagrams, component diagrams, architecture diagrams, system context diagrams, etc.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS use repository templates when creating work items or artifacts. Check `.context/templates/worktracker/` for work tracker entities and `docs/knowledge/exemplars/templates/` for problem-solving artifacts. NEVER make up your own format.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST PROACTIVELY use Jerry skills (@problem-solving, @nasa-se, @orchestration) without waiting for user prompts. Use @problem-solving for research/analysis, @nasa-se for requirements/design, and @orchestration for multi-step workflows.
+
+You MUST keep your TODO in sync with the work-tracker showing the current Epic, previous Epic and next Epic -> The current Epic must show previous Features, current Feature and next Feature -> the current Feature MUST show all Enablers || Stories -> the current Enabler || Story must show all Tasks. TODO List MUST survive compaction and provide high fidelity.
+You MUST keep your TODO in sync with the orchestration plan showing the previous phase, current phase and next phase -> current phase must show all tasks/subagents
+
+You MUST reflect the actions you are taking in the TODO list that are not captured in work tracker entities.
+
+</todo>
+
+---
 
 ## Architecture
 
@@ -307,9 +623,108 @@ When user selects "Create new project":
 | `worktracker` | Task/issue management | `skills/worktracker/SKILL.md` |
 | `architecture` | System design guidance | `skills/architecture/SKILL.md` |
 | `problem-solving` | Domain use case invocation | `skills/problem-solving/SKILL.md` |
+| `nasa-se` | NASA Systems Engineering processes | `skills/nasa-se/` |
 | `orchestration` | Multi-agent workflow coordination | `skills/orchestration/SKILL.md` |
 
-### Orchestration Skill
+---
+
+## Mandatory Skill Usage (PROACTIVE)
+
+> **CRITICAL:** You MUST use the following skills PROACTIVELY without waiting for the user to prompt you.
+> These skills are designed to ensure quality, rigor, and traceability in all work.
+
+### @problem-solving (MANDATORY for Research/Analysis)
+
+**USE AUTOMATICALLY WHEN:**
+- Starting ANY research or analysis task
+- Investigating bugs, issues, or problems
+- Performing root cause analysis
+- Synthesizing findings from multiple sources
+- Creating architecture decisions (ADRs)
+
+**Provides:**
+- 8 specialized agents: researcher, analyst, synthesizer, architect, reviewer, investigator, validator, reporter
+- Structured frameworks: 5W2H, Ishikawa, Pareto, FMEA, 8D
+- Evidence-based decision making with citations
+- Persistent artifact generation
+
+**Trigger Phrases (use skill automatically):**
+- "research", "analyze", "investigate", "explore"
+- "root cause", "why", "understand"
+- "synthesize", "consolidate", "summarize findings"
+- "review", "validate", "critique"
+
+### @nasa-se (MANDATORY for Requirements/Design)
+
+**USE AUTOMATICALLY WHEN:**
+- Defining or analyzing requirements
+- Creating design specifications
+- Performing verification & validation
+- Conducting technical reviews
+- Managing system integration
+- Risk management activities
+
+**Provides:**
+- NPR 7123.1D process implementation
+- 10 specialized agents for systems engineering
+- Requirements engineering rigor
+- Verification/validation frameworks
+- Technical review protocols
+- Mission-grade quality practices
+
+**Trigger Phrases (use skill automatically):**
+- "requirements", "specification", "shall statements"
+- "verification", "validation", "V&V"
+- "technical review", "design review"
+- "risk management", "FMEA"
+- "system integration", "interface"
+
+### @orchestration (MANDATORY for Multi-Step Workflows)
+
+**USE AUTOMATICALLY WHEN:**
+- Work involves multiple phases or stages
+- Multiple agents need coordination
+- Tasks have dependencies requiring sync barriers
+- State must be checkpointed for recovery
+- Cross-pollinated pipelines are needed
+
+**Provides:**
+- ORCHESTRATION_PLAN.md - Strategic workflow context
+- ORCHESTRATION_WORKTRACKER.md - Tactical execution tracking
+- ORCHESTRATION.yaml - Machine-readable state (SSOT)
+- Sync barriers for parallel work coordination
+- State checkpointing for resilience
+
+**Trigger Phrases (use skill automatically):**
+- "orchestration", "pipeline", "workflow"
+- "multi-agent", "parallel", "coordinate"
+- "sync barrier", "checkpoint"
+- "phases", "stages", "gates"
+
+### Skill Usage Behavior Rules
+
+1. **DO NOT WAIT** for user to invoke skills - use them proactively when triggers apply
+2. **COMBINE SKILLS** when appropriate (e.g., @orchestration + @problem-solving for complex analysis)
+3. **INVOKE EARLY** - Use skills at the start of work, not after struggling without them
+4. **PERSIST ARTIFACTS** - All skill outputs must be persisted to the repository
+5. **REFERENCE IN TODO** - Track skill invocations and outputs in your TODO list
+
+### Example: Starting a New Feature
+
+```
+User: "Let's work on EN-004 Architecture Decisions"
+
+Claude's Internal Process:
+1. ✅ Invoke @orchestration - This has multiple ADRs requiring coordination
+2. ✅ Invoke @problem-solving - Research and analysis needed for each ADR
+3. ✅ Invoke @nasa-se - Architecture decisions require SE rigor
+4. ✅ Create/update TODO with skill tracking
+5. ✅ Proceed with coordinated execution
+```
+
+---
+
+### Orchestration Skill Details
 
 For multi-agent workflows requiring cross-pollinated pipelines, sync barriers, or state checkpointing, use the **orchestration** skill. The skill provides:
 

@@ -17,7 +17,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 > **Owner:** Claude
 > **Target Sprint:** Sprint 4
 > **Effort Points:** 5
-> **Gate:** GATE-6 (Final Review)
+> **Gate:** GATE-7 (CLI Final Review - Above and Beyond)
 
 ---
 
@@ -44,7 +44,7 @@ Implement the transcript skill CLI interface that enables users to invoke the sk
 - Progress is visible during processing
 - Errors provide actionable guidance
 - Output location is clearly communicated
-- Human approval received at GATE-6
+- Human approval received at GATE-7 (CLI is "Above and Beyond" - LAST priority)
 
 ---
 
@@ -59,7 +59,7 @@ Implement the transcript skill CLI interface that enables users to invoke the sk
 - [ ] Error handling with user guidance
 - [ ] Integration tests passing
 - [ ] ps-critic review passed
-- [ ] Human approval at GATE-6
+- [ ] Human approval at GATE-7 (Above and Beyond)
 
 ### Technical Criteria
 
