@@ -300,7 +300,7 @@ Phase 3 (Could Have):
 | **D3: Interim Containment** | Manual review of all context files before use; reject files with warnings |
 | **D4: Root Cause** | No automated validation of context files; developers edit YAML manually without tooling |
 | **D5: Permanent Corrective Action** | 1. Add YAML linting to CI pipeline 2. Pre-load validation at skill activation 3. Provide clear error messages with line numbers |
-| **D6: Implementation** | FEAT-002 TASK: Implement YAML validation hook at context loading |
+| **D6: Implementation** | FEAT-002 TASK: Configure YAML validation in SKILL.md `context_injection.validation` section |
 | **D7: Prevention** | Schema-aware editor support; documentation on YAML best practices |
 | **D8: Recognition** | Team review complete: 2026-01-27 |
 
@@ -314,7 +314,7 @@ Phase 3 (Could Have):
 | **D3: Interim Containment** | Manual inspection of resolved prompts; test with all supported domains |
 | **D4: Root Cause** | No validation that all template variables are resolvable before agent invocation |
 | **D5: Permanent Corrective Action** | 1. Variable existence validation at template load 2. Default value fallback 3. Clear error when variable missing |
-| **D6: Implementation** | FEAT-002 TASK: Add template variable validation to TemplateResolver |
+| **D6: Implementation** | FEAT-002 TASK: Configure template variable validation in `prompt_templates.yaml` with Semantic Kernel `{{$variable}}` syntax |
 | **D7: Prevention** | Type-safe variable definitions; IDE support for variable autocomplete |
 | **D8: Recognition** | Team review complete: 2026-01-27 |
 
@@ -328,7 +328,7 @@ Phase 3 (Could Have):
 | **D3: Interim Containment** | Document supported schema versions; warn on version mismatch |
 | **D4: Root Cause** | No version compatibility checking; schema evolution not planned |
 | **D5: Permanent Corrective Action** | 1. Schema version compatibility matrix 2. Graceful upgrade path 3. Clear error messages for unsupported versions |
-| **D6: Implementation** | FEAT-002 TASK: Implement schema version validation with compatibility ranges |
+| **D6: Implementation** | FEAT-002 TASK: Configure schema version validation in `DOMAIN-SCHEMA.json` with version compatibility ranges |
 | **D7: Prevention** | Semantic versioning for schemas; deprecation warnings |
 | **D8: Recognition** | Team review complete: 2026-01-27 |
 
@@ -342,7 +342,7 @@ Phase 3 (Could Have):
 | **D3: Interim Containment** | Log domain at all injection points; manual verification |
 | **D4: Root Cause** | No verification that injected context matches expected domain |
 | **D5: Permanent Corrective Action** | 1. Context checksum verification 2. Domain field in context payload 3. Assertion at injection point |
-| **D6: Implementation** | FEAT-002 TASK: Add context verification at agent invocation |
+| **D6: Implementation** | FEAT-002 TASK: Configure context verification in AGENT.md `persona_context.domain_extensions` section |
 | **D7: Prevention** | Immutable context objects; type-safe domain enum |
 | **D8: Recognition** | Team review complete: 2026-01-27 |
 
@@ -356,7 +356,7 @@ Phase 3 (Could Have):
 | **D3: Interim Containment** | Manual state verification after each phase |
 | **D4: Root Cause** | Non-atomic state updates; no transaction semantics |
 | **D5: Permanent Corrective Action** | 1. Transaction-like state updates 2. Write-ahead logging 3. State validation before checkpoint |
-| **D6: Implementation** | FEAT-002 TASK: Implement atomic state update mechanism |
+| **D6: Implementation** | FEAT-002 TASK: Configure atomic state tracking in ORCHESTRATION.yaml `context_state` section |
 | **D7: Prevention** | State machine with defined transitions; immutable state history |
 | **D8: Recognition** | Team review complete: 2026-01-27 |
 

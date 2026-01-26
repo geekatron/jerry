@@ -116,12 +116,14 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 | TASK-032 | Ishikawa & Pareto Analysis | 1 | **DONE** | ps-analyst | 1 | TASK-031 | [TASK-032](./TASK-032-ishikawa-pareto.md) |
 | TASK-033 | Formal Requirements | 1 | **DONE** | ps-analyst | 1 | TASK-032 | [TASK-033](./TASK-033-formal-requirements.md) |
 | TASK-034 | TDD Creation (Iterative) | 2 | **DONE (0.93)** | ps-architect + nse-architecture + ps-critic | 2 | BARRIER-1 | [TASK-034](./TASK-034-tdd-creation.md) |
-| TASK-035 | Specification Creation (Iterative) | 2 | **READY** | ps-architect + nse-architecture + ps-critic | 2 | TASK-034 ✓ | [TASK-035](./TASK-035-spec-creation.md) |
-| TASK-036 | Orchestration Integration Design | 3 | BACKLOG | ps-architect | 2 | BARRIER-2 | [TASK-036](./TASK-036-orchestration-integration.md) |
-| TASK-037 | FMEA & Risk Assessment | 3 | BACKLOG | nse-risk | 2 | BARRIER-2 | [TASK-037](./TASK-037-fmea-risk.md) |
-| TASK-038 | Example Orchestration Plans | 3 | BACKLOG | ps-architect + ps-validator + nse-verification | 2 | BARRIER-2 | [TASK-038](./TASK-038-example-plans.md) |
-| TASK-039 | Quality Review | 4 | BACKLOG | ps-critic + nse-qa | 2 | TASK-036,037,038 | [TASK-039](./TASK-039-quality-review.md) |
-| TASK-040 | Final Synthesis & GATE-4 Prep | 4 | BACKLOG | ps-synthesizer | 2 | BARRIER-3 | [TASK-040](./TASK-040-synthesis-gate4.md) |
+| TASK-035 | Specification Creation (Iterative) | 2 | **DONE (0.96)** | ps-architect + nse-architecture + ps-critic | 2 | TASK-034 ✓ | [TASK-035](./TASK-035-spec-creation.md) |
+| TASK-036 | Orchestration Integration Design | 3 | **DONE** | ps-architect | 2 | BARRIER-2 | [TASK-036](./TASK-036-orchestration-integration.md) |
+| TASK-037 | FMEA & Risk Assessment | 3 | **DONE** | nse-risk | 2 | BARRIER-2 | [TASK-037](./TASK-037-fmea-risk.md) |
+| TASK-038 | Domain Context Specifications | 3 | **DONE** | ps-architect + ps-validator + nse-verification | 2 | BARRIER-2 | [TASK-038](./TASK-038-example-plans.md) |
+| TASK-039 | Quality Review | 4 | **DONE** | ps-critic + nse-qa | 2 | TASK-036,037,038 | [TASK-039](./TASK-039-quality-review.md) |
+| TASK-040 | Final Synthesis & GATE-4 Prep | 4 | **DONE** | ps-synthesizer | 2 | BARRIER-3 | [TASK-040](./TASK-040-synthesis-gate4.md) |
+| TASK-041 | Remediate 8D Terminology (REM-001) | 4.1 | **DONE** | Claude | 1 | TASK-039 | [TASK-041](./TASK-041-remediate-8d-terminology.md) |
+| TASK-042 | Remediate DISC-001 Reference (REM-002) | 4.1 | **DONE** | Claude | 1 | TASK-039 | [TASK-042](./TASK-042-remediate-disc001-reference.md) |
 
 ### Workflow Architecture
 

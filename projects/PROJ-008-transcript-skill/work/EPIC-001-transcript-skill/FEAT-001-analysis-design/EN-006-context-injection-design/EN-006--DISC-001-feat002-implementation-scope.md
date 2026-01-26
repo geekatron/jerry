@@ -53,7 +53,7 @@ created_by: "Claude"
 
 # Timestamps
 created_at: "2026-01-27T00:30:00Z"
-updated_at: "2026-01-27T00:30:00Z"
+updated_at: "2026-01-26T14:45:00Z"
 completed_at: "2026-01-27T00:30:00Z"
 
 # Hierarchy
@@ -112,9 +112,14 @@ During the TASK-038 update to include 6 transcript analysis domains with per-dom
 
 **Key Findings:**
 - TASK-038 produces specifications/designs only (entities, extraction rules, prompt templates)
-- FEAT-002 must implement actual `contexts/{domain}.yaml` files
+- FEAT-002 must create actual `contexts/{domain}.yaml` files (YAML configuration only, no Python code)
 - User has test transcripts available for validation
 - Three-stage validation: manual review + schema validation + transcript testing
+
+> **IMPORTANT:** All FEAT-002 implementation tasks produce **YAML configuration files only**
+> (`contexts/*.yaml`, SKILL.md, AGENT.md). No Python or executable code is created.
+> See [SPEC-context-injection.md Section 3](./docs/specs/SPEC-context-injection.md#3-claude-code-skills-mapping) for
+> Claude Code Skills mapping patterns.
 
 **Validation:** User confirmed via clarifying questions that TASK-038 is design-only and implementation belongs in FEAT-002.
 
@@ -185,7 +190,7 @@ The boundary between FEAT-001 and FEAT-002 is now clearly defined:
 
 The following tasks need to be created in FEAT-002:
 
-#### Category 1: Context File Implementation
+#### Category 1: Context File Configuration (YAML Only)
 
 | Task | Description | Domain | Depends On |
 |------|-------------|--------|------------|
@@ -317,6 +322,7 @@ These work items should be created in FEAT-002:
 | Parent | [EN-006](./EN-006-context-injection-design.md) | Parent enabler |
 | Task | [TASK-038](./TASK-038-example-plans.md) | Domain Context Specifications |
 | Spec | [SPEC-context-injection.md](./docs/specs/SPEC-context-injection.md) | Context injection specification |
+| **Spec Section 3** | [SPEC Section 3: Claude Code Skills Mapping](./docs/specs/SPEC-context-injection.md#3-claude-code-skills-mapping) | **Required reference for YAML-only implementation** |
 | Schema | [context-injection-schema.json](./docs/specs/schemas/context-injection-schema.json) | JSON Schema for validation |
 
 ---
