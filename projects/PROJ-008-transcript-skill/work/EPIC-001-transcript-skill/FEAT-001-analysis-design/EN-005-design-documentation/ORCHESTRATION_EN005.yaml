@@ -1,0 +1,604 @@
+# ORCHESTRATION_EN005.yaml
+# Machine-readable orchestration state for EN-005 Design Documentation
+# Document ID: PROJ-008-EN005-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-01-26T09:00:00Z
+
+schema_version: "1.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "en005-tdd-20260126-001"
+  name: "EN-005 Technical Design Documentation"
+  project_id: "PROJ-008-transcript-skill"
+  enabler_id: "EN-005"
+  version: "1.0"
+  created_at: "2026-01-26T09:00:00Z"
+  updated_at: "2026-01-26T09:00:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | AWAITING_GATE
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  pattern: "SEQUENTIAL_WITH_CRITIC_FEEDBACK"
+
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    quality_threshold: 0.90       # Minimum quality score
+    max_feedback_iterations: 3    # Prevent infinite loops
+
+  # Source Document References
+  source_documents:
+    en003_requirements:
+      - path: "EN-003-requirements-synthesis/requirements/REQUIREMENTS-SPECIFICATION.md"
+        content: "Consolidated 40 requirements (10 STK, 15 FR, 10 NFR, 5 IR)"
+        key_items:
+          - "31 MUST priority requirements (78%)"
+          - "6 design patterns (PAT-001..006)"
+          - "5 YELLOW risks requiring design coverage"
+          - "4 implementation phases"
+          - "8 assumptions requiring validation"
+      - path: "EN-003-requirements-synthesis/requirements/NASA-SE-REQUIREMENTS.md"
+        content: "NASA SE formal requirements specification"
+        key_items:
+          - "Stakeholder hierarchy (3 primary, 2 secondary)"
+          - "ADIT verification method mapping"
+          - "Requirements-to-risk linkage"
+          - "Design element allocation"
+
+    en004_adrs:
+      - path: "docs/adrs/ADR-001-agent-architecture.md"
+        status: "APPROVED"
+        quality_score: 0.92
+      - path: "docs/adrs/ADR-002-artifact-structure.md"
+        status: "APPROVED"
+        quality_score: 0.91
+      - path: "docs/adrs/ADR-003-bidirectional-linking.md"
+        status: "APPROVED"
+        quality_score: 0.93
+      - path: "docs/adrs/ADR-004-file-splitting.md"
+        status: "APPROVED"
+        quality_score: 0.94
+      - path: "docs/adrs/ADR-005-agent-implementation.md"
+        status: "APPROVED"
+        quality_score: 0.92
+
+  # Discovery and Decision Documents
+  supporting_documents:
+    discoveries:
+      - id: "DISC-001"
+        title: "Design Documentation Inputs"
+        path: "EN-005-design-documentation/FEAT-001--DISC-001-design-inputs.md"
+        status: "DOCUMENTED"
+        key_findings:
+          - "40 requirements mapped to 3 agents"
+          - "6 design patterns require TDD documentation"
+          - "5 YELLOW risks need design mitigation"
+          - "Token budgets within limits for all deliverables"
+
+    decisions:
+      - id: "DEC-001"
+        title: "Design Documentation Approach"
+        path: "EN-005-design-documentation/FEAT-001--DEC-001-design-approach.md"
+        status: "ACCEPTED"
+        key_decisions:
+          - "DEC-001-001: L0/L1/L2 structure for all TDDs"
+          - "DEC-001-002: ADR Compliance Checklist in each TDD"
+          - "DEC-001-003: Requirements Traceability Matrix"
+          - "DEC-001-004: Sequential TDD development"
+          - "DEC-001-005: AGENT.md follows PS_AGENT_TEMPLATE"
+          - "DEC-001-006: ps-critic review at 0.90 threshold"
+          - "DEC-001-007: PLAYBOOK phase alignment"
+          - "DEC-001-008: RUNBOOK risk-based structure"
+          - "DEC-001-009: Token budget monitoring"
+          - "DEC-001-010: Bidirectional linking per ADR-003"
+
+  # ADR Alignment
+    - id: "ADR-001"
+      title: "Agent Architecture"
+      impact: "Defines 3 custom agents + ps-critic integration"
+      key_artifacts:
+        - "ts-parser AGENT.md"
+        - "ts-extractor AGENT.md"
+        - "ts-formatter AGENT.md"
+    - id: "ADR-002"
+      title: "Artifact Structure"
+      impact: "Hierarchical packet with 35K limit"
+      key_artifacts:
+        - "00-index.md template"
+        - "packet directory structure"
+    - id: "ADR-003"
+      title: "Bidirectional Deep Linking"
+      impact: "Custom anchors with backlinks"
+      key_artifacts:
+        - "anchor registry design"
+        - "backlinks template"
+    - id: "ADR-004"
+      title: "File Splitting Strategy"
+      impact: "Semantic boundary split at 31.5K"
+      key_artifacts:
+        - "split detection logic"
+        - "navigation templates"
+    - id: "ADR-005"
+      title: "Agent Implementation"
+      impact: "Prompt-based Phase 1, Python Phase 2"
+      key_artifacts:
+        - "AGENT.md templates"
+        - "trigger monitoring spec"
+
+# =============================================================================
+# PHASE DEFINITIONS
+# =============================================================================
+phases:
+  phase_1:
+    id: "PHASE-1"
+    name: "Technical Design Document (TDD)"
+    description: "Create comprehensive TDD following template with L0/L1/L2 perspectives"
+    status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+    depends_on: []
+
+    tasks:
+      - id: "TASK-001"
+        title: "Create TDD: Transcript Skill Overview"
+        agent: "ps-architect"
+        status: "PENDING"
+        artifact: "docs/TDD-transcript-skill.md"
+        description: |
+          Create the main TDD document including:
+          - L0: Executive Summary (ELI5)
+          - L1: Technical Architecture (Engineer)
+          - L2: Strategic Design (Architect)
+          - C4 Model diagrams (Context, Container, Component)
+          - Requirements traceability matrix
+        acceptance_criteria:
+          - "TDD follows .context/templates/design/TDD.template.md structure"
+          - "L0/L1/L2 sections complete and accurate"
+          - "All 5 ADRs referenced with specific decisions"
+          - "C4 diagrams rendered in Mermaid"
+          - "Token budget documented per component"
+        evidence_required:
+          - "File created at docs/TDD-transcript-skill.md"
+          - "All sections present in document"
+          - "ADR references verified"
+
+      - id: "TASK-002"
+        title: "Create TDD: ts-parser Agent Design"
+        agent: "ps-architect"
+        status: "PENDING"
+        depends_on: ["TASK-001"]
+        artifact: "docs/TDD-ts-parser.md"
+        description: |
+          Design the transcript-parser agent:
+          - VTT/SRT/TXT format detection
+          - Parsing logic and normalization
+          - Canonical transcript JSON schema
+          - Error handling strategies
+        acceptance_criteria:
+          - "Input formats documented (VTT, SRT, TXT)"
+          - "Canonical JSON schema defined"
+          - "Parsing algorithm documented"
+          - "Error cases enumerated"
+          - "Token budget: <5K per agent invocation"
+        evidence_required:
+          - "JSON schema validated against sample transcripts"
+          - "Error handling matrix complete"
+
+      - id: "TASK-003"
+        title: "Create TDD: ts-extractor Agent Design"
+        agent: "ps-architect"
+        status: "PENDING"
+        depends_on: ["TASK-001"]
+        artifact: "docs/TDD-ts-extractor.md"
+        description: |
+          Design the entity-extractor agent:
+          - Speaker identification patterns
+          - Action item detection
+          - Decision recognition
+          - Question extraction
+          - Topic segmentation
+          - Tiered extraction (Rule → ML → LLM per PAT-001)
+        acceptance_criteria:
+          - "Entity types defined with JSON schemas"
+          - "Extraction patterns documented"
+          - "Tiered approach specified (rule/ML/LLM)"
+          - "Confidence scoring mechanism defined"
+          - "Citation format specified per ADR-003"
+        evidence_required:
+          - "Sample extractions for each entity type"
+          - "Pattern regex/rules documented"
+
+      - id: "TASK-004"
+        title: "Create TDD: ts-formatter Agent Design"
+        agent: "ps-architect"
+        status: "PENDING"
+        depends_on: ["TASK-001", "TASK-002", "TASK-003"]
+        artifact: "docs/TDD-ts-formatter.md"
+        description: |
+          Design the output-formatter agent:
+          - Packet structure generation (ADR-002)
+          - File splitting logic (ADR-004)
+          - Anchor registry management (ADR-003)
+          - Backlinks generation
+          - Token counting and enforcement
+          - Index file generation
+        acceptance_criteria:
+          - "Packet structure matches ADR-002"
+          - "Split logic follows ADR-004 (31.5K soft limit)"
+          - "Anchor naming per ADR-003 conventions"
+          - "Backlinks template defined"
+          - "Token counting algorithm specified"
+        evidence_required:
+          - "Sample packet structure diagram"
+          - "Split algorithm flowchart"
+
+  phase_2:
+    id: "PHASE-2"
+    name: "Agent AGENT.md Files"
+    description: "Create prompt-based agent definitions following PS_AGENT_TEMPLATE.md"
+    status: "PENDING"
+    depends_on: ["PHASE-1"]
+
+    tasks:
+      - id: "TASK-005"
+        title: "Create ts-parser AGENT.md"
+        agent: "ps-architect"
+        status: "PENDING"
+        artifact: "agents/ts-parser/AGENT.md"
+        description: |
+          Create the ts-parser agent definition:
+          - YAML frontmatter with identity, capabilities, guardrails
+          - System prompt in XML structure
+          - Input validation rules
+          - Output format specification
+        acceptance_criteria:
+          - "Follows PS_AGENT_TEMPLATE.md structure"
+          - "XML tags: <agent>, <identity>, <capabilities>, <processing_instructions>"
+          - "Model selection: haiku (fast parsing)"
+          - "Output persistence to canonical JSON"
+        evidence_required:
+          - "AGENT.md file created"
+          - "Template compliance verified"
+
+      - id: "TASK-006"
+        title: "Create ts-extractor AGENT.md"
+        agent: "ps-architect"
+        status: "PENDING"
+        artifact: "agents/ts-extractor/AGENT.md"
+        description: |
+          Create the ts-extractor agent definition:
+          - Entity extraction prompts
+          - Confidence scoring instructions
+          - Citation format requirements
+          - Quality thresholds
+        acceptance_criteria:
+          - "Follows PS_AGENT_TEMPLATE.md structure"
+          - "Tiered extraction documented"
+          - "Model selection: sonnet (complex NER)"
+          - "Citation format matches ADR-003"
+        evidence_required:
+          - "AGENT.md file created"
+          - "Sample extraction output validated"
+
+      - id: "TASK-007"
+        title: "Create ts-formatter AGENT.md"
+        agent: "ps-architect"
+        status: "PENDING"
+        artifact: "agents/ts-formatter/AGENT.md"
+        description: |
+          Create the ts-formatter agent definition:
+          - Output generation instructions
+          - Token counting procedures
+          - Split decision logic
+          - Backlinks generation
+        acceptance_criteria:
+          - "Follows PS_AGENT_TEMPLATE.md structure"
+          - "Split logic per ADR-004"
+          - "Anchor registry per ADR-003"
+          - "Model selection: sonnet (formatting)"
+        evidence_required:
+          - "AGENT.md file created"
+          - "Sample output validated"
+
+      - id: "TASK-008"
+        title: "Create SKILL.md Orchestrator"
+        agent: "ps-architect"
+        status: "PENDING"
+        depends_on: ["TASK-005", "TASK-006", "TASK-007"]
+        artifact: "SKILL.md"
+        description: |
+          Create the main SKILL.md entry point:
+          - Skill interface for Claude Code
+          - Agent invocation sequence
+          - ps-critic integration for quality review
+          - Error handling and recovery
+        acceptance_criteria:
+          - "Follows Jerry SKILL.md conventions"
+          - "Invokes all 3 custom agents"
+          - "Integrates ps-critic for quality gate"
+          - "Maintains P-003 single nesting"
+        evidence_required:
+          - "SKILL.md file created"
+          - "Agent flow documented"
+
+  phase_3:
+    id: "PHASE-3"
+    name: "PLAYBOOK and RUNBOOK"
+    description: "Create operational documentation for EN-005 execution"
+    status: "PENDING"
+    depends_on: ["PHASE-2"]
+
+    tasks:
+      - id: "TASK-009"
+        title: "Create EN-005 PLAYBOOK"
+        agent: "ps-architect"
+        status: "PENDING"
+        artifact: "docs/PLAYBOOK-en005.md"
+        description: |
+          Create operational playbook following template:
+          - Phase-based execution steps
+          - Decision points with criteria
+          - Verification checkpoints
+          - Rollback procedures
+          - RACI matrix
+        acceptance_criteria:
+          - "Follows .context/templates/design/PLAYBOOK.template.md"
+          - "All phases documented"
+          - "Decision trees in Mermaid"
+          - "Prerequisites and verification checklists"
+        evidence_required:
+          - "PLAYBOOK file created"
+          - "All sections complete"
+
+      - id: "TASK-010"
+        title: "Create EN-005 RUNBOOK"
+        agent: "ps-architect"
+        status: "PENDING"
+        artifact: "docs/RUNBOOK-en005.md"
+        description: |
+          Create troubleshooting runbook:
+          - Symptom-Cause-Resolution mapping
+          - Decision trees for common issues
+          - Escalation matrix
+          - Recovery procedures
+        acceptance_criteria:
+          - "Follows .context/templates/design/RUNBOOK.template.md"
+          - "Common failure scenarios covered"
+          - "Troubleshooting decision trees complete"
+          - "L0/L1/L2 perspectives included"
+        evidence_required:
+          - "RUNBOOK file created"
+          - "Decision trees validated"
+
+  phase_4:
+    id: "PHASE-4"
+    name: "Quality Review and Finalization"
+    description: "ps-critic review with feedback loop until quality >= 0.90"
+    status: "PENDING"
+    depends_on: ["PHASE-1", "PHASE-2", "PHASE-3"]
+
+    tasks:
+      - id: "TASK-011"
+        title: "ps-critic Review: TDD Documents"
+        agent: "ps-critic"
+        status: "PENDING"
+        artifact: "review/tdd-review.md"
+        description: |
+          Quality review of all TDD documents:
+          - Template compliance
+          - ADR alignment
+          - Completeness check
+          - Technical accuracy
+        acceptance_criteria:
+          - "Quality score >= 0.90"
+          - "All TDD sections reviewed"
+          - "ADR traceability verified"
+          - "No critical issues"
+        evidence_required:
+          - "Review artifact created"
+          - "Quality score documented"
+
+      - id: "TASK-012"
+        title: "ps-critic Review: Agent Definitions"
+        agent: "ps-critic"
+        status: "PENDING"
+        artifact: "review/agent-review.md"
+        description: |
+          Quality review of all AGENT.md files:
+          - PS_AGENT_TEMPLATE.md compliance
+          - Constitutional compliance (P-002, P-003)
+          - Prompt quality assessment
+          - Integration validation
+        acceptance_criteria:
+          - "Quality score >= 0.90"
+          - "Template compliance verified"
+          - "No P-003 violations"
+          - "No critical issues"
+        evidence_required:
+          - "Review artifact created"
+          - "Quality score documented"
+
+      - id: "TASK-013"
+        title: "Final Review and GATE-4 Preparation"
+        agent: "ps-critic"
+        status: "PENDING"
+        depends_on: ["TASK-011", "TASK-012"]
+        artifact: "review/EN-005-final-review.md"
+        description: |
+          Final quality assessment for GATE-4:
+          - Aggregate quality scoring
+          - Requirements traceability verification
+          - ADR alignment confirmation
+          - GATE-4 readiness checklist
+        acceptance_criteria:
+          - "Aggregate quality score >= 0.90"
+          - "All deliverables complete"
+          - "GATE-4 checklist passed"
+          - "Human approval ready"
+        evidence_required:
+          - "Final review artifact created"
+          - "GATE-4 checklist completed"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_phase: "PHASE-1"
+  current_task: null
+
+  sequence:
+    - phase: "PHASE-1"
+      tasks: ["TASK-001", "TASK-002", "TASK-003", "TASK-004"]
+      pattern: "SEQUENTIAL_WITH_PARALLEL"  # TASK-002,003 can run parallel after TASK-001
+      status: "PENDING"
+    - phase: "PHASE-2"
+      tasks: ["TASK-005", "TASK-006", "TASK-007", "TASK-008"]
+      pattern: "SEQUENTIAL_WITH_PARALLEL"  # TASK-005,006,007 can run parallel
+      status: "PENDING"
+    - phase: "PHASE-3"
+      tasks: ["TASK-009", "TASK-010"]
+      pattern: "PARALLEL"
+      status: "PENDING"
+    - phase: "PHASE-4"
+      tasks: ["TASK-011", "TASK-012", "TASK-013"]
+      pattern: "SEQUENTIAL_WITH_FEEDBACK"
+      status: "PENDING"
+    - task: "GATE-4"
+      type: "human_approval"
+      status: "PENDING"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  phases:
+    complete: 0
+    total: 4
+    percent: 0
+
+  tasks:
+    complete: 0
+    total: 13
+    percent: 0
+
+  quality:
+    average_score: null
+    scores: {}
+
+  timing:
+    workflow_started: "2026-01-26T09:00:00Z"
+    last_activity: null
+    estimated_completion: null
+
+# =============================================================================
+# DELIVERABLES REGISTRY
+# =============================================================================
+deliverables:
+  tdd_documents:
+    - id: "TDD-001"
+      title: "Transcript Skill Overview"
+      path: "docs/TDD-transcript-skill.md"
+      status: "PENDING"
+    - id: "TDD-002"
+      title: "ts-parser Agent Design"
+      path: "docs/TDD-ts-parser.md"
+      status: "PENDING"
+    - id: "TDD-003"
+      title: "ts-extractor Agent Design"
+      path: "docs/TDD-ts-extractor.md"
+      status: "PENDING"
+    - id: "TDD-004"
+      title: "ts-formatter Agent Design"
+      path: "docs/TDD-ts-formatter.md"
+      status: "PENDING"
+
+  agent_definitions:
+    - id: "AGENT-001"
+      title: "ts-parser AGENT.md"
+      path: "agents/ts-parser/AGENT.md"
+      status: "PENDING"
+    - id: "AGENT-002"
+      title: "ts-extractor AGENT.md"
+      path: "agents/ts-extractor/AGENT.md"
+      status: "PENDING"
+    - id: "AGENT-003"
+      title: "ts-formatter AGENT.md"
+      path: "agents/ts-formatter/AGENT.md"
+      status: "PENDING"
+    - id: "AGENT-004"
+      title: "SKILL.md Orchestrator"
+      path: "SKILL.md"
+      status: "PENDING"
+
+  operational_docs:
+    - id: "OPS-001"
+      title: "EN-005 PLAYBOOK"
+      path: "docs/PLAYBOOK-en005.md"
+      status: "PENDING"
+    - id: "OPS-002"
+      title: "EN-005 RUNBOOK"
+      path: "docs/RUNBOOK-en005.md"
+      status: "PENDING"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Start TASK-001: Create TDD Overview"
+      depends_on: "Orchestration setup complete"
+      status: "READY"
+
+  subsequent:
+    - action: "Create detailed task files"
+      depends_on: "TASK-001 started"
+    - action: "Execute PHASE-1 parallel tasks"
+      depends_on: "TASK-001 complete"
+    - action: "PHASE-2 agent definitions"
+      depends_on: "PHASE-1 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "discovery-decision-complete"
+  current_state: |
+    EN-005 orchestration fully configured with:
+    - Source documents from EN-003 (40 requirements) and EN-004 (5 ADRs)
+    - Discovery document (DISC-001) capturing input synthesis
+    - Decision document (DEC-001) with 10 design approach decisions
+    Ready to start PHASE-1 execution.
+  next_step: "Execute TASK-001: Create TDD Overview document"
+
+  files_to_read:
+    # Orchestration artifacts
+    - "ORCHESTRATION_EN005.md"    # Strategic context
+    - "ORCHESTRATION_EN005.yaml"  # This file - machine-readable state
+
+    # Discovery and Decision documents
+    - "EN-005-design-documentation/FEAT-001--DISC-001-design-inputs.md"
+    - "EN-005-design-documentation/FEAT-001--DEC-001-design-approach.md"
+
+    # EN-003 Requirements
+    - "EN-003-requirements-synthesis/requirements/REQUIREMENTS-SPECIFICATION.md"
+    - "EN-003-requirements-synthesis/requirements/NASA-SE-REQUIREMENTS.md"
+
+    # EN-004 ADRs
+    - "docs/adrs/ADR-001-agent-architecture.md"
+    - "docs/adrs/ADR-002-artifact-structure.md"
+    - "docs/adrs/ADR-003-bidirectional-linking.md"
+    - "docs/adrs/ADR-004-file-splitting.md"
+    - "docs/adrs/ADR-005-agent-implementation.md"
+
+    # EN-004 Final Review (for context)
+    - "EN-004-architecture-decisions/review/EN-004-final-review.md"
