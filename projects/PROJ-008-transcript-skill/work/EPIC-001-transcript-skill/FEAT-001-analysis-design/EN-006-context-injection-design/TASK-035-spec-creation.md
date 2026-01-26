@@ -26,8 +26,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: COMPLETE
+resolution: DONE
 
 # === PRIORITY ===
 priority: CRITICAL
@@ -38,7 +38,8 @@ created_by: "Claude"
 
 # === TIMESTAMPS ===
 created_at: "2026-01-26T16:00:00Z"
-updated_at: "2026-01-26T16:00:00Z"
+updated_at: "2026-01-26T23:30:00Z"
+completed_at: "2026-01-26T23:30:00Z"
 
 # === HIERARCHY ===
 parent_id: "EN-006"
@@ -60,8 +61,10 @@ due_date: null
 # === TASK-SPECIFIC PROPERTIES ===
 activity: DESIGN
 original_estimate: 3
-remaining_work: 3
-time_spent: 0
+remaining_work: 0
+time_spent: 2
+quality_score: 0.96
+iterations_used: 1
 
 # === ORCHESTRATION ===
 phase: 2
@@ -70,7 +73,8 @@ execution_mode: "ITERATIVE"
 ps_agent: "ps-architect"
 nse_agent: "nse-architecture"
 critic: "ps-critic"
-blocked_by: "TASK-034"
+blocked_by: null  # TASK-034 complete with 0.93
+key_decision: "DEC-002"  # Claude Code Skills implementation approach
 max_iterations: 3
 quality_threshold: 0.90
 ```
@@ -85,6 +89,16 @@ Create the formal specification for the context injection mechanism, including:
 
 1. **SPEC-context-injection.md** - Human-readable specification
 2. **context-injection-schema.json** - Machine-readable JSON Schema
+
+**CRITICAL DECISION (DEC-002):** This specification focuses on **Claude Code Skills** implementation approach, NOT Python CLI. The TDD's Python code (IContextProvider, ContextPayload, etc.) represents conceptual patterns that map to skill constructs:
+
+| TDD Concept | Claude Code Skill Construct |
+|-------------|----------------------------|
+| `IContextProvider` interface | SKILL.md instructions |
+| `load_static_context()` | `contexts/{domain}.yaml` |
+| `resolve_template()` | Template variables `{{$variable}}` |
+| `ContextPayload` | Skill invocation arguments |
+| Agent integration | AGENT.md files |
 
 This task uses the same iterative Generator-Critic loop as TASK-034:
 - ps-architect generates specification
@@ -185,36 +199,36 @@ This task uses the same iterative Generator-Critic loop as TASK-034:
 ### Acceptance Criteria
 
 **Specification Content Criteria:**
-- [ ] **AC-001:** Spec follows established specification format
-- [ ] **AC-002:** All payload fields documented with types and constraints
-- [ ] **AC-003:** All injection points specified
-- [ ] **AC-004:** Prompt template syntax fully defined
-- [ ] **AC-005:** Security requirements documented
-- [ ] **AC-006:** Error handling specified
+- [x] **AC-001:** Spec follows established specification format
+- [x] **AC-002:** All payload fields documented with types and constraints
+- [x] **AC-003:** All injection points specified
+- [x] **AC-004:** Prompt template syntax fully defined
+- [x] **AC-005:** Security requirements documented
+- [x] **AC-006:** Error handling specified
 
 **JSON Schema Criteria:**
-- [ ] **AC-007:** Schema validates against JSON Schema Draft 2020-12
-- [ ] **AC-008:** All custom types defined in $defs
-- [ ] **AC-009:** Required fields marked
-- [ ] **AC-010:** Descriptions provided for all fields
+- [x] **AC-007:** Schema validates against JSON Schema Draft 2020-12
+- [x] **AC-008:** All custom types defined in $defs
+- [x] **AC-009:** Required fields marked
+- [x] **AC-010:** Descriptions provided for all fields
 
 **NASA SE Validation Criteria (nse-architecture):**
-- [ ] **AC-011:** Specification compliant with NASA SE Process 4
-- [ ] **AC-012:** Interface definitions complete
-- [ ] **AC-013:** Verification approach documented
+- [x] **AC-011:** Specification compliant with NASA SE Process 4
+- [x] **AC-012:** Interface definitions complete
+- [x] **AC-013:** Verification approach documented
 
 **Quality Criteria (ps-critic):**
-- [ ] **AC-014:** Quality score >= 0.90
-- [ ] **AC-015:** No ambiguous or incomplete definitions
-- [ ] **AC-016:** All TDD references resolved
+- [x] **AC-014:** Quality score >= 0.90 ✅ **ACHIEVED: 0.96**
+- [x] **AC-015:** No ambiguous or incomplete definitions
+- [x] **AC-016:** All TDD references resolved
 
 ### Deliverables
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| Specification | Spec | docs/specs/SPEC-context-injection.md | PENDING |
-| JSON Schema | Schema | docs/specs/schemas/context-injection-schema.json | PENDING |
-| Iteration Feedback | Critique | docs/critiques/en006-spec-critique-v1.md | PENDING |
+| Specification | Spec | docs/specs/SPEC-context-injection.md | COMPLETE |
+| JSON Schema | Schema | docs/specs/schemas/context-injection-schema.json | COMPLETE |
+| Iteration Feedback | Critique | docs/critiques/en006-spec-critique-v1.md | COMPLETE |
 
 ---
 
@@ -223,6 +237,8 @@ This task uses the same iterative Generator-Critic loop as TASK-034:
 | Date       | Status      | Notes                          |
 |------------|-------------|--------------------------------|
 | 2026-01-26 | Created     | Task created for redesigned workflow |
+| 2026-01-26 | IN_PROGRESS | ps-architect created SPEC and JSON Schema |
+| 2026-01-26 | COMPLETE    | ps-critic evaluation: 0.96 (ACCEPT). All 16/16 acceptance criteria met. |
 
 ---
 

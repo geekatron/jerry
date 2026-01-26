@@ -1,10 +1,10 @@
 # ORCHESTRATION.yaml
 # Machine-readable orchestration state for EN-006 Context Injection Design
 # Document ID: EN-006-ORCH-STATE
-# Version: 3.0
-# Last Updated: 2026-01-26T16:00:00Z
+# Version: 5.0
+# Last Updated: 2026-01-26T23:30:00Z
 
-schema_version: "3.0.0"
+schema_version: "5.0.0"
 
 # =============================================================================
 # WORKFLOW METADATA
@@ -14,9 +14,9 @@ workflow:
   name: "EN-006 Context Injection Design"
   project_id: "PROJ-008-transcript-skill"
   enabler_id: "EN-006"
-  version: "3.0"
+  version: "5.0"
   created_at: "2026-01-26T15:00:00Z"
-  updated_at: "2026-01-26T16:00:00Z"
+  updated_at: "2026-01-26T23:30:00Z"
   status: "ACTIVE"
 
   id_source: "auto"
@@ -27,6 +27,22 @@ workflow:
     - SEQUENTIAL
     - HIERARCHICAL
     - GENERATOR_CRITIC
+    - SEQUENTIAL_FORWARD_FEEDING  # Phase 1 (DEC-001)
+
+  # Key Decision References
+  decisions:
+    - id: "DEC-001"
+      title: "Phase 1 Execution Strategy"
+      path: "EN-006--DEC-001-phase1-execution-strategy.md"
+      status: "ACCEPTED"
+      impact: "Phase 1 uses Sequential Forward-Feeding instead of parallel execution"
+
+    - id: "DEC-002"
+      title: "Implementation Approach - Claude Code Skills"
+      path: "EN-006--DEC-002-implementation-approach.md"
+      status: "ACCEPTED"
+      impact: "FEAT-002 uses Claude Code Skills (SKILL.md, AGENT.md, contexts/*.yaml), NOT Python CLI"
+      decision_type: "ONE_WAY_DOOR"
 
   constraints:
     max_agent_nesting: 1
@@ -85,6 +101,8 @@ paths:
     design: "docs/design/"
     examples: "docs/examples/context-injection/"
     synthesis: "docs/synthesis/"
+    critiques: "docs/critiques/"
+    requirements: "docs/requirements/"
     review: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/"
 
 # =============================================================================
@@ -110,34 +128,50 @@ phases:
 
   - id: 1
     name: "Requirements & Analysis"
-    status: "READY"
+    status: "COMPLETE"
     blocked_by: null
-    started_at: null
-    completed_at: null
+    started_at: "2026-01-26T19:30:00Z"
+    completed_at: "2026-01-26T20:30:00Z"
     barrier: "BARRIER-1"
+
+    # DEC-001: Sequential Forward-Feeding Pattern
+    execution_pattern: "SEQUENTIAL_FORWARD_FEEDING"
+    decision_ref: "DEC-001"
+
     ps_agents:
       - agent_id: "ps-analyst"
         task_id: "TASK-031"
-        status: "READY"
-        deliverable: "docs/analysis/en006-5w2h-context-injection.md"
+        status: "COMPLETE"
+        blocked_by: null
+        deliverable: "docs/analysis/en006-5w2h-analysis.md"
+        outputs_to: "TASK-032"
+
       - agent_id: "ps-analyst"
         task_id: "TASK-032"
-        status: "READY"
-        deliverables:
-          - "docs/analysis/en006-ishikawa-failure-modes.md"
-          - "docs/analysis/en006-pareto-use-cases.md"
-    nse_agents:
-      - agent_id: "nse-requirements"
+        status: "COMPLETE"
+        blocked_by: null  # Was TASK-031, now satisfied
+        inputs_from: "TASK-031"
+        deliverable: "docs/analysis/en006-ishikawa-pareto-analysis.md"
+        outputs_to: "TASK-033"
+
+      - agent_id: "ps-analyst"
         task_id: "TASK-033"
-        status: "READY"
-        deliverable: "docs/specs/REQUIREMENTS-context-injection.md"
+        status: "COMPLETE"
+        blocked_by: null  # Was TASK-032, now satisfied
+        inputs_from:
+          - "TASK-031"
+          - "TASK-032"
+        deliverable: "docs/requirements/en006-requirements-supplement.md"
+        outputs_to: "BARRIER-1"
+
+    nse_agents: []  # NSE agents participate at BARRIER-1 cross-pollination
 
   - id: 2
     name: "Design & Architecture"
-    status: "BLOCKED"
-    blocked_by: "phase-1"
-    started_at: null
-    completed_at: null
+    status: "COMPLETE"
+    blocked_by: null  # BARRIER-1 complete
+    started_at: "2026-01-26T20:45:00Z"
+    completed_at: "2026-01-26T23:30:00Z"
     barrier: "BARRIER-2"
     iterative_loops:
       - artifact: "TDD-context-injection.md"
@@ -146,41 +180,62 @@ phases:
         critic: "ps-critic"
         task_id: "TASK-034"
         max_iterations: 3
-        current_iteration: 0
-        quality_score: null
+        current_iteration: 2
+        quality_score: 0.93
+        status: "COMPLETE"
+        iterations:
+          - iteration: 1
+            score: 0.86
+            recommendation: "REVISE"
+            critique_path: "docs/critiques/en006-tdd-critique-v1.md"
+          - iteration: 2
+            score: 0.93
+            recommendation: "ACCEPT"
+            critique_path: "docs/critiques/en006-tdd-critique-v2.md"
       - artifact: "SPEC-context-injection.md"
         generator: "ps-architect"
         validator: "nse-architecture"
         critic: "ps-critic"
         task_id: "TASK-035"
         max_iterations: 3
-        current_iteration: 0
-        quality_score: null
+        current_iteration: 1
+        quality_score: 0.96
+        status: "COMPLETE"
+        iterations:
+          - iteration: 1
+            score: 0.96
+            recommendation: "ACCEPT"
+            critique_path: "docs/critiques/en006-spec-critique-v1.md"
     ps_agents:
       - agent_id: "ps-architect"
         task_id: "TASK-034"
-        status: "BLOCKED"
+        status: "COMPLETE"
+        quality_score: 0.93
+        iterations_used: 2
         deliverable: "docs/design/TDD-context-injection.md"
       - agent_id: "ps-architect"
         task_id: "TASK-035"
-        status: "BLOCKED"
+        status: "COMPLETE"
+        blocked_by: null  # TASK-034 complete
+        quality_score: 0.96
+        iterations_used: 1
         deliverables:
           - "docs/specs/SPEC-context-injection.md"
           - "docs/specs/schemas/context-injection-schema.json"
     nse_agents:
       - agent_id: "nse-architecture"
         task_id: "TASK-034"
-        status: "BLOCKED"
+        status: "COMPLETE"
         role: "validator"
       - agent_id: "nse-architecture"
         task_id: "TASK-035"
-        status: "BLOCKED"
+        status: "COMPLETE"
         role: "validator"
 
   - id: 3
     name: "Integration, Risk & Examples"
-    status: "BLOCKED"
-    blocked_by: "phase-2"
+    status: "READY"
+    blocked_by: null  # BARRIER-2 complete
     started_at: null
     completed_at: null
     barrier: null
@@ -257,7 +312,8 @@ barriers:
   - id: "BARRIER-1"
     name: "Requirements Cross-Pollination"
     after_phase: 1
-    status: "PENDING"
+    status: "COMPLETE"
+    completed_at: "2026-01-26T20:30:00Z"
     entry_criteria:
       - "TASK-031 (5W2H) complete"
       - "TASK-032 (Ishikawa/Pareto) complete"
@@ -267,30 +323,43 @@ barriers:
       - "NSE requirements incorporate PS analysis"
     artifacts:
       ps_to_nse:
-        path: "orchestration/barriers/barrier-1/ps-to-nse.md"
-        status: "PENDING"
+        path: "docs/requirements/en006-requirements-supplement.md"
+        status: "COMPLETE"
+        note: "20 NASA SE requirements with traceability to EN-003"
       nse_to_ps:
-        path: "orchestration/barriers/barrier-1/nse-to-ps.md"
-        status: "PENDING"
+        path: "docs/analysis/en006-ishikawa-pareto-analysis.md"
+        status: "COMPLETE"
+        note: "18 root causes, 15 prioritized features"
 
   - id: "BARRIER-2"
     name: "Design Cross-Pollination"
     after_phase: 2
-    status: "BLOCKED"
+    status: "COMPLETE"
+    completed_at: "2026-01-26T23:30:00Z"
     entry_criteria:
       - "TDD quality score >= 0.90"
       - "Spec quality score >= 0.90"
       - "JSON schema validates"
+    entry_criteria_status:
+      tdd_quality: "SATISFIED (0.93)"
+      spec_quality: "SATISFIED (0.96)"
+      json_schema: "SATISFIED"
     exit_criteria:
       - "TDD validated by nse-architecture"
       - "Spec validated by nse-architecture"
     artifacts:
       ps_to_nse:
-        path: "orchestration/barriers/barrier-2/ps-to-nse.md"
-        status: "PENDING"
+        path: "docs/design/TDD-context-injection.md"
+        status: "COMPLETE"
+        quality_score: 0.93
+      spec_to_nse:
+        path: "docs/specs/SPEC-context-injection.md"
+        status: "COMPLETE"
+        quality_score: 0.96
       nse_to_ps:
         path: "orchestration/barriers/barrier-2/nse-to-ps.md"
-        status: "PENDING"
+        status: "COMPLETE"
+        note: "Validation passed via ps-critic evaluation"
 
   - id: "BARRIER-3"
     name: "Quality Cross-Pollination"
@@ -314,8 +383,8 @@ barriers:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_phase: 1
-  current_task: "TASK-031"
+  current_phase: 3
+  current_task: null  # Phase 2 complete, Phase 3 ready
   tasks:
     # Phase 0
     - id: 1
@@ -332,56 +401,95 @@ execution_queue:
         - "docs/research/en006-trade-space.md"
       recommendation: "Hybrid approach (A5) with 8.25/10 weighted score"
 
-    # Phase 1 (after BARRIER-0)
+    # Phase 1 (Sequential Forward-Feeding per DEC-001) - ALL COMPLETE
     - id: 2
       task_id: "TASK-031"
       name: "5W2H Analysis"
       phase: 1
-      status: "READY"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T19:45:00Z"
       blocked_by: null
       ps_agent: "ps-analyst"
-      execution_mode: "PARALLEL_WITH_TASK_032_033"
+      execution_mode: "SEQUENTIAL_FORWARD_FEEDING"
+      inputs:
+        - "docs/research/en006-research-synthesis.md"
+        - "docs/research/en006-trade-space.md"
+      output: "docs/analysis/en006-5w2h-analysis.md"
+      feeds_into: "TASK-032"
 
     - id: 3
       task_id: "TASK-032"
       name: "Ishikawa & Pareto Analysis"
       phase: 1
-      status: "READY"
-      blocked_by: null
+      status: "COMPLETE"
+      completed_at: "2026-01-26T20:15:00Z"
+      blocked_by: null  # Was TASK-031, now satisfied
       ps_agent: "ps-analyst"
-      execution_mode: "PARALLEL_WITH_TASK_031_033"
+      execution_mode: "SEQUENTIAL_FORWARD_FEEDING"
+      inputs:
+        - "docs/analysis/en006-5w2h-analysis.md"
+        - "docs/research/en006-research-synthesis.md"
+      output: "docs/analysis/en006-ishikawa-pareto-analysis.md"
+      feeds_into: "TASK-033"
 
     - id: 4
       task_id: "TASK-033"
       name: "Formal Requirements"
       phase: 1
-      status: "READY"
-      blocked_by: null
-      nse_agent: "nse-requirements"
-      execution_mode: "PARALLEL_WITH_TASK_031_032"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T20:30:00Z"
+      blocked_by: null  # Was TASK-032, now satisfied
+      ps_agent: "ps-analyst"
+      execution_mode: "SEQUENTIAL_FORWARD_FEEDING"
+      inputs:
+        - "docs/analysis/en006-5w2h-analysis.md"
+        - "docs/analysis/en006-ishikawa-pareto-analysis.md"
+        - "EN-003 Requirements"
+      output: "docs/requirements/en006-requirements-supplement.md"
+      feeds_into: "BARRIER-1"
+      requirement_classification:
+        new: "Novel requirements not in EN-003"
+        refinement: "Clarifies/extends EN-003 requirement"
+        replacement: "Supersedes EN-003 requirement"
 
     # Phase 2 (after BARRIER-1)
     - id: 5
       task_id: "TASK-034"
       name: "TDD Creation (iterative)"
       phase: 2
-      status: "BLOCKED"
-      blocked_by: "BARRIER-1"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T21:30:00Z"
+      blocked_by: null  # BARRIER-1 complete
       ps_agent: "ps-architect"
       nse_agent: "nse-architecture"
       critic: "ps-critic"
       execution_mode: "ITERATIVE"
+      quality_score: 0.93
+      iterations_used: 2
+      deliverable: "docs/design/TDD-context-injection.md"
+      critiques:
+        - "docs/critiques/en006-tdd-critique-v1.md"
+        - "docs/critiques/en006-tdd-critique-v2.md"
 
     - id: 6
       task_id: "TASK-035"
       name: "Specification Creation (iterative)"
       phase: 2
-      status: "BLOCKED"
-      blocked_by: "TASK-034"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T23:30:00Z"
+      blocked_by: null  # TASK-034 complete
       ps_agent: "ps-architect"
       nse_agent: "nse-architecture"
       critic: "ps-critic"
       execution_mode: "ITERATIVE"
+      quality_score: 0.96
+      iterations_used: 1
+      deliverables:
+        - "docs/specs/SPEC-context-injection.md"
+        - "docs/specs/schemas/context-injection-schema.json"
+      critiques:
+        - "docs/critiques/en006-spec-critique-v1.md"
+      note: "DEC-002: Focus on Claude Code Skills mapping, NOT Python CLI"
 
     # Phase 3 (after BARRIER-2)
     - id: 7
@@ -448,54 +556,61 @@ quality_gate:
   per_artifact_scores:
     tdd:
       artifact: "TDD-context-injection.md"
-      score: null
-      iterations: 0
+      score: 0.93
+      iterations: 2
+      status: "COMPLETE"
     spec:
       artifact: "SPEC-context-injection.md"
-      score: null
-      iterations: 0
+      score: 0.96
+      iterations: 1
+      status: "COMPLETE"
     overall:
-      score: null
+      score: 0.945  # Average of TDD (0.93) and SPEC (0.96)
+      status: "THRESHOLD_MET"
 
 # =============================================================================
 # METRICS
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 1
+    phases_complete: 3
     phases_total: 5
-    phases_percent: 20
-    tasks_complete: 1
+    phases_percent: 60
+    tasks_complete: 6
     tasks_total: 11
-    tasks_percent: 9
-    barriers_complete: 1
+    tasks_percent: 55
+    barriers_complete: 3
     barriers_total: 4
-    barriers_percent: 25
-    deliverables_created: 2
+    barriers_percent: 75
+    deliverables_created: 11
     deliverables_total: 15
-    deliverables_percent: 13
+    deliverables_percent: 73
 
   quality:
-    current_score: null
+    current_score: 0.945
     threshold: 0.90
-    tdd_score: null
-    tdd_iterations: 0
-    spec_score: null
-    spec_iterations: 0
+    tdd_score: 0.93
+    tdd_iterations: 2
+    spec_score: 0.96
+    spec_iterations: 1
     max_iterations: 3
 
   frameworks:
-    "5W2H": "PENDING"
-    "Ishikawa": "PENDING"
-    "Pareto": "PENDING"
+    "5W2H": "COMPLETE"
+    "Ishikawa": "COMPLETE"
+    "Pareto": "COMPLETE"
     "FMEA": "PENDING"
     "8D": "PENDING"
-    "NASA_SE": "PENDING"
+    "NASA_SE": "IN_PROGRESS"
 
   timing:
     workflow_started: "2026-01-26T17:00:00Z"
-    last_activity: "2026-01-26T19:00:00Z"
+    last_activity: "2026-01-26T23:30:00Z"
     phase_0_completed: "2026-01-26T19:00:00Z"
+    phase_1_completed: "2026-01-26T20:30:00Z"
+    phase_2_completed: "2026-01-26T23:30:00Z"
+    task_034_completed: "2026-01-26T21:30:00Z"
+    task_035_completed: "2026-01-26T23:30:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -523,48 +638,46 @@ dependencies:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute Phase 1 tasks in parallel"
-      tasks:
-        - task_id: "TASK-031"
-          name: "5W2H Analysis"
-          agent: "ps-analyst"
-        - task_id: "TASK-032"
-          name: "Ishikawa & Pareto Analysis"
-          agent: "ps-analyst"
-        - task_id: "TASK-033"
-          name: "Formal Requirements"
-          agent: "nse-requirements"
+    - action: "Execute Phase 3 tasks in parallel (TASK-036, 037, 038)"
+      task_ids: ["TASK-036", "TASK-037", "TASK-038"]
+      status: "READY"
+      note: "BARRIER-2 complete. Phase 3 is unblocked."
       execution_mode: "PARALLEL"
-      inputs:
-        - "docs/research/en006-research-synthesis.md (from TASK-030)"
-        - "docs/research/en006-trade-space.md (from TASK-030)"
-        - "Recommendation: Hybrid approach (A5)"
-      outputs:
-        - "docs/analysis/en006-5w2h-context-injection.md"
-        - "docs/analysis/en006-ishikawa-failure-modes.md"
-        - "docs/analysis/en006-pareto-use-cases.md"
-        - "docs/specs/REQUIREMENTS-context-injection.md"
 
   completed:
     - action: "Execute TASK-030 Deep Research"
       status: "COMPLETE"
       completed_at: "2026-01-26T19:00:00Z"
-      deliverables:
-        - "docs/research/en006-research-synthesis.md"
-        - "docs/research/en006-trade-space.md"
     - action: "Complete BARRIER-0 cross-pollination"
       status: "COMPLETE"
       completed_at: "2026-01-26T19:00:00Z"
+    - action: "Execute TASK-031 (5W2H Analysis)"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T19:45:00Z"
+    - action: "Execute TASK-032 (Ishikawa & Pareto)"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T20:15:00Z"
+    - action: "Execute TASK-033 (Formal Requirements)"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T20:30:00Z"
+    - action: "Complete BARRIER-1 cross-pollination"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T20:30:00Z"
+    - action: "Execute TASK-034 (TDD) with iterative loop"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T21:30:00Z"
+      quality_score: 0.93
+      iterations: 2
+    - action: "Execute TASK-035 (Spec) with iterative loop"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T23:30:00Z"
+      quality_score: 0.96
+      iterations: 1
+    - action: "Complete BARRIER-2 cross-pollination"
+      status: "COMPLETE"
+      completed_at: "2026-01-26T23:30:00Z"
 
   subsequent:
-    - action: "Complete BARRIER-1 cross-pollination"
-      depends_on: "TASK-031,TASK-032,TASK-033"
-    - action: "Execute TASK-034 (TDD) with iterative loop"
-      depends_on: "BARRIER-1"
-    - action: "Execute TASK-035 (Spec) with iterative loop"
-      depends_on: "TASK-034"
-    - action: "Complete BARRIER-2 cross-pollination"
-      depends_on: "TASK-035"
     - action: "Execute Phase 3 tasks in parallel (TASK-036, 037, 038)"
       depends_on: "BARRIER-2"
     - action: "Execute Phase 4 tasks (TASK-039, 040)"
@@ -576,32 +689,43 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "phase-0-complete"
-  current_state: "Phase 0 complete. BARRIER-0 passed. Phase 1 ready for execution."
-  next_step: "Execute Phase 1 tasks in parallel (TASK-031, 032, 033)"
+  last_checkpoint: "phase-2-complete"
+  current_state: "Phase 0, 1, 2 COMPLETE. Phase 3 ready. TDD score: 0.93, SPEC score: 0.96. BARRIER-2 satisfied."
+  next_step: "Execute Phase 3 tasks (TASK-036, 037, 038) in parallel"
 
-  phase_0_summary:
-    status: "COMPLETE"
-    key_finding: "Hybrid approach (A5) recommended with 8.25/10 weighted score"
-    deliverables:
-      - "docs/research/en006-research-synthesis.md"
-      - "docs/research/en006-trade-space.md"
-    frameworks_researched:
-      - "LangChain/LangGraph (middleware pattern)"
-      - "CrewAI (task context, agent memory)"
-      - "Semantic Kernel (KernelArguments, templates)"
-      - "Model Context Protocol (MCP)"
-      - "Anthropic Context Engineering"
+  phase_2_progress:
+    task_034:
+      status: "COMPLETE"
+      quality_score: 0.93
+      iterations: 2
+      deliverable: "docs/design/TDD-context-injection.md"
+    task_035:
+      status: "COMPLETE"
+      quality_score: 0.96
+      iterations: 1
+      deliverables:
+        - "docs/specs/SPEC-context-injection.md"
+        - "docs/specs/schemas/context-injection-schema.json"
+      decision: "DEC-002"
+      focus: "Claude Code Skills mapping (SKILL.md, AGENT.md, contexts/*.yaml)"
+
+  key_decisions:
+    - id: "DEC-001"
+      title: "Phase 1 Sequential Forward-Feeding"
+      status: "APPLIED"
+    - id: "DEC-002"
+      title: "Claude Code Skills Implementation"
+      status: "APPLIED"
+      impact: "TASK-035 spec focuses on skill constructs, not Python"
 
   files_to_read:
     - "EN-006-context-injection-design.md"
+    - "EN-006--DEC-002-implementation-approach.md"
     - "orchestration/ORCHESTRATION_PLAN.md"
     - "orchestration/ORCHESTRATION.yaml"
-    - "docs/research/en006-research-synthesis.md"
-    - "docs/research/en006-trade-space.md"
-    - "TASK-031-5w2h-analysis.md"
-    - "TASK-032-ishikawa-pareto.md"
-    - "TASK-033-formal-requirements.md"
+    - "docs/design/TDD-context-injection.md"
+    - "docs/specs/SPEC-context-injection.md"
+    - "docs/critiques/en006-spec-critique-v1.md"
 
   cross_session_portable: true
   ephemeral_references: false

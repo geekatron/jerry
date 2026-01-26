@@ -51,19 +51,19 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 
 ### Definition of Done
 
-**Phase 0 (Research):**
-- [ ] Deep research synthesis with citations and sources
-- [ ] Trade space analysis documented
-- [ ] Context7 and web research completed
+**Phase 0 (Research): ✅ COMPLETE**
+- [x] Deep research synthesis with citations and sources (en006-research-synthesis.md)
+- [x] Trade space analysis documented (en006-trade-space.md)
+- [x] Context7 and web research completed (LangChain, CrewAI, industry patterns)
 
-**Phase 1 (Requirements & Analysis):**
-- [ ] 5W2H analysis for context injection use cases
-- [ ] Ishikawa (root cause) analysis for failure modes
-- [ ] Pareto (80/20) prioritization of use cases
-- [ ] Formal requirements documented (NASA SE Process 2)
+**Phase 1 (Requirements & Analysis): ✅ COMPLETE**
+- [x] 5W2H analysis for context injection use cases (en006-5w2h-analysis.md)
+- [x] Ishikawa (root cause) analysis for failure modes (en006-ishikawa-pareto-analysis.md)
+- [x] Pareto (80/20) prioritization of use cases (en006-ishikawa-pareto-analysis.md)
+- [x] Formal requirements documented (en006-requirements-supplement.md, 20 NASA SE requirements)
 
 **Phase 2 (Design & Architecture):**
-- [ ] TDD-context-injection.md created with quality >= 0.90
+- [x] TDD-context-injection.md created with quality >= 0.90 (**0.93 achieved in 2 iterations**)
 - [ ] SPEC-context-injection.md created with quality >= 0.90
 - [ ] JSON schema for context injection payload validated
 
@@ -94,7 +94,7 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 
 | # | Criterion | Threshold | Verified |
 |---|-----------|-----------|----------|
-| QC-1 | TDD quality score | >= 0.90 | [ ] |
+| QC-1 | TDD quality score | >= 0.90 | [x] **0.93** |
 | QC-2 | Specification quality score | >= 0.90 | [ ] |
 | QC-3 | Overall deliverable quality | >= 0.90 | [ ] |
 | QC-4 | EN-003 requirements traceability | 100% | [ ] |
@@ -109,12 +109,12 @@ Design a context injection mechanism that allows existing Jerry agents (ps-resea
 
 | ID | Title | Phase | Status | Owner | Effort | Blocked By | Link |
 |----|-------|-------|--------|-------|--------|------------|------|
-| TASK-030 | Deep Research & Exploration | 0 | BACKLOG | ps-researcher + nse-explorer | 2 | EN-003 | [TASK-030](./TASK-030-deep-research.md) |
-| TASK-031 | 5W2H Analysis | 1 | BACKLOG | ps-analyst | 1 | BARRIER-0 | [TASK-031](./TASK-031-5w2h-analysis.md) |
-| TASK-032 | Ishikawa & Pareto Analysis | 1 | BACKLOG | ps-analyst | 1 | BARRIER-0 | [TASK-032](./TASK-032-ishikawa-pareto.md) |
-| TASK-033 | Formal Requirements | 1 | BACKLOG | nse-requirements | 1 | BARRIER-0 | [TASK-033](./TASK-033-formal-requirements.md) |
-| TASK-034 | TDD Creation (Iterative) | 2 | BACKLOG | ps-architect + nse-architecture + ps-critic | 2 | BARRIER-1 | [TASK-034](./TASK-034-tdd-creation.md) |
-| TASK-035 | Specification Creation (Iterative) | 2 | BACKLOG | ps-architect + nse-architecture + ps-critic | 2 | TASK-034 | [TASK-035](./TASK-035-spec-creation.md) |
+| TASK-030 | Deep Research & Exploration | 0 | **DONE** | ps-researcher + nse-explorer | 2 | EN-003 | [TASK-030](./TASK-030-deep-research.md) |
+| TASK-031 | 5W2H Analysis | 1 | **DONE** | ps-analyst | 1 | BARRIER-0 | [TASK-031](./TASK-031-5w2h-analysis.md) |
+| TASK-032 | Ishikawa & Pareto Analysis | 1 | **DONE** | ps-analyst | 1 | TASK-031 | [TASK-032](./TASK-032-ishikawa-pareto.md) |
+| TASK-033 | Formal Requirements | 1 | **DONE** | ps-analyst | 1 | TASK-032 | [TASK-033](./TASK-033-formal-requirements.md) |
+| TASK-034 | TDD Creation (Iterative) | 2 | **DONE (0.93)** | ps-architect + nse-architecture + ps-critic | 2 | BARRIER-1 | [TASK-034](./TASK-034-tdd-creation.md) |
+| TASK-035 | Specification Creation (Iterative) | 2 | **READY** | ps-architect + nse-architecture + ps-critic | 2 | TASK-034 ✓ | [TASK-035](./TASK-035-spec-creation.md) |
 | TASK-036 | Orchestration Integration Design | 3 | BACKLOG | ps-architect | 2 | BARRIER-2 | [TASK-036](./TASK-036-orchestration-integration.md) |
 | TASK-037 | FMEA & Risk Assessment | 3 | BACKLOG | nse-risk | 2 | BARRIER-2 | [TASK-037](./TASK-037-fmea-risk.md) |
 | TASK-038 | Example Orchestration Plans | 3 | BACKLOG | ps-architect + ps-validator + nse-verification | 2 | BARRIER-2 | [TASK-038](./TASK-038-example-plans.md) |
@@ -387,6 +387,15 @@ pipeline:
 | Depends On | EN-004 | ADRs guide mechanism design |
 | Blocks | EN-013 | Implementation needs this design |
 
+### Decisions
+
+| ID | Title | Status | Path |
+|----|-------|--------|------|
+| DEC-001 | Phase 1 Execution Strategy | ACCEPTED | [DEC-001](./EN-006--DEC-001-phase1-execution-strategy.md) |
+| DEC-002 | Implementation Approach - Claude Code Skills | **ACCEPTED** | [DEC-002](./EN-006--DEC-002-implementation-approach.md) |
+
+**DEC-002 Impact:** FEAT-002 implementation will use Claude Code Skills (SKILL.md, AGENT.md, contexts/*.yaml, hooks) NOT Python CLI modules. TDD Python code represents conceptual patterns.
+
 ### Related Enablers
 
 - EN-013: Context Injection Implementation (FEAT-002)
@@ -400,6 +409,8 @@ pipeline:
 | 2026-01-26 | Claude | pending | Enabler created |
 | 2026-01-26 | Claude | pending | Task files created (TASK-030..034), orchestration artifacts added |
 | 2026-01-26 | Claude | BACKLOG | **Major redesign:** Cross-pollinated pipeline (PS + NSE), 11 tasks (TASK-030..040), 4 barriers, Generator-Critic loops, full framework rigor (5W2H, Ishikawa, Pareto, FMEA, 8D, NASA SE) |
+| 2026-01-26 | Claude | IN_PROGRESS | Phase 0 complete, Phase 1 complete (DEC-001 forward-feeding), TASK-034 complete (TDD 0.93), TASK-035 ready |
+| 2026-01-26 | Claude | IN_PROGRESS | **DEC-002 created:** Claude Code Skills implementation approach. FEAT-002 will NOT use Python CLI modules. |
 
 ---
 

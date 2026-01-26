@@ -4,10 +4,11 @@
 > **Project:** PROJ-008-transcript-skill
 > **Workflow ID:** `en006-ctxinj-20260126-001`
 > **Status:** ACTIVE
-> **Version:** 3.0
+> **Version:** 4.0
 > **Created:** 2026-01-26
 > **Last Updated:** 2026-01-26
-> **Pattern:** Cross-Pollinated Pipeline (Pattern 5) + Generator-Critic (Pattern 8)
+> **Pattern:** Cross-Pollinated Pipeline (Pattern 5) + Generator-Critic (Pattern 8) + Sequential Forward-Feeding (Phase 1)
+> **Key Decisions:** [DEC-001](../EN-006--DEC-001-phase1-execution-strategy.md) (Forward-Feeding), [DEC-002](../EN-006--DEC-002-implementation-approach.md) (Claude Code Skills)
 
 ---
 
@@ -15,9 +16,13 @@
 
 Design the context injection mechanism that allows existing Jerry agents (ps-researcher, ps-analyst, ps-synthesizer) to be specialized for domain-specific transcript processing. This enabler uses **full rigor** with all problem-solving frameworks and cross-pollinated PS + NSE pipelines.
 
-**Current State:** Not started - redesigned orchestration with cross-pollinated pipelines
+**Current State:** Phase 0, 1 COMPLETE. Phase 2 IN_PROGRESS - TDD complete (0.93), TASK-035 (Spec) ready
 
-**Orchestration Pattern:** Cross-Pollinated Pipeline with Generator-Critic Loops
+**Orchestration Pattern:** Cross-Pollinated Pipeline with Generator-Critic Loops + Sequential Forward-Feeding (Phase 1)
+
+**Key Decisions:**
+- [DEC-001](../EN-006--DEC-001-phase1-execution-strategy.md) - Phase 1 executes sequentially: TASK-031 → TASK-032 → TASK-033
+- [DEC-002](../EN-006--DEC-002-implementation-approach.md) - FEAT-002 uses Claude Code Skills (NOT Python CLI)
 
 ### 1.1 Workflow Identification
 
@@ -102,21 +107,50 @@ EN-006 CROSS-POLLINATED PIPELINE (Full Rigor)
                                   │
                                   ▼
 ╔═══════════════════════════════════════════════════════════════════════════════════╗
-║ PHASE 1: REQUIREMENTS & ANALYSIS                                                   ║
+║ PHASE 1: REQUIREMENTS & ANALYSIS (Sequential Forward-Feeding - DEC-001)           ║
 ╠═══════════════════════════════════════════════════════════════════════════════════╣
 ║                                                                                    ║
-║  ┌─────────────────────────────┐         ┌─────────────────────────────┐         ║
-║  │ PS-ANALYST                  │         │ NSE-REQUIREMENTS            │         ║
-║  │ ─────────────────────────── │         │ ─────────────────────────── │         ║
-║  │ • 5W2H Framework Analysis   │         │ • NASA SE Process 1, 2, 11  │         ║
-║  │ • Ishikawa (Root Cause)     │         │ • Formal "shall" statements │         ║
-║  │ • Pareto (80/20) Analysis   │         │ • Traceability matrix       │         ║
-║  │ • Gap Analysis              │         │ • Verification requirements │         ║
-║  │ • Trade-off Analysis        │         │ • Validation criteria       │         ║
-║  └──────────────┬──────────────┘         └──────────────┬──────────────┘         ║
-║                 │                                        │                        ║
-║                 └────────────────┬───────────────────────┘                        ║
-║                                  ▼                                                ║
+║  ┌─────────────────────────────────────────────────────────────────────────────┐ ║
+║  │ SEQUENTIAL FORWARD-FEEDING PATTERN (DEC-001)                                 │ ║
+║  │ Each task's output feeds as input to the next task                           │ ║
+║  └─────────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                                    ║
+║  ┌─────────────────────────────┐                                                 ║
+║  │ TASK-031: 5W2H ANALYSIS     │  ◄── Phase 0 research synthesis                ║
+║  │ ─────────────────────────── │                                                 ║
+║  │ • What: Context injection   │                                                 ║
+║  │ • Why: Domain specialization│                                                 ║
+║  │ • Who: Skill devs, users    │                                                 ║
+║  │ • When: Skill invocation    │                                                 ║
+║  │ • Where: Skills, agents     │                                                 ║
+║  │ • How: Hybrid approach      │                                                 ║
+║  │ • How Much: Scope/cost      │                                                 ║
+║  └──────────────┬──────────────┘                                                 ║
+║                 │                                                                  ║
+║                 │ OUTPUT: docs/analysis/en006-5w2h-analysis.md                    ║
+║                 ▼                                                                  ║
+║  ┌─────────────────────────────┐                                                 ║
+║  │ TASK-032: ISHIKAWA & PARETO │  ◄── 5W2H as input                             ║
+║  │ ─────────────────────────── │                                                 ║
+║  │ • Ishikawa (6M root cause)  │                                                 ║
+║  │ • Pareto (80/20) priority   │                                                 ║
+║  │ • Root cause identification │                                                 ║
+║  │ • Impact prioritization     │                                                 ║
+║  └──────────────┬──────────────┘                                                 ║
+║                 │                                                                  ║
+║                 │ OUTPUT: docs/analysis/en006-ishikawa-pareto-analysis.md         ║
+║                 ▼                                                                  ║
+║  ┌─────────────────────────────┐                                                 ║
+║  │ TASK-033: FORMAL REQS       │  ◄── 5W2H + Ishikawa/Pareto as input           ║
+║  │ ─────────────────────────── │                                                 ║
+║  │ • New requirements (NEW)    │                                                 ║
+║  │ • Refinements (REFINEMENT)  │                                                 ║
+║  │ • Replacements (REPLACEMENT)│                                                 ║
+║  │ • EN-003 relationship map   │                                                 ║
+║  └──────────────┬──────────────┘                                                 ║
+║                 │                                                                  ║
+║                 │ OUTPUT: docs/requirements/en006-requirements-supplement.md      ║
+║                 ▼                                                                  ║
 ║                    ╔═══════════════════════════╗                                  ║
 ║                    ║  BARRIER-1: REQUIREMENTS  ║                                  ║
 ║                    ║    Cross-Pollination      ║                                  ║
@@ -130,10 +164,9 @@ EN-006 CROSS-POLLINATED PIPELINE (Full Rigor)
 ║  └─────────────────────────────┘         └─────────────────────────────┘         ║
 ║                                                                                    ║
 ║  OUTPUTS:                                                                          ║
-║  • docs/analysis/en006-5w2h-context-injection.md                                  ║
-║  • docs/analysis/en006-ishikawa-failure-modes.md                                  ║
-║  • docs/analysis/en006-pareto-use-cases.md                                        ║
-║  • docs/specs/REQUIREMENTS-context-injection.md                                   ║
+║  • docs/analysis/en006-5w2h-analysis.md (TASK-031)                               ║
+║  • docs/analysis/en006-ishikawa-pareto-analysis.md (TASK-032)                    ║
+║  • docs/requirements/en006-requirements-supplement.md (TASK-033)                  ║
 ╚═══════════════════════════════════════════════════════════════════════════════════╝
                                   │
                                   ▼
@@ -323,19 +356,21 @@ EN-006 CROSS-POLLINATED PIPELINE (Full Rigor)
 
 ### 4.1 Revised Task Structure
 
-| Task ID | Phase | Description | PS Agent | NSE Agent |
-|---------|-------|-------------|----------|-----------|
-| TASK-030 | 0 | Deep Research & Exploration | ps-researcher | nse-explorer |
-| TASK-031 | 1 | 5W2H Analysis | ps-analyst | - |
-| TASK-032 | 1 | Ishikawa & Pareto Analysis | ps-analyst | - |
-| TASK-033 | 1 | Formal Requirements | - | nse-requirements |
-| TASK-034 | 2 | TDD Creation (iterative) | ps-architect | nse-architecture |
-| TASK-035 | 2 | Specification Creation (iterative) | ps-architect | nse-architecture |
-| TASK-036 | 3 | Orchestration Integration | ps-architect | - |
-| TASK-037 | 3 | FMEA & Risk Assessment | - | nse-risk |
-| TASK-038 | 3 | Example Plans | ps-architect | nse-verification |
-| TASK-039 | 4 | Quality Review | ps-critic | nse-qa |
-| TASK-040 | 4 | Final Synthesis & GATE-4 Prep | ps-synthesizer | - |
+| Task ID | Phase | Description | PS Agent | NSE Agent | Dependencies |
+|---------|-------|-------------|----------|-----------|--------------|
+| TASK-030 | 0 | Deep Research & Exploration | ps-researcher | nse-explorer | None |
+| TASK-031 | 1 | 5W2H Analysis | ps-analyst | - | TASK-030 (BARRIER-0) |
+| TASK-032 | 1 | Ishikawa & Pareto Analysis | ps-analyst | - | **TASK-031** (forward-feeding) |
+| TASK-033 | 1 | Formal Requirements | ps-analyst + nse-requirements | - | **TASK-031, TASK-032** (forward-feeding) |
+| TASK-034 | 2 | TDD Creation (iterative) | ps-architect | nse-architecture | BARRIER-1 |
+| TASK-035 | 2 | Specification Creation (iterative) | ps-architect | nse-architecture | TASK-034 |
+| TASK-036 | 3 | Orchestration Integration | ps-architect | - | BARRIER-2 |
+| TASK-037 | 3 | FMEA & Risk Assessment | - | nse-risk | BARRIER-2 |
+| TASK-038 | 3 | Example Plans | ps-architect | nse-verification | BARRIER-2 |
+| TASK-039 | 4 | Quality Review | ps-critic | nse-qa | TASK-036, 037, 038 |
+| TASK-040 | 4 | Final Synthesis & GATE-4 Prep | ps-synthesizer | - | BARRIER-3 |
+
+**Note:** Phase 1 uses **Sequential Forward-Feeding** (DEC-001) where each task feeds outputs to the next.
 
 ### 4.2 Deliverable Mapping
 
@@ -370,17 +405,37 @@ EN-006 CROSS-POLLINATED PIPELINE (Full Rigor)
 ```
 TASK-030 ─────────────────────────────────────────────────────────────────────────────
     │
-    │ BARRIER-0
+    │ BARRIER-0 (COMPLETE)
     │
     ▼
-┌─────────┬─────────┬─────────┐
-│TASK-031 │TASK-032 │TASK-033 │  (can run in parallel after BARRIER-0)
-└────┬────┴────┬────┴────┬────┘
-     │         │         │
-     │ BARRIER-1         │
-     │         │         │
-     └────┬────┴─────────┘
-          ▼
+╔═══════════════════════════════════════════════════════════════════════════════════╗
+║ PHASE 1: SEQUENTIAL FORWARD-FEEDING (DEC-001)                                      ║
+╠═══════════════════════════════════════════════════════════════════════════════════╣
+║                                                                                    ║
+║  ┌─────────┐                                                                      ║
+║  │TASK-031 │  5W2H Analysis                                                       ║
+║  │ (5W2H)  │  INPUT: Phase 0 research synthesis                                   ║
+║  └────┬────┘  OUTPUT: en006-5w2h-analysis.md                                      ║
+║       │                                                                            ║
+║       │ feeds into                                                                 ║
+║       ▼                                                                            ║
+║  ┌─────────┐                                                                      ║
+║  │TASK-032 │  Ishikawa & Pareto Analysis                                          ║
+║  │(Ishi+P) │  INPUT: TASK-031 output + Phase 0 research                           ║
+║  └────┬────┘  OUTPUT: en006-ishikawa-pareto-analysis.md                           ║
+║       │                                                                            ║
+║       │ feeds into                                                                 ║
+║       ▼                                                                            ║
+║  ┌─────────┐                                                                      ║
+║  │TASK-033 │  Formal Requirements                                                 ║
+║  │ (Reqs)  │  INPUT: TASK-031 + TASK-032 outputs + EN-003                         ║
+║  └────┬────┘  OUTPUT: en006-requirements-supplement.md                            ║
+║       │                                                                            ║
+╚═══════════════════════════════════════════════════════════════════════════════════╝
+     │
+     │ BARRIER-1
+     │
+     ▼
      ┌─────────┐
      │TASK-034 │ ◄──► nse-architecture (iterative loop)
      └────┬────┘
@@ -570,30 +625,96 @@ Deliverables (relative to FEAT-001 docs/):
 ### 11.1 Current Execution State
 
 ```
-WORKFLOW STATUS AS OF 2026-01-26
-================================
+WORKFLOW STATUS AS OF 2026-01-26 (v4.0)
+=======================================
 
-Phase 0 (Research):        PENDING
-Phase 1 (Requirements):    BLOCKED by Phase 0
-Phase 2 (Design):          BLOCKED by Phase 1
-Phase 3 (Integration):     BLOCKED by Phase 2
-Phase 4 (Quality):         BLOCKED by Phase 3
+Phase 0 (Research):        ✓ COMPLETE (Hybrid A5 selected, 8.25/10 score)
+  └─ BARRIER-0:            ✓ COMPLETE (Research cross-pollination done)
+
+Phase 1 (Requirements):    ✓ COMPLETE (Sequential Forward-Feeding per DEC-001)
+  ├─ TASK-031 (5W2H):      ✓ COMPLETE - docs/analysis/en006-5w2h-analysis.md
+  ├─ TASK-032 (Ishikawa):  ✓ COMPLETE - docs/analysis/en006-ishikawa-pareto-analysis.md
+  └─ TASK-033 (Reqs):      ✓ COMPLETE - docs/requirements/en006-requirements-supplement.md
+  └─ BARRIER-1:            ✓ COMPLETE (Requirements cross-pollination done)
+
+Phase 2 (Design):          IN_PROGRESS
+  ├─ TASK-034 (TDD):       ✓ COMPLETE - Score 0.93 (2 iterations)
+  │   ├─ Iteration 1:      0.86 (REVISE) - docs/critiques/en006-tdd-critique-v1.md
+  │   └─ Iteration 2:      0.93 (ACCEPT) - docs/critiques/en006-tdd-critique-v2.md
+  └─ TASK-035 (Spec):      READY ◄── Next to execute (DEC-002: Claude Code Skills focus)
+
+Phase 3 (Integration):     BLOCKED by Phase 2 (BARRIER-2)
+Phase 4 (Quality):         BLOCKED by Phase 3 (BARRIER-3)
 
 GATE-4: PENDING (requires Phase 4 completion)
+
+METRICS: 5/11 tasks complete (45%), 2/4 barriers complete (50%), TDD score: 0.93
 ```
 
-### 11.2 Next Actions
+### 11.2 Key Decisions
 
-1. Create/update task files (TASK-030 through TASK-040)
-2. Execute TASK-030 (Deep Research) using ps-researcher + nse-explorer
-3. Upon BARRIER-0 completion, execute Phase 1 tasks in parallel
-4. Continue sequential/parallel execution through Phase 4
-5. Request GATE-4 human approval
+| ID | Title | Status | Impact |
+|----|-------|--------|--------|
+| DEC-001 | Phase 1 Execution Strategy | APPLIED | Sequential Forward-Feeding for Phase 1 |
+| DEC-002 | Implementation Approach | ACCEPTED | FEAT-002 uses Claude Code Skills (NOT Python CLI) |
+
+**DEC-002 Critical Impact:**
+- TDD Python code (IContextProvider, etc.) = **conceptual patterns**
+- TASK-035 Specification focuses on Claude Code skill constructs
+- FEAT-002 deliverables: SKILL.md, AGENT.md, contexts/*.yaml, hooks
+- NO Python CLI modules will be built
+
+### 11.3 Phase 2 Progress
+
+**TASK-034 TDD Creation:**
+- Status: COMPLETE (0.93 quality score)
+- Iterations: 2 (max 3)
+- Deliverable: `docs/design/TDD-context-injection.md`
+- Critiques: `docs/critiques/en006-tdd-critique-v1.md`, `docs/critiques/en006-tdd-critique-v2.md`
+
+**TASK-035 Specification (READY):**
+- Focus: Claude Code Skills mapping per DEC-002
+- Expected outputs:
+  - `docs/specs/SPEC-context-injection.md`
+  - `docs/specs/schemas/context-injection-schema.json`
+- Quality threshold: >= 0.90
+- Max iterations: 3
+
+### 11.4 Next Actions
+
+1. ✓ DEC-001 created (Phase 1 Execution Strategy)
+2. ✓ ORCHESTRATION_PLAN.md updated with forward-feeding strategy
+3. ✓ ORCHESTRATION.yaml with task dependencies
+4. ✓ TASK-031, 032, 033 executed with forward-feeding
+5. ✓ BARRIER-1 cross-pollination complete
+6. ✓ TASK-034 (TDD) complete with 0.93 score (2 iterations)
+7. ✓ DEC-002 created (Claude Code Skills Implementation)
+8. **Execute TASK-035 (Specification Creation)** ◄── CURRENT
+9. Complete BARRIER-2 cross-pollination
+10. Execute Phase 3 tasks (TASK-036, 037, 038)
+11. Execute Phase 4 tasks (TASK-039, 040)
+12. Complete BARRIER-3 and request GATE-4 approval
+
+### 11.5 Files to Read for Context
+
+```
+Essential (read before continuing):
+├── EN-006--DEC-002-implementation-approach.md    # Critical: Claude Code Skills decision
+├── docs/design/TDD-context-injection.md          # Reference: Conceptual patterns
+├── docs/critiques/en006-tdd-critique-v2.md       # Reference: Quality criteria met
+└── TASK-035-spec-creation.md                     # Current task details
+
+Supporting:
+├── docs/analysis/en006-5w2h-analysis.md          # Requirements context
+├── docs/analysis/en006-ishikawa-pareto-analysis.md
+├── docs/requirements/en006-requirements-supplement.md
+└── docs/research/en006-research-synthesis.md     # Industry patterns
+```
 
 ---
 
 *Document ID: EN-006-ORCH-PLAN*
 *Workflow ID: en006-ctxinj-20260126-001*
-*Version: 3.0*
+*Version: 4.0*
 *Constitutional Compliance: P-002, P-003, P-020, P-022*
 *Frameworks: 5W2H, Ishikawa, Pareto, FMEA, 8D, NASA SE*

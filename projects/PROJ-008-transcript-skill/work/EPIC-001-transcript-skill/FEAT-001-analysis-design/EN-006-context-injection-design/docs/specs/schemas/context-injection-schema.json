@@ -1,0 +1,617 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.framework/schemas/context-injection/1.0.0",
+  "title": "Context Injection Payload",
+  "description": "Schema for validating context injection payloads in Claude Code Skills. Implements REQ-CI-F-006 from EN-006 Requirements Supplement.",
+  "type": "object",
+  "required": [
+    "domain",
+    "schema_version",
+    "entity_definitions",
+    "extraction_rules"
+  ],
+  "properties": {
+    "domain": {
+      "$ref": "#/$defs/DomainIdentifier",
+      "description": "Domain identifier (e.g., 'legal', 'sales', 'engineering')"
+    },
+    "schema_version": {
+      "$ref": "#/$defs/SemanticVersion",
+      "description": "Version of the schema format (e.g., '1.0.0')"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable domain name",
+      "maxLength": 100,
+      "examples": ["Legal Document Analysis", "Sales Call Analysis"]
+    },
+    "entity_definitions": {
+      "type": "object",
+      "description": "Map of entity type name to definition",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/EntityDefinition"
+      }
+    },
+    "extraction_rules": {
+      "type": "array",
+      "description": "Ordered list of extraction rules",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/ExtractionRule"
+      },
+      "uniqueItems": true
+    },
+    "prompt_guidance": {
+      "$ref": "#/$defs/PromptGuidance",
+      "description": "Expert guidance for AI agent prompts"
+    },
+    "metadata": {
+      "$ref": "#/$defs/ContextMetadata",
+      "description": "Additional context metadata"
+    },
+    "document_id": {
+      "type": ["string", "null"],
+      "description": "ID of the document being analyzed (dynamic context)",
+      "maxLength": 255
+    },
+    "user_preferences": {
+      "type": "object",
+      "description": "User-specific preferences (dynamic context)",
+      "additionalProperties": true
+    },
+    "previous_analysis": {
+      "type": ["object", "null"],
+      "description": "Cached previous analysis results (dynamic context)",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "DomainIdentifier": {
+      "title": "Domain Identifier",
+      "description": "Validated domain string. Must be lowercase alphanumeric with optional hyphens.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "minLength": 1,
+      "maxLength": 50,
+      "examples": ["legal", "sales", "engineering", "medical-imaging"]
+    },
+    "SemanticVersion": {
+      "title": "Semantic Version",
+      "description": "Version string in X.Y.Z format per Semantic Versioning 2.0.0",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "examples": ["1.0.0", "2.1.0", "1.0.0-beta.1"]
+    },
+    "EntityDefinition": {
+      "title": "Entity Definition",
+      "description": "Definition of an entity type to extract from transcripts",
+      "type": "object",
+      "required": ["attributes"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the entity type",
+          "maxLength": 500
+        },
+        "attributes": {
+          "type": "array",
+          "description": "List of attributes this entity can have",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/EntityAttribute"
+          }
+        },
+        "extraction_patterns": {
+          "type": "array",
+          "description": "Pattern templates for extracting this entity",
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "maxItems": 20
+        },
+        "examples": {
+          "type": "array",
+          "description": "Example instances of this entity",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "maxItems": 10
+        }
+      },
+      "additionalProperties": false
+    },
+    "EntityAttribute": {
+      "title": "Entity Attribute",
+      "description": "Single attribute of an entity definition",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Simple attribute name (string type assumed)",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        {
+          "type": "object",
+          "description": "Detailed attribute specification",
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Attribute name",
+              "minLength": 1,
+              "maxLength": 50,
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "type": {
+              "type": "string",
+              "description": "Attribute data type",
+              "enum": ["string", "integer", "float", "boolean", "date", "datetime", "enum", "array", "object"],
+              "default": "string"
+            },
+            "required": {
+              "type": "boolean",
+              "description": "Whether this attribute is required",
+              "default": false
+            },
+            "values": {
+              "type": "array",
+              "description": "Allowed values for enum type",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "maxItems": 50
+            },
+            "description": {
+              "type": "string",
+              "description": "Human-readable description of the attribute",
+              "maxLength": 200
+            },
+            "default": {
+              "description": "Default value for this attribute"
+            }
+          },
+          "additionalProperties": false,
+          "if": {
+            "properties": {
+              "type": { "const": "enum" }
+            }
+          },
+          "then": {
+            "required": ["values"]
+          }
+        }
+      ]
+    },
+    "ExtractionRule": {
+      "title": "Extraction Rule",
+      "description": "Rule for extracting entities from transcript content",
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this rule",
+          "pattern": "^[a-z][a-z0-9_-]*$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what this rule extracts",
+          "maxLength": 500
+        },
+        "entity_type": {
+          "type": "string",
+          "description": "Entity type this rule extracts (must match entity_definitions key)"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Processing priority (lower = higher priority)",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 50
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "description": "Minimum confidence score for extraction (0.0-1.0)",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.7
+        },
+        "patterns": {
+          "type": "array",
+          "description": "Extraction patterns (regex or template)",
+          "items": {
+            "$ref": "#/$defs/ExtractionPattern"
+          },
+          "maxItems": 20
+        },
+        "tier": {
+          "type": "integer",
+          "description": "Extraction tier: 1=rule-based, 2=ML-based, 3=LLM-based",
+          "enum": [1, 2, 3],
+          "default": 1
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this rule is currently active",
+          "default": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExtractionPattern": {
+      "title": "Extraction Pattern",
+      "description": "Pattern for matching and extracting content",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Simple regex pattern",
+          "maxLength": 500
+        },
+        {
+          "type": "object",
+          "description": "Detailed pattern specification",
+          "required": ["regex"],
+          "properties": {
+            "regex": {
+              "type": "string",
+              "description": "Regular expression pattern",
+              "maxLength": 500
+            },
+            "flags": {
+              "type": "string",
+              "description": "Regex flags (e.g., 'i' for case-insensitive)",
+              "pattern": "^[gimsuy]*$",
+              "maxLength": 6
+            },
+            "groups": {
+              "type": "object",
+              "description": "Named capture group mapping",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of what this pattern matches",
+              "maxLength": 200
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "PromptGuidance": {
+      "title": "Prompt Guidance",
+      "description": "Expert guidance text for AI agent prompts",
+      "type": "string",
+      "maxLength": 10000,
+      "examples": [
+        "When analyzing legal documents:\n1. Identify parties before obligations\n2. Cross-reference with party roles"
+      ]
+    },
+    "ContextMetadata": {
+      "title": "Context Metadata",
+      "description": "Additional metadata about the context",
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string",
+          "description": "Author of this context schema",
+          "maxLength": 100
+        },
+        "created": {
+          "type": "string",
+          "description": "Creation date (ISO 8601)",
+          "format": "date"
+        },
+        "updated": {
+          "type": "string",
+          "description": "Last update date (ISO 8601)",
+          "format": "date"
+        },
+        "compliance": {
+          "type": "array",
+          "description": "Compliance standards this context adheres to",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "maxItems": 20
+        },
+        "industry_standards": {
+          "type": "array",
+          "description": "Industry standards referenced",
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "maxItems": 20
+        },
+        "tags": {
+          "type": "array",
+          "description": "Categorization tags",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "maxItems": 50
+        },
+        "version_notes": {
+          "type": "string",
+          "description": "Notes about this schema version",
+          "maxLength": 1000
+        }
+      },
+      "additionalProperties": true
+    },
+    "Citation": {
+      "title": "Citation",
+      "description": "Citation linking extraction to source content",
+      "type": "object",
+      "required": ["segment_id", "anchor"],
+      "properties": {
+        "segment_id": {
+          "type": "string",
+          "description": "ID of the source segment",
+          "pattern": "^seg-\\d{3,}$"
+        },
+        "anchor": {
+          "type": "string",
+          "description": "Anchor link for navigation",
+          "pattern": "^#seg-\\d{3,}$"
+        },
+        "timestamp_ms": {
+          "type": "integer",
+          "description": "Timestamp in milliseconds",
+          "minimum": 0
+        },
+        "text_snippet": {
+          "type": "string",
+          "description": "Text snippet from source (max 200 chars)",
+          "maxLength": 200
+        }
+      },
+      "additionalProperties": false
+    },
+    "TemplateVariable": {
+      "title": "Template Variable",
+      "description": "Definition of a template variable available in prompts",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Variable name (used as {{$name}})",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "source": {
+          "type": "string",
+          "description": "Dot-notation path to value source (e.g., 'context.domain')",
+          "maxLength": 100
+        },
+        "default": {
+          "description": "Default value if source is unavailable"
+        },
+        "type": {
+          "type": "string",
+          "description": "Expected value type",
+          "enum": ["string", "integer", "float", "boolean", "array", "object"],
+          "default": "string"
+        },
+        "format": {
+          "type": "string",
+          "description": "Output format transformation",
+          "enum": ["json", "yaml", "list", "markdown", "plain"],
+          "default": "plain"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description",
+          "maxLength": 200
+        }
+      },
+      "additionalProperties": false
+    },
+    "ValidationError": {
+      "title": "Validation Error",
+      "description": "Single validation error from schema validation",
+      "type": "object",
+      "required": ["field", "message"],
+      "properties": {
+        "field": {
+          "type": "string",
+          "description": "Field that failed validation"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error message"
+        },
+        "path": {
+          "type": "string",
+          "description": "JSON path to the error location"
+        },
+        "code": {
+          "type": "string",
+          "description": "Error code (e.g., 'CI-001')",
+          "pattern": "^CI-\\d{3}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ValidationResult": {
+      "title": "Validation Result",
+      "description": "Result of context payload validation",
+      "type": "object",
+      "required": ["is_valid", "errors"],
+      "properties": {
+        "is_valid": {
+          "type": "boolean",
+          "description": "Whether validation passed"
+        },
+        "errors": {
+          "type": "array",
+          "description": "List of validation errors",
+          "items": {
+            "$ref": "#/$defs/ValidationError"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "description": "List of validation warnings (non-blocking)",
+          "items": {
+            "$ref": "#/$defs/ValidationError"
+          }
+        },
+        "schema_version": {
+          "type": "string",
+          "description": "Version of schema used for validation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ContextLoadStatus": {
+      "title": "Context Load Status",
+      "description": "Status of context loading operation",
+      "type": "string",
+      "enum": ["success", "partial", "fallback", "failed"],
+      "enumDescriptions": [
+        "All context sources loaded successfully",
+        "Some sources succeeded, others failed",
+        "Using fallback context due to primary failure",
+        "Context loading failed completely"
+      ]
+    },
+    "ContextResult": {
+      "title": "Context Result",
+      "description": "Result of context loading operation",
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/ContextLoadStatus"
+        },
+        "context": {
+          "description": "Loaded context payload (null if failed)",
+          "oneOf": [
+            { "$ref": "#" },
+            { "type": "null" }
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "description": "Error messages from loading",
+          "items": {
+            "type": "string"
+          }
+        },
+        "load_time_ms": {
+          "type": "number",
+          "description": "Time taken to load context in milliseconds",
+          "minimum": 0
+        },
+        "cache_hit": {
+          "type": "boolean",
+          "description": "Whether context was loaded from cache"
+        },
+        "fallback_used": {
+          "type": "boolean",
+          "description": "Whether fallback context was used"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "examples": [
+    {
+      "domain": "legal",
+      "schema_version": "1.0.0",
+      "display_name": "Legal Document Analysis",
+      "entity_definitions": {
+        "party": {
+          "description": "Legal entity in contract",
+          "attributes": [
+            {
+              "name": "name",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "role",
+              "type": "enum",
+              "values": ["buyer", "seller", "guarantor", "witness"]
+            },
+            {
+              "name": "jurisdiction",
+              "type": "string"
+            }
+          ],
+          "extraction_patterns": [
+            "{{name}} (the \"{{role}}\")",
+            "{{role}}: {{name}}"
+          ]
+        },
+        "obligation": {
+          "description": "Contractual obligation",
+          "attributes": [
+            {
+              "name": "obligor",
+              "type": "string",
+              "required": true
+            },
+            {
+              "name": "terms",
+              "type": "string"
+            },
+            {
+              "name": "deadline",
+              "type": "date"
+            }
+          ]
+        }
+      },
+      "extraction_rules": [
+        {
+          "id": "parties",
+          "description": "Identify all parties mentioned by name and role",
+          "entity_type": "party",
+          "priority": 1,
+          "confidence_threshold": 0.85,
+          "tier": 1,
+          "patterns": [
+            {
+              "regex": "([A-Z][a-z]+ [A-Z][a-z]+)\\s*\\(the\\s*\"([^\"]+)\"\\)",
+              "groups": {
+                "name": 1,
+                "role": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "dates",
+          "description": "Extract all dates in ISO 8601 format",
+          "priority": 2,
+          "confidence_threshold": 0.90,
+          "tier": 1
+        }
+      ],
+      "prompt_guidance": "When analyzing legal documents:\n1. Identify parties before analyzing obligations\n2. Cross-reference obligations with party roles\n3. Flag ambiguous terms for human review",
+      "metadata": {
+        "author": "Jerry Framework",
+        "created": "2026-01-26",
+        "compliance": ["GDPR", "CCPA"],
+        "industry_standards": ["IACCM", "WorldCC"]
+      }
+    }
+  ]
+}
