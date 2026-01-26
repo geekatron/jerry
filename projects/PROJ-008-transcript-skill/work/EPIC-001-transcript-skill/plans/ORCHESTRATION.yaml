@@ -1,0 +1,606 @@
+# ORCHESTRATION.yaml - Single Source of Truth for Orchestration State
+# Version: 1.0.0
+# Last Updated: 2026-01-26T00:00:00Z
+
+orchestration:
+  id: ORCH-001
+  name: "Transcript Skill Development"
+  version: "1.0.0"
+  status: ACTIVE
+  created: "2026-01-26T00:00:00Z"
+  last_updated: "2026-01-26T00:00:00Z"
+
+# Current execution state
+state:
+  current_phase: 1
+  current_phase_name: "Parallel Research"
+  current_feature: FEAT-001
+  next_gate: GATE-1
+  execution_status: READY_FOR_EXECUTION
+
+# Phase definitions
+phases:
+  - id: 1
+    name: "Parallel Research"
+    feature: FEAT-001
+    gate: GATE-1
+    status: PENDING
+    enablers:
+      - EN-001
+      - EN-002
+    parallel: true
+    sync_barrier: true
+
+  - id: 2
+    name: "Requirements Synthesis"
+    feature: FEAT-001
+    gate: GATE-2
+    status: BLOCKED
+    blocked_by: GATE-1
+    enablers:
+      - EN-003
+    parallel: false
+
+  - id: 3
+    name: "Architecture Decisions"
+    feature: FEAT-001
+    gate: GATE-3
+    status: BLOCKED
+    blocked_by: GATE-2
+    enablers:
+      - EN-004
+    parallel: false
+
+  - id: 4
+    name: "Design Documentation"
+    feature: FEAT-001
+    gate: GATE-4
+    status: BLOCKED
+    blocked_by: GATE-3
+    enablers:
+      - EN-005
+      - EN-006
+    parallel: true
+    sync_barrier: true
+
+  - id: 5
+    name: "Core Implementation"
+    feature: FEAT-002
+    gate: GATE-5
+    status: BLOCKED
+    blocked_by: GATE-4
+    enablers:
+      - EN-007
+      - EN-008
+    parallel: false  # EN-008 depends on EN-007
+
+  - id: 6
+    name: "Output Generation & Integration"
+    feature: FEAT-002
+    gate: GATE-6
+    status: BLOCKED
+    blocked_by: GATE-5
+    enablers:
+      - EN-009
+      - EN-010
+      - EN-011
+      - EN-012
+      - EN-013
+    parallel: true  # Most can run in parallel
+    sync_barrier: true
+
+# Gate definitions
+gates:
+  - id: GATE-1
+    name: "Research Review"
+    after_phase: 1
+    approval_for: "Research completeness"
+    status: PENDING
+    requires_human: true
+    prerequisites:
+      - EN-001_COMPLETE
+      - EN-002_COMPLETE
+      - PS_CRITIC_REVIEW
+
+  - id: GATE-2
+    name: "Requirements Review"
+    after_phase: 2
+    approval_for: "Requirements validity"
+    status: BLOCKED
+    requires_human: true
+    prerequisites:
+      - EN-003_COMPLETE
+      - PS_CRITIC_REVIEW
+
+  - id: GATE-3
+    name: "Architecture Review"
+    after_phase: 3
+    approval_for: "Architecture decisions"
+    status: BLOCKED
+    requires_human: true
+    prerequisites:
+      - EN-004_COMPLETE
+      - PS_CRITIC_REVIEW
+
+  - id: GATE-4
+    name: "Design Review"
+    after_phase: 4
+    approval_for: "Design completeness"
+    status: BLOCKED
+    requires_human: true
+    prerequisites:
+      - EN-005_COMPLETE
+      - EN-006_COMPLETE
+      - PS_CRITIC_REVIEW
+
+  - id: GATE-5
+    name: "Core Implementation Review"
+    after_phase: 5
+    approval_for: "Core implementation"
+    status: BLOCKED
+    requires_human: true
+    prerequisites:
+      - EN-007_COMPLETE
+      - EN-008_COMPLETE
+      - INTEGRATION_TESTS_PASS
+
+  - id: GATE-6
+    name: "Final Review"
+    after_phase: 6
+    approval_for: "Final review and release"
+    status: BLOCKED
+    requires_human: true
+    prerequisites:
+      - EN-009_COMPLETE
+      - EN-010_COMPLETE
+      - EN-011_COMPLETE
+      - EN-012_COMPLETE
+      - EN-013_COMPLETE
+      - E2E_TESTS_PASS
+
+# Enabler tracking
+enablers:
+  # FEAT-001: Analysis & Design
+  EN-001:
+    name: "Market Analysis Research"
+    feature: FEAT-001
+    phase: 1
+    status: PENDING
+    effort_points: 13
+    tasks:
+      - id: TASK-001
+        name: "Research Pocket"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-002
+        name: "Research Otter.ai"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-003
+        name: "Research Fireflies"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-004
+        name: "Research Grain"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-005
+        name: "Research tl;dv"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-006
+        name: "Synthesize Feature Matrix"
+        status: PENDING
+        agent: ps-synthesizer
+        blocked_by: [TASK-001, TASK-002, TASK-003, TASK-004, TASK-005]
+
+  EN-002:
+    name: "Technical Standards Research"
+    feature: FEAT-001
+    phase: 1
+    status: PENDING
+    effort_points: 8
+    tasks:
+      - id: TASK-007
+        name: "VTT Format Specification"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-008
+        name: "SRT Format Specification"
+        status: PENDING
+        agent: ps-researcher
+      - id: TASK-009
+        name: "NLP/NER Best Practices"
+        status: PENDING
+        agent: ps-researcher
+
+  EN-003:
+    name: "Requirements Synthesis"
+    feature: FEAT-001
+    phase: 2
+    status: BLOCKED
+    blocked_by: [GATE-1]
+    effort_points: 8
+    tasks:
+      - id: TASK-010
+        name: "5W2H Analysis"
+        status: BLOCKED
+        agent: ps-analyst
+      - id: TASK-011
+        name: "Ishikawa Diagram"
+        status: BLOCKED
+        agent: ps-analyst
+      - id: TASK-012
+        name: "FMEA Analysis"
+        status: BLOCKED
+        agent: ps-analyst
+      - id: TASK-013
+        name: "Requirements Document"
+        status: BLOCKED
+        agent: ps-synthesizer
+      - id: TASK-014
+        name: "ps-critic Review"
+        status: BLOCKED
+        agent: ps-critic
+
+  EN-004:
+    name: "Architecture Decision Records"
+    feature: FEAT-001
+    phase: 3
+    status: BLOCKED
+    blocked_by: [GATE-2]
+    effort_points: 8
+    tasks:
+      - id: TASK-016
+        name: "ADR-001 Agent Architecture"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-017
+        name: "ADR-002 Artifact Structure"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-018
+        name: "ADR-003 Bidirectional Linking"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-019
+        name: "ADR-004 File Splitting"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-020
+        name: "ADR-005 Agent Implementation"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-021
+        name: "ps-critic ADR Review"
+        status: BLOCKED
+        agent: ps-critic
+
+  EN-005:
+    name: "Design Documentation"
+    feature: FEAT-001
+    phase: 4
+    status: BLOCKED
+    blocked_by: [GATE-3]
+    effort_points: 13
+    tasks:
+      - id: TASK-022
+        name: "Design VTT Parser"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-023
+        name: "Design Entity Extraction"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-024
+        name: "Design Mind Map Generator"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-025
+        name: "Design Artifact Packager"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-026
+        name: "Design Deep Linking System"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-027
+        name: "Design Worktracker Integration"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-028
+        name: "Create Component Diagrams"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-029
+        name: "ps-critic Design Review"
+        status: BLOCKED
+        agent: ps-critic
+
+  EN-006:
+    name: "Context Injection Design"
+    feature: FEAT-001
+    phase: 4
+    status: BLOCKED
+    blocked_by: [GATE-3]
+    effort_points: 5
+    tasks:
+      - id: TASK-030
+        name: "5W2H Analysis"
+        status: BLOCKED
+        agent: ps-analyst
+      - id: TASK-031
+        name: "Context Injection Spec"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-032
+        name: "Orchestration Integration Design"
+        status: BLOCKED
+        agent: ps-architect
+      - id: TASK-033
+        name: "Example Orchestration Plans"
+        status: BLOCKED
+        agent: ps-architect
+
+  # FEAT-002: Implementation
+  EN-007:
+    name: "VTT Parser Implementation"
+    feature: FEAT-002
+    phase: 5
+    status: BLOCKED
+    blocked_by: [GATE-4]
+    effort_points: 8
+    tasks:
+      - id: TASK-034
+        name: "Create VTT Parser Agent Prompt"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-035
+        name: "Implement Speaker Identification"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-036
+        name: "Implement Timestamp Normalization"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-037
+        name: "Implement Chunking Strategy"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-038
+        name: "Create Unit Tests"
+        status: BLOCKED
+        agent: custom
+
+  EN-008:
+    name: "Entity Extraction Pipeline"
+    feature: FEAT-002
+    phase: 5
+    status: BLOCKED
+    blocked_by: [EN-007]
+    effort_points: 13
+    tasks:
+      - id: TASK-039
+        name: "Create Speaker Profiler Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-040
+        name: "Create Topic Extractor Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-041
+        name: "Create Question Detector Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-042
+        name: "Create Action Item Extractor Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-043
+        name: "Create Idea Extractor Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-044
+        name: "Create Decision Extractor Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-045
+        name: "Implement Confidence Scoring"
+        status: BLOCKED
+        agent: custom
+
+  EN-009:
+    name: "Mind Map Generator"
+    feature: FEAT-002
+    phase: 6
+    status: BLOCKED
+    blocked_by: [GATE-5]
+    effort_points: 8
+    tasks:
+      - id: TASK-046
+        name: "Create Mermaid Generator Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-047
+        name: "Create ASCII Generator Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-048
+        name: "Implement Deep Link Embedding"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-049
+        name: "Create Unit Tests"
+        status: BLOCKED
+        agent: custom
+
+  EN-010:
+    name: "Artifact Packaging & Deep Linking"
+    feature: FEAT-002
+    phase: 6
+    status: BLOCKED
+    blocked_by: [EN-008]
+    effort_points: 8
+    tasks:
+      - id: TASK-050
+        name: "Implement Token Counter"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-051
+        name: "Implement File Splitter"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-052
+        name: "Implement Forward Link Generator"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-053
+        name: "Implement Backlinks Generator"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-054
+        name: "Implement Index/Manifest Generator"
+        status: BLOCKED
+        agent: custom
+
+  EN-011:
+    name: "Worktracker Integration"
+    feature: FEAT-002
+    phase: 6
+    status: BLOCKED
+    blocked_by: [EN-010]
+    effort_points: 5
+    tasks:
+      - id: TASK-055
+        name: "Create Suggestion Generator Agent"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-056
+        name: "Implement Task Creation Flow"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-057
+        name: "Implement Story Creation Flow"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-058
+        name: "Implement Decision Record Flow"
+        status: BLOCKED
+        agent: custom
+
+  EN-012:
+    name: "Skill CLI Interface"
+    feature: FEAT-002
+    phase: 6
+    status: BLOCKED
+    blocked_by: [EN-007, EN-010]
+    effort_points: 5
+    tasks:
+      - id: TASK-059
+        name: "Create SKILL.md Definition"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-060
+        name: "Implement Command Handler"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-061
+        name: "Implement Progress Reporting"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-062
+        name: "Implement Error Handling"
+        status: BLOCKED
+        agent: custom
+
+  EN-013:
+    name: "Context Injection Implementation"
+    feature: FEAT-002
+    phase: 6
+    status: BLOCKED
+    blocked_by: [EN-006]
+    effort_points: 5
+    tasks:
+      - id: TASK-063
+        name: "Implement Context Loader"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-064
+        name: "Implement Prompt Merger"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-065
+        name: "Implement Metadata Passing"
+        status: BLOCKED
+        agent: custom
+      - id: TASK-066
+        name: "Create Example Context Files"
+        status: BLOCKED
+        agent: custom
+
+# Agent registry
+agents:
+  problem_solving:
+    - id: ps-researcher
+      role: "Research and gather information"
+      available: true
+    - id: ps-analyst
+      role: "Analyze and apply frameworks"
+      available: true
+    - id: ps-synthesizer
+      role: "Combine and synthesize findings"
+      available: true
+    - id: ps-architect
+      role: "Design architecture and systems"
+      available: true
+    - id: ps-critic
+      role: "Review and provide adversarial feedback"
+      available: true
+
+  custom:
+    - id: vtt-parser
+      role: "Parse VTT transcript files"
+      available: false  # To be created
+    - id: entity-extractor
+      role: "Extract entities from transcripts"
+      available: false
+    - id: mindmap-generator
+      role: "Generate mind maps"
+      available: false
+
+# Checkpointing configuration
+checkpointing:
+  enabled: true
+  triggers:
+    - task_completion
+    - gate_reached
+    - error_encountered
+    - session_end
+  storage:
+    type: filesystem
+    path: "./checkpoints/"
+  retention:
+    max_checkpoints: 10
+    cleanup_on_gate_pass: true
+
+# Artifact management
+artifacts:
+  token_limit: 35000
+  split_strategy: "natural_boundaries"
+  deep_linking:
+    enabled: true
+    format: "bidirectional_with_backlinks"
+  output_structure:
+    prefix_numbering: true
+    index_generation: true
+
+# Metrics tracking
+metrics:
+  total_enablers: 13
+  total_tasks: 66
+  total_effort_points: 107
+  completed_enablers: 0
+  completed_tasks: 0
+  completed_effort_points: 0
+  gates_passed: 0
+  gates_total: 6

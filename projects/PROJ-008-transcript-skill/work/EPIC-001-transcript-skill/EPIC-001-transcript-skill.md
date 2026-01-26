@@ -26,8 +26,10 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 **Key Objectives:**
 - Deep competitive research on 5 meeting intelligence products
 - Multi-framework problem analysis (5W2H, Ishikawa, FMEA, 8D, NASA SE)
-- Phased implementation from VTT MVP to full entity extraction
+- Formal Architecture Decision Records (ADRs)
 - Three-tier documentation (ELI5, Engineer, Architect)
+- Phased implementation: prompt-based agents first, Python later if needed
+- Token-managed artifacts (<35K tokens each) with bidirectional deep linking
 
 ---
 
@@ -42,6 +44,8 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 - Mind maps are generated that link to source transcripts
 - Users can convert action items to worktracker tasks
 - Documentation serves all three persona levels effectively
+- All artifacts are Claude-friendly (<35K tokens)
+- Bidirectional deep linking enables navigation
 
 ---
 
@@ -51,7 +55,7 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 |--------|-------------|
 | **Problem** | Meeting transcripts contain valuable information but extracting structured insights requires manual effort |
 | **Solution** | Automated entity extraction + mind map generation + worktracker integration |
-| **Cost** | Development time across 4 phases (estimated 8-12 weeks) |
+| **Cost** | Development time across 2 features (estimated 4-6 weeks with semi-supervised workflow) |
 | **Benefit** | Reduced time from meeting to action items; persistent knowledge capture |
 | **Risk** | Entity extraction accuracy; handling diverse meeting formats |
 
@@ -61,16 +65,32 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 
 ### Feature Inventory
 
-| ID | Title | Status | Priority | Progress |
-|----|-------|--------|----------|----------|
-| [FEAT-001](./FEAT-001-competitive-research/FEAT-001-competitive-research.md) | Competitive Research & Analysis | pending | high | 0% |
-| FEAT-002 | VTT Parser & Entity Extraction | pending | high | 0% |
-| FEAT-003 | Mind Map Generation | pending | medium | 0% |
-| FEAT-004 | Worktracker Integration | pending | medium | 0% |
+| ID | Title | Status | Priority | Progress | Gates |
+|----|-------|--------|----------|----------|-------|
+| [FEAT-001](./FEAT-001-analysis-design/FEAT-001-analysis-design.md) | Analysis & Design | pending | high | 0% | 1-4 |
+| [FEAT-002](./FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | pending | high | 0% | 5-6 |
 
 ### Feature Links
 
-- [FEAT-001: Competitive Research & Analysis](./FEAT-001-competitive-research/FEAT-001-competitive-research.md)
+- [FEAT-001: Analysis & Design](./FEAT-001-analysis-design/FEAT-001-analysis-design.md)
+  - Research, requirements, architecture decisions, design documentation
+  - 6 enablers, 4 human approval gates
+- [FEAT-002: Implementation](./FEAT-002-implementation/FEAT-002-implementation.md)
+  - VTT parser, entity extraction, mind maps, artifact packaging, worktracker integration
+  - 7 enablers, 2 human approval gates
+
+---
+
+## Human Approval Gates
+
+| Gate | Feature | After | Approval For |
+|------|---------|-------|--------------|
+| GATE-1 | FEAT-001 | EN-001, EN-002 | Research completeness |
+| GATE-2 | FEAT-001 | EN-003 | Requirements validity |
+| GATE-3 | FEAT-001 | EN-004 | Architecture decisions |
+| GATE-4 | FEAT-001 | EN-005, EN-006 | Design completeness |
+| GATE-5 | FEAT-002 | EN-007, EN-008 | Core implementation |
+| GATE-6 | FEAT-002 | EN-009..EN-013 | Final review |
 
 ---
 
@@ -82,9 +102,9 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/4 completed)             |
-| Enablers:  [....................] 0% (0/4 completed)             |
-| Stories:   [....................] 0% (0/0 completed)             |
+| Features:  [....................] 0% (0/2 completed)             |
+| Enablers:  [....................] 0% (0/13 completed)            |
+| Tasks:     [....................] 0% (0/66 completed)            |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                             |
 +------------------------------------------------------------------+
@@ -94,61 +114,86 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 4 |
+| **Total Features** | 2 |
 | **Completed Features** | 0 |
 | **In Progress Features** | 0 |
-| **Pending Features** | 4 |
-| **Feature Completion %** | 0% |
+| **Pending Features** | 2 |
+| **Total Enablers** | 13 |
+| **Total Tasks** | ~66 |
+| **Total Effort (points)** | 107 |
+| **Completion %** | 0% |
 
 ### Milestone Tracking
 
-| Milestone | Target Date | Status | Notes |
-|-----------|-------------|--------|-------|
-| Research Complete | TBD | PENDING | Phase 0 |
-| MVP VTT Parser | TBD | PENDING | Phase 1 |
-| Entity Extraction | TBD | PENDING | Phase 2 |
-| Full Integration | TBD | PENDING | Phase 3-4 |
+| Milestone | Target Date | Status | Gate |
+|-----------|-------------|--------|------|
+| Research Complete | TBD | PENDING | GATE-1 |
+| Requirements Complete | TBD | PENDING | GATE-2 |
+| Architecture Complete | TBD | PENDING | GATE-3 |
+| Design Complete | TBD | PENDING | GATE-4 |
+| Core Implementation | TBD | PENDING | GATE-5 |
+| Full Implementation | TBD | PENDING | GATE-6 |
 
 ---
 
-## Orchestration Plan
-
-### Current Phase: 0 - Research & Discovery
+## Orchestration Pipeline
 
 ```
-+------------------------------------------------------------------+
-|              EPIC-001 ORCHESTRATION PIPELINE                      |
-+------------------------------------------------------------------+
-|                                                                    |
-|  PHASE 0: RESEARCH                                                |
-|  ┌─────────────────────────────────────────────────────────┐      |
-|  │  Status: STARTING                                        │      |
-|  │                                                          │      |
-|  │  Agents:                                                 │      |
-|  │  - ps-researcher (x5): Competitive analysis             │      |
-|  │  - ps-analyst: Framework analysis                        │      |
-|  │  - ps-synthesizer: Combine findings                      │      |
-|  │  - ps-critic: Adversarial review                         │      |
-|  │                                                          │      |
-|  │  Deliverables:                                           │      |
-|  │  - Competitive analysis report                           │      |
-|  │  - 5W2H analysis                                         │      |
-|  │  - FMEA analysis                                         │      |
-|  │  - Requirements specification                            │      |
-|  └─────────────────────────────────────────────────────────┘      |
-|                              │                                     |
-|                              ▼                                     |
-|  PHASE 1: MVP FOUNDATION (Blocked by Phase 0)                     |
-|  ┌─────────────────────────────────────────────────────────┐      |
-|  │  Status: BLOCKED                                         │      |
-|  └─────────────────────────────────────────────────────────┘      |
-|                              │                                     |
-|                              ▼                                     |
-|  PHASE 2-4: (Sequential)                                          |
-|  ┌─────────────────────────────────────────────────────────┐      |
-|  │  Status: BLOCKED                                         │      |
-|  └─────────────────────────────────────────────────────────┘      |
-+------------------------------------------------------------------+
++==============================================================================+
+|                    EPIC-001 ORCHESTRATION PIPELINE                            |
++==============================================================================+
+|                                                                               |
+|  ┌─────────────────────────────────────────────────────────────────────────┐ |
+|  │                     FEAT-001: ANALYSIS & DESIGN                          │ |
+|  │                                                                          │ |
+|  │  PHASE 1: Research (EN-001, EN-002)                                     │ |
+|  │  ───────────────────────────────────────                                │ |
+|  │  Market analysis + Technical standards                                   │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 1: Research Review ★                          │ |
+|  │                              │                                           │ |
+|  │  PHASE 2: Requirements (EN-003)                                         │ |
+|  │  ─────────────────────────────────                                      │ |
+|  │  5W2H, Ishikawa, FMEA, Requirements Spec                                │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 2: Requirements Review ★                      │ |
+|  │                              │                                           │ |
+|  │  PHASE 3: Architecture (EN-004)                                         │ |
+|  │  ──────────────────────────────────                                     │ |
+|  │  ADRs: Agent Architecture, Artifact Structure, Deep Linking             │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 3: Architecture Review ★                      │ |
+|  │                              │                                           │ |
+|  │  PHASE 4: Design (EN-005, EN-006)                                       │ |
+|  │  ───────────────────────────────────                                    │ |
+|  │  L0/L1/L2 Design Docs + Context Injection Design                        │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 4: Design Review ★                            │ |
+|  └──────────────────────────────┼──────────────────────────────────────────┘ |
+|                                 │                                            |
+|                                 ▼                                            |
+|  ┌─────────────────────────────────────────────────────────────────────────┐ |
+|  │                     FEAT-002: IMPLEMENTATION                             │ |
+|  │                                                                          │ |
+|  │  PHASE 5: Core Implementation (EN-007, EN-008)                          │ |
+|  │  ─────────────────────────────────────────────                          │ |
+|  │  VTT Parser + Entity Extraction Pipeline                                 │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 5: Core Review ★                              │ |
+|  │                              │                                           │ |
+|  │  PHASE 6: Output Generation (EN-009..EN-013)                            │ |
+|  │  ──────────────────────────────────────────────                         │ |
+|  │  Mind Maps + Artifact Packaging + Worktracker + CLI + Context Injection │ |
+|  │                              │                                           │ |
+|  │                    ★ GATE 6: Final Review ★                             │ |
+|  └──────────────────────────────┼──────────────────────────────────────────┘ |
+|                                 │                                            |
+|                                 ▼                                            |
+|                    ┌────────────────────────┐                               |
+|                    │  TRANSCRIPT SKILL       │                               |
+|                    │  COMPLETE & RELEASED    │                               |
+|                    └────────────────────────┘                               |
++==============================================================================+
 ```
 
 ---
@@ -164,7 +209,7 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
 | Depends On | None | Epic is top-level for this project |
-| Blocks | FEAT-002 | Research must complete before implementation |
+| Blocks | None | No downstream epics |
 
 ---
 
@@ -180,11 +225,17 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 - None identified yet
 
 ### Decisions
+
 | ID | Decision | Date | Status |
 |----|----------|------|--------|
 | DEC-001 | MVP format: VTT only | 2026-01-25 | DOCUMENTED |
 | DEC-002 | Mind map output: Mermaid + ASCII | 2026-01-25 | DOCUMENTED |
 | DEC-003 | Task creation: Suggest first | 2026-01-25 | DOCUMENTED |
+| DEC-004 | Bidirectional linking with backlinks | 2026-01-26 | DOCUMENTED |
+| DEC-005 | Token limit: 35K per artifact | 2026-01-26 | DOCUMENTED |
+| DEC-006 | Phased agents: Prompt-based first, Python later | 2026-01-26 | DOCUMENTED |
+| DEC-007 | Two features: Analysis & Design + Implementation | 2026-01-26 | DOCUMENTED |
+| DEC-008 | 6 human approval gates | 2026-01-26 | DOCUMENTED |
 
 ---
 
@@ -194,6 +245,7 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 |------|--------|--------|-------|
 | 2026-01-25 | Claude | pending | Epic created |
 | 2026-01-25 | Claude | in_progress | Starting Phase 0 research |
+| 2026-01-26 | Claude | in_progress | Restructured to two features with 6 gates |
 
 ---
 
