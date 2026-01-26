@@ -24,6 +24,35 @@ UPDATED: 2026-01-26 - Aligned with ADR-001 through ADR-005
 
 ---
 
+## Artifact Relocation Notice (2026-01-26)
+
+> **Per DISC-004 and DEC-002:** Implementation artifacts have been relocated to `skills/transcript/` per Claude Code best practices. TDD documents (design specs) remain in EN-005.
+
+### Relocation Summary
+
+| Artifact | Original Location | New Location | Status |
+|----------|-------------------|--------------|--------|
+| ts-parser agent | agents/ts-parser/AGENT.md | **skills/transcript/agents/ts-parser.md** | RELOCATED |
+| ts-extractor agent | agents/ts-extractor/AGENT.md | **skills/transcript/agents/ts-extractor.md** | RELOCATED |
+| ts-formatter agent | agents/ts-formatter/AGENT.md | **skills/transcript/agents/ts-formatter.md** | RELOCATED |
+| SKILL.md orchestrator | SKILL.md | **skills/transcript/SKILL.md** | RELOCATED |
+| PLAYBOOK | docs/PLAYBOOK-en005.md | **skills/transcript/docs/PLAYBOOK.md** | RELOCATED |
+| RUNBOOK | docs/RUNBOOK-en005.md | **skills/transcript/docs/RUNBOOK.md** | RELOCATED |
+
+### Artifacts Remaining in EN-005 (Design Specs)
+
+| Artifact | Location | Purpose |
+|----------|----------|---------|
+| TDD-transcript-skill.md | docs/ | Overall architecture spec |
+| TDD-ts-parser.md | docs/ | Parser design spec |
+| TDD-ts-extractor.md | docs/ | Extractor design spec |
+| TDD-ts-formatter.md | docs/ | Formatter design spec |
+| ps-critic reviews | review/ | Quality review artifacts |
+
+**Rationale:** TDD documents are design specifications that inform implementation. AGENT.md and SKILL.md files are executable implementations that belong in `skills/transcript/` per Claude Code plugin conventions.
+
+---
+
 ## Summary
 
 Create comprehensive design documentation for the Transcript Skill aligned with the Architecture Decision Records (ADR-001 through ADR-005). This includes Technical Design Documents (TDDs) for each agent, AGENT.md definitions, and operational documentation (PLAYBOOK/RUNBOOK).
@@ -308,6 +337,9 @@ Create comprehensive design documentation for the Transcript Skill aligned with 
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created |
 | 2026-01-26 | Claude | in_progress | Updated with ADR alignment, new task structure |
+| 2026-01-26 | Claude | in_progress | Tasks 1-13 executed, ps-critic reviews complete |
+| 2026-01-26 | Claude | awaiting_approval | DISC-002 identified scope creep, DEC-002 decision made |
+| 2026-01-26 | Claude | awaiting_approval | DISC-004 research on file organization, artifacts relocated to skills/transcript/ |
 
 ---
 

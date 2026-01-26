@@ -27,6 +27,10 @@ classification: ENABLER
 # === LIFECYCLE STATE ===
 status: DONE
 resolution: completed
+relocation_note: |
+  RELOCATED per DISC-004 and DEC-002 (2026-01-26):
+  Implementation artifact moved to: skills/transcript/agents/ts-extractor.md
+  This task file documents design intent. Executable implementation now in skills/ folder.
 
 # === PRIORITY ===
 priority: MEDIUM
@@ -187,7 +191,7 @@ quality_thresholds:
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| ts-extractor AGENT.md | Agent Definition | agents/ts-extractor/AGENT.md | PENDING |
+| ts-extractor AGENT.md | Agent Definition | ~~agents/ts-extractor/AGENT.md~~ → **skills/transcript/agents/ts-extractor.md** | RELOCATED |
 
 ### Verification
 
@@ -203,6 +207,8 @@ quality_thresholds:
 | Date       | Status      | Notes                          |
 |------------|-------------|--------------------------------|
 | 2026-01-26 | Created     | Initial task creation          |
+| 2026-01-26 | DONE        | Agent definition created        |
+| 2026-01-26 | RELOCATED   | Moved to skills/transcript/agents/ts-extractor.md per DISC-004, DEC-002 |
 
 ---
 

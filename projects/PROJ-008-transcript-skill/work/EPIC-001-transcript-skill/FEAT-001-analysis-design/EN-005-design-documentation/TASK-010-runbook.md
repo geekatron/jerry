@@ -27,6 +27,10 @@ classification: ENABLER
 # === LIFECYCLE STATE ===
 status: DONE
 resolution: completed
+relocation_note: |
+  RELOCATED per DISC-004 and DEC-002 (2026-01-26):
+  Implementation artifact moved to: skills/transcript/docs/RUNBOOK.md
+  This task file documents design intent. Executable implementation now in skills/ folder.
 
 # === PRIORITY ===
 priority: MEDIUM
@@ -190,7 +194,7 @@ graph TD
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| RUNBOOK-en005.md | Troubleshooting Runbook | docs/RUNBOOK-en005.md | PENDING |
+| RUNBOOK-en005.md | Troubleshooting Runbook | ~~docs/RUNBOOK-en005.md~~ → **skills/transcript/docs/RUNBOOK.md** | RELOCATED |
 
 ### Verification
 
@@ -206,6 +210,8 @@ graph TD
 | Date       | Status      | Notes                          |
 |------------|-------------|--------------------------------|
 | 2026-01-26 | Created     | Initial task creation          |
+| 2026-01-26 | DONE        | RUNBOOK created                 |
+| 2026-01-26 | RELOCATED   | Moved to skills/transcript/docs/RUNBOOK.md per DISC-004, DEC-002 |
 
 ---
 

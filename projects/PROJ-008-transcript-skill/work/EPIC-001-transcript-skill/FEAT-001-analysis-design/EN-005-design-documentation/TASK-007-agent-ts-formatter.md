@@ -27,6 +27,10 @@ classification: ENABLER
 # === LIFECYCLE STATE ===
 status: DONE
 resolution: completed
+relocation_note: |
+  RELOCATED per DISC-004 and DEC-002 (2026-01-26):
+  Implementation artifact moved to: skills/transcript/agents/ts-formatter.md
+  This task file documents design intent. Executable implementation now in skills/ folder.
 
 # === PRIORITY ===
 priority: MEDIUM
@@ -190,7 +194,7 @@ split_strategy:
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| ts-formatter AGENT.md | Agent Definition | agents/ts-formatter/AGENT.md | PENDING |
+| ts-formatter AGENT.md | Agent Definition | ~~agents/ts-formatter/AGENT.md~~ → **skills/transcript/agents/ts-formatter.md** | RELOCATED |
 
 ### Verification
 
@@ -206,6 +210,8 @@ split_strategy:
 | Date       | Status      | Notes                          |
 |------------|-------------|--------------------------------|
 | 2026-01-26 | Created     | Initial task creation          |
+| 2026-01-26 | DONE        | Agent definition created        |
+| 2026-01-26 | RELOCATED   | Moved to skills/transcript/agents/ts-formatter.md per DISC-004, DEC-002 |
 
 ---
 

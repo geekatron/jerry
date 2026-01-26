@@ -263,9 +263,12 @@ Comprehensive analysis and design phase for the Transcript Skill. This feature e
 - DEC-004: Bidirectional linking with backlinks (pending ADR)
 - DEC-005: Token limit: 35K per artifact (pending ADR)
 - DEC-006: Prompt-based agents first, Python later (pending ADR)
+- **[DEC-002: Design vs Implementation Boundary](./FEAT-001--DEC-002-design-implementation-boundary.md)** - PROPOSED
 
 ### Discoveries
-- None documented yet
+- **[DISC-002: EN-005 Scope Creep](./FEAT-001--DISC-002-scope-creep-en005.md)** - Implementation tasks in design phase (HIGH)
+- **[DISC-003: Acceptance Criteria Not Updated](./FEAT-001--DISC-003-acceptance-criteria-not-updated.md)** - Checkboxes not checked (MEDIUM)
+- **[DISC-004: Skill File Organization Standards](./FEAT-001--DISC-004-skill-file-organization.md)** - Industry standards for agent file naming (HIGH)
 
 ### Bugs
 - None identified

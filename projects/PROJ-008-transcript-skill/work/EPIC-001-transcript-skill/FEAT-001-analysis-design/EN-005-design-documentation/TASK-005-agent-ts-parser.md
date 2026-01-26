@@ -27,6 +27,10 @@ classification: ENABLER
 # === LIFECYCLE STATE ===
 status: DONE
 resolution: completed
+relocation_note: |
+  RELOCATED per DISC-004 and DEC-002 (2026-01-26):
+  Implementation artifact moved to: skills/transcript/agents/ts-parser.md
+  This task file documents design intent. Executable implementation now in skills/ folder.
 
 # === PRIORITY ===
 priority: MEDIUM
@@ -185,7 +189,7 @@ guardrails:
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| ts-parser AGENT.md | Agent Definition | agents/ts-parser/AGENT.md | PENDING |
+| ts-parser AGENT.md | Agent Definition | ~~agents/ts-parser/AGENT.md~~ → **skills/transcript/agents/ts-parser.md** | RELOCATED |
 
 ### Verification
 
@@ -201,6 +205,8 @@ guardrails:
 | Date       | Status      | Notes                          |
 |------------|-------------|--------------------------------|
 | 2026-01-26 | Created     | Initial task creation          |
+| 2026-01-26 | DONE        | Agent definition created        |
+| 2026-01-26 | RELOCATED   | Moved to skills/transcript/agents/ts-parser.md per DISC-004, DEC-002 |
 
 ---
 
