@@ -1,0 +1,102 @@
+# Entity Definitions: Product Management Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+
+domain: product-management
+version: "1.0.0"
+
+metadata:
+  target_users:
+    - "Product Managers"
+    - "Product Owners"
+    - "Business Analysts"
+    - "Strategy Teams"
+  transcript_types:
+    - "Product strategy session"
+    - "Roadmap planning"
+    - "Feature prioritization"
+    - "Stakeholder interview"
+    - "Competitive analysis"
+  key_use_cases:
+    - "Track feature requests"
+    - "Capture user needs"
+    - "Document roadmap items"
+    - "Record stakeholder feedback"
+    - "Analyze competitive landscape"
+
+entities:
+  feature_request:
+    description: "A requested product capability from internal or external sources"
+    attributes:
+      - title: "Feature name or identifier"
+      - description: "What the feature does"
+      - requester: "Who requested (customer, sales, exec, etc.)"
+      - business_value: "Why it's valuable"
+      - priority: "Priority level (P0 | P1 | P2 | P3 or MoSCoW)"
+      - target_persona: "Primary user persona"
+    relationships:
+      - type: "addresses"
+        target: "user_need"
+      - type: "becomes"
+        target: "roadmap_item"
+
+  user_need:
+    description: "Identified user requirement or job-to-be-done"
+    attributes:
+      - persona: "User type or segment"
+      - need: "What they need to accomplish"
+      - pain_point: "Current problem or frustration"
+      - frequency: "How often encountered (always | often | sometimes | rarely)"
+      - impact: "Impact on user success (high | medium | low)"
+    relationships:
+      - type: "addressed_by"
+        target: "feature_request"
+
+  roadmap_item:
+    description: "Planned product work with timeline"
+    attributes:
+      - title: "Item name or epic"
+      - quarter: "Target quarter (Q1, Q2, Q3, Q4 + Year)"
+      - dependencies: "What it depends on"
+      - success_metric: "How to measure success (OKR, KPI)"
+      - confidence: "Delivery confidence (high | medium | low)"
+    relationships:
+      - type: "informed_by"
+        target: "stakeholder_feedback"
+      - type: "considers"
+        target: "competitive_insight"
+
+  stakeholder_feedback:
+    description: "Input from customers, executives, or partners"
+    attributes:
+      - stakeholder: "Who provided feedback (name, role, company)"
+      - topic: "Subject of feedback"
+      - sentiment: "Overall sentiment (positive | neutral | negative)"
+      - key_points: "Main points made"
+      - urgency: "Expressed urgency (urgent | soon | someday)"
+    relationships:
+      - type: "informs"
+        target: "roadmap_item"
+      - type: "creates"
+        target: "feature_request"
+
+  competitive_insight:
+    description: "Intelligence about competitors and market"
+    attributes:
+      - competitor: "Which competitor"
+      - feature: "What they have or announced"
+      - our_position: "How we compare (ahead | parity | behind)"
+      - action: "Suggested response"
+      - source: "Where this came from"
+    relationships:
+      - type: "influences"
+        target: "roadmap_item"
+
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - feature_request
+    - user_need
+    - roadmap_item

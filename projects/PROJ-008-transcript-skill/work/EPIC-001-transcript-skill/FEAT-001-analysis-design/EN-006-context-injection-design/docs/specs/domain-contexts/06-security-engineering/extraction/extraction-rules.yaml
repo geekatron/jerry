@@ -1,0 +1,134 @@
+# Extraction Rules: Security Engineering Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+
+domain: security-engineering
+version: "1.0.0"
+
+extraction_rules:
+  vulnerability_patterns:
+    - pattern: "CVE-{year}-{id}"
+      confidence: high
+      example: "CVE-2024-12345"
+      note: "CVE identifier pattern"
+    - pattern: "Vulnerability: {title}"
+      confidence: high
+      example: "Vulnerability: SQL injection in login"
+    - pattern: "CVSS score: {score}"
+      confidence: high
+      example: "CVSS score: 7.8"
+    - pattern: "Critical|High|Medium|Low severity"
+      confidence: high
+      example: "High severity vulnerability"
+    - pattern: "CWE-{id}"
+      confidence: high
+      example: "CWE-89 (SQL Injection)"
+    - pattern: "Affected: {systems}"
+      confidence: medium
+      example: "Affected: user authentication service"
+
+  threat_patterns:
+    - pattern: "Threat: {description}"
+      confidence: high
+      example: "Threat: unauthorized data access"
+    - pattern: "STRIDE: {category}"
+      confidence: high
+      example: "STRIDE: Information Disclosure"
+    - pattern: "Attack vector: {vector}"
+      confidence: high
+      example: "Attack vector: network"
+    - pattern: "Attacker could {action}"
+      confidence: high
+      example: "Attacker could steal credentials"
+    - pattern: "Spoofing|Tampering|Repudiation|Information|Denial|Elevation"
+      confidence: high
+      note: "STRIDE category keywords"
+    - pattern: "Threat actor: {actor}"
+      confidence: high
+      example: "Threat actor: external attacker"
+
+  mitigation_patterns:
+    - pattern: "Mitigation: {title}"
+      confidence: high
+      example: "Mitigation: implement input validation"
+    - pattern: "We should {action} to prevent {threat}"
+      confidence: high
+      example: "We should add MFA to prevent credential theft"
+    - pattern: "Control: {control}"
+      confidence: high
+      example: "Control: WAF rule for SQL injection"
+    - pattern: "Remediation: {action}"
+      confidence: high
+      example: "Remediation: upgrade to patched version"
+    - pattern: "Fix: {action}"
+      confidence: high
+      example: "Fix: sanitize user input"
+    - pattern: "Preventive|Detective|Corrective control"
+      confidence: medium
+      example: "Implement detective control"
+
+  compliance_patterns:
+    - pattern: "SOC2|PCI|HIPAA|GDPR requirement"
+      confidence: high
+      example: "SOC2 requirement CC6.1"
+    - pattern: "Compliance gap: {gap}"
+      confidence: high
+      example: "Compliance gap: no encryption at rest"
+    - pattern: "We're not compliant with {requirement}"
+      confidence: high
+      example: "We're not compliant with GDPR Article 32"
+    - pattern: "Audit finding: {finding}"
+      confidence: high
+      example: "Audit finding: missing access logs"
+    - pattern: "Control {id}: {description}"
+      confidence: medium
+      example: "Control CC6.1: logical access"
+    - pattern: "Framework: {framework}"
+      confidence: medium
+      example: "Framework: ISO 27001"
+
+  decision_patterns:
+    - pattern: "Security decision: {decision}"
+      confidence: high
+      example: "Security decision: accept the risk"
+    - pattern: "Risk accepted: {risk}"
+      confidence: high
+      example: "Risk accepted: legacy system exposure"
+    - pattern: "Approved by {approver}"
+      confidence: high
+      example: "Approved by CISO"
+    - pattern: "Accept the risk of {risk}"
+      confidence: high
+      example: "Accept the risk of delayed patching"
+    - pattern: "We decided to {decision}"
+      confidence: medium
+      example: "We decided to implement compensating controls"
+
+context_rules:
+  security_audit:
+    primary_entities:
+      - vulnerability
+      - mitigation
+    secondary_entities:
+      - compliance_gap
+  threat_modeling:
+    primary_entities:
+      - threat
+      - mitigation
+    secondary_entities:
+      - vulnerability
+    methodology: "STRIDE"
+  compliance_review:
+    primary_entities:
+      - compliance_gap
+    secondary_entities:
+      - mitigation
+      - security_decision
+  vulnerability_triage:
+    primary_entities:
+      - vulnerability
+      - mitigation
+    secondary_entities:
+      - security_decision
+    prioritization: "CVSS"

@@ -1,0 +1,104 @@
+# Entity Definitions: Software Architecture Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+
+domain: software-architecture
+version: "1.0.0"
+
+metadata:
+  target_users:
+    - "Software Architects"
+    - "Principal Engineers"
+    - "Tech Leads"
+    - "Engineering Directors"
+  transcript_types:
+    - "Architecture review"
+    - "ADR discussion"
+    - "Design session"
+    - "Technical deep dive"
+    - "Trade-off analysis"
+  key_use_cases:
+    - "Document ADRs"
+    - "Record alternatives"
+    - "Track quality attributes"
+    - "Map components"
+    - "Flag technical debt"
+
+entities:
+  architectural_decision:
+    description: "A significant architectural choice that affects system structure or behavior"
+    attributes:
+      - title: "Decision title/summary (ADR title)"
+      - context: "Why this decision is needed (problem statement)"
+      - decision: "What was decided (the solution)"
+      - consequences: "Impact of the decision (positive and negative)"
+      - status: "Decision status (proposed | accepted | deprecated | superseded)"
+      - adr_number: "ADR identifier if mentioned"
+    relationships:
+      - type: "rejects"
+        target: "alternative"
+      - type: "addresses"
+        target: "quality_attribute"
+
+  alternative:
+    description: "An option considered but not chosen for the decision"
+    attributes:
+      - title: "Alternative name/identifier"
+      - description: "What the alternative entails"
+      - pros: "Benefits of this option"
+      - cons: "Drawbacks of this option"
+      - rejection_reason: "Why it was not chosen"
+    relationships:
+      - type: "rejected_by"
+        target: "architectural_decision"
+
+  quality_attribute:
+    description: "Non-functional requirement or system quality discussed"
+    attributes:
+      - attribute: "Quality category (ISO 25010: performance | security | maintainability | reliability | compatibility | usability | portability)"
+      - requirement: "Specific requirement or target"
+      - priority: "Priority level (high | medium | low)"
+      - trade_offs: "Trade-offs with other quality attributes"
+      - measurement: "How to measure (if discussed)"
+    relationships:
+      - type: "addressed_by"
+        target: "architectural_decision"
+      - type: "influences"
+        target: "component"
+
+  component:
+    description: "System component or module discussed in the architecture"
+    attributes:
+      - name: "Component name or identifier"
+      - responsibility: "What the component does (single responsibility)"
+      - interfaces: "How it connects to other components"
+      - constraints: "Technical or business constraints"
+      - technology: "Technology stack if mentioned"
+    relationships:
+      - type: "incurs"
+        target: "technical_debt"
+      - type: "implements"
+        target: "quality_attribute"
+
+  technical_debt:
+    description: "Identified technical debt or architectural concern"
+    attributes:
+      - description: "What is the debt/issue"
+      - impact: "How it affects the system"
+      - remediation: "Proposed fix or improvement"
+      - priority: "Priority level (high | medium | low)"
+      - cost: "Estimated effort to address"
+    relationships:
+      - type: "incurred_by"
+        target: "component"
+      - type: "created_by"
+        target: "architectural_decision"
+
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - architectural_decision
+    - alternative
+    - quality_attribute

@@ -1,0 +1,109 @@
+# Entity Definitions: Software Engineering Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+#
+# DISCLAIMER: This guidance is AI-generated based on NASA Systems Engineering
+# standards. It is advisory only and does not constitute official NASA guidance.
+
+domain: software-engineering
+version: "1.0.0"
+
+metadata:
+  target_users:
+    - "Software Engineers"
+    - "Tech Leads"
+    - "Engineering Managers"
+    - "Scrum Masters"
+  transcript_types:
+    - "Daily standup"
+    - "Sprint planning"
+    - "Sprint retrospective"
+    - "Code review"
+    - "Pair programming session"
+  key_use_cases:
+    - "Track commitments"
+    - "Surface blockers"
+    - "Capture decisions"
+    - "Extract action items"
+    - "Identify risks"
+
+entities:
+  commitment:
+    description: "Work item a team member commits to complete within a time period"
+    attributes:
+      - assignee: "Person making the commitment (name or identifier)"
+      - work_item: "Description of the work being committed to"
+      - sprint: "Sprint or time period for completion"
+      - confidence: "Confidence level (high | medium | low)"
+      - story_points: "Estimated effort if mentioned"
+    relationships:
+      - type: "blocked_by"
+        target: "blocker"
+      - type: "relates_to"
+        target: "decision"
+
+  blocker:
+    description: "Impediment preventing progress on work"
+    attributes:
+      - reporter: "Person reporting the blocker"
+      - description: "What is blocked or the blocking issue"
+      - dependency: "What or who is causing the block"
+      - severity: "Severity level (critical | major | minor)"
+      - status: "Current status (active | resolved | escalated)"
+    relationships:
+      - type: "blocks"
+        target: "commitment"
+      - type: "resolved_by"
+        target: "action_item"
+
+  decision:
+    description: "Technical or process decision made during the meeting"
+    attributes:
+      - topic: "Subject of the decision"
+      - outcome: "The decision that was made"
+      - rationale: "Why this decision was made"
+      - participants: "Who was involved in making the decision"
+      - scope: "Scope of impact (team | project | organization)"
+    relationships:
+      - type: "triggers"
+        target: "action_item"
+      - type: "addresses"
+        target: "risk"
+
+  action_item:
+    description: "Follow-up task assigned during the meeting"
+    attributes:
+      - owner: "Person responsible for the action"
+      - task: "Description of what needs to be done"
+      - due_date: "When it should be completed"
+      - context: "Related discussion or decision"
+      - priority: "Priority level (high | medium | low)"
+    relationships:
+      - type: "resolves"
+        target: "blocker"
+      - type: "mitigates"
+        target: "risk"
+
+  risk:
+    description: "Identified technical or schedule risk"
+    attributes:
+      - description: "Description of the risk"
+      - likelihood: "Probability of occurrence (high | medium | low)"
+      - impact: "Potential impact (high | medium | low)"
+      - mitigation: "Proposed mitigation strategy"
+      - owner: "Person responsible for monitoring"
+    relationships:
+      - type: "mitigated_by"
+        target: "action_item"
+      - type: "addressed_by"
+        target: "decision"
+
+# Validation rules for this domain
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 3
+  required_entities:
+    - commitment
+    - blocker
+    - action_item

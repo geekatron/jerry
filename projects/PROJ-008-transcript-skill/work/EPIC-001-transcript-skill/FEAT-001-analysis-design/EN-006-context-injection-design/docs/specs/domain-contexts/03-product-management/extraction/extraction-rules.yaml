@@ -1,0 +1,130 @@
+# Extraction Rules: Product Management Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+
+domain: product-management
+version: "1.0.0"
+
+extraction_rules:
+  feature_patterns:
+    - pattern: "We need {feature} to {benefit}"
+      confidence: high
+      example: "We need SSO to reduce friction"
+    - pattern: "Customers are asking for {feature}"
+      confidence: high
+      example: "Customers are asking for dark mode"
+    - pattern: "Feature request: {feature}"
+      confidence: high
+      example: "Feature request: export to PDF"
+    - pattern: "{requester} wants {feature}"
+      confidence: high
+      example: "Sales wants better reporting"
+    - pattern: "Request for {feature}"
+      confidence: medium
+      example: "Request for mobile support"
+    - pattern: "Can we add {feature}"
+      confidence: medium
+      example: "Can we add batch processing?"
+
+  priority_patterns:
+    - pattern: "This is P0|P1|P2|P3"
+      confidence: high
+      example: "This is P0"
+    - pattern: "Priority: {level}"
+      confidence: high
+      example: "Priority: high"
+    - pattern: "Must have for {milestone}"
+      confidence: high
+      example: "Must have for Q2 launch"
+    - pattern: "This is critical|important|nice-to-have"
+      confidence: high
+      example: "This is critical for enterprise"
+    - pattern: "MoSCoW: {level}"
+      confidence: high
+      example: "MoSCoW: Must have"
+    - pattern: "Blocker for {customer}"
+      confidence: high
+      example: "Blocker for Acme Corp deal"
+
+  roadmap_patterns:
+    - pattern: "Targeting Q{quarter} for {item}"
+      confidence: high
+      example: "Targeting Q2 for the API redesign"
+    - pattern: "On the roadmap for {timeframe}"
+      confidence: high
+      example: "On the roadmap for H2"
+    - pattern: "Planning to ship {item} in {quarter}"
+      confidence: high
+      example: "Planning to ship notifications in Q3"
+    - pattern: "{item} is scheduled for {time}"
+      confidence: high
+      example: "Mobile app is scheduled for Q4"
+    - pattern: "Roadmap: {item}"
+      confidence: medium
+      example: "Roadmap: analytics dashboard"
+
+  user_need_patterns:
+    - pattern: "Users need {need}"
+      confidence: high
+      example: "Users need faster onboarding"
+    - pattern: "Pain point: {issue}"
+      confidence: high
+      example: "Pain point: manual data entry"
+    - pattern: "The problem is {issue}"
+      confidence: high
+      example: "The problem is finding old conversations"
+    - pattern: "{persona} struggle with {issue}"
+      confidence: high
+      example: "Admins struggle with permissions"
+    - pattern: "Job to be done: {job}"
+      confidence: medium
+      example: "Job to be done: generate reports quickly"
+
+  stakeholder_patterns:
+    - pattern: "{stakeholder} said {feedback}"
+      confidence: high
+      example: "The CTO said we need better security"
+    - pattern: "Feedback from {stakeholder}: {feedback}"
+      confidence: high
+      example: "Feedback from sales: pricing is confusing"
+    - pattern: "{customer} mentioned {topic}"
+      confidence: high
+      example: "Acme mentioned integration issues"
+    - pattern: "According to {source}, {insight}"
+      confidence: medium
+      example: "According to NPS, search is broken"
+
+  competitive_patterns:
+    - pattern: "{competitor} has {feature}"
+      confidence: high
+      example: "Slack has threaded messages"
+    - pattern: "{competitor} just announced {feature}"
+      confidence: high
+      example: "Notion just announced AI"
+    - pattern: "Competitive gap: {gap}"
+      confidence: high
+      example: "Competitive gap: no mobile app"
+    - pattern: "We're behind on {feature}"
+      confidence: high
+      example: "We're behind on real-time collaboration"
+
+context_rules:
+  strategy_session:
+    primary_entities:
+      - roadmap_item
+      - competitive_insight
+    secondary_entities:
+      - feature_request
+  roadmap_planning:
+    primary_entities:
+      - roadmap_item
+      - feature_request
+    secondary_entities:
+      - user_need
+  stakeholder_interview:
+    primary_entities:
+      - stakeholder_feedback
+      - feature_request
+    secondary_entities:
+      - user_need
