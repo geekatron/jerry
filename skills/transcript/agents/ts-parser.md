@@ -7,7 +7,8 @@ model: "haiku"
 
 # ts-parser Agent
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
+> **Errata:** EN-007:DISC-001 (VTT voice tag gaps corrected)
 > **Role:** Transcript Parser
 > **Model:** haiku (fast parsing, low cost)
 > **Constitutional Compliance:** P-002, P-003
@@ -70,16 +71,38 @@ When given a transcript file, detect format as follows:
 ```
 WEBVTT files contain:
 - Header: "WEBVTT" (required)
-- Cues: timestamp line + payload lines
+- Cues: timestamp line + payload lines (may span multiple text lines)
 
-Voice Tag Pattern: <v SPEAKER_NAME>text
-Example: <v Alice>Good morning everyone.
+VOICE TAG PATTERN (with optional closing tag):
+─────────────────────────────────────────────
+Opening tag: <v SPEAKER_NAME>
+Closing tag: </v> (optional per W3C spec, but common in practice)
+
+Single-line example:
+  <v Alice>Good morning everyone.</v>
+
+Multi-line example (real-world pattern):
+  <v Brendan Bennett>All right. Yeah.
+  So I guess I was a little interested in</v>
+
+MULTI-LINE PAYLOAD HANDLING:
+────────────────────────────
+- Cue payloads MAY span multiple text lines
+- Voice tag opens on first line, closes on last line
+- All lines between belong to same utterance
+- Concatenate lines with SINGLE SPACE (normalize whitespace)
+- Strip closing </v> tag from extracted text
 
 Extract:
 - start_ms: Convert HH:MM:SS.mmm to milliseconds
 - end_ms: Convert HH:MM:SS.mmm to milliseconds
 - speaker: Extract from <v> tag, or null if absent
-- text: Content after voice tag
+- text: Content between tags (or after opening tag if no closing)
+       MUST strip closing </v> from extracted text
+       MUST normalize multi-line to single space-separated string
+
+IMPORTANT: Accept BOTH with and without closing </v> tags
+per PAT-002 (Defensive Parsing: "Accept liberally, produce consistently").
 ```
 
 ### SRT Parsing Rules (FR-002)
@@ -143,8 +166,20 @@ Precision: 10 milliseconds (round to nearest 10ms)
 | Negative duration | end_ms < start_ms | Swap values, log warning |
 | Missing speaker | No pattern match | Use null, continue |
 | Empty text | len(text.strip()) == 0 | Skip segment, log debug |
-| Encoding error | Decode exception | Try fallback encodings |
+| Encoding error | Decode exception | Try fallback encodings (see below) |
 | File too large | size > 50MB | Stream process in batches |
+
+**Encoding Fallback Chain (NFR-007):**
+```
+Attempt decoding in this order:
+1. UTF-8 with BOM detection (check for BOM marker first)
+2. UTF-8 without BOM (try decode)
+3. Windows-1252 (common Windows encoding)
+4. ISO-8859-1 (Western European)
+5. Latin-1 (final fallback - accepts all byte values)
+
+If all fail: Log error with bytes preview, return empty result
+```
 
 **Recovery Principle:** "Accept liberally, produce consistently"
 - Continue parsing despite individual segment errors
@@ -277,8 +312,9 @@ This state is passed to ts-extractor for entity extraction.
 |---------|------|--------|---------|
 | 1.0.0 | 2026-01-26 | ps-architect | Initial agent definition |
 | 1.0.1 | 2026-01-26 | Claude | Relocated to skills/transcript/agents/ per DISC-004 |
+| 1.1.0 | 2026-01-27 | Claude | **ERRATA:** VTT Parsing Rules corrected per EN-007:DISC-001. Added closing `</v>` tag handling, multi-line payload support, explicit encoding fallback chain. |
 
 ---
 
-*Agent: ts-parser v1.0.0*
+*Agent: ts-parser v1.1.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents)*

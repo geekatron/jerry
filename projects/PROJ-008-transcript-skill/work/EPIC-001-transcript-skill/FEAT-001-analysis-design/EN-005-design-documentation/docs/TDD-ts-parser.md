@@ -1,9 +1,10 @@
 # Technical Design Document: ts-parser Agent
 
 > **Document ID:** TDD-ts-parser
-> **Version:** 1.0
+> **Version:** 1.1
 > **Status:** DRAFT
-> **Date:** 2026-01-26
+> **Date:** 2026-01-27
+> **Errata:** EN-007:DISC-001 (VTT voice tag gaps corrected)
 > **Author:** ps-architect agent
 > **Token Count:** ~4,800 (within 5K target per AC-005)
 > **Parent:** [TDD-transcript-skill.md](./TDD-transcript-skill.md)
@@ -80,18 +81,52 @@ TIMESTAMP_LINE = START_TIME " --> " END_TIME SETTINGS?
 START_TIME    = TIMESTAMP
 END_TIME      = TIMESTAMP
 TIMESTAMP     = HH:MM:SS.mmm | MM:SS.mmm
-PAYLOAD       = TEXT_LINE | VOICE_TAG TEXT_LINE
-VOICE_TAG     = "<v " SPEAKER_NAME ">"
+PAYLOAD       = TEXT_LINE | VOICE_BLOCK
+VOICE_BLOCK   = VOICE_OPEN TEXT_CONTENT* VOICE_CLOSE?
+VOICE_OPEN    = "<v " SPEAKER_NAME ">"
+VOICE_CLOSE   = "</v>"
+TEXT_CONTENT  = TEXT_LINE                    <- May span multiple lines
 
-Example:
-────────
+MULTI-LINE PAYLOAD HANDLING:
+────────────────────────────
+- Cue payloads MAY span multiple text lines
+- Voice tag opens on first line, closes on last line (or omitted per W3C spec)
+- All lines between opening and closing belong to same utterance
+- Concatenate lines with single space (normalize whitespace)
+- Strip closing </v> tag from extracted text
+
+Example 1: Single-line with closing tag (common)
+────────────────────────────────────────────────
+WEBVTT
+
+00:00:00.000 --> 00:00:05.500
+<v Alice>Good morning everyone.</v>
+
+00:00:05.500 --> 00:00:10.200
+<v Bob>Good morning Alice.</v>
+
+Example 2: Multi-line payload (real-world pattern)
+──────────────────────────────────────────────────
+WEBVTT
+
+d9aef475-18c3-4c8c-bf99-88d578a2eb5b/9-0
+00:00:05.608 --> 00:00:10.319
+<v Brendan Bennett>All right. Yeah.
+So I guess I was a little interested in</v>
+
+Extracted as:
+  speaker: "Brendan Bennett"
+  text: "All right. Yeah. So I guess I was a little interested in"
+
+Example 3: Without closing tag (W3C allows omission)
+────────────────────────────────────────────────────
 WEBVTT
 
 00:00:00.000 --> 00:00:05.500
 <v Alice>Good morning everyone.
 
-00:00:05.500 --> 00:00:10.200
-<v Bob>Good morning Alice.
+Note: Parser MUST handle both with and without closing </v> tags
+per PAT-002 (Defensive Parsing: "Accept liberally, produce consistently").
 ```
 
 ### 1.2 SRT Format (FR-002)
@@ -489,6 +524,7 @@ TARGET: <500 MB RAM (NFR-002)
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | ps-architect | Initial design with schemas and algorithms |
+| 1.1 | 2026-01-27 | Claude | **ERRATA:** Section 1.1 VTT grammar corrected per EN-007:DISC-001. Added closing `</v>` tag support, multi-line payload handling, updated examples. |
 
 ---
 
