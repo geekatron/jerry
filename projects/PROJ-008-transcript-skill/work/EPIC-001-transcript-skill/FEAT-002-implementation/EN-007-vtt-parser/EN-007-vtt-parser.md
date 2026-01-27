@@ -157,12 +157,12 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-101](./TASK-101-parser-agent-alignment.md) | Verify ts-parser agent definition alignment | pending | Claude | 2 | - |
-| [TASK-102](./TASK-102-vtt-processing.md) | Implement/verify VTT processing (FR-001) | pending | Claude | 2 | TASK-101 |
-| [TASK-103](./TASK-103-srt-processing.md) | Implement/verify SRT processing (FR-002) | pending | Claude | 1 | TASK-101 |
-| [TASK-104](./TASK-104-plain-text-processing.md) | Implement/verify plain text processing (FR-003) | pending | Claude | 1 | TASK-101 |
+| [TASK-101](./TASK-101-parser-agent-alignment.md) | Verify ts-parser agent definition alignment | **done** | Claude | 3 | - |
+| [TASK-102](./TASK-102-vtt-processing.md) | Implement/verify VTT processing (FR-001) | pending | Claude | 2 | ~~TASK-101~~ |
+| [TASK-103](./TASK-103-srt-processing.md) | Implement/verify SRT processing (FR-002) | pending | Claude | 1 | ~~TASK-101~~ |
+| [TASK-104](./TASK-104-plain-text-processing.md) | Implement/verify plain text processing (FR-003) | pending | Claude | 1 | ~~TASK-101~~ |
 | [TASK-105](./TASK-105-parser-validation.md) | Create test cases and validation | pending | Claude | 2 | TASK-102..104 |
-| [TASK-105A](./TASK-105A-parser-contract-tests.md) | Create parser contract tests (TDD/BDD) | pending | Claude | 1 | TASK-101 |
+| [TASK-105A](./TASK-105A-parser-contract-tests.md) | Create parser contract tests (TDD/BDD) | pending | Claude | 1 | ~~TASK-101~~ |
 
 **NOTE:** Task IDs renumbered from TASK-034-038 to TASK-101-105 per DISC-001 to avoid conflicts with EN-006 tasks.
 **TASK-105A added:** 2026-01-27 per TDD/BDD Testing Strategy for contract test coverage.
@@ -172,12 +172,12 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 
 ## Implementation Artifacts
 
-### Existing (from EN-005)
+### Existing (from EN-005, updated per DISC-001)
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| TDD | [TDD-ts-parser.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Complete |
-| Agent Definition | [skills/transcript/agents/ts-parser.md](../../../../../skills/transcript/agents/ts-parser.md) | Complete |
+| TDD | [TDD-ts-parser.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Complete (v1.1 - ERRATA) |
+| Agent Definition | [skills/transcript/agents/ts-parser.md](../../../../../skills/transcript/agents/ts-parser.md) | Complete (v1.1.0 - ERRATA) |
 
 ### To Verify/Enhance
 
@@ -259,6 +259,7 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-26 | Claude | revised | Aligned with TDD-ts-parser.md per DISC-001; tasks renumbered to TASK-101+ |
 | 2026-01-27 | Claude | revised | Added TASK-105A (parser contract tests) per TDD/BDD Testing Strategy |
 | 2026-01-27 | Claude | in_progress | TASK-101 audit discovered DISC-001 (VTT voice tag gaps); remediation in progress |
+| 2026-01-27 | Claude | in_progress | TASK-101 complete: TDD v1.1, Agent v1.1.0; TASK-102..105A unblocked |
 
 ---
 
