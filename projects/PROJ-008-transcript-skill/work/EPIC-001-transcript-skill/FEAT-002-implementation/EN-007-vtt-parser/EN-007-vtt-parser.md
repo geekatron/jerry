@@ -246,7 +246,8 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 
 ### Discovery Reference
 
-- [DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Alignment analysis (task renumbering)
+- [FEAT-002:DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Enabler alignment analysis (task renumbering)
+- [EN-007:DISC-001](./EN-007--DISC-001-vtt-voice-tag-gaps.md) - **VTT Voice Tag Parsing Gaps (CRITICAL)** - Found during TASK-101 audit
 
 ---
 
@@ -257,6 +258,7 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-26 | Claude | pending | Enabler created |
 | 2026-01-26 | Claude | revised | Aligned with TDD-ts-parser.md per DISC-001; tasks renumbered to TASK-101+ |
 | 2026-01-27 | Claude | revised | Added TASK-105A (parser contract tests) per TDD/BDD Testing Strategy |
+| 2026-01-27 | Claude | in_progress | TASK-101 audit discovered DISC-001 (VTT voice tag gaps); remediation in progress |
 
 ---
 
