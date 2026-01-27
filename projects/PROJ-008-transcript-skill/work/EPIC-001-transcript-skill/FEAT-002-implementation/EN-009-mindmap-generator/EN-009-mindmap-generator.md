@@ -17,7 +17,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 > **Owner:** Claude
 > **Target Sprint:** Sprint 4
 > **Effort Points:** 8
-> **Gate:** GATE-6 (Final Review)
+> **Gate:** GATE-5 (Core Implementation Review)
 
 ---
 
@@ -172,9 +172,10 @@ For large transcripts (>50 topics):
 
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
-| Depends On | EN-008 | Requires extracted entities |
+| Depends On | EN-016 | Requires ts-formatter output (8-file packet) |
 | Depends On | ADR-003 | Deep linking strategy |
-| Blocks | EN-010 | Artifact packaging includes mind maps |
+| Blocked By | EN-016 | ts-formatter must complete before mind map generation |
+| Used By | EN-015 | Validation tests include mind map verification |
 
 ---
 
@@ -183,6 +184,7 @@ For large transcripts (>50 topics):
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created |
+| 2026-01-26 | Claude | pending | BUG-001: EN-009 ID retained for Mind Map (ts-formatter renumbered to EN-016). Gate corrected to GATE-5. Dependencies updated. |
 
 ---
 

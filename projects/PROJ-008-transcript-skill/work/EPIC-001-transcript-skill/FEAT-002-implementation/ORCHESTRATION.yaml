@@ -1,0 +1,293 @@
+# FEAT-002 Orchestration State (SSOT)
+# Machine-readable execution state for FEAT-002 Implementation
+# Created: 2026-01-26 per DISC-001 restructuring
+
+workflow:
+  id: "feat-002-implementation-20260126-001"
+  name: "FEAT-002: Transcript Skill Implementation"
+  feature_id: "FEAT-002"
+  status: PLANNING  # PLANNING | ACTIVE | PAUSED | COMPLETE | FAILED
+
+metadata:
+  created_at: "2026-01-26T17:30:00Z"
+  updated_at: "2026-01-26T17:30:00Z"
+  prerequisite: "FEAT-001 Complete (All 4 Gates Passed)"
+  alignment_analysis: "DISC-001"
+
+# Enabler definitions with restructured task allocations
+enablers:
+  EN-007:
+    title: "ts-parser Agent Implementation"
+    status: pending
+    priority: high
+    gate: GATE-5
+    tasks:
+      start: TASK-101
+      end: TASK-105
+    dependencies: []
+    implements:
+      - TDD-ts-parser.md
+    deliverables:
+      - skills/transcript/agents/ts-parser.md
+
+  EN-008:
+    title: "ts-extractor Agent Implementation"
+    status: pending
+    priority: high
+    gate: GATE-5
+    tasks:
+      start: TASK-106
+      end: TASK-112
+    dependencies:
+      - EN-007
+    implements:
+      - TDD-ts-extractor.md
+      - PAT-001 (Tiered Extraction)
+      - PAT-003 (Speaker Detection)
+      - PAT-004 (Citation Required)
+    deliverables:
+      - skills/transcript/agents/ts-extractor.md
+
+  EN-009:
+    title: "Mind Map Generator (Mermaid + ASCII)"
+    status: pending
+    priority: high
+    gate: GATE-5
+    tasks:
+      start: TASK-046
+      end: TASK-049
+    dependencies:
+      - EN-016
+    deliverables:
+      - 07-mindmap/mindmap.mmd
+      - 07-mindmap/mindmap.ascii.txt
+    note: "Original EN-009 - retained per BUG-001"
+
+  EN-010:
+    title: "Artifact Packaging & Deep Linking"
+    status: DEPRECATED
+    absorbed_into: EN-016
+    rationale: "ts-formatter handles all packaging per ADR-002 and TDD-ts-formatter.md"
+    tasks:
+      migrated_to: EN-016
+
+  EN-011:
+    title: "Worktracker Integration"
+    status: pending
+    priority: medium
+    gate: GATE-6
+    tasks:
+      # Uses existing task allocation
+      legacy: true
+    dependencies:
+      - EN-016
+    deliverables:
+      - 08-workitems/suggested-tasks.md
+
+  EN-016:
+    title: "ts-formatter Agent Implementation"
+    status: pending
+    priority: high
+    gate: GATE-5
+    tasks:
+      start: TASK-113
+      end: TASK-119
+    dependencies:
+      - EN-008
+    implements:
+      - TDD-ts-formatter.md
+      - ADR-002 (8-file packet)
+      - ADR-003 (Bidirectional linking)
+      - ADR-004 (Semantic splitting)
+    absorbs:
+      - EN-010  # Artifact Packaging (deprecated)
+    deliverables:
+      - skills/transcript/agents/ts-formatter.md
+    note: "Renumbered from EN-009 per BUG-001 (ID conflict with Mind Map Generator)"
+
+  EN-012:
+    title: "Skill CLI Interface"
+    status: MOVED_TO_FEAT_003
+    priority: low
+    gate: GATE-7
+    note: "MOVED TO FEAT-003 per DISC-002 (Above and Beyond scope)"
+    tasks:
+      migrated_to: FEAT-003
+    dependencies:
+      - EN-011
+    moved_by: DISC-002
+
+  EN-013:
+    title: "Context Injection Implementation"
+    status: pending
+    priority: medium
+    gate: GATE-5
+    tasks:
+      start: TASK-120
+      end: TASK-125
+    dependencies:
+      - EN-006  # Design from FEAT-001
+    implements:
+      - SPEC-context-injection.md Section 3
+      - DEC-002 (YAML-only)
+    deliverables:
+      - skills/transcript/SKILL.md (context_injection section)
+      - skills/transcript/agents/ts-*.md (context sections)
+
+  EN-014:
+    title: "Domain Context Files"
+    status: pending
+    priority: medium
+    gate: GATE-6
+    tasks:
+      start: TASK-126
+      end: TASK-130
+    dependencies:
+      - EN-013
+    implements:
+      - SPEC-context-injection.md Section 3.3
+    deliverables:
+      - skills/transcript/contexts/general.yaml
+      - skills/transcript/contexts/transcript.yaml
+      - skills/transcript/contexts/meeting.yaml
+      - skills/transcript/contexts/schemas/domain-schema.json
+
+  EN-015:
+    title: "Validation & Test Cases"
+    status: pending
+    priority: high
+    gate: GATE-6
+    tasks:
+      start: TASK-131
+      end: TASK-137
+    dependencies:
+      - EN-007
+      - EN-008
+      - EN-009  # Mind Map Generator
+      - EN-016  # ts-formatter
+      - EN-014
+    deliverables:
+      - test_data/transcripts/golden/
+      - test_data/transcripts/edge_cases/
+      - test_data/validation/parser-tests.yaml
+      - test_data/validation/extractor-tests.yaml
+      - test_data/validation/formatter-tests.yaml
+
+# Gate definitions
+gates:
+  GATE-5:
+    name: "Core Implementation Review"
+    status: pending
+    enablers:
+      - EN-007
+      - EN-008
+      - EN-009  # Mind Map Generator
+      - EN-013
+      - EN-016  # ts-formatter
+    approval_required: true
+    criteria:
+      - "ts-parser processes VTT/SRT/plain text"
+      - "ts-extractor extracts all entity types"
+      - "ts-formatter creates 8-file packet"
+      - "Mind Map Generator creates Mermaid + ASCII"
+      - "Context injection working"
+
+  GATE-6:
+    name: "Functionality Review"
+    status: pending
+    enablers:
+      - EN-011
+      - EN-014
+      - EN-015
+    approval_required: true
+    criteria:
+      - "Worktracker integration functional"
+      - "Domain context files valid"
+      - "All validation tests passing"
+
+  GATE-7:
+    name: "CLI Final Review"
+    status: MOVED_TO_FEAT_003
+    enablers:
+      - EN-012
+    approval_required: false  # Moved to FEAT-003
+    note: "MOVED TO FEAT-003 per DISC-002 (Above and Beyond scope)"
+    criteria:
+      - "CLI interface functional"
+      - "End-to-end workflow complete"
+
+# Execution queue
+execution_queue:
+  current_group: 0  # Not started
+  groups:
+    - id: 1
+      name: "Core Agents"
+      mode: SEQUENTIAL
+      enablers:
+        - EN-007
+        - EN-008
+      gate: GATE-5
+
+    - id: 2
+      name: "Context & Formatting"
+      mode: PARALLEL
+      enablers:
+        - EN-009   # Mind Map Generator
+        - EN-013   # Context Injection
+        - EN-016   # ts-formatter
+      gate: GATE-5
+
+    - id: 3
+      name: "Integration & Validation"
+      mode: PARALLEL
+      enablers:
+        - EN-011
+        - EN-014
+        - EN-015
+      gate: GATE-6
+
+    # Group 4 (CLI) moved to FEAT-003 per DISC-002
+    # - id: 4
+    #   name: "CLI"
+    #   mode: SEQUENTIAL
+    #   enablers:
+    #     - EN-012
+    #   gate: GATE-7
+
+# Task allocation summary
+task_allocation:
+  EN-007: [TASK-101, TASK-102, TASK-103, TASK-104, TASK-105]
+  EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112]
+  EN-009: [TASK-046, TASK-047, TASK-048, TASK-049]  # Mind Map Generator (retained per BUG-001)
+  EN-013: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
+  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
+  EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137]
+  EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119]  # ts-formatter (renumbered per BUG-001)
+
+# Metrics
+metrics:
+  enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
+  enablers_complete: 0
+  enablers_moved: 1  # EN-012 → FEAT-003
+  tasks_total: 45  # EN-007(5)+EN-008(7)+EN-009(4)+EN-011(4)+EN-013(6)+EN-014(5)+EN-015(7)+EN-016(7)
+  tasks_complete: 0
+  gates_passed: 0
+  gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
+  completion_percentage: 0
+
+# Checkpoint tracking
+checkpoints:
+  latest_id: null
+  entries: []
+
+# History
+history:
+  - timestamp: "2026-01-26T17:30:00Z"
+    event: "Orchestration created"
+    details: "Per DISC-001 restructuring. EN-010 deprecated, EN-014/EN-015 added."
+  - timestamp: "2026-01-26T22:30:00Z"
+    event: "BUG-001 resolved"
+    details: "EN-009 ID conflict resolved. ts-formatter renumbered to EN-016. EN-009 retained for Mind Map Generator (TASK-046..049). DISC-002 created for EN-011/EN-012 future scope analysis."
+  - timestamp: "2026-01-26T23:30:00Z"
+    event: "DISC-002 executed"
+    details: "EN-012 (CLI) moved to FEAT-003 per user approval. GATE-7 removed. Enablers: 9→8. Gates: 3→2. Tasks remain allocated but moved to FEAT-003 scope."

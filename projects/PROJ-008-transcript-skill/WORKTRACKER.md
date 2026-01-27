@@ -5,7 +5,7 @@
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-25T00:00:00Z
-> **Last Updated:** 2026-01-26T00:00:00Z
+> **Last Updated:** 2026-01-27T00:00:00Z
 > **Branch:** feat/008-transcript-skill
 
 ---
@@ -22,11 +22,13 @@
 | Overall: [####................] 20%                               |
 |                                                                    |
 | Epics:    [##..................] 10% (1/1 in_progress)           |
-| Features: [....................] 0%  (0/2 completed)             |
-| Enablers: [######..............] 23% (3/13 completed)            |
-| Gates:    [######..............] 29% (2/7 passed)                |
+| Features: [....................] 0%  (0/3 completed)             |
+| Enablers: [######..............] 25% (3/12 completed)            |
+| Gates:    [####................] 33% (2/6 passed)                |
 +------------------------------------------------------------------+
 ```
+
+**Note:** FEAT-003 (Future Enhancements) added per DISC-002. EN-012 and GATE-7 moved from FEAT-002 to FEAT-003.
 
 ---
 
@@ -49,7 +51,19 @@ This worktracker manages the Transcript Skill project - a Jerry framework capabi
 
 | ID | Title | Status | Priority | Progress | Features |
 |----|-------|--------|----------|----------|----------|
-| [EPIC-001](./work/EPIC-001-transcript-skill/EPIC-001-transcript-skill.md) | Transcript Skill Foundation | in_progress | high | 0% | 2 |
+| [EPIC-001](./work/EPIC-001-transcript-skill/EPIC-001-transcript-skill.md) | Transcript Skill Foundation | in_progress | high | 0% | 3 |
+
+---
+
+## Feature Inventory
+
+| ID | Title | Status | Priority | Enablers | Gates |
+|----|-------|--------|----------|----------|-------|
+| [FEAT-001](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/FEAT-001-analysis-design.md) | Analysis & Design | in_progress | high | 6 | GATE-1 ✓, GATE-2 ✓, GATE-3, GATE-4 |
+| [FEAT-002](./work/EPIC-001-transcript-skill/FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | pending | high | 8 | GATE-5, GATE-6 |
+| [FEAT-003](./work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/FEAT-003-future-enhancements.md) | Future Enhancements | deferred | low | 1 | GATE-7 |
+
+**Note:** FEAT-003 created per DISC-002. Contains deferred "Above and Beyond" scope (EN-012 CLI Interface).
 
 ---
 
@@ -162,32 +176,43 @@ PROJ-008-transcript-skill
 
             ★ GATE-6: Core Functionality Review ★
 
+    └── FEAT-003: Future Enhancements [DEFERRED] (per DISC-002)
+        │
         ┌──────────────────────────────────────────────────────────────────────┐
-        │  PHASE 7: CLI (ABOVE AND BEYOND) - LITERALLY LAST                    │
+        │  ABOVE AND BEYOND - DEFERRED TO FUTURE RELEASE                       │
         └──────────────────────────────────────────────────────────────────────┘
-
-        └── EN-012: Skill CLI Interface [PENDING] ← **LAST** (Above and Beyond)
+        │
+        └── EN-012: Skill CLI Interface [DEFERRED] ← Moved from FEAT-002
             ├── TASK-059: Create SKILL.md Definition
             ├── TASK-060: Implement Command Handler
             ├── TASK-061: Implement Progress Reporting
             └── TASK-062: Implement Error Handling
 
-            ★ GATE-7: CLI Final Review (Above and Beyond) ★
+            ★ GATE-7: CLI Final Review (Future Enhancement) ★
 ```
 
 ---
 
 ## Human Approval Gates
 
-| Gate | After | Approval For | Status |
-|------|-------|--------------|--------|
-| GATE-1 | EN-001, EN-002 | Research completeness | PASSED ✓ |
-| GATE-2 | EN-003 | Requirements validity | PASSED ✓ |
-| GATE-3 | EN-004 | Architecture decisions | PENDING |
-| GATE-4 | EN-005, EN-006 | Design completeness | PENDING |
-| GATE-5 | EN-007, EN-008 | Core implementation | PENDING |
-| GATE-6 | EN-009, EN-010, EN-011, EN-013 | Core output generation & integration | PENDING |
-| GATE-7 | EN-012 | CLI Interface (**Above and Beyond** - LITERALLY LAST) | PENDING |
+### FEAT-001 & FEAT-002 Gates (MVP Scope)
+
+| Gate | Feature | After | Approval For | Status |
+|------|---------|-------|--------------|--------|
+| GATE-1 | FEAT-001 | EN-001, EN-002 | Research completeness | PASSED ✓ |
+| GATE-2 | FEAT-001 | EN-003 | Requirements validity | PASSED ✓ |
+| GATE-3 | FEAT-001 | EN-004 | Architecture decisions | PENDING |
+| GATE-4 | FEAT-001 | EN-005, EN-006 | Design completeness | PENDING |
+| GATE-5 | FEAT-002 | EN-007, EN-008, EN-009, EN-013, EN-016 | Core implementation | PENDING |
+| GATE-6 | FEAT-002 | EN-011, EN-014, EN-015 | Integration & validation | PENDING |
+
+### FEAT-003 Gate (Deferred Scope)
+
+| Gate | Feature | After | Approval For | Status |
+|------|---------|-------|--------------|--------|
+| GATE-7 | FEAT-003 | EN-012 | CLI Interface (Future Enhancement) | DEFERRED |
+
+**Note:** GATE-5/GATE-6 enabler assignments updated per DISC-001 restructuring. GATE-7 moved to FEAT-003 per DISC-002.
 
 ---
 
@@ -195,20 +220,24 @@ PROJ-008-transcript-skill
 
 ### By Category
 
-| Category | Total | Completed | In Progress | Pending | % Complete |
-|----------|-------|-----------|-------------|---------|------------|
-| Epics | 1 | 0 | 1 | 0 | 0% |
-| Features | 2 | 0 | 1 | 1 | 0% |
-| Enablers | 13 | 3 | 1 | 9 | 23% |
-| Tasks | 66 | 15 | 0 | 51 | 23% |
-| Gates | 7 | 2 | 1 | 4 | 29% |
+| Category | Total | Completed | In Progress | Pending | Deferred | % Complete |
+|----------|-------|-----------|-------------|---------|----------|------------|
+| Epics | 1 | 0 | 1 | 0 | 0 | 0% |
+| Features | 3 | 0 | 1 | 1 | 1 | 0% |
+| Enablers | 12 | 3 | 1 | 8 | 1 | 25% |
+| Tasks | 69 | 15 | 0 | 54 | 4 | 22% |
+| Gates | 6 | 2 | 1 | 3 | 1 | 33% |
+
+**Note:** FEAT-003, EN-012, GATE-7 deferred per DISC-002. EN-010 deprecated (absorbed into EN-016) per DISC-001.
+**Task count updated:** +7 TDD/BDD testing tasks (TASK-105A, 112A, 112B, 119A, 119B, 119C, 131A) added per TDD/BDD Testing Strategy.
 
 ### By Feature
 
-| Feature | Enablers | Tasks | Effort | % Complete |
+| Feature | Enablers | Tasks | Status | % Complete |
 |---------|----------|-------|--------|------------|
-| FEAT-001: Analysis & Design | 6 | 33 | 55 pts | 0% |
-| FEAT-002: Implementation | 7 | 33 | 52 pts | 0% |
+| FEAT-001: Analysis & Design | 6 | 33 | in_progress | 0% |
+| FEAT-002: Implementation | 8 | 52 | pending | 0% |
+| FEAT-003: Future Enhancements | 1 | 4 | deferred | 0% |
 
 ### Milestone Tracking
 
@@ -260,26 +289,47 @@ PROJ-008-transcript-skill
 
 ## Artifact Registry
 
+### Core Artifacts
+
 | Category | Artifact | Location | Status |
 |----------|----------|----------|--------|
 | Plan | Project Plan | [PLAN.md](./PLAN.md) | COMPLETE |
 | Epic | EPIC-001 | [work/EPIC-001-transcript-skill/](./work/EPIC-001-transcript-skill/) | IN_PROGRESS |
-| Feature | FEAT-001 | [work/EPIC-001-transcript-skill/FEAT-001-analysis-design/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/) | IN_PROGRESS |
-| Feature | FEAT-002 | [work/EPIC-001-transcript-skill/FEAT-002-implementation/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/) | PENDING |
-| Enabler | EN-001 | [FEAT-001-analysis-design/EN-001-market-analysis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/) | COMPLETE |
-| Enabler | EN-002 | [FEAT-001-analysis-design/EN-002-technical-standards/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-002-technical-standards/) | COMPLETE |
-| Enabler | EN-003 | [FEAT-001-analysis-design/EN-003-requirements-synthesis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-003-requirements-synthesis/) | COMPLETE |
-| Enabler | EN-004 | [FEAT-001-analysis-design/EN-004-architecture-decisions/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/) | IN_PROGRESS |
 | ADRs | docs/adrs/ | [docs/adrs/](../../../docs/adrs/) | IN_PROGRESS |
-| Enabler | EN-005 | [FEAT-001-analysis-design/EN-005-design-documentation/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/) | PENDING |
-| Enabler | EN-006 | [FEAT-001-analysis-design/EN-006-context-injection-design/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-006-context-injection-design/) | PENDING |
-| Enabler | EN-007 | [FEAT-002-implementation/EN-007-vtt-parser/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/) | PENDING |
-| Enabler | EN-008 | [FEAT-002-implementation/EN-008-entity-extraction/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-008-entity-extraction/) | PENDING |
-| Enabler | EN-009 | [FEAT-002-implementation/EN-009-mindmap-generator/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-009-mindmap-generator/) | PENDING |
-| Enabler | EN-010 | [FEAT-002-implementation/EN-010-artifact-packaging/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-010-artifact-packaging/) | PENDING |
-| Enabler | EN-011 | [FEAT-002-implementation/EN-011-worktracker-integration/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-011-worktracker-integration/) | PENDING |
-| Enabler | EN-012 | [FEAT-002-implementation/EN-012-skill-interface/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-012-skill-interface/) | PENDING |
-| Enabler | EN-013 | [FEAT-002-implementation/EN-013-context-injection/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-013-context-injection/) | PENDING |
+
+### FEAT-001: Analysis & Design
+
+| Enabler | Location | Status |
+|---------|----------|--------|
+| FEAT-001 | [FEAT-001-analysis-design/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/) | IN_PROGRESS |
+| EN-001 | [EN-001-market-analysis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-001-market-analysis/) | COMPLETE |
+| EN-002 | [EN-002-technical-standards/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-002-technical-standards/) | COMPLETE |
+| EN-003 | [EN-003-requirements-synthesis/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-003-requirements-synthesis/) | COMPLETE |
+| EN-004 | [EN-004-architecture-decisions/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/) | IN_PROGRESS |
+| EN-005 | [EN-005-design-documentation/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/) | PENDING |
+| EN-006 | [EN-006-context-injection-design/](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-006-context-injection-design/) | PENDING |
+
+### FEAT-002: Implementation (MVP)
+
+| Enabler | Location | Status | Notes |
+|---------|----------|--------|-------|
+| FEAT-002 | [FEAT-002-implementation/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/) | PENDING | |
+| EN-007 | [EN-007-vtt-parser/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/) | PENDING | ts-parser |
+| EN-008 | [EN-008-entity-extraction/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-008-entity-extraction/) | PENDING | ts-extractor |
+| EN-009 | [EN-009-mindmap-generator/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-009-mindmap-generator/) | PENDING | Mind Map |
+| EN-010 | [EN-010-artifact-packaging/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-010-artifact-packaging/) | DEPRECATED | Absorbed into EN-016 |
+| EN-011 | [EN-011-worktracker-integration/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-011-worktracker-integration/) | PENDING | |
+| EN-013 | [EN-013-context-injection/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-013-context-injection/) | PENDING | |
+| EN-014 | [EN-014-domain-context-files/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-014-domain-context-files/) | PENDING | Added per DISC-001 |
+| EN-015 | [EN-015-transcript-validation/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-015-transcript-validation/) | PENDING | Added per DISC-001 |
+| EN-016 | [EN-016-ts-formatter/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-016-ts-formatter/) | PENDING | Added per BUG-001 |
+
+### FEAT-003: Future Enhancements (Deferred)
+
+| Enabler | Location | Status | Notes |
+|---------|----------|--------|-------|
+| FEAT-003 | [FEAT-003-future-enhancements/](./work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/) | DEFERRED | Created per DISC-002 |
+| EN-012 | [EN-012-skill-interface/](./work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/EN-012-skill-interface/) | DEFERRED | Moved from FEAT-002 per DISC-002 |
 
 ---
 
@@ -305,23 +355,44 @@ PROJ-008-transcript-skill
 
 ### Internal Dependencies
 
+#### Feature Dependencies
+
 | Item | Depends On | Blocks |
 |------|------------|--------|
 | FEAT-001 | None | FEAT-002 |
-| FEAT-002 | FEAT-001 (GATE-4) | None |
+| FEAT-002 | FEAT-001 (GATE-4) | FEAT-003 |
+| FEAT-003 | FEAT-002 (GATE-6) | None |
+
+#### FEAT-001 Enabler Dependencies
+
+| Item | Depends On | Blocks |
+|------|------------|--------|
 | EN-001 | None | GATE-1 |
 | EN-002 | None | GATE-1 |
 | EN-003 | GATE-1 | GATE-2 |
 | EN-004 | GATE-2 | GATE-3 |
 | EN-005 | GATE-3 | GATE-4 |
 | EN-006 | GATE-3 | GATE-4 |
-| EN-007 | GATE-4 | GATE-5 |
-| EN-008 | EN-007 | GATE-5 |
-| EN-009 | GATE-5 | GATE-6 |
-| EN-010 | EN-008 | GATE-6 |
-| EN-011 | EN-010 | GATE-6 |
-| EN-012 | GATE-6 | GATE-7 | ← **LAST** (Above and Beyond)
-| EN-013 | EN-006 | GATE-6 |
+
+#### FEAT-002 Enabler Dependencies (MVP)
+
+| Item | Depends On | Blocks | Notes |
+|------|------------|--------|-------|
+| EN-007 | GATE-4 | EN-008 | ts-parser |
+| EN-008 | EN-007 | EN-016 | ts-extractor |
+| EN-009 | EN-016 | GATE-5 | Mind Map Generator |
+| EN-010 | - | - | DEPRECATED (absorbed into EN-016) |
+| EN-011 | EN-016 | GATE-6 | Worktracker Integration |
+| EN-013 | EN-006 | EN-014 | Context Injection |
+| EN-014 | EN-013 | EN-015 | Domain Context Files |
+| EN-015 | EN-007, EN-008, EN-009, EN-014, EN-016 | GATE-6 | Validation & Testing |
+| EN-016 | EN-008 | EN-009, EN-011, EN-015 | ts-formatter |
+
+#### FEAT-003 Enabler Dependencies (Deferred)
+
+| Item | Depends On | Blocks | Notes |
+|------|------------|--------|-------|
+| EN-012 | GATE-6 | GATE-7 | Skill CLI Interface (deferred per DISC-002) |
 
 ---
 
@@ -408,7 +479,10 @@ PROJ-008-transcript-skill
 - [ ] Context injection working
 - [ ] End-to-end tests passing (core functionality)
 
-### CLI Gates (GATE-7) - ABOVE AND BEYOND - LITERALLY LAST
+### CLI Gates (GATE-7) - DEFERRED TO FEAT-003
+
+**Status:** DEFERRED per DISC-002. Moved to FEAT-003 (Future Enhancements).
+
 - [ ] SKILL.md definition created
 - [ ] CLI interface working
 - [ ] Progress reporting working
@@ -446,3 +520,10 @@ PROJ-008-transcript-skill
 | 2026-01-26 | Claude | Updated to composite IDs for EN-004 tasks (format: EN-004--TASK-NNN-slug) |
 | 2026-01-26 | Claude | EN-004 Architecture Decisions: created 6 task files using TASK.md template |
 | 2026-01-26 | Claude | EN-004 Architecture Decisions: updated enabler to full ENABLER.md template |
+| 2026-01-26 | Claude | DISC-001: Enabler alignment restructuring - EN-010 deprecated, EN-014/EN-015 added |
+| 2026-01-26 | Claude | BUG-001: EN-009 ID conflict resolved - ts-formatter renumbered to EN-016 |
+| 2026-01-26 | Claude | DISC-002: EN-012 moved to FEAT-003 (Future Enhancements). GATE-7 deferred. |
+| 2026-01-26 | Claude | FEAT-003 created for deferred "Above and Beyond" scope per DISC-002 |
+| 2026-01-26 | Claude | Updated WORKTRACKER.md: Added FEAT-003, updated Artifact Registry, Dependencies, Gates |
+| 2026-01-27 | Claude | TDD/BDD Testing Strategy created with human-in-loop ground truth approach |
+| 2026-01-27 | Claude | Added 7 TDD/BDD testing tasks: TASK-105A, 112A, 112B, 119A, 119B, 119C, 131A (total: 69 tasks) |

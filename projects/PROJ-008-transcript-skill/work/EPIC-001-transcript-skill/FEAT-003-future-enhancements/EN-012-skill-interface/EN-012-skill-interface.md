@@ -13,7 +13,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 > **Created:** 2026-01-26T00:00:00Z
 > **Due:** TBD
 > **Completed:**
-> **Parent:** FEAT-002
+> **Parent:** FEAT-003
 > **Owner:** Claude
 > **Target Sprint:** Sprint 4
 > **Effort Points:** 5
@@ -82,7 +82,7 @@ Implement the transcript skill CLI interface that enables users to invoke the sk
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| TASK-059 | Create SKILL.md Definition | pending | Claude | 1 | EN-010 |
+| TASK-059 | Create SKILL.md Definition | pending | Claude | 1 | EN-016 |
 | TASK-060 | Implement Command Handler | pending | Claude | 2 | TASK-059 |
 | TASK-061 | Implement Progress Reporting | pending | Claude | 1 | TASK-060 |
 | TASK-062 | Implement Error Handling | pending | Claude | 1 | TASK-060 |
@@ -238,7 +238,7 @@ Extract only action items and decisions:
 
 ### Hierarchy
 
-- **Parent Feature:** [FEAT-002: Implementation](../FEAT-002-implementation.md)
+- **Parent Feature:** [FEAT-003: Future Enhancements](../FEAT-003-future-enhancements.md)
 
 ### Dependencies
 
@@ -246,7 +246,7 @@ Extract only action items and decisions:
 |----------------|------|-------------|
 | Depends On | EN-007 | VTT parser must be complete |
 | Depends On | EN-008 | Entity extraction must be complete |
-| Depends On | EN-010 | Artifact packaging must be complete |
+| Depends On | EN-016 | Artifact packaging must be complete (EN-010 deprecated, absorbed into EN-016) |
 
 ---
 
@@ -255,6 +255,7 @@ Extract only action items and decisions:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created |
+| 2026-01-26 | Claude | pending | DISC-002: Moved to FEAT-003 (Future Enhancements). EN-012 is "Above and Beyond" scope, explicitly deferred from MVP. |
 
 ---
 

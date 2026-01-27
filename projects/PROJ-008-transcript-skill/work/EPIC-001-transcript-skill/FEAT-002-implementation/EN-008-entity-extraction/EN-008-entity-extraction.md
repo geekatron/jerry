@@ -1,9 +1,10 @@
-# EN-008: Entity Extraction Pipeline
+# EN-008: ts-extractor Agent Implementation
 
 <!--
 TEMPLATE: Enabler
-VERSION: 1.0.0
+VERSION: 2.0.0
 SOURCE: ONTOLOGY-v1.md Section 3.4.5
+REVISED: 2026-01-26 per DISC-001 alignment analysis
 -->
 
 > **Type:** enabler
@@ -11,6 +12,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-26T00:00:00Z
+> **Revised:** 2026-01-26T16:00:00Z
 > **Due:** TBD
 > **Completed:**
 > **Parent:** FEAT-002
@@ -23,26 +25,121 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 
 ## Summary
 
-Implement the entity extraction pipeline using prompt-based agents to extract structured entities from parsed transcript data. The pipeline extracts speakers, topics, questions, action items, ideas, and decisions with confidence scores and source references.
+Implement the **ts-extractor agent** that extracts structured entities from parsed transcript data using a tiered extraction pipeline. The agent extracts action items, decisions, questions, topics, and performs speaker identification with confidence scoring and citation linking.
+
+**Implements:** [TDD-ts-extractor.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
 
 **Technical Justification:**
-- Core value delivery of the transcript skill
-- Multiple entity types require specialized extraction logic
-- Confidence scoring enables quality filtering
-- Deep linking to source enables verification
+- Core value delivery of the transcript skill (72% user pain per EN-001)
+- PAT-001 Tiered Extraction: Rule → ML → LLM for optimal precision/recall
+- PAT-003 4-Pattern Speaker Detection for >90% speaker attribution
+- PAT-004 Citation-Required extraction prevents hallucination
+- Outputs feed directly to ts-formatter for artifact packaging
+
+---
+
+## Design Reference (L0/L1/L2)
+
+### L0: The Research Analyst Analogy
+
+The ts-extractor is like a **Research Analyst** reading meeting transcripts:
+
+```
+THE RESEARCH ANALYST (ts-extractor)
+===================================
+
+        PARSED TRANSCRIPT                    STRUCTURED FINDINGS
+        ─────────────────                    ───────────────────
+
+    ┌─────────────────────┐
+    │ Canonical JSON      │           ┌──────────────────────────────┐
+    │ from ts-parser      │           │        EXTRACTION REPORT      │
+    │                     │           │ ═══════════════════════════   │
+    │ - Segments          │           │                               │
+    │ - Timestamps        │    ───►   │  Action Items: 5              │
+    │ - Text              │           │  Decisions: 3                 │
+    │                     │           │  Open Questions: 2            │
+    │                     │           │  Speakers Identified: 4       │
+    │                     │           │  Topics: 3                    │
+    └─────────────────────┘           └──────────────────────────────┘
+
+    "I find the needles in the haystack."
+```
+
+### L1: Component Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          ts-extractor Agent                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  INPUT: CanonicalTranscript JSON (from ts-parser)                           │
+│                                                                              │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                      SpeakerIdentifier (PAT-003)                      │   │
+│  │ + identify_speakers(segments) -> SpeakerMap                           │   │
+│  │ + _pattern_chain(text) -> (speaker, confidence)                       │   │
+│  │   Pattern 1: VTT Voice Tags (0.95)                                    │   │
+│  │   Pattern 2: Prefix Pattern (0.90)                                    │   │
+│  │   Pattern 3: Bracket Pattern (0.85)                                   │   │
+│  │   Pattern 4: Contextual Resolution (0.60)                             │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                    TieredExtractor (PAT-001)                          │   │
+│  │  ┌────────────────┐ ┌────────────────┐ ┌────────────────┐            │   │
+│  │  │ RuleExtractor  │ │  MLExtractor   │ │  LLMExtractor  │            │   │
+│  │  │ ────────────── │ │ ────────────── │ │ ────────────── │            │   │
+│  │  │ Tier 1         │ │ Tier 2         │ │ Tier 3         │            │   │
+│  │  │ Conf: 0.85-1.0 │ │ Conf: 0.70-0.85│ │ Conf: 0.50-0.70│            │   │
+│  │  │ ~40% coverage  │ │ ~30% coverage  │ │ ~30% coverage  │            │   │
+│  │  └────────────────┘ └────────────────┘ └────────────────┘            │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                    CitationLinker (PAT-004)                           │   │
+│  │ + link_citations(entities) -> entities with citations                 │   │
+│  │ + _generate_anchor(segment_id) -> "#seg-NNN"                         │   │
+│  │ + _validate_citation(citation) -> bool (anti-hallucination)          │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                      │                                       │
+│                                      ▼                                       │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                    TopicSegmenter (FR-009)                            │   │
+│  │ + segment_topics(segments) -> List[Topic]                             │   │
+│  │ + _detect_boundary(prev, curr) -> bool                                │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│                                                                              │
+│  OUTPUT: ExtractionReport JSON                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### L2: Strategic Considerations
+
+- **PAT-001 Tiered Extraction:** Rule → ML → LLM pipeline balances precision (85%+) with recall
+- **PAT-003 4-Pattern Speaker Detection:** Handles VTT (60%), SRT (35%), Plain (5%) with graceful degradation
+- **PAT-004 Citation-Required:** Anti-hallucination safeguard - every entity MUST have valid citation
+- **ADR-002 Token Budget:** ~12K tokens per invocation, well within 35K hard limit
+- **Risk Mitigation:** R-004 (missing voice tags), R-006 (low precision), R-008 (hallucination)
 
 ---
 
 ## Benefit Hypothesis
 
-**We believe that** implementing entity extraction as modular prompt-based agents
+**We believe that** implementing ts-extractor as a single agent with tiered extraction per TDD-ts-extractor.md
 
-**Will result in** accurate, verifiable entity extraction with clear provenance
+**Will result in** accurate, verifiable entity extraction with >85% precision/recall
 
 **We will know we have succeeded when:**
-- All 6 entity types are extracted correctly
-- Confidence scores correlate with accuracy
-- Source references link back to specific transcript locations
+- Action items extracted with confidence scoring (FR-006)
+- Decisions extracted with rationale when available (FR-007)
+- Questions detected with answered status tracking (FR-008)
+- Topics segmented with time boundaries (FR-009)
+- Speaker attribution >90% accuracy (FR-005)
+- All entities have valid citations (PAT-004)
+- Processing time <30s for 1-hour transcript (NFR-004)
 - Human approval received at GATE-5
 
 ---
@@ -51,30 +148,29 @@ Implement the entity extraction pipeline using prompt-based agents to extract st
 
 ### Definition of Done
 
-- [ ] Speaker profiler agent implemented
-- [ ] Topic extractor agent implemented
-- [ ] Question detector agent implemented
-- [ ] Action item extractor agent implemented
-- [ ] Idea extractor agent implemented
-- [ ] Decision extractor agent implemented
-- [ ] Confidence scoring implemented
-- [ ] Source reference linking implemented
-- [ ] Integration tests passing
+- [ ] ts-extractor agent definition complete (`skills/transcript/agents/ts-extractor.md`)
+- [ ] SpeakerIdentifier implements PAT-003 (4-pattern chain)
+- [ ] TieredExtractor implements PAT-001 (Rule → ML → LLM)
+- [ ] CitationLinker implements PAT-004 (anti-hallucination)
+- [ ] TopicSegmenter implements FR-009 (boundary detection)
+- [ ] Confidence scoring mechanism per NFR-008
+- [ ] Entity schemas match TDD-ts-extractor.md
 - [ ] ps-critic review passed
 - [ ] Human approval at GATE-5
 
-### Technical Criteria
+### Technical Criteria (from TDD-ts-extractor.md)
 
-| # | Criterion | Verified |
-|---|-----------|----------|
-| AC-1 | Extracts speaker profiles with metadata | [ ] |
-| AC-2 | Identifies topics with hierarchy (main/sub) | [ ] |
-| AC-3 | Detects questions with context | [ ] |
-| AC-4 | Extracts action items with assignee if present | [ ] |
-| AC-5 | Identifies ideas and suggestions | [ ] |
-| AC-6 | Captures decisions and rationale | [ ] |
-| AC-7 | All entities have confidence scores [0-1] | [ ] |
-| AC-8 | All entities link to source cue IDs | [ ] |
+| # | Criterion | TDD Section | Verified |
+|---|-----------|-------------|----------|
+| AC-1 | Extracts action items with assignee/due date | 1.1 | [ ] |
+| AC-2 | Extracts decisions with rationale | 1.2 | [ ] |
+| AC-3 | Detects questions with answered status | 1.3 | [ ] |
+| AC-4 | Segments topics with time boundaries | 1.4 | [ ] |
+| AC-5 | Speaker identification via 4-pattern chain (PAT-003) | 3 | [ ] |
+| AC-6 | Tiered extraction: Rule → ML → LLM (PAT-001) | 2 | [ ] |
+| AC-7 | All entities have citations (PAT-004) | 1.5 | [ ] |
+| AC-8 | Confidence scores with HIGH/MEDIUM/LOW thresholds | 4 | [ ] |
+| AC-9 | Processing time <30s for 1-hour transcript | 9 | [ ] |
 
 ---
 
@@ -84,63 +180,57 @@ Implement the entity extraction pipeline using prompt-based agents to extract st
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| TASK-039 | Create Speaker Profiler Agent | pending | Claude | 2 | EN-007 |
-| TASK-040 | Create Topic Extractor Agent | pending | Claude | 2 | EN-007 |
-| TASK-041 | Create Question Detector Agent | pending | Claude | 2 | EN-007 |
-| TASK-042 | Create Action Item Extractor Agent | pending | Claude | 2 | EN-007 |
-| TASK-043 | Create Idea Extractor Agent | pending | Claude | 2 | EN-007 |
-| TASK-044 | Create Decision Extractor Agent | pending | Claude | 2 | EN-007 |
-| TASK-045 | Implement Confidence Scoring | pending | Claude | 1 | TASK-039..044 |
+| [TASK-106](./TASK-106-extractor-agent-alignment.md) | Verify ts-extractor agent definition alignment | pending | Claude | 2 | - |
+| [TASK-107](./TASK-107-speaker-identification.md) | Implement/verify SpeakerIdentifier (PAT-003) | pending | Claude | 2 | TASK-106 |
+| [TASK-108](./TASK-108-tiered-extraction.md) | Implement/verify TieredExtractor (PAT-001) | pending | Claude | 3 | TASK-106 |
+| [TASK-109](./TASK-109-citation-linker.md) | Implement/verify CitationLinker (PAT-004) | pending | Claude | 2 | TASK-106 |
+| [TASK-110](./TASK-110-topic-segmenter.md) | Implement/verify TopicSegmenter (FR-009) | pending | Claude | 2 | TASK-106 |
+| [TASK-111](./TASK-111-confidence-scoring.md) | Implement confidence scoring (NFR-008) | pending | Claude | 1 | TASK-107..110 |
+| [TASK-112](./TASK-112-extractor-validation.md) | Create test cases and validation | pending | Claude | 2 | TASK-111 |
+| [TASK-112A](./TASK-112A-extractor-contract-tests.md) | Create extractor contract tests (TDD/BDD) | pending | Claude | 1 | TASK-106 |
+| [TASK-112B](./TASK-112B-parser-extractor-integration-tests.md) | Create parser-extractor integration tests | pending | Claude | 2 | TASK-105A, TASK-112A |
+
+**NOTE:** Task IDs start at TASK-106 to avoid conflicts with EN-007 tasks (TASK-101-105) and FEAT-001 tasks (TASK-031-042).
+**TASK-112A/B added:** 2026-01-27 per TDD/BDD Testing Strategy for contract and integration test coverage.
+**Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
 
 ---
 
-## Entity Schemas
-
-### Speaker Profile
-
-```json
-{
-  "entity_type": "speaker",
-  "id": "speaker-001",
-  "name": "John Smith",
-  "role": "Meeting Host",
-  "speaking_time_seconds": 1245,
-  "turn_count": 47,
-  "topics_discussed": ["topic-001", "topic-003"],
-  "confidence": 0.95,
-  "source_cues": ["cue-001", "cue-005", "cue-012"]
-}
-```
-
-### Topic
-
-```json
-{
-  "entity_type": "topic",
-  "id": "topic-001",
-  "name": "Q4 Budget Review",
-  "parent_topic_id": null,
-  "subtopics": ["topic-002", "topic-003"],
-  "time_range": {"start": "00:05:00", "end": "00:25:00"},
-  "speakers_involved": ["speaker-001", "speaker-002"],
-  "confidence": 0.88,
-  "source_cues": ["cue-010", "cue-011", "cue-012"]
-}
-```
+## Entity Schemas (per TDD-ts-extractor.md)
 
 ### Action Item
 
 ```json
 {
-  "entity_type": "action_item",
-  "id": "action-001",
-  "description": "Send updated budget projections to finance team",
-  "assignee": "speaker-002",
-  "due_date": null,
-  "priority": "high",
-  "related_topic_id": "topic-001",
+  "id": "act-001",
+  "text": "Send the report",
+  "assignee": "Bob",
+  "due_date": "2026-01-31",
   "confidence": 0.92,
-  "source_cues": ["cue-045"]
+  "citation": {
+    "segment_id": "seg-042",
+    "anchor": "#seg-042",
+    "timestamp_ms": 930000,
+    "text_snippet": "Bob, can you send me the report by Friday?"
+  }
+}
+```
+
+### Decision
+
+```json
+{
+  "id": "dec-001",
+  "text": "Go with Option B for the launch",
+  "decided_by": "Manager",
+  "rationale": null,
+  "confidence": 0.95,
+  "citation": {
+    "segment_id": "seg-087",
+    "anchor": "#seg-087",
+    "timestamp_ms": 1695000,
+    "text_snippet": "we've decided to go with Option B"
+  }
 }
 ```
 
@@ -148,64 +238,99 @@ Implement the entity extraction pipeline using prompt-based agents to extract st
 
 ```json
 {
-  "entity_type": "question",
-  "id": "question-001",
-  "text": "What's our timeline for the Q4 deliverables?",
-  "asker_id": "speaker-003",
-  "answer_summary": "Targeting end of November",
-  "answered_by_id": "speaker-001",
-  "confidence": 0.97,
-  "source_cues": ["cue-067", "cue-068"]
+  "id": "que-001",
+  "text": "How are we handling authentication for the API?",
+  "asked_by": "Dev",
+  "answered": false,
+  "answer_citation": null,
+  "citation": {
+    "segment_id": "seg-023",
+    "anchor": "#seg-023",
+    "timestamp_ms": 525000,
+    "text_snippet": "How are we handling authentication..."
+  }
+}
+```
+
+### Topic
+
+```json
+{
+  "id": "top-001",
+  "title": "Q4 Budget Review",
+  "start_ms": 300000,
+  "end_ms": 1500000,
+  "segment_ids": ["seg-010", "seg-011", "seg-012"]
 }
 ```
 
 ---
 
-## Pipeline Architecture
+## Implementation Artifacts
 
+### Existing (from EN-005)
+
+| Artifact | Path | Status |
+|----------|------|--------|
+| TDD | [TDD-ts-extractor.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md) | Complete |
+| Agent Definition | [skills/transcript/agents/ts-extractor.md](../../../../../skills/transcript/agents/ts-extractor.md) | Complete |
+
+### To Verify/Enhance
+
+| Artifact | Purpose | Status |
+|----------|---------|--------|
+| Entity JSON Schemas | Output validation | Verify alignment |
+| Extraction prompt templates | LLM tier prompts | Awaiting implementation |
+| Test transcripts | Validation | Awaiting EN-015 |
+
+---
+
+## Input/Output Format
+
+### Input (from ts-parser)
+
+Canonical JSON transcript per TDD-ts-parser.md Section 3:
+
+```json
+{
+  "version": "1.0",
+  "source": { "format": "vtt", "encoding": "utf-8" },
+  "metadata": { "duration_ms": 3600000, "segment_count": 150 },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 5000,
+      "speaker": "Alice",
+      "text": "Good morning everyone."
+    }
+  ]
+}
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                  ENTITY EXTRACTION PIPELINE                      │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌─────────────┐                                               │
-│   │ VTT Parser  │                                               │
-│   │  Output     │                                               │
-│   └──────┬──────┘                                               │
-│          │                                                       │
-│          ▼                                                       │
-│   ┌──────────────────────────────────────────────────────────┐ │
-│   │                   PARALLEL EXTRACTION                     │ │
-│   │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐       │ │
-│   │  │ Speaker │ │  Topic  │ │Question │ │ Action  │       │ │
-│   │  │Profiler │ │Extractor│ │Detector │ │Extractor│       │ │
-│   │  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘       │ │
-│   │       │           │           │           │             │ │
-│   │  ┌────┴────┐ ┌────┴────┐                               │ │
-│   │  │  Idea   │ │Decision │                               │ │
-│   │  │Extractor│ │Extractor│                               │ │
-│   │  └────┬────┘ └────┬────┘                               │ │
-│   └───────┼───────────┼─────────────────────────────────────┘ │
-│           │           │                                        │
-│           └─────┬─────┘                                        │
-│                 ▼                                               │
-│   ┌──────────────────────┐                                     │
-│   │   Entity Merger &    │                                     │
-│   │  Deduplication       │                                     │
-│   └──────────┬───────────┘                                     │
-│              │                                                  │
-│              ▼                                                  │
-│   ┌──────────────────────┐                                     │
-│   │   Confidence         │                                     │
-│   │   Scoring            │                                     │
-│   └──────────┬───────────┘                                     │
-│              │                                                  │
-│              ▼                                                  │
-│   ┌──────────────────────┐                                     │
-│   │  Structured Output   │                                     │
-│   │  (JSON per entity)   │                                     │
-│   └──────────────────────┘                                     │
-└─────────────────────────────────────────────────────────────────┘
+
+### Output (to ts-formatter)
+
+Extraction report JSON:
+
+```json
+{
+  "version": "1.0",
+  "source_transcript_id": "canonical-001",
+  "extraction_timestamp": "2026-01-26T16:00:00Z",
+  "speakers": [
+    { "name": "Alice", "segment_count": 45, "confidence": 0.95 }
+  ],
+  "action_items": [ /* per schema above */ ],
+  "decisions": [ /* per schema above */ ],
+  "questions": [ /* per schema above */ ],
+  "topics": [ /* per schema above */ ],
+  "statistics": {
+    "total_segments_processed": 150,
+    "entities_extracted": 15,
+    "average_confidence": 0.87,
+    "processing_time_ms": 12500
+  }
+}
 ```
 
 ---
@@ -220,10 +345,17 @@ Implement the entity extraction pipeline using prompt-based agents to extract st
 
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
-| Depends On | EN-007 | Requires parsed VTT output |
-| Depends On | EN-005 | Design documentation required |
-| Blocks | EN-009 | Mind map needs entities |
-| Blocks | EN-010 | Artifact packaging needs entities |
+| Implements | [TDD-ts-extractor.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md) | Technical design |
+| Depends On | EN-007 | Requires parsed transcript output |
+| References | [ADR-001](../../FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-001.md) | Hybrid agent architecture |
+| References | [ADR-002](../../FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-002.md) | Token limit (35K hard) |
+| References | [ADR-003](../../FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-003.md) | Bidirectional deep linking |
+| References | [ADR-005](../../FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-005.md) | Phased implementation |
+| Blocks | EN-016 | ts-formatter needs extraction output (EN-009 is Mind Map Generator) |
+
+### Discovery Reference
+
+- [DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Alignment analysis (architecture correction)
 
 ---
 
@@ -231,7 +363,9 @@ Implement the entity extraction pipeline using prompt-based agents to extract st
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
-| 2026-01-26 | Claude | pending | Enabler created |
+| 2026-01-26 | Claude | pending | Enabler created (6 parallel agents) |
+| 2026-01-26 | Claude | revised | MAJOR rewrite per DISC-001: Single ts-extractor with PAT-001/003/004; tasks renumbered to TASK-106+ |
+| 2026-01-27 | Claude | revised | Added TASK-112A (contract tests), TASK-112B (integration tests) per TDD/BDD Testing Strategy |
 
 ---
 

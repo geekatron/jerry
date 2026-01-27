@@ -83,7 +83,7 @@ Implement integration between the transcript skill and Jerry worktracker, enabli
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| TASK-055 | Create Suggestion Generator Agent | pending | Claude | 2 | EN-010 |
+| TASK-055 | Create Suggestion Generator Agent | pending | Claude | 2 | EN-016 |
 | TASK-056 | Implement Task Creation Flow | pending | Claude | 1 | TASK-055 |
 | TASK-057 | Implement Story Creation Flow | pending | Claude | 1 | TASK-055 |
 | TASK-058 | Implement Decision Record Flow | pending | Claude | 1 | TASK-055 |
@@ -251,7 +251,7 @@ decision_record:
 
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
-| Depends On | EN-010 | Requires packaged artifacts |
+| Depends On | EN-016 | Requires packaged artifacts from ts-formatter (EN-010 deprecated, absorbed into EN-016) |
 | Depends On | DEC-003 | Suggestion-first approach |
 
 ### Related Enablers

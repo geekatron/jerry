@@ -1,23 +1,70 @@
-# EN-010: Artifact Packaging & Deep Linking
+# EN-010: Artifact Packaging & Deep Linking [DEPRECATED]
 
 <!--
 TEMPLATE: Enabler
-VERSION: 1.0.0
+VERSION: 2.0.0
 SOURCE: ONTOLOGY-v1.md Section 3.4.5
+STATUS: DEPRECATED - Absorbed into EN-016 (ts-formatter) per DISC-001 and BUG-001
 -->
 
 > **Type:** enabler
-> **Status:** pending
-> **Priority:** high
-> **Impact:** high
+> **Status:** DEPRECATED
+> **Priority:** N/A
+> **Impact:** N/A
 > **Created:** 2026-01-26T00:00:00Z
-> **Due:** TBD
-> **Completed:**
+> **Deprecated:** 2026-01-26T16:30:00Z
+> **Due:** N/A
+> **Completed:** N/A
 > **Parent:** FEAT-002
 > **Owner:** Claude
-> **Target Sprint:** Sprint 4
-> **Effort Points:** 8
-> **Gate:** GATE-6 (Final Review)
+> **Target Sprint:** N/A
+> **Effort Points:** 0 (absorbed into EN-009)
+> **Gate:** N/A
+
+---
+
+## DEPRECATION NOTICE
+
+**This enabler has been deprecated and absorbed into [EN-016: ts-formatter Agent Implementation](../EN-016-ts-formatter/EN-016-ts-formatter.md).**
+
+> **Note:** EN-016 was originally created as EN-009 but was renumbered per BUG-001 to resolve an ID conflict with EN-009 Mind Map Generator.
+
+### Rationale
+
+Per [DISC-001 Enabler Alignment Analysis](../FEAT-002--DISC-001-enabler-alignment-analysis.md):
+
+1. **TDD-ts-formatter.md** defines ts-formatter as the artifact packaging agent
+2. **ADR-002** assigns the 8-file hierarchical packet structure to ts-formatter
+3. Separating formatting from packaging creates unnecessary complexity
+4. Single ts-formatter agent handles: PacketGenerator, TokenCounter, FileSplitter, AnchorRegistry, BacklinkInjector
+
+### Task Migration
+
+| Original Task | Status | Migrated To |
+|---------------|--------|-------------|
+| TASK-050 (Token Counter) | Deprecated | TASK-115 |
+| TASK-051 (File Splitter) | Deprecated | TASK-116 |
+| TASK-052 (Forward Link Generator) | Deprecated | TASK-117 |
+| TASK-053 (Backlinks Generator) | Deprecated | TASK-118 |
+| TASK-054 (Index/Manifest Generator) | Deprecated | TASK-114 |
+
+### Acceptance Criteria Migration
+
+All EN-010 acceptance criteria are covered by EN-016 (ts-formatter):
+- AC-1 (Token limit) → EN-016 AC-2
+- AC-2 (Split context) → EN-016 AC-3
+- AC-3 (Forward links) → EN-016 AC-4
+- AC-4 (Backlinks) → EN-016 AC-5
+- AC-5 (Index complete) → EN-016 AC-6
+- AC-6 (Anchor unique) → EN-016 AC-7
+- AC-7 (Cross-references) → EN-016 AC-4, AC-5
+- AC-8 (Numbered prefixes) → EN-016 AC-1
+
+---
+
+## Original Content (Archived)
+
+The following content is preserved for reference only. All work should reference EN-009
 
 ---
 
