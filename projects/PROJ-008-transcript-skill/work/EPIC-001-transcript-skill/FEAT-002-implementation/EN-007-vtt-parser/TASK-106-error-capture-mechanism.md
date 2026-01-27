@@ -141,7 +141,11 @@ Reference test cases that exercise error capture:
 - Design: [TDD-ts-parser.md v1.2](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md)
 - Research: [W3C WebVTT Test Suite Research](./research/webvtt-test-suite-research.md)
 - Discovery: [DISC-002: Test Infrastructure](./EN-007--DISC-002-test-infrastructure-dependency.md)
-- Related: [TASK-102: VTT Processing](./TASK-102-vtt-processing.md) (validation)
+- **Enables**: [TASK-102](./TASK-102-vtt-processing.md), [TASK-103](./TASK-103-srt-processing.md), [TASK-104](./TASK-104-plain-text-processing.md) (error surfacing during verification)
+
+### Execution Order
+
+**Recommended:** Execute TASK-106 BEFORE TASK-102, TASK-103, TASK-104 so that format processing verification can properly capture and surface parsing errors.
 
 ---
 

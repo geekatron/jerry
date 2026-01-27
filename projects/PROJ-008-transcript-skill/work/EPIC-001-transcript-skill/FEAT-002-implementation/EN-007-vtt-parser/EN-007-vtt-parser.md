@@ -170,16 +170,40 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 **TASK-106 added:** 2026-01-27 per W3C WebVTT research for enhanced error capture (PAT-002).
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
 
+### Execution Dependency Graph
+
+```
+TASK-101 (foundation - DONE)
+    │
+    ├──► TASK-102 (VTT) ─────────┐
+    │                            │
+    ├──► TASK-103 (SRT) ─────────┼──► TASK-105 (validation)
+    │                            │
+    ├──► TASK-104 (Plain Text) ──┘
+    │
+    ├──► TASK-105A (contract tests) ──► (parallel with 102-104)
+    │
+    └──► TASK-106 (error capture) ────► (parallel, needed by 102-104 verification)
+
+Recommended execution order:
+1. TASK-106 (error capture) - Enables proper error surfacing
+2. TASK-102, TASK-103, TASK-104 (can run in parallel)
+3. TASK-105A (contract tests)
+4. TASK-105 (final validation)
+```
+
 ---
 
 ## Implementation Artifacts
 
-### Existing (from EN-005, updated per DISC-001)
+### Existing (from EN-005, updated per DISC-001 and DISC-002)
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| TDD | [TDD-ts-parser.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Complete (v1.1 - ERRATA) |
-| Agent Definition | [skills/transcript/agents/ts-parser.md](../../../../../skills/transcript/agents/ts-parser.md) | Complete (v1.1.0 - ERRATA) |
+| TDD | [TDD-ts-parser.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Complete (v1.2 - error capture schema) |
+| Agent Definition | [skills/transcript/agents/ts-parser.md](../../../../../skills/transcript/agents/ts-parser.md) | Complete (v1.2.0 - error capture) |
+| Test Specification | [parser-tests.yaml](../../../../../skills/transcript/test_data/validation/parser-tests.yaml) | Complete (v1.1.0 - 14 VTT tests) |
+| W3C Research | [webvtt-test-suite-research.md](./research/webvtt-test-suite-research.md) | Complete |
 
 ### To Verify/Enhance
 
