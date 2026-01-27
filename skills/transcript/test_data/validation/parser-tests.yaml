@@ -1,0 +1,219 @@
+# =============================================================================
+# PARSER TEST SPECIFICATION
+# =============================================================================
+# Purpose: Test cases for ts-parser agent verification
+# Created: 2026-01-27
+# Source: EN-007 DISC-002 (Minimal test infrastructure)
+# Implements: FR-001 (VTT), FR-002 (SRT), FR-003 (Plain Text), FR-004 (Format Detection)
+# Reference: TDD-ts-parser.md, ts-parser.md
+#
+# REVIEW STATUS: PENDING_HUMAN_REVIEW
+# =============================================================================
+
+version: "1.0.0"
+agent: ts-parser
+created_at: "2026-01-27T14:30:00Z"
+review_status: PENDING_HUMAN_REVIEW
+
+# =============================================================================
+# TEST SUITES
+# =============================================================================
+
+test_suites:
+
+  # ---------------------------------------------------------------------------
+  # VTT PARSING (FR-001) - Primary focus for TASK-102
+  # ---------------------------------------------------------------------------
+  vtt_parsing:
+    description: "WebVTT format parsing tests (FR-001)"
+    implements: "FR-001"
+    reference: "TDD-ts-parser.md Section 1.1"
+
+    tests:
+      # Test VTT-001: Basic VTT with voice tags
+      - id: vtt-001
+        name: "Parse VTT with voice tags and closing </v> tags"
+        description: |
+          Verify ts-parser correctly handles VTT files with:
+          - WEBVTT header
+          - Voice tags with closing </v> (per DISC-001 correction)
+          - Standard HH:MM:SS.mmm timestamps
+        input:
+          file: "transcripts/real/internal-sample-sample.vtt"
+          format: vtt
+        expected:
+          file: "../expected/internal-sample-sample.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "vtt"
+          - type: segment_count
+            expected: 20
+          - type: speakers_detected
+            expected: ["Adam Nowak", "Brendan Bennett"]
+          - type: no_parse_errors
+          - type: closing_tags_stripped
+            description: "Text should NOT contain </v> closing tags"
+        acceptance_criteria:
+          - "AC-1: WEBVTT header recognized"
+          - "AC-2: Voice tags parsed correctly"
+          - "AC-3: Closing </v> tags stripped from text"
+
+      # Test VTT-002: Multi-line cue payloads
+      - id: vtt-002
+        name: "Parse VTT with multi-line cue payloads"
+        description: |
+          Verify ts-parser correctly handles multi-line cue payloads:
+          - Voice tag opens on first line
+          - Closing tag on last line
+          - Lines joined with single space
+        input:
+          file: "transcripts/real/internal-sample-sample.vtt"
+          segment_filter: "seg-002"  # Multi-line example
+        expected:
+          segment:
+            id: "seg-002"
+            speaker: "Brendan Bennett"
+            text: "All right. Yeah. So I guess I was a little interested in"
+        assertions:
+          - type: text_no_newlines
+            description: "Multi-line payload joined with single space"
+          - type: text_no_closing_tag
+            description: "Closing </v> stripped from extracted text"
+        acceptance_criteria:
+          - "AC-4: Multi-line payloads joined correctly"
+
+      # Test VTT-003: Timestamp normalization
+      - id: vtt-003
+        name: "Timestamps normalized to milliseconds"
+        description: |
+          Verify ts-parser converts VTT timestamps to milliseconds:
+          - HH:MM:SS.mmm -> integer milliseconds
+          - Precision: 10ms (per NFR-006)
+        input:
+          file: "transcripts/real/internal-sample-sample.vtt"
+          segment_filter: "seg-001"
+        expected:
+          segment:
+            start_ms: 3528
+            end_ms: 6448
+        assertions:
+          - type: timestamp_format
+            expected: "milliseconds"
+          - type: start_before_end
+            description: "start_ms < end_ms for all segments"
+        acceptance_criteria:
+          - "AC-6: Timestamps normalized to milliseconds"
+
+      # Test VTT-004: Speaker extraction from voice tags
+      - id: vtt-004
+        name: "Speaker names extracted from <v> tags"
+        description: |
+          Verify ts-parser extracts speaker names correctly:
+          - Pattern: <v SPEAKER_NAME>text</v>
+          - Full name preserved (first and last)
+        input:
+          file: "transcripts/real/internal-sample-sample.vtt"
+        expected:
+          speakers: ["Adam Nowak", "Brendan Bennett"]
+        assertions:
+          - type: speaker_count
+            expected: 2
+          - type: full_names_preserved
+            description: "First and last names both present"
+        acceptance_criteria:
+          - "AC-2: Voice tags parsed correctly"
+
+      # Test VTT-005: Canonical JSON schema compliance
+      - id: vtt-005
+        name: "Output matches canonical JSON schema"
+        description: |
+          Verify ts-parser output conforms to TDD-ts-parser.md Section 3 schema:
+          - version field present
+          - source object with format, encoding, file_path
+          - metadata object with duration_ms, segment_count, detected_speakers
+          - segments array with required fields
+        input:
+          file: "transcripts/real/internal-sample-sample.vtt"
+        expected:
+          schema_compliance: true
+        assertions:
+          - type: has_version
+            expected: "1.0"
+          - type: has_source_object
+            required_fields: ["format", "encoding", "file_path"]
+          - type: has_metadata_object
+            required_fields: ["duration_ms", "segment_count", "detected_speakers"]
+          - type: has_segments_array
+            segment_required_fields: ["id", "start_ms", "end_ms", "speaker", "text"]
+        acceptance_criteria:
+          - "AC-5: Output matches canonical JSON schema"
+
+  # ---------------------------------------------------------------------------
+  # FORMAT DETECTION (FR-004) - Placeholder for expansion
+  # ---------------------------------------------------------------------------
+  format_detection:
+    description: "Format auto-detection tests (FR-004)"
+    implements: "FR-004"
+    reference: "TDD-ts-parser.md Section 2"
+    status: "PLACEHOLDER - Expand in EN-015"
+
+    tests:
+      - id: det-001
+        name: "Auto-detect VTT format"
+        description: "Verify format detection for VTT files"
+        input:
+          file: "transcripts/real/internal-sample-sample.vtt"
+        assertions:
+          - type: format_detected
+            expected: "vtt"
+
+  # ---------------------------------------------------------------------------
+  # SRT PARSING (FR-002) - Placeholder for TASK-103
+  # ---------------------------------------------------------------------------
+  srt_parsing:
+    description: "SubRip format parsing tests (FR-002)"
+    implements: "FR-002"
+    reference: "TDD-ts-parser.md Section 1.2"
+    status: "PLACEHOLDER - Implement in TASK-103"
+
+    tests:
+      - id: srt-001
+        name: "Parse SRT with comma timestamps (placeholder)"
+        status: "PENDING_TEST_DATA"
+        note: "Requires SRT test file from EN-015"
+
+  # ---------------------------------------------------------------------------
+  # PLAIN TEXT PARSING (FR-003) - Placeholder for TASK-104
+  # ---------------------------------------------------------------------------
+  plain_text_parsing:
+    description: "Plain text format parsing tests (FR-003)"
+    implements: "FR-003"
+    reference: "TDD-ts-parser.md Section 1.3"
+    status: "PLACEHOLDER - Implement in TASK-104"
+
+    tests:
+      - id: txt-001
+        name: "Parse plain text with speaker prefixes (placeholder)"
+        status: "PENDING_TEST_DATA"
+        note: "Requires plain text test file from EN-015"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# This is MINIMAL test infrastructure created per EN-007:DISC-002 to unblock
+# TASK-102 VTT processing verification.
+#
+# EXPANSION PLANNED (EN-015 Sprint 4):
+# - Additional VTT edge cases
+# - SRT test files and cases
+# - Plain text test files and cases
+# - Golden dataset (3 meetings)
+# - Edge case files (malformed, empty, large, unicode)
+#
+# HUMAN REVIEW REQUIRED:
+# - Verify expected JSON values are correct
+# - Confirm test assertions match acceptance criteria
+# - Approve before using for verification
+#
+# =============================================================================

@@ -1,10 +1,11 @@
-# TASK-102: Implement/Verify VTT Processing (FR-001)
+# TASK-102: Verify VTT Processing (FR-001)
 
 <!--
 TEMPLATE: Task
-VERSION: 1.0.0
+VERSION: 1.1.0
 SOURCE: ONTOLOGY-v1.md Section 3.4.6
 ENABLER: EN-007 (ts-parser Agent Implementation)
+REVISED: 2026-01-27 per DISC-002 (test infrastructure now available)
 -->
 
 ---
@@ -14,13 +15,17 @@ ENABLER: EN-007 (ts-parser Agent Implementation)
 ```yaml
 id: "TASK-102"
 work_type: TASK
-title: "Implement/Verify VTT Processing (FR-001)"
+title: "Verify VTT Processing (FR-001)"
 description: |
   Verify WebVTT format parsing in ts-parser agent handles all VTT
   features: WEBVTT header, cue timing, voice tags, nested tags.
 
+  REVISED 2026-01-27: This is VERIFICATION only (not implementation).
+  Implementation code belongs in FEAT-003. We verify the agent definition
+  is complete and test it against real VTT files per DISC-002 test infrastructure.
+
 classification: ENABLER
-status: BACKLOG
+status: READY
 resolution: null
 priority: HIGH
 assignee: "Claude"
@@ -56,7 +61,11 @@ time_spent: 0
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `READY`
+
+**State History:**
+- 2026-01-26: BACKLOG (created)
+- 2026-01-27: READY (DISC-002 resolved, test infrastructure available)
 
 ---
 
@@ -98,19 +107,32 @@ WEBVTT
 - [ ] Segment IDs generated sequentially (seg-001, seg-002)
 - [ ] Output matches canonical schema (TDD Section 3)
 
-### Test Cases (from EN-015)
+### Test Cases (from DISC-002 Minimal Infrastructure)
 
-Reference test cases in parser-tests.yaml:
-- `vtt-001`: Parse basic VTT with voice tags
-- `vtt-002`: Parse VTT with missing voice tags (fallback)
-- `err-002`: Handle malformed VTT with partial recovery
+Reference test cases in `skills/transcript/test_data/validation/parser-tests.yaml`:
+
+| Test ID | Name | Status |
+|---------|------|--------|
+| `vtt-001` | Parse VTT with voice tags and closing `</v>` tags | READY |
+| `vtt-002` | Parse VTT with multi-line cue payloads | READY |
+| `vtt-003` | Timestamps normalized to milliseconds | READY |
+| `vtt-004` | Speaker names extracted from `<v>` tags | READY |
+| `vtt-005` | Output matches canonical JSON schema | READY |
+
+**Test Data Location:**
+- Input: `skills/transcript/test_data/transcripts/real/internal-sample-sample.vtt`
+- Expected: `skills/transcript/test_data/expected/internal-sample-sample.expected.json`
+- Spec: `skills/transcript/test_data/validation/parser-tests.yaml`
+
+**NOTE:** Expected output is PENDING_HUMAN_REVIEW before verification.
 
 ### Related Items
 
 - Parent: [EN-007: ts-parser Agent Implementation](./EN-007-vtt-parser.md)
-- Blocked By: [TASK-101: Agent alignment](./TASK-101-parser-agent-alignment.md)
+- Blocked By: ~~[TASK-101: Agent alignment](./TASK-101-parser-agent-alignment.md)~~ (DONE)
 - References: [TDD-ts-parser.md Section 1.1](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md)
-- Validated By: [TASK-134: Parser tests](../EN-015-transcript-validation/TASK-134-parser-tests.md)
+- Test Infrastructure: [DISC-002](./EN-007--DISC-002-test-infrastructure-dependency.md) - Created minimal test infrastructure
+- Full Test Suite: [TASK-134: Parser tests](../EN-015-transcript-validation/TASK-134-parser-tests.md) (EN-015 expansion)
 
 ---
 
@@ -137,4 +159,5 @@ Reference test cases in parser-tests.yaml:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-007 |
+| 2026-01-27 | READY | DISC-002 resolved: Test infrastructure created in `skills/transcript/test_data/`; task clarified as verification (not implementation); status changed from BACKLOG to READY |
 

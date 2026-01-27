@@ -248,6 +248,7 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 
 - [FEAT-002:DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Enabler alignment analysis (task renumbering)
 - [EN-007:DISC-001](./EN-007--DISC-001-vtt-voice-tag-gaps.md) - **VTT Voice Tag Parsing Gaps (CRITICAL)** - Found during TASK-101 audit
+- [EN-007:DISC-002](./EN-007--DISC-002-test-infrastructure-dependency.md) - **Test Infrastructure Dependency Gap (RESOLVED)** - Found during TASK-102 prep; created minimal test infrastructure in `skills/transcript/test_data/`
 
 ---
 
@@ -260,6 +261,7 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-27 | Claude | revised | Added TASK-105A (parser contract tests) per TDD/BDD Testing Strategy |
 | 2026-01-27 | Claude | in_progress | TASK-101 audit discovered DISC-001 (VTT voice tag gaps); remediation in progress |
 | 2026-01-27 | Claude | in_progress | TASK-101 complete: TDD v1.1, Agent v1.1.0; TASK-102..105A unblocked |
+| 2026-01-27 | Claude | in_progress | DISC-002: Test infrastructure dependency gap resolved; created `skills/transcript/test_data/` with minimal test infrastructure |
 
 ---
 
