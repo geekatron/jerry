@@ -117,16 +117,16 @@ Design the ts-extractor agent that handles semantic entity extraction from parse
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Entity types defined with JSON schemas
-- [ ] **AC-002:** Extraction patterns documented (regex + semantic)
-- [ ] **AC-003:** Tiered approach specified (rule → ML → LLM) per PAT-001
-- [ ] **AC-004:** Confidence scoring mechanism defined (0.0-1.0 scale)
-- [ ] **AC-005:** Citation format specified per ADR-003
-- [ ] **AC-006:** 4-pattern speaker detection chain documented per PAT-003
-- [ ] **AC-007:** Sample extractions for each entity type
-- [ ] **AC-008:** L0/L1/L2 perspectives complete per DEC-001-001
-- [ ] **AC-009:** ADR Compliance Checklist (ADR-001, ADR-002, ADR-003) complete
-- [ ] **AC-010:** File created at `docs/TDD-ts-extractor.md`
+- [x] **AC-001:** Entity types defined with JSON schemas
+- [x] **AC-002:** Extraction patterns documented (regex + semantic)
+- [x] **AC-003:** Tiered approach specified (rule → ML → LLM) per PAT-001
+- [x] **AC-004:** Confidence scoring mechanism defined (0.0-1.0 scale)
+- [x] **AC-005:** Citation format specified per ADR-003
+- [x] **AC-006:** 4-pattern speaker detection chain documented per PAT-003
+- [x] **AC-007:** Sample extractions for each entity type
+- [x] **AC-008:** L0/L1/L2 perspectives complete per DEC-001-001
+- [x] **AC-009:** ADR Compliance Checklist (ADR-001, ADR-002, ADR-003) complete
+- [x] **AC-010:** File created at `docs/TDD-ts-extractor.md`
 
 ### Dependencies
 
@@ -220,15 +220,15 @@ Tier 3: LLM-Based (Slow, High Recall)
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| TDD-ts-extractor.md | Technical Design Document | docs/TDD-ts-extractor.md | PENDING |
+| TDD-ts-extractor.md | Technical Design Document | docs/TDD-ts-extractor.md | COMPLETE |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Sample extractions for each entity type
-- [ ] Pattern regex/rules documented
-- [ ] Confidence scoring validated
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] Sample extractions for each entity type
+- [x] Pattern regex/rules documented
+- [x] Confidence scoring validated
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 

@@ -121,16 +121,16 @@ Claude Code (User)
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Follows Jerry SKILL.md conventions (see problem-solving skill)
-- [ ] **AC-002:** Invokes all 3 custom agents in correct sequence
-- [ ] **AC-003:** Integrates ps-critic for quality gate (>= 0.90)
-- [ ] **AC-004:** Maintains P-003 single nesting (orchestrator → workers only)
-- [ ] **AC-005:** Error handling and recovery documented
-- [ ] **AC-006:** Input validation for transcript formats
-- [ ] **AC-007:** Output path configuration
-- [ ] **AC-008:** L0/L1/L2 documentation for skill usage
-- [ ] **AC-009:** File created at `SKILL.md` (skill root)
-- [ ] **AC-010:** Agent flow documented with ASCII diagram
+- [x] **AC-001:** Follows Jerry SKILL.md conventions (see problem-solving skill)
+- [x] **AC-002:** Invokes all 3 custom agents in correct sequence
+- [x] **AC-003:** Integrates ps-critic for quality gate (>= 0.90)
+- [x] **AC-004:** Maintains P-003 single nesting (orchestrator → workers only)
+- [x] **AC-005:** Error handling and recovery documented
+- [x] **AC-006:** Input validation for transcript formats
+- [x] **AC-007:** Output path configuration
+- [x] **AC-008:** L0/L1/L2 documentation for skill usage
+- [x] **AC-009:** File created at `SKILL.md` → RELOCATED to `skills/transcript/SKILL.md`
+- [x] **AC-010:** Agent flow documented with ASCII diagram
 
 ### Dependencies
 
@@ -219,10 +219,10 @@ Each is a WORKER. None spawn other agents.
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] P-003 compliance validated
-- [ ] Agent flow tested
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] P-003 compliance validated
+- [x] Agent flow tested
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 

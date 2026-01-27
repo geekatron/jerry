@@ -110,16 +110,16 @@ RUNBOOK Troubleshooting Sections:
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Follows `.context/templates/design/RUNBOOK.template.md` structure
-- [ ] **AC-002:** All 5 YELLOW risks have troubleshooting sections
-- [ ] **AC-003:** Symptom-Cause-Resolution tables for each issue
-- [ ] **AC-004:** Decision trees in Mermaid for diagnosis
-- [ ] **AC-005:** Escalation matrix defined
-- [ ] **AC-006:** Recovery procedures documented
-- [ ] **AC-007:** L0/L1/L2 perspectives included
-- [ ] **AC-008:** Links to relevant TDD sections
-- [ ] **AC-009:** File created at `docs/RUNBOOK-en005.md`
-- [ ] **AC-010:** All decision trees validated
+- [x] **AC-001:** Follows `.context/templates/design/RUNBOOK.template.md` structure
+- [x] **AC-002:** All 5 YELLOW risks have troubleshooting sections
+- [x] **AC-003:** Symptom-Cause-Resolution tables for each issue
+- [x] **AC-004:** Decision trees in Mermaid for diagnosis
+- [x] **AC-005:** Escalation matrix defined
+- [x] **AC-006:** Recovery procedures documented
+- [x] **AC-007:** L0/L1/L2 perspectives included
+- [x] **AC-008:** Links to relevant TDD sections
+- [x] **AC-009:** File created at `docs/RUNBOOK-en005.md` → RELOCATED to `skills/transcript/docs/RUNBOOK.md`
+- [x] **AC-010:** All decision trees validated
 
 ### Dependencies
 
@@ -198,10 +198,10 @@ graph TD
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] All YELLOW risks covered
-- [ ] Decision trees render correctly
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] All YELLOW risks covered
+- [x] Decision trees render correctly
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 

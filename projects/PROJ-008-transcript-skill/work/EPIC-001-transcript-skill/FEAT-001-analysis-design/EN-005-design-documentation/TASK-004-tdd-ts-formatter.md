@@ -114,16 +114,16 @@ Design the ts-formatter agent that handles the final stage of transcript process
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Packet structure matches ADR-002 (00-index.md, 01-summary.md, etc.)
-- [ ] **AC-002:** Split logic follows ADR-004 (31.5K soft limit, split at ## headings)
-- [ ] **AC-003:** Anchor naming per ADR-003 conventions (`{type}-{nnn}`)
-- [ ] **AC-004:** Backlinks template defined with `<backlinks>` section
-- [ ] **AC-005:** Token counting algorithm specified (tiktoken-compatible)
-- [ ] **AC-006:** Sample packet structure diagram
-- [ ] **AC-007:** Split algorithm flowchart
-- [ ] **AC-008:** L0/L1/L2 perspectives complete per DEC-001-001
-- [ ] **AC-009:** ADR Compliance Checklist (ADR-001..005) complete
-- [ ] **AC-010:** File created at `docs/TDD-ts-formatter.md`
+- [x] **AC-001:** Packet structure matches ADR-002 (00-index.md, 01-summary.md, etc.)
+- [x] **AC-002:** Split logic follows ADR-004 (31.5K soft limit, split at ## headings)
+- [x] **AC-003:** Anchor naming per ADR-003 conventions (`{type}-{nnn}`)
+- [x] **AC-004:** Backlinks template defined with `<backlinks>` section
+- [x] **AC-005:** Token counting algorithm specified (tiktoken-compatible)
+- [x] **AC-006:** Sample packet structure diagram
+- [x] **AC-007:** Split algorithm flowchart
+- [x] **AC-008:** L0/L1/L2 perspectives complete per DEC-001-001
+- [x] **AC-009:** ADR Compliance Checklist (ADR-001..005) complete
+- [x] **AC-010:** File created at `docs/TDD-ts-formatter.md`
 
 ### Dependencies
 
@@ -220,15 +220,15 @@ backlinks:
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| TDD-ts-formatter.md | Technical Design Document | docs/TDD-ts-formatter.md | PENDING |
+| TDD-ts-formatter.md | Technical Design Document | docs/TDD-ts-formatter.md | COMPLETE |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Sample packet structure diagram
-- [ ] Split algorithm flowchart validated
-- [ ] Anchor registry schema validated
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] Sample packet structure diagram
+- [x] Split algorithm flowchart validated
+- [x] Anchor registry schema validated
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 

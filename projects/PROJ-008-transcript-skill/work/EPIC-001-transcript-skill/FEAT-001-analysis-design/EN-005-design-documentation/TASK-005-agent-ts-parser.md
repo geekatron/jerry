@@ -106,16 +106,16 @@ Create the ts-parser agent definition following the PS_AGENT_TEMPLATE.md structu
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Follows PS_AGENT_TEMPLATE.md structure exactly
-- [ ] **AC-002:** YAML frontmatter with identity, capabilities, guardrails
-- [ ] **AC-003:** XML tags present: `<agent>`, `<identity>`, `<capabilities>`, `<processing_instructions>`
-- [ ] **AC-004:** Model selection: haiku (fast parsing)
-- [ ] **AC-005:** Input validation rules documented
-- [ ] **AC-006:** Output format specification (canonical JSON)
-- [ ] **AC-007:** Error handling instructions included
-- [ ] **AC-008:** Constitutional compliance: P-002 (file persistence), P-003 (no subagents)
-- [ ] **AC-009:** File created at `agents/ts-parser/AGENT.md`
-- [ ] **AC-010:** Template compliance verified by review
+- [x] **AC-001:** Follows PS_AGENT_TEMPLATE.md structure exactly
+- [x] **AC-002:** YAML frontmatter with identity, capabilities, guardrails
+- [x] **AC-003:** XML tags present: `<agent>`, `<identity>`, `<capabilities>`, `<processing_instructions>`
+- [x] **AC-004:** Model selection: haiku (fast parsing)
+- [x] **AC-005:** Input validation rules documented
+- [x] **AC-006:** Output format specification (canonical JSON)
+- [x] **AC-007:** Error handling instructions included
+- [x] **AC-008:** Constitutional compliance: P-002 (file persistence), P-003 (no subagents)
+- [x] **AC-009:** File created at `agents/ts-parser/AGENT.md` → RELOCATED to `skills/transcript/agents/ts-parser.md`
+- [x] **AC-010:** Template compliance verified by review
 
 ### Dependencies
 
@@ -193,10 +193,10 @@ guardrails:
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Template compliance checked
-- [ ] XML structure validated
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] Template compliance checked
+- [x] XML structure validated
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 

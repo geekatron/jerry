@@ -103,16 +103,16 @@ Create the ts-formatter agent definition for output generation. This agent imple
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Follows PS_AGENT_TEMPLATE.md structure exactly
-- [ ] **AC-002:** Output generation instructions for packet structure
-- [ ] **AC-003:** Token counting procedures documented
-- [ ] **AC-004:** Split decision logic per ADR-004
-- [ ] **AC-005:** Anchor registry management per ADR-003
-- [ ] **AC-006:** Backlinks generation template
-- [ ] **AC-007:** Model selection: sonnet (formatting quality)
-- [ ] **AC-008:** Constitutional compliance: P-002 (file persistence)
-- [ ] **AC-009:** File created at `agents/ts-formatter/AGENT.md`
-- [ ] **AC-010:** Sample output validated against ADR-002
+- [x] **AC-001:** Follows PS_AGENT_TEMPLATE.md structure exactly
+- [x] **AC-002:** Output generation instructions for packet structure
+- [x] **AC-003:** Token counting procedures documented
+- [x] **AC-004:** Split decision logic per ADR-004
+- [x] **AC-005:** Anchor registry management per ADR-003
+- [x] **AC-006:** Backlinks generation template
+- [x] **AC-007:** Model selection: sonnet (formatting quality)
+- [x] **AC-008:** Constitutional compliance: P-002 (file persistence)
+- [x] **AC-009:** File created at `agents/ts-formatter/AGENT.md` → RELOCATED to `skills/transcript/agents/ts-formatter.md`
+- [x] **AC-010:** Sample output validated against ADR-002
 
 ### Dependencies
 
@@ -198,10 +198,10 @@ split_strategy:
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Sample output validated
-- [ ] ADR compliance verified
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] Sample output validated
+- [x] ADR compliance verified
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 

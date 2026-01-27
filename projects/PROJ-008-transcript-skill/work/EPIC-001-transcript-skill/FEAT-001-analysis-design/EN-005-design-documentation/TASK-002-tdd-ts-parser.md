@@ -107,16 +107,16 @@ Design the ts-parser agent that handles the first stage of transcript processing
 
 ### Acceptance Criteria
 
-- [ ] **AC-001:** Input formats documented (VTT, SRT, TXT) with grammar/BNF
-- [ ] **AC-002:** Canonical JSON schema defined with JSON Schema validation
-- [ ] **AC-003:** Parsing algorithm documented with flowchart
-- [ ] **AC-004:** Error cases enumerated (malformed timestamps, missing speakers, etc.)
-- [ ] **AC-005:** Token budget compliance: <5K per agent invocation
-- [ ] **AC-006:** Timestamp normalization logic per NFR-006
-- [ ] **AC-007:** PAT-002 (Defensive Parsing) pattern implemented
-- [ ] **AC-008:** L0/L1/L2 perspectives complete per DEC-001-001
-- [ ] **AC-009:** ADR Compliance Checklist (ADR-001, ADR-002) complete
-- [ ] **AC-010:** File created at `docs/TDD-ts-parser.md`
+- [x] **AC-001:** Input formats documented (VTT, SRT, TXT) with grammar/BNF
+- [x] **AC-002:** Canonical JSON schema defined with JSON Schema validation
+- [x] **AC-003:** Parsing algorithm documented with flowchart
+- [x] **AC-004:** Error cases enumerated (malformed timestamps, missing speakers, etc.)
+- [x] **AC-005:** Token budget compliance: <5K per agent invocation
+- [x] **AC-006:** Timestamp normalization logic per NFR-006
+- [x] **AC-007:** PAT-002 (Defensive Parsing) pattern implemented
+- [x] **AC-008:** L0/L1/L2 perspectives complete per DEC-001-001
+- [x] **AC-009:** ADR Compliance Checklist (ADR-001, ADR-002) complete
+- [x] **AC-010:** File created at `docs/TDD-ts-parser.md`
 
 ### Dependencies
 
@@ -182,14 +182,14 @@ Design the ts-parser agent that handles the first stage of transcript processing
 
 | Deliverable | Type | Link | Status |
 |-------------|------|------|--------|
-| TDD-ts-parser.md | Technical Design Document | docs/TDD-ts-parser.md | PENDING |
+| TDD-ts-parser.md | Technical Design Document | docs/TDD-ts-parser.md | COMPLETE |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] JSON schema validated against sample transcripts
-- [ ] Error handling matrix complete
-- [ ] Reviewed by: TBD
+- [x] Acceptance criteria verified
+- [x] JSON schema validated against sample transcripts
+- [x] Error handling matrix complete
+- [x] Reviewed by: ps-critic (Quality Score: 0.93)
 
 ---
 
