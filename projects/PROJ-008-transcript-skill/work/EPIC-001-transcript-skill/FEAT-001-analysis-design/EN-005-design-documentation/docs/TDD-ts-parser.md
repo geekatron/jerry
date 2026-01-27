@@ -1,10 +1,10 @@
 # Technical Design Document: ts-parser Agent
 
 > **Document ID:** TDD-ts-parser
-> **Version:** 1.1
+> **Version:** 1.2
 > **Status:** DRAFT
 > **Date:** 2026-01-27
-> **Errata:** EN-007:DISC-001 (VTT voice tag gaps corrected)
+> **Errata:** EN-007:DISC-001 (VTT voice tag gaps), EN-007:DISC-002 (error capture schema)
 > **Author:** ps-architect agent
 > **Token Count:** ~4,800 (within 5K target per AC-005)
 > **Parent:** [TDD-transcript-skill.md](./TDD-transcript-skill.md)
@@ -220,14 +220,14 @@ FORMAT DETECTION FLOWCHART
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "transcript-skill/canonical-transcript-v1.0",
+  "$id": "transcript-skill/canonical-transcript-v1.1",
   "title": "Canonical Transcript",
   "type": "object",
   "required": ["version", "source", "segments"],
   "properties": {
     "version": {
       "type": "string",
-      "const": "1.0"
+      "const": "1.1"
     },
     "source": {
       "type": "object",
@@ -267,6 +267,48 @@ FORMAT DETECTION FLOWCHART
           "text": { "type": "string", "minLength": 1 },
           "raw_text": { "type": "string" }
         }
+      }
+    },
+    "parse_metadata": {
+      "type": "object",
+      "description": "Error capture for defensive parsing (PAT-002)",
+      "properties": {
+        "parse_status": {
+          "type": "string",
+          "enum": ["complete", "partial", "failed"]
+        },
+        "parse_warnings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ParseIssue" }
+        },
+        "parse_errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ParseIssue" }
+        },
+        "skipped_segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cue_index": { "type": "integer" },
+              "reason": { "type": "string" },
+              "raw_content": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "ParseIssue": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "pattern": "^(WARN|ERR|SKIP)-\\d{3}$" },
+        "message": { "type": "string" },
+        "cue_index": { "type": "integer" },
+        "severity": { "type": "string", "enum": ["warning", "error", "info"] },
+        "raw_value": { "type": "string" },
+        "recovery_action": { "type": "string" }
       }
     }
   }
@@ -349,6 +391,66 @@ ENCODING DETECTION FLOW
 | Unknown encoding | Decode exception | Try fallbacks | WARNING |
 | File not found | OS exception | Raise error | ERROR |
 | File too large | Size > 50MB | Stream processing | INFO |
+
+### 6.1 Enhanced Error Capture Schema (v1.2)
+
+Per PAT-002 (Defensive Parsing) and W3C WebVTT research (EN-007:DISC-002), the parser MUST
+capture and surface errors to downstream consumers without failing the overall parse.
+
+```json
+{
+  "parse_metadata": {
+    "parse_status": "partial|complete|failed",
+    "parse_warnings": [
+      {
+        "code": "WARN-001",
+        "message": "Malformed timestamp at cue 15",
+        "cue_index": 15,
+        "severity": "warning",
+        "raw_value": "0:05:23.abc"
+      }
+    ],
+    "parse_errors": [
+      {
+        "code": "ERR-001",
+        "message": "Invalid voice tag syntax",
+        "cue_index": 42,
+        "severity": "error",
+        "raw_value": "<v>",
+        "recovery_action": "extracted_as_anonymous"
+      }
+    ],
+    "skipped_segments": [
+      {
+        "cue_index": 23,
+        "reason": "empty_payload",
+        "raw_content": ""
+      }
+    ]
+  }
+}
+```
+
+**Error Codes:**
+
+| Code | Category | Description |
+|------|----------|-------------|
+| WARN-001 | Timestamp | Malformed timestamp, best-effort parsed |
+| WARN-002 | Timestamp | Negative duration, times swapped |
+| WARN-003 | Encoding | Fallback encoding used |
+| WARN-004 | Voice Tag | Class annotation stripped |
+| ERR-001 | Voice Tag | Invalid syntax, extracted as anonymous |
+| ERR-002 | Payload | Empty after tag stripping |
+| ERR-003 | Structure | Malformed cue structure |
+| SKIP-001 | Payload | Empty cue text |
+| SKIP-002 | Payload | Whitespace-only payload |
+| SKIP-003 | Voice Tag | Empty voice annotation |
+
+**Integration with Canonical Schema:**
+
+The `parse_metadata` object is added to the root of the canonical output alongside
+`version`, `source`, `metadata`, and `segments`. This allows downstream consumers
+(ts-extractor) to make informed decisions about data quality.
 
 ## 7. Component Architecture
 
@@ -525,6 +627,7 @@ TARGET: <500 MB RAM (NFR-002)
 |---------|------|--------|---------|
 | 1.0 | 2026-01-26 | ps-architect | Initial design with schemas and algorithms |
 | 1.1 | 2026-01-27 | Claude | **ERRATA:** Section 1.1 VTT grammar corrected per EN-007:DISC-001. Added closing `</v>` tag support, multi-line payload handling, updated examples. |
+| 1.2 | 2026-01-27 | Claude | **ENHANCEMENT:** Section 3 canonical schema updated to v1.1 with `parse_metadata` object. Section 6.1 added enhanced error capture schema per EN-007:DISC-002 and W3C WebVTT research. Error codes defined for warnings, errors, and skipped segments. |
 
 ---
 

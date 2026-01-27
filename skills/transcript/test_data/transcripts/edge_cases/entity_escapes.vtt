@@ -1,0 +1,19 @@
+WEBVTT
+
+NOTE HTML entity escapes (CE-005, CE-006, CE-007)
+NOTE Parser should decode HTML entities to their characters
+
+00:00.000 --> 00:01.000
+Tom &amp; Jerry
+
+00:01.000 --> 00:02.000
+3 &lt; 5 and 10 &gt; 2
+
+00:02.000 --> 00:03.000
+Non-breaking&nbsp;space here
+
+00:03.000 --> 00:04.000
+<v Speaker>&amp;amp; is an escaped ampersand</v>
+
+00:04.000 --> 00:05.000
+Mixed: &lt;tag&gt; is not a real tag

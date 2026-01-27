@@ -163,9 +163,11 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 | [TASK-104](./TASK-104-plain-text-processing.md) | Implement/verify plain text processing (FR-003) | pending | Claude | 1 | ~~TASK-101~~ |
 | [TASK-105](./TASK-105-parser-validation.md) | Create test cases and validation | pending | Claude | 2 | TASK-102..104 |
 | [TASK-105A](./TASK-105A-parser-contract-tests.md) | Create parser contract tests (TDD/BDD) | pending | Claude | 1 | ~~TASK-101~~ |
+| [TASK-106](./TASK-106-error-capture-mechanism.md) | Implement enhanced error capture mechanism | pending | Claude | 2 | ~~TASK-101~~ |
 
 **NOTE:** Task IDs renumbered from TASK-034-038 to TASK-101-105 per DISC-001 to avoid conflicts with EN-006 tasks.
 **TASK-105A added:** 2026-01-27 per TDD/BDD Testing Strategy for contract test coverage.
+**TASK-106 added:** 2026-01-27 per W3C WebVTT research for enhanced error capture (PAT-002).
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
 
 ---
@@ -262,6 +264,8 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-27 | Claude | in_progress | TASK-101 audit discovered DISC-001 (VTT voice tag gaps); remediation in progress |
 | 2026-01-27 | Claude | in_progress | TASK-101 complete: TDD v1.1, Agent v1.1.0; TASK-102..105A unblocked |
 | 2026-01-27 | Claude | in_progress | DISC-002: Test infrastructure dependency gap resolved; created `skills/transcript/test_data/` with minimal test infrastructure |
+| 2026-01-27 | Claude | in_progress | W3C WebVTT research complete: 11 edge case VTT files created, parser-tests.yaml v1.1.0 with 14 VTT tests |
+| 2026-01-27 | Claude | in_progress | Added TASK-106 (error capture mechanism) per W3C research; TDD-ts-parser.md updated to v1.2 with enhanced error schema |
 
 ---
 

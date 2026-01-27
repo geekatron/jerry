@@ -1,8 +1,10 @@
 # Transcript Skill Test Data
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Created:** 2026-01-27
+> **Updated:** 2026-01-27 (Added edge case files from W3C WebVTT research)
 > **Source:** EN-007:DISC-002 (Test Infrastructure Dependency Gap Resolution)
+> **Research:** EN-007 webvtt-test-suite-research.md
 > **Review Status:** PENDING_HUMAN_REVIEW
 
 ---
@@ -19,29 +21,55 @@ This directory contains test data and validation specifications for the transcri
 
 ```
 test_data/
-├── README.md                          ← This file
-├── transcripts/                       ← Test input files
-│   ├── real/                          ← Real VTT files from users (TASK-131A)
+├── README.md                              ← This file
+├── transcripts/                           ← Test input files
+│   ├── real/                              ← Real VTT files from users
 │   │   └── internal-sample-sample.vtt
-│   ├── golden/                        ← Synthetic golden dataset (EN-015)
+│   ├── golden/                            ← Synthetic golden dataset (EN-015)
 │   │   └── (placeholder for 3 meetings)
-│   └── edge_cases/                    ← Edge case files (EN-015)
-│       └── (placeholder for malformed, empty, large, unicode)
-├── expected/                          ← Expected parser outputs
+│   └── edge_cases/                        ← Edge case VTT files (W3C research)
+│       ├── voice_tag_basic.vtt            ← VT-001, VT-002
+│       ├── voice_tag_no_close.vtt         ← VT-004
+│       ├── voice_tag_with_class.vtt       ← VT-006, VT-007
+│       ├── multi_speaker_cue.vtt          ← VT-009
+│       ├── nested_formatting.vtt          ← VT-008, TT-008
+│       ├── multiline_payload.vtt          ← ML-001 through ML-005
+│       ├── unicode_speakers.vtt           ← CE-003, CE-004
+│       ├── entity_escapes.vtt             ← CE-005, CE-006, CE-007
+│       ├── timestamp_edge_cases.vtt       ← TS-001 through TS-005
+│       ├── empty_and_malformed.vtt        ← PAT-002 defensive parsing
+│       └── combined_edge_cases.vtt        ← All edge cases combined
+├── expected/                              ← Expected parser outputs
 │   └── internal-sample-sample.expected.json
-└── validation/                        ← Test specifications
-    └── parser-tests.yaml              ← ts-parser test cases
+└── validation/                            ← Test specifications
+    └── parser-tests.yaml                  ← ts-parser test cases (v1.1.0)
 ```
 
 ---
 
-## Current Contents (Minimal - DISC-002)
+## Current Contents
 
 ### Real Transcript Sample
 
 | File | Source | Cues | Speakers | Purpose |
 |------|--------|------|----------|---------|
 | `transcripts/real/internal-sample-sample.vtt` | User VTT (first 20 cues) | 20 | 2 (Adam Nowak, Brendan Bennett) | VTT parsing verification |
+
+### Edge Case Files (from W3C WebVTT Research)
+
+| File | Test IDs | Description |
+|------|----------|-------------|
+| `voice_tag_basic.vtt` | VT-001, VT-002 | Basic voice tags with/without spaces in names |
+| `voice_tag_no_close.vtt` | VT-004 | Voice tags without closing `</v>` |
+| `voice_tag_with_class.vtt` | VT-006, VT-007 | Voice tags with CSS classes (`.loud`, `.whisper`) |
+| `multi_speaker_cue.vtt` | VT-009 | Multiple speakers in single cue |
+| `nested_formatting.vtt` | VT-008, TT-008 | Nested `<b>`, `<i>`, `<u>` within voice tags |
+| `multiline_payload.vtt` | ML-001–ML-005 | Multi-line cue payloads, whitespace handling |
+| `unicode_speakers.vtt` | CE-003, CE-004 | Unicode: Chinese, Arabic, Greek, Japanese, Emoji |
+| `entity_escapes.vtt` | CE-005–CE-007 | HTML entities: `&amp;`, `&lt;`, `&gt;`, `&nbsp;` |
+| `timestamp_edge_cases.vtt` | TS-001–TS-005 | Timestamp formats: no hours, extended hours, boundaries |
+| `empty_and_malformed.vtt` | PAT-002 | Empty cues, whitespace-only, empty voice annotations |
+| `combined_edge_cases.vtt` | All | All edge cases in single file |
 
 ### Expected Output
 
@@ -53,7 +81,35 @@ test_data/
 
 | File | Agent | Test Count | Status |
 |------|-------|------------|--------|
-| `validation/parser-tests.yaml` | ts-parser | 5 VTT tests + placeholders | PENDING_HUMAN_REVIEW |
+| `validation/parser-tests.yaml` | ts-parser | 14 VTT tests + placeholders | PENDING_HUMAN_REVIEW |
+
+---
+
+## Test Case Summary
+
+### Core VTT Tests (5 - from DISC-002)
+
+| Test ID | Name | Input | Coverage |
+|---------|------|-------|----------|
+| vtt-001 | Voice tags with closing tags | internal-sample-sample.vtt | FR-001.3 |
+| vtt-002 | Multi-line cue payloads | internal-sample-sample.vtt | FR-001.4 |
+| vtt-003 | Timestamp normalization | internal-sample-sample.vtt | NFR-006 |
+| vtt-004 | Speaker extraction | internal-sample-sample.vtt | FR-001.3 |
+| vtt-005 | Canonical JSON schema | internal-sample-sample.vtt | TDD Section 3 |
+
+### Edge Case Tests (9 - from W3C Research)
+
+| Test ID | Name | Input | Research ID |
+|---------|------|-------|-------------|
+| vtt-006 | Voice tags without closing | voice_tag_no_close.vtt | VT-004 |
+| vtt-007 | Voice tags with classes | voice_tag_with_class.vtt | VT-006, VT-007 |
+| vtt-008 | Multiple speakers per cue | multi_speaker_cue.vtt | VT-009 |
+| vtt-009 | Nested formatting tags | nested_formatting.vtt | VT-008, TT-008 |
+| vtt-010 | Unicode speakers/content | unicode_speakers.vtt | CE-003, CE-004 |
+| vtt-011 | HTML entity decoding | entity_escapes.vtt | CE-005–CE-007 |
+| vtt-012 | Timestamp edge cases | timestamp_edge_cases.vtt | TS-001–TS-005 |
+| vtt-013 | Empty/malformed (PAT-002) | empty_and_malformed.vtt | Error handling |
+| vtt-014 | Combined edge cases | combined_edge_cases.vtt | Comprehensive |
 
 ---
 
@@ -69,22 +125,52 @@ test_data/
    - Verify multi-line text joined correctly
    - Verify closing `</v>` tags stripped
 
-2. **parser-tests.yaml**
+2. **parser-tests.yaml (v1.1.0)**
    - Verify test assertions match acceptance criteria
-   - Confirm test coverage is adequate for TASK-102
+   - Confirm edge case test coverage is adequate
+   - Review W3C-derived test cases for applicability
+
+3. **Edge case VTT files**
+   - Verify files match W3C specification requirements
+   - Confirm Unicode test data covers required scripts
+
+---
+
+## Research Reference
+
+Edge case files were created based on comprehensive W3C WebVTT research:
+
+- **Research Document:** `EN-007/research/webvtt-test-suite-research.md`
+- **Sources:**
+  - [W3C WebVTT Specification](https://www.w3.org/TR/webvtt1/)
+  - [web-platform-tests/wpt](https://github.com/web-platform-tests/wpt/tree/master/webvtt)
+  - [MDN WebVTT Format](https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API/Web_Video_Text_Tracks_Format)
+  - [w3c/webvtt.js](https://github.com/w3c/webvtt.js)
+  - [mozilla/vtt.js](https://github.com/mozilla/vtt.js)
+
+### Gap Analysis from Research
+
+| Category | WPT Coverage | Our Coverage | Gap Status |
+|----------|-------------|--------------|------------|
+| Header/Signature | Excellent | Not tested (low priority) | Deferred to EN-015 |
+| Timestamps | Good | 7 tests | Covered |
+| Voice Tags | **Poor** | 5 tests | **Addressed** |
+| Tag Stripping | Limited | 3 tests | Covered |
+| Multiline | Limited | 3 tests | Covered |
+| Encoding | Good | 5 tests | Covered |
 
 ---
 
 ## Expansion Plan (EN-015 Sprint 4)
 
-This minimal infrastructure will be expanded in EN-015 to include:
+This infrastructure will be expanded in EN-015 to include:
 
 | Artifact | EN-015 Task | Description |
 |----------|-------------|-------------|
 | Golden Dataset (3 meetings) | TASK-131 | Synthetic meetings with known entities |
 | Human Annotations | TASK-131A | Ground truth for real VTT files |
 | Ground Truth JSON | TASK-132 | Expected extraction results |
-| Edge Case Files | TASK-133 | malformed.vtt, empty.vtt, large.vtt, unicode.vtt |
+| Additional Edge Cases | TASK-133 | Header validation, SRT compatibility |
 | Full parser-tests.yaml | TASK-134 | Complete test specification |
 | extractor-tests.yaml | TASK-135 | ts-extractor test cases |
 | formatter-tests.yaml | TASK-136 | ts-formatter test cases |
@@ -96,10 +182,16 @@ This minimal infrastructure will be expanded in EN-015 to include:
 
 ### For TASK-102 (VTT Processing Verification)
 
-1. Read `validation/parser-tests.yaml` for test cases
+1. Read `validation/parser-tests.yaml` for test cases (vtt-001 through vtt-005)
 2. Run ts-parser against `transcripts/real/internal-sample-sample.vtt`
 3. Compare output against `expected/internal-sample-sample.expected.json`
 4. Verify all assertions pass
+
+### For Edge Case Testing
+
+1. Review test cases vtt-006 through vtt-014 in `parser-tests.yaml`
+2. Run ts-parser against files in `transcripts/edge_cases/`
+3. Verify edge case handling per assertions
 
 ### For Future Tasks
 
@@ -111,11 +203,12 @@ This minimal infrastructure will be expanded in EN-015 to include:
 ## References
 
 - [EN-007:DISC-002](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/EN-007--DISC-002-test-infrastructure-dependency.md) - Test Infrastructure Decision
+- [EN-007:webvtt-research](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/research/webvtt-test-suite-research.md) - W3C WebVTT Test Suite Research
 - [EN-015](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-015-transcript-validation/EN-015-transcript-validation.md) - Full Test Infrastructure Enabler
 - [TDD-ts-parser.md](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) - Parser Design Specification
 - [ts-parser.md](../agents/ts-parser.md) - Parser Agent Definition
 
 ---
 
-*Test Data Version: 1.0.0*
+*Test Data Version: 1.1.0*
 *Constitutional Compliance: P-002 (persisted), P-004 (provenance)*

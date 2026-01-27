@@ -3,16 +3,19 @@
 # =============================================================================
 # Purpose: Test cases for ts-parser agent verification
 # Created: 2026-01-27
+# Updated: 2026-01-27 (Added edge case tests from W3C WebVTT research)
 # Source: EN-007 DISC-002 (Minimal test infrastructure)
+# Research: EN-007 webvtt-test-suite-research.md
 # Implements: FR-001 (VTT), FR-002 (SRT), FR-003 (Plain Text), FR-004 (Format Detection)
 # Reference: TDD-ts-parser.md, ts-parser.md
 #
 # REVIEW STATUS: PENDING_HUMAN_REVIEW
 # =============================================================================
 
-version: "1.0.0"
+version: "1.1.0"
 agent: ts-parser
 created_at: "2026-01-27T14:30:00Z"
+updated_at: "2026-01-27T18:00:00Z"
 review_status: PENDING_HUMAN_REVIEW
 
 # =============================================================================
@@ -147,6 +150,180 @@ test_suites:
             segment_required_fields: ["id", "start_ms", "end_ms", "speaker", "text"]
         acceptance_criteria:
           - "AC-5: Output matches canonical JSON schema"
+
+  # ---------------------------------------------------------------------------
+  # VTT EDGE CASES (From W3C WebVTT Research)
+  # Reference: EN-007 research/webvtt-test-suite-research.md
+  # ---------------------------------------------------------------------------
+  vtt_edge_cases:
+    description: "WebVTT edge case tests derived from W3C WebVTT spec research"
+    implements: "FR-001"
+    reference: "W3C WebVTT Spec, WPT test suite, webvtt-test-suite-research.md"
+    status: "READY"
+
+    tests:
+      # Test VTT-006: Voice tags without closing tag
+      - id: vtt-006
+        name: "Parse voice tags without closing </v> tag"
+        description: |
+          Per W3C spec, closing tag can be omitted if voice spans entire cue.
+          Tests VT-004 from research.
+        input:
+          file: "transcripts/edge_cases/voice_tag_no_close.vtt"
+        assertions:
+          - type: speakers_extracted
+            expected: ["John", "Mary", "Bob"]
+          - type: all_segments_valid
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "VT-004: Voice tags without closing tag parsed correctly"
+
+      # Test VTT-007: Voice tags with CSS classes
+      - id: vtt-007
+        name: "Parse voice tags with class annotations"
+        description: |
+          Format: <v.class1.class2 Speaker>text</v>
+          Classes should be stripped, speaker name extracted.
+          Tests VT-006, VT-007 from research.
+        input:
+          file: "transcripts/edge_cases/voice_tag_with_class.vtt"
+        assertions:
+          - type: speakers_extracted
+            expected: ["Boss", "Employee", "Multi-Class Speaker"]
+          - type: classes_stripped
+            description: "Text should not contain .loud, .whisper, etc."
+        acceptance_criteria:
+          - "VT-006: Voice tag classes stripped correctly"
+
+      # Test VTT-008: Multiple speakers in single cue
+      - id: vtt-008
+        name: "Parse multiple speakers in single cue"
+        description: |
+          Tests cues with multiple <v> tags.
+          Tests VT-009 from research.
+        input:
+          file: "transcripts/edge_cases/multi_speaker_cue.vtt"
+        assertions:
+          - type: multi_speaker_extraction
+            description: "All speakers extracted from multi-speaker cues"
+        acceptance_criteria:
+          - "VT-009: Multiple speakers per cue supported"
+
+      # Test VTT-009: Nested formatting tags
+      - id: vtt-009
+        name: "Strip nested formatting tags from voice spans"
+        description: |
+          Format: <v Speaker><b>Bold</b> and <i>italic</i></v>
+          All formatting tags should be stripped, text preserved.
+          Tests VT-008, TT-008 from research.
+        input:
+          file: "transcripts/edge_cases/nested_formatting.vtt"
+        assertions:
+          - type: formatting_tags_stripped
+            tags: ["<b>", "</b>", "<i>", "</i>", "<u>", "</u>", "<c>", "</c>", "<lang>", "</lang>"]
+          - type: text_preserved
+        acceptance_criteria:
+          - "TT-008: Nested formatting tags stripped"
+
+      # Test VTT-010: Unicode speakers and content
+      - id: vtt-010
+        name: "Parse Unicode speaker names and content"
+        description: |
+          Tests i18n support with various scripts:
+          - Chinese, Arabic, Greek, German umlauts, Japanese, Emoji
+          Tests CE-003, CE-004 from research.
+        input:
+          file: "transcripts/edge_cases/unicode_speakers.vtt"
+        assertions:
+          - type: unicode_speakers_extracted
+            expected_count: 6
+          - type: encoding_detected
+            expected: "utf-8"
+        acceptance_criteria:
+          - "CE-004: Unicode speaker names preserved"
+
+      # Test VTT-011: HTML entity decoding
+      - id: vtt-011
+        name: "Decode HTML entities in cue text"
+        description: |
+          Tests entity decoding: &amp; -> &, &lt; -> <, &gt; -> >, &nbsp; -> space
+          Tests CE-005, CE-006, CE-007 from research.
+        input:
+          file: "transcripts/edge_cases/entity_escapes.vtt"
+        assertions:
+          - type: entity_decoded
+            test_cases:
+              - input: "&amp;"
+                expected: "&"
+              - input: "&lt;"
+                expected: "<"
+              - input: "&gt;"
+                expected: ">"
+        acceptance_criteria:
+          - "CE-005: HTML entities decoded correctly"
+
+      # Test VTT-012: Timestamp edge cases
+      - id: vtt-012
+        name: "Parse timestamp edge cases"
+        description: |
+          Tests timestamp format variations:
+          - No hours format (MM:SS.mmm)
+          - With hours format (HH:MM:SS.mmm)
+          - Extended hours (>2 digits)
+          - Minute boundaries
+          - Short/minimal durations
+          Tests TS-001 through TS-005 from research.
+        input:
+          file: "transcripts/edge_cases/timestamp_edge_cases.vtt"
+        assertions:
+          - type: timestamps_normalized
+            format: "milliseconds"
+          - type: start_before_end
+            all_segments: true
+        acceptance_criteria:
+          - "TS-001: No-hours format parsed"
+          - "TS-002: With-hours format parsed"
+          - "TS-003: Extended hours supported"
+
+      # Test VTT-013: Empty and malformed cues
+      - id: vtt-013
+        name: "Handle empty and malformed cues gracefully"
+        description: |
+          Tests PAT-002 defensive parsing:
+          - Empty cue text
+          - Whitespace-only payloads
+          - Empty voice annotations
+          Parser should continue despite individual errors.
+        input:
+          file: "transcripts/edge_cases/empty_and_malformed.vtt"
+        assertions:
+          - type: no_fatal_error
+          - type: parse_warnings_captured
+            description: "Warnings for malformed cues should be logged"
+          - type: valid_segments_extracted
+            min_count: 1
+        acceptance_criteria:
+          - "PAT-002: Defensive parsing continues despite errors"
+
+      # Test VTT-014: Combined edge cases
+      - id: vtt-014
+        name: "Parse combined edge cases file"
+        description: |
+          Comprehensive test with all edge cases in single file:
+          - Voice tags (VT-*)
+          - Tag stripping (TT-*)
+          - Multiline (ML-*)
+          - Encoding (CE-*)
+          - Timestamps (TS-*)
+        input:
+          file: "transcripts/edge_cases/combined_edge_cases.vtt"
+        assertions:
+          - type: all_segments_valid
+          - type: no_fatal_error
+          - type: segment_count
+            minimum: 20
+        acceptance_criteria:
+          - "Comprehensive edge case coverage validated"
 
   # ---------------------------------------------------------------------------
   # FORMAT DETECTION (FR-004) - Placeholder for expansion

@@ -1,18 +1,18 @@
 ---
 name: ts-parser
-version: "1.0.0"
+version: "1.2.0"
 description: "Parses VTT, SRT, and plain text transcripts into canonical JSON format"
 model: "haiku"
 ---
 
 # ts-parser Agent
 
-> **Version:** 1.1.0
-> **Errata:** EN-007:DISC-001 (VTT voice tag gaps corrected)
+> **Version:** 1.2.0
+> **Errata:** EN-007:DISC-001 (VTT voice tag gaps), EN-007:DISC-002 (error capture schema)
 > **Role:** Transcript Parser
 > **Model:** haiku (fast parsing, low cost)
 > **Constitutional Compliance:** P-002, P-003
-> **TDD Reference:** [TDD-ts-parser.md](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md)
+> **TDD Reference:** [TDD-ts-parser.md v1.2](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md)
 
 ---
 
@@ -160,14 +160,18 @@ Precision: 10 milliseconds (round to nearest 10ms)
 
 ### Error Handling (PAT-002: Defensive Parsing)
 
-| Error | Detection | Recovery |
-|-------|-----------|----------|
-| Malformed timestamp | Regex fails | Log warning, skip segment |
-| Negative duration | end_ms < start_ms | Swap values, log warning |
-| Missing speaker | No pattern match | Use null, continue |
-| Empty text | len(text.strip()) == 0 | Skip segment, log debug |
-| Encoding error | Decode exception | Try fallback encodings (see below) |
-| File too large | size > 50MB | Stream process in batches |
+| Error | Detection | Recovery | Error Code |
+|-------|-----------|----------|------------|
+| Malformed timestamp | Regex fails | Best-effort parse, log warning | WARN-001 |
+| Negative duration | end_ms < start_ms | Swap values, log warning | WARN-002 |
+| Fallback encoding | UTF-8 fails | Try fallback chain, log warning | WARN-003 |
+| Voice tag with class | `<v.class Name>` | Strip class, extract name | WARN-004 |
+| Invalid voice syntax | Empty `<v>` | Extract as anonymous | ERR-001 |
+| Empty after stripping | Tags removed, no content | Skip segment | ERR-002 |
+| Malformed cue | Can't parse structure | Best effort, log error | ERR-003 |
+| Empty cue text | len(text) == 0 | Skip segment | SKIP-001 |
+| Whitespace-only | len(text.strip()) == 0 | Skip segment | SKIP-002 |
+| Empty voice annotation | `<v></v>` | Skip segment | SKIP-003 |
 
 **Encoding Fallback Chain (NFR-007):**
 ```
@@ -183,18 +187,62 @@ If all fail: Log error with bytes preview, return empty result
 
 **Recovery Principle:** "Accept liberally, produce consistently"
 - Continue parsing despite individual segment errors
-- Log all issues for transparency
+- Capture ALL issues in parse_metadata for transparency
 - Never fail entirely if partial parsing is possible
+- Surface errors to downstream consumers for quality assessment
+
+### Enhanced Error Capture (v1.2 - TDD-ts-parser.md Section 6.1)
+
+All parsing issues MUST be captured in the `parse_metadata` object:
+
+```json
+{
+  "parse_metadata": {
+    "parse_status": "complete|partial|failed",
+    "parse_warnings": [
+      {
+        "code": "WARN-001",
+        "message": "Malformed timestamp at cue 15",
+        "cue_index": 15,
+        "severity": "warning",
+        "raw_value": "0:05:23.abc"
+      }
+    ],
+    "parse_errors": [
+      {
+        "code": "ERR-001",
+        "message": "Invalid voice tag syntax",
+        "cue_index": 42,
+        "severity": "error",
+        "raw_value": "<v>",
+        "recovery_action": "extracted_as_anonymous"
+      }
+    ],
+    "skipped_segments": [
+      {
+        "cue_index": 23,
+        "reason": "empty_payload",
+        "raw_content": ""
+      }
+    ]
+  }
+}
+```
+
+**parse_status Determination:**
+- `complete` - No errors, no skipped segments
+- `partial` - Has warnings OR skipped segments, but no fatal errors
+- `failed` - Fatal error preventing any extraction
 
 ---
 
 ## Output Schema
 
-### Canonical Transcript JSON Schema
+### Canonical Transcript JSON Schema (v1.1)
 
 ```json
 {
-  "version": "1.0",
+  "version": "1.1",
   "source": {
     "format": "vtt|srt|plain",
     "encoding": "utf-8",
@@ -203,8 +251,7 @@ If all fail: Log error with bytes preview, return empty result
   "metadata": {
     "duration_ms": 3600000,
     "segment_count": 150,
-    "detected_speakers": 4,
-    "parse_warnings": []
+    "detected_speakers": 4
   },
   "segments": [
     {
@@ -215,7 +262,13 @@ If all fail: Log error with bytes preview, return empty result
       "text": "Good morning everyone.",
       "raw_text": "<v Alice>Good morning everyone."
     }
-  ]
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
 }
 ```
 
@@ -313,8 +366,9 @@ This state is passed to ts-extractor for entity extraction.
 | 1.0.0 | 2026-01-26 | ps-architect | Initial agent definition |
 | 1.0.1 | 2026-01-26 | Claude | Relocated to skills/transcript/agents/ per DISC-004 |
 | 1.1.0 | 2026-01-27 | Claude | **ERRATA:** VTT Parsing Rules corrected per EN-007:DISC-001. Added closing `</v>` tag handling, multi-line payload support, explicit encoding fallback chain. |
+| 1.2.0 | 2026-01-27 | Claude | **ENHANCEMENT:** Added enhanced error capture mechanism per TDD-ts-parser.md v1.2. Added `parse_metadata` object with parse_warnings, parse_errors, skipped_segments. Error codes defined for all edge cases per W3C WebVTT research. |
 
 ---
 
-*Agent: ts-parser v1.1.0*
+*Agent: ts-parser v1.2.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents)*

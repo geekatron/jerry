@@ -107,9 +107,11 @@ WEBVTT
 - [ ] Segment IDs generated sequentially (seg-001, seg-002)
 - [ ] Output matches canonical schema (TDD Section 3)
 
-### Test Cases (from DISC-002 Minimal Infrastructure)
+### Test Cases (from DISC-002 Minimal Infrastructure + W3C Research)
 
-Reference test cases in `skills/transcript/test_data/validation/parser-tests.yaml`:
+Reference test cases in `skills/transcript/test_data/validation/parser-tests.yaml` (v1.1.0):
+
+#### Core VTT Tests (5)
 
 | Test ID | Name | Status |
 |---------|------|--------|
@@ -119,10 +121,29 @@ Reference test cases in `skills/transcript/test_data/validation/parser-tests.yam
 | `vtt-004` | Speaker names extracted from `<v>` tags | READY |
 | `vtt-005` | Output matches canonical JSON schema | READY |
 
-**Test Data Location:**
-- Input: `skills/transcript/test_data/transcripts/real/internal-sample-sample.vtt`
+#### Edge Case Tests (9 - from W3C WebVTT Research)
+
+| Test ID | Name | Input File | Status |
+|---------|------|------------|--------|
+| `vtt-006` | Voice tags without closing `</v>` | `voice_tag_no_close.vtt` | READY |
+| `vtt-007` | Voice tags with CSS classes | `voice_tag_with_class.vtt` | READY |
+| `vtt-008` | Multiple speakers per cue | `multi_speaker_cue.vtt` | READY |
+| `vtt-009` | Nested formatting tags stripped | `nested_formatting.vtt` | READY |
+| `vtt-010` | Unicode speaker names and content | `unicode_speakers.vtt` | READY |
+| `vtt-011` | HTML entity decoding | `entity_escapes.vtt` | READY |
+| `vtt-012` | Timestamp edge cases | `timestamp_edge_cases.vtt` | READY |
+| `vtt-013` | Empty/malformed (PAT-002) | `empty_and_malformed.vtt` | READY |
+| `vtt-014` | Combined edge cases | `combined_edge_cases.vtt` | READY |
+
+**Test Data Locations:**
+- Core Input: `skills/transcript/test_data/transcripts/real/internal-sample-sample.vtt`
+- Edge Cases: `skills/transcript/test_data/transcripts/edge_cases/*.vtt`
 - Expected: `skills/transcript/test_data/expected/internal-sample-sample.expected.json`
-- Spec: `skills/transcript/test_data/validation/parser-tests.yaml`
+- Spec: `skills/transcript/test_data/validation/parser-tests.yaml` (v1.1.0)
+
+**Research Reference:**
+- W3C WebVTT test suite research: `EN-007-vtt-parser/research/webvtt-test-suite-research.md`
+- Sources: W3C WebVTT Spec, web-platform-tests/wpt, w3c/webvtt.js, mozilla/vtt.js
 
 **NOTE:** Expected output is PENDING_HUMAN_REVIEW before verification.
 
@@ -160,4 +181,5 @@ Reference test cases in `skills/transcript/test_data/validation/parser-tests.yam
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-007 |
 | 2026-01-27 | READY | DISC-002 resolved: Test infrastructure created in `skills/transcript/test_data/`; task clarified as verification (not implementation); status changed from BACKLOG to READY |
+| 2026-01-27 | READY | W3C WebVTT research complete: Added 9 edge case tests (vtt-006 through vtt-014); test infrastructure expanded to 14 total VTT tests; parser-tests.yaml updated to v1.1.0 |
 
