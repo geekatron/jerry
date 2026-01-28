@@ -15,69 +15,75 @@ CREATED: 2026-01-26 per DISC-001 restructuring
 |-----------|-------|
 | **Workflow ID** | feat-002-implementation-20260126-001 |
 | **Feature** | FEAT-002: Transcript Skill Implementation |
-| **Status** | PLANNING |
+| **Status** | ACTIVE |
 | **Created** | 2026-01-26 |
-| **Gates** | GATE-5, GATE-6, GATE-7 |
+| **Updated** | 2026-01-28 (DEC-003 execution) |
+| **Gates** | GATE-5, GATE-6 (GATE-7/EN-012 moved to FEAT-003 per DISC-002) |
 
 ---
 
 ## L0: Executive Summary (ELI5)
 
 ```
-FEAT-002: BUILD THE TRANSCRIPT SKILL
-====================================
+FEAT-002: BUILD THE TRANSCRIPT SKILL (Updated per DEC-003)
+==========================================================
 
 Think of building a FACTORY that processes meeting recordings:
 
 ┌────────────────────────────────────────────────────────────────────────────┐
 │                                                                            │
-│   PHASE 5: BUILD THE MACHINES                                              │
-│   ─────────────────────────────                                            │
+│   GROUP 1: BUILD THE CORE MACHINES (SEQUENTIAL)                            │
+│   ─────────────────────────────────────────────                            │
 │                                                                            │
 │   ┌─────────────┐         ┌─────────────┐                                 │
 │   │  MACHINE 1  │         │  MACHINE 2  │                                 │
 │   │  ts-parser  │────────▶│ ts-extractor│                                 │
 │   │  (reads VTT)│         │ (finds items)│                                 │
+│   │   EN-007    │         │   EN-008    │                                 │
 │   └─────────────┘         └──────┬──────┘                                 │
 │                                  │                                         │
-│                          ┌───────┴───────┐                                │
-│                          │ ★ QUALITY     │                                │
-│                          │   CHECK ★     │                                │
-│                          │  (GATE-5)     │                                │
-│                          └───────┬───────┘                                │
+│   GROUP 2: CONTEXT & FORMATTING (PARALLEL)                                 │
+│   ────────────────────────────────────────                                 │
 │                                  │                                         │
-│   PHASE 6: BUILD THE PACKAGING LINE                                        │
-│   ─────────────────────────────────                                        │
-│                                  │                                         │
-│   ┌─────────────┐  ┌─────────────┴─────────────┐  ┌─────────────┐        │
-│   │  MACHINE 3  │  │       MACHINE 4           │  │  MACHINE 5  │        │
-│   │ts-formatter │  │   Context Injection       │  │ Worktracker │        │
-│   │(packages)   │  │   (customization)         │  │ Integration │        │
-│   └─────────────┘  └───────────────────────────┘  └─────────────┘        │
-│          │                     │                         │                │
-│          └─────────────────────┴─────────────────────────┘                │
-│                                │                                          │
-│                        ┌───────┴───────┐                                 │
-│                        │ ★ QUALITY     │                                 │
-│                        │   CHECK ★     │                                 │
-│                        │  (GATE-6)     │                                 │
-│                        └───────┬───────┘                                 │
-│                                │                                          │
-│   PHASE 7: OPTIONAL UPGRADE (CLI)                                         │
-│   ───────────────────────────────                                         │
-│                                │                                          │
-│                        ┌───────┴───────┐                                 │
-│                        │  MACHINE 6    │                                 │
-│                        │   CLI         │                                 │
-│                        │  Interface    │                                 │
-│                        └───────┬───────┘                                 │
-│                                │                                          │
-│                        ┌───────┴───────┐                                 │
-│                        │ ★ FINAL CHECK │                                 │
-│                        │  (GATE-7)     │                                 │
-│                        └───────────────┘                                 │
-│                                                                           │
-└───────────────────────────────────────────────────────────────────────────┘
+│   ┌─────────────────┐     ┌──────┴──────┐                                 │
+│   │  MACHINE 3      │     │  MACHINE 4  │                                 │
+│   │  ts-formatter   │     │  Context    │                                 │
+│   │  (packages)     │     │  Injection  │                                 │
+│   │    EN-016       │     │   EN-013    │                                 │
+│   └────────┬────────┘     └─────────────┘                                 │
+│            │                                                               │
+│   GROUP 3: MIND MAP GENERATION (SEQUENTIAL) ◀── NEW per DEC-003           │
+│   ─────────────────────────────────────────                                │
+│            │                                                               │
+│   ┌────────▼────────┐                                                     │
+│   │  MACHINE 5      │  Depends on EN-016 (ts-formatter)                   │
+│   │  Mind Map Gen   │                                                     │
+│   │  (visualize)    │                                                     │
+│   │    EN-009       │                                                     │
+│   └────────┬────────┘                                                     │
+│            │                                                               │
+│   ╔════════╧════════╗                                                     │
+│   ║  ★ GATE-5 ★     ║  Core Implementation Review                         │
+│   ╚════════╤════════╝                                                     │
+│            │                                                               │
+│   GROUP 4: INTEGRATION & VALIDATION (PARALLEL)                             │
+│   ────────────────────────────────────────────                             │
+│            │                                                               │
+│   ┌────────┴────────┐  ┌─────────────┐  ┌─────────────┐                  │
+│   │  MACHINE 6      │  │  MACHINE 7  │  │  MACHINE 8  │                  │
+│   │  Worktracker    │  │  Domain     │  │  Validation │                  │
+│   │  Integration    │  │  Contexts   │  │  & Tests    │                  │
+│   │    EN-011       │  │   EN-014    │  │   EN-015    │                  │
+│   └────────┬────────┘  └──────┬──────┘  └──────┬──────┘                  │
+│            └─────────────────┬┴────────────────┘                          │
+│                              │                                             │
+│   ╔══════════════════════════╧══════════════╗                             │
+│   ║  ★ GATE-6 ★  Functionality Review       ║                             │
+│   ╚═════════════════════════════════════════╝                             │
+│                                                                            │
+│   [EN-012 CLI moved to FEAT-003 per DISC-002 - Above and Beyond scope]    │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
 
 "We build each machine, test it, then connect them into a working factory."
 ```
@@ -87,14 +93,15 @@ Think of building a FACTORY that processes meeting recordings:
 ## L1: Implementation Pipeline (Engineer)
 
 ```
-FEAT-002 IMPLEMENTATION WORKFLOW
-================================
+FEAT-002 IMPLEMENTATION WORKFLOW (Updated per DEC-003)
+======================================================
 
 PREREQUISITE: FEAT-001 Complete (All 4 Gates Passed ✓)
                DISC-001 Alignment Analysis Complete ✓
+               DEC-003 Execution Order Correction ✓
 
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  PHASE 5: CORE IMPLEMENTATION (EN-007, EN-008)                            ║
+║  GROUP 1: CORE AGENTS (SEQUENTIAL)                                        ║
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║                                                                           ║
 ║  ┌───────────────────────────┐      ┌───────────────────────────┐        ║
@@ -102,6 +109,7 @@ PREREQUISITE: FEAT-001 Complete (All 4 Gates Passed ✓)
 ║  │   ts-parser Agent         │─────▶│   ts-extractor Agent      │        ║
 ║  │   ──────────────────      │      │   ──────────────────      │        ║
 ║  │   TASK-101..105           │      │   TASK-106..112           │        ║
+║  │   Status: GATE-5 PASSED ✓ │      │   Status: gate-5-ready    │        ║
 ║  │                           │      │                           │        ║
 ║  │   Implements:             │      │   Implements:             │        ║
 ║  │   - VTT processing        │      │   - Action items (FR-006) │        ║
@@ -112,8 +120,49 @@ PREREQUISITE: FEAT-001 Complete (All 4 Gates Passed ✓)
 ║  │   - Defensive parsing     │      │   - Tiered extract (PAT-001)│       ║
 ║  │                           │      │   - Citations (PAT-004)   │        ║
 ║  └───────────────────────────┘      └───────────────────────────┘        ║
-║              │                                    │                       ║
-║              └──────────────┬─────────────────────┘                       ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              ▼
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  GROUP 2: CONTEXT & FORMATTING (PARALLEL)                                 ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║                                                                           ║
+║  ┌───────────────────────────┐      ┌───────────────────────────┐        ║
+║  │        EN-016             │      │        EN-013             │        ║
+║  │   ts-formatter Agent      │      │   Context Injection       │        ║
+║  │   ──────────────────      │      │   ──────────────────      │        ║
+║  │   TASK-113..119           │      │   TASK-120..125           │        ║
+║  │   Status: pending         │      │   Status: pending         │        ║
+║  │                           │      │                           │        ║
+║  │   Implements:             │      │   Implements:             │        ║
+║  │   - 8-file packet (ADR-002)│     │   - SKILL.md context      │        ║
+║  │   - Token counting        │      │   - AGENT.md context      │        ║
+║  │   - File splitting (ADR-004)│    │   - Template variables    │        ║
+║  │   - Anchors (ADR-003)     │      │   - YAML-only per DEC-002 │        ║
+║  │   - Backlinks injection   │      │                           │        ║
+║  │   *Absorbs EN-010*        │      │                           │        ║
+║  └─────────────┬─────────────┘      └───────────────────────────┘        ║
+╚════════════════╪══════════════════════════════════════════════════════════╝
+                 │
+                 ▼
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  GROUP 3: MIND MAP GENERATION (SEQUENTIAL) ◀── NEW per DEC-003            ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║                                                                           ║
+║  ┌───────────────────────────┐                                           ║
+║  │        EN-009             │  Blocked By: EN-016 (ts-formatter)        ║
+║  │   Mind Map Generator      │                                           ║
+║  │   ──────────────────      │                                           ║
+║  │   TASK-001..004*          │  *Enabler-scoped numbering per DEC-003    ║
+║  │   Status: pending         │                                           ║
+║  │                           │                                           ║
+║  │   Implements:             │  Tasks:                                   ║
+║  │   - Mermaid diagrams      │  - TASK-001: Mermaid Generator            ║
+║  │   - ASCII rendering       │  - TASK-002: ASCII Generator              ║
+║  │   - Visual hierarchy      │  - TASK-003: Deep Link Embedding          ║
+║  │   - Deep links (ADR-003)  │  - TASK-004: Unit Tests                   ║
+║  │                           │                                           ║
+║  └───────────────────────────┘                                           ║
 ║                             │                                             ║
 ║              ╔══════════════╧══════════════╗                              ║
 ║              ║  ★ GATE-5: Core Review ★    ║                              ║
@@ -123,78 +172,38 @@ PREREQUISITE: FEAT-001 Complete (All 4 Gates Passed ✓)
                               │
                               ▼
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  PHASE 6: OUTPUT GENERATION (EN-016, EN-009, EN-011, EN-013-015)          ║
+║  GROUP 4: INTEGRATION & VALIDATION (PARALLEL)                             ║
 ╠═══════════════════════════════════════════════════════════════════════════╣
 ║                                                                           ║
 ║  ┌───────────────────────────┐      ┌───────────────────────────┐        ║
-║  │        EN-016             │      │        EN-009             │        ║
-║  │   ts-formatter Agent      │      │   Mind Map Generator      │        ║
+║  │        EN-011             │      │        EN-014             │        ║
+║  │   Worktracker Integration │      │   Domain Context Files    │        ║
 ║  │   ──────────────────      │      │   ──────────────────      │        ║
-║  │   TASK-113..119           │      │   TASK-046..049           │        ║
+║  │   (legacy tasks)          │      │   TASK-126..130           │        ║
+║  │   Status: pending         │      │   Status: pending         │        ║
 ║  │                           │      │                           │        ║
 ║  │   Implements:             │      │   Implements:             │        ║
-║  │   - 8-file packet (ADR-002)│     │   - Mermaid diagrams      │        ║
-║  │   - Token counting        │      │   - ASCII rendering       │        ║
-║  │   - File splitting (ADR-004)│    │   - Visual hierarchy      │        ║
-║  │   - Anchors (ADR-003)     │      │                           │        ║
-║  │   - Backlinks injection   │      │                           │        ║
-║  │   *Absorbs EN-010*        │      │                           │        ║
+║  │   - Work item suggestions │      │   - general.yaml          │        ║
+║  │   - Task integration      │      │   - transcript.yaml       │        ║
+║  │                           │      │   - meeting.yaml          │        ║
 ║  └───────────────────────────┘      └───────────────────────────┘        ║
 ║                                                                           ║
 ║  ┌───────────────────────────┐                                           ║
-║  │        EN-013             │                                           ║
-║  │   Context Injection       │                                           ║
+║  │        EN-015             │                                           ║
+║  │   Validation & Tests      │                                           ║
 ║  │   ──────────────────      │                                           ║
-║  │   TASK-120..125           │                                           ║
-║  │   - SKILL.md context      │                                           ║
-║  │   - AGENT.md context      │                                           ║
-║  │   - Template variables    │                                           ║
+║  │   TASK-131..138           │  (TASK-138 added per DEC-003:D-005)       ║
+║  │   Status: pending         │                                           ║
+║  │                           │                                           ║
+║  │   Implements:             │                                           ║
+║  │   - Golden dataset        │                                           ║
+║  │   - Edge case transcripts │                                           ║
+║  │   - Test specifications   │                                           ║
+║  │   - Integration tests     │                                           ║
 ║  └───────────────────────────┘                                           ║
-║                                                                           ║
-║  ┌───────────────────────────┐      ┌───────────────────────────┐        ║
-║  │        EN-014             │      │        EN-015             │        ║
-║  │   Domain Context Files    │      │   Validation & Tests      │        ║
-║  │   ──────────────────      │      │   ──────────────────      │        ║
-║  │   TASK-126..130           │      │   TASK-131..137           │        ║
-║  │                           │      │                           │        ║
-║  │   Implements:             │      │   Implements:             │        ║
-║  │   - general.yaml          │      │   - Golden dataset        │        ║
-║  │   - transcript.yaml       │      │   - Edge case transcripts │        ║
-║  │   - meeting.yaml          │      │   - Test specifications   │        ║
-║  │   - JSON Schema           │      │   - Integration tests     │        ║
-║  └───────────────────────────┘      └───────────────────────────┘        ║
-║                                                                           ║
-║  ┌───────────────────────────┐                                           ║
-║  │        EN-011             │                                           ║
-║  │   Worktracker Integration │                                           ║
-║  │   ──────────────────      │                                           ║
-║  │   (Existing - unchanged)  │                                           ║
-║  └───────────────────────────┘                                           ║
-║              │                                                            ║
-║              └──────────────────────────────────────────────────────────▶ ║
 ║                             │                                             ║
 ║              ╔══════════════╧══════════════╗                              ║
 ║              ║  ★ GATE-6: Func. Review ★   ║                              ║
-║              ║  Human Approval Required    ║                              ║
-║              ╚══════════════╤══════════════╝                              ║
-╚═════════════════════════════╪═════════════════════════════════════════════╝
-                              │
-                              ▼
-╔═══════════════════════════════════════════════════════════════════════════╗
-║  PHASE 7: CLI INTERFACE (EN-012) - ABOVE AND BEYOND                       ║
-╠═══════════════════════════════════════════════════════════════════════════╣
-║                                                                           ║
-║  ┌───────────────────────────────────────────────────────────────┐       ║
-║  │                          EN-012                                │       ║
-║  │                   Skill CLI Interface                          │       ║
-║  │                   ──────────────────                           │       ║
-║  │                   (Optional Enhancement)                       │       ║
-║  │                                                                │       ║
-║  │   This is LITERALLY LAST - only after all core work complete   │       ║
-║  └───────────────────────────────────────────────────────────────┘       ║
-║                             │                                             ║
-║              ╔══════════════╧══════════════╗                              ║
-║              ║  ★ GATE-7: Final Review ★   ║                              ║
 ║              ║  Human Approval Required    ║                              ║
 ║              ╚══════════════╤══════════════╝                              ║
 ╚═════════════════════════════╪═════════════════════════════════════════════╝
@@ -205,55 +214,75 @@ PREREQUISITE: FEAT-001 Complete (All 4 Gates Passed ✓)
                     ║  IMPLEMENTATION         ║
                     ║  COMPLETE               ║
                     ╚═════════════════════════╝
+
+[EN-012 CLI Interface moved to FEAT-003 per DISC-002 - Above and Beyond scope]
 ```
 
 ---
 
 ## L2: Strategic Considerations (Architect)
 
-### Enabler Restructuring (DISC-001)
+### Enabler Restructuring (DISC-001 + DEC-003)
 
-The following changes were made per DISC-001 Alignment Analysis:
+The following changes were made per DISC-001 Alignment Analysis and DEC-003 Execution Order Correction:
 
 | Original | New State | Rationale |
 |----------|-----------|-----------|
-| EN-007 | Revised | Aligned with TDD-ts-parser.md, tasks renumbered TASK-101+ |
-| EN-008 | **MAJOR Rewrite** | 6 parallel agents → 1 ts-extractor per TDD |
-| EN-009 | **RESTORED** | Mind Map Generator (Mermaid + ASCII), TASK-046..049 |
+| EN-007 | Revised → **GATE-5 PASSED** | Aligned with TDD-ts-parser.md, tasks TASK-101..105+105A+106+107 |
+| EN-008 | **MAJOR Rewrite** → gate-5-ready | 6 parallel agents → 1 ts-extractor per TDD |
+| EN-009 | **RESTORED** | Mind Map Generator (Mermaid + ASCII), TASK-001..004 (enabler-scoped per DEC-003) |
 | EN-010 | **DEPRECATED** | Absorbed into EN-016 per ADR-002 |
+| EN-012 | **MOVED** | → FEAT-003 per DISC-002 (Above and Beyond scope) |
 | EN-013 | Revised | YAML-only per SPEC Section 3, tasks renumbered |
 | EN-014 | **Created** | Domain context files (general, transcript, meeting) |
-| EN-015 | **Created** | Validation & test cases |
+| EN-015 | **Created** | Validation & test cases (TASK-138 added per DEC-003:D-005) |
 | EN-016 | **RENUMBERED** | ts-formatter per TDD, absorbs EN-010 (was EN-009 per BUG-001) |
 
 ### Task ID Allocation
 
 | Enabler | Task Range | Purpose |
 |---------|------------|---------|
-| EN-007 | TASK-101..105 | ts-parser agent |
-| EN-008 | TASK-106..112 | ts-extractor agent |
-| EN-009 | TASK-046..049 | Mind Map Generator (Mermaid + ASCII) |
+| EN-007 | TASK-101..105, 105A, 106, 107 | ts-parser agent (8 tasks) |
+| EN-008 | TASK-106..112, 112A, 112B | ts-extractor agent (9 tasks) |
+| EN-009 | TASK-001..004* | Mind Map Generator (*enabler-scoped per DEC-003) |
 | EN-013 | TASK-120..125 | Context injection |
 | EN-014 | TASK-126..130 | Domain context files |
-| EN-015 | TASK-131..137 | Validation & tests |
-| EN-016 | TASK-113..119 | ts-formatter agent (renumbered from EN-009) |
+| EN-015 | TASK-131..138 | Validation & tests (TASK-138 per DEC-003:D-005) |
+| EN-016 | TASK-113..119 | ts-formatter agent |
 
-### Critical Dependencies
+### Critical Dependencies (Updated per DEC-003)
 
 ```
-EN-007 (ts-parser)
-    │
-    └──▶ EN-008 (ts-extractor) ──▶ [GATE-5]
+EN-007 (ts-parser) ────────────────┐
+    │                              │
+    └──▶ EN-008 (ts-extractor)     │
+              │                    │  GROUP 1: SEQUENTIAL
+              │                    │
+╔═════════════╪════════════════════╪═════════════════════════════════════╗
+║             ▼                                                          ║
+║    EN-016 (ts-formatter) ◄───────────────────┐                        ║
+║             │                                │  GROUP 2: PARALLEL      ║
+║    EN-013 (context injection) ───────────────┤                        ║
+╚═════════════╪════════════════════════════════╪═════════════════════════╝
+              │                                │
+              ▼                                │
+╔═════════════════════════════════════════════╪═════════════════════════╗
+║    EN-009 (mind-map) ◄───────────────────────┘  GROUP 3: SEQUENTIAL   ║
+║             │          Blocked By: EN-016                              ║
+╚═════════════╪═════════════════════════════════════════════════════════╝
               │
-              └──▶ EN-016 (ts-formatter) ──▶ EN-009 (mind-map)
-                        │
-    EN-013 (context) ───┤
-                        │
-    EN-014 (domains) ───┼──▶ EN-015 (validation) ──▶ [GATE-6]
-                        │
-    EN-011 (worktracker)┘
-                              │
-                              └──▶ EN-012 (CLI) ──▶ [GATE-7]
+              ▼ [GATE-5]
+╔═════════════════════════════════════════════════════════════════════╗
+║    EN-011 (worktracker) ─────────┬──────────────┐                   ║
+║                                  │              │  GROUP 4: PARALLEL ║
+║    EN-014 (domains) ─────────────┼──────────────┤                   ║
+║                                  │              │                   ║
+║    EN-015 (validation) ──────────┴──────────────┘                   ║
+╚═════════════════════════════════════════════════════════════════════╝
+              │
+              ▼ [GATE-6]
+
+[EN-012 (CLI) moved to FEAT-003 per DISC-002]
 ```
 
 ### Risk Areas
@@ -273,33 +302,37 @@ EN-007 (ts-parser)
 
 | ID | Title | Status | Tasks | Gate |
 |----|-------|--------|-------|------|
-| EN-007 | ts-parser Agent Implementation | pending | TASK-101..105 | GATE-5 |
-| EN-008 | ts-extractor Agent Implementation | pending | TASK-106..112 | GATE-5 |
-| EN-009 | ts-formatter Agent Implementation | pending | TASK-113..119 | GATE-5 |
-| EN-011 | Worktracker Integration | pending | (existing) | GATE-6 |
-| EN-012 | Skill CLI Interface | pending | (existing) | GATE-7 |
+| EN-007 | ts-parser Agent Implementation | **gate-5-passed** | TASK-101..107 | GATE-5 ✓ |
+| EN-008 | ts-extractor Agent Implementation | **gate-5-ready** | TASK-106..112B | GATE-5 |
+| EN-009 | Mind Map Generator (Mermaid + ASCII) | pending | TASK-001..004* | GATE-5 |
+| EN-011 | Worktracker Integration | pending | (legacy) | GATE-6 |
 | EN-013 | Context Injection Implementation | pending | TASK-120..125 | GATE-5 |
 | EN-014 | Domain Context Files | pending | TASK-126..130 | GATE-6 |
-| EN-015 | Validation & Test Cases | pending | TASK-131..137 | GATE-6 |
+| EN-015 | Validation & Test Cases | pending | TASK-131..138 | GATE-6 |
+| EN-016 | ts-formatter Agent Implementation | pending | TASK-113..119 | GATE-5 |
 
-### Deprecated Enablers
+*EN-009 uses enabler-scoped task numbering per DEC-003:AI-004
 
-| ID | Title | Absorbed Into | Rationale |
-|----|-------|---------------|-----------|
-| EN-010 | Artifact Packaging & Deep Linking | EN-009 | ts-formatter handles all packaging per ADR-002 |
+### Deprecated/Moved Enablers
+
+| ID | Title | Status | Rationale |
+|----|-------|--------|-----------|
+| EN-010 | Artifact Packaging & Deep Linking | **DEPRECATED** | Absorbed into EN-016 per ADR-002 |
+| EN-012 | Skill CLI Interface | **MOVED** | → FEAT-003 per DISC-002 (Above and Beyond) |
 
 ---
 
-## Execution Queue
+## Execution Queue (Updated per DEC-003)
 
 ### Group 1: Core Agents (GATE-5)
 
 ```yaml
 group: 1
 mode: SEQUENTIAL
+status: in_progress
 enablers:
-  - EN-007  # ts-parser (foundation)
-  - EN-008  # ts-extractor (depends on parser output)
+  - EN-007  # ts-parser (foundation) - GATE-5 PASSED ✓
+  - EN-008  # ts-extractor (depends on parser output) - gate-5-ready
 gate: GATE-5
 ```
 
@@ -308,33 +341,42 @@ gate: GATE-5
 ```yaml
 group: 2
 mode: PARALLEL
+status: pending
 enablers:
-  - EN-009  # ts-formatter
+  - EN-016  # ts-formatter (renumbered per BUG-001)
   - EN-013  # Context injection
 gate: GATE-5
+note: "EN-009 moved to Group 3 per DEC-003 (depends on EN-016)"
 ```
 
-### Group 3: Integration & Validation (GATE-6)
+### Group 3: Mind Map Generation (GATE-5) ← NEW per DEC-003
 
 ```yaml
 group: 3
-mode: PARALLEL
+mode: SEQUENTIAL
+status: pending
 enablers:
-  - EN-011  # Worktracker
-  - EN-014  # Domain context files
-  - EN-015  # Validation & tests
-gate: GATE-6
+  - EN-009  # Mind Map Generator (depends on EN-016)
+gate: GATE-5
+tasks: TASK-001..004  # Enabler-scoped numbering per DEC-003:AI-004
+note: "NEW group per DEC-003 - EN-009 must wait for EN-016 ts-formatter output"
 ```
 
-### Group 4: CLI (GATE-7)
+### Group 4: Integration & Validation (GATE-6) ← Renumbered from Group 3
 
 ```yaml
 group: 4
-mode: SEQUENTIAL
+mode: PARALLEL
+status: pending
 enablers:
-  - EN-012  # CLI interface (LAST)
-gate: GATE-7
+  - EN-011  # Worktracker
+  - EN-014  # Domain context files
+  - EN-015  # Validation & tests (TASK-138 added per DEC-003:D-005)
+gate: GATE-6
+note: "Renumbered from Group 3 per DEC-003"
 ```
+
+**Note:** Group 4 (CLI/EN-012) moved to FEAT-003 per DISC-002 (Above and Beyond scope)
 
 ---
 
@@ -344,7 +386,9 @@ gate: GATE-7
 |----------|---------|
 | [FEAT-002-implementation.md](./FEAT-002-implementation.md) | Feature definition |
 | [DISC-001](./FEAT-002--DISC-001-enabler-alignment-analysis.md) | Alignment analysis |
-| [ORCHESTRATION.yaml](./ORCHESTRATION.yaml) | Machine-readable state |
+| [DISC-002](./FEAT-002--DISC-002-future-scope-analysis.md) | Future scope (EN-012 → FEAT-003) |
+| [DEC-003](./FEAT-002--DEC-003-orchestration-execution-order.md) | Orchestration execution order correction |
+| [ORCHESTRATION.yaml](./ORCHESTRATION.yaml) | Machine-readable state (SSOT) |
 | [TDD-ts-parser.md](../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Parser design |
 | [TDD-ts-extractor.md](../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md) | Extractor design |
 | [TDD-ts-formatter.md](../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-formatter.md) | Formatter design |
@@ -357,3 +401,6 @@ gate: GATE-7
 | Date | Author | Notes |
 |------|--------|-------|
 | 2026-01-26 | Claude | Created per DISC-001 restructuring |
+| 2026-01-26 | Claude | DISC-002 executed: EN-012 moved to FEAT-003, GATE-7 removed |
+| 2026-01-28 | Claude | EN-007 GATE-5 passed, EN-008 gate-5-ready |
+| 2026-01-28 | Claude | **DEC-003 AI-003/AI-004 executed:** Group renumbering (Group 2→EN-013+EN-016, NEW Group 3→EN-009, old Group 3→Group 4). EN-009 tasks created with enabler-scoped numbering (TASK-001..004). |
