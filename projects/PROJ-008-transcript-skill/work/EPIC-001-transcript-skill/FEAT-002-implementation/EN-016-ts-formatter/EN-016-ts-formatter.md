@@ -17,7 +17,7 @@ RENUMBERED: EN-009 -> EN-016 per BUG-001 (ID conflict with Mind Map Generator)
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-26T16:30:00Z

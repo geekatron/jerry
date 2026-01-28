@@ -17,7 +17,7 @@ CREATED: 2026-01-26 per DISC-001 restructuring
 | **Feature** | FEAT-002: Transcript Skill Implementation |
 | **Status** | ACTIVE |
 | **Created** | 2026-01-26 |
-| **Updated** | 2026-01-28 (EN-008 GATE-5 passed) |
+| **Updated** | 2026-01-28 (Group 2 started) |
 | **Gates** | GATE-5, GATE-6 (GATE-7/EN-012 moved to FEAT-003 per DISC-002) |
 
 ---
@@ -337,17 +337,18 @@ gate: GATE-5
 note: "Group 1 (Core Agents) complete. Ready for Group 2."
 ```
 
-### Group 2: Context & Formatting (GATE-5)
+### Group 2: Context & Formatting (GATE-5) ← **ACTIVE**
 
 ```yaml
 group: 2
 mode: PARALLEL
-status: pending
+status: in_progress  # Started 2026-01-28
+execution_order: [EN-016, EN-013]  # Option A: Sequential within parallel group
 enablers:
-  - EN-016  # ts-formatter (renumbered per BUG-001)
-  - EN-013  # Context injection
+  - EN-016  # ts-formatter (first - higher effort, establishes output structure)
+  - EN-013  # Context injection (second - references established patterns)
 gate: GATE-5
-note: "EN-009 moved to Group 3 per DEC-003 (depends on EN-016)"
+note: "Option A execution: EN-016 first → EN-013. User approved 2026-01-28."
 ```
 
 ### Group 3: Mind Map Generation (GATE-5) ← NEW per DEC-003
@@ -406,3 +407,4 @@ note: "Renumbered from Group 3 per DEC-003"
 | 2026-01-28 | Claude | EN-007 GATE-5 passed, EN-008 gate-5-ready |
 | 2026-01-28 | Claude | **DEC-003 AI-003/AI-004 executed:** Group renumbering (Group 2→EN-013+EN-016, NEW Group 3→EN-009, old Group 3→Group 4). EN-009 tasks created with enabler-scoped numbering (TASK-001..004). |
 | 2026-01-28 | Claude | **EN-008 GATE-5 PASSED:** Human approval received. Quality evidence: ps-critic (0.91 PASS), nse-qa (0.88 PASS). Group 1 (Core Agents) complete. Ready for Group 2 (EN-016 + EN-013). |
+| 2026-01-28 | Claude | **Group 2 Started:** Execution strategy Option A (EN-016 first → EN-013). User approved sequential execution within parallel group. EN-016 in_progress. |

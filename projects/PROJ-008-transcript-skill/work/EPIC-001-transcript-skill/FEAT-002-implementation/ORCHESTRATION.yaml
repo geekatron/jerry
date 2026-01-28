@@ -10,7 +10,7 @@ workflow:
 
 metadata:
   created_at: "2026-01-26T17:30:00Z"
-  updated_at: "2026-01-28T14:00:00Z"
+  updated_at: "2026-01-28T16:00:00Z"
   prerequisite: "FEAT-001 Complete (All 4 Gates Passed)"
   alignment_analysis: "DISC-001"
   folder_structure_precedence: "DISC-003"
@@ -246,7 +246,7 @@ gates:
 
 # Execution queue
 execution_queue:
-  current_group: 1  # Core Agents in progress
+  current_group: 2  # Context & Formatting (Group 1 complete)
   groups:
     - id: 1
       name: "Core Agents"
@@ -259,11 +259,13 @@ execution_queue:
     - id: 2
       name: "Context & Formatting"
       mode: PARALLEL
+      status: in_progress  # Started 2026-01-28
+      execution_order: [EN-016, EN-013]  # Sequential within parallel group per user approval
       enablers:
-        - EN-013   # Context Injection
-        - EN-016   # ts-formatter
+        - EN-016   # ts-formatter (first - higher effort, establishes output structure)
+        - EN-013   # Context Injection (second - lower effort, references patterns)
       gate: GATE-5
-      note: "EN-009 moved to Group 3 per DEC-003 (depends on EN-016)"
+      note: "Option A execution: EN-016 first → EN-013. EN-009 moved to Group 3 per DEC-003."
 
     - id: 3
       name: "Mind Map Generation"
@@ -344,3 +346,6 @@ history:
   - timestamp: "2026-01-28T15:00:00Z"
     event: "EN-008 GATE-5 passed"
     details: "ts-extractor implementation complete. Quality reviews: ps-critic (0.91 PASS), nse-qa (0.88 PASS). Human approval received. Group 1 (Core Agents) complete. Ready for Group 2 (EN-016 + EN-013)."
+  - timestamp: "2026-01-28T16:00:00Z"
+    event: "Group 2 started - Context & Formatting"
+    details: "Execution strategy: Option A (EN-016 first → EN-013). User approved sequential execution within parallel group. EN-016 (ts-formatter) higher effort/priority, establishes output structure. EN-013 (Context Injection) follows, can reference established patterns."
