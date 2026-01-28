@@ -17,7 +17,7 @@ CREATED: 2026-01-26 per DISC-001 restructuring
 | **Feature** | FEAT-002: Transcript Skill Implementation |
 | **Status** | ACTIVE |
 | **Created** | 2026-01-26 |
-| **Updated** | 2026-01-28 (DEC-003 execution) |
+| **Updated** | 2026-01-28 (EN-008 GATE-5 passed) |
 | **Gates** | GATE-5, GATE-6 (GATE-7/EN-012 moved to FEAT-003 per DISC-002) |
 
 ---
@@ -109,7 +109,7 @@ PREREQUISITE: FEAT-001 Complete (All 4 Gates Passed ✓)
 ║  │   ts-parser Agent         │─────▶│   ts-extractor Agent      │        ║
 ║  │   ──────────────────      │      │   ──────────────────      │        ║
 ║  │   TASK-101..105           │      │   TASK-106..112           │        ║
-║  │   Status: GATE-5 PASSED ✓ │      │   Status: gate-5-ready    │        ║
+║  │   Status: GATE-5 PASSED ✓ │      │   Status: GATE-5 PASSED ✓ │        ║
 ║  │                           │      │                           │        ║
 ║  │   Implements:             │      │   Implements:             │        ║
 ║  │   - VTT processing        │      │   - Action items (FR-006) │        ║
@@ -229,7 +229,7 @@ The following changes were made per DISC-001 Alignment Analysis and DEC-003 Exec
 | Original | New State | Rationale |
 |----------|-----------|-----------|
 | EN-007 | Revised → **GATE-5 PASSED** | Aligned with TDD-ts-parser.md, tasks TASK-101..105+105A+106+107 |
-| EN-008 | **MAJOR Rewrite** → gate-5-ready | 6 parallel agents → 1 ts-extractor per TDD |
+| EN-008 | **MAJOR Rewrite** → **GATE-5 PASSED** | 6 parallel agents → 1 ts-extractor per TDD |
 | EN-009 | **RESTORED** | Mind Map Generator (Mermaid + ASCII), TASK-001..004 (enabler-scoped per DEC-003) |
 | EN-010 | **DEPRECATED** | Absorbed into EN-016 per ADR-002 |
 | EN-012 | **MOVED** | → FEAT-003 per DISC-002 (Above and Beyond scope) |
@@ -303,7 +303,7 @@ EN-007 (ts-parser) ────────────────┐
 | ID | Title | Status | Tasks | Gate |
 |----|-------|--------|-------|------|
 | EN-007 | ts-parser Agent Implementation | **gate-5-passed** | TASK-101..107 | GATE-5 ✓ |
-| EN-008 | ts-extractor Agent Implementation | **gate-5-ready** | TASK-106..112B | GATE-5 |
+| EN-008 | ts-extractor Agent Implementation | **gate-5-passed** ✓ | TASK-106..112B | GATE-5 ✓ |
 | EN-009 | Mind Map Generator (Mermaid + ASCII) | pending | TASK-001..004* | GATE-5 |
 | EN-011 | Worktracker Integration | pending | (legacy) | GATE-6 |
 | EN-013 | Context Injection Implementation | pending | TASK-120..125 | GATE-5 |
@@ -329,11 +329,12 @@ EN-007 (ts-parser) ────────────────┐
 ```yaml
 group: 1
 mode: SEQUENTIAL
-status: in_progress
+status: COMPLETE ✓
 enablers:
   - EN-007  # ts-parser (foundation) - GATE-5 PASSED ✓
-  - EN-008  # ts-extractor (depends on parser output) - gate-5-ready
+  - EN-008  # ts-extractor (depends on parser output) - GATE-5 PASSED ✓
 gate: GATE-5
+note: "Group 1 (Core Agents) complete. Ready for Group 2."
 ```
 
 ### Group 2: Context & Formatting (GATE-5)
@@ -404,3 +405,4 @@ note: "Renumbered from Group 3 per DEC-003"
 | 2026-01-26 | Claude | DISC-002 executed: EN-012 moved to FEAT-003, GATE-7 removed |
 | 2026-01-28 | Claude | EN-007 GATE-5 passed, EN-008 gate-5-ready |
 | 2026-01-28 | Claude | **DEC-003 AI-003/AI-004 executed:** Group renumbering (Group 2→EN-013+EN-016, NEW Group 3→EN-009, old Group 3→Group 4). EN-009 tasks created with enabler-scoped numbering (TASK-001..004). |
+| 2026-01-28 | Claude | **EN-008 GATE-5 PASSED:** Human approval received. Quality evidence: ps-critic (0.91 PASS), nse-qa (0.88 PASS). Group 1 (Core Agents) complete. Ready for Group 2 (EN-016 + EN-013). |

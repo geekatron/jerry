@@ -171,14 +171,14 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 ```
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
-|      (Restructured per DISC-001, BUG-001, DISC-002)              |
+|   (Updated: 2026-01-28 - Group 1 Complete, EN-007+EN-008 PASSED)  |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/8 completed)             |
+| Enablers:  [#####...............] 25% (2/8 completed)            |
 | Deprecated: EN-010 (absorbed into EN-016)                        |
 | Moved:     EN-012 → FEAT-003 (Above and Beyond)                  |
-| Tasks:     [....................] 0% (0/45 completed)            |
+| Tasks:     [######..............] 35% (17/49 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                             |
+| Overall:   [#####...............] 25%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -189,12 +189,12 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | **Active Enablers** | 8 | EN-007,008,009,011,013,014,015,016 |
 | **Deprecated Enablers** | 1 | EN-010 absorbed into EN-016 |
 | **Moved Enablers** | 1 | EN-012 → FEAT-003 per DISC-002 |
-| **Completed Enablers** | 0 | |
-| **Total Tasks** | 45 | EN-009:TASK-001..004*, 055..058, 101-137 (*enabler-scoped, excludes EN-012) |
-| **Completed Tasks** | 0 | |
+| **Completed Enablers** | 2 | EN-007 ✓, EN-008 ✓ (Group 1 Complete) |
+| **Total Tasks** | 49 | EN-009:TASK-001..004*, 055..058, 101-138 (*enabler-scoped) |
+| **Completed Tasks** | 17 | EN-007 (8) + EN-008 (9) |
 | **Gates Total** | 2 | GATE-5, GATE-6 (GATE-7 moved to FEAT-003) |
-| **Gates Passed** | 0 | |
-| **Completion %** | 0% | |
+| **Gates Passed** | 0 | GATE-5 partial (EN-009, EN-013, EN-016 pending) |
+| **Completion %** | 25% | 2/8 enablers complete |
 | **Bug Resolutions** | 1 | BUG-001 (EN-009 ID conflict resolved) |
 
 ### Orchestration Artifacts

@@ -46,7 +46,7 @@ enablers:
 
   EN-008:
     title: "ts-extractor Agent Implementation"
-    status: gate-5-ready
+    status: gate-5-passed
     priority: high
     gate: GATE-5
     tasks:
@@ -72,8 +72,8 @@ enablers:
         score: 0.88
         status: PASS
     approval:
-      human_approval: pending
-      approved_at: null
+      human_approval: true
+      approved_at: "2026-01-28T15:00:00Z"
 
   EN-009:
     title: "Mind Map Generator (Mermaid + ASCII)"
@@ -304,14 +304,14 @@ task_allocation:
 # Metrics
 metrics:
   enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
-  enablers_complete: 1  # EN-007 passed GATE-5
-  enablers_gate_ready: 1  # EN-008 ready for GATE-5
+  enablers_complete: 2  # EN-007, EN-008 passed GATE-5
+  enablers_gate_ready: 0  # No enablers currently awaiting human approval
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 49  # Updated with additional contract/integration tests
   tasks_complete: 17  # EN-007 (8) + EN-008 tasks (9 per summary)
-  gates_passed: 0  # GATE-5 not yet fully passed (awaiting EN-008 human approval)
+  gates_passed: 0  # GATE-5 not yet fully passed (EN-009, EN-013, EN-016 still pending)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 12  # 1/8 enablers complete
+  completion_percentage: 25  # 2/8 enablers complete
 
 # Checkpoint tracking
 checkpoints:
@@ -341,3 +341,6 @@ history:
   - timestamp: "2026-01-28T14:00:00Z"
     event: "DEC-003 execution - Group renumbering and EN-009 task files"
     details: "Per DEC-003: (1) Group 2 now EN-013+EN-016 only (parallel). (2) NEW Group 3 for EN-009 (sequential after EN-016). (3) Old Group 3 renumbered to Group 4. (4) EN-009 task IDs changed to enabler-scoped TASK-001..004. (5) TASK-138 added to EN-015 for EN-008 deferred findings."
+  - timestamp: "2026-01-28T15:00:00Z"
+    event: "EN-008 GATE-5 passed"
+    details: "ts-extractor implementation complete. Quality reviews: ps-critic (0.91 PASS), nse-qa (0.88 PASS). Human approval received. Group 1 (Core Agents) complete. Ready for Group 2 (EN-016 + EN-013)."
