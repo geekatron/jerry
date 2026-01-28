@@ -20,13 +20,13 @@ description: |
   files at semantic boundaries per ADR-004.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: VERIFIED_COMPLETE
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:30:00Z"
-updated_at: "2026-01-26T18:30:00Z"
+updated_at: "2026-01-28T17:30:00Z"
 
 parent_id: "EN-016"
 
@@ -47,15 +47,18 @@ due_date: null
 
 activity: DEVELOPMENT
 original_estimate: 4
-remaining_work: 4
-time_spent: 0
+remaining_work: 0
+time_spent: 1
+note: "FileSplitter already defined in ts-formatter.md lines 86-92 + Split File Template"
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
+
+> **Verification Result:** FileSplitter verified complete in ts-formatter.md. Split decision flow (lines 81-84), semantic boundary detection (## heading), continuation file naming, and Split File Template (with navigation) all defined per ADR-004.
 
 ---
 
@@ -235,4 +238,5 @@ Reference test scenarios:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-016 |
+| 2026-01-28 | **DONE** | FileSplitter verified complete. Algorithm (split at ## heading), soft/hard limits, continuation naming, and Split File Template (PAT-005) all defined in ts-formatter.md v1.1.0. |
 

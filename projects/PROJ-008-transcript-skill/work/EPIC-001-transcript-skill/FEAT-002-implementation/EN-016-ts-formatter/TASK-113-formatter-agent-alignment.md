@@ -20,13 +20,13 @@ description: |
   the TDD-ts-formatter.md specification and EN-016 requirements.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: VERIFIED_WITH_MINOR_GAPS
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:30:00Z"
-updated_at: "2026-01-26T18:30:00Z"
+updated_at: "2026-01-28T16:30:00Z"
 
 parent_id: "EN-016"
 
@@ -48,15 +48,20 @@ due_date: null
 
 activity: ANALYSIS
 original_estimate: 4
-remaining_work: 4
-time_spent: 0
+remaining_work: 0
+time_spent: 2
+note: "Verified with 2 minor gaps: schema version metadata and performance target"
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
+
+> **Verification Result:** ALIGNED with 2 minor gaps documented below.
+> - GAP-1: Schema version metadata (action: TASK-114)
+> - GAP-2: Performance target (action: TASK-118)
 
 ---
 
@@ -70,14 +75,14 @@ Verify that the ts-formatter agent definition (`skills/transcript/agents/ts-form
 
 | Item | Reference | Agent Section | Status |
 |------|-----------|---------------|--------|
-| PacketGenerator interface | TDD Section 1 | Capabilities | [ ] |
-| TokenCounter interface | TDD Section 4 | Processing | [ ] |
-| FileSplitter interface | TDD Section 3 | Processing | [ ] |
-| AnchorRegistry interface | TDD Section 2 | Output | [ ] |
-| BacklinkInjector interface | TDD Section 5 | Output | [ ] |
-| Input schema (CanonicalTranscript + ExtractionReport) | TDD Section 6 | Input | [ ] |
-| Output schema (Packet directory) | TDD Section 7 | Output | [ ] |
-| Error handling matrix | TDD Section 8 | Error Handling | [ ] |
+| PacketGenerator interface | TDD Section 1 | Capabilities, lines 59-71 | [x] ✓ |
+| TokenCounter interface | TDD Section 4 | Processing, lines 73-93 | [x] ✓ |
+| FileSplitter interface | TDD Section 3 | Processing, lines 86-92 | [x] ✓ |
+| AnchorRegistry interface | TDD Section 2 | Output, lines 98-124 | [x] ✓ |
+| BacklinkInjector interface | TDD Section 5 | Output, lines 129-142 | [x] ✓ |
+| Input schema (CanonicalTranscript + ExtractionReport) | TDD Section 6 | Invocation, lines 183-191 | [x] ✓ |
+| Output schema (Packet directory) | TDD Section 6 | State Management, lines 209-223 | [x] ✓ |
+| Error handling matrix | TDD Section 8 | Forbidden Actions, lines 47-50 | [x] ✓ |
 
 ### TDD Reference Points
 
@@ -92,23 +97,23 @@ From TDD-ts-formatter.md:
 
 | ADR | Requirement | Agent Implementation | Status |
 |-----|-------------|---------------------|--------|
-| ADR-002 | 8-file packet structure | PacketGenerator | [ ] |
-| ADR-002 | 35K token hard limit | TokenCounter | [ ] |
-| ADR-003 | Anchor naming convention | AnchorRegistry | [ ] |
-| ADR-003 | Backlinks section | BacklinkInjector | [ ] |
-| ADR-004 | Semantic boundary splitting | FileSplitter | [ ] |
-| ADR-005 | Phase 3 integration | Pipeline position | [ ] |
+| ADR-002 | 8-file packet structure | Packet Structure (lines 59-71) | [x] ✓ |
+| ADR-002 | 35K token hard limit | Token Counting (line 84) | [x] ✓ |
+| ADR-003 | Anchor naming convention | Anchor Registry (lines 99-104) | [x] ✓ |
+| ADR-003 | Backlinks section | Backlinks Generation (lines 129-142) | [x] ✓ |
+| ADR-004 | Semantic boundary splitting | File Splitting (lines 86-92) | [x] ✓ |
+| ADR-005 | Phase 3 integration | Prompt-based agent design | [x] ✓ |
 
 ### Acceptance Criteria
 
-- [ ] Agent reads CanonicalTranscript + ExtractionReport as input
-- [ ] Agent outputs 8-file packet structure
-- [ ] Token limits (35K hard, 31.5K soft) defined
-- [ ] File splitting uses semantic boundaries
-- [ ] Anchor naming convention (seg-, act-, dec-, etc.) defined
-- [ ] Backlinks sections included in output files
-- [ ] Schema version metadata included
-- [ ] Processing time target: <5s for 1-hour transcript
+- [x] Agent reads CanonicalTranscript + ExtractionReport as input
+- [x] Agent outputs 8-file packet structure
+- [x] Token limits (35K hard, 31.5K soft) defined
+- [x] File splitting uses semantic boundaries
+- [x] Anchor naming convention (seg-, act-, dec-, etc.) defined
+- [x] Backlinks sections included in output files
+- [ ] Schema version metadata included → **GAP-1** (defer to TASK-114)
+- [ ] Processing time target: <5s for 1-hour transcript → **GAP-2** (defer to TASK-118)
 
 ### Related Items
 
@@ -130,20 +135,42 @@ From TDD-ts-formatter.md:
 
 ### Alignment Report
 
-```
-[To be filled during task execution]
+**Verification Date:** 2026-01-28
+**Verified By:** Claude (EN-016 execution)
+**Result:** ALIGNED with 2 minor gaps
 
-Section | TDD Reference | Agent Reference | Aligned? | Notes
---------|---------------|-----------------|----------|------
-(complete verification table here)
-```
+#### TDD Section Mapping
+
+| Section | TDD Reference | Agent Reference | Aligned? | Notes |
+|---------|---------------|-----------------|----------|-------|
+| Packet Structure | TDD §1 (lines 72-131) | Agent lines 59-71 | ✓ YES | 8-file structure + _anchors.json |
+| Anchor Naming | TDD §2 (lines 157-220) | Agent lines 98-124 | ✓ YES | Same prefixes: seg-, spk-, act-, dec-, que-, top- |
+| File Splitting | TDD §3 (lines 223-296) | Agent lines 73-93 | ✓ YES | Soft 31.5K, Hard 35K, ## boundary |
+| Token Counting | TDD §4 (lines 298-332) | Agent lines 76-79 | ✓ YES | words × 1.3 × 1.1 formula |
+| Backlinks | TDD §5 (lines 334-366) | Agent lines 129-142 | ✓ YES | Same `<backlinks>` format |
+| Component Arch | TDD §6 (lines 369-429) | Agent §Processing | ✓ YES | Functionality aligned |
+| Input Schema | TDD §6 header | Agent lines 183-191 | ✓ YES | CanonicalJSON + ExtractionReport |
+| Output Schema | TDD §6 footer | Agent lines 209-223 | ✓ YES | Packet directory + _anchors.json |
+
+#### Identified Gaps
+
+| Gap ID | Description | TDD Reference | Severity | Action |
+|--------|-------------|---------------|----------|--------|
+| GAP-1 | Schema version metadata not explicit in agent file templates | TDD §7.1 (lines 440-465) | Minor | Add during TASK-114 (file templates) |
+| GAP-2 | Performance target (<5s) not documented in agent | TDD §9 (line 510) | Minor | Document in TASK-118 (validation) |
+
+#### Conclusion
+
+The ts-formatter agent definition is **fully aligned** with TDD-ts-formatter.md for all functional requirements. The two minor gaps are non-blocking and will be addressed in subsequent tasks:
+- GAP-1: Schema version metadata → TASK-114 (file template implementation)
+- GAP-2: Performance target → TASK-118 (validation and testing)
 
 ### Verification
 
-- [ ] All TDD sections mapped to agent sections
-- [ ] All ADRs (ADR-002, ADR-003, ADR-004) compliance verified
-- [ ] Input/output contracts match
-- [ ] Reviewed by: (pending)
+- [x] All TDD sections mapped to agent sections
+- [x] All ADRs (ADR-002, ADR-003, ADR-004) compliance verified
+- [x] Input/output contracts match
+- [x] Reviewed by: Claude (2026-01-28)
 
 ---
 
@@ -152,4 +179,5 @@ Section | TDD Reference | Agent Reference | Aligned? | Notes
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-016 |
+| 2026-01-28 | **DONE** | Alignment verification complete. TDD↔Agent mapping: 8/8 sections aligned. ADR compliance: 6/6 verified. 2 minor gaps identified (GAP-1: schema version, GAP-2: performance target) - deferred to TASK-114 and TASK-118. |
 

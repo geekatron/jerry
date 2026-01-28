@@ -380,6 +380,280 @@ assertion_types:
     description: "Verify all topic segment_ids exist in parser output"
     implementation: "all(seg_id in parser_segments for topic in topics for seg_id in topic.segment_ids)"
 
+  # ---------------------------------------------------------------------------
+  # EXTRACTOR-TO-FORMATTER PIPELINE INTEGRATION (Added: TASK-119B)
+  # ---------------------------------------------------------------------------
+  extractor-to-formatter:
+    description: "ts-extractor output compatible with ts-formatter input"
+    pipeline_agents:
+      - agent: ts-extractor
+        role: producer
+        output_schema: "schemas/extraction-report.json"
+      - agent: ts-formatter
+        role: consumer
+        input_schema: "schemas/extraction-report.json"
+        output_schema: "schemas/packet-structure.json"
+
+    tests:
+      # -----------------------------------------------------------------------
+      # INT-EF-001: Entity Count Preservation
+      # -----------------------------------------------------------------------
+      - id: int-ef-001
+        name: "Entity counts preserved during formatting"
+        description: |
+          Verify that all entities extracted by ts-extractor appear in
+          the formatted packet output. No entities should be lost during
+          the formatting process.
+        priority: high
+        pipeline:
+          - agent: ts-extractor
+            input: "precalculated/canonical-001.json"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: formatter_output
+        assertions:
+          - id: int-ef-001-a
+            type: entity_count_match
+            entity: "action_items"
+            description: "Action item count matches between extractor and formatter"
+            expected: |
+              count(extractor_output.action_items) ==
+              count_entities_in_file(formatter_output/04-action-items.md)
+          - id: int-ef-001-b
+            type: entity_count_match
+            entity: "decisions"
+            description: "Decision count matches"
+            expected: |
+              count(extractor_output.decisions) ==
+              count_entities_in_file(formatter_output/05-decisions.md)
+          - id: int-ef-001-c
+            type: entity_count_match
+            entity: "questions"
+            description: "Question count matches"
+            expected: |
+              count(extractor_output.questions) ==
+              count_entities_in_file(formatter_output/06-questions.md)
+          - id: int-ef-001-d
+            type: entity_count_match
+            entity: "topics"
+            description: "Topic count matches"
+            expected: |
+              count(extractor_output.topics) ==
+              count_entities_in_file(formatter_output/07-topics.md)
+        acceptance_criteria:
+          - "AC-1: All action items from extractor appear in 04-action-items.md"
+          - "AC-2: All decisions from extractor appear in 05-decisions.md"
+          - "AC-3: All questions from extractor appear in 06-questions.md"
+          - "AC-4: All topics from extractor appear in 07-topics.md"
+
+      # -----------------------------------------------------------------------
+      # INT-EF-002: Citation Link Resolution
+      # -----------------------------------------------------------------------
+      - id: int-ef-002
+        name: "Extractor citations become valid formatter links"
+        description: |
+          Verify that citation references from ts-extractor are correctly
+          transformed into resolvable markdown links in the formatted output.
+          This ensures PAT-004 anti-hallucination works end-to-end.
+        priority: critical
+        pipeline:
+          - agent: ts-extractor
+            input: "precalculated/canonical-001.json"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: formatter_output
+        assertions:
+          - id: int-ef-002-a
+            type: citation_to_link_valid
+            description: "All extractor citations become valid markdown links"
+            expected: |
+              for each entity in [action_items, decisions, questions]:
+                markdown_link = find_link_for_entity(entity, formatter_output)
+                anchor_target = parse_anchor(markdown_link)
+                assert anchor_target in formatter_output._anchors.json
+          - id: int-ef-002-b
+            type: citation_segment_link_resolves
+            description: "Citation segment_ids link to actual transcript segments"
+            expected: |
+              for each citation in extractor_output.*.citation:
+                link = f"02-transcript.md#{citation.segment_id}"
+                assert anchor_exists(formatter_output, link)
+          - id: int-ef-002-c
+            type: citation_text_preserved
+            description: "Citation text_snippet appears in formatted entity"
+            expected: |
+              for each entity in extractor_output.action_items:
+                formatted_entity = find_entity_in_file(formatter_output/04-action-items.md, entity.id)
+                assert entity.citation.text_snippet in formatted_entity OR
+                       similarity(entity.citation.text_snippet, formatted_entity.content) > 0.9
+        acceptance_criteria:
+          - "AC-5: All citations become valid markdown anchor links"
+          - "AC-6: Segment ID links resolve to 02-transcript.md anchors"
+          - "AC-7: Citation text snippets preserved in formatted output"
+
+      # -----------------------------------------------------------------------
+      # INT-EF-003: Speaker Data Flow
+      # -----------------------------------------------------------------------
+      - id: int-ef-003
+        name: "Speaker data preserved in speaker section"
+        description: |
+          Verify that speaker information from ts-extractor is correctly
+          formatted in 03-speakers.md with all speaker attributes.
+        priority: medium
+        pipeline:
+          - agent: ts-extractor
+            input: "precalculated/canonical-001.json"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: formatter_output
+        assertions:
+          - id: int-ef-003-a
+            type: speaker_count_match
+            description: "All speakers from extractor appear in speakers file"
+            expected: |
+              count(extractor_output.speakers) ==
+              count_speakers_in_file(formatter_output/03-speakers.md)
+          - id: int-ef-003-b
+            type: speaker_name_preserved
+            description: "Speaker names match between extractor and formatter"
+            expected: |
+              for each speaker in extractor_output.speakers:
+                assert speaker.name in formatter_output/03-speakers.md
+          - id: int-ef-003-c
+            type: speaker_anchor_generated
+            description: "Each speaker has anchor in formatted output"
+            expected: |
+              for each speaker in extractor_output.speakers:
+                assert f"#spk-{speaker.id}" in formatter_output/03-speakers.md anchors
+        acceptance_criteria:
+          - "AC-8: All speakers from extractor in 03-speakers.md"
+          - "AC-9: Speaker names preserved exactly"
+          - "AC-10: Speaker anchors (spk-*) generated correctly"
+
+      # -----------------------------------------------------------------------
+      # INT-EF-004: Topic Hierarchy Preservation
+      # -----------------------------------------------------------------------
+      - id: int-ef-004
+        name: "Topic structure preserved in topics section"
+        description: |
+          Verify that topic segmentation from ts-extractor is correctly
+          represented in 07-topics.md with segment linkages.
+        priority: medium
+        pipeline:
+          - agent: ts-extractor
+            input: "precalculated/canonical-001.json"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: formatter_output
+        assertions:
+          - id: int-ef-004-a
+            type: topic_title_preserved
+            description: "Topic titles match between extractor and formatter"
+            expected: |
+              for each topic in extractor_output.topics:
+                assert topic.title in formatter_output/07-topics.md
+          - id: int-ef-004-b
+            type: topic_segment_links_valid
+            description: "Topic segment links resolve to transcript"
+            expected: |
+              for each topic in extractor_output.topics:
+                for each segment_id in topic.segment_ids:
+                  assert f"02-transcript.md#{segment_id}" resolves
+          - id: int-ef-004-c
+            type: topic_anchor_generated
+            description: "Each topic has anchor in formatted output"
+            expected: |
+              for each topic in extractor_output.topics:
+                assert f"#top-{topic.id}" in formatter_output/07-topics.md anchors
+        acceptance_criteria:
+          - "AC-11: Topic titles preserved in 07-topics.md"
+          - "AC-12: Topic segment_id links resolve to transcript"
+          - "AC-13: Topic anchors (top-*) generated correctly"
+
+      # -----------------------------------------------------------------------
+      # INT-EF-005: Backlink Generation
+      # -----------------------------------------------------------------------
+      - id: int-ef-005
+        name: "Backlinks generated from extractor citations"
+        description: |
+          Verify that ts-formatter generates backlinks in transcript segments
+          based on entity citations from ts-extractor. This completes the
+          bidirectional linking per ADR-003/IR-004.
+        priority: high
+        pipeline:
+          - agent: ts-extractor
+            input: "precalculated/canonical-001.json"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: formatter_output
+        assertions:
+          - id: int-ef-005-a
+            type: backlink_generated
+            description: "Backlinks generated for cited segments"
+            expected: |
+              for each action_item in extractor_output.action_items:
+                segment_id = action_item.citation.segment_id
+                backlinks_section = get_backlinks(formatter_output/02-transcript.md, segment_id)
+                assert f"04-action-items.md#{action_item.id}" in backlinks_section
+          - id: int-ef-005-b
+            type: backlink_context_present
+            description: "Backlinks include context from citing entity"
+            expected: |
+              for each backlink in formatter_output/_anchors.json.*.backlinks:
+                assert backlink.context != null and backlink.context != ""
+          - id: int-ef-005-c
+            type: backlink_bidirectional
+            description: "Forward and backward links are consistent"
+            expected: |
+              for each anchor in formatter_output._anchors.json:
+                for each backlink in anchor.backlinks:
+                  source_file = get_file(backlink.source_file)
+                  assert f"#{anchor.id}" in source_file.content
+        acceptance_criteria:
+          - "AC-14: Transcript segments have backlinks to citing entities"
+          - "AC-15: Backlinks include context (e.g., 'Action item cites this segment')"
+          - "AC-16: Forward links and backlinks are bidirectionally consistent"
+
+      # -----------------------------------------------------------------------
+      # INT-EF-006: Extraction Stats in Summary
+      # -----------------------------------------------------------------------
+      - id: int-ef-006
+        name: "Extraction statistics reflected in summary"
+        description: |
+          Verify that extraction_stats from ts-extractor are used to
+          generate accurate summary statistics in 01-summary.md.
+        priority: low
+        pipeline:
+          - agent: ts-extractor
+            input: "precalculated/canonical-001.json"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: formatter_output
+        assertions:
+          - id: int-ef-006-a
+            type: stats_in_summary
+            description: "Entity counts appear in summary"
+            expected: |
+              summary_text = formatter_output/01-summary.md
+              assert str(extractor_output.extraction_stats.action_items) in summary_text
+              assert str(extractor_output.extraction_stats.decisions) in summary_text
+              assert str(extractor_output.extraction_stats.questions) in summary_text
+          - id: int-ef-006-b
+            type: speaker_count_in_summary
+            description: "Speaker count in summary matches extractor"
+            expected: |
+              assert str(extractor_output.extraction_stats.speakers_identified) in
+                     formatter_output/01-summary.md
+        acceptance_criteria:
+          - "AC-17: Entity counts in 01-summary.md match extraction_stats"
+          - "AC-18: Speaker count in summary matches extractor output"
+
 # =============================================================================
 # TEST EXECUTION CONFIGURATION
 # =============================================================================

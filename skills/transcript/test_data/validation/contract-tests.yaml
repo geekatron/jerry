@@ -496,6 +496,224 @@ assertion_types:
     description: "Verify all items at path have citation object"
     implementation: "all(hasattr(item, 'citation') and item.citation for item in data[path])"
 
+  # ---------------------------------------------------------------------------
+  # ts-formatter Output Contracts (Added: TASK-119A)
+  # ---------------------------------------------------------------------------
+  ts-formatter-output:
+    description: "ts-formatter output matches 8-file packet structure (ADR-002)"
+    schema_ref: "schemas/packet-structure.json"
+
+    tests:
+      # Contract CON-FMT-001: 8-File Packet Structure
+      - id: con-fmt-001
+        name: "Formatter output has all 8 required files"
+        description: |
+          Verify that ts-formatter output contains all 8 files per ADR-002
+          packet structure specification.
+        input:
+          extraction_report: "precalculated/extraction-report-001.json"
+          canonical_transcript: "precalculated/canonical-001.json"
+        assertions:
+          - type: files_exist
+            expected:
+              - "00-index.md"
+              - "01-summary.md"
+              - "02-transcript.md"
+              - "03-speakers.md"
+              - "04-action-items.md"
+              - "05-decisions.md"
+              - "06-questions.md"
+              - "07-topics.md"
+          - type: file_exists
+            path: "_anchors.json"
+            description: "Anchor registry JSON must be present"
+        acceptance_criteria:
+          - "AC-1: All 8 content files present"
+          - "AC-2: _anchors.json present"
+
+      # Contract CON-FMT-002: Token Limits (ADR-002, NFR-009)
+      - id: con-fmt-002
+        name: "All files under 35K token limit"
+        description: |
+          Verify that no file in the packet exceeds the 35K token hard limit
+          per ADR-002 and NFR-009.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: token_count_max
+            max_tokens: 35000
+            apply_to: "*.md"
+            description: "All Markdown files under 35K tokens"
+          - type: token_count_soft
+            soft_limit: 31500
+            description: "Files approaching soft limit should be split"
+        acceptance_criteria:
+          - "AC-3: No file exceeds 35,000 tokens"
+          - "AC-4: Files approaching 31,500 trigger split evaluation"
+
+      # Contract CON-FMT-003: Index File Structure
+      - id: con-fmt-003
+        name: "Index file has required navigation structure"
+        description: |
+          Verify 00-index.md contains all required navigation sections
+          and links to other files in the packet.
+        input:
+          file: "output/transcript-meeting-001/00-index.md"
+        assertions:
+          - type: section_present
+            section: "Quick Navigation"
+            description: "Index must have Quick Navigation section"
+          - type: section_present
+            section: "Meeting Overview"
+            description: "Index must have Meeting Overview section"
+          - type: markdown_links_valid
+            description: "All links in index resolve to packet files"
+          - type: schema_version_present
+            path: "frontmatter.schema_version"
+            expected: "1.0"
+        acceptance_criteria:
+          - "AC-5: Quick Navigation section present"
+          - "AC-6: All internal links resolve to valid files"
+          - "AC-7: Schema version in frontmatter"
+
+      # Contract CON-FMT-004: Anchor Naming Convention (ADR-003)
+      - id: con-fmt-004
+        name: "Anchor IDs follow naming convention"
+        description: |
+          Verify all anchor IDs in the packet follow the naming convention
+          defined in ADR-003: {type}-{sequence} format.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: anchor_pattern
+            pattern: "^(seg|spk|act|dec|que|top)-\\d{3,}$"
+            files: ["02-transcript.md", "03-speakers.md", "04-action-items.md",
+                    "05-decisions.md", "06-questions.md", "07-topics.md"]
+          - type: anchor_uniqueness
+            description: "All anchor IDs unique within packet"
+        acceptance_criteria:
+          - "AC-8: All anchors match pattern {type}-NNN"
+          - "AC-9: No duplicate anchor IDs"
+
+      # Contract CON-FMT-005: Backlinks Section Present (IR-004)
+      - id: con-fmt-005
+        name: "Backlinks sections present in entity files"
+        description: |
+          Verify that each entity file contains a backlinks section
+          (Referenced By) per IR-004 bidirectional linking requirement.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: section_present
+            section: "Referenced By"
+            files: ["02-transcript.md", "04-action-items.md",
+                    "05-decisions.md", "06-questions.md", "07-topics.md"]
+            optional: true
+            description: "Backlinks section present if file has references"
+          - type: backlink_format_valid
+            description: "Backlinks formatted as markdown table"
+        acceptance_criteria:
+          - "AC-10: Backlinks section present where applicable"
+          - "AC-11: Backlinks formatted as table with From/Anchor/Context"
+
+      # Contract CON-FMT-006: Forward Links Resolve (ADR-003)
+      - id: con-fmt-006
+        name: "All forward links resolve to valid anchors"
+        description: |
+          Verify that all forward links (citations) in the packet resolve
+          to valid anchors defined in the packet or _anchors.json.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: forward_link_resolution
+            description: "All internal links resolve to existing anchors"
+            expected: "resolution_rate == 1.0"
+          - type: cross_file_link_valid
+            description: "Links to other files include correct path"
+          - type: anchor_exists_in_registry
+            description: "All referenced anchors exist in _anchors.json"
+        acceptance_criteria:
+          - "AC-12: 100% of forward links resolve"
+          - "AC-13: Cross-file links use correct relative paths"
+          - "AC-14: All anchors registered in _anchors.json"
+
+      # Contract CON-FMT-007: Split File Navigation (ADR-004)
+      - id: con-fmt-007
+        name: "Split files have navigation headers"
+        description: |
+          When files are split due to token limits, verify each part
+          has proper navigation headers per ADR-004.
+        input:
+          packet_path: "output/transcript-meeting-002/"  # Large transcript
+        preconditions:
+          - "02-transcript.md was split into multiple parts"
+        assertions:
+          - type: split_file_naming
+            pattern: "02-transcript-(\\d{2})\\.md"
+            description: "Split files follow naming convention"
+          - type: split_navigation_present
+            required_fields:
+              - "part"
+              - "total_parts"
+              - "previous"
+              - "next"
+            description: "Each split file has navigation frontmatter"
+          - type: split_links_valid
+            description: "Previous/Next links resolve correctly"
+        acceptance_criteria:
+          - "AC-15: Split files named {base}-NN.md"
+          - "AC-16: Navigation frontmatter in all split parts"
+          - "AC-17: Prev/Next links form valid chain"
+
+      # Contract CON-FMT-008: _anchors.json Structure
+      - id: con-fmt-008
+        name: "Anchor registry JSON is valid"
+        description: |
+          Verify _anchors.json contains valid JSON with all registered
+          anchors and their backlinks per ADR-003.
+        input:
+          file: "output/transcript-meeting-001/_anchors.json"
+        assertions:
+          - type: json_schema_valid
+            schema: "anchor-registry.json"
+          - type: required_fields
+            path: "$"
+            expected: ["version", "packet_id", "anchors"]
+          - type: anchor_has_required_fields
+            path: "$.anchors.*"
+            expected: ["type", "file", "line", "backlinks"]
+        acceptance_criteria:
+          - "AC-18: _anchors.json is valid JSON"
+          - "AC-19: Contains version, packet_id, anchors"
+          - "AC-20: Each anchor has type, file, line, backlinks"
+
+      # Contract CON-FMT-009: Schema Version Metadata (PAT-005)
+      - id: con-fmt-009
+        name: "All files have schema version metadata"
+        description: |
+          Verify all generated files include schema version in YAML
+          frontmatter per PAT-005 versioned schema evolution.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: frontmatter_present
+            files: "*.md"
+            description: "All Markdown files have YAML frontmatter"
+          - type: field_present
+            path: "frontmatter.schema_version"
+            files: "*.md"
+          - type: field_present
+            path: "frontmatter.generator"
+            expected: "ts-formatter"
+          - type: field_present
+            path: "frontmatter.generated_at"
+            pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
+        acceptance_criteria:
+          - "AC-21: All files have YAML frontmatter"
+          - "AC-22: schema_version field present"
+          - "AC-23: generator = 'ts-formatter'"
+          - "AC-24: generated_at ISO timestamp present"
+
 # =============================================================================
 # NOTES
 # =============================================================================

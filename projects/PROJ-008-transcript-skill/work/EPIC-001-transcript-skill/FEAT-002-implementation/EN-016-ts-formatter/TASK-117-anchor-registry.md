@@ -20,13 +20,13 @@ description: |
   anchors and their backlinks per ADR-003.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: VERIFIED_COMPLETE
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:30:00Z"
-updated_at: "2026-01-26T18:30:00Z"
+updated_at: "2026-01-28T17:30:00Z"
 
 parent_id: "EN-016"
 
@@ -47,15 +47,18 @@ due_date: null
 
 activity: DEVELOPMENT
 original_estimate: 4
-remaining_work: 4
-time_spent: 0
+remaining_work: 0
+time_spent: 1
+note: "AnchorRegistry already defined in ts-formatter.md lines 98-124"
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
+
+> **Verification Result:** AnchorRegistry verified complete in ts-formatter.md (lines 98-124). Anchor ID formats (seg-, spk-, act-, dec-, que-, top-), registry structure with backlinks, and _anchors.json output all defined per ADR-003.
 
 ---
 
@@ -243,4 +246,5 @@ Reference test scenarios:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-016 |
+| 2026-01-28 | **DONE** | AnchorRegistry verified complete. Anchor ID formats, registry JSON structure, _anchors.json output all defined in ts-formatter.md. Matches ADR-003 and TDD-ts-formatter §2. |
 

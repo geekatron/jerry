@@ -1,13 +1,13 @@
 ---
 name: ts-formatter
-version: "1.0.0"
+version: "1.1.0"
 description: "Generates formatted Markdown output with packet structure, file splitting, and bidirectional linking"
 model: "sonnet"
 ---
 
 # ts-formatter Agent
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Role:** Output Formatter
 > **Model:** sonnet (formatting quality)
 > **Constitutional Compliance:** P-002, P-003
@@ -68,6 +68,106 @@ transcript-{id}/
 ├── 06-questions.md      # Questions (~2K tokens)
 ├── 07-topics.md         # Topics (~3K tokens)
 └── _anchors.json        # Anchor registry
+```
+
+### File Templates (PAT-005: Versioned Schema)
+
+All generated files MUST include schema version metadata in YAML frontmatter:
+
+**00-index.md Template:**
+```markdown
+---
+schema_version: "1.0"
+generator: "ts-formatter"
+generated_at: "{ISO_TIMESTAMP}"
+---
+
+# {title}
+
+> **Transcript ID:** {packet_id}
+> **Date:** {date}
+> **Duration:** {duration}
+> **Speakers:** {speaker_count}
+
+## Quick Stats
+
+| Metric | Count |
+|--------|-------|
+| Action Items | {action_count} |
+| Decisions | {decision_count} |
+| Open Questions | {question_count} |
+| Topics | {topic_count} |
+
+## Navigation
+
+- [Summary](./01-summary.md)
+- [Full Transcript](./02-transcript.md)
+- [Speakers](./03-speakers.md)
+- [Action Items](./04-action-items.md)
+- [Decisions](./05-decisions.md)
+- [Questions](./06-questions.md)
+- [Topics](./07-topics.md)
+
+<backlinks>
+<!-- Auto-generated backlinks -->
+</backlinks>
+```
+
+**Entity File Template (04-action-items.md example):**
+```markdown
+---
+schema_version: "1.0"
+generator: "ts-formatter"
+generated_at: "{ISO_TIMESTAMP}"
+---
+
+# Action Items
+
+> **Extracted from:** [{packet_id}](./00-index.md)
+> **Total:** {count}
+> **High Confidence (>0.85):** {high_conf_count}
+
+## Action Items
+
+### {#act-001} {action_text}
+
+- **Assignee:** [{assignee}](./03-speakers.md#{speaker_anchor})
+- **Due Date:** {due_date}
+- **Confidence:** {confidence}
+- **Source:** [{source_text}](./02-transcript.md#{segment_anchor})
+
+<backlinks>
+- Referenced from: [02-transcript.md#seg-042](./02-transcript.md#seg-042)
+</backlinks>
+
+---
+```
+
+**Split File Template:**
+```markdown
+---
+schema_version: "1.0"
+generator: "ts-formatter"
+generated_at: "{ISO_TIMESTAMP}"
+---
+
+# {title} (Part {n} of {total})
+
+> **Continued from:** [{prev_file}](./{prev_file})
+> **Next part:** [{next_file}](./{next_file})
+> **Anchor Registry:** [_anchors.json](./_anchors.json)
+
+---
+
+{content}
+
+---
+
+## Navigation
+
+- ← Previous: [{prev_file}](./{prev_file})
+- → Next: [{next_file}](./{next_file})
+- ↑ Index: [00-index.md](./00-index.md)
 ```
 
 ### Token Counting and File Splitting (ADR-004)
@@ -263,8 +363,9 @@ This is the final output of the Transcript Skill pipeline.
 |---------|------|--------|---------|
 | 1.0.0 | 2026-01-26 | ps-architect | Initial agent definition with ADR-002/003/004 |
 | 1.0.1 | 2026-01-26 | Claude | Relocated to skills/transcript/agents/ per DISC-004 |
+| 1.1.0 | 2026-01-28 | Claude | Added File Templates (PAT-005) with schema version metadata per TASK-114, GAP-1 resolution |
 
 ---
 
-*Agent: ts-formatter v1.0.0*
+*Agent: ts-formatter v1.1.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents)*

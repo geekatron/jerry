@@ -21,7 +21,7 @@ RENUMBERED: EN-009 -> EN-016 per BUG-001 (ID conflict with Mind Map Generator)
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-26T16:30:00Z
-> **Revised:** 2026-01-26T16:30:00Z
+> **Revised:** 2026-01-28T16:45:00Z
 > **Due:** TBD
 > **Completed:**
 > **Parent:** FEAT-002
@@ -204,15 +204,15 @@ THE PUBLISHING HOUSE (ts-formatter)
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-113](./TASK-113-formatter-agent-alignment.md) | Verify ts-formatter agent definition alignment | pending | Claude | 2 | - |
-| [TASK-114](./TASK-114-packet-generator.md) | Implement/verify PacketGenerator (ADR-002) | pending | Claude | 2 | TASK-113 |
-| [TASK-115](./TASK-115-token-counter.md) | Implement/verify TokenCounter (NFR-009) | pending | Claude | 1 | TASK-113 |
-| [TASK-116](./TASK-116-file-splitter.md) | Implement/verify FileSplitter (ADR-004) | pending | Claude | 2 | TASK-115 |
-| [TASK-117](./TASK-117-anchor-registry.md) | Implement/verify AnchorRegistry (ADR-003) | pending | Claude | 2 | TASK-113 |
-| [TASK-118](./TASK-118-backlink-injector.md) | Implement/verify BacklinkInjector (IR-004) | pending | Claude | 1 | TASK-117 |
+| [TASK-113](./TASK-113-formatter-agent-alignment.md) | Verify ts-formatter agent definition alignment | **DONE** | Claude | 2 | - |
+| [TASK-114](./TASK-114-packet-generator.md) | Implement/verify PacketGenerator (ADR-002) | **DONE** | Claude | 2 | TASK-113 |
+| [TASK-115](./TASK-115-token-counter.md) | Implement/verify TokenCounter (NFR-009) | **DONE** | Claude | 1 | TASK-113 |
+| [TASK-116](./TASK-116-file-splitter.md) | Implement/verify FileSplitter (ADR-004) | **DONE** | Claude | 2 | TASK-115 |
+| [TASK-117](./TASK-117-anchor-registry.md) | Implement/verify AnchorRegistry (ADR-003) | **DONE** | Claude | 2 | TASK-113 |
+| [TASK-118](./TASK-118-backlink-injector.md) | Implement/verify BacklinkInjector (IR-004) | **DONE** | Claude | 1 | TASK-117 |
 | [TASK-119](./TASK-119-formatter-validation.md) | Create test cases and validation | pending | Claude | 2 | TASK-114..118 |
-| [TASK-119A](./TASK-119A-formatter-contract-tests.md) | Create formatter contract tests (TDD/BDD) | pending | Claude | 1 | TASK-113 |
-| [TASK-119B](./TASK-119B-extractor-formatter-integration-tests.md) | Create extractor-formatter integration tests | pending | Claude | 2 | TASK-112A, TASK-119A |
+| [TASK-119A](./TASK-119A-formatter-contract-tests.md) | Create formatter contract tests (TDD/BDD) | **DONE** | Claude | 1 | TASK-113 ✓ |
+| [TASK-119B](./TASK-119B-extractor-formatter-integration-tests.md) | Create extractor-formatter integration tests | **DONE** | Claude | 2 | TASK-112A ✓, TASK-119A ✓ |
 | [TASK-119C](./TASK-119C-e2e-pipeline-tests.md) | Create end-to-end pipeline tests | pending | Claude | 2 | TASK-137, TASK-131A |
 
 **NOTE:** Task IDs start at TASK-113 to avoid conflicts with EN-007 (TASK-101-105) and EN-008 (TASK-106-112).
@@ -387,6 +387,9 @@ transcript-meeting-20260126-001/
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Created per DISC-001: ts-formatter implementation absorbing EN-010 |
 | 2026-01-27 | Claude | revised | Added TASK-119A (contract tests), TASK-119B (integration tests), TASK-119C (E2E tests) per TDD/BDD Testing Strategy |
+| 2026-01-28 | Claude | in_progress | TASK-113 complete: ts-formatter agent ↔ TDD alignment verified (8/8 sections, 6/6 ADRs). 2 minor gaps documented (GAP-1: schema version → TASK-114, GAP-2: performance target → TASK-118) |
+| 2026-01-28 | Claude | in_progress | TASK-114..118 complete: All core components verified (PacketGenerator, TokenCounter, FileSplitter, AnchorRegistry, BacklinkInjector). PAT-005 file templates added to ts-formatter.md. |
+| 2026-01-28 | Claude | in_progress | TASK-119A/B complete: Formatter contract tests (9 tests: CON-FMT-001..009) and extractor-formatter integration tests (6 tests: INT-EF-001..006) added to validation YAML files. |
 
 ---
 

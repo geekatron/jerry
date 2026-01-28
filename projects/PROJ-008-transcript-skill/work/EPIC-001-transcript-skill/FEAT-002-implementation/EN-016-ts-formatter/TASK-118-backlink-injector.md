@@ -20,13 +20,13 @@ description: |
   backlinks sections in all output files per IR-004.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: VERIFIED_COMPLETE
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:30:00Z"
-updated_at: "2026-01-26T18:30:00Z"
+updated_at: "2026-01-28T17:30:00Z"
 
 parent_id: "EN-016"
 
@@ -47,15 +47,20 @@ due_date: null
 
 activity: DEVELOPMENT
 original_estimate: 2
-remaining_work: 2
-time_spent: 0
+remaining_work: 0
+time_spent: 1
+note: "BacklinkInjector already defined in ts-formatter.md lines 129-142"
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
+
+> **Verification Result:** BacklinkInjector verified complete in ts-formatter.md (lines 129-142). Backlinks section format with `<backlinks>` tags, generation algorithm, and injection flow all defined per IR-004.
+>
+> **Note:** GAP-2 (Performance target <5s) from TASK-113 should be documented in validation (TASK-119), not in agent definition.
 
 ---
 
@@ -233,4 +238,5 @@ Reference test scenarios:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-016 |
+| 2026-01-28 | **DONE** | BacklinkInjector verified complete. Backlinks section format, generation algorithm, `<backlinks>` tag injection all defined in ts-formatter.md. Matches IR-004 and TDD-ts-formatter §5. |
 
