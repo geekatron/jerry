@@ -10,7 +10,7 @@ workflow:
 
 metadata:
   created_at: "2026-01-26T17:30:00Z"
-  updated_at: "2026-01-28T12:45:00Z"
+  updated_at: "2026-01-28T14:00:00Z"
   prerequisite: "FEAT-001 Complete (All 4 Gates Passed)"
   alignment_analysis: "DISC-001"
   folder_structure_precedence: "DISC-003"
@@ -81,14 +81,15 @@ enablers:
     priority: high
     gate: GATE-5
     tasks:
-      start: TASK-046
-      end: TASK-049
+      start: TASK-001
+      end: TASK-004
+      note: "Enabler-scoped numbering per DEC-003"
     dependencies:
       - EN-016
     deliverables:
       - 07-mindmap/mindmap.mmd
       - 07-mindmap/mindmap.ascii.txt
-    note: "Original EN-009 - retained per BUG-001"
+    note: "Original EN-009 - retained per BUG-001. Task files created per DEC-003:AI-004."
 
   EN-010:
     title: "Artifact Packaging & Deep Linking"
@@ -259,12 +260,20 @@ execution_queue:
       name: "Context & Formatting"
       mode: PARALLEL
       enablers:
-        - EN-009   # Mind Map Generator
         - EN-013   # Context Injection
         - EN-016   # ts-formatter
       gate: GATE-5
+      note: "EN-009 moved to Group 3 per DEC-003 (depends on EN-016)"
 
     - id: 3
+      name: "Mind Map Generation"
+      mode: SEQUENTIAL
+      enablers:
+        - EN-009   # Mind Map Generator (depends on EN-016)
+      gate: GATE-5
+      note: "NEW group per DEC-003 - EN-009 must wait for EN-016"
+
+    - id: 4
       name: "Integration & Validation"
       mode: PARALLEL
       enablers:
@@ -272,6 +281,7 @@ execution_queue:
         - EN-014
         - EN-015
       gate: GATE-6
+      note: "Renumbered from Group 3 per DEC-003"
 
     # Group 4 (CLI) moved to FEAT-003 per DISC-002
     # - id: 4
@@ -285,10 +295,10 @@ execution_queue:
 task_allocation:
   EN-007: [TASK-101, TASK-102, TASK-103, TASK-104, TASK-105, TASK-105A, TASK-106, TASK-107]
   EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112, TASK-112A, TASK-112B]
-  EN-009: [TASK-046, TASK-047, TASK-048, TASK-049]  # Mind Map Generator (retained per BUG-001)
+  EN-009: [TASK-001, TASK-002, TASK-003, TASK-004]  # Mind Map Generator - enabler-scoped numbering per DEC-003
   EN-013: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
   EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
-  EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137]
+  EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137, TASK-138]  # Added TASK-138 per DEC-003:D-005
   EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119]  # ts-formatter (renumbered per BUG-001)
 
 # Metrics
@@ -328,3 +338,6 @@ history:
   - timestamp: "2026-01-28T12:45:00Z"
     event: "DISC-003 created and remediation applied"
     details: "Quality artifact folder structure precedence documented. Files moved to critiques/ and qa/ subdirectories per skill definitions. ORCHESTRATION.yaml updated to ACTIVE status."
+  - timestamp: "2026-01-28T14:00:00Z"
+    event: "DEC-003 execution - Group renumbering and EN-009 task files"
+    details: "Per DEC-003: (1) Group 2 now EN-013+EN-016 only (parallel). (2) NEW Group 3 for EN-009 (sequential after EN-016). (3) Old Group 3 renumbered to Group 4. (4) EN-009 task IDs changed to enabler-scoped TASK-001..004. (5) TASK-138 added to EN-015 for EN-008 deferred findings."

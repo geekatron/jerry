@@ -119,7 +119,7 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 |----|------|-------|--------|----------|-------|------|-------|
 | [EN-007](./EN-007-vtt-parser/EN-007-vtt-parser.md) | Enabler | ts-parser Agent Implementation | pending | high | 101-105 | 5 | Per TDD-ts-parser.md |
 | [EN-008](./EN-008-entity-extraction/EN-008-entity-extraction.md) | Enabler | ts-extractor Agent Implementation | pending | high | 106-112 | 5 | Per TDD-ts-extractor.md (MAJOR rewrite) |
-| [EN-009](./EN-009-mindmap-generator/EN-009-mindmap-generator.md) | Enabler | Mind Map Generator (Mermaid + ASCII) | pending | high | 046-049 | 5 | **RESTORED** - Mermaid + ASCII visualization |
+| [EN-009](./EN-009-mindmap-generator/EN-009-mindmap-generator.md) | Enabler | Mind Map Generator (Mermaid + ASCII) | pending | high | 001-004* | 5 | **RESTORED** - Mermaid + ASCII (*enabler-scoped per DEC-003) |
 | ~~EN-010~~ | ~~Enabler~~ | ~~Artifact Packaging & Deep Linking~~ | **DEPRECATED** | - | - | - | Absorbed into EN-016 per ADR-002 |
 | [EN-011](./EN-011-worktracker-integration/EN-011-worktracker-integration.md) | Enabler | Worktracker Integration | pending | medium | 055-058 | 6 | Depends on EN-016 |
 | ~~EN-012~~ | ~~Enabler~~ | ~~Skill CLI Interface~~ | **MOVED** | - | - | - | → **[FEAT-003](../FEAT-003-future-enhancements/EN-012-skill-interface/EN-012-skill-interface.md)** per DISC-002 |
@@ -134,7 +134,7 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 |---------|------------|-------------|-------|
 | EN-007 | TASK-101..105 | 5 | ts-parser |
 | EN-008 | TASK-106..112 | 7 | ts-extractor |
-| EN-009 | TASK-046..049 | 4 | Mind Map Generator (Mermaid + ASCII) |
+| EN-009 | TASK-001..004* | 4 | Mind Map Generator (*enabler-scoped per DEC-003) |
 | EN-011 | TASK-055..058 | 4 | Worktracker Integration |
 | ~~EN-012~~ | ~~TASK-059..062~~ | ~~4~~ | ~~Skill CLI Interface~~ → FEAT-003 |
 | EN-013 | TASK-120..125 | 6 | Context Injection |
@@ -190,7 +190,7 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | **Deprecated Enablers** | 1 | EN-010 absorbed into EN-016 |
 | **Moved Enablers** | 1 | EN-012 → FEAT-003 per DISC-002 |
 | **Completed Enablers** | 0 | |
-| **Total Tasks** | 45 | TASK-046..049, 055..058, 101-137 (excludes EN-012 tasks) |
+| **Total Tasks** | 45 | EN-009:TASK-001..004*, 055..058, 101-137 (*enabler-scoped, excludes EN-012) |
 | **Completed Tasks** | 0 | |
 | **Gates Total** | 2 | GATE-5, GATE-6 (GATE-7 moved to FEAT-003) |
 | **Gates Passed** | 0 | |
@@ -231,12 +231,23 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 |                                 ▼                                            |
 |  EXECUTION GROUP 2: CONTEXT & FORMATTING (PARALLEL)                          |
 |  ┌─────────────────────────────────────────────────────────────────────────┐ |
-|  │  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────┐ │ |
-|  │  │      EN-016         │  │      EN-009         │  │    EN-013       │ │ |
-|  │  │ ts-formatter Agent  │  │   Mind Map Gen      │  │Context Injection│ │ |
-|  │  │  (TASK-113..119)    │  │  (TASK-046..049)    │  │ (TASK-120..125) │ │ |
-|  │  │ Absorbs EN-010      │  │ Mermaid + ASCII     │  │ YAML-only       │ │ |
-|  │  └─────────────────────┘  └─────────────────────┘  └─────────────────┘ │ |
+|  │  ┌─────────────────────┐                         ┌─────────────────┐   │ |
+|  │  │      EN-016         │                         │    EN-013       │   │ |
+|  │  │ ts-formatter Agent  │                         │Context Injection│   │ |
+|  │  │  (TASK-113..119)    │                         │ (TASK-120..125) │   │ |
+|  │  │ Absorbs EN-010      │                         │ YAML-only       │   │ |
+|  │  └─────────┬───────────┘                         └─────────────────┘   │ |
+|  └────────────│───────────────────────────────────────────────────────────┘ |
+|               │                                                              |
+|               ▼                                                              |
+|  EXECUTION GROUP 3: MIND MAP GENERATION (SEQUENTIAL) ◄── NEW per DEC-003    |
+|  ┌─────────────────────────────────────────────────────────────────────────┐ |
+|  │  ┌─────────────────────┐                                               │ |
+|  │  │      EN-009         │                                               │ |
+|  │  │   Mind Map Gen      │  Blocked By: EN-016                           │ |
+|  │  │  (TASK-001..004*)   │  *enabler-scoped numbering per DEC-003        │ |
+|  │  │ Mermaid + ASCII     │                                               │ |
+|  │  └─────────────────────┘                                               │ |
 |  └─────────────────────────────────────────────────────────────────────────┘ |
 |                                 │                                            |
 |                   ╔═════════════╧═════════════╗                              |
@@ -245,7 +256,7 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 |                   ╚═════════════╤═════════════╝                              |
 |                                 │                                            |
 |                                 ▼                                            |
-|  EXECUTION GROUP 3: INTEGRATION & VALIDATION (PARALLEL)                      |
+|  EXECUTION GROUP 4: INTEGRATION & VALIDATION (PARALLEL) ◄── Renumbered      |
 |  ┌─────────────────────────────────────────────────────────────────────────┐ |
 |  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐        │ |
 |  │  │     EN-011      │  │     EN-014      │  │     EN-015      │        │ |
@@ -450,6 +461,7 @@ If any file exceeds 35K tokens:
 | 2026-01-26 | Claude | PLANNING | **DISC-002 CREATED:** Future scope analysis for EN-011/EN-012. EN-011 (Worktracker) stays in FEAT-002 (core). EN-012 (CLI) recommended for FEAT-003 (Above and Beyond). |
 | 2026-01-26 | Claude | PLANNING | **DISC-002 EXECUTED:** EN-012 moved to FEAT-003. GATE-7 removed from FEAT-002. Task count reduced from 49→45. Enabler count reduced from 9→8. |
 | 2026-01-28 | Claude | PLANNING | **DEC-003 CREATED:** Orchestration execution order correction. EN-009 cannot be parallel with EN-016 (dependency). TASK-138 created in EN-015 for EN-008 deferred findings. |
+| 2026-01-28 | Claude | PLANNING | **DEC-003 AI-003/AI-004 EXECUTED:** (1) ORCHESTRATION.yaml group renumbering (Group 2→EN-013+EN-016, Group 3→EN-009, Group 4→rest). (2) EN-009 task files created with enabler-scoped numbering (TASK-001..004). |
 
 ---
 

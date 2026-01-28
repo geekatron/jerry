@@ -81,12 +81,14 @@ Implement the mind map generator that transforms extracted entities into visual 
 
 ### Task Inventory
 
+<!-- Task IDs use enabler-scoped numbering per DEC-003:AI-004 -->
+
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| TASK-046 | Create Mermaid Generator Agent | pending | Claude | 3 | EN-008 |
-| TASK-047 | Create ASCII Generator Agent | pending | Claude | 2 | EN-008 |
-| TASK-048 | Implement Deep Link Embedding | pending | Claude | 2 | TASK-046 |
-| TASK-049 | Create Unit Tests | pending | Claude | 1 | TASK-046..048 |
+| [TASK-001](./TASK-001-mermaid-generator.md) | Create Mermaid Generator Agent | pending | Claude | 3 | EN-016 |
+| [TASK-002](./TASK-002-ascii-generator.md) | Create ASCII Generator Agent | pending | Claude | 2 | EN-016 |
+| [TASK-003](./TASK-003-deep-link-embedding.md) | Implement Deep Link Embedding | pending | Claude | 2 | TASK-001 |
+| [TASK-004](./TASK-004-unit-tests.md) | Create Unit Tests | pending | Claude | 3 | TASK-001, TASK-002, TASK-003 |
 
 ---
 
@@ -185,6 +187,7 @@ For large transcripts (>50 topics):
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created |
 | 2026-01-26 | Claude | pending | BUG-001: EN-009 ID retained for Mind Map (ts-formatter renumbered to EN-016). Gate corrected to GATE-5. Dependencies updated. |
+| 2026-01-28 | Claude | pending | DEC-003:AI-004 - Task files created with enabler-scoped numbering (TASK-001..004). Blocked By updated to EN-016. |
 
 ---
 
