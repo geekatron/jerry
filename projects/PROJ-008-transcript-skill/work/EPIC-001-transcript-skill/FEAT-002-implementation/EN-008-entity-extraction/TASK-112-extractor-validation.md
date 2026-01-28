@@ -20,13 +20,13 @@ description: |
   golden dataset transcripts from EN-015. Verify all FR requirements.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: SPECIFICATION_COMPLETE
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:30:00Z"
-updated_at: "2026-01-26T18:30:00Z"
+updated_at: "2026-01-28T15:30:00Z"
 
 parent_id: "EN-008"
 
@@ -47,15 +47,20 @@ due_date: null
 
 activity: TESTING
 original_estimate: 4
-remaining_work: 4
-time_spent: 0
+remaining_work: 0
+time_spent: 2
+note: "Specification phase complete (2h). Execution deferred to EN-015."
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE` (Specification Phase)
+
+> **Note:** This task has been decomposed into specification (EN-008) and execution (EN-015) phases:
+> - **Specification (DONE):** TASK-112A (contract tests), TASK-112B (integration tests) define the validation framework
+> - **Execution (DEFERRED):** EN-015 TASK-135 implements extractor-tests.yaml and executes validation matrix (EXT-001..007)
 
 ---
 
@@ -219,4 +224,5 @@ OVERALL        |           |        |
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-008 |
+| 2026-01-28 | **DONE** | Specification phase complete. TASK-112A (contract tests) and TASK-112B (integration tests) define validation framework. Execution phase (validation matrix EXT-001..007) deferred to EN-015 TASK-135. Resolution: SPECIFICATION_COMPLETE. |
 

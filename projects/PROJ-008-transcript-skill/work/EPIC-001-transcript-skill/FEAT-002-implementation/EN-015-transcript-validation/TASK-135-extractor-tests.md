@@ -145,10 +145,14 @@ test_suites:
 - Parent: [EN-015: Transcript Validation](./EN-015-transcript-validation.md)
 - Blocked By: [TASK-132: Ground truth JSON](./TASK-132-ground-truth-json.md)
 - Tests: [EN-008: ts-extractor Agent](../EN-008-entity-extraction/EN-008-entity-extraction.md)
+- **Implements:** [EN-008 TASK-112 Validation Matrix](../EN-008-entity-extraction/TASK-112-extractor-validation.md) (EXT-001..007)
 - References: [TDD-ts-extractor.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
 - References: [PAT-001: Tiered Extraction](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
 - References: [PAT-003: Speaker Detection](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
 - References: [PAT-004: Citation Required](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
+
+> **Note:** This task implements the execution phase of EN-008 TASK-112 validation matrix (EXT-001 through EXT-007).
+> The specification phase was completed in EN-008 via TASK-112A (contract tests) and TASK-112B (integration tests).
 
 ---
 
