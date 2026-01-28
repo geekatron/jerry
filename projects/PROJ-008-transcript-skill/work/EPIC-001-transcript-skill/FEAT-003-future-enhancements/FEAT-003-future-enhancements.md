@@ -48,6 +48,13 @@ This feature captures functionality that was originally planned for FEAT-002 but
 |----|-------|--------|---------------|
 | [EN-012](./EN-012-skill-interface/EN-012-skill-interface.md) | Skill CLI Interface | pending | GATE-7 |
 
+### Tech Debt (Created 2026-01-27)
+
+| ID | Title | Status | Origin |
+|----|-------|--------|--------|
+| [EN-017](./EN-017-utf16-support/EN-017-utf16-support.md) | UTF-16 BOM Support | pending | EN-007:DEC-001 |
+| [EN-018](./EN-018-task-renumbering/EN-018-task-renumbering.md) | FEAT-002 Task Renumbering | pending | Worktracker compliance |
+
 ---
 
 ## Dependencies
@@ -79,3 +86,5 @@ This feature captures functionality that was originally planned for FEAT-002 but
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | PLANNED | Feature created per DISC-002 decision. EN-012 moved from FEAT-002. |
+| 2026-01-27 | Claude | PLANNED | Added EN-017 (UTF-16 support) per EN-007:DEC-001 |
+| 2026-01-27 | Claude | PLANNED | Added EN-018 (task renumbering) per worktracker compliance feedback |

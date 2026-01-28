@@ -185,6 +185,10 @@ Attempt decoding in this order:
 If all fail: Log error with bytes preview, return empty result
 ```
 
+> **NOTE (DEC-001):** UTF-16 BOM detection is **OUT OF SCOPE** for MVP. Current
+> implementation only supports UTF-8 BOM. UTF-16 support deferred to EN-017.
+> See [EN-007:DEC-001](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/EN-007--DEC-001-utf16-bom-out-of-scope.md).
+
 **Recovery Principle:** "Accept liberally, produce consistently"
 - Continue parsing despite individual segment errors
 - Capture ALL issues in parse_metadata for transparency

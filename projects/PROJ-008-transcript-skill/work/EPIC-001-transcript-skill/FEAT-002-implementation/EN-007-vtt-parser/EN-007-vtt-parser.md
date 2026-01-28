@@ -282,6 +282,10 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 - [EN-007:DISC-001](./EN-007--DISC-001-vtt-voice-tag-gaps.md) - **VTT Voice Tag Parsing Gaps (CRITICAL)** - Found during TASK-101 audit
 - [EN-007:DISC-002](./EN-007--DISC-002-test-infrastructure-dependency.md) - **Test Infrastructure Dependency Gap (RESOLVED)** - Found during TASK-102 prep; created minimal test infrastructure in `skills/transcript/test_data/`
 
+### Decision Reference
+
+- [EN-007:DEC-001](./EN-007--DEC-001-utf16-bom-out-of-scope.md) - **UTF-16 BOM Support Out of Scope** - Found during TASK-107 documentation audit; UTF-16 deferred to EN-017 in FEAT-003
+
 ---
 
 ## History
@@ -305,6 +309,7 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-27 | Claude | in_progress | ps-critic review complete: Score 0.892 (CONDITIONAL) - 2 minor gaps (AC-4, AC-7 verification) |
 | 2026-01-27 | Claude | in_progress | GAP-001 resolved: AC-4 (Format detection) verified - 11 format_detected assertions in parser-tests.yaml |
 | 2026-01-27 | Claude | in_progress | GAP-002 addressed: TASK-107 created for encoding fallback verification (NFR-007) |
+| 2026-01-27 | Claude | in_progress | DEC-001 created: UTF-16 BOM support documented as out-of-scope; tech debt EN-017 in FEAT-003 |
 
 ---
 

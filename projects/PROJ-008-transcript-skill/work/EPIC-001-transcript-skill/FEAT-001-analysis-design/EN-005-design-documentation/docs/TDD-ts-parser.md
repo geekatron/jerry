@@ -368,6 +368,11 @@ ENCODING DETECTION FLOW
   │ UTF-16LE│    └───────┬───────┘
   └─────────┘            │
                 ┌────────┴────────┐
+
+> **NOTE (DEC-001):** UTF-16 and UTF-16LE BOM detection is **OUT OF SCOPE** for MVP.
+> Current implementation only supports UTF-8 BOM detection. UTF-16 support deferred to
+> tech debt enabler EN-017 in FEAT-003. See [EN-007:DEC-001](../../FEAT-002-implementation/EN-007-vtt-parser/EN-007--DEC-001-utf16-bom-out-of-scope.md).
+
                 │                 │
             SUCCESS           FAILURE
                 │                 │
