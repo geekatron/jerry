@@ -1,0 +1,91 @@
+{
+  "_metadata": {
+    "description": "Expected ts-parser output for txt_no_speakers.txt",
+    "source_file": "transcripts/edge_cases/txt_no_speakers.txt",
+    "derived_by": "Claude (deterministic derivation from plain text)",
+    "derived_at": "2026-01-27T21:00:00Z",
+    "purpose": "Golden test data for TASK-104 plain text fallback behavior verification",
+    "review_status": "PENDING_HUMAN_REVIEW",
+    "notes": [
+      "Tests plain text format with NO speaker detection patterns",
+      "All segments should have null speaker (fallback behavior)",
+      "Per FR-003.4: Fallback to null speaker when undetected",
+      "No timestamps available (null for start_ms and end_ms)"
+    ]
+  },
+  "version": "1.1",
+  "source": {
+    "format": "plain",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/txt_no_speakers.txt"
+  },
+  "metadata": {
+    "duration_ms": null,
+    "segment_count": 7,
+    "detected_speakers": 0
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "Welcome to the meeting.",
+      "raw_text": "Welcome to the meeting."
+    },
+    {
+      "id": "seg-002",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "Let's discuss the project timeline.",
+      "raw_text": "Let's discuss the project timeline."
+    },
+    {
+      "id": "seg-003",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "The deadline is next Friday.",
+      "raw_text": "The deadline is next Friday."
+    },
+    {
+      "id": "seg-004",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "We need to prioritize the critical features.",
+      "raw_text": "We need to prioritize the critical features."
+    },
+    {
+      "id": "seg-005",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "Testing should start by Wednesday.",
+      "raw_text": "Testing should start by Wednesday."
+    },
+    {
+      "id": "seg-006",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "Any questions about the plan?",
+      "raw_text": "Any questions about the plan?"
+    },
+    {
+      "id": "seg-007",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": null,
+      "text": "Sounds good, let's proceed.",
+      "raw_text": "Sounds good, let's proceed."
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

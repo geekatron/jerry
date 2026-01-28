@@ -25,8 +25,8 @@ description: |
   is complete and test it against real VTT files per DISC-002 test infrastructure.
 
 classification: ENABLER
-status: READY
-resolution: null
+status: DONE
+resolution: completed
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"

@@ -1,0 +1,88 @@
+{
+  "_metadata": {
+    "description": "Expected ts-parser output for srt_period_timestamps.srt",
+    "source_file": "transcripts/edge_cases/srt_period_timestamps.srt",
+    "derived_by": "Claude (deterministic derivation from SRT)",
+    "derived_at": "2026-01-27T21:00:00Z",
+    "purpose": "Golden test data for TASK-103 SRT period timestamp verification",
+    "review_status": "PENDING_HUMAN_REVIEW",
+    "notes": [
+      "Tests Otter.ai style SRT with period timestamps (00:00:00.000)",
+      "Speaker extraction from '[Speaker]' bracket prefix pattern",
+      "Multi-line cue payloads joined with single space"
+    ]
+  },
+  "version": "1.1",
+  "source": {
+    "format": "srt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/srt_period_timestamps.srt"
+  },
+  "metadata": {
+    "duration_ms": 35000,
+    "segment_count": 6,
+    "detected_speakers": 3
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "cue_index": 1,
+      "start_ms": 0,
+      "end_ms": 5250,
+      "speaker": "Alice",
+      "text": "Welcome to the design review session.",
+      "raw_text": "[Alice] Welcome to the design review session."
+    },
+    {
+      "id": "seg-002",
+      "cue_index": 2,
+      "start_ms": 5250,
+      "end_ms": 10500,
+      "speaker": "Bob",
+      "text": "Thanks Alice. I have the diagrams ready.",
+      "raw_text": "[Bob] Thanks Alice. I have the diagrams ready."
+    },
+    {
+      "id": "seg-003",
+      "cue_index": 3,
+      "start_ms": 10500,
+      "end_ms": 15750,
+      "speaker": "Alice",
+      "text": "Great. Let's walk through the architecture.",
+      "raw_text": "[Alice] Great. Let's walk through the architecture."
+    },
+    {
+      "id": "seg-004",
+      "cue_index": 4,
+      "start_ms": 15750,
+      "end_ms": 22000,
+      "speaker": "Charlie",
+      "text": "I have some questions about the data flow.",
+      "raw_text": "[Charlie] I have some questions about the data flow."
+    },
+    {
+      "id": "seg-005",
+      "cue_index": 5,
+      "start_ms": 22000,
+      "end_ms": 28500,
+      "speaker": "Bob",
+      "text": "Sure, let me explain. The data flows from the ingestion layer to the processing pipeline.",
+      "raw_text": "[Bob] Sure, let me explain. The data flows from\nthe ingestion layer to the processing pipeline."
+    },
+    {
+      "id": "seg-006",
+      "cue_index": 6,
+      "start_ms": 28500,
+      "end_ms": 35000,
+      "speaker": "Alice",
+      "text": "And the storage layer handles persistence. We use event sourcing for audit trails.",
+      "raw_text": "[Alice] And the storage layer handles persistence.\nWe use event sourcing for audit trails."
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

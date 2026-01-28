@@ -125,29 +125,29 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 
 ### Definition of Done
 
-- [ ] ts-parser agent definition complete (`skills/transcript/agents/ts-parser.md`)
-- [ ] VTT processing verified (FR-001)
-- [ ] SRT processing verified (FR-002)
-- [ ] Plain text processing verified (FR-003)
+- [x] ts-parser agent definition complete (`skills/transcript/agents/ts-parser.md`) - v1.2.0
+- [x] VTT processing verified (FR-001) - TASK-102 complete
+- [x] SRT processing verified (FR-002) - TASK-103 complete
+- [x] Plain text processing verified (FR-003) - TASK-104 complete
 - [ ] Format detection verified (FR-004)
-- [ ] Timestamp normalization verified (NFR-006)
+- [x] Timestamp normalization verified (NFR-006) - TASK-102, 103
 - [ ] Encoding detection verified (NFR-007)
-- [ ] Error handling graceful (PAT-002)
-- [ ] ps-critic review passed
+- [x] Error handling graceful (PAT-002) - TASK-106 complete
+- [x] ps-critic review passed - Score: 0.892 (CONDITIONAL)
 - [ ] Human approval at GATE-5
 
 ### Technical Criteria (from TDD-ts-parser.md)
 
 | # | Criterion | TDD Section | Verified |
 |---|-----------|-------------|----------|
-| AC-1 | Parses WebVTT with voice tags `<v Speaker>` | 1.1 | [ ] |
-| AC-2 | Parses SRT with speaker prefix `Name:` | 1.2 | [ ] |
-| AC-3 | Parses plain text patterns (colon, bracket, caps) | 1.3 | [ ] |
+| AC-1 | Parses WebVTT with voice tags `<v Speaker>` | 1.1 | [x] TASK-102 |
+| AC-2 | Parses SRT with speaker prefix `Name:` | 1.2 | [x] TASK-103 |
+| AC-3 | Parses plain text patterns (colon, bracket, caps) | 1.3 | [x] TASK-104 |
 | AC-4 | Auto-detects format from content | 2 | [ ] |
-| AC-5 | Outputs canonical JSON per schema | 3 | [ ] |
-| AC-6 | Normalizes timestamps to milliseconds | 4 | [ ] |
+| AC-5 | Outputs canonical JSON per schema | 3 | [x] TASK-102..104 |
+| AC-6 | Normalizes timestamps to milliseconds | 4 | [x] TASK-102, 103 |
 | AC-7 | Handles encoding detection with fallbacks | 5 | [ ] |
-| AC-8 | Error handling per matrix (continues parsing) | 6 | [ ] |
+| AC-8 | Error handling per matrix (continues parsing) | 6 | [x] TASK-106 |
 
 ---
 
@@ -158,12 +158,12 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
 | [TASK-101](./TASK-101-parser-agent-alignment.md) | Verify ts-parser agent definition alignment | **done** | Claude | 3 | - |
-| [TASK-102](./TASK-102-vtt-processing.md) | Implement/verify VTT processing (FR-001) | pending | Claude | 2 | ~~TASK-101~~ |
-| [TASK-103](./TASK-103-srt-processing.md) | Implement/verify SRT processing (FR-002) | pending | Claude | 1 | ~~TASK-101~~ |
-| [TASK-104](./TASK-104-plain-text-processing.md) | Implement/verify plain text processing (FR-003) | pending | Claude | 1 | ~~TASK-101~~ |
-| [TASK-105](./TASK-105-parser-validation.md) | Create test cases and validation | pending | Claude | 2 | TASK-102..104 |
-| [TASK-105A](./TASK-105A-parser-contract-tests.md) | Create parser contract tests (TDD/BDD) | pending | Claude | 1 | ~~TASK-101~~ |
-| [TASK-106](./TASK-106-error-capture-mechanism.md) | Implement enhanced error capture mechanism | pending | Claude | 2 | ~~TASK-101~~ |
+| [TASK-102](./TASK-102-vtt-processing.md) | Implement/verify VTT processing (FR-001) | **done** | Claude | 2 | ~~TASK-101~~ |
+| [TASK-103](./TASK-103-srt-processing.md) | Implement/verify SRT processing (FR-002) | **done** | Claude | 1 | ~~TASK-101~~ |
+| [TASK-104](./TASK-104-plain-text-processing.md) | Implement/verify plain text processing (FR-003) | **done** | Claude | 1 | ~~TASK-101~~ |
+| [TASK-105](./TASK-105-parser-validation.md) | Create test cases and validation | **done** | Claude | 2 | ~~TASK-102..104~~ |
+| [TASK-105A](./TASK-105A-parser-contract-tests.md) | Create parser contract tests (TDD/BDD) | **done** | Claude | 1 | ~~TASK-101~~ |
+| [TASK-106](./TASK-106-error-capture-mechanism.md) | Implement enhanced error capture mechanism | **done** | Claude | 2 | ~~TASK-101~~ |
 
 **NOTE:** Task IDs renumbered from TASK-034-038 to TASK-101-105 per DISC-001 to avoid conflicts with EN-006 tasks.
 **TASK-105A added:** 2026-01-27 per TDD/BDD Testing Strategy for contract test coverage.
@@ -202,8 +202,12 @@ Recommended execution order:
 |----------|------|--------|
 | TDD | [TDD-ts-parser.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Complete (v1.2 - error capture schema) |
 | Agent Definition | [skills/transcript/agents/ts-parser.md](../../../../../skills/transcript/agents/ts-parser.md) | Complete (v1.2.0 - error capture) |
-| Test Specification | [parser-tests.yaml](../../../../../skills/transcript/test_data/validation/parser-tests.yaml) | Complete (v1.1.0 - 14 VTT tests) |
+| Test Specification | [parser-tests.yaml](../../../../../skills/transcript/test_data/validation/parser-tests.yaml) | Complete (v1.3.0 - 14 VTT + 3 SRT + 4 TXT tests) |
 | W3C Research | [webvtt-test-suite-research.md](./research/webvtt-test-suite-research.md) | Complete |
+| VTT Verification | [verification/TASK-102-vtt-verification-results.md](./verification/TASK-102-vtt-verification-results.md) | Complete |
+| SRT Verification | [verification/TASK-103-srt-verification-results.md](./verification/TASK-103-srt-verification-results.md) | Complete |
+| Plain Text Verification | [verification/TASK-104-plain-text-verification-results.md](./verification/TASK-104-plain-text-verification-results.md) | Complete |
+| ps-critic Review | [critiques/EN-007-ps-critic-review.md](./critiques/EN-007-ps-critic-review.md) | Complete (Score: 0.892) |
 
 ### To Verify/Enhance
 
@@ -290,6 +294,13 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-27 | Claude | in_progress | DISC-002: Test infrastructure dependency gap resolved; created `skills/transcript/test_data/` with minimal test infrastructure |
 | 2026-01-27 | Claude | in_progress | W3C WebVTT research complete: 11 edge case VTT files created, parser-tests.yaml v1.1.0 with 14 VTT tests |
 | 2026-01-27 | Claude | in_progress | Added TASK-106 (error capture mechanism) per W3C research; TDD-ts-parser.md updated to v1.2 with enhanced error schema |
+| 2026-01-27 | Claude | in_progress | TASK-106 complete: Enhanced error capture schema verified |
+| 2026-01-27 | Claude | in_progress | TASK-102 complete: All 14 VTT tests pass (core + edge cases) |
+| 2026-01-27 | Claude | in_progress | TASK-103 complete: 3 SRT test cases pass (comma/period timestamps, mixed speakers) |
+| 2026-01-27 | Claude | in_progress | TASK-104 complete: 4 Plain Text test cases pass (colon/bracket/ALL CAPS/null fallback) |
+| 2026-01-27 | Claude | in_progress | TASK-105 complete: 33/33 validation tests pass (5 golden + 14 edge case + 4 format detection + 10 AC) |
+| 2026-01-27 | Claude | in_progress | TASK-105A complete: Contract tests created (10 tests), JSON schemas created (canonical-transcript.json, segment.json) |
+| 2026-01-27 | Claude | in_progress | ps-critic review complete: Score 0.892 (CONDITIONAL) - 2 minor gaps (AC-4, AC-7 verification) |
 
 ---
 

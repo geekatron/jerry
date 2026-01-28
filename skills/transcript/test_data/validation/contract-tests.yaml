@@ -1,0 +1,339 @@
+# =============================================================================
+# CONTRACT TEST SPECIFICATION
+# =============================================================================
+# Purpose: Contract tests for ts-parser output schema validation
+# Created: 2026-01-27
+# Task: TASK-105A
+# Reference: TDD-ts-parser.md Section 3, TDD/BDD Testing Strategy
+# Schema: schemas/canonical-transcript.json (v1.1)
+#
+# CONTRACT TESTS verify that:
+# 1. Output structure matches the agreed schema
+# 2. Required fields are always present
+# 3. Field types and formats are correct
+# 4. Schema changes are intentional and documented
+# =============================================================================
+
+version: "1.0.0"
+agent: ts-parser
+schema_version: "1.1"
+created_at: "2026-01-27T23:45:00Z"
+
+# =============================================================================
+# SCHEMA REFERENCES
+# =============================================================================
+schemas:
+  canonical_transcript:
+    path: "../schemas/canonical-transcript.json"
+    version: "1.1"
+    description: "Full canonical transcript output schema"
+
+  segment:
+    path: "../schemas/segment.json"
+    version: "1.1"
+    description: "Individual segment sub-schema"
+
+# =============================================================================
+# CONTRACT TESTS
+# =============================================================================
+contracts:
+
+  # ---------------------------------------------------------------------------
+  # ts-parser Output Contracts
+  # ---------------------------------------------------------------------------
+  ts-parser-output:
+    description: "ts-parser output matches CanonicalTranscript schema v1.1"
+    schema_ref: "schemas/canonical-transcript.json"
+
+    tests:
+      # Contract CON-PAR-001: Required Top-Level Fields
+      - id: con-par-001
+        name: "Parser output has required top-level fields"
+        description: |
+          Verify that ts-parser output always contains the required
+          top-level fields: version, source, and segments.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+          format: vtt
+        assertions:
+          - type: json_schema_valid
+            schema: "canonical-transcript.json"
+          - type: required_fields
+            path: "$"
+            expected: ["version", "source", "segments"]
+          - type: field_value
+            path: "$.version"
+            expected: "1.1"
+        acceptance_criteria:
+          - "AC-1: version, source, segments always present"
+          - "AC-2: version equals '1.1'"
+
+      # Contract CON-PAR-002: Source Object Structure
+      - id: con-par-002
+        name: "Source object has required fields"
+        description: |
+          Verify source object contains format and encoding.
+          File_path is optional but recommended.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.source"
+            expected: ["format", "encoding"]
+          - type: field_enum
+            path: "$.source.format"
+            allowed: ["vtt", "srt", "plain"]
+        acceptance_criteria:
+          - "AC-3: source.format is one of vtt, srt, plain"
+          - "AC-4: source.encoding is present"
+
+      # Contract CON-PAR-003: Segment Array Structure
+      - id: con-par-003
+        name: "Segments array contains valid segment objects"
+        description: |
+          Verify each segment in the segments array conforms
+          to the Segment sub-schema.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: array_item_schema
+            path: "$.segments"
+            schema: "segment.json"
+          - type: array_min_items
+            path: "$.segments"
+            minimum: 1
+        acceptance_criteria:
+          - "AC-5: All segments match Segment schema"
+          - "AC-6: segments array is non-empty"
+
+      # Contract CON-PAR-004: Segment ID Format
+      - id: con-par-004
+        name: "Segment IDs follow seg-NNN pattern"
+        description: |
+          Verify all segment IDs match the pattern seg-NNN
+          where NNN is a zero-padded sequence number.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_pattern
+            path: "$.segments[*].id"
+            pattern: "^seg-\\d{3,}$"
+          - type: unique_values
+            path: "$.segments[*].id"
+            description: "All segment IDs must be unique"
+        acceptance_criteria:
+          - "AC-7: Segment IDs match pattern seg-NNN"
+          - "AC-8: Segment IDs are unique"
+
+      # Contract CON-PAR-005: Segment Required Fields
+      - id: con-par-005
+        name: "Each segment has required fields"
+        description: |
+          Verify each segment contains the required fields:
+          id and text. Other fields may be null.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.segments[*]"
+            expected: ["id", "text"]
+          - type: field_type
+            path: "$.segments[*].text"
+            expected: "string"
+          - type: field_min_length
+            path: "$.segments[*].text"
+            minimum: 1
+        acceptance_criteria:
+          - "AC-9: Each segment has id and text"
+          - "AC-10: text is non-empty string"
+
+      # Contract CON-PAR-006: Timestamp Format (VTT/SRT)
+      - id: con-par-006
+        name: "Timestamps are integers in milliseconds"
+        description: |
+          For VTT and SRT formats, verify timestamps are
+          normalized to integer milliseconds.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_type
+            path: "$.segments[*].start_ms"
+            expected: ["integer", "null"]
+          - type: field_type
+            path: "$.segments[*].end_ms"
+            expected: ["integer", "null"]
+          - type: field_range
+            path: "$.segments[*].start_ms"
+            minimum: 0
+          - type: timestamp_order
+            description: "end_ms >= start_ms for all segments"
+        acceptance_criteria:
+          - "AC-11: Timestamps are integers >= 0"
+          - "AC-12: end_ms >= start_ms"
+
+      # Contract CON-PAR-007: Plain Text Null Timestamps
+      - id: con-par-007
+        name: "Plain text format has null timestamps"
+        description: |
+          For plain text format, verify timestamps are null
+          since no timing information is available.
+        input:
+          file: "transcripts/golden/meeting-001.txt"
+          format: plain
+        assertions:
+          - type: field_value
+            path: "$.source.format"
+            expected: "plain"
+          - type: field_null
+            path: "$.segments[*].start_ms"
+          - type: field_null
+            path: "$.segments[*].end_ms"
+        acceptance_criteria:
+          - "AC-13: Plain text has null start_ms"
+          - "AC-14: Plain text has null end_ms"
+
+      # Contract CON-PAR-008: Parse Metadata Structure
+      - id: con-par-008
+        name: "Parse metadata captures parsing issues"
+        description: |
+          Verify parse_metadata object is present and
+          contains parse_status indicating success/partial/failed.
+        input:
+          file: "transcripts/edge_cases/empty_and_malformed.vtt"
+        assertions:
+          - type: field_present
+            path: "$.parse_metadata"
+          - type: field_enum
+            path: "$.parse_metadata.parse_status"
+            allowed: ["complete", "partial", "failed"]
+          - type: array_schema
+            path: "$.parse_metadata.parse_warnings"
+            schema: "ParseIssue"
+        acceptance_criteria:
+          - "AC-15: parse_metadata is present"
+          - "AC-16: parse_status is valid enum"
+
+      # Contract CON-PAR-009: Metadata Speaker Count
+      - id: con-par-009
+        name: "Metadata reports correct speaker count"
+        description: |
+          Verify metadata.detected_speakers matches the
+          actual number of unique speakers in segments.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_type
+            path: "$.metadata.detected_speakers"
+            expected: "integer"
+          - type: field_range
+            path: "$.metadata.detected_speakers"
+            minimum: 0
+          - type: consistency_check
+            description: "detected_speakers matches unique speakers in segments"
+        acceptance_criteria:
+          - "AC-17: detected_speakers is integer >= 0"
+          - "AC-18: Matches actual unique speakers"
+
+      # Contract CON-PAR-010: Cross-Format Consistency
+      - id: con-par-010
+        name: "Same content produces consistent output across formats"
+        description: |
+          Verify that meeting-001 in VTT, SRT, and TXT formats
+          produces structurally consistent output (same speakers,
+          same text content, different timestamps for plain).
+        inputs:
+          - file: "transcripts/golden/meeting-001.vtt"
+          - file: "transcripts/golden/meeting-001.srt"
+          - file: "transcripts/golden/meeting-001.txt"
+        assertions:
+          - type: cross_format_speakers
+            description: "Same speakers detected across all formats"
+          - type: cross_format_segment_count
+            description: "Same segment count across all formats"
+          - type: cross_format_text
+            description: "Same text content (normalized)"
+        acceptance_criteria:
+          - "AC-19: Speakers consistent across formats"
+          - "AC-20: Segment count consistent"
+
+# =============================================================================
+# ASSERTION TYPE DEFINITIONS
+# =============================================================================
+assertion_types:
+  json_schema_valid:
+    description: "Validate entire output against JSON Schema"
+    implementation: "jsonschema.validate(output, schema)"
+
+  required_fields:
+    description: "Check that specified fields exist at path"
+    implementation: "all(field in data[path] for field in expected)"
+
+  field_value:
+    description: "Check field has exact expected value"
+    implementation: "data[path] == expected"
+
+  field_enum:
+    description: "Check field value is in allowed list"
+    implementation: "data[path] in allowed"
+
+  field_type:
+    description: "Check field type matches expected"
+    implementation: "isinstance(data[path], expected_type)"
+
+  field_pattern:
+    description: "Check field matches regex pattern"
+    implementation: "re.match(pattern, data[path])"
+
+  field_range:
+    description: "Check numeric field is within range"
+    implementation: "minimum <= data[path] <= maximum"
+
+  field_null:
+    description: "Check field is null"
+    implementation: "data[path] is None"
+
+  field_present:
+    description: "Check field exists (may be null)"
+    implementation: "path in data"
+
+  array_item_schema:
+    description: "Validate each array item against sub-schema"
+    implementation: "all(validate(item, schema) for item in data[path])"
+
+  array_min_items:
+    description: "Check array has minimum number of items"
+    implementation: "len(data[path]) >= minimum"
+
+  unique_values:
+    description: "Check all values at path are unique"
+    implementation: "len(set(data[path])) == len(data[path])"
+
+  timestamp_order:
+    description: "Verify end_ms >= start_ms for all segments"
+    implementation: "all(seg.end_ms >= seg.start_ms for seg in segments)"
+
+  cross_format_speakers:
+    description: "Verify same speakers across format variants"
+    implementation: "speakers(vtt) == speakers(srt) == speakers(txt)"
+
+  consistency_check:
+    description: "Custom consistency validation"
+    implementation: "custom"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# These contract tests ensure ts-parser output is:
+# 1. Schema-compliant - validates against canonical-transcript.json
+# 2. Consistent - same structure across all input formats
+# 3. Predictable - field types and patterns are enforced
+#
+# Contract tests are run BEFORE integration tests to catch
+# schema violations early in the testing pipeline.
+#
+# HUMAN REVIEW REQUIRED:
+# - Verify assertion types cover all schema requirements
+# - Confirm cross-format consistency tests are feasible
+# - Approve before using in CI/CD pipeline
+# =============================================================================

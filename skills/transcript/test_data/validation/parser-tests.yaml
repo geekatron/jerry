@@ -12,11 +12,12 @@
 # REVIEW STATUS: PENDING_HUMAN_REVIEW
 # =============================================================================
 
-version: "1.1.0"
+version: "1.3.0"
 agent: ts-parser
 created_at: "2026-01-27T14:30:00Z"
-updated_at: "2026-01-27T18:00:00Z"
+updated_at: "2026-01-27T22:00:00Z"
 review_status: PENDING_HUMAN_REVIEW
+note: "v1.3.0 - Added SRT (TASK-103) and Plain Text (TASK-104) test cases with test data"
 
 # =============================================================================
 # TEST SUITES
@@ -170,6 +171,8 @@ test_suites:
           Tests VT-004 from research.
         input:
           file: "transcripts/edge_cases/voice_tag_no_close.vtt"
+        expected:
+          file: "../expected/voice_tag_no_close.expected.json"
         assertions:
           - type: speakers_extracted
             expected: ["John", "Mary", "Bob"]
@@ -187,6 +190,8 @@ test_suites:
           Tests VT-006, VT-007 from research.
         input:
           file: "transcripts/edge_cases/voice_tag_with_class.vtt"
+        expected:
+          file: "../expected/voice_tag_with_class.expected.json"
         assertions:
           - type: speakers_extracted
             expected: ["Boss", "Employee", "Multi-Class Speaker"]
@@ -203,6 +208,8 @@ test_suites:
           Tests VT-009 from research.
         input:
           file: "transcripts/edge_cases/multi_speaker_cue.vtt"
+        expected:
+          file: "../expected/multi_speaker_cue.expected.json"
         assertions:
           - type: multi_speaker_extraction
             description: "All speakers extracted from multi-speaker cues"
@@ -218,6 +225,8 @@ test_suites:
           Tests VT-008, TT-008 from research.
         input:
           file: "transcripts/edge_cases/nested_formatting.vtt"
+        expected:
+          file: "../expected/nested_formatting.expected.json"
         assertions:
           - type: formatting_tags_stripped
             tags: ["<b>", "</b>", "<i>", "</i>", "<u>", "</u>", "<c>", "</c>", "<lang>", "</lang>"]
@@ -234,6 +243,8 @@ test_suites:
           Tests CE-003, CE-004 from research.
         input:
           file: "transcripts/edge_cases/unicode_speakers.vtt"
+        expected:
+          file: "../expected/unicode_speakers.expected.json"
         assertions:
           - type: unicode_speakers_extracted
             expected_count: 6
@@ -250,6 +261,8 @@ test_suites:
           Tests CE-005, CE-006, CE-007 from research.
         input:
           file: "transcripts/edge_cases/entity_escapes.vtt"
+        expected:
+          file: "../expected/entity_escapes.expected.json"
         assertions:
           - type: entity_decoded
             test_cases:
@@ -275,6 +288,8 @@ test_suites:
           Tests TS-001 through TS-005 from research.
         input:
           file: "transcripts/edge_cases/timestamp_edge_cases.vtt"
+        expected:
+          file: "../expected/timestamp_edge_cases.expected.json"
         assertions:
           - type: timestamps_normalized
             format: "milliseconds"
@@ -296,6 +311,8 @@ test_suites:
           Parser should continue despite individual errors.
         input:
           file: "transcripts/edge_cases/empty_and_malformed.vtt"
+        expected:
+          file: "../expected/empty_and_malformed.expected.json"
         assertions:
           - type: no_fatal_error
           - type: parse_warnings_captured
@@ -317,6 +334,8 @@ test_suites:
           - Timestamps (TS-*)
         input:
           file: "transcripts/edge_cases/combined_edge_cases.vtt"
+        expected:
+          file: "../expected/combined_edge_cases.expected.json"
         assertions:
           - type: all_segments_valid
           - type: no_fatal_error
@@ -345,48 +364,233 @@ test_suites:
             expected: "vtt"
 
   # ---------------------------------------------------------------------------
-  # SRT PARSING (FR-002) - Placeholder for TASK-103
+  # SRT PARSING (FR-002) - TASK-103 Verification
   # ---------------------------------------------------------------------------
   srt_parsing:
     description: "SubRip format parsing tests (FR-002)"
     implements: "FR-002"
-    reference: "TDD-ts-parser.md Section 1.2"
-    status: "PLACEHOLDER - Implement in TASK-103"
+    reference: "TDD-ts-parser.md Section 1.2, ts-parser.md FR-002"
+    status: "READY"
 
     tests:
+      # Test SRT-001: Standard SRT with comma timestamps (Zoom format)
       - id: srt-001
-        name: "Parse SRT with comma timestamps (placeholder)"
-        status: "PENDING_TEST_DATA"
-        note: "Requires SRT test file from EN-015"
+        name: "Parse SRT with comma timestamps and colon speaker prefix"
+        description: |
+          Verify ts-parser correctly handles standard SRT files with:
+          - Sequence numbers (1, 2, 3...)
+          - Comma timestamps: HH:MM:SS,mmm --> HH:MM:SS,mmm
+          - Speaker pattern: "Speaker: text"
+          - Multi-line cue payloads joined with single space
+        input:
+          file: "transcripts/real/sample-meeting-zoom.srt"
+          format: srt
+        expected:
+          file: "../expected/sample-meeting-zoom.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: segment_count
+            expected: 10
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "Charlie"]
+          - type: no_parse_errors
+          - type: timestamps_normalized
+            format: "milliseconds"
+        acceptance_criteria:
+          - "FR-002.1: Sequence numbers parsed"
+          - "FR-002.2: Comma timestamps normalized to milliseconds"
+          - "FR-002.3: Speaker colon prefix extracted"
+          - "FR-002.6: Multi-line payloads joined"
+
+      # Test SRT-002: SRT with period timestamps (Otter.ai format)
+      - id: srt-002
+        name: "Parse SRT with period timestamps and bracket speaker prefix"
+        description: |
+          Verify ts-parser handles Otter.ai style SRT files with:
+          - Period timestamps: HH:MM:SS.mmm --> HH:MM:SS.mmm
+          - Speaker pattern: "[Speaker] text"
+          Tests FR-002.4 (period timestamp support)
+        input:
+          file: "transcripts/edge_cases/srt_period_timestamps.srt"
+          format: srt
+        expected:
+          file: "../expected/srt_period_timestamps.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: segment_count
+            expected: 6
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "Charlie"]
+          - type: no_parse_errors
+          - type: timestamps_normalized
+            format: "milliseconds"
+        acceptance_criteria:
+          - "FR-002.4: Period timestamps parsed correctly"
+          - "FR-002.5: Bracket speaker prefix extracted"
+
+      # Test SRT-003: SRT with mixed speaker patterns
+      - id: srt-003
+        name: "Parse SRT with mixed speaker patterns"
+        description: |
+          Verify ts-parser handles mixed speaker patterns in SRT:
+          - Pattern 1: "Alice: text" (colon prefix)
+          - Pattern 2: "[Bob] text" (bracket prefix)
+          - Pattern 3: "CHARLIE: text" (all caps with colon)
+          - Pattern 4: No prefix (speaker = null)
+        input:
+          file: "transcripts/edge_cases/srt_mixed_speakers.srt"
+          format: srt
+        expected:
+          file: "../expected/srt_mixed_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: segment_count
+            expected: 5
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "CHARLIE", "Diana"]
+          - type: null_speaker_fallback
+            description: "Segment without speaker prefix has speaker=null"
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-002.3: Multiple speaker patterns supported"
+          - "FR-002.7: Fallback to null speaker when no pattern detected"
 
   # ---------------------------------------------------------------------------
-  # PLAIN TEXT PARSING (FR-003) - Placeholder for TASK-104
+  # PLAIN TEXT PARSING (FR-003) - TASK-104 Verification
   # ---------------------------------------------------------------------------
   plain_text_parsing:
     description: "Plain text format parsing tests (FR-003)"
     implements: "FR-003"
-    reference: "TDD-ts-parser.md Section 1.3"
-    status: "PLACEHOLDER - Implement in TASK-104"
+    reference: "TDD-ts-parser.md Section 1.3, ts-parser.md FR-003"
+    status: "READY"
 
     tests:
+      # Test TXT-001: Plain text with colon speaker prefix
       - id: txt-001
-        name: "Parse plain text with speaker prefixes (placeholder)"
-        status: "PENDING_TEST_DATA"
-        note: "Requires plain text test file from EN-015"
+        name: "Parse plain text with colon speaker prefix"
+        description: |
+          Verify ts-parser correctly handles plain text files with:
+          - Pattern: "Speaker: text"
+          - No timestamps (start_ms, end_ms = null)
+          - Multi-line utterances joined with single space
+        input:
+          file: "transcripts/real/sample-interview.txt"
+          format: plain
+        expected:
+          file: "../expected/sample-interview.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 9
+          - type: speakers_detected
+            expected: ["Interviewer", "Candidate"]
+          - type: no_timestamps
+            description: "All start_ms and end_ms should be null"
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.1: Colon prefix speaker extracted"
+          - "FR-003.5: Multi-line utterances joined"
+          - "FR-003.6: Timestamps are null for plain text"
+
+      # Test TXT-002: Plain text with bracket speaker prefix
+      - id: txt-002
+        name: "Parse plain text with bracket speaker prefix"
+        description: |
+          Verify ts-parser handles bracket speaker pattern:
+          - Pattern: "[Speaker] text"
+          Tests FR-003.2 from ts-parser.md
+        input:
+          file: "transcripts/edge_cases/txt_bracket_speakers.txt"
+          format: plain
+        expected:
+          file: "../expected/txt_bracket_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 7
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "Charlie"]
+          - type: no_timestamps
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.2: Bracket prefix speaker extracted"
+
+      # Test TXT-003: Plain text with ALL CAPS speaker pattern
+      - id: txt-003
+        name: "Parse plain text with ALL CAPS speaker on separate line"
+        description: |
+          Verify ts-parser handles ALL CAPS speaker pattern:
+          - Speaker name on separate line (all uppercase)
+          - Utterance follows on next line(s)
+          Tests FR-003.3 from ts-parser.md
+        input:
+          file: "transcripts/edge_cases/txt_allcaps_speakers.txt"
+          format: plain
+        expected:
+          file: "../expected/txt_allcaps_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 7
+          - type: speakers_detected
+            expected: ["ALICE", "BOB", "CHARLIE"]
+          - type: no_timestamps
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.3: ALL CAPS speaker pattern detected"
+
+      # Test TXT-004: Plain text with no speaker detection (fallback)
+      - id: txt-004
+        name: "Parse plain text with no speaker patterns (fallback)"
+        description: |
+          Verify ts-parser fallback behavior when no speaker patterns detected:
+          - All segments have speaker = null
+          - Text preserved in segments
+          Tests FR-003.4 from ts-parser.md
+        input:
+          file: "transcripts/edge_cases/txt_no_speakers.txt"
+          format: plain
+        expected:
+          file: "../expected/txt_no_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 7
+          - type: detected_speakers_count
+            expected: 0
+          - type: all_speakers_null
+            description: "All segments should have speaker=null"
+          - type: no_timestamps
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.4: Fallback to null speaker when undetected"
 
 # =============================================================================
 # NOTES
 # =============================================================================
 #
-# This is MINIMAL test infrastructure created per EN-007:DISC-002 to unblock
-# TASK-102 VTT processing verification.
+# VERSION HISTORY:
+# - v1.0.0: Initial VTT tests for TASK-102
+# - v1.1.0: Added VTT edge case tests from W3C WebVTT research
+# - v1.2.0: Added expected output JSON files for all edge case tests (TASK-106)
+# - v1.3.0: Added SRT (TASK-103) and Plain Text (TASK-104) test suites
 #
-# EXPANSION PLANNED (EN-015 Sprint 4):
-# - Additional VTT edge cases
-# - SRT test files and cases
-# - Plain text test files and cases
-# - Golden dataset (3 meetings)
-# - Edge case files (malformed, empty, large, unicode)
+# TEST DATA CREATED:
+# - SRT: sample-meeting-zoom.srt, srt_period_timestamps.srt, srt_mixed_speakers.srt
+# - Plain Text: sample-interview.txt, txt_bracket_speakers.txt,
+#               txt_allcaps_speakers.txt, txt_no_speakers.txt
+# - Expected JSON: 7 new expected output files in expected/ directory
+#
+# REMAINING FOR EN-015:
+# - Golden dataset (3 full meetings)
+# - Additional stress tests (large files, performance)
 #
 # HUMAN REVIEW REQUIRED:
 # - Verify expected JSON values are correct

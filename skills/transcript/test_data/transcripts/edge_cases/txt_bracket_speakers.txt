@@ -1,0 +1,13 @@
+[Alice] Welcome to the team standup.
+
+[Bob] Good morning everyone.
+
+[Charlie] I finished the code review yesterday.
+
+[Alice] Great work Charlie. Any blockers?
+
+[Bob] I need some clarification on the API spec.
+
+[Charlie] I can help with that after the meeting.
+
+[Alice] Perfect. Let's sync up after this call.

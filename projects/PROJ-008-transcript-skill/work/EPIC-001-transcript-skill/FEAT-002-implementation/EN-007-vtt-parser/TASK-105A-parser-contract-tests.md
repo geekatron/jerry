@@ -8,13 +8,14 @@ CREATED: 2026-01-27
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-01-27T00:00:00Z
+> **Updated:** 2026-01-27T23:50:00Z
 > **Parent:** EN-007
 > **Owner:** Claude
 > **Effort Points:** 1
-> **Blocked By:** TASK-101 (parser agent alignment)
+> **Blocked By:** ~~TASK-101~~ (completed)
 
 ---
 
@@ -38,10 +39,10 @@ Create **contract tests** that validate ts-parser output matches the **Canonical
 
 | # | Criterion | Source | Verified |
 |---|-----------|--------|----------|
-| AC-1 | Validate CanonicalTranscript schema compliance | TDD-ts-parser | [ ] |
-| AC-2 | Verify required fields: version, source, metadata, segments | TDD-ts-parser | [ ] |
-| AC-3 | Verify segment structure: id, speaker, text, start_ms, end_ms | TDD-ts-parser | [ ] |
-| AC-4 | Tests reference JSON Schema at schemas/canonical-transcript.json | TDD/BDD Strategy | [ ] |
+| AC-1 | Validate CanonicalTranscript schema compliance | TDD-ts-parser | [x] |
+| AC-2 | Verify required fields: version, source, metadata, segments | TDD-ts-parser | [x] |
+| AC-3 | Verify segment structure: id, speaker, text, start_ms, end_ms | TDD-ts-parser | [x] |
+| AC-4 | Tests reference JSON Schema at schemas/canonical-transcript.json | TDD/BDD Strategy | [x] |
 
 ---
 

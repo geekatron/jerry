@@ -1,0 +1,43 @@
+1
+00:00:03,528 --> 00:00:06,448
+Alice: Good morning everyone, thanks for joining.
+
+2
+00:00:06,500 --> 00:00:10,319
+Bob: Morning Alice! Ready to discuss the sprint.
+
+3
+00:00:10,319 --> 00:00:16,930
+Alice: Yes, let's start with the backlog review.
+We have several items to prioritize.
+
+4
+00:00:16,930 --> 00:00:20,401
+Bob: I noticed the API task is still pending.
+Should we tackle that first?
+
+5
+00:00:20,401 --> 00:00:24,368
+Alice: Good point. Let me share my screen.
+
+6
+00:00:24,408 --> 00:00:31,578
+Charlie: Hey team, sorry I'm late.
+Had a quick sync with the stakeholders.
+
+7
+00:00:31,578 --> 00:00:38,655
+Alice: No worries Charlie. We were just starting.
+Bob raised a good point about the API.
+
+8
+00:00:38,655 --> 00:00:41,728
+Charlie: The API work is critical for the demo.
+
+9
+00:00:41,728 --> 00:00:46,872
+Bob: Agreed. I can take the lead on that.
+
+10
+00:00:46,872 --> 00:00:50,291
+Alice: Perfect. Let's assign it now.

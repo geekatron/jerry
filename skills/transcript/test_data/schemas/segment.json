@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "transcript-skill/segment-v1.1",
+  "title": "Transcript Segment",
+  "description": "JSON Schema for a single transcript segment - reusable sub-schema",
+  "type": "object",
+  "required": ["id", "text"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Segment identifier in format seg-NNN",
+      "pattern": "^seg-\\d{3,}$",
+      "examples": ["seg-001", "seg-042", "seg-1000"]
+    },
+    "start_ms": {
+      "type": ["integer", "null"],
+      "description": "Start time in milliseconds. Null for plain text format.",
+      "minimum": 0,
+      "examples": [0, 5500, 3600000]
+    },
+    "end_ms": {
+      "type": ["integer", "null"],
+      "description": "End time in milliseconds. Null for plain text format.",
+      "minimum": 0,
+      "examples": [5500, 10200, 3660000]
+    },
+    "speaker": {
+      "type": ["string", "null"],
+      "description": "Speaker name extracted from voice tag or prefix. Null if undetected.",
+      "examples": ["Alice", "Bob Smith", null]
+    },
+    "text": {
+      "type": "string",
+      "description": "The utterance text content with tags stripped and whitespace normalized.",
+      "minLength": 1,
+      "examples": ["Good morning everyone.", "I finished the API integration."]
+    },
+    "raw_text": {
+      "type": "string",
+      "description": "Original unparsed line for debugging purposes.",
+      "examples": ["<v Alice>Good morning everyone.</v>"]
+    }
+  },
+  "examples": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 5500,
+      "speaker": "Alice",
+      "text": "Good morning everyone.",
+      "raw_text": "<v Alice>Good morning everyone.</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Bob",
+      "text": "Good morning Alice."
+    }
+  ]
+}

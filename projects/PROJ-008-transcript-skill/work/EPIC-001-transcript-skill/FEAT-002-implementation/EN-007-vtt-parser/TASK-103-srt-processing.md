@@ -20,13 +20,13 @@ description: |
   sequence numbers, both comma and period timestamps, speaker prefixes.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: COMPLETED
+resolution: VERIFIED
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:30:00Z"
-updated_at: "2026-01-26T18:30:00Z"
+updated_at: "2026-01-27T22:00:00Z"
 
 parent_id: "EN-007"
 
@@ -56,7 +56,7 @@ time_spent: 0
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `COMPLETED`
 
 ---
 
@@ -99,13 +99,13 @@ Bob: Hi Alice! Ready for the meeting?
 
 ### Acceptance Criteria
 
-- [ ] Sequence numbers parsed and used for ordering
-- [ ] Comma timestamps (00:00:00,000) parsed correctly
-- [ ] Period timestamps (00:00:00.000) parsed correctly
-- [ ] `[Speaker]` prefix extracts speaker name
-- [ ] `Speaker:` prefix extracts speaker name
-- [ ] Multi-line content joined correctly
-- [ ] Output matches canonical schema (TDD Section 3)
+- [x] Sequence numbers parsed and used for ordering
+- [x] Comma timestamps (00:00:00,000) parsed correctly
+- [x] Period timestamps (00:00:00.000) parsed correctly
+- [x] `[Speaker]` prefix extracts speaker name
+- [x] `Speaker:` prefix extracts speaker name
+- [x] Multi-line content joined correctly
+- [x] Output matches canonical schema (TDD Section 3)
 
 ### Test Cases (from EN-015)
 
@@ -129,14 +129,20 @@ Reference test cases in parser-tests.yaml:
 | Deliverable | Type | Link |
 |-------------|------|------|
 | ts-parser.md SRT section | Agent | skills/transcript/agents/ts-parser.md |
-| SRT test results | Test Evidence | (link to test output) |
+| SRT test data (3 files) | Test Input | skills/transcript/test_data/transcripts/real/sample-meeting-zoom.srt |
+|  |  | skills/transcript/test_data/transcripts/edge_cases/srt_period_timestamps.srt |
+|  |  | skills/transcript/test_data/transcripts/edge_cases/srt_mixed_speakers.srt |
+| Expected outputs (3 files) | Golden Data | skills/transcript/test_data/expected/sample-meeting-zoom.expected.json |
+|  |  | skills/transcript/test_data/expected/srt_period_timestamps.expected.json |
+|  |  | skills/transcript/test_data/expected/srt_mixed_speakers.expected.json |
+| Verification Results | Test Evidence | verification/TASK-103-srt-verification-results.md |
 
 ### Verification
 
-- [ ] All FR-002.x requirements implemented
-- [ ] Both timestamp formats (comma/period) work
-- [ ] Speaker extraction patterns work
-- [ ] Reviewed by: (pending)
+- [x] All FR-002.x requirements implemented
+- [x] Both timestamp formats (comma/period) work
+- [x] Speaker extraction patterns work (colon, bracket, ALL CAPS, null fallback)
+- [x] Reviewed by: Claude (2026-01-27)
 
 ---
 
@@ -145,4 +151,6 @@ Reference test cases in parser-tests.yaml:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-007 |
+| 2026-01-27 | IN_PROGRESS | Test data created (3 SRT files, 3 expected JSON) |
+| 2026-01-27 | COMPLETED | All 3 test cases verified - srt-001, srt-002, srt-003 pass |
 
