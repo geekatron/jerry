@@ -320,14 +320,191 @@ assertion_types:
     description: "Custom consistency validation"
     implementation: "custom"
 
+  # ---------------------------------------------------------------------------
+  # ts-extractor Output Contracts (Added: TASK-112A)
+  # ---------------------------------------------------------------------------
+  ts-extractor-output:
+    description: "ts-extractor output matches ExtractionReport schema"
+    schema_ref: "schemas/extraction-report.json"
+
+    tests:
+      # Contract CON-EXT-001: Required Top-Level Fields
+      - id: con-ext-001
+        name: "Extractor output has required top-level fields"
+        description: |
+          Verify that ts-extractor output always contains the required
+          top-level fields per TDD-ts-extractor.md Output Schema.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: json_schema_valid
+            schema: "extraction-report.json"
+          - type: required_fields
+            path: "$"
+            expected: ["version", "packet_id", "extraction_stats", "speakers", "action_items", "decisions", "questions", "topics"]
+          - type: field_value
+            path: "$.version"
+            expected: "1.0"
+        acceptance_criteria:
+          - "AC-1: All required top-level fields present"
+          - "AC-2: version equals '1.0'"
+
+      # Contract CON-EXT-002: All Entities Have Citations (PAT-004)
+      - id: con-ext-002
+        name: "All extracted entities have citations (PAT-004)"
+        description: |
+          Verify that every extracted entity (action items, decisions,
+          questions) has a valid citation per PAT-004 anti-hallucination.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: citation_present
+            path: "$.action_items[*].citation"
+            description: "All action items have citations"
+          - type: citation_present
+            path: "$.decisions[*].citation"
+            description: "All decisions have citations"
+          - type: citation_present
+            path: "$.questions[*].citation"
+            description: "All questions have citations"
+        acceptance_criteria:
+          - "AC-3: Every action_item has citation"
+          - "AC-4: Every decision has citation"
+          - "AC-5: Every question has citation"
+
+      # Contract CON-EXT-003: Citation Structure Valid
+      - id: con-ext-003
+        name: "Citation structure is valid (ADR-003)"
+        description: |
+          Verify citation objects contain required fields per ADR-003
+          bidirectional deep linking specification.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.action_items[*].citation"
+            expected: ["segment_id", "anchor", "timestamp_ms", "text_snippet"]
+          - type: field_pattern
+            path: "$.action_items[*].citation.segment_id"
+            pattern: "^seg-\\d{3,}$"
+          - type: field_pattern
+            path: "$.action_items[*].citation.anchor"
+            pattern: "^#seg-\\d{3,}$"
+        acceptance_criteria:
+          - "AC-6: Citation has segment_id, anchor, timestamp_ms, text_snippet"
+          - "AC-7: segment_id matches pattern seg-NNN"
+          - "AC-8: anchor matches pattern #seg-NNN"
+
+      # Contract CON-EXT-004: Confidence Scores Present
+      - id: con-ext-004
+        name: "All entities have confidence scores (NFR-008)"
+        description: |
+          Verify all extracted entities include confidence scores
+          between 0.0 and 1.0 per NFR-008.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_present
+            path: "$.action_items[*].confidence"
+          - type: field_range
+            path: "$.action_items[*].confidence"
+            minimum: 0.0
+            maximum: 1.0
+          - type: field_present
+            path: "$.decisions[*].confidence"
+          - type: field_present
+            path: "$.questions[*].confidence"
+          - type: field_present
+            path: "$.speakers[*].confidence"
+        acceptance_criteria:
+          - "AC-9: All entities have confidence field"
+          - "AC-10: Confidence is between 0.0 and 1.0"
+
+      # Contract CON-EXT-005: Speaker Structure Valid
+      - id: con-ext-005
+        name: "Speaker objects have required fields"
+        description: |
+          Verify speaker objects contain required fields per
+          ts-extractor output schema.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.speakers[*]"
+            expected: ["id", "name", "detection_pattern", "confidence", "segment_count"]
+          - type: field_pattern
+            path: "$.speakers[*].id"
+            pattern: "^spk-"
+          - type: field_enum
+            path: "$.speakers[*].detection_pattern"
+            allowed: ["vtt_voice_tag", "prefix_pattern", "bracket_pattern", "contextual"]
+        acceptance_criteria:
+          - "AC-11: Speakers have id, name, detection_pattern, confidence, segment_count"
+          - "AC-12: Speaker IDs follow spk-* pattern"
+          - "AC-13: detection_pattern is valid enum"
+
+      # Contract CON-EXT-006: Extraction Stats Present
+      - id: con-ext-006
+        name: "Extraction statistics are present (NFR-008)"
+        description: |
+          Verify extraction_stats object contains required metrics
+          per ts-extractor output schema v1.2.0.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.extraction_stats"
+            expected: ["speakers_identified", "action_items", "decisions", "questions", "topics"]
+          - type: field_present
+            path: "$.extraction_stats.confidence_summary"
+          - type: required_fields
+            path: "$.extraction_stats.confidence_summary"
+            expected: ["average", "high_count", "medium_count", "low_count", "high_ratio"]
+        acceptance_criteria:
+          - "AC-14: extraction_stats has entity counts"
+          - "AC-15: confidence_summary present with distribution metrics"
+
+      # Contract CON-EXT-007: Topic Structure Valid
+      - id: con-ext-007
+        name: "Topic objects have required fields (FR-009)"
+        description: |
+          Verify topic objects contain required fields per
+          FR-009 topic segmentation requirement.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.topics[*]"
+            expected: ["id", "title", "start_ms", "end_ms", "segment_ids"]
+          - type: field_pattern
+            path: "$.topics[*].id"
+            pattern: "^top-\\d{3,}$"
+          - type: field_type
+            path: "$.topics[*].segment_ids"
+            expected: "array"
+          - type: timestamp_order
+            description: "end_ms >= start_ms for all topics"
+        acceptance_criteria:
+          - "AC-16: Topics have id, title, start_ms, end_ms, segment_ids"
+          - "AC-17: Topic IDs follow top-NNN pattern"
+          - "AC-18: segment_ids is array"
+
+# =============================================================================
+# ADDITIONAL ASSERTION TYPES (for ts-extractor)
+# =============================================================================
+  citation_present:
+    description: "Verify all items at path have citation object"
+    implementation: "all(hasattr(item, 'citation') and item.citation for item in data[path])"
+
 # =============================================================================
 # NOTES
 # =============================================================================
 #
-# These contract tests ensure ts-parser output is:
-# 1. Schema-compliant - validates against canonical-transcript.json
+# These contract tests ensure ts-parser and ts-extractor output is:
+# 1. Schema-compliant - validates against JSON schemas
 # 2. Consistent - same structure across all input formats
 # 3. Predictable - field types and patterns are enforced
+# 4. Citation-required - PAT-004 anti-hallucination enforcement
 #
 # Contract tests are run BEFORE integration tests to catch
 # schema violations early in the testing pipeline.

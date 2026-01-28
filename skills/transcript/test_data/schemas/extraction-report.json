@@ -1,0 +1,319 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "extraction-report.json",
+  "title": "ExtractionReport",
+  "description": "Schema for ts-extractor output per TDD-ts-extractor.md Section 3",
+  "version": "1.0",
+  "type": "object",
+  "required": ["version", "packet_id", "extraction_stats", "speakers", "action_items", "decisions", "questions", "topics"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version"
+    },
+    "packet_id": {
+      "type": "string",
+      "description": "Unique identifier for the transcript packet"
+    },
+    "extraction_stats": {
+      "$ref": "#/$defs/ExtractionStats"
+    },
+    "speakers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Speaker"
+      },
+      "description": "Identified speakers"
+    },
+    "action_items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ActionItem"
+      },
+      "description": "Extracted action items"
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Decision"
+      },
+      "description": "Extracted decisions"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Question"
+      },
+      "description": "Extracted questions"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Topic"
+      },
+      "description": "Segmented topics"
+    }
+  },
+  "$defs": {
+    "ExtractionStats": {
+      "type": "object",
+      "required": ["speakers_identified", "action_items", "decisions", "questions", "topics"],
+      "properties": {
+        "speakers_identified": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "action_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "decisions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "questions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "topics": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confidence_summary": {
+          "$ref": "#/$defs/ConfidenceSummary"
+        }
+      }
+    },
+    "ConfidenceSummary": {
+      "type": "object",
+      "required": ["average", "high_count", "medium_count", "low_count", "high_ratio"],
+      "properties": {
+        "average": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Average confidence across all entities"
+        },
+        "high_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of HIGH confidence entities (>=0.85)"
+        },
+        "medium_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of MEDIUM confidence entities (0.70-0.84)"
+        },
+        "low_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of LOW confidence entities (<0.70)"
+        },
+        "high_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Ratio of HIGH confidence entities"
+        }
+      }
+    },
+    "Speaker": {
+      "type": "object",
+      "required": ["id", "name", "detection_pattern", "confidence", "segment_count"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^spk-",
+          "description": "Speaker identifier (spk-*)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Speaker name as detected"
+        },
+        "detection_pattern": {
+          "type": "string",
+          "enum": ["vtt_voice_tag", "prefix_pattern", "bracket_pattern", "contextual"],
+          "description": "Pattern used for speaker detection (PAT-003)"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Detection confidence score"
+        },
+        "segment_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of segments attributed to this speaker"
+        }
+      }
+    },
+    "Citation": {
+      "type": "object",
+      "required": ["segment_id", "anchor", "timestamp_ms", "text_snippet"],
+      "properties": {
+        "segment_id": {
+          "type": "string",
+          "pattern": "^seg-\\d{3,}$",
+          "description": "Source segment identifier"
+        },
+        "anchor": {
+          "type": "string",
+          "pattern": "^#seg-\\d{3,}$",
+          "description": "Deep link anchor per ADR-003"
+        },
+        "timestamp_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Timestamp in milliseconds"
+        },
+        "text_snippet": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Source text snippet for verification"
+        }
+      },
+      "description": "Citation object per PAT-004 anti-hallucination"
+    },
+    "ActionItem": {
+      "type": "object",
+      "required": ["id", "text", "confidence", "citation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^act-\\d{3,}$",
+          "description": "Action item identifier"
+        },
+        "text": {
+          "type": "string",
+          "description": "Action item description"
+        },
+        "assignee": {
+          "type": ["string", "null"],
+          "description": "Assigned person (if stated)"
+        },
+        "due_date": {
+          "type": ["string", "null"],
+          "description": "Due date (if stated)"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "tier": {
+          "type": "integer",
+          "enum": [1, 2, 3],
+          "description": "Extraction tier (PAT-001)"
+        },
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        }
+      }
+    },
+    "Decision": {
+      "type": "object",
+      "required": ["id", "text", "confidence", "citation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^dec-\\d{3,}$",
+          "description": "Decision identifier"
+        },
+        "text": {
+          "type": "string",
+          "description": "Decision description"
+        },
+        "decided_by": {
+          "type": ["string", "null"],
+          "description": "Person or group who made the decision"
+        },
+        "rationale": {
+          "type": ["string", "null"],
+          "description": "Rationale for the decision (if stated)"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        }
+      }
+    },
+    "Question": {
+      "type": "object",
+      "required": ["id", "text", "answered", "confidence", "citation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^que-\\d{3,}$",
+          "description": "Question identifier"
+        },
+        "text": {
+          "type": "string",
+          "description": "Question text"
+        },
+        "asked_by": {
+          "type": ["string", "null"],
+          "description": "Person who asked"
+        },
+        "answered": {
+          "type": "boolean",
+          "description": "Whether question was answered in meeting"
+        },
+        "answer_citation": {
+          "oneOf": [
+            { "$ref": "#/$defs/Citation" },
+            { "type": "null" }
+          ],
+          "description": "Citation for answer (if answered)"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        }
+      }
+    },
+    "Topic": {
+      "type": "object",
+      "required": ["id", "title", "start_ms", "end_ms", "segment_ids"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^top-\\d{3,}$",
+          "description": "Topic identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Generated topic title"
+        },
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Topic start timestamp"
+        },
+        "end_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Topic end timestamp"
+        },
+        "segment_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^seg-\\d{3,}$"
+          },
+          "minItems": 1,
+          "description": "Segments within this topic"
+        }
+      }
+    }
+  }
+}

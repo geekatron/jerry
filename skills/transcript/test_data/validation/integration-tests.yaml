@@ -1,0 +1,416 @@
+# =============================================================================
+# INTEGRATION TEST SPECIFICATION
+# =============================================================================
+# Purpose: Integration tests for ts-parser to ts-extractor data flow
+# Created: 2026-01-28
+# Task: TASK-112B
+# Reference: TDD/BDD Testing Strategy
+#
+# INTEGRATION TESTS verify that:
+# 1. Parser output is compatible with extractor input
+# 2. No data loss occurs during pipeline transition
+# 3. Timestamps and speaker information are preserved
+# 4. Citations resolve correctly to parser segments
+# =============================================================================
+
+version: "1.0.0"
+type: integration
+created_at: "2026-01-28T00:00:00Z"
+
+# =============================================================================
+# TEST SUITES
+# =============================================================================
+test_suites:
+
+  # ---------------------------------------------------------------------------
+  # PARSER-TO-EXTRACTOR PIPELINE INTEGRATION
+  # ---------------------------------------------------------------------------
+  parser-to-extractor:
+    description: "ts-parser output compatible with ts-extractor input"
+    pipeline_agents:
+      - agent: ts-parser
+        role: producer
+        output_schema: "schemas/canonical-transcript.json"
+      - agent: ts-extractor
+        role: consumer
+        input_schema: "schemas/canonical-transcript.json"
+        output_schema: "schemas/extraction-report.json"
+
+    tests:
+      # -----------------------------------------------------------------------
+      # INT-001: Segment Data Flow
+      # -----------------------------------------------------------------------
+      - id: int-001
+        name: "Parser segments flow to extractor"
+        description: |
+          Verify that all segments produced by ts-parser are available
+          to ts-extractor for entity extraction. No segments should be
+          dropped or corrupted during the handoff.
+        priority: high
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+        assertions:
+          - id: int-001-a
+            type: segment_count_match
+            description: "Extractor receives all segments from parser"
+            expected: "parser_output.segments.length == extractor_input.segments.length"
+          - id: int-001-b
+            type: no_data_loss
+            description: "All segment IDs from parser exist in extractor context"
+            expected: "all parser_output.segments[*].id in extractor_context.segment_ids"
+          - id: int-001-c
+            type: speaker_preservation
+            description: "Speaker names preserved through pipeline"
+            expected: "parser_output.unique_speakers == extractor_input.unique_speakers"
+        acceptance_criteria:
+          - "AC-1: All parser segments available to extractor"
+          - "AC-2: No segments dropped during handoff"
+          - "AC-3: Speaker names match between parser output and extractor input"
+
+      # -----------------------------------------------------------------------
+      # INT-002: Timestamp Integrity
+      # -----------------------------------------------------------------------
+      - id: int-002
+        name: "Timestamps preserved through pipeline"
+        description: |
+          Verify that all timestamps from ts-parser are preserved
+          exactly in the data consumed by ts-extractor. This is critical
+          for accurate topic segmentation and citation generation.
+        priority: high
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+        assertions:
+          - id: int-002-a
+            type: timestamp_integrity
+            description: "All timestamps match between parser and extractor"
+            expected: |
+              for each segment in parser_output.segments:
+                extractor_segment = find_segment_by_id(segment.id)
+                assert segment.start_ms == extractor_segment.start_ms
+                assert segment.end_ms == extractor_segment.end_ms
+          - id: int-002-b
+            type: timestamp_ordering
+            description: "Topic timestamps fall within segment timestamp ranges"
+            expected: |
+              for each topic in extractor_output.topics:
+                assert topic.start_ms >= parser_output.segments[0].start_ms
+                assert topic.end_ms <= parser_output.segments[-1].end_ms
+          - id: int-002-c
+            type: citation_timestamp_valid
+            description: "Citation timestamps reference valid segment timestamps"
+            expected: |
+              for each entity in [action_items, decisions, questions]:
+                segment = find_segment_by_id(entity.citation.segment_id)
+                assert entity.citation.timestamp_ms >= segment.start_ms
+                assert entity.citation.timestamp_ms <= segment.end_ms
+        acceptance_criteria:
+          - "AC-4: Segment timestamps exactly preserved"
+          - "AC-5: Topic boundaries within transcript range"
+          - "AC-6: Citation timestamps within source segment range"
+
+      # -----------------------------------------------------------------------
+      # INT-003: Citation Resolution
+      # -----------------------------------------------------------------------
+      - id: int-003
+        name: "Citation references resolve to parser segments"
+        description: |
+          Verify that all citations generated by ts-extractor point to
+          valid segment IDs that exist in the ts-parser output. This
+          ensures PAT-004 (Citation-Required) anti-hallucination works
+          across the pipeline boundary.
+        priority: critical
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+        assertions:
+          - id: int-003-a
+            type: citation_resolution
+            description: "All extractor citations point to valid parser segment IDs"
+            expected: |
+              parser_segment_ids = set(parser_output.segments[*].id)
+              for each entity in [action_items, decisions, questions]:
+                assert entity.citation.segment_id in parser_segment_ids
+          - id: int-003-b
+            type: citation_text_match
+            description: "Citation text_snippet exists in source segment text"
+            expected: |
+              for each entity in [action_items, decisions, questions]:
+                segment = find_segment_by_id(entity.citation.segment_id)
+                assert entity.citation.text_snippet in segment.text OR
+                       similarity(entity.citation.text_snippet, segment.text) > 0.8
+          - id: int-003-c
+            type: citation_anchor_format
+            description: "Citation anchors correctly formatted from segment IDs"
+            expected: |
+              for each entity in [action_items, decisions, questions]:
+                assert entity.citation.anchor == "#" + entity.citation.segment_id
+          - id: int-003-d
+            type: topic_segment_resolution
+            description: "Topic segment_ids all exist in parser output"
+            expected: |
+              parser_segment_ids = set(parser_output.segments[*].id)
+              for each topic in extractor_output.topics:
+                for each seg_id in topic.segment_ids:
+                  assert seg_id in parser_segment_ids
+        acceptance_criteria:
+          - "AC-7: All citation segment_ids exist in parser output"
+          - "AC-8: Citation text_snippets match source segment text"
+          - "AC-9: Citation anchors correctly derived from segment_ids"
+          - "AC-10: Topic segment_ids all resolve to valid parser segments"
+
+      # -----------------------------------------------------------------------
+      # INT-004: Schema Compatibility
+      # -----------------------------------------------------------------------
+      - id: int-004
+        name: "Parser output schema compatible with extractor input"
+        description: |
+          Verify that ts-parser output conforms to the schema expected
+          by ts-extractor. This is a contract test at the integration level.
+        priority: high
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+        assertions:
+          - id: int-004-a
+            type: schema_compatibility
+            description: "Parser output validates against extractor input schema"
+            expected: "validate(parser_output, schemas/canonical-transcript.json) == true"
+          - id: int-004-b
+            type: required_fields_present
+            description: "All fields required by extractor are present in parser output"
+            expected: |
+              required_by_extractor = ["version", "source", "segments"]
+              for each field in required_by_extractor:
+                assert field in parser_output
+          - id: int-004-c
+            type: segment_schema_valid
+            description: "Each segment has fields required by extractor"
+            expected: |
+              extractor_required_segment_fields = ["id", "text"]
+              for each segment in parser_output.segments:
+                for each field in extractor_required_segment_fields:
+                  assert field in segment
+        acceptance_criteria:
+          - "AC-11: Parser output validates against canonical-transcript schema"
+          - "AC-12: All extractor-required top-level fields present"
+          - "AC-13: All extractor-required segment fields present"
+
+      # -----------------------------------------------------------------------
+      # INT-005: Speaker Flow Through Pipeline
+      # -----------------------------------------------------------------------
+      - id: int-005
+        name: "Speaker information preserved and enriched"
+        description: |
+          Verify that speaker information from ts-parser (if present)
+          is preserved by ts-extractor, and that extractor-detected
+          speakers are traceable to source segments.
+        priority: medium
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+        assertions:
+          - id: int-005-a
+            type: speaker_name_match
+            description: "Parser-detected speakers appear in extractor output"
+            expected: |
+              parser_speakers = set(parser_output.segments[*].speaker where speaker != null)
+              extractor_speakers = set(extractor_output.speakers[*].name)
+              assert parser_speakers.issubset(extractor_speakers) OR
+                     extractor_speakers == parser_speakers
+          - id: int-005-b
+            type: speaker_segment_count_valid
+            description: "Extractor speaker segment_count matches parser data"
+            expected: |
+              for each speaker in extractor_output.speakers:
+                parser_count = count(parser_output.segments where segment.speaker == speaker.name)
+                assert speaker.segment_count >= parser_count * 0.9  # Allow some attribution variation
+          - id: int-005-c
+            type: entity_speaker_attribution
+            description: "Entity assignees/asked_by reference valid speakers"
+            expected: |
+              valid_speakers = set(extractor_output.speakers[*].name)
+              for each action_item in extractor_output.action_items:
+                if action_item.assignee != null:
+                  assert action_item.assignee in valid_speakers OR
+                         action_item.assignee == "Unknown"
+              for each question in extractor_output.questions:
+                if question.asked_by != null:
+                  assert question.asked_by in valid_speakers OR
+                         question.asked_by == "Unknown"
+        acceptance_criteria:
+          - "AC-14: Parser-detected speakers preserved in extractor output"
+          - "AC-15: Speaker segment counts approximately match"
+          - "AC-16: Entity speaker attributions reference valid speakers"
+
+      # -----------------------------------------------------------------------
+      # INT-006: Format Agnostic Pipeline
+      # -----------------------------------------------------------------------
+      - id: int-006
+        name: "Pipeline works across input formats"
+        description: |
+          Verify that the parser-to-extractor pipeline works correctly
+          for VTT, SRT, and plain text inputs, producing consistent
+          extraction results.
+        priority: medium
+        pipelines:
+          - name: "VTT Pipeline"
+            steps:
+              - agent: ts-parser
+                input: "golden/meeting-001.vtt"
+                capture: vtt_parser_output
+              - agent: ts-extractor
+                input: "${vtt_parser_output}"
+                capture: vtt_extractor_output
+          - name: "SRT Pipeline"
+            steps:
+              - agent: ts-parser
+                input: "golden/meeting-001.srt"
+                capture: srt_parser_output
+              - agent: ts-extractor
+                input: "${srt_parser_output}"
+                capture: srt_extractor_output
+        assertions:
+          - id: int-006-a
+            type: cross_format_entity_consistency
+            description: "Same entities extracted regardless of input format"
+            expected: |
+              # Allow for timestamp differences in SRT (no sub-ms precision)
+              vtt_entities = normalize_entities(vtt_extractor_output)
+              srt_entities = normalize_entities(srt_extractor_output)
+              assert jaccard_similarity(vtt_entities, srt_entities) > 0.85
+          - id: int-006-b
+            type: cross_format_speaker_consistency
+            description: "Same speakers detected regardless of input format"
+            expected: |
+              vtt_speakers = set(vtt_extractor_output.speakers[*].name)
+              srt_speakers = set(srt_extractor_output.speakers[*].name)
+              assert vtt_speakers == srt_speakers
+        acceptance_criteria:
+          - "AC-17: Entity extraction consistent across VTT and SRT"
+          - "AC-18: Speaker detection consistent across formats"
+
+# =============================================================================
+# ASSERTION TYPE DEFINITIONS
+# =============================================================================
+assertion_types:
+  segment_count_match:
+    description: "Verify segment counts match between pipeline stages"
+    implementation: "len(stage1.segments) == len(stage2.segments)"
+
+  no_data_loss:
+    description: "Verify all data from producer available to consumer"
+    implementation: "all(producer_id in consumer_ids for producer_id in producer.segment_ids)"
+
+  speaker_preservation:
+    description: "Verify speaker names preserved through pipeline"
+    implementation: "set(producer.speakers) == set(consumer.speakers)"
+
+  timestamp_integrity:
+    description: "Verify timestamps match exactly between stages"
+    implementation: "all(p.start_ms == c.start_ms and p.end_ms == c.end_ms for p, c in zip(producer, consumer))"
+
+  timestamp_ordering:
+    description: "Verify timestamps fall within valid ranges"
+    implementation: "min_ts <= timestamp <= max_ts"
+
+  citation_resolution:
+    description: "Verify all citations point to valid segment IDs"
+    implementation: "all(citation.segment_id in valid_segment_ids for citation in citations)"
+
+  citation_text_match:
+    description: "Verify citation text exists in source segment"
+    implementation: "citation.text_snippet in source_segment.text"
+
+  citation_anchor_format:
+    description: "Verify anchor correctly derived from segment_id"
+    implementation: "citation.anchor == '#' + citation.segment_id"
+
+  citation_timestamp_valid:
+    description: "Verify citation timestamp within segment time range"
+    implementation: "segment.start_ms <= citation.timestamp_ms <= segment.end_ms"
+
+  schema_compatibility:
+    description: "Verify producer output validates against consumer input schema"
+    implementation: "jsonschema.validate(producer_output, consumer_input_schema)"
+
+  required_fields_present:
+    description: "Verify all required fields exist"
+    implementation: "all(field in data for field in required_fields)"
+
+  speaker_name_match:
+    description: "Verify speaker names consistent across stages"
+    implementation: "producer_speakers.issubset(consumer_speakers)"
+
+  speaker_segment_count_valid:
+    description: "Verify speaker segment counts approximately match"
+    implementation: "abs(producer_count - consumer_count) / producer_count < 0.1"
+
+  entity_speaker_attribution:
+    description: "Verify entity speakers reference valid speaker names"
+    implementation: "entity.speaker in valid_speakers or entity.speaker == 'Unknown'"
+
+  cross_format_entity_consistency:
+    description: "Verify entities extracted consistently across formats"
+    implementation: "jaccard_similarity(format1_entities, format2_entities) > threshold"
+
+  cross_format_speaker_consistency:
+    description: "Verify speakers detected consistently across formats"
+    implementation: "format1_speakers == format2_speakers"
+
+  topic_segment_resolution:
+    description: "Verify all topic segment_ids exist in parser output"
+    implementation: "all(seg_id in parser_segments for topic in topics for seg_id in topic.segment_ids)"
+
+# =============================================================================
+# TEST EXECUTION CONFIGURATION
+# =============================================================================
+execution:
+  parallel: false  # Integration tests must run sequentially
+  timeout_seconds: 60  # Per-test timeout
+  cleanup: true  # Clean intermediate artifacts after test
+  capture_artifacts:
+    - parser_output
+    - extractor_output
+  artifact_retention: "7d"  # Keep artifacts for 7 days
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# These integration tests verify the parser-to-extractor pipeline:
+#
+# 1. INT-001: Data completeness - no segments lost
+# 2. INT-002: Timestamp integrity - exact preservation
+# 3. INT-003: Citation resolution - PAT-004 across boundary
+# 4. INT-004: Schema compatibility - contract at integration level
+# 5. INT-005: Speaker flow - attribution preservation
+# 6. INT-006: Format agnostic - works for VTT, SRT, plain
+#
+# Integration tests run AFTER contract tests to ensure:
+# - Each agent's output is schema-valid (contract tests)
+# - Pipeline handoffs preserve data integrity (integration tests)
+#
+# HUMAN REVIEW REQUIRED:
+# - Verify assertion implementations are feasible
+# - Confirm timeout values are appropriate
+# - Approve before using in CI/CD pipeline
+# =============================================================================

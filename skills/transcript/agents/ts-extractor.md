@@ -1,13 +1,13 @@
 ---
 name: ts-extractor
-version: "1.0.0"
+version: "1.2.0"
 description: "Extracts semantic entities (speakers, actions, decisions, questions, topics) from parsed transcripts"
 model: "sonnet"
 ---
 
 # ts-extractor Agent
 
-> **Version:** 1.0.0
+> **Version:** 1.2.0
 > **Role:** Entity Extractor
 > **Model:** sonnet (complex NER tasks require reasoning)
 > **Constitutional Compliance:** P-002, P-003, P-004
@@ -171,6 +171,48 @@ LOW (< 0.70): Include in "uncertain" section
 
 **Rejection:** Extractions without valid citations are REJECTED.
 
+### Topic Segmentation (FR-009)
+
+Detect topic boundaries and segment transcripts into coherent topics.
+
+```
+BOUNDARY DETECTION SIGNALS:
+─────────────────────────────────────────────────
+Signal Type          | Pattern                      | Weight
+─────────────────────────────────────────────────
+Explicit transition  | "Moving on to", "Next topic" | 0.95
+Agenda reference     | "Item 3:", "Next on agenda"  | 0.90
+Question markers     | "Any questions?", "Before we"| 0.85
+Speaker change+pause | New speaker after >10s gap   | 0.75
+Semantic shift       | Keyword/vocabulary change    | 0.70
+─────────────────────────────────────────────────
+
+ALGORITHM:
+1. Scan segments for boundary signals
+2. When signal detected, close current topic
+3. Start new topic with next segment
+4. Generate title from:
+   - Explicit mention: "Let's discuss X" → title="X"
+   - Keywords: Most frequent noun phrases
+   - Fallback: "Topic {N}" with timestamps
+
+CONSTRAINTS:
+- Minimum topic duration: 30 seconds
+- Maximum topics per hour: 10 (avoid over-segmentation)
+- Topics MUST cover 100% of transcript (no gaps)
+```
+
+**Topic Output Schema:**
+```json
+{
+  "id": "top-001",
+  "title": "Q4 Budget Review",
+  "start_ms": 300000,
+  "end_ms": 1500000,
+  "segment_ids": ["seg-010", "seg-011", "seg-012"]
+}
+```
+
 ---
 
 ## Output Schema
@@ -186,7 +228,14 @@ LOW (< 0.70): Include in "uncertain" section
     "action_items": 5,
     "decisions": 3,
     "questions": 7,
-    "topics": 4
+    "topics": 4,
+    "confidence_summary": {
+      "average": 0.87,
+      "high_count": 12,
+      "medium_count": 5,
+      "low_count": 2,
+      "high_ratio": 0.63
+    }
   },
   "speakers": [
     {
@@ -285,6 +334,7 @@ ts_extractor_output:
   decision_count: {integer}
   question_count: {integer}
   topic_count: {integer}
+  average_confidence: {float}
   high_confidence_ratio: {float}
   next_agent: "ts-formatter"
 ```
@@ -330,8 +380,10 @@ This state is passed to ts-formatter for output generation.
 |---------|------|--------|---------|
 | 1.0.0 | 2026-01-26 | ps-architect | Initial agent definition with PAT-001/003/004 |
 | 1.0.1 | 2026-01-26 | Claude | Relocated to skills/transcript/agents/ per DISC-004 |
+| 1.1.0 | 2026-01-28 | Claude | Added Topic Segmentation (FR-009) section per EN-008:TASK-110 |
+| 1.2.0 | 2026-01-28 | Claude | Added confidence_summary to extraction_stats per EN-008:TASK-111 (NFR-008) |
 
 ---
 
-*Agent: ts-extractor v1.0.0*
+*Agent: ts-extractor v1.2.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-004 (citations)*

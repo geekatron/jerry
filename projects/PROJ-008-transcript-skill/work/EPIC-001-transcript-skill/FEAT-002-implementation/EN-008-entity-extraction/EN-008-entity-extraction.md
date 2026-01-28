@@ -148,29 +148,30 @@ THE RESEARCH ANALYST (ts-extractor)
 
 ### Definition of Done
 
-- [ ] ts-extractor agent definition complete (`skills/transcript/agents/ts-extractor.md`)
-- [ ] SpeakerIdentifier implements PAT-003 (4-pattern chain)
-- [ ] TieredExtractor implements PAT-001 (Rule → ML → LLM)
-- [ ] CitationLinker implements PAT-004 (anti-hallucination)
-- [ ] TopicSegmenter implements FR-009 (boundary detection)
-- [ ] Confidence scoring mechanism per NFR-008
-- [ ] Entity schemas match TDD-ts-extractor.md
-- [ ] ps-critic review passed
-- [ ] Human approval at GATE-5
+- [x] ts-extractor agent definition complete (`skills/transcript/agents/ts-extractor.md`) - TASK-106
+- [x] SpeakerIdentifier implements PAT-003 (4-pattern chain) - TASK-107
+- [x] TieredExtractor implements PAT-001 (Rule → ML → LLM) - TASK-108
+- [x] CitationLinker implements PAT-004 (anti-hallucination) - TASK-109
+- [x] TopicSegmenter implements FR-009 (boundary detection) - TASK-110
+- [x] Confidence scoring mechanism per NFR-008 - TASK-111
+- [x] Entity schemas match TDD-ts-extractor.md - TASK-112A (contract tests)
+- [x] ps-critic review passed (0.91) - [critiques/en008-gate5-iter1-critique.md](./critiques/en008-gate5-iter1-critique.md)
+- [x] nse-qa review passed (0.88) - [qa/proj008-en008-implementation-qa.md](./qa/proj008-en008-implementation-qa.md)
+- [ ] Human approval at GATE-5 - PENDING
 
 ### Technical Criteria (from TDD-ts-extractor.md)
 
 | # | Criterion | TDD Section | Verified |
 |---|-----------|-------------|----------|
-| AC-1 | Extracts action items with assignee/due date | 1.1 | [ ] |
-| AC-2 | Extracts decisions with rationale | 1.2 | [ ] |
-| AC-3 | Detects questions with answered status | 1.3 | [ ] |
-| AC-4 | Segments topics with time boundaries | 1.4 | [ ] |
-| AC-5 | Speaker identification via 4-pattern chain (PAT-003) | 3 | [ ] |
-| AC-6 | Tiered extraction: Rule → ML → LLM (PAT-001) | 2 | [ ] |
-| AC-7 | All entities have citations (PAT-004) | 1.5 | [ ] |
-| AC-8 | Confidence scores with HIGH/MEDIUM/LOW thresholds | 4 | [ ] |
-| AC-9 | Processing time <30s for 1-hour transcript | 9 | [ ] |
+| AC-1 | Extracts action items with assignee/due date | 1.1 | [x] TASK-108 |
+| AC-2 | Extracts decisions with rationale | 1.2 | [x] TASK-108 |
+| AC-3 | Detects questions with answered status | 1.3 | [x] TASK-108 |
+| AC-4 | Segments topics with time boundaries | 1.4 | [x] TASK-110 |
+| AC-5 | Speaker identification via 4-pattern chain (PAT-003) | 3 | [x] TASK-107 |
+| AC-6 | Tiered extraction: Rule → ML → LLM (PAT-001) | 2 | [x] TASK-108 |
+| AC-7 | All entities have citations (PAT-004) | 1.5 | [x] TASK-109, TASK-112A |
+| AC-8 | Confidence scores with HIGH/MEDIUM/LOW thresholds | 4 | [x] TASK-111 |
+| AC-9 | Processing time <30s for 1-hour transcript | 9 | [ ] Runtime verification (EN-015) |
 
 ---
 
@@ -180,15 +181,15 @@ THE RESEARCH ANALYST (ts-extractor)
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-106](./TASK-106-extractor-agent-alignment.md) | Verify ts-extractor agent definition alignment | pending | Claude | 2 | - |
-| [TASK-107](./TASK-107-speaker-identification.md) | Implement/verify SpeakerIdentifier (PAT-003) | pending | Claude | 2 | TASK-106 |
-| [TASK-108](./TASK-108-tiered-extraction.md) | Implement/verify TieredExtractor (PAT-001) | pending | Claude | 3 | TASK-106 |
-| [TASK-109](./TASK-109-citation-linker.md) | Implement/verify CitationLinker (PAT-004) | pending | Claude | 2 | TASK-106 |
-| [TASK-110](./TASK-110-topic-segmenter.md) | Implement/verify TopicSegmenter (FR-009) | pending | Claude | 2 | TASK-106 |
-| [TASK-111](./TASK-111-confidence-scoring.md) | Implement confidence scoring (NFR-008) | pending | Claude | 1 | TASK-107..110 |
-| [TASK-112](./TASK-112-extractor-validation.md) | Create test cases and validation | pending | Claude | 2 | TASK-111 |
-| [TASK-112A](./TASK-112A-extractor-contract-tests.md) | Create extractor contract tests (TDD/BDD) | pending | Claude | 1 | TASK-106 |
-| [TASK-112B](./TASK-112B-parser-extractor-integration-tests.md) | Create parser-extractor integration tests | pending | Claude | 2 | TASK-105A, TASK-112A |
+| [TASK-106](./TASK-106-extractor-agent-alignment.md) | Verify ts-extractor agent definition alignment | **done** | Claude | 2 | - |
+| [TASK-107](./TASK-107-speaker-identification.md) | Implement/verify SpeakerIdentifier (PAT-003) | **done** | Claude | 2 | ~~TASK-106~~ |
+| [TASK-108](./TASK-108-tiered-extraction.md) | Implement/verify TieredExtractor (PAT-001) | **done** | Claude | 3 | ~~TASK-106~~ |
+| [TASK-109](./TASK-109-citation-linker.md) | Implement/verify CitationLinker (PAT-004) | **done** | Claude | 2 | ~~TASK-106~~ |
+| [TASK-110](./TASK-110-topic-segmenter.md) | Implement/verify TopicSegmenter (FR-009) | **done** | Claude | 2 | ~~TASK-106~~ |
+| [TASK-111](./TASK-111-confidence-scoring.md) | Implement confidence scoring (NFR-008) | **done** | Claude | 1 | ~~TASK-107..110~~ |
+| [TASK-112](./TASK-112-extractor-validation.md) | Create test cases and validation | pending | Claude | 2 | ~~TASK-111~~, **TASK-132** (EN-015) |
+| [TASK-112A](./TASK-112A-extractor-contract-tests.md) | Create extractor contract tests (TDD/BDD) | **done** | Claude | 1 | ~~TASK-106~~ |
+| [TASK-112B](./TASK-112B-parser-extractor-integration-tests.md) | Create parser-extractor integration tests | **done** | Claude | 2 | ~~TASK-105A~~, ~~TASK-112A~~ |
 
 **NOTE:** Task IDs start at TASK-106 to avoid conflicts with EN-007 tasks (TASK-101-105) and FEAT-001 tasks (TASK-031-042).
 **TASK-112A/B added:** 2026-01-27 per TDD/BDD Testing Strategy for contract and integration test coverage.
@@ -366,6 +367,8 @@ Extraction report JSON:
 | 2026-01-26 | Claude | pending | Enabler created (6 parallel agents) |
 | 2026-01-26 | Claude | revised | MAJOR rewrite per DISC-001: Single ts-extractor with PAT-001/003/004; tasks renumbered to TASK-106+ |
 | 2026-01-27 | Claude | revised | Added TASK-112A (contract tests), TASK-112B (integration tests) per TDD/BDD Testing Strategy |
+| 2026-01-28 | Claude | in_progress | TASK-106-111 verified complete; TASK-112A created (7 contract tests); TASK-112B created (6 integration tests); ts-extractor.md v1.2.0 with confidence_summary; extraction-report.json schema created |
+| 2026-01-28 | Claude | gate-5-ready | ps-critic (0.91 PASS) and nse-qa (0.88 PASS) reviews completed; agent version mismatch fixed (v1.2.0); ready for GATE-5 human approval |
 
 ---
 

@@ -156,9 +156,9 @@ Execute comprehensive validation of ts-extractor against the golden dataset from
 ### Related Items
 
 - Parent: [EN-008: ts-extractor Agent Implementation](./EN-008-entity-extraction.md)
-- Blocked By: [TASK-111: Confidence scoring](./TASK-111-confidence-scoring.md)
-- Depends On: [TASK-131: Golden dataset](../EN-015-transcript-validation/TASK-131-golden-dataset-transcripts.md)
-- Depends On: [TASK-132: Ground truth](../EN-015-transcript-validation/TASK-132-ground-truth-json.md)
+- Blocked By: ~~[TASK-111: Confidence scoring](./TASK-111-confidence-scoring.md)~~ (DONE)
+- **Blocked By**: [TASK-132: Ground truth JSON](../EN-015-transcript-validation/TASK-132-ground-truth-json.md) (EN-015 dependency)
+- Depends On: [TASK-131: Golden dataset](../EN-015-transcript-validation/TASK-131-golden-dataset-transcripts.md) (DONE)
 - References: [TASK-135: Extractor tests](../EN-015-transcript-validation/TASK-135-extractor-tests.md)
 
 ---

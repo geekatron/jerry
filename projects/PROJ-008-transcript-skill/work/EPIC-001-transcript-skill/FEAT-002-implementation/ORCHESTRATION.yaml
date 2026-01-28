@@ -6,38 +6,53 @@ workflow:
   id: "feat-002-implementation-20260126-001"
   name: "FEAT-002: Transcript Skill Implementation"
   feature_id: "FEAT-002"
-  status: PLANNING  # PLANNING | ACTIVE | PAUSED | COMPLETE | FAILED
+  status: ACTIVE  # PLANNING | ACTIVE | PAUSED | COMPLETE | FAILED
 
 metadata:
   created_at: "2026-01-26T17:30:00Z"
-  updated_at: "2026-01-26T17:30:00Z"
+  updated_at: "2026-01-28T12:45:00Z"
   prerequisite: "FEAT-001 Complete (All 4 Gates Passed)"
   alignment_analysis: "DISC-001"
+  folder_structure_precedence: "DISC-003"
 
 # Enabler definitions with restructured task allocations
 enablers:
   EN-007:
     title: "ts-parser Agent Implementation"
-    status: pending
+    status: gate-5-passed
     priority: high
     gate: GATE-5
     tasks:
       start: TASK-101
       end: TASK-105
+      additional: [TASK-105A, TASK-106, TASK-107]  # Contract tests, encoding fallback
     dependencies: []
     implements:
       - TDD-ts-parser.md
     deliverables:
       - skills/transcript/agents/ts-parser.md
+    quality_reviews:
+      ps_critic:
+        path: EN-007-vtt-parser/critiques/en007-gate5-iter1-critique.md
+        score: 0.89
+        status: PASS
+      nse_qa:
+        path: EN-007-vtt-parser/qa/proj008-en007-implementation-qa.md
+        score: 0.87
+        status: PASS
+    approval:
+      human_approval: true
+      approved_at: "2026-01-28T08:00:00Z"
 
   EN-008:
     title: "ts-extractor Agent Implementation"
-    status: pending
+    status: gate-5-ready
     priority: high
     gate: GATE-5
     tasks:
       start: TASK-106
       end: TASK-112
+      additional: [TASK-112A, TASK-112B]  # Contract tests, integration tests
     dependencies:
       - EN-007
     implements:
@@ -47,6 +62,18 @@ enablers:
       - PAT-004 (Citation Required)
     deliverables:
       - skills/transcript/agents/ts-extractor.md
+    quality_reviews:
+      ps_critic:
+        path: EN-008-entity-extraction/critiques/en008-gate5-iter1-critique.md
+        score: 0.91
+        status: PASS
+      nse_qa:
+        path: EN-008-entity-extraction/qa/proj008-en008-implementation-qa.md
+        score: 0.88
+        status: PASS
+    approval:
+      human_approval: pending
+      approved_at: null
 
   EN-009:
     title: "Mind Map Generator (Mermaid + ASCII)"
@@ -218,7 +245,7 @@ gates:
 
 # Execution queue
 execution_queue:
-  current_group: 0  # Not started
+  current_group: 1  # Core Agents in progress
   groups:
     - id: 1
       name: "Core Agents"
@@ -256,8 +283,8 @@ execution_queue:
 
 # Task allocation summary
 task_allocation:
-  EN-007: [TASK-101, TASK-102, TASK-103, TASK-104, TASK-105]
-  EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112]
+  EN-007: [TASK-101, TASK-102, TASK-103, TASK-104, TASK-105, TASK-105A, TASK-106, TASK-107]
+  EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112, TASK-112A, TASK-112B]
   EN-009: [TASK-046, TASK-047, TASK-048, TASK-049]  # Mind Map Generator (retained per BUG-001)
   EN-013: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
   EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
@@ -267,13 +294,14 @@ task_allocation:
 # Metrics
 metrics:
   enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
-  enablers_complete: 0
+  enablers_complete: 1  # EN-007 passed GATE-5
+  enablers_gate_ready: 1  # EN-008 ready for GATE-5
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 45  # EN-007(5)+EN-008(7)+EN-009(4)+EN-011(4)+EN-013(6)+EN-014(5)+EN-015(7)+EN-016(7)
-  tasks_complete: 0
-  gates_passed: 0
+  tasks_total: 49  # Updated with additional contract/integration tests
+  tasks_complete: 17  # EN-007 (8) + EN-008 tasks (9 per summary)
+  gates_passed: 0  # GATE-5 not yet fully passed (awaiting EN-008 human approval)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 0
+  completion_percentage: 12  # 1/8 enablers complete
 
 # Checkpoint tracking
 checkpoints:
@@ -291,3 +319,12 @@ history:
   - timestamp: "2026-01-26T23:30:00Z"
     event: "DISC-002 executed"
     details: "EN-012 (CLI) moved to FEAT-003 per user approval. GATE-7 removed. Enablers: 9→8. Gates: 3→2. Tasks remain allocated but moved to FEAT-003 scope."
+  - timestamp: "2026-01-28T08:00:00Z"
+    event: "EN-007 GATE-5 passed"
+    details: "ts-parser implementation complete. ps-critic (0.89) and nse-qa (0.87) reviews passed. Human approval received."
+  - timestamp: "2026-01-28T12:00:00Z"
+    event: "EN-008 quality reviews complete"
+    details: "ps-critic (0.91) and nse-qa (0.88) reviews passed. Ready for GATE-5 human approval."
+  - timestamp: "2026-01-28T12:45:00Z"
+    event: "DISC-003 created and remediation applied"
+    details: "Quality artifact folder structure precedence documented. Files moved to critiques/ and qa/ subdirectories per skill definitions. ORCHESTRATION.yaml updated to ACTIVE status."
