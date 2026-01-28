@@ -20,7 +20,7 @@ description: |
   enables domain-specific context loading per REQ-CI-F-002.
 
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: "Claude"
@@ -150,3 +150,4 @@ context_injection:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-013 |
+| 2026-01-28 | **DONE** | Added context_injection section to SKILL.md YAML frontmatter. Includes default_domain="general", domains=[general, transcript], context_path="./contexts/", 4 template variables. |

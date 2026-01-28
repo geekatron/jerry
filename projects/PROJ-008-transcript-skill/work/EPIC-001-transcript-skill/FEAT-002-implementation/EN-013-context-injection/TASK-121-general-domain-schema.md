@@ -20,7 +20,7 @@ description: |
   with minimal/generic entity definitions per REQ-CI-F-001.
 
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: MEDIUM
 assignee: "Claude"
@@ -180,3 +180,4 @@ prompt_guidance: |
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-013 |
+| 2026-01-28 | **DONE** | Created contexts/general.yaml with schema_version="1.0.0", domain="general", 2 entity_definitions (mention, topic), 2 extraction_rules, prompt_guidance. |

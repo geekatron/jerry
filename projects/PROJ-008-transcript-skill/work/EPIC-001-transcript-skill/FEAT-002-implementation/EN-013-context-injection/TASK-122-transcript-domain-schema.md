@@ -20,7 +20,7 @@ description: |
   entity definitions (action items, decisions, questions, speakers) per REQ-CI-F-007.
 
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: "Claude"
@@ -228,3 +228,4 @@ prompt_guidance: |
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-013 |
+| 2026-01-28 | **DONE** | Created contexts/transcript.yaml with 5 entity_definitions (action_item, decision, question, speaker, topic), 5 extraction_rules with confidence thresholds, comprehensive prompt_guidance including PAT-003, PAT-004 references. |

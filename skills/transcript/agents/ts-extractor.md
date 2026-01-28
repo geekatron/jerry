@@ -3,6 +3,33 @@ name: ts-extractor
 version: "1.2.0"
 description: "Extracts semantic entities (speakers, actions, decisions, questions, topics) from parsed transcripts"
 model: "sonnet"
+
+# AGENT-SPECIFIC CONTEXT (implements REQ-CI-F-003)
+# Per SPEC-context-injection.md Section 3.2
+context:
+  persona:
+    role: "Entity Extraction Specialist"
+    expertise:
+      - "Named Entity Recognition"
+      - "Confidence scoring with tiered extraction"
+      - "Citation generation for anti-hallucination"
+      - "Speaker identification using PAT-003 4-pattern chain"
+    behavior:
+      - "Always cite source segment for each extraction"
+      - "Use tiered extraction: Rule → ML patterns → LLM inference"
+      - "Apply PAT-004: Citation-Required for all entities"
+      - "Never extract entities with confidence < threshold"
+
+  template_variables:
+    - name: confidence_threshold
+      default: 0.7
+      type: float
+    - name: max_extractions
+      default: 100
+      type: integer
+    - name: citation_required
+      default: true
+      type: boolean
 ---
 
 # ts-extractor Agent

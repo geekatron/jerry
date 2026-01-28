@@ -3,6 +3,33 @@ name: ts-parser
 version: "1.2.0"
 description: "Parses VTT, SRT, and plain text transcripts into canonical JSON format"
 model: "haiku"
+
+# AGENT-SPECIFIC CONTEXT (implements REQ-CI-F-003)
+# Per SPEC-context-injection.md Section 3.2
+context:
+  persona:
+    role: "Transcript Parsing Specialist"
+    expertise:
+      - "VTT/SRT format parsing"
+      - "Timestamp extraction and normalization"
+      - "Speaker identification from format cues"
+      - "Multi-encoding detection (UTF-8, Windows-1252, ISO-8859-1)"
+    behavior:
+      - "Preserve original speaker names exactly as written"
+      - "Normalize timestamps to milliseconds"
+      - "Handle multi-format input gracefully"
+      - "Detect and recover from encoding errors"
+
+  template_variables:
+    - name: timestamp_format
+      default: "ms"
+      type: string
+    - name: speaker_detection
+      default: true
+      type: boolean
+    - name: encoding_fallback
+      default: ["utf-8", "windows-1252", "iso-8859-1"]
+      type: array
 ---
 
 # ts-parser Agent

@@ -152,12 +152,13 @@ enablers:
 
   EN-013:
     title: "Context Injection Implementation"
-    status: pending
+    status: gate-ready
     priority: medium
     gate: GATE-5
     tasks:
       start: TASK-120
       end: TASK-125
+      complete: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
     dependencies:
       - EN-006  # Design from FEAT-001
     implements:
@@ -165,7 +166,13 @@ enablers:
       - DEC-002 (YAML-only)
     deliverables:
       - skills/transcript/SKILL.md (context_injection section)
-      - skills/transcript/agents/ts-*.md (context sections)
+      - skills/transcript/contexts/general.yaml
+      - skills/transcript/contexts/transcript.yaml
+      - skills/transcript/schemas/context-domain-schema.json
+      - skills/transcript/agents/ts-parser.md (context section)
+      - skills/transcript/agents/ts-extractor.md (context section)
+      - skills/transcript/agents/ts-formatter.md (context section)
+      - test_data/validation/context-injection-tests.yaml
 
   EN-014:
     title: "Domain Context Files"
@@ -313,13 +320,13 @@ metrics:
   enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
   enablers_complete: 2  # EN-007, EN-008 passed GATE-5
   enablers_in_progress: 1  # EN-016 (8/10 tasks complete)
-  enablers_gate_ready: 0  # No enablers currently awaiting human approval
+  enablers_gate_ready: 1  # EN-013 (6/6 tasks complete, awaiting quality reviews)
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 52  # Updated: EN-016 now has 10 tasks (TASK-119A/B/C added)
-  tasks_complete: 25  # EN-007 (8) + EN-008 (9) + EN-016 (8: TASK-113..118, 119A, 119B)
-  gates_passed: 0  # GATE-5 not yet fully passed (EN-009, EN-013, EN-016 still pending)
+  tasks_complete: 31  # EN-007 (8) + EN-008 (9) + EN-016 (8: TASK-113..118, 119A, 119B) + EN-013 (6)
+  gates_passed: 0  # GATE-5 not yet fully passed (EN-009, EN-016 still pending)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 48  # 25/52 tasks complete
+  completion_percentage: 60  # 31/52 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -358,3 +365,6 @@ history:
   - timestamp: "2026-01-28T18:30:00Z"
     event: "EN-016 core tasks complete (8/10)"
     details: "Completed: TASK-113 (alignment), TASK-114..118 (core components verified - PacketGenerator, TokenCounter, FileSplitter, AnchorRegistry, BacklinkInjector), TASK-119A (9 formatter contracts CON-FMT-001..009), TASK-119B (6 integration tests INT-EF-001..006). Pending: TASK-119 (validation execution), TASK-119C (E2E tests - blocked by TASK-137, TASK-131A)."
+  - timestamp: "2026-01-28T19:30:00Z"
+    event: "EN-013 all tasks complete (6/6)"
+    details: "TASK-120 (SKILL.md context_injection), TASK-121 (general.yaml), TASK-122 (transcript.yaml with 5 entities), TASK-123 (agent context sections for all 3 agents), TASK-124 (JSON Schema draft-2020-12), TASK-125 (18 test cases). Status: gate-ready for ps-critic/nse-qa reviews. Deliverables: contexts/general.yaml, contexts/transcript.yaml, schemas/context-domain-schema.json, test_data/validation/context-injection-tests.yaml."

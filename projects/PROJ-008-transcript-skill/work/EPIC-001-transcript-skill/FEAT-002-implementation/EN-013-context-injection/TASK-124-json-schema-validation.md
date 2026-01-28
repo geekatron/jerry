@@ -20,7 +20,7 @@ description: |
   (domain schemas, SKILL.md sections) per REQ-CI-F-009.
 
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: MEDIUM
 assignee: "Claude"
@@ -253,3 +253,4 @@ skills/transcript/schemas/context-domain-schema.json
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-013 |
+| 2026-01-28 | **DONE** | Created schemas/context-domain-schema.json using JSON Schema draft-2020-12. Includes required fields (schema_version, domain, entity_definitions), $defs for entityDefinition, attribute, extractionRule. Validates both general.yaml and transcript.yaml. |

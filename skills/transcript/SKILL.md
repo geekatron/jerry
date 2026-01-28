@@ -3,6 +3,36 @@ name: transcript
 description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. Integrates with ps-critic for quality review.
 version: "1.0.0"
 allowed-tools: Read, Write, Glob, Task
+
+# CONTEXT INJECTION (implements REQ-CI-F-002)
+# Enables domain-specific context loading per SPEC-context-injection.md Section 3.1
+context_injection:
+  # Default domain when none specified
+  default_domain: "general"
+
+  # Available domain schemas
+  domains:
+    - general      # Default: no domain-specific entities
+    - transcript   # Transcript-specific: speakers, topics, action items
+
+  # Context files location
+  context_path: "./contexts/"
+
+  # Template variables available to agents
+  template_variables:
+    - name: domain
+      source: invocation.domain
+      default: "general"
+    - name: entity_definitions
+      source: context.entity_definitions
+      format: yaml
+    - name: extraction_rules
+      source: context.extraction_rules
+      format: list
+    - name: prompt_guidance
+      source: context.prompt_guidance
+      format: text
+
 activation-keywords:
   - "transcript"
   - "meeting notes"

@@ -20,7 +20,7 @@ description: |
   mechanism covering schema validation, merge order, and template resolution.
 
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: "Claude"
@@ -282,3 +282,4 @@ Memory peak |       | N/A    |
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-013 |
+| 2026-01-28 | **DONE** | Created test_data/validation/context-injection-tests.yaml with 18 test cases across 5 categories: schema validation (3), merge order (4), template resolution (3), performance (2), edge cases (6). Covers REQ-CI-F-001, F-002, F-003, F-009, P-001, P-002. |

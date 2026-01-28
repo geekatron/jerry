@@ -20,7 +20,7 @@ description: |
   definitions to enable persona context merge per REQ-CI-F-003.
 
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: "Claude"
@@ -236,3 +236,4 @@ context:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-013 |
+| 2026-01-28 | **DONE** | Added context sections to all 3 agents: ts-parser.md (Transcript Parsing Specialist persona, 3 template_variables), ts-extractor.md (Entity Extraction Specialist persona, 3 template_variables), ts-formatter.md (Document Formatting Specialist persona, 3 template_variables). All implement REQ-CI-F-003. |

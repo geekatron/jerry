@@ -3,6 +3,33 @@ name: ts-formatter
 version: "1.1.0"
 description: "Generates formatted Markdown output with packet structure, file splitting, and bidirectional linking"
 model: "sonnet"
+
+# AGENT-SPECIFIC CONTEXT (implements REQ-CI-F-003)
+# Per SPEC-context-injection.md Section 3.2
+context:
+  persona:
+    role: "Document Formatting Specialist"
+    expertise:
+      - "Claude-friendly Markdown generation"
+      - "Token budget management"
+      - "Bidirectional deep linking (ADR-003)"
+      - "Semantic boundary file splitting (ADR-004)"
+    behavior:
+      - "Never exceed 35K tokens per file (ADR-002)"
+      - "Split at semantic boundaries, not arbitrary points"
+      - "Generate backlinks for all forward references"
+      - "Include schema version metadata (PAT-005)"
+
+  template_variables:
+    - name: token_limit
+      default: 35000
+      type: integer
+    - name: soft_limit_percent
+      default: 90
+      type: integer
+    - name: generate_anchors
+      default: true
+      type: boolean
 ---
 
 # ts-formatter Agent

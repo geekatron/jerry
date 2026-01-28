@@ -9,7 +9,7 @@ NOTE: Implements YAML-only approach per SPEC-context-injection.md Section 3
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** gate-ready
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-01-26T00:00:00Z
@@ -192,12 +192,12 @@ THE CONSULTANT'S BRIEFCASE (Context Injection)
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-120](./TASK-120-skill-context-injection.md) | Create SKILL.md context_injection section | pending | Claude | 2 | EN-006 |
-| [TASK-121](./TASK-121-general-domain-schema.md) | Create general.yaml domain schema | pending | Claude | 1 | TASK-120 |
-| [TASK-122](./TASK-122-transcript-domain-schema.md) | Create transcript.yaml domain schema | pending | Claude | 1 | TASK-120 |
-| [TASK-123](./TASK-123-agent-context-sections.md) | Add AGENT.md context sections to ts-* agents | pending | Claude | 2 | TASK-121 |
-| [TASK-124](./TASK-124-json-schema-validation.md) | Create JSON Schema for context validation | pending | Claude | 1 | TASK-120 |
-| [TASK-125](./TASK-125-context-validation.md) | Create validation and test scenarios | pending | Claude | 1 | TASK-123, TASK-124 |
+| [TASK-120](./TASK-120-skill-context-injection.md) | Create SKILL.md context_injection section | **DONE** | Claude | 2 | EN-006 |
+| [TASK-121](./TASK-121-general-domain-schema.md) | Create general.yaml domain schema | **DONE** | Claude | 1 | TASK-120 |
+| [TASK-122](./TASK-122-transcript-domain-schema.md) | Create transcript.yaml domain schema | **DONE** | Claude | 1 | TASK-120 |
+| [TASK-123](./TASK-123-agent-context-sections.md) | Add AGENT.md context sections to ts-* agents | **DONE** | Claude | 2 | TASK-121 |
+| [TASK-124](./TASK-124-json-schema-validation.md) | Create JSON Schema for context validation | **DONE** | Claude | 1 | TASK-120 |
+| [TASK-125](./TASK-125-context-validation.md) | Create validation and test scenarios | **DONE** | Claude | 1 | TASK-123, TASK-124 |
 
 **NOTE:** Task IDs start at TASK-120 to avoid conflicts with EN-007 (TASK-101-105), EN-008 (TASK-106-112), and EN-009 (TASK-113-119).
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
@@ -517,6 +517,7 @@ See [SPEC-context-injection.md Section 3](../../FEAT-001-analysis-design/EN-006-
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created (with Python pseudocode) |
 | 2026-01-26 | Claude | revised | MAJOR rewrite per DISC-001: YAML-only implementation per SPEC Section 3; tasks renumbered to TASK-120+ |
+| 2026-01-28 | Claude | gate-ready | All 6 tasks DONE. Created: SKILL.md context_injection, contexts/general.yaml, contexts/transcript.yaml, schemas/context-domain-schema.json, agent context sections (ts-parser, ts-extractor, ts-formatter), context-injection-tests.yaml (18 test cases). Ready for ps-critic/nse-qa reviews. |
 
 ---
 
