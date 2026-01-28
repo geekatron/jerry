@@ -177,8 +177,10 @@ THE DRIVING TEST ANALOGY (Validation)
 | [TASK-135](./TASK-135-extractor-tests.md) | Create extractor test specification | pending | Claude | 1 | TASK-132 |
 | [TASK-136](./TASK-136-formatter-tests.md) | Create formatter test specification | pending | Claude | 1 | TASK-131 |
 | [TASK-137](./TASK-137-integration-tests.md) | Create integration test specification | pending | Claude | 1 | TASK-134, TASK-135, TASK-136 |
+| [TASK-138](./TASK-138-en008-deferred-findings.md) | EN-008 deferred minor findings | backlog | Claude | 1 | TASK-135, TASK-137 |
 
 **NOTE:** Task IDs start at TASK-131 to continue from EN-014 (TASK-126-130).
+**TASK-138 added:** 2026-01-28 per DEC-003:D-005 - Deferred minor findings from EN-008 GATE-5 review.
 **TASK-131A added:** 2026-01-27 per TDD/BDD Testing Strategy - **Human annotation prevents "dog fooding" bias**.
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
 
@@ -595,6 +597,7 @@ This enabler follows the TDD/BDD approach with:
 | 2026-01-26 | Claude | pending | Enabler created per FEAT-002 restructuring |
 | 2026-01-26 | Claude | pending | TDD/BDD testing strategy document created with human-in-loop ground truth approach |
 | 2026-01-27 | Claude | revised | Added TASK-131A (human annotation) per TDD/BDD Testing Strategy - prevents "dog fooding" bias |
+| 2026-01-28 | Claude | revised | Added TASK-138 (EN-008 deferred findings) per DEC-003:D-005 |
 
 ---
 

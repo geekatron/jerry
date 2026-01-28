@@ -427,10 +427,13 @@ If any file exceeds 35K tokens:
 ### Decisions
 - Inherited from FEAT-001 ADRs (ADR-001 through ADR-005)
 - DEC-002: YAML-only implementation approach
+- [DEC-003: Orchestration Execution Order Correction](./FEAT-002--DEC-003-orchestration-execution-order.md) - EN-009/EN-016 dependency fix, TASK-138
 
 ### Discoveries
 - [DISC-001: Enabler Alignment Analysis](./FEAT-002--DISC-001-enabler-alignment-analysis.md) - Major restructuring trigger
 - [DISC-002: Future Scope Analysis](./FEAT-002--DISC-002-future-scope-analysis.md) - EN-011/EN-012 scope evaluation
+- [DISC-003: Quality Artifact Folder Structure](./FEAT-002--DISC-003-quality-artifact-folder-structure.md) - Critiques/QA folder requirements
+- [DISC-004: Agent Instruction Compliance Failure](./FEAT-002--DISC-004-agent-instruction-compliance-failure.md) - Background task context isolation
 
 ### Bugs
 - [BUG-001: EN-009 ID Conflict](./FEAT-002--BUG-001-en009-id-conflict.md) - **RESOLVED** - Two enablers shared EN-009 ID. ts-formatter renumbered to EN-016.
@@ -446,6 +449,7 @@ If any file exceeds 35K tokens:
 | 2026-01-26 | Claude | PLANNING | **BUG-001 RESOLVED:** EN-009 ID conflict fixed. EN-009-ts-formatter renumbered to EN-016. EN-009-mindmap-generator retained as original. All dependencies updated. |
 | 2026-01-26 | Claude | PLANNING | **DISC-002 CREATED:** Future scope analysis for EN-011/EN-012. EN-011 (Worktracker) stays in FEAT-002 (core). EN-012 (CLI) recommended for FEAT-003 (Above and Beyond). |
 | 2026-01-26 | Claude | PLANNING | **DISC-002 EXECUTED:** EN-012 moved to FEAT-003. GATE-7 removed from FEAT-002. Task count reduced from 49→45. Enabler count reduced from 9→8. |
+| 2026-01-28 | Claude | PLANNING | **DEC-003 CREATED:** Orchestration execution order correction. EN-009 cannot be parallel with EN-016 (dependency). TASK-138 created in EN-015 for EN-008 deferred findings. |
 
 ---
 
