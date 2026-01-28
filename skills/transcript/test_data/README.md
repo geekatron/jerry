@@ -1,8 +1,8 @@
 # Transcript Skill Test Data
 
-> **Version:** 1.1.0
+> **Version:** 1.2.0
 > **Created:** 2026-01-27
-> **Updated:** 2026-01-27 (Added edge case files from W3C WebVTT research)
+> **Updated:** 2026-01-27 (Added encoding fallback test files - TASK-107)
 > **Source:** EN-007:DISC-002 (Test Infrastructure Dependency Gap Resolution)
 > **Research:** EN-007 webvtt-test-suite-research.md
 > **Review Status:** PENDING_HUMAN_REVIEW
@@ -38,9 +38,17 @@ test_data/
 │       ├── entity_escapes.vtt             ← CE-005, CE-006, CE-007
 │       ├── timestamp_edge_cases.vtt       ← TS-001 through TS-005
 │       ├── empty_and_malformed.vtt        ← PAT-002 defensive parsing
-│       └── combined_edge_cases.vtt        ← All edge cases combined
+│       ├── combined_edge_cases.vtt        ← All edge cases combined
+│       ├── windows1252_sample.vtt         ← ⚠️ BINARY: Windows-1252 encoding test
+│       ├── windows1252_sample.srt         ← ⚠️ BINARY: Windows-1252 SRT test
+│       ├── iso88591_sample.vtt            ← ⚠️ BINARY: ISO-8859-1 encoding test
+│       └── iso88591_sample.srt            ← ⚠️ BINARY: ISO-8859-1 SRT test
 ├── expected/                              ← Expected parser outputs
-│   └── internal-sample-sample.expected.json
+│   ├── internal-sample-sample.expected.json
+│   ├── windows1252_sample.expected.json   ← Encoding fallback expected output
+│   ├── windows1252_sample_srt.expected.json
+│   ├── iso88591_sample.expected.json
+│   └── iso88591_sample_srt.expected.json
 └── validation/                            ← Test specifications
     └── parser-tests.yaml                  ← ts-parser test cases (v1.1.0)
 ```
@@ -70,18 +78,65 @@ test_data/
 | `timestamp_edge_cases.vtt` | TS-001–TS-005 | Timestamp formats: no hours, extended hours, boundaries |
 | `empty_and_malformed.vtt` | PAT-002 | Empty cues, whitespace-only, empty voice annotations |
 | `combined_edge_cases.vtt` | All | All edge cases in single file |
+| `windows1252_sample.vtt` | ENC-001 | ⚠️ **BINARY** - Windows-1252 encoding (€, smart quotes) |
+| `windows1252_sample.srt` | ENC-003 | ⚠️ **BINARY** - Windows-1252 SRT encoding test |
+| `iso88591_sample.vtt` | ENC-002 | ⚠️ **BINARY** - ISO-8859-1 encoding (German, French chars) |
+| `iso88591_sample.srt` | ENC-004 | ⚠️ **BINARY** - ISO-8859-1 SRT encoding test |
 
 ### Expected Output
 
 | File | Source | Purpose |
 |------|--------|---------|
 | `expected/internal-sample-sample.expected.json` | Derived from VTT (deterministic) | Golden output for comparison |
+| `expected/windows1252_sample.expected.json` | TASK-107 encoding tests | Windows-1252 VTT expected output |
+| `expected/windows1252_sample_srt.expected.json` | TASK-107 encoding tests | Windows-1252 SRT expected output |
+| `expected/iso88591_sample.expected.json` | TASK-107 encoding tests | ISO-8859-1 VTT expected output |
+| `expected/iso88591_sample_srt.expected.json` | TASK-107 encoding tests | ISO-8859-1 SRT expected output |
 
 ### Test Specifications
 
 | File | Agent | Test Count | Status |
 |------|-------|------------|--------|
-| `validation/parser-tests.yaml` | ts-parser | 14 VTT tests + placeholders | PENDING_HUMAN_REVIEW |
+| `validation/parser-tests.yaml` | ts-parser | 18 VTT + 4 encoding + SRT + TXT tests | PENDING_HUMAN_REVIEW |
+
+---
+
+## ⚠️ ENCODING TEST FILES - IMPORTANT WARNING
+
+The following files are **BINARY files** with specific byte sequences designed to test encoding fallback (NFR-007):
+
+| File | Encoding | Special Bytes |
+|------|----------|---------------|
+| `windows1252_sample.vtt` | Windows-1252 | `0x80` (€), `0x93/0x94` (smart quotes), `0x92` (') |
+| `windows1252_sample.srt` | Windows-1252 | Same as above |
+| `iso88591_sample.vtt` | ISO-8859-1 | `0xF6` (ö), `0xE9` (é), `0xE8` (è), `0xE0` (à) |
+| `iso88591_sample.srt` | ISO-8859-1 | Same as above |
+
+### DO NOT EDIT WITH TEXT EDITORS
+
+**WARNING:** These files contain bytes that are INVALID UTF-8. Opening them in a text editor may:
+- Corrupt the byte sequences (making tests invalid)
+- Transcode characters incorrectly
+- Add/remove BOM markers
+
+### Regeneration
+
+If files become corrupted, regenerate them using the Python script:
+```python
+# Example regeneration (see test_data/scripts/generate_encoding_tests.py for full script)
+windows1252_content = b'WEBVTT\n\n...\n<v M\xfcller>The price is \x8050...'
+with open('windows1252_sample.vtt', 'wb') as f:
+    f.write(windows1252_content)
+```
+
+### Purpose
+
+These files verify the encoding fallback chain per NFR-007:
+1. UTF-8 decode attempt FAILS (invalid byte sequences)
+2. Parser falls back to Windows-1252 or ISO-8859-1
+3. WARN-003 is emitted in `parse_metadata.parse_warnings`
+
+**Reference:** EN-007:DEC-001 (UTF-16 BOM out of scope), TDD-ts-parser.md Section 5
 
 ---
 
@@ -110,6 +165,15 @@ test_data/
 | vtt-012 | Timestamp edge cases | timestamp_edge_cases.vtt | TS-001–TS-005 |
 | vtt-013 | Empty/malformed (PAT-002) | empty_and_malformed.vtt | Error handling |
 | vtt-014 | Combined edge cases | combined_edge_cases.vtt | Comprehensive |
+
+### Encoding Fallback Tests (4 - from TASK-107)
+
+| Test ID | Name | Input | Requirement |
+|---------|------|-------|-------------|
+| enc-001 | Windows-1252 VTT fallback | windows1252_sample.vtt | NFR-007.1, NFR-007.2 |
+| enc-002 | ISO-8859-1 VTT fallback | iso88591_sample.vtt | NFR-007.1, NFR-007.4 |
+| enc-003 | Windows-1252 SRT fallback | windows1252_sample.srt | NFR-007.2 |
+| enc-004 | ISO-8859-1 SRT fallback | iso88591_sample.srt | NFR-007.4 |
 
 ---
 
@@ -157,7 +221,7 @@ Edge case files were created based on comprehensive W3C WebVTT research:
 | Voice Tags | **Poor** | 5 tests | **Addressed** |
 | Tag Stripping | Limited | 3 tests | Covered |
 | Multiline | Limited | 3 tests | Covered |
-| Encoding | Good | 5 tests | Covered |
+| Encoding | Good | 9 tests (5 UTF-8 + 4 fallback) | **Covered (TASK-107)** |
 
 ---
 
@@ -210,5 +274,6 @@ This infrastructure will be expanded in EN-015 to include:
 
 ---
 
-*Test Data Version: 1.1.0*
+*Test Data Version: 1.2.0*
 *Constitutional Compliance: P-002 (persisted), P-004 (provenance)*
+*TASK-107: Encoding fallback tests added 2026-01-27*

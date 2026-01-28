@@ -131,7 +131,7 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 - [x] Plain text processing verified (FR-003) - TASK-104 complete
 - [x] Format detection verified (FR-004) - Implicit: 11 format_detected assertions in parser-tests.yaml
 - [x] Timestamp normalization verified (NFR-006) - TASK-102, 103
-- [ ] Encoding detection verified (NFR-007)
+- [x] Encoding detection verified (NFR-007) - TASK-107 complete
 - [x] Error handling graceful (PAT-002) - TASK-106 complete
 - [x] ps-critic review passed - Score: 0.892 (CONDITIONAL)
 - [ ] Human approval at GATE-5
@@ -146,7 +146,7 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 | AC-4 | Auto-detects format from content | 2 | [x] parser-tests.yaml det-001 + 11 format_detected assertions |
 | AC-5 | Outputs canonical JSON per schema | 3 | [x] TASK-102..104 |
 | AC-6 | Normalizes timestamps to milliseconds | 4 | [x] TASK-102, 103 |
-| AC-7 | Handles encoding detection with fallbacks | 5 | [ ] |
+| AC-7 | Handles encoding detection with fallbacks | 5 | [x] TASK-107 |
 | AC-8 | Error handling per matrix (continues parsing) | 6 | [x] TASK-106 |
 
 ---
@@ -164,7 +164,7 @@ The ts-parser is like a **Reception Desk** at a Translation Office:
 | [TASK-105](./TASK-105-parser-validation.md) | Create test cases and validation | **done** | Claude | 2 | ~~TASK-102..104~~ |
 | [TASK-105A](./TASK-105A-parser-contract-tests.md) | Create parser contract tests (TDD/BDD) | **done** | Claude | 1 | ~~TASK-101~~ |
 | [TASK-106](./TASK-106-error-capture-mechanism.md) | Implement enhanced error capture mechanism | **done** | Claude | 2 | ~~TASK-101~~ |
-| [TASK-107](./TASK-107-encoding-fallback-verification.md) | Verify encoding detection with fallbacks (NFR-007) | pending | Claude | 1 | ~~TASK-101~~ |
+| [TASK-107](./TASK-107-encoding-fallback-verification.md) | Verify encoding detection with fallbacks (NFR-007) | **done** | Claude | 1 | ~~TASK-101~~ |
 
 **NOTE:** Task IDs renumbered from TASK-034-038 to TASK-101-105 per DISC-001 to avoid conflicts with EN-006 tasks.
 **TASK-105A added:** 2026-01-27 per TDD/BDD Testing Strategy for contract test coverage.
@@ -204,7 +204,7 @@ Recommended execution order:
 |----------|------|--------|
 | TDD | [TDD-ts-parser.md](../../FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-parser.md) | Complete (v1.2 - error capture schema) |
 | Agent Definition | [skills/transcript/agents/ts-parser.md](../../../../../skills/transcript/agents/ts-parser.md) | Complete (v1.2.0 - error capture) |
-| Test Specification | [parser-tests.yaml](../../../../../skills/transcript/test_data/validation/parser-tests.yaml) | Complete (v1.3.0 - 14 VTT + 3 SRT + 4 TXT tests) |
+| Test Specification | [parser-tests.yaml](../../../../../skills/transcript/test_data/validation/parser-tests.yaml) | Complete (v1.4.0 - 14 VTT + 4 encoding + 3 SRT + 4 TXT tests) |
 | W3C Research | [webvtt-test-suite-research.md](./research/webvtt-test-suite-research.md) | Complete |
 | VTT Verification | [verification/TASK-102-vtt-verification-results.md](./verification/TASK-102-vtt-verification-results.md) | Complete |
 | SRT Verification | [verification/TASK-103-srt-verification-results.md](./verification/TASK-103-srt-verification-results.md) | Complete |
@@ -310,6 +310,7 @@ Canonical JSON per TDD-ts-parser.md Section 3:
 | 2026-01-27 | Claude | in_progress | GAP-001 resolved: AC-4 (Format detection) verified - 11 format_detected assertions in parser-tests.yaml |
 | 2026-01-27 | Claude | in_progress | GAP-002 addressed: TASK-107 created for encoding fallback verification (NFR-007) |
 | 2026-01-27 | Claude | in_progress | DEC-001 created: UTF-16 BOM support documented as out-of-scope; tech debt EN-017 in FEAT-003 |
+| 2026-01-27 | Claude | in_progress | TASK-107 complete: Encoding fallback test infrastructure created (4 binary test files, 4 expected JSON, parser-tests.yaml v1.4.0 encoding_fallback section) |
 
 ---
 

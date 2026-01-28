@@ -12,12 +12,12 @@
 # REVIEW STATUS: PENDING_HUMAN_REVIEW
 # =============================================================================
 
-version: "1.3.0"
+version: "1.4.0"
 agent: ts-parser
 created_at: "2026-01-27T14:30:00Z"
-updated_at: "2026-01-27T22:00:00Z"
+updated_at: "2026-01-27T23:30:00Z"
 review_status: PENDING_HUMAN_REVIEW
-note: "v1.3.0 - Added SRT (TASK-103) and Plain Text (TASK-104) test cases with test data"
+note: "v1.4.0 - Added encoding fallback tests (TASK-107) for NFR-007 verification"
 
 # =============================================================================
 # TEST SUITES
@@ -572,6 +572,142 @@ test_suites:
         acceptance_criteria:
           - "FR-003.4: Fallback to null speaker when undetected"
 
+  # ---------------------------------------------------------------------------
+  # ENCODING FALLBACK (NFR-007) - TASK-107 Verification
+  # ---------------------------------------------------------------------------
+  encoding_fallback:
+    description: "Encoding fallback chain tests (NFR-007)"
+    implements: "NFR-007"
+    reference: "TDD-ts-parser.md Section 5, EN-007:DEC-001"
+    status: "READY"
+    note: |
+      Tests the encoding fallback chain: UTF-8 → Windows-1252 → ISO-8859-1 → Latin-1
+      Files in this suite contain bytes that are INVALID UTF-8, forcing fallback.
+      See EN-007:DEC-001 for UTF-16 BOM scope exclusion.
+
+    tests:
+      # Test ENC-001: Windows-1252 VTT fallback
+      - id: enc-001
+        name: "Detect and decode Windows-1252 VTT file"
+        description: |
+          Verify ts-parser fallback to Windows-1252 encoding:
+          - File contains € (0x80), smart quotes (0x93/0x94), apostrophe (0x92)
+          - These bytes are INVALID in UTF-8, but valid in Windows-1252
+          - Parser should detect Windows-1252 and decode correctly
+          - WARN-003 should be emitted in parse_warnings
+        input:
+          file: "transcripts/edge_cases/windows1252_sample.vtt"
+          format: vtt
+        expected:
+          file: "../expected/windows1252_sample.expected.json"
+        assertions:
+          - type: encoding_detected
+            expected: "windows-1252"
+          - type: parse_warning
+            expected_code: "WARN-003"
+            expected_message: "Fallback encoding used"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Müller", "François"]
+          - type: text_contains
+            segment: 1
+            expected: "€50"
+            description: "Euro sign correctly decoded from 0x80"
+          - type: text_contains
+            segment: 1
+            expected: '"exactly"'
+            description: "Smart quotes correctly decoded from 0x93/0x94"
+        acceptance_criteria:
+          - "NFR-007.1: UTF-8 decode failure triggers fallback"
+          - "NFR-007.2: Windows-1252 encoding detected and used"
+          - "NFR-007.3: WARN-003 emitted in parse_warnings"
+
+      # Test ENC-002: ISO-8859-1 VTT fallback
+      - id: enc-002
+        name: "Detect and decode ISO-8859-1 VTT file"
+        description: |
+          Verify ts-parser fallback to ISO-8859-1 encoding:
+          - File contains German umlauts (ö=0xF6, é=0xE9, è=0xE8, à=0xE0)
+          - These bytes are INVALID in UTF-8 without proper multi-byte sequence
+          - Parser should detect ISO-8859-1 and decode correctly
+          - WARN-003 should be emitted in parse_warnings
+        input:
+          file: "transcripts/edge_cases/iso88591_sample.vtt"
+          format: vtt
+        expected:
+          file: "../expected/iso88591_sample.expected.json"
+        assertions:
+          - type: encoding_detected
+            expected: "iso-8859-1"
+          - type: parse_warning
+            expected_code: "WARN-003"
+            expected_message: "Fallback encoding used"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Dörte", "René"]
+          - type: text_contains
+            segment: 2
+            expected: "Très bien"
+            description: "French accented characters correctly decoded"
+        acceptance_criteria:
+          - "NFR-007.1: UTF-8 decode failure triggers fallback"
+          - "NFR-007.4: ISO-8859-1 encoding detected and used"
+          - "NFR-007.3: WARN-003 emitted in parse_warnings"
+
+      # Test ENC-003: Windows-1252 SRT fallback
+      - id: enc-003
+        name: "Detect and decode Windows-1252 SRT file"
+        description: |
+          Verify ts-parser fallback for SRT format with Windows-1252 encoding:
+          - Same encoding test as enc-001 but for SRT format
+          - Verifies encoding fallback works across formats
+        input:
+          file: "transcripts/edge_cases/windows1252_sample.srt"
+          format: srt
+        expected:
+          file: "../expected/windows1252_sample_srt.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: encoding_detected
+            expected: "windows-1252"
+          - type: parse_warning
+            expected_code: "WARN-003"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Müller", "François"]
+        acceptance_criteria:
+          - "NFR-007.2: Windows-1252 fallback works for SRT format"
+
+      # Test ENC-004: ISO-8859-1 SRT fallback
+      - id: enc-004
+        name: "Detect and decode ISO-8859-1 SRT file"
+        description: |
+          Verify ts-parser fallback for SRT format with ISO-8859-1 encoding:
+          - Same encoding test as enc-002 but for SRT format
+          - Verifies encoding fallback works across formats
+        input:
+          file: "transcripts/edge_cases/iso88591_sample.srt"
+          format: srt
+        expected:
+          file: "../expected/iso88591_sample_srt.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: encoding_detected
+            expected: "iso-8859-1"
+          - type: parse_warning
+            expected_code: "WARN-003"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Dörte", "René"]
+        acceptance_criteria:
+          - "NFR-007.4: ISO-8859-1 fallback works for SRT format"
+
 # =============================================================================
 # NOTES
 # =============================================================================
@@ -581,12 +717,17 @@ test_suites:
 # - v1.1.0: Added VTT edge case tests from W3C WebVTT research
 # - v1.2.0: Added expected output JSON files for all edge case tests (TASK-106)
 # - v1.3.0: Added SRT (TASK-103) and Plain Text (TASK-104) test suites
+# - v1.4.0: Added encoding fallback tests (TASK-107) for NFR-007
 #
 # TEST DATA CREATED:
 # - SRT: sample-meeting-zoom.srt, srt_period_timestamps.srt, srt_mixed_speakers.srt
 # - Plain Text: sample-interview.txt, txt_bracket_speakers.txt,
 #               txt_allcaps_speakers.txt, txt_no_speakers.txt
-# - Expected JSON: 7 new expected output files in expected/ directory
+# - Encoding (TASK-107): windows1252_sample.vtt, windows1252_sample.srt,
+#                        iso88591_sample.vtt, iso88591_sample.srt
+#                        ⚠️ WARNING: These are BINARY files with specific byte sequences.
+#                        Do NOT edit with text editors - will corrupt encoding tests!
+# - Expected JSON: 11 expected output files in expected/ directory
 #
 # REMAINING FOR EN-015:
 # - Golden dataset (3 full meetings)

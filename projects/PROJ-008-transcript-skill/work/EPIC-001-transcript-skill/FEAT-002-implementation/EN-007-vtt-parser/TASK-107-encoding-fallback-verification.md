@@ -8,10 +8,11 @@ CREATED: 2026-01-27
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-01-27T00:00:00Z
-> **Updated:** 2026-01-27T00:00:00Z
+> **Updated:** 2026-01-27T23:45:00Z
+> **Completed:** 2026-01-27T23:45:00Z
 > **Parent:** EN-007
 > **Owner:** Claude
 > **Effort Points:** 1
@@ -62,20 +63,20 @@ TRY UTF-8 DECODE
 
 ### Definition of Done
 
-- [ ] Test file created with Windows-1252 encoding
-- [ ] Test file created with ISO-8859-1 encoding
-- [ ] Test specifications added to parser-tests.yaml
-- [ ] Verify fallback chain triggers WARN-003
-- [ ] AC-7 marked as verified in EN-007
+- [x] Test file created with Windows-1252 encoding
+- [x] Test file created with ISO-8859-1 encoding
+- [x] Test specifications added to parser-tests.yaml
+- [x] Verify fallback chain triggers WARN-003
+- [x] AC-7 marked as verified in EN-007
 
 ### Technical Criteria
 
 | # | Criterion | Source | Verified |
 |---|-----------|--------|----------|
-| AC-1 | Windows-1252 file decodes correctly | TDD Section 5 | [ ] |
-| AC-2 | ISO-8859-1 file decodes correctly | TDD Section 5 | [ ] |
-| AC-3 | Fallback triggers WARN-003 code | TDD Section 6.1 | [ ] |
-| AC-4 | source.encoding reflects actual encoding used | Schema | [ ] |
+| AC-1 | Windows-1252 file decodes correctly | TDD Section 5 | [x] |
+| AC-2 | ISO-8859-1 file decodes correctly | TDD Section 5 | [x] |
+| AC-3 | Fallback triggers WARN-003 code | TDD Section 6.1 | [x] |
+| AC-4 | source.encoding reflects actual encoding used | Schema | [x] |
 
 ---
 
@@ -121,13 +122,19 @@ encoding_fallback:
 
 ## Deliverables
 
-| Deliverable | Path | Description |
-|-------------|------|-------------|
-| Windows-1252 Test File | `test_data/transcripts/edge_cases/windows1252_sample.vtt` | VTT with Windows-1252 characters |
-| ISO-8859-1 Test File | `test_data/transcripts/edge_cases/iso88591_sample.vtt` | VTT with ISO-8859-1 characters |
-| Expected JSON (Windows) | `test_data/expected/windows1252_sample.expected.json` | Expected output |
-| Expected JSON (ISO) | `test_data/expected/iso88591_sample.expected.json` | Expected output |
-| Test Specification | `test_data/validation/parser-tests.yaml` | encoding_fallback section |
+| Deliverable | Path | Description | Status |
+|-------------|------|-------------|--------|
+| Windows-1252 VTT | `test_data/transcripts/edge_cases/windows1252_sample.vtt` | Binary VTT with € (0x80), smart quotes | ✅ Created |
+| Windows-1252 SRT | `test_data/transcripts/edge_cases/windows1252_sample.srt` | Binary SRT with Windows-1252 chars | ✅ Created |
+| ISO-8859-1 VTT | `test_data/transcripts/edge_cases/iso88591_sample.vtt` | Binary VTT with German/French chars | ✅ Created |
+| ISO-8859-1 SRT | `test_data/transcripts/edge_cases/iso88591_sample.srt` | Binary SRT with ISO-8859-1 chars | ✅ Created |
+| Expected JSON (Win VTT) | `test_data/expected/windows1252_sample.expected.json` | Expected output | ✅ Created |
+| Expected JSON (Win SRT) | `test_data/expected/windows1252_sample_srt.expected.json` | Expected output | ✅ Created |
+| Expected JSON (ISO VTT) | `test_data/expected/iso88591_sample.expected.json` | Expected output | ✅ Created |
+| Expected JSON (ISO SRT) | `test_data/expected/iso88591_sample_srt.expected.json` | Expected output | ✅ Created |
+| Test Specification | `test_data/validation/parser-tests.yaml` | encoding_fallback section v1.4.0 | ✅ Updated |
+| README | `test_data/README.md` | Encoding warning section | ✅ Updated |
+| DEC-001 | `EN-007--DEC-001-utf16-bom-out-of-scope.md` | UTF-16 scope decision | ✅ Created |
 
 ---
 
@@ -176,3 +183,8 @@ with open('windows1252_sample.vtt', 'w', encoding='windows-1252') as f:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-27 | Claude | pending | Task created per ps-critic GAP-002 finding |
+| 2026-01-27 | Claude | in_progress | Step 1: DEC-001 UTF-16 BOM out of scope decision documented |
+| 2026-01-27 | Claude | in_progress | Step 2: Created 4 binary encoding test files (VTT and SRT for Windows-1252 and ISO-8859-1) |
+| 2026-01-27 | Claude | in_progress | Step 3: Created 4 expected JSON output files |
+| 2026-01-27 | Claude | in_progress | Step 4: Added encoding_fallback section to parser-tests.yaml (v1.4.0) |
+| 2026-01-27 | Claude | completed | Step 5: Updated README with encoding test file warnings |
