@@ -43,6 +43,11 @@ test = [
     "pytest-bdd>=8.0.0",
     "pytest-cov>=4.0.0",
 ]
+# EN-020: Transcript bounded context dependencies (TDD-FEAT-004 v1.2.0)
+transcript = [
+    "webvtt-py>=0.5.1",           # VTT/SRT parsing (deterministic)
+    "charset-normalizer>=3.3.0",  # Encoding detection fallback
+]
 
 [project.scripts]
 jerry = "src.interface.cli.main:main"
