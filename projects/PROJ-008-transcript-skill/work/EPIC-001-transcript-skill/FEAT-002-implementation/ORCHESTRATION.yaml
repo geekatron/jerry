@@ -223,14 +223,17 @@ enablers:
 
   EN-014:
     title: "Domain Context Files"
-    status: pending
+    status: in-progress
     priority: medium
     gate: GATE-6
     tasks:
       start: TASK-126
-      end: TASK-159  # Expanded from TASK-130 per DISC-005
+      end: TASK-169  # Extended from TASK-159 per DISC-006
       original: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
+      schema_extension: [TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169]  # NEW per DISC-006
       en006_promotion: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]
+      complete: [TASK-126, TASK-127, TASK-128, TASK-164]  # Original 3 domains + schema research
+      in_progress: []  # TASK-164 complete, TASK-165 ready to start
     dependencies:
       - EN-013
       - EN-016  # New dependency: expanded tasks blocked by EN-016 completion per DISC-005
@@ -238,14 +241,33 @@ enablers:
       - SPEC-context-injection.md Section 3.3
     source:
       discovery: DISC-005  # EN-006 artifact promotion gap analysis
+      schema_gap: DISC-006  # Schema gap analysis - EN-006 features vs domain-schema.json
       en006_artifacts: "EN-006/docs/specs/domain-contexts/"
+    workflow:
+      definition: "EN-014--WORKFLOW-schema-extension.md"
+      quality_strategy: "Dual-reviewer (ps-critic + nse-qa) with Logical AND"
+      elevated_threshold: 0.90  # For TASK-168 final review
+      human_gate: TASK-169  # Blocks TASK-150..159
+    blocking_chain:
+      # Schema Extension must complete before EN-006 Artifact Promotion
+      # TASK-164 → TASK-165 → TASK-166 → TASK-167 → TASK-168 → TASK-169 → TASK-150..159
+      schema_extension_blocks: en006_promotion
+      human_gate_task: TASK-169
     deliverables:
       # Original scope (3 domains)
       - skills/transcript/contexts/general.yaml
       - skills/transcript/contexts/transcript.yaml
       - skills/transcript/contexts/meeting.yaml
       - skills/transcript/schemas/domain-schema.json
-      # EN-006 promotion scope (6 additional domains)
+      # Schema extension deliverables (TASK-164..168) - CORRECTED PATHS per DISC-010
+      - research/EN-014-e-164-schema-extensibility-manual.md  # Superseded manual research
+      - research/EN-014-e-164-schema-extensibility.md  # ps-researcher output
+      - research/EN-014-e-164-research-comparison.md  # Comparison synthesis
+      - docs/analysis/EN-014-e-165-gap-impact.md
+      - docs/decisions/ADR-EN014-001-schema-extension-strategy.md
+      - docs/design/TDD-EN014-domain-schema-v2.md
+      - docs/reviews/EN-014-e-168-final-review.md
+      # EN-006 promotion scope (6 additional domains) - blocked by TASK-169
       - skills/transcript/contexts/software-engineering.yaml
       - skills/transcript/contexts/software-architecture.yaml
       - skills/transcript/contexts/product-management.yaml
@@ -255,7 +277,32 @@ enablers:
       - skills/transcript/schemas/DOMAIN-SCHEMA.json
       - skills/transcript/docs/domains/SPEC-*.md  # 6 SPEC files
       - skills/transcript/docs/domains/DOMAIN-SELECTION-GUIDE.md
-    note: "Scope expanded 2026-01-28 per DISC-005: Added TASK-150..159 for EN-006 artifact promotion"
+    remediation:
+      discovery: "FEAT-002--DISC-010"
+      reason: "TASK-164 executed without proper skill invocation (ps-researcher bypassed, critic outputs not persisted)"
+      plan:
+        phase_1_preparation:
+          - "Create DISC-010 discovery document"
+          - "Update ORCHESTRATION.yaml with remediation plan"
+          - "Revert TASK-164 to IN_PROGRESS"
+          - "Move manual research to -manual.md suffix"
+          - "Fix research path (research/ not docs/research/)"
+        phase_2_fresh_research:
+          - "Invoke @problem-solving with ps-researcher"
+          - "Create fresh research without access to manual version"
+        phase_3_comparison:
+          - "Invoke ps-synthesizer to compare both research outputs"
+          - "Document convergence/divergence"
+        phase_4_quality_reviews:
+          - "Invoke ps-critic → critiques/en014-task164-iter1-critique.md"
+          - "Invoke nse-qa → qa/en014-task164-iter1-qa.md"
+          - "Verify scores >= 0.85"
+        phase_5_completion:
+          - "Update TASK-164 to DONE"  # COMPLETE
+          - "Update ORCHESTRATION.yaml"  # COMPLETE
+      status: COMPLETE
+      completed_at: "2026-01-29T02:00:00Z"
+    note: "UPDATED 2026-01-29: TASK-164 REMEDIATION COMPLETE per DISC-010. ps-researcher invocation successful (9 sources), ps-critic (0.92) and nse-qa (0.92) both passed. TASK-165 (Gap Impact Assessment) now unblocked."
 
   EN-015:
     title: "Validation & Test Cases"
@@ -488,7 +535,7 @@ task_allocation:
   EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112, TASK-112A, TASK-112B]
   EN-009: [TASK-001, TASK-002, TASK-003, TASK-004]  # Mind Map Generator - enabler-scoped numbering per DEC-003
   EN-013: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
-  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Expanded per DISC-005: +10 tasks for EN-006 promotion
+  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Expanded per DISC-005 (+10) and DISC-006 (+6 schema extension). TASK-169 blocks TASK-150..159.
   EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137, TASK-138]  # Added TASK-138 per DEC-003:D-005
   EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B, TASK-119C]  # ts-formatter (renumbered per BUG-001), with test tasks
   EN-017: [TASK-140, TASK-141, TASK-142, TASK-143, TASK-144]  # Large Transcript Dataset (per DEC-004)
@@ -500,15 +547,15 @@ task_allocation:
 metrics:
   enablers_total: 12  # +1 (EN-024) per parallel session cleanup; excludes deprecated EN-010 and moved EN-012
   enablers_complete: 5  # EN-007, EN-008, EN-013, EN-016, EN-018
-  enablers_in_progress: 0  # None currently active
-  enablers_pending: 6  # EN-011, EN-014, EN-015, EN-017, EN-019, EN-024
+  enablers_in_progress: 1  # EN-014 (schema extension workflow active)
+  enablers_pending: 5  # EN-011, EN-015, EN-017, EN-019, EN-024
   enablers_gate_ready: 0  # All GATE-5 enablers approved
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 85  # +9 tasks (EN-024: TASK-240..248) per parallel session cleanup (76→85)
-  tasks_complete: 42  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5)
+  tasks_total: 91  # +6 tasks (TASK-164..169) for EN-014 schema extension per DISC-006 (85→91)
+  tasks_complete: 46  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (4: TASK-126..128, TASK-164)
   gates_passed: 1  # GATE-5 passed 2026-01-28
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 49  # 42/85 tasks complete
+  completion_percentage: 51  # 46/91 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -580,3 +627,9 @@ history:
   - timestamp: "2026-01-28T23:45:00Z"
     event: "EN-024 created - Mindmap Pipeline Integration"
     details: "Parallel session created EN-019-mindmap-pipeline-integration folder with conflicting ID. EN-019 was already allocated to 'Large Transcript Dataset Extension' per DISC-008. RENUMBERED to EN-024. Tasks renumbered from TASK-001..009 to TASK-240..248 per global task allocation. Added EN-014 as dependency (must complete before pipeline integration). EN-024 integrates EN-009 mindmap agents into default transcript skill pipeline as opt-in feature with --mindmap flag. New Group 6 (Pipeline Extensions) added. Enablers: 11→12. Tasks: 76→85. Completion: 55%→49%."
+  - timestamp: "2026-01-29T00:00:00Z"
+    event: "EN-014 Schema Extension Workflow created per DISC-006"
+    details: "Gap analysis discovered EN-006 artifacts contain 4 feature categories (relationships, metadata, context_rules, validation) not supported by current domain-schema.json. Created DISC-006 documenting gaps. Added TASK-164..169 for research/analysis/ADR/TDD/review/gate workflow. TASK-150..159 (EN-006 Artifact Promotion) now BLOCKED by TASK-169 (Human Approval Gate). Quality strategy: Dual-reviewer (ps-critic + nse-qa) with Logical AND, elevated 0.90 threshold for final review. Workflow documented in EN-014--WORKFLOW-schema-extension.md. Tasks: 85→91. EN-014 status: in-progress."
+  - timestamp: "2026-01-29T02:00:00Z"
+    event: "TASK-164 remediation complete per DISC-010"
+    details: "DISC-010 skill invocation failure remediation complete. 5 phases executed: (1) DISC-010 created documenting violations, (2) ps-researcher invocation with Context7 + web search - 9 authoritative sources, L0/L1/L2, 5W2H framework, (3) ps-synthesizer comparison with manual research - 85% convergence, (4) ps-critic review 0.92 PASS, nse-qa review 0.92 PASS, (5) ORCHESTRATION.yaml updated. Primary recommendation: Extend JSON Schema v1.0.0→v1.1.0 with 4 new optional sections (relationships, metadata, context_rules, validation). Key insight: unevaluatedProperties superior to additionalProperties. TASK-165 (Gap Impact Assessment) now unblocked. Tasks complete: 45→46. Completion: 49%→51%."

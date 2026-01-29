@@ -218,13 +218,36 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
 **Scope expanded:** 2026-01-28 per DISC-005. Added TASK-150..159 for EN-006 artifact promotion.
 
+### Task Inventory - Schema Extension Workflow (DISC-006)
+
+> **Source:** [DISC-006](./EN-014--DISC-006-schema-gap-analysis.md) - Schema Gap Analysis: EN-006 Features vs domain-schema.json
+>
+> **Rationale:** EN-006 artifacts contain 4 feature categories (relationships, metadata, context_rules, validation) not supported by current domain-schema.json. These tasks research, analyze, and design schema V2 before domain YAML promotion.
+>
+> **Workflow:** [EN-014--WORKFLOW-schema-extension.md](./EN-014--WORKFLOW-schema-extension.md)
+>
+> **Quality Strategy:** Dual-reviewer (ps-critic + nse-qa) with Logical AND; ADR uses nse-reviewer; Final review elevated to 0.90 threshold.
+
+| ID | Title | Status | Owner | Effort | Blocked By | Reviewers |
+|----|-------|--------|-------|--------|------------|-----------|
+| [TASK-164](./TASK-164-research-schema-extensibility.md) | Research: Schema Extensibility Patterns | BACKLOG | Claude | 2 | - | ps-critic + nse-qa |
+| [TASK-165](./TASK-165-analysis-gap-impact.md) | Analysis: Gap Impact Assessment | BACKLOG | Claude | 2 | TASK-164 | ps-critic + nse-qa |
+| [TASK-166](./TASK-166-adr-schema-extension.md) | ADR: Schema Extension Strategy | BACKLOG | Claude | 2 | TASK-164, 165 | ps-critic + nse-reviewer |
+| [TASK-167](./TASK-167-tdd-schema-v2.md) | TDD: Schema V2 Design | BACKLOG | Claude | 3 | TASK-166 | ps-critic + nse-qa |
+| [TASK-168](./TASK-168-final-adversarial-review.md) | Final Adversarial Review | BACKLOG | Claude | 2 | TASK-164..167 | TRIPLE (0.90) |
+| [TASK-169](./TASK-169-human-gate.md) | GATE: Human Approval | BACKLOG | Human | 1 | TASK-168 | Human |
+
+**NOTE:** TASK-150..159 (EN-006 Artifact Promotion) are BLOCKED by TASK-169 Human Approval Gate.
+This ensures schema extension is complete before domain YAML creation begins.
+
 ### Effort Summary
 
 | Scope | Tasks | Story Points |
 |-------|-------|--------------|
 | Original (3 domains) | TASK-126..130 | 6 |
+| Schema Extension | TASK-164..169 | 12 |
 | EN-006 Promotion (6 domains) | TASK-150..159 | 9 |
-| **Total** | **15 tasks** | **15 SP** |
+| **Total** | **21 tasks** | **27 SP** |
 
 ---
 
@@ -664,6 +687,11 @@ EN-006/docs/specs/domain-contexts/
 
 - [DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Alignment analysis
 - [DISC-005](../FEAT-002--DISC-005-en006-artifact-promotion-gap.md) - EN-006 artifact promotion gap (scope expansion source)
+- [DISC-006](./EN-014--DISC-006-schema-gap-analysis.md) - Schema gap analysis: EN-006 features vs domain-schema.json
+
+### Workflow Reference
+
+- [EN-014--WORKFLOW-schema-extension.md](./EN-014--WORKFLOW-schema-extension.md) - Schema extension workflow with dual-reviewer quality gates
 
 ---
 
@@ -673,6 +701,7 @@ EN-006/docs/specs/domain-contexts/
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created per FEAT-002 restructuring |
 | 2026-01-28 | Claude | pending | **SCOPE EXPANDED** per DISC-005: Added TASK-150..159 to promote 6 EN-006 domain specifications. Original scope (3 domains, 5 tasks, 6 SP) expanded to 8 domains total (15 tasks, 15 SP). Human decisions: (1) SPEC files promoted as documentation, (2) Consolidated YAML per SPEC design, (3) Work blocked by EN-016 completion. |
+| 2026-01-29 | Claude | pending | **SCHEMA EXTENSION WORKFLOW** per DISC-006: Created TASK-164..169 for schema gap analysis and V2 design. TASK-150..159 now BLOCKED by TASK-169 human approval gate. Added dual-reviewer (ps-critic + nse-qa) quality strategy. Total scope: 21 tasks, 27 SP. |
 
 ---
 
