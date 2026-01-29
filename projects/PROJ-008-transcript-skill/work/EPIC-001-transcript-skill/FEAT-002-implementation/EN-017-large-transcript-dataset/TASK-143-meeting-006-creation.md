@@ -1,11 +1,12 @@
 # Task: TASK-143 - Create meeting-006-all-hands.vtt
 
 > **Task ID:** TASK-143
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Enabler:** [EN-017-large-transcript-dataset](./EN-017-large-transcript-dataset.md)
 > **Created:** 2026-01-28
 > **Last Updated:** 2026-01-28
+> **Completed:** 2026-01-28
 
 ---
 
@@ -25,8 +26,11 @@ Create a ~3-hour quarterly all-hands transcript with approximately 90K tokens. T
 - [ ] **AC-6:** Contains 15-20 action items
 - [ ] **AC-7:** Contains 5-8 decisions
 - [ ] **AC-8:** Contains 12-18 questions
-- [ ] **AC-9:** File saved to `skills/transcript/test_data/input/meeting-006-all-hands.vtt`
+- [ ] **AC-9:** File saved to `skills/transcript/test_data/transcripts/golden/meeting-006-all-hands.vtt`
 - [ ] **AC-10:** Expected to trigger 2-3 file splits
+- [ ] **AC-11:** Timestamps strictly sequential from 00:00:00 to end (per TASK-145)
+- [ ] **AC-12:** No timestamp seconds ≥ 60 (valid VTT format)
+- [ ] **AC-13:** Generate content end-to-end, never insert mid-file
 
 ---
 
@@ -136,6 +140,7 @@ NOTE Expected Splits: 2-3
 
 ### Depends On
 - TASK-140 (Dataset Design)
+- TASK-145 (Timestamp Ordering Fix) - Establishes correct pattern
 
 ### Blocks
 - TASK-144 (Dataset Validation)

@@ -1,8 +1,8 @@
 # Transcript Skill Test Data
 
-> **Version:** 1.2.0
+> **Version:** 1.3.0
 > **Created:** 2026-01-27
-> **Updated:** 2026-01-27 (Added encoding fallback test files - TASK-107)
+> **Updated:** 2026-01-28 (Added large transcript golden dataset - EN-017)
 > **Source:** EN-007:DISC-002 (Test Infrastructure Dependency Gap Resolution)
 > **Research:** EN-007 webvtt-test-suite-research.md
 > **Review Status:** PENDING_HUMAN_REVIEW
@@ -25,8 +25,11 @@ test_data/
 ├── transcripts/                           ← Test input files
 │   ├── real/                              ← Real VTT files from users
 │   │   └── internal-sample-sample.vtt
-│   ├── golden/                            ← Synthetic golden dataset (EN-015)
-│   │   └── (placeholder for 3 meetings)
+│   ├── golden/                            ← Synthetic golden dataset (EN-017)
+│   │   ├── meeting-001.vtt                ← 8 min, ~1.6K tokens (no splits)
+│   │   ├── meeting-004-sprint-planning.vtt ← 126 min, ~23K tokens (no splits)
+│   │   ├── meeting-005-roadmap-review.vtt  ← 160 min, ~37K tokens (1 split)
+│   │   └── meeting-006-all-hands.vtt       ← 304 min, ~94K tokens (2-3 splits)
 │   └── edge_cases/                        ← Edge case VTT files (W3C research)
 │       ├── voice_tag_basic.vtt            ← VT-001, VT-002
 │       ├── voice_tag_no_close.vtt         ← VT-004
@@ -62,6 +65,41 @@ test_data/
 | File | Source | Cues | Speakers | Purpose |
 |------|--------|------|----------|---------|
 | `transcripts/real/internal-sample-sample.vtt` | User VTT (first 20 cues) | 20 | 2 (Adam Nowak, Brendan Bennett) | VTT parsing verification |
+
+### Large Transcript Golden Dataset (EN-017)
+
+Created for testing file splitting behavior in ts-formatter. Token calculation uses formula from DISC-006:
+`actual_tokens = (word_count × 1.3) + (cue_count × 12)`
+
+| File | Duration | Words | Cues | Tokens | Splits | Topic |
+|------|----------|-------|------|--------|--------|-------|
+| `meeting-004-sprint-planning.vtt` | 02:05:45 | 13,030 | 536 | ~23,371 | 0 | Engineering sprint |
+| `meeting-005-roadmap-review.vtt` | 02:40:02 | 20,202 | 899 | ~37,051 | 1 | Product roadmap |
+| `meeting-006-all-hands.vtt` | 05:03:46 | 44,225 | 3,071 | ~94,345 | 2-3 | Quarterly all-hands |
+
+**Split Thresholds (ADR-004):**
+- **Soft Limit:** 31,500 tokens (prefer split at semantic ## boundaries)
+- **Hard Limit:** 35,000 tokens (force split regardless)
+
+**Speaker Rosters:**
+- **meeting-004:** Sarah Chen (SM), Mike Johnson, Emma Williams, David Kim, Lisa Martinez, Raj Patel
+- **meeting-005:** Jennifer Adams (VP Product), Marcus Thompson, Anna Kowalski, Chris Wong, Steve Roberts, Priya Sharma, Olivia Foster
+- **meeting-006:** Robert Chen (CEO), Diana Martinez (CTO), James Wilson, Jennifer Adams, Michelle Taylor, Kevin O'Brien, 30+ employees
+
+**Entity Distribution:**
+
+| Entity Type | meeting-004 | meeting-005 | meeting-006 |
+|-------------|-------------|-------------|-------------|
+| Topics | 4 | 5+ | 8+ |
+| Action Items | 10+ | 14+ | 17+ |
+| Decisions | 2-3 | 6+ | 7+ |
+| Questions | 5+ | 10+ | 14+ |
+
+**W3C Compliance:** All files validated with `validate_vtt.py` (monotonic timestamps, valid seconds < 60)
+
+**Source:** EN-017 TASK-141 through TASK-143
+
+---
 
 ### Edge Case Files (from W3C WebVTT Research)
 
@@ -274,6 +312,6 @@ This infrastructure will be expanded in EN-015 to include:
 
 ---
 
-*Test Data Version: 1.2.0*
+*Test Data Version: 1.3.0*
 *Constitutional Compliance: P-002 (persisted), P-004 (provenance)*
-*TASK-107: Encoding fallback tests added 2026-01-27*
+*EN-017: Large transcript golden dataset added 2026-01-28*

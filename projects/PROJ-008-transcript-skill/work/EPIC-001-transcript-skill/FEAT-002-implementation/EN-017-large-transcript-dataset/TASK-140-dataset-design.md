@@ -1,7 +1,7 @@
 # Task: TASK-140 - Dataset Design & Planning
 
 > **Task ID:** TASK-140
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** high
 > **Enabler:** [EN-017-large-transcript-dataset](./EN-017-large-transcript-dataset.md)
 > **Created:** 2026-01-28
@@ -17,12 +17,12 @@ Design the large transcript dataset with detailed specifications for token targe
 
 ## Acceptance Criteria
 
-- [ ] **AC-1:** Token targets documented with estimation formula
-- [ ] **AC-2:** Topic domains defined with context rationale
-- [ ] **AC-3:** Speaker roster defined for each transcript
-- [ ] **AC-4:** Expected entity counts estimated per transcript
-- [ ] **AC-5:** Timeline/agenda structure planned for each transcript
-- [ ] **AC-6:** Design documented in EN-017 enabler file
+- [x] **AC-1:** Token targets documented with estimation formula
+- [x] **AC-2:** Topic domains defined with context rationale
+- [x] **AC-3:** Speaker roster defined for each transcript
+- [x] **AC-4:** Expected entity counts estimated per transcript
+- [x] **AC-5:** Timeline/agenda structure planned for each transcript
+- [x] **AC-6:** Design documented in EN-017 enabler file
 
 ---
 
@@ -77,3 +77,4 @@ Project expected counts for: speakers, topics, action items, decisions, question
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-01-28 | Claude | Initial task created |
+| 2026-01-28 | Claude | DONE: Added detailed meeting agendas to EN-017 enabler. Token targets (25K/45K/90K), speaker rosters with IDs, entity distribution targets, agenda timelines with topic breakdowns, and VTT generation guidelines. |
