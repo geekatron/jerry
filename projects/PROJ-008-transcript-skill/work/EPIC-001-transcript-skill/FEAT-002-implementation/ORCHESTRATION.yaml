@@ -121,8 +121,8 @@ enablers:
       start: TASK-113
       end: TASK-119
       additional: [TASK-119A, TASK-119B, TASK-119C]  # Contract, integration, E2E tests
-      complete: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119A, TASK-119B]
-      pending: [TASK-119, TASK-119C]
+      complete: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B]
+      pending: [TASK-119C]
     dependencies:
       - EN-008
     implements:
@@ -353,10 +353,10 @@ metrics:
   enablers_gate_ready: 0  # None (EN-013 now complete)
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 62  # Updated: EN-014 expanded +10 tasks per DISC-005 (52→62)
-  tasks_complete: 32  # EN-007 (8) + EN-008 (9) + EN-016 (8) + EN-013 (6) + EN-015 (1: TASK-137)
+  tasks_complete: 33  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1: TASK-137)
   gates_passed: 0  # GATE-5 not yet fully passed (EN-009, EN-016 still pending)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 52  # 32/62 tasks complete (adjusted for expanded scope)
+  completion_percentage: 53  # 33/62 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -407,3 +407,6 @@ history:
   - timestamp: "2026-01-28T21:00:00Z"
     event: "EN-014 scope expanded per DISC-005"
     details: "Gap analysis discovered EN-006 TASK-038 produced 34 files across 6 domain specifications never promoted to skill. Added TASK-150..159 (10 tasks, 9 SP) for artifact promotion. Original scope (3 domains, 5 tasks) expanded to 8 domains total (15 tasks, 15 SP). Human decisions: (1) SPEC files promoted as docs, (2) Consolidated YAML per SPEC design, (3) Blocked by EN-016 completion. Dependencies updated. Metrics adjusted: tasks_total 52→62, completion 62%→52%."
+  - timestamp: "2026-01-28T22:30:00Z"
+    event: "EN-016 TASK-119 complete"
+    details: "5-phase formatter validation complete: (1) Agent definition verification - TDD aligned, (2) Golden dataset verification - 5 files available, YAML-only discovery, (3) Sample packet creation - 9 files (25KB), 57 anchors, (4) Contract test execution - 8/8 CON-FMT tests pass, (5) Live invocation analysis documented. Sample packet at test_data/expected_output/transcript-meeting-001/. EN-016 now 9/10 tasks complete (TASK-119C E2E pending)."
