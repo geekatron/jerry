@@ -252,11 +252,13 @@ class TranscriptChunker:
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-160 | Design chunk file schemas | pending | high |
-| TASK-161 | Implement TranscriptChunker | pending | high |
-| TASK-162 | Create index generation | pending | high |
-| TASK-163 | Add navigation links | pending | medium |
-| TASK-164 | Unit tests for chunker | pending | high |
+| TASK-210 | Design chunk file schemas | pending | high |
+| TASK-211 | Implement TranscriptChunker | pending | high |
+| TASK-212 | Create index generation | pending | high |
+| TASK-213 | Add navigation links | pending | medium |
+| TASK-214 | Unit tests for chunker | pending | high |
+
+**Note:** Task IDs renumbered from TASK-160-164 to TASK-210-214 per DEC-010 (FEAT-004 task range allocation).
 
 ---
 

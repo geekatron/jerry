@@ -168,10 +168,12 @@ topics:
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-170 | Update ts-extractor.md input section | pending | high |
-| TASK-171 | Add chunked processing protocol | pending | high |
-| TASK-172 | Document chunk selection strategies | pending | medium |
-| TASK-173 | Update extraction-report schema | pending | medium |
+| TASK-220 | Update ts-extractor.md input section | pending | high |
+| TASK-221 | Add chunked processing protocol | pending | high |
+| TASK-222 | Document chunk selection strategies | pending | medium |
+| TASK-223 | Update extraction-report schema | pending | medium |
+
+**Note:** Task IDs renumbered from TASK-170-173 to TASK-220-223 per DEC-010 (FEAT-004 task range allocation).
 
 ---
 

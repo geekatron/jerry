@@ -186,12 +186,14 @@ extractor_input_contract:
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-180 | Create integration test fixtures | pending | high |
-| TASK-181 | Parser → Chunker data integrity tests | pending | high |
-| TASK-182 | Chunker → Extractor compatibility tests | pending | high |
-| TASK-183 | End-to-end pipeline tests | pending | high |
-| TASK-184 | Citation accuracy validation | pending | medium |
-| TASK-185 | ps-critic quality gate test | pending | high |
+| TASK-230 | Create integration test fixtures | pending | high |
+| TASK-231 | Parser → Chunker data integrity tests | pending | high |
+| TASK-232 | Chunker → Extractor compatibility tests | pending | high |
+| TASK-233 | End-to-end pipeline tests | pending | high |
+| TASK-234 | Citation accuracy validation | pending | medium |
+| TASK-235 | ps-critic quality gate test | pending | high |
+
+**Note:** Task IDs renumbered from TASK-180-185 to TASK-230-235 per DEC-010 (FEAT-004 task range allocation).
 
 ---
 

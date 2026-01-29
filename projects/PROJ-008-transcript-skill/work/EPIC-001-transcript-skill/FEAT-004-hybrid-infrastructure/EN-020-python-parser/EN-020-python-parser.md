@@ -209,12 +209,14 @@ def _clean_text(self, text: str) -> str:
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-150 | Create parser module structure | pending | high |
-| TASK-151 | Implement VTT parser with webvtt-py | pending | high |
-| TASK-152 | Implement voice tag extraction | pending | high |
-| TASK-153 | Add encoding detection fallback | pending | medium |
-| TASK-154 | Create unit tests (90%+ coverage) | pending | high |
-| TASK-155 | Integration test with meeting-006 | pending | high |
+| TASK-200 | Create parser module structure | pending | high |
+| TASK-201 | Implement VTT parser with webvtt-py | pending | high |
+| TASK-202 | Implement voice tag extraction | pending | high |
+| TASK-203 | Add encoding detection fallback | pending | medium |
+| TASK-204 | Create unit tests (90%+ coverage) | pending | high |
+| TASK-205 | Integration test with meeting-006 | pending | high |
+
+**Note:** Task IDs renumbered from TASK-150-155 to TASK-200-205 per DEC-010 (FEAT-004 task range allocation).
 
 ---
 
