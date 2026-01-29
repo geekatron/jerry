@@ -472,3 +472,140 @@ class TestMeeting006Integration:
         # 3071 segments / 500 = 7 chunks (6 full + 1 remainder)
         expected_chunks = (len(result.segments) + 499) // 500  # ceiling division
         assert index_data["total_chunks"] == expected_chunks
+
+
+# =============================================================================
+# Cross-Reference Contract Tests (TASK-232 AC-3)
+# =============================================================================
+
+
+class TestIndexChunkCrossReferences:
+    """Contract tests for cross-reference integrity between index and chunks.
+
+    TASK-232 AC-3: Cross-references between index and chunks are consistent.
+    """
+
+    def test_index_chunk_cross_references(self, chunked_output: Path) -> None:
+        """Verify index chunk references match actual chunk files.
+
+        Contract: Every chunk pointer in index MUST reference an existing file.
+        """
+        index_path = chunked_output / "index.json"
+        index_data = json.loads(index_path.read_text())
+
+        chunks_dir = chunked_output / "chunks"
+        actual_chunks = set(p.name for p in chunks_dir.glob("chunk-*.json"))
+        index_chunks = set(
+            Path(c["file"]).name for c in index_data["chunks"]
+        )
+
+        assert actual_chunks == index_chunks, (
+            f"Index and filesystem chunks mismatch:\n"
+            f"  In index but not filesystem: {index_chunks - actual_chunks}\n"
+            f"  In filesystem but not index: {actual_chunks - index_chunks}"
+        )
+
+    def test_chunk_count_matches_index(self, chunked_output: Path) -> None:
+        """Verify total_chunks matches actual chunk file count.
+
+        Contract: index.total_chunks MUST equal number of chunk files.
+        """
+        index_path = chunked_output / "index.json"
+        index_data = json.loads(index_path.read_text())
+
+        chunks_dir = chunked_output / "chunks"
+        actual_count = len(list(chunks_dir.glob("chunk-*.json")))
+
+        assert index_data["total_chunks"] == actual_count, (
+            f"total_chunks ({index_data['total_chunks']}) != "
+            f"actual file count ({actual_count})"
+        )
+
+
+# =============================================================================
+# Segment Range Contract Tests (TASK-232 AC-4)
+# =============================================================================
+
+
+class TestSegmentRangeIntegrity:
+    """Contract tests for segment range integrity across chunks.
+
+    TASK-232 AC-4: Segment ID ranges are non-overlapping and complete.
+    """
+
+    def test_segment_ranges_non_overlapping(self, chunked_output: Path) -> None:
+        """Verify segment ID ranges don't overlap between chunks.
+
+        Contract: No segment ID should appear in multiple chunks.
+        """
+        index_path = chunked_output / "index.json"
+        index_data = json.loads(index_path.read_text())
+
+        all_ranges = []
+        for chunk_meta in index_data["chunks"]:
+            seg_range = chunk_meta["segment_range"]
+            all_ranges.append((seg_range[0], seg_range[1], chunk_meta["chunk_id"]))
+
+        # Sort by start and check no overlaps
+        all_ranges.sort()
+        for i in range(len(all_ranges) - 1):
+            current_end = all_ranges[i][1]
+            next_start = all_ranges[i + 1][0]
+            current_id = all_ranges[i][2]
+            next_id = all_ranges[i + 1][2]
+
+            assert next_start > current_end, (
+                f"Overlapping ranges: {current_id} ends at {current_end}, "
+                f"{next_id} starts at {next_start}"
+            )
+
+    def test_segment_ranges_complete_coverage(self, chunked_output: Path) -> None:
+        """Verify segment ranges cover all segments without gaps.
+
+        Contract: Segment IDs 1..total_segments MUST all be covered.
+        """
+        index_path = chunked_output / "index.json"
+        index_data = json.loads(index_path.read_text())
+
+        total_segments = index_data["total_segments"]
+
+        # Verify first chunk starts at 1
+        first_range = index_data["chunks"][0]["segment_range"]
+        assert first_range[0] == 1, (
+            f"First chunk should start at segment 1, got: {first_range[0]}"
+        )
+
+        # Verify last chunk ends at total_segments
+        last_range = index_data["chunks"][-1]["segment_range"]
+        assert last_range[1] == total_segments, (
+            f"Last chunk should end at segment {total_segments}, "
+            f"got: {last_range[1]}"
+        )
+
+        # Verify no gaps between consecutive chunks
+        all_ranges = sorted(c["segment_range"] for c in index_data["chunks"])
+        for i in range(len(all_ranges) - 1):
+            current_end = all_ranges[i][1]
+            next_start = all_ranges[i + 1][0]
+            assert next_start == current_end + 1, (
+                f"Gap in segment coverage: chunk ending at {current_end}, "
+                f"next starts at {next_start}"
+            )
+
+    def test_segment_count_matches_range(self, chunked_output: Path) -> None:
+        """Verify segment_count matches segment_range span in each chunk.
+
+        Contract: For each chunk, segment_count == end - start + 1.
+        """
+        chunks_dir = chunked_output / "chunks"
+
+        for chunk_file in chunks_dir.glob("chunk-*.json"):
+            chunk_data = json.loads(chunk_file.read_text())
+            seg_range = chunk_data["segment_range"]
+            actual_count = len(chunk_data["segments"])
+            expected_count = seg_range[1] - seg_range[0] + 1
+
+            assert actual_count == expected_count, (
+                f"{chunk_file.name}: segment count ({actual_count}) != "
+                f"range span ({expected_count}) for range {seg_range}"
+            )

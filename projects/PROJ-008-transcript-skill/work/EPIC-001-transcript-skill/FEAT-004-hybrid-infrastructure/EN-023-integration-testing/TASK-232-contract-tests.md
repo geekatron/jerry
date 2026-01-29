@@ -30,8 +30,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -42,7 +42,7 @@ created_by: "Claude"
 
 # === TIMESTAMPS ===
 created_at: "2026-01-29T21:30:00Z"
-updated_at: "2026-01-29T21:30:00Z"
+updated_at: "2026-01-30T00:15:00Z"
 
 # === HIERARCHY ===
 parent_id: "EN-023"
@@ -76,7 +76,7 @@ time_spent: null
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
 
 ---
 
@@ -89,8 +89,8 @@ Contract tests ensure the TranscriptChunker output maintains compatibility with 
 ### Schemas to Validate
 
 **From EN-021:**
-- `skills/transcript/test_data/schemas/index-schema.json`
-- `skills/transcript/test_data/schemas/chunk-schema.json`
+- `skills/transcript/test_data/schemas/index.schema.json`
+- `skills/transcript/test_data/schemas/chunk.schema.json`
 
 ### Test Cases
 
@@ -209,11 +209,11 @@ class TestChunkerOutputSchemas:
 
 ## Acceptance Criteria
 
-- [ ] AC-1: index.json output validates against index-schema.json
-- [ ] AC-2: All chunk-NNN.json files validate against chunk-schema.json
-- [ ] AC-3: Cross-references between index and chunks are consistent
-- [ ] AC-4: Segment ID ranges are non-overlapping and complete
-- [ ] AC-5: Tests use jsonschema library for validation
+- [x] AC-1: index.json output validates against index-schema.json
+- [x] AC-2: All chunk-NNN.json files validate against chunk-schema.json
+- [x] AC-3: Cross-references between index and chunks are consistent
+- [x] AC-4: Segment ID ranges are non-overlapping and complete
+- [x] AC-5: Tests use jsonschema library for validation
 
 ---
 
@@ -231,8 +231,8 @@ class TestChunkerOutputSchemas:
 | Metric | Value |
 |--------|-------|
 | Original Estimate | 2 hours |
-| Remaining Work | 2 hours |
-| Time Spent | - |
+| Remaining Work | 0 hours |
+| Time Spent | 0.5 hours |
 
 ---
 
@@ -242,13 +242,39 @@ class TestChunkerOutputSchemas:
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Contract tests | Python | `tests/contract/transcript/test_chunker_schemas.py` |
+| Contract tests | Python | `tests/contract/transcript/test_chunk_schemas.py` |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] `pytest -m contract tests/contract/transcript/` passes
+- [x] Acceptance criteria verified
+- [x] `pytest -m contract tests/contract/transcript/` passes (22 tests)
 - [ ] Reviewed by: Human
+
+---
+
+## Implementation Details
+
+### Test Suite Summary
+
+22 contract tests covering:
+- **Index Schema Validation**: 5 tests (jsonschema + manual field checks)
+- **Chunk Schema Validation**: 5 tests (jsonschema + format validation)
+- **Navigation Links Validation**: 3 tests (index link, first/last boundaries)
+- **Invalid JSON Detection**: 3 tests (negative tests for schema violations)
+- **Cross-Reference Integrity**: 2 tests (AC-3)
+- **Segment Range Integrity**: 3 tests (AC-4)
+- **Golden Dataset Integration**: 1 test (meeting-006 end-to-end)
+
+### Test Execution Evidence
+
+```bash
+$ uv run pytest tests/contract/transcript/test_chunk_schemas.py -v
+============================= test session starts ==============================
+collected 22 items
+
+tests/contract/transcript/test_chunk_schemas.py ... 22 passed in 0.49s
+============================== 22 passed in 0.49s ==============================
+```
 
 ---
 
@@ -257,3 +283,4 @@ class TestChunkerOutputSchemas:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-29 | BACKLOG | Created per DEC-012 restructuring |
+| 2026-01-30 | DONE | 22 contract tests passing. Added AC-3 (cross-reference) and AC-4 (segment range) tests. jsonschema dependency in dev extras. |

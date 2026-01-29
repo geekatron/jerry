@@ -194,7 +194,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 |----|-------|--------|----------|-----|
 | TASK-230 | Integration Test Infrastructure Setup | **DONE** | high | - |
 | TASK-231 | Parser → Chunker Integration Tests | **DONE** | high | ✓ |
-| TASK-232 | Chunker Output Contract Tests | pending | high | ✓ |
+| TASK-232 | Chunker Output Contract Tests | **DONE** | high | ✓ |
 | TASK-233 | Python-Layer Pipeline Tests | pending | high | ✓ |
 
 ### LLM Validation Tests (Slow, On-Demand)
