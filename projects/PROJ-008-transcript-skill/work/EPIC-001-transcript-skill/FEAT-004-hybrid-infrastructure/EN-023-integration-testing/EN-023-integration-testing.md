@@ -9,7 +9,7 @@ PURPOSE: End-to-end integration testing of hybrid architecture
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** compliance
@@ -29,13 +29,13 @@ id: "EN-023"
 work_type: ENABLER
 title: "Integration Testing"
 classification: ENABLER
-status: pending
+status: in_progress
 priority: medium
 impact: medium
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T22:00:00Z"
-updated_at: "2026-01-28T22:00:00Z"
+updated_at: "2026-01-29T21:15:00Z"
 parent_id: "FEAT-004"
 tags: ["enabler", "testing", "integration", "compliance"]
 effort: 5
@@ -184,16 +184,27 @@ extractor_input_contract:
 
 ## Children (Tasks)
 
-| ID | Title | Status | Priority |
-|----|-------|--------|----------|
-| TASK-230 | Create integration test fixtures | pending | high |
-| TASK-231 | Parser → Chunker data integrity tests | pending | high |
-| TASK-232 | Chunker → Extractor compatibility tests | pending | high |
-| TASK-233 | End-to-end pipeline tests | pending | high |
-| TASK-234 | Citation accuracy validation | pending | medium |
-| TASK-235 | ps-critic quality gate test | pending | high |
+Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: Python-Layer (CI-friendly) and LLM Validation (on-demand).
 
-**Note:** Task IDs renumbered from TASK-180-185 to TASK-230-235 per DEC-010 (FEAT-004 task range allocation).
+### Python-Layer Tests (Fast, CI)
+
+| ID | Title | Status | Priority | CI |
+|----|-------|--------|----------|-----|
+| TASK-230 | Integration Test Infrastructure Setup | pending | high | - |
+| TASK-231 | Parser → Chunker Integration Tests | pending | high | ✓ |
+| TASK-232 | Chunker Output Contract Tests | pending | high | ✓ |
+| TASK-233 | Python-Layer Pipeline Tests | pending | high | ✓ |
+
+### LLM Validation Tests (Slow, On-Demand)
+
+| ID | Title | Status | Priority | CI |
+|----|-------|--------|----------|-----|
+| TASK-234 | LLM Integration Test Framework | pending | medium | - |
+| TASK-235 | ts-extractor Chunked Input Validation | pending | high | ✗ |
+| TASK-236 | Full Pipeline E2E Test | pending | high | ✗ |
+| TASK-237 | ps-critic Quality Gate Test | pending | high | ✗ |
+
+**Note:** Tasks restructured from 6 to 8 per DEC-012 (Hybrid Testing Strategy). Task range per DEC-010.
 
 ---
 
@@ -201,11 +212,12 @@ extractor_input_contract:
 
 ### Definition of Done
 
-- [ ] Integration test suite complete
+- [ ] Python-layer integration tests complete (TASK-230..233)
+- [ ] LLM validation test framework complete (TASK-234..237)
 - [ ] All 6 datasets tested
 - [ ] meeting-006 produces complete output (3,071 segments)
 - [ ] ps-critic quality score >= 0.90
-- [ ] CI/CD pipeline integration
+- [ ] CI excludes LLM tests (pytest -m "not llm")
 
 ### Functional Criteria
 
@@ -235,6 +247,7 @@ extractor_input_contract:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-28 | Claude | pending | Enabler created from DISC-009 |
+| 2026-01-29 | Claude | in_progress | Restructured to 8 tasks per DEC-012 (Hybrid Testing Strategy). Two-tier approach: Python tests (CI) + LLM tests (validation). Created TASK-230..237 task files. |
 
 ---
 
