@@ -20,13 +20,14 @@ description: |
   with meeting-specific entities: attendee, agenda_item, follow_up.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: FIXED
 priority: MEDIUM
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T19:30:00Z"
-updated_at: "2026-01-26T19:30:00Z"
+updated_at: "2026-01-28T22:45:00Z"
+completed_at: "2026-01-28T11:00:00Z"
 
 parent_id: "EN-014"
 
@@ -55,7 +56,13 @@ time_spent: 0
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
+
+```
+BACKLOG → IN_PROGRESS → DONE
+                         ↑
+                    (completed)
+```
 
 ---
 
