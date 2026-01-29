@@ -113,12 +113,15 @@ class VTTParser:
                 ))
 
         except Exception as e:
+            # Classify error type based on exception message and content
+            error_type = self._classify_error(e, content)
+
             # Return partial result with error
             return ParseResult(
                 segments=segments,
                 format="vtt",
                 warnings=warnings,
-                errors=[{"type": "parse_error", "message": str(e)}],
+                errors=[{"type": error_type, "message": str(e)}],
                 parse_status="failed" if not segments else "partial",
             )
 
@@ -132,6 +135,52 @@ class VTTParser:
             warnings=warnings,
             parse_status="complete",
         )
+
+    def _classify_error(self, error: Exception, content: str) -> str:
+        """Classify error type based on exception and content.
+
+        Error Types (per ParseResult docstring contract):
+        - "format_error": Missing WEBVTT header, invalid VTT structure, empty file
+        - "timestamp_error": Invalid timestamp format
+        - "encoding_error": Decoding failures (handled in _read_file_with_encoding)
+        - "parse_error": Generic fallback for unexpected errors
+
+        Args:
+            error: The exception that occurred during parsing
+            content: The content that was being parsed
+
+        Returns:
+            Error type string matching ParseResult error type contract
+        """
+        error_msg = str(error).lower()
+
+        # Check for format errors (missing WEBVTT header, invalid structure)
+        format_indicators = [
+            "webvtt",
+            "header",
+            "malformed",
+            "invalid",
+            "expected",
+            "file",
+        ]
+        if any(indicator in error_msg for indicator in format_indicators):
+            return "format_error"
+
+        # Check for empty content (format error)
+        if not content or not content.strip():
+            return "format_error"
+
+        # Check if content lacks WEBVTT header (format error)
+        if not content.strip().startswith("WEBVTT"):
+            return "format_error"
+
+        # Check for timestamp errors
+        timestamp_indicators = ["timestamp", "time", "-->"]
+        if any(indicator in error_msg for indicator in timestamp_indicators):
+            return "timestamp_error"
+
+        # Default to generic parse_error
+        return "parse_error"
 
     def _extract_speaker(self, text: str) -> Optional[str]:
         """Extract speaker from VTT voice tag.

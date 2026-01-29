@@ -18,13 +18,51 @@ class ParseResult:
     """Result from VTT/SRT parsing operation.
 
     Attributes:
-        segments: List of parsed transcript segments
-        format: Source format identifier (vtt, srt, txt)
-        encoding: Detected/used encoding
-        duration_ms: Total transcript duration in milliseconds
-        warnings: List of non-fatal issues encountered
-        errors: List of fatal errors (parse_status will be 'failed')
-        parse_status: Status indicator (complete, partial, failed)
+        segments: List of parsed transcript segments.
+        format: Source format identifier. Valid values: "vtt", "srt", "txt".
+        encoding: Detected/used encoding (e.g., "utf-8", "utf-8-sig", "windows-1252").
+        duration_ms: Total transcript duration in milliseconds. None if no segments.
+        warnings: List of non-fatal issues. Each warning is a dict with "type" and "message".
+        errors: List of fatal errors. Each error is a dict with "type" and "message".
+            See Error Types below for valid type values.
+        parse_status: Status indicator. Valid values:
+            - "complete": All content parsed successfully
+            - "partial": Some content parsed, but errors occurred
+            - "failed": No content could be parsed
+
+    Error Types:
+        Each error dict has the structure: {"type": <string>, "message": <string>}
+
+        Valid error type values:
+        - "encoding_error": File could not be decoded with any supported encoding.
+            Supported encodings: utf-8-sig, utf-8, windows-1252, iso-8859-1, latin-1.
+            Example: Binary file, corrupted content, unsupported encoding.
+
+        - "format_error": Content does not conform to expected transcript format.
+            Example: Missing WEBVTT header, invalid VTT structure, empty file.
+
+        - "timestamp_error": Timestamp in transcript could not be parsed.
+            Expected formats: "HH:MM:SS.mmm" or "MM:SS.mmm".
+            Example: "invalid:timestamp", "25:61:00.000" (invalid values).
+
+        - "parse_error": Generic parsing failure not covered by specific types.
+            Used as fallback for unexpected errors from underlying parser.
+
+    Example - Successful parse:
+        >>> result.parse_status
+        "complete"
+        >>> result.errors
+        []
+        >>> result.segment_count
+        3071
+
+    Example - Failed parse:
+        >>> result.parse_status
+        "failed"
+        >>> result.errors
+        [{"type": "format_error", "message": "Missing WEBVTT header"}]
+        >>> result.segment_count
+        0
 
     Reference: TDD-FEAT-004 v1.2.0, Section 4
     """
