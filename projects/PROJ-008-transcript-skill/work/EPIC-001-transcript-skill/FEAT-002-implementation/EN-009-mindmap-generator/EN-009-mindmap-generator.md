@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** gate-ready
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-26T00:00:00Z
@@ -52,28 +52,28 @@ Implement the mind map generator that transforms extracted entities into visual 
 
 ### Definition of Done
 
-- [ ] Mermaid diagram generator implemented
-- [ ] ASCII art generator implemented
-- [ ] Topic hierarchy visualization working
-- [ ] Entity relationships shown
-- [ ] Deep links to source cues embedded
-- [ ] Large transcript handling (chunking)
-- [ ] Unit tests passing
+- [x] Mermaid diagram generator implemented
+- [x] ASCII art generator implemented
+- [x] Topic hierarchy visualization working
+- [x] Entity relationships shown
+- [x] Deep links to source cues embedded
+- [x] Large transcript handling (chunking)
+- [x] Unit tests passing
 - [ ] ps-critic review passed
-- [ ] Human approval at GATE-6
+- [ ] Human approval at GATE-5
 
 ### Technical Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | Generates valid Mermaid mindmap syntax | [ ] |
-| AC-2 | Topics form hierarchical structure | [ ] |
-| AC-3 | Speakers connected to their topics | [ ] |
-| AC-4 | Action items linked to topics | [ ] |
-| AC-5 | Questions and decisions shown | [ ] |
-| AC-6 | Deep links to source cues in nodes | [ ] |
-| AC-7 | ASCII version readable at 80 chars | [ ] |
-| AC-8 | Handles 50+ topics gracefully | [ ] |
+| AC-1 | Generates valid Mermaid mindmap syntax | [x] |
+| AC-2 | Topics form hierarchical structure | [x] |
+| AC-3 | Speakers connected to their topics | [x] |
+| AC-4 | Action items linked to topics | [x] |
+| AC-5 | Questions and decisions shown | [x] |
+| AC-6 | Deep links to source cues in nodes | [x] |
+| AC-7 | ASCII version readable at 80 chars | [x] |
+| AC-8 | Handles 50+ topics gracefully | [x] |
 
 ---
 
@@ -85,10 +85,16 @@ Implement the mind map generator that transforms extracted entities into visual 
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-001](./TASK-001-mermaid-generator.md) | Create Mermaid Generator Agent | pending | Claude | 3 | EN-016 |
-| [TASK-002](./TASK-002-ascii-generator.md) | Create ASCII Generator Agent | pending | Claude | 2 | EN-016 |
-| [TASK-003](./TASK-003-deep-link-embedding.md) | Implement Deep Link Embedding | pending | Claude | 2 | TASK-001 |
-| [TASK-004](./TASK-004-unit-tests.md) | Create Unit Tests | pending | Claude | 3 | TASK-001, TASK-002, TASK-003 |
+| [TASK-001](./TASK-001-mermaid-generator.md) | Create Mermaid Generator Agent | **DONE** | Claude | 3 | - |
+| [TASK-002](./TASK-002-ascii-generator.md) | Create ASCII Generator Agent | **DONE** | Claude | 2 | - |
+| [TASK-003](./TASK-003-deep-link-embedding.md) | Implement Deep Link Embedding | **DONE** | Claude | 2 | - |
+| [TASK-004](./TASK-004-unit-tests.md) | Create Unit Tests | **DONE** | Claude | 3 | - |
+
+### Discoveries
+
+| ID | Title | Status |
+|----|-------|--------|
+| [DISC-001](./DISC-001-missing-tdd-document.md) | Missing TDD Document | documented |
 
 ---
 
@@ -188,6 +194,7 @@ For large transcripts (>50 topics):
 | 2026-01-26 | Claude | pending | Enabler created |
 | 2026-01-26 | Claude | pending | BUG-001: EN-009 ID retained for Mind Map (ts-formatter renumbered to EN-016). Gate corrected to GATE-5. Dependencies updated. |
 | 2026-01-28 | Claude | pending | DEC-003:AI-004 - Task files created with enabler-scoped numbering (TASK-001..004). Blocked By updated to EN-016. |
+| 2026-01-28 | Claude | gate-ready | All 4 tasks complete. Created: ts-mindmap-mermaid.md, ts-mindmap-ascii.md, mindmap-tests.yaml, mindmap-link-tests.yaml. DISC-001 documented TDD not required. Ready for GATE-5 quality reviews. |
 
 ---
 

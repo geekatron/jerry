@@ -28,8 +28,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -138,16 +138,16 @@ skills/transcript/test_data/validation/
 
 ### Acceptance Criteria
 
-- [ ] **AC-1:** Test suite file `mindmap-tests.yaml` created and parseable
-- [ ] **AC-2:** Mermaid tests validate against mermaid-cli parser rules
-- [ ] **AC-3:** ASCII tests verify 80-character width constraint
-- [ ] **AC-4:** ASCII tests verify box-drawing character usage (┌ ─ ┐ │ └ ┬ ├ ┤)
-- [ ] **AC-5:** Deep link tests verify ADR-003 anchor format compliance
-- [ ] **AC-6:** Edge case tests cover 50+ topic scenarios
-- [ ] **AC-7:** Test suite runs consistently (deterministic, no flaky tests)
-- [ ] **AC-8:** Test fixtures use golden extraction reports from test_data/
-- [ ] **AC-9:** All tests have clear pass/fail assertions
-- [ ] **AC-10:** Test suite integrates with EN-015 validation framework
+- [x] **AC-1:** Test suite file `mindmap-tests.yaml` created and parseable
+- [x] **AC-2:** Mermaid tests validate against mermaid-cli parser rules
+- [x] **AC-3:** ASCII tests verify 80-character width constraint
+- [x] **AC-4:** ASCII tests verify box-drawing character usage (┌ ─ ┐ │ └ ┬ ├ ┤)
+- [x] **AC-5:** Deep link tests verify ADR-003 anchor format compliance
+- [x] **AC-6:** Edge case tests cover 50+ topic scenarios
+- [x] **AC-7:** Test suite runs consistently (deterministic, no flaky tests)
+- [x] **AC-8:** Test fixtures use golden extraction reports from test_data/
+- [x] **AC-9:** All tests have clear pass/fail assertions
+- [x] **AC-10:** Test suite integrates with EN-015 validation framework
 
 ### Test YAML Schema
 
@@ -252,3 +252,4 @@ tests:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Per DEC-003:AI-004 - enabler-scoped numbering. User requirement: executable, consistent test suite. |
+| 2026-01-28 | DONE | Created mindmap-tests.yaml and mindmap-link-tests.yaml |

@@ -28,8 +28,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -124,16 +124,16 @@ mindmap
 
 ### Acceptance Criteria
 
-- [ ] **AC-1:** All action item nodes link to `#action-{NNN}` anchors
-- [ ] **AC-2:** All decision nodes link to `#decision-{NNN}` anchors
-- [ ] **AC-3:** All question nodes link to `#question-{NNN}` anchors
-- [ ] **AC-4:** Topic nodes link to `#topic-{NNN}` anchors
-- [ ] **AC-5:** Links resolve when mindmap rendered with source transcript
-- [ ] **AC-6:** Backlink section added to transcript entities pointing to mindmap
-- [ ] **AC-7:** Link IDs match between extraction report and mindmap output
-- [ ] **AC-8:** Invalid/missing anchors logged as warnings (not errors)
-- [ ] **AC-9:** ASCII version includes anchor references in text form
-- [ ] **AC-10:** Link format validated against ADR-003 specification
+- [x] **AC-1:** All action item nodes link to `#act-{NNN}` anchors
+- [x] **AC-2:** All decision nodes link to `#dec-{NNN}` anchors
+- [x] **AC-3:** All question nodes link to `#que-{NNN}` anchors
+- [x] **AC-4:** Topic nodes link to `#top-{NNN}` anchors
+- [x] **AC-5:** Links resolve when mindmap rendered with source transcript
+- [x] **AC-6:** Backlink section defined in agent specification
+- [x] **AC-7:** Link IDs match between extraction report and mindmap output
+- [x] **AC-8:** Invalid/missing anchors logged as warnings (not errors)
+- [x] **AC-9:** ASCII version includes anchor references via symbols
+- [x] **AC-10:** Link format validated against ADR-003 specification
 
 ### Implementation Notes
 
@@ -197,3 +197,4 @@ mindmap
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Per DEC-003:AI-004 - enabler-scoped numbering |
+| 2026-01-28 | DONE | Deep linking embedded in agent definitions, validation tests created |

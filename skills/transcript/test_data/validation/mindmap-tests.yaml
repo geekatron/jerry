@@ -1,0 +1,556 @@
+# EN-009 Mind Map Generator - Test Suite
+# Per TASK-004: Create Mindmap Generator Unit Tests
+# Validates Mermaid and ASCII mindmap generation
+
+test_suite:
+  name: "EN-009 Mind Map Generator Tests"
+  version: "1.0.0"
+  description: "Comprehensive test suite for Mermaid and ASCII mindmap generators"
+  enabler: "EN-009"
+  agents:
+    - ts-mindmap-mermaid
+    - ts-mindmap-ascii
+
+# =============================================================================
+# MERMAID SYNTAX VALIDATION TESTS
+# =============================================================================
+
+mermaid_tests:
+  - id: "MM-001"
+    name: "Valid Mermaid syntax for simple extraction"
+    category: "mermaid"
+    description: "Verifies basic Mermaid mindmap generation with minimal input"
+    input:
+      extraction_report: "test_data/golden/simple-extraction.json"
+      packet_id: "meeting-001"
+      meeting_title: "Q4 Planning Meeting"
+    expected:
+      output_file: "07-mindmap/mindmap.mmd"
+      assertions:
+        - type: "starts_with"
+          value: "mindmap"
+        - type: "contains"
+          value: "root(("
+        - type: "contains"
+          value: "))"
+        - type: "file_exists"
+          path: "07-mindmap/mindmap.mmd"
+
+  - id: "MM-002"
+    name: "Empty extraction handling"
+    category: "mermaid"
+    description: "Verifies graceful handling of extraction with no entities"
+    input:
+      extraction_report:
+        version: "1.0"
+        packet_id: "empty-001"
+        extraction_stats:
+          speakers_identified: 0
+          action_items: 0
+          decisions: 0
+          questions: 0
+          topics: 0
+        speakers: []
+        action_items: []
+        decisions: []
+        questions: []
+        topics: []
+    expected:
+      output_file: "07-mindmap/mindmap.mmd"
+      assertions:
+        - type: "starts_with"
+          value: "mindmap"
+        - type: "contains"
+          value: "root(("
+        - type: "not_contains"
+          value: "undefined"
+
+  - id: "MM-003"
+    name: "50+ topics graceful degradation"
+    category: "mermaid"
+    description: "Verifies overflow handling for large topic counts"
+    input:
+      extraction_report: "test_data/golden/large-extraction.json"
+      topic_count: 60
+    expected:
+      assertions:
+        - type: "starts_with"
+          value: "mindmap"
+        - type: "valid_mermaid_syntax"
+        - type: "contains"
+          value: "... and"  # Overflow indicator
+
+  - id: "MM-004"
+    name: "Unicode content handling"
+    category: "mermaid"
+    description: "Verifies proper Unicode character handling"
+    input:
+      extraction_report:
+        topics:
+          - id: "top-001"
+            title: "Budget Review 预算审查"
+        speakers:
+          - id: "spk-maria"
+            name: "María García"
+    expected:
+      assertions:
+        - type: "contains"
+          value: "预算"
+        - type: "valid_utf8"
+
+  - id: "MM-005"
+    name: "Special characters escaped"
+    category: "mermaid"
+    description: "Verifies special chars in content are properly escaped"
+    input:
+      action_item:
+        id: "act-001"
+        text: "Review [Q4] budget (draft) & finalize"
+    expected:
+      assertions:
+        - type: "valid_mermaid_syntax"
+        - type: "not_contains"
+          value: "syntax error"
+
+  - id: "MM-006"
+    name: "Root node format"
+    category: "mermaid"
+    description: "Verifies root node uses double parentheses"
+    input:
+      meeting_title: "Sprint Planning - Week 4"
+    expected:
+      assertions:
+        - type: "regex_match"
+          pattern: "root\\(\\(.+\\)\\)"
+
+  - id: "MM-007"
+    name: "Speaker branch with icons"
+    category: "mermaid"
+    description: "Verifies speakers grouped with user icons"
+    input:
+      speakers:
+        - id: "spk-alice"
+          name: "Alice"
+        - id: "spk-bob"
+          name: "Bob"
+    expected:
+      assertions:
+        - type: "contains"
+          value: "Speakers"
+        - type: "contains"
+          value: "::icon(fa fa-user)"
+
+  - id: "MM-008"
+    name: "Indentation consistency"
+    category: "mermaid"
+    description: "Verifies 2-space indentation throughout"
+    expected:
+      assertions:
+        - type: "indentation"
+          value: 2
+          style: "spaces"
+
+# =============================================================================
+# ASCII FORMAT VALIDATION TESTS
+# =============================================================================
+
+ascii_tests:
+  - id: "AA-001"
+    name: "Valid ASCII tree with box-drawing"
+    category: "ascii"
+    description: "Verifies ASCII output uses proper box-drawing characters"
+    input:
+      extraction_report: "test_data/golden/simple-extraction.json"
+    expected:
+      output_file: "07-mindmap/mindmap.ascii.txt"
+      assertions:
+        - type: "contains"
+          value: "┌"
+        - type: "contains"
+          value: "─"
+        - type: "contains"
+          value: "│"
+        - type: "contains"
+          value: "└"
+
+  - id: "AA-002"
+    name: "80-character width constraint"
+    category: "ascii"
+    description: "Verifies no line exceeds 80 characters"
+    input:
+      extraction_report: "test_data/golden/simple-extraction.json"
+    expected:
+      assertions:
+        - type: "max_line_length"
+          value: 80
+
+  - id: "AA-003"
+    name: "Long node name truncation"
+    category: "ascii"
+    description: "Verifies long content truncated with ellipsis"
+    input:
+      action_item:
+        id: "act-001"
+        text: "This is a very long action item text that definitely exceeds the maximum width constraint"
+    expected:
+      assertions:
+        - type: "contains"
+          value: "..."
+        - type: "max_line_length"
+          value: 80
+
+  - id: "AA-004"
+    name: "Legend presence and format"
+    category: "ascii"
+    description: "Verifies legend explains all entity symbols"
+    expected:
+      assertions:
+        - type: "contains"
+          value: "Legend:"
+        - type: "contains"
+          value: "[→]"
+        - type: "contains"
+          value: "[?]"
+        - type: "contains"
+          value: "[!]"
+        - type: "contains"
+          value: "[*]"
+
+  - id: "AA-005"
+    name: "UTF-8 file encoding"
+    category: "ascii"
+    description: "Verifies output file is valid UTF-8"
+    expected:
+      assertions:
+        - type: "valid_utf8"
+
+  - id: "AA-006"
+    name: "Root node centered"
+    category: "ascii"
+    description: "Verifies root node is approximately centered"
+    expected:
+      assertions:
+        - type: "root_centered"
+          tolerance: 5
+
+  - id: "AA-007"
+    name: "Proper branching lines"
+    category: "ascii"
+    description: "Verifies parent-child connections use branching chars"
+    expected:
+      assertions:
+        - type: "contains"
+          value: "┬"
+        - type: "contains"
+          value: "▼"
+
+  - id: "AA-008"
+    name: "Entity symbol prefixes"
+    category: "ascii"
+    description: "Verifies each entity type has correct symbol"
+    input:
+      action_items:
+        - id: "act-001"
+          text: "Test action"
+      decisions:
+        - id: "dec-001"
+          text: "Test decision"
+      questions:
+        - id: "que-001"
+          text: "Test question"
+    expected:
+      assertions:
+        - type: "contains"
+          value: "[→]"  # Action
+        - type: "contains"
+          value: "[!]"  # Decision
+        - type: "contains"
+          value: "[?]"  # Question
+
+# =============================================================================
+# DEEP LINK COMPLIANCE TESTS
+# =============================================================================
+
+deep_link_tests:
+  - id: "DL-001"
+    name: "Action items link to anchors"
+    category: "deep-link"
+    description: "Verifies action item nodes have deep links"
+    input:
+      action_item:
+        id: "act-001"
+        text: "Send report"
+    expected:
+      mermaid_contains: "(#act-001)"
+    assertions:
+      - type: "regex_match"
+        pattern: "\\(#act-\\d{3,}\\)"
+
+  - id: "DL-002"
+    name: "Decisions link to anchors"
+    category: "deep-link"
+    input:
+      decision:
+        id: "dec-003"
+        text: "Approved budget"
+    expected:
+      mermaid_contains: "(#dec-003)"
+    assertions:
+      - type: "regex_match"
+        pattern: "\\(#dec-\\d{3,}\\)"
+
+  - id: "DL-003"
+    name: "Questions link to anchors"
+    category: "deep-link"
+    input:
+      question:
+        id: "que-007"
+        text: "When is deadline?"
+    expected:
+      mermaid_contains: "(#que-007)"
+    assertions:
+      - type: "regex_match"
+        pattern: "\\(#que-\\d{3,}\\)"
+
+  - id: "DL-004"
+    name: "Topics link to anchors"
+    category: "deep-link"
+    input:
+      topic:
+        id: "top-002"
+        title: "Budget Review"
+    expected:
+      mermaid_contains: "(#top-002)"
+    assertions:
+      - type: "regex_match"
+        pattern: "\\(#top-\\d{3,}\\)"
+
+  - id: "DL-005"
+    name: "Invalid anchor warning"
+    category: "deep-link"
+    description: "Verifies missing anchors log warning, not error"
+    input:
+      action_item:
+        id: "act-999"
+        text: "Non-existent"
+      anchor_exists: false
+    expected:
+      behavior: "warning"
+      error: false
+
+# =============================================================================
+# EDGE CASE TESTS
+# =============================================================================
+
+edge_case_tests:
+  - id: "EC-001"
+    name: "Empty extraction report"
+    category: "edge-case"
+    input:
+      extraction_report:
+        topics: []
+        speakers: []
+        action_items: []
+        decisions: []
+        questions: []
+    expected:
+      behavior: "graceful"
+      output_exists: true
+
+  - id: "EC-002"
+    name: "100+ topics performance"
+    category: "edge-case"
+    input:
+      topic_count: 100
+    expected:
+      behavior: "degrades_gracefully"
+      max_displayed_topics: 30
+
+  - id: "EC-003"
+    name: "Very long topic titles"
+    category: "edge-case"
+    input:
+      topic:
+        id: "top-001"
+        title: "This is a very long topic title that should be truncated to fit within reasonable bounds"
+    expected:
+      assertions:
+        - type: "truncated"
+          max_length: 40
+
+  - id: "EC-004"
+    name: "Maximum hierarchy depth"
+    category: "edge-case"
+    description: "Verifies max 3 levels rendered"
+    expected:
+      max_depth: 3
+
+  - id: "EC-005"
+    name: "Missing required fields"
+    category: "edge-case"
+    input:
+      action_item:
+        id: "act-001"
+        # text field missing
+    expected:
+      behavior: "defaults_applied"
+      fallback_text: "[No description]"
+
+  - id: "EC-006"
+    name: "Null values in extraction"
+    category: "edge-case"
+    input:
+      action_item:
+        id: "act-001"
+        text: null
+        assignee: null
+    expected:
+      behavior: "graceful"
+      no_crash: true
+
+  - id: "EC-007"
+    name: "Duplicate entity IDs"
+    category: "edge-case"
+    input:
+      action_items:
+        - id: "act-001"
+          text: "First"
+        - id: "act-001"
+          text: "Duplicate"
+    expected:
+      behavior: "warning_logged"
+      unique_rendered: true
+
+# =============================================================================
+# INTEGRATION TESTS
+# =============================================================================
+
+integration_tests:
+  - id: "INT-001"
+    name: "End-to-end Mermaid generation"
+    category: "integration"
+    description: "Full pipeline from extraction report to Mermaid output"
+    input:
+      extraction_report: "test_data/golden/meeting-001-extraction.json"
+      packet_directory: "test_data/golden/meeting-001/"
+    expected:
+      output_file: "07-mindmap/mindmap.mmd"
+      assertions:
+        - type: "file_exists"
+        - type: "valid_mermaid_syntax"
+        - type: "contains_all_entities"
+
+  - id: "INT-002"
+    name: "End-to-end ASCII generation"
+    category: "integration"
+    description: "Full pipeline from extraction report to ASCII output"
+    input:
+      extraction_report: "test_data/golden/meeting-001-extraction.json"
+      packet_directory: "test_data/golden/meeting-001/"
+    expected:
+      output_file: "07-mindmap/mindmap.ascii.txt"
+      assertions:
+        - type: "file_exists"
+        - type: "max_line_length"
+          value: 80
+        - type: "contains"
+          value: "Legend:"
+
+  - id: "INT-003"
+    name: "Both formats generated"
+    category: "integration"
+    description: "Verifies both Mermaid and ASCII created in 07-mindmap/"
+    expected:
+      files:
+        - "07-mindmap/mindmap.mmd"
+        - "07-mindmap/mindmap.ascii.txt"
+      assertions:
+        - type: "directory_contains"
+          path: "07-mindmap/"
+          count: 2
+
+# =============================================================================
+# CONTRACT TESTS (CON-MM-*)
+# =============================================================================
+
+contract_tests:
+  - id: "CON-MM-001"
+    name: "Mermaid output contract"
+    description: "Verifies Mermaid output meets contract requirements"
+    requirements:
+      - Starts with 'mindmap' keyword
+      - Has exactly one root node
+      - Uses 2-space indentation
+      - All entities have deep links
+      - Valid syntax parseable by mermaid-cli
+    assertions:
+      - type: "starts_with"
+        value: "mindmap"
+      - type: "single_root"
+      - type: "indentation"
+        value: 2
+
+  - id: "CON-MM-002"
+    name: "ASCII output contract"
+    description: "Verifies ASCII output meets contract requirements"
+    requirements:
+      - Maximum 80 character line width
+      - Uses Unicode box-drawing characters
+      - Includes legend at bottom
+      - Valid UTF-8 encoding
+      - Entity symbols consistent
+    assertions:
+      - type: "max_line_length"
+        value: 80
+      - type: "valid_utf8"
+      - type: "contains"
+        value: "Legend:"
+
+  - id: "CON-MM-003"
+    name: "Directory structure contract"
+    description: "Verifies output directory structure"
+    requirements:
+      - Creates 07-mindmap/ directory
+      - Contains mindmap.mmd file
+      - Contains mindmap.ascii.txt file
+    assertions:
+      - type: "directory_exists"
+        path: "07-mindmap/"
+
+# =============================================================================
+# TEST EXECUTION METADATA
+# =============================================================================
+
+execution:
+  runner: "yaml_test_runner"
+  timeout_seconds: 60
+  parallel: true
+  fail_fast: false
+  categories:
+    - mermaid
+    - ascii
+    - deep-link
+    - edge-case
+    - integration
+    - contract
+
+reporting:
+  format: "json"
+  output_file: "test_data/results/mindmap-test-results.json"
+  coverage:
+    track: true
+    minimum: 80
+
+# =============================================================================
+# GOLDEN TEST DATA REQUIREMENTS
+# =============================================================================
+
+golden_data:
+  description: "Required golden test data files"
+  files:
+    - path: "test_data/golden/simple-extraction.json"
+      description: "Simple extraction report (5-10 entities)"
+    - path: "test_data/golden/large-extraction.json"
+      description: "Large extraction report (50+ topics)"
+    - path: "test_data/golden/meeting-001-extraction.json"
+      description: "Full meeting extraction for integration tests"

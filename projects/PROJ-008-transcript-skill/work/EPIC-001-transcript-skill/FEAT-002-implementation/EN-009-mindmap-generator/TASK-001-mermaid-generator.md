@@ -28,8 +28,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -110,16 +110,16 @@ mindmap
 
 ### Acceptance Criteria
 
-- [ ] **AC-1:** Generates valid Mermaid mindmap syntax (parseable by mermaid-cli)
-- [ ] **AC-2:** Root node contains meeting title/date
-- [ ] **AC-3:** Level 1 nodes are main topics from topic segmentation
-- [ ] **AC-4:** Level 2+ nodes contain subtopics and entities
-- [ ] **AC-5:** Action items include assignee in node text
-- [ ] **AC-6:** Questions show answered/unanswered status
-- [ ] **AC-7:** Decisions include rationale summary
-- [ ] **AC-8:** All entity nodes have deep links per ADR-003 format
-- [ ] **AC-9:** Handles 50+ topics without syntax errors
-- [ ] **AC-10:** Speaker nodes grouped under "Speakers" branch
+- [x] **AC-1:** Generates valid Mermaid mindmap syntax (parseable by mermaid-cli)
+- [x] **AC-2:** Root node contains meeting title/date
+- [x] **AC-3:** Level 1 nodes are main topics from topic segmentation
+- [x] **AC-4:** Level 2+ nodes contain subtopics and entities
+- [x] **AC-5:** Action items include assignee in node text
+- [x] **AC-6:** Questions show answered/unanswered status
+- [x] **AC-7:** Decisions include rationale summary
+- [x] **AC-8:** All entity nodes have deep links per ADR-003 format
+- [x] **AC-9:** Handles 50+ topics without syntax errors
+- [x] **AC-10:** Speaker nodes grouped under "Speakers" branch
 
 ### Implementation Notes
 
@@ -177,3 +177,4 @@ mindmap
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Per DEC-003:AI-004 - enabler-scoped numbering |
+| 2026-01-28 | DONE | Agent definition created: skills/transcript/agents/ts-mindmap-mermaid.md |

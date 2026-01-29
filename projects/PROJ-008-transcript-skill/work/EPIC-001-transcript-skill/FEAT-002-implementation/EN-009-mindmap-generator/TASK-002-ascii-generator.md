@@ -28,8 +28,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -115,16 +115,16 @@ Legend:
 
 ### Acceptance Criteria
 
-- [ ] **AC-1:** Generates valid ASCII tree using box-drawing characters (┌ ─ ┐ │ └ ┴ ┬ ├ ┤)
-- [ ] **AC-2:** Root node is centered and double-boxed
-- [ ] **AC-3:** Child nodes connect with proper branching lines
-- [ ] **AC-4:** All content fits within 80-character width
-- [ ] **AC-5:** Entity symbols in legend ([→] action, [?] question, [!] decision)
-- [ ] **AC-6:** Handles overflow by truncating with ellipsis (...)
-- [ ] **AC-7:** Speaker names shown with [*] prefix
-- [ ] **AC-8:** Works with up to 50 topics (degrades gracefully beyond)
-- [ ] **AC-9:** File is valid UTF-8 encoding
-- [ ] **AC-10:** Readable in monospace font terminal
+- [x] **AC-1:** Generates valid ASCII tree using box-drawing characters (┌ ─ ┐ │ └ ┴ ┬ ├ ┤)
+- [x] **AC-2:** Root node is centered and double-boxed
+- [x] **AC-3:** Child nodes connect with proper branching lines
+- [x] **AC-4:** All content fits within 80-character width
+- [x] **AC-5:** Entity symbols in legend ([→] action, [?] question, [!] decision)
+- [x] **AC-6:** Handles overflow by truncating with ellipsis (...)
+- [x] **AC-7:** Speaker names shown with [*] prefix
+- [x] **AC-8:** Works with up to 50 topics (degrades gracefully beyond)
+- [x] **AC-9:** File is valid UTF-8 encoding
+- [x] **AC-10:** Readable in monospace font terminal
 
 ### Implementation Notes
 
@@ -187,3 +187,4 @@ Legend:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Per DEC-003:AI-004 - enabler-scoped numbering |
+| 2026-01-28 | DONE | Agent definition created: skills/transcript/agents/ts-mindmap-ascii.md |

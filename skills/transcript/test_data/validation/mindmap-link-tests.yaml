@@ -1,0 +1,371 @@
+# EN-009 Mind Map Generator - Deep Link Validation Tests
+# Per TASK-003: Implement Deep Link Embedding
+# Validates ADR-003 compliance for bidirectional deep linking
+
+test_suite:
+  name: "EN-009 Mind Map Deep Link Tests"
+  version: "1.0.0"
+  description: "Validates deep link format and anchor compliance per ADR-003"
+  reference: "ADR-003 Bidirectional Deep Linking Strategy"
+
+# =============================================================================
+# ANCHOR FORMAT VALIDATION
+# =============================================================================
+
+anchor_format_tests:
+  - id: "DL-001"
+    name: "Action item anchor format"
+    description: "Verifies action items use #act-NNN anchor format"
+    input:
+      entity_type: "action_item"
+      entity_id: "act-001"
+    expected:
+      anchor_format: "#act-001"
+      mermaid_link: "[Action: Send report](#act-001)"
+      ascii_reference: "See: #act-001"
+    assertions:
+      - type: "regex_match"
+        pattern: "^#act-\\d{3,}$"
+        target: "anchor_format"
+
+  - id: "DL-002"
+    name: "Decision anchor format"
+    description: "Verifies decisions use #dec-NNN anchor format"
+    input:
+      entity_type: "decision"
+      entity_id: "dec-003"
+    expected:
+      anchor_format: "#dec-003"
+      mermaid_link: "[Decision: Approved budget](#dec-003)"
+    assertions:
+      - type: "regex_match"
+        pattern: "^#dec-\\d{3,}$"
+        target: "anchor_format"
+
+  - id: "DL-003"
+    name: "Question anchor format"
+    description: "Verifies questions use #que-NNN anchor format"
+    input:
+      entity_type: "question"
+      entity_id: "que-007"
+    expected:
+      anchor_format: "#que-007"
+      mermaid_link: "[Open: When is deadline?](#que-007)"
+    assertions:
+      - type: "regex_match"
+        pattern: "^#que-\\d{3,}$"
+        target: "anchor_format"
+
+  - id: "DL-004"
+    name: "Topic anchor format"
+    description: "Verifies topics use #top-NNN anchor format"
+    input:
+      entity_type: "topic"
+      entity_id: "top-002"
+    expected:
+      anchor_format: "#top-002"
+    assertions:
+      - type: "regex_match"
+        pattern: "^#top-\\d{3,}$"
+        target: "anchor_format"
+
+  - id: "DL-005"
+    name: "Speaker anchor format"
+    description: "Verifies speakers use #spk-name anchor format"
+    input:
+      entity_type: "speaker"
+      entity_id: "spk-alice"
+    expected:
+      anchor_format: "#spk-alice"
+    assertions:
+      - type: "regex_match"
+        pattern: "^#spk-[a-z-]+$"
+        target: "anchor_format"
+
+  - id: "DL-006"
+    name: "Segment anchor format"
+    description: "Verifies segments use #seg-NNN anchor format"
+    input:
+      entity_type: "segment"
+      entity_id: "seg-042"
+    expected:
+      anchor_format: "#seg-042"
+    assertions:
+      - type: "regex_match"
+        pattern: "^#seg-\\d{3,}$"
+        target: "anchor_format"
+
+# =============================================================================
+# MERMAID LINK EMBEDDING
+# =============================================================================
+
+mermaid_link_tests:
+  - id: "ML-001"
+    name: "Mermaid action item with link"
+    description: "Verifies Mermaid mindmap embeds action item deep links"
+    input:
+      extraction_report: "test_data/golden/simple-extraction.json"
+      action_item:
+        id: "act-001"
+        text: "Send updated projections to finance"
+    expected:
+      mindmap_node: "[Action: Send updated projections...](#act-001)"
+    assertions:
+      - type: "contains"
+        value: "(#act-001)"
+      - type: "contains"
+        value: "[Action:"
+
+  - id: "ML-002"
+    name: "Mermaid decision with link"
+    description: "Verifies Mermaid mindmap embeds decision deep links"
+    input:
+      decision:
+        id: "dec-001"
+        text: "Approved Q3 budget variance"
+    expected:
+      mindmap_node: "[Decision: Approved Q3 budget...](#dec-001)"
+    assertions:
+      - type: "contains"
+        value: "(#dec-001)"
+      - type: "contains"
+        value: "[Decision:"
+
+  - id: "ML-003"
+    name: "Mermaid question (open) with link"
+    description: "Verifies open questions include status in link text"
+    input:
+      question:
+        id: "que-002"
+        text: "What is the timeline?"
+        answered: false
+    expected:
+      mindmap_node: "[Open: What is the timeline?](#que-002)"
+    assertions:
+      - type: "contains"
+        value: "[Open:"
+      - type: "contains"
+        value: "(#que-002)"
+
+  - id: "ML-004"
+    name: "Mermaid question (answered) with link"
+    description: "Verifies answered questions show different status"
+    input:
+      question:
+        id: "que-003"
+        text: "When is the launch?"
+        answered: true
+    expected:
+      mindmap_node: "[Answered: When is the launch?](#que-003)"
+    assertions:
+      - type: "contains"
+        value: "[Answered:"
+      - type: "contains"
+        value: "(#que-003)"
+
+  - id: "ML-005"
+    name: "Text truncation in links"
+    description: "Verifies long text is truncated with ellipsis"
+    input:
+      action_item:
+        id: "act-005"
+        text: "Send the updated quarterly projections report to the finance team by end of week"
+    expected:
+      max_text_length: 40
+    assertions:
+      - type: "ends_with"
+        value: "..."
+      - type: "max_length"
+        value: 43  # 40 + "..."
+
+# =============================================================================
+# ASCII LINK REFERENCES
+# =============================================================================
+
+ascii_link_tests:
+  - id: "AL-001"
+    name: "ASCII action item reference"
+    description: "Verifies ASCII includes anchor references for action items"
+    input:
+      action_item:
+        id: "act-001"
+        text: "Send report"
+    expected:
+      ascii_contains:
+        - "[→] Send..."
+    assertions:
+      - type: "contains"
+        value: "[→]"
+
+  - id: "AL-002"
+    name: "ASCII decision reference"
+    description: "Verifies ASCII includes decision symbol"
+    input:
+      decision:
+        id: "dec-001"
+        text: "Approved budget"
+    expected:
+      ascii_contains:
+        - "[!]"
+    assertions:
+      - type: "contains"
+        value: "[!]"
+
+  - id: "AL-003"
+    name: "ASCII question reference"
+    description: "Verifies ASCII includes question symbol"
+    input:
+      question:
+        id: "que-001"
+        text: "When is deadline?"
+    expected:
+      ascii_contains:
+        - "[?]"
+    assertions:
+      - type: "contains"
+        value: "[?]"
+
+  - id: "AL-004"
+    name: "ASCII speaker reference"
+    description: "Verifies ASCII includes speaker symbol"
+    input:
+      speaker:
+        id: "spk-alice"
+        name: "Alice"
+    expected:
+      ascii_contains:
+        - "[*] Alice"
+    assertions:
+      - type: "contains"
+        value: "[*]"
+
+  - id: "AL-005"
+    name: "ASCII legend includes all symbols"
+    description: "Verifies ASCII legend explains all entity symbols"
+    expected:
+      legend_contains:
+        - "[→] Action Item"
+        - "[?]"
+        - "[!] Decision"
+        - "[*] Speaker"
+    assertions:
+      - type: "contains"
+        value: "Legend:"
+      - type: "contains"
+        value: "[→]"
+      - type: "contains"
+        value: "[?]"
+      - type: "contains"
+        value: "[!]"
+
+# =============================================================================
+# LINK VALIDATION EDGE CASES
+# =============================================================================
+
+edge_case_tests:
+  - id: "EC-001"
+    name: "Missing anchor handling"
+    description: "Verifies system logs warning for missing anchors"
+    input:
+      action_item:
+        id: "act-999"
+        text: "Non-existent reference"
+      anchor_exists: false
+    expected:
+      behavior: "warning_logged"
+      error: false
+    assertions:
+      - type: "not_error"
+
+  - id: "EC-002"
+    name: "Invalid anchor format handling"
+    description: "Verifies invalid anchor formats are rejected"
+    input:
+      anchor: "action-001"  # Wrong format (should be act-001)
+    expected:
+      valid: false
+    assertions:
+      - type: "regex_not_match"
+        pattern: "^#(act|dec|que|top|seg)-\\d{3,}$|^#spk-[a-z-]+$"
+
+  - id: "EC-003"
+    name: "Special characters in text"
+    description: "Verifies special chars don't break link syntax"
+    input:
+      action_item:
+        id: "act-010"
+        text: "Review [Q4] budget (draft)"
+    expected:
+      escaped: true
+    assertions:
+      - type: "valid_markdown_link"
+
+  - id: "EC-004"
+    name: "Empty entity text"
+    description: "Verifies empty text handled gracefully"
+    input:
+      action_item:
+        id: "act-011"
+        text: ""
+    expected:
+      fallback_text: "[No description]"
+    assertions:
+      - type: "not_empty"
+
+  - id: "EC-005"
+    name: "Duplicate anchor IDs"
+    description: "Verifies duplicate anchors are detected"
+    input:
+      action_items:
+        - id: "act-001"
+          text: "First action"
+        - id: "act-001"  # Duplicate
+          text: "Second action"
+    expected:
+      behavior: "warning_logged"
+      unique_anchors: 1
+    assertions:
+      - type: "unique_values"
+        path: "anchors"
+
+# =============================================================================
+# ADR-003 COMPLIANCE MATRIX
+# =============================================================================
+
+adr_003_compliance:
+  description: "ADR-003 Bidirectional Deep Linking Strategy compliance verification"
+
+  requirements:
+    - id: "ADR-003-R1"
+      name: "Anchor format standardization"
+      description: "All anchors follow #entity-type-NNN pattern"
+      test_ids: ["DL-001", "DL-002", "DL-003", "DL-004", "DL-005", "DL-006"]
+
+    - id: "ADR-003-R2"
+      name: "Forward links in mindmap"
+      description: "Mindmap nodes link to source transcript locations"
+      test_ids: ["ML-001", "ML-002", "ML-003", "ML-004"]
+
+    - id: "ADR-003-R3"
+      name: "Backlinks in transcript"
+      description: "Transcript entities reference mindmap visualization"
+      note: "Implemented via backlink comments in transcript files"
+
+    - id: "ADR-003-R4"
+      name: "Link validation"
+      description: "Links verified for resolution, warnings for missing"
+      test_ids: ["EC-001", "EC-002"]
+
+# =============================================================================
+# TEST EXECUTION METADATA
+# =============================================================================
+
+execution:
+  runner: "yaml_test_runner"
+  timeout_seconds: 30
+  parallel: true
+  fail_fast: false
+
+reporting:
+  format: "json"
+  output_file: "test_data/results/mindmap-link-test-results.json"
