@@ -20,13 +20,14 @@ description: |
   transcript entities: action_item, decision, question, speaker, topic.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: FIXED
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T19:30:00Z"
-updated_at: "2026-01-26T19:30:00Z"
+updated_at: "2026-01-28T22:30:00Z"
+completed_at: "2026-01-28T11:15:00Z"
 
 parent_id: "EN-014"
 

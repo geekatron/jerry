@@ -20,13 +20,14 @@ description: |
   ensuring consistent structure across all domain schemas.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: FIXED
 priority: MEDIUM
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T19:30:00Z"
-updated_at: "2026-01-26T19:30:00Z"
+updated_at: "2026-01-28T22:00:00Z"
+completed_at: "2026-01-28T22:00:00Z"
 
 parent_id: "EN-014"
 
@@ -49,15 +50,21 @@ due_date: null
 
 activity: DEVELOPMENT
 original_estimate: 2
-remaining_work: 2
-time_spent: 0
+remaining_work: 0
+time_spent: 1
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
+
+```
+BACKLOG → IN_PROGRESS → DONE
+                         ↑
+                    (completed)
+```
 
 ---
 
@@ -194,16 +201,16 @@ skills/transcript/contexts/schemas/domain-schema.json
 
 ### Acceptance Criteria
 
-- [ ] JSON Schema file created at correct location
-- [ ] `$schema` references draft-2020-12
-- [ ] `$id` set to jerry-framework URL
-- [ ] `required` fields: schema_version, domain, entity_definitions
-- [ ] Entity definition schema complete
-- [ ] Attribute schema with type enum
-- [ ] Extraction rule schema with confidence constraints
-- [ ] Tier enum for PAT-001 compliance
-- [ ] `extends` field supported for domain inheritance
-- [ ] Schema validates as valid JSON Schema
+- [x] JSON Schema file created at correct location ✓ `skills/transcript/contexts/schemas/domain-schema.json`
+- [x] `$schema` references draft-2020-12 ✓ `"https://json-schema.org/draft/2020-12/schema"`
+- [x] `$id` set to jerry-framework URL ✓ `"https://jerry-framework.dev/schemas/domain-context-1.0.0.json"`
+- [x] `required` fields: schema_version, domain, entity_definitions ✓
+- [x] Entity definition schema complete ✓ with description, attributes, extraction_patterns
+- [x] Attribute schema with type enum ✓ string, integer, float, boolean, date, array, enum
+- [x] Extraction rule schema with confidence constraints ✓ minimum: 0, maximum: 1
+- [x] Tier enum for PAT-001 compliance ✓ rule, ml, llm
+- [x] `extends` field supported for domain inheritance ✓
+- [x] Schema validates as valid JSON Schema ✓
 
 ### Related Items
 
@@ -226,12 +233,35 @@ skills/transcript/contexts/schemas/domain-schema.json
 
 ### Verification
 
-- [ ] JSON Schema file created
-- [ ] Schema is valid JSON Schema draft-2020-12
-- [ ] Required fields enforced
-- [ ] Type constraints defined
-- [ ] Enum constraints working
-- [ ] Reviewed by: (pending)
+- [x] JSON Schema file created ✓
+- [x] Schema is valid JSON Schema draft-2020-12 ✓
+- [x] Required fields enforced ✓ schema_version, domain, entity_definitions
+- [x] Type constraints defined ✓ with allOf conditionals for enum/array
+- [x] Enum constraints working ✓ type, tier enums defined
+- [x] Reviewed by: Claude (self-verification)
+
+---
+
+## Implementation Notes
+
+### Schema Features Implemented
+
+1. **Required Fields**: schema_version, domain, entity_definitions enforced
+2. **Conditional Validation**: `allOf` used to require `values` for enum types and `items` for array types
+3. **Pattern Constraints**: schema_version must match semver pattern `^\d+\.\d+\.\d+$`
+4. **Range Constraints**: confidence_threshold bounded to [0, 1]
+5. **Examples Section**: Includes complete example for validation testing
+
+### File Structure
+
+```
+skills/transcript/contexts/
+├── schemas/
+│   └── domain-schema.json    ← This deliverable
+├── general.yaml
+├── transcript.yaml
+└── meeting.yaml
+```
 
 ---
 
@@ -240,3 +270,4 @@ skills/transcript/contexts/schemas/domain-schema.json
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-014 |
+| 2026-01-28 | DONE | JSON Schema created with full validation support including conditional constraints for enum/array types, examples section, and REQ-CI-F-009 compliance |
