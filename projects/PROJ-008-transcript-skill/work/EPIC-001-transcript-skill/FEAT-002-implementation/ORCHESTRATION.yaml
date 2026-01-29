@@ -232,8 +232,8 @@ enablers:
       original: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
       schema_extension: [TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169]  # NEW per DISC-006
       en006_promotion: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]
-      complete: [TASK-126, TASK-127, TASK-128, TASK-164]  # Original 3 domains + schema research
-      in_progress: []  # TASK-164 complete, TASK-165 ready to start
+      complete: [TASK-126, TASK-127, TASK-128, TASK-164, TASK-165]  # Original 3 domains + schema research + gap impact
+      in_progress: [TASK-166]  # ADR Schema Extension (next)
     dependencies:
       - EN-013
       - EN-016  # New dependency: expanded tasks blocked by EN-016 completion per DISC-005
@@ -263,7 +263,7 @@ enablers:
       - research/EN-014-e-164-schema-extensibility-manual.md  # Superseded manual research
       - research/EN-014-e-164-schema-extensibility.md  # ps-researcher output
       - research/EN-014-e-164-research-comparison.md  # Comparison synthesis
-      - docs/analysis/EN-014-e-165-gap-impact.md
+      - analysis/EN-014-e-165-gap-impact.md  # Path relative to EN-014-domain-context-files/
       - docs/decisions/ADR-EN014-001-schema-extension-strategy.md
       - docs/design/TDD-EN014-domain-schema-v2.md
       - docs/reviews/EN-014-e-168-final-review.md
@@ -552,10 +552,10 @@ metrics:
   enablers_gate_ready: 0  # All GATE-5 enablers approved
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 91  # +6 tasks (TASK-164..169) for EN-014 schema extension per DISC-006 (85→91)
-  tasks_complete: 46  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (4: TASK-126..128, TASK-164)
+  tasks_complete: 47  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (5: TASK-126..128, TASK-164, TASK-165)
   gates_passed: 1  # GATE-5 passed 2026-01-28
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 51  # 46/91 tasks complete
+  completion_percentage: 52  # 47/91 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -633,3 +633,6 @@ history:
   - timestamp: "2026-01-29T02:00:00Z"
     event: "TASK-164 remediation complete per DISC-010"
     details: "DISC-010 skill invocation failure remediation complete. 5 phases executed: (1) DISC-010 created documenting violations, (2) ps-researcher invocation with Context7 + web search - 9 authoritative sources, L0/L1/L2, 5W2H framework, (3) ps-synthesizer comparison with manual research - 85% convergence, (4) ps-critic review 0.92 PASS, nse-qa review 0.92 PASS, (5) ORCHESTRATION.yaml updated. Primary recommendation: Extend JSON Schema v1.0.0→v1.1.0 with 4 new optional sections (relationships, metadata, context_rules, validation). Key insight: unevaluatedProperties superior to additionalProperties. TASK-165 (Gap Impact Assessment) now unblocked. Tasks complete: 45→46. Completion: 49%→51%."
+  - timestamp: "2026-01-29T09:45:00Z"
+    event: "TASK-165 Gap Impact Assessment complete"
+    details: "ps-analyst executed 1509-line comprehensive analysis using 5W2H, FMEA (RPN scoring), and NASA SE NPR 7123.1D frameworks. Key finding: 70% cumulative intelligence loss without fixes. Priority ranking: GAP-001 (RPN 336) → GAP-003 (RPN 288) → GAP-004 (RPN 192) → GAP-002 (RPN 144). Dual-reviewer quality gate PASSED: ps-critic (0.94 PASS), nse-qa (0.913 PASS). NC-001 (document history) identified as MINOR. TASK-166 (ADR Schema Extension) now unblocked. Tasks complete: 46→47. Completion: 51%→52%."
