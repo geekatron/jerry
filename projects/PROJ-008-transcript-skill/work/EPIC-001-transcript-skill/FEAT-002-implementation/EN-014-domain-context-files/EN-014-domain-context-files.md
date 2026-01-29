@@ -29,6 +29,8 @@ Create the **domain context YAML files** that provide domain-specific knowledge 
 
 **Implements:** [SPEC-context-injection.md Section 3.3](../../FEAT-001-analysis-design/EN-006-context-injection-design/docs/specs/SPEC-context-injection.md#33-contextsyaml-domain-files)
 
+**Scope Expansion (2026-01-28):** Per [DISC-005](../FEAT-002--DISC-005-en006-artifact-promotion-gap.md), this enabler now includes promoting the 6 domain specifications from EN-006 TASK-038. Original scope was 3 domains (general, transcript, meeting); expanded scope adds 6 more domains from EN-006 design phase (software-engineering, software-architecture, product-management, user-experience, cloud-engineering, security-engineering).
+
 **Technical Justification:**
 - Domain schemas enable agent specialization without code changes
 - YAML configuration separates domain knowledge from agent logic
@@ -178,7 +180,7 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 
 ## Children (Tasks)
 
-### Task Inventory
+### Task Inventory - Original Scope (3 Domains)
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
@@ -188,8 +190,41 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 | [TASK-129](./TASK-129-domain-json-schema.md) | Create JSON Schema validator for domain files | pending | Claude | 1 | TASK-126 |
 | [TASK-130](./TASK-130-schema-validation.md) | Validate all schemas against JSON Schema | pending | Claude | 1 | TASK-129, TASK-128 |
 
+### Task Inventory - EN-006 Artifact Promotion (6 Additional Domains)
+
+> **Source:** [DISC-005](../FEAT-002--DISC-005-en006-artifact-promotion-gap.md) - EN-006 Context Injection Artifact Promotion Gap Analysis
+>
+> **Rationale:** EN-006 TASK-038 produced 34 files across 6 domain specifications during the design phase.
+> These artifacts contain runtime-necessary entity definitions, extraction rules, and prompt guidance
+> that must be transformed and promoted to the skill for self-containment.
+>
+> **Transformation:** EN-006 decomposed files (4 files per domain) → Consolidated YAML (1 file per domain)
+> per SPEC-context-injection.md Section 3.3 design.
+
+| ID | Title | Status | Owner | Effort | Blocked By |
+|----|-------|--------|-------|--------|------------|
+| [TASK-150](./TASK-150-software-engineering-domain.md) | Transform & create software-engineering.yaml | pending | Claude | 1 | TASK-129 |
+| [TASK-151](./TASK-151-software-architecture-domain.md) | Transform & create software-architecture.yaml | pending | Claude | 1 | TASK-129 |
+| [TASK-152](./TASK-152-product-management-domain.md) | Transform & create product-management.yaml | pending | Claude | 1 | TASK-129 |
+| [TASK-153](./TASK-153-user-experience-domain.md) | Transform & create user-experience.yaml | pending | Claude | 1 | TASK-129 |
+| [TASK-154](./TASK-154-cloud-engineering-domain.md) | Transform & create cloud-engineering.yaml | pending | Claude | 1 | TASK-129 |
+| [TASK-155](./TASK-155-security-engineering-domain.md) | Transform & create security-engineering.yaml | pending | Claude | 1 | TASK-129 |
+| [TASK-156](./TASK-156-domain-schema-promotion.md) | Promote DOMAIN-SCHEMA.json to skill schemas | pending | Claude | 0.5 | TASK-129 |
+| [TASK-157](./TASK-157-spec-files-promotion.md) | Promote SPEC-*.md files to skill docs | pending | Claude | 1 | TASK-150..155 |
+| [TASK-158](./TASK-158-skill-md-domain-update.md) | Update SKILL.md with 6 new domains | pending | Claude | 0.5 | TASK-150..155 |
+| [TASK-159](./TASK-159-domain-load-validation.md) | Validation: All 8 domains load correctly | pending | Claude | 1 | TASK-158, TASK-130 |
+
 **NOTE:** Task IDs start at TASK-126 to continue from EN-013 (TASK-120-125).
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
+**Scope expanded:** 2026-01-28 per DISC-005. Added TASK-150..159 for EN-006 artifact promotion.
+
+### Effort Summary
+
+| Scope | Tasks | Story Points |
+|-------|-------|--------------|
+| Original (3 domains) | TASK-126..130 | 6 |
+| EN-006 Promotion (6 domains) | TASK-150..159 | 9 |
+| **Total** | **15 tasks** | **15 SP** |
 
 ---
 
@@ -553,19 +588,57 @@ When domain="meeting":
 
 ## File Location
 
+### Target Skill Structure After EN-014 Completion
+
 ```
 skills/transcript/
-├── SKILL.md                    ← References context_path: "./contexts/"
+├── SKILL.md                          ← TASK-158: Updated with 8 domains
 ├── agents/
 │   ├── ts-parser.md
 │   ├── ts-extractor.md
 │   └── ts-formatter.md
-└── contexts/                   ← Domain schema files (this enabler)
-    ├── general.yaml            ← TASK-126
-    ├── transcript.yaml         ← TASK-127
-    ├── meeting.yaml            ← TASK-128
-    └── schemas/
-        └── domain-schema.json  ← TASK-129 (JSON Schema validator)
+├── contexts/                         ← Domain schema files (this enabler)
+│   ├── general.yaml                  ← TASK-126 (Original)
+│   ├── transcript.yaml               ← TASK-127 (Original)
+│   ├── meeting.yaml                  ← TASK-128 (Original)
+│   ├── software-engineering.yaml     ← TASK-150 (EN-006 Promotion)
+│   ├── software-architecture.yaml    ← TASK-151 (EN-006 Promotion)
+│   ├── product-management.yaml       ← TASK-152 (EN-006 Promotion)
+│   ├── user-experience.yaml          ← TASK-153 (EN-006 Promotion)
+│   ├── cloud-engineering.yaml        ← TASK-154 (EN-006 Promotion)
+│   └── security-engineering.yaml     ← TASK-155 (EN-006 Promotion)
+├── schemas/
+│   ├── domain-schema.json            ← TASK-129 (Original)
+│   └── DOMAIN-SCHEMA.json            ← TASK-156 (EN-006 Promotion - validation schema)
+└── docs/
+    ├── PLAYBOOK.md                   ← Existing
+    ├── RUNBOOK.md                    ← Existing
+    └── domains/                      ← TASK-157: NEW folder for domain documentation
+        ├── SPEC-software-engineering.md
+        ├── SPEC-software-architecture.md
+        ├── SPEC-product-management.md
+        ├── SPEC-user-experience.md
+        ├── SPEC-cloud-engineering.md
+        ├── SPEC-security-engineering.md
+        └── DOMAIN-SELECTION-GUIDE.md ← From EN-006 README flowchart
+```
+
+### EN-006 Source Artifacts (for transformation)
+
+```
+EN-006/docs/specs/domain-contexts/
+├── DOMAIN-SCHEMA.json              ← To: schemas/DOMAIN-SCHEMA.json (TASK-156)
+├── README.md                       ← To: docs/domains/DOMAIN-SELECTION-GUIDE.md (TASK-157)
+├── 01-software-engineering/
+│   ├── SPEC-software-engineering.md   ← To: docs/domains/ (TASK-157)
+│   ├── entities/entity-definitions.yaml  ─┐
+│   ├── extraction/extraction-rules.yaml  ─┼→ contexts/software-engineering.yaml (TASK-150)
+│   └── prompts/prompt-templates.md       ─┘
+├── 02-software-architecture/          ← Same transform (TASK-151)
+├── 03-product-management/             ← Same transform (TASK-152)
+├── 04-user-experience/                ← Same transform (TASK-153)
+├── 05-cloud-engineering/              ← Same transform (TASK-154)
+└── 06-security-engineering/           ← Same transform (TASK-155)
 ```
 
 ---
@@ -590,6 +663,7 @@ skills/transcript/
 ### Discovery Reference
 
 - [DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Alignment analysis
+- [DISC-005](../FEAT-002--DISC-005-en006-artifact-promotion-gap.md) - EN-006 artifact promotion gap (scope expansion source)
 
 ---
 
@@ -598,6 +672,7 @@ skills/transcript/
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-26 | Claude | pending | Enabler created per FEAT-002 restructuring |
+| 2026-01-28 | Claude | pending | **SCOPE EXPANDED** per DISC-005: Added TASK-150..159 to promote 6 EN-006 domain specifications. Original scope (3 domains, 5 tasks, 6 SP) expanded to 8 domains total (15 tasks, 15 SP). Human decisions: (1) SPEC files promoted as documentation, (2) Consolidated YAML per SPEC design, (3) Work blocked by EN-016 completion. |
 
 ---
 

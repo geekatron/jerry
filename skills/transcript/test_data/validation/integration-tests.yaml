@@ -654,37 +654,740 @@ assertion_types:
           - "AC-17: Entity counts in 01-summary.md match extraction_stats"
           - "AC-18: Speaker count in summary matches extractor output"
 
+# ---------------------------------------------------------------------------
+  # END-TO-END PIPELINE TESTS (Added: TASK-137)
+  # ---------------------------------------------------------------------------
+  # Full pipeline: VTT/SRT → ts-parser → ts-extractor → ts-formatter → 8-file packet
+  # These tests verify the complete skill workflow from input to final output.
+  # ---------------------------------------------------------------------------
+  end-to-end:
+    description: "Full pipeline integration tests - input to 8-file packet"
+    pipeline_agents:
+      - agent: ts-parser
+        role: stage-1
+        input_type: "VTT/SRT/plain text"
+        output_schema: "schemas/canonical-transcript.json"
+      - agent: ts-extractor
+        role: stage-2
+        input_schema: "schemas/canonical-transcript.json"
+        output_schema: "schemas/extraction-report.json"
+      - agent: ts-formatter
+        role: stage-3
+        input_schema: "schemas/extraction-report.json"
+        output_type: "8-file packet"
+
+    tests:
+      # -----------------------------------------------------------------------
+      # E2E-001: Golden Dataset Meeting-001
+      # -----------------------------------------------------------------------
+      - id: e2e-001
+        name: "Golden dataset meeting-001 full pipeline"
+        description: |
+          End-to-end test using meeting-001 golden dataset. Verifies the complete
+          pipeline produces a valid 8-file packet with expected entity counts
+          and proper linking structure.
+        priority: critical
+        input:
+          type: vtt
+          path: "golden/meeting-001.vtt"
+        context: "contexts/transcript.yaml"
+        ground_truth: "golden/meeting-001.expected.json"
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            context: "contexts/transcript.yaml"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: e2e-001-a
+            type: pipeline_success
+            description: "Pipeline completes without error"
+            expected: "exit_code == 0 AND no_exceptions_raised"
+          - id: e2e-001-b
+            type: final_packet_valid
+            description: "Output is valid 8-file packet"
+            expected: |
+              packet_files = [
+                "00-index.md", "01-summary.md", "02-transcript.md",
+                "03-speakers.md", "04-action-items.md", "05-decisions.md",
+                "06-questions.md", "07-topics.md", "_anchors.json"
+              ]
+              for each file in packet_files:
+                assert file_exists(packet_output, file)
+          - id: e2e-001-c
+            type: extraction_accuracy
+            description: "Entity extraction meets F1 threshold vs ground truth"
+            expected: |
+              f1_action_items = calculate_f1(extractor_output.action_items, ground_truth.action_items)
+              f1_decisions = calculate_f1(extractor_output.decisions, ground_truth.decisions)
+              f1_questions = calculate_f1(extractor_output.questions, ground_truth.questions)
+              assert f1_action_items >= 0.80
+              assert f1_decisions >= 0.80
+              assert f1_questions >= 0.75
+          - id: e2e-001-d
+            type: anchor_integrity
+            description: "All anchors resolve correctly"
+            expected: |
+              anchors = load_json(packet_output/_anchors.json)
+              for each anchor in anchors:
+                assert anchor_resolves(packet_output, anchor)
+        acceptance_criteria:
+          - "AC-E2E-1: Pipeline completes successfully"
+          - "AC-E2E-2: All 8 packet files generated"
+          - "AC-E2E-3: Entity F1 scores meet thresholds"
+          - "AC-E2E-4: All anchors resolve within packet"
+
+      # -----------------------------------------------------------------------
+      # E2E-002: Golden Dataset Meeting-002 (Complex)
+      # -----------------------------------------------------------------------
+      - id: e2e-002
+        name: "Golden dataset meeting-002 full pipeline (complex)"
+        description: |
+          End-to-end test using meeting-002 golden dataset. This transcript has
+          more speakers, longer duration, and more complex entity relationships.
+          Tests robustness under real-world complexity.
+        priority: high
+        input:
+          type: vtt
+          path: "golden/meeting-002.vtt"
+        context: "contexts/transcript.yaml"
+        ground_truth: "golden/meeting-002.expected.json"
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-002.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            context: "contexts/transcript.yaml"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: e2e-002-a
+            type: pipeline_success
+            description: "Pipeline completes for complex input"
+            expected: "exit_code == 0 AND no_exceptions_raised"
+          - id: e2e-002-b
+            type: final_packet_valid
+            description: "Complex transcript produces valid packet"
+            expected: |
+              all_files_present = check_packet_structure(packet_output)
+              assert all_files_present == true
+          - id: e2e-002-c
+            type: extraction_accuracy
+            description: "Entity extraction meets F1 threshold"
+            expected: |
+              avg_f1 = average([f1_action_items, f1_decisions, f1_questions])
+              assert avg_f1 >= 0.75  # Slightly lower threshold for complex input
+          - id: e2e-002-d
+            type: speaker_count_match
+            description: "All speakers detected and formatted"
+            expected: |
+              ground_truth_speakers = count(ground_truth.speakers)
+              detected_speakers = count_speakers_in_file(packet_output/03-speakers.md)
+              assert detected_speakers >= ground_truth_speakers * 0.9
+        acceptance_criteria:
+          - "AC-E2E-5: Complex transcript pipeline succeeds"
+          - "AC-E2E-6: Valid packet generated"
+          - "AC-E2E-7: Average F1 >= 0.75"
+          - "AC-E2E-8: 90%+ speakers detected"
+
+      # -----------------------------------------------------------------------
+      # E2E-003: Golden Dataset Meeting-003 (Edge Cases)
+      # -----------------------------------------------------------------------
+      - id: e2e-003
+        name: "Golden dataset meeting-003 full pipeline (edge cases)"
+        description: |
+          End-to-end test using meeting-003 golden dataset. Contains edge cases:
+          overlapping speech, unclear speaker attribution, ambiguous entity
+          boundaries. Tests graceful handling of difficult inputs.
+        priority: medium
+        input:
+          type: vtt
+          path: "golden/meeting-003.vtt"
+        context: "contexts/transcript.yaml"
+        ground_truth: "golden/meeting-003.expected.json"
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-003.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            context: "contexts/transcript.yaml"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: e2e-003-a
+            type: pipeline_success
+            description: "Edge cases don't crash pipeline"
+            expected: "exit_code == 0 AND no_exceptions_raised"
+          - id: e2e-003-b
+            type: final_packet_valid
+            description: "Valid packet despite edge cases"
+            expected: |
+              all_files_present = check_packet_structure(packet_output)
+              assert all_files_present == true
+          - id: e2e-003-c
+            type: no_orphan_links
+            description: "No broken links in packet"
+            expected: |
+              broken_links = find_broken_links(packet_output)
+              assert count(broken_links) == 0
+          - id: e2e-003-d
+            type: confidence_scores_present
+            description: "Low-confidence entities flagged appropriately"
+            expected: |
+              for each entity in extractor_output.*:
+                assert entity.confidence != null
+                if edge_case_entity(entity):
+                  assert entity.confidence < 0.8  # Edge cases should have lower confidence
+        acceptance_criteria:
+          - "AC-E2E-9: Edge case transcript completes"
+          - "AC-E2E-10: No broken links"
+          - "AC-E2E-11: Confidence scores reflect uncertainty"
+
+  # ---------------------------------------------------------------------------
+  # ERROR PROPAGATION TESTS (Added: TASK-137)
+  # ---------------------------------------------------------------------------
+  # Tests verifying graceful degradation when pipeline receives malformed,
+  # incomplete, or problematic input. Per PAT-002 (Defensive Parsing).
+  # ---------------------------------------------------------------------------
+  error-propagation:
+    description: "Error handling and graceful degradation tests"
+    reference: "PAT-002 (Defensive Parsing)"
+
+    tests:
+      # -----------------------------------------------------------------------
+      # ERR-E2E-001: Malformed Input Graceful Degradation
+      # -----------------------------------------------------------------------
+      - id: err-e2e-001
+        name: "Malformed VTT input graceful degradation"
+        description: |
+          Test pipeline behavior when input has syntax errors, missing timestamps,
+          or corrupted segments. Pipeline should not crash but produce partial
+          output with warnings/errors logged.
+        priority: high
+        input:
+          type: vtt
+          path: "edge_cases/malformed.vtt"
+          known_issues:
+            - "Invalid timestamp on line 15"
+            - "Missing segment separator at line 42"
+            - "Corrupted UTF-8 on line 78"
+        pipeline:
+          - agent: ts-parser
+            input: "edge_cases/malformed.vtt"
+            capture: parser_output
+            expect_warnings: true
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+            expect_warnings: true
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: err-e2e-001-a
+            type: no_crash
+            description: "Pipeline does not crash on malformed input"
+            expected: "exit_code != 1 AND no_unhandled_exceptions"
+          - id: err-e2e-001-b
+            type: warnings_logged
+            description: "Parse errors are logged as warnings"
+            expected: |
+              parser_output.warnings.length > 0
+              for each warning in parser_output.warnings:
+                assert warning.type in ["invalid_timestamp", "missing_separator", "encoding_error"]
+          - id: err-e2e-001-c
+            type: partial_output
+            description: "Valid segments are still extracted"
+            expected: |
+              assert parser_output.segments.length > 0
+              assert extractor_output.entities_found > 0 OR
+                     extractor_output.warnings.includes("no_extractable_content")
+          - id: err-e2e-001-d
+            type: error_documentation
+            description: "Packet includes error documentation"
+            expected: |
+              summary = read_file(packet_output/01-summary.md)
+              assert "Warning" in summary OR "Error" in summary OR
+                     packet_output.metadata.has_warnings == true
+        acceptance_criteria:
+          - "AC-ERR-1: No crash on malformed input"
+          - "AC-ERR-2: Warnings logged for each issue"
+          - "AC-ERR-3: Valid portions still processed"
+          - "AC-ERR-4: Errors documented in output"
+
+      # -----------------------------------------------------------------------
+      # ERR-E2E-002: Empty Input Handling
+      # -----------------------------------------------------------------------
+      - id: err-e2e-002
+        name: "Empty input produces minimal valid output"
+        description: |
+          Test pipeline behavior when input is empty or contains no meaningful
+          content. Should produce a valid but minimal 8-file packet.
+        priority: medium
+        input:
+          type: vtt
+          path: "edge_cases/empty.vtt"
+        pipeline:
+          - agent: ts-parser
+            input: "edge_cases/empty.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: err-e2e-002-a
+            type: pipeline_success
+            description: "Empty input does not crash pipeline"
+            expected: "exit_code == 0"
+          - id: err-e2e-002-b
+            type: final_packet_valid
+            description: "Valid packet structure even for empty input"
+            expected: |
+              all_files_present = check_packet_structure(packet_output)
+              assert all_files_present == true
+          - id: err-e2e-002-c
+            type: empty_indicator
+            description: "Output clearly indicates no content"
+            expected: |
+              summary = read_file(packet_output/01-summary.md)
+              assert "no content" in summary.lower() OR
+                     "empty transcript" in summary.lower() OR
+                     extractor_output.extraction_stats.total == 0
+          - id: err-e2e-002-d
+            type: no_false_entities
+            description: "No hallucinated entities from empty input"
+            expected: |
+              assert extractor_output.action_items.length == 0
+              assert extractor_output.decisions.length == 0
+              assert extractor_output.questions.length == 0
+        acceptance_criteria:
+          - "AC-ERR-5: Empty input completes without crash"
+          - "AC-ERR-6: Valid packet structure"
+          - "AC-ERR-7: Clear empty/no-content indication"
+          - "AC-ERR-8: Zero hallucinated entities"
+
+  # ---------------------------------------------------------------------------
+  # CONTEXT INJECTION TESTS (Added: TASK-137)
+  # ---------------------------------------------------------------------------
+  # Tests verifying EN-013 context injection works correctly end-to-end.
+  # Domain context should influence extraction behavior.
+  # ---------------------------------------------------------------------------
+  context-injection:
+    description: "Context injection integration tests (EN-013)"
+    references:
+      - "EN-013 (Context Injection Implementation)"
+      - "SPEC-context-injection.md"
+      - "REQ-CI-F-001, REQ-CI-F-002, REQ-CI-F-003"
+
+    tests:
+      # -----------------------------------------------------------------------
+      # CTX-001: Transcript Domain Context Applied
+      # -----------------------------------------------------------------------
+      - id: ctx-001
+        name: "Transcript domain context correctly applied"
+        description: |
+          Verify that transcript.yaml domain context is loaded and applied
+          during extraction. Entity definitions and extraction rules from
+          the context should influence extraction behavior.
+        priority: high
+        input:
+          type: vtt
+          path: "golden/meeting-001.vtt"
+        context: "contexts/transcript.yaml"
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            context: "contexts/transcript.yaml"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: ctx-001-a
+            type: context_loaded
+            description: "Context file successfully loaded"
+            expected: |
+              assert extractor_output.metadata.context_domain == "transcript"
+              assert extractor_output.metadata.context_version != null
+          - id: ctx-001-b
+            type: entity_types_from_context
+            description: "Extracted entity types match context definitions"
+            expected: |
+              context_entities = load_yaml("contexts/transcript.yaml").entity_definitions.keys()
+              extracted_types = set(extractor_output.*.entity_type)
+              # All extracted types should be defined in context
+              assert extracted_types.issubset(context_entities)
+          - id: ctx-001-c
+            type: confidence_thresholds_applied
+            description: "Context confidence thresholds applied to extraction"
+            expected: |
+              context = load_yaml("contexts/transcript.yaml")
+              for each entity in extractor_output.action_items:
+                threshold = context.extraction_rules.find(r => r.entity_type == "action_item").confidence_threshold
+                assert entity.confidence >= threshold OR entity.flagged_low_confidence == true
+          - id: ctx-001-d
+            type: prompt_guidance_influenced
+            description: "Extraction reflects context prompt_guidance"
+            expected: |
+              # Context guidance for action items emphasizes specific owners
+              # Verify extraction attempts owner assignment
+              action_items_with_assignee = count(extractor_output.action_items where assignee != null)
+              assert action_items_with_assignee / count(extractor_output.action_items) > 0.5
+        acceptance_criteria:
+          - "AC-CTX-1: Context domain metadata in output"
+          - "AC-CTX-2: Entity types match context definitions"
+          - "AC-CTX-3: Confidence thresholds from context applied"
+          - "AC-CTX-4: Extraction behavior reflects guidance"
+
+      # -----------------------------------------------------------------------
+      # CTX-002: General Context Fallback
+      # -----------------------------------------------------------------------
+      - id: ctx-002
+        name: "General context fallback works correctly"
+        description: |
+          Verify that general.yaml context is used as fallback when no
+          domain-specific context is provided. Default behaviors should apply.
+        priority: medium
+        input:
+          type: vtt
+          path: "golden/meeting-001.vtt"
+        context: "contexts/general.yaml"
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+          - agent: ts-extractor
+            input: "${parser_output}"
+            context: "contexts/general.yaml"
+            capture: extractor_output
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+        assertions:
+          - id: ctx-002-a
+            type: context_loaded
+            description: "General context loaded as fallback"
+            expected: |
+              assert extractor_output.metadata.context_domain == "general"
+          - id: ctx-002-b
+            type: default_entity_types
+            description: "Default entity types from general context"
+            expected: |
+              general_context = load_yaml("contexts/general.yaml")
+              for each entity_type in ["key_point", "topic"]:
+                assert entity_type in general_context.entity_definitions.keys()
+          - id: ctx-002-c
+            type: pipeline_success
+            description: "Pipeline completes with general context"
+            expected: "exit_code == 0 AND no_exceptions_raised"
+        acceptance_criteria:
+          - "AC-CTX-5: General context loads as fallback"
+          - "AC-CTX-6: Default entity types available"
+          - "AC-CTX-7: Pipeline succeeds with general context"
+
+  # ---------------------------------------------------------------------------
+  # PERFORMANCE TESTS (Added: TASK-137)
+  # ---------------------------------------------------------------------------
+  # Tests verifying pipeline completes within acceptable time limits.
+  # Per REQ-CI-P-001 performance requirements.
+  # ---------------------------------------------------------------------------
+  performance:
+    description: "Performance threshold tests"
+    reference: "REQ-CI-P-001, REQ-CI-P-002"
+
+    tests:
+      # -----------------------------------------------------------------------
+      # PERF-001: Standard Transcript Performance
+      # -----------------------------------------------------------------------
+      - id: perf-001
+        name: "15-minute transcript completes in 60 seconds"
+        description: |
+          Verify that a standard 15-minute meeting transcript is processed
+          through the complete pipeline within 60 seconds (excluding LLM
+          inference time, which varies by model).
+        priority: medium
+        input:
+          type: vtt
+          path: "golden/meeting-001.vtt"
+          duration_minutes: 15
+        context: "contexts/transcript.yaml"
+        performance_limits:
+          max_total_seconds: 60
+          max_parser_seconds: 5
+          max_extractor_seconds: 45  # Most time in extraction
+          max_formatter_seconds: 10
+        pipeline:
+          - agent: ts-parser
+            input: "golden/meeting-001.vtt"
+            capture: parser_output
+            measure_time: true
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+            measure_time: true
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+            measure_time: true
+        assertions:
+          - id: perf-001-a
+            type: performance
+            description: "Total pipeline time within limit"
+            expected: |
+              total_time = parser_time + extractor_time + formatter_time
+              assert total_time <= 60  # seconds
+          - id: perf-001-b
+            type: stage_performance
+            description: "Parser completes quickly"
+            expected: "parser_time <= 5"  # Parsing should be fast
+          - id: perf-001-c
+            type: stage_performance
+            description: "Formatter completes within limit"
+            expected: "formatter_time <= 10"  # Formatting should be predictable
+        acceptance_criteria:
+          - "AC-PERF-1: Total pipeline <= 60 seconds"
+          - "AC-PERF-2: Parser <= 5 seconds"
+          - "AC-PERF-3: Formatter <= 10 seconds"
+        notes: |
+          Extractor time is variable based on LLM model and context length.
+          The 45-second allocation for extractor is a guideline, not strict limit.
+
+      # -----------------------------------------------------------------------
+      # PERF-002: Large Transcript Performance
+      # -----------------------------------------------------------------------
+      - id: perf-002
+        name: "60-minute transcript completes in 5 minutes"
+        description: |
+          Verify that a large 60-minute transcript (approximately 4x the
+          standard size) is processed within 5 minutes. Tests scaling behavior.
+        priority: low
+        input:
+          type: vtt
+          path: "edge_cases/large.vtt"
+          duration_minutes: 60
+        context: "contexts/transcript.yaml"
+        performance_limits:
+          max_total_seconds: 300  # 5 minutes
+        pipeline:
+          - agent: ts-parser
+            input: "edge_cases/large.vtt"
+            capture: parser_output
+            measure_time: true
+          - agent: ts-extractor
+            input: "${parser_output}"
+            capture: extractor_output
+            measure_time: true
+          - agent: ts-formatter
+            input: "${extractor_output}"
+            capture: packet_output
+            measure_time: true
+        assertions:
+          - id: perf-002-a
+            type: performance
+            description: "Large transcript within time limit"
+            expected: |
+              total_time = parser_time + extractor_time + formatter_time
+              assert total_time <= 300  # 5 minutes
+          - id: perf-002-b
+            type: memory_usage
+            description: "Memory usage stays reasonable"
+            expected: |
+              peak_memory_mb = max(parser_memory, extractor_memory, formatter_memory)
+              assert peak_memory_mb <= 500  # 500MB limit
+          - id: perf-002-c
+            type: no_timeout
+            description: "Pipeline does not timeout"
+            expected: "exit_code != TIMEOUT_EXIT_CODE"
+        acceptance_criteria:
+          - "AC-PERF-4: Large transcript <= 5 minutes"
+          - "AC-PERF-5: Peak memory <= 500MB"
+          - "AC-PERF-6: No timeout"
+        notes: |
+          Large transcript tests may be skipped in CI for speed.
+          Run as part of nightly/weekly performance regression suite.
+
+# =============================================================================
+# NEW ASSERTION TYPE DEFINITIONS (Added: TASK-137)
+# =============================================================================
+  # E2E Assertion Types
+  pipeline_success:
+    description: "Full pipeline completes without fatal error"
+    implementation: "exit_code == 0 AND no unhandled exceptions"
+
+  final_packet_valid:
+    description: "Output is valid 8-file packet with all required files"
+    implementation: "all 9 files present (8 .md + _anchors.json)"
+
+  extraction_accuracy:
+    description: "Entity extraction F1 score meets threshold vs ground truth"
+    implementation: "calculate_f1(extracted, ground_truth) >= threshold"
+
+  anchor_integrity:
+    description: "All anchors in _anchors.json resolve to valid targets"
+    implementation: "all anchors have valid file:line targets"
+
+  speaker_count_match:
+    description: "Speaker count matches ground truth within tolerance"
+    implementation: "abs(detected - expected) / expected <= tolerance"
+
+  no_orphan_links:
+    description: "No links point to non-existent targets"
+    implementation: "find_broken_links(packet) == []"
+
+  confidence_scores_present:
+    description: "All entities have confidence scores"
+    implementation: "all entities have .confidence field with 0-1 value"
+
+  # Error Propagation Assertion Types
+  no_crash:
+    description: "Pipeline does not crash (may produce warnings)"
+    implementation: "exit_code not in [1, CRASH_CODES]"
+
+  warnings_logged:
+    description: "Parse/extraction warnings are captured"
+    implementation: "output.warnings.length > 0"
+
+  partial_output:
+    description: "Valid portions still produce output"
+    implementation: "output.segments.length > 0 OR output.warnings includes explanation"
+
+  error_documentation:
+    description: "Errors are documented in output packet"
+    implementation: "summary or metadata contains error/warning information"
+
+  empty_indicator:
+    description: "Empty/no-content clearly indicated"
+    implementation: "output indicates empty state"
+
+  no_false_entities:
+    description: "No hallucinated entities from empty input"
+    implementation: "entity counts == 0 for all types"
+
+  # Context Injection Assertion Types
+  context_loaded:
+    description: "Context file successfully loaded and applied"
+    implementation: "metadata.context_domain matches expected"
+
+  entity_types_from_context:
+    description: "Extracted types match context definitions"
+    implementation: "extracted_types subset of context_defined_types"
+
+  confidence_thresholds_applied:
+    description: "Context confidence thresholds influence extraction"
+    implementation: "entities meet context thresholds OR flagged"
+
+  prompt_guidance_influenced:
+    description: "Extraction behavior reflects context guidance"
+    implementation: "extraction characteristics match guidance expectations"
+
+  # Performance Assertion Types
+  performance:
+    description: "Operation completes within time limit"
+    implementation: "elapsed_time <= max_seconds"
+
+  stage_performance:
+    description: "Individual stage completes within limit"
+    implementation: "stage_time <= stage_max_seconds"
+
+  memory_usage:
+    description: "Memory usage stays within limit"
+    implementation: "peak_memory_mb <= max_memory_mb"
+
+  no_timeout:
+    description: "Operation does not timeout"
+    implementation: "exit_code != TIMEOUT_EXIT_CODE"
+
 # =============================================================================
 # TEST EXECUTION CONFIGURATION
 # =============================================================================
 execution:
   parallel: false  # Integration tests must run sequentially
-  timeout_seconds: 60  # Per-test timeout
+  timeout_seconds: 60  # Per-test timeout (increased for E2E)
+  e2e_timeout_seconds: 120  # E2E-specific timeout
+  performance_timeout_seconds: 300  # Performance test timeout
   cleanup: true  # Clean intermediate artifacts after test
   capture_artifacts:
     - parser_output
     - extractor_output
+    - packet_output
   artifact_retention: "7d"  # Keep artifacts for 7 days
 
 # =============================================================================
 # NOTES
 # =============================================================================
 #
-# These integration tests verify the parser-to-extractor pipeline:
+# INTEGRATION TEST SUITES:
 #
-# 1. INT-001: Data completeness - no segments lost
-# 2. INT-002: Timestamp integrity - exact preservation
-# 3. INT-003: Citation resolution - PAT-004 across boundary
-# 4. INT-004: Schema compatibility - contract at integration level
-# 5. INT-005: Speaker flow - attribution preservation
-# 6. INT-006: Format agnostic - works for VTT, SRT, plain
+# 1. PARSER-TO-EXTRACTOR (TASK-112B)
+#    - INT-001: Data completeness - no segments lost
+#    - INT-002: Timestamp integrity - exact preservation
+#    - INT-003: Citation resolution - PAT-004 across boundary
+#    - INT-004: Schema compatibility - contract at integration level
+#    - INT-005: Speaker flow - attribution preservation
+#    - INT-006: Format agnostic - works for VTT, SRT, plain
 #
-# Integration tests run AFTER contract tests to ensure:
-# - Each agent's output is schema-valid (contract tests)
-# - Pipeline handoffs preserve data integrity (integration tests)
+# 2. EXTRACTOR-TO-FORMATTER (TASK-119B)
+#    - INT-EF-001: Entity count preservation
+#    - INT-EF-002: Citation link resolution
+#    - INT-EF-003: Speaker data flow
+#    - INT-EF-004: Topic hierarchy preservation
+#    - INT-EF-005: Backlink generation
+#    - INT-EF-006: Extraction stats in summary
+#
+# 3. END-TO-END PIPELINE (TASK-137)
+#    - E2E-001: Golden meeting-001 full pipeline
+#    - E2E-002: Golden meeting-002 complex pipeline
+#    - E2E-003: Golden meeting-003 edge cases
+#
+# 4. ERROR PROPAGATION (TASK-137)
+#    - ERR-E2E-001: Malformed input graceful degradation
+#    - ERR-E2E-002: Empty input handling
+#
+# 5. CONTEXT INJECTION (TASK-137)
+#    - CTX-001: Transcript domain context applied
+#    - CTX-002: General context fallback
+#
+# 6. PERFORMANCE (TASK-137)
+#    - PERF-001: 15-minute transcript in 60 seconds
+#    - PERF-002: 60-minute transcript in 5 minutes
+#
+# TEST EXECUTION ORDER:
+# 1. Contract tests (schema validation)
+# 2. Parser-to-extractor integration
+# 3. Extractor-to-formatter integration
+# 4. End-to-end pipeline tests
+# 5. Error propagation tests
+# 6. Context injection tests
+# 7. Performance tests (may be in separate CI job)
 #
 # HUMAN REVIEW REQUIRED:
 # - Verify assertion implementations are feasible
 # - Confirm timeout values are appropriate
+# - Review ground truth expected values
 # - Approve before using in CI/CD pipeline
+#
+# DEPENDENCIES:
+# - TASK-131: Golden dataset creation (for E2E-001..003)
+# - TASK-134: Parser tests (contract level)
+# - TASK-135: Extractor tests (contract level)
+# - TASK-136: Formatter tests (contract level)
+# - EN-013: Context injection (for CTX-001..002)
+#
 # =============================================================================

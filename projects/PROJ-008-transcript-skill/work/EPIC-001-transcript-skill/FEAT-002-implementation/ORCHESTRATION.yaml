@@ -152,7 +152,7 @@ enablers:
 
   EN-013:
     title: "Context Injection Implementation"
-    status: gate-ready
+    status: gate-5-passed
     priority: medium
     gate: GATE-5
     tasks:
@@ -173,6 +173,18 @@ enablers:
       - skills/transcript/agents/ts-extractor.md (context section)
       - skills/transcript/agents/ts-formatter.md (context section)
       - test_data/validation/context-injection-tests.yaml
+    quality_reviews:
+      ps_critic:
+        path: EN-013-context-injection/critiques/en013-gate5-iter1-critique.md
+        score: 0.93
+        status: PASS
+      nse_qa:
+        path: EN-013-context-injection/qa/proj008-en013-implementation-qa.md
+        score: 0.92
+        status: PASS
+    approval:
+      human_approval: pending
+      approved_at: null
 
   EN-014:
     title: "Domain Context Files"
@@ -181,16 +193,34 @@ enablers:
     gate: GATE-6
     tasks:
       start: TASK-126
-      end: TASK-130
+      end: TASK-159  # Expanded from TASK-130 per DISC-005
+      original: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
+      en006_promotion: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]
     dependencies:
       - EN-013
+      - EN-016  # New dependency: expanded tasks blocked by EN-016 completion per DISC-005
     implements:
       - SPEC-context-injection.md Section 3.3
+    source:
+      discovery: DISC-005  # EN-006 artifact promotion gap analysis
+      en006_artifacts: "EN-006/docs/specs/domain-contexts/"
     deliverables:
+      # Original scope (3 domains)
       - skills/transcript/contexts/general.yaml
       - skills/transcript/contexts/transcript.yaml
       - skills/transcript/contexts/meeting.yaml
-      - skills/transcript/contexts/schemas/domain-schema.json
+      - skills/transcript/schemas/domain-schema.json
+      # EN-006 promotion scope (6 additional domains)
+      - skills/transcript/contexts/software-engineering.yaml
+      - skills/transcript/contexts/software-architecture.yaml
+      - skills/transcript/contexts/product-management.yaml
+      - skills/transcript/contexts/user-experience.yaml
+      - skills/transcript/contexts/cloud-engineering.yaml
+      - skills/transcript/contexts/security-engineering.yaml
+      - skills/transcript/schemas/DOMAIN-SCHEMA.json
+      - skills/transcript/docs/domains/SPEC-*.md  # 6 SPEC files
+      - skills/transcript/docs/domains/DOMAIN-SELECTION-GUIDE.md
+    note: "Scope expanded 2026-01-28 per DISC-005: Added TASK-150..159 for EN-006 artifact promotion"
 
   EN-015:
     title: "Validation & Test Cases"
@@ -311,22 +341,22 @@ task_allocation:
   EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112, TASK-112A, TASK-112B]
   EN-009: [TASK-001, TASK-002, TASK-003, TASK-004]  # Mind Map Generator - enabler-scoped numbering per DEC-003
   EN-013: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
-  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
+  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Expanded per DISC-005: +10 tasks for EN-006 promotion
   EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137, TASK-138]  # Added TASK-138 per DEC-003:D-005
   EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B, TASK-119C]  # ts-formatter (renumbered per BUG-001), with test tasks
 
 # Metrics
 metrics:
   enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
-  enablers_complete: 2  # EN-007, EN-008 passed GATE-5
+  enablers_complete: 3  # EN-007, EN-008, EN-013 passed GATE-5
   enablers_in_progress: 1  # EN-016 (8/10 tasks complete)
-  enablers_gate_ready: 1  # EN-013 (6/6 tasks complete, awaiting quality reviews)
+  enablers_gate_ready: 0  # None (EN-013 now complete)
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 52  # Updated: EN-016 now has 10 tasks (TASK-119A/B/C added)
-  tasks_complete: 31  # EN-007 (8) + EN-008 (9) + EN-016 (8: TASK-113..118, 119A, 119B) + EN-013 (6)
+  tasks_total: 62  # Updated: EN-014 expanded +10 tasks per DISC-005 (52→62)
+  tasks_complete: 32  # EN-007 (8) + EN-008 (9) + EN-016 (8) + EN-013 (6) + EN-015 (1: TASK-137)
   gates_passed: 0  # GATE-5 not yet fully passed (EN-009, EN-016 still pending)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 60  # 31/52 tasks complete
+  completion_percentage: 52  # 32/62 tasks complete (adjusted for expanded scope)
 
 # Checkpoint tracking
 checkpoints:
@@ -368,3 +398,12 @@ history:
   - timestamp: "2026-01-28T19:30:00Z"
     event: "EN-013 all tasks complete (6/6)"
     details: "TASK-120 (SKILL.md context_injection), TASK-121 (general.yaml), TASK-122 (transcript.yaml with 5 entities), TASK-123 (agent context sections for all 3 agents), TASK-124 (JSON Schema draft-2020-12), TASK-125 (18 test cases). Status: gate-ready for ps-critic/nse-qa reviews. Deliverables: contexts/general.yaml, contexts/transcript.yaml, schemas/context-domain-schema.json, test_data/validation/context-injection-tests.yaml."
+  - timestamp: "2026-01-28T20:28:00Z"
+    event: "EN-013 GATE-5 quality reviews complete"
+    details: "ps-critic (0.93 PASS) and nse-qa (0.92 PASS) reviews completed. EN-013 status updated to gate-5-passed. Awaiting human approval. Reports: critiques/en013-gate5-iter1-critique.md, qa/proj008-en013-implementation-qa.md."
+  - timestamp: "2026-01-28T20:30:00Z"
+    event: "EN-015 TASK-137 complete"
+    details: "Extended integration-tests.yaml with 4 new test suites: end-to-end (E2E-001..003), error-propagation (ERR-E2E-001..002), context-injection (CTX-001..002), performance (PERF-001..002). Added 20+ assertion types. File now ~1100 lines."
+  - timestamp: "2026-01-28T21:00:00Z"
+    event: "EN-014 scope expanded per DISC-005"
+    details: "Gap analysis discovered EN-006 TASK-038 produced 34 files across 6 domain specifications never promoted to skill. Added TASK-150..159 (10 tasks, 9 SP) for artifact promotion. Original scope (3 domains, 5 tasks) expanded to 8 domains total (15 tasks, 15 SP). Human decisions: (1) SPEC files promoted as docs, (2) Consolidated YAML per SPEC design, (3) Blocked by EN-016 completion. Dependencies updated. Metrics adjusted: tasks_total 52→62, completion 62%→52%."
