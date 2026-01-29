@@ -22,13 +22,14 @@ description: |
   backward compatibility approach per ADR-EN014-001 decision.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-29T00:00:00Z"
-updated_at: "2026-01-29T00:00:00Z"
+updated_at: "2026-01-29T12:10:00Z"
+completed_at: "2026-01-29T12:10:00Z"
 
 parent_id: "EN-014"
 
@@ -54,18 +55,18 @@ due_date: null
 
 activity: DESIGN
 original_estimate: 5
-remaining_work: 5
-time_spent: 0
+remaining_work: 0
+time_spent: 3
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
 
 ```
-BACKLOG → IN_PROGRESS → DONE
+BACKLOG → IN_PROGRESS → DONE ← (current)
               ↓
            BLOCKED
 ```
@@ -172,15 +173,15 @@ validation:
 
 ### Acceptance Criteria
 
-- [ ] TDD created at `docs/design/TDD-EN014-domain-schema-v2.md`
-- [ ] JSON Schema definition for all 4 features (relationships, metadata, context_rules, validation)
-- [ ] Migration strategy from V1 to V2 documented
-- [ ] Backward compatibility approach specified
-- [ ] Validation rules and error handling defined
-- [ ] At least 2 example YAML files demonstrating V2 features
-- [ ] L0/L1/L2 audience sections included
-- [ ] ps-critic quality review passes (≥ 0.85)
-- [ ] nse-qa quality review passes (≥ 0.85)
+- [x] TDD created at `docs/design/TDD-EN014-domain-schema-v2.md`
+- [x] JSON Schema definition for all 4 features (relationships, metadata, context_rules, validation)
+- [x] Migration strategy from V1 to V2 documented
+- [x] Backward compatibility approach specified
+- [x] Validation rules and error handling defined
+- [x] At least 2 example YAML files demonstrating V2 features
+- [x] L0/L1/L2 audience sections included
+- [x] ps-critic quality review passes (≥ 0.85) - **Score: 0.93 PASS**
+- [x] nse-qa quality review passes (≥ 0.85) - **Score: 0.91 PASS**
 
 ### Implementation Notes
 
@@ -211,11 +212,11 @@ docs/design/TDD-EN014-domain-schema-v2.md
 
 ## Time Tracking
 
-| Metric            | Value    |
-|-------------------|----------|
-| Original Estimate | 5 hours  |
-| Remaining Work    | 5 hours  |
-| Time Spent        | 0 hours  |
+| Metric            | Value      |
+|-------------------|------------|
+| Original Estimate | 5 hours    |
+| Remaining Work    | 0 hours    |
+| Time Spent        | 3 hours    |
 
 ---
 
@@ -223,22 +224,22 @@ docs/design/TDD-EN014-domain-schema-v2.md
 
 ### Deliverables
 
-| Deliverable | Type | Link |
-|-------------|------|------|
-| TDD Document | Markdown | docs/design/TDD-EN014-domain-schema-v2.md |
-| Example V2 YAML | YAML | (within TDD or separate) |
-| ps-critic Review | Quality Report | (pending) |
-| nse-qa Review | Quality Report | (pending) |
+| Deliverable | Type | Link | Status |
+|-------------|------|------|--------|
+| TDD Document | Markdown | [docs/design/TDD-EN014-domain-schema-v2.md](./docs/design/TDD-EN014-domain-schema-v2.md) | **COMPLETE** |
+| Example V2 YAML | YAML | (within TDD Section 6.1-6.2) | **COMPLETE** |
+| ps-critic Review | Quality Report | [critiques/en014-task167-iter1-critique.md](./critiques/en014-task167-iter1-critique.md) | **COMPLETE** (0.93) |
+| nse-qa Review | Quality Report | [qa/en014-task167-iter1-qa.md](./qa/en014-task167-iter1-qa.md) | **COMPLETE** (0.91) |
 
 ### Verification
 
-- [ ] TDD created at specified path
-- [ ] All 4 schema features designed
-- [ ] Migration strategy documented
-- [ ] Example files created
-- [ ] ps-critic score ≥ 0.85
-- [ ] nse-qa score ≥ 0.85
-- [ ] Reviewed by: (pending dual-reviewer)
+- [x] TDD created at specified path (1947 lines)
+- [x] All 4 schema features designed ($defs: entityRelationship, domainMetadata, contextRule, validationRule)
+- [x] Migration strategy documented (Section 4: SchemaVer v1.0.0→v1.1.0)
+- [x] Example files created (software-engineering.yaml, general.yaml)
+- [x] ps-critic score ≥ 0.85 (Score: **0.93**)
+- [x] nse-qa score ≥ 0.85 (Score: **0.91**)
+- [x] Reviewed by: ps-critic (v2.0.0) + nse-qa (v2.0.0) - Dual-reviewer PASS
 
 ---
 
@@ -247,3 +248,7 @@ docs/design/TDD-EN014-domain-schema-v2.md
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-29 | Created | Initial creation per EN-014:DISC-006 |
+| 2026-01-29 | IN_PROGRESS | Started execution. TASK-166 (ADR) complete with decision: Option A (JSON Schema Extension v1.0.0→v1.1.0). Invoking ps-architect to create TDD. |
+| 2026-01-29 | IN_PROGRESS | **ps-architect COMPLETE**: TDD created with full V1.1.0 JSON Schema specification (1947 lines). 4 $defs sections designed (entityRelationship, domainMetadata, contextRule, validationRule). L0/L1/L2 triple-lens, migration strategy, backward compatibility, 2 example YAML files. Artifact: [TDD-EN014-domain-schema-v2.md](./docs/design/TDD-EN014-domain-schema-v2.md) |
+| 2026-01-29 | IN_PROGRESS | **ps-critic COMPLETE**: Quality review passed with score 0.93 (threshold 0.85). 0 major issues, 3 minor improvements, 12 positive findings. Artifact: [en014-task167-iter1-critique.md](./critiques/en014-task167-iter1-critique.md) |
+| 2026-01-29 | DONE | **nse-qa COMPLETE**: NASA SE quality review passed with score 0.91 (threshold 0.85). NPR 7123.1D compliance verified (Process 14: 0.92, Process 15: 0.90, Process 16: 0.89). 0 critical, 0 major, 2 minor NCs, 12 observations. Dual-reviewer PASS. TASK-167 complete. |

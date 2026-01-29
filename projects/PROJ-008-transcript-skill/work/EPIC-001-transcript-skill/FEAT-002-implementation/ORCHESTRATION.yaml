@@ -232,8 +232,8 @@ enablers:
       original: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
       schema_extension: [TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169]  # NEW per DISC-006
       en006_promotion: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]
-      complete: [TASK-126, TASK-127, TASK-128, TASK-164, TASK-165, TASK-166]  # Original 3 domains + schema research + gap impact + ADR
-      in_progress: [TASK-167]  # TDD Schema V2 (next)
+      complete: [TASK-126, TASK-127, TASK-128, TASK-164, TASK-165, TASK-166, TASK-167]  # Original 3 domains + schema research + gap impact + ADR + TDD
+      in_progress: [TASK-168]  # Final Adversarial Review (next)
     dependencies:
       - EN-013
       - EN-016  # New dependency: expanded tasks blocked by EN-016 completion per DISC-005
@@ -552,10 +552,10 @@ metrics:
   enablers_gate_ready: 0  # All GATE-5 enablers approved
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 91  # +6 tasks (TASK-164..169) for EN-014 schema extension per DISC-006 (85→91)
-  tasks_complete: 48  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (6: TASK-126..128, TASK-164..166)
+  tasks_complete: 49  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (7: TASK-126..128, TASK-164..167)
   gates_passed: 1  # GATE-5 passed 2026-01-28
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 53  # 48/91 tasks complete
+  completion_percentage: 54  # 49/91 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -639,3 +639,6 @@ history:
   - timestamp: "2026-01-29T11:30:00Z"
     event: "TASK-166 ADR Schema Extension complete"
     details: "ps-architect executed 819-line ADR using Michael Nygard format with 3 alternatives evaluated. Decision: Option A (JSON Schema Extension v1.0.0→v1.1.0) with backward compatibility via SchemaVer. 12 authoritative sources cited. Dual-reviewer quality gate PASSED: ps-critic (0.926 PASS), nse-qa (0.914 PASS). NPR 7123.1D Process 14/15/16 compliance verified. Key schema extensions: entityRelationship, domainMetadata, contextRules, validationRules via $defs. TASK-167 (TDD Schema V2) now unblocked. Tasks complete: 47→48. Completion: 52%→53%."
+  - timestamp: "2026-01-29T12:10:00Z"
+    event: "TASK-167 TDD Schema V2 complete"
+    details: "ps-architect executed 1947-line TDD with full JSON Schema V1.1.0 specification. All 4 $defs sections designed: entityRelationship, domainMetadata, contextRule, validationRule. Migration strategy documented (SchemaVer v1.0.0→v1.1.0, REVISION bump, additive-only). 2 example YAML files created (software-engineering.yaml, general.yaml). Dual-reviewer quality gate PASSED: ps-critic (0.93 PASS), nse-qa (0.91 PASS). NPR 7123.1D Process 14/15/16 compliance verified. TASK-168 (Final Adversarial Review) now unblocked. Tasks complete: 48→49. Completion: 53%→54%."
