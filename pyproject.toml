@@ -28,7 +28,9 @@ classifiers = [
 
 # Zero external dependencies for core
 # Libraries added here should be pre-installed in Claude Code Web environment
-dependencies = []
+dependencies = [
+    "jsonschema[test]>=4.26.0",
+]
 
 [project.optional-dependencies]
 dev = [

@@ -216,6 +216,9 @@ wheels = [
 name = "jerry"
 version = "0.2.0"
 source = { editable = "." }
+dependencies = [
+    { name = "jsonschema" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -240,6 +243,7 @@ requires-dist = [
     { name = "charset-normalizer", marker = "extra == 'transcript'", specifier = ">=3.3.0" },
     { name = "filelock", marker = "extra == 'dev'", specifier = ">=3.12.0" },
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.21.0" },
+    { name = "jsonschema", extras = ["test"], specifier = ">=4.26.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0.0" },
     { name = "pytest-archon", marker = "extra == 'test'", specifier = ">=0.0.6" },
