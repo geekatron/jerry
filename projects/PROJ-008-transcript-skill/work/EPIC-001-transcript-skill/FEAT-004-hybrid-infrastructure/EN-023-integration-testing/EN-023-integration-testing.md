@@ -35,7 +35,7 @@ impact: medium
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T22:00:00Z"
-updated_at: "2026-01-29T23:45:00Z"
+updated_at: "2026-01-30T00:35:00Z"
 parent_id: "FEAT-004"
 tags: ["enabler", "testing", "integration", "compliance"]
 effort: 5
@@ -195,7 +195,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 | TASK-230 | Integration Test Infrastructure Setup | **DONE** | high | - |
 | TASK-231 | Parser → Chunker Integration Tests | **DONE** | high | ✓ |
 | TASK-232 | Chunker Output Contract Tests | **DONE** | high | ✓ |
-| TASK-233 | Python-Layer Pipeline Tests | pending | high | ✓ |
+| TASK-233 | Python-Layer Pipeline Tests | **DONE** | high | ✓ |
 
 ### LLM Validation Tests (Slow, On-Demand)
 
@@ -214,7 +214,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 
 ### Definition of Done
 
-- [ ] Python-layer integration tests complete (TASK-230..233)
+- [x] Python-layer integration tests complete (TASK-230..233)
 - [ ] LLM validation test framework complete (TASK-234..237)
 - [ ] All 6 datasets tested
 - [ ] meeting-006 produces complete output (3,071 segments)
@@ -252,6 +252,8 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 | 2026-01-29 | Claude | in_progress | Restructured to 8 tasks per DEC-012 (Hybrid Testing Strategy). Two-tier approach: Python tests (CI) + LLM tests (validation). Created TASK-230..237 task files. |
 | 2026-01-29 | Claude | in_progress | TASK-230 DONE: Test infrastructure created - directories, pytest markers (llm, slow), conftest.py fixtures, CI exclusion configured. |
 | 2026-01-29 | Claude | in_progress | TASK-231 DONE: Parser → Chunker integration tests - 24 tests passing. Zero segment loss verified for all 6 datasets. Test matrix updated with actual segment counts. |
+| 2026-01-30 | Claude | in_progress | TASK-232 DONE: Chunker output contract tests - 22 tests passing. Schema validation, cross-references, segment ranges verified. |
+| 2026-01-30 | Claude | in_progress | TASK-233 DONE: Python-layer pipeline tests - 13 tests passing in 0.55s. All 5 ACs verified. Performance far exceeds thresholds. Python-layer CI tests complete. |
 
 ---
 
