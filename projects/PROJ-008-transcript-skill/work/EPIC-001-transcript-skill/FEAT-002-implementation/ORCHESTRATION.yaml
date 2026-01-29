@@ -114,7 +114,7 @@ enablers:
 
   EN-016:
     title: "ts-formatter Agent Implementation"
-    status: in_progress
+    status: gate-5-passed
     priority: high
     gate: GATE-5
     tasks:
@@ -122,7 +122,7 @@ enablers:
       end: TASK-119
       additional: [TASK-119A, TASK-119B, TASK-119C]  # Contract, integration, E2E tests
       complete: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B]
-      pending: [TASK-119C]
+      pending: [TASK-119C]  # E2E tests - deferred, not blocking GATE-5
     dependencies:
       - EN-008
     implements:
@@ -136,6 +136,19 @@ enablers:
       - skills/transcript/agents/ts-formatter.md
       - test_data/validation/contract-tests.yaml (ts-formatter section)
       - test_data/validation/integration-tests.yaml (extractor-formatter section)
+      - test_data/expected_output/transcript-meeting-001/ (sample packet)
+    quality_reviews:
+      ps_critic:
+        path: EN-016-ts-formatter/critiques/en016-gate5-iter1-critique.md
+        score: 0.94
+        status: PASS
+      nse_qa:
+        path: EN-016-ts-formatter/qa/proj008-en016-implementation-qa.md
+        score: 0.90
+        status: PASS
+    approval:
+      human_approval: pending
+      approved_at: null
     note: "Renumbered from EN-009 per BUG-001 (ID conflict with Mind Map Generator)"
 
   EN-012:
@@ -288,7 +301,7 @@ gates:
 
 # Execution queue
 execution_queue:
-  current_group: 2  # Context & Formatting (Group 1 complete)
+  current_group: 3  # Mind Map Generation (Groups 1-2 complete)
   groups:
     - id: 1
       name: "Core Agents"
@@ -301,13 +314,13 @@ execution_queue:
     - id: 2
       name: "Context & Formatting"
       mode: PARALLEL
-      status: in_progress  # Started 2026-01-28
+      status: complete  # Both EN-016 and EN-013 passed GATE-5
       execution_order: [EN-016, EN-013]  # Sequential within parallel group per user approval
       enablers:
-        - EN-016   # ts-formatter (first - higher effort, establishes output structure)
-        - EN-013   # Context Injection (second - lower effort, references patterns)
+        - EN-016   # ts-formatter - GATE-5 passed (ps-critic 0.94, nse-qa 0.90)
+        - EN-013   # Context Injection - GATE-5 passed (ps-critic 0.93, nse-qa 0.92)
       gate: GATE-5
-      note: "Option A execution: EN-016 first → EN-013. EN-009 moved to Group 3 per DEC-003."
+      note: "COMPLETE: Both enablers passed GATE-5. Awaiting human approval."
 
     - id: 3
       name: "Mind Map Generation"
@@ -348,9 +361,9 @@ task_allocation:
 # Metrics
 metrics:
   enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
-  enablers_complete: 3  # EN-007, EN-008, EN-013 passed GATE-5
-  enablers_in_progress: 1  # EN-016 (8/10 tasks complete)
-  enablers_gate_ready: 0  # None (EN-013 now complete)
+  enablers_complete: 4  # EN-007, EN-008, EN-013, EN-016 passed GATE-5
+  enablers_in_progress: 0  # Group 2 complete
+  enablers_gate_ready: 0  # None awaiting review
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 62  # Updated: EN-014 expanded +10 tasks per DISC-005 (52→62)
   tasks_complete: 33  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1: TASK-137)
@@ -410,3 +423,6 @@ history:
   - timestamp: "2026-01-28T22:30:00Z"
     event: "EN-016 TASK-119 complete"
     details: "5-phase formatter validation complete: (1) Agent definition verification - TDD aligned, (2) Golden dataset verification - 5 files available, YAML-only discovery, (3) Sample packet creation - 9 files (25KB), 57 anchors, (4) Contract test execution - 8/8 CON-FMT tests pass, (5) Live invocation analysis documented. Sample packet at test_data/expected_output/transcript-meeting-001/. EN-016 now 9/10 tasks complete (TASK-119C E2E pending)."
+  - timestamp: "2026-01-28T23:00:00Z"
+    event: "EN-016 GATE-5 quality reviews passed"
+    details: "ps-critic (0.94 PASS) and nse-qa (0.90 PASS) reviews completed. Key findings: (1) All 5 TDD components have behavioral coverage, (2) 100% ADR compliance, (3) 8/8 applicable contract tests pass, (4) NPR 7123.1D Process 14-16 compliant. Minor gaps: CON-FMT-007 not testable (no large transcript), performance metric not measurable for YAML-only agents. Group 2 (Context & Formatting) complete. Ready for human approval."
