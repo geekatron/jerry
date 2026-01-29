@@ -30,8 +30,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -74,7 +74,7 @@ time_spent: null
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
 
 ---
 
@@ -139,10 +139,10 @@ pytest -m "not llm" --cov=src/transcript
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Test directory structure created per DEC-012 D-003
-- [ ] AC-2: pytest.ini configured with markers (unit, integration, contract, llm, slow)
-- [ ] AC-3: conftest.py files created with shared fixtures
-- [ ] AC-4: CI config excludes llm marker tests
+- [x] AC-1: Test directory structure created per DEC-012 D-003
+- [x] AC-2: pytest.ini configured with markers (unit, integration, contract, llm, slow)
+- [x] AC-3: conftest.py files created with shared fixtures
+- [x] AC-4: CI config excludes llm marker tests
 
 ---
 
@@ -195,8 +195,8 @@ def skip_llm_if_no_api():
 | Metric            | Value |
 |-------------------|-------|
 | Original Estimate | 2 hours |
-| Remaining Work    | 2 hours |
-| Time Spent        | - |
+| Remaining Work    | 0 hours |
+| Time Spent        | 1 hour |
 
 ---
 
@@ -212,9 +212,9 @@ def skip_llm_if_no_api():
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] `pytest --collect-only -m "not llm"` works
-- [ ] `pytest --collect-only -m llm` works
+- [x] Acceptance criteria verified
+- [x] `pytest --collect-only -m "not llm"` works (2231 tests collected)
+- [x] `pytest --collect-only -m llm` works (empty, as expected - no llm tests yet)
 - [ ] Reviewed by: Human
 
 ---
@@ -224,3 +224,56 @@ def skip_llm_if_no_api():
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-29 | BACKLOG | Created per DEC-012 restructuring |
+| 2026-01-29 | IN_PROGRESS | Started test infrastructure setup |
+| 2026-01-29 | DONE | Completed - all 4 ACs verified |
+
+---
+
+## Implementation Details
+
+### Files Created/Modified
+
+**New Files:**
+- `tests/unit/transcript/__init__.py` - Unit test module docstring
+- `tests/unit/transcript/conftest.py` - Sample VTT/SRT/TXT content fixtures
+- `tests/integration/transcript/__init__.py` - Integration test module docstring
+- `tests/integration/transcript/conftest.py` - Golden dataset path and temp dir fixtures
+- `tests/contract/transcript/__init__.py` - Contract test module docstring
+- `tests/contract/transcript/conftest.py` - JSON schema loading fixtures
+- `tests/llm/__init__.py` - LLM test package docstring
+- `tests/llm/transcript/__init__.py` - LLM test module docstring with warnings
+- `tests/llm/transcript/conftest.py` - LLM test config and chunked input fixtures
+
+**Modified Files:**
+- `pytest.ini` - Added `llm` and `slow` markers
+- `.github/workflows/ci.yml` - Added `not llm` to pytest marker exclusions
+
+### Verification Evidence
+
+```bash
+# Directory structure verified
+$ ls tests/{unit,integration,contract,llm}/transcript/
+tests/contract/transcript/:
+__init__.py  conftest.py  test_chunk_schemas.py
+
+tests/integration/transcript/:
+__init__.py  conftest.py
+
+tests/llm/transcript/:
+__init__.py  conftest.py
+
+tests/unit/transcript/:
+__init__.py  conftest.py  test_chunker.py  test_vtt_parser.py
+
+# pytest markers verified
+$ grep -A2 "llm:" pytest.ini
+    llm: marks tests that invoke LLM agents (slow, expensive, excluded from CI)
+    slow: marks tests that take > 5 seconds (e.g., large file processing)
+
+# CI exclusion verified
+$ grep "not llm" .github/workflows/ci.yml
+            -m "not subprocess and not llm" \
+            -m "not subprocess and not llm" \
+            -m "not llm" \
+            -m "not llm" \
+```

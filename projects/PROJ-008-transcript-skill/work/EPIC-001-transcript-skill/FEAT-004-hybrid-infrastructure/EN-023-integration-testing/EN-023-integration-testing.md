@@ -35,7 +35,7 @@ impact: medium
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T22:00:00Z"
-updated_at: "2026-01-29T21:15:00Z"
+updated_at: "2026-01-29T22:15:00Z"
 parent_id: "FEAT-004"
 tags: ["enabler", "testing", "integration", "compliance"]
 effort: 5
@@ -190,7 +190,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 
 | ID | Title | Status | Priority | CI |
 |----|-------|--------|----------|-----|
-| TASK-230 | Integration Test Infrastructure Setup | pending | high | - |
+| TASK-230 | Integration Test Infrastructure Setup | **DONE** | high | - |
 | TASK-231 | Parser → Chunker Integration Tests | pending | high | ✓ |
 | TASK-232 | Chunker Output Contract Tests | pending | high | ✓ |
 | TASK-233 | Python-Layer Pipeline Tests | pending | high | ✓ |
@@ -248,6 +248,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 |------|--------|--------|-------|
 | 2026-01-28 | Claude | pending | Enabler created from DISC-009 |
 | 2026-01-29 | Claude | in_progress | Restructured to 8 tasks per DEC-012 (Hybrid Testing Strategy). Two-tier approach: Python tests (CI) + LLM tests (validation). Created TASK-230..237 task files. |
+| 2026-01-29 | Claude | in_progress | TASK-230 DONE: Test infrastructure created - directories, pytest markers (llm, slow), conftest.py fixtures, CI exclusion configured. |
 
 ---
 
