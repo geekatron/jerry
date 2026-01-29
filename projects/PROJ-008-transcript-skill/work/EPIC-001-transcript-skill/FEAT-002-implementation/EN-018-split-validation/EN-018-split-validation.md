@@ -1,7 +1,7 @@
 # Enabler: EN-018 - Split Validation Testing
 
 > **Enabler ID:** EN-018
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Feature:** [FEAT-002-implementation](../FEAT-002-implementation.md)
 > **Gate:** GATE-6
@@ -35,12 +35,12 @@ Contract test CON-FMT-007 (Split Navigation) was identified as untestable during
 
 ### In Scope
 
-- [ ] Test TokenCounter threshold detection
-- [ ] Test FileSplitter semantic boundary detection
-- [ ] Test SplitNavigation link generation
-- [ ] Test _anchors.json split tracking
-- [ ] Execute CON-FMT-007 contract test
-- [ ] Document split validation evidence
+- [x] Test TokenCounter threshold detection ✓
+- [x] Test FileSplitter semantic boundary detection ✓
+- [x] Test SplitNavigation link generation ✓
+- [x] Test _anchors.json split tracking ✓
+- [x] Execute CON-FMT-007 contract test ✓
+- [x] Document split validation evidence ✓
 
 ### Out of Scope
 
@@ -52,42 +52,56 @@ Contract test CON-FMT-007 (Split Navigation) was identified as untestable during
 
 ## Acceptance Criteria
 
-### AC-1: Token Threshold Tests
-- [ ] TokenCounter correctly identifies meeting-004 as NO split required
-- [ ] TokenCounter correctly identifies meeting-005 as 1 split required
-- [ ] TokenCounter correctly identifies meeting-006 as 2-3 splits required
+### AC-1: Token Threshold Tests (CORRECTED per DISC-008)
+- [x] TokenCounter correctly identifies meeting-004 as NO split required (~18.6K MD tokens) ✓
+- [x] TokenCounter correctly identifies meeting-005 as NO split required (~28.9K MD tokens) ✓
+- [x] TokenCounter correctly identifies meeting-006 as 2-split required (~63.2K MD tokens) ✓
+
+**Note:** Original expectations used DISC-006 VTT formula. Corrected to use ts-formatter Markdown formula per [DISC-008](../FEAT-002--DISC-008-token-formula-discrepancy.md).
 
 ### AC-2: Boundary Detection Tests
-- [ ] FileSplitter splits at ## heading boundaries
-- [ ] Split points preserve semantic coherence
-- [ ] No mid-segment splits occur
+- [x] FileSplitter splits at ## heading boundaries ✓
+- [x] Split points preserve semantic coherence ✓
+- [x] No mid-segment splits occur ✓
 
 ### AC-3: Navigation Link Tests
-- [ ] Split files contain "Continue in Part X" links
-- [ ] Links use correct relative paths
-- [ ] Links point to valid anchors
+- [x] Split files contain "Continue in Part X" links ✓
+- [x] Links use correct relative paths ✓
+- [x] Links point to valid anchors ✓
 
 ### AC-4: Anchor Tracking Tests
-- [ ] _anchors.json tracks entities across split files
-- [ ] File references are correct for split content
-- [ ] Line numbers are accurate within each split file
+- [x] _anchors.json tracks entities across split files ✓
+- [x] File references are correct for split content ✓
+- [x] Line numbers are accurate within each split file ✓
 
-### AC-5: CON-FMT-007 Execution
-- [ ] Contract test passes for meeting-005 (1 split)
-- [ ] Contract test passes for meeting-006 (multi-split)
-- [ ] Evidence documented in validation report
+### AC-5: CON-FMT-007 Execution (CORRECTED per DISC-008)
+- [x] ~~Contract test passes for meeting-005 (1 split)~~ → meeting-005 does NOT trigger split ✓
+- [x] Contract test passes for meeting-006 (2-split) ✓
+- [x] Evidence documented in validation report ✓
+- [x] Test coverage gap documented (EN-019 required for full coverage) ✓
 
 ---
 
 ## Technical Design
 
-### Test Matrix
+### Test Matrix (CORRECTED per DISC-008)
 
-| Test Case | Transcript | Token Count | Splits | Validation Focus |
-|-----------|------------|-------------|--------|------------------|
-| SPLIT-001 | meeting-004 | ~25K | 0 | Near-limit behavior |
-| SPLIT-002 | meeting-005 | ~45K | 1 | Single split |
-| SPLIT-003 | meeting-006 | ~90K | 2-3 | Multi-split |
+| Test Case | Transcript | Words | MD Tokens | Splits | Validation Focus |
+|-----------|------------|-------|-----------|--------|------------------|
+| SPLIT-001 | meeting-004 | 13,030 | ~18,633 | 0 | Below soft limit (31,500) |
+| SPLIT-002 | meeting-005 | 20,202 | ~28,889 | 0 | Below soft limit (31,500) |
+| SPLIT-003 | meeting-006 | 44,225 | ~63,242 | 2 | Multi-split, index + 2 parts |
+
+**Token Calculation Formula (ts-formatter, per DISC-008):**
+```
+md_tokens = word_count × 1.3 × 1.1 = word_count × 1.43
+```
+
+**Note:** Original values used DISC-006 VTT formula which includes cue overhead. ts-formatter counts Markdown output tokens, not VTT input. See [DISC-008](../FEAT-002--DISC-008-token-formula-discrepancy.md).
+
+**ADR-004 Thresholds:**
+- Soft Limit: 31,500 tokens (triggers split)
+- Hard Limit: 35,000 tokens
 
 ### Test Artifacts
 
@@ -103,9 +117,8 @@ Each test generates:
 transcript-meeting-006/
 ├── 00-index.md
 ├── 01-summary.md
-├── 02-transcript-part-1.md      ← Split 1
-├── 02-transcript-part-2.md      ← Split 2
-├── 02-transcript-part-3.md      ← Split 3 (if needed)
+├── 02-transcript-part-1.md      ← Split 1 (~31.5K tokens)
+├── 02-transcript-part-2.md      ← Split 2 (~31.7K tokens)
 ├── 03-speakers.md
 ├── 04-action-items.md
 ├── 05-decisions.md
@@ -114,17 +127,19 @@ transcript-meeting-006/
 └── _anchors.json
 ```
 
+**Note:** meeting-006 at ~63.2K tokens will produce 2 parts (not 3 as originally expected with VTT formula).
+
 ---
 
 ## Tasks
 
 | ID | Task | Status | Depends On |
 |----|------|--------|------------|
-| [TASK-145](./TASK-145-token-threshold-tests.md) | Token Threshold Validation | pending | EN-017 |
-| [TASK-146](./TASK-146-boundary-detection-tests.md) | Semantic Boundary Tests | pending | TASK-145 |
-| [TASK-147](./TASK-147-navigation-link-tests.md) | Navigation Link Validation | pending | TASK-146 |
-| [TASK-148](./TASK-148-anchor-tracking-tests.md) | Anchor Tracking Tests | pending | TASK-146 |
-| [TASK-149](./TASK-149-con-fmt-007-execution.md) | CON-FMT-007 Contract Test | pending | TASK-147, TASK-148 |
+| [TASK-145](./TASK-145-token-threshold-tests.md) | Token Threshold Validation | **done** ✓ | EN-017 ✓ |
+| [TASK-146](./TASK-146-boundary-detection-tests.md) | Semantic Boundary Tests | **done** ✓ | TASK-145 ✓ |
+| [TASK-147](./TASK-147-navigation-link-tests.md) | Navigation Link Validation | **done** ✓ | TASK-146 ✓ |
+| [TASK-148](./TASK-148-anchor-tracking-tests.md) | Anchor Tracking Tests | **done** ✓ | TASK-146 ✓ |
+| [TASK-149](./TASK-149-con-fmt-007-execution.md) | CON-FMT-007 Contract Test | **done** ✓ | TASK-147 ✓, TASK-148 ✓ |
 
 ### Task Dependency Graph
 
@@ -156,9 +171,10 @@ TASK-146 (Boundaries)
 
 | Item | Relationship | Status |
 |------|--------------|--------|
-| [EN-017](../EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) | Large transcript dataset | pending |
+| [EN-017](../EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) | Large transcript dataset | **complete** |
 | [EN-016](../EN-016-ts-formatter/EN-016-ts-formatter.md) | ts-formatter implementation | complete |
 | [DEC-004](../FEAT-002--DEC-004-split-testing-enablers.md) | Decision documented | complete |
+| [ADR-004](../../../../../docs/adrs/ADR-004-file-splitting.md) | Split strategy specification | complete |
 
 ### Blocks
 
@@ -172,11 +188,11 @@ TASK-146 (Boundaries)
 
 ### GATE-6 Requirements (Split Validation)
 
-- [ ] All threshold tests pass
-- [ ] Boundary detection validated
-- [ ] Navigation links verified
-- [ ] Anchor tracking confirmed
-- [ ] CON-FMT-007 contract test passes
+- [x] All threshold tests pass ✓ (TASK-145)
+- [x] Boundary detection validated ✓ (TASK-146)
+- [x] Navigation links verified ✓ (TASK-147)
+- [x] Anchor tracking confirmed ✓ (TASK-148)
+- [x] CON-FMT-007 contract test passes ✓ (TASK-149)
 
 ---
 
@@ -184,9 +200,12 @@ TASK-146 (Boundaries)
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| Split logic has bugs | High | Medium | Thorough testing with 3 transcript sizes |
+| Split logic has bugs | High | Medium | Testing with meeting-006 (~63K tokens) |
 | Anchor tracking fails | High | Low | Explicit verification tests |
 | Navigation links break | Medium | Low | Relative path validation |
+| **Test coverage gap** | Medium | **Realized** | EN-019 will extend meeting-004/005 |
+
+**Test Coverage Gap (DISC-008):** Only meeting-006 triggers splits. meeting-004 and meeting-005 are below the 31.5K soft limit with the correct Markdown formula. EN-019 required to achieve full test coverage.
 
 ---
 
@@ -195,8 +214,9 @@ TASK-146 (Boundaries)
 | Type | Path | Description |
 |------|------|-------------|
 | Decision | [DEC-004](../FEAT-002--DEC-004-split-testing-enablers.md) | Split testing decision |
+| Discovery | [DISC-008](../FEAT-002--DISC-008-token-formula-discrepancy.md) | Token formula discrepancy |
 | Contract Test | [contract-tests.yaml](../../../../../skills/transcript/test_data/validation/contract-tests.yaml) | CON-FMT-007 definition |
-| ADR | [ADR-004](../../../../../docs/adrs/ADR-004-file-splitting-strategy.md) | Split strategy |
+| ADR | [ADR-004](../../../../../docs/adrs/ADR-004-file-splitting.md) | Split strategy |
 | Dataset | [EN-017](../EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) | Large transcripts |
 
 ---
@@ -206,3 +226,5 @@ TASK-146 (Boundaries)
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-01-28 | Claude | Initial enabler created per DEC-004 |
+| 2026-01-28 | Claude | **CORRECTED:** Updated token counts per DISC-008 discovery (VTT→MD formula) |
+| 2026-01-28 | Claude | **COMPLETE:** All 5 tasks done, GATE-6 requirements met, CON-FMT-007 verified |
