@@ -256,6 +256,40 @@ enablers:
       - test_data/validation/extractor-tests.yaml
       - test_data/validation/formatter-tests.yaml
 
+  EN-017:
+    title: "Large Transcript Dataset"
+    status: pending
+    priority: high
+    gate: GATE-6
+    tasks:
+      start: TASK-140
+      end: TASK-144
+      list: [TASK-140, TASK-141, TASK-142, TASK-143, TASK-144]
+    dependencies:
+      - EN-016  # GATE-5 passed
+    deliverables:
+      - skills/transcript/test_data/input/meeting-004-sprint-planning.vtt
+      - skills/transcript/test_data/input/meeting-005-roadmap-review.vtt
+      - skills/transcript/test_data/input/meeting-006-all-hands.vtt
+    created_by: DEC-004
+    note: "Created to address CON-FMT-007 gap identified in EN-016 GATE-5 quality reviews. 3 large transcripts: 25K/45K/90K tokens."
+
+  EN-018:
+    title: "Split Validation Testing"
+    status: pending
+    priority: high
+    gate: GATE-6
+    tasks:
+      start: TASK-145
+      end: TASK-149
+      list: [TASK-145, TASK-146, TASK-147, TASK-148, TASK-149]
+    dependencies:
+      - EN-017  # Large transcript dataset required
+    deliverables:
+      - EN-018-split-validation/CON-FMT-007-validation-report.md
+    created_by: DEC-004
+    note: "Validates file splitting behavior using EN-017 dataset. Executes CON-FMT-007 contract test."
+
 # Gate definitions
 gates:
   GATE-5:
@@ -282,11 +316,15 @@ gates:
       - EN-011
       - EN-014
       - EN-015
+      - EN-017  # Large Transcript Dataset (per DEC-004)
+      - EN-018  # Split Validation Testing (per DEC-004)
     approval_required: true
     criteria:
       - "Worktracker integration functional"
       - "Domain context files valid"
       - "All validation tests passing"
+      - "Large transcript dataset created (EN-017)"
+      - "Split validation complete - CON-FMT-007 passes (EN-018)"
 
   GATE-7:
     name: "CLI Final Review"
@@ -340,6 +378,16 @@ execution_queue:
       gate: GATE-6
       note: "Renumbered from Group 3 per DEC-003"
 
+    - id: 5
+      name: "Split Testing"
+      mode: SEQUENTIAL
+      enablers:
+        - EN-017  # Large Transcript Dataset
+        - EN-018  # Split Validation Testing
+      gate: GATE-6
+      created_by: DEC-004
+      note: "NEW per DEC-004: Addresses CON-FMT-007 gap from EN-016 quality reviews. EN-017 → EN-018 sequential."
+
     # Group 4 (CLI) moved to FEAT-003 per DISC-002
     # - id: 4
     #   name: "CLI"
@@ -357,19 +405,22 @@ task_allocation:
   EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Expanded per DISC-005: +10 tasks for EN-006 promotion
   EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137, TASK-138]  # Added TASK-138 per DEC-003:D-005
   EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B, TASK-119C]  # ts-formatter (renumbered per BUG-001), with test tasks
+  EN-017: [TASK-140, TASK-141, TASK-142, TASK-143, TASK-144]  # Large Transcript Dataset (per DEC-004)
+  EN-018: [TASK-145, TASK-146, TASK-147, TASK-148, TASK-149]  # Split Validation Testing (per DEC-004)
 
 # Metrics
 metrics:
-  enablers_total: 8  # Excluding deprecated EN-010 and moved EN-012; includes EN-016 per BUG-001
+  enablers_total: 10  # +2 (EN-017, EN-018) per DEC-004; excludes deprecated EN-010 and moved EN-012
   enablers_complete: 4  # EN-007, EN-008, EN-013, EN-016 passed GATE-5
   enablers_in_progress: 0  # Group 2 complete
+  enablers_pending: 6  # EN-009, EN-011, EN-014, EN-015, EN-017, EN-018
   enablers_gate_ready: 0  # None awaiting review
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 62  # Updated: EN-014 expanded +10 tasks per DISC-005 (52→62)
+  tasks_total: 72  # +10 tasks (EN-017: 5, EN-018: 5) per DEC-004 (62→72)
   tasks_complete: 33  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1: TASK-137)
-  gates_passed: 0  # GATE-5 not yet fully passed (EN-009, EN-016 still pending)
+  gates_passed: 0  # GATE-5 not yet fully passed (EN-009 still pending)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 53  # 33/62 tasks complete
+  completion_percentage: 46  # 33/72 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -426,3 +477,6 @@ history:
   - timestamp: "2026-01-28T23:00:00Z"
     event: "EN-016 GATE-5 quality reviews passed"
     details: "ps-critic (0.94 PASS) and nse-qa (0.90 PASS) reviews completed. Key findings: (1) All 5 TDD components have behavioral coverage, (2) 100% ADR compliance, (3) 8/8 applicable contract tests pass, (4) NPR 7123.1D Process 14-16 compliant. Minor gaps: CON-FMT-007 not testable (no large transcript), performance metric not measurable for YAML-only agents. Group 2 (Context & Formatting) complete. Ready for human approval."
+  - timestamp: "2026-01-28T23:30:00Z"
+    event: "DEC-004 - Split Testing Enablers created"
+    details: "Per GATE-5 quality review gap (CON-FMT-007 not testable), created 2 new enablers: EN-017 (Large Transcript Dataset, 5 tasks) and EN-018 (Split Validation Testing, 5 tasks). EN-017 creates 3 large transcripts (25K/45K/90K tokens) with different topics. EN-018 validates split behavior and executes CON-FMT-007. Sequential dependency: EN-017 → EN-018 → GATE-6. Enablers: 8→10. Tasks: 62→72. New Group 5 (Split Testing) added to execution queue."

@@ -100,7 +100,7 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | Gate | After Enablers | Approval Required For |
 |------|----------------|----------------------|
 | GATE-5 | EN-007, EN-008, EN-009, EN-013, EN-016 | Core agent implementation & context injection |
-| GATE-6 | EN-011, EN-014, EN-015 | Integration, domain contexts & validation |
+| GATE-6 | EN-011, EN-014, EN-015, EN-017, EN-018 | Integration, domain contexts, validation & split testing |
 
 **Note:**
 - Gate assignments restructured per DISC-001. EN-010 deprecated (absorbed into EN-016).
@@ -127,6 +127,8 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | [EN-014](./EN-014-domain-context-files/EN-014-domain-context-files.md) | Enabler | Domain Context Files | pending | medium | 126-130 | 6 | general, transcript, meeting |
 | [EN-015](./EN-015-transcript-validation/EN-015-transcript-validation.md) | Enabler | Validation & Test Cases | pending | high | 131-137 | 6 | Golden dataset, edge cases |
 | [EN-016](./EN-016-ts-formatter/EN-016-ts-formatter.md) | Enabler | ts-formatter Agent Implementation | pending | high | 113-119 | 5 | **RENUMBERED** from EN-009 per BUG-001, absorbs EN-010 |
+| [EN-017](./EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) | Enabler | Large Transcript Dataset | pending | high | 140-144 | 6 | **NEW** per DEC-004 (split testing gap) |
+| [EN-018](./EN-018-split-validation/EN-018-split-validation.md) | Enabler | Split Validation Testing | pending | high | 145-149 | 6 | **NEW** per DEC-004 (CON-FMT-007) |
 
 ### Task Allocation Summary
 
@@ -141,7 +143,9 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | EN-014 | TASK-126..130 | 5 | Domain Context Files |
 | EN-015 | TASK-131..137 | 7 | Validation & Test Cases |
 | EN-016 | TASK-113..119 | 7 | ts-formatter (renumbered from EN-009) |
-| **Total** | | **45** | Excludes EN-012 (moved to FEAT-003) |
+| EN-017 | TASK-140..144 | 5 | Large Transcript Dataset (per DEC-004) |
+| EN-018 | TASK-145..149 | 5 | Split Validation Testing (per DEC-004) |
+| **Total** | | **55** | Excludes EN-012 (moved to FEAT-003) |
 
 ### Work Item Links
 
@@ -154,6 +158,8 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 - [EN-014: Domain Context Files](./EN-014-domain-context-files/EN-014-domain-context-files.md)
 - [EN-015: Validation & Test Cases](./EN-015-transcript-validation/EN-015-transcript-validation.md)
 - [EN-016: ts-formatter Agent Implementation](./EN-016-ts-formatter/EN-016-ts-formatter.md)
+- [EN-017: Large Transcript Dataset](./EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) ← **NEW** per DEC-004
+- [EN-018: Split Validation Testing](./EN-018-split-validation/EN-018-split-validation.md) ← **NEW** per DEC-004
 
 **Deprecated/Moved Enablers:**
 - ~~EN-010: Artifact Packaging & Deep Linking~~ → Absorbed into EN-016
@@ -186,15 +192,15 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| **Active Enablers** | 8 | EN-007,008,009,011,013,014,015,016 |
+| **Active Enablers** | 10 | EN-007,008,009,011,013,014,015,016,017,018 |
 | **Deprecated Enablers** | 1 | EN-010 absorbed into EN-016 |
 | **Moved Enablers** | 1 | EN-012 → FEAT-003 per DISC-002 |
-| **Completed Enablers** | 2 | EN-007 ✓, EN-008 ✓ (Group 1 Complete) |
-| **Total Tasks** | 49 | EN-009:TASK-001..004*, 055..058, 101-138 (*enabler-scoped) |
-| **Completed Tasks** | 17 | EN-007 (8) + EN-008 (9) |
+| **Completed Enablers** | 4 | EN-007 ✓, EN-008 ✓, EN-013 ✓, EN-016 ✓ (Groups 1-2 Complete) |
+| **Total Tasks** | 59 | +10 tasks per DEC-004 (EN-017: 5, EN-018: 5) |
+| **Completed Tasks** | 33 | EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) |
 | **Gates Total** | 2 | GATE-5, GATE-6 (GATE-7 moved to FEAT-003) |
-| **Gates Passed** | 0 | GATE-5 partial (EN-009, EN-013, EN-016 pending) |
-| **Completion %** | 25% | 2/8 enablers complete |
+| **Gates Passed** | 0 | GATE-5 partial (EN-009 pending, EN-007/008/013/016 passed) |
+| **Completion %** | 40% | 4/10 enablers complete |
 | **Bug Resolutions** | 1 | BUG-001 (EN-009 ID conflict resolved) |
 
 ### Orchestration Artifacts
@@ -439,6 +445,7 @@ If any file exceeds 35K tokens:
 - Inherited from FEAT-001 ADRs (ADR-001 through ADR-005)
 - DEC-002: YAML-only implementation approach
 - [DEC-003: Orchestration Execution Order Correction](./FEAT-002--DEC-003-orchestration-execution-order.md) - EN-009/EN-016 dependency fix, TASK-138
+- [DEC-004: Split Testing Enablers](./FEAT-002--DEC-004-split-testing-enablers.md) - EN-017/EN-018 creation for CON-FMT-007 gap
 
 ### Discoveries
 - [DISC-001: Enabler Alignment Analysis](./FEAT-002--DISC-001-enabler-alignment-analysis.md) - Major restructuring trigger
@@ -462,6 +469,7 @@ If any file exceeds 35K tokens:
 | 2026-01-26 | Claude | PLANNING | **DISC-002 EXECUTED:** EN-012 moved to FEAT-003. GATE-7 removed from FEAT-002. Task count reduced from 49→45. Enabler count reduced from 9→8. |
 | 2026-01-28 | Claude | PLANNING | **DEC-003 CREATED:** Orchestration execution order correction. EN-009 cannot be parallel with EN-016 (dependency). TASK-138 created in EN-015 for EN-008 deferred findings. |
 | 2026-01-28 | Claude | PLANNING | **DEC-003 AI-003/AI-004 EXECUTED:** (1) ORCHESTRATION.yaml group renumbering (Group 2→EN-013+EN-016, Group 3→EN-009, Group 4→rest). (2) EN-009 task files created with enabler-scoped numbering (TASK-001..004). |
+| 2026-01-28 | Claude | PLANNING | **DEC-004 CREATED:** Split testing enablers (EN-017, EN-018) created to address CON-FMT-007 gap identified in EN-016 GATE-5 quality reviews. 3 large transcripts (25K/45K/90K tokens) with different topics. EN-017 → EN-018 sequential dependency. Group 5 (Split Testing) added. Enablers: 8→10. Tasks: 49→59. |
 
 ---
 
