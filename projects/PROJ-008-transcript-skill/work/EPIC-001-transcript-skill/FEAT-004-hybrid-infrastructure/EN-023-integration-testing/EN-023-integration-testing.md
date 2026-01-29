@@ -201,7 +201,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 
 | ID | Title | Status | Priority | CI |
 |----|-------|--------|----------|-----|
-| TASK-234 | LLM Integration Test Framework | pending | medium | - |
+| TASK-234 | LLM Integration Test Framework | **DONE** | medium | - |
 | TASK-235 | ts-extractor Chunked Input Validation | pending | high | ✗ |
 | TASK-236 | Full Pipeline E2E Test | pending | high | ✗ |
 | TASK-237 | ps-critic Quality Gate Test | pending | high | ✗ |
@@ -254,6 +254,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 | 2026-01-29 | Claude | in_progress | TASK-231 DONE: Parser → Chunker integration tests - 24 tests passing. Zero segment loss verified for all 6 datasets. Test matrix updated with actual segment counts. |
 | 2026-01-30 | Claude | in_progress | TASK-232 DONE: Chunker output contract tests - 22 tests passing. Schema validation, cross-references, segment ranges verified. |
 | 2026-01-30 | Claude | in_progress | TASK-233 DONE: Python-layer pipeline tests - 13 tests passing in 0.55s. All 5 ACs verified. Performance far exceeds thresholds. Python-layer CI tests complete. |
+| 2026-01-30 | Claude | in_progress | TASK-234 DONE: LLM test framework complete. conftest.py fixtures enhanced (chunked_input_path fixed for ParseResult), utils.py with comparison/validation utilities, pytest -m llm marker verified. Unblocks TASK-235..237. |
 
 ---
 

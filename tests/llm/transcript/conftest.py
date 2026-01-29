@@ -63,10 +63,12 @@ def chunked_input_path(temp_output_dir: Path) -> Generator[Path, None, None]:
     parser = VTTParser()
     chunker = TranscriptChunker()
 
-    canonical = parser.parse(vtt_path)
-    index_path = chunker.chunk(canonical, temp_output_dir)
+    # Parse VTT file - returns ParseResult with segments
+    parse_result = parser.parse(str(vtt_path))
+    # Chunk the segments into index.json + chunks/
+    index_path = chunker.chunk(parse_result.segments, str(temp_output_dir))
 
-    yield index_path
+    yield Path(index_path)
 
 
 @pytest.fixture
