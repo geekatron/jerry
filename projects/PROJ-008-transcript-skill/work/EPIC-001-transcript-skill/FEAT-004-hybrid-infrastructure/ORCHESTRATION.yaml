@@ -1,0 +1,478 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for FEAT-004 TDD creation workflow
+# Document ID: FEAT-004-ORCH-STATE
+# Version: 2.3
+# Last Updated: 2026-01-29T10:30:00Z
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "feat004-tdd-20260129-001"
+  name: "FEAT-004 Hybrid Infrastructure TDD Creation"
+  project_id: "PROJ-008-transcript-skill"
+  version: "2.3"
+  created_at: "2026-01-29T20:00:00Z"
+  updated_at: "2026-01-29T10:30:00Z"
+  status: "PHASE_5_HUMAN_GATE_RETRY"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+    - FEEDBACK_LOOPS
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 1
+    max_feedback_iterations: 2
+    checkpoint_frequency: "PHASE"
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "FEAT-004-hybrid-infrastructure/docs/"
+  research: "FEAT-004-hybrid-infrastructure/docs/research/"
+  analysis: "FEAT-004-hybrid-infrastructure/docs/analysis/"
+  design: "FEAT-004-hybrid-infrastructure/docs/design/"
+  critiques: "FEAT-004-hybrid-infrastructure/docs/critiques/"
+
+# =============================================================================
+# PIPELINE DEFINITION (Single Pipeline - Sequential with Feedback)
+# =============================================================================
+pipeline:
+  id: "tdd-creation-pipeline"
+  name: "TDD Creation Pipeline"
+  description: "Sequential workflow using problem-solving skill agents"
+
+  short_alias: "ps"
+  skill_source: "problem-solving"
+
+  status: "COMPLETE"
+  current_phase: 5
+  total_phases: 5
+  progress_percent: 100
+  feedback_iteration: 1
+
+  phases:
+    - id: 1
+      name: "Research"
+      task_id: "TASK-240"
+      agent: "ps-researcher"
+      status: "COMPLETE"
+      started_at: "2026-01-29T21:00:00Z"
+      completed_at: "2026-01-29T21:30:00Z"
+      description: "Research hybrid architecture patterns, Python libraries, TDD practices"
+      input_artifacts: []
+      output_artifact: "FEAT-004-e-240-hybrid-architecture-research.md"
+      output_path: "FEAT-004-hybrid-infrastructure/docs/research/"
+      quality_threshold: 0.85
+
+      research_questions:
+        - id: "RQ-1"
+          question: "LLM orchestrator patterns with Python delegation"
+          status: "PENDING"
+        - id: "RQ-2"
+          question: "Format-specific routing in production systems"
+          status: "PENDING"
+        - id: "RQ-3"
+          question: "webvtt-py performance characteristics"
+          status: "PENDING"
+        - id: "RQ-4"
+          question: "Chunking strategies for Lost-in-the-Middle mitigation"
+          status: "PENDING"
+        - id: "RQ-5"
+          question: "RED/GREEN/REFACTOR best practices for hybrid architectures"
+          status: "PENDING"
+        - id: "RQ-6"
+          question: "Python parsers for SRT/plain text comparison"
+          status: "PENDING"
+
+      feedback:
+        received: []
+        iterations: 0
+        max_iterations: 2
+
+    - id: 2
+      name: "Analysis"
+      task_id: "TASK-241"
+      agent: "ps-analyst"
+      status: "COMPLETE"
+      blocked_by: null
+      started_at: "2026-01-29T21:30:00Z"
+      completed_at: "2026-01-29T22:00:00Z"
+      description: "Blast radius assessment, gap mapping, FMEA risk analysis"
+      input_artifacts:
+        - "FEAT-004-e-240-hybrid-architecture-research.md"
+      output_artifact: "FEAT-004-e-241-blast-radius-analysis.md"
+      output_path: "FEAT-004-hybrid-infrastructure/docs/analysis/"
+      quality_threshold: 0.85
+
+      analysis_scope:
+        - "ts-parser.md transformation (MAJOR)"
+        - "SKILL.md pipeline update"
+        - "ts-extractor.md chunked input"
+        - "EN-020..023 specifications"
+        - "Test specification extensions"
+
+      frameworks:
+        - "5W2H"
+        - "Ishikawa"
+        - "FMEA"
+
+      feedback:
+        can_request_from: "phase-1"
+        received: []
+        iterations: 0
+        max_iterations: 2
+
+    - id: 3
+      name: "Architecture"
+      task_id: "TASK-242"
+      agent: "ps-architect"
+      status: "REVISION_COMPLETE"
+      blocked_by: null
+      started_at: "2026-01-29T22:00:00Z"
+      completed_at: "2026-01-29T22:30:00Z"
+      revision_requested_at: "2026-01-29T22:30:00Z"
+      revision_completed_at: "2026-01-29T10:30:00Z"
+      revision_reason: "DISC-012: CLI Integration Gap + Path Corrections"
+      revision_result: "v1.1.0: Added Section 11 CLI Integration; v1.2.0: Corrected paths from skills/transcript/src/ to src/transcript/ bounded context per Hexagonal Architecture"
+      description: "Create TDD-FEAT-004-hybrid-infrastructure.md"
+      input_artifacts:
+        - "FEAT-004-e-240-hybrid-architecture-research.md"
+        - "FEAT-004-e-241-blast-radius-analysis.md"
+      output_artifact: "TDD-FEAT-004-hybrid-infrastructure.md"
+      output_path: "FEAT-004-hybrid-infrastructure/docs/design/"
+      quality_threshold: 0.95
+
+      tdd_sections:
+        - id: 1
+          title: "Problem Statement"
+          status: "PENDING"
+        - id: 2
+          title: "Architecture Overview"
+          status: "PENDING"
+        - id: 3
+          title: "ts-parser.md Transformation"
+          status: "PENDING"
+        - id: 4
+          title: "Python Parser (EN-020)"
+          status: "PENDING"
+        - id: 5
+          title: "Chunking Strategy (EN-021)"
+          status: "PENDING"
+        - id: 6
+          title: "Extractor Adaptation (EN-022)"
+          status: "PENDING"
+        - id: 7
+          title: "Integration Testing (EN-023)"
+          status: "PENDING"
+        - id: 8
+          title: "Testing Strategy"
+          status: "PENDING"
+        - id: 9
+          title: "Implementation Roadmap"
+          status: "PENDING"
+        - id: 10
+          title: "Migration Strategy"
+          status: "PENDING"
+        - id: 11
+          title: "Jerry CLI Integration"
+          status: "COMPLETE"
+          added_by: "FL-001"
+          added_at: "2026-01-30T00:15:00Z"
+
+      feedback:
+        can_request_from: "phase-2"
+        received: []
+        iterations: 0
+        max_iterations: 2
+
+    - id: 4
+      name: "Validation"
+      task_id: "TASK-243"
+      agent: "ps-critic"
+      status: "REVALIDATION_COMPLETE"
+      blocked_by: null
+      started_at: "2026-01-29T22:30:00Z"
+      completed_at: "2026-01-29T23:45:00Z"
+      revalidation_started_at: "2026-01-30T00:15:00Z"
+      revalidation_completed_at: "2026-01-30T00:30:00Z"
+      revalidation_score: 0.97
+      description: "Quality re-validation at 0.95 threshold (after FL-001 TDD amendment)"
+      input_artifacts:
+        - "TDD-FEAT-004-hybrid-infrastructure.md"
+      output_artifact: "FEAT-004-e-243-tdd-validation-critique.md"
+      output_path: "FEAT-004-hybrid-infrastructure/docs/critiques/"
+      quality_threshold: 0.95
+      quality_score_achieved: 0.97
+
+      validation_criteria:
+        - "All enablers (EN-020..023) fully specified"
+        - "Work items can be created from TDD"
+        - "DISC-009 requirements traced"
+        - "DEC-011 alignment verified"
+        - "L0/L1/L2 documentation complete"
+
+      feedback:
+        can_request_from: "phase-3"
+        received: []
+        iterations: 0
+        max_iterations: 2
+
+    - id: 5
+      name: "Human Approval"
+      task_id: "TASK-244"
+      agent: "Human"
+      status: "APPROVED"
+      blocked_by: null
+      started_at: "2026-01-29T23:45:00Z"
+      completed_at: "2026-01-29T10:45:00Z"
+      rejection_reason: "DISC-012: CLI Integration Gap - TDD missing Section 11 Jerry CLI Integration"
+      feedback_discovery: "FEAT-004--DISC-012-cli-integration-gap.md"
+      retry_started_at: "2026-01-29T10:30:00Z"
+      retry_context: "TDD v1.2.0 with Section 11 CLI Integration + path corrections (skills/transcript/src/ → src/transcript/)"
+      approval_version: "1.2.0"
+      approval_note: "Human approved TDD v1.2.0 after FL-001 CLI integration + path corrections"
+      description: "GATE-5: Human review and approval of TDD"
+      input_artifacts:
+        - "TDD-FEAT-004-hybrid-infrastructure.md"
+        - "FEAT-004-e-243-tdd-validation-critique.md"
+      output_artifact: null
+
+      approval_checklist:
+        - item: "TDD addresses DISC-009 operational findings"
+          verified: true
+        - item: "ts-parser.md transformation clearly specified"
+          verified: true
+        - item: "Python parser requirements actionable"
+          verified: true
+        - item: "Chunking strategy implementable"
+          verified: true
+        - item: "Testing strategy comprehensive"
+          verified: true
+        - item: "Implementation roadmap clear"
+          verified: true
+        - item: "CLI integration specified (TDD-EN014 pattern)"
+          verified: true
+          blocker: false
+          discovery: "DISC-012"
+          resolution: "Section 11 added via FL-001, revalidated at 0.97"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_phase: 1
+  groups:
+    - id: 1
+      name: "Phase 1: Research"
+      task_id: "TASK-240"
+      status: "READY"
+      agent: "ps-researcher"
+
+    - id: 2
+      name: "Phase 2: Analysis"
+      task_id: "TASK-241"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agent: "ps-analyst"
+
+    - id: 3
+      name: "Phase 3: Architecture"
+      task_id: "TASK-242"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agent: "ps-architect"
+
+    - id: 4
+      name: "Phase 4: Validation"
+      task_id: "TASK-243"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      agent: "ps-critic"
+
+    - id: 5
+      name: "Phase 5: Human Approval"
+      task_id: "TASK-244"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      agent: "Human"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 4
+    phases_total: 5
+    phases_percent: 80
+    artifacts_created: 4
+    artifacts_total: 4
+    artifacts_percent: 100
+    feedback_iterations_used: 0
+    feedback_iterations_max: 10
+
+  quality:
+    research_score: 0.92
+    analysis_score: 0.91
+    tdd_score: 0.97
+    validation_passed: true
+
+  timing:
+    workflow_started: "2026-01-29T21:00:00Z"
+    last_activity: "2026-01-29T21:00:00Z"
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# FEEDBACK LOOPS
+# =============================================================================
+feedback_loops:
+  completed:
+    - id: "FL-001"
+      from_phase: 5
+      to_phase: 3
+      reason: "DISC-012: CLI Integration Gap - TDD missing Section 11 Jerry CLI Integration per TDD-EN014 pattern"
+      status: "COMPLETE"
+      created_at: "2026-01-29T22:30:00Z"
+      revision_completed_at: "2026-01-29T10:30:00Z"
+      revalidation_completed_at: "2026-01-30T00:30:00Z"
+      discovery: "FEAT-004--DISC-012-cli-integration-gap.md"
+      reference_tdd: "TDD-EN014-domain-schema-v2.md"
+      required_amendment: "Add Section 11: Jerry CLI Integration (parser registration, main routing, CLIAdapter method, bootstrap wiring)"
+      amendment_result: |
+        v1.1.0: Added Section 11 (~470 lines) with subsections 11.1-11.8 following TDD-EN014 pattern
+        v1.2.0: Corrected all path references from skills/transcript/src/ to src/transcript/ bounded context per Hexagonal Architecture
+      tdd_version_updated: "1.0.0 -> 1.1.0 -> 1.2.0"
+      path_correction_details:
+        incorrect_path: "skills/transcript/src/"
+        correct_path: "src/transcript/"
+        rationale: "Hexagonal Architecture bounded context pattern - VTTParser with external libs goes in infrastructure/adapters/"
+        files_corrected: 3
+        references_updated:
+          - "EN-020 VTT Parser location"
+          - "TASK-200 environment setup"
+          - "Rollback procedure"
+      revalidation_score: 0.97
+      iteration: 1
+      max_iterations: 2
+      outcome: "SUCCESS - CLI gap resolved (v1.1.0), paths corrected (v1.2.0)"
+  active: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "HUMAN GATE RETRY: Review TDD v1.2.0 with Section 11 CLI Integration + Path Corrections"
+      task_id: "TASK-244"
+      status: "AWAITING_HUMAN"
+      reference: "FL-001 complete, DISC-012 resolved, paths corrected"
+      input: "TDD-FEAT-004-hybrid-infrastructure.md v1.2.0"
+      changes_since_v1_1_0:
+        - "Corrected skills/transcript/src/ → src/transcript/ (3 references)"
+        - "Updated to use pyproject.toml for dependencies"
+        - "VTTParser location: src/transcript/infrastructure/adapters/vtt_parser.py"
+
+  subsequent: []
+
+  completed:
+    - action: "FEEDBACK LOOP FL-001: ps-architect amended TDD with Section 11 CLI Integration"
+      task_id: "TASK-242"
+      status: "COMPLETE"
+      completed_at: "2026-01-30T00:15:00Z"
+      reference: "DISC-012"
+      result: "Added Section 11 (~470 lines) following TDD-EN014 pattern"
+    - action: "Phase 4 Revalidation: ps-critic scored TDD v1.1.0 at 0.97"
+      task_id: "TASK-243"
+      status: "COMPLETE"
+      completed_at: "2026-01-30T00:30:00Z"
+      reference: "FL-001"
+      result: "APPROVED (score 0.97 >= 0.95 threshold)"
+    - action: "Path Corrections: Corrected skills/transcript/src/ to src/transcript/"
+      task_id: "TASK-242"
+      status: "COMPLETE"
+      completed_at: "2026-01-29T10:30:00Z"
+      reference: "FL-001-continuation"
+      result: "TDD v1.2.0 - All paths follow Hexagonal Architecture bounded context pattern"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "CP-008-path-corrections-complete"
+  current_state: "PHASE_5_HUMAN_GATE_RETRY: TDD v1.2.0 with CLI Integration + path corrections, awaiting human approval"
+  next_step: "Human review of TDD-FEAT-004 v1.2.0"
+
+  feedback_loop_context:
+    discovery: "FEAT-004--DISC-012-cli-integration-gap.md"
+    gap_identified: "TDD missing Section 11 Jerry CLI Integration"
+    gap_resolved: true
+    resolution_timestamp: "2026-01-30T00:15:00Z"
+    reference_pattern: "TDD-EN014-domain-schema-v2.md Section 10 (lines 1492-1723)"
+    sections_added:
+      - "Section 11.1: Parser Registration (parse command)"
+      - "Section 11.2: Main Routing (_handle_transcript)"
+      - "Section 11.3: CLIAdapter Method (cmd_transcript_parse)"
+      - "Section 11.4: Bootstrap Wiring (VTTParser factory)"
+      - "Section 11.5: CLI Integration Sequence Diagram"
+      - "Section 11.6: CLI Usage Examples"
+      - "Section 11.7: Exit Codes"
+      - "Section 11.8: Integration with LLM Agents"
+
+  path_correction_context:
+    issue: "TDD used skills/transcript/src/ instead of src/transcript/ bounded context"
+    resolution_timestamp: "2026-01-29T10:30:00Z"
+    architecture_rule: "Hexagonal Architecture - VTTParser with external libs (webvtt-py, charset-normalizer) belongs in infrastructure/adapters/"
+    correct_locations:
+      vtt_parser: "src/transcript/infrastructure/adapters/vtt_parser.py"
+      dependencies: "root pyproject.toml [project.dependencies]"
+    tdd_version: "1.2.0"
+    references_corrected: 3
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"
+    - "ORCHESTRATION.yaml"
+    - "FEAT-004--DISC-012-cli-integration-gap.md"
+    - "TDD-EN014-domain-schema-v2.md"
+    - "TDD-FEAT-004-hybrid-infrastructure.md"
+    - "FEAT-004--DEC-011-ts-parser-hybrid-role.md"
+    - ".claude/rules/architecture-standards.md"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+# =============================================================================
+# DECISION REFERENCES
+# =============================================================================
+decisions:
+  - id: "DEC-011"
+    title: "ts-parser.md Hybrid Architecture Role"
+    path: "FEAT-004--DEC-011-ts-parser-hybrid-role.md"
+    key_decisions:
+      - "D-001: ts-parser.md as orchestrator/delegator/fallback/validator"
+      - "D-002: Python format support added incrementally (VTT first)"
+      - "D-003: TDD provides instructions for work items, not test code"

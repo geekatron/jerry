@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/transcript/index.json",
+  "title": "ChunkIndex",
+  "description": "Index file for chunked transcript containing metadata and pointers to segment chunk files. Reference: TDD-FEAT-004 Section 5.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "total_segments",
+    "total_chunks",
+    "chunk_size",
+    "chunks"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version for compatibility checking"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when index was generated"
+    },
+    "generator": {
+      "type": "string",
+      "description": "Generator tool/version that created this index",
+      "examples": ["transcript-chunker-1.0"]
+    },
+    "total_segments": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of segments in the source transcript"
+    },
+    "total_chunks": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of chunk files generated"
+    },
+    "chunk_size": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 500,
+      "description": "Target segments per chunk (last chunk may have fewer)"
+    },
+    "source": {
+      "type": "object",
+      "description": "Source transcript metadata",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Original transcript filename"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["vtt", "srt", "plain"],
+          "description": "Source transcript format"
+        },
+        "encoding": {
+          "type": "string",
+          "default": "utf-8",
+          "description": "Character encoding used to read source file"
+        }
+      }
+    },
+    "duration_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Total transcript duration in milliseconds (null if unknown)"
+    },
+    "speakers": {
+      "type": "object",
+      "description": "Speaker metadata",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of unique speakers detected"
+        },
+        "list": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of all unique speaker names"
+        },
+        "segment_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0},
+          "description": "Segment count per speaker"
+        }
+      }
+    },
+    "word_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Estimated total word count across all segments"
+    },
+    "chunks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/ChunkPointer"
+      },
+      "description": "Array of chunk metadata pointers"
+    }
+  },
+  "$defs": {
+    "ChunkPointer": {
+      "type": "object",
+      "required": ["chunk_id", "segment_range", "file"],
+      "properties": {
+        "chunk_id": {
+          "type": "string",
+          "pattern": "^chunk-\\d{3}$",
+          "description": "Unique chunk identifier (e.g., 'chunk-001')"
+        },
+        "segment_range": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 1},
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[start_segment_id, end_segment_id] (1-indexed, inclusive)"
+        },
+        "timestamp_range": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$",
+              "description": "Start timestamp (HH:MM:SS.mmm)"
+            },
+            "end": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$",
+              "description": "End timestamp (HH:MM:SS.mmm)"
+            },
+            "start_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Start time in milliseconds"
+            },
+            "end_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "End time in milliseconds"
+            }
+          }
+        },
+        "file": {
+          "type": "string",
+          "description": "Relative path to chunk file from index.json location"
+        },
+        "segment_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of segments in this chunk"
+        },
+        "speaker_counts": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0},
+          "description": "Segment count per speaker in this chunk"
+        },
+        "word_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Word count in this chunk"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "1.0",
+      "generated_at": "2026-01-29T20:00:00Z",
+      "generator": "transcript-chunker-1.0",
+      "total_segments": 3071,
+      "total_chunks": 7,
+      "chunk_size": 500,
+      "source": {
+        "file": "meeting-006-all-hands.vtt",
+        "format": "vtt",
+        "encoding": "utf-8"
+      },
+      "duration_ms": 18231000,
+      "speakers": {
+        "count": 50,
+        "list": ["Robert Chen", "Diana Martinez", "Jennifer Adams"],
+        "segment_counts": {
+          "Robert Chen": 1005,
+          "Diana Martinez": 491,
+          "Jennifer Adams": 317
+        }
+      },
+      "word_count": 28796,
+      "chunks": [
+        {
+          "chunk_id": "chunk-001",
+          "segment_range": [1, 500],
+          "timestamp_range": {
+            "start": "00:00:00.000",
+            "end": "01:15:23.500",
+            "start_ms": 0,
+            "end_ms": 4523500
+          },
+          "file": "chunks/chunk-001.json",
+          "segment_count": 500,
+          "speaker_counts": {"Robert Chen": 150, "Diana Martinez": 80},
+          "word_count": 4500
+        }
+      ]
+    }
+  ]
+}
