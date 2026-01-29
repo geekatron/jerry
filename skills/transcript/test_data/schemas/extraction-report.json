@@ -2,19 +2,31 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "extraction-report.json",
   "title": "ExtractionReport",
-  "description": "Schema for ts-extractor output per TDD-ts-extractor.md Section 3",
-  "version": "1.0",
+  "description": "Schema for ts-extractor output per TDD-ts-extractor.md Section 3 (v1.1: chunked input support)",
+  "version": "1.1",
   "type": "object",
-  "required": ["version", "packet_id", "extraction_stats", "speakers", "action_items", "decisions", "questions", "topics"],
+  "required": ["version", "packet_id", "input_format", "extraction_stats", "speakers", "action_items", "decisions", "questions", "topics"],
   "properties": {
     "version": {
       "type": "string",
-      "const": "1.0",
-      "description": "Schema version"
+      "enum": ["1.0", "1.1"],
+      "description": "Schema version (1.1 adds chunked input support)"
     },
     "packet_id": {
       "type": "string",
       "description": "Unique identifier for the transcript packet"
+    },
+    "input_format": {
+      "type": "string",
+      "enum": ["single_file", "chunked"],
+      "description": "Input format used: single_file (legacy) or chunked (recommended for large transcripts)"
+    },
+    "chunk_metadata": {
+      "oneOf": [
+        { "$ref": "#/$defs/ChunkMetadata" },
+        { "type": "null" }
+      ],
+      "description": "Chunk processing metadata (present only when input_format='chunked')"
     },
     "extraction_stats": {
       "$ref": "#/$defs/ExtractionStats"
@@ -55,7 +67,74 @@
       "description": "Segmented topics"
     }
   },
+  "if": {
+    "properties": { "input_format": { "const": "chunked" } }
+  },
+  "then": {
+    "required": ["chunk_metadata"],
+    "properties": {
+      "chunk_metadata": {
+        "$ref": "#/$defs/ChunkMetadata"
+      }
+    }
+  },
   "$defs": {
+    "ChunkMetadata": {
+      "type": "object",
+      "required": ["index_path", "chunks_processed", "chunks_total", "selection_strategy"],
+      "properties": {
+        "index_path": {
+          "type": "string",
+          "description": "Path to index.json that was used"
+        },
+        "chunks_processed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of chunks actually processed"
+        },
+        "chunks_total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total chunks available in index"
+        },
+        "selection_strategy": {
+          "type": "string",
+          "enum": ["sequential", "index_only", "selective"],
+          "description": "Chunk selection strategy used (per TASK-222)"
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChunkProcessingInfo"
+          },
+          "description": "Per-chunk processing details"
+        }
+      },
+      "description": "Metadata about chunk processing for traceability and debugging"
+    },
+    "ChunkProcessingInfo": {
+      "type": "object",
+      "required": ["chunk_id", "segment_range", "entities_extracted"],
+      "properties": {
+        "chunk_id": {
+          "type": "string",
+          "pattern": "^chunk-\\d{3,}$",
+          "description": "Chunk identifier (matches EN-021 naming)"
+        },
+        "segment_range": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Segment ID range [start, end] in this chunk"
+        },
+        "entities_extracted": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total entities extracted from this chunk"
+        }
+      }
+    },
     "ExtractionStats": {
       "type": "object",
       "required": ["speakers_identified", "action_items", "decisions", "questions", "topics"],
@@ -158,6 +237,11 @@
           "pattern": "^seg-\\d{3,}$",
           "description": "Source segment identifier"
         },
+        "chunk_id": {
+          "type": "string",
+          "pattern": "^chunk-\\d{3,}$",
+          "description": "Source chunk identifier (present only for chunked input)"
+        },
         "anchor": {
           "type": "string",
           "pattern": "^#seg-\\d{3,}$",
@@ -174,7 +258,7 @@
           "description": "Source text snippet for verification"
         }
       },
-      "description": "Citation object per PAT-004 anti-hallucination"
+      "description": "Citation object per PAT-004 anti-hallucination (v1.1: optional chunk_id for chunked input)"
     },
     "ActionItem": {
       "type": "object",
@@ -312,6 +396,14 @@
           },
           "minItems": 1,
           "description": "Segments within this topic"
+        },
+        "chunk_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^chunk-\\d{3,}$"
+          },
+          "description": "Chunks containing this topic (present only for chunked input)"
         }
       }
     }
