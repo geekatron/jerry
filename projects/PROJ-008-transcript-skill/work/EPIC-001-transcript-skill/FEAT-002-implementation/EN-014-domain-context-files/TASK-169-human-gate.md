@@ -28,7 +28,7 @@ priority: CRITICAL
 assignee: "Human"
 created_by: "Claude"
 created_at: "2026-01-29T00:00:00Z"
-updated_at: "2026-01-29T16:30:00Z"
+updated_at: "2026-01-29T18:15:00Z"
 
 parent_id: "EN-014"
 
@@ -172,7 +172,7 @@ The human reviewer should verify:
 (Human feedback will be recorded here)
 ```
 
-### Prerequisites Status (2026-01-29T16:30:00Z)
+### Prerequisites Status (2026-01-29T18:15:00Z)
 
 All prerequisites for human approval are now **COMPLETE**:
 
@@ -187,11 +187,16 @@ All prerequisites for human approval are now **COMPLETE**:
 | TASK-176 | Gap Analysis (e-176) | COMPLETE | - |
 | TASK-177 | TDD Revision (v3.0.0) | COMPLETE | - |
 | TASK-178 | TDD Validation (ps-critic) | COMPLETE | **0.96** |
+| **DISC-010** | **TDD Hybrid Architecture Gap (DISC-009)** | **RESOLVED** | - |
+| TASK-179 | ps-analyst DISC-009 Gap Analysis | COMPLETE | 11 gaps identified |
+| TASK-180 | nse-architect TDD v3.1.0 Revision | COMPLETE | Section 12 added |
+| TASK-181 | ps-critic TDD v3.1.0 Validation | COMPLETE | **0.97** |
 
-**TDD v3.0.0 Addresses All Implementation Gaps:**
+**TDD v3.1.0 Addresses All Gaps (Including DISC-009 Hybrid Architecture):**
 
-The TDD was revised from v2.0 to v3.0.0 based on DISC-008 findings and e-176 gap analysis:
+The TDD was revised from v3.0.0 to v3.1.0 based on DISC-010 findings and TASK-179 gap analysis:
 
+**v3.0.0 Changes (DISC-008 Implementation Gaps):**
 1. **Section 6:** Integration Specification (sequence diagrams for CLI, skill, CI)
 2. **Section 7:** Runtime Environment (Python 3.11+, venv, dependencies)
 3. **Section 8:** Testing Strategy (RED/GREEN/REFACTOR, coverage targets)
@@ -199,15 +204,33 @@ The TDD was revised from v2.0 to v3.0.0 based on DISC-008 findings and e-176 gap
 5. **Section 10:** Jerry CLI Integration (parser, adapter, bootstrap patterns)
 6. **Section 11:** Implementability Checklist
 
+**v3.1.0 Changes (DISC-009 Hybrid Architecture Integration):**
+1. **NEW Section 12:** Hybrid Architecture Rationale
+   - 12.1: Why Python Validators (Not LLM-Based)
+   - 12.2: Connection to DISC-009 Research (Stanford, Meilisearch, byteiota)
+   - 12.3: Integration with FEAT-004 (Hybrid Infrastructure Initiative)
+2. **Updated Section 5.2:** Added rationale paragraph referencing DISC-009
+3. **Updated Section 7:** Added hybrid architecture runtime context
+4. **Updated Section 10:** Added pipeline position documentation
+5. **Updated References:** Added [10-16] industry sources
+
+**Key Evidence Integrated (DISC-009):**
+- Stanford "Lost-in-the-Middle": 30%+ LLM accuracy degradation in middle context
+- Meilisearch cost analysis: 1,250x efficiency (Python: $0.00008 vs LLM: $0.10)
+- byteiota industry survey: 60% of production LLM apps use hybrid/RAG
+
 **Artifacts for Human Review:**
 
 | Artifact | Path |
 |----------|------|
-| TDD v3.0.0 | `EN-014-domain-context-files/docs/design/TDD-EN014-domain-schema-v2.md` |
-| Gap Analysis | `EN-014-domain-context-files/analysis/EN-014-e-176-tdd-implementation-gap-analysis.md` |
-| Validation Critique | `EN-014-domain-context-files/critiques/EN-014-e-178-tdd-validation-critique.md` |
+| **TDD v3.1.0** | `EN-014-domain-context-files/docs/design/TDD-EN014-domain-schema-v2.md` |
+| Gap Analysis (DISC-008) | `EN-014-domain-context-files/analysis/EN-014-e-176-tdd-implementation-gap-analysis.md` |
+| Validation Critique (v3.0.0) | `EN-014-domain-context-files/critiques/EN-014-e-178-tdd-validation-critique.md` |
+| **Gap Analysis (DISC-009)** | `EN-014-domain-context-files/analysis/EN-014-e-179-disc009-tdd-integration.md` |
+| **Validation Critique (v3.1.0)** | `EN-014-domain-context-files/critiques/EN-014-e-181-tdd-v310-validation-critique.md` |
 | User Decisions | `EN-014-domain-context-files/EN-014--DEC-001-cli-namespace-domain-validation.md` |
 | ADR | `EN-014-domain-context-files/docs/decisions/ADR-EN014-001-schema-extension-strategy.md` |
+| **DISC-010** | `EN-014-domain-context-files/EN-014--DISC-010-tdd-hybrid-architecture-gap.md` |
 
 **READY FOR USER REVIEW**
 
@@ -254,3 +277,5 @@ The TDD was revised from v2.0 to v3.0.0 based on DISC-008 findings and e-176 gap
 | 2026-01-29 | Created | Initial creation per EN-014:DISC-006 |
 | 2026-01-29 | BLOCKED | DISC-008 identified TDD implementation gaps |
 | 2026-01-29 | IN_PROGRESS | Prerequisites complete: TDD v3.0.0 validated (0.96), ready for human review |
+| 2026-01-29 | IN_PROGRESS | DISC-010 identified: DISC-009 hybrid architecture not addressed in TDD v3.0.0 |
+| 2026-01-29 | IN_PROGRESS | DISC-010 resolved: TDD v3.1.0 with Section 12 (Hybrid Architecture Rationale), validated at 0.97 |
