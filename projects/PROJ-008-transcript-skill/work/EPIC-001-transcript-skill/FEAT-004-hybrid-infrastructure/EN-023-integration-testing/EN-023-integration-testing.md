@@ -203,8 +203,8 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 |----|-------|--------|----------|-----|
 | TASK-234 | LLM Integration Test Framework | **DONE** | medium | - |
 | TASK-235 | ts-extractor Chunked Input Validation | **DONE** | high | ✗ |
-| TASK-236 | Full Pipeline E2E Test | pending | high | ✗ |
-| TASK-237 | ps-critic Quality Gate Test | pending | high | ✗ |
+| TASK-236 | Full Pipeline E2E Test | **DONE** | high | ✗ |
+| TASK-237 | ps-critic Quality Gate Test | **DONE** | high | ✗ |
 
 **Note:** Tasks restructured from 6 to 8 per DEC-012 (Hybrid Testing Strategy). Task range per DEC-010.
 
@@ -215,7 +215,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 ### Definition of Done
 
 - [x] Python-layer integration tests complete (TASK-230..233)
-- [ ] LLM validation test framework complete (TASK-234..237)
+- [x] LLM validation test framework complete (TASK-234..237)
 - [ ] All 6 datasets tested
 - [ ] meeting-006 produces complete output (3,071 segments)
 - [ ] ps-critic quality score >= 0.90
@@ -256,6 +256,8 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 | 2026-01-30 | Claude | in_progress | TASK-233 DONE: Python-layer pipeline tests - 13 tests passing in 0.55s. All 5 ACs verified. Performance far exceeds thresholds. Python-layer CI tests complete. |
 | 2026-01-30 | Claude | in_progress | TASK-234 DONE: LLM test framework complete. conftest.py fixtures enhanced (chunked_input_path fixed for ParseResult), utils.py with comparison/validation utilities, pytest -m llm marker verified. Unblocks TASK-235..237. |
 | 2026-01-30 | Claude | in_progress | TASK-235 DONE: ts-extractor chunked input validation tests - 10 tests across 2 classes covering all 6 ACs. Tests validate extraction-report.json v1.1 schema. jsonschema dependency added. |
+| 2026-01-30 | Claude | in_progress | TASK-236 DONE: Full pipeline E2E tests - 8 tests across 2 classes (TestFullPipelineE2E: 6 tests, TestPipelineSegmentCoverage: 2 tests). All 6 ACs covered. Tests validate complete pipeline from VTT to output packet. |
+| 2026-01-30 | Claude | in_progress | TASK-237 DONE: ps-critic quality gate tests - 10 tests across 2 classes (TestPsCriticQualityGate: 6 tests, TestExtractionMetrics: 4 tests). All 6 ACs covered. Tests validate quality score >= 0.90, ADR compliance, and extraction metrics. |
 
 ---
 
