@@ -1,0 +1,374 @@
+# Domain Schema: User Experience Transcript Analysis
+# Version: 1.0.0
+# TASK-153: EN-014 Artifact Promotion
+# Source: EN-006/docs/specs/domain-contexts/04-user-experience/
+# Implements: SPEC-context-injection.md Section 3.3, TDD-EN014 Schema V1.1.0
+
+schema_version: "1.0.0"
+domain: "user-experience"
+display_name: "User Experience Transcript Analysis"
+extends: "transcript"  # Inherits base entities (speaker, topic, question)
+
+# CRITICAL: This domain emphasizes preserving VERBATIM user quotes.
+# Never paraphrase or summarize user statements.
+
+# Domain metadata (TDD-EN014 Section 4.2)
+metadata:
+  target_users:
+    - "UX Researchers"
+    - "UX Designers"
+    - "Product Designers"
+    - "Research Operations"
+  transcript_types:
+    - "User interview"
+    - "Usability test"
+    - "Design critique"
+    - "Focus group"
+    - "Stakeholder feedback session"
+  key_use_cases:
+    - "Extract user insights"
+    - "Identify pain points"
+    - "Document usability issues"
+    - "Preserve verbatim quotes"
+    - "Build research repository"
+  verbatim_quote_requirement: true
+
+# Entity definitions
+entity_definitions:
+  user_insight:
+    description: "Key insight or learning from user research"
+    attributes:
+      - name: "insight"
+        type: "string"
+        required: true
+        description: "What was learned"
+      - name: "participant"
+        type: "string"
+        required: true
+        description: "User identifier (anonymized, e.g., P01, P02)"
+      - name: "context"
+        type: "string"
+        description: "Research context when insight emerged"
+      - name: "confidence"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Confidence level"
+      - name: "supporting_quotes"
+        type: "array"
+        items: "string"
+        description: "Direct quotes supporting this insight (VERBATIM)"
+    extraction_patterns:
+      - "We learned that {{insight}}"
+      - "Key insight: {{insight}}"
+      - "Users consistently {{behavior}}"
+      - "Pattern: {{insight}}"
+      - "Theme: {{theme}}"
+      - "We observed {{observation}}"
+    relationships:
+      - type: "reveals"
+        target: "pain_point"
+      - type: "supported_by"
+        target: "user_quote"
+
+  pain_point:
+    description: "User frustration, problem, or friction point"
+    attributes:
+      - name: "description"
+        type: "string"
+        required: true
+        description: "The pain point described"
+      - name: "severity"
+        type: "enum"
+        values: ["critical", "major", "minor", "cosmetic"]
+        required: true
+        description: "Nielsen Norman severity (0-4 or critical/major/minor/cosmetic)"
+      - name: "frequency"
+        type: "enum"
+        values: ["always", "often", "sometimes", "rarely"]
+        description: "How often encountered"
+      - name: "user_quote"
+        type: "string"
+        description: "Verbatim quote expressing the pain (DO NOT PARAPHRASE)"
+      - name: "impact"
+        type: "string"
+        description: "Impact on user's goals"
+    extraction_patterns:
+      - "Users struggle with {{issue}}"
+      - "Frustration: {{description}}"
+      - "I can't figure out how to {{task}}"
+      - "This is confusing because {{reason}}"
+      - "Pain point: {{description}}"
+      - "I hate when {{issue}}"
+    relationships:
+      - type: "manifests_as"
+        target: "usability_issue"
+      - type: "revealed_by"
+        target: "user_insight"
+
+  usability_issue:
+    description: "Problem found during usability testing"
+    attributes:
+      - name: "task"
+        type: "string"
+        required: true
+        description: "What user was trying to accomplish"
+      - name: "issue"
+        type: "string"
+        required: true
+        description: "What went wrong or was difficult"
+      - name: "severity"
+        type: "integer"
+        description: "Nielsen Norman severity (0-4)"
+      - name: "recommendation"
+        type: "string"
+        description: "Suggested fix or improvement"
+      - name: "success_rate"
+        type: "string"
+        description: "Task completion rate if measured"
+    extraction_patterns:
+      - "User failed to {{task}}"
+      - "Completion rate: {{percentage}}"
+      - "User gave up on {{task}}"
+      - "Error during {{task}}"
+      - "Task success: {{rate}}"
+      - "Severity: {{level}}"
+    relationships:
+      - type: "triggers"
+        target: "design_feedback"
+
+  design_feedback:
+    description: "Feedback on design artifacts from any source"
+    attributes:
+      - name: "artifact"
+        type: "string"
+        required: true
+        description: "What was being reviewed (screen, flow, prototype)"
+      - name: "feedback_type"
+        type: "enum"
+        values: ["positive", "constructive", "concern"]
+        required: true
+        description: "Type of feedback"
+      - name: "feedback"
+        type: "string"
+        required: true
+        description: "The feedback provided"
+      - name: "action"
+        type: "string"
+        description: "Suggested action or change"
+      - name: "source"
+        type: "enum"
+        values: ["participant", "stakeholder", "designer"]
+        description: "Who provided feedback"
+    extraction_patterns:
+      - "I like {{feature}}"
+      - "Concern about {{issue}}"
+      - "Suggestion: {{suggestion}}"
+      - "Design feedback: {{feedback}}"
+      - "This would be better if {{improvement}}"
+    relationships:
+      - type: "triggered_by"
+        target: "usability_issue"
+
+  user_quote:
+    description: "Verbatim user statement - MUST be preserved exactly"
+    attributes:
+      - name: "quote"
+        type: "string"
+        required: true
+        description: "EXACT words spoken by user - DO NOT PARAPHRASE"
+      - name: "participant"
+        type: "string"
+        required: true
+        description: "User identifier (anonymized)"
+      - name: "context"
+        type: "string"
+        description: "When/why they said it"
+      - name: "theme"
+        type: "string"
+        description: "Related research theme"
+      - name: "timestamp"
+        type: "string"
+        description: "When in session (if available)"
+    note: |
+      CRITICAL: User quotes must be preserved verbatim.
+      This is essential for research validity and insight traceability.
+      Never summarize, paraphrase, or clean up user language.
+      Include filler words, grammatical errors, and incomplete sentences.
+    extraction_patterns:
+      - "\"{{quote}}\""
+      - "User said: {{quote}}"
+      - "Quote: {{quote}}"
+      - "Verbatim: {{quote}}"
+      - "P{{id}}: {{quote}}"
+
+# Extraction rules with confidence thresholds
+extraction_rules:
+  - id: "user_insights"
+    entity_type: "user_insight"
+    confidence_threshold: 0.75
+    priority: 1
+    tier: "llm"
+    description: "Extract key learnings from user research"
+
+  - id: "pain_points"
+    entity_type: "pain_point"
+    confidence_threshold: 0.8
+    priority: 2
+    tier: "rule"
+    description: "Identify user frustrations and problems"
+
+  - id: "usability_issues"
+    entity_type: "usability_issue"
+    confidence_threshold: 0.8
+    priority: 3
+    tier: "rule"
+    description: "Document problems found during usability testing"
+
+  - id: "design_feedback"
+    entity_type: "design_feedback"
+    confidence_threshold: 0.7
+    priority: 4
+    tier: "rule"
+    description: "Capture feedback on design artifacts"
+
+  - id: "user_quotes"
+    entity_type: "user_quote"
+    confidence_threshold: 0.9
+    priority: 5
+    tier: "rule"
+    description: "Preserve verbatim user statements exactly as spoken"
+
+# Context-specific rules (TDD-EN014 Section 4.3)
+context_rules:
+  user_interview:
+    primary_focus:
+      - user_insight
+      - user_quote
+      - pain_point
+    secondary_focus:
+      - design_feedback
+    verbatim_priority: "highest"
+    extraction_emphasis: |
+      In user interviews, prioritize:
+      1. User quotes (PRESERVE VERBATIM - highest priority)
+      2. Key insights with supporting evidence
+      3. Pain points with severity assessment
+      4. Design feedback if discussing artifacts
+
+  usability_test:
+    primary_focus:
+      - usability_issue
+      - pain_point
+    secondary_focus:
+      - user_quote
+      - user_insight
+    extraction_emphasis: |
+      In usability tests, focus on:
+      1. Task completion rates and failures
+      2. Usability issues with severity (Nielsen Norman 0-4)
+      3. Pain points encountered
+      4. User quotes expressing frustration (VERBATIM)
+
+  design_critique:
+    primary_focus:
+      - design_feedback
+    secondary_focus:
+      - usability_issue
+    extraction_emphasis: |
+      In design critiques, capture:
+      1. Feedback organized by artifact
+      2. Type (positive, constructive, concern)
+      3. Specific suggestions for improvement
+      4. Source of feedback (participant, stakeholder, designer)
+
+  focus_group:
+    primary_focus:
+      - user_insight
+      - user_quote
+    secondary_focus:
+      - pain_point
+    verbatim_priority: "highest"
+    extraction_emphasis: |
+      In focus groups, document:
+      1. Individual quotes with participant IDs
+      2. Group consensus patterns
+      3. Dissenting opinions
+      4. Themes emerging from discussion
+
+# Validation rules (TDD-EN014 Section 4.4)
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - user_insight
+    - pain_point
+    - user_quote
+  verbatim_quote_requirement: true
+
+# Prompt guidance for ts-extractor agent
+prompt_guidance: |
+  ## User Experience Transcript Analysis
+
+  When analyzing UX research transcripts, apply domain expertise:
+
+  ### ⚠️ CRITICAL: Verbatim Quote Preservation
+
+  **DO NOT paraphrase, summarize, or clean up user quotes.**
+
+  User quotes must be preserved EXACTLY as spoken, including:
+  - Filler words ("um", "like", "you know")
+  - Grammatical errors
+  - Incomplete sentences
+  - Colloquialisms
+  - [inaudible] for unclear speech
+  - [laughter] for non-verbal cues
+
+  This is ESSENTIAL for research validity.
+
+  ### User Insight Extraction
+  - Identify patterns across participants
+  - Link insights to supporting quotes
+  - Assess confidence based on evidence strength
+  - Document research context
+
+  ### Pain Point Identification
+  - Apply Nielsen Norman severity scale (0-4 or critical/major/minor/cosmetic)
+  - Capture frequency of occurrence
+  - Document impact on user goals
+  - Preserve verbatim expressions of frustration
+
+  ### Usability Issue Documentation
+  - Note specific tasks attempted
+  - Calculate success/failure rates when possible
+  - Recommend fixes or improvements
+  - Apply severity consistently
+
+  ### Design Feedback Capture
+  - Identify artifact being discussed
+  - Categorize as positive, constructive, or concern
+  - Capture specific actionable suggestions
+  - Note feedback source for attribution
+
+  ### Participant Anonymization
+  - Use P01, P02, etc. instead of real names
+  - Maintain consistent IDs across transcript
+  - Preserve demographic context if relevant
+
+  ### Quality Checklist
+  Before finalizing extraction:
+  - [ ] All quotes are verbatim (not paraphrased)
+  - [ ] Participant IDs are anonymized (P01, not real names)
+  - [ ] Severity ratings use Nielsen Norman scale
+  - [ ] Context is preserved for each insight
+
+  ### Confidence Scoring Guidelines
+  - 0.9+: Direct verbatim quote with clear context
+  - 0.7-0.9: Observed behavior with researcher interpretation
+  - 0.5-0.7: Inferred insight, flag for review
+  - <0.5: Do not extract
+
+  ### Anti-Hallucination Rules (PAT-004)
+  - Every extraction MUST have a source segment citation
+  - NEVER modify user quotes - preserve exactly as spoken
+  - When uncertain, use lower confidence scores
+  - Preserve original participant attribution
