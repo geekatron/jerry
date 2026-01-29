@@ -172,12 +172,30 @@ PROJ-008-transcript-skill
         │   ├── TASK-057: Implement Story Creation Flow
         │   └── TASK-058: Implement Decision Record Flow
         │
-        └── EN-013: Context Injection Implementation [PENDING]
-            ├── TASK-063: Implement Context Loader
-            ├── TASK-064: Implement Prompt Merger
-            ├── TASK-065: Implement Metadata Passing
-            └── TASK-066: Create Example Context Files
+        ├── EN-013: Context Injection Implementation [PENDING]
+        │   ├── TASK-063: Implement Context Loader
+        │   ├── TASK-064: Implement Prompt Merger
+        │   ├── TASK-065: Implement Metadata Passing
+        │   └── TASK-066: Create Example Context Files
+        │
+        ├── EN-019: Large Transcript Dataset Extension [PENDING] ← per DISC-008
+        │   ├── TASK-160: Plan dataset extension scope
+        │   ├── TASK-161: Extend meeting-004 (~22.5K words)
+        │   ├── TASK-162: Extend meeting-005 (~26K words)
+        │   └── TASK-163: Validate extensions trigger splits
+        │
+        └── EN-024: Mindmap Pipeline Integration [PENDING] ← RENUMBERED from EN-019
+            ├── TASK-240: Research Current Pipeline State
+            ├── TASK-241: Analysis 5W2H + Ishikawa
+            ├── TASK-242: ADR-006 Mindmap Integration
+            ├── TASK-243: SKILL.md --mindmap Flag
+            ├── TASK-244: Pipeline Orchestration Update
+            ├── TASK-245: ps-critic Mindmap Validation
+            ├── TASK-246: Integration Tests
+            ├── TASK-247: Documentation Update (PLAYBOOK/RUNBOOK)
+            └── TASK-248: Quality Review (ps-critic)
 
+            ★ GATE-5: Core Implementation Review ★
             ★ GATE-6: Core Functionality Review ★
 
     ├── FEAT-003: Future Enhancements [DEFERRED] (per DISC-002)
@@ -263,8 +281,8 @@ PROJ-008-transcript-skill
 |----------|-------|-----------|-------------|---------|----------|------------|
 | Epics | 1 | 0 | 1 | 0 | 0 | 0% |
 | Features | 3 | 0 | 1 | 1 | 1 | 0% |
-| Enablers | 12 | 3 | 1 | 8 | 1 | 25% |
-| Tasks | 69 | 15 | 0 | 54 | 4 | 22% |
+| Enablers | 12 | 5 | 0 | 6 | 1 | 42% |
+| Tasks | 85 | 42 | 0 | 43 | 4 | 49% |
 | Gates | 6 | 2 | 1 | 3 | 1 | 33% |
 
 **Note:** FEAT-003, EN-012, GATE-7 deferred per DISC-002. EN-010 deprecated (absorbed into EN-016) per DISC-001.
@@ -275,7 +293,7 @@ PROJ-008-transcript-skill
 | Feature | Enablers | Tasks | Status | % Complete |
 |---------|----------|-------|--------|------------|
 | FEAT-001: Analysis & Design | 6 | 33 | in_progress | 0% |
-| FEAT-002: Implementation | 8 | 52 | pending | 0% |
+| FEAT-002: Implementation | 11 | 61 | pending | 0% |
 | FEAT-003: Future Enhancements | 1 | 4 | deferred | 0% |
 
 ### Milestone Tracking
@@ -362,6 +380,10 @@ PROJ-008-transcript-skill
 | EN-014 | [EN-014-domain-context-files/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-014-domain-context-files/) | PENDING | Added per DISC-001 |
 | EN-015 | [EN-015-transcript-validation/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-015-transcript-validation/) | PENDING | Added per DISC-001 |
 | EN-016 | [EN-016-ts-formatter/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-016-ts-formatter/) | PENDING | Added per BUG-001 |
+| EN-017 | [EN-017-large-transcript-dataset/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-017-large-transcript-dataset/) | PENDING | Added per DEC-004 |
+| EN-018 | [EN-018-split-validation/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-018-split-validation/) | PENDING | Added per DEC-004 |
+| EN-019 | [EN-019-dataset-extension/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-019-dataset-extension/) | PENDING | Added per DISC-008 (extend transcripts) |
+| EN-024 | [EN-024-mindmap-pipeline-integration/](./work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-024-mindmap-pipeline-integration/) | PENDING | RENUMBERED from EN-019 (opt-in mindmap) |
 
 ### FEAT-003: Future Enhancements (Deferred)
 
@@ -425,7 +447,11 @@ PROJ-008-transcript-skill
 | EN-013 | EN-006 | EN-014 | Context Injection |
 | EN-014 | EN-013 | EN-015 | Domain Context Files |
 | EN-015 | EN-007, EN-008, EN-009, EN-014, EN-016 | GATE-6 | Validation & Testing |
-| EN-016 | EN-008 | EN-009, EN-011, EN-015 | ts-formatter |
+| EN-016 | EN-008 | EN-009, EN-011, EN-015, EN-024 | ts-formatter |
+| EN-017 | GATE-5 | EN-018 | Large Transcript Dataset |
+| EN-018 | EN-017 | GATE-6 | Split Validation Testing |
+| EN-019 | EN-017, EN-018 | GATE-6 | Large Transcript Dataset Extension |
+| EN-024 | EN-009, EN-014, EN-016 | GATE-6 | Mindmap Pipeline Integration |
 
 #### FEAT-003 Enabler Dependencies (Deferred)
 
@@ -566,3 +592,4 @@ PROJ-008-transcript-skill
 | 2026-01-26 | Claude | Updated WORKTRACKER.md: Added FEAT-003, updated Artifact Registry, Dependencies, Gates |
 | 2026-01-27 | Claude | TDD/BDD Testing Strategy created with human-in-loop ground truth approach |
 | 2026-01-27 | Claude | Added 7 TDD/BDD testing tasks: TASK-105A, 112A, 112B, 119A, 119B, 119C, 131A (total: 69 tasks) |
+| 2026-01-28 | Claude | EN-024 Mindmap Pipeline Integration created (RENUMBERED from EN-019 per ID conflict). EN-019 is allocated to "Large Transcript Dataset Extension" per DISC-008. Tasks renumbered from TASK-001..009 to TASK-240..248. Adds opt-in --mindmap flag. Enablers: 11→12. Tasks: 76→85. |

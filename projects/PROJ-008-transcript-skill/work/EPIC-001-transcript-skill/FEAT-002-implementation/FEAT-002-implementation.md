@@ -129,6 +129,8 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | [EN-016](./EN-016-ts-formatter/EN-016-ts-formatter.md) | Enabler | ts-formatter Agent Implementation | pending | high | 113-119 | 5 | **RENUMBERED** from EN-009 per BUG-001, absorbs EN-010 |
 | [EN-017](./EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) | Enabler | Large Transcript Dataset | pending | high | 140-144 | 6 | **NEW** per DEC-004 (split testing gap) |
 | [EN-018](./EN-018-split-validation/EN-018-split-validation.md) | Enabler | Split Validation Testing | pending | high | 145-149 | 6 | **NEW** per DEC-004 (CON-FMT-007) |
+| [EN-019](./EN-019-dataset-extension/EN-019-dataset-extension.md) | Enabler | Large Transcript Dataset Extension | pending | high | 160-163 | 6 | **NEW** per DISC-008 (extend transcripts for split testing) |
+| [EN-024](./EN-024-mindmap-pipeline-integration/EN-024-mindmap-pipeline-integration.md) | Enabler | Mindmap Pipeline Integration | pending | high | 240-248 | 6 | **RENUMBERED** from EN-019 - Opt-in mindmap generation |
 
 ### Task Allocation Summary
 
@@ -145,7 +147,9 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 | EN-016 | TASK-113..119 | 7 | ts-formatter (renumbered from EN-009) |
 | EN-017 | TASK-140..144 | 5 | Large Transcript Dataset (per DEC-004) |
 | EN-018 | TASK-145..149 | 5 | Split Validation Testing (per DEC-004) |
-| **Total** | | **55** | Excludes EN-012 (moved to FEAT-003) |
+| EN-019 | TASK-160..163 | 4 | Large Transcript Dataset Extension (per DISC-008) |
+| EN-024 | TASK-240..248 | 9 | Mindmap Pipeline Integration (RENUMBERED from EN-019) |
+| **Total** | | **85** | Excludes EN-012 (moved to FEAT-003) |
 
 ### Work Item Links
 
@@ -160,6 +164,8 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 - [EN-016: ts-formatter Agent Implementation](./EN-016-ts-formatter/EN-016-ts-formatter.md)
 - [EN-017: Large Transcript Dataset](./EN-017-large-transcript-dataset/EN-017-large-transcript-dataset.md) ← **NEW** per DEC-004
 - [EN-018: Split Validation Testing](./EN-018-split-validation/EN-018-split-validation.md) ← **NEW** per DEC-004
+- [EN-019: Large Transcript Dataset Extension](./EN-019-dataset-extension/EN-019-dataset-extension.md) ← **NEW** per DISC-008 (extend transcripts)
+- [EN-024: Mindmap Pipeline Integration](./EN-024-mindmap-pipeline-integration/EN-024-mindmap-pipeline-integration.md) ← **RENUMBERED** from EN-019 (opt-in mindmap generation)
 
 **Deprecated/Moved Enablers:**
 - ~~EN-010: Artifact Packaging & Deep Linking~~ → Absorbed into EN-016
@@ -192,15 +198,15 @@ Implement the Transcript Skill based on the analysis and design completed in FEA
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| **Active Enablers** | 10 | EN-007,008,009,011,013,014,015,016,017,018 |
+| **Active Enablers** | 12 | EN-007,008,009,011,013,014,015,016,017,018,019,024 |
 | **Deprecated Enablers** | 1 | EN-010 absorbed into EN-016 |
 | **Moved Enablers** | 1 | EN-012 → FEAT-003 per DISC-002 |
-| **Completed Enablers** | 4 | EN-007 ✓, EN-008 ✓, EN-013 ✓, EN-016 ✓ (Groups 1-2 Complete) |
-| **Total Tasks** | 59 | +10 tasks per DEC-004 (EN-017: 5, EN-018: 5) |
-| **Completed Tasks** | 33 | EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) |
+| **Completed Enablers** | 5 | EN-007 ✓, EN-008 ✓, EN-009 ✓, EN-013 ✓, EN-016 ✓ (GATE-5 passed) |
+| **Total Tasks** | 85 | +10 tasks per DEC-004 (EN-017: 5, EN-018: 5) +4 tasks per EN-019 (DISC-008) +9 tasks per EN-024 |
+| **Completed Tasks** | 42 | EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-009 (4) + EN-018 (5) + EN-015 (1) |
 | **Gates Total** | 2 | GATE-5, GATE-6 (GATE-7 moved to FEAT-003) |
-| **Gates Passed** | 0 | GATE-5 partial (EN-009 pending, EN-007/008/013/016 passed) |
-| **Completion %** | 40% | 4/10 enablers complete |
+| **Gates Passed** | 1 | GATE-5 passed (EN-007, EN-008, EN-009, EN-013, EN-016 approved) |
+| **Completion %** | 49% | 42/85 tasks complete (5/12 enablers complete) |
 | **Bug Resolutions** | 1 | BUG-001 (EN-009 ID conflict resolved) |
 
 ### Orchestration Artifacts
@@ -470,6 +476,7 @@ If any file exceeds 35K tokens:
 | 2026-01-28 | Claude | PLANNING | **DEC-003 CREATED:** Orchestration execution order correction. EN-009 cannot be parallel with EN-016 (dependency). TASK-138 created in EN-015 for EN-008 deferred findings. |
 | 2026-01-28 | Claude | PLANNING | **DEC-003 AI-003/AI-004 EXECUTED:** (1) ORCHESTRATION.yaml group renumbering (Group 2→EN-013+EN-016, Group 3→EN-009, Group 4→rest). (2) EN-009 task files created with enabler-scoped numbering (TASK-001..004). |
 | 2026-01-28 | Claude | PLANNING | **DEC-004 CREATED:** Split testing enablers (EN-017, EN-018) created to address CON-FMT-007 gap identified in EN-016 GATE-5 quality reviews. 3 large transcripts (25K/45K/90K tokens) with different topics. EN-017 → EN-018 sequential dependency. Group 5 (Split Testing) added. Enablers: 8→10. Tasks: 49→59. |
+| 2026-01-28 | Claude | PLANNING | **EN-024 CREATED (RENUMBERED from EN-019):** Mindmap Pipeline Integration enabler. EN-019 allocated to "Large Transcript Dataset Extension" per DISC-008. EN-024 task IDs renumbered from TASK-001..009 to TASK-240..248. Integrates EN-009 mindmap agents into default pipeline via opt-in --mindmap flag. Enablers: 11→12. Tasks: 76→85. |
 
 ---
 

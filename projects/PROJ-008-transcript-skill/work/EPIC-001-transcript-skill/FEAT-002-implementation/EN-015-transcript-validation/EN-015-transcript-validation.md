@@ -161,6 +161,19 @@ THE DRIVING TEST ANALOGY (Validation)
 | AC-7 | Link resolution tests verify anchors work | ADR-003 | [ ] |
 | AC-8 | All enabler ACs have corresponding tests | Quality | [ ] |
 
+### End-to-End Pipeline Validation (EN-014 + EN-024 Coverage)
+
+| # | Criterion | Source | Verified |
+|---|-----------|--------|----------|
+| AC-9 | Domain context files (EN-014) validated for all 8 domains | EN-014 | [ ] |
+| AC-10 | Context injection loads correct schema per --context flag | EN-013 | [ ] |
+| AC-11 | Mindmap pipeline (--mindmap flag) generates Mermaid output | EN-024 | [ ] |
+| AC-12 | Mindmap pipeline (--mindmap flag) generates ASCII output | EN-024 | [ ] |
+| AC-13 | Mindmap pipeline validates deep links per ADR-003 | EN-024 | [ ] |
+| AC-14 | Pipeline works correctly without --mindmap (backward compatible) | EN-024 | [ ] |
+| AC-15 | ps-critic validates mindmap output when present | EN-024 | [ ] |
+| AC-16 | Full E2E test: VTT → Parser → Extractor → Formatter → Mindmap → Critic | E2E | [ ] |
+
 ---
 
 ## Children (Tasks)
@@ -566,13 +579,16 @@ projects/PROJ-008-transcript-skill/
 |----------------|------|-------------|
 | Depends On | EN-007 | Parser tests validate ts-parser |
 | Depends On | EN-008 | Extractor tests validate ts-extractor |
-| Depends On | EN-009 | Formatter tests validate ts-formatter |
+| Depends On | EN-009 | Mindmap agents to validate (ts-mindmap-mermaid, ts-mindmap-ascii) |
 | Depends On | EN-014 | Domain schemas used in context tests |
+| Depends On | EN-016 | Formatter tests validate ts-formatter |
+| Depends On | EN-024 | Mindmap pipeline integration tests (--mindmap flag validation) |
 | References | TDD-ts-parser.md | Parser requirements to test |
 | References | TDD-ts-extractor.md | Extractor requirements to test |
 | References | TDD-ts-formatter.md | Formatter requirements to test |
 | References | ADR-002 | Token limits to verify |
 | References | ADR-003 | Link resolution to verify |
+| References | ADR-006 | Mindmap integration decision (to be created by EN-024) |
 | References | PAT-002 | Defensive parsing to verify |
 | References | PAT-003 | Speaker detection to verify |
 | References | PAT-004 | Citation requirement to verify |

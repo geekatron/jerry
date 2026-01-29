@@ -333,6 +333,31 @@ enablers:
     created_by: DISC-008
     note: "Corrective work for DISC-008: Extend meeting-004 (~22.5K words) and meeting-005 (~26K words) to trigger splits. Provides full CON-FMT-007 coverage."
 
+  EN-024:
+    title: "Mindmap Pipeline Integration"
+    status: pending
+    priority: high
+    gate: GATE-6
+    tasks:
+      start: TASK-240
+      end: TASK-248
+      list: [TASK-240, TASK-241, TASK-242, TASK-243, TASK-244, TASK-245, TASK-246, TASK-247, TASK-248]
+    dependencies:
+      - EN-009  # Mindmap Generator agents
+      - EN-014  # Domain Context Files must be complete
+      - EN-016  # ts-formatter provides packet output
+    implements:
+      - ADR-006 (to be created)
+    deliverables:
+      - skills/transcript/SKILL.md (--mindmap flag)
+      - skills/transcript/agents/ts-mindmap-mermaid.md (pipeline integration)
+      - skills/transcript/agents/ts-mindmap-ascii.md (pipeline integration)
+      - skills/problem-solving/agents/ps-critic.md (mindmap validation)
+      - skills/transcript/docs/PLAYBOOK.md (updated)
+      - skills/transcript/docs/RUNBOOK.md (updated)
+    created_by: "parallel session cleanup"
+    note: "RENUMBERED from EN-019 per ID conflict. EN-019 is Dataset Extension. Integrates EN-009 mindmap agents into default pipeline as opt-in feature with --mindmap flag. Tasks renumbered from TASK-001..009 to TASK-240..248."
+
 # Gate definitions
 gates:
   GATE-5:
@@ -363,6 +388,8 @@ gates:
       - EN-015
       - EN-017  # Large Transcript Dataset (per DEC-004)
       - EN-018  # Split Validation Testing (per DEC-004)
+      - EN-019  # Dataset Extension (per DISC-008)
+      - EN-024  # Mindmap Pipeline Integration
     approval_required: true
     criteria:
       - "Worktracker integration functional"
@@ -370,6 +397,7 @@ gates:
       - "All validation tests passing"
       - "Large transcript dataset created (EN-017)"
       - "Split validation complete - CON-FMT-007 passes (EN-018)"
+      - "Mindmap pipeline integration complete (EN-024)"
 
   GATE-7:
     name: "CLI Final Review"
@@ -435,6 +463,17 @@ execution_queue:
       created_by: DEC-004
       note: "NEW per DEC-004: Addresses CON-FMT-007 gap. EN-017 → EN-018 → EN-019 (corrective per DISC-008)."
 
+    - id: 6
+      name: "Pipeline Extensions"
+      mode: SEQUENTIAL
+      enablers:
+        - EN-024  # Mindmap Pipeline Integration (depends on EN-014)
+      gate: GATE-6
+      dependencies:
+        - EN-014  # Domain Context Files must be complete first
+      created_by: "parallel session cleanup"
+      note: "EN-024 integrates EN-009 mindmap agents into pipeline. Blocked by EN-014 completion. Task IDs: TASK-240..248."
+
     # Group 4 (CLI) moved to FEAT-003 per DISC-002
     # - id: 4
     #   name: "CLI"
@@ -455,20 +494,21 @@ task_allocation:
   EN-017: [TASK-140, TASK-141, TASK-142, TASK-143, TASK-144]  # Large Transcript Dataset (per DEC-004)
   EN-018: [TASK-145, TASK-146, TASK-147, TASK-148, TASK-149]  # Split Validation Testing (per DEC-004)
   EN-019: [TASK-160, TASK-161, TASK-162, TASK-163]  # Dataset Extension (per DISC-008)
+  EN-024: [TASK-240, TASK-241, TASK-242, TASK-243, TASK-244, TASK-245, TASK-246, TASK-247, TASK-248]  # Mindmap Pipeline Integration (renumbered from parallel session EN-019)
 
 # Metrics
 metrics:
-  enablers_total: 11  # +1 (EN-019) per DISC-008; excludes deprecated EN-010 and moved EN-012
-  enablers_complete: 5  # EN-007, EN-008, EN-013, EN-016, EN-018 (added EN-018 per session)
+  enablers_total: 12  # +1 (EN-024) per parallel session cleanup; excludes deprecated EN-010 and moved EN-012
+  enablers_complete: 5  # EN-007, EN-008, EN-013, EN-016, EN-018
   enablers_in_progress: 0  # None currently active
-  enablers_pending: 5  # EN-011, EN-014, EN-015, EN-017, EN-019
+  enablers_pending: 6  # EN-011, EN-014, EN-015, EN-017, EN-019, EN-024
   enablers_gate_ready: 0  # All GATE-5 enablers approved
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 76  # +4 tasks (EN-019: TASK-160..163) per DISC-008 (72→76)
+  tasks_total: 85  # +9 tasks (EN-024: TASK-240..248) per parallel session cleanup (76→85)
   tasks_complete: 42  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5)
   gates_passed: 1  # GATE-5 passed 2026-01-28
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 55  # 42/76 tasks complete
+  completion_percentage: 49  # 42/85 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -537,3 +577,6 @@ history:
   - timestamp: "2026-01-28T23:00:00Z"
     event: "GATE-5 passed - Human approval received"
     details: "EN-009, EN-013, EN-016 human approved by Adam Nowak. GATE-5 (Core Implementation Review) officially passed. All 5 GATE-5 enablers complete: EN-007 (ts-parser), EN-008 (ts-extractor), EN-009 (Mind Map Generator), EN-013 (Context Injection), EN-016 (ts-formatter). Quality scores: EN-007 (0.89/0.87), EN-008 (0.91/0.88), EN-009 (0.91/0.91), EN-013 (0.93/0.92), EN-016 (0.94/0.90). Gates passed: 0→1."
+  - timestamp: "2026-01-28T23:45:00Z"
+    event: "EN-024 created - Mindmap Pipeline Integration"
+    details: "Parallel session created EN-019-mindmap-pipeline-integration folder with conflicting ID. EN-019 was already allocated to 'Large Transcript Dataset Extension' per DISC-008. RENUMBERED to EN-024. Tasks renumbered from TASK-001..009 to TASK-240..248 per global task allocation. Added EN-014 as dependency (must complete before pipeline integration). EN-024 integrates EN-009 mindmap agents into default transcript skill pipeline as opt-in feature with --mindmap flag. New Group 6 (Pipeline Extensions) added. Enablers: 11→12. Tasks: 76→85. Completion: 55%→49%."

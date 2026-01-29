@@ -1,0 +1,320 @@
+# EN-024: Mindmap Pipeline Integration
+
+<!--
+TEMPLATE: Enabler
+VERSION: 1.0.0
+SOURCE: ONTOLOGY-v1.md Section 3.4.9
+CREATED: 2026-01-28 per user request
+PURPOSE: Integrate EN-009 mindmap agents into default transcript skill pipeline
+RENUMBERED: 2026-01-28 from EN-019 per ID conflict (EN-019 = Large Transcript Dataset Extension)
+-->
+
+> **Type:** enabler
+> **Status:** pending
+> **Priority:** high
+> **Impact:** high
+> **Enabler Type:** architecture
+> **Created:** 2026-01-28T00:00:00Z
+> **Due:** TBD
+> **Completed:**
+> **Parent:** FEAT-002
+> **Owner:** Claude
+> **Effort:** 21
+
+---
+
+## Summary
+
+Integrate the existing mindmap generator agents (ts-mindmap-mermaid, ts-mindmap-ascii) from EN-009 into the default transcript skill pipeline as an opt-in feature. This addresses an omission in the original EN-009 scope where the agents were implemented but not wired into the pipeline.
+
+**Technical Scope:**
+- Add `--mindmap` opt-in flag to SKILL.md invocation
+- Add `--mindmap-format` parameter (mermaid, ascii, both) with "both" as default
+- Insert mindmap generation step between ts-formatter and ps-critic
+- Update ps-critic to validate mindmap output when mindmaps are enabled
+- Create ADR-006 to formalize the integration decision
+- Update documentation (PLAYBOOK.md, RUNBOOK.md)
+
+---
+
+## Enabler Type Classification
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| **INFRASTRUCTURE** | Platform, tooling, DevOps enablers | CI/CD pipelines, monitoring setup |
+| **EXPLORATION** | Research and proof-of-concept work | Technology spikes, prototypes |
+| **ARCHITECTURE** | Architectural runway and design work | Service decomposition, API design |
+| **COMPLIANCE** | Security, regulatory, and compliance requirements | GDPR implementation, SOC2 controls |
+
+**This Enabler Type:** ARCHITECTURE (Pipeline design and integration)
+
+---
+
+## Problem Statement
+
+The EN-009 Mindmap Generator enabler successfully implemented two mindmap agents (ts-mindmap-mermaid and ts-mindmap-ascii) with deep linking support. However, these agents are not integrated into the default transcript skill pipeline.
+
+**Current State:**
+```
+ts-parser -> ts-extractor -> ts-formatter -> ps-critic
+```
+
+**Gap:** Users cannot generate mindmaps as part of standard transcript processing without manually invoking the agents after the fact.
+
+**Impact:**
+- Mindmaps are a key differentiation feature (per EN-001 competitive analysis)
+- Manual invocation breaks the seamless workflow experience
+- ps-critic does not validate mindmap quality
+
+---
+
+## Business Value
+
+Integrating mindmaps into the pipeline delivers on the original product vision from competitive analysis:
+
+**From EN-001 Market Analysis:**
+- Mind maps are a differentiating feature not common in competitors
+- Visual representation aids comprehension of meeting content
+- Deep linking provides source verification capability
+
+### Features Unlocked
+
+- Seamless mindmap generation with single `/transcript` command
+- User-selectable format (Mermaid, ASCII, or both)
+- Quality-assured mindmaps via ps-critic validation
+- Complete packet output including visual artifacts
+
+---
+
+## Technical Approach
+
+### Pipeline Integration Design
+
+```
+PROPOSED PIPELINE (when --mindmap flag used):
+
+ts-parser -> ts-extractor -> ts-formatter -> ts-mindmap-* -> ps-critic
+                                                   |
+                                                   v
+                                        07-mindmap/mindmap.mmd
+                                        07-mindmap/mindmap.ascii.txt
+```
+
+### Parameter Design
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `--mindmap` | flag | false | (presence enables) |
+| `--mindmap-format` | string | "both" | "mermaid", "ascii", "both" |
+
+### State Passing
+
+| Agent | Input | Output |
+|-------|-------|--------|
+| ts-formatter | extraction-report.json | 8-file packet + ts_formatter_output |
+| ts-mindmap-* | ts_formatter_output + packet | 07-mindmap/ files + ts_mindmap_output |
+| ps-critic | all files including mindmaps | quality-review.md |
+
+### Architecture Diagram
+
+```
++------------------------------------------------------------------+
+|                     TRANSCRIPT SKILL PIPELINE                      |
++------------------------------------------------------------------+
+|                                                                    |
+|  USER INPUT                                                        |
+|  /transcript file.vtt --mindmap --mindmap-format both              |
+|       |                                                            |
+|       v                                                            |
+|  +-----------+                                                     |
+|  | ts-parser |  (haiku)                                            |
+|  +-----------+                                                     |
+|       |                                                            |
+|       v canonical-transcript.json                                  |
+|  +-------------+                                                   |
+|  | ts-extractor| (sonnet)                                          |
+|  +-------------+                                                   |
+|       |                                                            |
+|       v extraction-report.json                                     |
+|  +-------------+                                                   |
+|  | ts-formatter| (sonnet)                                          |
+|  +-------------+                                                   |
+|       |                                                            |
+|       v 8-file packet                                              |
+|       |                                                            |
+|       +-- [--mindmap flag set?] --+                                |
+|       |           YES             |                                |
+|       v                           | NO                             |
+|  +-------------------+            |                                |
+|  | ts-mindmap-mermaid| (sonnet)   |                                |
+|  | ts-mindmap-ascii  | (sonnet)   |                                |
+|  +-------------------+            |                                |
+|       |                           |                                |
+|       v 07-mindmap/ files         |                                |
+|       +---------------------------+                                |
+|       |                                                            |
+|       v                                                            |
+|  +-----------+                                                     |
+|  | ps-critic | (sonnet) - validates mindmaps if present            |
+|  +-----------+                                                     |
+|       |                                                            |
+|       v quality-review.md                                          |
+|                                                                    |
++------------------------------------------------------------------+
+```
+
+---
+
+## Non-Functional Requirements (NFRs) Addressed
+
+| NFR Category | Requirement | Current State | Target State |
+|--------------|-------------|---------------|--------------|
+| Usability | Single command workflow | Manual post-processing | Integrated pipeline |
+| Quality | Mindmap validation | Not validated | ps-critic coverage |
+| Flexibility | Format selection | N/A | User-selectable |
+| Extensibility | Pipeline modularity | Fixed stages | Conditional stages |
+
+---
+
+## Children (Tasks)
+
+### Task Inventory
+
+| ID | Title | Status | Effort | Owner | Blocked By |
+|----|-------|--------|--------|-------|------------|
+| [TASK-240](./TASK-240-research-pipeline-state.md) | Research: Current Pipeline State Analysis | pending | 2 | Claude | - |
+| [TASK-241](./TASK-241-analysis-5w2h-ishikawa.md) | Analysis: 5W2H + Ishikawa Integration Analysis | pending | 3 | Claude | TASK-240 |
+| [TASK-242](./TASK-242-adr-006-mindmap-integration.md) | ADR-006: Mindmap Pipeline Integration Decision | pending | 3 | Claude | TASK-241 |
+| [TASK-243](./TASK-243-skill-md-mindmap-flag.md) | Update SKILL.md with --mindmap Flag | pending | 2 | Claude | TASK-242 |
+| [TASK-244](./TASK-244-pipeline-orchestration-update.md) | Update Pipeline Orchestration Flow | pending | 3 | Claude | TASK-242 |
+| [TASK-245](./TASK-245-ps-critic-mindmap-validation.md) | Update ps-critic Mindmap Validation Criteria | pending | 2 | Claude | TASK-244 |
+| [TASK-246](./TASK-246-integration-tests.md) | Integration Tests for Mindmap Pipeline | pending | 3 | Claude | TASK-244, TASK-245 |
+| [TASK-247](./TASK-247-documentation-update.md) | Update PLAYBOOK.md and RUNBOOK.md | pending | 2 | Claude | TASK-244 |
+| [TASK-248](./TASK-248-quality-review.md) | Quality Review (ps-critic) | pending | 1 | Claude | TASK-246, TASK-247 |
+
+### Decisions
+
+| ID | Title | Status |
+|----|-------|--------|
+| [DEC-001](./EN-024--DEC-001-pipeline-integration-requirements.md) | Pipeline Integration Requirements | pending |
+
+### Discoveries
+
+(None yet)
+
+---
+
+## Progress Summary
+
+### Status Overview
+
+```
++------------------------------------------------------------------+
+|                   ENABLER PROGRESS TRACKER                        |
++------------------------------------------------------------------+
+| Tasks:     [....................] 0% (0/9 completed)             |
+| Effort:    [....................] 0% (0/21 points completed)     |
++------------------------------------------------------------------+
+| Overall:   [....................] 0%                             |
++------------------------------------------------------------------+
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| **Total Tasks** | 9 |
+| **Completed Tasks** | 0 |
+| **Total Effort (points)** | 21 |
+| **Completed Effort** | 0 |
+| **Completion %** | 0% |
+
+---
+
+## Acceptance Criteria
+
+### Definition of Done
+
+- [ ] ADR-006 created and accepted for pipeline integration
+- [ ] SKILL.md updated with --mindmap and --mindmap-format parameters
+- [ ] Pipeline orchestration updated with conditional mindmap step
+- [ ] ps-critic validation criteria includes mindmap checks
+- [ ] Integration tests passing for mindmap pipeline
+- [ ] PLAYBOOK.md and RUNBOOK.md updated
+- [ ] Quality review passed (ps-critic >= 0.90)
+- [ ] Human approval at GATE-6
+
+### Technical Criteria
+
+| # | Criterion | Verified |
+|---|-----------|----------|
+| AC-1 | --mindmap flag enables mindmap generation | [ ] |
+| AC-2 | --mindmap-format accepts mermaid, ascii, both | [ ] |
+| AC-3 | Default format is "both" when --mindmap used | [ ] |
+| AC-4 | Mindmaps generated after ts-formatter | [ ] |
+| AC-5 | ps-critic validates mindmaps when present | [ ] |
+| AC-6 | Pipeline works correctly without --mindmap | [ ] |
+| AC-7 | Partial result with warnings on mindmap failure | [ ] |
+| AC-8 | Instructions provided for mindmap regeneration | [ ] |
+
+---
+
+## Risks and Mitigations
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| Pipeline complexity increases | MEDIUM | LOW | Clear conditional logic, comprehensive tests |
+| ps-critic scope creep | LOW | MEDIUM | Define specific mindmap criteria only |
+| Breaking existing workflow | LOW | HIGH | Extensive regression testing |
+| Format selection confusion | LOW | LOW | Clear documentation, sensible defaults |
+
+---
+
+## Dependencies
+
+### Depends On
+
+- [EN-009: Mindmap Generator](../EN-009-mindmap-generator/EN-009-mindmap-generator.md) - Provides ts-mindmap-mermaid and ts-mindmap-ascii agents
+- [EN-014: Domain Context Files](../EN-014-domain-context-files/EN-014-domain-context-files.md) - Context domain schemas must be complete before pipeline integration
+- [EN-016: ts-formatter](../EN-016-ts-formatter/EN-016-ts-formatter.md) - Provides packet output that mindmaps consume
+- [ADR-002: Artifact Structure](../../../../../docs/adrs/ADR-002-artifact-structure.md) - Defines 07-mindmap/ in packet structure
+- [ADR-003: Bidirectional Linking](../../../../../docs/adrs/ADR-003-bidirectional-linking.md) - Deep link format for mindmaps
+
+### Enables
+
+- Complete transcript skill pipeline with visual outputs
+- Quality-assured mindmap generation
+- User-controlled format selection
+
+---
+
+## Related Items
+
+### Hierarchy
+
+- **Parent Feature:** [FEAT-002: Implementation](../FEAT-002-implementation.md)
+
+### Related Items
+
+- **Prerequisite Enabler:** [EN-009: Mindmap Generator](../EN-009-mindmap-generator/EN-009-mindmap-generator.md)
+- **Related ADR:** [ADR-002: Artifact Structure](../../../../../docs/adrs/ADR-002-artifact-structure.md)
+- **Successor Enabler:** [EN-015: Validation & Test Cases](../EN-015-validation-test-cases/EN-015-validation-test-cases.md) - End-to-end validation includes EN-024 pipeline
+
+---
+
+## History
+
+| Date | Author | Status | Notes |
+|------|--------|--------|-------|
+| 2026-01-28 | Claude | pending | Enabler created per user request. Addresses omission in EN-009 scope where agents were implemented but not integrated into pipeline. |
+| 2026-01-28 | Claude | pending | **RENUMBERED from EN-019 to EN-024** per ID conflict. EN-019 is allocated to "Large Transcript Dataset Extension" in ORCHESTRATION.yaml. Task IDs renumbered from TASK-001..009 to TASK-240..248 per global task allocation. Added EN-014 as dependency. |
+
+---
+
+## System Mapping
+
+| System | Mapping |
+|--------|---------|
+| **Azure DevOps** | PBI with ValueArea=Architectural |
+| **SAFe** | Enabler (Architecture type) |
+| **JIRA** | Story with 'enabler' label |
