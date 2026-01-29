@@ -231,9 +231,11 @@ enablers:
       end: TASK-169  # Extended from TASK-159 per DISC-006
       original: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130]
       schema_extension: [TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169]  # NEW per DISC-006
+      tdd_minor_fixes: [TASK-170, TASK-171, TASK-172, TASK-173, TASK-174, TASK-175]  # NEW per DISC-007 (TDD validation gap)
       en006_promotion: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]
       complete: [TASK-126, TASK-127, TASK-128, TASK-164, TASK-165, TASK-166, TASK-167]  # Original 3 domains + schema research + gap impact + ADR + TDD
-      in_progress: [TASK-168]  # Final Adversarial Review (next)
+      in_progress: []  # TASK-168 blocked by TASK-170; TASK-170 blocked by TASK-171..175
+      backlog: [TASK-171, TASK-172, TASK-173, TASK-174, TASK-175, TASK-170, TASK-168, TASK-169]  # TDD fixes → adversarial review → final review → gate
     dependencies:
       - EN-013
       - EN-016  # New dependency: expanded tasks blocked by EN-016 completion per DISC-005
@@ -250,8 +252,10 @@ enablers:
       human_gate: TASK-169  # Blocks TASK-150..159
     blocking_chain:
       # Schema Extension must complete before EN-006 Artifact Promotion
-      # TASK-164 → TASK-165 → TASK-166 → TASK-167 → TASK-168 → TASK-169 → TASK-150..159
+      # TASK-164 → TASK-165 → TASK-166 → TASK-167 → (TASK-171..175 parallel) → TASK-170 → TASK-168 → TASK-169 → TASK-150..159
       schema_extension_blocks: en006_promotion
+      tdd_minor_fixes_block: TASK-170  # TASK-171..175 must complete before TASK-170 (TDD adversarial review)
+      tdd_adversarial_blocks: TASK-168  # TASK-170 must complete before TASK-168 (final review)
       human_gate_task: TASK-169
     deliverables:
       # Original scope (3 domains)
@@ -535,7 +539,7 @@ task_allocation:
   EN-008: [TASK-106, TASK-107, TASK-108, TASK-109, TASK-110, TASK-111, TASK-112, TASK-112A, TASK-112B]
   EN-009: [TASK-001, TASK-002, TASK-003, TASK-004]  # Mind Map Generator - enabler-scoped numbering per DEC-003
   EN-013: [TASK-120, TASK-121, TASK-122, TASK-123, TASK-124, TASK-125]
-  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Expanded per DISC-005 (+10) and DISC-006 (+6 schema extension). TASK-169 blocks TASK-150..159.
+  EN-014: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-164, TASK-165, TASK-166, TASK-167, TASK-170, TASK-171, TASK-172, TASK-173, TASK-174, TASK-175, TASK-168, TASK-169, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Expanded per DISC-005 (+10), DISC-006 (+6), DISC-007 (+6 TDD fixes). TASK-171..175 → TASK-170 → TASK-168 → TASK-169 → TASK-150..159.
   EN-015: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137, TASK-138]  # Added TASK-138 per DEC-003:D-005
   EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B, TASK-119C]  # ts-formatter (renumbered per BUG-001), with test tasks
   EN-017: [TASK-140, TASK-141, TASK-142, TASK-143, TASK-144]  # Large Transcript Dataset (per DEC-004)
@@ -551,11 +555,12 @@ metrics:
   enablers_pending: 5  # EN-011, EN-015, EN-017, EN-019, EN-024
   enablers_gate_ready: 0  # All GATE-5 enablers approved
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 91  # +6 tasks (TASK-164..169) for EN-014 schema extension per DISC-006 (85→91)
+  tasks_total: 97  # +6 tasks (TASK-170..175) for EN-014 TDD fixes per DISC-007 (91→97)
   tasks_complete: 49  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (7: TASK-126..128, TASK-164..167)
+  tasks_backlog: 8  # EN-014 TDD minor fixes: TASK-171..175 (5) + TASK-170 (1) + TASK-168 (1) + TASK-169 (1)
   gates_passed: 1  # GATE-5 passed 2026-01-28
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 54  # 49/91 tasks complete
+  completion_percentage: 51  # 49/97 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -642,3 +647,6 @@ history:
   - timestamp: "2026-01-29T12:10:00Z"
     event: "TASK-167 TDD Schema V2 complete"
     details: "ps-architect executed 1947-line TDD with full JSON Schema V1.1.0 specification. All 4 $defs sections designed: entityRelationship, domainMetadata, contextRule, validationRule. Migration strategy documented (SchemaVer v1.0.0→v1.1.0, REVISION bump, additive-only). 2 example YAML files created (software-engineering.yaml, general.yaml). Dual-reviewer quality gate PASSED: ps-critic (0.93 PASS), nse-qa (0.91 PASS). NPR 7123.1D Process 14/15/16 compliance verified. TASK-168 (Final Adversarial Review) now unblocked. Tasks complete: 48→49. Completion: 53%→54%."
+  - timestamp: "2026-01-29T12:30:00Z"
+    event: "DISC-007 TDD Validation Implementation Gap created"
+    details: "Gap analysis of TASK-167 dual-reviewer findings identified 4 implementation gaps: IMPL-001 (Technology Selection), IMPL-002 (Validator Location), IMPL-003 (Execution Context), IMPL-004 (SV-006 Algorithm). Created DISC-007 discovery document. Created TASK-170 (TDD Adversarial Review, target 0.95) and TASK-171..175 (TDD minor fixes from ps-critic MINOR-001/002/003 and nse-qa NC-m-001/002). Dependency chain: TASK-171..175 (parallel) → TASK-170 → TASK-168 → TASK-169. TASK-168 now blocked by TASK-170. Tasks: 91→97. Completion: 54%→51%."

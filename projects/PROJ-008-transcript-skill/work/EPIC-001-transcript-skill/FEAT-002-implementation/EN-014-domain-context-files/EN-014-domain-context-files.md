@@ -240,14 +240,36 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 **NOTE:** TASK-150..159 (EN-006 Artifact Promotion) are BLOCKED by TASK-169 Human Approval Gate.
 This ensures schema extension is complete before domain YAML creation begins.
 
+### Task Inventory - TDD Minor Issue Fixes (ps-critic + nse-qa Findings)
+
+> **Source:** [DISC-007](./EN-014--DISC-007-tdd-validation-implementation-gap.md) - TDD Validation Implementation Gap
+>
+> **Rationale:** TASK-167 dual-reviewer quality reviews (ps-critic 0.93, nse-qa 0.91) identified 5 minor issues
+> that must be addressed before TDD adversarial review (TASK-170). These are documentation improvements,
+> not architectural changes.
+>
+> **Execution Order:** TASK-171..175 (parallel) → TASK-170 (TDD Adversarial Review) → TASK-168 (Final Review)
+
+| ID | Title | Status | Owner | Effort | Blocked By | Source |
+|----|-------|--------|-------|--------|------------|--------|
+| [TASK-170](./TASK-170-tdd-adversarial-review.md) | TDD Adversarial Review (nse-reviewer) | BACKLOG | Claude | 2 | TASK-171..175 | User request |
+| [TASK-171](./TASK-171-containment-cardinality-docs.md) | Add containment cardinality documentation | BACKLOG | Claude | 1 | - | ps-critic MINOR-001 |
+| [TASK-172](./TASK-172-section-numbering-fix.md) | Fix section numbering inconsistency | BACKLOG | Claude | 1 | - | ps-critic MINOR-002 |
+| [TASK-173](./TASK-173-semantic-validator-reference.md) | Add semantic validator implementation reference | BACKLOG | Claude | 2 | - | ps-critic MINOR-003, DISC-007 |
+| [TASK-174](./TASK-174-performance-benchmarks.md) | Replace performance estimates with benchmarks | BACKLOG | Claude | 1 | - | nse-qa NC-m-001 |
+| [TASK-175](./TASK-175-sv006-implementation-details.md) | Add SV-006 circular detection implementation details | BACKLOG | Claude | 2 | - | nse-qa NC-m-002, DISC-007 |
+
+**Quality Gate:** TASK-170 targets **nse-reviewer score ≥ 0.95** (elevated from ADR's 0.93). If < 0.85 after 2 iterations, escalate to user.
+
 ### Effort Summary
 
 | Scope | Tasks | Story Points |
 |-------|-------|--------------|
 | Original (3 domains) | TASK-126..130 | 6 |
 | Schema Extension | TASK-164..169 | 12 |
+| TDD Minor Issue Fixes | TASK-170..175 | 9 |
 | EN-006 Promotion (6 domains) | TASK-150..159 | 9 |
-| **Total** | **21 tasks** | **27 SP** |
+| **Total** | **27 tasks** | **36 SP** |
 
 ---
 
@@ -688,6 +710,7 @@ EN-006/docs/specs/domain-contexts/
 - [DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Alignment analysis
 - [DISC-005](../FEAT-002--DISC-005-en006-artifact-promotion-gap.md) - EN-006 artifact promotion gap (scope expansion source)
 - [DISC-006](./EN-014--DISC-006-schema-gap-analysis.md) - Schema gap analysis: EN-006 features vs domain-schema.json
+- [DISC-007](./EN-014--DISC-007-tdd-validation-implementation-gap.md) - TDD validation implementation gap (triggers TASK-170-175)
 
 ### Workflow Reference
 
@@ -702,6 +725,7 @@ EN-006/docs/specs/domain-contexts/
 | 2026-01-26 | Claude | pending | Enabler created per FEAT-002 restructuring |
 | 2026-01-28 | Claude | pending | **SCOPE EXPANDED** per DISC-005: Added TASK-150..159 to promote 6 EN-006 domain specifications. Original scope (3 domains, 5 tasks, 6 SP) expanded to 8 domains total (15 tasks, 15 SP). Human decisions: (1) SPEC files promoted as documentation, (2) Consolidated YAML per SPEC design, (3) Work blocked by EN-016 completion. |
 | 2026-01-29 | Claude | pending | **SCHEMA EXTENSION WORKFLOW** per DISC-006: Created TASK-164..169 for schema gap analysis and V2 design. TASK-150..159 now BLOCKED by TASK-169 human approval gate. Added dual-reviewer (ps-critic + nse-qa) quality strategy. Total scope: 21 tasks, 27 SP. |
+| 2026-01-29 | Claude | pending | **TDD IMPROVEMENTS** per DISC-007: Created TASK-170..175 to address ps-critic (3 MINOR) and nse-qa (2 NC-m) findings from TASK-167 quality reviews. TASK-170 adds nse-reviewer adversarial review of TDD (target 0.95). TASK-171..175 fix minor documentation issues (containment cardinality, section numbering, validator reference, performance benchmarks, SV-006 algorithm). Execution order: TASK-171..175 (parallel) → TASK-170 → TASK-168. Total scope: 27 tasks, 36 SP. |
 
 ---
 
