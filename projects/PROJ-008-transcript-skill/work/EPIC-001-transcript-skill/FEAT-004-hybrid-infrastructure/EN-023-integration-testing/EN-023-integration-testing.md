@@ -35,7 +35,7 @@ impact: medium
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T22:00:00Z"
-updated_at: "2026-01-29T22:15:00Z"
+updated_at: "2026-01-29T23:45:00Z"
 parent_id: "FEAT-004"
 tags: ["enabler", "testing", "integration", "compliance"]
 effort: 5
@@ -77,14 +77,16 @@ Each integration point needs testing to ensure:
 
 ### Test Datasets
 
-| Dataset | Size | Segments | Purpose |
-|---------|------|----------|---------|
-| meeting-001 | 5K tokens | ~100 | Smoke test |
-| meeting-002 | 15K tokens | ~500 | Small transcript |
-| meeting-003 | 25K tokens | ~800 | Medium transcript |
-| meeting-004 | 25K tokens | ~800 | Sprint planning format |
-| meeting-005 | 45K tokens | ~1,500 | Roadmap review format |
-| meeting-006 | 90K tokens | ~3,071 | Large all-hands (primary) |
+| Dataset | Size | Segments | Chunks | Purpose |
+|---------|------|----------|--------|---------|
+| meeting-001 | 5K tokens | 39 | 1 | Smoke test |
+| meeting-002 | 15K tokens | 97 | 1 | Small transcript |
+| meeting-003 | 25K tokens | 62 | 1 | Medium transcript |
+| meeting-004 | 25K tokens | 536 | 2 | Sprint planning format |
+| meeting-005 | 45K tokens | 896 | 2 | Roadmap review format |
+| meeting-006 | 90K tokens | 3,071 | 7 | Large all-hands (primary) |
+
+**Note:** Segment counts verified via TASK-231 integration tests (2026-01-29).
 
 ### Integration Test Suite
 
@@ -191,7 +193,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 | ID | Title | Status | Priority | CI |
 |----|-------|--------|----------|-----|
 | TASK-230 | Integration Test Infrastructure Setup | **DONE** | high | - |
-| TASK-231 | Parser → Chunker Integration Tests | pending | high | ✓ |
+| TASK-231 | Parser → Chunker Integration Tests | **DONE** | high | ✓ |
 | TASK-232 | Chunker Output Contract Tests | pending | high | ✓ |
 | TASK-233 | Python-Layer Pipeline Tests | pending | high | ✓ |
 
@@ -223,7 +225,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | Parser → Chunker: Zero segment loss | [ ] |
+| AC-1 | Parser → Chunker: Zero segment loss | [x] |
 | AC-2 | Chunker → Extractor: Format compatible | [ ] |
 | AC-3 | End-to-end: meeting-006 completes | [ ] |
 | AC-4 | End-to-end: Quality >= 0.90 | [ ] |
@@ -249,6 +251,7 @@ Per **DEC-012 Hybrid Testing Strategy**, tasks are restructured into two tiers: 
 | 2026-01-28 | Claude | pending | Enabler created from DISC-009 |
 | 2026-01-29 | Claude | in_progress | Restructured to 8 tasks per DEC-012 (Hybrid Testing Strategy). Two-tier approach: Python tests (CI) + LLM tests (validation). Created TASK-230..237 task files. |
 | 2026-01-29 | Claude | in_progress | TASK-230 DONE: Test infrastructure created - directories, pytest markers (llm, slow), conftest.py fixtures, CI exclusion configured. |
+| 2026-01-29 | Claude | in_progress | TASK-231 DONE: Parser → Chunker integration tests - 24 tests passing. Zero segment loss verified for all 6 datasets. Test matrix updated with actual segment counts. |
 
 ---
 

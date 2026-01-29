@@ -30,8 +30,8 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 
 # === PRIORITY ===
 priority: HIGH
@@ -42,7 +42,7 @@ created_by: "Claude"
 
 # === TIMESTAMPS ===
 created_at: "2026-01-29T21:30:00Z"
-updated_at: "2026-01-29T21:30:00Z"
+updated_at: "2026-01-29T23:30:00Z"
 
 # === HIERARCHY ===
 parent_id: "EN-023"
@@ -76,7 +76,7 @@ time_spent: null
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
 
 ---
 
@@ -90,12 +90,14 @@ These tests validate the integration point between VTTParser (EN-020) and Transc
 
 | Dataset | Segments | Expected Chunks | Test Focus |
 |---------|----------|-----------------|------------|
-| meeting-001 | ~100 | 1 | Small file baseline |
-| meeting-002 | ~500 | 1 | Near chunk boundary |
-| meeting-003 | ~800 | 2 | Multi-chunk |
-| meeting-004 | ~800 | 2 | Sprint planning format |
-| meeting-005 | ~1,500 | 3 | Roadmap review |
+| meeting-001 | 39 | 1 | Small file baseline |
+| meeting-002 | 97 | 1 | Near chunk boundary |
+| meeting-003 | 62 | 1 | Small dataset |
+| meeting-004 | 536 | 2 | Sprint planning format |
+| meeting-005 | 896 | 2 | Roadmap review |
 | meeting-006 | 3,071 | 7 | Large all-hands (primary) |
+
+**Note:** Segment counts updated based on actual data verification. Original estimates were approximations.
 
 ### Test Cases
 
@@ -205,11 +207,11 @@ class TestParserChunkerIntegration:
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Zero segment loss in parser → chunker handoff (all 6 datasets)
-- [ ] AC-2: Speaker counts match between parser output and chunker index
-- [ ] AC-3: Timestamps are continuous across chunk boundaries
-- [ ] AC-4: meeting-006 (3,071 segments) processes correctly into 7 chunks
-- [ ] AC-5: Tests pass with pytest -m integration marker
+- [x] AC-1: Zero segment loss in parser → chunker handoff (all 6 datasets)
+- [x] AC-2: Speaker counts match between parser output and chunker index
+- [x] AC-3: Timestamps are continuous across chunk boundaries
+- [x] AC-4: meeting-006 (3,071 segments) processes correctly into 7 chunks
+- [x] AC-5: Tests pass with pytest -m integration marker
 
 ---
 
@@ -226,8 +228,8 @@ class TestParserChunkerIntegration:
 | Metric | Value |
 |--------|-------|
 | Original Estimate | 3 hours |
-| Remaining Work | 3 hours |
-| Time Spent | - |
+| Remaining Work | 0 hours |
+| Time Spent | 1.5 hours |
 
 ---
 
@@ -241,10 +243,46 @@ class TestParserChunkerIntegration:
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] `pytest -m integration tests/integration/transcript/test_parser_chunker.py` passes
-- [ ] All 6 datasets pass
+- [x] Acceptance criteria verified
+- [x] `pytest -m integration tests/integration/transcript/test_parser_chunker.py` passes (24/24 tests)
+- [x] All 6 datasets pass
 - [ ] Reviewed by: Human
+
+---
+
+## Implementation Details
+
+### Test Suite Summary
+
+24 integration tests covering:
+- **Segment Loss Tests**: 7 tests (1 per dataset + aggregated)
+- **Speaker Preservation Tests**: 6 tests (meeting-006 primary + 5 others)
+- **Timestamp Continuity Tests**: 2 tests (cross-chunk + within-chunk ordering)
+- **Chunk Count Tests**: 7 tests (meeting-006 primary + parametrized for all)
+- **Supplementary Tests**: 2 tests (navigation links + segment ID sequencing)
+
+### Golden Dataset Verification
+
+| Dataset | Segments | Chunks | Status |
+|---------|----------|--------|--------|
+| meeting-001.vtt | 39 | 1 | ✅ PASS |
+| meeting-002.vtt | 97 | 1 | ✅ PASS |
+| meeting-003.vtt | 62 | 1 | ✅ PASS |
+| meeting-004-sprint-planning.vtt | 536 | 2 | ✅ PASS |
+| meeting-005-roadmap-review.vtt | 896 | 2 | ✅ PASS |
+| meeting-006-all-hands.vtt | 3071 | 7 | ✅ PASS |
+
+### Test Execution Evidence
+
+```bash
+$ uv run pytest tests/integration/transcript/test_parser_chunker.py -v -m integration
+============================= test session starts ==============================
+platform darwin -- Python 3.14.0, pytest-9.0.2
+collected 24 items
+
+tests/integration/transcript/test_parser_chunker.py ... 24 passed in 1.32s
+============================== 24 passed in 1.32s ==============================
+```
 
 ---
 
@@ -253,3 +291,4 @@ class TestParserChunkerIntegration:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-29 | BACKLOG | Created per DEC-012 restructuring |
+| 2026-01-29 | DONE | Completed - 24 integration tests created and passing. Test expectations updated with actual segment counts from golden datasets. |
