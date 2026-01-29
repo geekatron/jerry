@@ -9,12 +9,12 @@ NOTE: Creates actual contexts/*.yaml domain schema files per SPEC-context-inject
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-01-26T17:00:00Z
 > **Due:** TBD
-> **Completed:**
+> **Completed:** 2026-01-29
 > **Parent:** FEAT-002
 > **Owner:** Claude
 > **Target Sprint:** Sprint 4
@@ -154,27 +154,27 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 
 ### Definition of Done
 
-- [ ] general.yaml created with minimal entity set
-- [ ] transcript.yaml created with core entities (REQ-CI-F-001)
-- [ ] meeting.yaml created with meeting extensions
-- [ ] All schemas pass JSON Schema validation (REQ-CI-F-009)
-- [ ] prompt_guidance provides domain-specific expert knowledge
-- [ ] Integration with EN-013 context injection verified
-- [ ] ps-critic review passed
-- [ ] Human approval at GATE-5
+- [x] general.yaml created with minimal entity set
+- [x] transcript.yaml created with core entities (REQ-CI-F-001)
+- [x] meeting.yaml created with meeting extensions
+- [x] All schemas pass JSON Schema validation (REQ-CI-F-009)
+- [x] prompt_guidance provides domain-specific expert knowledge
+- [x] Integration with EN-013 context injection verified
+- [x] ps-critic review passed
+- [x] Human approval at GATE-5
 
 ### Technical Criteria (from SPEC-context-injection.md Section 3.3)
 
 | # | Criterion | SPEC Section | Verified |
 |---|-----------|--------------|----------|
-| AC-1 | Each schema has schema_version field | 3.3.2 | [ ] |
-| AC-2 | Each schema has domain identifier | 3.3.2 | [ ] |
-| AC-3 | entity_definitions has at least 1 entity | 2.3 | [ ] |
-| AC-4 | extraction_rules has at least 1 rule | 2.3 | [ ] |
-| AC-5 | Confidence thresholds in 0.0-1.0 range | 2.3 | [ ] |
-| AC-6 | Extraction rule IDs are unique | 2.3 | [ ] |
-| AC-7 | prompt_guidance provides actionable guidance | 3.3.2 | [ ] |
-| AC-8 | Schemas load correctly by SKILL.md | 3.1 | [ ] |
+| AC-1 | Each schema has schema_version field | 3.3.2 | [x] |
+| AC-2 | Each schema has domain identifier | 3.3.2 | [x] |
+| AC-3 | entity_definitions has at least 1 entity | 2.3 | [x] |
+| AC-4 | extraction_rules has at least 1 rule | 2.3 | [x] |
+| AC-5 | Confidence thresholds in 0.0-1.0 range | 2.3 | [x] |
+| AC-6 | Extraction rule IDs are unique | 2.3 | [x] |
+| AC-7 | prompt_guidance provides actionable guidance | 3.3.2 | [x] |
+| AC-8 | Schemas load correctly by SKILL.md | 3.1 | [x] |
 
 ---
 
@@ -184,11 +184,11 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-126](./TASK-126-general-domain-schema.md) | Create general.yaml baseline domain schema | pending | Claude | 1 | EN-013 |
-| [TASK-127](./TASK-127-transcript-domain-schema.md) | Create transcript.yaml core domain schema | pending | Claude | 2 | TASK-126 |
-| [TASK-128](./TASK-128-meeting-domain-schema.md) | Create meeting.yaml extended domain schema | pending | Claude | 1 | TASK-127 |
-| [TASK-129](./TASK-129-domain-json-schema.md) | Create JSON Schema validator for domain files | pending | Claude | 1 | TASK-126 |
-| [TASK-130](./TASK-130-schema-validation.md) | Validate all schemas against JSON Schema | pending | Claude | 1 | TASK-129, TASK-128 |
+| [TASK-126](./TASK-126-general-domain-schema.md) | Create general.yaml baseline domain schema | **DONE** | Claude | 1 | EN-013 |
+| [TASK-127](./TASK-127-transcript-domain-schema.md) | Create transcript.yaml core domain schema | **DONE** | Claude | 2 | TASK-126 |
+| [TASK-128](./TASK-128-meeting-domain-schema.md) | Create meeting.yaml extended domain schema | **DONE** | Claude | 1 | TASK-127 |
+| [TASK-129](./TASK-129-domain-json-schema.md) | Create JSON Schema validator for domain files | **DONE** | Claude | 1 | TASK-126 |
+| [TASK-130](./TASK-130-schema-validation.md) | Validate all schemas against JSON Schema | **DONE** | Claude | 1 | TASK-129, TASK-128 |
 
 ### Task Inventory - EN-006 Artifact Promotion (6 Additional Domains)
 
@@ -203,16 +203,16 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-150](./TASK-150-software-engineering-domain.md) | Transform & create software-engineering.yaml | pending | Claude | 1 | TASK-129 |
-| [TASK-151](./TASK-151-software-architecture-domain.md) | Transform & create software-architecture.yaml | pending | Claude | 1 | TASK-129 |
-| [TASK-152](./TASK-152-product-management-domain.md) | Transform & create product-management.yaml | pending | Claude | 1 | TASK-129 |
-| [TASK-153](./TASK-153-user-experience-domain.md) | Transform & create user-experience.yaml | pending | Claude | 1 | TASK-129 |
-| [TASK-154](./TASK-154-cloud-engineering-domain.md) | Transform & create cloud-engineering.yaml | pending | Claude | 1 | TASK-129 |
-| [TASK-155](./TASK-155-security-engineering-domain.md) | Transform & create security-engineering.yaml | pending | Claude | 1 | TASK-129 |
-| [TASK-156](./TASK-156-domain-schema-promotion.md) | Promote DOMAIN-SCHEMA.json to skill schemas | pending | Claude | 0.5 | TASK-129 |
-| [TASK-157](./TASK-157-spec-files-promotion.md) | Promote SPEC-*.md files to skill docs | pending | Claude | 1 | TASK-150..155 |
-| [TASK-158](./TASK-158-skill-md-domain-update.md) | Update SKILL.md with 6 new domains | pending | Claude | 0.5 | TASK-150..155 |
-| [TASK-159](./TASK-159-domain-load-validation.md) | Validation: All 8 domains load correctly | pending | Claude | 1 | TASK-158, TASK-130 |
+| [TASK-150](./TASK-150-software-engineering-domain.md) | Transform & create software-engineering.yaml | **DONE** | Claude | 1 | TASK-129 |
+| [TASK-151](./TASK-151-software-architecture-domain.md) | Transform & create software-architecture.yaml | **DONE** | Claude | 1 | TASK-129 |
+| [TASK-152](./TASK-152-product-management-domain.md) | Transform & create product-management.yaml | **DONE** | Claude | 1 | TASK-129 |
+| [TASK-153](./TASK-153-user-experience-domain.md) | Transform & create user-experience.yaml | **DONE** | Claude | 1 | TASK-129 |
+| [TASK-154](./TASK-154-cloud-engineering-domain.md) | Transform & create cloud-engineering.yaml | **DONE** | Claude | 1 | TASK-129 |
+| [TASK-155](./TASK-155-security-engineering-domain.md) | Transform & create security-engineering.yaml | **DONE** | Claude | 1 | TASK-129 |
+| [TASK-156](./TASK-156-domain-schema-promotion.md) | Promote DOMAIN-SCHEMA.json to skill schemas | **DONE** | Claude | 0.5 | TASK-129 |
+| [TASK-157](./TASK-157-spec-files-promotion.md) | Promote SPEC-*.md files to skill docs | **DONE** | Claude | 1 | TASK-150..155 |
+| [TASK-158](./TASK-158-skill-md-domain-update.md) | Update SKILL.md with 6 new domains | **DONE** | Claude | 0.5 | TASK-150..155 |
+| [TASK-159](./TASK-159-domain-load-validation.md) | Validation: All 8 domains load correctly | **DONE** | Claude | 1 | TASK-158, TASK-130 |
 
 **NOTE:** Task IDs start at TASK-126 to continue from EN-013 (TASK-120-125).
 **Task files created:** 2026-01-26 with detailed acceptance criteria and evidence requirements.
@@ -230,12 +230,12 @@ SAME CHEF (ts-extractor)          DIFFERENT RECIPE BOOKS
 
 | ID | Title | Status | Owner | Effort | Blocked By | Reviewers |
 |----|-------|--------|-------|--------|------------|-----------|
-| [TASK-164](./TASK-164-research-schema-extensibility.md) | Research: Schema Extensibility Patterns | BACKLOG | Claude | 2 | - | ps-critic + nse-qa |
-| [TASK-165](./TASK-165-analysis-gap-impact.md) | Analysis: Gap Impact Assessment | BACKLOG | Claude | 2 | TASK-164 | ps-critic + nse-qa |
-| [TASK-166](./TASK-166-adr-schema-extension.md) | ADR: Schema Extension Strategy | BACKLOG | Claude | 2 | TASK-164, 165 | ps-critic + nse-reviewer |
-| [TASK-167](./TASK-167-tdd-schema-v2.md) | TDD: Schema V2 Design | BACKLOG | Claude | 3 | TASK-166 | ps-critic + nse-qa |
-| [TASK-168](./TASK-168-final-adversarial-review.md) | Final Adversarial Review | BACKLOG | Claude | 2 | TASK-164..167 | TRIPLE (0.90) |
-| [TASK-169](./TASK-169-human-gate.md) | GATE: Human Approval | BACKLOG | Human | 1 | TASK-168 | Human |
+| [TASK-164](./TASK-164-research-schema-extensibility.md) | Research: Schema Extensibility Patterns | **DONE** | Claude | 2 | - | ps-critic + nse-qa |
+| [TASK-165](./TASK-165-analysis-gap-impact.md) | Analysis: Gap Impact Assessment | **DONE** | Claude | 2 | TASK-164 | ps-critic + nse-qa |
+| [TASK-166](./TASK-166-adr-schema-extension.md) | ADR: Schema Extension Strategy | **DONE** | Claude | 2 | TASK-164, 165 | ps-critic + nse-reviewer |
+| [TASK-167](./TASK-167-tdd-schema-v2.md) | TDD: Schema V2 Design | **DONE** | Claude | 3 | TASK-166 | ps-critic + nse-qa |
+| [TASK-168](./TASK-168-final-adversarial-review.md) | Final Adversarial Review | **DONE** | Claude | 2 | TASK-164..167 | TRIPLE (0.90) |
+| [TASK-169](./TASK-169-human-gate.md) | GATE: Human Approval | **DONE** | Human | 1 | TASK-168 | Human |
 
 **NOTE:** TASK-150..159 (EN-006 Artifact Promotion) are BLOCKED by TASK-169 Human Approval Gate.
 This ensures schema extension is complete before domain YAML creation begins.
@@ -252,12 +252,12 @@ This ensures schema extension is complete before domain YAML creation begins.
 
 | ID | Title | Status | Owner | Effort | Blocked By | Source |
 |----|-------|--------|-------|--------|------------|--------|
-| [TASK-170](./TASK-170-tdd-adversarial-review.md) | TDD Adversarial Review (nse-reviewer) | BACKLOG | Claude | 2 | TASK-171..175 | User request |
-| [TASK-171](./TASK-171-containment-cardinality-docs.md) | Add containment cardinality documentation | BACKLOG | Claude | 1 | - | ps-critic MINOR-001 |
-| [TASK-172](./TASK-172-section-numbering-fix.md) | Fix section numbering inconsistency | BACKLOG | Claude | 1 | - | ps-critic MINOR-002 |
-| [TASK-173](./TASK-173-semantic-validator-reference.md) | Add semantic validator implementation reference | BACKLOG | Claude | 2 | - | ps-critic MINOR-003, DISC-007 |
-| [TASK-174](./TASK-174-performance-benchmarks.md) | Replace performance estimates with benchmarks | BACKLOG | Claude | 1 | - | nse-qa NC-m-001 |
-| [TASK-175](./TASK-175-sv006-implementation-details.md) | Add SV-006 circular detection implementation details | BACKLOG | Claude | 2 | - | nse-qa NC-m-002, DISC-007 |
+| [TASK-170](./TASK-170-tdd-adversarial-review.md) | TDD Adversarial Review (nse-reviewer) | **DONE** | Claude | 2 | TASK-171..175 | User request |
+| [TASK-171](./TASK-171-containment-cardinality-docs.md) | Add containment cardinality documentation | **DONE** | Claude | 1 | - | ps-critic MINOR-001 |
+| [TASK-172](./TASK-172-section-numbering-fix.md) | Fix section numbering inconsistency | **DONE** | Claude | 1 | - | ps-critic MINOR-002 |
+| [TASK-173](./TASK-173-semantic-validator-reference.md) | Add semantic validator implementation reference | **DONE** | Claude | 2 | - | ps-critic MINOR-003, DISC-007 |
+| [TASK-174](./TASK-174-performance-benchmarks.md) | Replace performance estimates with benchmarks | **DONE** | Claude | 1 | - | nse-qa NC-m-001 |
+| [TASK-175](./TASK-175-sv006-implementation-details.md) | Add SV-006 circular detection implementation details | **DONE** | Claude | 2 | - | nse-qa NC-m-002, DISC-007 |
 
 **Quality Gate:** TASK-170 targets **nse-reviewer score ≥ 0.95** (elevated from ADR's 0.93). If < 0.85 after 2 iterations, escalate to user.
 
@@ -727,6 +727,7 @@ EN-006/docs/specs/domain-contexts/
 | 2026-01-29 | Claude | pending | **SCHEMA EXTENSION WORKFLOW** per DISC-006: Created TASK-164..169 for schema gap analysis and V2 design. TASK-150..159 now BLOCKED by TASK-169 human approval gate. Added dual-reviewer (ps-critic + nse-qa) quality strategy. Total scope: 21 tasks, 27 SP. |
 | 2026-01-29 | Claude | pending | **TDD IMPROVEMENTS** per DISC-007: Created TASK-170..175 to address ps-critic (3 MINOR) and nse-qa (2 NC-m) findings from TASK-167 quality reviews. TASK-170 adds nse-reviewer adversarial review of TDD (target 0.95). TASK-171..175 fix minor documentation issues (containment cardinality, section numbering, validator reference, performance benchmarks, SV-006 algorithm). Execution order: TASK-171..175 (parallel) → TASK-170 → TASK-168. Total scope: 27 tasks, 36 SP. |
 | 2026-01-30 | Human | in_progress | **TASK-169 APPROVED**: Human approval gate passed. TDD v3.1.0 validated (0.97 quality score). TASK-150..159 (Domain YAML Creation) now UNBLOCKED. Proceeding to implementation phase. |
+| 2026-01-29 | Claude | **DONE** | **EN-014 COMPLETE**: All 27 tasks completed. Original scope (TASK-126..130), Schema Extension (TASK-164..175), and EN-006 Promotion (TASK-150..159) all DONE. 9 domain YAML files created, DOMAIN-SCHEMA.json promoted, SKILL.md updated, 6 SPEC files + DOMAIN-SELECTION-GUIDE.md promoted, validation passed. |
 
 ---
 
