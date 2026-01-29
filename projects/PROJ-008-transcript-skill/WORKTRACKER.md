@@ -18,13 +18,15 @@
 +------------------------------------------------------------------+
 | PROJ-008: Transcript Skill                                        |
 |                                                                    |
-| Phase: ANALYSIS & DESIGN                                          |
+| Phase: ANALYSIS & DESIGN + HYBRID INFRASTRUCTURE                  |
 | Overall: [####................] 20%                               |
 |                                                                    |
 | Epics:    [##..................] 10% (1/1 in_progress)           |
-| Features: [....................] 0%  (0/3 completed)             |
-| Enablers: [######..............] 25% (3/12 completed)            |
+| Features: [....................] 0%  (0/4 completed)             |
+| Enablers: [######..............] 19% (3/16 completed)            |
 | Gates:    [####................] 33% (2/6 passed)                |
++------------------------------------------------------------------+
+| FEAT-004 Created: Hybrid Python + LLM Architecture (per DISC-009) |
 +------------------------------------------------------------------+
 ```
 
@@ -62,8 +64,10 @@ This worktracker manages the Transcript Skill project - a Jerry framework capabi
 | [FEAT-001](./work/EPIC-001-transcript-skill/FEAT-001-analysis-design/FEAT-001-analysis-design.md) | Analysis & Design | in_progress | high | 6 | GATE-1 ✓, GATE-2 ✓, GATE-3, GATE-4 |
 | [FEAT-002](./work/EPIC-001-transcript-skill/FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | pending | high | 8 | GATE-5, GATE-6 |
 | [FEAT-003](./work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/FEAT-003-future-enhancements.md) | Future Enhancements | deferred | low | 1 | GATE-7 |
+| [FEAT-004](./work/EPIC-001-transcript-skill/FEAT-004-hybrid-infrastructure/FEAT-004-hybrid-infrastructure.md) | Hybrid Parsing Infrastructure | pending | high | 4 | - |
 
 **Note:** FEAT-003 created per DISC-002. Contains deferred "Above and Beyond" scope (EN-012 CLI Interface).
+**Note:** FEAT-004 created per DISC-009. Addresses agent-only architecture limitation for large file processing.
 
 ---
 
@@ -176,7 +180,7 @@ PROJ-008-transcript-skill
 
             ★ GATE-6: Core Functionality Review ★
 
-    └── FEAT-003: Future Enhancements [DEFERRED] (per DISC-002)
+    ├── FEAT-003: Future Enhancements [DEFERRED] (per DISC-002)
         │
         ┌──────────────────────────────────────────────────────────────────────┐
         │  ABOVE AND BEYOND - DEFERRED TO FUTURE RELEASE                       │
@@ -189,6 +193,41 @@ PROJ-008-transcript-skill
             └── TASK-062: Implement Error Handling
 
             ★ GATE-7: CLI Final Review (Future Enhancement) ★
+
+    └── FEAT-004: Hybrid Parsing Infrastructure [PENDING] (per DISC-009)
+        │
+        ┌──────────────────────────────────────────────────────────────────────┐
+        │  ARCHITECTURE REMEDIATION - Python + LLM Hybrid                      │
+        └──────────────────────────────────────────────────────────────────────┘
+        │
+        ├── EN-020: Python Parser Implementation [PENDING]
+        │   ├── TASK-150: Create parser module structure
+        │   ├── TASK-151: Implement VTT parser with webvtt-py
+        │   ├── TASK-152: Implement voice tag extraction
+        │   ├── TASK-153: Add encoding detection fallback
+        │   ├── TASK-154: Create unit tests (90%+ coverage)
+        │   └── TASK-155: Integration test with meeting-006
+        │
+        ├── EN-021: Chunking Strategy [PENDING]
+        │   ├── TASK-160: Design chunk file schemas
+        │   ├── TASK-161: Implement TranscriptChunker
+        │   ├── TASK-162: Create index generation
+        │   ├── TASK-163: Add navigation links
+        │   └── TASK-164: Unit tests for chunker
+        │
+        ├── EN-022: Extractor Adaptation [PENDING]
+        │   ├── TASK-170: Update ts-extractor.md input section
+        │   ├── TASK-171: Add chunked processing protocol
+        │   ├── TASK-172: Document chunk selection strategies
+        │   └── TASK-173: Update extraction-report schema
+        │
+        └── EN-023: Integration Testing [PENDING]
+            ├── TASK-180: Create integration test fixtures
+            ├── TASK-181: Parser → Chunker data integrity tests
+            ├── TASK-182: Chunker → Extractor compatibility tests
+            ├── TASK-183: End-to-end pipeline tests
+            ├── TASK-184: Citation accuracy validation
+            └── TASK-185: ps-critic quality gate test
 ```
 
 ---
