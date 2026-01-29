@@ -77,7 +77,7 @@ enablers:
 
   EN-009:
     title: "Mind Map Generator (Mermaid + ASCII)"
-    status: gate-ready
+    status: gate-5-passed
     priority: high
     gate: GATE-5
     tasks:
@@ -96,7 +96,19 @@ enablers:
       - 07-mindmap/mindmap.ascii.txt
     discoveries:
       - DISC-001-missing-tdd-document.md  # Documented that TDD not required for EN-009
-    note: "Original EN-009 - retained per BUG-001. All 4 tasks complete. Ready for GATE-5 quality reviews."
+    quality_reviews:
+      ps_critic:
+        path: EN-009-mindmap-generator/critiques/en009-gate5-iter1-critique.md
+        score: 0.91
+        status: PASS
+      nse_qa:
+        path: EN-009-mindmap-generator/qa/proj008-en009-implementation-qa.md
+        score: 0.91
+        status: PASS
+    approval:
+      human_approval: pending
+      approved_at: null
+    note: "Original EN-009 - retained per BUG-001. All 4 tasks complete. GATE-5 quality reviews passed. Awaiting human approval."
 
   EN-010:
     title: "Artifact Packaging & Deep Linking"
@@ -283,19 +295,40 @@ enablers:
 
   EN-018:
     title: "Split Validation Testing"
-    status: pending
+    status: done
     priority: high
     gate: GATE-6
     tasks:
       start: TASK-145
       end: TASK-149
       list: [TASK-145, TASK-146, TASK-147, TASK-148, TASK-149]
+      complete: [TASK-145, TASK-146, TASK-147, TASK-148, TASK-149]
     dependencies:
       - EN-017  # Large transcript dataset required
     deliverables:
       - EN-018-split-validation/CON-FMT-007-validation-report.md
+    discoveries:
+      - DISC-008  # Token formula discrepancy (VTT vs Markdown)
     created_by: DEC-004
-    note: "Validates file splitting behavior using EN-017 dataset. Executes CON-FMT-007 contract test."
+    note: "COMPLETE: Split validation using EN-017 dataset. CON-FMT-007 verified for meeting-006. Test coverage gap identified (DISC-008) - EN-019 created for corrections."
+
+  EN-019:
+    title: "Large Transcript Dataset Extension"
+    status: pending
+    priority: high
+    gate: GATE-6
+    tasks:
+      start: TASK-160
+      end: TASK-163
+      list: [TASK-160, TASK-161, TASK-162, TASK-163]
+    dependencies:
+      - EN-017  # Original transcripts to extend
+      - EN-018  # Split validation identified gap
+    deliverables:
+      - skills/transcript/test_data/input/meeting-004-sprint-planning-extended.vtt
+      - skills/transcript/test_data/input/meeting-005-roadmap-review-extended.vtt
+    created_by: DISC-008
+    note: "Corrective work for DISC-008: Extend meeting-004 (~22.5K words) and meeting-005 (~26K words) to trigger splits. Provides full CON-FMT-007 coverage."
 
 # Gate definitions
 gates:
@@ -392,9 +425,10 @@ execution_queue:
       enablers:
         - EN-017  # Large Transcript Dataset
         - EN-018  # Split Validation Testing
+        - EN-019  # Dataset Extension (corrective per DISC-008)
       gate: GATE-6
       created_by: DEC-004
-      note: "NEW per DEC-004: Addresses CON-FMT-007 gap from EN-016 quality reviews. EN-017 → EN-018 sequential."
+      note: "NEW per DEC-004: Addresses CON-FMT-007 gap. EN-017 → EN-018 → EN-019 (corrective per DISC-008)."
 
     # Group 4 (CLI) moved to FEAT-003 per DISC-002
     # - id: 4
@@ -415,20 +449,21 @@ task_allocation:
   EN-016: [TASK-113, TASK-114, TASK-115, TASK-116, TASK-117, TASK-118, TASK-119, TASK-119A, TASK-119B, TASK-119C]  # ts-formatter (renumbered per BUG-001), with test tasks
   EN-017: [TASK-140, TASK-141, TASK-142, TASK-143, TASK-144]  # Large Transcript Dataset (per DEC-004)
   EN-018: [TASK-145, TASK-146, TASK-147, TASK-148, TASK-149]  # Split Validation Testing (per DEC-004)
+  EN-019: [TASK-160, TASK-161, TASK-162, TASK-163]  # Dataset Extension (per DISC-008)
 
 # Metrics
 metrics:
-  enablers_total: 10  # +2 (EN-017, EN-018) per DEC-004; excludes deprecated EN-010 and moved EN-012
-  enablers_complete: 4  # EN-007, EN-008, EN-013, EN-016 passed GATE-5
-  enablers_in_progress: 0  # Group 3 complete
-  enablers_pending: 5  # EN-011, EN-014, EN-015, EN-017, EN-018
-  enablers_gate_ready: 1  # EN-009 ready for GATE-5 quality reviews
+  enablers_total: 11  # +1 (EN-019) per DISC-008; excludes deprecated EN-010 and moved EN-012
+  enablers_complete: 5  # EN-007, EN-008, EN-013, EN-016, EN-018 (added EN-018 per session)
+  enablers_in_progress: 0  # None currently active
+  enablers_pending: 5  # EN-011, EN-014, EN-015, EN-017, EN-019
+  enablers_gate_ready: 1  # EN-009 ready for GATE-5 human approval
   enablers_moved: 1  # EN-012 → FEAT-003
-  tasks_total: 72  # +10 tasks (EN-017: 5, EN-018: 5) per DEC-004 (62→72)
-  tasks_complete: 37  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1: TASK-137) + EN-009 (4)
-  gates_passed: 0  # GATE-5 not yet fully passed (EN-009 awaiting reviews)
+  tasks_total: 76  # +4 tasks (EN-019: TASK-160..163) per DISC-008 (72→76)
+  tasks_complete: 42  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5)
+  gates_passed: 0  # GATE-5 not yet fully passed (EN-009 awaiting human approval)
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 51  # 37/72 tasks complete
+  completion_percentage: 55  # 42/76 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -491,3 +526,6 @@ history:
   - timestamp: "2026-01-28T16:30:00Z"
     event: "EN-009 all tasks complete"
     details: "Mind Map Generator enabler complete. Deliverables: (1) ts-mindmap-mermaid.md - Mermaid mindmap agent with deep linking per ADR-003, (2) ts-mindmap-ascii.md - ASCII fallback agent with 80-char width constraint, box-drawing chars, (3) mindmap-tests.yaml - 30+ test cases for Mermaid/ASCII/deep-link validation, (4) mindmap-link-tests.yaml - ADR-003 compliance tests. DISC-001 documented: TDD not required for EN-009, specifications sufficient in enabler/task files. Group 3 (Mind Map Generation) complete. Tasks: 33→37. Completion: 46%→51%. EN-009 status: gate-ready for ps-critic/nse-qa reviews."
+  - timestamp: "2026-01-28T17:00:00Z"
+    event: "EN-018 complete, EN-019 created per DISC-008"
+    details: "EN-018 Split Validation Testing complete (5/5 tasks done). CON-FMT-007 verified for meeting-006. DISC-008 discovered token formula discrepancy: ts-formatter uses Markdown tokens (words × 1.43), not VTT tokens. meeting-004 (18.6K) and meeting-005 (28.9K) do not trigger splits. EN-019 created as corrective work to extend transcripts to proper sizes. Enablers: 10→11. Tasks: 72→76. Completion: 51%→55%."
