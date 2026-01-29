@@ -6,14 +6,69 @@ allowed-tools: Read, Write, Glob, Task
 
 # CONTEXT INJECTION (implements REQ-CI-F-002)
 # Enables domain-specific context loading per SPEC-context-injection.md Section 3.1
+# Updated: EN-014 TASK-158 - All 9 domains registered
 context_injection:
   # Default domain when none specified
   default_domain: "general"
 
-  # Available domain schemas
+  # Available domain schemas (9 total)
+  # See docs/domains/DOMAIN-SELECTION-GUIDE.md for selection flowchart
   domains:
-    - general      # Default: no domain-specific entities
-    - transcript   # Transcript-specific: speakers, topics, action items
+    # Baseline Domains (3)
+    - name: "general"
+      description: "Baseline extraction - speakers, topics, questions"
+      file: "contexts/general.yaml"
+      spec: null  # No specialized spec
+
+    - name: "transcript"
+      description: "Base transcript entities - extends general"
+      file: "contexts/transcript.yaml"
+      spec: null  # No specialized spec
+
+    - name: "meeting"
+      description: "Generic meetings - action items, decisions, follow-ups"
+      file: "contexts/meeting.yaml"
+      spec: null  # No specialized spec
+
+    # Professional Domains (6) - From EN-006 Context Injection Design
+    - name: "software-engineering"
+      description: "Standups, sprint planning, code reviews - commitments, blockers, risks"
+      file: "contexts/software-engineering.yaml"
+      spec: "docs/domains/SPEC-software-engineering.md"
+      target_users: ["Engineers", "Tech Leads", "Scrum Masters"]
+
+    - name: "software-architecture"
+      description: "ADR discussions, design sessions - decisions, alternatives, quality attributes"
+      file: "contexts/software-architecture.yaml"
+      spec: "docs/domains/SPEC-software-architecture.md"
+      target_users: ["Architects", "Principal Engineers"]
+
+    - name: "product-management"
+      description: "Roadmap planning, feature prioritization - requests, user needs, stakeholder feedback"
+      file: "contexts/product-management.yaml"
+      spec: "docs/domains/SPEC-product-management.md"
+      target_users: ["PMs", "Product Owners", "Business Analysts"]
+
+    - name: "user-experience"
+      description: "Research interviews, usability tests - insights, pain points, verbatim quotes"
+      file: "contexts/user-experience.yaml"
+      spec: "docs/domains/SPEC-user-experience.md"
+      target_users: ["UX Researchers", "UX Designers"]
+      special_requirements: ["verbatim_quote_preservation"]
+
+    - name: "cloud-engineering"
+      description: "Post-mortems, capacity planning - incidents, root causes, action items"
+      file: "contexts/cloud-engineering.yaml"
+      spec: "docs/domains/SPEC-cloud-engineering.md"
+      target_users: ["SREs", "DevOps Engineers", "Platform Engineers"]
+      special_requirements: ["blameless_culture"]
+
+    - name: "security-engineering"
+      description: "Security audits, threat modeling - vulnerabilities, threats (STRIDE), compliance gaps"
+      file: "contexts/security-engineering.yaml"
+      spec: "docs/domains/SPEC-security-engineering.md"
+      target_users: ["Security Engineers", "AppSec Engineers", "Compliance Officers"]
+      special_requirements: ["risk_acceptance_documentation", "stride_support", "cvss_support"]
 
   # Context files location
   context_path: "./contexts/"
@@ -95,7 +150,43 @@ Activate when:
 "Extract action items from the quarterly review"
 "/transcript analyze-meeting.srt"
 "Parse the team standup notes and find all decisions"
+"/transcript meeting.vtt --domain software-engineering"
 ```
+
+---
+
+## Domain Selection
+
+The transcript skill supports **9 domain contexts** that customize entity extraction for specific professional contexts. See [DOMAIN-SELECTION-GUIDE.md](./docs/domains/DOMAIN-SELECTION-GUIDE.md) for the complete selection flowchart.
+
+### Available Domains
+
+| Domain | Context File | Use For | Key Entities |
+|--------|--------------|---------|--------------|
+| `general` | general.yaml | Any transcript (default) | speakers, topics, questions |
+| `transcript` | transcript.yaml | Extends general | + segments, timestamps |
+| `meeting` | meeting.yaml | Generic meetings | + action_items, decisions, follow_ups |
+| `software-engineering` | software-engineering.yaml | Standups, sprint planning | + commitments, blockers, risks |
+| `software-architecture` | software-architecture.yaml | ADR discussions, design | + architectural_decisions, alternatives |
+| `product-management` | product-management.yaml | Roadmap, prioritization | + feature_requests, user_needs |
+| `user-experience` | user-experience.yaml | Research, usability tests | + user_insights, pain_points, verbatim quotes |
+| `cloud-engineering` | cloud-engineering.yaml | Post-mortems, capacity | + incidents, root_causes (blameless) |
+| `security-engineering` | security-engineering.yaml | Audits, threat modeling | + vulnerabilities, threats (STRIDE), compliance_gaps |
+
+### Specifying a Domain
+
+```
+/transcript <file> --domain <domain-name>
+```
+
+**Examples:**
+```
+/transcript standup.vtt --domain software-engineering
+/transcript postmortem.vtt --domain cloud-engineering
+/transcript user-interview.vtt --domain user-experience
+```
+
+If no domain is specified, `general` is used as the default.
 
 ---
 
