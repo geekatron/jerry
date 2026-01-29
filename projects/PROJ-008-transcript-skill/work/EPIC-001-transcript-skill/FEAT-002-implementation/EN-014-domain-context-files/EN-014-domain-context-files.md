@@ -726,6 +726,7 @@ EN-006/docs/specs/domain-contexts/
 | 2026-01-28 | Claude | pending | **SCOPE EXPANDED** per DISC-005: Added TASK-150..159 to promote 6 EN-006 domain specifications. Original scope (3 domains, 5 tasks, 6 SP) expanded to 8 domains total (15 tasks, 15 SP). Human decisions: (1) SPEC files promoted as documentation, (2) Consolidated YAML per SPEC design, (3) Work blocked by EN-016 completion. |
 | 2026-01-29 | Claude | pending | **SCHEMA EXTENSION WORKFLOW** per DISC-006: Created TASK-164..169 for schema gap analysis and V2 design. TASK-150..159 now BLOCKED by TASK-169 human approval gate. Added dual-reviewer (ps-critic + nse-qa) quality strategy. Total scope: 21 tasks, 27 SP. |
 | 2026-01-29 | Claude | pending | **TDD IMPROVEMENTS** per DISC-007: Created TASK-170..175 to address ps-critic (3 MINOR) and nse-qa (2 NC-m) findings from TASK-167 quality reviews. TASK-170 adds nse-reviewer adversarial review of TDD (target 0.95). TASK-171..175 fix minor documentation issues (containment cardinality, section numbering, validator reference, performance benchmarks, SV-006 algorithm). Execution order: TASK-171..175 (parallel) → TASK-170 → TASK-168. Total scope: 27 tasks, 36 SP. |
+| 2026-01-30 | Human | in_progress | **TASK-169 APPROVED**: Human approval gate passed. TDD v3.1.0 validated (0.97 quality score). TASK-150..159 (Domain YAML Creation) now UNBLOCKED. Proceeding to implementation phase. |
 
 ---
 
