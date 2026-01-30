@@ -30,6 +30,8 @@ classifiers = [
 # Libraries added here should be pre-installed in Claude Code Web environment
 dependencies = [
     "jsonschema[test]>=4.26.0",
+    "webvtt-py>=0.5.1",
+    "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
 ]
 
 [project.optional-dependencies]

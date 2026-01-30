@@ -457,3 +457,257 @@ class TestChunkerNavigation:
                 chunk = json.load(f)
             assert "index" in chunk["navigation"]
             assert chunk["navigation"]["index"] is not None
+
+
+# =============================================================================
+# TOKEN-BASED CHUNKING TESTS (EN-026, TASK-262)
+# =============================================================================
+
+class TestChunkerTokenBased:
+    """Token-based chunking tests per EN-026 (BUG-001 fix).
+
+    TDD RED Phase: These tests written BEFORE implementation.
+    Reference: TASK-262, DEC-001 (D-005, D-006, D-007)
+    """
+
+    @pytest.mark.happy_path
+    def test_chunker_accepts_target_tokens_parameter(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """TranscriptChunker accepts target_tokens parameter."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # Should not raise an error
+        chunker = TranscriptChunker(target_tokens=18000)
+        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        assert (tmp_output_dir / "index.json").exists()
+
+    @pytest.mark.happy_path
+    def test_chunker_default_target_tokens_is_18000(self) -> None:
+        """Default target_tokens value is 18000 when specified."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # When target_tokens is explicitly set to use default
+        chunker = TranscriptChunker(target_tokens=18000)
+        assert chunker.target_tokens == 18000
+
+    @pytest.mark.happy_path
+    def test_chunker_target_tokens_takes_precedence(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """target_tokens takes precedence over chunk_size when both provided."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # Both parameters provided - target_tokens should win
+        chunker = TranscriptChunker(chunk_size=2, target_tokens=18000)
+
+        # If chunk_size were used, we'd get 5 chunks (10 segments / 2)
+        # With token-based, we'll get fewer chunks since 18000 tokens is generous
+        chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        with open(tmp_output_dir / "index.json") as f:
+            index = json.load(f)
+
+        # With 18000 tokens target, 10 small segments should fit in 1 chunk
+        assert index["total_chunks"] < 5  # Less than segment-based would produce
+
+    @pytest.mark.happy_path
+    def test_chunker_accepts_token_counter_injection(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """TranscriptChunker accepts TokenCounter via constructor injection."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+        from src.transcript.application.services.token_counter import TokenCounter
+
+        # Create a TokenCounter instance
+        token_counter = TokenCounter()
+
+        # Inject into chunker
+        chunker = TranscriptChunker(target_tokens=18000, token_counter=token_counter)
+        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        assert (tmp_output_dir / "index.json").exists()
+
+    @pytest.mark.happy_path
+    def test_chunker_token_based_respects_limit(
+        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """Token-based chunks don't exceed target_tokens limit."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+        from src.transcript.application.services.token_counter import TokenCounter
+
+        target = 5000  # Small target to force multiple chunks
+        token_counter = TokenCounter()
+        chunker = TranscriptChunker(target_tokens=target, token_counter=token_counter)
+        chunker.chunk(large_segment_list, str(tmp_output_dir))
+
+        # Verify each chunk is under the target
+        chunks_dir = tmp_output_dir / "chunks"
+        for chunk_file in sorted(chunks_dir.glob("chunk-*.json")):
+            with open(chunk_file) as f:
+                chunk = json.load(f)
+
+            # Count tokens in this chunk
+            chunk_text = json.dumps(chunk["segments"])
+            chunk_tokens = token_counter.count_tokens(chunk_text)
+
+            # Should be under target (with some margin for JSON overhead)
+            assert chunk_tokens <= target * 1.1  # 10% margin for overhead
+
+    @pytest.mark.happy_path
+    def test_chunker_token_based_index_contains_target_tokens(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """Index.json contains target_tokens field when token-based chunking used."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        chunker = TranscriptChunker(target_tokens=18000)
+        chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        with open(tmp_output_dir / "index.json") as f:
+            index = json.load(f)
+
+        assert "target_tokens" in index
+        assert index["target_tokens"] == 18000
+
+    @pytest.mark.happy_path
+    def test_chunker_creates_token_counter_internally_if_not_injected(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """TokenCounter is created internally if not injected."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # No token_counter injected - should create one internally
+        chunker = TranscriptChunker(target_tokens=18000)
+        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        assert (tmp_output_dir / "index.json").exists()
+
+    @pytest.mark.edge_case
+    def test_chunker_token_based_single_segment_under_limit(
+        self, tmp_output_dir: Path
+    ) -> None:
+        """Single segment under target_tokens produces 1 chunk."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        single_segment = [ParsedSegment(
+            id="1",
+            start_ms=0,
+            end_ms=5000,
+            speaker="Alice",
+            text="Short content.",
+            raw_text="<v Alice>Short content.</v>",
+        )]
+
+        chunker = TranscriptChunker(target_tokens=18000)
+        chunker.chunk(single_segment, str(tmp_output_dir))
+
+        with open(tmp_output_dir / "index.json") as f:
+            index = json.load(f)
+
+        assert index["total_chunks"] == 1
+
+    @pytest.mark.edge_case
+    def test_chunker_token_based_forces_split_on_large_content(
+        self, tmp_output_dir: Path
+    ) -> None:
+        """Large content segments are split into multiple chunks."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # Create segments with substantial content
+        segments = []
+        for i in range(20):
+            long_text = f"This is segment {i} with substantial content. " * 100
+            segments.append(ParsedSegment(
+                id=str(i),
+                start_ms=i * 5000,
+                end_ms=(i + 1) * 5000,
+                speaker="Speaker",
+                text=long_text,
+                raw_text=f"<v Speaker>{long_text}</v>",
+            ))
+
+        # Use a smaller target to force splitting
+        chunker = TranscriptChunker(target_tokens=2000)
+        chunker.chunk(segments, str(tmp_output_dir))
+
+        with open(tmp_output_dir / "index.json") as f:
+            index = json.load(f)
+
+        # Should produce multiple chunks due to token limit
+        assert index["total_chunks"] > 1
+
+
+class TestChunkerDeprecation:
+    """Deprecation warning tests per DEC-001 D-007."""
+
+    @pytest.mark.happy_path
+    def test_chunk_size_alone_logs_deprecation_warning(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path, caplog
+    ) -> None:
+        """Using chunk_size without target_tokens logs deprecation warning."""
+        import logging
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        with caplog.at_level(logging.WARNING):
+            chunker = TranscriptChunker(chunk_size=500)  # No target_tokens
+            chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        # Should log deprecation warning
+        assert any("deprecat" in record.message.lower() for record in caplog.records)
+
+    @pytest.mark.happy_path
+    def test_target_tokens_does_not_log_deprecation(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path, caplog
+    ) -> None:
+        """Using target_tokens does not log deprecation warning."""
+        import logging
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        with caplog.at_level(logging.WARNING):
+            chunker = TranscriptChunker(target_tokens=18000)
+            chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        # Should NOT log deprecation warning
+        assert not any("deprecat" in record.message.lower() for record in caplog.records)
+
+
+class TestChunkerBackwardCompatibility:
+    """Backward compatibility tests - existing behavior must not break."""
+
+    @pytest.mark.happy_path
+    def test_backward_compat_chunk_size_only_still_works(
+        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """TranscriptChunker(chunk_size=X) still works as before."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # Old usage pattern - should still work
+        chunker = TranscriptChunker(chunk_size=3)
+        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+
+        with open(tmp_output_dir / "index.json") as f:
+            index = json.load(f)
+
+        # 10 segments / 3 per chunk = 4 chunks (segment-based behavior)
+        assert index["total_chunks"] == 4
+        assert index["chunk_size"] == 3
+
+    @pytest.mark.happy_path
+    def test_backward_compat_default_constructor_works(
+        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+    ) -> None:
+        """TranscriptChunker() with no args still works (uses default chunk_size=500)."""
+        from src.transcript.application.services.chunker import TranscriptChunker
+
+        # Default constructor - should use segment-based with chunk_size=500
+        chunker = TranscriptChunker()
+        result = chunker.chunk(large_segment_list, str(tmp_output_dir))
+
+        with open(tmp_output_dir / "index.json") as f:
+            index = json.load(f)
+
+        # 1500 segments / 500 per chunk = 3 chunks
+        assert index["total_chunks"] == 3
+        assert index["chunk_size"] == 500

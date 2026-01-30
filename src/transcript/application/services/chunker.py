@@ -4,13 +4,18 @@ TranscriptChunker Service.
 Implements Option D chunking strategy: index + chunk files for LLM-efficient processing.
 Addresses "Lost-in-the-Middle" problem by enabling selective chunk loading.
 
-Reference: EN-021-chunking-strategy.md, TDD-FEAT-004 Section 5
+v2.1 (EN-026): Added token-based chunking to fix BUG-001 (chunk token overflow).
+- Token-based: Uses TokenCounter to ensure chunks fit within Claude Code Read limit
+- Segment-based: Legacy mode, deprecated but maintained for backward compatibility
+
+Reference: EN-021-chunking-strategy.md, TDD-FEAT-004 Section 5, EN-026
 Location: src/transcript/application/services/chunker.py
 """
 
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -20,6 +25,9 @@ if TYPE_CHECKING:
 
 from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
 
+# Module logger for deprecation warnings
+logger = logging.getLogger(__name__)
+
 
 class TranscriptChunker:
     """Splits transcript segments into LLM-efficient chunks.
@@ -28,34 +36,83 @@ class TranscriptChunker:
     enabling agents to request specific chunks instead of loading
     the entire transcript.
 
+    Supports two chunking strategies:
+    1. Token-based (recommended): Chunks by target token count for Claude Code
+    2. Segment-based (deprecated): Chunks by segment count (legacy)
+
     Attributes:
-        chunk_size: Number of segments per chunk (default: 500)
+        chunk_size: Number of segments per chunk (legacy)
+        target_tokens: Target tokens per chunk (recommended)
 
-    Example:
-        >>> chunker = TranscriptChunker(chunk_size=500)
+    Example (recommended - token-based):
+        >>> chunker = TranscriptChunker(target_tokens=18000)
         >>> index_path = chunker.chunk(segments, "/output/dir")
-        >>> print(index_path)  # /output/dir/index.json
 
-    Reference: EN-021-chunking-strategy.md, TDD-FEAT-004 Section 5
+    Example (legacy - segment-based):
+        >>> chunker = TranscriptChunker(chunk_size=500)  # Deprecated
+        >>> index_path = chunker.chunk(segments, "/output/dir")
+
+    Reference:
+        - EN-021-chunking-strategy.md
+        - EN-026 (Token-Based Chunking, BUG-001 fix)
+        - Claude Code Read limit: 25,000 tokens (GitHub Issue #4002)
     """
 
-    def __init__(self, chunk_size: int = 500) -> None:
-        """Initialize chunker with specified chunk size.
+    def __init__(
+        self,
+        chunk_size: int = 500,
+        target_tokens: int | None = None,
+        token_counter: "TokenCounter | None" = None,
+    ) -> None:
+        """Initialize chunker with segment or token-based strategy.
 
         Args:
-            chunk_size: Number of segments per chunk. Must be positive.
+            chunk_size: Number of segments per chunk (legacy, deprecated if
+                       target_tokens not provided). Must be positive.
+            target_tokens: Target tokens per chunk (recommended). When provided,
+                          uses token-based chunking and ignores chunk_size.
+                          Default when used: 18,000 (25% margin from 25K limit).
+            token_counter: Injected TokenCounter instance. Created internally
+                          if not provided when target_tokens is set.
 
         Raises:
             ValueError: If chunk_size is not positive.
+
+        Note:
+            Using chunk_size without target_tokens is deprecated and will log
+            a warning. Migrate to token-based chunking for reliable Claude Code
+            compatibility.
         """
         if chunk_size <= 0:
             raise ValueError(f"chunk_size must be positive, got {chunk_size}")
+
         self._chunk_size = chunk_size
+        self._target_tokens = target_tokens
+        self._token_counter = token_counter
+
+        # Create TokenCounter internally if needed but not provided
+        if target_tokens is not None and token_counter is None:
+            from src.transcript.application.services.token_counter import TokenCounter
+            self._token_counter = TokenCounter()
+
+        # Log deprecation warning for segment-based chunking
+        if target_tokens is None:
+            logger.warning(
+                "TranscriptChunker: Using segment-based chunking (chunk_size=%d) is "
+                "deprecated. Migrate to token-based chunking with target_tokens=18000 "
+                "for reliable Claude Code compatibility. See EN-026 for details.",
+                chunk_size,
+            )
 
     @property
     def chunk_size(self) -> int:
-        """Return the configured chunk size."""
+        """Return the configured chunk size (segment-based)."""
         return self._chunk_size
+
+    @property
+    def target_tokens(self) -> int | None:
+        """Return the configured target tokens (token-based)."""
+        return self._target_tokens
 
     def chunk(self, segments: list[ParsedSegment], output_dir: str) -> str:
         """Create index and chunk files from segments.
@@ -126,7 +183,28 @@ class TranscriptChunker:
     def _split_segments(
         self, segments: list[ParsedSegment]
     ) -> Iterator[list[ParsedSegment]]:
-        """Yield batches of segments according to chunk_size.
+        """Yield batches of segments according to chunking strategy.
+
+        Uses token-based splitting if target_tokens is set,
+        otherwise falls back to segment-based splitting.
+
+        Args:
+            segments: Full list of segments to split.
+
+        Yields:
+            Batches of segments according to configured strategy.
+        """
+        if self._target_tokens is not None:
+            # Token-based chunking (recommended)
+            yield from self._split_by_tokens(segments)
+        else:
+            # Segment-based chunking (legacy)
+            yield from self._split_by_count(segments)
+
+    def _split_by_count(
+        self, segments: list[ParsedSegment]
+    ) -> Iterator[list[ParsedSegment]]:
+        """Yield batches of segments by count (legacy segment-based).
 
         Args:
             segments: Full list of segments to split.
@@ -136,6 +214,44 @@ class TranscriptChunker:
         """
         for i in range(0, len(segments), self._chunk_size):
             yield segments[i : i + self._chunk_size]
+
+    def _split_by_tokens(
+        self, segments: list[ParsedSegment]
+    ) -> Iterator[list[ParsedSegment]]:
+        """Yield batches of segments by token count.
+
+        Accumulates segments until adding the next would exceed target_tokens,
+        then yields the current batch and starts a new one.
+
+        Args:
+            segments: Full list of segments to split.
+
+        Yields:
+            Batches of segments, each with tokens <= target_tokens.
+        """
+        assert self._token_counter is not None
+        assert self._target_tokens is not None
+
+        current_batch: list[ParsedSegment] = []
+        current_tokens = 0
+
+        for segment in segments:
+            segment_tokens = self._token_counter.count_segment_tokens(segment)
+
+            # Check if adding this segment would exceed limit
+            if current_tokens + segment_tokens > self._target_tokens and current_batch:
+                # Yield current batch and start new one
+                yield current_batch
+                current_batch = [segment]
+                current_tokens = segment_tokens
+            else:
+                # Add to current batch
+                current_batch.append(segment)
+                current_tokens += segment_tokens
+
+        # Yield final batch if non-empty
+        if current_batch:
+            yield current_batch
 
     def _create_chunk_data(
         self,
@@ -236,7 +352,7 @@ class TranscriptChunker:
         speakers_list = sorted(speaker_counts.keys())
         total_duration = segments[-1].end_ms if segments else 0
 
-        return {
+        index_data: dict[str, Any] = {
             "schema_version": "1.0",
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "total_segments": len(segments),
@@ -250,6 +366,12 @@ class TranscriptChunker:
             },
             "chunks": chunk_metadata,
         }
+
+        # Include target_tokens if token-based chunking was used
+        if self._target_tokens is not None:
+            index_data["target_tokens"] = self._target_tokens
+
+        return index_data
 
     def _segment_to_dict(self, segment: ParsedSegment) -> dict[str, Any]:
         """Convert ParsedSegment to dictionary for JSON serialization.
@@ -268,3 +390,8 @@ class TranscriptChunker:
             "text": segment.text,
             "raw_text": segment.raw_text,
         }
+
+
+# Type hint for optional import
+if TYPE_CHECKING:
+    from src.transcript.application.services.token_counter import TokenCounter

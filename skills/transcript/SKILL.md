@@ -1,8 +1,9 @@
 ---
 name: transcript
 description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
-version: "2.1.0"
-allowed-tools: Read, Write, Glob, Task
+version: "2.2.0"
+allowed-tools: Read, Write, Glob, Task, Bash(*)
+argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]
 
 # CONTEXT INJECTION (implements REQ-CI-F-002)
 # Enables domain-specific context loading per SPEC-context-injection.md Section 3.1
@@ -97,6 +98,55 @@ activation-keywords:
   - "extract decisions"
   - "analyze meeting"
   - "/transcript"
+---
+
+# MANDATORY: CLI Invocation for Parsing (Phase 1)
+
+> **CRITICAL:** For VTT files, you MUST invoke the Python parser via the `jerry` CLI.
+> DO NOT use Task agents for parsing. The CLI provides 1,250x cost reduction and deterministic output.
+
+## Phase 1: Parse Transcript (REQUIRED CLI INVOCATION)
+
+**ARGUMENT PARSING RULES:**
+1. The FIRST positional argument from user input is the `<file-path>` (the VTT/SRT file)
+2. The `--output-dir` flag specifies the output directory (default: `./transcript-output`)
+3. **IMPORTANT:** If user provides `--output`, treat it as `--output-dir` (alias)
+
+**For VTT files, Claude MUST execute this bash command:**
+
+```bash
+uv run jerry transcript parse "<FILE_PATH>" --output-dir "<OUTPUT_DIR>"
+```
+
+Where:
+- `<FILE_PATH>` = The ACTUAL file path from the user's invocation (first positional arg)
+- `<OUTPUT_DIR>` = The output directory from `--output-dir` or `--output` flag (default: `./transcript-output`)
+
+**Example - user invokes:**
+```
+/transcript /Users/me/meeting.vtt --output-dir /Users/me/output/
+```
+
+**Claude executes:**
+```bash
+uv run jerry transcript parse "/Users/me/meeting.vtt" --output-dir "/Users/me/output/"
+```
+
+**CRITICAL:** Always quote file paths to handle spaces and special characters.
+
+**Expected output:**
+- `index.json` - Chunk metadata and speaker summary
+- `chunks/chunk-*.json` - Transcript segments in processable chunks
+- `canonical-transcript.json` - Full parsed output (for reference only, DO NOT read into context)
+
+## Phase 2+: LLM Agent Orchestration
+
+After Phase 1 CLI parsing completes, continue with LLM agents:
+1. **ts-extractor** - Read `index.json` + `chunks/*.json`, produce `extraction-report.json`
+2. **ts-formatter** - Read `index.json` + `extraction-report.json`, produce packet files
+3. **ts-mindmap-*** - Generate mindmaps (if `--no-mindmap` not set)
+4. **ps-critic** - Quality review >= 0.90
+
 ---
 
 # Transcript Skill
@@ -353,27 +403,27 @@ MINDMAPS: ADR-006 - Mindmaps ON by default, opt-out via --no-mindmap flag.
 ### Option 1: Slash Command
 
 ```
-/transcript <file-path> [--output <dir>] [--format <vtt|srt|txt>] [--no-mindmap] [--mindmap-format <format>]
+/transcript <file-path> [--output-dir <dir>] [--format <vtt|srt|txt>] [--no-mindmap] [--mindmap-format <format>]
 ```
 
 **Examples (Default - Mindmaps Generated):**
 ```
-/transcript meeting.vtt                              # Mindmaps ON by default (both formats)
-/transcript standup.srt --output ./docs/meetings/    # With output directory
-/transcript notes.txt --format txt                   # Force format detection
+/transcript meeting.vtt                                   # Mindmaps ON by default (both formats)
+/transcript standup.srt --output-dir ./docs/meetings/     # With output directory
+/transcript notes.txt --format txt                        # Force format detection
 ```
 
 **Examples (Mindmap Format Selection):**
 ```
-/transcript meeting.vtt --mindmap-format mermaid     # Only Mermaid format
-/transcript meeting.vtt --mindmap-format ascii       # Only ASCII format
-/transcript meeting.vtt --mindmap-format both        # Both formats (explicit)
+/transcript meeting.vtt --mindmap-format mermaid          # Only Mermaid format
+/transcript meeting.vtt --mindmap-format ascii            # Only ASCII format
+/transcript meeting.vtt --mindmap-format both             # Both formats (explicit)
 ```
 
 **Examples (Opt-Out - Disable Mindmaps):**
 ```
-/transcript meeting.vtt --no-mindmap                 # Skip mindmap generation
-/transcript meeting.vtt --no-mindmap --output ./docs # With other options
+/transcript meeting.vtt --no-mindmap                      # Skip mindmap generation
+/transcript meeting.vtt --no-mindmap --output-dir ./docs  # With other options
 ```
 
 ### Option 2: Natural Language
@@ -433,6 +483,7 @@ transcript-{id}/
   "total_segments": 3071,
   "chunk_count": 7,
   "chunk_size": 500,
+  "target_tokens": 18000,
   "parsing_method": "python",
   "chunks": [
     {
@@ -444,6 +495,18 @@ transcript-{id}/
   ]
 }
 ```
+
+### Chunk Token Budget (v2.1 - EN-026)
+
+| Parameter | Value | Source |
+|-----------|-------|--------|
+| Claude Code Read limit | 25,000 tokens | GitHub Issue #4002 |
+| Target tokens per chunk | 18,000 tokens | 25% safety margin |
+| Token counting | tiktoken p50k_base | Best Claude approximation |
+
+**Note:** Prior to v2.1, chunks used segment-based splitting (500 segments per chunk).
+v2.1 uses **token-based splitting** to ensure chunks fit within Claude Code's Read tool limits.
+This fixes BUG-001 where large transcripts produced chunks exceeding the 25K token limit.
 
 ### Token Budget Compliance (ADR-004)
 
@@ -715,9 +778,10 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 2.1.0*
+*Skill Version: 2.2.0*
 *Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-01-26*
 *v2.0: 2026-01-30 per DISC-009 findings (99.8% data loss resolution)*
 *v2.1: 2026-01-30 per ADR-006 (Mindmap Pipeline Integration - default ON, opt-out via --no-mindmap)*
+*v2.2: 2026-01-29 - Added explicit CLI invocation instructions for Phase 1 parsing (fixes EN-024 verification gap)*

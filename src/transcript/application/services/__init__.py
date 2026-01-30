@@ -6,5 +6,6 @@ Reference: Hexagonal Architecture - application layer services.
 """
 
 from src.transcript.application.services.chunker import TranscriptChunker
+from src.transcript.application.services.token_counter import TokenCounter
 
-__all__ = ["TranscriptChunker"]
+__all__ = ["TranscriptChunker", "TokenCounter"]
