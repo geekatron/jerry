@@ -25,7 +25,7 @@ mermaid_tests:
       packet_id: "meeting-001"
       meeting_title: "Q4 Planning Meeting"
     expected:
-      output_file: "07-mindmap/mindmap.mmd"
+      output_file: "08-mindmap/mindmap.mmd"
       assertions:
         - type: "starts_with"
           value: "mindmap"
@@ -34,7 +34,7 @@ mermaid_tests:
         - type: "contains"
           value: "))"
         - type: "file_exists"
-          path: "07-mindmap/mindmap.mmd"
+          path: "08-mindmap/mindmap.mmd"
 
   - id: "MM-002"
     name: "Empty extraction handling"
@@ -56,7 +56,7 @@ mermaid_tests:
         questions: []
         topics: []
     expected:
-      output_file: "07-mindmap/mindmap.mmd"
+      output_file: "08-mindmap/mindmap.mmd"
       assertions:
         - type: "starts_with"
           value: "mindmap"
@@ -162,7 +162,7 @@ ascii_tests:
     input:
       extraction_report: "test_data/golden/simple-extraction.json"
     expected:
-      output_file: "07-mindmap/mindmap.ascii.txt"
+      output_file: "08-mindmap/mindmap.ascii.txt"
       assertions:
         - type: "contains"
           value: "┌"
@@ -434,7 +434,7 @@ integration_tests:
       extraction_report: "test_data/golden/meeting-001-extraction.json"
       packet_directory: "test_data/golden/meeting-001/"
     expected:
-      output_file: "07-mindmap/mindmap.mmd"
+      output_file: "08-mindmap/mindmap.mmd"
       assertions:
         - type: "file_exists"
         - type: "valid_mermaid_syntax"
@@ -448,7 +448,7 @@ integration_tests:
       extraction_report: "test_data/golden/meeting-001-extraction.json"
       packet_directory: "test_data/golden/meeting-001/"
     expected:
-      output_file: "07-mindmap/mindmap.ascii.txt"
+      output_file: "08-mindmap/mindmap.ascii.txt"
       assertions:
         - type: "file_exists"
         - type: "max_line_length"
@@ -459,14 +459,14 @@ integration_tests:
   - id: "INT-003"
     name: "Both formats generated"
     category: "integration"
-    description: "Verifies both Mermaid and ASCII created in 07-mindmap/"
+    description: "Verifies both Mermaid and ASCII created in 08-mindmap/"
     expected:
       files:
-        - "07-mindmap/mindmap.mmd"
-        - "07-mindmap/mindmap.ascii.txt"
+        - "08-mindmap/mindmap.mmd"
+        - "08-mindmap/mindmap.ascii.txt"
       assertions:
         - type: "directory_contains"
-          path: "07-mindmap/"
+          path: "08-mindmap/"
           count: 2
 
 # =============================================================================
@@ -510,12 +510,12 @@ contract_tests:
     name: "Directory structure contract"
     description: "Verifies output directory structure"
     requirements:
-      - Creates 07-mindmap/ directory
+      - Creates 08-mindmap/ directory
       - Contains mindmap.mmd file
       - Contains mindmap.ascii.txt file
     assertions:
       - type: "directory_exists"
-        path: "07-mindmap/"
+        path: "08-mindmap/"
 
 # =============================================================================
 # TEST EXECUTION METADATA
