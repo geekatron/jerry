@@ -9,27 +9,41 @@ PURPOSE: Document decisions for mindmap pipeline integration requirements
 -->
 
 > **Type:** decision
-> **Status:** DOCUMENTED
+> **Status:** SUPERSEDED
 > **Priority:** high
 > **Created:** 2026-01-28T00:00:00Z
+> **Superseded:** 2026-01-30T00:00:00Z
+> **Superseded By:** [ADR-006: Mindmap Pipeline Integration](../../../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md)
 > **Parent:** EN-024
 > **Owner:** Claude
-> **Related:** EN-009, ADR-002
+> **Related:** EN-009, ADR-002, ADR-006
 
 ---
 
 ## Summary
 
-This document captures the key requirements decisions made between the User and Claude for integrating mindmap generation into the transcript skill pipeline. These decisions establish the scope and constraints for EN-024 implementation.
+> **⚠️ SUPERSEDED:** This decision document has been superseded by [ADR-006: Mindmap Pipeline Integration](../../../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md).
+>
+> **Key Changes in ADR-006:**
+> - D-001 changed from opt-in (`--mindmap`) to **opt-out** (`--no-mindmap`) - mindmaps now ON by default
+> - Output directory changed from `07-mindmap/` to `08-mindmap/` per DISC-001
+> - State key formalized as `ts_mindmap_output`
+> - Validation criteria formalized as MM-001..007, AM-001..005
+>
+> **For current decisions, refer to ADR-006.**
 
-**Decisions Captured:** 6
+---
 
-**Key Outcomes:**
-- Mindmap generation will be opt-in via `--mindmap` flag
-- Format selection supports mermaid, ascii, or both (default)
-- Pipeline position established: after ts-formatter, before ps-critic
-- ps-critic will validate mindmaps when enabled
-- Failure handling defined: partial result with warnings
+This document captures the **initial** requirements decisions made between the User and Claude for integrating mindmap generation into the transcript skill pipeline. These decisions were formalized and **refined** in ADR-006.
+
+**Decisions Captured:** 6 (see ADR-006 for refined versions)
+
+**Original Key Outcomes (Superseded):**
+- ~~Mindmap generation will be opt-in via `--mindmap` flag~~ → **Now opt-out via `--no-mindmap`**
+- Format selection supports mermaid, ascii, or both (default) → **Unchanged**
+- Pipeline position established: after ts-formatter, before ps-critic → **Unchanged**
+- ps-critic will validate mindmaps when enabled → **Formalized as MM-*/AM-* criteria**
+- Failure handling defined: partial result with warnings → **Unchanged**
 
 ---
 
@@ -295,6 +309,7 @@ This ensures:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-01-28 | Claude | Created decision document capturing 6 decisions from user discussion |
+| 2026-01-30 | Claude | **SUPERSEDED by ADR-006**: Decision D-001 changed from opt-in to opt-out behavior. All decisions formalized in ADR-006 with L0/L1/L2 explanations. |
 
 ---
 
@@ -305,15 +320,16 @@ id: "EN-024:DEC-001"
 parent_id: "EN-024"
 work_type: DECISION
 title: "Pipeline Integration Requirements"
-status: DOCUMENTED
+status: SUPERSEDED
 priority: high
 created_by: "Claude"
 created_at: "2026-01-28T00:00:00Z"
-updated_at: "2026-01-28T00:00:00Z"
+updated_at: "2026-01-30T00:00:00Z"
 decided_at: "2026-01-28T00:00:00Z"
+superseded_at: "2026-01-30T00:00:00Z"
 participants: ["User", "Claude"]
-tags: ["pipeline", "mindmap", "integration", "requirements"]
+tags: ["pipeline", "mindmap", "integration", "requirements", "superseded"]
 decision_count: 6
-superseded_by: null
+superseded_by: "ADR-006"
 supersedes: null
 ```

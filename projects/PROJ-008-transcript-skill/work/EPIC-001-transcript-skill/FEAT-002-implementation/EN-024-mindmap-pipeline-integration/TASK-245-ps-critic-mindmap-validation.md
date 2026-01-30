@@ -24,7 +24,7 @@ priority: MEDIUM
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T00:00:00Z"
-updated_at: "2026-01-28T00:00:00Z"
+updated_at: "2026-01-30T00:00:00Z"
 parent_id: "EN-024"
 tags:
   - implementation
@@ -88,26 +88,30 @@ Update ps-critic to include validation criteria for mindmap outputs when they ar
 
 ## Implementation Notes
 
-### Conditional Validation Logic
+### Conditional Validation Logic (Per ADR-006 Section 5.5)
 
 ```
-IF 07-mindmap/mindmap.mmd exists:
+# Default: Mindmaps are generated unless --no-mindmap is used
+IF 08-mindmap/mindmap.mmd exists:
     Validate Mermaid criteria MM-001 through MM-007
 ENDIF
 
-IF 07-mindmap/mindmap.ascii.txt exists:
+IF 08-mindmap/mindmap.ascii.txt exists:
     Validate ASCII criteria AM-001 through AM-005
 ENDIF
+
+# Note: Output directory is 08-mindmap/ per DISC-001 numbering correction
 ```
 
-### Quality Score Contribution
+### Quality Score Contribution (Per ADR-006 Section 5.5)
 
-When mindmaps are present, they should contribute to the overall quality score:
-- Core packet files: 80% weight
-- Mindmap files: 20% weight (when present)
+When mindmaps are present (default behavior), they contribute to overall quality score:
+- Core packet files: 85% weight
+- Mindmap files: 15% weight (when present)
 
-When mindmaps are not present (--mindmap not used):
+When mindmaps are not present (`--no-mindmap` opt-out used):
 - Core packet files: 100% weight
+- No penalty for absence when explicitly opted out
 
 ### Files to Modify
 
@@ -121,6 +125,7 @@ When mindmaps are not present (--mindmap not used):
 
 - Parent: [EN-024: Mindmap Pipeline Integration](./EN-024-mindmap-pipeline-integration.md)
 - Blocked By: [TASK-244: Pipeline Orchestration](./TASK-244-pipeline-orchestration-update.md)
+- **ADR Reference:** [ADR-006: Mindmap Pipeline Integration](../../../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) - Section 5.5 (ps-critic Integration)
 - Blocks: [TASK-246: Integration Tests](./TASK-246-integration-tests.md)
 
 ---
@@ -148,3 +153,4 @@ When mindmaps are not present (--mindmap not used):
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Initial task creation |
+| 2026-01-30 | Updated | **ADR-006 ALIGNMENT**: Updated validation logic path from 07-mindmap/ to 08-mindmap/ per DISC-001. Updated quality score contribution (85/15) per ADR-006 Section 5.5. Added note about opt-out behavior (--no-mindmap). |

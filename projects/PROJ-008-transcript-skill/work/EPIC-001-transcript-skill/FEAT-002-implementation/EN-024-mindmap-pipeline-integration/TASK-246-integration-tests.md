@@ -24,7 +24,7 @@ priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T00:00:00Z"
-updated_at: "2026-01-28T00:00:00Z"
+updated_at: "2026-01-30T00:00:00Z"
 parent_id: "EN-024"
 tags:
   - testing
@@ -32,12 +32,13 @@ tags:
   - validation
 effort: 3
 acceptance_criteria: |
-  - Test: --mindmap flag generates both formats
+  - Test: Default invocation generates both formats (mindmaps ON by default)
   - Test: --mindmap-format mermaid generates only Mermaid
   - Test: --mindmap-format ascii generates only ASCII
-  - Test: Pipeline without --mindmap skips mindmap generation
-  - Test: Mindmap failure produces partial result with warning
-  - Test: ps-critic validates mindmaps when present
+  - Test: --no-mindmap opt-out flag skips mindmap generation
+  - Test: Mindmap failure produces partial result with warning (ADR-006 Section 5.4)
+  - Test: ps-critic validates mindmaps when present (ADR-006 Section 5.5)
+  - Test: Output to 08-mindmap/ directory (DISC-001)
   - All tests documented in test specification file
 activity: TESTING
 original_estimate: 3
@@ -61,67 +62,91 @@ Create comprehensive integration tests for the mindmap pipeline integration feat
 
 ---
 
-## Test Specifications
+## Test Specifications (Per ADR-006)
 
 ### TC-001: Default Mindmap Generation (Both Formats)
 
 **Given:** Transcript file `meeting.vtt`
-**When:** `/transcript meeting.vtt --mindmap`
+**When:** `/transcript meeting.vtt` (NO FLAG - mindmaps ON by default)
 **Then:**
-- `07-mindmap/mindmap.mmd` exists
-- `07-mindmap/mindmap.ascii.txt` exists
+- `08-mindmap/mindmap.mmd` exists
+- `08-mindmap/mindmap.ascii.txt` exists
 - Both files have valid content
+- ts_mindmap_output.overall_status == "complete"
+
+**Reference:** ADR-006 Section 4 (Default Behavior)
 
 ### TC-002: Mermaid Only Format
 
 **Given:** Transcript file `meeting.vtt`
-**When:** `/transcript meeting.vtt --mindmap --mindmap-format mermaid`
+**When:** `/transcript meeting.vtt --mindmap-format mermaid`
 **Then:**
-- `07-mindmap/mindmap.mmd` exists
-- `07-mindmap/mindmap.ascii.txt` does NOT exist
+- `08-mindmap/mindmap.mmd` exists
+- `08-mindmap/mindmap.ascii.txt` does NOT exist
+- ts_mindmap_output.mermaid.status == "complete"
+- ts_mindmap_output.ascii.status == "skipped"
+
+**Reference:** ADR-006 Section 5.1 (Format Parameter)
 
 ### TC-003: ASCII Only Format
 
 **Given:** Transcript file `meeting.vtt`
-**When:** `/transcript meeting.vtt --mindmap --mindmap-format ascii`
+**When:** `/transcript meeting.vtt --mindmap-format ascii`
 **Then:**
-- `07-mindmap/mindmap.mmd` does NOT exist
-- `07-mindmap/mindmap.ascii.txt` exists
+- `08-mindmap/mindmap.mmd` does NOT exist
+- `08-mindmap/mindmap.ascii.txt` exists
+- ts_mindmap_output.mermaid.status == "skipped"
+- ts_mindmap_output.ascii.status == "complete"
 
-### TC-004: Pipeline Without Mindmap
+**Reference:** ADR-006 Section 5.1 (Format Parameter)
+
+### TC-004: Opt-Out via --no-mindmap Flag
 
 **Given:** Transcript file `meeting.vtt`
-**When:** `/transcript meeting.vtt` (no --mindmap flag)
+**When:** `/transcript meeting.vtt --no-mindmap` (explicit opt-out)
 **Then:**
-- `07-mindmap/` directory does NOT exist
-- All other packet files exist normally
+- `08-mindmap/` directory does NOT exist
+- All other packet files (00-07) exist normally
+- ts_mindmap_output.overall_status == "skipped"
+- No mindmap validation performed by ps-critic
+
+**Reference:** ADR-006 Section 4 (Opt-Out Mechanism)
 
 ### TC-005: Mindmap Failure Graceful Degradation
 
 **Given:** Conditions that cause mindmap generation to fail
-**When:** `/transcript meeting.vtt --mindmap`
+**When:** `/transcript meeting.vtt` (default, mindmaps enabled)
 **Then:**
-- Core packet files (00-06) are generated
-- Warning message in output
-- Regeneration instructions provided
-- Pipeline completes (not fails)
+- Core packet files (00-07) are generated
+- Warning message in output indicating failure
+- Regeneration instructions provided (see ADR-006 Section 5.4)
+- ts_mindmap_output.overall_status == "failed" OR "partial"
+- Pipeline completes (does NOT fail entirely)
 
-### TC-006: ps-critic Validates Mindmaps
+**Reference:** ADR-006 Section 5.4 (Graceful Degradation)
 
-**Given:** Transcript processed with `--mindmap`
+### TC-006: ps-critic Validates Mindmaps When Present
+
+**Given:** Transcript processed with default (mindmaps enabled)
 **When:** ps-critic runs quality review
 **Then:**
-- Mindmap validation criteria checked
-- Quality score includes mindmap contribution
-- Invalid Mermaid syntax flagged
+- MM-001..007 validation criteria checked for Mermaid
+- AM-001..005 validation criteria checked for ASCII
+- Quality score includes 15% mindmap contribution
+- Invalid Mermaid syntax flagged as MM-001 failure
 
-### TC-007: ps-critic Skips Mindmap Validation When Not Present
+**Reference:** ADR-006 Section 5.5 (ps-critic Integration)
 
-**Given:** Transcript processed without `--mindmap`
+### TC-007: ps-critic Skips Mindmap Validation When Opted Out
+
+**Given:** Transcript processed with `--no-mindmap` flag
 **When:** ps-critic runs quality review
 **Then:**
 - Mindmap validation criteria NOT checked
-- Quality score based only on core files
+- Quality score based on 100% core files
+- No penalty for missing mindmaps (explicit opt-out)
+
+**Reference:** ADR-006 Section 5.5 (Conditional Validation)
 
 ---
 
@@ -154,6 +179,7 @@ Use existing test data from:
 - Parent: [EN-024: Mindmap Pipeline Integration](./EN-024-mindmap-pipeline-integration.md)
 - Blocked By: [TASK-244: Pipeline Orchestration](./TASK-244-pipeline-orchestration-update.md)
 - Blocked By: [TASK-245: ps-critic Update](./TASK-245-ps-critic-mindmap-validation.md)
+- **ADR Reference:** [ADR-006: Mindmap Pipeline Integration](../../../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) - All test cases derived from ADR decisions
 - Blocks: [TASK-248: Quality Review](./TASK-248-quality-review.md)
 
 ---
@@ -179,3 +205,4 @@ Use existing test data from:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Initial task creation |
+| 2026-01-30 | Updated | **ADR-006 ALIGNMENT**: Rewrote all test specifications to align with ADR-006 opt-out behavior. TC-001 now tests default (mindmaps ON), TC-004 tests --no-mindmap opt-out. All paths updated to 08-mindmap/ per DISC-001. Added ADR section references to each test case. |

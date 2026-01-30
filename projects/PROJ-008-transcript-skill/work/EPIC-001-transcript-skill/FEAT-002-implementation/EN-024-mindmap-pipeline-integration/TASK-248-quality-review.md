@@ -24,7 +24,7 @@ priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-28T00:00:00Z"
-updated_at: "2026-01-28T00:00:00Z"
+updated_at: "2026-01-30T00:00:00Z"
 parent_id: "EN-024"
 tags:
   - review
@@ -49,14 +49,14 @@ time_spent: 0
 
 Conduct comprehensive quality review of all EN-024 deliverables to ensure they meet the >= 0.90 quality threshold before requesting GATE-5 approval.
 
-### Review Scope
+### Review Scope (Per ADR-006)
 
-1. **ADR-006**: Architecture decision completeness and clarity
-2. **SKILL.md Updates**: Parameter documentation accuracy
-3. **Pipeline Orchestration**: Logic correctness
-4. **ps-critic Criteria**: Validation completeness
-5. **Integration Tests**: Test coverage adequacy
-6. **Documentation**: PLAYBOOK.md and RUNBOOK.md completeness
+1. **ADR-006**: Architecture decision completeness and clarity (Nygard format, L0/L1/L2)
+2. **SKILL.md Updates**: Parameter documentation accuracy (--no-mindmap, --mindmap-format)
+3. **Pipeline Orchestration**: Logic correctness (opt-out behavior, state passing)
+4. **ps-critic Criteria**: Validation completeness (MM-001..007, AM-001..005)
+5. **Integration Tests**: Test coverage adequacy (TC-001..TC-007)
+6. **Documentation**: PLAYBOOK.md and RUNBOOK.md completeness (08-mindmap/ paths)
 
 ### Quality Criteria
 
@@ -125,7 +125,7 @@ Conduct comprehensive quality review of all EN-024 deliverables to ensure they m
 
 ### Expected Deliverable
 
-Review report at: `EN-024-mindmap-pipeline-integration/critiques/en019-quality-review.md`
+Review report at: `EN-024-mindmap-pipeline-integration/critiques/en024-quality-review.md`
 
 ---
 
@@ -134,6 +134,7 @@ Review report at: `EN-024-mindmap-pipeline-integration/critiques/en019-quality-r
 - Parent: [EN-024: Mindmap Pipeline Integration](./EN-024-mindmap-pipeline-integration.md)
 - Blocked By: [TASK-246: Integration Tests](./TASK-246-integration-tests.md)
 - Blocked By: [TASK-247: Documentation Update](./TASK-247-documentation-update.md)
+- **ADR Reference:** [ADR-006: Mindmap Pipeline Integration](../../../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) - All criteria derived from ADR-006
 
 ---
 
@@ -143,7 +144,8 @@ Review report at: `EN-024-mindmap-pipeline-integration/critiques/en019-quality-r
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Quality Review Report | Review | critiques/en019-quality-review.md |
+| Quality Review Report | Review | critiques/en024-quality-review.md |
+| ADR-006 Reference | ADR | [ADR-006-mindmap-pipeline-integration.md](../../../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) |
 
 ### Verification
 
@@ -158,3 +160,4 @@ Review report at: `EN-024-mindmap-pipeline-integration/critiques/en019-quality-r
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-28 | Created | Initial task creation |
+| 2026-01-30 | Updated | **ADR-006 ALIGNMENT**: Fixed deliverable path (en019 → en024). Added ADR-006 to review scope and evidence. Updated review criteria to reference ADR-006 sections. |
