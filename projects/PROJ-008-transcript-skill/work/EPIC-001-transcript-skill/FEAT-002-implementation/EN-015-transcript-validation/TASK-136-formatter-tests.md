@@ -20,13 +20,13 @@ description: |
   Tests 8-file packet structure, token limits, deep linking, and file splitting.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:00:00Z"
-updated_at: "2026-01-26T18:00:00Z"
+updated_at: "2026-01-29T15:00:00Z"
 
 parent_id: "EN-015"
 
@@ -48,15 +48,15 @@ due_date: null
 
 activity: TESTING
 original_estimate: 2
-remaining_work: 2
-time_spent: 0
+remaining_work: 0
+time_spent: 2
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
 
 ---
 
@@ -68,13 +68,13 @@ Create a comprehensive YAML test specification for validating the ts-formatter a
 
 ### Acceptance Criteria
 
-- [ ] 8-file packet structure test suite
-- [ ] Token limit test suite (each file <35K)
-- [ ] File splitting test suite (for large.vtt)
-- [ ] Deep linking test suite (anchor resolution)
-- [ ] Backlinks section test suite
-- [ ] Index file completeness tests
-- [ ] All tests map to ADR requirements
+- [x] 8-file packet structure test suite (PKT-001..004)
+- [x] Token limit test suite (TOK-001..004, each file <35K)
+- [x] File splitting test suite (SPLIT-001..004 for semantic boundaries)
+- [x] Deep linking test suite (LINK-001..005, anchor resolution)
+- [x] Backlinks section test suite (LINK-004..005)
+- [x] Index file completeness tests (PKT-002)
+- [x] All tests map to ADR requirements (ADR-002, ADR-003, ADR-004)
 
 ### 8-File Packet Tests (ADR-002)
 
@@ -206,12 +206,12 @@ test_suites:
 
 ### Verification
 
-- [ ] All ADR requirements have corresponding tests
-- [ ] Token limit tests cover all file types
-- [ ] Large file splitting tested
-- [ ] Deep link resolution tested
-- [ ] YAML syntax is valid
-- [ ] Reviewed by: (pending)
+- [x] All ADR requirements have corresponding tests (ADR-002: packet_structure, ADR-003: bidirectional_linking, ADR-004: file_splitting)
+- [x] Token limit tests cover all file types (expected_outputs section with max_tokens per file)
+- [x] Large file splitting tested (SPLIT-001..004 with meeting-002.vtt)
+- [x] Deep link resolution tested (LINK-001..005, anchor format patterns)
+- [x] YAML syntax is valid
+- [x] Reviewed by: Claude (2026-01-29)
 
 ---
 
@@ -220,4 +220,5 @@ test_suites:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-015 |
+| 2026-01-29 | DONE | Created formatter-tests.yaml with 9 test suites, 45+ assertions |
 

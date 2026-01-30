@@ -10,7 +10,7 @@ workflow:
 
 metadata:
   created_at: "2026-01-26T17:30:00Z"
-  updated_at: "2026-01-28T16:00:00Z"
+  updated_at: "2026-01-29T15:00:00Z"
   prerequisite: "FEAT-001 Complete (All 4 Gates Passed)"
   alignment_analysis: "DISC-001"
   folder_structure_precedence: "DISC-003"
@@ -223,9 +223,10 @@ enablers:
 
   EN-014:
     title: "Domain Context Files"
-    status: in-progress
+    status: done
     priority: medium
     gate: GATE-6
+    completed_at: "2026-01-29T12:00:00Z"
     tasks:
       start: TASK-126
       end: TASK-169  # Extended from TASK-159 per DISC-006
@@ -233,9 +234,9 @@ enablers:
       schema_extension: [TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169]  # NEW per DISC-006
       tdd_minor_fixes: [TASK-170, TASK-171, TASK-172, TASK-173, TASK-174, TASK-175]  # NEW per DISC-007 (TDD validation gap)
       en006_promotion: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]
-      complete: [TASK-126, TASK-127, TASK-128, TASK-164, TASK-165, TASK-166, TASK-167, TASK-171, TASK-172, TASK-173, TASK-174, TASK-175, TASK-170, TASK-168, TASK-169]  # Schema extension workflow COMPLETE. Gate passed 2026-01-30.
-      in_progress: [TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # Domain YAML Creation NOW UNBLOCKED
-      backlog: []  # All schema extension tasks complete. EN-006 Promotion (TASK-150..159) in progress.
+      complete: [TASK-126, TASK-127, TASK-128, TASK-129, TASK-130, TASK-164, TASK-165, TASK-166, TASK-167, TASK-168, TASK-169, TASK-170, TASK-171, TASK-172, TASK-173, TASK-174, TASK-175, TASK-150, TASK-151, TASK-152, TASK-153, TASK-154, TASK-155, TASK-156, TASK-157, TASK-158, TASK-159]  # ALL 27 TASKS COMPLETE
+      in_progress: []
+      backlog: []
     dependencies:
       - EN-013
       - EN-016  # New dependency: expanded tasks blocked by EN-016 completion per DISC-005
@@ -306,16 +307,19 @@ enablers:
           - "Update ORCHESTRATION.yaml"  # COMPLETE
       status: COMPLETE
       completed_at: "2026-01-29T02:00:00Z"
-    note: "UPDATED 2026-01-30: TASK-169 HUMAN GATE APPROVED. Schema extension workflow COMPLETE (TASK-164..169). TDD v3.1.0 validated (0.97). TASK-150..159 (Domain YAML Creation) NOW UNBLOCKED. 15/27 EN-014 tasks complete."
+    note: "COMPLETE 2026-01-29: ALL 27 TASKS DONE. Original scope (TASK-126..130), Schema extension (TASK-164..169), TDD fixes (TASK-170..175), EN-006 Promotion (TASK-150..159). Deliverables: 9 domain YAML files, 2 JSON Schemas, 6 SPEC docs, DOMAIN-SELECTION-GUIDE.md. EN-015 now UNBLOCKED."
 
   EN-015:
     title: "Validation & Test Cases"
-    status: pending
+    status: gate-6-passed
     priority: high
     gate: GATE-6
     tasks:
       start: TASK-131
-      end: TASK-137
+      end: TASK-138
+      complete: [TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137]
+      pending: [TASK-131A]  # Human annotation of user VTT files - requires user VTT files
+      backlog: [TASK-138]  # EN-008 deferred findings
     dependencies:
       - EN-007
       - EN-008
@@ -323,11 +327,30 @@ enablers:
       - EN-016  # ts-formatter
       - EN-014
     deliverables:
-      - test_data/transcripts/golden/
-      - test_data/transcripts/edge_cases/
+      - test_data/transcripts/golden/meeting-001.vtt
+      - test_data/transcripts/golden/meeting-002.vtt
+      - test_data/transcripts/golden/meeting-003.vtt
+      - test_data/transcripts/golden/meeting-001.expected.json
+      - test_data/transcripts/golden/meeting-002.expected.json
+      - test_data/transcripts/golden/meeting-003.expected.json
+      - test_data/transcripts/edge_cases/ (13 files)
       - test_data/validation/parser-tests.yaml
       - test_data/validation/extractor-tests.yaml
       - test_data/validation/formatter-tests.yaml
+      - test_data/validation/integration-tests.yaml
+    quality_reviews:
+      ps_critic:
+        path: EN-015-transcript-validation/critiques/EN-015-e-gate6-ps-critic-review.md
+        score: 0.92
+        status: PASS
+      nse_qa:
+        path: EN-015-transcript-validation/qa/EN-015-e-gate6-nse-qa-report.md
+        score: 0.91
+        status: PASS
+    approval:
+      gate_6_passed: true
+      passed_at: "2026-01-29T16:00:00Z"
+    note: "GATE-6 passed (0.92/0.91). 7/8 core tasks DONE. TASK-131A (human annotation) pending user VTT files. TASK-138 (EN-008 deferred) in backlog."
 
   EN-017:
     title: "Large Transcript Dataset"
@@ -550,17 +573,17 @@ task_allocation:
 # Metrics
 metrics:
   enablers_total: 12  # +1 (EN-024) per parallel session cleanup; excludes deprecated EN-010 and moved EN-012
-  enablers_complete: 5  # EN-007, EN-008, EN-013, EN-016, EN-018
-  enablers_in_progress: 1  # EN-014 (schema extension workflow active)
-  enablers_pending: 5  # EN-011, EN-015, EN-017, EN-019, EN-024
-  enablers_gate_ready: 0  # All GATE-5 enablers approved
+  enablers_complete: 7  # EN-007, EN-008, EN-009, EN-013, EN-014, EN-015, EN-016, EN-018
+  enablers_in_progress: 0
+  enablers_pending: 4  # EN-011, EN-017, EN-019, EN-024
+  enablers_gate_ready: 0  # EN-015 moved to complete
   enablers_moved: 1  # EN-012 → FEAT-003
   tasks_total: 97  # +6 tasks (TASK-170..175) for EN-014 TDD fixes per DISC-007 (91→97)
-  tasks_complete: 49  # EN-007 (8) + EN-008 (9) + EN-016 (9) + EN-013 (6) + EN-015 (1) + EN-009 (4) + EN-018 (5) + EN-014 (7: TASK-126..128, TASK-164..167)
-  tasks_backlog: 8  # EN-014 TDD minor fixes: TASK-171..175 (5) + TASK-170 (1) + TASK-168 (1) + TASK-169 (1)
-  gates_passed: 1  # GATE-5 passed 2026-01-28
+  tasks_complete: 76  # EN-007 (8) + EN-008 (9) + EN-009 (4) + EN-013 (6) + EN-014 (27) + EN-015 (7) + EN-016 (9) + EN-018 (5) + EN-017 (1 TASK-131)
+  tasks_backlog: 2  # TASK-131A (user VTT files), TASK-138 (EN-008 deferred)
+  gates_passed: 2  # GATE-5 passed 2026-01-28, GATE-6 passed 2026-01-29
   gates_total: 2  # GATE-5, GATE-6 (GATE-7 moved to FEAT-003)
-  completion_percentage: 51  # 49/97 tasks complete
+  completion_percentage: 78  # 76/97 tasks complete
 
 # Checkpoint tracking
 checkpoints:
@@ -653,3 +676,12 @@ history:
   - timestamp: "2026-01-30T10:00:00Z"
     event: "TASK-169 Human Approval Gate APPROVED"
     details: "Human (Adam Nowak) approved EN-014 schema extension workflow. TDD v3.1.0 validated at 0.97 quality score. All prerequisites complete: Research (0.92), Analysis (0.91), ADR (0.93), TDD v3.1.0 (0.97), Final Review PASS. TASK-150..159 (Domain YAML Creation - 10 tasks) NOW UNBLOCKED. EN-014 schema extension phase: 15/27 tasks complete. Proceeding to implementation phase."
+  - timestamp: "2026-01-29T12:00:00Z"
+    event: "EN-014 COMPLETE - All 27 Tasks Done"
+    details: "Domain Context Files enabler complete. All 4 task groups finished: Original scope (TASK-126..130, 5 tasks), Schema extension (TASK-164..169, 6 tasks), TDD fixes (TASK-170..175, 6 tasks), EN-006 Promotion (TASK-150..159, 10 tasks). Deliverables: 9 domain YAML files (general, transcript, meeting + 6 professional), 2 JSON Schemas (DOMAIN-SCHEMA.json, domain-schema.json), 6 SPEC documentation files, DOMAIN-SELECTION-GUIDE.md. EN-015 (Validation & Test Cases) NOW UNBLOCKED. Tasks complete: 49→69. Completion: 51%→71%."
+  - timestamp: "2026-01-29T15:00:00Z"
+    event: "EN-015 core tasks complete (7/8) - Gate Ready"
+    details: "Validation & Test Cases enabler 7/8 core tasks complete. TASK-131 (golden dataset - 3 VTT files), TASK-132 (ground truth JSON - 3 expected.json), TASK-133 (edge cases - 13 VTT files), TASK-134 (parser-tests.yaml), TASK-135 (extractor-tests.yaml ~550 lines, 10 test suites), TASK-136 (formatter-tests.yaml ~450 lines, 9 test suites), TASK-137 (integration-tests.yaml). Pending: TASK-131A (human annotation - requires user VTT files). Backlog: TASK-138 (EN-008 deferred findings). EN-015 status: gate-ready. Tasks complete: 69→76. Completion: 71%→78%."
+  - timestamp: "2026-01-29T16:00:00Z"
+    event: "EN-015 GATE-6 PASSED - Quality reviews complete"
+    details: "Transcript Validation & Test Cases enabler passed GATE-6 (Functionality Review). Quality scores: ps-critic (0.92 PASS) and nse-qa (0.91 PASS). Key strengths: (1) Comprehensive W3C WebVTT coverage, (2) Strong requirements traceability, (3) Layered test strategy, (4) Evidence-based ground truth, (5) Production-ready dataset variety. Minor findings: TASK-133 status discrepancy (LOW), missing test_data/README.md (LOW). GATE-6 verdict: APPROVED. Review reports: critiques/EN-015-e-gate6-ps-critic-review.md, qa/EN-015-e-gate6-nse-qa-report.md. Enablers complete: 6→7. Gates passed: 1→2 (GATE-5 + GATE-6)."

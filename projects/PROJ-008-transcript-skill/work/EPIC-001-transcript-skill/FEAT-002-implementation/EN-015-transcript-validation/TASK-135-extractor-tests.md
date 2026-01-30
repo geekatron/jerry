@@ -20,13 +20,13 @@ description: |
   Uses ground truth JSON to measure precision, recall, and F1 scores.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: HIGH
 assignee: "Claude"
 created_by: "Claude"
 created_at: "2026-01-26T18:00:00Z"
-updated_at: "2026-01-26T18:00:00Z"
+updated_at: "2026-01-29T15:00:00Z"
 
 parent_id: "EN-015"
 
@@ -48,15 +48,15 @@ due_date: null
 
 activity: TESTING
 original_estimate: 2
-remaining_work: 2
-time_spent: 0
+remaining_work: 0
+time_spent: 2
 ```
 
 ---
 
 ## State Machine
 
-**Current State:** `BACKLOG`
+**Current State:** `DONE`
 
 ---
 
@@ -68,14 +68,14 @@ Create a comprehensive YAML test specification for validating the ts-extractor a
 
 ### Acceptance Criteria
 
-- [ ] Action item extraction test suite with precision >= 0.85, recall >= 0.80
-- [ ] Decision extraction test suite with precision >= 0.85, recall >= 0.75
-- [ ] Question extraction test suite with precision >= 0.80, recall >= 0.70
-- [ ] Speaker identification test suite with accuracy >= 0.95
-- [ ] Topic extraction test suite with precision >= 0.75, recall >= 0.70
-- [ ] Citation validation test suite (100% coverage)
-- [ ] Confidence tier validation tests
-- [ ] All tests reference ground truth JSON
+- [x] Action item extraction test suite with precision >= 0.85, recall >= 0.80
+- [x] Decision extraction test suite with precision >= 0.85, recall >= 0.75
+- [x] Question extraction test suite with precision >= 0.80, recall >= 0.70
+- [x] Speaker identification test suite with accuracy >= 0.95
+- [x] Topic extraction test suite with precision >= 0.75, recall >= 0.70
+- [x] Citation validation test suite (100% coverage)
+- [x] Confidence tier validation tests
+- [x] All tests reference ground truth JSON
 
 ### Precision/Recall Targets (from EN-015)
 
@@ -166,12 +166,12 @@ test_suites:
 
 ### Verification
 
-- [ ] All entity types have test suites
-- [ ] Precision/recall thresholds match EN-015 spec
-- [ ] Ground truth files referenced correctly
-- [ ] PAT-004 citation tests included
-- [ ] YAML syntax is valid
-- [ ] Reviewed by: (pending)
+- [x] All entity types have test suites (speaker_identification, action_item_extraction, decision_extraction, question_extraction, topic_segmentation)
+- [x] Precision/recall thresholds match EN-015 spec (targets section at bottom)
+- [x] Ground truth files referenced correctly (meeting-001/002/003.expected.json)
+- [x] PAT-004 citation tests included (citation_validation suite: CITE-001..005)
+- [x] YAML syntax is valid
+- [x] Reviewed by: Claude (2026-01-29)
 
 ---
 
@@ -180,4 +180,5 @@ test_suites:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-26 | Created | Initial task creation per EN-015 |
+| 2026-01-29 | DONE | Created extractor-tests.yaml with 10 test suites, 50+ assertions |
 

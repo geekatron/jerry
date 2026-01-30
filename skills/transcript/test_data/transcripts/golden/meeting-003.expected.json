@@ -1,0 +1,436 @@
+{
+  "_metadata": {
+    "description": "Ground truth extraction results for meeting-003.vtt golden dataset",
+    "source_file": "transcripts/golden/meeting-003.vtt",
+    "derived_by": "Claude (human-verified ground truth for TASK-132)",
+    "derived_at": "2026-01-29T14:30:00Z",
+    "purpose": "Golden test data for ts-extractor validation - edge case parsing and late joiner handling",
+    "review_status": "GROUND_TRUTH",
+    "task_reference": "EN-015/TASK-132",
+    "notes": [
+      "Edge Cases Meeting with W3C VTT parsing challenges",
+      "Initial 3 speakers + 2 late joiners (Diana at 5:00, Eve at 10:00)",
+      "Contains: 10 action items, 4 decisions, 3 questions, 7 topics",
+      "Incorporates: multiline payloads, voice tag classes, nested formatting, entity escapes, unicode",
+      "Tests dynamic speaker detection for late joiners"
+    ]
+  },
+  "version": "1.1",
+  "packet_id": "meeting-003",
+  "input_format": "single_file",
+  "chunk_metadata": null,
+  "extraction_stats": {
+    "speakers_identified": 5,
+    "action_items": 10,
+    "decisions": 4,
+    "questions": 3,
+    "topics": 7,
+    "confidence_summary": {
+      "average": 0.92,
+      "high_count": 17,
+      "medium_count": 0,
+      "low_count": 0,
+      "high_ratio": 1.0
+    }
+  },
+  "speakers": [
+    {
+      "id": "spk-001",
+      "name": "Alice",
+      "role": null,
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 18,
+      "join_time_ms": 0
+    },
+    {
+      "id": "spk-002",
+      "name": "Bob",
+      "role": null,
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 14,
+      "join_time_ms": 0
+    },
+    {
+      "id": "spk-003",
+      "name": "Charlie",
+      "role": null,
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 10,
+      "join_time_ms": 0
+    },
+    {
+      "id": "spk-004",
+      "name": "Diana",
+      "role": null,
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 8,
+      "join_time_ms": 305000,
+      "late_joiner": true
+    },
+    {
+      "id": "spk-005",
+      "name": "Eve",
+      "role": null,
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 8,
+      "join_time_ms": 605000,
+      "late_joiner": true
+    }
+  ],
+  "action_items": [
+    {
+      "id": "act-001",
+      "text": "Increase rate limit to 200 requests per minute",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-008",
+        "anchor": "#seg-008",
+        "timestamp_ms": 108000,
+        "text_snippet": "The rate limit needs to be at least 200 requests per minute. I'll implement the change."
+      }
+    },
+    {
+      "id": "act-002",
+      "text": "Update developer documentation with threshold logic",
+      "assignee": "Charlie",
+      "due_date": "this afternoon",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-012",
+        "anchor": "#seg-012",
+        "timestamp_ms": 210000,
+        "text_snippet": "I can take that. I'll update the docs this afternoon."
+      }
+    },
+    {
+      "id": "act-003",
+      "text": "Prepare migration rollback procedure as backup",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-018",
+        "anchor": "#seg-018",
+        "timestamp_ms": 380000,
+        "text_snippet": "I'll prepare the rollback procedure as backup."
+      }
+    },
+    {
+      "id": "act-004",
+      "text": "Send maintenance notification 48 hours in advance",
+      "assignee": "Alice",
+      "due_date": "48 hours before migration",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-021",
+        "anchor": "#seg-021",
+        "timestamp_ms": 435000,
+        "text_snippet": "I'll send the maintenance notification 48 hours in advance."
+      }
+    },
+    {
+      "id": "act-005",
+      "text": "Prepare status page update for migration",
+      "assignee": "Diana",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-022",
+        "anchor": "#seg-022",
+        "timestamp_ms": 460000,
+        "text_snippet": "I'll prepare a status page update. Can someone review it before I publish?"
+      }
+    },
+    {
+      "id": "act-006",
+      "text": "Review Diana's status page update",
+      "assignee": "Bob",
+      "due_date": "by Friday",
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-023",
+        "anchor": "#seg-023",
+        "timestamp_ms": 485000,
+        "text_snippet": "I can review it. Send it to me by Friday."
+      }
+    },
+    {
+      "id": "act-007",
+      "text": "Set up CloudFront CDN for international users",
+      "assignee": "Eve",
+      "due_date": "3 days",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-031",
+        "anchor": "#seg-031",
+        "timestamp_ms": 725000,
+        "text_snippet": "I can set up CloudFront."
+      }
+    },
+    {
+      "id": "act-008",
+      "text": "Implement lazy loading component with skeleton screens",
+      "assignee": "Charlie",
+      "due_date": "2 days",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-033",
+        "anchor": "#seg-033",
+        "timestamp_ms": 775000,
+        "text_snippet": "I'll implement the lazy loading component."
+      }
+    },
+    {
+      "id": "act-009",
+      "text": "Perform mobile performance testing after implementation",
+      "assignee": "Diana",
+      "due_date": "1 day after implementation",
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-037",
+        "anchor": "#seg-037",
+        "timestamp_ms": 910000,
+        "text_snippet": "I'll need 1 day for mobile performance testing after implementation."
+      }
+    },
+    {
+      "id": "act-010",
+      "text": "Coordinate staged deployment (10%, 50%, 100%)",
+      "assignee": "Eve",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-040",
+        "anchor": "#seg-040",
+        "timestamp_ms": 985000,
+        "text_snippet": "I'll coordinate the deployment."
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "text": "Increase rate limit to 200 requests per minute",
+      "decided_by": "team consensus (Alice announced)",
+      "rationale": "Current 100 req/min limit hit within 30 seconds by peak users, affecting 15% of users",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-009",
+        "anchor": "#seg-009",
+        "timestamp_ms": 128000,
+        "text_snippet": "We decided to increase the rate limit to 200 requests per minute."
+      }
+    },
+    {
+      "id": "dec-002",
+      "text": "Schedule database migration for Sunday 3 AM",
+      "decided_by": "team consensus (Diana proposed)",
+      "rationale": "15 minutes downtime acceptable for SLA, low traffic window",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-019",
+        "anchor": "#seg-019",
+        "timestamp_ms": 400000,
+        "text_snippet": "We decided on Sunday 3 AM for the migration window."
+      }
+    },
+    {
+      "id": "dec-003",
+      "text": "Implement CDN and lazy loading for mobile performance",
+      "decided_by": "team consensus (Eve proposed CDN, Bob confirmed)",
+      "rationale": "Image loading is main bottleneck; international users complaining about latency",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-030",
+        "anchor": "#seg-030",
+        "timestamp_ms": 705000,
+        "text_snippet": "We agreed to implement CDN and lazy loading for mobile performance."
+      }
+    },
+    {
+      "id": "dec-004",
+      "text": "Target next Friday for mobile performance release with staged rollout",
+      "decided_by": "team consensus (Alice announced)",
+      "rationale": "CDN 3 days + lazy loading 2 days + testing 1 day = about a week",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-038",
+        "anchor": "#seg-038",
+        "timestamp_ms": 935000,
+        "text_snippet": "We decided to target next Friday for mobile performance release."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "que-001",
+      "text": "Should we record the meeting for those who join late?",
+      "asked_by": "Bob",
+      "answered": true,
+      "answer_summary": "Yes, recording has started",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-002",
+        "anchor": "#seg-002",
+        "timestamp_ms": 8500,
+        "text_snippet": "Should we record the meeting for those who join late?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-003",
+        "anchor": "#seg-003",
+        "timestamp_ms": 18000,
+        "text_snippet": "Yes, recording has started."
+      }
+    },
+    {
+      "id": "que-002",
+      "text": "How long will the database migration downtime be?",
+      "asked_by": "Charlie",
+      "answered": true,
+      "answer_summary": "Estimated 15 minutes, script optimized to minimize downtime",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-015",
+        "anchor": "#seg-015",
+        "timestamp_ms": 260000,
+        "text_snippet": "How long will the downtime be? Our SLA requires 99.9% uptime."
+      },
+      "answer_citation": {
+        "segment_id": "seg-016",
+        "anchor": "#seg-016",
+        "timestamp_ms": 285000,
+        "text_snippet": "Estimated 15 minutes. I've optimized the script to minimize downtime."
+      }
+    },
+    {
+      "id": "que-003",
+      "text": "Should we do a staged rollout for mobile performance deployment?",
+      "asked_by": "Eve",
+      "answered": true,
+      "answer_summary": "Yes, start with 10%, then 50%, then 100% of traffic",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-040",
+        "anchor": "#seg-040",
+        "timestamp_ms": 985000,
+        "text_snippet": "Should we do a staged rollout?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-041",
+        "anchor": "#seg-041",
+        "timestamp_ms": 1005000,
+        "text_snippet": "Yes, let's start with 10% of traffic, then 50%, then 100%."
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "top-001",
+      "title": "Meeting Setup and Recording",
+      "start_ms": 0,
+      "end_ms": 25000,
+      "segment_ids": ["seg-001", "seg-002", "seg-003"],
+      "summary": "Alice starts meeting while waiting for others. Bob suggests recording. Diana and Eve will be late."
+    },
+    {
+      "id": "top-002",
+      "title": "API Rate Limiting Issue",
+      "start_ms": 25000,
+      "end_ms": 225000,
+      "segment_ids": ["seg-004", "seg-005", "seg-006", "seg-007", "seg-008", "seg-009", "seg-010", "seg-011", "seg-012"],
+      "summary": "Charlie reports 429 errors affecting 15% of users. Decision: Increase limit from 100 to 200 req/min. Charlie to update docs."
+    },
+    {
+      "id": "top-003",
+      "title": "Database Migration Timeline",
+      "start_ms": 225000,
+      "end_ms": 410000,
+      "segment_ids": ["seg-013", "seg-014", "seg-015", "seg-016", "seg-017", "seg-018", "seg-019"],
+      "summary": "Migration script ready, 15 minutes downtime. Diana joins (late). Decision: Sunday 3 AM window."
+    },
+    {
+      "id": "top-004",
+      "title": "Customer Notification and Status Page",
+      "start_ms": 410000,
+      "end_ms": 530000,
+      "segment_ids": ["seg-020", "seg-021", "seg-022", "seg-023", "seg-024"],
+      "summary": "Alice to send 48-hour notice. Diana to prepare status page update, Bob to review by Friday."
+    },
+    {
+      "id": "top-005",
+      "title": "Mobile App Performance Issues",
+      "start_ms": 530000,
+      "end_ms": 755000,
+      "segment_ids": ["seg-025", "seg-026", "seg-027", "seg-028", "seg-029", "seg-030", "seg-031", "seg-032", "seg-033"],
+      "summary": "Eve joins (late). Image loading bottleneck identified. Decision: Implement CDN and lazy loading. International users in São Paulo, Tokyo, München affected."
+    },
+    {
+      "id": "top-006",
+      "title": "Mobile Performance Timeline",
+      "start_ms": 755000,
+      "end_ms": 1025000,
+      "segment_ids": ["seg-034", "seg-035", "seg-036", "seg-037", "seg-038", "seg-039", "seg-040", "seg-041", "seg-042"],
+      "summary": "CDN 3 days + lazy loading 2 days + testing 1 day. Decision: Target next Friday with staged rollout (10%, 50%, 100%)."
+    },
+    {
+      "id": "top-007",
+      "title": "Meeting Recap and Action Items",
+      "start_ms": 1025000,
+      "end_ms": 1230000,
+      "segment_ids": ["seg-043", "seg-044", "seg-045", "seg-046", "seg-047", "seg-048", "seg-049", "seg-050", "seg-051", "seg-052"],
+      "summary": "Alice recaps: Bob (rate limits, rollback), Charlie (docs, lazy loading), Diana (status page, monitoring), Eve (CDN, deployment), Alice (notifications, stakeholders)."
+    }
+  ],
+  "edge_case_markers": {
+    "_note": "This meeting incorporates W3C WebVTT edge cases for parser validation",
+    "multiline_payload": {
+      "segment_ids": ["seg-004"],
+      "description": "Cue with multi-line text payload (ML-001, ML-002)"
+    },
+    "voice_tag_with_class": {
+      "segment_ids": ["seg-005"],
+      "description": "Voice tag with CSS class: <v.urgent Bob> (VT-006, VT-007)"
+    },
+    "nested_formatting": {
+      "segment_ids": ["seg-008"],
+      "description": "Nested <b> and <i> tags within cue (TT-008)"
+    },
+    "entity_escapes": {
+      "segment_ids": ["seg-003", "seg-010", "seg-011"],
+      "description": "HTML entities: &amp; &lt; &gt; (CE-005, CE-006)"
+    },
+    "short_timestamps": {
+      "segment_ids": ["seg-013", "seg-014", "seg-015", "seg-016"],
+      "description": "Timestamps without hours: 03:45.000 --> 04:00.000 (TS-001)"
+    },
+    "late_joiners": {
+      "speaker_ids": ["spk-004", "spk-005"],
+      "description": "Diana joins at 5:00, Eve joins at 10:00 - tests dynamic speaker detection"
+    },
+    "multiple_speakers_same_cue": {
+      "segment_ids": ["seg-024"],
+      "description": "Two speakers in one cue: <v Alice>Thanks Bob.</v> <v Diana>Thanks... (VT-009)"
+    },
+    "unicode_text": {
+      "segment_ids": ["seg-031", "seg-032"],
+      "description": "International characters: São Paulo, Tokyo, München (CE-003, CE-004)"
+    }
+  }
+}

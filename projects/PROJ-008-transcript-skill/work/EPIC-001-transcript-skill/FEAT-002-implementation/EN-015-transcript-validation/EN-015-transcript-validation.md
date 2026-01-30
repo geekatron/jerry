@@ -9,7 +9,7 @@ NOTE: Provides test transcripts and validation scenarios for transcript skill
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** approved (GATE-6)
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-26T17:30:00Z
@@ -182,14 +182,14 @@ THE DRIVING TEST ANALOGY (Validation)
 
 | ID | Title | Status | Owner | Effort | Blocked By |
 |----|-------|--------|-------|--------|------------|
-| [TASK-131](./TASK-131-golden-dataset-transcripts.md) | Create golden dataset transcripts (3 meetings) | pending | Claude | 2 | - |
+| [TASK-131](./TASK-131-golden-dataset-transcripts.md) | Create golden dataset transcripts (3 meetings) | **DONE** | Claude | 2 | - |
 | [TASK-131A](./TASK-131A-human-annotation-vtt.md) | **CRITICAL:** Human annotation of user VTT files | pending | Human | 3 | User VTT files |
-| [TASK-132](./TASK-132-ground-truth-json.md) | Create ground truth JSON for golden dataset | pending | Claude | 2 | TASK-131 |
-| [TASK-133](./TASK-133-edge-case-transcripts.md) | Create edge case transcripts (malformed, empty, large) | pending | Claude | 1 | - |
-| [TASK-134](./TASK-134-parser-tests.md) | Create parser test specification (parser-tests.yaml) | pending | Claude | 1 | TASK-131 |
-| [TASK-135](./TASK-135-extractor-tests.md) | Create extractor test specification | pending | Claude | 1 | TASK-132 |
-| [TASK-136](./TASK-136-formatter-tests.md) | Create formatter test specification | pending | Claude | 1 | TASK-131 |
-| [TASK-137](./TASK-137-integration-tests.md) | Create integration test specification | pending | Claude | 1 | TASK-134, TASK-135, TASK-136 |
+| [TASK-132](./TASK-132-ground-truth-json.md) | Create ground truth JSON for golden dataset | **DONE** | Claude | 2 | TASK-131 |
+| [TASK-133](./TASK-133-edge-case-transcripts.md) | Create edge case transcripts (malformed, empty, large) | **DONE** | Claude | 1 | - |
+| [TASK-134](./TASK-134-parser-tests.md) | Create parser test specification (parser-tests.yaml) | **DONE** | Claude | 1 | TASK-131 |
+| [TASK-135](./TASK-135-extractor-tests.md) | Create extractor test specification | **DONE** | Claude | 1 | TASK-132 |
+| [TASK-136](./TASK-136-formatter-tests.md) | Create formatter test specification | **DONE** | Claude | 1 | TASK-131 |
+| [TASK-137](./TASK-137-integration-tests.md) | Create integration test specification | **DONE** | Claude | 1 | TASK-134, TASK-135, TASK-136 |
 | [TASK-138](./TASK-138-en008-deferred-findings.md) | EN-008 deferred minor findings | backlog | Claude | 1 | TASK-135, TASK-137 |
 
 **NOTE:** Task IDs start at TASK-131 to continue from EN-014 (TASK-126-130).
@@ -614,6 +614,8 @@ This enabler follows the TDD/BDD approach with:
 | 2026-01-26 | Claude | pending | TDD/BDD testing strategy document created with human-in-loop ground truth approach |
 | 2026-01-27 | Claude | revised | Added TASK-131A (human annotation) per TDD/BDD Testing Strategy - prevents "dog fooding" bias |
 | 2026-01-28 | Claude | revised | Added TASK-138 (EN-008 deferred findings) per DEC-003:D-005 |
+| 2026-01-29 | Claude | gate-ready | 7/8 core tasks DONE (TASK-131..137). TASK-131A pending user VTT files, TASK-138 backlog |
+| 2026-01-29 | Claude | **approved** | GATE-6 passed: ps-critic (0.92), nse-qa (0.91). Review reports in critiques/ and qa/ folders |
 
 ---
 
