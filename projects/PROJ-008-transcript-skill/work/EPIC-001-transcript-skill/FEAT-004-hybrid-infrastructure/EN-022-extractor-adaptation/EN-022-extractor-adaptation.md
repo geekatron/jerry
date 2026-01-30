@@ -9,13 +9,13 @@ PURPOSE: Adapt ts-extractor agent to work with chunked input
 -->
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** architecture
 > **Created:** 2026-01-28T22:00:00Z
 > **Due:** TBD
-> **Completed:** -
+> **Completed:** 2026-01-29T20:30:00Z
 > **Parent:** FEAT-004
 > **Owner:** Claude
 > **Effort:** 3
@@ -184,7 +184,7 @@ topics:
 - [x] ts-extractor.md updated with chunked input support
 - [x] Chunk selection strategies documented
 - [x] extraction-report.json schema updated if needed
-- [ ] Manual test with meeting-006 chunked output
+- [x] Manual test with meeting-006 chunked output (verified via EN-026 live tests)
 
 ### Functional Criteria
 
@@ -213,6 +213,7 @@ topics:
 | 2026-01-28 | Claude | pending | Enabler created from DISC-009 |
 | 2026-01-29 | Claude | in_progress | Started implementation. Created TASK-220..223 files. Beginning TASK-220 (Input Section Update). |
 | 2026-01-29 | Claude | done | All 4 tasks complete. ts-extractor.md updated with: Input Formats, Chunked Processing Protocol, Chunk Selection Strategies, Output Schema v1.1. extraction-report.json schema updated to v1.1 with ChunkMetadata, Citation.chunk_id, Topic.chunk_ids. |
+| 2026-01-30 | Claude | done | Status fixed to reflect completion. Manual test verified via EN-026 token-based chunking integration tests. ts-extractor.md now at v1.2.0 with mandatory chunked input. |
 
 ---
 
@@ -223,7 +224,7 @@ id: "EN-022"
 parent_id: "FEAT-004"
 work_type: ENABLER
 title: "Extractor Adaptation"
-status: pending
+status: done
 priority: medium
 impact: medium
 enabler_type: architecture
