@@ -358,6 +358,12 @@ Extraction report JSON:
 
 - [DISC-001](../FEAT-002--DISC-001-enabler-alignment-analysis.md) - Alignment analysis (architecture correction)
 
+### Known Bugs
+
+| Bug ID | Title | Status | Severity | Notes |
+|--------|-------|--------|----------|-------|
+| [BUG-001](./BUG-001-question-count-inflation.md) | Question Count Inflation | pending | major | extraction_stats.questions_found (63) != questions array (15) |
+
 ---
 
 ## History

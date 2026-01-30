@@ -384,6 +384,49 @@ transcript-{id}/
 
 ---
 
+## Agent File Consumption Rules (CRITICAL)
+
+> **MANDATORY:** Agents MUST follow these file consumption rules to prevent context window overflow.
+> Violating these rules causes degraded performance and potential failures.
+
+### Files Agents SHOULD Read
+
+| File | Typical Size | Agent | Purpose |
+|------|--------------|-------|---------|
+| `index.json` | ~8KB | ts-extractor, ts-formatter | Metadata, speaker list, chunk references |
+| `chunks/chunk-*.json` | ~130KB each | ts-extractor | Actual transcript data in manageable pieces |
+| `extraction-report.json` | ~35KB | ts-formatter, ps-critic | Entity extraction results |
+| `packet/*.md` | Variable | ps-critic | Generated Markdown files for quality review |
+
+### Files Agents MUST NEVER Read
+
+| File | Typical Size | Why Forbidden |
+|------|--------------|---------------|
+| `canonical-transcript.json` | **~930KB** | **TOO LARGE** - will overwhelm context window, cause context rot, degrade agent performance |
+
+### Rationale
+
+The `canonical-transcript.json` file is generated for:
+- **Reference/archive purposes** - Human inspection of full parsed output
+- **Programmatic access by Python code** - CLI tools that process outside LLM context
+- **NOT for LLM agent consumption** - File size exceeds safe context limits
+
+The chunking architecture (DISC-009) was specifically designed to solve the large file problem:
+- Each chunk is < 150KB (fits comfortably in context)
+- Python parser creates chunks; LLM agents consume chunks
+- This prevents the 99.8% data loss experienced with agent-only architecture
+
+### Agent-Specific File Access
+
+| Agent | Reads | Never Reads |
+|-------|-------|-------------|
+| **ts-parser** | Input VTT/SRT/TXT file | - |
+| **ts-extractor** | `index.json`, `chunks/*.json` | `canonical-transcript.json` |
+| **ts-formatter** | `index.json`, `extraction-report.json` | `canonical-transcript.json` |
+| **ps-critic** | All `packet/*.md` files, `quality-review.md` | `canonical-transcript.json` |
+
+---
+
 ## Orchestration Flow
 
 ### L1: Step-by-Step Pipeline (v2.0 Hybrid)
@@ -406,18 +449,18 @@ Errors: Python failure → fallback to LLM parsing
 
 STEP 2: EXTRACT (ts-extractor)
 ──────────────────────────────
-Input:  index.json + chunks/*.json (or canonical-transcript.json for small files)
+Input:  index.json + chunks/*.json (NEVER canonical-transcript.json)
 Process:
-  1. Read index.json for overview
-  2. Request relevant chunks based on task
-  3. Extract entities with confidence scores
+  1. Read index.json for metadata and chunk listing
+  2. Process each chunk sequentially for entity extraction
+  3. Extract entities with confidence scores and citations
 Output: extraction-report.json
 Errors: Low confidence extractions → flag for review
 
 STEP 3: FORMAT (ts-formatter)
 ─────────────────────────────
-Input:  canonical-transcript.json + extraction-report.json
-Output: transcript-{id}/ packet directory (8 files per ADR-002)
+Input:  index.json + extraction-report.json (NEVER canonical-transcript.json)
+Output: packet/ directory (8 files per ADR-002)
 Errors: Token overflow → split files automatically (ADR-004)
 
 STEP 4: REVIEW (ps-critic)

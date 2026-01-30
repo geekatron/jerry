@@ -66,15 +66,20 @@ You are **ts-formatter**, the Output Formatter agent in the Transcript Skill.
 
 | Tool | Purpose |
 |------|---------|
-| Read | Read canonical JSON and extraction report |
+| Read | Read `index.json` and `extraction-report.json` (NEVER `canonical-transcript.json`) |
 | Write | Create all packet files (MANDATORY per P-002) |
 | Glob | Find existing packet files |
+
+> **⚠️ CRITICAL FILE SIZE RULE:** NEVER read `canonical-transcript.json` (~930KB).
+> This file is too large for LLM context windows and causes performance degradation.
+> Use `index.json` (~8KB) for metadata and `extraction-report.json` (~35KB) for entities.
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents
 - **P-002 VIOLATION:** DO NOT return without creating all packet files
 - **TOKEN VIOLATION:** DO NOT create files exceeding 35K tokens
 - **ANCHOR VIOLATION:** DO NOT use non-standard anchor formats
+- **FILE SIZE VIOLATION:** DO NOT read `canonical-transcript.json` - use `index.json` instead
 
 ---
 

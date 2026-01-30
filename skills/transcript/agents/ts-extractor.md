@@ -82,30 +82,30 @@ You are **ts-extractor**, the Entity Extractor agent in the Transcript Skill.
 
 ## Input Formats
 
-The extractor supports two input formats. Choose based on transcript size.
+> **CRITICAL FILE SIZE RULE:** NEVER read `canonical-transcript.json` (~930KB).
+> This file is too large for LLM context windows and causes performance degradation.
+> Always use `index.json` + `chunks/*.json` instead.
 
-### Format A: Single File (Legacy)
+The extractor uses chunked input format for all transcripts.
 
-**Use when:** Transcript has < 1000 segments
+### Format A: Single File (DEPRECATED - DO NOT USE)
+
+> **⚠️ DEPRECATED:** Format A using `canonical-transcript.json` is deprecated.
+> Per DISC-009 findings, large files cause 99.8% data loss and context rot.
+> Always use Format B (chunked) regardless of transcript size.
+
+~~**Use when:** Transcript has < 1000 segments~~
 
 ```yaml
+# ❌ DEPRECATED - DO NOT USE
 input:
   format: single_file
-  path: canonical-transcript.json
-  constraints:
-    - Entire transcript loaded into context
-    - Suitable for transcripts < 30,000 tokens
-    - Simple workflow, no chunk management
+  path: canonical-transcript.json  # ❌ TOO LARGE (~930KB)
 ```
 
-**Workflow:**
-```
-canonical-transcript.json → ts-extractor → extraction-report.json
-```
+### Format B: Chunked (MANDATORY for All Transcripts)
 
-### Format B: Chunked (Recommended for Large Transcripts)
-
-**Use when:** Transcript has ≥ 1000 segments
+**Use for:** ALL transcripts, regardless of size
 
 ```yaml
 input:
@@ -137,34 +137,39 @@ Read metadata              Plan extraction
 ### Format Selection Decision Tree
 
 ```
-Transcript segment count?
+Transcript available?
     │
-    ├─ < 1000 segments ──────► Format A (Single File)
-    │                              └─ Simpler, full context
-    │                              └─ ~30K token budget OK
-    │
-    └─ ≥ 1000 segments ──────► Format B (Chunked)
-                                   └─ Selective loading
-                                   └─ Better accuracy (focused context)
-                                   └─ Lower cost per extraction
+    └─ Always ─────────────────► Format B (Chunked) ONLY
+                                     └─ Uses index.json + chunks/*.json
+                                     └─ Selective loading for efficiency
+                                     └─ Better accuracy (focused context)
+                                     └─ NEVER use canonical-transcript.json
+
+⚠️ DEPRECATED PATH (DO NOT USE):
+    ├─ < 1000 segments ──────► ❌ Format A DEPRECATED
+    │                              └─ canonical-transcript.json is TOO LARGE
 ```
 
 ### Input Detection
 
-The extractor auto-detects input format:
+The extractor expects **chunked input only**:
 
-1. **Check for index.json** → If present, use Format B (chunked)
-2. **Check for canonical-transcript.json** → If present, use Format A (single file)
+1. **Check for index.json** → Use chunked workflow
+2. **canonical-transcript.json found but no index.json** → ERROR: Request chunked output from ts-parser
 3. **Neither found** → Return error with helpful message
 
 ```python
-# Auto-detection pseudocode
+# Input detection (v2.0 - chunked only)
 if (input_path / "index.json").exists():
     return InputFormat.CHUNKED
 elif (input_path / "canonical-transcript.json").exists():
-    return InputFormat.SINGLE_FILE
+    # DO NOT use canonical-transcript.json directly!
+    raise InputFormatError(
+        "Found canonical-transcript.json but no index.json. "
+        "Rerun ts-parser to generate chunked output."
+    )
 else:
-    raise InputNotFoundError("Expected index.json or canonical-transcript.json")
+    raise InputNotFoundError("Expected index.json from ts-parser v2.0")
 ```
 
 ---

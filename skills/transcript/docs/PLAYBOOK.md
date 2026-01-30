@@ -184,14 +184,16 @@ Invoke ts-parser with:
 ### Entry Criteria
 
 - [ ] DP-1 decision: PROCEED
-- [ ] canonical-transcript.json available
+- [ ] index.json + chunks/*.json available (v2.0 chunked output)
 
 ### Procedure: Invoke ts-extractor
+
+> **⚠️ CRITICAL:** NEVER use `canonical-transcript.json` as input - use chunked files only.
 
 **Invocation:**
 ```markdown
 Invoke ts-extractor with:
-- Input: canonical-transcript.json
+- Input: index.json + chunks/*.json (NEVER canonical-transcript.json)
 - Confidence threshold: 0.7
 ```
 
@@ -216,17 +218,19 @@ Invoke ts-extractor with:
 ### Entry Criteria
 
 - [ ] DP-2 decision: PROCEED
-- [ ] canonical-transcript.json available
+- [ ] index.json available (v2.0 metadata)
 - [ ] extraction-report.json available
 
 ### Procedure: Invoke ts-formatter
 
+> **⚠️ CRITICAL:** NEVER use `canonical-transcript.json` as input - use index.json only.
+
 **Invocation:**
 ```markdown
 Invoke ts-formatter with:
-- Input: canonical-transcript.json
+- Input: index.json (NEVER canonical-transcript.json)
 - Input: extraction-report.json
-- Output directory: ./transcript-{id}/
+- Output directory: ./packet/
 ```
 
 **Verification:**
