@@ -286,3 +286,133 @@ class TestParserEdgeCases:
         parser = create_parser()
         with pytest.raises(SystemExit):
             parser.parse_args(["items", "block", "WORK-001"])  # Missing --reason
+
+
+# =============================================================================
+# Transcript Namespace Tests (TASK-251: CLI Transcript Namespace)
+# =============================================================================
+
+
+class TestTranscriptNamespace:
+    """Tests for transcript namespace commands.
+
+    TDD RED Phase: These tests should FAIL until _add_transcript_namespace()
+    is implemented in parser.py.
+
+    References:
+        - TDD-FEAT-004 Section 11: Jerry CLI Integration
+        - TASK-251: Implement CLI Transcript Namespace
+    """
+
+    def test_parser_has_transcript_namespace(self) -> None:
+        """Parser should have transcript namespace."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.namespace == "transcript"
+
+    def test_transcript_parse_command(self) -> None:
+        """transcript parse <path> command parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.namespace == "transcript"
+        assert args.command == "parse"
+        assert args.path == "meeting.vtt"
+
+    def test_transcript_parse_with_format_vtt(self) -> None:
+        """transcript parse --format vtt parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt", "--format", "vtt"])
+        assert args.format == "vtt"
+
+    def test_transcript_parse_with_format_srt(self) -> None:
+        """transcript parse --format srt parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.srt", "--format", "srt"])
+        assert args.format == "srt"
+
+    def test_transcript_parse_with_format_auto(self) -> None:
+        """transcript parse --format auto parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt", "--format", "auto"])
+        assert args.format == "auto"
+
+    def test_transcript_parse_format_default_is_auto(self) -> None:
+        """transcript parse format defaults to auto."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.format == "auto"
+
+    def test_transcript_parse_with_output_dir(self) -> None:
+        """transcript parse --output-dir parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(
+            ["transcript", "parse", "meeting.vtt", "--output-dir", "/tmp/output"]
+        )
+        assert args.output_dir == "/tmp/output"
+
+    def test_transcript_parse_output_dir_default_is_none(self) -> None:
+        """transcript parse output_dir defaults to None (same as input)."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.output_dir is None
+
+    def test_transcript_parse_with_chunk_size(self) -> None:
+        """transcript parse --chunk-size parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(
+            ["transcript", "parse", "meeting.vtt", "--chunk-size", "1000"]
+        )
+        assert args.chunk_size == 1000
+
+    def test_transcript_parse_chunk_size_default_is_500(self) -> None:
+        """transcript parse chunk_size defaults to 500."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.chunk_size == 500
+
+    def test_transcript_parse_with_no_chunks(self) -> None:
+        """transcript parse --no-chunks parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt", "--no-chunks"])
+        assert args.no_chunks is True
+
+    def test_transcript_parse_no_chunks_default_is_false(self) -> None:
+        """transcript parse no_chunks defaults to False."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.no_chunks is False
+
+    def test_transcript_parse_missing_path_fails(self) -> None:
+        """transcript parse requires path argument."""
+        parser = create_parser()
+        with pytest.raises(SystemExit):
+            parser.parse_args(["transcript", "parse"])  # Missing path
+
+    def test_transcript_parse_invalid_format_fails(self) -> None:
+        """transcript parse with invalid format should fail."""
+        parser = create_parser()
+        with pytest.raises(SystemExit):
+            parser.parse_args(["transcript", "parse", "meeting.vtt", "--format", "invalid"])
+
+    def test_transcript_parse_with_json_output(self) -> None:
+        """--json transcript parse parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args(["--json", "transcript", "parse", "meeting.vtt"])
+        assert args.json is True
+        assert args.namespace == "transcript"
+
+    def test_transcript_parse_all_options(self) -> None:
+        """transcript parse with all options parses correctly."""
+        parser = create_parser()
+        args = parser.parse_args([
+            "transcript", "parse", "meeting.vtt",
+            "--format", "vtt",
+            "--output-dir", "/tmp/output",
+            "--chunk-size", "250",
+        ])
+        assert args.namespace == "transcript"
+        assert args.command == "parse"
+        assert args.path == "meeting.vtt"
+        assert args.format == "vtt"
+        assert args.output_dir == "/tmp/output"
+        assert args.chunk_size == 250

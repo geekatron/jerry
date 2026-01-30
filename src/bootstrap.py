@@ -99,6 +99,12 @@ from src.work_tracking.infrastructure.persistence.in_memory_event_store import (
     InMemoryEventStore,
 )
 
+# EN-025: Transcript parsing components (TDD-FEAT-004 Section 11.4)
+from src.transcript.application.commands import ParseTranscriptCommand
+from src.transcript.application.handlers import ParseTranscriptCommandHandler
+from src.transcript.application.services.chunker import TranscriptChunker
+from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
+
 # Module-level session repository singleton for session state persistence
 # In production, this would be replaced with a file-based or database repository
 _session_repository: InMemorySessionRepository | None = None
@@ -287,6 +293,40 @@ def get_serializer() -> ToonSerializer:
     return _serializer
 
 
+# =============================================================================
+# Transcript Parsing Factories (TDD-FEAT-004 Section 11.4)
+# =============================================================================
+
+
+def create_vtt_parser() -> VTTParser:
+    """Create a VTT parser instance.
+
+    Returns:
+        VTTParser instance with encoding detection.
+
+    References:
+        - EN-020: Python Parser Implementation
+        - TDD-FEAT-004: Hybrid Infrastructure Design
+    """
+    return VTTParser()
+
+
+def create_transcript_chunker(chunk_size: int = 500) -> TranscriptChunker:
+    """Create a transcript chunker instance.
+
+    Args:
+        chunk_size: Number of segments per chunk (default: 500)
+
+    Returns:
+        TranscriptChunker instance.
+
+    References:
+        - EN-021: Chunking Strategy
+        - ADR-004: File Splitting Strategy
+    """
+    return TranscriptChunker(chunk_size=chunk_size)
+
+
 def get_projects_directory() -> str:
     """Determine the projects directory path.
 
@@ -438,6 +478,15 @@ def create_command_dispatcher() -> CommandDispatcher:
     dispatcher.register(CompleteWorkItemCommand, complete_work_item_handler.handle)
     dispatcher.register(BlockWorkItemCommand, block_work_item_handler.handle)
     dispatcher.register(CancelWorkItemCommand, cancel_work_item_handler.handle)
+
+    # Register transcript commands (EN-025: TDD-FEAT-004 Section 11.4)
+    vtt_parser = create_vtt_parser()
+    chunker = create_transcript_chunker()
+    parse_transcript_handler = ParseTranscriptCommandHandler(
+        vtt_parser=vtt_parser,
+        chunker=chunker,
+    )
+    dispatcher.register(ParseTranscriptCommand, parse_transcript_handler.handle)
 
     return dispatcher
 

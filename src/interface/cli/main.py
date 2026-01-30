@@ -37,6 +37,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from src.bootstrap import (
+    create_command_dispatcher,
     create_query_dispatcher,
     create_session_command_handlers,
     get_projects_directory,
@@ -56,14 +57,20 @@ def create_cli_adapter() -> CLIAdapter:
 
     Returns:
         CLIAdapter with injected dispatcher, session handlers, and configuration
+
+    References:
+        - TDD-FEAT-004 Section 11.4: Bootstrap Wiring
+        - TASK-251: Added command_dispatcher for transcript commands
     """
-    dispatcher = create_query_dispatcher()
+    query_dispatcher = create_query_dispatcher()
+    command_dispatcher = create_command_dispatcher()
     projects_dir = get_projects_directory()
     session_handlers = create_session_command_handlers()
     return CLIAdapter(
-        dispatcher=dispatcher,
+        dispatcher=query_dispatcher,
         projects_dir=projects_dir,
         session_handlers=session_handlers,
+        command_dispatcher=command_dispatcher,
     )
 
 
@@ -95,6 +102,8 @@ def main() -> int:
         return _handle_projects(adapter, args, json_output)
     elif args.namespace == "config":
         return _handle_config(adapter, args, json_output)
+    elif args.namespace == "transcript":
+        return _handle_transcript(adapter, args, json_output)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -267,6 +276,39 @@ def _handle_config(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
         return adapter.cmd_config_path(json_output=json_output)
 
     print(f"Error: Unknown config command '{args.command}'")
+    return 1
+
+
+def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
+    """Route transcript namespace commands.
+
+    Args:
+        adapter: CLI adapter instance
+        args: Parsed arguments
+        json_output: Whether to output JSON
+
+    Returns:
+        Exit code
+
+    References:
+        - TDD-FEAT-004 Section 11.2: Main Routing
+        - TASK-251: Implement CLI Transcript Namespace
+    """
+    if args.command is None:
+        print("Error: No transcript command specified. Use 'jerry transcript --help'")
+        return 1
+
+    if args.command == "parse":
+        return adapter.cmd_transcript_parse(
+            path=args.path,
+            format=getattr(args, "format", "auto"),
+            output_dir=getattr(args, "output_dir", None),
+            chunk_size=getattr(args, "chunk_size", 500),
+            generate_chunks=not getattr(args, "no_chunks", False),
+            json_output=json_output,
+        )
+
+    print(f"Error: Unknown transcript command '{args.command}'")
     return 1
 
 

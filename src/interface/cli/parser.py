@@ -79,6 +79,9 @@ Examples:
     # Config namespace
     _add_config_namespace(subparsers)
 
+    # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
+    _add_transcript_namespace(subparsers)
+
     return parser
 
 
@@ -398,4 +401,67 @@ def _add_config_namespace(
         "path",
         help="Show configuration file paths",
         description="Display paths to all configuration files.",
+    )
+
+
+def _add_transcript_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add transcript namespace commands.
+
+    Commands:
+        - parse: Parse VTT/SRT transcript to canonical JSON
+
+    References:
+        - TDD-FEAT-004 Section 11: Jerry CLI Integration
+        - TASK-251: Implement CLI Transcript Namespace
+        - EN-020: Python Parser Implementation
+    """
+    transcript_parser = subparsers.add_parser(
+        "transcript",
+        help="Transcript skill commands",
+        description="Manage transcript skill operations.",
+    )
+
+    transcript_subparsers = transcript_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # parse command
+    parse_parser = transcript_subparsers.add_parser(
+        "parse",
+        help="Parse transcript file to canonical JSON",
+        description="Parse VTT/SRT transcript file and produce canonical JSON output with optional chunking.",
+    )
+    parse_parser.add_argument(
+        "path",
+        help="Path to transcript file (VTT or SRT)",
+    )
+    parse_parser.add_argument(
+        "--format",
+        choices=["vtt", "srt", "auto"],
+        default="auto",
+        help="Input format (default: auto-detect from extension)",
+    )
+    parse_parser.add_argument(
+        "--output-dir",
+        dest="output_dir",
+        default=None,
+        help="Output directory for canonical JSON and chunks (default: same as input)",
+    )
+    parse_parser.add_argument(
+        "--chunk-size",
+        dest="chunk_size",
+        type=int,
+        default=500,
+        help="Number of segments per chunk (default: 500)",
+    )
+    parse_parser.add_argument(
+        "--no-chunks",
+        dest="no_chunks",
+        action="store_true",
+        default=False,
+        help="Skip chunk generation, output canonical JSON only",
     )

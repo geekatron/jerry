@@ -187,3 +187,153 @@ class TestVersionUpdate:
         from src.interface.cli.parser import __version__
 
         assert __version__ == "0.1.0"
+
+
+# =============================================================================
+# Transcript Namespace Routing Tests (TASK-251: TDD Section 11.2)
+# =============================================================================
+
+
+class TestHandleTranscript:
+    """Tests for _handle_transcript routing function.
+
+    TDD RED Phase: These tests should FAIL until _handle_transcript()
+    is implemented in main.py.
+
+    References:
+        - TDD-FEAT-004 Section 11.2: Main Routing
+        - TASK-251: Implement CLI Transcript Namespace
+    """
+
+    def test_routes_to_parse_command(self) -> None:
+        """transcript parse routes to cmd_transcript_parse."""
+        from src.interface.cli.main import _handle_transcript
+
+        mock_adapter = MagicMock()
+        mock_adapter.cmd_transcript_parse.return_value = 0
+
+        args = MagicMock()
+        args.command = "parse"
+        args.path = "meeting.vtt"
+        args.format = "auto"
+        args.output_dir = None
+        args.chunk_size = 500
+        args.no_chunks = False
+
+        result = _handle_transcript(mock_adapter, args, json_output=False)
+
+        assert result == 0
+        mock_adapter.cmd_transcript_parse.assert_called_once_with(
+            path="meeting.vtt",
+            format="auto",
+            output_dir=None,
+            chunk_size=500,
+            generate_chunks=True,  # not no_chunks
+            json_output=False,
+        )
+
+    def test_routes_to_parse_with_custom_options(self) -> None:
+        """transcript parse with options routes correctly."""
+        from src.interface.cli.main import _handle_transcript
+
+        mock_adapter = MagicMock()
+        mock_adapter.cmd_transcript_parse.return_value = 0
+
+        args = MagicMock()
+        args.command = "parse"
+        args.path = "/path/to/meeting.srt"
+        args.format = "srt"
+        args.output_dir = "/tmp/output"
+        args.chunk_size = 1000
+        args.no_chunks = True
+
+        result = _handle_transcript(mock_adapter, args, json_output=True)
+
+        assert result == 0
+        mock_adapter.cmd_transcript_parse.assert_called_once_with(
+            path="/path/to/meeting.srt",
+            format="srt",
+            output_dir="/tmp/output",
+            chunk_size=1000,
+            generate_chunks=False,  # no_chunks=True means generate_chunks=False
+            json_output=True,
+        )
+
+    def test_passes_json_flag(self) -> None:
+        """JSON flag is passed to adapter method."""
+        from src.interface.cli.main import _handle_transcript
+
+        mock_adapter = MagicMock()
+        mock_adapter.cmd_transcript_parse.return_value = 0
+
+        args = MagicMock()
+        args.command = "parse"
+        args.path = "meeting.vtt"
+        args.format = "auto"
+        args.output_dir = None
+        args.chunk_size = 500
+        args.no_chunks = False
+
+        _handle_transcript(mock_adapter, args, json_output=True)
+
+        mock_adapter.cmd_transcript_parse.assert_called_once()
+        call_kwargs = mock_adapter.cmd_transcript_parse.call_args[1]
+        assert call_kwargs["json_output"] is True
+
+    def test_no_command_returns_error(self) -> None:
+        """No command (None) returns exit code 1."""
+        from src.interface.cli.main import _handle_transcript
+
+        mock_adapter = MagicMock()
+
+        args = MagicMock()
+        args.command = None
+
+        result = _handle_transcript(mock_adapter, args, json_output=False)
+
+        assert result == 1
+
+    def test_unknown_command_returns_error(self) -> None:
+        """Unknown command returns exit code 1."""
+        from src.interface.cli.main import _handle_transcript
+
+        mock_adapter = MagicMock()
+
+        args = MagicMock()
+        args.command = "unknown"
+
+        result = _handle_transcript(mock_adapter, args, json_output=False)
+
+        assert result == 1
+
+
+class TestMainTranscriptRouting:
+    """Tests for main() entry point routing to transcript namespace."""
+
+    @patch("src.interface.cli.main.create_cli_adapter")
+    @patch("src.interface.cli.main.create_parser")
+    def test_transcript_parse_routes_correctly(
+        self, mock_create_parser: Mock, mock_create_adapter: Mock
+    ) -> None:
+        """jerry transcript parse routes to correct handler."""
+        mock_parser = MagicMock()
+        mock_args = MagicMock()
+        mock_args.namespace = "transcript"
+        mock_args.command = "parse"
+        mock_args.path = "meeting.vtt"
+        mock_args.format = "auto"
+        mock_args.output_dir = None
+        mock_args.chunk_size = 500
+        mock_args.no_chunks = False
+        mock_args.json = False
+        mock_parser.parse_args.return_value = mock_args
+        mock_create_parser.return_value = mock_parser
+
+        mock_adapter = MagicMock()
+        mock_adapter.cmd_transcript_parse.return_value = 0
+        mock_create_adapter.return_value = mock_adapter
+
+        result = main()
+
+        assert result == 0
+        mock_adapter.cmd_transcript_parse.assert_called_once()

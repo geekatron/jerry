@@ -1,7 +1,7 @@
 ---
 name: transcript
-description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. Integrates with ps-critic for quality review.
-version: "1.0.0"
+description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
+version: "2.0.0"
 allowed-tools: Read, Write, Glob, Task
 
 # CONTEXT INJECTION (implements REQ-CI-F-002)
@@ -193,32 +193,63 @@ If no domain is specified, `general` is used as the default.
 ## Agent Pipeline
 
 ```
-TRANSCRIPT SKILL PIPELINE
-=========================
+TRANSCRIPT SKILL PIPELINE (v2.0 HYBRID ARCHITECTURE)
+====================================================
 
-                    USER INPUT
-                        │
-                        │ Transcript file (VTT/SRT/TXT)
-                        │
-                        ▼
-    ┌─────────────────────────────────────────────────────────┐
-    │              SKILL.md ORCHESTRATOR                       │
-    │          (P-003: Single-level nesting)                   │
-    └─────────────────────────────────────────────────────────┘
-                        │
-        ┌───────────────┼───────────────┬───────────────┐
-        │               │               │               │
-        ▼               ▼               ▼               ▼
-    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-    │ts-parser │    │ts-extractor│  │ts-formatter│  │ps-critic │
-    │ (haiku) │───►│ (sonnet)  │───►│ (sonnet)  │───►│ (sonnet) │
-    └─────────┘    └─────────┘    └─────────┘    └─────────┘
-         │               │               │               │
-         ▼               ▼               ▼               ▼
-    Canonical      Extraction       Packet          Quality
-    JSON           Report           Files           Report
+                    USER INPUT (VTT/SRT/TXT)
+                           │
+                           ▼
+    ┌───────────────────────────────────────────────────────┐
+    │              ts-parser v2.0 (ORCHESTRATOR)            │
+    │          Model: haiku (orchestration only)            │
+    └───────────────────────┬───────────────────────────────┘
+                            │
+           ┌────────────────┴────────────────┐
+           │ FORMAT DETECTION                │
+           ▼                                 ▼
+    ┌─────────────┐                   ┌─────────────┐
+    │ VTT Format  │                   │ SRT/TXT     │
+    │ (Python)    │                   │ (LLM)       │
+    └──────┬──────┘                   └──────┬──────┘
+           │                                 │
+           ▼                                 │
+    ┌─────────────┐                          │
+    │  Python VTT │  1,250x cost reduction   │
+    │   Parser    │  Sub-second parsing      │
+    └──────┬──────┘  100% accuracy           │
+           │                                 │
+           ▼                                 │
+    ┌─────────────┐                          │
+    │  VALIDATOR  │                          │
+    └──────┬──────┘                          │
+           │                                 │
+           ▼                                 │
+    ┌─────────────┐                          │
+    │   Chunker   │                          │
+    │  (500 segs) │                          │
+    └──────┬──────┘                          │
+           │                                 │
+           └────────────────┬────────────────┘
+                            ▼
+    ┌───────────────────────────────────────────────────────┐
+    │              ts-extractor (sonnet)                    │
+    │          Processes chunks OR monolithic               │
+    └───────────────────────┬───────────────────────────────┘
+                            │
+                            ▼
+    ┌───────────────────────────────────────────────────────┐
+    │              ts-formatter (sonnet)                    │
+    │          Generates 8-file packet per ADR-002          │
+    └───────────────────────┬───────────────────────────────┘
+                            │
+                            ▼
+    ┌───────────────────────────────────────────────────────┐
+    │              ps-critic (sonnet)                       │
+    │          Quality validation >= 0.90                   │
+    └───────────────────────────────────────────────────────┘
 
 COMPLIANCE: Each agent is a WORKER. None spawn subagents.
+RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large files.
 ```
 
 ---
@@ -227,18 +258,26 @@ COMPLIANCE: Each agent is a WORKER. None spawn subagents.
 
 | Agent | Model | Role | Output |
 |-------|-------|------|--------|
-| `ts-parser` | haiku | Parse VTT/SRT/TXT to canonical JSON | `canonical-transcript.json` |
+| `ts-parser` v2.0 | haiku | **ORCHESTRATOR:** Route VTT→Python, others→LLM. Validate and chunk. | `index.json` + `chunks/*.json` |
 | `ts-extractor` | sonnet | Extract speakers, actions, decisions, questions, topics | `extraction-report.json` |
 | `ts-formatter` | sonnet | Generate Markdown packet with navigation | `transcript-{id}/` directory |
 | `ps-critic` | sonnet | Validate quality >= 0.90 threshold | `quality-review.md` |
 
 ### Agent Capabilities Summary
 
-**ts-parser (Reception Desk):**
-- Auto-detect format from file content
-- Parse VTT voice tags, SRT speaker prefixes
-- Normalize timestamps to milliseconds
+**ts-parser v2.0 (Strategy Pattern Orchestrator):**
+
+*Four Roles per TDD-FEAT-004:*
+1. **ORCHESTRATOR** - Coordinate pipeline based on format detection
+2. **DELEGATOR** - Route VTT to Python parser via Bash tool (1,250x cost reduction)
+3. **FALLBACK** - LLM parsing for SRT/TXT formats and error recovery
+4. **VALIDATOR** - Verify Python output schema before chunking
+
+*Capabilities:*
+- Auto-detect format (VTT header, SRT timestamps, plain text)
+- Invoke Python parser for VTT files (deterministic, sub-second)
 - Handle encoding detection (UTF-8, Windows-1252, ISO-8859-1)
+- Generate chunked output: `index.json` + `chunks/chunk-NNN.json`
 
 **ts-extractor (Research Analyst):**
 - 4-pattern speaker detection chain (PAT-003)
@@ -295,19 +334,45 @@ COMPLIANCE: Each agent is a WORKER. None spawn subagents.
 
 ---
 
-## Output Structure (ADR-002)
+## Output Structure (ADR-002 + v2.0 Hybrid)
 
 ```
 transcript-{id}/
-├── 00-index.md          # Navigation hub (~2K tokens)
-├── 01-summary.md        # Executive summary (~5K tokens)
-├── 02-transcript.md     # Full transcript (may split)
-├── 03-speakers.md       # Speaker directory
-├── 04-action-items.md   # Action items with citations
-├── 05-decisions.md      # Decisions with context
-├── 06-questions.md      # Open questions
-├── 07-topics.md         # Topic segments
-└── _anchors.json        # Anchor registry for linking
+├── canonical/                  # v2.0: Hybrid parser output
+│   ├── canonical-transcript.json  # Full parsed transcript
+│   ├── index.json              # Chunk index with metadata
+│   └── chunks/                 # Chunked segments (500 per file)
+│       ├── chunk-000.json      # Segments 0-499
+│       ├── chunk-001.json      # Segments 500-999
+│       └── ...
+├── 00-index.md                 # Navigation hub (~2K tokens)
+├── 01-summary.md               # Executive summary (~5K tokens)
+├── 02-transcript.md            # Full transcript (may split)
+├── 03-speakers.md              # Speaker directory
+├── 04-action-items.md          # Action items with citations
+├── 05-decisions.md             # Decisions with context
+├── 06-questions.md             # Open questions
+├── 07-topics.md                # Topic segments
+└── _anchors.json               # Anchor registry for linking
+```
+
+### v2.0 Chunked Structure (index.json)
+
+```json
+{
+  "total_segments": 3071,
+  "chunk_count": 7,
+  "chunk_size": 500,
+  "parsing_method": "python",
+  "chunks": [
+    {
+      "file": "chunks/chunk-000.json",
+      "start_segment": 0,
+      "end_segment": 499,
+      "speaker_summary": {"Alice": 120, "Bob": 80}
+    }
+  ]
+}
 ```
 
 ### Token Budget Compliance (ADR-004)
@@ -321,26 +386,39 @@ transcript-{id}/
 
 ## Orchestration Flow
 
-### L1: Step-by-Step Pipeline
+### L1: Step-by-Step Pipeline (v2.0 Hybrid)
 
 ```
-STEP 1: PARSE (ts-parser)
-─────────────────────────
+STEP 1: PARSE + CHUNK (ts-parser v2.0)
+──────────────────────────────────────
 Input:  Raw transcript file (VTT/SRT/TXT)
-Output: canonical-transcript.json
-Errors: Format detection failure → warn and default to plain text
+Process:
+  1. Detect format (VTT header check)
+  2. IF VTT:
+     - Delegate to Python parser (Bash tool)
+     - Validate output schema
+     - Chunk to 500-segment files
+  3. ELSE (SRT/TXT):
+     - Use LLM parsing (fallback)
+     - Chunk if large file
+Output: index.json + chunks/chunk-NNN.json
+Errors: Python failure → fallback to LLM parsing
 
 STEP 2: EXTRACT (ts-extractor)
 ──────────────────────────────
-Input:  canonical-transcript.json
+Input:  index.json + chunks/*.json (or canonical-transcript.json for small files)
+Process:
+  1. Read index.json for overview
+  2. Request relevant chunks based on task
+  3. Extract entities with confidence scores
 Output: extraction-report.json
 Errors: Low confidence extractions → flag for review
 
 STEP 3: FORMAT (ts-formatter)
 ─────────────────────────────
 Input:  canonical-transcript.json + extraction-report.json
-Output: transcript-{id}/ packet directory
-Errors: Token overflow → split files automatically
+Output: transcript-{id}/ packet directory (8 files per ADR-002)
+Errors: Token overflow → split files automatically (ADR-004)
 
 STEP 4: REVIEW (ps-critic)
 ──────────────────────────
@@ -349,22 +427,28 @@ Output: quality-review.md
 Errors: Score < 0.90 → report issues for human review
 ```
 
-### L2: State Passing Between Agents
+### L2: State Passing Between Agents (v2.0)
 
 | Agent | Output Key | Passed To |
 |-------|------------|-----------|
-| ts-parser | `ts_parser_output` | ts-extractor |
+| ts-parser v2.0 | `ts_parser_output` | ts-extractor |
 | ts-extractor | `ts_extractor_output` | ts-formatter |
 | ts-formatter | `ts_formatter_output` | ps-critic |
 | ps-critic | `quality_output` | User/Orchestrator |
 
-**State Schema:**
+**State Schema (v2.0):**
 ```yaml
 ts_parser_output:
+  # v2.0 chunked output structure
   canonical_json_path: string
+  index_json_path: string           # NEW: Chunk index
+  chunks_dir: string                # NEW: chunks/ directory
+  chunk_count: integer              # NEW: Number of chunks
   format_detected: vtt|srt|plain
+  parsing_method: python|llm        # NEW: Which parser was used
   segment_count: integer
   speaker_count: integer
+  validation_passed: boolean        # NEW: Output validation status
 
 ts_extractor_output:
   extraction_report_path: string
@@ -372,6 +456,7 @@ ts_extractor_output:
   decision_count: integer
   question_count: integer
   high_confidence_ratio: float
+  chunks_processed: integer         # NEW: For chunked input
 
 ts_formatter_output:
   packet_path: string
@@ -453,12 +538,17 @@ COMPLIANT: Exactly ONE level of agent nesting
 
 ### Backlinks
 - [TDD-transcript-skill.md](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-transcript-skill.md) - Architecture overview
+- [TDD-FEAT-004](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-004-hybrid-infrastructure/docs/design/TDD-FEAT-004-hybrid-infrastructure.md) - Hybrid Infrastructure Technical Design (v2.0 basis)
 - [ADR-001](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-001.md) - Agent Architecture
 - [ADR-002](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-002.md) - Artifact Structure
+- [DISC-009](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-019-live-skill-invocation/DISC-009-agent-only-architecture-limitation.md) - Agent-Only Architecture Limitation (v2.0 rationale)
+- [EN-025](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-004-hybrid-infrastructure/EN-025-skill-integration/EN-025-skill-integration.md) - v2.0 Integration Enabler
 
 ### Forward Links
 - [PLAYBOOK.md](./docs/PLAYBOOK.md) - Execution playbook
 - [RUNBOOK.md](./docs/RUNBOOK.md) - Operational procedures
+- [VTT Parser](./src/parser/vtt_parser.py) - Python VTT parser (v2.0)
+- [Transcript Chunker](./src/chunker/transcript_chunker.py) - Python chunker (v2.0)
 
 ---
 
@@ -466,14 +556,15 @@ COMPLIANT: Exactly ONE level of agent nesting
 
 For detailed agent specifications, see:
 
-- `agents/ts-parser.md` - Parser agent definition
+- `agents/ts-parser.md` - Parser/Orchestrator agent definition (v2.0)
 - `agents/ts-extractor.md` - Extractor agent definition
 - `agents/ts-formatter.md` - Formatter agent definition
 - `skills/problem-solving/agents/ps-critic.md` - Critic agent (shared)
 
 ---
 
-*Skill Version: 1.0.0*
+*Skill Version: 2.0.0*
+*Architecture: Hybrid Python+LLM (Strategy Pattern)*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-01-26*
-*Relocated: 2026-01-26 per DISC-004*
+*v2.0: 2026-01-30 per DISC-009 findings (99.8% data loss resolution)*

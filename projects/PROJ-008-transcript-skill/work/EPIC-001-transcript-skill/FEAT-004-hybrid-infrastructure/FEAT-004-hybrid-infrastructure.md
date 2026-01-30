@@ -9,15 +9,17 @@ PURPOSE: Implement hybrid Python + LLM architecture for transcript processing
 -->
 
 > **Type:** feature
-> **Status:** done
-> **Priority:** high
-> **Impact:** high
+> **Status:** in_progress
+> **Priority:** critical
+> **Impact:** critical
 > **Created:** 2026-01-28T22:00:00Z
 > **Due:** TBD
-> **Completed:** 2026-01-30T03:00:00Z
+> **Completed:** null
 > **Parent:** EPIC-001
 > **Owner:** Claude
 > **Target Sprint:** TBD
+>
+> **STATUS REVISION NOTE:** Reverted from "done" to "in_progress" on 2026-01-29 per [DISC-013](./FEAT-004--DISC-013-missing-skill-integration-enabler.md). EN-020..023 created Python components but integration into SKILL.md orchestration was never done. EN-025 created to address this gap.
 
 ---
 
@@ -173,6 +175,7 @@ LEGEND:
 | EN-021 | Enabler | Chunking Strategy | **DONE** | high | EN-020 |
 | EN-022 | Enabler | Extractor Adaptation | **DONE** | medium | EN-021 |
 | EN-023 | Enabler | Integration Testing | **DONE** | medium | EN-020, EN-021, EN-022 |
+| EN-025 | Enabler | ts-parser v2.0 + CLI + SKILL.md Integration | **PENDING** | critical | EN-020, EN-021, EN-022, EN-023 |
 
 ### Work Item Links
 
@@ -180,6 +183,7 @@ LEGEND:
 - [EN-021: Chunking Strategy](./EN-021-chunking-strategy/EN-021-chunking-strategy.md)
 - [EN-022: Extractor Adaptation](./EN-022-extractor-adaptation/EN-022-extractor-adaptation.md)
 - [EN-023: Integration Testing](./EN-023-integration-testing/EN-023-integration-testing.md)
+- [EN-025: ts-parser v2.0 + CLI + SKILL.md Integration](./EN-025-skill-integration/EN-025-skill-integration.md) **← CRITICAL: Integration Gap Fix**
 
 ---
 
@@ -191,7 +195,7 @@ LEGEND:
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [████████████████████] 100% (4/4 completed)            |
+| Enablers:  [████████████████....] 80% (4/5 completed)             |
 | Tasks:     [████████████████████] 100% (27/27 completed)          |
 +------------------------------------------------------------------+
 | Overall:   [████████████████████] 100%                            |
@@ -202,7 +206,7 @@ LEGEND:
 
 | Metric | Value |
 |--------|-------|
-| **Total Enablers** | 4 |
+| **Total Enablers** | 5 |
 | **Completed Enablers** | 4 |
 | **Total Tasks** | 27 |
 | **Completed Tasks** | 27 |
