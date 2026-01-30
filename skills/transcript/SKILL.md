@@ -1,7 +1,7 @@
 ---
 name: transcript
 description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
-version: "2.0.0"
+version: "2.1.0"
 allowed-tools: Read, Write, Glob, Task
 
 # CONTEXT INJECTION (implements REQ-CI-F-002)
@@ -193,11 +193,13 @@ If no domain is specified, `general` is used as the default.
 ## Agent Pipeline
 
 ```
-TRANSCRIPT SKILL PIPELINE (v2.0 HYBRID ARCHITECTURE)
-====================================================
+TRANSCRIPT SKILL PIPELINE (v2.1 HYBRID ARCHITECTURE + MINDMAPS)
+===============================================================
 
                     USER INPUT (VTT/SRT/TXT)
                            │
+                           │ /transcript file.vtt [--mindmap-format both]
+                           │ /transcript file.vtt --no-mindmap  (to disable)
                            ▼
     ┌───────────────────────────────────────────────────────┐
     │              ts-parser v2.0 (ORCHESTRATOR)            │
@@ -242,14 +244,43 @@ TRANSCRIPT SKILL PIPELINE (v2.0 HYBRID ARCHITECTURE)
     │          Generates 8-file packet per ADR-002          │
     └───────────────────────┬───────────────────────────────┘
                             │
+                            │ ts_formatter_output.packet_path
                             ▼
+                ┌───────────────────────────┐
+                │   --no-mindmap flag set?  │
+                └─────────────┬─────────────┘
+                              │
+           ┌──────────────────┴──────────────────┐
+           │ NO (default)                        │ YES
+           ▼                                     ▼
+    ┌─────────────────────┐              (skip mindmaps)
+    │    ts-mindmap-*     │                      │
+    │      (sonnet)       │                      │
+    │                     │                      │
+    │ ┌─────────────────┐ │                      │
+    │ │ts-mindmap-mermaid│ │  Output:            │
+    │ └─────────────────┘ │  08-mindmap/         │
+    │ ┌─────────────────┐ │  mindmap.mmd         │
+    │ │ ts-mindmap-ascii│ │  mindmap.ascii.txt   │
+    │ └─────────────────┘ │                      │
+    └──────────┬──────────┘                      │
+               │                                 │
+               │ ts_mindmap_output               │
+               └──────────────┬──────────────────┘
+                              │
+                              ▼
     ┌───────────────────────────────────────────────────────┐
     │              ps-critic (sonnet)                       │
     │          Quality validation >= 0.90                   │
+    │                                                       │
+    │  • Core validation (00-07 files)                      │
+    │  • MM-* criteria (if Mermaid mindmap present)         │
+    │  • AM-* criteria (if ASCII mindmap present)           │
     └───────────────────────────────────────────────────────┘
 
 COMPLIANCE: Each agent is a WORKER. None spawn subagents.
 RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large files.
+MINDMAPS: ADR-006 - Mindmaps ON by default, opt-out via --no-mindmap flag.
 ```
 
 ---
@@ -261,7 +292,9 @@ RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large fi
 | `ts-parser` v2.0 | haiku | **ORCHESTRATOR:** Route VTT→Python, others→LLM. Validate and chunk. | `index.json` + `chunks/*.json` |
 | `ts-extractor` | sonnet | Extract speakers, actions, decisions, questions, topics | `extraction-report.json` |
 | `ts-formatter` | sonnet | Generate Markdown packet with navigation | `transcript-{id}/` directory |
-| `ps-critic` | sonnet | Validate quality >= 0.90 threshold | `quality-review.md` |
+| `ts-mindmap-mermaid` | sonnet | Generate Mermaid mindmap with deep links (ADR-003) | `08-mindmap/mindmap.mmd` |
+| `ts-mindmap-ascii` | sonnet | Generate ASCII art mindmap for terminal display | `08-mindmap/mindmap.ascii.txt` |
+| `ps-critic` | sonnet | Validate quality >= 0.90 threshold (includes MM-*/AM-* criteria) | `quality-review.md` |
 
 ### Agent Capabilities Summary
 
@@ -291,11 +324,27 @@ RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large fi
 - ADR-003 anchor registry and bidirectional backlinks
 - Token counting and limit enforcement
 
+**ts-mindmap-mermaid (Visualization - Mermaid):**
+- Generates Mermaid mindmap syntax from extraction report
+- Topic hierarchy with entity grouping
+- Deep links to transcript anchors (ADR-003 format)
+- Entity symbols: → (action), ? (question), ! (decision), ✓ (follow-up)
+- Maximum 50 topics (overflow handling)
+
+**ts-mindmap-ascii (Visualization - ASCII):**
+- Generates ASCII art mindmap for terminal display
+- UTF-8 box-drawing characters for tree structure
+- 80-character line width limit
+- Legend at bottom explaining entity symbols
+- Terminal-friendly fallback when Mermaid rendering unavailable
+
 **ps-critic (Quality Inspector):**
 - Quality score calculation (aggregate >= 0.90)
 - Requirements traceability verification
 - ADR compliance checking
 - Improvement recommendations
+- MM-* criteria validation (if Mermaid mindmap present)
+- AM-* criteria validation (if ASCII mindmap present)
 
 ---
 
@@ -304,14 +353,27 @@ RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large fi
 ### Option 1: Slash Command
 
 ```
-/transcript <file-path> [--output <dir>] [--format <vtt|srt|txt>]
+/transcript <file-path> [--output <dir>] [--format <vtt|srt|txt>] [--no-mindmap] [--mindmap-format <format>]
 ```
 
-**Examples:**
+**Examples (Default - Mindmaps Generated):**
 ```
-/transcript meeting.vtt
-/transcript standup.srt --output ./docs/meetings/
-/transcript notes.txt --format txt
+/transcript meeting.vtt                              # Mindmaps ON by default (both formats)
+/transcript standup.srt --output ./docs/meetings/    # With output directory
+/transcript notes.txt --format txt                   # Force format detection
+```
+
+**Examples (Mindmap Format Selection):**
+```
+/transcript meeting.vtt --mindmap-format mermaid     # Only Mermaid format
+/transcript meeting.vtt --mindmap-format ascii       # Only ASCII format
+/transcript meeting.vtt --mindmap-format both        # Both formats (explicit)
+```
+
+**Examples (Opt-Out - Disable Mindmaps):**
+```
+/transcript meeting.vtt --no-mindmap                 # Skip mindmap generation
+/transcript meeting.vtt --no-mindmap --output ./docs # With other options
 ```
 
 ### Option 2: Natural Language
@@ -320,6 +382,9 @@ RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large fi
 "Process the transcript at /path/to/meeting.vtt"
 "Extract action items from yesterday's team meeting"
 "Analyze the quarterly review transcript and create a summary"
+"Process the meeting transcript and generate mindmaps"
+"Parse the standup notes without mindmaps"
+"Create a Mermaid-only mindmap from the transcript"
 ```
 
 ### Input Parameters
@@ -331,6 +396,8 @@ RATIONALE: DISC-009 - Agent-only architecture caused 99.8% data loss on large fi
 | `format` | string | No | auto-detect | Force format: `vtt`, `srt`, `txt` |
 | `confidence_threshold` | float | No | 0.7 | Minimum confidence for extractions |
 | `quality_threshold` | float | No | 0.9 | ps-critic quality threshold |
+| `--no-mindmap` | flag | No | false | Disable mindmap generation (mindmaps ON by default) |
+| `--mindmap-format` | string | No | "both" | Format: `mermaid`, `ascii`, `both` |
 
 ---
 
@@ -353,6 +420,9 @@ transcript-{id}/
 ├── 05-decisions.md             # Decisions with context
 ├── 06-questions.md             # Open questions
 ├── 07-topics.md                # Topic segments
+├── 08-mindmap/                 # Mindmap directory (default: enabled, per ADR-006)
+│   ├── mindmap.mmd             # Mermaid format (if --mindmap-format mermaid or both)
+│   └── mindmap.ascii.txt       # ASCII format (if --mindmap-format ascii or both)
 └── _anchors.json               # Anchor registry for linking
 ```
 
@@ -463,6 +533,24 @@ Input:  index.json + extraction-report.json (NEVER canonical-transcript.json)
 Output: packet/ directory (8 files per ADR-002)
 Errors: Token overflow → split files automatically (ADR-004)
 
+STEP 3.5: MINDMAP GENERATION (ts-mindmap-*, conditional - ADR-006)
+──────────────────────────────────────────────────────────────────
+Condition: --no-mindmap flag NOT set (mindmaps ON by default)
+Input:  ts_extractor_output.extraction_report_path + ts_formatter_output.packet_path
+Process:
+  1. IF --no-mindmap flag is NOT set:  # Default behavior
+     - IF --mindmap-format == "mermaid" OR "both" (default):
+       Invoke ts-mindmap-mermaid
+       Output: 08-mindmap/mindmap.mmd
+     - IF --mindmap-format == "ascii" OR "both" (default):
+       Invoke ts-mindmap-ascii
+       Output: 08-mindmap/mindmap.ascii.txt
+  2. ELSE:
+     - Skip mindmap generation (user opted out)
+     - ts_mindmap_output.overall_status = "skipped"
+Output: ts_mindmap_output state key
+Errors: Graceful degradation - continue with warning, provide regeneration instructions
+
 STEP 4: REVIEW (ps-critic)
 ──────────────────────────
 Input:  All generated files
@@ -476,7 +564,8 @@ Errors: Score < 0.90 → report issues for human review
 |-------|------------|-----------|
 | ts-parser v2.0 | `ts_parser_output` | ts-extractor |
 | ts-extractor | `ts_extractor_output` | ts-formatter |
-| ts-formatter | `ts_formatter_output` | ps-critic |
+| ts-formatter | `ts_formatter_output` | ts-mindmap-* (if enabled), ps-critic |
+| ts-mindmap-* | `ts_mindmap_output` | ps-critic |
 | ps-critic | `quality_output` | User/Orchestrator |
 
 **State Schema (v2.0):**
@@ -506,6 +595,23 @@ ts_formatter_output:
   files_created: string[]
   total_tokens: integer
   split_files: integer
+
+ts_mindmap_output:                      # NEW: ADR-006 Section 5.2
+  enabled: boolean                      # Was --no-mindmap NOT set?
+  format_requested: string              # "mermaid" | "ascii" | "both"
+  mermaid:
+    path: string | null                 # Path to 08-mindmap/mindmap.mmd
+    status: string                      # "complete" | "failed" | "skipped"
+    error_message: string | null
+    topic_count: integer
+    deep_link_count: integer
+  ascii:
+    path: string | null                 # Path to 08-mindmap/mindmap.ascii.txt
+    status: string                      # "complete" | "failed" | "skipped"
+    error_message: string | null
+    topic_count: integer
+    max_line_width: integer             # Should be <= 80
+  overall_status: string                # "complete" | "partial" | "failed"
 
 quality_output:
   quality_score: float
@@ -584,6 +690,7 @@ COMPLIANT: Exactly ONE level of agent nesting
 - [TDD-FEAT-004](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-004-hybrid-infrastructure/docs/design/TDD-FEAT-004-hybrid-infrastructure.md) - Hybrid Infrastructure Technical Design (v2.0 basis)
 - [ADR-001](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-001.md) - Agent Architecture
 - [ADR-002](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-002.md) - Artifact Structure
+- [ADR-006](../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) - Mindmap Pipeline Integration (v2.1 basis)
 - [DISC-009](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-019-live-skill-invocation/DISC-009-agent-only-architecture-limitation.md) - Agent-Only Architecture Limitation (v2.0 rationale)
 - [EN-025](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-004-hybrid-infrastructure/EN-025-skill-integration/EN-025-skill-integration.md) - v2.0 Integration Enabler
 
@@ -602,12 +709,15 @@ For detailed agent specifications, see:
 - `agents/ts-parser.md` - Parser/Orchestrator agent definition (v2.0)
 - `agents/ts-extractor.md` - Extractor agent definition
 - `agents/ts-formatter.md` - Formatter agent definition
+- `agents/ts-mindmap-mermaid.md` - Mermaid mindmap agent definition (ADR-006)
+- `agents/ts-mindmap-ascii.md` - ASCII mindmap agent definition (ADR-006)
 - `skills/problem-solving/agents/ps-critic.md` - Critic agent (shared)
 
 ---
 
-*Skill Version: 2.0.0*
-*Architecture: Hybrid Python+LLM (Strategy Pattern)*
+*Skill Version: 2.1.0*
+*Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-01-26*
 *v2.0: 2026-01-30 per DISC-009 findings (99.8% data loss resolution)*
+*v2.1: 2026-01-30 per ADR-006 (Mindmap Pipeline Integration - default ON, opt-out via --no-mindmap)*
