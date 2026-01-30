@@ -111,48 +111,58 @@ mindmap
 | Level | Content | Syntax |
 |-------|---------|--------|
 | Root | Meeting title/date | `((text))` double parentheses |
-| L1 | Main topics | Standard text |
-| L2 | Subtopics, entity groups | Standard text |
-| L3 | Individual entities | `[text with link](#anchor)` |
-| Special | Speakers section | Separate branch with icons |
+| L1 | Main topics | Plain text |
+| L2 | Subtopics, entity groups | Plain text |
+| L3 | Individual entities | Plain text (see note below) |
+| Special | Speakers section | Separate branch |
+
+> **CRITICAL: Mermaid Mindmap Syntax Limitation**
+> Mermaid mindmaps support **plain text nodes only**. They do NOT support:
+> - Markdown links `[text](url)`
+> - HTML elements
+> - Anchor references inside nodes
+>
+> Deep links are provided via the ASCII visualization and the reference table below the mindmap.
 
 ### Entity Node Formatting
 
 **Action Items:**
 ```
-[Action: {text truncated to 40 chars}...](#act-NNN)
+{assignee}: {text truncated to 40 chars}
 ```
 
 **Decisions:**
 ```
-[Decision: {text truncated to 40 chars}...](#dec-NNN)
+{text truncated to 50 chars}
 ```
 
 **Questions:**
 ```
-[{status}: {text truncated to 40 chars}...](#que-NNN)
+{text truncated to 40 chars} - {status}
 ```
 Where status is "Answered" or "Open"
 
 **Speakers:**
 ```
 {Speaker Name}
-  ::icon(fa fa-user)
 ```
 
-### Deep Link Format (ADR-003)
+### Deep Link Strategy (ADR-003 Compliance)
 
-All entity nodes MUST include deep links in the format:
-```
-(#entity-type-NNN)
-```
+Since Mermaid mindmaps cannot embed links, ADR-003 compliance is achieved through:
 
-Examples:
-- `(#act-001)` - Action item 1
-- `(#dec-003)` - Decision 3
-- `(#que-002)` - Question 2
-- `(#top-005)` - Topic 5
-- `(#seg-042)` - Segment 42
+1. **ASCII Visualization** (`mindmap.ascii.txt`) - Contains full deep links in `──►seg-NNN` format
+2. **Reference Table** - Appended as a comment block in the .mmd file
+
+Reference table format at end of mindmap file:
+```
+%% === DEEP LINK REFERENCE ===
+%% Action Items: act-001→seg-006, act-002→seg-013, act-003→seg-019...
+%% Decisions: dec-001→seg-010, dec-002→seg-018, dec-003→seg-025...
+%% Questions: que-001→seg-009, que-002→seg-023, que-003→seg-027...
+%% Topics: top-001→seg-001..008, top-002→seg-009..013...
+%% ============================
+```
 
 ### Topic Hierarchy Construction
 
@@ -192,7 +202,8 @@ OUTPUT VALIDATION:
 [ ] mindmap keyword at start
 [ ] root node with double parentheses
 [ ] All nodes properly indented (2 spaces per level)
-[ ] All deep links use correct anchor format
+[ ] All nodes use PLAIN TEXT ONLY (no markdown links)
+[ ] Deep link reference block appended as comments
 [ ] No syntax errors in Mermaid structure
 ```
 
@@ -203,7 +214,8 @@ The generated mindmap MUST:
 2. Have exactly one root node
 3. Use consistent indentation (2 spaces)
 4. Have balanced node structures
-5. Use valid link syntax for deep links
+5. Use **plain text only** in nodes (NO markdown links, NO HTML)
+6. Include deep link reference comment block at end of file
 
 ---
 
@@ -266,27 +278,41 @@ mindmap
   root((Q4 Planning Meeting - 2026-01-15))
     Budget Review
       Current Status
-        [Action: Send updated projections to finance](#act-001)
-        [Decision: Approve Q3 budget variance](#dec-001)
+        Send updated projections to finance
+        Approve Q3 budget variance
       Projections Q4
-        [Open: What is the timeline for approval?](#que-001)
+        What is the timeline for approval? - Open
     Timeline Discussion
       Q4 Deliverables
-        [Action: Create milestone tracker](#act-002)
-        [Answered: When is November launch?](#que-002)
+        Create milestone tracker
+        When is November launch? - Answered
       Dependencies
-        [Decision: Prioritize API work](#dec-002)
+        Prioritize API work
     Staffing
       Hiring Plan
-        [Action: Post 3 job requisitions](#act-003)
+        Post 3 job requisitions
     Speakers
       Alice
-        ::icon(fa fa-user)
       Bob
-        ::icon(fa fa-user)
       Charlie
-        ::icon(fa fa-user)
+
+%% === DEEP LINK REFERENCE ===
+%% Action Items:
+%%   act-001 → seg-005 (Send updated projections)
+%%   act-002 → seg-012 (Create milestone tracker)
+%%   act-003 → seg-018 (Post job requisitions)
+%% Decisions:
+%%   dec-001 → seg-006 (Approve Q3 budget variance)
+%%   dec-002 → seg-014 (Prioritize API work)
+%% Questions:
+%%   que-001 → seg-008 (Timeline for approval - OPEN)
+%%   que-002 → seg-013 (November launch - ANSWERED at seg-015)
+%% ============================
 ```
+
+> **Note:** The `%%` lines are Mermaid comments and will not render. They provide
+> traceability to source segments for ADR-003 compliance. For clickable deep links,
+> see the companion `mindmap.ascii.txt` file.
 
 ---
 
@@ -327,8 +353,9 @@ mindmap
 |---------|------|--------|---------|
 | 1.0.0 | 2026-01-28 | Claude | Initial agent definition per EN-009 TASK-001 |
 | 1.0.1 | 2026-01-30 | Claude | **CORRECTED** output directory from `07-mindmap/` to `08-mindmap/` per EN-024:DISC-001 |
+| 1.1.0 | 2026-01-30 | Claude | **CRITICAL FIX** - Removed invalid markdown link syntax from examples. Mermaid mindmaps only support plain text nodes. Added deep link reference comment block strategy for ADR-003 compliance. |
 
 ---
 
-*Agent: ts-mindmap-mermaid v1.0.0*
+*Agent: ts-mindmap-mermaid v1.1.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents)*
