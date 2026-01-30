@@ -299,11 +299,18 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
         return 1
 
     if args.command == "parse":
+        # EN-026: Support both token-based and segment-based chunking
+        # --no-token-limit disables token-based chunking (deprecated)
+        target_tokens: int | None = getattr(args, "target_tokens", 18000)
+        if getattr(args, "no_token_limit", False):
+            target_tokens = None
+
         return adapter.cmd_transcript_parse(
             path=args.path,
             format=getattr(args, "format", "auto"),
             output_dir=getattr(args, "output_dir", None),
             chunk_size=getattr(args, "chunk_size", 500),
+            target_tokens=target_tokens,
             generate_chunks=not getattr(args, "no_chunks", False),
             json_output=json_output,
         )

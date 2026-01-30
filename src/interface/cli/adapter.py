@@ -1331,6 +1331,7 @@ class CLIAdapter:
         format: str = "auto",
         output_dir: str | None = None,
         chunk_size: int = 500,
+        target_tokens: int | None = 18000,
         generate_chunks: bool = True,
         json_output: bool = False,
     ) -> int:
@@ -1340,12 +1341,17 @@ class CLIAdapter:
             path: Path to transcript file (VTT or SRT)
             format: Input format ('vtt', 'srt', or 'auto')
             output_dir: Output directory (default: same as input)
-            chunk_size: Number of segments per chunk
+            chunk_size: Number of segments per chunk (deprecated, use target_tokens)
+            target_tokens: Target tokens per chunk (default: 18000, recommended)
             generate_chunks: Whether to generate chunk files
             json_output: Whether to output as JSON
 
         Returns:
             Exit code (0 for success, 1 for failure)
+
+        Note:
+            EN-026: target_tokens=18000 is the recommended default to ensure
+            chunks fit within Claude Code Read limit (25K tokens).
 
         References:
             - TDD-FEAT-004: Hybrid Infrastructure Design
@@ -1372,12 +1378,13 @@ class CLIAdapter:
             # Import command here to avoid circular imports at module level
             from src.transcript.application.commands import ParseTranscriptCommand
 
-            # Create parse command
+            # Create parse command (EN-026: token-based chunking by default)
             command = ParseTranscriptCommand(
                 path=path,
                 format=format,
                 output_dir=output_dir,
                 chunk_size=chunk_size,
+                target_tokens=target_tokens,
                 generate_chunks=generate_chunks,
             )
 

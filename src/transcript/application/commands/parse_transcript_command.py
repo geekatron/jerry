@@ -23,12 +23,18 @@ class ParseTranscriptCommand:
         path: Path to the transcript file (VTT or SRT)
         format: Input format ('vtt', 'srt', or 'auto')
         output_dir: Output directory (None = same as input)
-        chunk_size: Number of segments per chunk (default: 500)
+        chunk_size: Number of segments per chunk (default: 500, deprecated)
+        target_tokens: Target tokens per chunk (default: 18000, recommended)
         generate_chunks: Whether to generate chunk files (default: True)
+
+    Note:
+        target_tokens takes precedence over chunk_size when both are set.
+        Using chunk_size without target_tokens is deprecated per EN-026.
     """
 
     path: str
     format: str = "auto"
     output_dir: str | None = None
     chunk_size: int = 500
+    target_tokens: int | None = 18000  # EN-026: Default to token-based chunking
     generate_chunks: bool = True

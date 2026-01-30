@@ -311,20 +311,29 @@ def create_vtt_parser() -> VTTParser:
     return VTTParser()
 
 
-def create_transcript_chunker(chunk_size: int = 500) -> TranscriptChunker:
+def create_transcript_chunker(
+    chunk_size: int = 500,
+    target_tokens: int | None = 18000,
+) -> TranscriptChunker:
     """Create a transcript chunker instance.
 
     Args:
-        chunk_size: Number of segments per chunk (default: 500)
+        chunk_size: Number of segments per chunk (default: 500, deprecated)
+        target_tokens: Target tokens per chunk (default: 18000, recommended)
 
     Returns:
         TranscriptChunker instance.
 
     References:
         - EN-021: Chunking Strategy
+        - EN-026: Token-Based Chunking (BUG-001 fix)
         - ADR-004: File Splitting Strategy
+
+    Note:
+        EN-026: target_tokens=18000 is the recommended default to ensure
+        chunks fit within Claude Code Read limit (25K tokens).
     """
-    return TranscriptChunker(chunk_size=chunk_size)
+    return TranscriptChunker(chunk_size=chunk_size, target_tokens=target_tokens)
 
 
 def get_projects_directory() -> str:

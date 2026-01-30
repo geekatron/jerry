@@ -218,6 +218,8 @@ class TestHandleTranscript:
         args.format = "auto"
         args.output_dir = None
         args.chunk_size = 500
+        args.target_tokens = 18000  # EN-026: Token-based chunking default
+        args.no_token_limit = False  # EN-026: Token-based chunking enabled
         args.no_chunks = False
 
         result = _handle_transcript(mock_adapter, args, json_output=False)
@@ -228,6 +230,7 @@ class TestHandleTranscript:
             format="auto",
             output_dir=None,
             chunk_size=500,
+            target_tokens=18000,  # EN-026: Token-based chunking
             generate_chunks=True,  # not no_chunks
             json_output=False,
         )
@@ -245,6 +248,8 @@ class TestHandleTranscript:
         args.format = "srt"
         args.output_dir = "/tmp/output"
         args.chunk_size = 1000
+        args.target_tokens = 18000  # EN-026: Token-based chunking default
+        args.no_token_limit = False  # EN-026: Token-based chunking enabled
         args.no_chunks = True
 
         result = _handle_transcript(mock_adapter, args, json_output=True)
@@ -255,6 +260,7 @@ class TestHandleTranscript:
             format="srt",
             output_dir="/tmp/output",
             chunk_size=1000,
+            target_tokens=18000,  # EN-026: Token-based chunking
             generate_chunks=False,  # no_chunks=True means generate_chunks=False
             json_output=True,
         )
@@ -272,6 +278,8 @@ class TestHandleTranscript:
         args.format = "auto"
         args.output_dir = None
         args.chunk_size = 500
+        args.target_tokens = 18000  # EN-026: Token-based chunking default
+        args.no_token_limit = False  # EN-026: Token-based chunking enabled
         args.no_chunks = False
 
         _handle_transcript(mock_adapter, args, json_output=True)
@@ -324,6 +332,8 @@ class TestMainTranscriptRouting:
         mock_args.format = "auto"
         mock_args.output_dir = None
         mock_args.chunk_size = 500
+        mock_args.target_tokens = 18000  # EN-026: Token-based chunking default
+        mock_args.no_token_limit = False  # EN-026: Token-based chunking enabled
         mock_args.no_chunks = False
         mock_args.json = False
         mock_parser.parse_args.return_value = mock_args

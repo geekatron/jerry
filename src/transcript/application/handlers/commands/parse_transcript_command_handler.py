@@ -124,10 +124,13 @@ class ParseTranscriptCommandHandler:
             chunk_count = 0
 
             if command.generate_chunks and parse_result.segments:
-                # Use command's chunk_size
+                # EN-026: Use token-based chunking by default (BUG-001 fix)
                 from src.transcript.application.services.chunker import TranscriptChunker
 
-                chunker = TranscriptChunker(chunk_size=command.chunk_size)
+                chunker = TranscriptChunker(
+                    chunk_size=command.chunk_size,
+                    target_tokens=command.target_tokens,
+                )
                 index_path = chunker.chunk(parse_result.segments, str(output_dir))
 
                 # Count chunks from index

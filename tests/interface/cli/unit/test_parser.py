@@ -370,6 +370,34 @@ class TestTranscriptNamespace:
         args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
         assert args.chunk_size == 500
 
+    def test_transcript_parse_with_target_tokens(self) -> None:
+        """transcript parse --target-tokens parses correctly (EN-026)."""
+        parser = create_parser()
+        args = parser.parse_args(
+            ["transcript", "parse", "meeting.vtt", "--target-tokens", "12000"]
+        )
+        assert args.target_tokens == 12000
+
+    def test_transcript_parse_target_tokens_default_is_18000(self) -> None:
+        """transcript parse target_tokens defaults to 18000 (EN-026: Claude Code limit)."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.target_tokens == 18000
+
+    def test_transcript_parse_with_no_token_limit(self) -> None:
+        """transcript parse --no-token-limit parses correctly (EN-026)."""
+        parser = create_parser()
+        args = parser.parse_args(
+            ["transcript", "parse", "meeting.vtt", "--no-token-limit"]
+        )
+        assert args.no_token_limit is True
+
+    def test_transcript_parse_no_token_limit_default_is_false(self) -> None:
+        """transcript parse no_token_limit defaults to False (EN-026)."""
+        parser = create_parser()
+        args = parser.parse_args(["transcript", "parse", "meeting.vtt"])
+        assert args.no_token_limit is False
+
     def test_transcript_parse_with_no_chunks(self) -> None:
         """transcript parse --no-chunks parses correctly."""
         parser = create_parser()
@@ -409,6 +437,7 @@ class TestTranscriptNamespace:
             "--format", "vtt",
             "--output-dir", "/tmp/output",
             "--chunk-size", "250",
+            "--target-tokens", "15000",
         ])
         assert args.namespace == "transcript"
         assert args.command == "parse"
@@ -416,3 +445,4 @@ class TestTranscriptNamespace:
         assert args.format == "vtt"
         assert args.output_dir == "/tmp/output"
         assert args.chunk_size == 250
+        assert args.target_tokens == 15000

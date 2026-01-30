@@ -456,7 +456,21 @@ def _add_transcript_namespace(
         dest="chunk_size",
         type=int,
         default=500,
-        help="Number of segments per chunk (default: 500)",
+        help="Number of segments per chunk (deprecated, use --target-tokens)",
+    )
+    parse_parser.add_argument(
+        "--target-tokens",
+        dest="target_tokens",
+        type=int,
+        default=18000,
+        help="Target tokens per chunk (default: 18000, recommended for Claude Code)",
+    )
+    parse_parser.add_argument(
+        "--no-token-limit",
+        dest="no_token_limit",
+        action="store_true",
+        default=False,
+        help="Disable token-based chunking, use segment-based only (deprecated)",
     )
     parse_parser.add_argument(
         "--no-chunks",
