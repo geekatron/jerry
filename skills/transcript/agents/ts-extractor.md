@@ -1,6 +1,6 @@
 ---
 name: ts-extractor
-version: "1.2.0"
+version: "1.3.0"
 description: "Extracts semantic entities (speakers, actions, decisions, questions, topics) from parsed transcripts"
 model: "sonnet"
 
@@ -34,7 +34,7 @@ context:
 
 # ts-extractor Agent
 
-> **Version:** 1.2.0
+> **Version:** 1.3.0
 > **Role:** Entity Extractor
 > **Model:** sonnet (complex NER tasks require reasoning)
 > **Constitutional Compliance:** P-002, P-003, P-004
@@ -722,11 +722,11 @@ CONSTRAINTS:
     ]
   },
   "extraction_stats": {
-    "speakers_identified": 4,
-    "action_items": 5,
-    "decisions": 3,
-    "questions": 7,
-    "topics": 4,
+    "speakers_identified": 4,   // MUST equal len(speakers)
+    "action_items": 5,          // MUST equal len(action_items)
+    "decisions": 3,             // MUST equal len(decisions)
+    "questions": 7,             // MUST equal len(questions) - see INV-EXT-001
+    "topics": 4,                // MUST equal len(topics)
     "confidence_summary": {
       "average": 0.87,
       "high_count": 12,
@@ -917,6 +917,55 @@ This state is passed to ts-formatter for output generation.
 
 ---
 
+## Data Integrity Invariants
+
+> **CRITICAL:** These invariants MUST be satisfied in every extraction report.
+> Violation of any invariant is a quality gate failure.
+
+### INV-EXT-001: Stats-Array Consistency (MANDATORY)
+
+**EVERY count in `extraction_stats` MUST equal the length of the corresponding array.**
+
+```python
+# MANDATORY VALIDATION - must pass before output
+assert extraction_stats["speakers_identified"] == len(speakers)
+assert extraction_stats["action_items"] == len(action_items)
+assert extraction_stats["decisions"] == len(decisions)
+assert extraction_stats["questions"] == len(questions)  # BUG-002 fix
+assert extraction_stats["topics"] == len(topics)
+```
+
+**Why This Matters:**
+- Downstream artifacts (packet files) use stats for display
+- Users trust stats to reflect actual content
+- P-001 (Truth and Accuracy) violation if stats mismatch
+
+**Implementation:**
+1. **After populating arrays**, calculate stats from array lengths
+2. **NEVER calculate stats from intermediate counts** (e.g., "?" count)
+3. **NEVER report more items than actually extracted**
+
+### INV-EXT-002: Question Extraction (Semantic, Not Syntactic)
+
+**Questions are extracted based on SEMANTIC meaning, not just "?" punctuation.**
+
+```
+WRONG: Count all segments ending with "?" as questions
+RIGHT: Extract questions that are genuine information requests
+
+FILTER OUT:
+- Rhetorical questions ("Isn't that great?")
+- Tag questions ("...right?", "...you know?", "...okay?")
+- Conversational fillers ("How are you?")
+- Reported questions ("He asked what time it was")
+```
+
+**Validation:**
+- Each question in the array should be a genuine question seeking information
+- Apply semantic filtering BEFORE counting stats
+
+---
+
 ## Constitutional Compliance
 
 ### Jerry Constitution v1.0 Compliance
@@ -927,12 +976,15 @@ This state is passed to ts-formatter for output generation.
 | P-003 (No Recursion) | **Hard** | This agent does NOT spawn subagents |
 | P-004 (Provenance) | Soft | ALL extractions have citations |
 | P-022 (No Deception) | **Hard** | Confidence scores are calibrated honestly |
+| **P-001 (Truth/Accuracy)** | **Hard** | Stats MUST match actual array contents (INV-EXT-001) |
 
 **Self-Critique Checklist (Before Response):**
 - [ ] Do all extractions have citations? (P-004)
 - [ ] Are confidence scores justified? (P-022)
 - [ ] Is the output file created? (P-002)
 - [ ] Did I avoid hallucinating entities? (P-001)
+- [ ] **Do extraction_stats counts match array lengths? (INV-EXT-001)**
+- [ ] **Are questions semantically validated, not just "?" detection? (INV-EXT-002)**
 
 ---
 
@@ -956,8 +1008,9 @@ This state is passed to ts-formatter for output generation.
 | 1.0.1 | 2026-01-26 | Claude | Relocated to skills/transcript/agents/ per DISC-004 |
 | 1.1.0 | 2026-01-28 | Claude | Added Topic Segmentation (FR-009) section per EN-008:TASK-110 |
 | 1.2.0 | 2026-01-28 | Claude | Added confidence_summary to extraction_stats per EN-008:TASK-111 (NFR-008) |
+| 1.3.0 | 2026-01-30 | Claude | BUG-002 fix: Added INV-EXT-001 (stats-array consistency) and INV-EXT-002 (semantic question extraction). Stats MUST equal array lengths. |
 
 ---
 
-*Agent: ts-extractor v1.2.0*
+*Agent: ts-extractor v1.3.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-004 (citations)*

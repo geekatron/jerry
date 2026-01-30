@@ -12,7 +12,7 @@ ROOT CAUSE: ts-extractor agent over-extracting questions from transcript
 -->
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** major
@@ -20,9 +20,9 @@ ROOT CAUSE: ts-extractor agent over-extracting questions from transcript
 > **Due:** TBD
 > **Completed:** -
 > **Parent:** FEAT-004
-> **Owner:** -
+> **Owner:** Claude
 > **Found In:** v2.0.0 (Hybrid Pipeline)
-> **Fix Version:** TBD
+> **Fix Version:** ts-extractor v1.3.0
 
 ---
 
@@ -112,20 +112,31 @@ Issue: Question count discrepancy
 
 ### Investigation Summary
 
-Not yet investigated. Initial hypothesis: ts-extractor may be classifying non-question statements as questions due to:
-1. Overly broad question detection patterns
-2. False positives from conversational filler (e.g., "you know?", "right?")
-3. Compound sentence parsing errors
+Investigation confirmed. The ts-extractor agent was counting questions at two different points:
+
+1. **extraction_stats calculation**: Counted ALL segments ending with "?" (~63)
+2. **questions array population**: Only populated semantically valid questions (15)
+
+This created a stats-array mismatch that violated data integrity (P-001).
 
 ### Root Cause
 
-TBD - Requires investigation of ts-extractor agent logic
+**Dual-count discrepancy in ts-extractor agent definition:**
+
+The agent's tiered extraction pipeline (PAT-001) has a Tier 1 rule:
+```
+QUESTION PATTERNS:
+- Ends with "?" → confidence 0.95
+```
+
+This syntactic rule detected 63 "?" segments, but the semantic extraction only produced 15 actual questions. The stats were calculated from the syntactic count, not the final array.
 
 ### Contributing Factors
 
-- Transcript contains conversational speech patterns
-- Question detection may lack rhetorical question filtering
-- No confidence threshold applied to question extractions
+- **Syntactic vs Semantic counting**: Stats counted "?" occurrences, not extracted questions
+- **No validation rule**: No requirement that `extraction_stats.questions == len(questions)`
+- **Rhetorical questions**: Tag questions like "...right?", "...okay?" were counted but not extracted
+- **Conversational fillers**: Segments like "you know?" counted in stats but filtered during extraction
 
 ---
 
@@ -133,11 +144,23 @@ TBD - Requires investigation of ts-extractor agent logic
 
 ### Solution Approach
 
-TBD - Investigation needed
+Added two mandatory data integrity invariants to ts-extractor.md v1.3.0:
+
+1. **INV-EXT-001 (Stats-Array Consistency)**: All `extraction_stats` counts MUST equal corresponding array lengths
+2. **INV-EXT-002 (Semantic Question Extraction)**: Questions extracted by semantic meaning, not "?" punctuation
 
 ### Changes Made
 
-(To be completed when fixed)
+**File:** `skills/transcript/agents/ts-extractor.md`
+**Version:** 1.2.0 → 1.3.0
+
+1. Added comments to extraction_stats schema requiring counts match array lengths
+2. Added "Data Integrity Invariants" section with:
+   - INV-EXT-001: Stats-Array Consistency (MANDATORY validation)
+   - INV-EXT-002: Question Extraction (Semantic, Not Syntactic)
+3. Updated Constitutional Compliance table with P-001 (Truth/Accuracy)
+4. Updated Self-Critique Checklist with two new validation items
+5. Updated version to 1.3.0 with changelog entry
 
 ---
 
@@ -145,9 +168,10 @@ TBD - Investigation needed
 
 ### Fix Verification
 
+- [x] Agent definition updated with INV-EXT-001 (stats must equal array lengths)
+- [x] Agent definition updated with INV-EXT-002 (semantic question extraction)
 - [ ] Question count in extraction-report.json within 10% of manual verification
 - [ ] Rhetorical questions and filler phrases filtered out
-- [ ] Confidence scores applied to question extractions
 - [ ] Overall quality score >= 0.90 with corrected extraction
 
 ### Quality Checklist
@@ -155,7 +179,7 @@ TBD - Investigation needed
 - [ ] Regression tests added for question extraction accuracy
 - [ ] Existing tests still passing
 - [ ] No new issues introduced
-- [ ] ts-extractor.md documentation updated (if applicable)
+- [x] ts-extractor.md documentation updated (v1.3.0)
 
 ---
 
@@ -202,6 +226,7 @@ This bug is **NOT** related to EN-025 (ts-parser v2.0 + CLI + SKILL.md Integrati
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-01-30T14:30:00Z | Claude | pending | Bug created during EN-025 quality verification. Parser/Chunker compliant (1.00) but overall quality 0.78 due to extraction layer question count discrepancy. |
+| 2026-01-30T15:00:00Z | Claude | in_progress | Root cause identified: stats calculated from "?" count (63), array from semantic extraction (15). Fix: INV-EXT-001 and INV-EXT-002 added to ts-extractor.md v1.3.0. Verification pending. |
 
 ---
 
