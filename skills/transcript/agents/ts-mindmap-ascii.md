@@ -86,9 +86,9 @@ Same as ts-mindmap-mermaid:
 
 ### Output Specification
 
-**File:** `07-mindmap/mindmap.ascii.txt`
+**File:** `08-mindmap/mindmap.ascii.txt`
 
-**Directory:** Use `07-mindmap/` (created by ts-mindmap-mermaid or create if needed)
+**Directory:** Use `08-mindmap/` (created by ts-mindmap-mermaid or create if needed)
 
 ### Box-Drawing Characters
 
@@ -233,7 +233,7 @@ When invoking ts-mindmap-ascii, provide:
 
 After generation, you MUST:
 
-1. **Ensure 07-mindmap/ directory** exists
+1. **Ensure 08-mindmap/ directory** exists
 2. **Write mindmap.ascii.txt file** with valid ASCII art
 3. **Report generation statistics**:
    - Topic count
@@ -251,7 +251,7 @@ DO NOT return without creating the ASCII file.
 ```yaml
 ts_mindmap_ascii_output:
   packet_id: "{packet_id}"
-  ascii_path: "{output_directory}/07-mindmap/mindmap.ascii.txt"
+  ascii_path: "{output_directory}/08-mindmap/mindmap.ascii.txt"
   topic_count: {integer}
   action_item_count: {integer}
   decision_count: {integer}
@@ -326,6 +326,7 @@ Legend:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0.0 | 2026-01-28 | Claude | Initial agent definition per EN-009 TASK-002 |
+| 1.0.1 | 2026-01-30 | Claude | **CORRECTED** output directory from `07-mindmap/` to `08-mindmap/` per EN-024:DISC-001 |
 
 ---
 

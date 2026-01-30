@@ -79,7 +79,7 @@ EXISTING BUT NOT INTEGRATED
                     └─────────────────┘     └────────────────┘
                             │                       │
                             ▼                       ▼
-                    07-mindmap/              07-mindmap/
+                    08-mindmap/              08-mindmap/
                     mindmap.mmd              mindmap.ascii.txt
 ```
 
@@ -153,7 +153,7 @@ From ts-mindmap-mermaid.md and ts-mindmap-ascii.md:
 # Mermaid mindmap output
 ts_mindmap_mermaid_output:
   packet_id: string
-  mindmap_path: string             # Path to 07-mindmap/mindmap.mmd
+  mindmap_path: string             # Path to 08-mindmap/mindmap.mmd
   topic_count: integer
   action_item_count: integer
   decision_count: integer
@@ -166,7 +166,7 @@ ts_mindmap_mermaid_output:
 # ASCII mindmap output
 ts_mindmap_ascii_output:
   packet_id: string
-  ascii_path: string               # Path to 07-mindmap/mindmap.ascii.txt
+  ascii_path: string               # Path to 08-mindmap/mindmap.ascii.txt
   topic_count: integer
   action_item_count: integer
   decision_count: integer
@@ -215,21 +215,26 @@ transcript-{id}/
 transcript-{id}/
 ├── ... (existing 8 files) ...
 ├── _anchors.json
-└── 07-mindmap/                    # NEW: Mindmap directory
+└── 08-mindmap/                    # NEW: Mindmap directory
     ├── mindmap.mmd                # Mermaid format (if enabled)
     └── mindmap.ascii.txt          # ASCII format (if enabled)
 ```
 
 ### 3.3 Directory Naming Analysis
 
-**Current:** `07-topics.md` uses index 07 for topics
-**Mindmap Directory:** `07-mindmap/` also uses 07
+**IMPORTANT UPDATE (2026-01-30):** See [DISC-001](../EN-024--DISC-001-mindmap-directory-numbering-discrepancy.md) for full analysis.
 
-**Observation:** This is intentional - per ADR-002 Section 3.2, the `07-*` prefix is reserved for visualization and topic content. The directory/file distinction prevents conflict:
-- `07-topics.md` - File
-- `07-mindmap/` - Directory
+**Current ts-formatter Implementation (Flat Structure):**
+- `07-topics.md` uses index 07 for topics
 
-**No conflict exists**, but documentation should clarify this convention.
+**Original Mindmap Agent References:**
+- `08-mindmap/` also used 07 (CONFLICT!)
+
+**Resolution:** The mindmap output directory is now `08-mindmap/` to avoid numbering confusion:
+- `07-topics.md` - Topics file (unchanged)
+- `08-mindmap/` - Mindmap directory (CORRECTED)
+
+**Root Cause:** ADR-002 proposed a hierarchical structure with `08-mindmap/`, but ts-formatter implemented a flat structure where 07 was already used for topics. This discrepancy was discovered during EN-024 integration work.
 
 ---
 
@@ -341,7 +346,7 @@ New decision point DP-2.5 needed:
 | Mindmap agents exist and are complete | ts-mindmap-mermaid.md, ts-mindmap-ascii.md |
 | Agents are NOT in pipeline | SKILL.md pipeline diagram shows 4 stages only |
 | State schemas are defined | Agent files specify output keys |
-| Output directory is reserved | ADR-002 specifies 07-mindmap/ |
+| Output directory is reserved | ADR-002 specifies 08-mindmap/ |
 | ps-critic has NO mindmap validation | ps-critic.md shows no MM-* or AM-* criteria |
 
 ### 6.2 Integration Gaps Identified
@@ -386,12 +391,12 @@ ts_mindmap_output:
   enabled: true
   format_requested: "both"         # From --mindmap-format parameter
   mermaid:
-    path: "transcript-{id}/07-mindmap/mindmap.mmd"
+    path: "transcript-{id}/08-mindmap/mindmap.mmd"
     status: "complete"
     topic_count: 15
     deep_link_count: 42
   ascii:
-    path: "transcript-{id}/07-mindmap/mindmap.ascii.txt"
+    path: "transcript-{id}/08-mindmap/mindmap.ascii.txt"
     status: "complete"
     topic_count: 15
     max_line_width: 78
@@ -441,6 +446,7 @@ FAILURE SCENARIO: Mindmap generation fails
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-01-28 | Claude | Initial research completed |
+| 2026-01-30 | Claude | Updated Section 3.3: Corrected 07-mindmap/ to 08-mindmap/ per [DISC-001](../EN-024--DISC-001-mindmap-directory-numbering-discrepancy.md) |
 
 ---
 

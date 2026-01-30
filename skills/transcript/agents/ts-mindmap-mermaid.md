@@ -86,9 +86,9 @@ The agent receives:
 
 ### Output Specification
 
-**File:** `07-mindmap/mindmap.mmd`
+**File:** `08-mindmap/mindmap.mmd`
 
-**Directory:** Create `07-mindmap/` if it doesn't exist.
+**Directory:** Create `08-mindmap/` if it doesn't exist.
 
 ### Mermaid Mindmap Syntax
 
@@ -226,7 +226,7 @@ When invoking ts-mindmap-mermaid, provide:
 
 After generation, you MUST:
 
-1. **Create 07-mindmap/ directory** if not exists
+1. **Create 08-mindmap/ directory** if not exists
 2. **Write mindmap.mmd file** with valid Mermaid syntax
 3. **Report generation statistics**:
    - Topic count
@@ -244,7 +244,7 @@ DO NOT return without creating the mindmap file.
 ```yaml
 ts_mindmap_mermaid_output:
   packet_id: "{packet_id}"
-  mindmap_path: "{output_directory}/07-mindmap/mindmap.mmd"
+  mindmap_path: "{output_directory}/08-mindmap/mindmap.mmd"
   topic_count: {integer}
   action_item_count: {integer}
   decision_count: {integer}
@@ -326,6 +326,7 @@ mindmap
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0.0 | 2026-01-28 | Claude | Initial agent definition per EN-009 TASK-001 |
+| 1.0.1 | 2026-01-30 | Claude | **CORRECTED** output directory from `07-mindmap/` to `08-mindmap/` per EN-024:DISC-001 |
 
 ---
 

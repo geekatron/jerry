@@ -127,3 +127,10 @@ Research document at: `EN-024-mindmap-pipeline-integration/research/pipeline-sta
 |------|--------|-------|
 | 2026-01-28 | Created | Initial task creation |
 | 2026-01-28 | DONE | Research complete. 7 gaps identified. Integration point: after ts-formatter, before ps-critic. |
+| 2026-01-30 | Updated | Additional research: Discovered file numbering discrepancy (07 vs 08). Created [DISC-001](./EN-024--DISC-001-mindmap-directory-numbering-discrepancy.md). Corrected output to `08-mindmap/`. |
+
+---
+
+## Discoveries
+
+- [EN-024:DISC-001](./EN-024--DISC-001-mindmap-directory-numbering-discrepancy.md) - Mindmap Directory Numbering Discrepancy (07 → 08)
