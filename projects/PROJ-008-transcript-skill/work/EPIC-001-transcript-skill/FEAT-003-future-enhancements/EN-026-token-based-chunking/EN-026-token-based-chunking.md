@@ -9,13 +9,13 @@ PURPOSE: Replace segment-based chunking with token-based chunking to respect Cla
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress (core complete, backlog items remain)
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** architecture
 > **Created:** 2026-01-30T08:30:00Z
 > **Due:** TBD
-> **Completed:** TBD
+> **Completed:** TBD (core: 2026-01-30)
 > **Parent:** FEAT-003
 > **Owner:** Claude
 > **Effort:** 8
@@ -219,14 +219,14 @@ Based on research ([Token Counting Guide 2025](https://www.propelcode.ai/blog/to
 
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
-| TASK-260 | Add tiktoken dependency | pending | 1 | Claude |
-| TASK-261 | Implement TokenCounter service | pending | 2 | Claude |
-| TASK-262 | Refactor TranscriptChunker to token-based | pending | 3 | Claude |
-| TASK-263 | Update index.json schema (target_tokens field) | pending | 1 | Claude |
-| TASK-264 | Unit tests for token-based chunking | pending | 2 | Claude |
-| TASK-265 | Integration tests with real VTT files | pending | 2 | Claude |
-| TASK-266 | Contract tests for updated schema | pending | 1 | Claude |
-| TASK-267 | Documentation update (SKILL.md, EN-021) | pending | 1 | Claude |
+| TASK-260 | Add tiktoken dependency | **DONE** | 1 | Claude |
+| TASK-261 | Implement TokenCounter service (TDD) | **DONE** | 2 | Claude |
+| TASK-262 | Refactor TranscriptChunker to token-based (TDD) | **DONE** | 3 | Claude |
+| TASK-263 | Update index.json schema (target_tokens field) | **DONE** | 1 | Claude |
+| TASK-264 | Unit tests for token-based chunking | **DONE** | 2 | Claude |
+| TASK-265 | Integration tests with real VTT files | BACKLOG | 2 | Claude |
+| TASK-266 | Contract tests for updated schema | BACKLOG | 1 | Claude |
+| TASK-267 | Documentation update (SKILL.md, EN-021) | BACKLOG | 1 | Claude |
 
 **Total Effort:** 13 story points
 
