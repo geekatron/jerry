@@ -1,7 +1,7 @@
 ---
 name: transcript
 description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
-version: "2.2.0"
+version: "2.3.0"
 allowed-tools: Read, Write, Glob, Task, Bash(*)
 argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]
 
@@ -480,21 +480,35 @@ transcript-{id}/
 
 ```json
 {
-  "total_segments": 3071,
-  "chunk_count": 7,
+  "schema_version": "1.0",
+  "generated_at": "2026-01-30T18:00:00Z",
+  "total_segments": 710,
+  "total_chunks": 4,
   "chunk_size": 500,
   "target_tokens": 18000,
-  "parsing_method": "python",
+  "duration_ms": 2263888,
+  "speakers": {
+    "count": 3,
+    "list": ["Adam Nowak", "Brendan Bennett", "Viktor Subota"],
+    "segment_counts": {"Adam Nowak": 459, "Brendan Bennett": 156, "Viktor Subota": 95}
+  },
   "chunks": [
     {
-      "file": "chunks/chunk-000.json",
-      "start_segment": 0,
-      "end_segment": 499,
-      "speaker_summary": {"Alice": 120, "Bob": 80}
+      "chunk_id": "chunk-001",
+      "segment_range": [1, 229],
+      "timestamp_range": {"start_ms": 3528, "end_ms": 721925},
+      "speaker_counts": {"Adam Nowak": 151, "Brendan Bennett": 39, "Viktor Subota": 39},
+      "word_count": 2193,
+      "file": "chunks/chunk-001.json"
     }
   ]
 }
 ```
+
+**Key Fields:**
+- `target_tokens`: When set (e.g., 18000), uses token-based chunking. When `null`, uses segment-based (500 segs/chunk).
+- `chunk_size`: Fallback for segment-based mode (used when `target_tokens` is null).
+- See DISC-001 for ~22% JSON serialization overhead (18K target → ~22K actual).
 
 ### Chunk Token Budget (v2.1 - EN-026)
 
@@ -756,6 +770,8 @@ COMPLIANT: Exactly ONE level of agent nesting
 - [ADR-006](../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) - Mindmap Pipeline Integration (v2.1 basis)
 - [DISC-009](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-019-live-skill-invocation/DISC-009-agent-only-architecture-limitation.md) - Agent-Only Architecture Limitation (v2.0 rationale)
 - [EN-025](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-004-hybrid-infrastructure/EN-025-skill-integration/EN-025-skill-integration.md) - v2.0 Integration Enabler
+- [EN-026](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/EN-026-token-based-chunking/EN-026-token-based-chunking.md) - Token-Based Chunking (BUG-001 fix)
+- [DISC-001](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/EN-026-token-based-chunking/EN-026--DISC-001-json-serialization-overhead.md) - JSON Serialization Overhead (~22%)
 
 ### Forward Links
 - [PLAYBOOK.md](./docs/PLAYBOOK.md) - Execution playbook
@@ -778,10 +794,11 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 2.2.0*
-*Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation*
+*Skill Version: 2.3.0*
+*Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation + Token-Based Chunking*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-01-26*
 *v2.0: 2026-01-30 per DISC-009 findings (99.8% data loss resolution)*
 *v2.1: 2026-01-30 per ADR-006 (Mindmap Pipeline Integration - default ON, opt-out via --no-mindmap)*
 *v2.2: 2026-01-29 - Added explicit CLI invocation instructions for Phase 1 parsing (fixes EN-024 verification gap)*
+*v2.3: 2026-01-30 per EN-026 (Token-Based Chunking - fixes BUG-001 chunk token overflow)*

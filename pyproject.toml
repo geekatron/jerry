@@ -32,6 +32,7 @@ dependencies = [
     "jsonschema[test]>=4.26.0",
     "webvtt-py>=0.5.1",
     "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
+    "filelock>=3.20.3",
 ]
 
 [project.optional-dependencies]
@@ -107,4 +108,12 @@ markers = [
     "negative: marks tests as negative/error scenarios",
     "edge-case: marks tests as edge case scenarios",
     "boundary: marks tests as boundary value scenarios",
+]
+
+[dependency-groups]
+dev = [
+    "pip-audit>=2.10.0",
+    "pyright>=1.1.408",
+    "pytest>=9.0.2",
+    "ruff>=0.14.11",
 ]

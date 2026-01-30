@@ -11,10 +11,9 @@ Dependencies: webvtt-py, charset-normalizer (optional-dependency: transcript)
 import re
 from io import StringIO
 from pathlib import Path
-from typing import List, Optional
 
-from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
 from src.transcript.domain.value_objects.parse_result import ParseResult
+from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
 
 
 class VTTParser:
@@ -30,10 +29,10 @@ class VTTParser:
     """
 
     # Pre-compiled regex pattern for voice tag extraction (fallback)
-    VOICE_TAG_PATTERN = re.compile(r'<v\s+([^>]+)>')
+    VOICE_TAG_PATTERN = re.compile(r"<v\s+([^>]+)>")
 
     # Encoding fallback chain per TDD-FEAT-004
-    ENCODING_FALLBACK = ['utf-8-sig', 'utf-8', 'windows-1252', 'iso-8859-1', 'latin-1']
+    ENCODING_FALLBACK = ["utf-8-sig", "utf-8", "windows-1252", "iso-8859-1", "latin-1"]
 
     def parse(self, file_path: str) -> ParseResult:
         """Parse a VTT file to canonical format.
@@ -86,31 +85,32 @@ class VTTParser:
             import webvtt
         except ImportError as e:
             raise ImportError(
-                "webvtt-py is required for VTT parsing. "
-                "Install with: pip install webvtt-py"
+                "webvtt-py is required for VTT parsing. Install with: pip install webvtt-py"
             ) from e
 
-        segments: List[ParsedSegment] = []
-        warnings: List[dict] = []
+        segments: list[ParsedSegment] = []
+        warnings: list[dict] = []
 
         try:
             # webvtt.from_buffer parses VTT content
             captions = webvtt.from_buffer(StringIO(content))
 
-            for i, caption in enumerate(captions, start=1):
+            for i, caption in enumerate(captions, start=1):  # type: ignore[arg-type]
                 # webvtt-py provides voice attribute and raw_text
                 raw_text = caption.raw_text
-                speaker = getattr(caption, 'voice', None) or self._extract_speaker(raw_text)
+                speaker = getattr(caption, "voice", None) or self._extract_speaker(raw_text)
                 text = caption.text  # Already cleaned by webvtt-py
 
-                segments.append(ParsedSegment(
-                    id=str(i),
-                    start_ms=self._timestamp_to_ms(caption.start),
-                    end_ms=self._timestamp_to_ms(caption.end),
-                    speaker=speaker,
-                    text=text,
-                    raw_text=raw_text,
-                ))
+                segments.append(
+                    ParsedSegment(
+                        id=str(i),
+                        start_ms=self._timestamp_to_ms(caption.start),
+                        end_ms=self._timestamp_to_ms(caption.end),
+                        speaker=speaker,
+                        text=text,
+                        raw_text=raw_text,
+                    )
+                )
 
         except Exception as e:
             # Classify error type based on exception message and content
@@ -182,7 +182,7 @@ class VTTParser:
         # Default to generic parse_error
         return "parse_error"
 
-    def _extract_speaker(self, text: str) -> Optional[str]:
+    def _extract_speaker(self, text: str) -> str | None:
         """Extract speaker from VTT voice tag.
 
         Handles format: <v Speaker Name>text</v>
@@ -210,16 +210,16 @@ class VTTParser:
             Time in milliseconds
         """
         # Handle both HH:MM:SS.mmm and MM:SS.mmm formats
-        parts = timestamp.replace(',', '.').split(':')
+        parts = timestamp.replace(",", ".").split(":")
 
         if len(parts) == 3:
             hours = int(parts[0])
             minutes = int(parts[1])
-            sec_parts = parts[2].split('.')
+            sec_parts = parts[2].split(".")
         elif len(parts) == 2:
             hours = 0
             minutes = int(parts[0])
-            sec_parts = parts[1].split('.')
+            sec_parts = parts[1].split(".")
         else:
             raise ValueError(f"Invalid timestamp format: {timestamp}")
 
@@ -247,6 +247,4 @@ class VTTParser:
             except UnicodeDecodeError:
                 continue
 
-        raise ValueError(
-            f"Unable to decode file with any encoding: {self.ENCODING_FALLBACK}"
-        )
+        raise ValueError(f"Unable to decode file with any encoding: {self.ENCODING_FALLBACK}")

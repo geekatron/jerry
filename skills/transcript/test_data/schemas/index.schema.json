@@ -41,7 +41,13 @@
       "type": "integer",
       "minimum": 1,
       "default": 500,
-      "description": "Target segments per chunk (last chunk may have fewer)"
+      "description": "Target segments per chunk (last chunk may have fewer). Used when target_tokens is null."
+    },
+    "target_tokens": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "default": null,
+      "description": "Target tokens per chunk for token-based chunking (EN-026). When set, takes precedence over chunk_size. Default 18000 for Claude Code compatibility. See DISC-001 for JSON overhead (~22%)."
     },
     "source": {
       "type": "object",
@@ -205,6 +211,45 @@
           "segment_count": 500,
           "speaker_counts": {"Robert Chen": 150, "Diana Martinez": 80},
           "word_count": 4500
+        }
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "generated_at": "2026-01-30T18:00:00Z",
+      "generator": "transcript-chunker-2.0",
+      "total_segments": 710,
+      "total_chunks": 4,
+      "chunk_size": 500,
+      "target_tokens": 18000,
+      "source": {
+        "file": "internal-sample.vtt",
+        "format": "vtt",
+        "encoding": "utf-8"
+      },
+      "duration_ms": 2263888,
+      "speakers": {
+        "count": 3,
+        "list": ["Adam Nowak", "Brendan Bennett", "Viktor Subota"],
+        "segment_counts": {
+          "Adam Nowak": 459,
+          "Brendan Bennett": 156,
+          "Viktor Subota": 95
+        }
+      },
+      "word_count": 6855,
+      "chunks": [
+        {
+          "chunk_id": "chunk-001",
+          "segment_range": [1, 229],
+          "timestamp_range": {
+            "start_ms": 3528,
+            "end_ms": 721925
+          },
+          "file": "chunks/chunk-001.json",
+          "segment_count": 229,
+          "speaker_counts": {"Adam Nowak": 151, "Brendan Bennett": 39, "Viktor Subota": 39},
+          "word_count": 2193
         }
       ]
     }
