@@ -1,7 +1,7 @@
 # Orchestration Plan: FEAT-005 Skill Compliance
 
 > **Workflow ID:** feat-005-compliance-20260130-001
-> **Version:** 2.0.0
+> **Version:** 2.1.0
 > **Status:** ACTIVE
 > **Created:** 2026-01-30T22:00:00Z
 > **Location:** FEAT-005-skill-compliance/orchestration/
@@ -232,37 +232,305 @@ Day 6:    Final quality gate + workflow complete
 
 ---
 
+## Adversarial Critic Feedback Loop (L2)
+
+The adversarial critic mechanism ensures quality through **iterative refinement**. Each enabler deliverable goes through a feedback loop where ps-critic acts as an adversarial reviewer.
+
+### Feedback Loop Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ADVERSARIAL CRITIC FEEDBACK LOOP                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌──────────────┐                                                          │
+│   │  IMPLEMENTER │  (Claude executing TASK-4xx)                             │
+│   └──────┬───────┘                                                          │
+│          │                                                                  │
+│          │ 1. Complete enabler tasks                                        │
+│          │    (e.g., TASK-400 through TASK-406)                             │
+│          ▼                                                                  │
+│   ┌──────────────────────────────────────────────────────────────────────┐ │
+│   │                     DELIVERABLES                                      │ │
+│   │  • Modified files (e.g., ts-parser.md, ts-extractor.md)              │ │
+│   │  • Updated documentation                                              │ │
+│   │  • Self-assessment checklist                                          │ │
+│   └──────────────────────────────┬───────────────────────────────────────┘ │
+│                                  │                                          │
+│                                  │ 2. Submit for review                     │
+│                                  ▼                                          │
+│   ┌──────────────────────────────────────────────────────────────────────┐ │
+│   │                     ps-critic EVALUATION                              │ │
+│   │                                                                       │ │
+│   │  Invocation:                                                          │ │
+│   │  ┌─────────────────────────────────────────────────────────────────┐ │ │
+│   │  │ "Use ps-critic to evaluate EN-027 deliverables against          │ │ │
+│   │  │  PAT-AGENT-001 compliance. Apply checklist A-001 through A-043. │ │ │
+│   │  │  Return structured critique with score and specific findings."  │ │ │
+│   │  └─────────────────────────────────────────────────────────────────┘ │ │
+│   │                                                                       │ │
+│   │  ps-critic reads:                                                     │ │
+│   │  • All modified agent .md files                                       │ │
+│   │  • PAT-AGENT-001 pattern spec (from work-026-e-003)                  │ │
+│   │  • Compliance checklist criteria                                      │ │
+│   │                                                                       │ │
+│   │  ps-critic produces:                                                  │ │
+│   │  • Numeric score (0.00 - 1.00)                                       │ │
+│   │  • Per-item checklist results                                         │ │
+│   │  • Specific findings with file:line references                       │ │
+│   │  • Recommended fixes                                                  │ │
+│   └──────────────────────────────┬───────────────────────────────────────┘ │
+│                                  │                                          │
+│                                  │ 3. Critique output                       │
+│                                  ▼                                          │
+│   ┌──────────────────────────────────────────────────────────────────────┐ │
+│   │                     CRITIQUE ARTIFACT                                 │ │
+│   │  Location: critiques/G-{enabler}-critique-{iteration}.md             │ │
+│   │                                                                       │ │
+│   │  ## Quality Score: 0.85 (BELOW THRESHOLD 0.90)                       │ │
+│   │                                                                       │ │
+│   │  ## Findings                                                          │ │
+│   │  | ID | Severity | File | Issue | Recommendation |                    │ │
+│   │  |----|----------|------|-------|----------------|                    │ │
+│   │  | F-001 | HIGH | ts-parser.md:45 | Missing input_validation | Add... │ │
+│   │  | F-002 | MEDIUM | ts-extractor.md:78 | Incomplete expertise | Add...│ │
+│   │                                                                       │ │
+│   │  ## Checklist Results                                                 │ │
+│   │  - [x] A-001: Agent has name field                                   │ │
+│   │  - [x] A-002: Agent has version field                                │ │
+│   │  - [ ] A-015: guardrails.input_validation present  ← FAIL            │ │
+│   │  ...                                                                  │ │
+│   └──────────────────────────────┬───────────────────────────────────────┘ │
+│                                  │                                          │
+│                                  │ 4. Score evaluation                      │
+│                                  ▼                                          │
+│                    ┌─────────────────────────────┐                          │
+│                    │   Score >= Threshold?       │                          │
+│                    └──────────────┬──────────────┘                          │
+│                                   │                                         │
+│              ┌────────────────────┴────────────────────┐                    │
+│              │                                         │                    │
+│              ▼ YES                                     ▼ NO                 │
+│   ┌──────────────────────┐              ┌──────────────────────────────┐   │
+│   │       PASS           │              │    ITERATION CYCLE           │   │
+│   │  Proceed to next     │              │                              │   │
+│   │  enabler             │              │  iteration < 3?              │   │
+│   └──────────────────────┘              │       │                      │   │
+│                                         │   YES ▼        NO ▼          │   │
+│                                         │  ┌────────┐  ┌────────────┐  │   │
+│                                         │  │ REFINE │  │ ESCALATE   │  │   │
+│                                         │  │        │  │ to user    │  │   │
+│                                         │  └───┬────┘  └────────────┘  │   │
+│                                         │      │                       │   │
+│                                         └──────┼───────────────────────┘   │
+│                                                │                            │
+│                                                │ 5. Address findings        │
+│                                                │    Re-submit               │
+│                                                │                            │
+│                    ┌───────────────────────────┘                            │
+│                    │                                                        │
+│                    ▼                                                        │
+│   ┌──────────────────────────────────────────────────────────────────────┐ │
+│   │                     REFINEMENT PHASE                                  │ │
+│   │                                                                       │ │
+│   │  Implementer:                                                         │ │
+│   │  1. Read critique findings (F-001, F-002, etc.)                      │ │
+│   │  2. Address each finding with specific fix                           │ │
+│   │  3. Update deliverable files                                          │ │
+│   │  4. Document fixes in refinement log                                 │ │
+│   │  5. Re-submit for ps-critic evaluation (iteration N+1)               │ │
+│   │                                                                       │ │
+│   │  Refinement Log Entry:                                                │ │
+│   │  ┌─────────────────────────────────────────────────────────────────┐ │ │
+│   │  │ Iteration: 2                                                     │ │ │
+│   │  │ Previous Score: 0.85                                             │ │ │
+│   │  │ Findings Addressed:                                              │ │ │
+│   │  │   - F-001: Added input_validation to ts-parser.md:45-52         │ │ │
+│   │  │   - F-002: Expanded expertise list in ts-extractor.md:78-85     │ │ │
+│   │  │ Files Modified: ts-parser.md, ts-extractor.md                   │ │ │
+│   │  └─────────────────────────────────────────────────────────────────┘ │ │
+│   └──────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+│          Loop back to ps-critic EVALUATION until PASS or iteration >= 3    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### ps-critic Invocation Protocol
+
+For each enabler gate, invoke ps-critic with this structure:
+
+```markdown
+## ps-critic Invocation for G-{enabler_id}
+
+**Context:**
+- Enabler: {enabler_id} - {enabler_name}
+- Iteration: {N} of 3
+- Previous Score: {score or "N/A for first iteration"}
+
+**Deliverables to Review:**
+- {file1.md}
+- {file2.md}
+- ...
+
+**Evaluation Criteria:**
+- Pattern: {PAT-xxx} from work-026-e-003
+- Checklist: {checklist_id} items {range}
+- Threshold: {0.90 or 0.95}
+
+**Required Output:**
+1. Numeric score (0.00 - 1.00)
+2. Checklist with pass/fail for each item
+3. Specific findings with severity, file:line, issue, recommendation
+4. Overall assessment (PASS/FAIL/NEEDS_REFINEMENT)
+
+**Artifact Location:**
+critiques/G-{enabler_id}-critique-{iteration}.md
+```
+
+### Critique Output Format
+
+Each ps-critic evaluation produces a structured artifact:
+
+```markdown
+# Quality Gate Critique: G-027 (Iteration 1)
+
+> **Enabler:** EN-027 - Agent Definition Compliance
+> **Evaluated:** 2026-01-31T10:00:00Z
+> **Score:** 0.85 / 1.00
+> **Threshold:** 0.90
+> **Result:** ❌ NEEDS_REFINEMENT
+
+---
+
+## Score Breakdown
+
+| Category | Weight | Score | Weighted |
+|----------|--------|-------|----------|
+| identity section | 20% | 0.95 | 0.19 |
+| capabilities section | 15% | 0.90 | 0.135 |
+| guardrails section | 25% | 0.70 | 0.175 |
+| validation section | 15% | 0.85 | 0.1275 |
+| constitution section | 10% | 1.00 | 0.10 |
+| session_context section | 15% | 0.80 | 0.12 |
+| **TOTAL** | 100% | - | **0.8475** |
+
+---
+
+## Findings
+
+| ID | Severity | File | Line | Issue | Recommendation |
+|----|----------|------|------|-------|----------------|
+| F-001 | HIGH | ts-parser.md | 45 | guardrails.input_validation missing format rules | Add `format: "vtt\|srt\|txt"` validation |
+| F-002 | HIGH | ts-extractor.md | 78 | guardrails.input_validation missing | Copy pattern from ts-parser, adapt for chunks |
+| F-003 | MEDIUM | ts-formatter.md | 92 | session_context.on_send incomplete | Add `calculate_confidence` step |
+| F-004 | LOW | ts-mindmap-mermaid.md | 34 | expertise list has only 2 items | Add 1+ more expertise areas |
+
+---
+
+## Checklist Results
+
+### PAT-AGENT-001 Compliance (A-001 through A-043)
+
+- [x] A-001: Agent has `name` field
+- [x] A-002: Agent has `version` field
+- [x] A-003: Agent has `description` field
+- [x] A-005: `identity.role` present
+- [x] A-006: `identity.expertise` has 3+ items (except F-004)
+- [x] A-007: `identity.cognitive_mode` is valid enum
+- [ ] A-015: `guardrails.input_validation` present in all agents ← **FAIL (F-001, F-002)**
+- [ ] A-016: `guardrails.output_filtering` present ← **FAIL**
+- [x] A-020: `validation.file_must_exist` present
+- [ ] A-025: `session_context.on_send` complete ← **FAIL (F-003)**
+...
+
+**Passed:** 38/43 (88.4%)
+**Failed:** 5/43 (11.6%)
+
+---
+
+## Recommended Actions
+
+1. **Address F-001 and F-002 first** (HIGH severity, blocking)
+2. Add input_validation to ts-parser.md and ts-extractor.md
+3. Complete session_context.on_send in ts-formatter.md
+4. Minor: Add expertise item to ts-mindmap-mermaid.md
+
+---
+
+## Next Steps
+
+- [ ] Implementer addresses findings F-001 through F-004
+- [ ] Re-submit for Iteration 2
+- [ ] Target score: >= 0.90
+```
+
+### Iteration Tracking
+
+Track refinement cycles in the ORCHESTRATION_WORKTRACKER.md:
+
+```markdown
+## Quality Gate Log: G-027
+
+| Iteration | Date | Score | Status | Findings | Actions Taken |
+|-----------|------|-------|--------|----------|---------------|
+| 1 | 2026-01-31 | 0.85 | ❌ FAIL | F-001, F-002, F-003, F-004 | - |
+| 2 | 2026-01-31 | 0.92 | ✅ PASS | - | Fixed F-001, F-002, F-003, F-004 |
+
+**Critique Artifacts:**
+- [G-027-critique-1.md](./critiques/G-027-critique-1.md)
+- [G-027-critique-2.md](./critiques/G-027-critique-2.md)
+```
+
+### Escalation Protocol
+
+If score remains below threshold after 3 iterations:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ESCALATION PROTOCOL                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Trigger: Score < threshold after iteration 3                   │
+│                                                                 │
+│  Actions:                                                       │
+│  1. Document unresolved findings in IMPEDIMENT file             │
+│  2. Create IMP-xxx with:                                        │
+│     - Findings that couldn't be resolved                        │
+│     - Attempted fixes                                           │
+│     - Blocking factors                                          │
+│  3. Notify user via AskUserQuestion:                            │
+│     "Quality gate G-{id} failed after 3 iterations.             │
+│      Score: {score}, Threshold: {threshold}.                    │
+│      Unresolved: {findings}. How should we proceed?"            │
+│                                                                 │
+│  Options presented to user:                                     │
+│  a) Lower threshold temporarily (document exception)            │
+│  b) Skip enabler, proceed with documented gaps                  │
+│  c) Provide guidance on specific findings                       │
+│  d) Pause workflow for manual intervention                      │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Quality Gates (ps-critic)
 
-### Gate Protocol
+### Gate Protocol Summary
 
-Each enabler completion triggers a ps-critic quality gate:
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│                    ps-critic QUALITY GATE                      │
-├────────────────────────────────────────────────────────────────┤
-│                                                                │
-│  INPUT:  Enabler deliverables (modified files)                 │
-│  CRITERIA: Compliance checklist from work-026-e-003            │
-│  THRESHOLD: >= 0.90 (0.95 for EN-030 final polish)            │
-│                                                                │
-│  PASS → Proceed to next enabler                                │
-│  FAIL → Iterate (max 3 attempts) → Escalate if still failing  │
-│                                                                │
-└────────────────────────────────────────────────────────────────┘
-```
+Each enabler completion triggers a ps-critic quality gate with the adversarial feedback loop above.
 
 ### Gate Criteria by Enabler
 
-| Gate | Enabler | Threshold | Criteria Source |
-|------|---------|-----------|-----------------|
-| G-027 | EN-027 | 0.90 | Agent Compliance Checklist (A-001 through A-043) |
-| G-028 | EN-028 | 0.90 | SKILL.md Compliance Checklist (S-001 through S-051) |
-| G-029 | EN-029 | 0.90 | PLAYBOOK.md Triple-Lens Checklist |
-| G-030 | EN-030 | 0.95 | Final polish - no regressions, integration complete |
-| G-031 | EN-031 | 0.90 | Model selection requirements from EN-031 AC |
-| G-FINAL | All | 0.90 | Aggregate compliance >= 95%, all 25 tasks complete |
+| Gate | Enabler | Threshold | Criteria Source | Max Iterations |
+|------|---------|-----------|-----------------|----------------|
+| G-027 | EN-027 | 0.90 | Agent Compliance Checklist (A-001 through A-043) | 3 |
+| G-028 | EN-028 | 0.90 | SKILL.md Compliance Checklist (S-001 through S-051) | 3 |
+| G-029 | EN-029 | 0.90 | PLAYBOOK.md Triple-Lens Checklist | 3 |
+| G-030 | EN-030 | 0.95 | Final polish - no regressions, integration complete | 3 |
+| G-031 | EN-031 | 0.90 | Model selection requirements from EN-031 AC | 3 |
+| G-FINAL | All | 0.90 | Aggregate compliance >= 95%, all 25 tasks complete | 1 |
 
 ---
 
