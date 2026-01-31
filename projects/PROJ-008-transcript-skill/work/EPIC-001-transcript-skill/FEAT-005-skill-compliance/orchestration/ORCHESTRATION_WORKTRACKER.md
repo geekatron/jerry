@@ -1,10 +1,11 @@
 # ORCHESTRATION WORKTRACKER: FEAT-005 Skill Compliance
 
 > **Workflow ID:** feat-005-compliance-20260130-001
-> **Version:** 2.1.0
+> **Version:** 2.2.0
 > **Status:** ACTIVE
-> **Last Updated:** 2026-01-31T00:30:00Z
+> **Last Updated:** 2026-01-31T02:00:00Z
 > **SSOT:** ORCHESTRATION.yaml
+> **Adversarial Protocol:** Enabled (6 patterns configured)
 
 ---
 
@@ -234,5 +235,6 @@ Both tracks can execute in parallel from day 1.
 
 ---
 
-*Worktracker Version: 2.1.0*
-*Last Updated: 2026-01-31T00:30:00Z*
+*Worktracker Version: 2.2.0*
+*Last Updated: 2026-01-31T02:00:00Z*
+*Update: Adversarial Prompting Protocol (6 patterns) synchronized from ORCHESTRATION.yaml*

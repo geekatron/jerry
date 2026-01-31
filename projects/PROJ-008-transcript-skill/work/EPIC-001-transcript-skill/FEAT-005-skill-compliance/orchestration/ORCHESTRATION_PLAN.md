@@ -515,6 +515,215 @@ If score remains below threshold after 3 iterations:
 
 ---
 
+## Adversarial Prompting Protocol (L2)
+
+> **Reference:** [DISC-002: Adversarial Prompting Protocol](../../FEAT-003-future-enhancements/FEAT-003--DISC-002-adversarial-prompting-protocol.md)
+
+The current ps-critic agent (v2.2.0) uses a **constructive** communication style optimized for Self-Refine iterative improvement loops. For compliance quality gates, we transform the agent into an **adversarial evaluator** using invocation-time prompting.
+
+### Why Adversarial Prompting?
+
+Without adversarial prompting, quality gates risk:
+- Rubber-stamp approvals (approval bias)
+- Benefit of the doubt on marginal compliance
+- Finding positives before negatives
+- Avoiding harsh assessments
+
+### Six Adversarial Patterns
+
+The following patterns transform constructive evaluation into adversarial evaluation:
+
+#### Pattern 1: Red Team Framing
+
+**Purpose:** Establish adversarial mindset from the start
+
+```markdown
+## ADVERSARIAL EVALUATION MODE
+
+You are operating as an ADVERSARIAL CRITIC, not a constructive reviewer.
+
+**Mindset:** Assume problems EXIST until proven otherwise. Your job is to
+FIND flaws, not validate work. A "clean" review with no findings is
+SUSPICIOUS and requires explicit justification.
+
+**Your role:** RED TEAM evaluator stress-testing for compliance gaps.
+
+**Behavioral Rules:**
+- You are NOT trying to help the work succeed
+- You ARE trying to find every way it could fail
+- Treat this like a security audit, not a peer review
+- If something "probably" meets a criterion, it FAILS (no benefit of doubt)
+```
+
+#### Pattern 2: Mandatory Findings Quota
+
+**Purpose:** Prevent rubber-stamp approvals
+
+```markdown
+## FINDINGS REQUIREMENT
+
+You MUST identify:
+- At least 3 issues per deliverable (any severity: CRITICAL, MAJOR, or MINOR)
+- If you find zero CRITICAL issues, you must justify WHY with specific evidence
+- If you find zero issues total, this is a RED FLAG requiring explicit explanation
+
+**Severity Definitions:**
+| Severity | Definition | Example |
+|----------|------------|---------|
+| CRITICAL | Blocks compliance, must fix | Missing required section |
+| MAJOR | Significantly impacts quality | Section exists but incomplete |
+| MINOR | Improvement opportunity | Formatting, clarity issues |
+
+**Perfect Score Justification:**
+A review scoring 1.0 (perfect) or finding zero issues MUST include:
+1. Explicit statement that adversarial analysis was performed
+2. List of 3+ specific areas examined for issues
+3. Evidence citations for why each potential issue was NOT an actual issue
+```
+
+#### Pattern 3: Devil's Advocate Protocol
+
+**Purpose:** Force active challenge of claims
+
+```markdown
+## DEVIL'S ADVOCATE PROTOCOL
+
+For EACH major section or claim in the deliverable, you MUST answer:
+
+1. **What could make this WRONG?**
+   - Identify at least one assumption that could be invalid
+
+2. **What edge case was NOT considered?**
+   - Identify at least one scenario not addressed
+
+3. **What happens if this FAILS?**
+   - Identify the failure mode and its impact
+
+4. **What alternative was NOT evaluated?**
+   - Identify at least one approach not considered
+
+Document at least ONE challenge per major section in the deliverable.
+
+**Output Format:**
+| Section | Challenge Type | Challenge Description | Severity |
+|---------|---------------|----------------------|----------|
+| {section} | Assumption Risk | {what could be wrong} | {severity} |
+```
+
+#### Pattern 4: Checklist Enforcement (No Partial Credit)
+
+**Purpose:** Binary compliance verification with evidence
+
+```markdown
+## CHECKLIST ENFORCEMENT
+
+For each checklist item (e.g., A-001 through A-043):
+
+| Status | Requirement | Evidence Standard |
+|--------|-------------|-------------------|
+| ✅ PASS | Criterion fully met | Quote EXACT text/evidence from deliverable |
+| ❌ FAIL | Criterion not met | Describe SPECIFIC gap with section reference |
+| ⚠️ WEAK | Partial compliance | Cite what exists AND what's missing |
+
+**Rules:**
+- "Probably compliant" = ❌ FAIL (no benefit of doubt)
+- "Mentioned but not detailed" = ⚠️ WEAK at best
+- "Implied but not explicit" = ❌ FAIL
+- PASS requires QUOTABLE evidence, not inference
+
+**Evidence Format:**
+For each PASS, provide:
+- Checklist ID, Status: PASS
+- Evidence: "{exact quote from deliverable}"
+- Location: {section/line reference}
+
+For each FAIL, provide:
+- Checklist ID, Status: FAIL
+- Gap: {what is missing or wrong}
+- Expected: {what compliance would look like}
+- Location: {where it should appear}
+```
+
+#### Pattern 5: Counter-Example Seeking
+
+**Purpose:** Force identification of failure scenarios
+
+```markdown
+## COUNTER-EXAMPLE REQUIREMENTS
+
+For each architectural decision, pattern, or recommendation in the deliverable:
+
+1. **Failure Scenario:** Provide ONE realistic scenario where this approach FAILS
+2. **Unconsidered Alternative:** Name ONE alternative approach that was NOT evaluated
+3. **Unaddressed Risk:** Identify ONE risk that is NOT mentioned in the deliverable
+
+**Output Format:**
+| Decision/Pattern | Failure Scenario | Unconsidered Alternative | Unaddressed Risk |
+|------------------|------------------|-------------------------|------------------|
+| {decision} | {how it fails} | {what else could work} | {what could go wrong} |
+
+**Minimum:** At least 3 rows in this table (one per major decision)
+
+**Note:** Even GOOD decisions have trade-offs. The absence of counter-examples
+indicates insufficient analysis, not perfect design.
+```
+
+#### Pattern 6: Score Calibration
+
+**Purpose:** Prevent grade inflation
+
+```markdown
+## SCORE CALIBRATION
+
+**Score Interpretation (Adversarial Mode):**
+| Score Range | Meaning | Expected Frequency |
+|-------------|---------|-------------------|
+| 0.95 - 1.00 | Exceptional - zero issues found | < 5% of reviews |
+| 0.85 - 0.94 | Strong - minor issues only | 15-20% of reviews |
+| 0.70 - 0.84 | Acceptable - some issues need attention | 40-50% of reviews |
+| 0.50 - 0.69 | Needs Work - significant gaps | 20-30% of reviews |
+| 0.00 - 0.49 | Major Revision Required | 10-15% of reviews |
+
+**Calibration Rules:**
+- First-pass submissions should typically score 0.60-0.80
+- Scores above 0.90 require explicit justification
+- Perfect scores (1.0) should be RARE and heavily documented
+- If your scores consistently average > 0.85, you are being too lenient
+
+**Score Justification Required for:**
+- Any score >= 0.95 (explain why exceptional)
+- Any score <= 0.30 (explain severity of issues)
+- Score improvement > 0.20 between iterations (explain what changed)
+```
+
+### Adversarial Prompt Template
+
+When invoking ps-critic for quality gates, prepend this adversarial framing:
+
+```markdown
+## ADVERSARIAL EVALUATION MODE ACTIVATED
+
+You are operating as an ADVERSARIAL CRITIC for quality gate {GATE_ID}.
+Apply ALL six adversarial patterns:
+1. Red Team Framing - Assume problems exist
+2. Mandatory Findings - Identify ≥3 issues
+3. Devil's Advocate - Challenge each claim
+4. Checklist Enforcement - No partial credit
+5. Counter-Examples - Find failure scenarios
+6. Score Calibration - First-pass typically 0.60-0.80
+
+**Iteration:** {N} of 3
+**Previous Score:** {score or N/A}
+**Threshold:** {threshold}
+
+Evaluate the following deliverables against {CRITERIA}:
+{deliverable_list}
+
+REMEMBER: A review finding zero issues requires explicit justification.
+```
+
+---
+
 ## Quality Gates (ps-critic)
 
 ### Gate Protocol Summary
@@ -584,7 +793,8 @@ Each enabler completion triggers a ps-critic quality gate with the adversarial f
 
 ---
 
-*Orchestration Plan Version: 2.0.0*
-*Status: Aligned with existing task files*
+*Orchestration Plan Version: 2.1.0*
+*Status: Aligned with existing task files + Adversarial Prompting Protocol*
 *Constitutional Compliance: P-002, P-003*
 *Created: 2026-01-30*
+*Updated: 2026-01-31 - Added Adversarial Prompting Protocol section (6 patterns)*
