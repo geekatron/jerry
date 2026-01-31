@@ -1,0 +1,734 @@
+# =============================================================================
+# CONTRACT TEST SPECIFICATION
+# =============================================================================
+# Purpose: Contract tests for ts-parser output schema validation
+# Created: 2026-01-27
+# Task: TASK-105A
+# Reference: TDD-ts-parser.md Section 3, TDD/BDD Testing Strategy
+# Schema: schemas/canonical-transcript.json (v1.1)
+#
+# CONTRACT TESTS verify that:
+# 1. Output structure matches the agreed schema
+# 2. Required fields are always present
+# 3. Field types and formats are correct
+# 4. Schema changes are intentional and documented
+# =============================================================================
+
+version: "1.0.0"
+agent: ts-parser
+schema_version: "1.1"
+created_at: "2026-01-27T23:45:00Z"
+
+# =============================================================================
+# SCHEMA REFERENCES
+# =============================================================================
+schemas:
+  canonical_transcript:
+    path: "../schemas/canonical-transcript.json"
+    version: "1.1"
+    description: "Full canonical transcript output schema"
+
+  segment:
+    path: "../schemas/segment.json"
+    version: "1.1"
+    description: "Individual segment sub-schema"
+
+# =============================================================================
+# CONTRACT TESTS
+# =============================================================================
+contracts:
+
+  # ---------------------------------------------------------------------------
+  # ts-parser Output Contracts
+  # ---------------------------------------------------------------------------
+  ts-parser-output:
+    description: "ts-parser output matches CanonicalTranscript schema v1.1"
+    schema_ref: "schemas/canonical-transcript.json"
+
+    tests:
+      # Contract CON-PAR-001: Required Top-Level Fields
+      - id: con-par-001
+        name: "Parser output has required top-level fields"
+        description: |
+          Verify that ts-parser output always contains the required
+          top-level fields: version, source, and segments.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+          format: vtt
+        assertions:
+          - type: json_schema_valid
+            schema: "canonical-transcript.json"
+          - type: required_fields
+            path: "$"
+            expected: ["version", "source", "segments"]
+          - type: field_value
+            path: "$.version"
+            expected: "1.1"
+        acceptance_criteria:
+          - "AC-1: version, source, segments always present"
+          - "AC-2: version equals '1.1'"
+
+      # Contract CON-PAR-002: Source Object Structure
+      - id: con-par-002
+        name: "Source object has required fields"
+        description: |
+          Verify source object contains format and encoding.
+          File_path is optional but recommended.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.source"
+            expected: ["format", "encoding"]
+          - type: field_enum
+            path: "$.source.format"
+            allowed: ["vtt", "srt", "plain"]
+        acceptance_criteria:
+          - "AC-3: source.format is one of vtt, srt, plain"
+          - "AC-4: source.encoding is present"
+
+      # Contract CON-PAR-003: Segment Array Structure
+      - id: con-par-003
+        name: "Segments array contains valid segment objects"
+        description: |
+          Verify each segment in the segments array conforms
+          to the Segment sub-schema.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: array_item_schema
+            path: "$.segments"
+            schema: "segment.json"
+          - type: array_min_items
+            path: "$.segments"
+            minimum: 1
+        acceptance_criteria:
+          - "AC-5: All segments match Segment schema"
+          - "AC-6: segments array is non-empty"
+
+      # Contract CON-PAR-004: Segment ID Format
+      - id: con-par-004
+        name: "Segment IDs follow seg-NNN pattern"
+        description: |
+          Verify all segment IDs match the pattern seg-NNN
+          where NNN is a zero-padded sequence number.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_pattern
+            path: "$.segments[*].id"
+            pattern: "^seg-\\d{3,}$"
+          - type: unique_values
+            path: "$.segments[*].id"
+            description: "All segment IDs must be unique"
+        acceptance_criteria:
+          - "AC-7: Segment IDs match pattern seg-NNN"
+          - "AC-8: Segment IDs are unique"
+
+      # Contract CON-PAR-005: Segment Required Fields
+      - id: con-par-005
+        name: "Each segment has required fields"
+        description: |
+          Verify each segment contains the required fields:
+          id and text. Other fields may be null.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.segments[*]"
+            expected: ["id", "text"]
+          - type: field_type
+            path: "$.segments[*].text"
+            expected: "string"
+          - type: field_min_length
+            path: "$.segments[*].text"
+            minimum: 1
+        acceptance_criteria:
+          - "AC-9: Each segment has id and text"
+          - "AC-10: text is non-empty string"
+
+      # Contract CON-PAR-006: Timestamp Format (VTT/SRT)
+      - id: con-par-006
+        name: "Timestamps are integers in milliseconds"
+        description: |
+          For VTT and SRT formats, verify timestamps are
+          normalized to integer milliseconds.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_type
+            path: "$.segments[*].start_ms"
+            expected: ["integer", "null"]
+          - type: field_type
+            path: "$.segments[*].end_ms"
+            expected: ["integer", "null"]
+          - type: field_range
+            path: "$.segments[*].start_ms"
+            minimum: 0
+          - type: timestamp_order
+            description: "end_ms >= start_ms for all segments"
+        acceptance_criteria:
+          - "AC-11: Timestamps are integers >= 0"
+          - "AC-12: end_ms >= start_ms"
+
+      # Contract CON-PAR-007: Plain Text Null Timestamps
+      - id: con-par-007
+        name: "Plain text format has null timestamps"
+        description: |
+          For plain text format, verify timestamps are null
+          since no timing information is available.
+        input:
+          file: "transcripts/golden/meeting-001.txt"
+          format: plain
+        assertions:
+          - type: field_value
+            path: "$.source.format"
+            expected: "plain"
+          - type: field_null
+            path: "$.segments[*].start_ms"
+          - type: field_null
+            path: "$.segments[*].end_ms"
+        acceptance_criteria:
+          - "AC-13: Plain text has null start_ms"
+          - "AC-14: Plain text has null end_ms"
+
+      # Contract CON-PAR-008: Parse Metadata Structure
+      - id: con-par-008
+        name: "Parse metadata captures parsing issues"
+        description: |
+          Verify parse_metadata object is present and
+          contains parse_status indicating success/partial/failed.
+        input:
+          file: "transcripts/edge_cases/empty_and_malformed.vtt"
+        assertions:
+          - type: field_present
+            path: "$.parse_metadata"
+          - type: field_enum
+            path: "$.parse_metadata.parse_status"
+            allowed: ["complete", "partial", "failed"]
+          - type: array_schema
+            path: "$.parse_metadata.parse_warnings"
+            schema: "ParseIssue"
+        acceptance_criteria:
+          - "AC-15: parse_metadata is present"
+          - "AC-16: parse_status is valid enum"
+
+      # Contract CON-PAR-009: Metadata Speaker Count
+      - id: con-par-009
+        name: "Metadata reports correct speaker count"
+        description: |
+          Verify metadata.detected_speakers matches the
+          actual number of unique speakers in segments.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_type
+            path: "$.metadata.detected_speakers"
+            expected: "integer"
+          - type: field_range
+            path: "$.metadata.detected_speakers"
+            minimum: 0
+          - type: consistency_check
+            description: "detected_speakers matches unique speakers in segments"
+        acceptance_criteria:
+          - "AC-17: detected_speakers is integer >= 0"
+          - "AC-18: Matches actual unique speakers"
+
+      # Contract CON-PAR-010: Cross-Format Consistency
+      - id: con-par-010
+        name: "Same content produces consistent output across formats"
+        description: |
+          Verify that meeting-001 in VTT, SRT, and TXT formats
+          produces structurally consistent output (same speakers,
+          same text content, different timestamps for plain).
+        inputs:
+          - file: "transcripts/golden/meeting-001.vtt"
+          - file: "transcripts/golden/meeting-001.srt"
+          - file: "transcripts/golden/meeting-001.txt"
+        assertions:
+          - type: cross_format_speakers
+            description: "Same speakers detected across all formats"
+          - type: cross_format_segment_count
+            description: "Same segment count across all formats"
+          - type: cross_format_text
+            description: "Same text content (normalized)"
+        acceptance_criteria:
+          - "AC-19: Speakers consistent across formats"
+          - "AC-20: Segment count consistent"
+
+# =============================================================================
+# ASSERTION TYPE DEFINITIONS
+# =============================================================================
+assertion_types:
+  json_schema_valid:
+    description: "Validate entire output against JSON Schema"
+    implementation: "jsonschema.validate(output, schema)"
+
+  required_fields:
+    description: "Check that specified fields exist at path"
+    implementation: "all(field in data[path] for field in expected)"
+
+  field_value:
+    description: "Check field has exact expected value"
+    implementation: "data[path] == expected"
+
+  field_enum:
+    description: "Check field value is in allowed list"
+    implementation: "data[path] in allowed"
+
+  field_type:
+    description: "Check field type matches expected"
+    implementation: "isinstance(data[path], expected_type)"
+
+  field_pattern:
+    description: "Check field matches regex pattern"
+    implementation: "re.match(pattern, data[path])"
+
+  field_range:
+    description: "Check numeric field is within range"
+    implementation: "minimum <= data[path] <= maximum"
+
+  field_null:
+    description: "Check field is null"
+    implementation: "data[path] is None"
+
+  field_present:
+    description: "Check field exists (may be null)"
+    implementation: "path in data"
+
+  array_item_schema:
+    description: "Validate each array item against sub-schema"
+    implementation: "all(validate(item, schema) for item in data[path])"
+
+  array_min_items:
+    description: "Check array has minimum number of items"
+    implementation: "len(data[path]) >= minimum"
+
+  unique_values:
+    description: "Check all values at path are unique"
+    implementation: "len(set(data[path])) == len(data[path])"
+
+  timestamp_order:
+    description: "Verify end_ms >= start_ms for all segments"
+    implementation: "all(seg.end_ms >= seg.start_ms for seg in segments)"
+
+  cross_format_speakers:
+    description: "Verify same speakers across format variants"
+    implementation: "speakers(vtt) == speakers(srt) == speakers(txt)"
+
+  consistency_check:
+    description: "Custom consistency validation"
+    implementation: "custom"
+
+  # ---------------------------------------------------------------------------
+  # ts-extractor Output Contracts (Added: TASK-112A)
+  # ---------------------------------------------------------------------------
+  ts-extractor-output:
+    description: "ts-extractor output matches ExtractionReport schema"
+    schema_ref: "schemas/extraction-report.json"
+
+    tests:
+      # Contract CON-EXT-001: Required Top-Level Fields
+      - id: con-ext-001
+        name: "Extractor output has required top-level fields"
+        description: |
+          Verify that ts-extractor output always contains the required
+          top-level fields per TDD-ts-extractor.md Output Schema.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: json_schema_valid
+            schema: "extraction-report.json"
+          - type: required_fields
+            path: "$"
+            expected: ["version", "packet_id", "extraction_stats", "speakers", "action_items", "decisions", "questions", "topics"]
+          - type: field_value
+            path: "$.version"
+            expected: "1.0"
+        acceptance_criteria:
+          - "AC-1: All required top-level fields present"
+          - "AC-2: version equals '1.0'"
+
+      # Contract CON-EXT-002: All Entities Have Citations (PAT-004)
+      - id: con-ext-002
+        name: "All extracted entities have citations (PAT-004)"
+        description: |
+          Verify that every extracted entity (action items, decisions,
+          questions) has a valid citation per PAT-004 anti-hallucination.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: citation_present
+            path: "$.action_items[*].citation"
+            description: "All action items have citations"
+          - type: citation_present
+            path: "$.decisions[*].citation"
+            description: "All decisions have citations"
+          - type: citation_present
+            path: "$.questions[*].citation"
+            description: "All questions have citations"
+        acceptance_criteria:
+          - "AC-3: Every action_item has citation"
+          - "AC-4: Every decision has citation"
+          - "AC-5: Every question has citation"
+
+      # Contract CON-EXT-003: Citation Structure Valid
+      - id: con-ext-003
+        name: "Citation structure is valid (ADR-003)"
+        description: |
+          Verify citation objects contain required fields per ADR-003
+          bidirectional deep linking specification.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.action_items[*].citation"
+            expected: ["segment_id", "anchor", "timestamp_ms", "text_snippet"]
+          - type: field_pattern
+            path: "$.action_items[*].citation.segment_id"
+            pattern: "^seg-\\d{3,}$"
+          - type: field_pattern
+            path: "$.action_items[*].citation.anchor"
+            pattern: "^#seg-\\d{3,}$"
+        acceptance_criteria:
+          - "AC-6: Citation has segment_id, anchor, timestamp_ms, text_snippet"
+          - "AC-7: segment_id matches pattern seg-NNN"
+          - "AC-8: anchor matches pattern #seg-NNN"
+
+      # Contract CON-EXT-004: Confidence Scores Present
+      - id: con-ext-004
+        name: "All entities have confidence scores (NFR-008)"
+        description: |
+          Verify all extracted entities include confidence scores
+          between 0.0 and 1.0 per NFR-008.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_present
+            path: "$.action_items[*].confidence"
+          - type: field_range
+            path: "$.action_items[*].confidence"
+            minimum: 0.0
+            maximum: 1.0
+          - type: field_present
+            path: "$.decisions[*].confidence"
+          - type: field_present
+            path: "$.questions[*].confidence"
+          - type: field_present
+            path: "$.speakers[*].confidence"
+        acceptance_criteria:
+          - "AC-9: All entities have confidence field"
+          - "AC-10: Confidence is between 0.0 and 1.0"
+
+      # Contract CON-EXT-005: Speaker Structure Valid
+      - id: con-ext-005
+        name: "Speaker objects have required fields"
+        description: |
+          Verify speaker objects contain required fields per
+          ts-extractor output schema.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.speakers[*]"
+            expected: ["id", "name", "detection_pattern", "confidence", "segment_count"]
+          - type: field_pattern
+            path: "$.speakers[*].id"
+            pattern: "^spk-"
+          - type: field_enum
+            path: "$.speakers[*].detection_pattern"
+            allowed: ["vtt_voice_tag", "prefix_pattern", "bracket_pattern", "contextual"]
+        acceptance_criteria:
+          - "AC-11: Speakers have id, name, detection_pattern, confidence, segment_count"
+          - "AC-12: Speaker IDs follow spk-* pattern"
+          - "AC-13: detection_pattern is valid enum"
+
+      # Contract CON-EXT-006: Extraction Stats Present
+      - id: con-ext-006
+        name: "Extraction statistics are present (NFR-008)"
+        description: |
+          Verify extraction_stats object contains required metrics
+          per ts-extractor output schema v1.2.0.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.extraction_stats"
+            expected: ["speakers_identified", "action_items", "decisions", "questions", "topics"]
+          - type: field_present
+            path: "$.extraction_stats.confidence_summary"
+          - type: required_fields
+            path: "$.extraction_stats.confidence_summary"
+            expected: ["average", "high_count", "medium_count", "low_count", "high_ratio"]
+        acceptance_criteria:
+          - "AC-14: extraction_stats has entity counts"
+          - "AC-15: confidence_summary present with distribution metrics"
+
+      # Contract CON-EXT-007: Topic Structure Valid
+      - id: con-ext-007
+        name: "Topic objects have required fields (FR-009)"
+        description: |
+          Verify topic objects contain required fields per
+          FR-009 topic segmentation requirement.
+        input:
+          file: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: required_fields
+            path: "$.topics[*]"
+            expected: ["id", "title", "start_ms", "end_ms", "segment_ids"]
+          - type: field_pattern
+            path: "$.topics[*].id"
+            pattern: "^top-\\d{3,}$"
+          - type: field_type
+            path: "$.topics[*].segment_ids"
+            expected: "array"
+          - type: timestamp_order
+            description: "end_ms >= start_ms for all topics"
+        acceptance_criteria:
+          - "AC-16: Topics have id, title, start_ms, end_ms, segment_ids"
+          - "AC-17: Topic IDs follow top-NNN pattern"
+          - "AC-18: segment_ids is array"
+
+# =============================================================================
+# ADDITIONAL ASSERTION TYPES (for ts-extractor)
+# =============================================================================
+  citation_present:
+    description: "Verify all items at path have citation object"
+    implementation: "all(hasattr(item, 'citation') and item.citation for item in data[path])"
+
+  # ---------------------------------------------------------------------------
+  # ts-formatter Output Contracts (Added: TASK-119A)
+  # ---------------------------------------------------------------------------
+  ts-formatter-output:
+    description: "ts-formatter output matches 8-file packet structure (ADR-002)"
+    schema_ref: "schemas/packet-structure.json"
+
+    tests:
+      # Contract CON-FMT-001: 8-File Packet Structure
+      - id: con-fmt-001
+        name: "Formatter output has all 8 required files"
+        description: |
+          Verify that ts-formatter output contains all 8 files per ADR-002
+          packet structure specification.
+        input:
+          extraction_report: "precalculated/extraction-report-001.json"
+          canonical_transcript: "precalculated/canonical-001.json"
+        assertions:
+          - type: files_exist
+            expected:
+              - "00-index.md"
+              - "01-summary.md"
+              - "02-transcript.md"
+              - "03-speakers.md"
+              - "04-action-items.md"
+              - "05-decisions.md"
+              - "06-questions.md"
+              - "07-topics.md"
+          - type: file_exists
+            path: "_anchors.json"
+            description: "Anchor registry JSON must be present"
+        acceptance_criteria:
+          - "AC-1: All 8 content files present"
+          - "AC-2: _anchors.json present"
+
+      # Contract CON-FMT-002: Token Limits (ADR-002, NFR-009)
+      - id: con-fmt-002
+        name: "All files under 35K token limit"
+        description: |
+          Verify that no file in the packet exceeds the 35K token hard limit
+          per ADR-002 and NFR-009.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: token_count_max
+            max_tokens: 35000
+            apply_to: "*.md"
+            description: "All Markdown files under 35K tokens"
+          - type: token_count_soft
+            soft_limit: 31500
+            description: "Files approaching soft limit should be split"
+        acceptance_criteria:
+          - "AC-3: No file exceeds 35,000 tokens"
+          - "AC-4: Files approaching 31,500 trigger split evaluation"
+
+      # Contract CON-FMT-003: Index File Structure
+      - id: con-fmt-003
+        name: "Index file has required navigation structure"
+        description: |
+          Verify 00-index.md contains all required navigation sections
+          and links to other files in the packet.
+        input:
+          file: "output/transcript-meeting-001/00-index.md"
+        assertions:
+          - type: section_present
+            section: "Quick Navigation"
+            description: "Index must have Quick Navigation section"
+          - type: section_present
+            section: "Meeting Overview"
+            description: "Index must have Meeting Overview section"
+          - type: markdown_links_valid
+            description: "All links in index resolve to packet files"
+          - type: schema_version_present
+            path: "frontmatter.schema_version"
+            expected: "1.0"
+        acceptance_criteria:
+          - "AC-5: Quick Navigation section present"
+          - "AC-6: All internal links resolve to valid files"
+          - "AC-7: Schema version in frontmatter"
+
+      # Contract CON-FMT-004: Anchor Naming Convention (ADR-003)
+      - id: con-fmt-004
+        name: "Anchor IDs follow naming convention"
+        description: |
+          Verify all anchor IDs in the packet follow the naming convention
+          defined in ADR-003: {type}-{sequence} format.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: anchor_pattern
+            pattern: "^(seg|spk|act|dec|que|top)-\\d{3,}$"
+            files: ["02-transcript.md", "03-speakers.md", "04-action-items.md",
+                    "05-decisions.md", "06-questions.md", "07-topics.md"]
+          - type: anchor_uniqueness
+            description: "All anchor IDs unique within packet"
+        acceptance_criteria:
+          - "AC-8: All anchors match pattern {type}-NNN"
+          - "AC-9: No duplicate anchor IDs"
+
+      # Contract CON-FMT-005: Backlinks Section Present (IR-004)
+      - id: con-fmt-005
+        name: "Backlinks sections present in entity files"
+        description: |
+          Verify that each entity file contains a backlinks section
+          (Referenced By) per IR-004 bidirectional linking requirement.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: section_present
+            section: "Referenced By"
+            files: ["02-transcript.md", "04-action-items.md",
+                    "05-decisions.md", "06-questions.md", "07-topics.md"]
+            optional: true
+            description: "Backlinks section present if file has references"
+          - type: backlink_format_valid
+            description: "Backlinks formatted as markdown table"
+        acceptance_criteria:
+          - "AC-10: Backlinks section present where applicable"
+          - "AC-11: Backlinks formatted as table with From/Anchor/Context"
+
+      # Contract CON-FMT-006: Forward Links Resolve (ADR-003)
+      - id: con-fmt-006
+        name: "All forward links resolve to valid anchors"
+        description: |
+          Verify that all forward links (citations) in the packet resolve
+          to valid anchors defined in the packet or _anchors.json.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: forward_link_resolution
+            description: "All internal links resolve to existing anchors"
+            expected: "resolution_rate == 1.0"
+          - type: cross_file_link_valid
+            description: "Links to other files include correct path"
+          - type: anchor_exists_in_registry
+            description: "All referenced anchors exist in _anchors.json"
+        acceptance_criteria:
+          - "AC-12: 100% of forward links resolve"
+          - "AC-13: Cross-file links use correct relative paths"
+          - "AC-14: All anchors registered in _anchors.json"
+
+      # Contract CON-FMT-007: Split File Navigation (ADR-004)
+      - id: con-fmt-007
+        name: "Split files have navigation headers"
+        description: |
+          When files are split due to token limits, verify each part
+          has proper navigation headers per ADR-004.
+        input:
+          packet_path: "output/transcript-meeting-002/"  # Large transcript
+        preconditions:
+          - "02-transcript.md was split into multiple parts"
+        assertions:
+          - type: split_file_naming
+            pattern: "02-transcript-(\\d{2})\\.md"
+            description: "Split files follow naming convention"
+          - type: split_navigation_present
+            required_fields:
+              - "part"
+              - "total_parts"
+              - "previous"
+              - "next"
+            description: "Each split file has navigation frontmatter"
+          - type: split_links_valid
+            description: "Previous/Next links resolve correctly"
+        acceptance_criteria:
+          - "AC-15: Split files named {base}-NN.md"
+          - "AC-16: Navigation frontmatter in all split parts"
+          - "AC-17: Prev/Next links form valid chain"
+
+      # Contract CON-FMT-008: _anchors.json Structure
+      - id: con-fmt-008
+        name: "Anchor registry JSON is valid"
+        description: |
+          Verify _anchors.json contains valid JSON with all registered
+          anchors and their backlinks per ADR-003.
+        input:
+          file: "output/transcript-meeting-001/_anchors.json"
+        assertions:
+          - type: json_schema_valid
+            schema: "anchor-registry.json"
+          - type: required_fields
+            path: "$"
+            expected: ["version", "packet_id", "anchors"]
+          - type: anchor_has_required_fields
+            path: "$.anchors.*"
+            expected: ["type", "file", "line", "backlinks"]
+        acceptance_criteria:
+          - "AC-18: _anchors.json is valid JSON"
+          - "AC-19: Contains version, packet_id, anchors"
+          - "AC-20: Each anchor has type, file, line, backlinks"
+
+      # Contract CON-FMT-009: Schema Version Metadata (PAT-005)
+      - id: con-fmt-009
+        name: "All files have schema version metadata"
+        description: |
+          Verify all generated files include schema version in YAML
+          frontmatter per PAT-005 versioned schema evolution.
+        input:
+          packet_path: "output/transcript-meeting-001/"
+        assertions:
+          - type: frontmatter_present
+            files: "*.md"
+            description: "All Markdown files have YAML frontmatter"
+          - type: field_present
+            path: "frontmatter.schema_version"
+            files: "*.md"
+          - type: field_present
+            path: "frontmatter.generator"
+            expected: "ts-formatter"
+          - type: field_present
+            path: "frontmatter.generated_at"
+            pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"
+        acceptance_criteria:
+          - "AC-21: All files have YAML frontmatter"
+          - "AC-22: schema_version field present"
+          - "AC-23: generator = 'ts-formatter'"
+          - "AC-24: generated_at ISO timestamp present"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# These contract tests ensure ts-parser and ts-extractor output is:
+# 1. Schema-compliant - validates against JSON schemas
+# 2. Consistent - same structure across all input formats
+# 3. Predictable - field types and patterns are enforced
+# 4. Citation-required - PAT-004 anti-hallucination enforcement
+#
+# Contract tests are run BEFORE integration tests to catch
+# schema violations early in the testing pipeline.
+#
+# HUMAN REVIEW REQUIRED:
+# - Verify assertion types cover all schema requirements
+# - Confirm cross-format consistency tests are feasible
+# - Approve before using in CI/CD pipeline
+# =============================================================================

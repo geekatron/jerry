@@ -1,0 +1,138 @@
+# Extraction Rules: Software Engineering Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+#
+# DISCLAIMER: This guidance is AI-generated based on NASA Systems Engineering
+# standards. It is advisory only and does not constitute official NASA guidance.
+
+domain: software-engineering
+version: "1.0.0"
+
+extraction_rules:
+  commitment_patterns:
+    - pattern: "I will {work_item}"
+      confidence: high
+      example: "I will finish the API integration"
+    - pattern: "I'm going to {work_item}"
+      confidence: high
+      example: "I'm going to work on the login bug"
+    - pattern: "I'll take {work_item}"
+      confidence: high
+      example: "I'll take the database migration task"
+    - pattern: "I'm picking up {work_item}"
+      confidence: medium
+      example: "I'm picking up JIRA-123"
+    - pattern: "My focus is {work_item}"
+      confidence: medium
+      example: "My focus is the performance testing"
+    - pattern: "I'm committing to {work_item}"
+      confidence: high
+      example: "I'm committing to the search feature"
+
+  blocker_patterns:
+    - pattern: "I'm blocked on {dependency}"
+      confidence: high
+      example: "I'm blocked on the API design review"
+    - pattern: "Waiting for {dependency}"
+      confidence: high
+      example: "Waiting for the infrastructure team"
+    - pattern: "Can't proceed until {dependency}"
+      confidence: high
+      example: "Can't proceed until we get the test data"
+    - pattern: "Dependency on {dependency}"
+      confidence: medium
+      example: "Dependency on the auth service deployment"
+    - pattern: "Stuck on {issue}"
+      confidence: high
+      example: "Stuck on a weird caching issue"
+    - pattern: "Need help with {issue}"
+      confidence: medium
+      example: "Need help with the deployment pipeline"
+
+  decision_patterns:
+    - pattern: "We decided to {outcome}"
+      confidence: high
+      example: "We decided to use PostgreSQL"
+    - pattern: "The decision is {outcome}"
+      confidence: high
+      example: "The decision is to postpone the release"
+    - pattern: "Going forward, we will {outcome}"
+      confidence: high
+      example: "Going forward, we will use TypeScript"
+    - pattern: "Consensus is {outcome}"
+      confidence: high
+      example: "Consensus is to refactor first"
+    - pattern: "Let's go with {outcome}"
+      confidence: medium
+      example: "Let's go with the microservices approach"
+    - pattern: "Agreed to {outcome}"
+      confidence: high
+      example: "Agreed to increase test coverage to 80%"
+
+  action_item_patterns:
+    - pattern: "{owner} will {task}"
+      confidence: high
+      example: "Sarah will update the documentation"
+    - pattern: "TODO: {task}"
+      confidence: high
+      example: "TODO: Review the PR by Friday"
+    - pattern: "Action item: {task}"
+      confidence: high
+      example: "Action item: Schedule the design review"
+    - pattern: "Can you {task}"
+      confidence: medium
+      example: "Can you follow up with the vendor?"
+    - pattern: "Please {task}"
+      confidence: medium
+      example: "Please update the Jira tickets"
+    - pattern: "Need to {task}"
+      confidence: medium
+      example: "Need to add error handling"
+
+  risk_patterns:
+    - pattern: "Risk is {description}"
+      confidence: high
+      example: "Risk is we might miss the deadline"
+    - pattern: "Concern about {description}"
+      confidence: high
+      example: "Concern about the performance impact"
+    - pattern: "Could impact {description}"
+      confidence: medium
+      example: "Could impact the release schedule"
+    - pattern: "Worried about {description}"
+      confidence: medium
+      example: "Worried about the integration complexity"
+    - pattern: "Potential issue with {description}"
+      confidence: high
+      example: "Potential issue with backwards compatibility"
+    - pattern: "Red flag: {description}"
+      confidence: high
+      example: "Red flag: the dependencies aren't locked"
+
+# Context-sensitive rules
+context_rules:
+  standup:
+    primary_entities:
+      - commitment
+      - blocker
+    secondary_entities:
+      - action_item
+  sprint_planning:
+    primary_entities:
+      - commitment
+      - risk
+    secondary_entities:
+      - decision
+  retrospective:
+    primary_entities:
+      - decision
+      - action_item
+    secondary_entities:
+      - risk
+  code_review:
+    primary_entities:
+      - decision
+      - action_item
+    secondary_entities:
+      - risk

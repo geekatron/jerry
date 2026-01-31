@@ -1,0 +1,333 @@
+# ORCHESTRATION_EN004.yaml
+# Machine-readable orchestration state for EN-004 Architecture Decisions
+# Document ID: PROJ-008-EN004-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-01-26T00:00:00Z
+
+schema_version: "1.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "en004-adr-20260126-001"
+  name: "EN-004 Architecture Decision Records"
+  project_id: "PROJ-008-transcript-skill"
+  enabler_id: "EN-004"
+  version: "1.0"
+  created_at: "2026-01-26T00:00:00Z"
+  updated_at: "2026-01-26T08:00:00Z"
+  status: "AWAITING_GATE"  # ACTIVE | PAUSED | COMPLETE | FAILED | AWAITING_GATE
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  pattern: "SEQUENTIAL_FEEDBACK_LOOP"
+
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    quality_threshold: 0.90       # Minimum quality score
+    max_feedback_iterations: 3    # Prevent infinite loops
+
+# =============================================================================
+# ADR DEFINITIONS
+# =============================================================================
+adrs:
+  adr_001:
+    id: "ADR-001"
+    title: "Agent Architecture"
+    task_id: "TASK-001"
+    slug: "agent-architecture"
+    status: "COMPLETE"  # PENDING | RESEARCH | DRAFTING | REVIEWING | REVISING | COMPLETE
+    depends_on: []
+
+    waves:
+      research:
+        agent: "ps-researcher"
+        status: "COMPLETE"
+        artifact: "research/adr-001-research.md"
+        started_at: "2026-01-26T00:00:00Z"
+        completed_at: "2026-01-26T00:30:00Z"
+
+      draft:
+        agent: "ps-architect"
+        status: "COMPLETE"
+        artifact: "docs/adrs/ADR-001-agent-architecture.md"
+        started_at: "2026-01-26T00:30:00Z"
+        completed_at: "2026-01-26T01:00:00Z"
+        iteration: 1
+
+      review:
+        agent: "ps-critic"
+        status: "COMPLETE"
+        artifact: "review/adr-001-review.md"
+        started_at: "2026-01-26T01:00:00Z"
+        completed_at: "2026-01-26T01:30:00Z"
+
+    quality:
+      current_score: 0.92
+      iterations: [0.92]
+      passed: true
+
+  adr_002:
+    id: "ADR-002"
+    title: "Artifact Structure & Token Management"
+    task_id: "TASK-002"
+    slug: "artifact-structure"
+    status: "COMPLETE"
+    depends_on: ["ADR-001"]
+
+    waves:
+      research:
+        agent: "ps-researcher"
+        status: "COMPLETE"
+        artifact: "research/adr-002-research.md"
+        started_at: "2026-01-26T01:30:00Z"
+        completed_at: "2026-01-26T02:00:00Z"
+
+      draft:
+        agent: "ps-architect"
+        status: "COMPLETE"
+        artifact: "docs/adrs/ADR-002-artifact-structure.md"
+        started_at: "2026-01-26T02:00:00Z"
+        completed_at: "2026-01-26T02:30:00Z"
+        iteration: 1
+
+      review:
+        agent: "ps-critic"
+        status: "COMPLETE"
+        artifact: "review/adr-002-review.md"
+        started_at: "2026-01-26T02:30:00Z"
+        completed_at: "2026-01-26T03:00:00Z"
+
+    quality:
+      current_score: 0.91
+      iterations: [0.91]
+      passed: true
+
+  adr_003:
+    id: "ADR-003"
+    title: "Bidirectional Deep Linking"
+    task_id: "TASK-003"
+    slug: "bidirectional-linking"
+    status: "COMPLETE"
+    depends_on: ["ADR-002"]
+
+    waves:
+      research:
+        agent: "ps-researcher"
+        status: "COMPLETE"
+        artifact: "research/adr-003-research.md"
+        started_at: "2026-01-26T03:00:00Z"
+        completed_at: "2026-01-26T03:30:00Z"
+
+      draft:
+        agent: "ps-architect"
+        status: "COMPLETE"
+        artifact: "docs/adrs/ADR-003-bidirectional-linking.md"
+        started_at: "2026-01-26T03:30:00Z"
+        completed_at: "2026-01-26T04:00:00Z"
+        iteration: 1
+
+      review:
+        agent: "ps-critic"
+        status: "COMPLETE"
+        artifact: "review/adr-003-review.md"
+        started_at: "2026-01-26T04:00:00Z"
+        completed_at: "2026-01-26T04:30:00Z"
+
+    quality:
+      current_score: 0.93
+      iterations: [0.93]
+      passed: true
+
+  adr_004:
+    id: "ADR-004"
+    title: "File Splitting Strategy"
+    task_id: "TASK-004"
+    slug: "file-splitting"
+    status: "COMPLETE"
+    depends_on: ["ADR-002"]
+
+    waves:
+      research:
+        agent: "ps-researcher"
+        status: "COMPLETE"
+        artifact: "research/adr-004-research.md"
+        started_at: "2026-01-26T04:30:00Z"
+        completed_at: "2026-01-26T05:00:00Z"
+
+      draft:
+        agent: "ps-architect"
+        status: "COMPLETE"
+        artifact: "docs/adrs/ADR-004-file-splitting.md"
+        started_at: "2026-01-26T05:00:00Z"
+        completed_at: "2026-01-26T05:30:00Z"
+        iteration: 1
+
+      review:
+        agent: "ps-critic"
+        status: "COMPLETE"
+        artifact: "review/adr-004-review.md"
+        started_at: "2026-01-26T05:30:00Z"
+        completed_at: "2026-01-26T06:00:00Z"
+
+    quality:
+      current_score: 0.94
+      iterations: [0.94]
+      passed: true
+
+  adr_005:
+    id: "ADR-005"
+    title: "Agent Implementation Approach"
+    task_id: "TASK-005"
+    slug: "agent-implementation"
+    status: "COMPLETE"
+    depends_on: ["ADR-001"]
+
+    waves:
+      research:
+        agent: "ps-researcher"
+        status: "COMPLETE"
+        artifact: "research/adr-005-research.md"
+        started_at: "2026-01-26T06:00:00Z"
+        completed_at: "2026-01-26T06:30:00Z"
+
+      draft:
+        agent: "ps-architect"
+        status: "COMPLETE"
+        artifact: "docs/adrs/ADR-005-agent-implementation.md"
+        started_at: "2026-01-26T06:30:00Z"
+        completed_at: "2026-01-26T07:00:00Z"
+        iteration: 1
+
+      review:
+        agent: "ps-critic"
+        status: "COMPLETE"
+        artifact: "review/adr-005-review.md"
+        started_at: "2026-01-26T07:00:00Z"
+        completed_at: "2026-01-26T07:30:00Z"
+
+    quality:
+      current_score: 0.92
+      iterations: [0.92]
+      passed: true
+
+# =============================================================================
+# FINAL REVIEW (TASK-006)
+# =============================================================================
+final_review:
+  id: "TASK-006"
+  agent: "ps-critic"
+  status: "COMPLETE"
+  depends_on: ["ADR-001", "ADR-002", "ADR-003", "ADR-004", "ADR-005"]
+  artifact: "review/EN-004-final-review.md"
+  started_at: "2026-01-26T07:30:00Z"
+  completed_at: "2026-01-26T08:00:00Z"
+
+  quality:
+    aggregate_score: 0.924
+    passed: true
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_adr: null
+  current_wave: null
+  current_task: "TASK-006"
+
+  sequence:
+    - adr: "ADR-001"
+      waves: ["research", "draft", "review"]
+      status: "COMPLETE"
+    - adr: "ADR-002"
+      waves: ["research", "draft", "review"]
+      status: "COMPLETE"
+    - adr: "ADR-003"
+      waves: ["research", "draft", "review"]
+      status: "COMPLETE"
+    - adr: "ADR-004"
+      waves: ["research", "draft", "review"]
+      status: "COMPLETE"
+    - adr: "ADR-005"
+      waves: ["research", "draft", "review"]
+      status: "COMPLETE"
+    - task: "TASK-006"
+      type: "final_review"
+      status: "COMPLETE"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  adrs:
+    complete: 5
+    total: 5
+    percent: 100
+
+  waves:
+    research_complete: 5
+    draft_complete: 5
+    review_complete: 5
+    total_waves: 15  # 5 ADRs x 3 waves
+
+  quality:
+    average_score: 0.924
+    scores:
+      ADR-001: 0.92
+      ADR-002: 0.91
+      ADR-003: 0.93
+      ADR-004: 0.94
+      ADR-005: 0.92
+
+  iterations:
+    total: 5
+    by_adr:
+      ADR-001: 1
+      ADR-002: 1
+      ADR-003: 1
+      ADR-004: 1
+      ADR-005: 1
+
+  timing:
+    workflow_started: "2026-01-26T00:00:00Z"
+    last_activity: "2026-01-26T07:30:00Z"
+    estimated_completion: "2026-01-26T08:00:00Z"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "GATE-3 Human Approval"
+      depends_on: "TASK-006 complete (quality 0.924 >= 0.90)"
+      status: "AWAITING_HUMAN"
+
+  subsequent:
+    - action: "EN-004 COMPLETE - Proceed to EN-005 Implementation"
+      depends_on: "GATE-3 approved"
+    - action: "Create SKILL.md orchestrator"
+      depends_on: "EN-005 started"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "TASK-006-complete"
+  current_state: "EN-004 COMPLETE - All 5 ADRs + Final Review done. Awaiting GATE-3 human approval."
+  next_step: "Present final review to user for GATE-3 approval"
+
+  files_to_read:
+    - "ORCHESTRATION_EN004.md"    # Strategic context
+    - "ORCHESTRATION_EN004.yaml"  # This file - machine-readable state
+    - "review/EN-004-final-review.md"  # Final review for GATE-3

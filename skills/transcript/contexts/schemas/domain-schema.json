@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/domain-context-1.0.0.json",
+  "title": "Domain Context Schema",
+  "description": "JSON Schema for validating transcript skill domain context YAML files. Implements REQ-CI-F-009 (Schema Validation).",
+  "type": "object",
+  "required": ["schema_version", "domain", "entity_definitions"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the domain schema (e.g., '1.0.0')"
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique domain identifier (e.g., 'general', 'meeting', 'transcript')"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable name for the domain"
+    },
+    "extends": {
+      "type": "string",
+      "description": "Parent domain to inherit entity definitions and extraction rules from"
+    },
+    "entity_definitions": {
+      "type": "object",
+      "description": "Map of entity type names to their definitions",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/entityDefinition"
+      }
+    },
+    "extraction_rules": {
+      "type": "array",
+      "description": "Ordered list of extraction rules for finding entities",
+      "items": {
+        "$ref": "#/$defs/extractionRule"
+      }
+    },
+    "prompt_guidance": {
+      "type": "string",
+      "description": "Expert knowledge and guidance for extraction agents"
+    }
+  },
+  "$defs": {
+    "entityDefinition": {
+      "type": "object",
+      "description": "Definition of an extractable entity type",
+      "required": ["description", "attributes"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what this entity represents"
+        },
+        "attributes": {
+          "type": "array",
+          "description": "List of attributes for this entity",
+          "items": {
+            "$ref": "#/$defs/attribute"
+          },
+          "minItems": 1
+        },
+        "extraction_patterns": {
+          "type": "array",
+          "description": "Optional pattern templates for rule-based extraction",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "attribute": {
+      "type": "object",
+      "description": "Definition of an entity attribute",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Attribute identifier (snake_case)"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string", "integer", "float", "boolean", "date", "array"],
+          "description": "Data type of the attribute"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this attribute must be present"
+        },
+        "default": {
+          "description": "Default value when attribute is not extracted"
+        },
+        "enum": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Valid values constraint (like JSON Schema enum). Use with type 'string'."
+        },
+        "items": {
+          "type": "string",
+          "description": "Type of elements for array type attributes. Optional; defaults to 'string'."
+        }
+      }
+    },
+    "extractionRule": {
+      "type": "object",
+      "description": "Rule for extracting entities from transcript content",
+      "required": ["id", "entity_type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this extraction rule"
+        },
+        "entity_type": {
+          "type": "string",
+          "description": "Reference to an entity definition in entity_definitions"
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.7,
+          "description": "Minimum confidence score (0.0-1.0) for extraction. Per NFR-008."
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Processing order (lower = higher priority)"
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["rule", "ml", "llm"],
+          "description": "Extraction strategy tier per PAT-001 (Tiered Extraction Pattern)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what this rule extracts"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "1.0.0",
+      "domain": "meeting",
+      "display_name": "Meeting Transcript Analysis",
+      "extends": "transcript",
+      "entity_definitions": {
+        "attendee": {
+          "description": "Person present in the meeting",
+          "attributes": [
+            { "name": "name", "type": "string", "required": true },
+            { "name": "role", "type": "string", "enum": ["organizer", "presenter", "participant"] }
+          ]
+        }
+      },
+      "extraction_rules": [
+        {
+          "id": "attendees",
+          "entity_type": "attendee",
+          "confidence_threshold": 0.85,
+          "priority": 0,
+          "tier": "rule",
+          "description": "Identify all meeting participants"
+        }
+      ],
+      "prompt_guidance": "When analyzing meeting transcripts, identify attendees from roll call or introductions."
+    }
+  ]
+}

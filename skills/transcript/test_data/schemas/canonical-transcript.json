@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "transcript-skill/canonical-transcript-v1.1",
+  "title": "Canonical Transcript",
+  "description": "JSON Schema for ts-parser output - canonical transcript format v1.1",
+  "type": "object",
+  "required": ["version", "source", "segments"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "const": "1.1"
+    },
+    "source": {
+      "$ref": "#/$defs/Source"
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    },
+    "segments": {
+      "type": "array",
+      "description": "Parsed transcript segments",
+      "items": {
+        "$ref": "#/$defs/Segment"
+      }
+    },
+    "parse_metadata": {
+      "$ref": "#/$defs/ParseMetadata"
+    }
+  },
+  "$defs": {
+    "Source": {
+      "type": "object",
+      "description": "Source file information",
+      "required": ["format", "encoding"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "description": "Detected format",
+          "enum": ["vtt", "srt", "plain"]
+        },
+        "encoding": {
+          "type": "string",
+          "description": "File encoding",
+          "default": "utf-8"
+        },
+        "file_path": {
+          "type": "string",
+          "description": "Original file path"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "description": "Transcript metadata",
+      "properties": {
+        "duration_ms": {
+          "type": ["integer", "null"],
+          "description": "Total duration in milliseconds",
+          "minimum": 0
+        },
+        "segment_count": {
+          "type": "integer",
+          "description": "Number of parsed segments",
+          "minimum": 0
+        },
+        "detected_speakers": {
+          "type": "integer",
+          "description": "Number of unique speakers detected",
+          "minimum": 0
+        }
+      }
+    },
+    "Segment": {
+      "type": "object",
+      "description": "A single transcript segment",
+      "required": ["id", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Segment identifier",
+          "pattern": "^seg-\\d{3,}$"
+        },
+        "start_ms": {
+          "type": ["integer", "null"],
+          "description": "Start time in milliseconds (null for plain text)",
+          "minimum": 0
+        },
+        "end_ms": {
+          "type": ["integer", "null"],
+          "description": "End time in milliseconds (null for plain text)",
+          "minimum": 0
+        },
+        "speaker": {
+          "type": ["string", "null"],
+          "description": "Speaker name (null if undetected)"
+        },
+        "text": {
+          "type": "string",
+          "description": "Utterance text content",
+          "minLength": 1
+        },
+        "raw_text": {
+          "type": "string",
+          "description": "Original unparsed line (for debugging)"
+        }
+      }
+    },
+    "ParseMetadata": {
+      "type": "object",
+      "description": "Error capture for defensive parsing (PAT-002)",
+      "properties": {
+        "parse_status": {
+          "type": "string",
+          "description": "Overall parse status",
+          "enum": ["complete", "partial", "failed"]
+        },
+        "parse_warnings": {
+          "type": "array",
+          "description": "Non-fatal issues encountered during parsing",
+          "items": {
+            "$ref": "#/$defs/ParseIssue"
+          }
+        },
+        "parse_errors": {
+          "type": "array",
+          "description": "Errors encountered during parsing",
+          "items": {
+            "$ref": "#/$defs/ParseIssue"
+          }
+        },
+        "skipped_segments": {
+          "type": "array",
+          "description": "Segments that were skipped",
+          "items": {
+            "$ref": "#/$defs/SkippedSegment"
+          }
+        }
+      }
+    },
+    "ParseIssue": {
+      "type": "object",
+      "description": "A parsing warning or error",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Error/warning code",
+          "pattern": "^(WARN|ERR|SKIP)-\\d{3}$"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable message"
+        },
+        "cue_index": {
+          "type": "integer",
+          "description": "Index of the affected cue"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["warning", "error", "info"]
+        },
+        "raw_value": {
+          "type": "string",
+          "description": "The problematic raw value"
+        },
+        "recovery_action": {
+          "type": "string",
+          "description": "Recovery action taken"
+        }
+      }
+    },
+    "SkippedSegment": {
+      "type": "object",
+      "description": "A segment that was skipped during parsing",
+      "properties": {
+        "cue_index": {
+          "type": "integer",
+          "description": "Index of the skipped cue"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for skipping"
+        },
+        "raw_content": {
+          "type": "string",
+          "description": "Original content that was skipped"
+        }
+      }
+    }
+  }
+}

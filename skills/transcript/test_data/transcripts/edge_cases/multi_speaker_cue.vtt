@@ -1,0 +1,13 @@
+WEBVTT
+
+NOTE Multiple speakers in single cue (VT-009)
+NOTE Parser should extract all speakers from a single cue
+
+00:00.000 --> 00:02.000
+<v John>Hello</v>
+<v Mary>Hi there</v>
+
+00:02.000 --> 00:04.000
+<v Alice>What's happening?</v>
+<v Bob>Not much.</v>
+<v Charlie>Same here.</v>

@@ -79,6 +79,9 @@ Examples:
     # Config namespace
     _add_config_namespace(subparsers)
 
+    # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
+    _add_transcript_namespace(subparsers)
+
     return parser
 
 
@@ -398,4 +401,131 @@ def _add_config_namespace(
         "path",
         help="Show configuration file paths",
         description="Display paths to all configuration files.",
+    )
+
+
+def _add_transcript_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add transcript namespace commands.
+
+    Commands:
+        - parse: Parse VTT/SRT transcript to canonical JSON
+
+    References:
+        - TDD-FEAT-004 Section 11: Jerry CLI Integration
+        - TASK-251: Implement CLI Transcript Namespace
+        - EN-020: Python Parser Implementation
+    """
+    transcript_parser = subparsers.add_parser(
+        "transcript",
+        help="Transcript skill commands",
+        description="Manage transcript skill operations.",
+    )
+
+    transcript_subparsers = transcript_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # parse command
+    parse_parser = transcript_subparsers.add_parser(
+        "parse",
+        help="Parse transcript file to canonical JSON",
+        description="Parse VTT/SRT transcript file and produce canonical JSON output with optional chunking.",
+    )
+    parse_parser.add_argument(
+        "path",
+        help="Path to transcript file (VTT or SRT)",
+    )
+    parse_parser.add_argument(
+        "--format",
+        choices=["vtt", "srt", "auto"],
+        default="auto",
+        help="Input format (default: auto-detect from extension)",
+    )
+    parse_parser.add_argument(
+        "--output-dir",
+        dest="output_dir",
+        default=None,
+        help="Output directory for canonical JSON and chunks (default: same as input)",
+    )
+    parse_parser.add_argument(
+        "--chunk-size",
+        dest="chunk_size",
+        type=int,
+        default=500,
+        help="Number of segments per chunk (deprecated, use --target-tokens)",
+    )
+    parse_parser.add_argument(
+        "--target-tokens",
+        dest="target_tokens",
+        type=int,
+        default=18000,
+        help="Target tokens per chunk (default: 18000, recommended for Claude Code)",
+    )
+    parse_parser.add_argument(
+        "--no-token-limit",
+        dest="no_token_limit",
+        action="store_true",
+        default=False,
+        help="Disable token-based chunking, use segment-based only (deprecated)",
+    )
+    parse_parser.add_argument(
+        "--no-chunks",
+        dest="no_chunks",
+        action="store_true",
+        default=False,
+        help="Skip chunk generation, output canonical JSON only",
+    )
+
+    # Model selection parameters (TASK-420, TASK-423: EN-031 Model Selection Capability)
+    # Profile selection (TASK-423: Predefined model profiles)
+    parse_parser.add_argument(
+        "--profile",
+        choices=["economy", "balanced", "quality", "speed"],
+        default=None,
+        help=(
+            "Model profile: economy (all haiku), balanced (default), "
+            "quality (opus for critical), speed (all haiku). "
+            "Individual --model-* flags override profile."
+        ),
+    )
+
+    # Individual model overrides (take precedence over --profile)
+    parse_parser.add_argument(
+        "--model-parser",
+        dest="model_parser",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-parser agent (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-extractor",
+        dest="model_extractor",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-extractor agent (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-formatter",
+        dest="model_formatter",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-formatter agent (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-mindmap",
+        dest="model_mindmap",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-mindmap-* agents (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-critic",
+        dest="model_critic",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ps-critic agent (overrides --profile)",
     )

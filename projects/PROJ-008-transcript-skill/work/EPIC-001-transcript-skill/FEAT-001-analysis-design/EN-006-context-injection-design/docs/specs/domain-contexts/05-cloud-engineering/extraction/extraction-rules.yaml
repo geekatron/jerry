@@ -1,0 +1,121 @@
+# Extraction Rules: Cloud Engineering Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+
+domain: cloud-engineering
+version: "1.0.0"
+
+extraction_rules:
+  incident_patterns:
+    - pattern: "Incident {id} was caused by {cause}"
+      confidence: high
+      example: "Incident INC-1234 was caused by a database failover"
+    - pattern: "SEV{level} incident"
+      confidence: high
+      example: "SEV1 incident affecting payments"
+    - pattern: "Root cause: {cause}"
+      confidence: high
+      example: "Root cause: certificate expiration"
+    - pattern: "Impact: {impact}"
+      confidence: high
+      example: "Impact: 5% of users saw errors"
+    - pattern: "Outage: {description}"
+      confidence: high
+      example: "Outage: API service down for 30 minutes"
+    - pattern: "Duration: {time}"
+      confidence: high
+      example: "Duration: 45 minutes MTTR"
+
+  action_patterns:
+    - pattern: "Action item: {title}"
+      confidence: high
+      example: "Action item: add alerting for cert expiry"
+    - pattern: "{owner} will {action}"
+      confidence: high
+      example: "SRE team will update the runbook"
+    - pattern: "TODO: {action}"
+      confidence: high
+      example: "TODO: implement automatic failover"
+    - pattern: "Follow-up: {action}"
+      confidence: high
+      example: "Follow-up: review monitoring gaps"
+    - pattern: "P{level}: {action}"
+      confidence: high
+      example: "P1: fix the memory leak"
+    - pattern: "Prevention: {action}"
+      confidence: high
+      example: "Prevention: add chaos testing"
+
+  capacity_patterns:
+    - pattern: "{resource} is at {percentage}% utilization"
+      confidence: high
+      example: "CPU is at 85% utilization"
+    - pattern: "We'll hit capacity in {timeframe}"
+      confidence: high
+      example: "We'll hit capacity in 3 weeks"
+    - pattern: "Need to scale {resource}"
+      confidence: high
+      example: "Need to scale the database cluster"
+    - pattern: "Capacity warning for {resource}"
+      confidence: high
+      example: "Capacity warning for disk space"
+    - pattern: "{resource} headroom: {amount}"
+      confidence: medium
+      example: "Memory headroom: only 15%"
+
+  metric_patterns:
+    - pattern: "SLO: {metric} at {value}"
+      confidence: high
+      example: "SLO: availability at 99.95%"
+    - pattern: "Error rate: {value}"
+      confidence: high
+      example: "Error rate: 0.5%"
+    - pattern: "Latency p{percentile}: {value}"
+      confidence: high
+      example: "Latency p99: 250ms"
+    - pattern: "{metric} is {trend}"
+      confidence: medium
+      example: "Latency is degrading"
+    - pattern: "Target: {value}"
+      confidence: medium
+      example: "Target: 99.9% availability"
+
+  root_cause_patterns:
+    - pattern: "The root cause was {cause}"
+      confidence: high
+      example: "The root cause was a memory leak"
+    - pattern: "Because {cause}"
+      confidence: medium
+      example: "Because the config wasn't updated"
+    - pattern: "5 Whys: {analysis}"
+      confidence: high
+      example: "5 Whys analysis revealed..."
+    - pattern: "Contributing factor: {factor}"
+      confidence: high
+      example: "Contributing factor: lack of testing"
+    - pattern: "System failure: {description}"
+      confidence: high
+      example: "System failure: network partition"
+
+context_rules:
+  post_mortem:
+    primary_entities:
+      - incident
+      - root_cause
+      - action_item
+    secondary_entities:
+      - metric
+    methodology: "5_whys"
+  capacity_planning:
+    primary_entities:
+      - capacity_concern
+      - metric
+    secondary_entities:
+      - action_item
+  slo_review:
+    primary_entities:
+      - metric
+    secondary_entities:
+      - action_item
+      - incident

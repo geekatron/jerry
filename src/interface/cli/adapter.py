@@ -1236,7 +1236,7 @@ class CLIAdapter:
                 for k, v in simple_items:
                     if isinstance(v, bool):
                         lines.append(f"{k} = {str(v).lower()}")
-                    elif isinstance(v, (int, float)):
+                    elif isinstance(v, int | float):
                         lines.append(f"{k} = {v}")
                     else:
                         lines.append(f'{k} = "{v}"')
@@ -1320,3 +1320,165 @@ class CLIAdapter:
             print(f"  Local:   {paths['local']}")
 
         return 0
+
+    # =========================================================================
+    # Transcript Namespace Commands (TASK-251: TDD-FEAT-004 Section 11.3)
+    # =========================================================================
+
+    def cmd_transcript_parse(
+        self,
+        path: str,
+        format: str = "auto",
+        output_dir: str | None = None,
+        chunk_size: int = 500,
+        target_tokens: int | None = 18000,
+        generate_chunks: bool = True,
+        model_parser: str = "haiku",
+        model_extractor: str = "sonnet",
+        model_formatter: str = "sonnet",
+        model_mindmap: str = "sonnet",
+        model_critic: str = "sonnet",
+        json_output: bool = False,
+    ) -> int:
+        """Parse a transcript file to canonical JSON.
+
+        Args:
+            path: Path to transcript file (VTT or SRT)
+            format: Input format ('vtt', 'srt', or 'auto')
+            output_dir: Output directory (default: same as input)
+            chunk_size: Number of segments per chunk (deprecated, use target_tokens)
+            target_tokens: Target tokens per chunk (default: 18000, recommended)
+            generate_chunks: Whether to generate chunk files
+            model_parser: Model for ts-parser agent (default: haiku)
+            model_extractor: Model for ts-extractor agent (default: sonnet)
+            model_formatter: Model for ts-formatter agent (default: sonnet)
+            model_mindmap: Model for ts-mindmap-* agents (default: sonnet)
+            model_critic: Model for ps-critic agent (default: sonnet)
+            json_output: Whether to output as JSON
+
+        Returns:
+            Exit code (0 for success, 1 for failure)
+
+        Note:
+            EN-026: target_tokens=18000 is the recommended default to ensure
+            chunks fit within Claude Code Read limit (25K tokens).
+
+            TASK-420: Model selection parameters enable users to choose
+            which Claude model to use for each agent in the pipeline.
+
+        References:
+            - TDD-FEAT-004: Hybrid Infrastructure Design
+            - EN-020: Python Parser Implementation
+            - EN-021: Chunking Strategy
+            - EN-031: Model Selection Capability
+
+        Example:
+            >>> jerry transcript parse meeting.vtt
+            Parsed: meeting.vtt
+            Output: meeting-canonical.json
+            Chunks: 6 files in chunks/
+
+            >>> jerry transcript parse meeting.vtt --model-extractor opus
+            Using opus for extraction (higher quality)
+
+            >>> jerry transcript parse meeting.vtt --json
+            {"success": true, "canonical_path": "...", "chunk_count": 6, ...}
+        """
+        if self._command_dispatcher is None:
+            if json_output:
+                print(json.dumps({"error": "Command dispatcher not configured"}))
+            else:
+                print("Error: Command dispatcher not configured")
+            return 1
+
+        try:
+            # Import command here to avoid circular imports at module level
+            from src.transcript.application.commands import ParseTranscriptCommand
+            from src.transcript.domain.value_objects.model_config import ModelConfig
+
+            # Create model configuration (TASK-420: Model selection)
+            model_config = ModelConfig(
+                parser=model_parser,
+                extractor=model_extractor,
+                formatter=model_formatter,
+                mindmap=model_mindmap,
+                critic=model_critic,
+            )
+
+            # Create parse command (EN-026: token-based chunking by default)
+            command = ParseTranscriptCommand(
+                path=path,
+                format=format,
+                output_dir=output_dir,
+                chunk_size=chunk_size,
+                target_tokens=target_tokens,
+                generate_chunks=generate_chunks,
+                model_config=model_config,
+            )
+
+            # Dispatch to handler
+            result = self._command_dispatcher.dispatch(command)
+
+            if json_output:
+                output: dict[str, Any] = {
+                    "success": result.success,
+                    "path": path,
+                    "format": result.detected_format,
+                    "canonical_path": result.canonical_path,
+                    "index_path": result.index_path,
+                    "chunk_count": result.chunk_count,
+                    "segment_count": result.segment_count,
+                    "warnings": result.warnings,
+                    "error": result.error,
+                }
+                print(json.dumps(output, indent=2))
+            else:
+                if result.success:
+                    print(f"Parsed: {path}")
+                    print(f"Format: {result.detected_format.upper()}")
+                    print(f"Segments: {result.segment_count}")
+                    print(f"Output: {result.canonical_path}")
+                    if result.chunk_count > 0:
+                        print(f"Chunks: {result.chunk_count} files")
+                        print(f"Index: {result.index_path}")
+                    if result.warnings:
+                        print(f"\nWarnings ({len(result.warnings)}):")
+                        for w in result.warnings:
+                            print(f"  - {w}")
+                else:
+                    print(f"Error: Failed to parse {path}")
+                    if result.error:
+                        print(
+                            f"  {result.error.get('code', 'UNKNOWN')}: "
+                            f"{result.error.get('message', 'Unknown error')}"
+                        )
+
+            return 0 if result.success else 1
+
+        except FileNotFoundError:
+            if json_output:
+                print(
+                    json.dumps(
+                        {
+                            "success": False,
+                            "error": {
+                                "code": "FILE_NOT_FOUND",
+                                "message": f"File not found: {path}",
+                            },
+                        }
+                    )
+                )
+            else:
+                print(f"Error: File not found: {path}")
+            return 1
+
+        except Exception as e:
+            if json_output:
+                print(
+                    json.dumps(
+                        {"success": False, "error": {"code": "INTERNAL_ERROR", "message": str(e)}}
+                    )
+                )
+            else:
+                print(f"Error: {e}")
+            return 1

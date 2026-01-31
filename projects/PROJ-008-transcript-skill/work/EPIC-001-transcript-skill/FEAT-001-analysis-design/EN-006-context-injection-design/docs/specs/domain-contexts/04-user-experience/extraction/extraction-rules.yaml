@@ -1,0 +1,131 @@
+# Extraction Rules: User Experience Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+#
+# CRITICAL: Preserve verbatim user quotes exactly as spoken.
+
+domain: user-experience
+version: "1.0.0"
+
+extraction_rules:
+  insight_patterns:
+    - pattern: "We learned that {insight}"
+      confidence: high
+      example: "We learned that users prefer visual navigation"
+    - pattern: "Key insight: {insight}"
+      confidence: high
+      example: "Key insight: onboarding is overwhelming"
+    - pattern: "Users consistently {behavior}"
+      confidence: high
+      example: "Users consistently skip the tutorial"
+    - pattern: "Pattern: {insight}"
+      confidence: high
+      example: "Pattern: search before browse"
+    - pattern: "Theme: {theme}"
+      confidence: medium
+      example: "Theme: trust and security concerns"
+    - pattern: "We observed {observation}"
+      confidence: high
+      example: "We observed hesitation at checkout"
+
+  pain_point_patterns:
+    - pattern: "Users struggle with {issue}"
+      confidence: high
+      example: "Users struggle with the settings menu"
+    - pattern: "Frustration: {description}"
+      confidence: high
+      example: "Frustration: can't find previous orders"
+    - pattern: "I can't figure out how to {task}"
+      confidence: high
+      verbatim: true
+      example: "I can't figure out how to change my password"
+    - pattern: "This is confusing because {reason}"
+      confidence: high
+      verbatim: true
+      example: "This is confusing because there are too many options"
+    - pattern: "Pain point: {description}"
+      confidence: high
+      example: "Pain point: slow load times"
+    - pattern: "I hate when {issue}"
+      confidence: high
+      verbatim: true
+      example: "I hate when it logs me out"
+
+  usability_patterns:
+    - pattern: "User failed to {task}"
+      confidence: high
+      example: "User failed to complete checkout"
+    - pattern: "Completion rate: {percentage}"
+      confidence: high
+      example: "Completion rate: 40%"
+    - pattern: "User gave up on {task}"
+      confidence: high
+      example: "User gave up on finding help"
+    - pattern: "Error during {task}"
+      confidence: high
+      example: "Error during form submission"
+    - pattern: "Task success: {rate}"
+      confidence: high
+      example: "Task success: 3/5 participants"
+    - pattern: "Severity: {level}"
+      confidence: high
+      example: "Severity: 3 (Major)"
+
+  quote_patterns:
+    - pattern: "\"[^\"]+\""
+      confidence: high
+      verbatim: true
+      note: "Capture anything in quotes as verbatim"
+    - pattern: "User said: {quote}"
+      confidence: high
+      verbatim: true
+    - pattern: "Quote: {quote}"
+      confidence: high
+      verbatim: true
+    - pattern: "Verbatim: {quote}"
+      confidence: high
+      verbatim: true
+    - pattern: "P[0-9]+: {quote}"
+      confidence: high
+      verbatim: true
+      note: "Participant identifier followed by quote"
+
+  feedback_patterns:
+    - pattern: "I like {feature}"
+      confidence: high
+      verbatim: true
+      type: positive
+    - pattern: "Concern about {issue}"
+      confidence: high
+      type: concern
+    - pattern: "Suggestion: {suggestion}"
+      confidence: high
+      type: constructive
+    - pattern: "Design feedback: {feedback}"
+      confidence: high
+    - pattern: "This would be better if {improvement}"
+      confidence: high
+      verbatim: true
+
+context_rules:
+  user_interview:
+    primary_entities:
+      - user_insight
+      - user_quote
+      - pain_point
+    secondary_entities:
+      - design_feedback
+    verbatim_priority: highest
+  usability_test:
+    primary_entities:
+      - usability_issue
+      - pain_point
+    secondary_entities:
+      - user_quote
+      - user_insight
+  design_critique:
+    primary_entities:
+      - design_feedback
+    secondary_entities:
+      - usability_issue

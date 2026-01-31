@@ -1,0 +1,549 @@
+# test_data/validation/extractor-tests.yaml
+# ts-extractor validation test cases
+# Created: 2026-01-29 per TASK-135
+# Implements: FR-005, FR-006, FR-007, FR-008, FR-009, PAT-001, PAT-003, PAT-004
+
+version: "1.0.0"
+agent: ts-extractor
+ground_truth_path: transcripts/golden
+
+# ============================================================================
+# METADATA
+# ============================================================================
+
+metadata:
+  description: "Extraction validation tests for ts-extractor agent"
+  references:
+    - TDD-ts-extractor.md (Section 3: Output Format)
+    - PAT-001 (Tiered Extraction)
+    - PAT-003 (4-Pattern Speaker Detection)
+    - PAT-004 (Citation Anti-Hallucination)
+    - NFR-008 (Confidence Scoring >= 0.70)
+  task: TASK-135
+  enabler: EN-015
+
+# ============================================================================
+# TEST SUITES
+# ============================================================================
+
+test_suites:
+
+  # ---------------------------------------------------------------------------
+  # SPEAKER IDENTIFICATION (PAT-003)
+  # ---------------------------------------------------------------------------
+
+  speaker_identification:
+    description: "Speaker identification tests per PAT-003 (4-Pattern Detection Chain)"
+    implements: [PAT-003, FR-005]
+
+    tests:
+      - id: SPK-001
+        name: "Identify speakers from VTT voice tags"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: speaker_count
+            expected: 4
+          - type: speaker_names
+            expected: ["Alice", "Bob", "Charlie", "Diana"]
+          - type: detection_pattern
+            expected: "vtt_voice_tag"
+          - type: speaker_confidence
+            minimum: 0.95
+
+      - id: SPK-002
+        name: "Handle late joiners with dynamic speaker detection"
+        input: "transcripts/golden/meeting-003.vtt"
+        ground_truth: "transcripts/golden/meeting-003.expected.json"
+        assertions:
+          - type: speaker_count
+            expected: 5  # 3 initial + 2 late joiners
+          - type: speaker_names
+            expected: ["Alice", "Bob", "Charlie", "Diana", "Eve"]
+          - type: late_joiner_detection
+            expected:
+              - speaker: "Diana"
+                join_time_ms: 305000
+              - speaker: "Eve"
+                join_time_ms: 605000
+
+      - id: SPK-003
+        name: "Large meeting speaker identification (6 speakers)"
+        input: "transcripts/golden/meeting-002.vtt"
+        ground_truth: "transcripts/golden/meeting-002.expected.json"
+        assertions:
+          - type: speaker_count
+            expected: 6
+          - type: speaker_names
+            expected: ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank"]
+          - type: detection_pattern
+            expected: "vtt_voice_tag"
+
+  # ---------------------------------------------------------------------------
+  # ACTION ITEM EXTRACTION
+  # ---------------------------------------------------------------------------
+
+  action_item_extraction:
+    description: "Action item extraction tests per TDD-ts-extractor Section 3.4"
+    implements: [FR-006, PAT-001, PAT-004]
+
+    tests:
+      - id: ACT-001
+        name: "Extract action items from meeting-001 (8 items)"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "action_items"
+            expected: 8
+          - type: precision
+            entity: "action_items"
+            minimum: 0.85
+          - type: recall
+            entity: "action_items"
+            minimum: 0.80
+
+      - id: ACT-002
+        name: "Extract action items from meeting-002 (16 items)"
+        input: "transcripts/golden/meeting-002.vtt"
+        ground_truth: "transcripts/golden/meeting-002.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "action_items"
+            expected: 16
+          - type: precision
+            entity: "action_items"
+            minimum: 0.85
+          - type: recall
+            entity: "action_items"
+            minimum: 0.75  # Higher count, slightly lower recall threshold
+
+      - id: ACT-003
+        name: "Verify assignee extraction accuracy"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_accuracy
+            entity: "action_items"
+            field: "assignee"
+            minimum: 0.90
+          - type: assignee_presence
+            # All 8 action items in meeting-001 have assignees
+            expected_ratio: 1.0
+
+      - id: ACT-004
+        name: "Verify due date extraction"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_presence
+            entity: "action_items"
+            field: "due_date"
+            # Not all action items have due dates
+            minimum_ratio: 0.4
+
+      - id: ACT-005
+        name: "Action items with collaborators"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_presence
+            entity: "action_items"
+            field: "collaborator"
+            # act-005: Charlie with Diana
+            minimum_count: 1
+
+  # ---------------------------------------------------------------------------
+  # DECISION EXTRACTION
+  # ---------------------------------------------------------------------------
+
+  decision_extraction:
+    description: "Decision extraction tests per TDD-ts-extractor Section 3.5"
+    implements: [FR-007, PAT-001, PAT-004]
+
+    tests:
+      - id: DEC-001
+        name: "Extract decisions from meeting-001 (3 decisions)"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "decisions"
+            expected: 3
+          - type: precision
+            entity: "decisions"
+            minimum: 0.85
+          - type: recall
+            entity: "decisions"
+            minimum: 0.75
+
+      - id: DEC-002
+        name: "Extract decisions from meeting-002 (8 decisions)"
+        input: "transcripts/golden/meeting-002.vtt"
+        ground_truth: "transcripts/golden/meeting-002.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "decisions"
+            expected: 8
+          - type: precision
+            entity: "decisions"
+            minimum: 0.85
+
+      - id: DEC-003
+        name: "Verify decided_by attribution"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_accuracy
+            entity: "decisions"
+            field: "decided_by"
+            minimum: 0.85
+
+      - id: DEC-004
+        name: "Verify rationale capture"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_presence
+            entity: "decisions"
+            field: "rationale"
+            # All 3 decisions in meeting-001 have rationale
+            minimum_ratio: 0.8
+
+  # ---------------------------------------------------------------------------
+  # QUESTION EXTRACTION
+  # ---------------------------------------------------------------------------
+
+  question_extraction:
+    description: "Question extraction tests per TDD-ts-extractor Section 3.6"
+    implements: [FR-008, PAT-001, PAT-004]
+
+    tests:
+      - id: QUE-001
+        name: "Extract questions from meeting-001 (2 questions)"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "questions"
+            expected: 2
+          - type: precision
+            entity: "questions"
+            minimum: 0.80
+
+      - id: QUE-002
+        name: "Extract questions from meeting-002 (5 questions)"
+        input: "transcripts/golden/meeting-002.vtt"
+        ground_truth: "transcripts/golden/meeting-002.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "questions"
+            expected: 5
+
+      - id: QUE-003
+        name: "Verify asked_by attribution"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_accuracy
+            entity: "questions"
+            field: "asked_by"
+            minimum: 0.90
+
+      - id: QUE-004
+        name: "Verify answered status tracking"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_accuracy
+            entity: "questions"
+            field: "answered"
+            expected: true  # Both questions in meeting-001 are answered
+
+      - id: QUE-005
+        name: "Verify answer_citation present when answered"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: conditional_field
+            entity: "questions"
+            condition: "answered == true"
+            field: "answer_citation"
+            required: true
+
+  # ---------------------------------------------------------------------------
+  # TOPIC SEGMENTATION
+  # ---------------------------------------------------------------------------
+
+  topic_segmentation:
+    description: "Topic segmentation tests per FR-009"
+    implements: [FR-009]
+
+    tests:
+      - id: TOP-001
+        name: "Segment topics from meeting-001 (7 topics)"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "topics"
+            expected: 7
+          - type: topic_coverage
+            # Topics should cover entire meeting duration
+            coverage_minimum: 0.95
+
+      - id: TOP-002
+        name: "Segment topics from meeting-002 (12 topics)"
+        input: "transcripts/golden/meeting-002.vtt"
+        ground_truth: "transcripts/golden/meeting-002.expected.json"
+        assertions:
+          - type: entity_count
+            entity: "topics"
+            expected: 12
+
+      - id: TOP-003
+        name: "Verify topic timestamps are sequential"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: timestamp_ordering
+            entity: "topics"
+            field_start: "start_ms"
+            field_end: "end_ms"
+            expected: "sequential_non_overlapping"
+
+      - id: TOP-004
+        name: "Verify topic segment_ids populated"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: field_presence
+            entity: "topics"
+            field: "segment_ids"
+            minimum_count_per_item: 1
+
+  # ---------------------------------------------------------------------------
+  # CITATION VALIDATION (PAT-004)
+  # ---------------------------------------------------------------------------
+
+  citation_validation:
+    description: "Citation anti-hallucination tests per PAT-004"
+    implements: [PAT-004]
+
+    tests:
+      - id: CITE-001
+        name: "All action items have valid citations"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: citation_coverage
+            entity: "action_items"
+            expected: 1.0  # 100% must have citations
+          - type: citation_validity
+            entity: "action_items"
+            expected: true  # All citations resolve to real segments
+
+      - id: CITE-002
+        name: "All decisions have valid citations"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: citation_coverage
+            entity: "decisions"
+            expected: 1.0
+          - type: citation_validity
+            entity: "decisions"
+            expected: true
+
+      - id: CITE-003
+        name: "All questions have valid citations"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: citation_coverage
+            entity: "questions"
+            expected: 1.0
+          - type: citation_validity
+            entity: "questions"
+            expected: true
+
+      - id: CITE-004
+        name: "Citation text snippets exist in source"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: citation_text_match
+            # text_snippet in citation must exist in source transcript
+            match_type: "substring"
+            expected: true
+
+      - id: CITE-005
+        name: "Citation anchors follow ADR-003 format"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: anchor_format
+            pattern: "^#seg-\\d{3,}$"
+            expected: true
+
+  # ---------------------------------------------------------------------------
+  # CONFIDENCE SCORING (NFR-008)
+  # ---------------------------------------------------------------------------
+
+  confidence_scoring:
+    description: "Confidence scoring tests per NFR-008"
+    implements: [NFR-008]
+
+    tests:
+      - id: CONF-001
+        name: "All entities meet minimum confidence threshold"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: confidence_threshold
+            entity: "action_items"
+            minimum: 0.70
+          - type: confidence_threshold
+            entity: "decisions"
+            minimum: 0.70
+          - type: confidence_threshold
+            entity: "questions"
+            minimum: 0.70
+
+      - id: CONF-002
+        name: "High confidence ratio above target"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: high_confidence_ratio
+            # Per ground truth: high_ratio = 1.0
+            expected_minimum: 0.80
+            high_threshold: 0.85
+
+      - id: CONF-003
+        name: "Confidence summary statistics correct"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: confidence_stats
+            fields: ["average", "high_count", "medium_count", "low_count", "high_ratio"]
+            expected_present: true
+
+  # ---------------------------------------------------------------------------
+  # TIERED EXTRACTION (PAT-001)
+  # ---------------------------------------------------------------------------
+
+  tiered_extraction:
+    description: "Tiered extraction tests per PAT-001"
+    implements: [PAT-001]
+
+    tests:
+      - id: TIER-001
+        name: "Tier field present on action items"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_presence
+            entity: "action_items"
+            field: "tier"
+            expected_ratio: 1.0
+          - type: field_values
+            entity: "action_items"
+            field: "tier"
+            allowed_values: [1, 2, 3]
+
+      - id: TIER-002
+        name: "Tier 1 extractions have high confidence"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: tier_confidence_correlation
+            tier: 1
+            confidence_minimum: 0.85
+
+  # ---------------------------------------------------------------------------
+  # EDGE CASES
+  # ---------------------------------------------------------------------------
+
+  edge_cases:
+    description: "Edge case extraction tests using meeting-003"
+
+    tests:
+      - id: EDGE-001
+        name: "Handle W3C VTT edge cases in meeting-003"
+        input: "transcripts/golden/meeting-003.vtt"
+        ground_truth: "transcripts/golden/meeting-003.expected.json"
+        assertions:
+          - type: no_errors
+          - type: entity_count
+            entity: "action_items"
+            expected: 10
+          - type: entity_count
+            entity: "decisions"
+            expected: 4
+
+      - id: EDGE-002
+        name: "Extract from multiline VTT payloads"
+        input: "transcripts/edge_cases/multiline_payload.vtt"
+        assertions:
+          - type: no_errors
+          - type: segment_text_preserved
+            expected: true
+
+      - id: EDGE-003
+        name: "Handle voice tags with CSS classes"
+        input: "transcripts/edge_cases/voice_tag_with_class.vtt"
+        assertions:
+          - type: speaker_detected
+            expected: true  # Should still detect speaker despite class
+
+      - id: EDGE-004
+        name: "Handle unicode/international text"
+        input: "transcripts/edge_cases/unicode_speakers.vtt"
+        assertions:
+          - type: no_errors
+          - type: unicode_preserved
+            expected: true
+
+  # ---------------------------------------------------------------------------
+  # EXTRACTION STATISTICS
+  # ---------------------------------------------------------------------------
+
+  extraction_statistics:
+    description: "Extraction statistics validation"
+
+    tests:
+      - id: STAT-001
+        name: "Extraction stats match entity counts"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: stats_match_counts
+            fields:
+              - stats_field: "extraction_stats.speakers_identified"
+                entity: "speakers"
+              - stats_field: "extraction_stats.action_items"
+                entity: "action_items"
+              - stats_field: "extraction_stats.decisions"
+                entity: "decisions"
+              - stats_field: "extraction_stats.questions"
+                entity: "questions"
+              - stats_field: "extraction_stats.topics"
+                entity: "topics"
+
+# ============================================================================
+# PRECISION/RECALL TARGETS
+# ============================================================================
+
+targets:
+  action_items:
+    precision: 0.85
+    recall: 0.80
+  decisions:
+    precision: 0.85
+    recall: 0.75
+  questions:
+    precision: 0.80
+    recall: 0.70
+  speakers:
+    precision: 0.90
+    recall: 0.95
+  topics:
+    precision: 0.75
+    recall: 0.70
+
+# ============================================================================
+# OUTPUT FORMAT
+# ============================================================================
+
+expected_output_schema: "schemas/extraction-report.json"

@@ -28,7 +28,12 @@ classifiers = [
 
 # Zero external dependencies for core
 # Libraries added here should be pre-installed in Claude Code Web environment
-dependencies = []
+dependencies = [
+    "jsonschema[test]>=4.26.0",
+    "webvtt-py>=0.5.1",
+    "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
+    "filelock>=3.20.3",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -42,6 +47,11 @@ test = [
     "pytest-archon>=0.0.6",
     "pytest-bdd>=8.0.0",
     "pytest-cov>=4.0.0",
+]
+# EN-020: Transcript bounded context dependencies (TDD-FEAT-004 v1.2.0)
+transcript = [
+    "webvtt-py>=0.5.1",           # VTT/SRT parsing (deterministic)
+    "charset-normalizer>=3.3.0",  # Encoding detection fallback
 ]
 
 [project.scripts]
@@ -98,4 +108,12 @@ markers = [
     "negative: marks tests as negative/error scenarios",
     "edge-case: marks tests as edge case scenarios",
     "boundary: marks tests as boundary value scenarios",
+]
+
+[dependency-groups]
+dev = [
+    "pip-audit>=2.10.0",
+    "pyright>=1.1.408",
+    "pytest>=9.0.2",
+    "ruff>=0.14.11",
 ]

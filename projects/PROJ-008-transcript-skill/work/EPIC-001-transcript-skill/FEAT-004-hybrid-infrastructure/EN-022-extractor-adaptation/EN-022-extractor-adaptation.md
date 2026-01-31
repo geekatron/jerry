@@ -1,0 +1,232 @@
+# EN-022: Extractor Adaptation
+
+<!--
+TEMPLATE: Enabler
+VERSION: 1.0.0
+SOURCE: ONTOLOGY-v1.md Section 3.4.9
+CREATED: 2026-01-28 (FEAT-004 Hybrid Infrastructure)
+PURPOSE: Adapt ts-extractor agent to work with chunked input
+-->
+
+> **Type:** enabler
+> **Status:** done
+> **Priority:** medium
+> **Impact:** medium
+> **Enabler Type:** architecture
+> **Created:** 2026-01-28T22:00:00Z
+> **Due:** TBD
+> **Completed:** 2026-01-29T20:30:00Z
+> **Parent:** FEAT-004
+> **Owner:** Claude
+> **Effort:** 3
+
+---
+
+## Frontmatter
+
+```yaml
+id: "EN-022"
+work_type: ENABLER
+title: "Extractor Adaptation"
+classification: ENABLER
+status: done
+priority: medium
+impact: medium
+assignee: "Claude"
+created_by: "Claude"
+created_at: "2026-01-28T22:00:00Z"
+updated_at: "2026-01-29T20:30:00Z"
+parent_id: "FEAT-004"
+tags: ["enabler", "ts-extractor", "chunking", "adaptation"]
+effort: 3
+enabler_type: architecture
+nfrs: ["NFR-008"]
+```
+
+---
+
+## Summary
+
+Adapt the ts-extractor agent definition to work with the chunked input format from EN-021. The agent will read the index file for overview, then request specific chunks for targeted extraction, improving accuracy and reducing token usage.
+
+**Technical Value:**
+- Agent works with chunked input
+- Selective chunk loading reduces costs
+- Improved accuracy through focused context
+- Citation preservation across chunks
+
+---
+
+## Problem Statement
+
+The current ts-extractor agent expects a single canonical-transcript.json file. With the chunked format from EN-021, the agent needs to:
+
+1. **Read index.json first** - Understand transcript overview
+2. **Decide which chunks to load** - Based on extraction task
+3. **Process chunks sequentially or selectively** - Depending on task type
+4. **Merge results** - Combine extractions from multiple chunks
+
+---
+
+## Technical Approach
+
+### Workflow Update
+
+```
+CURRENT:
+ts-extractor reads canonical-transcript.json (entire file)
+                    ↓
+            Extract all entities
+
+UPDATED:
+ts-extractor reads index.json (small, metadata only)
+                    ↓
+            Identifies relevant chunks based on task
+                    ↓
+            Reads specific chunk files
+                    ↓
+            Extracts entities from focused context
+                    ↓
+            Merges results with citation preservation
+```
+
+### Agent Definition Updates
+
+Update `ts-extractor.md` with new input handling:
+
+```markdown
+## Input Formats
+
+### Format A: Single File (Legacy)
+- File: `canonical-transcript.json`
+- Use: Small transcripts (< 1000 segments)
+
+### Format B: Chunked (Recommended)
+- Index: `index.json` - Read first for overview
+- Chunks: `chunks/chunk-NNN.json` - Load as needed
+
+## Chunked Processing Protocol
+
+1. **Read Index**
+   - Load `index.json`
+   - Note: total_segments, speaker_counts, chunk_metadata
+
+2. **Plan Extraction**
+   - For action items: Process all chunks sequentially
+   - For speaker-specific: Load chunks with that speaker
+   - For topic-specific: Use topics_preview to select chunks
+
+3. **Process Chunks**
+   - Load one chunk at a time
+   - Extract entities with full segment context
+   - Preserve segment_id for citation
+
+4. **Merge Results**
+   - Combine entities from all processed chunks
+   - Deduplicate if necessary
+   - Maintain citation references
+```
+
+### Chunk Selection Logic
+
+```yaml
+# Task-based chunk selection
+
+action_items:
+  strategy: sequential
+  reason: "Action items can appear anywhere"
+
+decisions:
+  strategy: sequential
+  reason: "Decisions can appear anywhere"
+
+questions:
+  strategy: sequential
+  reason: "Questions appear throughout"
+
+speakers:
+  strategy: index_only
+  reason: "Speaker counts available in index"
+
+topics:
+  strategy: selective
+  selection_criteria: "Use topics_preview from index"
+```
+
+---
+
+## NFRs Addressed
+
+| NFR | Requirement | How Addressed |
+|-----|-------------|---------------|
+| NFR-008 | Confidence scoring | Maintained in chunked mode |
+| PAT-004 | Citation required | Segment IDs preserved |
+
+---
+
+## Children (Tasks)
+
+| ID | Title | Status | Priority |
+|----|-------|--------|----------|
+| TASK-220 | Update ts-extractor.md input section | **done** | high |
+| TASK-221 | Add chunked processing protocol | **done** | high |
+| TASK-222 | Document chunk selection strategies | **done** | medium |
+| TASK-223 | Update extraction-report schema | **done** | medium |
+
+**Note:** Task IDs renumbered from TASK-170-173 to TASK-220-223 per DEC-010 (FEAT-004 task range allocation).
+
+---
+
+## Acceptance Criteria
+
+### Definition of Done
+
+- [x] ts-extractor.md updated with chunked input support
+- [x] Chunk selection strategies documented
+- [x] extraction-report.json schema updated if needed
+- [x] Manual test with meeting-006 chunked output (verified via EN-026 live tests)
+
+### Functional Criteria
+
+| # | Criterion | Verified |
+|---|-----------|----------|
+| AC-1 | Agent reads index.json first | [x] |
+| AC-2 | Agent loads chunks selectively | [x] |
+| AC-3 | Citations reference segment IDs correctly | [x] |
+| AC-4 | Extraction report matches single-file quality | [x] |
+
+---
+
+## Dependencies
+
+| Type | Item | Description |
+|------|------|-------------|
+| Depends On | EN-021 | Requires chunked output format |
+| Related | ts-extractor.md | Agent definition to update |
+
+---
+
+## History
+
+| Date | Author | Status | Notes |
+|------|--------|--------|-------|
+| 2026-01-28 | Claude | pending | Enabler created from DISC-009 |
+| 2026-01-29 | Claude | in_progress | Started implementation. Created TASK-220..223 files. Beginning TASK-220 (Input Section Update). |
+| 2026-01-29 | Claude | done | All 4 tasks complete. ts-extractor.md updated with: Input Formats, Chunked Processing Protocol, Chunk Selection Strategies, Output Schema v1.1. extraction-report.json schema updated to v1.1 with ChunkMetadata, Citation.chunk_id, Topic.chunk_ids. |
+| 2026-01-30 | Claude | done | Status fixed to reflect completion. Manual test verified via EN-026 token-based chunking integration tests. ts-extractor.md now at v1.2.0 with mandatory chunked input. |
+
+---
+
+## Metadata
+
+```yaml
+id: "EN-022"
+parent_id: "FEAT-004"
+work_type: ENABLER
+title: "Extractor Adaptation"
+status: done
+priority: medium
+impact: medium
+enabler_type: architecture
+tags: ["ts-extractor", "chunking", "adaptation"]
+```

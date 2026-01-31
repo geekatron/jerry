@@ -1,0 +1,130 @@
+# Extraction Rules: Software Architecture Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+
+domain: software-architecture
+version: "1.0.0"
+
+extraction_rules:
+  decision_patterns:
+    - pattern: "We're going with {decision}"
+      confidence: high
+      example: "We're going with the microservices approach"
+    - pattern: "The architecture decision is {decision}"
+      confidence: high
+      example: "The architecture decision is to use event sourcing"
+    - pattern: "ADR: {decision}"
+      confidence: high
+      example: "ADR: Use PostgreSQL for primary database"
+    - pattern: "We chose {decision} because {rationale}"
+      confidence: high
+      example: "We chose REST because of team familiarity"
+    - pattern: "Decision: {decision}"
+      confidence: high
+      example: "Decision: Implement CQRS pattern"
+    - pattern: "We've decided to {decision}"
+      confidence: high
+      example: "We've decided to split the monolith"
+
+  alternative_patterns:
+    - pattern: "We considered {alternative}"
+      confidence: high
+      example: "We considered GraphQL"
+    - pattern: "Another option was {alternative}"
+      confidence: high
+      example: "Another option was MongoDB"
+    - pattern: "We rejected {alternative} because {reason}"
+      confidence: high
+      example: "We rejected gRPC because of client complexity"
+    - pattern: "Alternative: {alternative}"
+      confidence: medium
+      example: "Alternative: serverless functions"
+    - pattern: "{alternative} was also on the table"
+      confidence: medium
+      example: "Kafka was also on the table"
+    - pattern: "We ruled out {alternative}"
+      confidence: high
+      example: "We ruled out the monolithic approach"
+
+  quality_attribute_patterns:
+    - pattern: "For {attribute}, we need {requirement}"
+      confidence: high
+      example: "For performance, we need sub-100ms response times"
+    - pattern: "{attribute} is critical because {reason}"
+      confidence: high
+      example: "Security is critical because we handle PII"
+    - pattern: "We're prioritizing {attribute} over {other}"
+      confidence: high
+      example: "We're prioritizing maintainability over performance"
+    - pattern: "The {attribute} requirement is {requirement}"
+      confidence: high
+      example: "The availability requirement is 99.9%"
+    - pattern: "Trade-off between {attr1} and {attr2}"
+      confidence: high
+      example: "Trade-off between consistency and availability"
+    - pattern: "NFR: {requirement}"
+      confidence: medium
+      example: "NFR: Support 10K concurrent users"
+
+  component_patterns:
+    - pattern: "The {component} is responsible for {responsibility}"
+      confidence: high
+      example: "The API Gateway is responsible for routing"
+    - pattern: "{component} component"
+      confidence: medium
+      example: "Authentication component"
+    - pattern: "{component} service"
+      confidence: medium
+      example: "User service"
+    - pattern: "{component} will handle {responsibility}"
+      confidence: high
+      example: "The cache layer will handle read optimization"
+    - pattern: "Interface between {comp1} and {comp2}"
+      confidence: high
+      example: "Interface between frontend and backend"
+
+  technical_debt_patterns:
+    - pattern: "Technical debt: {description}"
+      confidence: high
+      example: "Technical debt: the authentication module needs refactoring"
+    - pattern: "We're taking on debt by {description}"
+      confidence: high
+      example: "We're taking on debt by skipping proper caching"
+    - pattern: "This is a hack, we should {remediation}"
+      confidence: high
+      example: "This is a hack, we should properly implement it later"
+    - pattern: "Tech debt: {description}"
+      confidence: high
+      example: "Tech debt: hardcoded configuration values"
+    - pattern: "We'll need to fix {description} later"
+      confidence: medium
+      example: "We'll need to fix the database schema later"
+
+context_rules:
+  architecture_review:
+    primary_entities:
+      - architectural_decision
+      - component
+    secondary_entities:
+      - quality_attribute
+      - technical_debt
+  adr_discussion:
+    primary_entities:
+      - architectural_decision
+      - alternative
+    secondary_entities:
+      - quality_attribute
+  design_session:
+    primary_entities:
+      - component
+      - architectural_decision
+    secondary_entities:
+      - alternative
+      - quality_attribute
+  trade_off_analysis:
+    primary_entities:
+      - quality_attribute
+      - alternative
+    secondary_entities:
+      - architectural_decision

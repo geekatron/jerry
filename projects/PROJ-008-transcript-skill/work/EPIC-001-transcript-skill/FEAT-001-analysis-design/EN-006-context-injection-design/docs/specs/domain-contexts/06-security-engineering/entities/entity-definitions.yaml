@@ -1,0 +1,130 @@
+# Entity Definitions: Security Engineering Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+#
+# Supports STRIDE threat modeling, CVSS scoring, and compliance frameworks.
+
+domain: security-engineering
+version: "1.0.0"
+
+metadata:
+  target_users:
+    - "Security Engineers"
+    - "Security Architects"
+    - "AppSec Engineers"
+    - "Compliance Officers"
+  transcript_types:
+    - "Security audit"
+    - "Threat modeling session"
+    - "Compliance review"
+    - "Vulnerability triage"
+    - "Security architecture review"
+  key_use_cases:
+    - "Document vulnerabilities"
+    - "Model threats (STRIDE)"
+    - "Track mitigations"
+    - "Identify compliance gaps"
+    - "Record risk decisions"
+
+entities:
+  vulnerability:
+    description: "Security vulnerability or weakness identified"
+    attributes:
+      - title: "Vulnerability name or description"
+      - cve: "CVE identifier if applicable (CVE-YYYY-NNNNN)"
+      - severity: "CVSS qualitative rating (critical | high | medium | low | informational)"
+      - cvss_score: "CVSS v3.1 numeric score (0.0-10.0)"
+      - affected_systems: "Systems or components impacted"
+      - status: "Current status (open | in_progress | mitigated | accepted)"
+      - cwe: "CWE identifier if applicable"
+    relationships:
+      - type: "exploited_by"
+        target: "threat"
+      - type: "remediated_by"
+        target: "mitigation"
+
+  threat:
+    description: "Threat identified during threat modeling"
+    attributes:
+      - threat_id: "STRIDE category or custom identifier"
+      - description: "Detailed threat description"
+      - threat_actor: "Who could exploit this (external attacker, insider, etc.)"
+      - attack_vector: "How they would attack (network, local, physical)"
+      - likelihood: "Probability of occurrence (high | medium | low)"
+      - impact: "Potential damage (high | medium | low)"
+      - stride_category: "STRIDE category (S, T, R, I, D, E)"
+    note: |
+      STRIDE Categories:
+      - Spoofing: Identity impersonation
+      - Tampering: Data modification
+      - Repudiation: Denying actions
+      - Information Disclosure: Data exposure
+      - Denial of Service: Availability impact
+      - Elevation of Privilege: Unauthorized access
+    relationships:
+      - type: "exploits"
+        target: "vulnerability"
+      - type: "mitigated_by"
+        target: "mitigation"
+
+  mitigation:
+    description: "Security control or remediation action"
+    attributes:
+      - title: "Mitigation name or description"
+      - type: "Control type (preventive | detective | corrective)"
+      - implementation: "How to implement the control"
+      - effectiveness: "Expected effectiveness (high | medium | low)"
+      - status: "Implementation status (proposed | approved | implemented | verified)"
+      - cost: "Estimated implementation effort"
+    note: |
+      Control types:
+      - Preventive: Stop attack before it happens
+      - Detective: Identify attack in progress
+      - Corrective: Respond and recover from attack
+    relationships:
+      - type: "mitigates"
+        target: "vulnerability"
+      - type: "mitigates"
+        target: "threat"
+
+  compliance_gap:
+    description: "Compliance requirement not met"
+    attributes:
+      - framework: "Compliance framework (SOC2 | PCI-DSS | HIPAA | GDPR | ISO27001)"
+      - requirement: "Specific control or requirement ID"
+      - current_state: "What we currently have"
+      - gap: "What's missing or non-compliant"
+      - remediation: "How to achieve compliance"
+      - due_date: "Compliance deadline if applicable"
+    relationships:
+      - type: "addressed_by"
+        target: "mitigation"
+
+  security_decision:
+    description: "Security architecture or risk decision"
+    attributes:
+      - topic: "What was being decided"
+      - decision: "The decision made"
+      - risk_accepted: "Any risk explicitly accepted"
+      - rationale: "Why this decision was made"
+      - approver: "Who approved (for risk acceptance)"
+      - expiry: "Review date for accepted risks"
+    note: |
+      IMPORTANT: Risk acceptance decisions must be explicitly documented
+      with approver and expiry date for audit purposes.
+    relationships:
+      - type: "addresses"
+        target: "vulnerability"
+      - type: "addresses"
+        target: "compliance_gap"
+
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 5
+  required_entities:
+    - vulnerability
+    - threat
+    - mitigation
+  stride_support: true
+  cvss_support: true

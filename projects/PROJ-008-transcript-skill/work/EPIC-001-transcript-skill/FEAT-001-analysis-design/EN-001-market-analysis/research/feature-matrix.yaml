@@ -1,0 +1,672 @@
+# Feature Matrix - Machine Parseable Format
+# Generated: 2026-01-25
+# Task: TASK-006
+# Enabler: EN-001
+# Agent: ps-synthesizer
+
+metadata:
+  generated: "2026-01-25"
+  products_analyzed: 5
+  task: TASK-006
+  enabler: EN-001
+  agent: ps-synthesizer
+  confidence_disclaimer: |
+    All data based on training data (cutoff: May 2025) and requires verification.
+    Pocket research was BLOCKED entirely due to tool unavailability.
+
+products:
+  - id: pocket
+    name: "Pocket"
+    url: "https://heypocket.com"
+    confidence: very_low
+    research_status: blocked
+    notes: "Research tools unavailable; no data collected"
+
+  - id: otter
+    name: "Otter.ai"
+    url: "https://otter.ai"
+    confidence: medium
+    research_status: training_data_based
+    notes: "Well-established product; training data reliable"
+
+  - id: fireflies
+    name: "Fireflies.ai"
+    url: "https://fireflies.ai"
+    confidence: medium
+    research_status: training_data_based
+    notes: "Well-established product; training data reliable"
+
+  - id: grain
+    name: "Grain"
+    url: "https://grain.com"
+    confidence: medium
+    research_status: training_data_based
+    notes: "Established product; video-centric focus"
+
+  - id: tldv
+    name: "tl;dv"
+    url: "https://tldv.io"
+    confidence: low_medium
+    research_status: training_data_based
+    notes: "Less documentation available in training data"
+
+features:
+  core:
+    - name: realtime_transcription
+      description: "Live speech-to-text during meetings"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, evidence: "Product documentation" }
+      fireflies: { supported: true, evidence: "Product documentation" }
+      grain: { supported: true, evidence: "Feature documentation" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: async_transcription
+      description: "Post-meeting speech-to-text processing"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, evidence: "Product documentation" }
+      fireflies: { supported: true, evidence: "Product documentation" }
+      grain: { supported: true, evidence: "Feature documentation" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: meeting_bot_join
+      description: "Automated meeting participant for recording"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, bot_name: "OtterPilot", evidence: "Product documentation" }
+      fireflies: { supported: true, bot_name: "Fred", evidence: "Product documentation" }
+      grain: { supported: true, evidence: "Feature documentation" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: speaker_identification
+      description: "Automatic speaker diarization and labeling"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, evidence: "Core diarization feature" }
+      fireflies: { supported: true, evidence: "Product documentation" }
+      grain: { supported: true, evidence: "Feature documentation" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: ai_summaries
+      description: "Automated meeting summaries"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, evidence: "Feature added ~2023" }
+      fireflies: { supported: true, evidence: "Feature documentation" }
+      grain: { supported: true, evidence: "Feature introduced ~2023" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: searchable_archive
+      description: "Full-text search across transcripts"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, evidence: "Core platform capability" }
+      fireflies: { supported: true, semantic_search: true, evidence: "Feature documentation" }
+      grain: { supported: true, evidence: "Standard feature" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: video_clips
+      description: "Create shareable video snippets"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: false, evidence: "Transcript focused" }
+      fireflies: { supported: true, feature_name: "Soundbites", evidence: "Product pages" }
+      grain: { supported: true, core_feature: true, evidence: "Core differentiator" }
+      tldv: { supported: true, evidence: "Training data" }
+
+    - name: ai_chat_interface
+      description: "Conversational interface for querying meeting content"
+      pocket: { supported: unknown, evidence: "Research blocked" }
+      otter: { supported: true, feature_name: "Otter AI Chat", evidence: "Feature ~2023-2024" }
+      fireflies: { supported: true, feature_name: "AskFred", evidence: "Product announcements" }
+      grain: { supported: unknown, evidence: "Not documented" }
+      tldv: { supported: unknown, evidence: "Not documented" }
+
+  entity_extraction:
+    - name: speakers
+      description: "Speaker identification and attribution"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: true, accuracy: "not_disclosed" }
+      fireflies: { supported: true, accuracy: "not_disclosed" }
+      grain: { supported: true, accuracy: "not_disclosed" }
+      tldv: { supported: true, accuracy: "not_disclosed", confidence: likely }
+
+    - name: topics_keywords
+      description: "Topic and keyword extraction"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: true, accuracy: "not_disclosed" }
+      fireflies: { supported: true, accuracy: "not_disclosed" }
+      grain: { supported: true, accuracy: "not_disclosed" }
+      tldv: { supported: true, accuracy: "not_disclosed", confidence: likely }
+
+    - name: action_items
+      description: "Automatic action item detection"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: true, accuracy: "not_disclosed", features: ["assignees", "follow_ups"] }
+      fireflies: { supported: true, accuracy: "not_disclosed", features: ["assignees"] }
+      grain: { supported: true, accuracy: "not_disclosed", method: "ai_summary" }
+      tldv: { supported: true, accuracy: "not_disclosed", confidence: likely }
+
+    - name: questions
+      description: "Question detection from conversation"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: partial, accuracy: "not_disclosed", notes: "Inferred from summary capabilities" }
+      fireflies: { supported: true, accuracy: "not_disclosed" }
+      grain: { supported: partial, accuracy: "not_disclosed", method: "ai_summary" }
+      tldv: { supported: unknown, accuracy: unknown }
+
+    - name: decisions
+      description: "Decision point detection"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: partial, accuracy: "not_disclosed", notes: "Inferred from summary capabilities" }
+      fireflies: { supported: partial, accuracy: "not_disclosed", notes: "Key moments feature" }
+      grain: { supported: partial, accuracy: "not_disclosed", method: "ai_summary" }
+      tldv: { supported: unknown, accuracy: unknown }
+
+    - name: key_points
+      description: "Key point/highlight extraction"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: true, accuracy: "not_disclosed" }
+      fireflies: { supported: true, accuracy: "not_disclosed" }
+      grain: { supported: true, accuracy: "not_disclosed", method: "ai_plus_manual" }
+      tldv: { supported: true, accuracy: "not_disclosed", confidence: likely }
+
+    - name: sentiment
+      description: "Sentiment analysis"
+      pocket: { supported: unknown, accuracy: unknown }
+      otter: { supported: false }
+      fireflies: { supported: true, tier: enterprise, accuracy: "not_disclosed" }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+    - name: named_entities
+      description: "People, companies, products mentioned"
+      pocket: { supported: unknown }
+      otter: { supported: unknown }
+      fireflies: { supported: unknown }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+  transcript_formats:
+    - name: vtt_import
+      description: "Import WebVTT transcript files"
+      pocket: { supported: unknown }
+      otter: { supported: unknown, notes: "Not explicitly documented" }
+      fireflies: { supported: unknown, notes: "Not explicitly documented" }
+      grain: { supported: unknown, notes: "Not explicitly documented" }
+      tldv: { supported: unknown, notes: "Not explicitly documented" }
+
+    - name: vtt_export
+      description: "Export to WebVTT format"
+      pocket: { supported: unknown }
+      otter: { supported: uncertain, notes: "Not explicitly confirmed" }
+      fireflies: { supported: unknown }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+    - name: srt_import
+      description: "Import SRT subtitle files"
+      pocket: { supported: unknown }
+      otter: { supported: unknown }
+      fireflies: { supported: unknown }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+    - name: srt_export
+      description: "Export to SRT format"
+      pocket: { supported: unknown }
+      otter: { supported: true }
+      fireflies: { supported: unknown }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+    - name: txt_export
+      description: "Plain text export"
+      pocket: { supported: unknown }
+      otter: { supported: true }
+      fireflies: { supported: true }
+      grain: { supported: true }
+      tldv: { supported: true, confidence: likely }
+
+    - name: docx_export
+      description: "Microsoft Word export"
+      pocket: { supported: unknown }
+      otter: { supported: true }
+      fireflies: { supported: true }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+    - name: pdf_export
+      description: "PDF export"
+      pocket: { supported: unknown }
+      otter: { supported: true }
+      fireflies: { supported: true }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+    - name: json_api
+      description: "JSON via API"
+      pocket: { supported: unknown }
+      otter: { supported: true, tier: enterprise }
+      fireflies: { supported: true }
+      grain: { supported: unknown }
+      tldv: { supported: unknown }
+
+  integrations:
+    video_conferencing:
+      - name: zoom
+        pocket: { supported: unknown }
+        otter: { supported: true, type: "bot_join" }
+        fireflies: { supported: true, type: "bot_join" }
+        grain: { supported: true, type: "native" }
+        tldv: { supported: true, type: "bot_join" }
+
+      - name: google_meet
+        pocket: { supported: unknown }
+        otter: { supported: true, type: "bot_join" }
+        fireflies: { supported: true, type: "bot_join" }
+        grain: { supported: true, type: "native" }
+        tldv: { supported: true, type: "extension_plus_bot" }
+
+      - name: ms_teams
+        pocket: { supported: unknown }
+        otter: { supported: true, type: "bot_join" }
+        fireflies: { supported: true, type: "bot_join" }
+        grain: { supported: true, type: "native" }
+        tldv: { supported: true, type: "bot_join" }
+
+      - name: cisco_webex
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: true, type: "bot_join" }
+        grain: { supported: unknown }
+        tldv: { supported: unknown }
+
+    calendars:
+      - name: google_calendar
+        pocket: { supported: unknown }
+        otter: { supported: true }
+        fireflies: { supported: true }
+        grain: { supported: unknown }
+        tldv: { supported: true }
+
+      - name: outlook_calendar
+        pocket: { supported: unknown }
+        otter: { supported: true }
+        fireflies: { supported: true }
+        grain: { supported: unknown }
+        tldv: { supported: true }
+
+    productivity:
+      - name: slack
+        pocket: { supported: unknown }
+        otter: { supported: true, features: ["share_transcripts"] }
+        fireflies: { supported: true, features: ["notifications", "sharing"] }
+        grain: { supported: true, features: ["clip_sharing", "notifications"] }
+        tldv: { supported: true, features: ["notifications", "sharing"] }
+
+      - name: notion
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: true }
+        grain: { supported: true, features: ["clip_embedding"] }
+        tldv: { supported: true }
+
+      - name: asana
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: true, features: ["task_creation"] }
+        grain: { supported: true }
+        tldv: { supported: unknown }
+
+      - name: linear
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: unknown }
+        grain: { supported: true }
+        tldv: { supported: unknown }
+
+      - name: confluence
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: unknown }
+        grain: { supported: true, features: ["clip_embedding"] }
+        tldv: { supported: unknown }
+
+    crm:
+      - name: salesforce
+        pocket: { supported: unknown }
+        otter: { supported: true, tier: enterprise }
+        fireflies: { supported: true, tier: enterprise }
+        grain: { supported: true }
+        tldv: { supported: true }
+
+      - name: hubspot
+        pocket: { supported: unknown }
+        otter: { supported: true, tier: enterprise }
+        fireflies: { supported: true }
+        grain: { supported: true }
+        tldv: { supported: true }
+
+    developer:
+      - name: rest_api
+        pocket: { supported: unknown }
+        otter: { supported: true, tier: enterprise }
+        fireflies: { supported: true, tier: business }
+        grain: { supported: partial, notes: "Limited documentation" }
+        tldv: { supported: unknown }
+
+      - name: webhooks
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: true }
+        grain: { supported: true }
+        tldv: { supported: unknown, notes: "Possibly available" }
+
+      - name: zapier
+        pocket: { supported: unknown }
+        otter: { supported: unknown }
+        fireflies: { supported: true }
+        grain: { supported: true }
+        tldv: { supported: unknown }
+
+pricing:
+  disclaimer: "All pricing from training data (May 2025). Verify at official websites."
+
+  pocket:
+    free: { price: unknown, features: unknown }
+    pro: { price: unknown, features: unknown }
+    business: { price: unknown, features: unknown }
+    enterprise: { price: unknown, features: unknown }
+
+  otter:
+    free:
+      price: "$0"
+      limits: "300 min/month, 30 min per conversation"
+    pro:
+      price: "$16.99/month (annual)"
+      limits: "1,200 min/month"
+      features: ["advanced_search", "export_options"]
+    business:
+      price: "$30/user/month (annual)"
+      features: ["admin_controls", "usage_analytics", "priority_support"]
+    enterprise:
+      price: "custom"
+      features: ["api_access", "sso", "salesforce", "custom_vocabulary"]
+
+  fireflies:
+    free:
+      price: "$0"
+      limits: "Limited transcription credits"
+      features: ["basic_search"]
+    pro:
+      price: "$10-18/seat/month"
+      features: ["unlimited_transcription", "ai_summaries", "integrations"]
+    business:
+      price: "$19-29/seat/month"
+      features: ["crm_integrations", "conversation_intelligence", "api_access"]
+    enterprise:
+      price: "custom"
+      features: ["sso", "admin_controls", "dedicated_support", "custom_retention"]
+
+  grain:
+    free:
+      price: "$0"
+      limits: "Limited recordings"
+      features: ["basic_features"]
+    starter:
+      price: "$15-20/user/month"
+      features: ["unlimited_recordings", "ai_features"]
+    business:
+      price: "$29-39/user/month"
+      features: ["advanced_integrations", "crm_features"]
+    enterprise:
+      price: "custom"
+      features: ["sso", "advanced_security", "dedicated_support"]
+
+  tldv:
+    free:
+      price: "$0"
+      limits: "Limited recordings"
+      features: ["basic_features"]
+    pro:
+      price: "$20-30/user/month"
+      features: ["unlimited_recordings", "ai_features"]
+    business:
+      price: "custom"
+      features: ["team_features", "advanced_integrations"]
+    enterprise:
+      price: "custom"
+      features: ["sso", "admin_controls", "dedicated_support"]
+
+market_analysis:
+  common_patterns:
+    - pattern: "bot_join_architecture"
+      description: "All competitors use meeting bots that join as participants"
+      products: ["otter", "fireflies", "grain", "tldv"]
+      trade_offs:
+        pros: ["platform_compatibility", "reliable_audio_capture"]
+        cons: ["privacy_concerns", "consent_requirements"]
+
+    - pattern: "async_processing"
+      description: "Transcription and AI analysis happen post-meeting"
+      products: ["otter", "fireflies", "grain", "tldv"]
+      trade_offs:
+        pros: ["batch_processing_efficiency", "higher_accuracy"]
+        cons: ["delayed_insights"]
+
+    - pattern: "freemium_conversion"
+      description: "Free tier with strict limits drives paid conversion"
+      products: ["otter", "fireflies", "grain", "tldv"]
+
+    - pattern: "enterprise_api_gating"
+      description: "API access restricted to highest pricing tiers"
+      products: ["otter", "fireflies"]
+
+    - pattern: "crm_integration_focus"
+      description: "Strong emphasis on Salesforce/HubSpot integration"
+      products: ["otter", "fireflies", "grain", "tldv"]
+      target_market: "sales_teams"
+
+    - pattern: "prose_over_structure"
+      description: "AI summaries provided as prose, not structured entities"
+      products: ["otter", "fireflies", "grain", "tldv"]
+
+  market_gaps:
+    - gap: "no_transcript_import"
+      description: "No competitor supports importing pre-existing VTT/SRT files"
+      opportunity: "text_first_processing"
+      impact: high
+
+    - gap: "no_accuracy_benchmarks"
+      description: "No competitor publishes entity extraction accuracy metrics"
+      opportunity: "transparency_differentiation"
+      impact: medium
+
+    - gap: "api_gated_to_enterprise"
+      description: "Developer access requires expensive enterprise tiers"
+      opportunity: "open_api_all_tiers"
+      impact: high
+
+    - gap: "prose_summaries_only"
+      description: "No machine-readable structured entity output"
+      opportunity: "structured_json_yaml_output"
+      impact: high
+
+    - gap: "video_centric_design"
+      description: "Products optimized for video, not text processing"
+      opportunity: "text_first_architecture"
+      impact: medium
+
+recommendations:
+  mvp:
+    - feature: "vtt_parsing"
+      rationale: "Core differentiator - no competitor supports transcript import"
+      priority: must_have
+
+    - feature: "speaker_attribution"
+      rationale: "Essential for meaningful entity extraction"
+      priority: must_have
+
+    - feature: "action_item_extraction"
+      rationale: "Table stakes - must match competitor quality"
+      priority: must_have
+
+    - feature: "topic_extraction"
+      rationale: "Table stakes - must match competitor quality"
+      priority: must_have
+
+    - feature: "json_output"
+      rationale: "Machine-readable output enables downstream automation"
+      priority: must_have
+
+    - feature: "cli_interface"
+      rationale: "Developer workflow integration"
+      priority: must_have
+
+  v1:
+    - feature: "srt_support"
+      rationale: "Second most common subtitle format"
+      priority: should_have
+
+    - feature: "question_detection"
+      rationale: "Weak support in market; opportunity to excel"
+      priority: should_have
+
+    - feature: "decision_detection"
+      rationale: "Weak support in market; opportunity to excel"
+      priority: should_have
+
+    - feature: "key_points_extraction"
+      rationale: "Expected feature in market"
+      priority: should_have
+
+    - feature: "multi_level_summaries"
+      rationale: "L0/L1/L2 format matches market expectations"
+      priority: should_have
+
+    - feature: "rest_api"
+      rationale: "Enable integration scenarios"
+      priority: should_have
+
+    - feature: "yaml_output"
+      rationale: "Human-readable alternative to JSON"
+      priority: should_have
+
+  future:
+    - feature: "sentiment_analysis"
+      rationale: "Enterprise feature in some competitors"
+      priority: nice_to_have
+
+    - feature: "named_entity_recognition"
+      rationale: "Enhanced entity extraction"
+      priority: nice_to_have
+
+    - feature: "meeting_type_classification"
+      rationale: "Domain-specific processing"
+      priority: nice_to_have
+
+    - feature: "custom_entity_definitions"
+      rationale: "User-defined extraction rules"
+      priority: nice_to_have
+
+    - feature: "integration_plugins"
+      rationale: "Notion, Slack, Asana export"
+      priority: nice_to_have
+
+    - feature: "local_processing_mode"
+      rationale: "Privacy-preserving option"
+      priority: nice_to_have
+
+  deprioritize:
+    - feature: "meeting_recording"
+      rationale: "Not our core value proposition; competitors have mature solutions"
+
+    - feature: "realtime_transcription"
+      rationale: "Requires audio infrastructure; not text-first"
+
+    - feature: "video_clip_generation"
+      rationale: "We are text-focused; leave to Grain/tl;dv"
+
+    - feature: "crm_integrations_v1"
+      rationale: "Complex to build right; defer to later versions"
+
+    - feature: "calendar_integration"
+      rationale: "Not needed for transcript processing"
+
+    - feature: "mobile_apps"
+      rationale: "Desktop/CLI first; mobile is future consideration"
+
+unique_value_propositions:
+  - id: "byot"
+    name: "Bring Your Own Transcript"
+    description: |
+      Process transcripts from ANY source - not just supported conferencing tools.
+      Works with historical transcripts, custom ASR outputs, and third-party services.
+
+  - id: "text_first"
+    name: "Text-First Architecture"
+    description: |
+      No meeting bots, no audio processing, no video storage. Just clean text analysis.
+      Benefits: No privacy concerns, no platform dependencies, lower costs, faster processing.
+
+  - id: "accuracy_transparency"
+    name: "Accuracy Transparency"
+    description: |
+      Publish precision/recall benchmarks for entity extraction.
+      Build trust through measurable quality competitors don't provide.
+
+  - id: "developer_first_api"
+    name: "Developer-First API"
+    description: |
+      Public REST API available on all tiers with clear documentation.
+      Not enterprise-gated like competitors.
+
+  - id: "structured_output"
+    name: "Structured Output"
+    description: |
+      Machine-readable entity extraction (JSON, YAML) vs. prose summaries.
+      Enable downstream automation that competitors' prose summaries block.
+
+  - id: "format_flexibility"
+    name: "Format Flexibility"
+    description: |
+      Native support for VTT, SRT, plain text input with timestamp preservation.
+      Accept transcripts from any source.
+
+references:
+  research_documents:
+    - path: "POCKET-analysis.md"
+      status: "blocked"
+      confidence: "very_low"
+
+    - path: "OTTER-analysis.md"
+      status: "training_data_based"
+      confidence: "medium"
+
+    - path: "FIREFLIES-analysis.md"
+      status: "training_data_based"
+      confidence: "medium"
+
+    - path: "GRAIN-analysis.md"
+      status: "training_data_based"
+      confidence: "medium"
+
+    - path: "TLDV-analysis.md"
+      status: "training_data_based"
+      confidence: "low_medium"
+
+  product_websites:
+    - name: "Pocket"
+      url: "https://heypocket.com/"
+      verification_required: true
+
+    - name: "Otter.ai"
+      url: "https://otter.ai/"
+      verification_required: true
+
+    - name: "Fireflies.ai"
+      url: "https://fireflies.ai/"
+      verification_required: true
+
+    - name: "Grain"
+      url: "https://grain.com/"
+      verification_required: true
+
+    - name: "tl;dv"
+      url: "https://tldv.io/"
+      verification_required: true

@@ -1,0 +1,498 @@
+# test_data/validation/formatter-tests.yaml
+# ts-formatter validation test cases
+# Created: 2026-01-29 per TASK-136
+# Implements: ADR-002, ADR-003, ADR-004, NFR-009, NFR-010
+
+version: "1.0.0"
+agent: ts-formatter
+output_schema: ADR-002
+
+# ============================================================================
+# METADATA
+# ============================================================================
+
+metadata:
+  description: "Formatter validation tests for ts-formatter agent"
+  references:
+    - TDD-ts-formatter.md (Section 3: Output Format)
+    - ADR-002 (8-File Packet Structure)
+    - ADR-003 (Bidirectional Deep Linking)
+    - ADR-004 (File Splitting Strategy)
+    - NFR-009 (Token Limits: Soft 31.5K, Hard 35K)
+    - NFR-010 (Output Readability)
+  task: TASK-136
+  enabler: EN-015
+
+# ============================================================================
+# TEST SUITES
+# ============================================================================
+
+test_suites:
+
+  # ---------------------------------------------------------------------------
+  # PACKET STRUCTURE (ADR-002)
+  # ---------------------------------------------------------------------------
+
+  packet_structure:
+    description: "8-file packet structure validation per ADR-002"
+    implements: [ADR-002]
+
+    tests:
+      - id: PKT-001
+        name: "Generate complete 8-file packet"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: file_count
+            expected: 8
+          - type: files_exist
+            expected:
+              - "00-index.md"
+              - "01-summary.md"
+              - "02-transcript.md"
+              - "03-speakers.md"
+              - "04-action-items.md"
+              - "05-decisions.md"
+              - "06-questions.md"
+              - "07-topics.md"
+
+      - id: PKT-002
+        name: "Index file contains navigation links"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: file_contains
+            file: "00-index.md"
+            patterns:
+              - "01-summary.md"
+              - "02-transcript.md"
+              - "03-speakers.md"
+              - "04-action-items.md"
+              - "05-decisions.md"
+              - "06-questions.md"
+              - "07-topics.md"
+
+      - id: PKT-003
+        name: "Summary file has executive summary section"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: file_contains
+            file: "01-summary.md"
+            patterns:
+              - "# Executive Summary"
+              - "## Key Points"
+              - "## Action Items"
+              - "## Decisions"
+
+      - id: PKT-004
+        name: "Packet directory naming convention"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: directory_name
+            pattern: "transcript-meeting-001"
+
+  # ---------------------------------------------------------------------------
+  # TOKEN LIMITS (NFR-009)
+  # ---------------------------------------------------------------------------
+
+  token_limits:
+    description: "Token limit compliance tests per NFR-009"
+    implements: [NFR-009, ADR-004]
+
+    tests:
+      - id: TOK-001
+        name: "Single file under soft limit (31.5K tokens)"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: max_file_tokens
+            soft_limit: 31500
+            expected: true
+
+      - id: TOK-002
+        name: "No file exceeds hard limit (35K tokens)"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: max_file_tokens
+            hard_limit: 35000
+            expected: true
+
+      - id: TOK-003
+        name: "Total packet under combined limit"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: total_packet_tokens
+            # 8 files × 35K max = 280K max
+            maximum: 280000
+
+      - id: TOK-004
+        name: "Token counts reported in metadata"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: metadata_present
+            fields:
+              - "token_count"
+              - "file_sizes"
+
+  # ---------------------------------------------------------------------------
+  # FILE SPLITTING (ADR-004)
+  # ---------------------------------------------------------------------------
+
+  file_splitting:
+    description: "File splitting strategy tests per ADR-004"
+    implements: [ADR-004]
+
+    tests:
+      - id: SPLIT-001
+        name: "Split at semantic boundaries (## heading)"
+        input: "transcripts/golden/meeting-002.vtt"
+        assertions:
+          - type: split_boundary
+            # If transcript exceeds soft limit, should split at ## headings
+            boundary_type: "heading_level_2"
+
+      - id: SPLIT-002
+        name: "Split files have navigation links"
+        input: "transcripts/golden/meeting-002.vtt"
+        assertions:
+          - type: split_navigation
+            # Split files should have prev/next links
+            has_navigation: true
+
+      - id: SPLIT-003
+        name: "Split file naming convention"
+        input: "transcripts/golden/meeting-002.vtt"
+        assertions:
+          - type: split_file_names
+            # 02-transcript.md → 02-transcript-part-1.md, 02-transcript-part-2.md
+            pattern: "{base}-part-{n}.md"
+
+      - id: SPLIT-004
+        name: "Anchor continuity across splits"
+        input: "transcripts/golden/meeting-002.vtt"
+        assertions:
+          - type: anchor_continuity
+            # All anchors from original should still resolve
+            expected: true
+
+  # ---------------------------------------------------------------------------
+  # BIDIRECTIONAL LINKING (ADR-003)
+  # ---------------------------------------------------------------------------
+
+  bidirectional_linking:
+    description: "Deep linking and backlink tests per ADR-003"
+    implements: [ADR-003]
+
+    tests:
+      - id: LINK-001
+        name: "All anchors registered in _anchors.json"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: anchors_file_exists
+            file: "_anchors.json"
+          - type: anchor_count
+            minimum: 10  # Should have segment anchors
+
+      - id: LINK-002
+        name: "Anchor format follows spec"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: anchor_format
+            patterns:
+              - segment: "^#seg-\\d{3,}$"
+              - action: "^#act-\\d{3,}$"
+              - decision: "^#dec-\\d{3,}$"
+              - question: "^#que-\\d{3,}$"
+              - topic: "^#top-\\d{3,}$"
+
+      - id: LINK-003
+        name: "Citation links resolve to real anchors"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: link_resolution
+            # All [text](#anchor) links should resolve to registered anchors
+            expected_resolution_rate: 1.0
+
+      - id: LINK-004
+        name: "Backlinks added to transcript segments"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: backlinks_present
+            file: "02-transcript.md"
+            # Segments referenced by entities should have backlinks
+            expected: true
+
+      - id: LINK-005
+        name: "Bidirectional link consistency"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: bidirectional_consistency
+            # If A links to B, B should link back to A
+            expected: true
+
+  # ---------------------------------------------------------------------------
+  # OUTPUT READABILITY (NFR-010)
+  # ---------------------------------------------------------------------------
+
+  output_readability:
+    description: "Output readability and format tests per NFR-010"
+    implements: [NFR-010]
+
+    tests:
+      - id: READ-001
+        name: "Files use GitHub-Flavored Markdown"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: markdown_valid
+            flavor: "gfm"
+            expected: true
+
+      - id: READ-002
+        name: "Tables properly formatted"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: table_format
+            # Tables should have header separator
+            pattern: "\\|[^|]+\\|\\n\\|[-:| ]+\\|"
+
+      - id: READ-003
+        name: "Code blocks have language tags"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: code_block_format
+            # Code blocks should have language identifier
+            pattern: "```\\w+"
+
+      - id: READ-004
+        name: "Timestamps formatted consistently"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: timestamp_format
+            # HH:MM:SS or MM:SS format
+            pattern: "(\\d{2}:\\d{2}:\\d{2}|\\d{2}:\\d{2})"
+
+      - id: READ-005
+        name: "Speaker names in consistent format"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: speaker_format
+            # **Speaker Name:** or similar
+            pattern: "\\*\\*[A-Za-z]+\\*\\*:"
+
+  # ---------------------------------------------------------------------------
+  # ENTITY FILES
+  # ---------------------------------------------------------------------------
+
+  entity_files:
+    description: "Entity-specific file validation"
+
+    tests:
+      - id: ENT-001
+        name: "Action items file structure"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: file_sections
+            file: "04-action-items.md"
+            expected_sections:
+              - "Action Items"
+              - "Summary"
+          - type: entity_count_in_file
+            file: "04-action-items.md"
+            entity: "action_items"
+            expected: 8
+
+      - id: ENT-002
+        name: "Decisions file structure"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: file_sections
+            file: "05-decisions.md"
+            expected_sections:
+              - "Decisions"
+          - type: entity_count_in_file
+            file: "05-decisions.md"
+            entity: "decisions"
+            expected: 3
+
+      - id: ENT-003
+        name: "Questions file shows answered status"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_display
+            file: "06-questions.md"
+            field: "answered"
+            display_format: "checkbox"  # [ ] or [x]
+
+      - id: ENT-004
+        name: "Topics file has time ranges"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_display
+            file: "07-topics.md"
+            field: "time_range"
+            pattern: "\\d{2}:\\d{2}.*-.*\\d{2}:\\d{2}"
+
+      - id: ENT-005
+        name: "Speakers file has segment counts"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: field_display
+            file: "03-speakers.md"
+            field: "segment_count"
+            expected: true
+
+  # ---------------------------------------------------------------------------
+  # TRANSCRIPT FILE
+  # ---------------------------------------------------------------------------
+
+  transcript_file:
+    description: "Main transcript file validation"
+
+    tests:
+      - id: TRANS-001
+        name: "Transcript preserves all segments"
+        input: "transcripts/golden/meeting-001.vtt"
+        ground_truth: "transcripts/golden/meeting-001.expected.json"
+        assertions:
+          - type: segment_preservation
+            # All segments from parser output present in formatted transcript
+            expected_ratio: 1.0
+
+      - id: TRANS-002
+        name: "Segment anchors present"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: anchor_presence
+            file: "02-transcript.md"
+            anchor_type: "segment"
+            expected: true
+
+      - id: TRANS-003
+        name: "Timestamps clickable/navigable"
+        input: "transcripts/golden/meeting-001.vtt"
+        assertions:
+          - type: timestamp_anchored
+            expected: true
+
+  # ---------------------------------------------------------------------------
+  # EDGE CASES
+  # ---------------------------------------------------------------------------
+
+  edge_cases:
+    description: "Formatter edge case tests"
+
+    tests:
+      - id: EDGE-001
+        name: "Handle meeting with many speakers (6)"
+        input: "transcripts/golden/meeting-002.vtt"
+        assertions:
+          - type: file_count
+            expected: 8
+          - type: no_errors
+
+      - id: EDGE-002
+        name: "Handle meeting with late joiners"
+        input: "transcripts/golden/meeting-003.vtt"
+        assertions:
+          - type: speaker_list_complete
+            # Should list all 5 speakers including late joiners
+            expected_speakers: ["Alice", "Bob", "Charlie", "Diana", "Eve"]
+
+      - id: EDGE-003
+        name: "Handle unicode content"
+        input: "transcripts/golden/meeting-003.vtt"
+        assertions:
+          - type: unicode_preserved
+            # Unicode city names from meeting-003
+            expected_content: ["São Paulo", "Tokyo", "München"]
+
+      - id: EDGE-004
+        name: "Handle empty entity categories"
+        input: "transcripts/edge_cases/empty_and_malformed.vtt"
+        assertions:
+          - type: empty_section_handling
+            # Should create files with "No X found" message
+            expected: "graceful_empty"
+
+  # ---------------------------------------------------------------------------
+  # MINDMAP INTEGRATION (EN-024)
+  # ---------------------------------------------------------------------------
+
+  mindmap_integration:
+    description: "Mindmap output integration tests (when --mindmap flag used)"
+    implements: [EN-024]
+    conditional: "--mindmap flag"
+
+    tests:
+      - id: MM-001
+        name: "Mindmap files added to packet when flag present"
+        input: "transcripts/golden/meeting-001.vtt"
+        flags: ["--mindmap"]
+        assertions:
+          - type: file_count
+            expected: 10  # 8 base + 2 mindmap files
+          - type: files_exist
+            expected:
+              - "07-mindmap/mindmap.mmd"
+              - "07-mindmap/mindmap.ascii.txt"
+
+      - id: MM-002
+        name: "Index includes mindmap links"
+        input: "transcripts/golden/meeting-001.vtt"
+        flags: ["--mindmap"]
+        assertions:
+          - type: file_contains
+            file: "00-index.md"
+            patterns:
+              - "07-mindmap/mindmap.mmd"
+              - "07-mindmap/mindmap.ascii.txt"
+
+# ============================================================================
+# OUTPUT EXPECTATIONS
+# ============================================================================
+
+expected_outputs:
+  packet_structure:
+    required_files:
+      - name: "00-index.md"
+        max_tokens: 2000
+        purpose: "Navigation hub"
+      - name: "01-summary.md"
+        max_tokens: 5000
+        purpose: "Executive summary"
+      - name: "02-transcript.md"
+        max_tokens: 35000
+        purpose: "Full transcript with anchors"
+        may_split: true
+      - name: "03-speakers.md"
+        max_tokens: 3000
+        purpose: "Speaker directory"
+      - name: "04-action-items.md"
+        max_tokens: 10000
+        purpose: "Action items with citations"
+      - name: "05-decisions.md"
+        max_tokens: 10000
+        purpose: "Decisions with context"
+      - name: "06-questions.md"
+        max_tokens: 5000
+        purpose: "Questions with answer status"
+      - name: "07-topics.md"
+        max_tokens: 5000
+        purpose: "Topic segments"
+
+    optional_files:
+      - name: "_anchors.json"
+        purpose: "Anchor registry for linking"
+      - name: "07-mindmap/mindmap.mmd"
+        condition: "--mindmap flag"
+        purpose: "Mermaid mindmap"
+      - name: "07-mindmap/mindmap.ascii.txt"
+        condition: "--mindmap flag"
+        purpose: "ASCII mindmap"
+
+# ============================================================================
+# TOKEN BUDGET
+# ============================================================================
+
+token_budget:
+  soft_limit: 31500
+  hard_limit: 35000
+  split_boundary: "## heading"
+  total_packet_max: 280000

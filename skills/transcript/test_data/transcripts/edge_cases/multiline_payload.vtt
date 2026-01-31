@@ -1,0 +1,19 @@
+WEBVTT
+
+NOTE Multiline cue payloads (ML-001 through ML-005)
+NOTE Parser should join lines with single space per our spec
+
+00:00.000 --> 00:02.000
+First line of text
+Second line of text
+Third line of text
+
+00:02.000 --> 00:04.000
+<v Speaker>This is line one
+This is line two
+This is line three</v>
+
+00:04.000 --> 00:06.000
+   Line with leading whitespace
+Line with no leading whitespace
+   Both leading and trailing

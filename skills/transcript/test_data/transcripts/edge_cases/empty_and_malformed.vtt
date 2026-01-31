@@ -1,0 +1,19 @@
+WEBVTT
+
+NOTE Edge cases for empty payloads and malformed cues
+NOTE Tests error handling and defensive parsing (PAT-002)
+
+00:00.000 --> 00:01.000
+
+
+00:01.000 --> 00:02.000
+
+
+00:02.000 --> 00:03.000
+<v Speaker></v>
+
+00:03.000 --> 00:04.000
+<v>Anonymous speaker with empty annotation</v>
+
+00:04.000 --> 00:05.000
+Normal text after empty cues

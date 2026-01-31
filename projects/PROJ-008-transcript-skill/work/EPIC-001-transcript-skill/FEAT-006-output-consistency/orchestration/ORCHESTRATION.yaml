@@ -1,0 +1,385 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for FEAT-006 Output Consistency
+# Document ID: PROJ-008-FEAT-006-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-01-31T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+schema_version: "1.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "feat-006-output-consistency-20260131-001"
+  name: "FEAT-006 Output Consistency"
+  project_id: "PROJ-008-transcript-skill"
+  feature_id: "FEAT-006"
+  version: "1.0"
+  created_at: "2026-01-31T00:00:00Z"
+  updated_at: "2026-01-31T00:00:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL           # Phases execute in order
+    - ADVERSARIAL_CRITIC   # Quality gates with feedback loops
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_critic_iterations: 3      # Max retries per quality gate
+    checkpoint_frequency: "PHASE" # Recovery at phase boundaries
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-006-output-consistency/"
+  orchestration: "{base}orchestration/"
+  research: "{base}docs/research/"
+  analysis: "{base}docs/analysis/"
+  decisions: "{base}docs/decisions/"
+  critiques: "{base}orchestration/critiques/"
+
+# =============================================================================
+# REFERENCE DATA (External Paths)
+# =============================================================================
+reference_data:
+  sonnet_output:
+    path: "Downloads/chats/2026-01-30-certificate-architecture/"
+    description: "Default (Sonnet) transcript output - CORRECT format"
+
+  opus_output:
+    path: "Downloads/chats/2026-01-30-certificate-architecture-opus-v2/"
+    description: "Opus transcript output - INCORRECT format"
+
+  feat_001_path:
+    path: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/"
+    description: "Original analysis and design documents"
+
+# =============================================================================
+# PIPELINE DEFINITION (Sequential)
+# =============================================================================
+pipeline:
+  id: "feat-006-pipeline"
+  name: "Output Consistency Pipeline"
+  description: "Sequential pipeline with adversarial critic loops"
+  status: "PHASE_0_PENDING"
+  current_phase: 0
+  total_phases: 6
+  progress_percent: 0
+
+  phases:
+    # Phase 0: Gap Analysis
+    - id: 0
+      name: "Gap Analysis"
+      path_id: "phase-0-gap-analysis"
+      status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "ps-analyst-001"
+          name: "Gap Analyst"
+          agent_type: "ps-analyst"
+          status: "PENDING"
+          artifact: "{base}docs/analysis/gap-analysis.md"
+          inputs:
+            - "{reference_data.sonnet_output.path}"
+            - "{reference_data.opus_output.path}"
+      quality_gate:
+        id: "G-001"
+        threshold: 0.85
+        status: "PENDING"
+        score: null
+        critique_path: "{base}orchestration/critiques/G-001-critique.md"
+
+    # Phase 1: Historical Research
+    - id: 1
+      name: "Historical Research"
+      path_id: "phase-1-historical-research"
+      status: "BLOCKED"
+      blocked_by: "phase-0"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "ps-researcher-001"
+          name: "Historical Researcher"
+          agent_type: "ps-researcher"
+          status: "BLOCKED"
+          artifact: "{base}docs/research/historical-research.md"
+          inputs:
+            - "{base}docs/analysis/gap-analysis.md"
+            - "{reference_data.feat_001_path}"
+      quality_gate:
+        id: "G-002"
+        threshold: 0.85
+        status: "PENDING"
+        score: null
+        critique_path: "{base}orchestration/critiques/G-002-critique.md"
+
+    # Phase 2: Industry Research (Deep)
+    - id: 2
+      name: "Industry Research"
+      path_id: "phase-2-industry-research"
+      status: "BLOCKED"
+      blocked_by: "phase-1"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "ps-researcher-002"
+          name: "Industry Researcher"
+          agent_type: "ps-researcher"
+          status: "BLOCKED"
+          artifact: "{base}docs/research/industry-research.md"
+          inputs:
+            - "{base}docs/analysis/gap-analysis.md"
+            - "{base}docs/research/historical-research.md"
+          tools:
+            - "Context7"
+            - "WebSearch"
+          frameworks:
+            - "5W2H"
+            - "Ishikawa"
+            - "Pareto Analysis"
+            - "FMEA"
+            - "8D"
+            - "NASA SE Handbook"
+        - id: "nse-req-eng-001"
+          name: "Requirements Engineer"
+          agent_type: "nse-requirements-engineer"
+          status: "BLOCKED"
+          artifact: "{base}docs/analysis/requirements-synthesis.md"
+          inputs:
+            - "{base}docs/research/industry-research.md"
+      quality_gate:
+        id: "G-003"
+        threshold: 0.85
+        status: "PENDING"
+        score: null
+        critique_path: "{base}orchestration/critiques/G-003-critique.md"
+
+    # Phase 3: Specification Design
+    - id: 3
+      name: "Specification Design"
+      path_id: "phase-3-specification"
+      status: "BLOCKED"
+      blocked_by: "phase-2"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "ps-architect-001"
+          name: "Specification Architect"
+          agent_type: "ps-architect"
+          status: "BLOCKED"
+          artifact: "{base}docs/decisions/ADR-007-output-template-specification.md"
+          inputs:
+            - "{base}docs/analysis/gap-analysis.md"
+            - "{base}docs/research/historical-research.md"
+            - "{base}docs/research/industry-research.md"
+            - "{base}docs/analysis/requirements-synthesis.md"
+        - id: "nse-architect-001"
+          name: "Spec Validator"
+          agent_type: "nse-architect"
+          status: "BLOCKED"
+          artifact: "{base}docs/analysis/spec-validation.md"
+          inputs:
+            - "{base}docs/decisions/ADR-007-output-template-specification.md"
+      quality_gate:
+        id: "G-004"
+        threshold: 0.90  # Higher threshold for specification
+        status: "PENDING"
+        score: null
+        critique_path: "{base}orchestration/critiques/G-004-critique.md"
+
+    # Phase 4: Implementation
+    - id: 4
+      name: "Implementation"
+      path_id: "phase-4-implementation"
+      status: "BLOCKED"
+      blocked_by: "phase-3"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "direct-work-001"
+          name: "Implementation"
+          agent_type: "direct-work"
+          status: "BLOCKED"
+          tasks:
+            - description: "Update ts-formatter agent definition"
+              artifact: "skills/transcript/agents/ts-formatter.md"
+            - description: "Update SKILL.md with template specification"
+              artifact: "skills/transcript/SKILL.md"
+            - description: "Update PLAYBOOK.md with validation steps"
+              artifact: "skills/transcript/docs/PLAYBOOK.md"
+            - description: "Create validation test cases"
+              artifact: "{base}docs/analysis/validation-test-cases.yaml"
+      quality_gate:
+        id: "G-005"
+        threshold: 0.90
+        status: "PENDING"
+        score: null
+        critique_path: "{base}orchestration/critiques/G-005-critique.md"
+
+    # Phase 5: Validation & Review
+    - id: 5
+      name: "Validation & Review"
+      path_id: "phase-5-validation"
+      status: "BLOCKED"
+      blocked_by: "phase-4"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "validation-001"
+          name: "Profile Validation"
+          agent_type: "validation"
+          status: "BLOCKED"
+          artifact: "{base}docs/analysis/validation-report.md"
+          tasks:
+            - "Run transcript skill with economy profile"
+            - "Run transcript skill with balanced profile"
+            - "Run transcript skill with quality profile"
+            - "Run transcript skill with speed profile"
+            - "Compare outputs for structural consistency"
+      quality_gate:
+        id: "G-FINAL"
+        threshold: 0.95  # Highest threshold for final gate
+        status: "PENDING"
+        score: null
+        critique_path: "{base}orchestration/critiques/G-FINAL-critique.md"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 0: Gap Analysis"
+      execution_mode: "SEQUENTIAL"
+      status: "READY"
+      agents: ["ps-analyst-001"]
+      quality_gate: "G-001"
+
+    - id: 2
+      name: "Phase 1: Historical Research"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents: ["ps-researcher-001"]
+      quality_gate: "G-002"
+
+    - id: 3
+      name: "Phase 2: Industry Research"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents: ["ps-researcher-002", "nse-req-eng-001"]
+      quality_gate: "G-003"
+
+    - id: 4
+      name: "Phase 3: Specification Design"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      agents: ["ps-architect-001", "nse-architect-001"]
+      quality_gate: "G-004"
+
+    - id: 5
+      name: "Phase 4: Implementation"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      agents: ["direct-work-001"]
+      quality_gate: "G-005"
+
+    - id: 6
+      name: "Phase 5: Validation & Review"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      agents: ["validation-001"]
+      quality_gate: "G-FINAL"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 6
+    phases_percent: 0
+    quality_gates_passed: 0
+    quality_gates_total: 6
+    quality_gates_percent: 0
+    agents_executed: 0
+    agents_total: 8
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 10
+    artifacts_percent: 0
+
+  quality:
+    average_gate_score: null
+    min_gate_score: null
+    max_gate_score: null
+    iterations_needed: 0
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 0: ps-analyst gap analysis"
+      agent: "ps-analyst-001"
+      inputs:
+        - "Downloads/chats/2026-01-30-certificate-architecture/"
+        - "Downloads/chats/2026-01-30-certificate-architecture-opus-v2/"
+
+  subsequent:
+    - action: "Run G-001 quality gate"
+      depends_on: "ps-analyst-001 complete"
+    - action: "Execute Phase 1 if G-001 passes"
+      depends_on: "G-001 >= 0.85"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow initialized, Phase 0 ready for execution"
+  next_step: "Execute ps-analyst-001 for gap analysis"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"
+    - "ORCHESTRATION_WORKTRACKER.md"
+    - "ORCHESTRATION.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false

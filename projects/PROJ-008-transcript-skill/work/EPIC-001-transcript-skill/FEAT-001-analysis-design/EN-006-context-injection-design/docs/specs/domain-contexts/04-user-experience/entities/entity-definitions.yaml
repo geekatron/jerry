@@ -1,0 +1,104 @@
+# Entity Definitions: User Experience Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+#
+# CRITICAL: This domain emphasizes preserving VERBATIM user quotes.
+# Never paraphrase or summarize user statements.
+
+domain: user-experience
+version: "1.0.0"
+
+metadata:
+  target_users:
+    - "UX Researchers"
+    - "UX Designers"
+    - "Product Designers"
+    - "Research Operations"
+  transcript_types:
+    - "User interview"
+    - "Usability test"
+    - "Design critique"
+    - "Focus group"
+    - "Stakeholder feedback session"
+  key_use_cases:
+    - "Extract user insights"
+    - "Identify pain points"
+    - "Document usability issues"
+    - "Preserve verbatim quotes"
+    - "Build research repository"
+
+entities:
+  user_insight:
+    description: "Key insight or learning from user research"
+    attributes:
+      - insight: "What was learned"
+      - participant: "User identifier (anonymized, e.g., P01, P02)"
+      - context: "Research context when insight emerged"
+      - confidence: "Confidence level (high | medium | low)"
+      - supporting_quotes: "Direct quotes supporting this insight"
+    relationships:
+      - type: "reveals"
+        target: "pain_point"
+      - type: "supported_by"
+        target: "user_quote"
+
+  pain_point:
+    description: "User frustration, problem, or friction point"
+    attributes:
+      - description: "The pain point described"
+      - severity: "Nielsen Norman severity (0-4 or critical | major | minor | cosmetic)"
+      - frequency: "How often encountered (always | often | sometimes | rarely)"
+      - user_quote: "Verbatim quote expressing the pain"
+      - impact: "Impact on user's goals"
+    relationships:
+      - type: "manifests_as"
+        target: "usability_issue"
+      - type: "revealed_by"
+        target: "user_insight"
+
+  usability_issue:
+    description: "Problem found during usability testing"
+    attributes:
+      - task: "What user was trying to accomplish"
+      - issue: "What went wrong or was difficult"
+      - severity: "Nielsen Norman severity (0-4)"
+      - recommendation: "Suggested fix or improvement"
+      - success_rate: "Task completion rate if measured"
+    relationships:
+      - type: "triggers"
+        target: "design_feedback"
+
+  design_feedback:
+    description: "Feedback on design artifacts from any source"
+    attributes:
+      - artifact: "What was being reviewed (screen, flow, prototype)"
+      - feedback_type: "Type (positive | constructive | concern)"
+      - feedback: "The feedback provided"
+      - action: "Suggested action or change"
+      - source: "Who provided (participant | stakeholder | designer)"
+    relationships:
+      - type: "triggered_by"
+        target: "usability_issue"
+
+  user_quote:
+    description: "Verbatim user statement - MUST be preserved exactly"
+    attributes:
+      - quote: "EXACT words spoken by user - DO NOT PARAPHRASE"
+      - participant: "User identifier (anonymized)"
+      - context: "When/why they said it"
+      - theme: "Related research theme"
+      - timestamp: "When in session (if available)"
+    note: |
+      CRITICAL: User quotes must be preserved verbatim.
+      This is essential for research validity and insight traceability.
+      Never summarize, paraphrase, or clean up user language.
+
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - user_insight
+    - pain_point
+    - user_quote
+  verbatim_quote_requirement: true

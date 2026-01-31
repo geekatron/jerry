@@ -1,0 +1,218 @@
+WEBVTT - Edge Cases Meeting (Golden Dataset)
+
+NOTE
+Golden dataset for ts-parser validation - EDGE CASES
+Initial speakers: Alice, Bob, Charlie (3)
+Late joins: Diana (5:00), Eve (10:00) → Total 5 speakers
+W3C edge cases incorporated: voice tags with classes, multiline payloads,
+nested formatting, entity escapes, unicode text
+Duration: ~20 minutes
+
+00:00:00.000 --> 00:00:08.500
+<v Alice>Let's start while we wait for others to join. We have three items on the agenda.
+
+00:00:08.500 --> 00:00:18.000
+<v Bob>Sounds good. Should we record the meeting for those who join late?
+
+00:00:18.000 --> 00:00:25.000
+<v Alice>Yes, recording has started. Diana &amp; Eve said they'll be a few minutes late.
+
+NOTE Edge case: Multiline payload (ML-001, ML-002 from W3C research)
+
+00:00:25.000 --> 00:00:45.000
+<v Charlie>I wanted to discuss the API rate limiting issue.
+We're seeing 429 errors during peak hours.
+This affects about 15% of our users.
+
+NOTE Edge case: Voice tag with class (VT-006, VT-007 from W3C research)
+
+00:00:45.000 --> 00:01:05.000
+<v.urgent Bob>This is critical. We need to increase our rate limits or implement request queuing.
+
+00:01:05.000 --> 00:01:25.000
+<v Alice>What's the current limit? I thought we increased it last sprint.
+
+00:01:25.000 --> 00:01:48.000
+<v Charlie>Current limit is 100 requests per minute per user. Peak users hit this within 30 seconds.
+
+NOTE Edge case: Nested formatting tags (TT-008 from W3C research)
+
+00:01:48.000 --> 00:02:10.000
+<v Bob>The <b>rate limit</b> needs to be at least <i>200 requests per minute</i>. I'll implement the change.
+
+00:02:10.000 --> 00:02:28.000
+<v Alice>We decided to increase the rate limit to 200 requests per minute.
+
+NOTE Edge case: Entity escapes (CE-005, CE-006 from W3C research)
+
+00:02:28.000 --> 00:02:50.000
+<v Charlie>We also need to document the X &lt; Y &lt; Z threshold logic. Users are confused about the limits.
+
+00:02:50.000 --> 00:03:10.000
+<v Bob>True. The threshold formula is complex: if count &gt; 50 &amp;&amp; time &lt; 60 then throttle.
+
+00:03:10.000 --> 00:03:30.000
+<v Alice>Can someone update the developer documentation? I'll assign this to whoever has bandwidth.
+
+00:03:30.000 --> 00:03:45.000
+<v Charlie>I can take that. I'll update the docs this afternoon.
+
+NOTE Edge case: Short timestamp without hours (TS-001 from W3C research)
+
+03:45.000 --> 04:00.000
+<v Alice>Moving to the second topic: database migration timeline.
+
+04:00.000 --> 04:20.000
+<v Bob>The migration script is ready. We need a maintenance window.
+
+04:20.000 --> 04:45.000
+<v Charlie>How long will the downtime be? Our SLA requires 99.9% uptime.
+
+04:45.000 --> 05:05.000
+<v Bob>Estimated 15 minutes. I've optimized the script to minimize downtime.
+
+NOTE Edge case: Late joiner (Diana joins at 5:00)
+
+05:05.000 --> 05:15.000
+<v Alice>Diana just joined. Welcome Diana!
+
+05:15.000 --> 05:35.000
+<v Diana>Sorry I'm late. Traffic was terrible. What did I miss?
+
+05:35.000 --> 06:00.000
+<v Alice>We discussed rate limiting and are now on database migration. Bob is estimating 15 minutes downtime.
+
+06:00.000 --> 06:20.000
+<v Diana>15 minutes is acceptable for our SLA. Can we schedule it for Sunday 3 AM?
+
+06:20.000 --> 06:40.000
+<v Bob>Sunday 3 AM works. I'll prepare the rollback procedure as backup.
+
+06:40.000 --> 06:55.000
+<v Alice>We decided on Sunday 3 AM for the migration window.
+
+NOTE Edge case: Voice tag without closing (VT-004 from W3C research)
+
+06:55.000 --> 07:15.000
+<v Charlie>Should we notify customers about the maintenance?
+
+07:15.000 --> 07:40.000
+<v Alice>Yes, I'll send the maintenance notification 48 hours in advance.
+
+07:40.000 --> 08:05.000
+<v Diana>I'll prepare a status page update. Can someone review it before I publish?
+
+08:05.000 --> 08:20.000
+<v Bob>I can review it. Send it to me by Friday.
+
+NOTE Edge case: Multiple speakers in same cue (VT-009 from W3C research)
+
+08:20.000 --> 08:50.000
+<v Alice>Thanks Bob.</v> <v Diana>Thanks for taking that on.
+
+08:50.000 --> 09:15.000
+<v Charlie>Third topic: the mobile app performance issues.
+
+09:15.000 --> 09:45.000
+<v Bob>I've been profiling the app. The main bottleneck is the image loading. We need lazy loading.
+
+09:45.000 --> 10:05.000
+<v Diana>The QA team has received multiple complaints about slow loading on mobile.
+
+NOTE Edge case: Second late joiner (Eve joins at 10:00)
+
+10:05.000 --> 10:15.000
+<v Alice>Eve just joined. Hi Eve!
+
+10:15.000 --> 10:30.000
+<v Eve>Hi everyone! Sorry for being late. I was stuck in another meeting.
+
+10:30.000 --> 10:55.000
+<v Alice>No problem. We're discussing mobile app performance. Bob identified image loading as the bottleneck.
+
+10:55.000 --> 11:20.000
+<v Eve>That makes sense. From an infrastructure perspective, we could add a CDN for images.
+
+11:20.000 --> 11:45.000
+<v Bob>Good idea. A CDN combined with lazy loading would significantly improve load times.
+
+11:45.000 --> 12:05.000
+<v Alice>We agreed to implement CDN and lazy loading for mobile performance.
+
+NOTE Edge case: Unicode/international characters (CE-003, CE-004 from W3C research)
+
+12:05.000 --> 12:30.000
+<v Eve>I can set up CloudFront. Our users in São Paulo and Tokyo have complained about latency.
+
+12:30.000 --> 12:55.000
+<v Diana>The München office also reported issues. International users definitely need CDN support.
+
+12:55.000 --> 13:15.000
+<v Charlie>I'll implement the lazy loading component. It should work with the CDN seamlessly.
+
+13:15.000 --> 13:40.000
+<v Bob>Make sure to add loading placeholders so users know content is coming.
+
+13:40.000 --> 14:00.000
+<v Charlie>Will do. I'll use skeleton screens for better UX.
+
+14:00.000 --> 14:25.000
+<v Alice>What's the timeline for these mobile improvements?
+
+14:25.000 --> 14:50.000
+<v Eve>CDN setup will take about 3 days including testing.
+
+14:50.000 --> 15:10.000
+<v Charlie>Lazy loading is probably 2 days of work.
+
+15:10.000 --> 15:35.000
+<v Diana>I'll need 1 day for mobile performance testing after implementation.
+
+15:35.000 --> 15:55.000
+<v Alice>So about a week total. We decided to target next Friday for mobile performance release.
+
+15:55.000 --> 16:20.000
+<v Bob>That aligns with the backend changes I'm making. We can release together.
+
+16:20.000 --> 16:45.000
+<v Eve>I'll coordinate the deployment. Should we do a staged rollout?
+
+16:45.000 --> 17:05.000
+<v Alice>Yes, let's start with 10% of traffic, then 50%, then 100%.
+
+17:05.000 --> 17:25.000
+<v Diana>I'll monitor error rates during each stage.
+
+17:25.000 --> 17:50.000
+<v Alice>Let's recap the action items from this meeting.
+
+17:50.000 --> 18:15.000
+<v Alice>Bob will increase rate limits and prepare the migration rollback procedure.
+
+18:15.000 --> 18:35.000
+<v Alice>Charlie will update the API documentation and implement lazy loading.
+
+18:35.000 --> 18:55.000
+<v Alice>Diana will prepare the status page update and monitor the staged rollout.
+
+18:55.000 --> 19:15.000
+<v Alice>Eve will set up CloudFront CDN and coordinate the deployment.
+
+19:15.000 --> 19:35.000
+<v Alice>And I'll send the maintenance notification and update stakeholders on timelines.
+
+19:35.000 --> 19:50.000
+<v Bob>Solid plan. Let's execute.
+
+19:50.000 --> 20:00.000
+<v Charlie>Agreed. Talk to everyone at standup tomorrow.
+
+20:00.000 --> 20:10.000
+<v Diana>See you all tomorrow.
+
+20:10.000 --> 20:20.000
+<v Eve>Thanks everyone. Bye!
+
+20:20.000 --> 20:30.000
+<v Alice>Great meeting. Adjourned.
+

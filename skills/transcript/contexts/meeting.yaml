@@ -1,0 +1,142 @@
+# Domain Schema for Meeting Transcript Analysis
+# Implements: REQ-CI-F-001
+# EN-014 TASK-128: Meeting-specific domain schema (extends transcript)
+
+schema_version: "1.0.0"
+domain: "meeting"
+display_name: "Meeting Transcript Analysis"
+extends: "transcript"  # Inherits: action_item, decision, question, speaker, topic
+
+# Meeting-specific entity definitions
+entity_definitions:
+  # Inherited from transcript: action_item, decision, question, speaker, topic
+
+  attendee:
+    description: "Person present in the meeting"
+    attributes:
+      - name: "name"
+        type: "string"
+        required: true
+      - name: "role"
+        type: "string"
+        enum: ["organizer", "presenter", "participant", "guest"]
+      - name: "department"
+        type: "string"
+      - name: "present_from_ms"
+        type: "integer"
+      - name: "present_to_ms"
+        type: "integer"
+      - name: "confidence"
+        type: "float"
+
+  agenda_item:
+    description: "Item from meeting agenda"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+      - name: "presenter"
+        type: "string"
+      - name: "allocated_time_min"
+        type: "integer"
+      - name: "actual_time_min"
+        type: "integer"
+      - name: "status"
+        type: "string"
+        enum: ["covered", "deferred", "skipped"]
+      - name: "start_segment"
+        type: "integer"
+      - name: "end_segment"
+        type: "integer"
+      - name: "confidence"
+        type: "float"
+
+  follow_up:
+    description: "Post-meeting follow-up item (distinct from immediate action items)"
+    attributes:
+      - name: "text"
+        type: "string"
+        required: true
+      - name: "owner"
+        type: "string"
+      - name: "target_meeting"
+        type: "string"
+      - name: "priority"
+        type: "string"
+        enum: ["high", "medium", "low"]
+      - name: "confidence"
+        type: "float"
+    extraction_patterns:
+      - "let's revisit {{text}} next time"
+      - "we'll need to discuss {{text}} with {{owner}}"
+      - "parking lot: {{text}}"
+      - "table {{text}} for the next meeting"
+
+# Meeting-specific extraction rules (supplements inherited rules)
+extraction_rules:
+  # Inherited from transcript: action_items, decisions, questions, speakers, topics
+
+  - id: "attendees"
+    entity_type: "attendee"
+    confidence_threshold: 0.85
+    priority: 0  # Highest priority for meetings
+    description: "Identify all meeting participants"
+
+  - id: "agenda_items"
+    entity_type: "agenda_item"
+    confidence_threshold: 0.75
+    priority: 6
+    description: "Extract agenda items and track coverage"
+
+  - id: "follow_ups"
+    entity_type: "follow_up"
+    confidence_threshold: 0.7
+    priority: 7
+    description: "Identify post-meeting follow-ups distinct from action items"
+
+# Meeting-specific expert guidance
+prompt_guidance: |
+  When analyzing meeting transcripts:
+
+  ## Attendees
+  Identify all meeting participants from:
+  - Roll call or introductions ("Good morning everyone, let's start...")
+  - Speaker labels in the transcript
+  - References to people present ("As Sarah mentioned...")
+  - Late arrivals and early departures ("X joined at 10:15", "Y had to drop off")
+
+  Role inference:
+  - Organizer: Kicks off meeting, manages time, wraps up
+  - Presenter: Leads specific agenda items
+  - Participant: Contributes to discussion
+  - Guest: Explicitly introduced as guest/visitor
+
+  ## Agenda Items
+  Recognize meeting structure:
+  - Explicit agenda references: "Item 3 is...", "Moving to the next item"
+  - Time checks: "We have 10 minutes left for this"
+  - Presenter transitions: "I'll hand over to Sarah for the next topic"
+  - Status tracking: covered/deferred/skipped based on discussion
+
+  ## Follow-ups (distinct from Action Items)
+  These are for FUTURE meetings, not immediate tasks:
+  - "Let's revisit this next time"
+  - "We'll need to discuss with absent parties"
+  - "Parking lot" items - deferred for later
+  - Items requiring more input/research first
+
+  ## Domain Extension
+  This domain EXTENDS transcript, so all base extraction rules apply:
+  - Action Items (FR-006): Immediate tasks with owners/deadlines
+  - Decisions (FR-007): Explicit decisions with consensus language
+  - Questions (FR-008): Open questions and their answers
+  - Speakers (FR-005): PAT-003 4-pattern detection chain
+  - Topics (FR-009): Topic segmentation
+
+  ## Confidence Scoring for Meeting Entities
+  - Attendees: 0.9+ for explicit roll call, 0.85-0.9 for speaker labels
+  - Agenda Items: 0.9+ for explicit numbering, 0.75-0.9 for implied structure
+  - Follow-ups: 0.8+ for explicit "next meeting", 0.7-0.8 for parking lot
+
+  ## Citation Requirement (PAT-004)
+  Every extraction MUST cite its source segment for anti-hallucination.

@@ -1,0 +1,114 @@
+# Entity Definitions: Cloud Engineering Domain
+# Version: 1.0.0
+# Task: TASK-038 (Phase 3)
+# Status: DESIGN COMPLETE
+#
+# Supports blameless post-mortem culture and SRE best practices.
+
+domain: cloud-engineering
+version: "1.0.0"
+
+metadata:
+  target_users:
+    - "Site Reliability Engineers (SREs)"
+    - "Cloud Engineers"
+    - "Platform Engineers"
+    - "DevOps Engineers"
+  transcript_types:
+    - "Incident post-mortem"
+    - "Capacity planning"
+    - "Infrastructure review"
+    - "On-call handoff"
+    - "SLO review"
+  key_use_cases:
+    - "Document incidents"
+    - "Identify root causes"
+    - "Track action items"
+    - "Monitor capacity"
+    - "Review SLO compliance"
+
+entities:
+  incident:
+    description: "Production incident or service degradation"
+    attributes:
+      - incident_id: "Incident identifier (INC-XXXX)"
+      - severity: "Severity level (SEV1 | SEV2 | SEV3 | SEV4)"
+      - impact: "Customer/business impact description"
+      - duration: "Time to detection + time to resolution"
+      - services_affected: "List of affected services"
+      - detection_method: "How it was detected (monitoring | customer | internal)"
+    relationships:
+      - type: "caused_by"
+        target: "root_cause"
+      - type: "generates"
+        target: "action_item"
+
+  root_cause:
+    description: "Underlying cause of incident (blameless)"
+    attributes:
+      - cause: "What caused the issue (not who)"
+      - category: "Category (human | process | system | external | unknown)"
+      - contributing_factors: "Other factors that contributed"
+      - preventable: "Could this have been prevented (yes | no | partially)"
+      - five_whys: "5 Whys analysis if performed"
+    note: |
+      IMPORTANT: Root cause analysis should be BLAMELESS.
+      Focus on systems and processes, not individuals.
+      Ask "what" not "who".
+    relationships:
+      - type: "causes"
+        target: "incident"
+
+  action_item:
+    description: "Follow-up action from incident review"
+    attributes:
+      - title: "Action description"
+      - owner: "Person or team responsible"
+      - priority: "Priority level (P0 | P1 | P2)"
+      - due_date: "Target completion date"
+      - type: "Action type (fix | prevention | detection | process)"
+      - status: "Current status (open | in_progress | done)"
+    note: |
+      Action types follow SRE best practices:
+      - fix: Immediate remediation
+      - prevention: Stop future occurrence
+      - detection: Improve monitoring/alerting
+      - process: Improve runbooks/procedures
+    relationships:
+      - type: "addresses"
+        target: "root_cause"
+      - type: "monitors"
+        target: "metric"
+
+  metric:
+    description: "SLO, SLA, or operational metric"
+    attributes:
+      - name: "Metric name (latency, error_rate, availability, etc.)"
+      - current_value: "Current measurement"
+      - target_value: "SLO/SLA target"
+      - trend: "Direction (improving | stable | degrading)"
+      - breach: "Is SLO breached (yes | no | at_risk)"
+    relationships:
+      - type: "monitored_by"
+        target: "action_item"
+
+  capacity_concern:
+    description: "Resource capacity issue or projection"
+    attributes:
+      - resource: "What resource (CPU, memory, disk, connections, etc.)"
+      - current_utilization: "Current usage percentage or value"
+      - threshold: "Warning threshold"
+      - projection: "When limit will be reached"
+      - mitigation: "Proposed solution (scale, optimize, etc.)"
+    relationships:
+      - type: "addressed_by"
+        target: "action_item"
+
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - incident
+    - root_cause
+    - action_item
+  blameless_culture: true

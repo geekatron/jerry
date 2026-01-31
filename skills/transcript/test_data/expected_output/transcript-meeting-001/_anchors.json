@@ -1,0 +1,105 @@
+{
+  "packet_id": "transcript-meeting-001",
+  "version": "1.0",
+  "generated_at": "2026-01-28T00:00:00Z",
+  "generator": "ts-formatter",
+  "anchors": {
+    "seg-001": {"type": "segment", "file": "02-transcript.md", "line": 15},
+    "seg-002": {"type": "segment", "file": "02-transcript.md", "line": 21},
+    "seg-003": {"type": "segment", "file": "02-transcript.md", "line": 27},
+    "seg-004": {"type": "segment", "file": "02-transcript.md", "line": 33},
+    "seg-005": {"type": "segment", "file": "02-transcript.md", "line": 39},
+    "seg-006": {"type": "segment", "file": "02-transcript.md", "line": 45},
+    "seg-007": {"type": "segment", "file": "02-transcript.md", "line": 53},
+    "seg-008": {"type": "segment", "file": "02-transcript.md", "line": 59},
+    "seg-009": {"type": "segment", "file": "02-transcript.md", "line": 65},
+    "seg-010": {"type": "segment", "file": "02-transcript.md", "line": 73},
+    "seg-011": {"type": "segment", "file": "02-transcript.md", "line": 79},
+    "seg-012": {"type": "segment", "file": "02-transcript.md", "line": 85},
+    "seg-013": {"type": "segment", "file": "02-transcript.md", "line": 91},
+    "seg-014": {"type": "segment", "file": "02-transcript.md", "line": 99},
+    "seg-015": {"type": "segment", "file": "02-transcript.md", "line": 105},
+    "seg-016": {"type": "segment", "file": "02-transcript.md", "line": 111},
+    "seg-017": {"type": "segment", "file": "02-transcript.md", "line": 117},
+    "seg-018": {"type": "segment", "file": "02-transcript.md", "line": 123},
+    "seg-019": {"type": "segment", "file": "02-transcript.md", "line": 131},
+    "seg-020": {"type": "segment", "file": "02-transcript.md", "line": 139},
+    "seg-021": {"type": "segment", "file": "02-transcript.md", "line": 147},
+    "seg-022": {"type": "segment", "file": "02-transcript.md", "line": 153},
+    "seg-023": {"type": "segment", "file": "02-transcript.md", "line": 161},
+    "seg-024": {"type": "segment", "file": "02-transcript.md", "line": 169},
+    "seg-025": {"type": "segment", "file": "02-transcript.md", "line": 175},
+    "seg-026": {"type": "segment", "file": "02-transcript.md", "line": 183},
+    "seg-027": {"type": "segment", "file": "02-transcript.md", "line": 193},
+    "seg-028": {"type": "segment", "file": "02-transcript.md", "line": 201},
+    "seg-029": {"type": "segment", "file": "02-transcript.md", "line": 211},
+    "seg-030": {"type": "segment", "file": "02-transcript.md", "line": 217},
+    "seg-031": {"type": "segment", "file": "02-transcript.md", "line": 225},
+    "seg-032": {"type": "segment", "file": "02-transcript.md", "line": 231},
+    "seg-033": {"type": "segment", "file": "02-transcript.md", "line": 237},
+    "seg-034": {"type": "segment", "file": "02-transcript.md", "line": 243},
+    "seg-035": {"type": "segment", "file": "02-transcript.md", "line": 249},
+    "seg-036": {"type": "segment", "file": "02-transcript.md", "line": 255},
+    "seg-037": {"type": "segment", "file": "02-transcript.md", "line": 261},
+    "seg-038": {"type": "segment", "file": "02-transcript.md", "line": 267},
+    "seg-039": {"type": "segment", "file": "02-transcript.md", "line": 273},
+    "spk-alice": {"type": "speaker", "file": "03-speakers.md", "line": 14},
+    "spk-bob": {"type": "speaker", "file": "03-speakers.md", "line": 31},
+    "spk-charlie": {"type": "speaker", "file": "03-speakers.md", "line": 52},
+    "spk-diana": {"type": "speaker", "file": "03-speakers.md", "line": 70},
+    "act-001": {"type": "action", "file": "04-action-items.md", "line": 14},
+    "act-002": {"type": "action", "file": "04-action-items.md", "line": 30},
+    "act-003": {"type": "action", "file": "04-action-items.md", "line": 46},
+    "act-004": {"type": "action", "file": "04-action-items.md", "line": 62},
+    "act-005": {"type": "action", "file": "04-action-items.md", "line": 76},
+    "dec-001": {"type": "decision", "file": "05-decisions.md", "line": 14},
+    "dec-002": {"type": "decision", "file": "05-decisions.md", "line": 37},
+    "dec-003": {"type": "decision", "file": "05-decisions.md", "line": 57},
+    "que-001": {"type": "question", "file": "06-questions.md", "line": 14},
+    "que-002": {"type": "question", "file": "06-questions.md", "line": 36},
+    "top-001": {"type": "topic", "file": "07-topics.md", "line": 14},
+    "top-002": {"type": "topic", "file": "07-topics.md", "line": 30},
+    "top-003": {"type": "topic", "file": "07-topics.md", "line": 49},
+    "top-004": {"type": "topic", "file": "07-topics.md", "line": 67}
+  },
+  "backlinks": {
+    "spk-alice": [
+      {"file": "02-transcript.md", "anchor": "seg-001", "context": "Good morning everyone"},
+      {"file": "04-action-items.md", "anchor": "act-005", "context": "Update release plan"}
+    ],
+    "spk-bob": [
+      {"file": "02-transcript.md", "anchor": "seg-003", "context": "finished the API authentication"},
+      {"file": "04-action-items.md", "anchor": "act-001", "context": "Send API documentation"},
+      {"file": "04-action-items.md", "anchor": "act-002", "context": "Prepare rollback scripts"}
+    ],
+    "spk-charlie": [
+      {"file": "02-transcript.md", "anchor": "seg-005", "context": "completed the login form UI"},
+      {"file": "04-action-items.md", "anchor": "act-003", "context": "smoke test checklist"}
+    ],
+    "spk-diana": [
+      {"file": "02-transcript.md", "anchor": "seg-009", "context": "drafted the test cases"},
+      {"file": "04-action-items.md", "anchor": "act-003", "context": "smoke test checklist"}
+    ],
+    "dec-001": [
+      {"file": "02-transcript.md", "anchor": "seg-018", "context": "Monday the 15th for production"},
+      {"file": "01-summary.md", "anchor": null, "context": "Key Decisions"}
+    ],
+    "dec-002": [
+      {"file": "02-transcript.md", "anchor": "seg-025", "context": "phased rollout approach"},
+      {"file": "06-questions.md", "anchor": "que-001", "context": "Resolution"}
+    ],
+    "dec-003": [
+      {"file": "02-transcript.md", "anchor": "seg-028", "context": "two weeks parallel"},
+      {"file": "06-questions.md", "anchor": "que-002", "context": "Resolution"}
+    ]
+  },
+  "statistics": {
+    "total_anchors": 57,
+    "segments": 39,
+    "speakers": 4,
+    "actions": 5,
+    "decisions": 3,
+    "questions": 2,
+    "topics": 4
+  }
+}

@@ -106,4 +106,5 @@ repos:
         pass_filenames: false
         # Only run on push to avoid slowdown on every commit
         stages: [pre-push]
-        args: [--strict, --progress-spinner=off]
+        # --skip-editable: Skip local packages not on PyPI (like jerry itself)
+        args: [--strict, --progress-spinner=off, --skip-editable]

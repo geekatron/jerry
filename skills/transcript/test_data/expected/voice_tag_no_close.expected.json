@@ -1,0 +1,45 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/voice_tag_no_close.vtt"
+  },
+  "metadata": {
+    "duration_ms": 3000,
+    "segment_count": 3,
+    "detected_speakers": 3
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": "John",
+      "text": "This is the entire cue with no closing tag",
+      "raw_text": "<v John>This is the entire cue with no closing tag"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": "Mary",
+      "text": "Another cue without closing tag",
+      "raw_text": "<v Mary>Another cue without closing tag"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": "Bob",
+      "text": "Yet another example",
+      "raw_text": "<v Bob>Yet another example"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

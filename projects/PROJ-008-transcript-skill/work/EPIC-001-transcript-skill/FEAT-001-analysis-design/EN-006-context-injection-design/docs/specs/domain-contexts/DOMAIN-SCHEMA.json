@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://jerry.dev/schemas/domain-context-v1.0.0.json",
+  "title": "Domain Context Specification Schema",
+  "description": "JSON Schema for validating domain-specific context injection specifications for transcript analysis.",
+  "version": "1.0.0",
+  "type": "object",
+  "definitions": {
+    "EntityAttribute": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Attribute description"
+      }
+    },
+    "Entity": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "What this entity represents",
+          "minLength": 10
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EntityAttribute"
+          },
+          "minItems": 3,
+          "description": "Minimum 3 meaningful attributes per entity"
+        }
+      },
+      "required": ["description", "attributes"]
+    },
+    "ExtractionPattern": {
+      "type": "object",
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "Pattern with {variable} placeholders",
+          "pattern": ".*\\{[a-z_]+\\}.*"
+        }
+      },
+      "required": ["pattern"]
+    },
+    "ExtractionRule": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ExtractionPattern"
+      },
+      "minItems": 4,
+      "description": "Minimum 4 patterns per entity type"
+    },
+    "TemplateVariable": {
+      "type": "string",
+      "pattern": "\\{\\{\\$[a-z_]+\\}\\}",
+      "description": "Template variable in {{$variable}} format"
+    },
+    "SeverityLevel": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "informational"]
+    },
+    "PriorityLevel": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3", "high", "medium", "low"]
+    },
+    "ConfidenceLevel": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "AcceptanceCriterion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]+-AC-[0-9]{3}$",
+          "description": "Acceptance criterion ID (e.g., SE-AC-001)"
+        },
+        "criterion": {
+          "type": "string",
+          "description": "What must be true"
+        },
+        "verification_method": {
+          "type": "string",
+          "description": "How to verify"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "passed", "failed"]
+        }
+      },
+      "required": ["id", "criterion", "verification_method"]
+    }
+  },
+  "properties": {
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z]+-[a-z]+$",
+      "description": "Domain identifier (e.g., 'software-engineering')",
+      "enum": [
+        "software-engineering",
+        "software-architecture",
+        "product-management",
+        "user-experience",
+        "cloud-engineering",
+        "security-engineering"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "target_users": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "transcript_types": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "key_use_cases": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      },
+      "required": ["target_users", "transcript_types", "key_use_cases"]
+    },
+    "entities": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Entity"
+      },
+      "minProperties": 4,
+      "description": "Minimum 4 entity types per domain"
+    },
+    "extraction_rules": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/ExtractionRule"
+      },
+      "description": "Extraction patterns keyed by {entity_type}_patterns"
+    },
+    "prompt_template": {
+      "type": "object",
+      "properties": {
+        "context_variables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "required": { "type": "boolean" }
+            },
+            "required": ["name", "description"]
+          }
+        },
+        "extraction_instructions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "entity_type": { "type": "string" },
+              "extract_fields": { "type": "array", "items": { "type": "string" } },
+              "look_for_phrases": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["entity_type", "extract_fields", "look_for_phrases"]
+          }
+        }
+      },
+      "required": ["context_variables", "extraction_instructions"]
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AcceptanceCriterion"
+      },
+      "minItems": 8,
+      "description": "Minimum 8 acceptance criteria per domain"
+    }
+  },
+  "required": ["domain", "version", "metadata", "entities", "extraction_rules", "prompt_template", "acceptance_criteria"]
+}

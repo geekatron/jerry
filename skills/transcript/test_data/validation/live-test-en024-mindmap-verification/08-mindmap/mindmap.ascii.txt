@@ -1,0 +1,135 @@
+                          ┌───────────────────────────────────────────────────────────┐
+                          │   TEAM STANDUP - AUTHENTICATION RELEASE PLANNING          │
+                          │        8:25 duration | 4 speakers | 5 topics              │
+                          └─────────────────┬─────────────────────────────────────────┘
+                                            │
+        ┌──────────────────────────────────┼──────────────────────────────────┬────────────────────────────────┐
+        │                                  │                                  │                                │
+   ┌────┴─────┐                       ┌────┴─────┐                       ┌────┴─────┐                   ┌────┴─────┐
+   │  TOPICS  │                       │ ACTIONS  │                       │DECISIONS │                   │QUESTIONS │
+   └────┬─────┘                       └────┬─────┘                       └────┬─────┘                   └────┬─────┘
+        │                                  │                                  │                                │
+        │                                  │                                  │                                │
+   ┌────┴──────────────────────────────────┤                                  │                                │
+   │                                       │                                  │                                │
+┌──┴────────────────────────┐              │                           ┌──────┴────────────────┐              │
+│ 1. DAILY STANDUP UPDATES  │◄─seg-001-008 │                           │ 1. TEST REVIEW TIMING │◄─seg-010     │
+│    [0:00 - 1:25]          │              │                           │    • Thursday PM      │              │
+└─┬─────────────────────────┘              │                           │    • Team confirmed   │              │
+  │                                        │                           └───────────────────────┘              │
+  ├─ Bob: Auth module done ──►seg-003     │                                                                  │
+  ├─ Charlie: Login UI done ──►seg-005    │                           ┌───────────────────────┐              │
+  ├─ Diana: Test cases ready ──►seg-009   │                           │ 2. DEPLOYMENT DATE    │◄─seg-018     │
+  └─ Unblocked: API ready ──►seg-006      │                           │    • Monday, 15th     │              │
+                                           │                           │    • Phased timeline  │              │
+┌────────────────────────────┐             │                           └───────────────────────┘              │
+│ 2. TEST PLANNING           │◄─seg-009-013│                                                                  │
+│    [1:25 - 2:20]           │             │                           ┌───────────────────────┐              │
+└─┬──────────────────────────┘             │                           │ 3. ROLLOUT STRATEGY   │◄─seg-025     │
+  │                                        │                           │    • Phased approach  │              │
+  ├─ Test cases drafted ──►seg-009        │                           │    • Internal → 10%   │              │
+  ├─ Thursday review ──►seg-010           │                           └───────────────────────┘              │
+  └─ Calendar invite ──►seg-013           │                                                                  │
+                                           │                                                                  │
+┌────────────────────────────┐             │                                                                  │
+│ 3. DEPLOYMENT TIMELINE     │◄─seg-014-022│                                                                  │
+│    [2:20 - 4:52]           │             │                                                                  │
+└─┬──────────────────────────┘             │                                                                  │
+  │                                        │                                                                  │
+  ├─ Backend: Next Friday ──►seg-015      │                           ┌─────────────────────────────────────┐
+  ├─ Frontend: Wednesday ──►seg-016       │                           │ 1. Test review this week? ──►seg-009│
+  ├─ Testing: 3 days ──►seg-017           │                           │    ✓ ANSWERED: Thursday ─►seg-010   │
+  ├─ Release: Monday 15th ──►seg-018      │                           └─────────────────────────────────────┘
+  ├─ Rollback scripts ──►seg-019          │                                                                  │
+  └─ Smoke tests ──►seg-020-022           │                           ┌─────────────────────────────────────┐
+                                           │                           │ 2. Gradual rollout? ────────►seg-023│
+┌────────────────────────────┐             │                           │    ✓ ANSWERED: Phased ──────►seg-024│
+│ 4. FEATURE FLAG STRATEGY   │◄─seg-023-026│                           └─────────────────────────────────────┘
+│    [4:52 - 6:00]           │             │                                                                  │
+└─┬──────────────────────────┘             │                           ┌─────────────────────────────────────┐
+  │                                        │                           │ 3. Deprecate legacy? ────────►seg-027│
+  ├─ Phased approach ──►seg-024           │                           │    ✓ ANSWERED: Keep 2 weeks ►seg-028│
+  ├─ Internal users first ──►seg-024      │                           └─────────────────────────────────────┘
+  ├─ Then 10% traffic ──►seg-024          │                                                                  │
+  └─ Update release plan ──►seg-026       │                                                                  │
+                                           │                                                                  │
+┌────────────────────────────┐             │                                                                  │
+│ 5. LEGACY DEPRECATION      │◄─seg-027-039│                                                                  │
+│    [6:00 - 8:25]           │             │                                                                  │
+└─┬──────────────────────────┘             │                                                                  │
+  │                                        │                                                                  │
+  ├─ Keep 2 weeks parallel ──►seg-028     │                                                                  │
+  ├─ Add deprecation warnings ──►seg-028  │                                                                  │
+  ├─ Create ticket ──►seg-030             │                                                                  │
+  └─ Action recap ──►seg-031-035          │                                                                  │
+                                           │                                                                  │
+                                           │                                                                  │
+        ┌──────────────────────────────────┴──────────────────────────────────┐
+        │                                                                      │
+   ┌────┴─────────────────────────────┐          ┌────────────────────────────┴────────────────────┐
+   │ BOB'S ACTIONS (4)                │          │ CHARLIE'S ACTIONS (1)                           │
+   └──────────────────────────────────┘          └─────────────────────────────────────────────────┘
+   │                                             │
+   ├─ 1. Send API docs to Charlie ──►seg-006    ├─ 1. Create smoke test checklist (w/Diana) ─►seg-020
+   ├─ 2. Prepare rollback scripts ──►seg-019    │
+   ├─ 3. Add deprecation warnings ──►seg-028    │
+   └─ 4. Create deprecation ticket ──►seg-030   │
+                                                 │
+   ┌──────────────────────────────────┐         │          ┌──────────────────────────────────────┐
+   │ DIANA'S ACTIONS (2)              │         └──────────│ ALICE'S ACTIONS (1)                  │
+   └──────────────────────────────────┘                    └──────────────────────────────────────┘
+   │                                                        │
+   ├─ 1. Send test review invite ───►seg-013              └─ 1. Update release plan ────────►seg-026
+   └─ 2. Block time w/Charlie ──────►seg-022
+
+
+══════════════════════════════════════════════════════════════════════════════════════════════════
+                                    DEEP LINK REFERENCE GUIDE
+══════════════════════════════════════════════════════════════════════════════════════════════════
+
+Navigation Format: [02-transcript.md#seg-NNN]
+
+Topic Segments:
+  • Topic 1 (Daily Standup): seg-001 through seg-008 [0:00-1:25]
+  • Topic 2 (Test Planning): seg-009 through seg-013 [1:25-2:20]
+  • Topic 3 (Deployment Timeline): seg-014 through seg-022 [2:20-4:52]
+  • Topic 4 (Feature Flag): seg-023 through seg-026 [4:52-6:00]
+  • Topic 5 (Legacy Deprecation): seg-027 through seg-039 [6:00-8:25]
+
+Key Moments:
+  • API unblock: seg-006 [0:52]
+  • Thursday decision: seg-010 [1:48]
+  • Monday 15th deployment: seg-018 [3:40]
+  • Phased rollout agreed: seg-024, seg-025 [5:10-5:32]
+  • Legacy parallel strategy: seg-028 [6:15]
+
+Action Items by Owner:
+  • Bob: seg-006, seg-019, seg-028, seg-030
+  • Charlie: seg-020
+  • Diana: seg-013, seg-022
+  • Alice: seg-026
+
+Questions & Answers:
+  • Q1: seg-009 → A1: seg-010
+  • Q2: seg-023 → A2: seg-024
+  • Q3: seg-027 → A3: seg-028
+
+══════════════════════════════════════════════════════════════════════════════════════════════════
+                                     VISUALIZATION LEGEND
+══════════════════════════════════════════════════════════════════════════════════════════════════
+
+Symbols:
+  ┌─┐ └─┘ │ ├─ ┤ ┬ ┴ ┼     Box drawing characters (structure)
+  ──►                       Leads to / References
+  ◄─                        Sourced from
+  •                         List item / Sub-point
+  ✓                         Answered/Resolved
+  [ ]                       Time range
+
+Structure:
+  Main trunk: Central meeting spine
+  Branches: Major categories (Topics, Actions, Decisions, Questions)
+  Leaves: Individual items with segment references
+
+This mindmap represents the logical flow and relationships extracted from the transcript.
+All items are linked to their source segments for full traceability (ADR-003).

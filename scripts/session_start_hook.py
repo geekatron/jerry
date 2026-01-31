@@ -101,7 +101,45 @@ def find_uv() -> str | None:
     return None
 
 
-def format_hook_output(cli_data: dict) -> tuple[str, str]:
+def check_precommit_hooks(plugin_root: Path) -> str | None:
+    """Check if pre-commit hooks are installed.
+
+    Returns warning message if hooks are missing, None if installed.
+    """
+    # Find the git hooks directory (handles worktrees)
+    git_path = plugin_root / ".git"
+
+    if git_path.is_file():
+        # This is a worktree - .git is a file pointing to main repo
+        try:
+            content = git_path.read_text().strip()
+            if content.startswith("gitdir:"):
+                # Extract main .git path and find hooks
+                gitdir = content.split(":", 1)[1].strip()
+                # Go up from worktrees/<name> to .git/hooks
+                main_git = Path(gitdir).parent.parent
+                hooks_dir = main_git / "hooks"
+            else:
+                return None  # Can't determine hooks location
+        except (OSError, IndexError):
+            return None
+    elif git_path.is_dir():
+        hooks_dir = git_path / "hooks"
+    else:
+        return None  # Not a git repo
+
+    # Check if pre-commit hook exists and is not a sample
+    precommit_hook = hooks_dir / "pre-commit"
+    if not precommit_hook.exists() or precommit_hook.name.endswith(".sample"):
+        return (
+            "Pre-commit hooks are NOT installed. Tests will not run before commits.\n"
+            "Run 'make setup' to install hooks and dependencies."
+        )
+
+    return None
+
+
+def format_hook_output(cli_data: dict, precommit_warning: str | None = None) -> tuple[str, str]:
     """Transform CLI JSON output to (systemMessage, additionalContext) tuple.
 
     Per DISC-005 and AC-002/AC-003:
@@ -116,6 +154,13 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
     validation = cli_data.get("validation", {})
     available = cli_data.get("available_projects", [])
 
+    # Build warning section if pre-commit hooks missing
+    warning_section = ""
+    if precommit_warning:
+        warning_section = (
+            f"\n<dev-environment-warning>\n{precommit_warning}\n</dev-environment-warning>\n"
+        )
+
     # Case 1: Active project with valid configuration
     if project_id and validation and validation.get("is_valid"):
         system_msg = f"Jerry Framework: Project {project_id} active"
@@ -126,6 +171,7 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
             f"ProjectPath: {project_path}\n"
             f"ValidationMessage: Project is properly configured\n"
             f"</project-context>"
+            f"{warning_section}"
         )
         return (system_msg, additional)
 
@@ -144,6 +190,7 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
             + "\n</project-error>\n\n"
             "ACTION REQUIRED: The specified project is invalid.\n"
             "Use AskUserQuestion to help the user select a valid project."
+            f"{warning_section}"
         )
         return (system_msg, additional)
 
@@ -166,6 +213,7 @@ def format_hook_output(cli_data: dict) -> tuple[str, str]:
         f"ACTION REQUIRED: No JERRY_PROJECT environment variable set.\n"
         f"Claude MUST use AskUserQuestion to help the user select an existing project or create a new one.\n"
         f"DO NOT proceed with any work until a project is selected."
+        f"{warning_section}"
     )
     return (system_msg, additional)
 
@@ -179,12 +227,17 @@ def main() -> int:
     log_file = get_log_file(plugin_root)
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
+    # Debug: Log startup
+    log_error(log_file, "DEBUG: Hook started")
+
     # Find uv
     uv_path = find_uv()
     if not uv_path:
         log_error(log_file, "ERROR: uv not found in PATH or common locations")
         output_error("uv package manager not found", log_file)
         return 0  # Exit 0 so Claude continues
+
+    log_error(log_file, f"DEBUG: Found uv at {uv_path}")
 
     # Change to plugin directory for uv to find pyproject.toml
     original_cwd = os.getcwd()
@@ -195,20 +248,26 @@ def main() -> int:
         output_error(f"Failed to cd to plugin directory: {plugin_root}", log_file)
         return 0
 
+    log_error(log_file, f"DEBUG: Changed to {plugin_root}, original cwd: {original_cwd}")
+
     try:
         # Sync dependencies (quiet mode)
+        log_error(log_file, "DEBUG: Starting uv sync...")
         sync_result = subprocess.run([uv_path, "sync", "--quiet"], capture_output=True, timeout=30)
+        log_error(log_file, f"DEBUG: uv sync completed with rc={sync_result.returncode}")
         if sync_result.returncode != 0:
             stderr = sync_result.stderr.decode("utf-8", errors="replace")
             log_error(log_file, f"WARNING: uv sync failed: {stderr}")
             # Continue anyway - deps might already be installed
 
         # EN-001: Call main CLI instead of deprecated jerry-session-start
+        log_error(log_file, "DEBUG: Starting jerry projects context...")
         result = subprocess.run(
             [uv_path, "run", "jerry", "--json", "projects", "context"],
             capture_output=True,
             timeout=30,
         )
+        log_error(log_file, f"DEBUG: jerry CLI completed with rc={result.returncode}")
 
         stdout = result.stdout.decode("utf-8", errors="replace")
 
@@ -229,8 +288,16 @@ def main() -> int:
             output_error(f"Invalid JSON from jerry CLI: {e}", log_file)
             return 0
 
+        # Only check for pre-commit hooks if user is working IN the Jerry repository
+        # This prevents the "run make setup" warning from appearing in other repos
+        precommit_warning = None
+        user_cwd = Path(original_cwd).resolve()
+        jerry_root = plugin_root.resolve()
+        if user_cwd == jerry_root or jerry_root in user_cwd.parents:
+            precommit_warning = check_precommit_hooks(plugin_root)
+
         # Transform to hook format with BOTH systemMessage and additionalContext
-        system_message, additional_context = format_hook_output(cli_data)
+        system_message, additional_context = format_hook_output(cli_data, precommit_warning)
         output_json(system_message, additional_context)
 
         # Log any stderr

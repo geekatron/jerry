@@ -1,0 +1,25 @@
+WEBVTT
+
+NOTE Timestamp format edge cases (TS-001 through TS-005)
+NOTE Tests various valid timestamp formats
+
+00:00.000 --> 00:01.000
+No hours format - minimal
+
+00:00:00.000 --> 00:00:01.000
+With hours format
+
+00:59.999 --> 01:00.000
+Minute boundary rollover
+
+00:00:59.999 --> 00:01:00.000
+Minute boundary with hours
+
+999:59:59.999 --> 1000:00:00.000
+Extended hours (>2 digits) - long video
+
+00:00.500 --> 00:00.750
+Short duration (250ms)
+
+00:00.001 --> 00:00.002
+Minimal duration (1ms)
