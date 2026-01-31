@@ -7,11 +7,13 @@ WARNING: These tests invoke LLM agents and are:
 
 Run manually with: pytest -m llm tests/llm/transcript/
 """
+
 from __future__ import annotations
 
 import json
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 import pytest
 
@@ -51,8 +53,8 @@ def chunked_input_path(temp_output_dir: Path) -> Generator[Path, None, None]:
     """
     # Import here to avoid issues if modules not yet implemented
     try:
-        from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
         from src.transcript.application.services.chunker import TranscriptChunker
+        from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
     except ImportError:
         pytest.skip("VTTParser or TranscriptChunker not yet implemented")
 

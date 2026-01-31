@@ -11,13 +11,11 @@ References:
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
 from src.interface.cli.adapter import CLIAdapter
-
 
 # =============================================================================
 # CLIAdapter Transcript Parse Tests (TDD-FEAT-004 Section 11.3)
@@ -41,7 +39,7 @@ class TestCmdTranscriptParse:
         adapter = CLIAdapter(dispatcher=mock_dispatcher)
 
         assert hasattr(adapter, "cmd_transcript_parse")
-        assert callable(getattr(adapter, "cmd_transcript_parse"))
+        assert callable(adapter.cmd_transcript_parse)
 
     def test_cmd_transcript_parse_accepts_required_parameters(self) -> None:
         """cmd_transcript_parse should accept path parameter."""
@@ -292,9 +290,7 @@ class TestCmdTranscriptParse:
         assert output["success"] is False
         assert "error" in output
 
-    def test_cmd_transcript_parse_file_not_found(
-        self, capsys: pytest.CaptureFixture[str]
-    ) -> None:
+    def test_cmd_transcript_parse_file_not_found(self, capsys: pytest.CaptureFixture[str]) -> None:
         """cmd_transcript_parse should handle FileNotFoundError."""
         mock_dispatcher = MagicMock()
         mock_command_dispatcher = MagicMock()
@@ -446,7 +442,9 @@ class TestCmdTranscriptParse:
 
         assert result == 0
         # Human output should show warnings when present
-        assert "Warning" in captured.out or "warning" in captured.out.lower() or "50" in captured.out
+        assert (
+            "Warning" in captured.out or "warning" in captured.out.lower() or "50" in captured.out
+        )
 
     def test_cmd_transcript_parse_very_large_chunk_size(self) -> None:
         """cmd_transcript_parse with chunk_size larger than segment count.

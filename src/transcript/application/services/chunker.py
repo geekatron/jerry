@@ -16,12 +16,13 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, Iterator
+    from collections.abc import Iterator
+    from typing import Any
 
 from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
 
@@ -62,7 +63,7 @@ class TranscriptChunker:
         self,
         chunk_size: int = 500,
         target_tokens: int | None = None,
-        token_counter: "TokenCounter | None" = None,
+        token_counter: TokenCounter | None = None,
     ) -> None:
         """Initialize chunker with segment or token-based strategy.
 
@@ -93,6 +94,7 @@ class TranscriptChunker:
         # Create TokenCounter internally if needed but not provided
         if target_tokens is not None and token_counter is None:
             from src.transcript.application.services.token_counter import TokenCounter
+
             self._token_counter = TokenCounter()
 
         # Log deprecation warning for segment-based chunking
@@ -146,9 +148,7 @@ class TranscriptChunker:
 
             # Calculate navigation
             prev_chunk = f"chunk-{chunk_num - 1:03d}.json" if chunk_num > 1 else None
-            next_chunk = (
-                f"chunk-{chunk_num + 1:03d}.json" if chunk_num < total_chunks else None
-            )
+            next_chunk = f"chunk-{chunk_num + 1:03d}.json" if chunk_num < total_chunks else None
 
             # Build chunk data
             chunk_data = self._create_chunk_data(
@@ -180,9 +180,7 @@ class TranscriptChunker:
 
         return str(index_file)
 
-    def _split_segments(
-        self, segments: list[ParsedSegment]
-    ) -> Iterator[list[ParsedSegment]]:
+    def _split_segments(self, segments: list[ParsedSegment]) -> Iterator[list[ParsedSegment]]:
         """Yield batches of segments according to chunking strategy.
 
         Uses token-based splitting if target_tokens is set,
@@ -201,9 +199,7 @@ class TranscriptChunker:
             # Segment-based chunking (legacy)
             yield from self._split_by_count(segments)
 
-    def _split_by_count(
-        self, segments: list[ParsedSegment]
-    ) -> Iterator[list[ParsedSegment]]:
+    def _split_by_count(self, segments: list[ParsedSegment]) -> Iterator[list[ParsedSegment]]:
         """Yield batches of segments by count (legacy segment-based).
 
         Args:
@@ -215,9 +211,7 @@ class TranscriptChunker:
         for i in range(0, len(segments), self._chunk_size):
             yield segments[i : i + self._chunk_size]
 
-    def _split_by_tokens(
-        self, segments: list[ParsedSegment]
-    ) -> Iterator[list[ParsedSegment]]:
+    def _split_by_tokens(self, segments: list[ParsedSegment]) -> Iterator[list[ParsedSegment]]:
         """Yield batches of segments by token count.
 
         Accumulates segments until adding the next would exceed target_tokens,
@@ -354,7 +348,7 @@ class TranscriptChunker:
 
         index_data: dict[str, Any] = {
             "schema_version": "1.0",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(tz=UTC).isoformat(),
             "total_segments": len(segments),
             "total_chunks": len(chunk_metadata),
             "chunk_size": self._chunk_size,

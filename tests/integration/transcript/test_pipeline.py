@@ -11,13 +11,14 @@ These tests are suitable for CI (no LLM invocation) and focus on:
 
 Reference: TASK-233, EN-023 Integration Testing
 """
+
 from __future__ import annotations
 
 import json
 import time
+from collections.abc import Generator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Generator
 
 import pytest
 
@@ -166,24 +167,18 @@ class TestPythonPipeline:
         )
 
         # Verify segment count
-        assert result.segment_count == 3071, (
-            f"Expected 3071 segments, got {result.segment_count}"
-        )
+        assert result.segment_count == 3071, f"Expected 3071 segments, got {result.segment_count}"
         assert result.index_data["total_segments"] == 3071, (
             f"Index reports wrong segment count: {result.index_data['total_segments']}"
         )
 
         # Verify chunk count
-        assert result.chunk_count == 7, (
-            f"Expected 7 chunks, got {result.chunk_count}"
-        )
+        assert result.chunk_count == 7, f"Expected 7 chunks, got {result.chunk_count}"
 
         # Verify actual chunk files
         chunks_dir = result.index_path.parent / "chunks"
         chunk_files = list(chunks_dir.glob("chunk-*.json"))
-        assert len(chunk_files) == 7, (
-            f"Expected 7 chunk files, found {len(chunk_files)}"
-        )
+        assert len(chunk_files) == 7, f"Expected 7 chunk files, found {len(chunk_files)}"
 
     # =========================================================================
     # AC-3: Performance Threshold Tests
@@ -314,9 +309,7 @@ class TestPythonPipeline:
             idx.pop("generated_at", None)
             idx.pop("processing_time_ms", None)
 
-        assert index_1 == index_2, (
-            "Pipeline output not idempotent: index.json differs between runs"
-        )
+        assert index_1 == index_2, "Pipeline output not idempotent: index.json differs between runs"
 
         # Compare chunk contents
         chunks_dir_1 = result_1.index_path.parent / "chunks"
@@ -329,7 +322,7 @@ class TestPythonPipeline:
             "Different number of chunk files between runs"
         )
 
-        for cf1, cf2 in zip(chunk_files_1, chunk_files_2):
+        for cf1, cf2 in zip(chunk_files_1, chunk_files_2, strict=True):
             with open(cf1) as f:
                 chunk_1 = json.load(f)
             with open(cf2) as f:
@@ -339,9 +332,7 @@ class TestPythonPipeline:
             for ch in [chunk_1, chunk_2]:
                 ch.pop("generated_at", None)
 
-            assert chunk_1 == chunk_2, (
-                f"Chunk content differs between runs: {cf1.name}"
-            )
+            assert chunk_1 == chunk_2, f"Chunk content differs between runs: {cf1.name}"
 
     def test_pipeline_idempotent_for_all_datasets(
         self,
@@ -420,9 +411,7 @@ class TestPythonPipeline:
         total_elapsed = time.time() - start_time
 
         # All 6 datasets should complete in < 30 seconds
-        assert total_elapsed < 30.0, (
-            f"All datasets took {total_elapsed:.2f}s, expected < 30s"
-        )
+        assert total_elapsed < 30.0, f"All datasets took {total_elapsed:.2f}s, expected < 30s"
 
         # Verify we processed all available datasets
         assert processed_count >= 6, (

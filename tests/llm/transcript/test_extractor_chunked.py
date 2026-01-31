@@ -12,6 +12,7 @@ Run manually with: pytest -m llm tests/llm/transcript/test_extractor_chunked.py
 
 Reference: TASK-235, EN-023 Integration Testing
 """
+
 from __future__ import annotations
 
 import json
@@ -32,7 +33,7 @@ def invoke_ts_extractor(
     index_path: Path,
     output_dir: Path,
     timeout_seconds: int = 300,
-) -> "LLMTestResult":
+) -> LLMTestResult:
     """Invoke ts-extractor agent via transcript skill.
 
     This function invokes the ts-extractor agent to process chunked input.
@@ -290,12 +291,8 @@ class TestExtractorChunkedInput:
         assert stats["action_items"] >= 5, (
             f"Too few action items: {stats['action_items']} (expected >= 5)"
         )
-        assert stats["decisions"] >= 3, (
-            f"Too few decisions: {stats['decisions']} (expected >= 3)"
-        )
-        assert stats["questions"] >= 3, (
-            f"Too few questions: {stats['questions']} (expected >= 3)"
-        )
+        assert stats["decisions"] >= 3, f"Too few decisions: {stats['decisions']} (expected >= 3)"
+        assert stats["questions"] >= 3, f"Too few questions: {stats['questions']} (expected >= 3)"
         assert stats["speakers_identified"] >= 5, (
             f"Too few speakers: {stats['speakers_identified']} (expected >= 5)"
         )
@@ -319,9 +316,7 @@ class TestExtractorChunkedInput:
 
             # High confidence ratio should be reasonable
             high_ratio = confidence.get("high_ratio", 0)
-            assert high_ratio >= 0.50, (
-                f"High confidence ratio too low: {high_ratio}"
-            )
+            assert high_ratio >= 0.50, f"High confidence ratio too low: {high_ratio}"
 
 
 @pytest.mark.llm
@@ -372,9 +367,7 @@ class TestExtractorChunkedCitations:
                             f"{entity_type}/{entity['id']}: invalid format {segment_id}"
                         )
 
-        assert not invalid_citations, (
-            f"Invalid segment_id citations: {invalid_citations[:5]}"
-        )
+        assert not invalid_citations, f"Invalid segment_id citations: {invalid_citations[:5]}"
 
     def test_citation_anchors_format(
         self,
@@ -390,9 +383,7 @@ class TestExtractorChunkedCitations:
 
                 # ADR-003: anchors must be #seg-NNNN
                 if not anchor.startswith("#seg-"):
-                    invalid_anchors.append(
-                        f"{entity_type}/{entity['id']}: {anchor}"
-                    )
+                    invalid_anchors.append(f"{entity_type}/{entity['id']}: {anchor}")
 
         assert not invalid_anchors, (
             f"Invalid anchor format (expected #seg-NNNN): {invalid_anchors[:5]}"
@@ -413,6 +404,4 @@ class TestExtractorChunkedCitations:
                 if not text_snippet or len(text_snippet.strip()) == 0:
                     missing_snippets.append(f"{entity_type}/{entity['id']}")
 
-        assert not missing_snippets, (
-            f"Citations missing text_snippet: {missing_snippets[:5]}"
-        )
+        assert not missing_snippets, f"Citations missing text_snippet: {missing_snippets[:5]}"

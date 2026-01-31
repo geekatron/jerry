@@ -15,14 +15,13 @@ Design Decisions (DEC-001):
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 
 from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
-
 
 # =============================================================================
 # TEST FIXTURES
 # =============================================================================
+
 
 @pytest.fixture
 def sample_segment() -> ParsedSegment:
@@ -68,6 +67,7 @@ def segment_no_speaker() -> ParsedSegment:
 # HAPPY PATH TESTS
 # =============================================================================
 
+
 class TestTokenCounterHappyPath:
     """Happy path tests for TokenCounter service."""
 
@@ -96,9 +96,7 @@ class TestTokenCounterHappyPath:
         assert isinstance(result, int)
 
     @pytest.mark.happy_path
-    def test_count_segment_tokens_returns_integer(
-        self, sample_segment: ParsedSegment
-    ) -> None:
+    def test_count_segment_tokens_returns_integer(self, sample_segment: ParsedSegment) -> None:
         """count_segment_tokens returns an integer count."""
         from src.transcript.application.services.token_counter import TokenCounter
 
@@ -109,9 +107,7 @@ class TestTokenCounterHappyPath:
         assert result > 0
 
     @pytest.mark.happy_path
-    def test_count_segment_tokens_includes_overhead(
-        self, sample_segment: ParsedSegment
-    ) -> None:
+    def test_count_segment_tokens_includes_overhead(self, sample_segment: ParsedSegment) -> None:
         """Segment token count includes JSON structure overhead."""
         from src.transcript.application.services.token_counter import TokenCounter
 
@@ -154,6 +150,7 @@ class TestTokenCounterHappyPath:
 # =============================================================================
 # EDGE CASE TESTS
 # =============================================================================
+
 
 class TestTokenCounterEdgeCases:
     """Edge case tests for TokenCounter service."""
@@ -214,9 +211,7 @@ class TestTokenCounterEdgeCases:
         assert result > 0
 
     @pytest.mark.edge_case
-    def test_count_segment_tokens_no_speaker(
-        self, segment_no_speaker: ParsedSegment
-    ) -> None:
+    def test_count_segment_tokens_no_speaker(self, segment_no_speaker: ParsedSegment) -> None:
         """Segment without speaker tokenizes correctly."""
         from src.transcript.application.services.token_counter import TokenCounter
 
@@ -242,6 +237,7 @@ class TestTokenCounterEdgeCases:
 # =============================================================================
 # BEHAVIORAL TESTS
 # =============================================================================
+
 
 class TestTokenCounterBehavior:
     """Behavioral tests for TokenCounter service."""
@@ -291,16 +287,16 @@ class TestTokenCounterBehavior:
 # SEGMENT SERIALIZATION TESTS
 # =============================================================================
 
+
 class TestSegmentTokenization:
     """Tests for segment-to-JSON token counting."""
 
     @pytest.mark.happy_path
-    def test_segment_overhead_calculation(
-        self, sample_segment: ParsedSegment
-    ) -> None:
+    def test_segment_overhead_calculation(self, sample_segment: ParsedSegment) -> None:
         """Verify segment JSON overhead is accounted for."""
-        from src.transcript.application.services.token_counter import TokenCounter
         import json
+
+        from src.transcript.application.services.token_counter import TokenCounter
 
         counter = TokenCounter()
 
@@ -323,9 +319,7 @@ class TestSegmentTokenization:
         assert actual_tokens == expected_tokens
 
     @pytest.mark.happy_path
-    def test_multiple_segments_cumulative(
-        self, sample_segment: ParsedSegment
-    ) -> None:
+    def test_multiple_segments_cumulative(self, sample_segment: ParsedSegment) -> None:
         """Multiple segments cumulative token count is additive."""
         from src.transcript.application.services.token_counter import TokenCounter
 
@@ -334,10 +328,7 @@ class TestSegmentTokenization:
         single_count = counter.count_segment_tokens(sample_segment)
 
         # Count 5 identical segments
-        total_count = sum(
-            counter.count_segment_tokens(sample_segment)
-            for _ in range(5)
-        )
+        total_count = sum(counter.count_segment_tokens(sample_segment) for _ in range(5))
 
         assert total_count == single_count * 5
 
@@ -346,13 +337,12 @@ class TestSegmentTokenization:
 # INTEGRATION-LIKE UNIT TESTS
 # =============================================================================
 
+
 class TestTokenCounterForChunking:
     """Tests verifying TokenCounter is suitable for chunking use case."""
 
     @pytest.mark.happy_path
-    def test_can_estimate_chunk_token_count(
-        self, sample_segment: ParsedSegment
-    ) -> None:
+    def test_can_estimate_chunk_token_count(self, sample_segment: ParsedSegment) -> None:
         """TokenCounter can estimate if segments fit in a chunk."""
         from src.transcript.application.services.token_counter import TokenCounter
 
@@ -376,7 +366,9 @@ class TestTokenCounterForChunking:
         total_tokens = sum(counter.count_segment_tokens(seg) for seg in segments)
 
         # Verify we can use this to determine if under limit
-        assert total_tokens < target_tokens or total_tokens >= target_tokens  # Always true, verifies no exception
+        assert (
+            total_tokens < target_tokens or total_tokens >= target_tokens
+        )  # Always true, verifies no exception
 
     @pytest.mark.happy_path
     def test_token_count_scales_with_content(self) -> None:

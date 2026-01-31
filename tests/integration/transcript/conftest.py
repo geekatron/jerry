@@ -3,10 +3,11 @@
 Integration tests may use the filesystem but do NOT invoke LLM agents.
 They are fast enough for CI and validate Python-layer component interaction.
 """
+
 from __future__ import annotations
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 

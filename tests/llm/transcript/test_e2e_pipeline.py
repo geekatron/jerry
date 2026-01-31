@@ -12,19 +12,20 @@ Run manually with: pytest -m llm tests/llm/transcript/test_e2e_pipeline.py
 
 Reference: TASK-236, EN-023 Integration Testing
 """
+
 from __future__ import annotations
 
 import json
 import re
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pytest
-from dataclasses import dataclass
 
 if TYPE_CHECKING:
-    from tests.llm.transcript.utils import LLMTestResult
+    pass
 
 
 @dataclass
@@ -59,7 +60,6 @@ def run_full_hybrid_pipeline(
     Returns:
         PipelineResult with success status and outputs.
     """
-    from tests.llm.transcript.utils import LLMTestResult
 
     start_time = time.time()
 
@@ -302,9 +302,7 @@ class TestFullPipelineE2E:
                 approx_tokens = char_count // 4
                 oversized_files.append(f"{md_file.name}: ~{approx_tokens:,} tokens")
 
-        assert not oversized_files, (
-            f"Files exceed 35K token limit: {oversized_files}"
-        )
+        assert not oversized_files, f"Files exceed 35K token limit: {oversized_files}"
 
     # =========================================================================
     # AC-6: Pipeline completes within reasonable time (< 10 minutes)
@@ -322,8 +320,7 @@ class TestFullPipelineE2E:
 
         max_time_seconds = 600  # 10 minutes
         assert pipeline_result.elapsed_seconds < max_time_seconds, (
-            f"Pipeline took {pipeline_result.elapsed_seconds:.2f}s, "
-            f"expected < {max_time_seconds}s"
+            f"Pipeline took {pipeline_result.elapsed_seconds:.2f}s, expected < {max_time_seconds}s"
         )
 
 

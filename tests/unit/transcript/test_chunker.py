@@ -12,46 +12,50 @@ Reference: TDD-FEAT-004 v1.2.0, Section 5, 8
 """
 
 import json
-import pytest
 from pathlib import Path
-from typing import List
+
+import pytest
 
 from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
-
 
 # =============================================================================
 # TEST FIXTURES
 # =============================================================================
 
+
 @pytest.fixture
-def sample_segments() -> List[ParsedSegment]:
+def sample_segments() -> list[ParsedSegment]:
     """Create a list of sample segments for testing."""
     segments = []
     for i in range(1, 11):  # 10 segments
-        segments.append(ParsedSegment(
-            id=str(i),
-            start_ms=(i - 1) * 5000,
-            end_ms=i * 5000,
-            speaker=f"Speaker {(i % 3) + 1}",
-            text=f"This is segment {i} content.",
-            raw_text=f"<v Speaker {(i % 3) + 1}>This is segment {i} content.</v>",
-        ))
+        segments.append(
+            ParsedSegment(
+                id=str(i),
+                start_ms=(i - 1) * 5000,
+                end_ms=i * 5000,
+                speaker=f"Speaker {(i % 3) + 1}",
+                text=f"This is segment {i} content.",
+                raw_text=f"<v Speaker {(i % 3) + 1}>This is segment {i} content.</v>",
+            )
+        )
     return segments
 
 
 @pytest.fixture
-def large_segment_list() -> List[ParsedSegment]:
+def large_segment_list() -> list[ParsedSegment]:
     """Create 1500 segments to test multi-chunk scenario."""
     segments = []
     for i in range(1, 1501):  # 1500 segments = 3 chunks with 500/chunk
-        segments.append(ParsedSegment(
-            id=str(i),
-            start_ms=(i - 1) * 1000,
-            end_ms=i * 1000,
-            speaker=f"Speaker {(i % 10) + 1}",
-            text=f"Content for segment {i}.",
-            raw_text=f"<v Speaker {(i % 10) + 1}>Content for segment {i}.</v>",
-        ))
+        segments.append(
+            ParsedSegment(
+                id=str(i),
+                start_ms=(i - 1) * 1000,
+                end_ms=i * 1000,
+                speaker=f"Speaker {(i % 10) + 1}",
+                text=f"Content for segment {i}.",
+                raw_text=f"<v Speaker {(i % 10) + 1}>Content for segment {i}.</v>",
+            )
+        )
     return segments
 
 
@@ -65,31 +69,32 @@ def tmp_output_dir(tmp_path: Path) -> Path:
 # HAPPY PATH TESTS
 # =============================================================================
 
+
 class TestChunkerHappyPath:
     """Happy path tests for TranscriptChunker."""
 
     @pytest.mark.happy_path
     def test_chunker_creates_index_and_chunks_directory(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker creates index.json and chunks/ directory."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
         chunker = TranscriptChunker(chunk_size=5)
-        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+        chunker.chunk(sample_segments, str(tmp_output_dir))
 
         assert (tmp_output_dir / "index.json").exists()
         assert (tmp_output_dir / "chunks").is_dir()
 
     @pytest.mark.happy_path
     def test_chunker_produces_correct_number_of_chunks(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker produces correct number of chunks (1500 / 500 = 3)."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
         chunker = TranscriptChunker(chunk_size=500)
-        result = chunker.chunk(large_segment_list, str(tmp_output_dir))
+        chunker.chunk(large_segment_list, str(tmp_output_dir))
 
         # Check index.json reports correct chunk count
         with open(tmp_output_dir / "index.json") as f:
@@ -100,7 +105,7 @@ class TestChunkerHappyPath:
 
     @pytest.mark.happy_path
     def test_chunker_index_contains_required_fields(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Index.json contains all required fields per schema."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -121,7 +126,7 @@ class TestChunkerHappyPath:
 
     @pytest.mark.happy_path
     def test_chunker_chunk_files_contain_required_fields(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Chunk files contain all required fields per schema."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -142,7 +147,7 @@ class TestChunkerHappyPath:
 
     @pytest.mark.happy_path
     def test_chunker_segments_preserved_across_chunks(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Total segments across all chunks equals input segment count."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -162,7 +167,7 @@ class TestChunkerHappyPath:
 
     @pytest.mark.happy_path
     def test_chunker_collects_unique_speakers(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Index.json contains speaker metadata."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -178,7 +183,7 @@ class TestChunkerHappyPath:
 
     @pytest.mark.happy_path
     def test_chunker_calculates_duration(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Index.json contains calculated duration."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -194,7 +199,7 @@ class TestChunkerHappyPath:
 
     @pytest.mark.happy_path
     def test_chunker_returns_index_path(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker.chunk() returns path to index.json."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -209,24 +214,25 @@ class TestChunkerHappyPath:
 # EDGE CASE TESTS
 # =============================================================================
 
+
 class TestChunkerEdgeCases:
     """Edge case tests for TranscriptChunker."""
 
     @pytest.mark.edge_case
-    def test_chunker_single_segment(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_single_segment(self, tmp_output_dir: Path) -> None:
         """TranscriptChunker handles single segment (1 chunk)."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
-        single_segment = [ParsedSegment(
-            id="1",
-            start_ms=0,
-            end_ms=5000,
-            speaker="Alice",
-            text="Single segment.",
-            raw_text="<v Alice>Single segment.</v>",
-        )]
+        single_segment = [
+            ParsedSegment(
+                id="1",
+                start_ms=0,
+                end_ms=5000,
+                speaker="Alice",
+                text="Single segment.",
+                raw_text="<v Alice>Single segment.</v>",
+            )
+        ]
 
         chunker = TranscriptChunker(chunk_size=500)
         chunker.chunk(single_segment, str(tmp_output_dir))
@@ -238,9 +244,7 @@ class TestChunkerEdgeCases:
         assert index["total_chunks"] == 1
 
     @pytest.mark.edge_case
-    def test_chunker_exactly_chunk_size_segments(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_exactly_chunk_size_segments(self, tmp_output_dir: Path) -> None:
         """Exactly chunk_size segments produces 1 chunk."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
@@ -265,9 +269,7 @@ class TestChunkerEdgeCases:
         assert index["total_chunks"] == 1
 
     @pytest.mark.edge_case
-    def test_chunker_chunk_size_plus_one_segments(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_chunk_size_plus_one_segments(self, tmp_output_dir: Path) -> None:
         """chunk_size + 1 segments produces 2 chunks."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
@@ -299,7 +301,7 @@ class TestChunkerEdgeCases:
 
     @pytest.mark.edge_case
     def test_chunker_custom_chunk_size(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker respects custom chunk_size."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -314,9 +316,7 @@ class TestChunkerEdgeCases:
         assert index["total_chunks"] == 4  # 3+3+3+1
 
     @pytest.mark.edge_case
-    def test_chunker_no_speakers(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_no_speakers(self, tmp_output_dir: Path) -> None:
         """TranscriptChunker handles segments with no speakers."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
@@ -345,13 +345,12 @@ class TestChunkerEdgeCases:
 # NEGATIVE TESTS
 # =============================================================================
 
+
 class TestChunkerNegative:
     """Negative/error tests for TranscriptChunker."""
 
     @pytest.mark.negative
-    def test_chunker_raises_for_empty_segments(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_raises_for_empty_segments(self, tmp_output_dir: Path) -> None:
         """TranscriptChunker raises ValueError for empty segments list."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
@@ -387,12 +386,13 @@ class TestChunkerNegative:
 # NAVIGATION TESTS
 # =============================================================================
 
+
 class TestChunkerNavigation:
     """Tests for chunk navigation links (TASK-213)."""
 
     @pytest.mark.happy_path
     def test_chunker_first_chunk_has_no_previous(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """First chunk has previous: null."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -408,7 +408,7 @@ class TestChunkerNavigation:
 
     @pytest.mark.happy_path
     def test_chunker_last_chunk_has_no_next(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Last chunk has next: null."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -424,7 +424,7 @@ class TestChunkerNavigation:
 
     @pytest.mark.happy_path
     def test_chunker_middle_chunk_has_both_links(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Middle chunk has both previous and next links."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -443,7 +443,7 @@ class TestChunkerNavigation:
 
     @pytest.mark.happy_path
     def test_chunker_all_chunks_have_index_link(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """All chunks have link back to index.json."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -463,6 +463,7 @@ class TestChunkerNavigation:
 # TOKEN-BASED CHUNKING TESTS (EN-026, TASK-262)
 # =============================================================================
 
+
 class TestChunkerTokenBased:
     """Token-based chunking tests per EN-026 (BUG-001 fix).
 
@@ -472,14 +473,14 @@ class TestChunkerTokenBased:
 
     @pytest.mark.happy_path
     def test_chunker_accepts_target_tokens_parameter(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker accepts target_tokens parameter."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
         # Should not raise an error
         chunker = TranscriptChunker(target_tokens=18000)
-        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+        chunker.chunk(sample_segments, str(tmp_output_dir))
 
         assert (tmp_output_dir / "index.json").exists()
 
@@ -494,7 +495,7 @@ class TestChunkerTokenBased:
 
     @pytest.mark.happy_path
     def test_chunker_target_tokens_takes_precedence(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """target_tokens takes precedence over chunk_size when both provided."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -514,7 +515,7 @@ class TestChunkerTokenBased:
 
     @pytest.mark.happy_path
     def test_chunker_accepts_token_counter_injection(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker accepts TokenCounter via constructor injection."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -525,13 +526,13 @@ class TestChunkerTokenBased:
 
         # Inject into chunker
         chunker = TranscriptChunker(target_tokens=18000, token_counter=token_counter)
-        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+        chunker.chunk(sample_segments, str(tmp_output_dir))
 
         assert (tmp_output_dir / "index.json").exists()
 
     @pytest.mark.happy_path
     def test_chunker_token_based_respects_limit(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Token-based chunks don't exceed target_tokens limit."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -557,7 +558,7 @@ class TestChunkerTokenBased:
 
     @pytest.mark.happy_path
     def test_chunker_token_based_index_contains_target_tokens(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """Index.json contains target_tokens field when token-based chunking used."""
         from src.transcript.application.services.chunker import TranscriptChunker
@@ -573,32 +574,32 @@ class TestChunkerTokenBased:
 
     @pytest.mark.happy_path
     def test_chunker_creates_token_counter_internally_if_not_injected(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TokenCounter is created internally if not injected."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
         # No token_counter injected - should create one internally
         chunker = TranscriptChunker(target_tokens=18000)
-        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+        chunker.chunk(sample_segments, str(tmp_output_dir))
 
         assert (tmp_output_dir / "index.json").exists()
 
     @pytest.mark.edge_case
-    def test_chunker_token_based_single_segment_under_limit(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_token_based_single_segment_under_limit(self, tmp_output_dir: Path) -> None:
         """Single segment under target_tokens produces 1 chunk."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
-        single_segment = [ParsedSegment(
-            id="1",
-            start_ms=0,
-            end_ms=5000,
-            speaker="Alice",
-            text="Short content.",
-            raw_text="<v Alice>Short content.</v>",
-        )]
+        single_segment = [
+            ParsedSegment(
+                id="1",
+                start_ms=0,
+                end_ms=5000,
+                speaker="Alice",
+                text="Short content.",
+                raw_text="<v Alice>Short content.</v>",
+            )
+        ]
 
         chunker = TranscriptChunker(target_tokens=18000)
         chunker.chunk(single_segment, str(tmp_output_dir))
@@ -609,9 +610,7 @@ class TestChunkerTokenBased:
         assert index["total_chunks"] == 1
 
     @pytest.mark.edge_case
-    def test_chunker_token_based_forces_split_on_large_content(
-        self, tmp_output_dir: Path
-    ) -> None:
+    def test_chunker_token_based_forces_split_on_large_content(self, tmp_output_dir: Path) -> None:
         """Large content segments are split into multiple chunks."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
@@ -619,14 +618,16 @@ class TestChunkerTokenBased:
         segments = []
         for i in range(20):
             long_text = f"This is segment {i} with substantial content. " * 100
-            segments.append(ParsedSegment(
-                id=str(i),
-                start_ms=i * 5000,
-                end_ms=(i + 1) * 5000,
-                speaker="Speaker",
-                text=long_text,
-                raw_text=f"<v Speaker>{long_text}</v>",
-            ))
+            segments.append(
+                ParsedSegment(
+                    id=str(i),
+                    start_ms=i * 5000,
+                    end_ms=(i + 1) * 5000,
+                    speaker="Speaker",
+                    text=long_text,
+                    raw_text=f"<v Speaker>{long_text}</v>",
+                )
+            )
 
         # Use a smaller target to force splitting
         chunker = TranscriptChunker(target_tokens=2000)
@@ -644,10 +645,11 @@ class TestChunkerDeprecation:
 
     @pytest.mark.happy_path
     def test_chunk_size_alone_logs_deprecation_warning(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path, caplog
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path, caplog
     ) -> None:
         """Using chunk_size without target_tokens logs deprecation warning."""
         import logging
+
         from src.transcript.application.services.chunker import TranscriptChunker
 
         with caplog.at_level(logging.WARNING):
@@ -659,10 +661,11 @@ class TestChunkerDeprecation:
 
     @pytest.mark.happy_path
     def test_target_tokens_does_not_log_deprecation(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path, caplog
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path, caplog
     ) -> None:
         """Using target_tokens does not log deprecation warning."""
         import logging
+
         from src.transcript.application.services.chunker import TranscriptChunker
 
         with caplog.at_level(logging.WARNING):
@@ -678,14 +681,14 @@ class TestChunkerBackwardCompatibility:
 
     @pytest.mark.happy_path
     def test_backward_compat_chunk_size_only_still_works(
-        self, sample_segments: List[ParsedSegment], tmp_output_dir: Path
+        self, sample_segments: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker(chunk_size=X) still works as before."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
         # Old usage pattern - should still work
         chunker = TranscriptChunker(chunk_size=3)
-        result = chunker.chunk(sample_segments, str(tmp_output_dir))
+        chunker.chunk(sample_segments, str(tmp_output_dir))
 
         with open(tmp_output_dir / "index.json") as f:
             index = json.load(f)
@@ -696,14 +699,14 @@ class TestChunkerBackwardCompatibility:
 
     @pytest.mark.happy_path
     def test_backward_compat_default_constructor_works(
-        self, large_segment_list: List[ParsedSegment], tmp_output_dir: Path
+        self, large_segment_list: list[ParsedSegment], tmp_output_dir: Path
     ) -> None:
         """TranscriptChunker() with no args still works (uses default chunk_size=500)."""
         from src.transcript.application.services.chunker import TranscriptChunker
 
         # Default constructor - should use segment-based with chunk_size=500
         chunker = TranscriptChunker()
-        result = chunker.chunk(large_segment_list, str(tmp_output_dir))
+        chunker.chunk(large_segment_list, str(tmp_output_dir))
 
         with open(tmp_output_dir / "index.json") as f:
             index = json.load(f)

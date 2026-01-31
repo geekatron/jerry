@@ -11,17 +11,18 @@ Test Categories:
 Reference: TDD-FEAT-004 v1.2.0, Section 4, 8
 """
 
-import pytest
 from pathlib import Path
 
-from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
-from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
-from src.transcript.domain.value_objects.parse_result import ParseResult
+import pytest
 
+from src.transcript.domain.value_objects.parse_result import ParseResult
+from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
+from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
 
 # =============================================================================
 # TEST FIXTURES
 # =============================================================================
+
 
 @pytest.fixture
 def parser() -> VTTParser:
@@ -61,6 +62,7 @@ No speaker tags here.
 # =============================================================================
 # HAPPY PATH TESTS
 # =============================================================================
+
 
 class TestVTTParserHappyPath:
     """Happy path tests for VTTParser."""
@@ -158,6 +160,7 @@ class TestVTTParserHappyPath:
 # EDGE CASE TESTS
 # =============================================================================
 
+
 class TestVTTParserEdgeCases:
     """Edge case tests for VTTParser."""
 
@@ -192,9 +195,7 @@ class TestVTTParserEdgeCases:
         assert result.segments[2].id == "3"
 
     @pytest.mark.edge_case
-    def test_parse_content_handles_unclosed_voice_tag(
-        self, parser: VTTParser
-    ) -> None:
+    def test_parse_content_handles_unclosed_voice_tag(self, parser: VTTParser) -> None:
         """VTTParser handles unclosed voice tag gracefully.
 
         Malformed voice tags should not crash the parser.
@@ -217,9 +218,7 @@ class TestVTTParserEdgeCases:
             assert result.segment_count >= 1
 
     @pytest.mark.edge_case
-    def test_parse_content_handles_mm_ss_timestamp_format(
-        self, parser: VTTParser
-    ) -> None:
+    def test_parse_content_handles_mm_ss_timestamp_format(self, parser: VTTParser) -> None:
         """VTTParser handles MM:SS.mmm timestamp format (2-part, no hours).
 
         Per W3C WebVTT spec, timestamps can be MM:SS.mmm when hours are 0.
@@ -238,9 +237,7 @@ Short timestamp format without hours.
         assert result.segments[0].end_ms == 10500
 
     @pytest.mark.edge_case
-    def test_parse_content_handles_comma_decimal_separator(
-        self, parser: VTTParser
-    ) -> None:
+    def test_parse_content_handles_comma_decimal_separator(self, parser: VTTParser) -> None:
         """VTTParser behavior with comma decimal separator (European format).
 
         LIMITATION: webvtt-py does not support comma as decimal separator.
@@ -267,6 +264,7 @@ Comma decimal separator.
 # =============================================================================
 # NEGATIVE TESTS
 # =============================================================================
+
 
 class TestVTTParserNegative:
     """Negative/error tests for VTTParser.
@@ -312,9 +310,7 @@ class TestVTTParserNegative:
         assert "12345" in str(exc_info.value)
 
     @pytest.mark.negative
-    def test_parse_content_returns_error_for_no_webvtt_header(
-        self, parser: VTTParser
-    ) -> None:
+    def test_parse_content_returns_error_for_no_webvtt_header(self, parser: VTTParser) -> None:
         """VTTParser returns format_error when WEBVTT header is missing.
 
         VTT files MUST start with "WEBVTT" per W3C WebVTT specification.
@@ -329,14 +325,14 @@ This content has no WEBVTT header.
         assert len(result.errors) >= 1
         assert result.errors[0]["type"] == "format_error"
         # Message should indicate the format issue
-        assert "webvtt" in result.errors[0]["message"].lower() or \
-               "header" in result.errors[0]["message"].lower() or \
-               "format" in result.errors[0]["message"].lower()
+        assert (
+            "webvtt" in result.errors[0]["message"].lower()
+            or "header" in result.errors[0]["message"].lower()
+            or "format" in result.errors[0]["message"].lower()
+        )
 
     @pytest.mark.negative
-    def test_parse_content_returns_error_for_malformed_cue(
-        self, parser: VTTParser
-    ) -> None:
+    def test_parse_content_returns_error_for_malformed_cue(self, parser: VTTParser) -> None:
         """VTTParser returns error for malformed cue (invalid timestamp arrow).
 
         VTT cues must use " --> " (with spaces) between timestamps.
@@ -355,9 +351,7 @@ Missing spaces around arrow.
             assert result.errors[0]["type"] in ("format_error", "parse_error")
 
     @pytest.mark.negative
-    def test_parse_returns_error_for_empty_file(
-        self, parser: VTTParser, tmp_path: Path
-    ) -> None:
+    def test_parse_returns_error_for_empty_file(self, parser: VTTParser, tmp_path: Path) -> None:
         """VTTParser handles 0-byte empty file gracefully.
 
         Empty file should return format_error (no WEBVTT header possible).
@@ -384,7 +378,7 @@ Missing spaces around arrow.
         binary_file = tmp_path / "binary.vtt"
         # Write bytes that are invalid in all supported encodings
         # Using bytes that form invalid UTF-8 sequences
-        binary_file.write_bytes(b'\x80\x81\x82\x83\xff\xfe\x00\x00')
+        binary_file.write_bytes(b"\x80\x81\x82\x83\xff\xfe\x00\x00")
 
         result = parser.parse(str(binary_file))
 
@@ -416,15 +410,14 @@ Missing spaces around arrow.
 # INTEGRATION TEST (using actual test data)
 # =============================================================================
 
+
 class TestVTTParserIntegration:
     """Integration tests using actual test data files."""
 
     @pytest.mark.integration
     def test_parse_meeting_006_all_hands(self, parser: VTTParser) -> None:
         """VTTParser correctly parses meeting-006-all-hands.vtt (AC-1)."""
-        test_file = Path(
-            "skills/transcript/test_data/transcripts/golden/meeting-006-all-hands.vtt"
-        )
+        test_file = Path("skills/transcript/test_data/transcripts/golden/meeting-006-all-hands.vtt")
 
         if not test_file.exists():
             pytest.skip(f"Test file not found: {test_file}")
@@ -432,7 +425,5 @@ class TestVTTParserIntegration:
         result = parser.parse(str(test_file))
 
         # AC-1: Parse meeting-006-all-hands.vtt producing exactly 3,071 segments
-        assert result.segment_count == 3071, (
-            f"Expected 3071 segments, got {result.segment_count}"
-        )
+        assert result.segment_count == 3071, f"Expected 3071 segments, got {result.segment_count}"
         assert result.parse_status == "complete"

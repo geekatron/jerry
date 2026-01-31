@@ -8,7 +8,6 @@ Location: src/transcript/domain/value_objects/parsed_segment.py
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,7 +34,7 @@ class ParsedSegment:
     id: str
     start_ms: int
     end_ms: int
-    speaker: Optional[str]
+    speaker: str | None
     text: str
     raw_text: str
 
@@ -46,9 +45,7 @@ class ParsedSegment:
         if self.start_ms < 0:
             raise ValueError(f"start_ms must be >= 0, got {self.start_ms}")
         if self.end_ms < self.start_ms:
-            raise ValueError(
-                f"end_ms ({self.end_ms}) must be >= start_ms ({self.start_ms})"
-            )
+            raise ValueError(f"end_ms ({self.end_ms}) must be >= start_ms ({self.start_ms})")
 
     @property
     def duration_ms(self) -> int:

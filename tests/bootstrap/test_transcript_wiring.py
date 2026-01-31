@@ -10,14 +10,11 @@ References:
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 import pytest
 
 from src.application.dispatchers.command_dispatcher import CommandDispatcher
 from src.bootstrap import create_command_dispatcher
 from src.transcript.application.commands import ParseTranscriptCommand
-
 
 # =============================================================================
 # Section 11.4: Bootstrap Transcript Wiring Tests
@@ -56,9 +53,7 @@ class TestTranscriptBootstrapWiring:
 
         # Create a minimal VTT file
         vtt_file = tmp_path / "test.vtt"
-        vtt_file.write_text(
-            "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello world\n"
-        )
+        vtt_file.write_text("WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello world\n")
         output_dir = tmp_path / "output"
         output_dir.mkdir()
 
@@ -134,9 +129,7 @@ class TestTranscriptBootstrapWiring:
         dispatcher = create_command_dispatcher()
 
         vtt_file = tmp_path / "meeting.vtt"
-        vtt_file.write_text(
-            "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello\n"
-        )
+        vtt_file.write_text("WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello\n")
         output_dir = tmp_path / "output"
         output_dir.mkdir()
 
@@ -164,9 +157,7 @@ class TestTranscriptBootstrapWiring:
         dispatcher = create_command_dispatcher()
 
         vtt_file = tmp_path / "meeting.vtt"
-        vtt_file.write_text(
-            "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello\n"
-        )
+        vtt_file.write_text("WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello\n")
         output_dir = tmp_path / "output"
         output_dir.mkdir()
 
@@ -200,9 +191,7 @@ class TestTranscriptBootstrapWiring:
 
         # Create an SRT file
         srt_file = tmp_path / "meeting.srt"
-        srt_file.write_text(
-            "1\n00:00:00,000 --> 00:00:05,000\nHello world\n"
-        )
+        srt_file.write_text("1\n00:00:00,000 --> 00:00:05,000\nHello world\n")
         output_dir = tmp_path / "output"
         output_dir.mkdir()
 
@@ -224,9 +213,7 @@ class TestTranscriptBootstrapWiring:
     # EDGE CASES (AC-8 Test Coverage Remediation)
     # =========================================================================
 
-    def test_parse_transcript_empty_vtt_file(
-        self, tmp_path: pytest.TempPathFactory
-    ) -> None:
+    def test_parse_transcript_empty_vtt_file(self, tmp_path: pytest.TempPathFactory) -> None:
         """Parsing a VTT file with only header (no segments) should succeed.
 
         EDGE CASE: Empty file with valid header should not error.
@@ -253,9 +240,7 @@ class TestTranscriptBootstrapWiring:
         assert result.success is True
         assert result.segment_count == 0
 
-    def test_parse_transcript_path_with_spaces(
-        self, tmp_path: pytest.TempPathFactory
-    ) -> None:
+    def test_parse_transcript_path_with_spaces(self, tmp_path: pytest.TempPathFactory) -> None:
         """Parsing a file at path with spaces should work correctly.
 
         EDGE CASE: Filesystem paths with spaces must be handled.
@@ -267,9 +252,7 @@ class TestTranscriptBootstrapWiring:
         spaced_dir = tmp_path / "my meeting files"
         spaced_dir.mkdir()
         vtt_file = spaced_dir / "team meeting 2026.vtt"
-        vtt_file.write_text(
-            "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello everyone\n"
-        )
+        vtt_file.write_text("WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nHello everyone\n")
         output_dir = tmp_path / "output dir"
         output_dir.mkdir()
 

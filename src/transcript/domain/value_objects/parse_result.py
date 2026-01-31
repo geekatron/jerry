@@ -8,7 +8,6 @@ Location: src/transcript/domain/value_objects/parse_result.py
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional
 
 from src.transcript.domain.value_objects.parsed_segment import ParsedSegment
 
@@ -67,12 +66,12 @@ class ParseResult:
     Reference: TDD-FEAT-004 v1.2.0, Section 4
     """
 
-    segments: List[ParsedSegment] = field(default_factory=list)
+    segments: list[ParsedSegment] = field(default_factory=list)
     format: str = "vtt"
     encoding: str = "utf-8"
-    duration_ms: Optional[int] = None
-    warnings: List[dict] = field(default_factory=list)
-    errors: List[dict] = field(default_factory=list)
+    duration_ms: int | None = None
+    warnings: list[dict] = field(default_factory=list)
+    errors: list[dict] = field(default_factory=list)
     parse_status: str = "complete"
 
     @property
@@ -83,17 +82,13 @@ class ParseResult:
     @property
     def speaker_count(self) -> int:
         """Return the number of unique speakers."""
-        speakers = {
-            s.speaker for s in self.segments if s.speaker is not None
-        }
+        speakers = {s.speaker for s in self.segments if s.speaker is not None}
         return len(speakers)
 
     @property
-    def speakers(self) -> List[str]:
+    def speakers(self) -> list[str]:
         """Return sorted list of unique speakers."""
-        speakers = {
-            s.speaker for s in self.segments if s.speaker is not None
-        }
+        speakers = {s.speaker for s in self.segments if s.speaker is not None}
         return sorted(speakers)
 
     @property

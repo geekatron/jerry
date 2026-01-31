@@ -126,14 +126,7 @@ def validate_vtt(file_path: Path) -> ValidationResult:
         match = timestamp_line_pattern.match(stripped)
         if match:
             cue_count += 1
-            start_ts, end_ts, settings = match.groups()
-
-            # Check 2: Seconds < 60
-            start_parts = start_ts.split(":")
-            end_parts = end_ts.split(":")
-
-            start_secs = int(start_parts[-2].split(".")[0]) if len(start_parts) >= 2 else 0
-            end_secs = int(end_parts[-2].split(".")[0]) if len(end_parts) >= 2 else 0
+            start_ts, end_ts, _settings = match.groups()
 
             # Get seconds from the SS.mmm part
             start_secs_val = int(start_ts.split(":")[-1].split(".")[0])
@@ -222,10 +215,11 @@ def validate_vtt(file_path: Path) -> ValidationResult:
 
 def print_result(result: ValidationResult, verbose: bool = True) -> None:
     """Print validation result."""
-    status = "PASS" if result.valid else "FAIL"
     status_symbol = "\u2713" if result.valid else "\u2717"
 
-    print(f"{status_symbol} {result.file_path.name}: {result.cue_count} cues, duration ~{result.duration_str}")
+    print(
+        f"{status_symbol} {result.file_path.name}: {result.cue_count} cues, duration ~{result.duration_str}"
+    )
 
     if result.issues:
         errors = [i for i in result.issues if i.severity == "error"]
@@ -258,9 +252,7 @@ def main() -> int:
         action="store_true",
         help="Validate all golden VTT files",
     )
-    parser.add_argument(
-        "-q", "--quiet", action="store_true", help="Only show failures"
-    )
+    parser.add_argument("-q", "--quiet", action="store_true", help="Only show failures")
 
     args = parser.parse_args()
 
@@ -312,8 +304,8 @@ def main() -> int:
             all_valid = False
 
     # Print results
-    print(f"\nVTT Compliance Validation")
-    print(f"=" * 50)
+    print("\nVTT Compliance Validation")
+    print("=" * 50)
     print(f"Files: {len(files)}")
     print()
 

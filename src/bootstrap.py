@@ -65,6 +65,12 @@ from src.session_management.infrastructure import (
     InMemorySessionRepository,
     OsEnvironmentAdapter,
 )
+
+# EN-025: Transcript parsing components (TDD-FEAT-004 Section 11.4)
+from src.transcript.application.commands import ParseTranscriptCommand
+from src.transcript.application.handlers import ParseTranscriptCommandHandler
+from src.transcript.application.services.chunker import TranscriptChunker
+from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
 from src.work_tracking.application.commands import (
     BlockWorkItemCommand,
     CancelWorkItemCommand,
@@ -98,12 +104,6 @@ from src.work_tracking.infrastructure.persistence.filesystem_event_store import 
 from src.work_tracking.infrastructure.persistence.in_memory_event_store import (
     InMemoryEventStore,
 )
-
-# EN-025: Transcript parsing components (TDD-FEAT-004 Section 11.4)
-from src.transcript.application.commands import ParseTranscriptCommand
-from src.transcript.application.handlers import ParseTranscriptCommandHandler
-from src.transcript.application.services.chunker import TranscriptChunker
-from src.transcript.infrastructure.adapters.vtt_parser import VTTParser
 
 # Module-level session repository singleton for session state persistence
 # In production, this would be replaced with a file-based or database repository

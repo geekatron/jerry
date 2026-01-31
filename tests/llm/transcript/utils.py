@@ -8,6 +8,7 @@ This module provides helper functions for:
 
 Reference: TASK-234, EN-023 Integration Testing
 """
+
 from __future__ import annotations
 
 import json
@@ -106,9 +107,7 @@ def compare_extraction_reports(
     if expected_speakers > 0:
         speaker_diff = abs(actual_speakers - expected_speakers) / expected_speakers
         if speaker_diff > tolerance:
-            differences.append(
-                f"speakers: expected ~{expected_speakers}, got {actual_speakers}"
-            )
+            differences.append(f"speakers: expected ~{expected_speakers}, got {actual_speakers}")
 
     return ComparisonResult(
         matches=len(differences) == 0,
@@ -165,27 +164,21 @@ def validate_citations(
                     if segment_id.startswith("seg-"):
                         seg_num = int(segment_id.split("-")[1])
                         if seg_num < 1 or seg_num > max_segment_id:
-                            errors.append(
-                                f"{entity_id}: segment_id {segment_id} out of range"
-                            )
+                            errors.append(f"{entity_id}: segment_id {segment_id} out of range")
                     else:
                         seg_num = int(segment_id)
                         if seg_num < 1 or seg_num > max_segment_id:
-                            errors.append(
-                                f"{entity_id}: segment_id {segment_id} out of range"
-                            )
+                            errors.append(f"{entity_id}: segment_id {segment_id} out of range")
                 except (ValueError, IndexError):
                     errors.append(f"{entity_id}: invalid segment_id format: {segment_id}")
 
             # Check confidence if present
             confidence = entity.get("confidence")
             if confidence is not None:
-                if not isinstance(confidence, (int, float)):
+                if not isinstance(confidence, int | float):
                     warnings.append(f"{entity_id}: confidence not a number")
                 elif confidence < 0.0 or confidence > 1.0:
-                    warnings.append(
-                        f"{entity_id}: confidence {confidence} out of range [0, 1]"
-                    )
+                    warnings.append(f"{entity_id}: confidence {confidence} out of range [0, 1]")
 
     return CitationValidationResult(
         valid=len(errors) == 0,
@@ -208,7 +201,7 @@ def validate_against_schema(
         Tuple of (is_valid, list of error messages).
     """
     try:
-        from jsonschema import Draft202012Validator, ValidationError
+        from jsonschema import Draft202012Validator
 
         validator = Draft202012Validator(schema)
         errors = []
@@ -248,13 +241,11 @@ class TimeoutContext:
         self.completed: bool = False
         self.result: Any = None
 
-    def __enter__(self) -> "TimeoutContext":
+    def __enter__(self) -> TimeoutContext:
         self.start_time = time.time()
         return self
 
-    def __exit__(
-        self, exc_type: type | None, exc_val: Exception | None, exc_tb: Any
-    ) -> None:
+    def __exit__(self, exc_type: type | None, exc_val: Exception | None, exc_tb: Any) -> None:
         self.end_time = time.time()
         if not self.completed:
             if self.elapsed_seconds > self.timeout_seconds:
