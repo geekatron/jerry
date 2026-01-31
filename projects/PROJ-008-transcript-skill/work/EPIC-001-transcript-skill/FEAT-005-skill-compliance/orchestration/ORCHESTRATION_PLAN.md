@@ -649,9 +649,9 @@ A score >= 0.95 requires heavy justification with cited evidence.
 
 ---
 
-*Orchestration Plan Version: 3.0.0*
-*Status: PENDING_APPROVAL (per DEC-002:D-004)*
-*Key Change: TASK-419 as Phase 0 sequential hard gate*
+*Orchestration Plan Version: 3.1.0*
+*Status: APPROVED*
+*Key Changes: Phase 0 sequential hard gate (v3.0) + Background execution for parallelism (v3.1)*
 *Constitutional Compliance: P-002, P-003, P-020*
 *Created: 2026-01-30*
-*Updated: 2026-01-31 - v3.0.0 corrects dependency chain flaw per DISC-003*
+*Updated: 2026-01-31 - v3.1.0 adds background execution per DEC-003*
