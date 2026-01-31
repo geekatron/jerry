@@ -295,6 +295,16 @@ class TranscriptChunker:
 
 ---
 
+## Known Issues
+
+| ID | Title | Status | Severity | Fix |
+|----|-------|--------|----------|-----|
+| [BUG-001](./BUG-001-chunk-token-overflow.md) | Chunk Token Count Exceeds Claude Code Read Tool Limit | pending | major | [EN-026](../../FEAT-003-future-enhancements/EN-026-token-based-chunking/EN-026-token-based-chunking.md) |
+
+**Note:** The 500-segment chunk size produces ~49K tokens, exceeding Claude Code's 25K Read tool limit. EN-026 will refactor to token-based chunking with 18K target.
+
+---
+
 ## History
 
 | Date | Author | Status | Notes |
@@ -303,6 +313,7 @@ class TranscriptChunker:
 | 2026-01-29 | Claude | in_progress | Started implementation. Task titles aligned with TDD-FEAT-004 Section 9. Added TASK-215 (Schema Validation Tests). |
 | 2026-01-29 | Claude | in_progress | TASK-210..214 DONE. TranscriptChunker implemented with 20 tests, 98% coverage. TDD RED→GREEN complete. Only TASK-215 (schema validation) remains. |
 | 2026-01-29 | Claude | done | EN-021 COMPLETE. All 6 tasks done. TASK-215 schema validation: 17 contract tests passing. Total: 37 tests (20 unit + 17 contract). meeting-006 integration verified. |
+| 2026-01-30 | Claude | done | BUG-001 discovered: 500-segment chunks produce ~49K tokens, exceeding Claude Code 25K Read limit. Fix tracked in EN-026 (FEAT-003). |
 
 ---
 

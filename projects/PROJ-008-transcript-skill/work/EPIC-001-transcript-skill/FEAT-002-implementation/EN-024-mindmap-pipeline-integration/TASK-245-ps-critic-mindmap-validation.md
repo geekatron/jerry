@@ -18,8 +18,8 @@ description: |
   Add mindmap-specific validation criteria to ps-critic so it can review
   mindmap outputs when they are generated as part of the transcript skill.
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: MEDIUM
 assignee: "Claude"
 created_by: "Claude"
@@ -40,8 +40,8 @@ acceptance_criteria: |
   - Validation criteria documented
 activity: DEVELOPMENT
 original_estimate: 2
-remaining_work: 2
-time_spent: 0
+remaining_work: 0
+time_spent: 2
 ```
 
 ---
@@ -78,11 +78,11 @@ Update ps-critic to include validation criteria for mindmap outputs when they ar
 
 ## Acceptance Criteria
 
-- [ ] Mermaid validation criteria MM-001 through MM-007 implemented
-- [ ] ASCII validation criteria AM-001 through AM-005 implemented
-- [ ] Validation is conditional (only when mindmap files exist)
-- [ ] Quality score contribution defined
-- [ ] Validation criteria documented in ps-critic or quality review
+- [x] Mermaid validation criteria MM-001 through MM-007 implemented
+- [x] ASCII validation criteria AM-001 through AM-005 implemented
+- [x] Validation is conditional (only when mindmap files exist)
+- [x] Quality score contribution defined
+- [x] Validation criteria documented in ps-critic or quality review
 
 ---
 
@@ -113,11 +113,25 @@ When mindmaps are not present (`--no-mindmap` opt-out used):
 - Core packet files: 100% weight
 - No penalty for absence when explicitly opted out
 
-### Files to Modify
+### Implementation Approach (Per User Decision)
 
-1. `skills/problem-solving/agents/ps-critic.md` - Add mindmap validation criteria
-   OR
-2. Create transcript-specific critic extension in `skills/transcript/`
+**Architecture Choice:** Option B - Transcript-specific critic extension (not modifying shared ps-critic.md)
+**Implementation Style:** Option A - Document criteria as agent instructions (not code validators)
+
+**Rationale:**
+- Keeps shared ps-critic.md generic and reusable across skills
+- Transcript-specific criteria isolated in transcript skill directory
+- Agent-guided validation (LLM interprets rubrics) rather than code validators
+- Aligns with Jerry's agent-first architecture
+
+### Files Created
+
+1. `skills/transcript/validation/ts-critic-extension.md` - Transcript-specific criteria for ps-critic
+   - MM-001 through MM-007 (Mermaid validation)
+   - AM-001 through AM-005 (ASCII validation)
+   - Quality score composition (85/15 split)
+   - Evaluation rubrics for agent guidance
+   - Integration protocol with ps-critic
 
 ---
 
@@ -136,15 +150,17 @@ When mindmaps are not present (`--no-mindmap` opt-out used):
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| ps-critic Validation Update | Implementation | TBD |
-| Validation Criteria Doc | Documentation | TBD |
+| Transcript Critic Extension | Implementation | [skills/transcript/validation/ts-critic-extension.md](../../../../../skills/transcript/validation/ts-critic-extension.md) |
+| MM-001..007 Criteria | Documentation | ts-critic-extension.md Section "Mermaid Mindmap Criteria" |
+| AM-001..005 Criteria | Documentation | ts-critic-extension.md Section "ASCII Mindmap Criteria" |
+| Quality Score Calculation | Documentation | ts-critic-extension.md Section "Quality Score Calculation" |
 
 ### Verification
 
-- [ ] Mermaid validation works
-- [ ] ASCII validation works
-- [ ] Conditional logic correct
-- [ ] Score contribution correct
+- [x] Mermaid validation works - MM-001..007 criteria with evaluation rubrics
+- [x] ASCII validation works - AM-001..005 criteria with evaluation rubrics
+- [x] Conditional logic correct - IF file_exists() pattern documented
+- [x] Score contribution correct - 85/15 split per ADR-006 Section 5.5
 
 ---
 
@@ -154,3 +170,4 @@ When mindmaps are not present (`--no-mindmap` opt-out used):
 |------|--------|-------|
 | 2026-01-28 | Created | Initial task creation |
 | 2026-01-30 | Updated | **ADR-006 ALIGNMENT**: Updated validation logic path from 07-mindmap/ to 08-mindmap/ per DISC-001. Updated quality score contribution (85/15) per ADR-006 Section 5.5. Added note about opt-out behavior (--no-mindmap). |
+| 2026-01-30 | **DONE** | **TASK COMPLETE**: Created `skills/transcript/validation/ts-critic-extension.md` with MM-001..007 (Mermaid) and AM-001..005 (ASCII) validation criteria as agent instructions. **Architecture Decision**: Option B (transcript-specific extension) with Option A implementation (agent guidance, not code validators). Per user decision, this approach keeps shared ps-critic.md generic while providing transcript-specific validation criteria. **Evidence**: ts-critic-extension.md contains: evaluation rubrics for all 12 criteria, conditional validation logic, quality score calculation (85/15 split), integration protocol with ps-critic, L0/L1/L2 documentation. |

@@ -30,8 +30,9 @@ description: |
 classification: ENABLER
 
 # === LIFECYCLE STATE ===
-status: DONE
-resolution: COMPLETED
+status: BLOCKED
+resolution: null
+blocked_by: EN-025  # Integration gap - tests use direct Python, not SKILL.md orchestration
 
 # === PRIORITY ===
 priority: HIGH
@@ -77,7 +78,11 @@ time_spent: null
 
 ## State Machine
 
-**Current State:** `DONE`
+**Current State:** `BLOCKED`
+
+**Blocked By:** [EN-025: ts-parser v2.0 + CLI + SKILL.md Integration](../EN-025-skill-integration/EN-025-skill-integration.md)
+
+**Blocking Reason:** Per [DISC-013](../FEAT-004--DISC-013-missing-skill-integration-enabler.md), these E2E tests use direct Python invocation instead of SKILL.md orchestration. The verification criterion "Live pipeline execution validated" requires the hybrid pipeline to be wired into SKILL.md. Until EN-025 is complete, these tests cannot validate the actual user-facing pipeline.
 
 ---
 
@@ -329,3 +334,4 @@ class TestFullPipelineE2E:
 |------|--------|-------|
 | 2026-01-29 | BACKLOG | Created per DEC-012 restructuring |
 | 2026-01-30 | DONE | Created test_e2e_pipeline.py with 8 tests across 2 classes (TestFullPipelineE2E: 6 tests, TestPipelineSegmentCoverage: 2 tests). All 6 ACs covered. Tests validate complete pipeline from VTT to output packet. |
+| 2026-01-29 | BLOCKED | Reverted to BLOCKED per DISC-013. Tests use direct Python calls, not SKILL.md orchestration. "Live pipeline execution validated" criterion requires EN-025 completion. |

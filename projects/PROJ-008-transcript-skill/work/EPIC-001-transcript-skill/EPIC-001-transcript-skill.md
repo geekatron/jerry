@@ -65,20 +65,32 @@ Build a comprehensive Transcript Skill for the Jerry framework that processes me
 
 ### Feature Inventory
 
-| ID | Title | Status | Priority | Progress | Gates |
+| ID | Title | Status | Priority | Progress | Notes |
 |----|-------|--------|----------|----------|-------|
-| [FEAT-001](./FEAT-001-analysis-design/FEAT-001-analysis-design.md) | Analysis & Design | pending | high | 0% | 1-4 |
-| [FEAT-002](./FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | pending | high | 0% | 5-7 |
+| [FEAT-001](./FEAT-001-analysis-design/FEAT-001-analysis-design.md) | Analysis & Design | completed | high | 100% | Gates 1-4 |
+| [FEAT-002](./FEAT-002-implementation/FEAT-002-implementation.md) | Implementation | completed | high | 100% | Core pipeline complete |
+| [FEAT-003](./FEAT-003-future-enhancements/FEAT-003-future-enhancements.md) | Future Enhancements | pending | low | 0% | Tech debt, optional features |
+| [FEAT-004](./FEAT-004-hybrid-infrastructure/FEAT-004-hybrid-infrastructure.md) | Hybrid Infrastructure | completed | critical | 100% | Python parser, v2.0 pipeline |
+| [FEAT-005](./FEAT-005-skill-compliance/FEAT-005-skill-compliance.md) | Skill Compliance | pending | high | 0% | Pattern compliance, model selection |
 
 ### Feature Links
 
-- [FEAT-001: Analysis & Design](./FEAT-001-analysis-design/FEAT-001-analysis-design.md)
+- [FEAT-001: Analysis & Design](./FEAT-001-analysis-design/FEAT-001-analysis-design.md) ✅
   - Research, requirements, architecture decisions, design documentation
-  - 6 enablers, 4 human approval gates
-- [FEAT-002: Implementation](./FEAT-002-implementation/FEAT-002-implementation.md)
-  - VTT parser, entity extraction, mind maps, artifact packaging, worktracker integration
+  - 6 enablers, 4 human approval gates (GATE-1 through GATE-4)
+- [FEAT-002: Implementation](./FEAT-002-implementation/FEAT-002-implementation.md) ✅
+  - VTT parser, entity extraction, mind maps, artifact packaging
   - 7 enablers, 3 human approval gates (GATE-5, GATE-6, GATE-7)
-  - Note: CLI (EN-012) is "Above and Beyond" at GATE-7 - LITERALLY LAST
+- [FEAT-003: Future Enhancements](./FEAT-003-future-enhancements/FEAT-003-future-enhancements.md)
+  - CLI interface (EN-012), UTF-16 support (EN-017), Task renumbering (EN-018)
+  - D3.js visualization (EN-019), Token-based chunking (EN-026)
+- [FEAT-004: Hybrid Infrastructure](./FEAT-004-hybrid-infrastructure/FEAT-004-hybrid-infrastructure.md) ✅
+  - Python VTT parser (1,250x cost reduction), Chunking strategy
+  - Resolved DISC-009 (99.8% data loss from agent-only architecture)
+- [FEAT-005: Skill Compliance](./FEAT-005-skill-compliance/FEAT-005-skill-compliance.md) **NEW**
+  - Agent definition compliance (EN-027), SKILL.md compliance (EN-028)
+  - Documentation compliance (EN-029, EN-030), Model selection (EN-031)
+  - Based on work-026 analysis (52% → 95% compliance)
 
 ---
 

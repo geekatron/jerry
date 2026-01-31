@@ -18,8 +18,8 @@ description: |
   Update the transcript skill PLAYBOOK.md and RUNBOOK.md documentation
   to include mindmap generation phase and troubleshooting guidance.
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: MEDIUM
 assignee: "Claude"
 created_by: "Claude"
@@ -39,8 +39,8 @@ acceptance_criteria: |
   - Examples include --mindmap usage
 activity: DOCUMENTATION
 original_estimate: 2
-remaining_work: 2
-time_spent: 0
+remaining_work: 0
+time_spent: 2
 ```
 
 ---
@@ -66,12 +66,12 @@ Update the transcript skill documentation (PLAYBOOK.md and RUNBOOK.md) to includ
 
 ## Acceptance Criteria
 
-- [ ] PLAYBOOK.md Phase 3.5 added for mindmap generation
-- [ ] Time commitment table updated (~30-60 seconds for mindmaps)
-- [ ] Decision point DP-2.5 added
-- [ ] RUNBOOK.md troubleshooting section updated
-- [ ] Mindmap regeneration procedure documented
-- [ ] Examples show --mindmap flag usage
+- [x] PLAYBOOK.md Phase 3.5 added for mindmap generation
+- [x] Time commitment table updated (~30-60 seconds for mindmaps)
+- [x] Decision point DP-2.5 added (plus renumbered DP-3 and DP-4)
+- [x] RUNBOOK.md troubleshooting section updated (R-015, R-016, R-017)
+- [x] Mindmap regeneration procedure documented
+- [x] Examples show --mindmap flag usage (--no-mindmap, --mindmap-format)
 
 ---
 
@@ -180,9 +180,9 @@ Reference: ADR-006 Section 5.4 (Graceful Degradation)
 
 ### Verification
 
-- [ ] Phase 3.5 documented
-- [ ] Troubleshooting complete
-- [ ] Examples accurate
+- [x] Phase 3.5 documented (PLAYBOOK.md Section 7)
+- [x] Troubleshooting complete (RUNBOOK.md Sections 4.7-4.9)
+- [x] Examples accurate (--no-mindmap, --mindmap-format mermaid|ascii|both)
 
 ---
 
@@ -192,3 +192,4 @@ Reference: ADR-006 Section 5.4 (Graceful Degradation)
 |------|--------|-------|
 | 2026-01-28 | Created | Initial task creation |
 | 2026-01-30 | Updated | **ADR-006 ALIGNMENT**: Updated PLAYBOOK and RUNBOOK examples to reflect opt-out behavior (--no-mindmap). Changed paths from 07-mindmap/ to 08-mindmap/ per DISC-001. Added ADR-006 section references. Updated decision points and troubleshooting guidance. |
+| 2026-01-30 | **DONE** | **TASK COMPLETE**: Updated both PLAYBOOK.md (v1.0.0→v1.1.0) and RUNBOOK.md (v1.0.0→v1.1.0). **PLAYBOOK changes:** Added Phase 3.5 Mindmap Generation section, updated Time Commitment table (+30-60s for mindmaps), added DP-2.5 and DP-3 decision points, renumbered Phase 4 to Section 8, added 4 mindmap-related documents to Related Documents. **RUNBOOK changes:** Added 3 new diagnostic procedures (R-015 Mermaid Syntax, R-016 ASCII Width, R-017 Graceful Degradation), updated decision tree with Phase 3.5 branch, added ts-mindmap agents to systems list. All changes reference ADR-006 sections. |
