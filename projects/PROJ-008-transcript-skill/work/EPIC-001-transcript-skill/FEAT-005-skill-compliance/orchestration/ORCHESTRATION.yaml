@@ -1,0 +1,261 @@
+# ORCHESTRATION.yaml - Machine-Readable State (SSOT)
+# Workflow: FEAT-005 Skill Compliance
+# Version: 2.0.0 (Aligned with existing task files)
+# Created: 2026-01-30
+
+workflow:
+  id: "feat-005-compliance-20260130-001"
+  name: "FEAT-005 Skill Compliance Execution"
+  project_id: "PROJ-008-transcript-skill"
+  feature_id: "FEAT-005"
+  status: ACTIVE
+  created_at: "2026-01-30T22:00:00Z"
+  updated_at: "2026-01-30T23:00:00Z"
+
+tracks:
+  track_a:
+    name: "Sequential Compliance Chain"
+    description: "EN-027 → EN-028 → EN-029 → EN-030"
+    total_effort_hours: 33
+    status: PENDING
+
+    enablers:
+      - id: "EN-027"
+        name: "Agent Definition Compliance"
+        status: PENDING
+        effort_hours: 10
+        blocked_by: []
+        tasks:
+          - id: "TASK-400"
+            title: "Add identity section"
+            effort: 1
+            status: PENDING
+          - id: "TASK-401"
+            title: "Add capabilities section"
+            effort: 1.5
+            status: PENDING
+          - id: "TASK-402"
+            title: "Add guardrails section"
+            effort: 3
+            status: PENDING
+          - id: "TASK-403"
+            title: "Add validation section"
+            effort: 2
+            status: PENDING
+          - id: "TASK-404"
+            title: "Add constitution section"
+            effort: 1
+            status: PENDING
+          - id: "TASK-405"
+            title: "Add session_context section"
+            effort: 1
+            status: PENDING
+          - id: "TASK-406"
+            title: "Validate agent compliance"
+            effort: 0.5
+            status: PENDING
+        quality_gate:
+          id: "G-027"
+          type: "ps-critic"
+          threshold: 0.90
+          criteria: "Agent Compliance Checklist (A-001 through A-043)"
+          status: PENDING
+          score: null
+
+      - id: "EN-028"
+        name: "SKILL.md Compliance"
+        status: BLOCKED
+        effort_hours: 9
+        blocked_by: ["EN-027"]
+        tasks:
+          - id: "TASK-407"
+            title: "Add invoking section"
+            effort: 1
+            status: PENDING
+          - id: "TASK-408"
+            title: "Enhance state passing"
+            effort: 2
+            status: PENDING
+          - id: "TASK-409"
+            title: "Add persistence section"
+            effort: 1
+            status: PENDING
+          - id: "TASK-410"
+            title: "Add self-critique"
+            effort: 1
+            status: PENDING
+          - id: "TASK-411"
+            title: "Restructure persona/output"
+            effort: 2
+            status: PENDING
+        quality_gate:
+          id: "G-028"
+          type: "ps-critic"
+          threshold: 0.90
+          criteria: "SKILL.md Compliance Checklist (S-001 through S-051)"
+          status: PENDING
+          score: null
+
+      - id: "EN-029"
+        name: "Documentation Compliance"
+        status: BLOCKED
+        effort_hours: 9
+        blocked_by: ["EN-028"]
+        tasks:
+          - id: "TASK-412"
+            title: "Add L2 architect section"
+            effort: 3
+            status: PENDING
+          - id: "TASK-413"
+            title: "Create anti-patterns"
+            effort: 3
+            status: PENDING
+          - id: "TASK-414"
+            title: "Declare pattern refs"
+            effort: 2
+            status: PENDING
+          - id: "TASK-415"
+            title: "Add constraints section"
+            effort: 1
+            status: PENDING
+        quality_gate:
+          id: "G-029"
+          type: "ps-critic"
+          threshold: 0.90
+          criteria: "PLAYBOOK.md Triple-Lens Checklist"
+          status: PENDING
+          score: null
+
+      - id: "EN-030"
+        name: "Documentation Polish"
+        status: BLOCKED
+        effort_hours: 5
+        blocked_by: ["EN-029"]
+        tasks:
+          - id: "TASK-416"
+            title: "Add tool examples"
+            effort: 2
+            status: PENDING
+          - id: "TASK-417"
+            title: "Add design rationale"
+            effort: 2
+            status: PENDING
+          - id: "TASK-418"
+            title: "Add cross-skill refs"
+            effort: 1
+            status: PENDING
+        quality_gate:
+          id: "G-030"
+          type: "ps-critic"
+          threshold: 0.95
+          criteria: "Final polish - no regressions, integration complete"
+          status: PENDING
+          score: null
+
+  track_b:
+    name: "Model Selection (Parallel)"
+    description: "EN-031 - Independent of Track A"
+    total_effort_hours: 34
+    status: PENDING
+
+    enablers:
+      - id: "EN-031"
+        name: "Model Selection Capability"
+        status: PENDING
+        effort_hours: 34
+        blocked_by: []
+        phases:
+          - phase: 1
+            name: "Validation"
+            tasks:
+              - id: "TASK-419"
+                title: "Validate Task tool model parameter"
+                effort: 2
+                status: PENDING
+                critical: true
+          - phase: 2
+            name: "Implementation"
+            tasks:
+              - id: "TASK-420"
+                title: "Add CLI model params"
+                effort: 8
+                status: PENDING
+              - id: "TASK-421"
+                title: "Update SKILL.md docs"
+                effort: 4
+                status: PENDING
+              - id: "TASK-422"
+                title: "Update agent definitions"
+                effort: 4
+                status: PENDING
+              - id: "TASK-423"
+                title: "Implement profiles"
+                effort: 8
+                status: PENDING
+          - phase: 3
+            name: "Testing"
+            tasks:
+              - id: "TASK-424"
+                title: "Integration testing"
+                effort: 8
+                status: PENDING
+        quality_gate:
+          id: "G-031"
+          type: "ps-critic"
+          threshold: 0.90
+          criteria: "Model selection requirements from EN-031 AC"
+          status: PENDING
+          score: null
+
+cross_pollination:
+  - id: "CP-1"
+    trigger: "TASK-419 complete"
+    from: "track_b"
+    to: "track_a"
+    information: "Task tool model param validation results"
+    status: PENDING
+
+  - id: "CP-2"
+    trigger: "EN-027 complete"
+    from: "track_a"
+    to: "track_b"
+    information: "Agent YAML schema patterns for TASK-422"
+    status: PENDING
+
+  - id: "CP-3"
+    trigger: "TASK-420 complete"
+    from: "track_b"
+    to: "track_a"
+    information: "CLI parameter design for SKILL.md documentation"
+    status: PENDING
+
+quality_gates:
+  final:
+    id: "G-FINAL"
+    type: "ps-critic"
+    threshold: 0.90
+    criteria: "Aggregate compliance >= 95%, all 25 tasks complete"
+    status: PENDING
+    score: null
+
+checkpoints:
+  entries: []
+  latest_id: null
+
+metrics:
+  tasks_total: 25
+  tasks_complete: 0
+  enablers_total: 5
+  enablers_complete: 0
+  quality_gates_total: 6
+  quality_gates_passed: 0
+  effort_total_hours: 67
+  effort_complete_hours: 0
+  estimated_days: 6
+  actual_days: null
+  completion_percentage: 0
+
+execution_log:
+  - timestamp: "2026-01-30T23:00:00Z"
+    event: "WORKFLOW_CREATED"
+    details: "Orchestration plan v2.0 created, aligned with existing task files"
