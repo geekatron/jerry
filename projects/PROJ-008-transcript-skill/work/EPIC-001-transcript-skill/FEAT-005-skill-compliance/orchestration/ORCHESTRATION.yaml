@@ -1,8 +1,8 @@
 # ORCHESTRATION.yaml - Machine-Readable State (SSOT)
 # Workflow: FEAT-005 Skill Compliance
-# Version: 2.2.0 (Added adversarial_protocol section with 6 prompting patterns)
+# Version: 3.0.0 (TASK-419 as Phase 0 sequential hard gate)
 # Created: 2026-01-30
-# Updated: 2026-01-31 - Added adversarial prompting protocol for quality gates
+# Updated: 2026-01-31 - v3.0.0 per DISC-003/DEC-002 dependency chain correction
 
 workflow:
   id: "feat-005-compliance-20260130-001"
@@ -10,16 +10,87 @@ workflow:
   project_id: "PROJ-008-transcript-skill"
   feature_id: "FEAT-005"
   status: ACTIVE
+  version: "3.0.0"
   created_at: "2026-01-30T22:00:00Z"
-  updated_at: "2026-01-31T02:00:00Z"
+  updated_at: "2026-01-31T04:00:00Z"
+
+# ============================================================================
+# VERSION 3.0.0 CRITICAL CHANGE
+# ============================================================================
+# DISC-003 identified a dependency chain flaw in v2.x:
+# - v2.x incorrectly showed EN-027 and TASK-419 as parallel
+# - TASK-419 results MUST inform EN-027 agent definition design
+# - v3.0.0 introduces Phase 0 as sequential hard gate
+#
+# Reference: FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md
+# Reference: FEAT-005--DEC-002-orchestration-v3-design-decisions.md
+# ============================================================================
+
+# ============================================================================
+# PHASE 0: SEQUENTIAL HARD GATE (v3.0.0 NEW)
+# ============================================================================
+# TASK-419 MUST complete BEFORE any parallel work begins.
+# If TASK-419 fails, escalate to user - do NOT proceed with parallel tracks.
+# ============================================================================
+phase_0:
+  name: "Sequential Hard Gate"
+  description: "TASK-419 validates Task tool model parameter before parallel execution"
+  status: PENDING
+  is_hard_gate: true
+  failure_action: "ESCALATE_TO_USER"
+
+  task:
+    id: "TASK-419"
+    title: "Validate Task tool model parameter"
+    effort_hours: 2
+    status: PENDING
+    critical: true
+    artifact_path: "EN-031-model-selection-capability/TASK-419-validate-task-model.md"
+    acceptance_criteria:
+      - "Confirm model parameter exists in Task tool schema"
+      - "Test invocation with model: haiku - verify haiku model used"
+      - "Test invocation with model: sonnet - verify sonnet model used"
+      - "Document exact parameter values (haiku vs claude-3-haiku)"
+      - "Document any limitations or edge cases"
+
+  quality_gate:
+    id: "G-PHASE0"
+    type: "validation"
+    threshold: "PASS"  # Binary pass/fail, not numeric score
+    criteria: "Model parameter works as documented"
+    status: PENDING
+    result: null  # PASS | FAIL
+
+  failure_protocol:
+    description: "If TASK-419 fails, workflow is blocked until user decision"
+    impediment_path: "FEAT-005--IMP-001-task-tool-model-param-failure.md"
+    escalation_message: |
+      CRITICAL: TASK-419 (Model Parameter Validation) FAILED.
+
+      This blocks the entire EN-031 Model Selection feature and affects
+      how EN-027 agent definitions should be structured.
+
+      Options:
+      a) Provide workaround or alternative approach
+      b) Descope EN-031 entirely, proceed with Track A only
+      c) Pause workflow for manual investigation
+      d) Accept limitation and document as known constraint
+    user_options:
+      - id: "a"
+        label: "Provide workaround"
+        action: "User provides alternative approach"
+      - id: "b"
+        label: "Descope EN-031"
+        action: "Remove EN-031 from scope, continue Track A only"
+      - id: "c"
+        label: "Pause workflow"
+        action: "Halt all work pending investigation"
+      - id: "d"
+        label: "Accept limitation"
+        action: "Document as constraint, proceed with limitations"
 
 # ============================================================================
 # ADVERSARIAL FEEDBACK LOOP CONFIGURATION
-# ============================================================================
-# Defines the iterative refinement mechanism where ps-critic evaluates
-# deliverables and provides structured feedback for upstream refinement.
-#
-# Flow: Implementer → Deliverables → ps-critic → Score Check → Pass/Iterate
 # ============================================================================
 feedback_loop:
   enabled: true
@@ -27,52 +98,36 @@ feedback_loop:
   escalation_on_failure: true
   critique_artifact_dir: "orchestration/critiques"
 
-  # ps-critic invocation template
   critic_config:
     agent: "ps-critic"
     model: "sonnet"
     output_format: "structured_markdown"
 
-  # Escalation protocol when max_iterations reached without passing
   escalation:
     notify_user: true
     block_downstream: true
     require_human_decision: true
 
-  # ============================================================================
-  # ADVERSARIAL PROMPTING PROTOCOL
-  # ============================================================================
-  # Six patterns to transform constructive ps-critic into adversarial evaluator
-  # Reference: FEAT-003--DISC-002-adversarial-prompting-protocol.md
-  # ============================================================================
   adversarial_protocol:
     enabled: true
     version: "1.0.0"
+    reference: "FEAT-003--DISC-002-adversarial-prompting-protocol.md"
 
-    # Pattern 1: Red Team Framing
     framing: |
       You are operating as an ADVERSARIAL CRITIC, not a constructive reviewer.
       Assume problems EXIST until proven otherwise. Your job is to FIND flaws,
       not validate work. A "clean" review with no findings is SUSPICIOUS.
 
-    # Pattern 2: Mandatory Findings
     minimum_findings: 3
     perfect_score_threshold: 0.95
     perfect_score_requires_justification: true
-
-    # Pattern 3: Devil's Advocate (applied per-section)
     devils_advocate_enabled: true
     challenges_per_section: 1
-
-    # Pattern 4: Checklist Enforcement
     checklist_evidence_required: true
     partial_credit_allowed: false
-
-    # Pattern 5: Counter-Examples
     counter_examples_required: true
     min_counter_examples: 3
 
-    # Pattern 6: Score Calibration
     score_calibration:
       expected_first_pass_range: [0.60, 0.80]
       high_score_justification_threshold: 0.90
@@ -84,14 +139,13 @@ feedback_loop:
         0.50-0.69: Needs Work (20-30%) - significant gaps
         0.00-0.49: Major Revision (10-15%) - fundamental issues
 
-    # Prompt template for invocation
     prompt_template: |
       ## ADVERSARIAL EVALUATION MODE ACTIVATED
 
       You are operating as an ADVERSARIAL CRITIC for quality gate {gate_id}.
       Apply ALL six adversarial patterns:
       1. Red Team Framing - Assume problems exist
-      2. Mandatory Findings - Identify ≥3 issues
+      2. Mandatory Findings - Identify >=3 issues
       3. Devil's Advocate - Challenge each claim
       4. Checklist Enforcement - No partial credit
       5. Counter-Examples - Find failure scenarios
@@ -106,19 +160,26 @@ feedback_loop:
 
       REMEMBER: A review finding zero issues requires explicit justification.
 
+# ============================================================================
+# TRACK A: SEQUENTIAL COMPLIANCE CHAIN
+# ============================================================================
+# BLOCKED BY: Phase 0 (TASK-419 must PASS first)
+# ============================================================================
 tracks:
   track_a:
     name: "Sequential Compliance Chain"
-    description: "EN-027 → EN-028 → EN-029 → EN-030"
+    description: "EN-027 -> EN-028 -> EN-029 -> EN-030"
     total_effort_hours: 33
-    status: PENDING
+    status: BLOCKED
+    blocked_by: ["phase_0"]  # v3.0.0: Must wait for Phase 0
 
     enablers:
       - id: "EN-027"
         name: "Agent Definition Compliance"
-        status: PENDING
+        status: BLOCKED
         effort_hours: 10
-        blocked_by: []
+        blocked_by: ["phase_0"]  # v3.0.0: Explicitly blocked by Phase 0
+        consumes_cross_pollination: ["CP-1"]  # Uses TASK-419 results
         tasks:
           - id: "TASK-400"
             title: "Add identity section"
@@ -155,7 +216,6 @@ tracks:
           criteria: "Agent Compliance Checklist (A-001 through A-043)"
           status: PENDING
           score: null
-          # Adversarial feedback loop state
           iteration:
             current: 0
             max: 3
@@ -196,7 +256,6 @@ tracks:
           criteria: "SKILL.md Compliance Checklist (S-001 through S-051)"
           status: PENDING
           score: null
-          # Adversarial feedback loop state
           iteration:
             current: 0
             max: 3
@@ -233,7 +292,6 @@ tracks:
           criteria: "PLAYBOOK.md Triple-Lens Checklist"
           status: PENDING
           score: null
-          # Adversarial feedback loop state
           iteration:
             current: 0
             max: 3
@@ -266,7 +324,6 @@ tracks:
           criteria: "Final polish - no regressions, integration complete"
           status: PENDING
           score: null
-          # Adversarial feedback loop state
           iteration:
             current: 0
             max: 3
@@ -274,34 +331,37 @@ tracks:
           critique_artifacts: []
           last_critique_path: null
 
+  # ============================================================================
+  # TRACK B: MODEL SELECTION (PHASES 2-3 ONLY)
+  # ============================================================================
+  # Note: TASK-419 (Phase 1) is now in Phase 0 above
+  # Track B Phase 2-3 are BLOCKED BY Phase 0
+  # ============================================================================
   track_b:
-    name: "Model Selection (Parallel)"
-    description: "EN-031 - Independent of Track A"
-    total_effort_hours: 34
-    status: PENDING
+    name: "Model Selection (Phases 2-3)"
+    description: "EN-031 Phases 2-3 - Implementation and Testing"
+    total_effort_hours: 32  # Reduced: TASK-419 (2h) moved to Phase 0
+    status: BLOCKED
+    blocked_by: ["phase_0"]  # v3.0.0: Must wait for Phase 0
 
     enablers:
       - id: "EN-031"
-        name: "Model Selection Capability"
-        status: PENDING
-        effort_hours: 34
-        blocked_by: []
+        name: "Model Selection Capability (Phases 2-3)"
+        status: BLOCKED
+        effort_hours: 32
+        blocked_by: ["phase_0"]
+        consumes_cross_pollination: ["CP-2"]  # Uses EN-027 patterns for TASK-422
         phases:
-          - phase: 1
-            name: "Validation"
-            tasks:
-              - id: "TASK-419"
-                title: "Validate Task tool model parameter"
-                effort: 2
-                status: PENDING
-                critical: true
+          # Note: Phase 1 (TASK-419) is now in phase_0 section above
           - phase: 2
             name: "Implementation"
+            blocked_by: ["phase_0"]
             tasks:
               - id: "TASK-420"
                 title: "Add CLI model params"
                 effort: 8
                 status: PENDING
+                produces_cross_pollination: "CP-3"
               - id: "TASK-421"
                 title: "Update SKILL.md docs"
                 effort: 4
@@ -310,12 +370,14 @@ tracks:
                 title: "Update agent definitions"
                 effort: 4
                 status: PENDING
+                consumes_cross_pollination: "CP-2"
               - id: "TASK-423"
                 title: "Implement profiles"
                 effort: 8
                 status: PENDING
           - phase: 3
             name: "Testing"
+            blocked_by: ["phase_2"]
             tasks:
               - id: "TASK-424"
                 title: "Integration testing"
@@ -328,7 +390,6 @@ tracks:
           criteria: "Model selection requirements from EN-031 AC"
           status: PENDING
           score: null
-          # Adversarial feedback loop state
           iteration:
             current: 0
             max: 3
@@ -336,29 +397,127 @@ tracks:
           critique_artifacts: []
           last_critique_path: null
 
+# ============================================================================
+# CROSS-POLLINATION SPECIFICATION (v3.0.0 DETAILED)
+# ============================================================================
+# Reference: DEC-002:D-005 requires no ambiguity in cross-pollination
+# ============================================================================
 cross_pollination:
   - id: "CP-1"
-    trigger: "TASK-419 complete"
-    from: "track_b"
-    to: "track_a"
-    information: "Task tool model param validation results"
+    name: "TASK-419 Results -> EN-027 Agent Definitions"
+    trigger: "TASK-419 complete (Phase 0 PASS)"
+    trigger_condition: "phase_0.task.status == COMPLETE AND phase_0.quality_gate.result == PASS"
+    from:
+      phase: "phase_0"
+      task: "TASK-419"
+    to:
+      track: "track_a"
+      enabler: "EN-027"
+    information:
+      summary: "Model parameter validation results inform agent definition design"
+      details:
+        - "Model parameter syntax (e.g., 'haiku' vs 'claude-3-haiku')"
+        - "Validation status (PASS/FAIL)"
+        - "Edge cases discovered"
+        - "Recommended default values"
+      artifact_path: "EN-031-model-selection-capability/TASK-419-validate-task-model.md"
+    usage_in_target:
+      - "Correct model override syntax in agent YAML sections"
+      - "Whether to include model override capability at all"
+      - "Guardrails for model selection input_validation rules"
+      - "Default model in agent definitions"
     status: PENDING
 
   - id: "CP-2"
-    trigger: "EN-027 complete"
-    from: "track_a"
-    to: "track_b"
-    information: "Agent YAML schema patterns for TASK-422"
+    name: "EN-027 Patterns -> TASK-422 Agent Updates"
+    trigger: "EN-027 quality gate G-027 PASS"
+    trigger_condition: "tracks.track_a.enablers[EN-027].quality_gate.status == PASSED"
+    from:
+      track: "track_a"
+      enabler: "EN-027"
+    to:
+      track: "track_b"
+      task: "TASK-422"
+    information:
+      summary: "Agent YAML schema patterns for model override"
+      details:
+        - "Standard YAML structure for agents"
+        - "session_context.schema definition"
+        - "Constitution compliance patterns"
+        - "Guardrails patterns"
+      artifact_paths:
+        - "skills/transcript/agents/ts-parser.md"
+        - "skills/transcript/agents/ts-extractor.md"
+        - "skills/transcript/agents/ts-formatter.md"
+        - "skills/transcript/agents/ts-mindmap-mermaid.md"
+        - "skills/transcript/agents/ts-mindmap-ascii.md"
+    usage_in_target:
+      - "Add model_override section using consistent structure"
+      - "Add model configuration to session_context schema"
+      - "Ensure model selection follows P-020 (user authority)"
+      - "Add model-specific input validation rules"
     status: PENDING
 
   - id: "CP-3"
+    name: "TASK-420 CLI Design -> SKILL.md Documentation"
     trigger: "TASK-420 complete"
-    from: "track_b"
-    to: "track_a"
-    information: "CLI parameter design for SKILL.md documentation"
+    trigger_condition: "tracks.track_b.enablers[EN-031].phases[2].tasks[TASK-420].status == COMPLETE"
+    from:
+      track: "track_b"
+      task: "TASK-420"
+    to:
+      track: "track_a"
+      enabler: "EN-028"
+      task: "TASK-421"
+    information:
+      summary: "CLI parameter design for SKILL.md documentation"
+      details:
+        - "Exact CLI flag syntax (e.g., '--model-parser haiku')"
+        - "Parameter validation rules"
+        - "Default behavior"
+        - "Profile definitions"
+      artifact_path: "EN-031-model-selection-capability/TASK-420-add-cli-model-params.md"
+    usage_in_target:
+      - "Usage examples in SKILL.md Invoking section"
+      - "Input validation documentation in Parameters table"
+      - "Default values in parameter descriptions"
+      - "Model profile documentation in new section"
     status: PENDING
 
+# ============================================================================
+# QUALITY GATES SUMMARY
+# ============================================================================
 quality_gates:
+  phase_0:
+    id: "G-PHASE0"
+    type: "validation"
+    threshold: "PASS"
+    criteria: "TASK-419 model parameter validation"
+    status: PENDING
+    result: null
+
+  enabler_gates:
+    - id: "G-027"
+      enabler: "EN-027"
+      threshold: 0.90
+      status: PENDING
+    - id: "G-028"
+      enabler: "EN-028"
+      threshold: 0.90
+      status: PENDING
+    - id: "G-029"
+      enabler: "EN-029"
+      threshold: 0.90
+      status: PENDING
+    - id: "G-030"
+      enabler: "EN-030"
+      threshold: 0.95
+      status: PENDING
+    - id: "G-031"
+      enabler: "EN-031"
+      threshold: 0.90
+      status: PENDING
+
   final:
     id: "G-FINAL"
     type: "ps-critic"
@@ -366,54 +525,87 @@ quality_gates:
     criteria: "Aggregate compliance >= 95%, all 25 tasks complete"
     status: PENDING
     score: null
-    # Adversarial feedback loop state
     iteration:
       current: 0
-      max: 3
+      max: 1
       history: []
     critique_artifacts: []
     last_critique_path: null
 
+# ============================================================================
+# CHECKPOINTS
+# ============================================================================
 checkpoints:
+  definitions:
+    - id: "CP-PHASE0"
+      trigger: "Phase 0 complete"
+      description: "TASK-419 validation complete"
+    - id: "CP-001"
+      trigger: "EN-027 complete"
+      description: "Agent definitions done"
+    - id: "CP-002"
+      trigger: "EN-028 complete"
+      description: "SKILL.md stable"
+    - id: "CP-003"
+      trigger: "EN-029 complete"
+      description: "Documentation structure done"
+    - id: "CP-004"
+      trigger: "EN-030 complete"
+      description: "Track A done"
+    - id: "CP-005"
+      trigger: "EN-031 complete"
+      description: "Track B done"
+    - id: "CP-FINAL"
+      trigger: "All complete"
+      description: "Workflow complete"
   entries: []
   latest_id: null
 
+# ============================================================================
+# METRICS
+# ============================================================================
 metrics:
   tasks_total: 25
   tasks_complete: 0
+  phase_0_complete: false
   enablers_total: 5
   enablers_complete: 0
-  quality_gates_total: 6
+  quality_gates_total: 7  # G-PHASE0 + G-027 to G-031 + G-FINAL
   quality_gates_passed: 0
-  effort_total_hours: 67
+  effort_total_hours: 67  # 2h (Phase 0) + 33h (Track A) + 32h (Track B)
   effort_complete_hours: 0
   estimated_days: 6
   actual_days: null
   completion_percentage: 0
 
+# ============================================================================
+# EXECUTION LOG
+# ============================================================================
 execution_log:
   - timestamp: "2026-01-30T23:00:00Z"
     event: "WORKFLOW_CREATED"
-    details: "Orchestration plan v2.0 created, aligned with existing task files"
+    details: "Orchestration plan v2.0 created"
   - timestamp: "2026-01-31T00:30:00Z"
     event: "FEEDBACK_LOOP_ADDED"
-    details: "v2.1.0 - Added adversarial feedback loop mechanism with iteration tracking"
+    details: "v2.1.0 - Added adversarial feedback loop"
+  - timestamp: "2026-01-31T02:00:00Z"
+    event: "ADVERSARIAL_PROTOCOL_ADDED"
+    details: "v2.2.0 - Added 6 adversarial prompting patterns"
+  - timestamp: "2026-01-31T04:00:00Z"
+    event: "VERSION_3_APPROVED"
+    details: "v3.0.0 - TASK-419 as Phase 0 sequential hard gate (DISC-003/DEC-002)"
 
 # ============================================================================
-# SCHEMA DOCUMENTATION: Iteration History Entry
+# SCHEMA DOCUMENTATION
 # ============================================================================
-# Each entry in quality_gate.iteration.history follows this schema:
+# Phase 0 is a NEW construct in v3.0.0:
+# - Contains exactly one task (TASK-419) that gates all downstream work
+# - Has binary PASS/FAIL quality gate (not numeric score)
+# - If FAIL: workflow is BLOCKED, user decision required
+# - If PASS: parallel tracks can begin
 #
-#   - iteration: 1                           # Iteration number (1-based)
-#     timestamp: "2026-01-31T10:00:00Z"      # When critique was generated
-#     score: 0.82                            # Score from ps-critic
-#     passed: false                          # Did it meet threshold?
-#     critique_path: "critiques/G-027-iteration-1.md"
-#     findings_count: 5                      # Number of issues found
-#     critical_findings: 2                   # Number of CRITICAL severity
-#
-# When iteration.current reaches max (3), escalation is triggered:
-#   - status changes to ESCALATED
-#   - escalation event logged
-#   - downstream enablers remain BLOCKED until user decision
+# Cross-pollination now includes:
+# - trigger_condition: Machine-readable condition for automation
+# - information.details: Array of specific data transferred
+# - usage_in_target: How the consuming task uses the information
 # ============================================================================
