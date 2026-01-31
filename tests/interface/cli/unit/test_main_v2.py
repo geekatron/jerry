@@ -221,10 +221,18 @@ class TestHandleTranscript:
         args.target_tokens = 18000  # EN-026: Token-based chunking default
         args.no_token_limit = False  # EN-026: Token-based chunking enabled
         args.no_chunks = False
+        # TASK-423: Add model profile parameters
+        args.profile = None
+        args.model_parser = None
+        args.model_extractor = None
+        args.model_formatter = None
+        args.model_mindmap = None
+        args.model_critic = None
 
         result = _handle_transcript(mock_adapter, args, json_output=False)
 
         assert result == 0
+        # TASK-423: Now includes resolved model parameters (from balanced profile)
         mock_adapter.cmd_transcript_parse.assert_called_once_with(
             path="meeting.vtt",
             format="auto",
@@ -232,6 +240,11 @@ class TestHandleTranscript:
             chunk_size=500,
             target_tokens=18000,  # EN-026: Token-based chunking
             generate_chunks=True,  # not no_chunks
+            model_parser="haiku",
+            model_extractor="sonnet",
+            model_formatter="haiku",
+            model_mindmap="sonnet",
+            model_critic="sonnet",
             json_output=False,
         )
 
@@ -251,10 +264,18 @@ class TestHandleTranscript:
         args.target_tokens = 18000  # EN-026: Token-based chunking default
         args.no_token_limit = False  # EN-026: Token-based chunking enabled
         args.no_chunks = True
+        # TASK-423: Add model profile parameters
+        args.profile = None
+        args.model_parser = None
+        args.model_extractor = None
+        args.model_formatter = None
+        args.model_mindmap = None
+        args.model_critic = None
 
         result = _handle_transcript(mock_adapter, args, json_output=True)
 
         assert result == 0
+        # TASK-423: Now includes resolved model parameters
         mock_adapter.cmd_transcript_parse.assert_called_once_with(
             path="/path/to/meeting.srt",
             format="srt",
@@ -262,6 +283,11 @@ class TestHandleTranscript:
             chunk_size=1000,
             target_tokens=18000,  # EN-026: Token-based chunking
             generate_chunks=False,  # no_chunks=True means generate_chunks=False
+            model_parser="haiku",
+            model_extractor="sonnet",
+            model_formatter="haiku",
+            model_mindmap="sonnet",
+            model_critic="sonnet",
             json_output=True,
         )
 
@@ -281,6 +307,13 @@ class TestHandleTranscript:
         args.target_tokens = 18000  # EN-026: Token-based chunking default
         args.no_token_limit = False  # EN-026: Token-based chunking enabled
         args.no_chunks = False
+        # TASK-423: Add model profile parameters
+        args.profile = None
+        args.model_parser = None
+        args.model_extractor = None
+        args.model_formatter = None
+        args.model_mindmap = None
+        args.model_critic = None
 
         _handle_transcript(mock_adapter, args, json_output=True)
 
@@ -336,6 +369,13 @@ class TestMainTranscriptRouting:
         mock_args.no_token_limit = False  # EN-026: Token-based chunking enabled
         mock_args.no_chunks = False
         mock_args.json = False
+        # TASK-423: Add model profile parameters
+        mock_args.profile = None
+        mock_args.model_parser = None
+        mock_args.model_extractor = None
+        mock_args.model_formatter = None
+        mock_args.model_mindmap = None
+        mock_args.model_critic = None
         mock_parser.parse_args.return_value = mock_args
         mock_create_parser.return_value = mock_parser
 

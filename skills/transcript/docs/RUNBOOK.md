@@ -16,7 +16,7 @@ RELOCATED: 2026-01-26 per DISC-004
 # === IDENTITY ===
 id: "RB-TRANSCRIPT-001"
 title: "Runbook: Transcript Skill Troubleshooting"
-version: "1.1.0"
+version: "1.3.1"
 status: "ACTIVE"
 
 # === OWNERSHIP ===
@@ -25,7 +25,7 @@ author: "ps-architect"
 
 # === TIMESTAMPS ===
 created: "2026-01-26T10:00:00Z"
-updated: "2026-01-30T14:00:00Z"
+updated: "2026-01-30T18:00:00Z"
 
 # === SCOPE ===
 systems:
@@ -34,6 +34,15 @@ systems:
   - "ts-formatter"
   - "ts-mindmap-mermaid"
   - "ts-mindmap-ascii"
+  - "ps-critic"
+
+# === TRACEABILITY ===
+work_items:
+  epic: "EPIC-001"
+  feature: "FEAT-005"
+  enabler: "EN-029"
+  tasks:
+    - "TASK-414"  # Pattern references
 ```
 
 ---
@@ -153,6 +162,77 @@ flowchart TD
 
 **CRITICAL:** Any hallucination triggers immediate L2 escalation.
 
+### Tool Example: Validating Citations with Grep
+
+**Scenario:** Verify all action items have source citations
+
+**Step 1: Search for action items**
+
+```
+Invoke Grep tool with:
+- pattern: "^## \\d+\\. "  # Markdown heading pattern
+- path: "transcript-meeting-001/04-action-items.md"
+- output_mode: "content"
+```
+
+**Returns:**
+```
+## 1. Implement user authentication
+## 2. Fix navigation bug
+## 3. Review deployment process
+```
+
+**Step 2: Verify each has a citation**
+
+```
+Invoke Grep tool with:
+- pattern: "\\*\\*Source:\\*\\*"
+- path: "transcript-meeting-001/04-action-items.md"
+- output_mode: "count"
+```
+
+**Returns:**
+```
+count: 3  # Should match action item count
+```
+
+**Step 3: Check citation format**
+
+```
+Invoke Grep tool with:
+- pattern: "\\[\\d{2}:\\d{2}:\\d{2}\\]"  # Timestamp format [HH:MM:SS]
+- path: "transcript-meeting-001/04-action-items.md"
+- output_mode: "content"
+```
+
+**Returns:**
+```
+- Timestamp: [00:15:32]
+- Timestamp: [00:23:45]
+- Timestamp: [01:02:18]
+```
+
+**Quality check logic:**
+
+```
+IF action_item_count != citation_count:
+    Flag as quality failure (T-004)
+    Report missing citations
+ELSE IF any citation missing timestamp:
+    Flag as quality warning
+ELSE:
+    Pass citation validation
+```
+
+**Verified Citation Structure (2026-01-30 test):**
+```
+Citation format in action items:
+- Segment: [#seg-0106](./02-transcript-part-1.md#seg-0106)
+- Timestamp: 00:09:37.500
+- Anchor: `priority_one_microservices`
+- Text Snippet: (quote from transcript)
+```
+
 ### 4.6 R-014: JSON Schema Breaking Changes
 
 **Symptoms:**
@@ -215,6 +295,80 @@ flowchart TD
 
 **Reference:** EN-026-token-based-chunking.md, BUG-001-chunk-token-overflow.md
 
+### Tool Example: Discovering Packet Files for Validation
+
+**Scenario:** ps-critic needs to find all packet files for quality review
+
+**Step 1: Discover core packet files**
+
+```
+Invoke Glob tool with:
+- pattern: "transcript-*/0*.md"
+```
+
+**Returns:**
+```
+transcript-meeting-001/00-index.md
+transcript-meeting-001/01-summary.md
+transcript-meeting-001/02-transcript.md
+transcript-meeting-001/03-speakers.md
+transcript-meeting-001/04-action-items.md
+transcript-meeting-001/05-decisions.md
+transcript-meeting-001/06-questions.md
+transcript-meeting-001/07-topics.md
+```
+
+**Step 2: Check for split files**
+
+```
+Invoke Glob tool with:
+- pattern: "transcript-*/02-transcript-part-*.md"
+```
+
+**Returns (if transcript was split):**
+```
+transcript-meeting-001/02-transcript-part-001.md
+transcript-meeting-001/02-transcript-part-002.md
+transcript-meeting-001/02-transcript-part-003.md
+```
+
+**Step 3: Discover mindmap files**
+
+```
+Invoke Glob tool with:
+- pattern: "transcript-*/08-mindmap/*"
+```
+
+**Returns (if mindmaps generated):**
+```
+transcript-meeting-001/08-mindmap/mindmap.mmd
+transcript-meeting-001/08-mindmap/mindmap.ascii.txt
+```
+
+**Usage in ps-critic workflow:**
+
+```
+1. Glob for packet files → validate count (8 core files expected)
+2. Read each file with Read tool → validate structure
+3. Glob for split files → add to validation list if present
+4. Glob for mindmap files → validate MM-*/AM-* criteria if present
+5. Aggregate quality scores → generate quality-review.md
+```
+
+**Verified Output (2026-01-30 test):**
+```
+$ find transcript-meeting-006/packet -name "0*.md" | sort
+00-index.md
+01-summary.md
+02-transcript-part-1.md
+02-transcript-part-2.md
+03-speakers.md
+04-action-items.md
+05-decisions.md
+06-questions.md
+07-topics.md
+```
+
 ---
 
 ## L1: Mindmap Diagnostic Procedures
@@ -243,7 +397,7 @@ flowchart TD
 - Unbalanced parentheses in `root((Title))`
 - Special characters in node labels (escape with quotes)
 
-**Reference:** ADR-006 Section 5.5 (MM-001 criterion), ts-critic-extension.md
+**Reference:** [ADR-006 - ps-critic Validation Criteria](../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md#ps-critic-validation-criteria) (MM-001 criterion), ts-critic-extension.md
 
 ### 4.8 R-016: ASCII Width Exceeded (AM-001)
 
@@ -270,7 +424,7 @@ flowchart TD
 - Missing legend placement calculation
 - Nested hierarchy causing deep indentation
 
-**Reference:** ADR-006 Section 5.5 (AM-001 criterion), ts-critic-extension.md
+**Reference:** [ADR-006 - ps-critic Validation Criteria](../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md#ps-critic-validation-criteria) (AM-001 criterion), ts-critic-extension.md
 
 ### 4.9 R-017: Mindmap Generation Failed (Graceful Degradation)
 
@@ -279,7 +433,7 @@ flowchart TD
 - Warning message in pipeline output
 - `08-mindmap/` directory missing or incomplete
 
-**Resolution (Per ADR-006 Section 5.4):**
+**Resolution (Per [ADR-006 - Graceful Degradation Design](../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md#graceful-degradation-design)):**
 
 1. **Verify core packet is intact:**
    ```bash
@@ -314,7 +468,7 @@ If mindmap generation fails repeatedly:
 - L2: Review ts-mindmap agent definitions
 - L3: Verify ADR-006 compliance in pipeline orchestration
 
-**Reference:** ADR-006 Section 5.4 (Graceful Degradation), PLAYBOOK.md Phase 3.5
+**Reference:** [ADR-006 - Graceful Degradation Design](../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md#graceful-degradation-design), PLAYBOOK.md Phase 3.5
 
 ---
 
@@ -338,10 +492,28 @@ If mindmap generation fails repeatedly:
 
 ---
 
+## Pattern References
+
+This runbook's troubleshooting procedures align with Jerry patterns:
+
+| Pattern ID | Pattern Name | Runbook Application |
+|------------|--------------|---------------------|
+| PAT-RESILIENCE-001 | Graceful Degradation | R-017 (mindmap failure recovery) |
+| PAT-RESILIENCE-002 | Rollback Capability | All rollback procedures (R-002 through R-018) |
+| PAT-QUALITY-002 | Citation Validation | R-008 (hallucination detection) |
+| PAT-DATA-002 | Chunking Strategy | R-018 (token overflow mitigation) |
+
+**Anti-Pattern Detection:**
+- AP-001: Diagnostic checks for canonical-transcript.json misuse
+- AP-002: Procedures assume quality gates in use
+- AP-005: R-008 explicitly checks for missing citations
+
+---
+
 ## Related Documents
 
 - [SKILL.md](../SKILL.md) - Skill definition
-- [PLAYBOOK.md](./PLAYBOOK.md) - Execution guide
+- [PLAYBOOK.md](./PLAYBOOK.md) - Execution guide (see §12 Anti-Patterns)
 - [ts-parser.md](../agents/ts-parser.md) - Parser agent
 - [ts-extractor.md](../agents/ts-extractor.md) - Extractor agent
 - [ts-formatter.md](../agents/ts-formatter.md) - Formatter agent
@@ -349,13 +521,19 @@ If mindmap generation fails repeatedly:
 - [ts-mindmap-ascii.md](../agents/ts-mindmap-ascii.md) - ASCII mindmap agent
 - [ts-critic-extension.md](../validation/ts-critic-extension.md) - Mindmap validation criteria (MM-*/AM-*)
 - [ADR-006](../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md) - Mindmap Pipeline Integration Decision
+- [Jerry Pattern Catalog](../../../.claude/patterns/PATTERN-CATALOG.md) - Full pattern reference
 
 ---
 
-*Runbook Version: 1.2.0*
-*Constitutional Compliance: P-002 (persisted), P-004 (provenance)*
+*Runbook Version: 1.3.1*
+*Constitutional Compliance: P-001, P-002, P-004*
+*Pattern Compliance: PAT-RESILIENCE-001, PAT-QUALITY-002*
 *Risk Coverage: 6/6 YELLOW risks from FMEA + 3 mindmap risks (R-015, R-016, R-017) + 1 token risk (R-018)*
 *Created: 2026-01-26*
-*Updated: 2026-01-30 per EN-024 (Mindmap Pipeline Integration)*
-*Updated: 2026-01-30 per EN-026 (Token-Based Chunking - R-018 added)*
-*Relocated: 2026-01-26 per DISC-004*
+*Updated: 2026-01-30*
+*Change Log:*
+- *v1.3.1 (2026-01-30): EN-030 TASK-416 - Added Glob/Grep tool examples for file discovery and citation validation with execution evidence*
+- *v1.3.0 (2026-01-30): EN-029 - Added pattern references section*
+- *v1.2.0 (2026-01-30): EN-026 - Added R-018 token overflow risk*
+- *v1.1.0 (2026-01-30): EN-024 - Added mindmap diagnostics (R-015, R-016, R-017)*
+- *v1.0.0 (2026-01-26): Initial version per EN-005*

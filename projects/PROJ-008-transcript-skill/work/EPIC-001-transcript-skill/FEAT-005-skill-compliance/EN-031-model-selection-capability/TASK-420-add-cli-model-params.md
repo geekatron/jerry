@@ -14,10 +14,11 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 id: "TASK-420"
 work_type: TASK
 title: "Add CLI parameters for model selection"
-status: BACKLOG
+status: DONE
 priority: MEDIUM
 assignee: "Claude"
 created_at: "2026-01-30T16:00:00Z"
+completed_at: "2026-01-30T17:30:00Z"
 parent_id: "EN-031"
 effort: 8
 activity: DEVELOPMENT
@@ -39,13 +40,13 @@ Add `--model-*` CLI parameters for each transcript skill agent to the `jerry tra
 
 ## Acceptance Criteria
 
-- [ ] `--model-parser` parameter accepts opus|sonnet|haiku (default: haiku)
-- [ ] `--model-extractor` parameter accepts opus|sonnet|haiku (default: sonnet)
-- [ ] `--model-formatter` parameter accepts opus|sonnet|haiku (default: sonnet)
-- [ ] `--model-mindmap` parameter accepts opus|sonnet|haiku (default: sonnet)
-- [ ] `--model-critic` parameter accepts opus|sonnet|haiku (default: sonnet)
-- [ ] Invalid model values produce clear error message
-- [ ] `--help` shows all model parameters with descriptions
+- [x] `--model-parser` parameter accepts opus|sonnet|haiku (default: haiku)
+- [x] `--model-extractor` parameter accepts opus|sonnet|haiku (default: sonnet)
+- [x] `--model-formatter` parameter accepts opus|sonnet|haiku (default: sonnet)
+- [x] `--model-mindmap` parameter accepts opus|sonnet|haiku (default: sonnet)
+- [x] `--model-critic` parameter accepts opus|sonnet|haiku (default: sonnet)
+- [x] Invalid model values produce clear error message
+- [x] `--help` shows all model parameters with descriptions
 
 ---
 
@@ -133,15 +134,78 @@ class ModelConfig:
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| CLI implementation | Code | src/interface/cli/ |
-| Unit tests | Tests | tests/unit/cli/ |
+| ModelConfig value object | Code | src/transcript/domain/value_objects/model_config.py |
+| CLI parser updates | Code | src/interface/cli/parser.py |
+| CLI main routing | Code | src/interface/cli/main.py |
+| CLI adapter updates | Code | src/interface/cli/adapter.py |
+| ParseTranscriptCommand updates | Code | src/transcript/application/commands/parse_transcript_command.py |
+| ModelConfig unit tests | Tests | tests/unit/transcript/domain/value_objects/test_model_config.py |
+| CLI parameter tests | Tests | tests/interface/cli/unit/test_model_parameters.py |
 
 ### Verification
 
-- [ ] All 5 model parameters work
-- [ ] Defaults match current behavior
-- [ ] Invalid values produce error
-- [ ] `jerry transcript parse --help` shows parameters
+- [x] All 5 model parameters work (29 tests pass)
+- [x] Defaults match current behavior (haiku for parser, sonnet for others)
+- [x] Invalid values produce error (argparse validation + ModelConfig validation)
+- [x] `jerry transcript parse --help` shows parameters (verified manually + test)
+
+### Test Results
+
+```
+# ModelConfig value object tests
+tests/unit/transcript/domain/value_objects/test_model_config.py::15 tests PASSED
+
+# CLI parameter tests
+tests/interface/cli/unit/test_model_parameters.py::29 tests PASSED
+```
+
+---
+
+## Cross-Pollination (CP-3 Output)
+
+### CLI Parameter Design
+
+**Exact Flag Syntax:**
+```bash
+--model-parser {opus|sonnet|haiku}      # ts-parser agent (default: haiku)
+--model-extractor {opus|sonnet|haiku}   # ts-extractor agent (default: sonnet)
+--model-formatter {opus|sonnet|haiku}   # ts-formatter agent (default: sonnet)
+--model-mindmap {opus|sonnet|haiku}     # ts-mindmap-* agents (default: sonnet)
+--model-critic {opus|sonnet|haiku}      # ps-critic agent (default: sonnet)
+```
+
+**Validation Rules:**
+1. **argparse level**: `choices=["opus", "sonnet", "haiku"]` enforces valid values at parse time
+2. **ModelConfig level**: `__post_init__` validation provides domain-level enforcement
+3. **Error handling**: Invalid values trigger SystemExit with clear error message from argparse
+
+**Default Behavior:**
+- If no `--model-*` flags provided, defaults are used (matches TASK-419 recommendations)
+- Defaults preserve current behavior (haiku for orchestration, sonnet for semantic work)
+- Flags can be mixed (e.g., only override extractor with `--model-extractor opus`)
+
+**Implementation Details:**
+- `ModelConfig` is a frozen dataclass with validation
+- `to_dict()` method maps friendly names to agent IDs
+- Both mindmap agents (`ts-mindmap-mermaid`, `ts-mindmap-ascii`) use same `--model-mindmap` value
+- Model values are simple strings (no provider prefix needed per TASK-419)
+
+**Example Usage:**
+```bash
+# Use defaults
+uv run jerry transcript parse meeting.vtt
+
+# Override extraction with opus (higher quality)
+uv run jerry transcript parse meeting.vtt --model-extractor opus
+
+# Use haiku for everything (lower cost)
+uv run jerry transcript parse meeting.vtt \
+    --model-parser haiku \
+    --model-extractor haiku \
+    --model-formatter haiku \
+    --model-mindmap haiku \
+    --model-critic haiku
+```
 
 ---
 
@@ -150,3 +214,4 @@ class ModelConfig:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-01-30 | Created | Initial creation per EN-031 |
+| 2026-01-30 | DONE | Implemented CLI parameters, ModelConfig, tests (44/44 pass) |

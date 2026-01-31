@@ -479,3 +479,53 @@ def _add_transcript_namespace(
         default=False,
         help="Skip chunk generation, output canonical JSON only",
     )
+
+    # Model selection parameters (TASK-420, TASK-423: EN-031 Model Selection Capability)
+    # Profile selection (TASK-423: Predefined model profiles)
+    parse_parser.add_argument(
+        "--profile",
+        choices=["economy", "balanced", "quality", "speed"],
+        default=None,
+        help=(
+            "Model profile: economy (all haiku), balanced (default), "
+            "quality (opus for critical), speed (all haiku). "
+            "Individual --model-* flags override profile."
+        ),
+    )
+
+    # Individual model overrides (take precedence over --profile)
+    parse_parser.add_argument(
+        "--model-parser",
+        dest="model_parser",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-parser agent (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-extractor",
+        dest="model_extractor",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-extractor agent (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-formatter",
+        dest="model_formatter",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-formatter agent (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-mindmap",
+        dest="model_mindmap",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ts-mindmap-* agents (overrides --profile)",
+    )
+    parse_parser.add_argument(
+        "--model-critic",
+        dest="model_critic",
+        choices=["opus", "sonnet", "haiku"],
+        default=None,
+        help="Model for ps-critic agent (overrides --profile)",
+    )

@@ -1236,7 +1236,7 @@ class CLIAdapter:
                 for k, v in simple_items:
                     if isinstance(v, bool):
                         lines.append(f"{k} = {str(v).lower()}")
-                    elif isinstance(v, (int, float)):
+                    elif isinstance(v, int | float):
                         lines.append(f"{k} = {v}")
                     else:
                         lines.append(f'{k} = "{v}"')
@@ -1333,6 +1333,11 @@ class CLIAdapter:
         chunk_size: int = 500,
         target_tokens: int | None = 18000,
         generate_chunks: bool = True,
+        model_parser: str = "haiku",
+        model_extractor: str = "sonnet",
+        model_formatter: str = "sonnet",
+        model_mindmap: str = "sonnet",
+        model_critic: str = "sonnet",
         json_output: bool = False,
     ) -> int:
         """Parse a transcript file to canonical JSON.
@@ -1344,6 +1349,11 @@ class CLIAdapter:
             chunk_size: Number of segments per chunk (deprecated, use target_tokens)
             target_tokens: Target tokens per chunk (default: 18000, recommended)
             generate_chunks: Whether to generate chunk files
+            model_parser: Model for ts-parser agent (default: haiku)
+            model_extractor: Model for ts-extractor agent (default: sonnet)
+            model_formatter: Model for ts-formatter agent (default: sonnet)
+            model_mindmap: Model for ts-mindmap-* agents (default: sonnet)
+            model_critic: Model for ps-critic agent (default: sonnet)
             json_output: Whether to output as JSON
 
         Returns:
@@ -1353,16 +1363,23 @@ class CLIAdapter:
             EN-026: target_tokens=18000 is the recommended default to ensure
             chunks fit within Claude Code Read limit (25K tokens).
 
+            TASK-420: Model selection parameters enable users to choose
+            which Claude model to use for each agent in the pipeline.
+
         References:
             - TDD-FEAT-004: Hybrid Infrastructure Design
             - EN-020: Python Parser Implementation
             - EN-021: Chunking Strategy
+            - EN-031: Model Selection Capability
 
         Example:
             >>> jerry transcript parse meeting.vtt
             Parsed: meeting.vtt
             Output: meeting-canonical.json
             Chunks: 6 files in chunks/
+
+            >>> jerry transcript parse meeting.vtt --model-extractor opus
+            Using opus for extraction (higher quality)
 
             >>> jerry transcript parse meeting.vtt --json
             {"success": true, "canonical_path": "...", "chunk_count": 6, ...}
@@ -1377,6 +1394,16 @@ class CLIAdapter:
         try:
             # Import command here to avoid circular imports at module level
             from src.transcript.application.commands import ParseTranscriptCommand
+            from src.transcript.domain.value_objects.model_config import ModelConfig
+
+            # Create model configuration (TASK-420: Model selection)
+            model_config = ModelConfig(
+                parser=model_parser,
+                extractor=model_extractor,
+                formatter=model_formatter,
+                mindmap=model_mindmap,
+                critic=model_critic,
+            )
 
             # Create parse command (EN-026: token-based chunking by default)
             command = ParseTranscriptCommand(
@@ -1386,6 +1413,7 @@ class CLIAdapter:
                 chunk_size=chunk_size,
                 target_tokens=target_tokens,
                 generate_chunks=generate_chunks,
+                model_config=model_config,
             )
 
             # Dispatch to handler
@@ -1433,7 +1461,10 @@ class CLIAdapter:
                     json.dumps(
                         {
                             "success": False,
-                            "error": {"code": "FILE_NOT_FOUND", "message": f"File not found: {path}"},
+                            "error": {
+                                "code": "FILE_NOT_FOUND",
+                                "message": f"File not found: {path}",
+                            },
                         }
                     )
                 )

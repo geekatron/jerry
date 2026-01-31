@@ -43,6 +43,7 @@ from src.bootstrap import (
     get_projects_directory,
 )
 from src.interface.cli.adapter import CLIAdapter
+from src.interface.cli.model_profiles import resolve_model_config
 from src.interface.cli.parser import create_parser
 
 if TYPE_CHECKING:
@@ -305,6 +306,16 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
         if getattr(args, "no_token_limit", False):
             target_tokens = None
 
+        # TASK-423: Resolve model configuration from profile and individual overrides
+        model_config = resolve_model_config(
+            profile=getattr(args, "profile", None),
+            model_parser=getattr(args, "model_parser", None),
+            model_extractor=getattr(args, "model_extractor", None),
+            model_formatter=getattr(args, "model_formatter", None),
+            model_mindmap=getattr(args, "model_mindmap", None),
+            model_critic=getattr(args, "model_critic", None),
+        )
+
         return adapter.cmd_transcript_parse(
             path=args.path,
             format=getattr(args, "format", "auto"),
@@ -312,6 +323,11 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
             chunk_size=getattr(args, "chunk_size", 500),
             target_tokens=target_tokens,
             generate_chunks=not getattr(args, "no_chunks", False),
+            model_parser=model_config["parser"],
+            model_extractor=model_config["extractor"],
+            model_formatter=model_config["formatter"],
+            model_mindmap=model_config["mindmap"],
+            model_critic=model_config["critic"],
             json_output=json_output,
         )
 

@@ -227,12 +227,17 @@ def main() -> int:
     log_file = get_log_file(plugin_root)
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
+    # Debug: Log startup
+    log_error(log_file, "DEBUG: Hook started")
+
     # Find uv
     uv_path = find_uv()
     if not uv_path:
         log_error(log_file, "ERROR: uv not found in PATH or common locations")
         output_error("uv package manager not found", log_file)
         return 0  # Exit 0 so Claude continues
+
+    log_error(log_file, f"DEBUG: Found uv at {uv_path}")
 
     # Change to plugin directory for uv to find pyproject.toml
     original_cwd = os.getcwd()
@@ -243,20 +248,26 @@ def main() -> int:
         output_error(f"Failed to cd to plugin directory: {plugin_root}", log_file)
         return 0
 
+    log_error(log_file, f"DEBUG: Changed to {plugin_root}, original cwd: {original_cwd}")
+
     try:
         # Sync dependencies (quiet mode)
+        log_error(log_file, "DEBUG: Starting uv sync...")
         sync_result = subprocess.run([uv_path, "sync", "--quiet"], capture_output=True, timeout=30)
+        log_error(log_file, f"DEBUG: uv sync completed with rc={sync_result.returncode}")
         if sync_result.returncode != 0:
             stderr = sync_result.stderr.decode("utf-8", errors="replace")
             log_error(log_file, f"WARNING: uv sync failed: {stderr}")
             # Continue anyway - deps might already be installed
 
         # EN-001: Call main CLI instead of deprecated jerry-session-start
+        log_error(log_file, "DEBUG: Starting jerry projects context...")
         result = subprocess.run(
             [uv_path, "run", "jerry", "--json", "projects", "context"],
             capture_output=True,
             timeout=30,
         )
+        log_error(log_file, f"DEBUG: jerry CLI completed with rc={result.returncode}")
 
         stdout = result.stdout.decode("utf-8", errors="replace")
 
@@ -277,8 +288,13 @@ def main() -> int:
             output_error(f"Invalid JSON from jerry CLI: {e}", log_file)
             return 0
 
-        # Check for pre-commit hooks
-        precommit_warning = check_precommit_hooks(plugin_root)
+        # Only check for pre-commit hooks if user is working IN the Jerry repository
+        # This prevents the "run make setup" warning from appearing in other repos
+        precommit_warning = None
+        user_cwd = Path(original_cwd).resolve()
+        jerry_root = plugin_root.resolve()
+        if user_cwd == jerry_root or jerry_root in user_cwd.parents:
+            precommit_warning = check_precommit_hooks(plugin_root)
 
         # Transform to hook format with BOTH systemMessage and additionalContext
         system_message, additional_context = format_hook_output(cli_data, precommit_warning)
