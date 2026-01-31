@@ -1,9 +1,9 @@
 # ORCHESTRATION WORKTRACKER: FEAT-005 Skill Compliance
 
 > **Workflow ID:** feat-005-compliance-20260130-001
-> **Version:** 2.0.0
+> **Version:** 2.1.0
 > **Status:** ACTIVE
-> **Last Updated:** 2026-01-30T23:00:00Z
+> **Last Updated:** 2026-01-31T00:30:00Z
 > **SSOT:** ORCHESTRATION.yaml
 
 ---
@@ -149,16 +149,42 @@
 
 ---
 
-## Quality Gate Summary
+## Quality Gate Summary (with Feedback Loop Tracking)
 
-| Gate | Enabler | Threshold | Score | Status |
-|------|---------|-----------|-------|--------|
-| G-027 | EN-027 | 0.90 | -.-- | ⬜ PENDING |
-| G-028 | EN-028 | 0.90 | -.-- | 🔒 BLOCKED |
-| G-029 | EN-029 | 0.90 | -.-- | 🔒 BLOCKED |
-| G-030 | EN-030 | 0.95 | -.-- | 🔒 BLOCKED |
-| G-031 | EN-031 | 0.90 | -.-- | ⬜ PENDING |
-| G-FINAL | All | 0.90 | -.-- | 🔒 BLOCKED |
+| Gate | Enabler | Threshold | Score | Iteration | Status | Last Critique |
+|------|---------|-----------|-------|-----------|--------|---------------|
+| G-027 | EN-027 | 0.90 | -.-- | 0/3 | ⬜ PENDING | - |
+| G-028 | EN-028 | 0.90 | -.-- | 0/3 | 🔒 BLOCKED | - |
+| G-029 | EN-029 | 0.90 | -.-- | 0/3 | 🔒 BLOCKED | - |
+| G-030 | EN-030 | 0.95 | -.-- | 0/3 | 🔒 BLOCKED | - |
+| G-031 | EN-031 | 0.90 | -.-- | 0/3 | ⬜ PENDING | - |
+| G-FINAL | All | 0.90 | -.-- | 0/3 | 🔒 BLOCKED | - |
+
+### Adversarial Feedback Loop Protocol
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  FEEDBACK LOOP: Implementer → ps-critic → Refine (max 3 iterations)         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  1. Complete enabler tasks                                                   │
+│  2. Submit to ps-critic for evaluation against checklist                     │
+│  3. IF score >= threshold: PASS → proceed to next enabler                   │
+│  4. IF score < threshold AND iteration < 3: REFINE → address findings       │
+│  5. IF iteration >= 3: ESCALATE → user decision required                    │
+│                                                                              │
+│  Critique artifacts: orchestration/critiques/{gate-id}-iteration-{n}.md     │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Critique Artifact Log
+
+| Gate | Iteration | Score | Findings | Critique Path | Timestamp |
+|------|-----------|-------|----------|---------------|-----------|
+| - | - | - | - | - | - |
+
+*No critiques generated yet*
 
 ---
 
@@ -180,6 +206,7 @@
 | Timestamp | Event | Details |
 |-----------|-------|---------|
 | 2026-01-30T23:00:00Z | WORKFLOW_CREATED | v2.0 aligned with existing task files |
+| 2026-01-31T00:30:00Z | FEEDBACK_LOOP_ADDED | v2.1 - Adversarial critic feedback loop with iteration tracking |
 
 ---
 
@@ -203,8 +230,9 @@ Both tracks can execute in parallel from day 1.
 | ✅ | COMPLETE - Successfully finished |
 | ❌ | FAILED - Needs attention |
 | 🔒 | BLOCKED - Waiting on dependency |
+| ⚠️ | ESCALATED - Max iterations reached, user decision required |
 
 ---
 
-*Worktracker Version: 2.0.0*
-*Last Updated: 2026-01-30T23:00:00Z*
+*Worktracker Version: 2.1.0*
+*Last Updated: 2026-01-31T00:30:00Z*

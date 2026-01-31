@@ -1,6 +1,6 @@
 # ORCHESTRATION.yaml - Machine-Readable State (SSOT)
 # Workflow: FEAT-005 Skill Compliance
-# Version: 2.0.0 (Aligned with existing task files)
+# Version: 2.1.0 (Added adversarial feedback loop mechanism)
 # Created: 2026-01-30
 
 workflow:
@@ -10,7 +10,33 @@ workflow:
   feature_id: "FEAT-005"
   status: ACTIVE
   created_at: "2026-01-30T22:00:00Z"
-  updated_at: "2026-01-30T23:00:00Z"
+  updated_at: "2026-01-31T00:30:00Z"
+
+# ============================================================================
+# ADVERSARIAL FEEDBACK LOOP CONFIGURATION
+# ============================================================================
+# Defines the iterative refinement mechanism where ps-critic evaluates
+# deliverables and provides structured feedback for upstream refinement.
+#
+# Flow: Implementer → Deliverables → ps-critic → Score Check → Pass/Iterate
+# ============================================================================
+feedback_loop:
+  enabled: true
+  max_iterations: 3
+  escalation_on_failure: true
+  critique_artifact_dir: "orchestration/critiques"
+
+  # ps-critic invocation template
+  critic_config:
+    agent: "ps-critic"
+    model: "sonnet"
+    output_format: "structured_markdown"
+
+  # Escalation protocol when max_iterations reached without passing
+  escalation:
+    notify_user: true
+    block_downstream: true
+    require_human_decision: true
 
 tracks:
   track_a:
@@ -61,6 +87,13 @@ tracks:
           criteria: "Agent Compliance Checklist (A-001 through A-043)"
           status: PENDING
           score: null
+          # Adversarial feedback loop state
+          iteration:
+            current: 0
+            max: 3
+            history: []
+          critique_artifacts: []
+          last_critique_path: null
 
       - id: "EN-028"
         name: "SKILL.md Compliance"
@@ -95,6 +128,13 @@ tracks:
           criteria: "SKILL.md Compliance Checklist (S-001 through S-051)"
           status: PENDING
           score: null
+          # Adversarial feedback loop state
+          iteration:
+            current: 0
+            max: 3
+            history: []
+          critique_artifacts: []
+          last_critique_path: null
 
       - id: "EN-029"
         name: "Documentation Compliance"
@@ -125,6 +165,13 @@ tracks:
           criteria: "PLAYBOOK.md Triple-Lens Checklist"
           status: PENDING
           score: null
+          # Adversarial feedback loop state
+          iteration:
+            current: 0
+            max: 3
+            history: []
+          critique_artifacts: []
+          last_critique_path: null
 
       - id: "EN-030"
         name: "Documentation Polish"
@@ -151,6 +198,13 @@ tracks:
           criteria: "Final polish - no regressions, integration complete"
           status: PENDING
           score: null
+          # Adversarial feedback loop state
+          iteration:
+            current: 0
+            max: 3
+            history: []
+          critique_artifacts: []
+          last_critique_path: null
 
   track_b:
     name: "Model Selection (Parallel)"
@@ -206,6 +260,13 @@ tracks:
           criteria: "Model selection requirements from EN-031 AC"
           status: PENDING
           score: null
+          # Adversarial feedback loop state
+          iteration:
+            current: 0
+            max: 3
+            history: []
+          critique_artifacts: []
+          last_critique_path: null
 
 cross_pollination:
   - id: "CP-1"
@@ -237,6 +298,13 @@ quality_gates:
     criteria: "Aggregate compliance >= 95%, all 25 tasks complete"
     status: PENDING
     score: null
+    # Adversarial feedback loop state
+    iteration:
+      current: 0
+      max: 3
+      history: []
+    critique_artifacts: []
+    last_critique_path: null
 
 checkpoints:
   entries: []
@@ -259,3 +327,25 @@ execution_log:
   - timestamp: "2026-01-30T23:00:00Z"
     event: "WORKFLOW_CREATED"
     details: "Orchestration plan v2.0 created, aligned with existing task files"
+  - timestamp: "2026-01-31T00:30:00Z"
+    event: "FEEDBACK_LOOP_ADDED"
+    details: "v2.1.0 - Added adversarial feedback loop mechanism with iteration tracking"
+
+# ============================================================================
+# SCHEMA DOCUMENTATION: Iteration History Entry
+# ============================================================================
+# Each entry in quality_gate.iteration.history follows this schema:
+#
+#   - iteration: 1                           # Iteration number (1-based)
+#     timestamp: "2026-01-31T10:00:00Z"      # When critique was generated
+#     score: 0.82                            # Score from ps-critic
+#     passed: false                          # Did it meet threshold?
+#     critique_path: "critiques/G-027-iteration-1.md"
+#     findings_count: 5                      # Number of issues found
+#     critical_findings: 2                   # Number of CRITICAL severity
+#
+# When iteration.current reaches max (3), escalation is triggered:
+#   - status changes to ESCALATED
+#   - escalation event logged
+#   - downstream enablers remain BLOCKED until user decision
+# ============================================================================
