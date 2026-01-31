@@ -1,8 +1,8 @@
 # ORCHESTRATION.yaml - Machine-Readable State (SSOT)
 # Workflow: FEAT-005 Skill Compliance
-# Version: 3.0.0 (TASK-419 as Phase 0 sequential hard gate)
+# Version: 3.1.0 (Background execution for parallel tracks)
 # Created: 2026-01-30
-# Updated: 2026-01-31 - v3.0.0 per DISC-003/DEC-002 dependency chain correction
+# Updated: 2026-01-31 - v3.1.0 per DEC-003 execution mode decision
 
 workflow:
   id: "feat-005-compliance-20260130-001"
@@ -10,9 +10,96 @@ workflow:
   project_id: "PROJ-008-transcript-skill"
   feature_id: "FEAT-005"
   status: ACTIVE
-  version: "3.0.0"
+  version: "3.1.0"
   created_at: "2026-01-30T22:00:00Z"
-  updated_at: "2026-01-31T04:00:00Z"
+  updated_at: "2026-01-31T05:00:00Z"
+
+# ============================================================================
+# EXECUTION MODE CONFIGURATION (v3.1.0 NEW)
+# ============================================================================
+# Reference: DEC-003 - Background execution required for true parallelism
+#
+# Key insight: Each Task agent gets its own context window. Running agents
+# in background does NOT degrade quality - they read/write files, not shared
+# memory. Foreground execution would make parallel tracks impossible.
+# ============================================================================
+execution:
+  # Phase 0: Foreground - blocking gate, must wait for result
+  phase_0_mode: foreground
+  phase_0_rationale: |
+    TASK-419 is a blocking gate. We must wait for PASS/FAIL before any other
+    work can begin. Foreground is simpler since nothing else can start until
+    this completes. Background would just mean we poll immediately anyway.
+
+  # Track agents: Background - enables true parallelism
+  track_agent_mode: background
+  track_agent_rationale: |
+    Track A and Track B must run in parallel. With foreground execution,
+    the orchestrator (Claude main context) would be blocked waiting for
+    each agent to complete. Background execution allows:
+    1. Spawn EN-027 (background) -> continues running
+    2. Spawn TASK-420 (background) -> continues running
+    3. Both progress simultaneously in separate context windows
+    4. Orchestrator polls/waits for completion
+    5. True parallelism achieved
+
+    Each agent has its own context window. They don't share memory.
+    Cross-pollination happens via files - agent A writes, agent B reads.
+    Background execution does NOT degrade quality.
+
+  # ps-critic: Foreground - quick evaluation, simpler coordination
+  critic_mode: foreground
+  critic_rationale: |
+    ps-critic evaluations are relatively quick and require immediate
+    decision-making (pass/fail/refine). Foreground simplifies the
+    iterative refinement loop. Could be background if needed.
+
+  # Orchestrator responsibilities during background execution
+  orchestrator:
+    responsibilities:
+      - "Spawn agents with run_in_background: true"
+      - "Track output_file paths for each background agent"
+      - "Poll for completion using Read tool or TaskOutput"
+      - "Update ORCHESTRATION.yaml after each agent completes"
+      - "Coordinate cross-pollination by spawning consumers after producers"
+      - "Enforce quality gates before spawning dependent agents"
+
+    # How to check background agent completion
+    completion_check:
+      method: "TaskOutput or Read output_file"
+      poll_interval: "30 seconds for long tasks, immediate for short"
+      timeout: "2x estimated effort as safety margin"
+
+    # State update protocol
+    state_updates:
+      timing: "After each agent completion, BEFORE spawning dependents"
+      serialization: "Updates are serialized by orchestrator - no race conditions"
+      artifacts:
+        - "ORCHESTRATION.yaml"
+        - "ORCHESTRATION_WORKTRACKER.md"
+
+  # Parallel execution strategy
+  parallel_strategy:
+    phase_0:
+      agents: ["TASK-419"]
+      execution: "sequential_foreground"
+      wait_for_all: true
+      on_complete: "evaluate G-PHASE0, if PASS spawn parallel tracks"
+
+    day_1_parallel:
+      track_a_agents: ["EN-027"]
+      track_b_agents: ["TASK-420", "TASK-421"]
+      execution: "parallel_background"
+      note: "TASK-422 waits for CP-2 (EN-027 complete)"
+
+    subsequent_days:
+      strategy: "spawn_when_unblocked"
+      description: |
+        As agents complete and quality gates pass, spawn the next
+        unblocked agents. This maximizes parallelism while respecting
+        dependencies. Example:
+        - EN-027 completes -> G-027 pass -> TASK-422 can spawn
+        - TASK-420 completes -> CP-3 ready -> EN-028 has CLI data
 
 # ============================================================================
 # VERSION 3.0.0 CRITICAL CHANGE
@@ -594,6 +681,9 @@ execution_log:
   - timestamp: "2026-01-31T04:00:00Z"
     event: "VERSION_3_APPROVED"
     details: "v3.0.0 - TASK-419 as Phase 0 sequential hard gate (DISC-003/DEC-002)"
+  - timestamp: "2026-01-31T05:00:00Z"
+    event: "EXECUTION_MODE_DEFINED"
+    details: "v3.1.0 - Background execution for parallel tracks (DEC-003)"
 
 # ============================================================================
 # SCHEMA DOCUMENTATION

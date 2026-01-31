@@ -1,11 +1,12 @@
 # Orchestration Plan: FEAT-005 Skill Compliance
 
 > **Workflow ID:** feat-005-compliance-20260130-001
-> **Version:** 3.0.0
-> **Status:** PENDING_APPROVAL
+> **Version:** 3.1.0
+> **Status:** APPROVED
 > **Created:** 2026-01-30T22:00:00Z
-> **Updated:** 2026-01-31T04:00:00Z
+> **Updated:** 2026-01-31T05:00:00Z
 > **Location:** FEAT-005-skill-compliance/orchestration/
+> **Execution Mode:** Background for parallel tracks (DEC-003)
 
 ---
 
@@ -17,7 +18,8 @@
 | 2.0.0 | 2026-01-30 | Added parallel tracks | Optimize execution time |
 | 2.1.0 | 2026-01-31 | Added adversarial prompting | Quality gate rigor |
 | 2.2.0 | 2026-01-31 | Added feedback loop config | Iteration tracking |
-| **3.0.0** | **2026-01-31** | **TASK-419 as Phase 0 sequential gate** | **DISC-003: Dependency chain flaw correction** |
+| 3.0.0 | 2026-01-31 | TASK-419 as Phase 0 sequential gate | DISC-003: Dependency chain flaw correction |
+| **3.1.0** | **2026-01-31** | **Background execution for parallel tracks** | **DEC-003: True parallelism enabled** |
 
 ---
 
@@ -27,18 +29,30 @@ This orchestration plan coordinates **execution** of the 25 pre-designed tasks f
 
 **CRITICAL CHANGE in v3.0:** TASK-419 (Model Parameter Validation) is now a **Phase 0 sequential prerequisite** that MUST complete successfully before ANY parallel work begins. This corrects the dependency chain flaw identified in [DISC-003](../FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md).
 
-### Key Principles (v3.0)
+### Key Principles (v3.1)
 
 1. **Phase 0 Gate:** TASK-419 validates Task tool model parameter BEFORE anything else
 2. **Phase 0 Failure = Hard Blocker:** If TASK-419 fails, escalate to user - do NOT proceed
-3. **Parallel Execution:** Track A and Track B run in parallel ONLY after Phase 0 passes
+3. **Background Execution (v3.1):** Track agents run in background to enable TRUE parallelism
 4. **Adversarial Critic:** ps-critic evaluates after EACH enabler with 6 adversarial patterns
 5. **No Ambiguity:** Cross-pollination points fully documented with explicit triggers and artifacts
+
+### Execution Mode (v3.1 - DEC-003)
+
+| Component | Mode | Rationale |
+|-----------|------|-----------|
+| Phase 0 (TASK-419) | Foreground | Blocking gate - must know PASS/FAIL first |
+| Track A agents | **Background** | Enable true parallelism with Track B |
+| Track B agents | **Background** | Enable true parallelism with Track A |
+| ps-critic | Foreground | Quick evaluation, simpler iterative refinement |
+
+**Key Insight:** Each Task agent gets its own context window. Background execution does NOT degrade quality because agents read/write files, not shared memory. Foreground execution would make parallel tracks impossible.
 
 ### Decision References
 
 - [DISC-003: Orchestration v2.x Dependency Chain Flaw](../FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md)
 - [DEC-002: Orchestration v3.0 Design Decisions](../FEAT-005--DEC-002-orchestration-v3-design-decisions.md)
+- [DEC-003: Background Execution for Parallel Tracks](../FEAT-005--DEC-003-background-execution-for-parallelism.md)
 
 ---
 

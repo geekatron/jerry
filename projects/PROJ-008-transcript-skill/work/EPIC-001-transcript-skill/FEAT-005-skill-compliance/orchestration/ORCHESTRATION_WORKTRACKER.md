@@ -1,11 +1,12 @@
 # ORCHESTRATION WORKTRACKER: FEAT-005 Skill Compliance
 
 > **Workflow ID:** feat-005-compliance-20260130-001
-> **Version:** 3.0.0
+> **Version:** 3.1.0
 > **Status:** ACTIVE
-> **Last Updated:** 2026-01-31T04:00:00Z
+> **Last Updated:** 2026-01-31T05:00:00Z
 > **SSOT:** ORCHESTRATION.yaml
 > **Adversarial Protocol:** Enabled (6 patterns configured)
+> **Execution Mode:** Background for parallel tracks (DEC-003)
 
 ---
 
@@ -95,6 +96,68 @@
                     ║       G-FINAL SYNTHESIS       ║
                     ║    All gates must pass ≥ 0.90 ║
                     ╚═══════════════════════════════╝
+```
+
+---
+
+## Execution Mode (v3.1.0 - DEC-003)
+
+**Key Insight:** Each Task agent gets its own context window. Background execution enables TRUE parallelism. Foreground would make parallel tracks impossible.
+
+| Component | Execution Mode | Rationale |
+|-----------|---------------|-----------|
+| **Phase 0** (TASK-419) | Foreground | Blocking gate - must know PASS/FAIL before anything else |
+| **Track A agents** | **Background** | Enable parallelism with Track B |
+| **Track B agents** | **Background** | Enable parallelism with Track A |
+| **ps-critic** | Foreground | Quick evaluation, simpler iterative refinement |
+
+### Why Background for Tracks?
+
+```
+FOREGROUND (impossible parallelism):
+─────────────────────────────────────────────────────────────────────────
+Orchestrator: Spawn EN-027 → BLOCKED 10h → Returns → NOW spawn TASK-420
+              Track B didn't start until Track A step 1 finished!
+─────────────────────────────────────────────────────────────────────────
+
+BACKGROUND (true parallelism):
+─────────────────────────────────────────────────────────────────────────
+Orchestrator: Spawn EN-027 (background) → output_file_A
+              Spawn TASK-420 (background) → output_file_B
+              Spawn TASK-421 (background) → output_file_C
+              │
+              └── ALL THREE running simultaneously in separate contexts!
+─────────────────────────────────────────────────────────────────────────
+```
+
+### Orchestrator Protocol
+
+1. **Spawn**: Use `Task` tool with `run_in_background: true`
+2. **Track**: Store `output_file` paths for each agent
+3. **Poll**: Use `TaskOutput` or `Read` to check completion
+4. **Update**: Update YAML after each completion, BEFORE spawning dependents
+5. **Coordinate**: Spawn consumers only after producers complete (CP dependencies)
+
+### Day 1 Parallel Execution Example
+
+```
+09:00 - G-PHASE0 PASS (Phase 0 complete)
+        │
+09:05 - Orchestrator spawns parallel (all background):
+        ├── Task(EN-027) → output_file_A
+        ├── Task(TASK-420) → output_file_B
+        └── Task(TASK-421) → output_file_C
+        │
+        └── Orchestrator NOT blocked, all three running!
+
+14:00 - EN-027 complete
+        ├── Update YAML: EN-027 COMPLETE
+        ├── ps-critic G-027 (foreground) → PASS
+        └── Spawn TASK-422 (has CP-2 data)
+
+15:00 - TASK-420 complete
+        ├── Update YAML: TASK-420 COMPLETE
+        └── CP-3 ready for EN-028
 ```
 
 ---
@@ -370,7 +433,8 @@ Days 1-6 (if Phase 0 PASS):
 | 2026-01-31T00:30:00Z | FEEDBACK_LOOP_ADDED | v2.1 - Adversarial critic feedback loop with iteration tracking |
 | 2026-01-31T02:00:00Z | DISC-003_CREATED | v2.2 - Identified dependency chain flaw |
 | 2026-01-31T03:30:00Z | DEC-002_DOCUMENTED | v3.0 design decisions documented |
-| 2026-01-31T04:00:00Z | **v3.0_RELEASED** | Corrected dependency chain - Phase 0 as sequential hard gate |
+| 2026-01-31T04:00:00Z | v3.0_RELEASED | Corrected dependency chain - Phase 0 as sequential hard gate |
+| 2026-01-31T05:00:00Z | **DEC-003_ACCEPTED** | v3.1 - Background execution for parallel tracks (true parallelism) |
 
 ---
 
@@ -419,11 +483,12 @@ Days 1-6 (if Phase 0 PASS):
 |----------|---------|------|
 | DISC-003 | Dependency chain flaw discovery | `FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md` |
 | DEC-002 | v3.0 design decisions | `FEAT-005--DEC-002-orchestration-v3-design-decisions.md` |
-| ORCHESTRATION_PLAN.md | v3.0 strategic plan | `orchestration/ORCHESTRATION_PLAN.md` |
-| ORCHESTRATION.yaml | v3.0 machine-readable SSOT | `orchestration/ORCHESTRATION.yaml` |
+| DEC-003 | Background execution decision | `FEAT-005--DEC-003-background-execution-for-parallelism.md` |
+| ORCHESTRATION_PLAN.md | v3.1 strategic plan | `orchestration/ORCHESTRATION_PLAN.md` |
+| ORCHESTRATION.yaml | v3.1 machine-readable SSOT | `orchestration/ORCHESTRATION.yaml` |
 
 ---
 
-*Worktracker Version: 3.0.0*
-*Last Updated: 2026-01-31T04:00:00Z*
-*Change: v3.0 - Phase 0 sequential hard gate, corrected dependency chain per DISC-003 and DEC-002*
+*Worktracker Version: 3.1.0*
+*Last Updated: 2026-01-31T05:00:00Z*
+*Change: v3.1 - Background execution for parallel tracks per DEC-003 (true parallelism enabled)*
