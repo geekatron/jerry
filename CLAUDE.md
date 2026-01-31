@@ -240,14 +240,49 @@ Use MCP Memory-Keeper to help you remember and maintain the structure and relati
 
 ---
 
+## Work Tracker (worktracker) Templates
+
+Description:
+- Work tracker (worktracker) templates are stored in the `docs/templates/worktracker/` folder.
+- These templates provide a standardized structure for creating various work tracker artifacts such as Bugs, Enablers, Epics, Features, Spikes, Stories, and Tasks.
+- Using these templates ensures consistency and completeness across all work tracker items.
+
+Directory Structure:
+```
+.context/                                                                                                       # Respository level Documents Folder (root)
+└── templates/                                                                                              # Repository level Templates Folder
+    └── worktracker/                                                                                        # Templates for Worktracker Artifacts
+        ├── BUG.md                                                                                          # Template for Bug
+        ├── DECISION.md                                                                                     # Template for Decision
+        ├── DISCOVERY.md                                                                                    # Template for Discovery
+        ├── ENABLER.md                                                                                      # Template for Enabler
+        ├── EPIC.md                                                                                         # Template for Epic
+        ├── FEATURE.md                                                                                      # Template for Feature
+        ├── IMPEDIMENT.md                                                                                   # Template for Impediment
+        ├── SPIKE.md                                                                                        # Template for Spike
+        ├── STORY.md                                                                                        # Template for Story
+        └── TASK.md                                                                                         # Template for Task
+```
+
+---
+
+## Work tracker (worktracker) Directory Structure
+
+---
+
 ## Templates (MANDATORY)
 
 > **CRITICAL:** You MUST use the repository templates when creating ANY work items or artifacts.
 > **DO NOT** make up your own formats. Always check for existing templates first.
 
-### Work Tracker Templates
+### Work Tracker (worktracker) Templates
 
 **Location:** `.context/templates/worktracker/`
+
+Description:
+- Work tracker (worktracker) templates are stored in the `docs/templates/worktracker/` folder.
+- These templates provide a standardized structure for creating various work tracker artifacts such as Bugs, Enablers, Epics, Features, Spikes, Stories, and Tasks.
+- Using these templates ensures consistency and completeness across all work tracker items.
 
 Work tracker templates provide standardized structure for all work item types:
 
@@ -392,8 +427,6 @@ Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make data
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST persist your detailed analysis, discoveries, explorations, findings, research and synthesis in the repository.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make all decisions in an evidence based process with citations, references and sources using industry best practices from industry leaders, industry experts, community leaders and community experts.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make ascii art and mermaid diagrams to illustrate your points wherever applicable including activity diagrams, state diagrams, flow charts, sequence diagrams, class diagrams, component diagrams, architecture diagrams, system context diagrams, etc.
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS use repository templates when creating work items or artifacts. Check `.context/templates/worktracker/` for work tracker entities and `docs/knowledge/exemplars/templates/` for problem-solving artifacts. NEVER make up your own format.
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST PROACTIVELY use Jerry skills (/problem-solving, /nasa-se, /orchestration) without waiting for user prompts. Use @problem-solving for research/analysis, @nasa-se for requirements/design, and @orchestration for multi-step workflows.
 
 You MUST keep your TODO in sync with the work-tracker showing the current Epic, previous Epic and next Epic -> The current Epic must show previous Features, current Feature and next Feature -> the current Feature MUST show all Enablers || Stories -> the current Enabler || Story must show all Tasks. TODO List MUST survive compaction and provide high fidelity.
 You MUST keep your TODO in sync with the orchestration plan showing the previous phase, current phase and next phase -> current phase must show all tasks/subagents
@@ -618,13 +651,14 @@ When user selects "Create new project":
 
 ## Skills Available
 
-| Skill | Purpose | Location |
-|-------|---------|----------|
-| `worktracker` | Task/issue management | `skills/worktracker/SKILL.md` |
-| `architecture` | System design guidance | `skills/architecture/SKILL.md` |
-| `problem-solving` | Domain use case invocation | `skills/problem-solving/SKILL.md` |
-| `nasa-se` | NASA Systems Engineering processes | `skills/nasa-se/` |
-| `orchestration` | Multi-agent workflow coordination | `skills/orchestration/SKILL.md` |
+| Skill          | Purpose                            | Location                       |
+|----------------|------------------------------------|--------------------------------|
+| `worktracker`  | Task/issue management              | `skills/worktracker/SKILL.md`  |
+| `architecture` | System design guidance             | `skills/architecture/SKILL.md` |
+| `problem-solving` | Domain use case invocation         | `skills/problem-solving/SKILL.md` |
+| `nasa-se`      | NASA Systems Engineering processes | `skills/nasa-se/`              |
+| `orchestration` | Multi-agent workflow coordination  | `skills/orchestration/SKILL.md` |
+| `transcript`   | Transcription skill                | `skills/transcript/SKILL.md`   |
 
 ---
 
