@@ -81,6 +81,7 @@ This feature captures functionality that was originally planned for FEAT-002 but
 |----|-------|--------|
 | [DISC-001](./FEAT-003--DISC-001-mermaid-static-visualization-limitation.md) | Mermaid Static Visualization Limitation | DOCUMENTED |
 | [DISC-002](./FEAT-003--DISC-002-adversarial-prompting-protocol.md) | Adversarial Prompting Protocol for Quality Gates | DOCUMENTED |
+| [DISC-003](./FEAT-003--DISC-003-github-dual-identity-management.md) | GitHub Dual Identity Management | DOCUMENTED |
 
 ---
 
@@ -118,3 +119,4 @@ This feature captures functionality that was originally planned for FEAT-002 but
 | 2026-01-30 | Claude | PLANNED | Added DISC-001 (Mermaid limitation) and EN-019 (D3.js interactive visualization) |
 | 2026-01-30 | Claude | PLANNED | Added EN-026 (Token-Based Chunking) to fix BUG-001 (chunk token overflow) |
 | 2026-01-31 | Claude | PLANNED | Added EN-020 (Adversarial Critic Agents) and DISC-002 (Adversarial Prompting Protocol) per FEAT-005 requirements |
+| 2026-01-31 | Claude | PLANNED | Added DISC-003 (GitHub Dual Identity Management) per PR #15 identity mismatch incident |
