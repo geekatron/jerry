@@ -3,6 +3,7 @@
 Unit tests are fast (< 1s) and require no external I/O.
 All fixtures provide in-memory test data only.
 """
+
 from __future__ import annotations
 
 import pytest

@@ -3,6 +3,7 @@
 Contract tests validate JSON schema compliance between components.
 They ensure the parser output matches the chunker input schema, etc.
 """
+
 from __future__ import annotations
 
 import json

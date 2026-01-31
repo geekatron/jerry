@@ -94,7 +94,9 @@ class ParseTranscriptCommandHandler:
                     detected_format=detected_format,
                     error={
                         "code": "PARSE_ERROR",
-                        "message": parse_result.errors[0]["message"] if parse_result.errors else "Unknown parse error",
+                        "message": parse_result.errors[0]["message"]
+                        if parse_result.errors
+                        else "Unknown parse error",
                     },
                 )
 

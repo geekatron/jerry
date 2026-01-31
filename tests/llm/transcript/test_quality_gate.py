@@ -15,6 +15,7 @@ Run manually with: pytest -m llm tests/llm/transcript/test_quality_gate.py
 
 Reference: TASK-237, EN-023 Integration Testing
 """
+
 from __future__ import annotations
 
 import json
@@ -273,9 +274,7 @@ class TestPsCriticQualityGate:
         ]
 
         found_violations = [v for v in adr_002_violations if v in report_content]
-        assert not found_violations, (
-            f"ADR-002 violations found: {found_violations}"
-        )
+        assert not found_violations, f"ADR-002 violations found: {found_violations}"
 
     # =========================================================================
     # AC-4: ADR-003 (deep linking) compliance verified
@@ -355,9 +354,7 @@ class TestPsCriticQualityGate:
         ]
 
         found_violations = [v for v in adr_004_violations if v in report_content]
-        assert not found_violations, (
-            f"ADR-004 violations found: {found_violations}"
-        )
+        assert not found_violations, f"ADR-004 violations found: {found_violations}"
 
     # =========================================================================
     # AC-6: Quality report saved for audit trail
@@ -427,9 +424,7 @@ class TestExtractionMetrics:
 
         if "precision" in quality_result.metrics:
             precision = quality_result.metrics["precision"]
-            assert precision >= 0.85, (
-                f"Extraction precision {precision:.1%} < 85% threshold"
-            )
+            assert precision >= 0.85, f"Extraction precision {precision:.1%} < 85% threshold"
 
     def test_extraction_recall_threshold(
         self,
@@ -443,9 +438,7 @@ class TestExtractionMetrics:
 
         if "recall" in quality_result.metrics:
             recall = quality_result.metrics["recall"]
-            assert recall >= 0.85, (
-                f"Extraction recall {recall:.1%} < 85% threshold"
-            )
+            assert recall >= 0.85, f"Extraction recall {recall:.1%} < 85% threshold"
 
     def test_confidence_ratio_threshold(
         self,
@@ -459,9 +452,7 @@ class TestExtractionMetrics:
 
         if "high_confidence_ratio" in quality_result.metrics:
             ratio = quality_result.metrics["high_confidence_ratio"]
-            assert ratio >= 0.70, (
-                f"High confidence ratio {ratio:.1%} < 70% threshold"
-            )
+            assert ratio >= 0.70, f"High confidence ratio {ratio:.1%} < 70% threshold"
 
     def test_citation_accuracy(
         self,
@@ -494,9 +485,7 @@ class TestExtractionMetrics:
                 # Must have segment_id
                 segment_id = citation.get("segment_id")
                 if not segment_id:
-                    invalid_citations.append(
-                        f"{entity_type}/{entity_id}: missing segment_id"
-                    )
+                    invalid_citations.append(f"{entity_type}/{entity_id}: missing segment_id")
                     continue
 
                 # Validate segment_id range
@@ -513,6 +502,4 @@ class TestExtractionMetrics:
                         )
 
         # PAT-004 requires 100% citation accuracy
-        assert not invalid_citations, (
-            f"Citation accuracy violations: {invalid_citations[:10]}"
-        )
+        assert not invalid_citations, f"Citation accuracy violations: {invalid_citations[:10]}"
