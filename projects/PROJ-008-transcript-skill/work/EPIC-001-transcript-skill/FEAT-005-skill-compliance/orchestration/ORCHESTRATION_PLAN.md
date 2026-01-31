@@ -1,90 +1,164 @@
 # Orchestration Plan: FEAT-005 Skill Compliance
 
 > **Workflow ID:** feat-005-compliance-20260130-001
-> **Version:** 2.1.0
-> **Status:** ACTIVE
+> **Version:** 3.0.0
+> **Status:** PENDING_APPROVAL
 > **Created:** 2026-01-30T22:00:00Z
+> **Updated:** 2026-01-31T04:00:00Z
 > **Location:** FEAT-005-skill-compliance/orchestration/
+
+---
+
+## Version History
+
+| Version | Date | Change | Rationale |
+|---------|------|--------|-----------|
+| 1.0.0 | 2026-01-30 | Initial creation | Workflow established |
+| 2.0.0 | 2026-01-30 | Added parallel tracks | Optimize execution time |
+| 2.1.0 | 2026-01-31 | Added adversarial prompting | Quality gate rigor |
+| 2.2.0 | 2026-01-31 | Added feedback loop config | Iteration tracking |
+| **3.0.0** | **2026-01-31** | **TASK-419 as Phase 0 sequential gate** | **DISC-003: Dependency chain flaw correction** |
 
 ---
 
 ## Executive Summary (L0)
 
-This orchestration plan coordinates **execution** of the 25 pre-designed tasks for FEAT-005 skill compliance. The design and analysis work is complete (work-026). This plan focuses on:
+This orchestration plan coordinates **execution** of the 25 pre-designed tasks for FEAT-005 skill compliance.
 
-- **Task execution tracking** across 5 enablers
-- **Parallel execution** of Track A (EN-027→EN-030) and Track B (EN-031)
-- **Quality gates** using ps-critic validation at enabler completion
-- **Cross-pollination** where Track B discoveries inform Track A
+**CRITICAL CHANGE in v3.0:** TASK-419 (Model Parameter Validation) is now a **Phase 0 sequential prerequisite** that MUST complete successfully before ANY parallel work begins. This corrects the dependency chain flaw identified in [DISC-003](../FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md).
 
-**Note:** Research and analysis phases are NOT included - that work is already done and documented in the task files.
+### Key Principles (v3.0)
+
+1. **Phase 0 Gate:** TASK-419 validates Task tool model parameter BEFORE anything else
+2. **Phase 0 Failure = Hard Blocker:** If TASK-419 fails, escalate to user - do NOT proceed
+3. **Parallel Execution:** Track A and Track B run in parallel ONLY after Phase 0 passes
+4. **Adversarial Critic:** ps-critic evaluates after EACH enabler with 6 adversarial patterns
+5. **No Ambiguity:** Cross-pollination points fully documented with explicit triggers and artifacts
+
+### Decision References
+
+- [DISC-003: Orchestration v2.x Dependency Chain Flaw](../FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md)
+- [DEC-002: Orchestration v3.0 Design Decisions](../FEAT-005--DEC-002-orchestration-v3-design-decisions.md)
 
 ---
 
-## Workflow Diagram
+## Workflow Diagram (v3.0)
 
 ```
-FEAT-005 SKILL COMPLIANCE EXECUTION
-═══════════════════════════════════
+FEAT-005 SKILL COMPLIANCE EXECUTION (v3.0)
+═══════════════════════════════════════════
 
                         ┌─────────────────────────────────┐
                         │        WORKFLOW START           │
                         │   feat-005-compliance-20260130  │
                         └───────────────┬─────────────────┘
                                         │
-              ┌─────────────────────────┴─────────────────────────┐
-              │                                                   │
-              ▼                                                   ▼
+                                        ▼
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                     PHASE 0: SEQUENTIAL HARD GATE                              ║
+║                     TASK-419: Validate Task tool model parameter               ║
+║                     Effort: 2h | CRITICAL - Must complete first                ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+                                        │
+                                        ▼
+                    ┌───────────────────────────────────────┐
+                    │      PHASE 0 RESULT CHECK             │
+                    │                                       │
+                    │   ┌─────────────┐  ┌─────────────┐   │
+                    │   │    PASS     │  │    FAIL     │   │
+                    │   └──────┬──────┘  └──────┬──────┘   │
+                    │          │                │          │
+                    └──────────┼────────────────┼──────────┘
+                               │                │
+                               │                ▼
+                               │      ╔════════════════════════════╗
+                               │      ║   HARD BLOCKER             ║
+                               │      ║   Escalate to User         ║
+                               │      ║   DO NOT PROCEED           ║
+                               │      ║                            ║
+                               │      ║   Options:                 ║
+                               │      ║   a) Provide workaround    ║
+                               │      ║   b) Descope EN-031        ║
+                               │      ║   c) Manual intervention   ║
+                               │      ╚════════════════════════════╝
+                               │
+                               ▼
+         ┌─────────────────────────────────────────────────────────────┐
+         │               CROSS-POLLINATION POINT CP-1                  │
+         │  TASK-419 results → inform EN-027 agent definition design   │
+         │  Artifact: EN-031.../TASK-419-validate-task-model.md        │
+         └─────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+              ╔════════════════════════════════════════════════╗
+              ║   PHASE 1+: PARALLEL TRACKS BEGIN HERE         ║
+              ║   (Only after Phase 0 PASS)                    ║
+              ╚════════════════════════════════════════════════╝
+                               │
+              ┌────────────────┴────────────────┐
+              │                                 │
+              ▼                                 ▼
 ╔═══════════════════════════════════════╗   ╔═══════════════════════════════════════╗
 ║  TRACK A: SEQUENTIAL COMPLIANCE       ║   ║  TRACK B: MODEL SELECTION (PARALLEL)  ║
-║  EN-027 → EN-028 → EN-029 → EN-030    ║   ║  EN-031 (Independent)                 ║
-║  33 hours sequential                  ║   ║  34 hours                             ║
+║  EN-027 → EN-028 → EN-029 → EN-030    ║   ║  EN-031 Phases 2-3 (After TASK-419)   ║
+║  33 hours sequential                  ║   ║  32 hours remaining                   ║
 ╚═══════════════════════════════════════╝   ╚═══════════════════════════════════════╝
-              │                                                   │
-              ▼                                                   ▼
+              │                                 │
+              ▼                                 ▼
 ┌─────────────────────────────────────┐   ┌─────────────────────────────────────┐
-│  EN-027: Agent Definition (10h)     │   │  EN-031 Phase 1: Validation         │
+│  EN-027: Agent Definition (10h)     │   │  EN-031 Phase 2: Implementation     │
 │  ───────────────────────────────────│   │  ───────────────────────────────────│
-│  TASK-400: Add identity section     │   │  TASK-419: Validate Task tool model │
-│  TASK-401: Add capabilities section │   │            parameter                │
-│  TASK-402: Add guardrails section   │   │                                     │
-│  TASK-403: Add validation section   │   │  Effort: 2h                         │
-│  TASK-404: Add constitution section │   └──────────────────┬──────────────────┘
-│  TASK-405: Add session_context      │                      │
-│  TASK-406: Validate compliance      │                      ▼
-│                                     │   ┌─────────────────────────────────────┐
-│  ┌───────────────────────────────┐  │   │  EN-031 Phase 2: Implementation     │
-│  │ 🔄 ps-critic GATE (>= 0.90)   │  │   │  ───────────────────────────────────│
-│  └───────────────────────────────┘  │   │  TASK-420: Add CLI model params     │
-└──────────────────┬──────────────────┘   │  TASK-421: Update SKILL.md docs     │
-                   │                      │  TASK-422: Update agent definitions │
-                   ▼                      │  TASK-423: Implement profiles       │
-┌─────────────────────────────────────┐   │                                     │
-│  EN-028: SKILL.md Compliance (9h)   │   │  Effort: 24h                        │
-│  ───────────────────────────────────│   └──────────────────┬──────────────────┘
-│  TASK-407: Add invoking section     │                      │
-│  TASK-408: Enhance state passing    │                      ▼
-│  TASK-409: Add persistence section  │   ┌─────────────────────────────────────┐
-│  TASK-410: Add self-critique        │   │  EN-031 Phase 3: Testing            │
-│  TASK-411: Restructure persona      │   │  ───────────────────────────────────│
-│                                     │   │  TASK-424: Integration testing      │
-│  ┌───────────────────────────────┐  │   │                                     │
-│  │ 🔄 ps-critic GATE (>= 0.90)   │  │   │  Effort: 8h                         │
-│  └───────────────────────────────┘  │   │                                     │
-└──────────────────┬──────────────────┘   │  ┌───────────────────────────────┐  │
-                   │                      │  │ 🔄 ps-critic GATE (>= 0.90)   │  │
-                   ▼                      │  └───────────────────────────────┘  │
-┌─────────────────────────────────────┐   └──────────────────┬──────────────────┘
-│  EN-029: Documentation (9h)         │                      │
+│  TASK-400: Add identity section     │   │  TASK-420: Add CLI model params     │
+│  TASK-401: Add capabilities section │   │  TASK-421: Update SKILL.md docs     │
+│  TASK-402: Add guardrails section   │   │  TASK-422: Update agent definitions │
+│  TASK-403: Add validation section   │   │  TASK-423: Implement profiles       │
+│  TASK-404: Add constitution section │   │                                     │
+│  TASK-405: Add session_context      │   │  Effort: 24h                        │
+│  TASK-406: Validate compliance      │   │                                     │
+│                                     │   │  ┌───────────────────────────────┐  │
+│  ┌───────────────────────────────┐  │   │  │ CP-3: TASK-420 results inform │  │
+│  │ 🔄 ps-critic GATE G-027       │  │   │  │      SKILL.md documentation   │  │
+│  │    Threshold: >= 0.90         │  │   │  └───────────────────────────────┘  │
+│  │    Adversarial Mode: ENABLED  │  │   └──────────────────┬──────────────────┘
+│  └───────────────────────────────┘  │                      │
+└──────────────────┬──────────────────┘                      │
+                   │                                         │
+    ┌──────────────┴──────────────────────────┐             │
+    │ CP-2: EN-027 agent patterns inform      │             │
+    │       TASK-422 agent definitions        │             │
+    └──────────────┬──────────────────────────┘             │
+                   │                                         │
+                   ▼                                         │
+┌─────────────────────────────────────┐                      │
+│  EN-028: SKILL.md Compliance (9h)   │                      │
 │  ───────────────────────────────────│                      │
-│  TASK-412: Add L2 architect section │                      │
-│  TASK-413: Create anti-patterns     │                      │
-│  TASK-414: Declare pattern refs     │                      │
-│  TASK-415: Add constraints section  │                      │
+│  TASK-407: Add invoking section     │                      │
+│  TASK-408: Enhance state passing    │                      │
+│  TASK-409: Add persistence section  │                      │
+│  TASK-410: Add self-critique        │                      │
+│  TASK-411: Restructure persona      │                      │
 │                                     │                      │
 │  ┌───────────────────────────────┐  │                      │
-│  │ 🔄 ps-critic GATE (>= 0.90)   │  │                      │
+│  │ 🔄 ps-critic GATE G-028       │  │                      │
+│  │    Threshold: >= 0.90         │  │                      │
+│  │    Adversarial Mode: ENABLED  │  │                      │
 │  └───────────────────────────────┘  │                      │
+└──────────────────┬──────────────────┘                      │
+                   │                                         │
+                   ▼                                         ▼
+┌─────────────────────────────────────┐   ┌─────────────────────────────────────┐
+│  EN-029: Documentation (9h)         │   │  EN-031 Phase 3: Testing            │
+│  ───────────────────────────────────│   │  ───────────────────────────────────│
+│  TASK-412: Add L2 architect section │   │  TASK-424: Integration testing      │
+│  TASK-413: Create anti-patterns     │   │                                     │
+│  TASK-414: Declare pattern refs     │   │  Effort: 8h                         │
+│  TASK-415: Add constraints section  │   │                                     │
+│                                     │   │  ┌───────────────────────────────┐  │
+│  ┌───────────────────────────────┐  │   │  │ 🔄 ps-critic GATE G-031       │  │
+│  │ 🔄 ps-critic GATE G-029       │  │   │  │    Threshold: >= 0.90         │  │
+│  │    Threshold: >= 0.90         │  │   │  │    Adversarial Mode: ENABLED  │  │
+│  │    Adversarial Mode: ENABLED  │  │   │  └───────────────────────────────┘  │
+│  └───────────────────────────────┘  │   └──────────────────┬──────────────────┘
 └──────────────────┬──────────────────┘                      │
                    │                                         │
                    ▼                                         │
@@ -96,7 +170,9 @@ FEAT-005 SKILL COMPLIANCE EXECUTION
 │  TASK-418: Add cross-skill refs     │                      │
 │                                     │                      │
 │  ┌───────────────────────────────┐  │                      │
-│  │ 🔄 ps-critic GATE (>= 0.95)   │  │                      │
+│  │ 🔄 ps-critic GATE G-030       │  │                      │
+│  │    Threshold: >= 0.95         │  │                      │
+│  │    Adversarial Mode: ENABLED  │  │                      │
 │  └───────────────────────────────┘  │                      │
 └──────────────────┬──────────────────┘                      │
                    │                                         │
@@ -104,10 +180,11 @@ FEAT-005 SKILL COMPLIANCE EXECUTION
                                      │
                                      ▼
                    ╔═════════════════════════════════════════╗
-                   ║         FINAL QUALITY GATE              ║
+                   ║         FINAL QUALITY GATE G-FINAL      ║
                    ║    ps-critic aggregate >= 0.90          ║
                    ║    All 25 tasks complete                ║
                    ║    Compliance score >= 95%              ║
+                   ║    Adversarial Mode: ENABLED            ║
                    ╚═════════════════════════════════════════╝
                                      │
                                      ▼
@@ -120,639 +197,406 @@ LEGEND:
 ═══════
 🔄  ps-critic quality gate (adversarial validation)
 →   Sequential dependency
+CP-x Cross-pollination point (see detailed spec below)
 ```
 
 ---
 
-## Task Inventory by Enabler
+## Phase 0: Sequential Hard Gate (CRITICAL)
 
-### EN-027: Agent Definition Compliance (7 tasks, 10h)
+> **RATIONALE:** DISC-003 identified that TASK-419 must complete BEFORE parallel tracks begin.
+> If TASK-419 fails, the entire model selection feature (EN-031) may be invalid, and we should
+> not waste effort on Track A agent definitions that assume model selection works.
 
-| Task ID | Title | Effort | Description |
-|---------|-------|--------|-------------|
-| TASK-400 | Add identity section | 1h | Add identity YAML to all 5 agents (role, expertise, cognitive_mode) |
-| TASK-401 | Add capabilities section | 1.5h | Add capabilities YAML (allowed_tools, forbidden_actions) |
-| TASK-402 | Add guardrails section | 3h | Add guardrails YAML (input_validation, output_filtering) |
-| TASK-403 | Add validation section | 2h | Add validation YAML (post_completion_checks) |
-| TASK-404 | Add constitution section | 1h | Add constitution YAML (principles_applied) |
-| TASK-405 | Add session_context section | 1h | Add session_context YAML (schema, on_receive, on_send) |
-| TASK-406 | Validate agent compliance | 0.5h | Run Agent Compliance Checklist, verify >= 90% |
+### TASK-419: Validate Task Tool Model Parameter
 
-**Quality Gate:** ps-critic validates all 5 agent files against PAT-AGENT-001
+| Attribute | Value |
+|-----------|-------|
+| **ID** | TASK-419 |
+| **Title** | Validate Task tool model parameter |
+| **Effort** | 2h |
+| **Priority** | CRITICAL |
+| **Phase** | 0 (Sequential Hard Gate) |
+| **Blocks** | ALL downstream work (Track A and Track B Phase 2-3) |
 
-### EN-028: SKILL.md Compliance (5 tasks, 9h)
+**Acceptance Criteria:**
+1. Confirm `model` parameter exists in Task tool schema
+2. Test invocation with `model: "haiku"` - verify haiku model is used
+3. Test invocation with `model: "sonnet"` - verify sonnet model is used
+4. Document exact parameter values (e.g., "haiku" vs "claude-3-haiku")
+5. Document any limitations or edge cases discovered
 
-| Task ID | Title | Effort | Description |
-|---------|-------|--------|-------------|
-| TASK-407 | Add invoking section | 1h | Add "Invoking an Agent" with 3 methods |
-| TASK-408 | Enhance state passing | 2h | Add session_context schema to state passing |
-| TASK-409 | Add persistence section | 1h | Add "Mandatory Persistence (P-002)" section |
-| TASK-410 | Add self-critique | 1h | Add self-critique checklist to Constitutional Compliance |
-| TASK-411 | Restructure persona/output | 2h | Move persona to top-level, add output sections |
+**Output Artifact:**
+- Path: `EN-031-model-selection-capability/TASK-419-validate-task-model.md`
+- Must include: Test results, exact parameter syntax, validation status
 
-**Blocked By:** EN-027 (agent YAML must be standardized first)
-**Quality Gate:** ps-critic validates SKILL.md against PAT-SKILL-001
-
-### EN-029: Documentation Compliance (4 tasks, 9h)
-
-| Task ID | Title | Effort | Description |
-|---------|-------|--------|-------------|
-| TASK-412 | Add L2 section | 3h | Add "L2 Architect" perspective to PLAYBOOK.md |
-| TASK-413 | Create anti-patterns | 3h | Create anti-pattern catalog with 4+ anti-patterns |
-| TASK-414 | Declare pattern refs | 2h | Add explicit pattern declarations (PAT-xxx) |
-| TASK-415 | Add constraints section | 1h | Document constraint violations and consequences |
-
-**Blocked By:** EN-028 (SKILL.md sections inform PLAYBOOK structure)
-**Quality Gate:** ps-critic validates PLAYBOOK.md against PAT-PLAYBOOK-001
-
-### EN-030: Documentation Polish (3 tasks, 5h)
-
-| Task ID | Title | Effort | Description |
-|---------|-------|--------|-------------|
-| TASK-416 | Add tool examples | 2h | Add concrete tool invocation examples |
-| TASK-417 | Add design rationale | 2h | Add design rationale to RUNBOOK.md |
-| TASK-418 | Add cross-skill refs | 1h | Add cross-skill integration examples |
-
-**Blocked By:** EN-029 (documentation structure must be complete)
-**Quality Gate:** ps-critic final validation (threshold: 0.95)
-
-### EN-031: Model Selection Capability (6 tasks, 34h) - PARALLEL TRACK
-
-| Task ID | Title | Effort | Description |
-|---------|-------|--------|-------------|
-| TASK-419 | Validate Task tool model | 2h | Confirm Task tool model parameter works |
-| TASK-420 | Add CLI model params | 8h | Add --model-* CLI parameters |
-| TASK-421 | Update SKILL.md docs | 4h | Document model configuration |
-| TASK-422 | Update agent definitions | 4h | Add model override capability to agents |
-| TASK-423 | Implement profiles | 8h | Implement economy/balanced/quality profiles |
-| TASK-424 | Integration testing | 8h | Test with different model combinations |
-
-**Blocked By:** NONE (runs parallel to Track A)
-**Quality Gate:** ps-critic validates implementation against requirements
-
----
-
-## Execution Strategy
-
-### Parallel Execution
+### Phase 0 Failure Handling
 
 ```
-Day 1-2:  Start BOTH tracks simultaneously
-          ├── Track A: EN-027 tasks (TASK-400 through TASK-406)
-          └── Track B: TASK-419 (validate Task tool model param)
-
-Day 2-3:  Continue parallel
-          ├── Track A: EN-027 completion + ps-critic gate
-          └── Track B: TASK-420, TASK-421 (CLI + docs)
-
-Day 3-4:  Continue parallel
-          ├── Track A: EN-028 tasks (TASK-407 through TASK-411)
-          └── Track B: TASK-422, TASK-423 (agent defs + profiles)
-
-Day 4-5:  Continue parallel
-          ├── Track A: EN-029 tasks (TASK-412 through TASK-415)
-          └── Track B: TASK-424 (integration testing)
-
-Day 5-6:  Track A completion
-          ├── Track A: EN-030 tasks (TASK-416 through TASK-418)
-          └── Track B: ps-critic validation
-
-Day 6:    Final quality gate + workflow complete
-```
-
-**Efficiency Gain:** ~4-6 days parallel vs ~8 days sequential (25-40% improvement)
-
-### Cross-Pollination Points
-
-| Point | Trigger | Information Flow |
-|-------|---------|------------------|
-| CP-1 | TASK-419 complete | If Task tool model param works → informs agent definition updates |
-| CP-2 | EN-027 complete | Agent YAML schema patterns → inform TASK-422 structure |
-| CP-3 | TASK-420 complete | CLI parameter design → inform SKILL.md documentation |
-
----
-
-## Adversarial Critic Feedback Loop (L2)
-
-The adversarial critic mechanism ensures quality through **iterative refinement**. Each enabler deliverable goes through a feedback loop where ps-critic acts as an adversarial reviewer.
-
-### Feedback Loop Architecture
-
-```
+IF TASK-419 FAILS:
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    ADVERSARIAL CRITIC FEEDBACK LOOP                         │
+│                           HARD BLOCKER PROTOCOL                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────────┐                                                          │
-│   │  IMPLEMENTER │  (Claude executing TASK-4xx)                             │
-│   └──────┬───────┘                                                          │
-│          │                                                                  │
-│          │ 1. Complete enabler tasks                                        │
-│          │    (e.g., TASK-400 through TASK-406)                             │
-│          ▼                                                                  │
-│   ┌──────────────────────────────────────────────────────────────────────┐ │
-│   │                     DELIVERABLES                                      │ │
-│   │  • Modified files (e.g., ts-parser.md, ts-extractor.md)              │ │
-│   │  • Updated documentation                                              │ │
-│   │  • Self-assessment checklist                                          │ │
-│   └──────────────────────────────┬───────────────────────────────────────┘ │
-│                                  │                                          │
-│                                  │ 2. Submit for review                     │
-│                                  ▼                                          │
-│   ┌──────────────────────────────────────────────────────────────────────┐ │
-│   │                     ps-critic EVALUATION                              │ │
-│   │                                                                       │ │
-│   │  Invocation:                                                          │ │
-│   │  ┌─────────────────────────────────────────────────────────────────┐ │ │
-│   │  │ "Use ps-critic to evaluate EN-027 deliverables against          │ │ │
-│   │  │  PAT-AGENT-001 compliance. Apply checklist A-001 through A-043. │ │ │
-│   │  │  Return structured critique with score and specific findings."  │ │ │
-│   │  └─────────────────────────────────────────────────────────────────┘ │ │
-│   │                                                                       │ │
-│   │  ps-critic reads:                                                     │ │
-│   │  • All modified agent .md files                                       │ │
-│   │  • PAT-AGENT-001 pattern spec (from work-026-e-003)                  │ │
-│   │  • Compliance checklist criteria                                      │ │
-│   │                                                                       │ │
-│   │  ps-critic produces:                                                  │ │
-│   │  • Numeric score (0.00 - 1.00)                                       │ │
-│   │  • Per-item checklist results                                         │ │
-│   │  • Specific findings with file:line references                       │ │
-│   │  • Recommended fixes                                                  │ │
-│   └──────────────────────────────┬───────────────────────────────────────┘ │
-│                                  │                                          │
-│                                  │ 3. Critique output                       │
-│                                  ▼                                          │
-│   ┌──────────────────────────────────────────────────────────────────────┐ │
-│   │                     CRITIQUE ARTIFACT                                 │ │
-│   │  Location: critiques/G-{enabler}-critique-{iteration}.md             │ │
-│   │                                                                       │ │
-│   │  ## Quality Score: 0.85 (BELOW THRESHOLD 0.90)                       │ │
-│   │                                                                       │ │
-│   │  ## Findings                                                          │ │
-│   │  | ID | Severity | File | Issue | Recommendation |                    │ │
-│   │  |----|----------|------|-------|----------------|                    │ │
-│   │  | F-001 | HIGH | ts-parser.md:45 | Missing input_validation | Add... │ │
-│   │  | F-002 | MEDIUM | ts-extractor.md:78 | Incomplete expertise | Add...│ │
-│   │                                                                       │ │
-│   │  ## Checklist Results                                                 │ │
-│   │  - [x] A-001: Agent has name field                                   │ │
-│   │  - [x] A-002: Agent has version field                                │ │
-│   │  - [ ] A-015: guardrails.input_validation present  ← FAIL            │ │
-│   │  ...                                                                  │ │
-│   └──────────────────────────────┬───────────────────────────────────────┘ │
-│                                  │                                          │
-│                                  │ 4. Score evaluation                      │
-│                                  ▼                                          │
-│                    ┌─────────────────────────────┐                          │
-│                    │   Score >= Threshold?       │                          │
-│                    └──────────────┬──────────────┘                          │
-│                                   │                                         │
-│              ┌────────────────────┴────────────────────┐                    │
-│              │                                         │                    │
-│              ▼ YES                                     ▼ NO                 │
-│   ┌──────────────────────┐              ┌──────────────────────────────┐   │
-│   │       PASS           │              │    ITERATION CYCLE           │   │
-│   │  Proceed to next     │              │                              │   │
-│   │  enabler             │              │  iteration < 3?              │   │
-│   └──────────────────────┘              │       │                      │   │
-│                                         │   YES ▼        NO ▼          │   │
-│                                         │  ┌────────┐  ┌────────────┐  │   │
-│                                         │  │ REFINE │  │ ESCALATE   │  │   │
-│                                         │  │        │  │ to user    │  │   │
-│                                         │  └───┬────┘  └────────────┘  │   │
-│                                         │      │                       │   │
-│                                         └──────┼───────────────────────┘   │
-│                                                │                            │
-│                                                │ 5. Address findings        │
-│                                                │    Re-submit               │
-│                                                │                            │
-│                    ┌───────────────────────────┘                            │
-│                    │                                                        │
-│                    ▼                                                        │
-│   ┌──────────────────────────────────────────────────────────────────────┐ │
-│   │                     REFINEMENT PHASE                                  │ │
-│   │                                                                       │ │
-│   │  Implementer:                                                         │ │
-│   │  1. Read critique findings (F-001, F-002, etc.)                      │ │
-│   │  2. Address each finding with specific fix                           │ │
-│   │  3. Update deliverable files                                          │ │
-│   │  4. Document fixes in refinement log                                 │ │
-│   │  5. Re-submit for ps-critic evaluation (iteration N+1)               │ │
-│   │                                                                       │ │
-│   │  Refinement Log Entry:                                                │ │
-│   │  ┌─────────────────────────────────────────────────────────────────┐ │ │
-│   │  │ Iteration: 2                                                     │ │ │
-│   │  │ Previous Score: 0.85                                             │ │ │
-│   │  │ Findings Addressed:                                              │ │ │
-│   │  │   - F-001: Added input_validation to ts-parser.md:45-52         │ │ │
-│   │  │   - F-002: Expanded expertise list in ts-extractor.md:78-85     │ │ │
-│   │  │ Files Modified: ts-parser.md, ts-extractor.md                   │ │ │
-│   │  └─────────────────────────────────────────────────────────────────┘ │ │
-│   └──────────────────────────────────────────────────────────────────────┘ │
+│  1. DO NOT PROCEED with ANY parallel work                                   │
 │                                                                             │
-│          Loop back to ps-critic EVALUATION until PASS or iteration >= 3    │
+│  2. Create IMPEDIMENT document:                                             │
+│     Path: FEAT-005--IMP-001-task-tool-model-param-failure.md                │
+│     Content: Failure details, attempted tests, exact error messages         │
+│                                                                             │
+│  3. Escalate to User via AskUserQuestion:                                   │
+│     ┌─────────────────────────────────────────────────────────────────────┐│
+│     │ "CRITICAL: TASK-419 (Model Parameter Validation) FAILED.            ││
+│     │                                                                      ││
+│     │ Finding: {detailed failure description}                              ││
+│     │                                                                      ││
+│     │ This blocks the entire EN-031 Model Selection feature and affects   ││
+│     │ how EN-027 agent definitions should be structured.                   ││
+│     │                                                                      ││
+│     │ Options:                                                             ││
+│     │ a) Provide workaround or alternative approach                        ││
+│     │ b) Descope EN-031 entirely, proceed with Track A only               ││
+│     │ c) Pause workflow for manual investigation                           ││
+│     │ d) Accept limitation and document as known constraint"              ││
+│     └─────────────────────────────────────────────────────────────────────┘│
+│                                                                             │
+│  4. WAIT for user decision before ANY further work                          │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### ps-critic Invocation Protocol
+---
 
-For each enabler gate, invoke ps-critic with this structure:
+## Cross-Pollination Specification (No Ambiguity)
 
-```markdown
-## ps-critic Invocation for G-{enabler_id}
+> **Reference:** DEC-002:D-005 requires detailed cross-pollination with no ambiguity.
 
-**Context:**
-- Enabler: {enabler_id} - {enabler_name}
-- Iteration: {N} of 3
-- Previous Score: {score or "N/A for first iteration"}
+### CP-1: TASK-419 → Track A (EN-027)
 
-**Deliverables to Review:**
-- {file1.md}
-- {file2.md}
-- ...
+| Attribute | Value |
+|-----------|-------|
+| **ID** | CP-1 |
+| **Trigger** | TASK-419 completion (PASS or FAIL) |
+| **Source** | Phase 0 (TASK-419) |
+| **Target** | Track A (EN-027 specifically) |
+| **Information Transferred** | Model parameter validation results |
 
-**Evaluation Criteria:**
-- Pattern: {PAT-xxx} from work-026-e-003
-- Checklist: {checklist_id} items {range}
-- Threshold: {0.90 or 0.95}
+**Detailed Information Flow:**
 
-**Required Output:**
-1. Numeric score (0.00 - 1.00)
-2. Checklist with pass/fail for each item
-3. Specific findings with severity, file:line, issue, recommendation
-4. Overall assessment (PASS/FAIL/NEEDS_REFINEMENT)
+```
+TASK-419 OUTPUT (Source)                          EN-027 CONSUMPTION (Target)
+─────────────────────────                         ────────────────────────────
+TASK-419-validate-task-model.md contains:         EN-027 agent definitions use:
 
-**Artifact Location:**
-critiques/G-{enabler_id}-critique-{iteration}.md
+1. Model parameter syntax                    →    1. Correct model override syntax
+   e.g., "model: haiku" or "model: claude-3-haiku"   in agent YAML sections
+
+2. Validation status (PASS/FAIL)             →    2. Whether to include model
+                                                     override capability at all
+
+3. Edge cases discovered                     →    3. Guardrails for model selection
+   e.g., "opus not available for subagents"          input_validation rules
+
+4. Recommended default values                →    4. Default model in agent
+   e.g., "haiku for simple tasks"                    definitions
 ```
 
-### Critique Output Format
+**Artifact Path:** `EN-031-model-selection-capability/TASK-419-validate-task-model.md`
 
-Each ps-critic evaluation produces a structured artifact:
-
-```markdown
-# Quality Gate Critique: G-027 (Iteration 1)
-
-> **Enabler:** EN-027 - Agent Definition Compliance
-> **Evaluated:** 2026-01-31T10:00:00Z
-> **Score:** 0.85 / 1.00
-> **Threshold:** 0.90
-> **Result:** ❌ NEEDS_REFINEMENT
+**If PASS:** EN-027 proceeds with model override capability in agent definitions
+**If FAIL:** HARD GATE - escalate to user for decision (see Phase 0 Failure Handling)
 
 ---
 
-## Score Breakdown
+### CP-2: EN-027 → TASK-422
 
-| Category | Weight | Score | Weighted |
-|----------|--------|-------|----------|
-| identity section | 20% | 0.95 | 0.19 |
-| capabilities section | 15% | 0.90 | 0.135 |
-| guardrails section | 25% | 0.70 | 0.175 |
-| validation section | 15% | 0.85 | 0.1275 |
-| constitution section | 10% | 1.00 | 0.10 |
-| session_context section | 15% | 0.80 | 0.12 |
-| **TOTAL** | 100% | - | **0.8475** |
+| Attribute | Value |
+|-----------|-------|
+| **ID** | CP-2 |
+| **Trigger** | EN-027 quality gate G-027 PASS |
+| **Source** | Track A (EN-027) |
+| **Target** | Track B (TASK-422) |
+| **Information Transferred** | Agent YAML schema patterns for model override |
+
+**Detailed Information Flow:**
+
+```
+EN-027 OUTPUT (Source)                            TASK-422 CONSUMPTION (Target)
+─────────────────────                             ──────────────────────────────
+Agent definition files contain:                   TASK-422 uses these patterns to:
+
+1. Standard YAML structure for agents        →    1. Add model_override section
+   (identity, capabilities, guardrails...)           using consistent structure
+
+2. session_context.schema definition         →    2. Add model configuration to
+   showing how state is passed                       session_context schema
+
+3. Constitution compliance patterns          →    3. Ensure model selection follows
+   (principles_applied section)                      P-020 (user authority)
+
+4. Guardrails patterns                       →    4. Add model-specific input
+   (input_validation, output_filtering)              validation rules
+```
+
+**Artifact Paths:**
+- Source: `skills/transcript/agents/ts-*.md` (5 agent files)
+- Target: `EN-031-model-selection-capability/TASK-422-update-agent-definitions.md`
+
+**When Available:** After G-027 passes (EN-027 complete)
 
 ---
 
-## Findings
+### CP-3: TASK-420 → SKILL.md Documentation
 
-| ID | Severity | File | Line | Issue | Recommendation |
-|----|----------|------|------|-------|----------------|
-| F-001 | HIGH | ts-parser.md | 45 | guardrails.input_validation missing format rules | Add `format: "vtt\|srt\|txt"` validation |
-| F-002 | HIGH | ts-extractor.md | 78 | guardrails.input_validation missing | Copy pattern from ts-parser, adapt for chunks |
-| F-003 | MEDIUM | ts-formatter.md | 92 | session_context.on_send incomplete | Add `calculate_confidence` step |
-| F-004 | LOW | ts-mindmap-mermaid.md | 34 | expertise list has only 2 items | Add 1+ more expertise areas |
+| Attribute | Value |
+|-----------|-------|
+| **ID** | CP-3 |
+| **Trigger** | TASK-420 completion |
+| **Source** | Track B (TASK-420) |
+| **Target** | Track A (influences EN-028/TASK-421 documentation) |
+| **Information Transferred** | CLI parameter design (--model-* flags) |
+
+**Detailed Information Flow:**
+
+```
+TASK-420 OUTPUT (Source)                          SKILL.md CONSUMPTION (Target)
+─────────────────────                             ─────────────────────────────
+CLI parameter implementation contains:            SKILL.md documentation needs:
+
+1. Exact CLI flag syntax                     →    1. Usage examples in SKILL.md
+   e.g., "--model-parser haiku"                      "Invoking the Skill" section
+
+2. Parameter validation rules                →    2. Input validation documentation
+   e.g., "must be: haiku|sonnet|opus"               in "Parameters" table
+
+3. Default behavior                          →    3. Default values documented
+   e.g., "if not specified, inherit"                in parameter descriptions
+
+4. Profile definitions                       →    4. Model profile documentation
+   e.g., "economy: haiku for all"                   in new "Model Profiles" section
+```
+
+**Artifact Path:** `EN-031-model-selection-capability/TASK-420-add-cli-model-params.md`
+
+**When Available:** After TASK-420 complete
 
 ---
 
-## Checklist Results
+## Execution Timeline (v3.0)
 
-### PAT-AGENT-001 Compliance (A-001 through A-043)
+```
+Day 0 (2h):    PHASE 0 - SEQUENTIAL HARD GATE
+               └── TASK-419: Validate Task tool model parameter
 
-- [x] A-001: Agent has `name` field
-- [x] A-002: Agent has `version` field
-- [x] A-003: Agent has `description` field
-- [x] A-005: `identity.role` present
-- [x] A-006: `identity.expertise` has 3+ items (except F-004)
-- [x] A-007: `identity.cognitive_mode` is valid enum
-- [ ] A-015: `guardrails.input_validation` present in all agents ← **FAIL (F-001, F-002)**
-- [ ] A-016: `guardrails.output_filtering` present ← **FAIL**
-- [x] A-020: `validation.file_must_exist` present
-- [ ] A-025: `session_context.on_send` complete ← **FAIL (F-003)**
-...
+               IF FAIL → ESCALATE TO USER, STOP
+               IF PASS → CONTINUE
 
-**Passed:** 38/43 (88.4%)
-**Failed:** 5/43 (11.6%)
+Day 1-2:       PARALLEL TRACKS BEGIN
+               ├── Track A: EN-027 tasks (TASK-400 through TASK-406)
+               │   Uses CP-1 results for model override design
+               │
+               └── Track B: TASK-420, TASK-421 (CLI + docs)
+                   Parallel with EN-027
+
+Day 2:         CROSS-POLLINATION CHECKPOINT
+               ├── CP-2: EN-027 complete → inform TASK-422
+               │   Agent YAML patterns feed into agent definition updates
+               │
+               └── CP-3: TASK-420 complete → inform EN-028 docs
+                   CLI design informs SKILL.md documentation
+
+Day 2-3:       CONTINUE PARALLEL
+               ├── Track A: EN-027 ps-critic gate G-027 (adversarial)
+               │   Then EN-028 tasks (TASK-407 through TASK-411)
+               │
+               └── Track B: TASK-422, TASK-423 (agent defs + profiles)
+
+Day 3-4:       CONTINUE PARALLEL
+               ├── Track A: EN-028 ps-critic gate G-028 (adversarial)
+               │   Then EN-029 tasks (TASK-412 through TASK-415)
+               │
+               └── Track B: TASK-424 (integration testing)
+
+Day 4-5:       TRACK A COMPLETION
+               ├── Track A: EN-029 ps-critic gate G-029 (adversarial)
+               │   Then EN-030 tasks (TASK-416 through TASK-418)
+               │
+               └── Track B: ps-critic gate G-031 (adversarial)
+
+Day 5-6:       FINAL CONVERGENCE
+               ├── Track A: EN-030 ps-critic gate G-030 (adversarial, threshold 0.95)
+               │
+               └── FINAL QUALITY GATE G-FINAL (adversarial)
+                   All 25 tasks complete, aggregate >= 0.90
+```
+
+**Efficiency:** ~6 days total vs ~8 days pure sequential (25% improvement)
+**Phase 0 overhead:** +2h but prevents potential rework from invalid assumptions
 
 ---
 
-## Recommended Actions
-
-1. **Address F-001 and F-002 first** (HIGH severity, blocking)
-2. Add input_validation to ts-parser.md and ts-extractor.md
-3. Complete session_context.on_send in ts-formatter.md
-4. Minor: Add expertise item to ts-mindmap-mermaid.md
-
----
-
-## Next Steps
-
-- [ ] Implementer addresses findings F-001 through F-004
-- [ ] Re-submit for Iteration 2
-- [ ] Target score: >= 0.90
-```
-
-### Iteration Tracking
-
-Track refinement cycles in the ORCHESTRATION_WORKTRACKER.md:
-
-```markdown
-## Quality Gate Log: G-027
-
-| Iteration | Date | Score | Status | Findings | Actions Taken |
-|-----------|------|-------|--------|----------|---------------|
-| 1 | 2026-01-31 | 0.85 | ❌ FAIL | F-001, F-002, F-003, F-004 | - |
-| 2 | 2026-01-31 | 0.92 | ✅ PASS | - | Fixed F-001, F-002, F-003, F-004 |
-
-**Critique Artifacts:**
-- [G-027-critique-1.md](./critiques/G-027-critique-1.md)
-- [G-027-critique-2.md](./critiques/G-027-critique-2.md)
-```
-
-### Escalation Protocol
-
-If score remains below threshold after 3 iterations:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    ESCALATION PROTOCOL                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Trigger: Score < threshold after iteration 3                   │
-│                                                                 │
-│  Actions:                                                       │
-│  1. Document unresolved findings in IMPEDIMENT file             │
-│  2. Create IMP-xxx with:                                        │
-│     - Findings that couldn't be resolved                        │
-│     - Attempted fixes                                           │
-│     - Blocking factors                                          │
-│  3. Notify user via AskUserQuestion:                            │
-│     "Quality gate G-{id} failed after 3 iterations.             │
-│      Score: {score}, Threshold: {threshold}.                    │
-│      Unresolved: {findings}. How should we proceed?"            │
-│                                                                 │
-│  Options presented to user:                                     │
-│  a) Lower threshold temporarily (document exception)            │
-│  b) Skip enabler, proceed with documented gaps                  │
-│  c) Provide guidance on specific findings                       │
-│  d) Pause workflow for manual intervention                      │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Adversarial Prompting Protocol (L2)
-
-> **Reference:** [DISC-002: Adversarial Prompting Protocol](../../FEAT-003-future-enhancements/FEAT-003--DISC-002-adversarial-prompting-protocol.md)
-
-The current ps-critic agent (v2.2.0) uses a **constructive** communication style optimized for Self-Refine iterative improvement loops. For compliance quality gates, we transform the agent into an **adversarial evaluator** using invocation-time prompting.
-
-### Why Adversarial Prompting?
-
-Without adversarial prompting, quality gates risk:
-- Rubber-stamp approvals (approval bias)
-- Benefit of the doubt on marginal compliance
-- Finding positives before negatives
-- Avoiding harsh assessments
-
-### Six Adversarial Patterns
-
-The following patterns transform constructive evaluation into adversarial evaluation:
-
-#### Pattern 1: Red Team Framing
-
-**Purpose:** Establish adversarial mindset from the start
-
-```markdown
-## ADVERSARIAL EVALUATION MODE
-
-You are operating as an ADVERSARIAL CRITIC, not a constructive reviewer.
-
-**Mindset:** Assume problems EXIST until proven otherwise. Your job is to
-FIND flaws, not validate work. A "clean" review with no findings is
-SUSPICIOUS and requires explicit justification.
-
-**Your role:** RED TEAM evaluator stress-testing for compliance gaps.
-
-**Behavioral Rules:**
-- You are NOT trying to help the work succeed
-- You ARE trying to find every way it could fail
-- Treat this like a security audit, not a peer review
-- If something "probably" meets a criterion, it FAILS (no benefit of doubt)
-```
-
-#### Pattern 2: Mandatory Findings Quota
-
-**Purpose:** Prevent rubber-stamp approvals
-
-```markdown
-## FINDINGS REQUIREMENT
-
-You MUST identify:
-- At least 3 issues per deliverable (any severity: CRITICAL, MAJOR, or MINOR)
-- If you find zero CRITICAL issues, you must justify WHY with specific evidence
-- If you find zero issues total, this is a RED FLAG requiring explicit explanation
-
-**Severity Definitions:**
-| Severity | Definition | Example |
-|----------|------------|---------|
-| CRITICAL | Blocks compliance, must fix | Missing required section |
-| MAJOR | Significantly impacts quality | Section exists but incomplete |
-| MINOR | Improvement opportunity | Formatting, clarity issues |
-
-**Perfect Score Justification:**
-A review scoring 1.0 (perfect) or finding zero issues MUST include:
-1. Explicit statement that adversarial analysis was performed
-2. List of 3+ specific areas examined for issues
-3. Evidence citations for why each potential issue was NOT an actual issue
-```
-
-#### Pattern 3: Devil's Advocate Protocol
-
-**Purpose:** Force active challenge of claims
-
-```markdown
-## DEVIL'S ADVOCATE PROTOCOL
-
-For EACH major section or claim in the deliverable, you MUST answer:
-
-1. **What could make this WRONG?**
-   - Identify at least one assumption that could be invalid
-
-2. **What edge case was NOT considered?**
-   - Identify at least one scenario not addressed
-
-3. **What happens if this FAILS?**
-   - Identify the failure mode and its impact
-
-4. **What alternative was NOT evaluated?**
-   - Identify at least one approach not considered
-
-Document at least ONE challenge per major section in the deliverable.
-
-**Output Format:**
-| Section | Challenge Type | Challenge Description | Severity |
-|---------|---------------|----------------------|----------|
-| {section} | Assumption Risk | {what could be wrong} | {severity} |
-```
-
-#### Pattern 4: Checklist Enforcement (No Partial Credit)
-
-**Purpose:** Binary compliance verification with evidence
-
-```markdown
-## CHECKLIST ENFORCEMENT
-
-For each checklist item (e.g., A-001 through A-043):
-
-| Status | Requirement | Evidence Standard |
-|--------|-------------|-------------------|
-| ✅ PASS | Criterion fully met | Quote EXACT text/evidence from deliverable |
-| ❌ FAIL | Criterion not met | Describe SPECIFIC gap with section reference |
-| ⚠️ WEAK | Partial compliance | Cite what exists AND what's missing |
-
-**Rules:**
-- "Probably compliant" = ❌ FAIL (no benefit of doubt)
-- "Mentioned but not detailed" = ⚠️ WEAK at best
-- "Implied but not explicit" = ❌ FAIL
-- PASS requires QUOTABLE evidence, not inference
-
-**Evidence Format:**
-For each PASS, provide:
-- Checklist ID, Status: PASS
-- Evidence: "{exact quote from deliverable}"
-- Location: {section/line reference}
-
-For each FAIL, provide:
-- Checklist ID, Status: FAIL
-- Gap: {what is missing or wrong}
-- Expected: {what compliance would look like}
-- Location: {where it should appear}
-```
-
-#### Pattern 5: Counter-Example Seeking
-
-**Purpose:** Force identification of failure scenarios
-
-```markdown
-## COUNTER-EXAMPLE REQUIREMENTS
-
-For each architectural decision, pattern, or recommendation in the deliverable:
-
-1. **Failure Scenario:** Provide ONE realistic scenario where this approach FAILS
-2. **Unconsidered Alternative:** Name ONE alternative approach that was NOT evaluated
-3. **Unaddressed Risk:** Identify ONE risk that is NOT mentioned in the deliverable
-
-**Output Format:**
-| Decision/Pattern | Failure Scenario | Unconsidered Alternative | Unaddressed Risk |
-|------------------|------------------|-------------------------|------------------|
-| {decision} | {how it fails} | {what else could work} | {what could go wrong} |
-
-**Minimum:** At least 3 rows in this table (one per major decision)
-
-**Note:** Even GOOD decisions have trade-offs. The absence of counter-examples
-indicates insufficient analysis, not perfect design.
-```
-
-#### Pattern 6: Score Calibration
-
-**Purpose:** Prevent grade inflation
-
-```markdown
-## SCORE CALIBRATION
-
-**Score Interpretation (Adversarial Mode):**
-| Score Range | Meaning | Expected Frequency |
-|-------------|---------|-------------------|
-| 0.95 - 1.00 | Exceptional - zero issues found | < 5% of reviews |
-| 0.85 - 0.94 | Strong - minor issues only | 15-20% of reviews |
-| 0.70 - 0.84 | Acceptable - some issues need attention | 40-50% of reviews |
-| 0.50 - 0.69 | Needs Work - significant gaps | 20-30% of reviews |
-| 0.00 - 0.49 | Major Revision Required | 10-15% of reviews |
-
-**Calibration Rules:**
-- First-pass submissions should typically score 0.60-0.80
-- Scores above 0.90 require explicit justification
-- Perfect scores (1.0) should be RARE and heavily documented
-- If your scores consistently average > 0.85, you are being too lenient
-
-**Score Justification Required for:**
-- Any score >= 0.95 (explain why exceptional)
-- Any score <= 0.30 (explain severity of issues)
-- Score improvement > 0.20 between iterations (explain what changed)
-```
-
-### Adversarial Prompt Template
-
-When invoking ps-critic for quality gates, prepend this adversarial framing:
+## Adversarial Critic Integration
+
+> **Reference:** DISC-002 documents 6 adversarial patterns
+> **Reference:** DEC-002:D-002 mandates adversarial critic after each enabler
+
+### When ps-critic Runs
+
+| Trigger | Gate | Threshold | Adversarial Patterns |
+|---------|------|-----------|----------------------|
+| TASK-419 complete | (Validation only) | - | N/A (simple pass/fail) |
+| EN-027 complete | G-027 | 0.90 | All 6 patterns |
+| EN-028 complete | G-028 | 0.90 | All 6 patterns |
+| EN-029 complete | G-029 | 0.90 | All 6 patterns |
+| EN-030 complete | G-030 | 0.95 | All 6 patterns |
+| EN-031 complete | G-031 | 0.90 | All 6 patterns |
+| All complete | G-FINAL | 0.90 | All 6 patterns |
+
+### Adversarial Prompt Template (v3.0)
 
 ```markdown
 ## ADVERSARIAL EVALUATION MODE ACTIVATED
 
 You are operating as an ADVERSARIAL CRITIC for quality gate {GATE_ID}.
 Apply ALL six adversarial patterns:
-1. Red Team Framing - Assume problems exist
-2. Mandatory Findings - Identify ≥3 issues
-3. Devil's Advocate - Challenge each claim
-4. Checklist Enforcement - No partial credit
-5. Counter-Examples - Find failure scenarios
+1. Red Team Framing - Assume problems exist until proven otherwise
+2. Mandatory Findings - Identify ≥3 issues (any severity)
+3. Devil's Advocate - Challenge each claim with counter-examples
+4. Checklist Enforcement - No partial credit, evidence required
+5. Counter-Examples - Find failure scenarios for each decision
 6. Score Calibration - First-pass typically 0.60-0.80
 
 **Iteration:** {N} of 3
 **Previous Score:** {score or N/A}
 **Threshold:** {threshold}
+**Gate:** {GATE_ID}
 
 Evaluate the following deliverables against {CRITERIA}:
 {deliverable_list}
 
 REMEMBER: A review finding zero issues requires explicit justification.
+A score >= 0.95 requires heavy justification with cited evidence.
+```
+
+### Feedback Loop (3 Iterations Max)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ADVERSARIAL FEEDBACK LOOP (Max 3 iterations per gate)                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. Complete enabler tasks                                                  │
+│  2. Submit to ps-critic with adversarial prompt                             │
+│  3. ps-critic returns score and findings                                    │
+│                                                                             │
+│  IF score >= threshold:                                                     │
+│     → PASS, proceed to next enabler                                         │
+│                                                                             │
+│  IF score < threshold AND iteration < 3:                                    │
+│     → REFINE: Address findings, re-submit                                   │
+│                                                                             │
+│  IF score < threshold AND iteration >= 3:                                   │
+│     → ESCALATE: Create impediment, ask user for decision                    │
+│                                                                             │
+│  Critique artifacts: orchestration/critiques/{gate-id}-iteration-{n}.md    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Quality Gates (ps-critic)
+## Quality Gates Summary
 
-### Gate Protocol Summary
-
-Each enabler completion triggers a ps-critic quality gate with the adversarial feedback loop above.
-
-### Gate Criteria by Enabler
-
-| Gate | Enabler | Threshold | Criteria Source | Max Iterations |
-|------|---------|-----------|-----------------|----------------|
-| G-027 | EN-027 | 0.90 | Agent Compliance Checklist (A-001 through A-043) | 3 |
-| G-028 | EN-028 | 0.90 | SKILL.md Compliance Checklist (S-001 through S-051) | 3 |
+| Gate | Enabler | Threshold | Criteria | Max Iterations |
+|------|---------|-----------|----------|----------------|
+| (Phase 0) | TASK-419 | PASS/FAIL | Model param works | 1 (hard gate) |
+| G-027 | EN-027 | 0.90 | Agent Compliance Checklist A-001 to A-043 | 3 |
+| G-028 | EN-028 | 0.90 | SKILL.md Compliance S-001 to S-051 | 3 |
 | G-029 | EN-029 | 0.90 | PLAYBOOK.md Triple-Lens Checklist | 3 |
-| G-030 | EN-030 | 0.95 | Final polish - no regressions, integration complete | 3 |
-| G-031 | EN-031 | 0.90 | Model selection requirements from EN-031 AC | 3 |
-| G-FINAL | All | 0.90 | Aggregate compliance >= 95%, all 25 tasks complete | 1 |
+| G-030 | EN-030 | 0.95 | Final polish, no regressions | 3 |
+| G-031 | EN-031 | 0.90 | Model selection requirements | 3 |
+| G-FINAL | All | 0.90 | Aggregate >= 95%, all 25 tasks | 1 |
+
+---
+
+## Task Inventory (25 Tasks Total)
+
+### Phase 0: Sequential Gate (1 task, 2h)
+
+| Task ID | Title | Effort | Enabler | Phase |
+|---------|-------|--------|---------|-------|
+| TASK-419 | Validate Task tool model parameter | 2h | EN-031 | 0 (Hard Gate) |
+
+### Track A: Sequential Compliance Chain (19 tasks, 33h)
+
+**EN-027: Agent Definition Compliance (7 tasks, 10h)**
+
+| Task ID | Title | Effort |
+|---------|-------|--------|
+| TASK-400 | Add identity section | 1h |
+| TASK-401 | Add capabilities section | 1.5h |
+| TASK-402 | Add guardrails section | 3h |
+| TASK-403 | Add validation section | 2h |
+| TASK-404 | Add constitution section | 1h |
+| TASK-405 | Add session_context section | 1h |
+| TASK-406 | Validate agent compliance | 0.5h |
+
+**EN-028: SKILL.md Compliance (5 tasks, 9h)**
+
+| Task ID | Title | Effort |
+|---------|-------|--------|
+| TASK-407 | Add invoking section | 1h |
+| TASK-408 | Enhance state passing | 2h |
+| TASK-409 | Add persistence section | 1h |
+| TASK-410 | Add self-critique | 1h |
+| TASK-411 | Restructure persona/output | 2h |
+
+**EN-029: Documentation Compliance (4 tasks, 9h)**
+
+| Task ID | Title | Effort |
+|---------|-------|--------|
+| TASK-412 | Add L2 architect section | 3h |
+| TASK-413 | Create anti-patterns | 3h |
+| TASK-414 | Declare pattern refs | 2h |
+| TASK-415 | Add constraints section | 1h |
+
+**EN-030: Documentation Polish (3 tasks, 5h)**
+
+| Task ID | Title | Effort |
+|---------|-------|--------|
+| TASK-416 | Add tool examples | 2h |
+| TASK-417 | Add design rationale | 2h |
+| TASK-418 | Add cross-skill refs | 1h |
+
+### Track B: Model Selection (5 tasks, 32h after Phase 0)
+
+**EN-031 Phase 2: Implementation (4 tasks, 24h)**
+
+| Task ID | Title | Effort |
+|---------|-------|--------|
+| TASK-420 | Add CLI model params | 8h |
+| TASK-421 | Update SKILL.md docs | 4h |
+| TASK-422 | Update agent definitions | 4h |
+| TASK-423 | Implement profiles | 8h |
+
+**EN-031 Phase 3: Testing (1 task, 8h)**
+
+| Task ID | Title | Effort |
+|---------|-------|--------|
+| TASK-424 | Integration testing | 8h |
 
 ---
 
 ## Checkpoints
 
-| ID | Trigger | Recovery Point | Artifacts to Preserve |
-|----|---------|----------------|----------------------|
-| CP-001 | EN-027 complete | Pre-YAML state | Backup of original agent .md files |
+| ID | Trigger | Recovery Point | Artifacts |
+|----|---------|----------------|-----------|
+| CP-PHASE0 | TASK-419 complete | Phase 0 done | Validation results |
+| CP-001 | EN-027 complete | Agent definitions done | Backup of agent .md files |
 | CP-002 | EN-028 complete | SKILL.md stable | SKILL.md backup |
-| CP-003 | EN-029 complete | Docs structure done | PLAYBOOK.md, RUNBOOK.md backups |
+| CP-003 | EN-029 complete | Docs structure done | PLAYBOOK.md, RUNBOOK.md |
 | CP-004 | EN-030 complete | Track A done | All documentation |
-| CP-005 | TASK-419 complete | Model validation done | Test results |
-| CP-006 | EN-031 complete | Track B done | CLI + profiles |
+| CP-005 | EN-031 complete | Track B done | CLI + profiles |
 | CP-FINAL | All complete | Workflow done | Full artifact set |
 
 ---
@@ -761,11 +605,11 @@ Each enabler completion triggers a ps-critic quality gate with the adversarial f
 
 | Metric | Target | Measurement |
 |--------|--------|-------------|
-| Compliance Score | >= 95% | Checklist completion from work-026-e-003 |
+| Phase 0 Pass | PASS | TASK-419 validates model param works |
+| Compliance Score | >= 95% | Checklist completion |
 | Tasks Complete | 25/25 | All TASK-4xx files marked complete |
-| Quality Gates Passed | 6/6 | All ps-critic gates >= threshold |
+| Quality Gates Passed | 7/7 | Phase 0 + G-027 through G-FINAL |
 | Parallel Efficiency | >= 25% | Days saved vs pure sequential |
-| Backward Compatibility | 100% | Existing pipeline still works |
 
 ---
 
@@ -773,28 +617,27 @@ Each enabler completion triggers a ps-critic quality gate with the adversarial f
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| TASK-419 fails (model param broken) | Medium | Critical | Early validation; fallback to hardcoded if needed |
+| TASK-419 fails | Medium | Critical | **Phase 0 hard gate; user decision required** |
 | ps-critic rejection loop | Low | Medium | Max 3 iterations; escalate with documented gaps |
-| Track A blocks Track B | Low | Low | Tracks are independent by design |
-| Breaking existing pipelines | Medium | High | Checkpoint before each enabler; test after each |
+| Cross-pollination timing | Low | Medium | Explicit trigger points with artifact paths |
+| Breaking existing pipelines | Medium | High | Checkpoint before each enabler |
 
 ---
 
 ## References
 
+- [DISC-003: Orchestration v2.x Dependency Chain Flaw](../FEAT-005--DISC-003-orchestration-dependency-chain-flaw.md)
+- [DEC-002: Orchestration v3.0 Design Decisions](../FEAT-005--DEC-002-orchestration-v3-design-decisions.md)
+- [DISC-002: Adversarial Prompting Protocol](../../FEAT-003-future-enhancements/FEAT-003--DISC-002-adversarial-prompting-protocol.md)
 - [FEAT-005 Feature Definition](../FEAT-005-skill-compliance.md)
 - [EN-027 Agent Definition Compliance](../EN-027-agent-definition-compliance/EN-027-agent-definition-compliance.md)
-- [EN-028 SKILL.md Compliance](../EN-028-skill-md-compliance/EN-028-skill-md-compliance.md)
-- [EN-029 Documentation Compliance](../EN-029-documentation-compliance/EN-029-documentation-compliance.md)
-- [EN-030 Documentation Polish](../EN-030-documentation-polish/EN-030-documentation-polish.md)
 - [EN-031 Model Selection](../EN-031-model-selection-capability/EN-031-model-selection-capability.md)
-- [work-026-e-002 Gap Analysis](../../../../../docs/analysis/work-026-e-002-transcript-skill-gap-analysis.md)
-- [work-026-e-003 Compliance Framework](../../../../../docs/synthesis/work-026-e-003-jerry-skill-compliance-framework.md)
 
 ---
 
-*Orchestration Plan Version: 2.1.0*
-*Status: Aligned with existing task files + Adversarial Prompting Protocol*
-*Constitutional Compliance: P-002, P-003*
+*Orchestration Plan Version: 3.0.0*
+*Status: PENDING_APPROVAL (per DEC-002:D-004)*
+*Key Change: TASK-419 as Phase 0 sequential hard gate*
+*Constitutional Compliance: P-002, P-003, P-020*
 *Created: 2026-01-30*
-*Updated: 2026-01-31 - Added Adversarial Prompting Protocol section (6 patterns)*
+*Updated: 2026-01-31 - v3.0.0 corrects dependency chain flaw per DISC-003*
