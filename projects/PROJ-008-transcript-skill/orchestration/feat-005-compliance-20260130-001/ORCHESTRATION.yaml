@@ -1,0 +1,551 @@
+# ORCHESTRATION.yaml - Machine-Readable State (SSOT)
+# Workflow: FEAT-005 Skill Compliance
+# Version: 1.0.0
+# Created: 2026-01-30T22:00:00Z
+
+workflow:
+  id: "feat-005-compliance-20260130-001"
+  name: "FEAT-005 Skill Compliance Orchestration"
+  project_id: "PROJ-008-transcript-skill"
+  feature_id: "FEAT-005"
+  status: ACTIVE
+  created_at: "2026-01-30T22:00:00Z"
+  updated_at: "2026-01-30T22:00:00Z"
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+pipelines:
+  compliance:
+    short_alias: "compliance"
+    skill_source: "problem-solving"
+    description: "Sequential Chain: EN-027 → EN-028 → EN-029 → EN-030"
+    current_phase: 1
+    total_phases: 4
+    status: PENDING
+    phases:
+      - id: 1
+        name: "EN-027 Agent Definition Compliance"
+        enabler_id: "EN-027"
+        status: PENDING
+        effort_hours: 10
+        agents:
+          - id: "ps-researcher-a1"
+            type: "ps-researcher"
+            task_id: "TASK-134"
+            status: PENDING
+            description: "Analyze PAT-AGENT-001 requirements"
+            artifact: null
+          - id: "ps-architect-a1"
+            type: "ps-architect"
+            task_id: "TASK-135"
+            status: PENDING
+            description: "Update ts-parser.md YAML frontmatter"
+            artifact: null
+          - id: "ps-architect-a2"
+            type: "ps-architect"
+            task_id: "TASK-136"
+            status: PENDING
+            description: "Update ts-extractor.md YAML frontmatter"
+            artifact: null
+          - id: "ps-architect-a3"
+            type: "ps-architect"
+            task_id: "TASK-137"
+            status: PENDING
+            description: "Update ts-formatter.md YAML frontmatter"
+            artifact: null
+          - id: "ps-critic-gate-1a"
+            type: "ps-critic"
+            task_id: "TASK-138"
+            status: PENDING
+            description: "Quality gate: Agent compliance validation"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+      - id: 2
+        name: "EN-028 SKILL.md Compliance"
+        enabler_id: "EN-028"
+        status: PENDING
+        effort_hours: 9
+        blocked_by: ["phase-1"]
+        agents:
+          - id: "ps-researcher-a2"
+            type: "ps-researcher"
+            task_id: "TASK-139"
+            status: PENDING
+            description: "Analyze PAT-SKILL-001 requirements"
+            artifact: null
+          - id: "ps-analyst-a1"
+            type: "ps-analyst"
+            task_id: "TASK-140"
+            status: PENDING
+            description: "Add invocation section with 3 methods"
+            artifact: null
+          - id: "ps-architect-a4"
+            type: "ps-architect"
+            task_id: "TASK-141"
+            status: PENDING
+            description: "Add state passing schema"
+            artifact: null
+          - id: "ps-synthesizer-a1"
+            type: "ps-synthesizer"
+            task_id: "TASK-142"
+            status: PENDING
+            description: "Add session context documentation"
+            artifact: null
+          - id: "ps-critic-gate-2a"
+            type: "ps-critic"
+            task_id: "TASK-143"
+            status: PENDING
+            description: "Quality gate: SKILL.md compliance validation"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+      - id: 3
+        name: "EN-029 Documentation Compliance"
+        enabler_id: "EN-029"
+        status: PENDING
+        effort_hours: 9
+        blocked_by: ["phase-2"]
+        agents:
+          - id: "ps-researcher-a3"
+            type: "ps-researcher"
+            task_id: "TASK-144"
+            status: PENDING
+            description: "Analyze PAT-PLAYBOOK-001 requirements"
+            artifact: null
+          - id: "ps-synthesizer-a2"
+            type: "ps-synthesizer"
+            task_id: "TASK-145"
+            status: PENDING
+            description: "Add anti-pattern catalog"
+            artifact: null
+          - id: "ps-analyst-a2"
+            type: "ps-analyst"
+            task_id: "TASK-146"
+            status: PENDING
+            description: "Add triple-lens format"
+            artifact: null
+          - id: "ps-architect-a5"
+            type: "ps-architect"
+            task_id: "TASK-147"
+            status: PENDING
+            description: "Add ASCII diagrams"
+            artifact: null
+          - id: "ps-critic-gate-3a"
+            type: "ps-critic"
+            task_id: "TASK-148"
+            status: PENDING
+            description: "Quality gate: Documentation compliance validation"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+      - id: 4
+        name: "EN-030 Documentation Polish"
+        enabler_id: "EN-030"
+        status: PENDING
+        effort_hours: 5
+        blocked_by: ["phase-3"]
+        agents:
+          - id: "ps-reviewer-a1"
+            type: "ps-reviewer"
+            task_id: "TASK-149"
+            status: PENDING
+            description: "Section 6 improvements"
+            artifact: null
+          - id: "ps-synthesizer-a3"
+            type: "ps-synthesizer"
+            task_id: "TASK-150"
+            status: PENDING
+            description: "Runbook examples"
+            artifact: null
+          - id: "ps-validator-a1"
+            type: "ps-validator"
+            task_id: "TASK-151"
+            status: PENDING
+            description: "Cross-references validation"
+            artifact: null
+          - id: "ps-analyst-a3"
+            type: "ps-analyst"
+            task_id: "TASK-152"
+            status: PENDING
+            description: "Index generation"
+            artifact: null
+          - id: "ps-critic-gate-4a"
+            type: "ps-critic"
+            task_id: "TASK-153"
+            status: PENDING
+            description: "Quality gate: Final polish validation"
+            is_gate: true
+            threshold: 0.95
+            artifact: null
+
+  model-sel:
+    short_alias: "model-sel"
+    skill_source: "nasa-se"
+    description: "EN-031 Model Selection Capability (parallel track)"
+    current_phase: 1
+    total_phases: 4
+    status: PENDING
+    phases:
+      - id: 1
+        name: "Requirements Analysis"
+        enabler_id: "EN-031"
+        status: PENDING
+        effort_hours: 12
+        agents:
+          - id: "nse-requirements-b1"
+            type: "nse-requirements"
+            task_id: "TASK-154"
+            status: PENDING
+            description: "SHALL statements for model selection"
+            artifact: null
+          - id: "nse-architecture-b1"
+            type: "nse-architecture"
+            task_id: "TASK-155"
+            status: PENDING
+            description: "Technical architecture design"
+            artifact: null
+          - id: "ps-researcher-b1"
+            type: "ps-researcher"
+            task_id: "TASK-156"
+            status: PENDING
+            description: "Industry pattern scan"
+            artifact: null
+          - id: "ps-critic-gate-1b"
+            type: "ps-critic"
+            task_id: null
+            status: PENDING
+            description: "Quality gate: Requirements validation"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+      - id: 2
+        name: "Design & Implementation"
+        enabler_id: "EN-031"
+        status: PENDING
+        effort_hours: 16
+        blocked_by: ["phase-1"]
+        agents:
+          - id: "ps-architect-b1"
+            type: "ps-architect"
+            task_id: "TASK-157"
+            status: PENDING
+            description: "CLI ADR creation"
+            artifact: null
+          - id: "nse-integration-b1"
+            type: "nse-integration"
+            task_id: "TASK-158"
+            status: PENDING
+            description: "Agent definition updates"
+            artifact: null
+          - id: "ps-synthesizer-b1"
+            type: "ps-synthesizer"
+            task_id: "TASK-159"
+            status: PENDING
+            description: "SKILL.md model parameters"
+            artifact: null
+          - id: "ps-validator-b1"
+            type: "ps-validator"
+            task_id: "TASK-160"
+            status: PENDING
+            description: "Constraint validation"
+            artifact: null
+          - id: "nse-qa-gate-2b"
+            type: "nse-qa"
+            task_id: null
+            status: PENDING
+            description: "Quality gate: NASA V&V verification"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+      - id: 3
+        name: "Testing & Integration"
+        enabler_id: "EN-031"
+        status: PENDING
+        effort_hours: 16
+        blocked_by: ["phase-2"]
+        agents:
+          - id: "nse-verification-b1"
+            type: "nse-verification"
+            task_id: "TASK-161"
+            status: PENDING
+            description: "Test matrix creation"
+            artifact: null
+          - id: "ps-reviewer-b1"
+            type: "ps-reviewer"
+            task_id: "TASK-162"
+            status: PENDING
+            description: "Unit test implementation"
+            artifact: null
+          - id: "nse-qa-b1"
+            type: "nse-qa"
+            task_id: "TASK-163"
+            status: PENDING
+            description: "Integration testing"
+            artifact: null
+          - id: "ps-critic-gate-3b"
+            type: "ps-critic"
+            task_id: "TASK-164"
+            status: PENDING
+            description: "Quality gate: V&V validation"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+      - id: 4
+        name: "Documentation"
+        enabler_id: "EN-031"
+        status: PENDING
+        effort_hours: 8
+        blocked_by: ["phase-3"]
+        agents:
+          - id: "ps-synthesizer-b2"
+            type: "ps-synthesizer"
+            task_id: "TASK-165"
+            status: PENDING
+            description: "User guide creation"
+            artifact: null
+          - id: "nse-reporter-b1"
+            type: "nse-reporter"
+            task_id: "TASK-166"
+            status: PENDING
+            description: "V&V report"
+            artifact: null
+          - id: "ps-critic-gate-4b"
+            type: "ps-critic"
+            task_id: "TASK-167"
+            status: PENDING
+            description: "Quality gate: Final validation"
+            is_gate: true
+            threshold: 0.90
+            artifact: null
+
+barriers:
+  - id: "barrier-1"
+    name: "Schema → Requirements Cross-Pollination"
+    status: PENDING
+    required_phases:
+      - pipeline: "compliance"
+        phase: 1
+      - pipeline: "model-sel"
+        phase: 1
+    artifacts:
+      compliance_to_model_sel:
+        path: null
+        status: PENDING
+        description: "Agent YAML schema patterns"
+      model_sel_to_compliance:
+        path: null
+        status: PENDING
+        description: "API patterns from industry research"
+
+  - id: "barrier-2"
+    name: "Documentation Ready Cross-Pollination"
+    status: PENDING
+    required_phases:
+      - pipeline: "compliance"
+        phase: 2
+      - pipeline: "model-sel"
+        phase: 2
+    artifacts:
+      compliance_to_model_sel:
+        path: null
+        status: PENDING
+        description: "SKILL.md section structure"
+      model_sel_to_compliance:
+        path: null
+        status: PENDING
+        description: "Model selection CLI syntax"
+
+  - id: "barrier-3"
+    name: "Quality Gates Passed"
+    status: PENDING
+    required_phases:
+      - pipeline: "compliance"
+        phase: 3
+      - pipeline: "model-sel"
+        phase: 3
+    artifacts:
+      compliance_to_model_sel:
+        path: null
+        status: PENDING
+        description: "Anti-pattern catalog"
+      model_sel_to_compliance:
+        path: null
+        status: PENDING
+        description: "Test matrix patterns"
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 1 Parallel"
+      execution_mode: PARALLEL
+      agents:
+        - "ps-researcher-a1"
+        - "nse-requirements-b1"
+        - "nse-architecture-b1"
+        - "ps-researcher-b1"
+    - id: 2
+      name: "Phase 1 Sequential (compliance)"
+      execution_mode: SEQUENTIAL
+      depends_on: [1]
+      agents:
+        - "ps-architect-a1"
+        - "ps-architect-a2"
+        - "ps-architect-a3"
+        - "ps-critic-gate-1a"
+    - id: 3
+      name: "Phase 1 Gate (model-sel)"
+      execution_mode: SEQUENTIAL
+      depends_on: [1]
+      agents:
+        - "ps-critic-gate-1b"
+    - id: 4
+      name: "Barrier 1"
+      execution_mode: BARRIER
+      depends_on: [2, 3]
+      barrier_id: "barrier-1"
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+critic_feedback:
+  protocol: "adversarial"
+  max_iterations: 3
+  escalation_on_failure: true
+  gates:
+    - gate_id: "ps-critic-gate-1a"
+      phase: 1
+      pipeline: "compliance"
+      threshold: 0.90
+      criteria:
+        - "PAT-AGENT-001 compliance"
+        - "8 required sections present"
+        - "Valid YAML syntax"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "ps-critic-gate-1b"
+      phase: 1
+      pipeline: "model-sel"
+      threshold: 0.90
+      criteria:
+        - "SHALL statement clarity"
+        - "Requirements traceability"
+        - "Completeness"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "ps-critic-gate-2a"
+      phase: 2
+      pipeline: "compliance"
+      threshold: 0.90
+      criteria:
+        - "PAT-SKILL-001 compliance"
+        - "3 invocation methods documented"
+        - "State passing schema valid"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "nse-qa-gate-2b"
+      phase: 2
+      pipeline: "model-sel"
+      threshold: 0.90
+      criteria:
+        - "NASA V&V standards"
+        - "Interface specifications"
+        - "Integration readiness"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "ps-critic-gate-3a"
+      phase: 3
+      pipeline: "compliance"
+      threshold: 0.90
+      criteria:
+        - "Triple-lens format"
+        - "Anti-pattern catalog completeness"
+        - "ASCII diagram quality"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "ps-critic-gate-3b"
+      phase: 3
+      pipeline: "model-sel"
+      threshold: 0.90
+      criteria:
+        - "Test coverage adequacy"
+        - "V&V completeness"
+        - "Integration test pass"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "ps-critic-gate-4a"
+      phase: 4
+      pipeline: "compliance"
+      threshold: 0.95
+      criteria:
+        - "Final polish quality"
+        - "No regressions"
+        - "Integration completeness"
+      status: PENDING
+      score: null
+      iterations: 0
+    - gate_id: "ps-critic-gate-4b"
+      phase: 4
+      pipeline: "model-sel"
+      threshold: 0.90
+      criteria:
+        - "Documentation completeness"
+        - "User guide clarity"
+        - "V&V report accuracy"
+      status: PENDING
+      score: null
+      iterations: 0
+
+metrics:
+  phases_complete: 0
+  phases_total: 8
+  agents_executed: 0
+  agents_total: 34
+  barriers_complete: 0
+  barriers_total: 3
+  critic_gates_passed: 0
+  critic_gates_total: 8
+  estimated_days: 6
+  actual_days: null
+  parallel_efficiency: null
+
+metadata:
+  constitutional_compliance:
+    - "P-002: File persistence for all state"
+    - "P-003: No recursive subagents"
+    - "P-010: Task tracking integrity"
+  skills_used:
+    - "problem-solving"
+    - "nasa-se"
+    - "orchestration"
+  agents_used:
+    problem_solving:
+      - "ps-researcher"
+      - "ps-analyst"
+      - "ps-architect"
+      - "ps-critic"
+      - "ps-validator"
+      - "ps-synthesizer"
+      - "ps-reviewer"
+      - "ps-reporter"
+    nasa_se:
+      - "nse-requirements"
+      - "nse-architecture"
+      - "nse-integration"
+      - "nse-verification"
+      - "nse-qa"
+      - "nse-reporter"
