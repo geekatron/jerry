@@ -1,7 +1,7 @@
 ---
 name: transcript
 description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
-version: "2.4.2"
+version: "2.5.0"
 allowed-tools: Read, Write, Glob, Task, Bash(*)
 argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]
 
@@ -1478,6 +1478,72 @@ This fixes BUG-001 where large transcripts produced chunks exceeding the 25K tok
 |-------|--------|--------|
 | Soft | 31,500 | Split at ## heading |
 | Hard | 35,000 | Force split |
+
+### Model-Agnostic Output Requirements (ADR-007)
+
+> **CRITICAL:** Output structure MUST be identical regardless of which LLM model (Sonnet, Opus, Haiku) executes the skill. ADR-007 defines the golden template specification.
+
+#### MUST-CREATE Files (Exactly 8 Core Files)
+
+| Number | File | Description |
+|--------|------|-------------|
+| 00 | `00-index.md` | Navigation hub and metadata |
+| 01 | `01-summary.md` | Executive summary |
+| 02 | `02-transcript.md` | Full formatted transcript (splittable) |
+| 03 | `03-speakers.md` | Speaker directory |
+| 04 | `04-action-items.md` | Action items with citations |
+| 05 | `05-decisions.md` | Decisions with context |
+| 06 | `06-questions.md` | Open and answered questions |
+| 07 | `07-topics.md` | Topic hierarchy |
+
+**Also Required:** `_anchors.json` (anchor registry)
+
+#### MUST-NOT-CREATE Files (Validation Failure)
+
+| Forbidden Pattern | Reason |
+|-------------------|--------|
+| `*-timeline.md` | Not part of ADR-002 schema |
+| `*-sentiment.md` | Not part of ADR-002 schema |
+| `*-analysis.md` | Not part of ADR-002 schema |
+| `08-*.md` | 08 reserved for mindmap directory |
+| Unnumbered `*.md` | All core files must be numbered 00-07 |
+
+#### Anchor Format (MUST USE)
+
+| Entity | Pattern | Valid | Invalid |
+|--------|---------|-------|---------|
+| Segment | `seg-NNN` | seg-001 | segment-001, SEG-001 |
+| Speaker | `spk-{slug}` | spk-alice-smith | speaker-alice |
+| Action | `act-NNN` | act-001 | AI-001, ACT-001 |
+| Decision | `dec-NNN` | dec-001 | DEC-001 |
+| Question | `que-NNN` | que-001 | QUE-001 |
+| Topic | `top-NNN` | top-001 | TOP-001 |
+
+**NNN = 3-digit, zero-padded (001-999)**
+
+#### Citation Format (MUST USE)
+
+```markdown
+> "{QUOTED_TEXT}"
+>
+> -- [{SPEAKER}](03-speakers.md#{spk-slug}), [[{TIMESTAMP}]](02-transcript.md#{seg-NNN})
+```
+
+**FORBIDDEN:** Links to `canonical-transcript.json` (file too large for LLM context)
+
+#### Navigation Links (MUST INCLUDE)
+
+Every entity file (01-07) MUST include:
+
+```markdown
+## Navigation
+
+- [Back to Index](00-index.md)
+- [Previous: {PREV_FILE_NAME}]({PREV_FILE}.md)
+- [Next: {NEXT_FILE_NAME}]({NEXT_FILE}.md)
+```
+
+**Reference:** See [ADR-007](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-006-output-consistency/docs/decisions/ADR-007-output-template-specification.md) for complete specification.
 
 ### Tool Example: Writing Packet Files
 
@@ -3377,11 +3443,13 @@ For detailed agent specifications, see:
 | 2.4.0 | 2026-01-30 | **EN-028 Compliance:** Added invoking section with natural language patterns, enhanced state passing with error handling, file persistence requirements (P-002 checklist), self-critique protocol (pre-finalization checks), restructured for triple-lens audience (L0/L1/L2), expanded Quick Reference with troubleshooting, model selection documentation (--model-* flags). | EN-028, TASK-407-411 |
 | 2.4.1 | 2026-01-30 | **G-028 Iteration 2 Refinements (F-001 to F-005):** Added 5 error invocation examples with error outputs (F-001); documented error state structures for all agents including propagated errors (F-002); expanded recovery scenarios from 3 to 10 covering Python parser failure, context overflow, file write errors, quality gate failure, timeouts, partial extraction, mindmap failures, file conflicts, missing dependencies, and state corruption (F-003); added quantitative thresholds to all agent self-critique checklists with numeric bounds for validation (F-004); expanded Quick Reference troubleshooting section with 7 orchestration failure scenarios including pipeline stuck, agent timeout, quality gate immediate failure, file conflicts, mindmap partial failure, state key mismatch, and Python parser fallback issues (F-005). Target: raise G-028 score from 0.78 to ≥ 0.90. | EN-028, G-028 Iteration 2 |
 | 2.4.2 | 2026-01-30 | **EN-030 Documentation Polish:** Added 6 comprehensive tool examples (Bash, Read, Write, Task, Glob, Grep) with execution evidence (TASK-416); Added 6 design rationale deep-dives covering hybrid architecture, chunking strategy, mindmap default-on, quality threshold 0.90, dual citation system, and P-003 compliance (TASK-417); Added 3 cross-skill integration sections for /problem-solving, /orchestration, and /nasa-se (TASK-418). Target: raise G-030 score from 0.83 to ≥ 0.95. | EN-030, TASK-416-418 |
+| 2.5.0 | 2026-01-31 | **ADR-007 Model-Agnostic Output:** Added "Model-Agnostic Output Requirements (ADR-007)" section with MUST-CREATE (8 files), MUST-NOT-CREATE lists, anchor format rules, citation format, and navigation requirements. Ensures output consistency across Sonnet/Opus/Haiku models. FEAT-006 Phase 4 implementation. | ADR-007, FEAT-006 |
 
 ---
 
-*Skill Version: 2.4.2*
+*Skill Version: 2.5.0*
 *Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation + Token-Based Chunking*
 *Constitutional Compliance: Jerry Constitution v1.0 (P-001, P-002, P-003, P-004, P-010, P-020, P-022)*
+*ADR Compliance: ADR-002 (packet structure), ADR-003 (anchor registry), ADR-004 (file splitting), ADR-006 (mindmap), ADR-007 (output template)*
 *Created: 2026-01-26*
-*Last Updated: 2026-01-30 (EN-030 Documentation Polish)*
+*Last Updated: 2026-01-31 (ADR-007 Model-Agnostic Output)*

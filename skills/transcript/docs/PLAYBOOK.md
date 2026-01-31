@@ -390,12 +390,31 @@ Invoke ps-critic with:
 - Input: Mindmap files (08-mindmap/, if present)
 - Quality threshold: 0.90
 - Extension: ts-critic-extension.md (for mindmap criteria MM-*/AM-*)
+- Extension: ADR-007 schema compliance criteria (SCHEMA-001 through SCHEMA-008)
 ```
+
+### ADR-007 Schema Compliance Criteria (CRITICAL)
+
+> **Model-Agnostic Validation:** These criteria MUST be checked regardless of which LLM model executed ts-formatter.
+
+| Criterion ID | Name | Weight | Threshold | Check |
+|--------------|------|--------|-----------|-------|
+| SCHEMA-001 | 8-File Packet Structure | 0.20 | 1.0 | All 8 core files (00-07) exist |
+| SCHEMA-002 | No Forbidden Files | 0.10 | 1.0 | No timeline, sentiment, analysis, 08-*.md |
+| SCHEMA-003 | Anchor Format Compliance | 0.15 | 0.95 | All anchors match `{type}-NNN` pattern |
+| SCHEMA-004 | Navigation Links Present | 0.10 | 0.90 | All entity files have prev/next navigation |
+| SCHEMA-005 | Citation Format Compliance | 0.15 | 0.85 | Citations include speaker + timestamp links |
+| SCHEMA-006 | No Canonical JSON Links | 0.10 | 1.0 | No links to canonical-transcript.json |
+| SCHEMA-007 | Token Limits Respected | 0.10 | 1.0 | All files under 35K tokens |
+| SCHEMA-008 | YAML Frontmatter Present | 0.10 | 0.95 | All files have schema_version |
+
+**Reference:** [ADR-007](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-006-output-consistency/docs/decisions/ADR-007-output-template-specification.md)
 
 **Verification:**
 - [ ] Overall score >= 0.90
 - [ ] `passed: true`
 - [ ] No critical issues
+- [ ] SCHEMA-001 through SCHEMA-008 evaluated (ADR-007 compliance)
 - [ ] MM-*/AM-* criteria evaluated (if mindmaps present, per [ADR-006 ps-critic Validation](../../../docs/adrs/ADR-006-mindmap-pipeline-integration.md#ps-critic-validation-criteria))
 
 ### Decision Point: DP-4
@@ -1048,13 +1067,15 @@ This skill implements patterns from the Jerry Pattern Catalog (`.claude/patterns
 
 ---
 
-*Playbook Version: 1.2.1*
+*Playbook Version: 1.3.0*
 *Triple-Lens Structure: L0 (ELI5), L1 (Engineer), L2 (Architect)*
 *Constitutional Compliance: P-001, P-002, P-003, P-004, P-010*
+*ADR Compliance: ADR-002, ADR-003, ADR-004, ADR-006, ADR-007*
 *Pattern Compliance: PAT-ARCH-001, PAT-AGENT-001, PAT-QUALITY-001*
 *Created: 2026-01-26*
-*Updated: 2026-01-30*
+*Updated: 2026-01-31*
 *Change Log:*
+- *v1.3.0 (2026-01-31): FEAT-006 - Added ADR-007 schema compliance criteria (SCHEMA-001 to SCHEMA-008) for model-agnostic validation*
 - *v1.2.1 (2026-01-30): EN-030 TASK-416 - Added Read tool example for chunked architecture (Phase 2) with execution evidence*
 - *v1.2.0 (2026-01-30): EN-029 - Added L2 sections, anti-patterns, pattern refs, constraints*
 - *v1.1.0 (2026-01-30): EN-024 - Mindmap pipeline integration*

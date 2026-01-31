@@ -217,23 +217,23 @@ WorkItem (abstract)
 ## Work tracker (worktracker) Behavior
 We use the Canonical model for all work items in our project documentation and tracking artifacts. The ADO Scrum, SAFe Terminology and Jira (Standard/Adv. Roadmaps) columns are provided for reference to map our canonical model to common frameworks and tools. If users use terminology from ADO Scrum, SAFe or JIRA, we should map it to our canonical model for consistency.
 
-`WORKTRACKER.md` is the Global Manifest tracking all Initiatives and Epics, Bugs, Decisions, Discoveries and Impediments. It exists in the root of the project folder ({ProjectId} e.g. `PROJ-005-plugin-bugs`). It is a pointer with relationships to to the items it is tracking. 
+`WORKTRACKER.md` is the Global Manifest tracking all Initiatives and Epics, Bugs, Decisions, Discoveries and Impediments. It exists in the root of the project folder ({ProjectId} e.g. `PROJ-005-plugin-bugs`). It is a pointer with relationships to to the items it is tracking.
 
-A folder is created for each Epic (`{EpicId}-{slug}`) in the `work/` folder. 
-Each Epic folder contains its own `{EpicId}-{slug}.md` tracking Features, Enablers, Stories and Tasks (Effort) for that Strategic Theme. This file also acts as a pointer with relationships to all respective artifacts of the Epic. 
+A folder is created for each Epic (`{EpicId}-{slug}`) in the `work/` folder.
+Each Epic folder contains its own `{EpicId}-{slug}.md` tracking Features, Enablers, Stories and Tasks (Effort) for that Strategic Theme. This file also acts as a pointer with relationships to all respective artifacts of the Epic.
 
-A folder (`{FeatureId}-{slug}`) is created for each Feature in the `work/{EpicId}-{slug}/` folder. 
+A folder (`{FeatureId}-{slug}`) is created for each Feature in the `work/{EpicId}-{slug}/` folder.
 Each Feature folder contains its own `{FeatureId}-{slug}.md` tracking Unit of Work, Enablers and Tasks (Effort) for that Feature. Each `FEATURE-WORKTRACKER.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Feature.
 
-A folder (`{EnablerId}-{slug}`) is created for each Enabler in the `work/{EpicId}-{slug}/{FeatureId}-{slug}/` folder. 
+A folder (`{EnablerId}-{slug}`) is created for each Enabler in the `work/{EpicId}-{slug}/{FeatureId}-{slug}/` folder.
 Each Enabler folder contains its own `{EnablerId}-{slug}.md` tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries for that Enabler. Each `{EnablerId}-{slug}.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Enabler.
 
-A folder (`{EnablerId}-{slug}`) is created for each Story in the `work/{EpicId}-{slug}/{FeatureId}-{slug}/` folder. 
+A folder (`{EnablerId}-{slug}`) is created for each Story in the `work/{EpicId}-{slug}/{FeatureId}-{slug}/` folder.
 Each Story folder contains its own `{Story}-{slug}.md` tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries for that Story. Each `{Story}-{slug}.md` must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you - it is a pointer with relationships to all respective artifacts of the Story.
 
 
-A file is created for each Task, Sub-Task, Spike, Bug, Impediment and Discovery in the respective `{EnablerId}-{slug}` or `{StoryId}-{slug}` following the scheme outlined in the Directory Structure. Each Task, Sub-Task, Spike, Bug, Impediment and Discovery file must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you. 
-Each Enabler and Story must contain verifiable acceptance criteria. 
+A file is created for each Task, Sub-Task, Spike, Bug, Impediment and Discovery in the respective `{EnablerId}-{slug}` or `{StoryId}-{slug}` following the scheme outlined in the Directory Structure. Each Task, Sub-Task, Spike, Bug, Impediment and Discovery file must have and maintain relationships to related artifacts in-order to enable traceability and auditability as well as easier traversal for you.
+Each Enabler and Story must contain verifiable acceptance criteria.
 Each Enabler and Story must be broken down into detailed Tasks with verifiable evidence. Verifiable evidence (citations, references and sources) must be provided to support closing out a Task.
 
 Use MCP Memory-Keeper to help you remember and maintain the structure and relationships of the Worktracker system. You don't have to remember everything, just remember to use MCP Memory-Keeper to help you keep track of everything. Try MCP Memory-Keeper first before searching the repository.
@@ -325,8 +325,8 @@ docs/knowledge/exemplars/templates/                                            #
 
 ```
 projects/
-└── {ProjectId}/ e.g. PROJ-005-plugin-bugs                                                                      # Project Context Folder                                                      
-    ├── PLAN.md                                                                                                 # Initial Project Plan and Overview. 
+└── {ProjectId}/ e.g. PROJ-005-plugin-bugs                                                                      # Project Context Folder
+    ├── PLAN.md                                                                                                 # Initial Project Plan and Overview.
     ├── WORKTRACKER.md                                                                                          # Global Manifest tracking all work items. Also a pointer with relationships to all decomposed work items.
     └── work/                                                                                                   # Project Worktracker Decomposition Folder
         └── {EpicId}-{slug}/ e.g. EPIC-001-forge-developer-experience                                           # Epic Folder. Large body of work spanning multiple sprints or months.
@@ -375,25 +375,25 @@ Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update the respe
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to capture and update decisions in the respective `*.md` files with detailed updates as YOU and I go through Questions and Answers.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to update your respective `*.md` files with detailed updates as you are working/progressing through them.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to document detailed bugs, discoveries and impediments as they are arise in their respective `*.md` files.
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list up to date.                                                                                                                                                                                                                                                
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list up to date.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with your respective work tracker `*.md` files.  You MUST keep your TODO in sync with the work-tracker.
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with work tracker. You MUST keep your work tracker entities up to date with detailed updates so they are truthful, accurate and honest representation of the current state. 
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your TODO list in sync with work tracker. You MUST keep your work tracker entities up to date with detailed updates so they are truthful, accurate and honest representation of the current state.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you to Keep your orchestration artifacts up to date with detailed updates so they are truthful, accurate and honest representation of the current state.
 
 
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Do NOT take shortcuts. Do NOT use hacks to solve problems. If you are about to take a shortcut or apply a hack, ask yourself is there a better way? If you are about to answer no, try again. If you are truly blocked and want to take a shortcut or apply a hack, ask me first? We are building mission-critical software and quality is king!
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Ask questions. Push back if something doesn't make sense or is misaligned. 
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Be truthful, accurate, evidence based (citations, sources, references) and honest. 
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Ask questions. Push back if something doesn't make sense or is misaligned.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: Be truthful, accurate, evidence based (citations, sources, references) and honest.
 
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS document your work so that it is understandable by yourself and three different personas: (1) ELI5 <- Explain it to me like I'm Five - i.e. Simple analogy explanations. (2) Engineer - Deep Technical explanation with context (3) 🧠 Architect - Performance implications, tradeoffs, one-way door decisions and design rationale
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS perform any kind of research and analysis using at minimum the following Problem-Solving frameworks 5W2H + Ishikawa + Pareto Analysis (80/20) + Failure Mode and Effects Analysis (FMEA) + 8D (Eight Disciplines) and NASA Systems Engineering Handbook framework and other before starting any implementation work.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST perform research and analysis using Context7 and search the internet for industry best practices, industry standards, innovative work and prior art on the topics you are working through.
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make data + evidence driven decisions based on industry best practices and prior art from authoritative sources such as but not limited to Industry Experts, Industry Innovators, Industry Leaders, Community Experts, Community Innovators, Community Leaders and Community experts ensuring you provide citations, references and sources. 
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make data + evidence driven decisions based on industry best practices and prior art from authoritative sources such as but not limited to Industry Experts, Industry Innovators, Industry Leaders, Community Experts, Community Innovators, Community Leaders and Community experts ensuring you provide citations, references and sources.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST persist your detailed analysis, discoveries, explorations, findings, research and synthesis in the repository.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make all decisions in an evidence based process with citations, references and sources using industry best practices from industry leaders, industry experts, community leaders and community experts.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST make ascii art and mermaid diagrams to illustrate your points wherever applicable including activity diagrams, state diagrams, flow charts, sequence diagrams, class diagrams, component diagrams, architecture diagrams, system context diagrams, etc.
 Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST ALWAYS use repository templates when creating work items or artifacts. Check `.context/templates/worktracker/` for work tracker entities and `docs/knowledge/exemplars/templates/` for problem-solving artifacts. NEVER make up your own format.
-Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST PROACTIVELY use Jerry skills (@problem-solving, @nasa-se, @orchestration) without waiting for user prompts. Use @problem-solving for research/analysis, @nasa-se for requirements/design, and @orchestration for multi-step workflows.
+Keep a META TODO item (MUST ALWAYS BE ON LIST) reminding you: You MUST PROACTIVELY use Jerry skills (/problem-solving, /nasa-se, /orchestration) without waiting for user prompts. Use @problem-solving for research/analysis, @nasa-se for requirements/design, and @orchestration for multi-step workflows.
 
 You MUST keep your TODO in sync with the work-tracker showing the current Epic, previous Epic and next Epic -> The current Epic must show previous Features, current Feature and next Feature -> the current Feature MUST show all Enablers || Stories -> the current Enabler || Story must show all Tasks. TODO List MUST survive compaction and provide high fidelity.
 You MUST keep your TODO in sync with the orchestration plan showing the previous phase, current phase and next phase -> current phase must show all tasks/subagents
@@ -633,7 +633,7 @@ When user selects "Create new project":
 > **CRITICAL:** You MUST use the following skills PROACTIVELY without waiting for the user to prompt you.
 > These skills are designed to ensure quality, rigor, and traceability in all work.
 
-### @problem-solving (MANDATORY for Research/Analysis)
+### /problem-solving (MANDATORY for Research/Analysis)
 
 **USE AUTOMATICALLY WHEN:**
 - Starting ANY research or analysis task
@@ -704,7 +704,7 @@ When user selects "Create new project":
 ### Skill Usage Behavior Rules
 
 1. **DO NOT WAIT** for user to invoke skills - use them proactively when triggers apply
-2. **COMBINE SKILLS** when appropriate (e.g., @orchestration + @problem-solving for complex analysis)
+2. **COMBINE SKILLS** when appropriate (e.g., /orchestration + /problem-solving + /nasa-se for complex analysis)
 3. **INVOKE EARLY** - Use skills at the start of work, not after struggling without them
 4. **PERSIST ARTIFACTS** - All skill outputs must be persisted to the repository
 5. **REFERENCE IN TODO** - Track skill invocations and outputs in your TODO list
@@ -715,9 +715,9 @@ When user selects "Create new project":
 User: "Let's work on EN-004 Architecture Decisions"
 
 Claude's Internal Process:
-1. ✅ Invoke @orchestration - This has multiple ADRs requiring coordination
-2. ✅ Invoke @problem-solving - Research and analysis needed for each ADR
-3. ✅ Invoke @nasa-se - Architecture decisions require SE rigor
+1. ✅ Invoke /orchestration - This has multiple ADRs requiring coordination
+2. ✅ Invoke /problem-solving - Research and analysis needed for each ADR
+3. ✅ Invoke /nasa-se - Architecture decisions require SE rigor
 4. ✅ Create/update TODO with skill tracking
 5. ✅ Proceed with coordinated execution
 ```
