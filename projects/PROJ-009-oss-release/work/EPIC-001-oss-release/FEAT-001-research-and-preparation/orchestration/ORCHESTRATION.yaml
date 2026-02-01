@@ -1,0 +1,1451 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for PROJ-009-oss-release
+# Document ID: PROJ-009-ORCH-STATE
+# Version: 4.0.0
+# Last Updated: 2026-01-31T19:30:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+#
+# CHANGE LOG v4.0.0:
+# - Corrected base path to feature-level location
+# - Added 5 new research agents for expanded scope (DISC-001 remediation)
+# - Updated execution state (partial Phase 0 complete, QG-0 FAILED)
+# - Added worktracker document references (DEC-001, DEC-002, DISC-001)
+
+# Schema version for evolution support (semver format)
+schema_version: "4.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "oss-release-20260131-001"
+  name: "Jerry OSS Release Preparation"
+  project_id: "PROJ-009-oss-release"
+  version: "4.0.0"
+  created_at: "2026-01-31T16:00:00Z"
+  updated_at: "2026-01-31T19:30:00Z"
+  status: "ACTIVE"  # PENDING_APPROVAL | APPROVED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+  approved_at: "2026-01-31T19:00:00Z"
+  approved_by: "User"
+
+  # Phase 0 Status
+  phase_0_status: "IN_PROGRESS"  # DISC-001 identified, expanded research required
+  qg_0_status: "FAILED"  # 0.876 < 0.92 threshold
+
+  # Workflow ID configuration
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL          # Phases execute in order
+    - CONCURRENT          # Pipelines run in parallel within phases
+    - BARRIER_SYNC        # Cross-pollination at barriers
+    - DUAL_QUALITY_GATE   # ps-critic + nse-qa at each gate
+    - CONTINUOUS_RISK     # nse-risk at every phase
+    - DUAL_REPORTING      # ps-reporter + nse-reporter at each phase
+    - FULL_ARTIFACT_PASS  # No summaries at barriers
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    no_deception: true            # P-022: Transparent reasoning
+    max_concurrent_agents: 5      # Soft constraint
+    max_qg_retries: 2             # Circuit breaker
+    checkpoint_frequency: "PHASE" # AGENT | PHASE | BARRIER
+    full_artifact_passthrough: true  # No summaries at barriers
+
+# =============================================================================
+# PATH CONFIGURATION (CORRECTED per DISC-001)
+# =============================================================================
+paths:
+  # CORRECT: Feature-level path, not project-level
+  base: "projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/"
+  ps_pipeline: "{base}ps/"
+  nse_pipeline: "{base}nse/"
+  cross_pollination: "{base}cross-pollination/"
+  quality_gates: "{base}quality-gates/"
+  reports: "{base}reports/"
+  risks: "{base}risks/"
+
+# =============================================================================
+# WORKTRACKER DOCUMENT REFERENCES
+# =============================================================================
+worktracker_documents:
+  decisions:
+    - id: "FEAT-001:DEC-001"
+      title: "Transcript Decisions (MIT License, Dual Repo, Orchestration, Decomposition)"
+      path: "FEAT-001--DEC-001-transcript-decisions.md"
+      status: "ACCEPTED"
+    - id: "FEAT-001:DEC-002"
+      title: "Orchestration Execution Decisions (Tiered, QG≥0.92, Checkpoints, Auto-retry)"
+      path: "FEAT-001--DEC-002-orchestration-execution-decisions.md"
+      status: "ACCEPTED"
+  discoveries:
+    - id: "FEAT-001:DISC-001"
+      title: "Missed Research Scope - Claude Code Best Practices Not Researched"
+      path: "FEAT-001--DISC-001-missed-research-scope.md"
+      status: "VALIDATED"
+      impact: "CRITICAL"
+      remediation: "Expand Phase 0 with 5 additional research agents"
+
+# =============================================================================
+# AGENT REGISTRY (24 Total - expanded per DISC-001)
+# =============================================================================
+agents:
+  # Problem-Solving Agents (14 - 9 original + 5 new research specialists)
+  ps_researcher:
+    id: "PS-01"
+    name: "ps-researcher"
+    skill: "problem-solving"
+    role: "Research Specialist (OSS Best Practices)"
+    phases: [0, 1]
+    status: "COMPLETE"  # EN-001 complete
+
+  # NEW: Expanded research agents per DISC-001 remediation
+  ps_researcher_claude_code:
+    id: "PS-01a"
+    name: "ps-researcher-claude-code"
+    skill: "problem-solving"
+    role: "Research Specialist (Claude Code Best Practices)"
+    phases: [0]
+    status: "PENDING"
+    enabler: "EN-002"
+    output: "ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md"
+
+  ps_researcher_claude_md:
+    id: "PS-01b"
+    name: "ps-researcher-claude-md"
+    skill: "problem-solving"
+    role: "Research Specialist (CLAUDE.md Optimization)"
+    phases: [0]
+    status: "PENDING"
+    enabler: "EN-003"
+    output: "ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md"
+
+  ps_researcher_plugins:
+    id: "PS-01c"
+    name: "ps-researcher-plugins"
+    skill: "problem-solving"
+    role: "Research Specialist (Claude Code Plugins)"
+    phases: [0]
+    status: "PENDING"
+    enabler: "EN-004"
+    output: "ps/phase-0/ps-researcher-plugins/plugins-best-practices.md"
+
+  ps_researcher_skills:
+    id: "PS-01d"
+    name: "ps-researcher-skills"
+    skill: "problem-solving"
+    role: "Research Specialist (Claude Code Skills)"
+    phases: [0]
+    status: "PENDING"
+    enabler: "EN-005"
+    output: "ps/phase-0/ps-researcher-skills/skills-best-practices.md"
+
+  ps_researcher_decomposition:
+    id: "PS-01e"
+    name: "ps-researcher-decomposition"
+    skill: "problem-solving"
+    role: "Research Specialist (Decomposition with Imports)"
+    phases: [0]
+    status: "PENDING"
+    enabler: "EN-006"
+    output: "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+
+  ps_analyst:
+    id: "PS-02"
+    name: "ps-analyst"
+    skill: "problem-solving"
+    role: "Analysis Specialist"
+    phases: [0, 1]
+
+  ps_architect:
+    id: "PS-03"
+    name: "ps-architect"
+    skill: "problem-solving"
+    role: "Architecture Specialist"
+    phases: [2]
+
+  ps_critic:
+    id: "PS-04"
+    name: "ps-critic"
+    skill: "problem-solving"
+    role: "Quality Evaluator (ADVERSARIAL)"
+    phases: ["QG-0", "QG-1", "QG-2", "QG-3", "QG-4"]
+    protocol: "DISC-002"
+
+  ps_validator:
+    id: "PS-05"
+    name: "ps-validator"
+    skill: "problem-solving"
+    role: "Validation Specialist"
+    phases: [3]
+
+  ps_synthesizer:
+    id: "PS-06"
+    name: "ps-synthesizer"
+    skill: "problem-solving"
+    role: "Synthesis Specialist"
+    phases: [3]
+
+  ps_reviewer:
+    id: "PS-07"
+    name: "ps-reviewer"
+    skill: "problem-solving"
+    role: "Review Specialist"
+    phases: [3]
+
+  ps_investigator:
+    id: "PS-08"
+    name: "ps-investigator"
+    skill: "problem-solving"
+    role: "Investigation Specialist"
+    phases: [1]
+
+  ps_reporter:
+    id: "PS-09"
+    name: "ps-reporter"
+    skill: "problem-solving"
+    role: "Reporting Specialist"
+    phases: [0, 1, 2, 3, 4]
+    invocations: 5
+
+  # NASA SE Agents (10)
+  nse_requirements:
+    id: "NSE-01"
+    name: "nse-requirements"
+    skill: "nasa-se"
+    role: "Requirements Engineer"
+    phases: [0, 2]
+
+  nse_verification:
+    id: "NSE-02"
+    name: "nse-verification"
+    skill: "nasa-se"
+    role: "V&V Specialist"
+    phases: [1, 4]
+
+  nse_risk:
+    id: "NSE-03"
+    name: "nse-risk"
+    skill: "nasa-se"
+    role: "Risk Manager (CONTINUOUS)"
+    phases: [0, 1, 2, 3, 4]
+    invocations: 5
+    output: "evolving_risk_register"
+
+  nse_reviewer:
+    id: "NSE-04"
+    name: "nse-reviewer"
+    skill: "nasa-se"
+    role: "Technical Review Gate"
+    phases: [3]
+
+  nse_integration:
+    id: "NSE-05"
+    name: "nse-integration"
+    skill: "nasa-se"
+    role: "System Integration"
+    phases: [2]
+
+  nse_configuration:
+    id: "NSE-06"
+    name: "nse-configuration"
+    skill: "nasa-se"
+    role: "Config Management"
+    phases: [2, 3]
+    baselines: ["requirements", "design"]
+
+  nse_architecture:
+    id: "NSE-07"
+    name: "nse-architecture"
+    skill: "nasa-se"
+    role: "Technical Architect"
+    phases: [2]
+
+  nse_explorer:
+    id: "NSE-08"
+    name: "nse-explorer"
+    skill: "nasa-se"
+    role: "Exploration Engineer (DIVERGENT)"
+    phases: [0]
+    thinking_mode: "DIVERGENT"
+
+  nse_qa:
+    id: "NSE-09"
+    name: "nse-qa"
+    skill: "nasa-se"
+    role: "QA Specialist (NASA Audit)"
+    phases: ["QG-0", "QG-1", "QG-2", "QG-3", "QG-4"]
+    protocol: "NPR-7123.1D"
+
+  nse_reporter:
+    id: "NSE-10"
+    name: "nse-reporter"
+    skill: "nasa-se"
+    role: "SE Status Reporter"
+    phases: [0, 1, 2, 3, 4]
+    invocations: 5
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  pipeline_a:
+    id: "pipeline-a"
+    name: "Problem-Solving Pipeline"
+    description: "Research, analysis, architecture, validation, synthesis"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    status: "BLOCKED"
+    current_phase: 0
+    total_phases: 5
+    progress_percent: 0
+
+    phases:
+      - id: 0
+        name: "Divergent Exploration & Initial Research (EXPANDED per DISC-001)"
+        path_id: "phase-0"
+        status: "IN_PROGRESS"  # Requires expanded research
+        agents:
+          # ORIGINAL AGENTS - COMPLETE
+          - id: "ps-researcher-p0"
+            agent_ref: "ps_researcher"
+            status: "COMPLETE"
+            task: "External best practices research (OSS generic)"
+            artifact: "ps/phase-0/ps-researcher/best-practices-research.md"
+            completed_at: "2026-01-31T17:00:00Z"
+          - id: "ps-analyst-p0"
+            agent_ref: "ps_analyst"
+            status: "COMPLETE"
+            task: "Current architecture analysis"
+            artifact: "ps/phase-0/ps-analyst/current-architecture-analysis.md"
+            completed_at: "2026-01-31T17:00:00Z"
+          # NEW AGENTS - IN_PROGRESS (DISC-001 remediation - launched 2026-01-31T19:50:00Z)
+          - id: "ps-researcher-claude-code-p0"
+            agent_ref: "ps_researcher_claude_code"
+            status: "IN_PROGRESS"
+            started_at: "2026-01-31T19:50:00Z"
+            task: "Claude Code CLI best practices research"
+            artifact: "ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md"
+          - id: "ps-researcher-claude-md-p0"
+            agent_ref: "ps_researcher_claude_md"
+            status: "COMPLETE"
+            started_at: "2026-01-31T19:50:00Z"
+            completed_at: "2026-01-31T19:57:00Z"
+            task: "CLAUDE.md optimization research"
+            artifact: "ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md"
+            findings_summary: "Target <500 lines, Jerry at 912 (82% over), lazy loading, 75% context rule, 46-54% token reduction possible"
+          - id: "ps-researcher-plugins-p0"
+            agent_ref: "ps_researcher_plugins"
+            status: "COMPLETE"
+            started_at: "2026-01-31T19:50:00Z"
+            completed_at: "2026-01-31T19:56:00Z"
+            task: "Claude Code plugins research"
+            artifact: "ps/phase-0/ps-researcher-plugins/plugins-best-practices.md"
+            findings_summary: "Plugin architecture, manifest structure, 12 hook events, distribution strategies, security considerations (FMEA)"
+          - id: "ps-researcher-skills-p0"
+            agent_ref: "ps_researcher_skills"
+            status: "COMPLETE"
+            started_at: "2026-01-31T19:50:00Z"
+            completed_at: "2026-01-31T19:55:00Z"
+            task: "Claude Code skills research"
+            artifact: "ps/phase-0/ps-researcher-skills/skills-best-practices.md"
+            findings_summary: "SKILL.md structure, design patterns (single/multi-agent), P-003 compliance, agent definitions, L0/L1/L2 documentation"
+          - id: "ps-researcher-decomposition-p0"
+            agent_ref: "ps_researcher_decomposition"
+            status: "IN_PROGRESS"
+            started_at: "2026-01-31T19:50:00Z"
+            task: "Decomposition with imports research"
+            artifact: "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+
+      - id: 1
+        name: "Deep Research & Investigation"
+        path_id: "phase-1"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        agents:
+          - id: "ps-researcher-p1"
+            agent_ref: "ps_researcher"
+            status: "BLOCKED"
+            task: "Deep dive into prioritized areas"
+            artifact: "ps/phase-1/ps-researcher/deep-research.md"
+          - id: "ps-analyst-p1"
+            agent_ref: "ps_analyst"
+            status: "BLOCKED"
+            task: "Gap analysis, FMEA, 5 Whys, trade-offs"
+            artifacts:
+              - "ps/phase-1/ps-analyst/gap-analysis.md"
+              - "ps/phase-1/ps-analyst/fmea-analysis.md"
+              - "ps/phase-1/ps-analyst/root-cause-5whys.md"
+          - id: "ps-investigator-p1"
+            agent_ref: "ps_investigator"
+            status: "BLOCKED"
+            task: "Investigate current problems"
+            artifact: "ps/phase-1/ps-investigator/problem-investigation.md"
+
+      - id: 2
+        name: "Requirements & Architecture"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "barrier-2"
+        agents:
+          - id: "ps-architect-p2"
+            agent_ref: "ps_architect"
+            status: "BLOCKED"
+            task: "Architecture Decision Records (7 ADRs)"
+            artifacts:
+              - "ps/phase-2/ps-architect/ADR-OSS-001-claude-md-decomposition.md"
+              - "ps/phase-2/ps-architect/ADR-OSS-002-skill-import-pattern.md"
+              - "ps/phase-2/ps-architect/ADR-OSS-003-worktracker-extraction.md"
+              - "ps/phase-2/ps-architect/ADR-OSS-004-multi-persona-docs.md"
+              - "ps/phase-2/ps-architect/ADR-OSS-005-repo-migration.md"
+              - "ps/phase-2/ps-architect/ADR-OSS-006-transcript-templates.md"
+              - "ps/phase-2/ps-architect/ADR-OSS-007-oss-release-checklist.md"
+
+      - id: 3
+        name: "Validation & Synthesis"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "barrier-3"
+        agents:
+          - id: "ps-validator-p3"
+            agent_ref: "ps_validator"
+            status: "BLOCKED"
+            task: "Constraint verification"
+            artifact: "ps/phase-3/ps-validator/constraint-validation.md"
+          - id: "ps-synthesizer-p3"
+            agent_ref: "ps_synthesizer"
+            status: "BLOCKED"
+            task: "Pattern synthesis"
+            artifact: "ps/phase-3/ps-synthesizer/pattern-synthesis.md"
+          - id: "ps-reviewer-p3"
+            agent_ref: "ps_reviewer"
+            status: "BLOCKED"
+            task: "Design review"
+            artifact: "ps/phase-3/ps-reviewer/design-review.md"
+
+      - id: 4
+        name: "Final V&V & Reporting"
+        path_id: "phase-4"
+        status: "BLOCKED"
+        blocked_by: "barrier-4"
+        agents:
+          - id: "ps-reporter-p4-final"
+            agent_ref: "ps_reporter"
+            status: "BLOCKED"
+            task: "Final comprehensive status report"
+            artifact: "reports/phase-4/ps-final-report.md"
+
+  pipeline_b:
+    id: "pipeline-b"
+    name: "NASA SE Pipeline"
+    description: "Requirements, V&V, risk, architecture, integration, configuration"
+    short_alias: "nse"
+    skill_source: "nasa-se"
+    status: "BLOCKED"
+    current_phase: 0
+    total_phases: 5
+    progress_percent: 0
+
+    phases:
+      - id: 0
+        name: "Divergent Exploration & Initial Research"
+        path_id: "phase-0"
+        status: "PENDING"
+        agents:
+          - id: "nse-explorer-p0"
+            agent_ref: "nse_explorer"
+            status: "PENDING"
+            task: "DIVERGENT exploration of all options"
+            artifact: "nse/phase-0/nse-explorer/divergent-alternatives.md"
+            thinking_mode: "DIVERGENT"
+          - id: "nse-requirements-p0"
+            agent_ref: "nse_requirements"
+            status: "PENDING"
+            task: "Current state inventory"
+            artifact: "nse/phase-0/nse-requirements/current-state-inventory.md"
+          - id: "nse-risk-p0"
+            agent_ref: "nse_risk"
+            status: "PENDING"
+            task: "Initial risk identification"
+            artifact: "risks/phase-0-risk-register.md"
+
+      - id: 1
+        name: "Deep Research & Investigation"
+        path_id: "phase-1"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        agents:
+          - id: "nse-verification-p1"
+            agent_ref: "nse_verification"
+            status: "BLOCKED"
+            task: "V&V planning"
+            artifact: "nse/phase-1/nse-verification/vv-planning.md"
+          - id: "nse-risk-p1"
+            agent_ref: "nse_risk"
+            status: "BLOCKED"
+            task: "Risk register update"
+            artifact: "risks/phase-1-risk-register.md"
+
+      - id: 2
+        name: "Requirements & Architecture"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "barrier-2"
+        agents:
+          - id: "nse-requirements-p2"
+            agent_ref: "nse_requirements"
+            status: "BLOCKED"
+            task: "Formal requirements specification"
+            artifact: "nse/phase-2/nse-requirements/requirements-spec.md"
+          - id: "nse-architecture-p2"
+            agent_ref: "nse_architecture"
+            status: "BLOCKED"
+            task: "Architecture decisions (NASA SE format)"
+            artifact: "nse/phase-2/nse-architecture/architecture-decisions.md"
+          - id: "nse-integration-p2"
+            agent_ref: "nse_integration"
+            status: "BLOCKED"
+            task: "Integration planning"
+            artifact: "nse/phase-2/nse-integration/integration-plan.md"
+          - id: "nse-configuration-p2"
+            agent_ref: "nse_configuration"
+            status: "BLOCKED"
+            task: "Requirements baseline"
+            artifact: "nse/phase-2/nse-configuration/requirements-baseline.md"
+            baseline_type: "requirements"
+          - id: "nse-risk-p2"
+            agent_ref: "nse_risk"
+            status: "BLOCKED"
+            task: "Risk register update"
+            artifact: "risks/phase-2-risk-register.md"
+
+      - id: 3
+        name: "Validation & Synthesis"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "barrier-3"
+        agents:
+          - id: "nse-reviewer-p3"
+            agent_ref: "nse_reviewer"
+            status: "BLOCKED"
+            task: "Technical review gate"
+            artifact: "nse/phase-3/nse-reviewer/technical-review.md"
+          - id: "nse-configuration-p3"
+            agent_ref: "nse_configuration"
+            status: "BLOCKED"
+            task: "Design baseline"
+            artifact: "nse/phase-3/nse-configuration/design-baseline.md"
+            baseline_type: "design"
+          - id: "nse-risk-p3"
+            agent_ref: "nse_risk"
+            status: "BLOCKED"
+            task: "Risk register update"
+            artifact: "risks/phase-3-risk-register.md"
+
+      - id: 4
+        name: "Final V&V & Reporting"
+        path_id: "phase-4"
+        status: "BLOCKED"
+        blocked_by: "barrier-4"
+        agents:
+          - id: "nse-verification-p4"
+            agent_ref: "nse_verification"
+            status: "BLOCKED"
+            task: "Final V&V"
+            artifact: "nse/phase-4/nse-verification/final-vv.md"
+          - id: "nse-qa-p4-final"
+            agent_ref: "nse_qa"
+            status: "BLOCKED"
+            task: "Comprehensive QA audit"
+            artifact: "nse/phase-4/nse-qa/comprehensive-qa-audit.md"
+          - id: "nse-reporter-p4-final"
+            agent_ref: "nse_reporter"
+            status: "BLOCKED"
+            task: "Final SE status report"
+            artifact: "reports/phase-4/nse-final-report.md"
+          - id: "nse-risk-p4"
+            agent_ref: "nse_risk"
+            status: "BLOCKED"
+            task: "Final risk assessment"
+            artifact: "risks/phase-4-final-risk-assessment.md"
+
+# =============================================================================
+# QUALITY GATES (Dual: ps-critic + nse-qa)
+# =============================================================================
+quality_gates:
+  - id: "QG-0"
+    name: "Quality Gate 0 - Post Exploration"
+    phase: 0
+    status: "PENDING"
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-0/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-0/nse-qa-audit.md"
+    pass_criteria: "BOTH evaluators must meet threshold"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+
+  - id: "QG-1"
+    name: "Quality Gate 1 - Post Deep Research"
+    phase: 1
+    status: "BLOCKED"
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-1/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-1/nse-qa-audit.md"
+    special_criteria:
+      - "Frameworks applied (5W2H, FMEA, 8D)"
+      - "Investigation complete"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+
+  - id: "QG-2"
+    name: "Quality Gate 2 - Post Requirements & Architecture"
+    phase: 2
+    status: "BLOCKED"
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-2/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-2/nse-qa-audit.md"
+    special_criteria:
+      - "All 7 ADRs complete with L0/L1/L2"
+      - "Requirements baseline established"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+
+  - id: "QG-3"
+    name: "Quality Gate 3 - Post Validation & Synthesis"
+    phase: 3
+    status: "BLOCKED"
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-3/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-3/nse-qa-audit.md"
+    special_criteria:
+      - "Validation complete"
+      - "Synthesis coherent"
+      - "Design baseline established"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+
+  - id: "QG-4"
+    name: "Quality Gate 4 - FINAL"
+    phase: 4
+    status: "BLOCKED"
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-4/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-4/nse-qa-audit.md"
+    special_criteria:
+      - "All deliverables complete"
+      - "Implementation roadmap actionable"
+      - "VCRM complete"
+      - "Comprehensive audit passed"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+
+# =============================================================================
+# PHASE REPORTS (Dual: ps-reporter + nse-reporter)
+# =============================================================================
+phase_reports:
+  - phase: 0
+    status: "PENDING"
+    reports:
+      - agent: "ps-reporter"
+        artifact: "reports/phase-0/ps-status-report.md"
+        status: "PENDING"
+      - agent: "nse-reporter"
+        artifact: "reports/phase-0/nse-status-report.md"
+        status: "PENDING"
+
+  - phase: 1
+    status: "BLOCKED"
+    reports:
+      - agent: "ps-reporter"
+        artifact: "reports/phase-1/ps-status-report.md"
+        status: "BLOCKED"
+      - agent: "nse-reporter"
+        artifact: "reports/phase-1/nse-status-report.md"
+        status: "BLOCKED"
+
+  - phase: 2
+    status: "BLOCKED"
+    reports:
+      - agent: "ps-reporter"
+        artifact: "reports/phase-2/ps-status-report.md"
+        status: "BLOCKED"
+      - agent: "nse-reporter"
+        artifact: "reports/phase-2/nse-status-report.md"
+        status: "BLOCKED"
+
+  - phase: 3
+    status: "BLOCKED"
+    reports:
+      - agent: "ps-reporter"
+        artifact: "reports/phase-3/ps-status-report.md"
+        status: "BLOCKED"
+      - agent: "nse-reporter"
+        artifact: "reports/phase-3/nse-status-report.md"
+        status: "BLOCKED"
+
+  - phase: 4
+    status: "BLOCKED"
+    reports:
+      - agent: "ps-reporter"
+        artifact: "reports/phase-4/ps-final-report.md"
+        status: "BLOCKED"
+      - agent: "nse-reporter"
+        artifact: "reports/phase-4/nse-final-report.md"
+        status: "BLOCKED"
+
+# =============================================================================
+# SYNC BARRIERS (Full Artifact Pass-Through)
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "Post-Phase 0 Cross-Pollination"
+    after_phase: 0
+    status: "PENDING"
+    depends_on:
+      - "pipeline_a.phase.0"
+      - "pipeline_b.phase.0"
+      - "QG-0"
+    content_type: "FULL_ARTIFACTS"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-1/ps-to-nse/"
+        manifest: "cross-pollination/barrier-1/ps-to-nse/handoff-manifest.md"
+        status: "PENDING"
+        artifacts_passed:
+          - "ps/phase-0/ps-researcher/best-practices-research.md"
+          - "ps/phase-0/ps-analyst/current-architecture-analysis.md"
+      nse_to_ps:
+        path: "cross-pollination/barrier-1/nse-to-ps/"
+        manifest: "cross-pollination/barrier-1/nse-to-ps/handoff-manifest.md"
+        status: "PENDING"
+        artifacts_passed:
+          - "nse/phase-0/nse-explorer/divergent-alternatives.md"
+          - "nse/phase-0/nse-requirements/current-state-inventory.md"
+          - "risks/phase-0-risk-register.md"
+
+  - id: "barrier-2"
+    name: "Post-Phase 1 Cross-Pollination"
+    after_phase: 1
+    status: "BLOCKED"
+    depends_on:
+      - "pipeline_a.phase.1"
+      - "pipeline_b.phase.1"
+      - "QG-1"
+    content_type: "FULL_ARTIFACTS"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-2/ps-to-nse/"
+        manifest: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+        status: "BLOCKED"
+        artifacts_passed:
+          - "ps/phase-1/ps-researcher/deep-research.md"
+          - "ps/phase-1/ps-analyst/gap-analysis.md"
+          - "ps/phase-1/ps-analyst/fmea-analysis.md"
+          - "ps/phase-1/ps-analyst/root-cause-5whys.md"
+          - "ps/phase-1/ps-investigator/problem-investigation.md"
+      nse_to_ps:
+        path: "cross-pollination/barrier-2/nse-to-ps/"
+        manifest: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+        status: "BLOCKED"
+        artifacts_passed:
+          - "nse/phase-1/nse-verification/vv-planning.md"
+          - "risks/phase-1-risk-register.md"
+
+  - id: "barrier-3"
+    name: "Post-Phase 2 Cross-Pollination"
+    after_phase: 2
+    status: "BLOCKED"
+    depends_on:
+      - "pipeline_a.phase.2"
+      - "pipeline_b.phase.2"
+      - "QG-2"
+    content_type: "FULL_ARTIFACTS"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-3/ps-to-nse/"
+        manifest: "cross-pollination/barrier-3/ps-to-nse/handoff-manifest.md"
+        status: "BLOCKED"
+        artifacts_passed:
+          - "ps/phase-2/ps-architect/ADR-OSS-001-claude-md-decomposition.md"
+          - "ps/phase-2/ps-architect/ADR-OSS-002-skill-import-pattern.md"
+          - "ps/phase-2/ps-architect/ADR-OSS-003-worktracker-extraction.md"
+          - "ps/phase-2/ps-architect/ADR-OSS-004-multi-persona-docs.md"
+          - "ps/phase-2/ps-architect/ADR-OSS-005-repo-migration.md"
+          - "ps/phase-2/ps-architect/ADR-OSS-006-transcript-templates.md"
+          - "ps/phase-2/ps-architect/ADR-OSS-007-oss-release-checklist.md"
+      nse_to_ps:
+        path: "cross-pollination/barrier-3/nse-to-ps/"
+        manifest: "cross-pollination/barrier-3/nse-to-ps/handoff-manifest.md"
+        status: "BLOCKED"
+        artifacts_passed:
+          - "nse/phase-2/nse-requirements/requirements-spec.md"
+          - "nse/phase-2/nse-architecture/architecture-decisions.md"
+          - "nse/phase-2/nse-integration/integration-plan.md"
+          - "nse/phase-2/nse-configuration/requirements-baseline.md"
+          - "risks/phase-2-risk-register.md"
+
+  - id: "barrier-4"
+    name: "Post-Phase 3 Cross-Pollination"
+    after_phase: 3
+    status: "BLOCKED"
+    depends_on:
+      - "pipeline_a.phase.3"
+      - "pipeline_b.phase.3"
+      - "QG-3"
+    content_type: "FULL_ARTIFACTS"
+    artifacts:
+      ps_to_nse:
+        path: "cross-pollination/barrier-4/ps-to-nse/"
+        manifest: "cross-pollination/barrier-4/ps-to-nse/handoff-manifest.md"
+        status: "BLOCKED"
+        artifacts_passed:
+          - "ps/phase-3/ps-validator/constraint-validation.md"
+          - "ps/phase-3/ps-synthesizer/pattern-synthesis.md"
+          - "ps/phase-3/ps-reviewer/design-review.md"
+      nse_to_ps:
+        path: "cross-pollination/barrier-4/nse-to-ps/"
+        manifest: "cross-pollination/barrier-4/nse-to-ps/handoff-manifest.md"
+        status: "BLOCKED"
+        artifacts_passed:
+          - "nse/phase-3/nse-reviewer/technical-review.md"
+          - "nse/phase-3/nse-configuration/design-baseline.md"
+          - "risks/phase-3-risk-register.md"
+
+# =============================================================================
+# RISK MANAGEMENT (Continuous)
+# =============================================================================
+risk_management:
+  continuous: true
+  agent: "nse-risk"
+  risk_registers:
+    - phase: 0
+      path: "risks/phase-0-risk-register.md"
+      status: "PENDING"
+    - phase: 1
+      path: "risks/phase-1-risk-register.md"
+      status: "BLOCKED"
+    - phase: 2
+      path: "risks/phase-2-risk-register.md"
+      status: "BLOCKED"
+    - phase: 3
+      path: "risks/phase-3-risk-register.md"
+      status: "BLOCKED"
+    - phase: 4
+      path: "risks/phase-4-final-risk-assessment.md"
+      status: "BLOCKED"
+  consolidated: "risks/risk-register-consolidated.md"
+  categories:
+    - "Technical"
+    - "Schedule"
+    - "Quality"
+    - "Scope"
+    - "External"
+
+# =============================================================================
+# CONFIGURATION MANAGEMENT
+# =============================================================================
+configuration_management:
+  agent: "nse-configuration"
+  baselines:
+    - name: "Requirements Baseline"
+      type: "requirements"
+      phase: 2
+      path: "nse/phase-2/nse-configuration/requirements-baseline.md"
+      status: "PENDING"
+    - name: "Design Baseline"
+      type: "design"
+      phase: 3
+      path: "nse/phase-3/nse-configuration/design-baseline.md"
+      status: "PENDING"
+  change_control:
+    enabled: true
+    requires_impact_analysis: true
+    approval_required: true
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 0
+  groups:
+    - id: 0
+      name: "Phase 0: PS Pipeline (EXPANDED per DISC-001)"
+      phase: 0
+      pipeline: "pipeline_a"
+      execution_mode: "PARALLEL"
+      status: "IN_PROGRESS"  # Tier 1 original agents complete, new agents pending
+      agents:
+        # COMPLETE - Original Tier 1 agents
+        - id: "ps-researcher-p0"
+          status: "COMPLETE"
+        - id: "ps-analyst-p0"
+          status: "COMPLETE"
+        # PENDING - New research agents (DISC-001 remediation)
+        - id: "ps-researcher-claude-code-p0"
+          status: "PENDING"
+        - id: "ps-researcher-claude-md-p0"
+          status: "PENDING"
+        - id: "ps-researcher-plugins-p0"
+          status: "PENDING"
+        - id: "ps-researcher-skills-p0"
+          status: "PENDING"
+        - id: "ps-researcher-decomposition-p0"
+          status: "PENDING"
+
+    - id: 1
+      name: "Phase 0: NSE Pipeline"
+      phase: 0
+      pipeline: "pipeline_b"
+      execution_mode: "PARALLEL"
+      status: "PENDING"
+      agents: ["nse-explorer-p0", "nse-requirements-p0", "nse-risk-p0"]
+
+    - id: 2
+      name: "Phase 0: Quality Gate"
+      phase: 0
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-0", "group-1"]
+      quality_gate: "QG-0"
+      evaluators: ["ps-critic", "nse-qa"]
+
+    - id: 3
+      name: "Phase 0: Reports"
+      phase: 0
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-2"]
+      agents: ["ps-reporter", "nse-reporter"]
+
+    - id: 4
+      name: "Barrier 1: Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-3"]
+      barrier: "barrier-1"
+
+    # Phase 1 groups (5-9)
+    - id: 5
+      name: "Phase 1: PS Pipeline"
+      phase: 1
+      pipeline: "pipeline_a"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-4"]
+      agents: ["ps-researcher-p1", "ps-analyst-p1", "ps-investigator-p1"]
+
+    - id: 6
+      name: "Phase 1: NSE Pipeline"
+      phase: 1
+      pipeline: "pipeline_b"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-4"]
+      agents: ["nse-verification-p1", "nse-risk-p1"]
+
+    - id: 7
+      name: "Phase 1: Quality Gate"
+      phase: 1
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-5", "group-6"]
+      quality_gate: "QG-1"
+
+    - id: 8
+      name: "Phase 1: Reports"
+      phase: 1
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-7"]
+      agents: ["ps-reporter", "nse-reporter"]
+
+    - id: 9
+      name: "Barrier 2: Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-8"]
+      barrier: "barrier-2"
+
+    # Phase 2 groups (10-14)
+    - id: 10
+      name: "Phase 2: PS Pipeline"
+      phase: 2
+      pipeline: "pipeline_a"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-9"]
+      agents: ["ps-architect-p2"]
+
+    - id: 11
+      name: "Phase 2: NSE Pipeline"
+      phase: 2
+      pipeline: "pipeline_b"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-9"]
+      agents: ["nse-requirements-p2", "nse-architecture-p2", "nse-integration-p2", "nse-configuration-p2", "nse-risk-p2"]
+
+    - id: 12
+      name: "Phase 2: Quality Gate"
+      phase: 2
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-10", "group-11"]
+      quality_gate: "QG-2"
+
+    - id: 13
+      name: "Phase 2: Reports"
+      phase: 2
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-12"]
+      agents: ["ps-reporter", "nse-reporter"]
+
+    - id: 14
+      name: "Barrier 3: Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-13"]
+      barrier: "barrier-3"
+
+    # Phase 3 groups (15-19)
+    - id: 15
+      name: "Phase 3: PS Pipeline"
+      phase: 3
+      pipeline: "pipeline_a"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-14"]
+      agents: ["ps-validator-p3", "ps-synthesizer-p3", "ps-reviewer-p3"]
+
+    - id: 16
+      name: "Phase 3: NSE Pipeline"
+      phase: 3
+      pipeline: "pipeline_b"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-14"]
+      agents: ["nse-reviewer-p3", "nse-configuration-p3", "nse-risk-p3"]
+
+    - id: 17
+      name: "Phase 3: Quality Gate"
+      phase: 3
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-15", "group-16"]
+      quality_gate: "QG-3"
+
+    - id: 18
+      name: "Phase 3: Reports"
+      phase: 3
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-17"]
+      agents: ["ps-reporter", "nse-reporter"]
+
+    - id: 19
+      name: "Barrier 4: Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-18"]
+      barrier: "barrier-4"
+
+    # Phase 4 groups (20-22)
+    - id: 20
+      name: "Phase 4: PS Pipeline"
+      phase: 4
+      pipeline: "pipeline_a"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-19"]
+      agents: ["ps-reporter-p4-final"]
+
+    - id: 21
+      name: "Phase 4: NSE Pipeline"
+      phase: 4
+      pipeline: "pipeline_b"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-19"]
+      agents: ["nse-verification-p4", "nse-qa-p4-final", "nse-reporter-p4-final", "nse-risk-p4"]
+
+    - id: 22
+      name: "Phase 4: FINAL Quality Gate"
+      phase: 4
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: ["group-20", "group-21"]
+      quality_gate: "QG-4"
+
+# =============================================================================
+# EXECUTION DEPENDENCIES (Tiered Analysis)
+# =============================================================================
+# User Decision DEC-OSS-001: Quality thresholds increased to ≥0.92 for all gates
+# Rationale: Mission-critical software - quality is king
+# Approved: 2026-01-31T19:00:00Z
+
+execution_dependencies:
+  phase_0:
+    description: "Tiered execution to respect data dependencies (EXPANDED per DISC-001)"
+    tiers:
+      - tier: 1a
+        name: "Initial Research & Exploration (COMPLETE)"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        agents:
+          - "ps-researcher-p0"       # COMPLETE - OSS generic best practices
+          - "ps-analyst-p0"          # COMPLETE - Current architecture analysis
+          - "nse-explorer-p0"        # COMPLETE - Divergent alternatives
+          - "nse-requirements-p0"    # COMPLETE - Current state inventory
+        dependencies: []
+        rationale: "No dependencies - can run truly in parallel"
+        completed_at: "2026-01-31T17:00:00Z"
+
+      - tier: 1b
+        name: "Expanded Research (DISC-001 Remediation)"
+        execution_mode: "PARALLEL"
+        status: "IN_PROGRESS"  # Launched 2026-01-31T19:50:00Z
+        started_at: "2026-01-31T19:50:00Z"
+        agents:
+          - "ps-researcher-claude-code-p0"    # EN-002: Claude Code CLI best practices
+          - "ps-researcher-claude-md-p0"      # EN-003: CLAUDE.md optimization
+          - "ps-researcher-plugins-p0"        # EN-004: Claude Code plugins
+          - "ps-researcher-skills-p0"         # EN-005: Claude Code skills
+          - "ps-researcher-decomposition-p0"  # EN-006: Decomposition with imports
+        dependencies: []
+        rationale: "DISC-001 identified missed scope - these can run in parallel with no dependencies"
+
+      - tier: 2
+        name: "Risk Identification"
+        execution_mode: "SEQUENTIAL"
+        status: "BLOCKED"
+        agents:
+          - "nse-risk-p0"
+        dependencies:
+          - "ps-researcher-p0"
+          - "ps-analyst-p0"
+          - "nse-explorer-p0"
+          - "nse-requirements-p0"
+          - "ps-researcher-claude-code-p0"
+          - "ps-researcher-claude-md-p0"
+          - "ps-researcher-plugins-p0"
+          - "ps-researcher-skills-p0"
+          - "ps-researcher-decomposition-p0"
+        rationale: "nse-risk needs ALL Tier 1 outputs (including expanded research) to identify risks"
+
+      - tier: 3
+        name: "Quality Gate"
+        execution_mode: "PARALLEL"
+        agents:
+          - "ps-critic"
+          - "nse-qa"
+        dependencies:
+          - "nse-risk-p0"
+        rationale: "Quality gate evaluates all Phase 0 work including risk register"
+
+      - tier: 4
+        name: "Phase Reports"
+        execution_mode: "PARALLEL"
+        agents:
+          - "ps-reporter"
+          - "nse-reporter"
+        dependencies:
+          - "ps-critic"
+          - "nse-qa"
+        rationale: "Reports generated after QG passes"
+
+  phase_1:
+    description: "Similar tiered structure - details to be refined at execution"
+
+  phase_2:
+    description: "ADRs depend on Phase 1 analysis - details to be refined"
+
+  phase_3:
+    description: "Validation depends on Phase 2 outputs - details to be refined"
+
+  phase_4:
+    description: "Final V&V depends on all prior phases - details to be refined"
+
+# =============================================================================
+# USER DECISIONS
+# =============================================================================
+decisions:
+  - id: "DEC-OSS-001"
+    date: "2026-01-31T19:00:00Z"
+    decision: "Quality threshold increase to ≥0.92 for ALL quality gates"
+    rationale: "Mission-critical software - quality is king"
+    impact: "Higher bar for phase completion, fewer false positives"
+    previous_values:
+      qg_0: 0.85
+      qg_1: 0.85
+      qg_2: 0.85
+      qg_3: 0.88
+      qg_4: 0.90
+    new_value: 0.92
+
+  - id: "DEC-OSS-002"
+    date: "2026-01-31T19:00:00Z"
+    decision: "Tiered execution within phases to respect data dependencies"
+    rationale: "nse-risk cannot identify risks without seeing exploration/research outputs first"
+    impact: "Slightly longer Phase 0 execution, but more accurate risk identification"
+
+  - id: "DEC-OSS-003"
+    date: "2026-01-31T19:00:00Z"
+    decision: "Checkpoint after each quality gate"
+    rationale: "User visibility into progress, opportunity for guidance"
+    impact: "5 user checkpoints during workflow execution"
+
+  - id: "DEC-OSS-004"
+    date: "2026-01-31T19:00:00Z"
+    decision: "Auto-retry quality gates up to 2 times before user escalation"
+    rationale: "Balance between automation and human oversight"
+    impact: "Follows DISC-002 protocol with user escalation as circuit breaker"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  frequency: "QUALITY_GATE"
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 10
+    phases_percent: 0
+    barriers_complete: 0
+    barriers_total: 4
+    barriers_percent: 0
+    quality_gates_complete: 0
+    quality_gates_total: 5
+    quality_gates_percent: 0
+    quality_gates_failed: 1  # QG-0 failed (0.876 < 0.92)
+    agents_executed: 4  # Tier 1a: ps-researcher, ps-analyst, nse-explorer, nse-requirements
+    agents_total: 32   # 9 PS + 10 NSE + 5 new research + 8 QG/reporters
+    agents_percent: 12.5
+    phase_0_agents_executed: 4
+    phase_0_agents_total: 12  # 7 PS (2 original + 5 new) + 3 NSE + 2 QG
+    phase_0_percent: 33
+    reports_generated: 0
+    reports_total: 10
+    reports_percent: 0
+    risk_registers_created: 0
+    risk_registers_total: 5
+    risk_registers_percent: 0
+
+  quality:
+    qg_0_ps_critic: null
+    qg_0_nse_qa: null
+    qg_1_ps_critic: null
+    qg_1_nse_qa: null
+    qg_2_ps_critic: null
+    qg_2_nse_qa: null
+    qg_3_ps_critic: null
+    qg_3_nse_qa: null
+    qg_4_ps_critic: null
+    qg_4_nse_qa: null
+    average_score: null
+    revision_cycles: 0
+
+  timing:
+    workflow_started: "2026-01-31T16:00:00Z"
+    last_activity: "2026-01-31T19:50:00Z"
+    tier_1b_started: "2026-01-31T19:50:00Z"
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved:
+    - id: "BLK-001"
+      description: "Awaiting user approval of orchestration plan"
+      blocking: ["all-phases"]
+      severity: "HIGH"
+      created_at: "2026-01-31T18:00:00Z"
+      resolved_at: "2026-01-31T19:00:00Z"
+      resolution: "User approved plan with DEC-OSS-001 through DEC-OSS-004"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  in_progress:
+    - action: "Execute Phase 0 Tier 1b - Expanded Research (DISC-001 remediation)"
+      agents:
+        - "ps-researcher-claude-code-p0"    # EN-002
+        - "ps-researcher-claude-md-p0"      # EN-003
+        - "ps-researcher-plugins-p0"        # EN-004
+        - "ps-researcher-skills-p0"         # EN-005
+        - "ps-researcher-decomposition-p0"  # EN-006
+      execution_mode: "PARALLEL"
+      status: "IN_PROGRESS"
+      started_at: "2026-01-31T19:50:00Z"
+      skill: "problem-solving"
+      rationale: "DISC-001 identified missed scope - ACT-005 required Claude Code research"
+
+  immediate:
+    - action: "Await Tier 1b completion, then execute Tier 2 (nse-risk)"
+      wait_for: "All 5 Tier 1b agents to complete"
+      next_agent: "nse-risk-p0"
+
+  completed:
+    - action: "Execute Phase 0 Tier 1a (original research)"
+      agents: ["ps-researcher-p0", "ps-analyst-p0", "nse-explorer-p0", "nse-requirements-p0"]
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      completed_at: "2026-01-31T17:00:00Z"
+
+  after_tier_1b:
+    - action: "Execute Phase 0 Tier 2 (nse-risk)"
+      agents: ["nse-risk-p0"]
+      execution_mode: "SEQUENTIAL"
+      dependencies: "All Tier 1 outputs (1a + 1b)"
+    - action: "Quality Gate 0 Re-evaluation (Tier 3)"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      mode: "PARALLEL"
+      note: "QG-0 failed first attempt (0.876 < 0.92) - re-evaluate with expanded research"
+    - action: "Phase 0 Reports (Tier 4)"
+      agents: ["ps-reporter", "nse-reporter"]
+      mode: "PARALLEL"
+    - action: "Barrier 1 cross-pollination"
+      content: "FULL_ARTIFACTS"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "2026-01-31T19:30:00Z"
+  current_state: "IN_PROGRESS"
+  previous_state: "QG-0 FAILED (0.876 < 0.92)"
+
+  # DISC-001 Remediation Status
+  disc_001_status:
+    discovery: "VALIDATED"
+    impact: "CRITICAL"
+    remediation: "Expand Phase 0 with 5 additional research agents"
+    agents_added:
+      - "ps-researcher-claude-code-p0 (EN-002)"
+      - "ps-researcher-claude-md-p0 (EN-003)"
+      - "ps-researcher-plugins-p0 (EN-004)"
+      - "ps-researcher-skills-p0 (EN-005)"
+      - "ps-researcher-decomposition-p0 (EN-006)"
+
+  next_step: "Execute Phase 0 Tier 1b - 5 expanded research agents in PARALLEL using /problem-solving skill"
+
+  tier_status:
+    tier_1a: "COMPLETE"
+    tier_1b: "IN_PROGRESS"  # Started 2026-01-31T19:50:00Z - 5 agents running in parallel
+    tier_2: "BLOCKED"       # Awaiting Tier 1b completion
+    tier_3: "BLOCKED"       # QG-0 re-evaluation after expanded research
+    tier_4: "BLOCKED"       # Reports
+
+  execution_notes:
+    - "DISC-001 validated: ACT-005 required Claude Code, CLAUDE.md, plugins, skills research"
+    - "Tier 1a COMPLETE: ps-researcher, ps-analyst, nse-explorer, nse-requirements (4 agents)"
+    - "Tier 1b PENDING: 5 new research agents (ps-researcher-claude-code, claude-md, plugins, skills, decomposition)"
+    - "Quality threshold: ≥0.92 for ALL gates (DEC-OSS-001)"
+    - "QG-0 requires re-evaluation after expanded research completes"
+    - "Use /problem-solving skill with background execution for parallel agents"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"
+    - "ORCHESTRATION_DIAGRAM_ASCII.md"
+    - "ORCHESTRATION_WORKTRACKER.md"
+    - "ORCHESTRATION.yaml"
+    - "FEAT-001--DISC-001-missed-research-scope.md"  # Critical context
+
+  agent_count:
+    problem_solving: 14  # 9 original + 5 new research
+    nasa_se: 10
+    total: 24
+
+  cross_session_portable: true
+
+# =============================================================================
+# DOCUMENT METADATA
+# =============================================================================
+document:
+  id: "PROJ-009-ORCH-STATE"
+  workflow_id: "oss-release-20260131-001"
+  version: "4.0.0"
+  status: "IN_PROGRESS"
+  created_at: "2026-01-31T16:00:00Z"
+  updated_at: "2026-01-31T19:50:00Z"
+  approved_at: "2026-01-31T19:00:00Z"
+  changes_in_version:
+    - "v4.0.0: DISC-001 remediation - expanded Phase 0 with 5 new research agents"
+    - "v4.0.0: Updated execution_queue with expanded agent list"
+    - "v4.0.0: Added tier 1b for expanded research (parallel execution)"
+    - "v4.0.0: Updated metrics and resumption context"
+    - "v3.1.0: DEC-OSS-001: Quality thresholds increased to ≥0.92 for all gates"
+    - "v3.1.0: DEC-OSS-002: Tiered execution dependencies documented"
+    - "v3.1.0: DEC-OSS-003: Checkpoint frequency set to QUALITY_GATE"
+    - "v3.1.0: DEC-OSS-004: Auto-retry 2x before user escalation confirmed"

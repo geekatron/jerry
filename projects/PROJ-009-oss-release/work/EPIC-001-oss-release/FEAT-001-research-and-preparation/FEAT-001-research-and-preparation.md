@@ -2,14 +2,15 @@
 
 <!--
 TEMPLATE: Feature
-VERSION: 1.0.0
+VERSION: 2.0.0
 SOURCE: ONTOLOGY-v1.md Section 3.4.4
 CREATED: 2026-01-31
+UPDATED: 2026-01-31T19:15:00Z
 PURPOSE: Deep research and preparation for Jerry OSS release
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** IN_PROGRESS
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-01-31T16:00:00Z
@@ -31,6 +32,45 @@ This feature encompasses the foundational research and analysis required before 
 - Clear gap analysis of current state vs. desired state
 - Quality-first approach with adversarial review at every gate
 
+**Current Status:**
+- Orchestration plan created and approved
+- Initial research executed (partial scope - OSS best practices, current state)
+- DISC-001 identified: Missing Claude Code specific research topics
+- Expanded research scope defined with 5 additional enablers
+
+---
+
+## Decisions
+
+| ID | Title | Status | Path |
+|----|-------|--------|------|
+| [DEC-001](./FEAT-001--DEC-001-transcript-decisions.md) | Transcript Decisions (MIT License, Dual Repo, Orchestration, Decomposition) | ACCEPTED | ./FEAT-001--DEC-001-transcript-decisions.md |
+| [DEC-002](./FEAT-001--DEC-002-orchestration-execution-decisions.md) | Orchestration Execution (Tiered, QG≥0.92, Checkpoints, Auto-retry) | ACCEPTED | ./FEAT-001--DEC-002-orchestration-execution-decisions.md |
+
+**Key Decisions:**
+- **DEC-001:D-001:** MIT License for OSS release
+- **DEC-001:D-002:** Orchestration approach for workflow coordination
+- **DEC-001:D-003:** Dual repository strategy (source-repository / jerry)
+- **DEC-001:D-004:** Decomposition with imports for CLAUDE.md optimization
+- **DEC-002:D-001:** Tiered execution within phases
+- **DEC-002:D-002:** Quality gate threshold ≥0.92
+- **DEC-002:D-003:** User checkpoints after each gate
+- **DEC-002:D-004:** Auto-retry 2x before user escalation
+
+---
+
+## Discoveries
+
+| ID | Title | Status | Impact | Path |
+|----|-------|--------|--------|------|
+| [DISC-001](./FEAT-001--DISC-001-missed-research-scope.md) | Missed Research Scope - Claude Code Best Practices | VALIDATED | CRITICAL | ./FEAT-001--DISC-001-missed-research-scope.md |
+
+**DISC-001 Impact:**
+- Initial research only covered generic OSS best practices
+- ACT-005 from transcript explicitly required Claude Code, CLAUDE.md, plugins, skills research
+- 5 additional research enablers required to address the gap
+- Phase 0 requires expansion before proceeding
+
 ---
 
 ## Benefit Hypothesis
@@ -51,19 +91,19 @@ This feature encompasses the foundational research and analysis required before 
 
 ### Definition of Done
 
-- [ ] Orchestration plan created and approved by user
-- [ ] Best practices research complete with citations
-- [ ] Current state analysis complete (separate research path)
+- [x] Orchestration plan created and approved by user
+- [ ] Best practices research complete with citations (ALL topics)
+- [x] Current state analysis complete (separate research path)
 - [ ] All research artifacts documented for L0/L1/L2 audiences
-- [ ] Quality gates passed with adversarial evaluation
+- [ ] Quality gates passed with adversarial evaluation (≥0.92)
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | Orchestration plan uses /problem-solving and /nasa-se skills | [ ] |
+| AC-1 | Orchestration plan uses /problem-solving and /nasa-se skills | [x] |
 | AC-2 | Research covers Claude Code plugin, skill, CLAUDE.md best practices | [ ] |
-| AC-3 | Current state analysis is separate from best practices research | [ ] |
+| AC-3 | Current state analysis is separate from best practices research | [x] |
 | AC-4 | All research uses multiple frameworks (5W2H, Ishikawa, FMEA, 8D, NASA SE) | [ ] |
 | AC-5 | Research includes Context7 and web search for industry best practices | [ ] |
 
@@ -73,7 +113,7 @@ This feature encompasses the foundational research and analysis required before 
 |---|-----------|----------|
 | NFC-1 | Research artifacts contain evidence and citations | [ ] |
 | NFC-2 | Documentation serves L0/L1/L2 personas | [ ] |
-| NFC-3 | Quality gates use adversarial prompting protocol | [ ] |
+| NFC-3 | Quality gates use adversarial prompting protocol | [x] |
 
 ---
 
@@ -96,18 +136,26 @@ This feature encompasses the foundational research and analysis required before 
 
 ## Children (Enablers/Tasks)
 
-### Enabler/Task Inventory
+### Enabler Inventory
+
+| ID | Type | Title | Status | Priority | Agent |
+|----|------|-------|--------|----------|-------|
+| EN-001 | Enabler | OSS Release Best Practices Research | COMPLETE | high | ps-researcher |
+| EN-002 | Enabler | Claude Code Best Practices Research | PENDING | CRITICAL | ps-researcher-claude-code |
+| EN-003 | Enabler | CLAUDE.md Optimization Research | PENDING | CRITICAL | ps-researcher-claude-md |
+| EN-004 | Enabler | Claude Code Plugins Research | PENDING | high | ps-researcher-plugins |
+| EN-005 | Enabler | Claude Code Skills Research | PENDING | high | ps-researcher-skills |
+| EN-006 | Enabler | Decomposition with Imports Research | PENDING | CRITICAL | ps-researcher-decomposition |
+| EN-007 | Enabler | Current State Analysis | COMPLETE | high | ps-analyst |
+
+### Task Inventory
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| [TASK-001](./TASK-001-orchestration-plan-design.md) | Task | Orchestration Plan Design | pending | high | 8 |
-
-### Planned Children (To Be Created After Orchestration Approval)
-
-| ID | Type | Title | Status | Priority |
-|----|------|-------|--------|----------|
-| EN-001 | Enabler | Best Practices Research | pending | high |
-| EN-002 | Enabler | Current State Analysis | pending | high |
+| [TASK-001](./TASK-001-orchestration-plan-design.md) | Task | Orchestration Plan Design | COMPLETE | high | 8 |
+| TASK-002 | Task | Move artifacts to correct location | COMPLETE | medium | 2 |
+| TASK-003 | Task | Create worktracker documents | COMPLETE | high | 4 |
+| TASK-004 | Task | Execute expanded research agents | PENDING | CRITICAL | 8 |
 
 ---
 
@@ -119,10 +167,12 @@ This feature encompasses the foundational research and analysis required before 
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/2 planned)               |
-| Tasks:     [....................] 0% (0/1 completed)             |
+| Enablers:  [####................] 29% (2/7 completed)            |
+| Tasks:     [############........] 75% (3/4 completed)            |
+| Decisions: [####################] 100% (2/2 documented)          |
+| Discovery: [####################] 100% (1/1 documented)          |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                             |
+| Overall:   [####................] 20%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -130,24 +180,38 @@ This feature encompasses the foundational research and analysis required before 
 
 | Metric | Value |
 |--------|-------|
-| **Total Tasks** | 1 |
-| **Completed Tasks** | 0 |
-| **Total Enablers** | 2 (planned) |
-| **Completed Enablers** | 0 |
-| **Completion %** | 0% |
+| **Total Tasks** | 4 |
+| **Completed Tasks** | 3 |
+| **Total Enablers** | 7 |
+| **Completed Enablers** | 2 |
+| **Decisions Documented** | 2 |
+| **Discoveries Documented** | 1 |
+| **Completion %** | 20% |
 
 ---
 
 ## Research Paths
 
-### Path A: Best Practices Research (External)
-- Claude Code plugin best practices (web search, Context7)
-- Skill authoring best practices
-- CLAUDE.md file best practices
-- Multi-persona documentation patterns
-- Industry standards for transcript formats
+### Path A: Best Practices Research (External) - EXPANDED
 
-### Path B: Current State Analysis (Internal)
+Original research (EN-001) covered:
+- REUSE specification for licensing
+- README structure best practices
+- CONTRIBUTING.md patterns
+
+**Missing topics identified in DISC-001 (to be addressed by EN-002 through EN-006):**
+
+| Enabler | Topic | Focus |
+|---------|-------|-------|
+| EN-002 | Claude Code best practices | CLI patterns, hook system, session management |
+| EN-003 | CLAUDE.md optimization | Context loading, decomposition, imports |
+| EN-004 | Claude Code Plugins | manifest.json, discovery, hooks |
+| EN-005 | Claude Code Skills | SKILL.md structure, agent patterns |
+| EN-006 | Decomposition with imports | Always-loaded vs contextual, file references |
+
+### Path B: Current State Analysis (Internal) - COMPLETE
+
+Completed via EN-007 (ps-analyst):
 - CLAUDE.md content inventory
 - Skills inventory and analysis
 - Work tracker skill gap analysis
@@ -157,7 +221,31 @@ This feature encompasses the foundational research and analysis required before 
 
 ---
 
-## Orchestration Approach
+## Orchestration
+
+### Orchestration Location (CORRECT PATH)
+
+**Workflow ID:** oss-release-20260131-001
+**Base Path:** `./orchestration/`
+
+| Artifact | Path |
+|----------|------|
+| Plan | [./orchestration/ORCHESTRATION_PLAN.md](./orchestration/ORCHESTRATION_PLAN.md) |
+| State | [./orchestration/ORCHESTRATION.yaml](./orchestration/ORCHESTRATION.yaml) |
+| Worktracker | [./orchestration/ORCHESTRATION_WORKTRACKER.md](./orchestration/ORCHESTRATION_WORKTRACKER.md) |
+| Diagram | [./orchestration/ORCHESTRATION_DIAGRAM_ASCII.md](./orchestration/ORCHESTRATION_DIAGRAM_ASCII.md) |
+
+### Agent Outputs
+
+| Agent | Output Path |
+|-------|-------------|
+| ps-researcher | [./orchestration/oss-release-20260131-001/ps/phase-0/ps-researcher/](./orchestration/oss-release-20260131-001/ps/phase-0/ps-researcher/) |
+| ps-analyst | [./orchestration/oss-release-20260131-001/ps/phase-0/ps-analyst/](./orchestration/oss-release-20260131-001/ps/phase-0/ps-analyst/) |
+| nse-explorer | [./orchestration/oss-release-20260131-001/nse/phase-0/nse-explorer/](./orchestration/oss-release-20260131-001/nse/phase-0/nse-explorer/) |
+| nse-requirements | [./orchestration/oss-release-20260131-001/nse/phase-0/nse-requirements/](./orchestration/oss-release-20260131-001/nse/phase-0/nse-requirements/) |
+| nse-risk | [./orchestration/oss-release-20260131-001/risks/](./orchestration/oss-release-20260131-001/risks/) |
+| ps-critic | [./orchestration/oss-release-20260131-001/quality-gates/qg-0/](./orchestration/oss-release-20260131-001/quality-gates/qg-0/) |
+| nse-qa | [./orchestration/oss-release-20260131-001/quality-gates/qg-0/](./orchestration/oss-release-20260131-001/quality-gates/qg-0/) |
 
 ### Skills Used
 - `/orchestration` - Coordinate multi-phase workflow
@@ -165,11 +253,12 @@ This feature encompasses the foundational research and analysis required before 
 - `/nasa-se` - Requirements engineering, verification
 
 ### Quality Gates
-Every phase uses adversarial prompting protocol (DISC-002):
+Every phase uses adversarial prompting protocol:
 - Red Team Framing
 - Mandatory Findings Quota
 - Checklist Enforcement
 - Score Calibration
+- **Threshold: ≥0.92**
 
 ---
 
@@ -187,15 +276,28 @@ Every phase uses adversarial prompting protocol (DISC-002):
 | Blocks | FEAT-003 | Documentation depends on research |
 | Blocks | FEAT-004 | Migration planning depends on research |
 
+### Transcript Source
+
+| Artifact | Path | Description |
+|----------|------|-------------|
+| Packet | [transcripts/001-oss-release/packet/](../../../../../transcripts/001-oss-release/packet/) | Source transcript packet |
+| Action Items | [04-action-items.md](../../../../../transcripts/001-oss-release/packet/04-action-items.md) | 14 action items |
+| Decisions | [05-decisions.md](../../../../../transcripts/001-oss-release/packet/05-decisions.md) | 4 transcript decisions |
+
 ---
 
 ## History
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
-| 2026-01-31 | Claude | pending | Feature created |
+| 2026-01-31T19:15:00Z | Claude | IN_PROGRESS | Updated with decisions, discoveries, expanded enablers, correct paths |
+| 2026-01-31T17:30:00Z | Claude | IN_PROGRESS | DISC-001 identified - missed research scope |
+| 2026-01-31T17:00:00Z | Claude | IN_PROGRESS | QG-0 failed (0.876 < 0.92) |
+| 2026-01-31T16:30:00Z | Claude | IN_PROGRESS | Phase 0 Tier 1-3 executed |
+| 2026-01-31T16:00:00Z | Claude | pending | Feature created |
 
 ---
 
-*Feature Version: 1.0.0*
+*Feature Version: 2.0.0*
 *Created: 2026-01-31*
+*Updated: 2026-01-31T19:15:00Z*
