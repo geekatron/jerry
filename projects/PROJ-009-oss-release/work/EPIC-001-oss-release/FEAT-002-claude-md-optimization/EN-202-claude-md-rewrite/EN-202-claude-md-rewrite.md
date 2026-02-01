@@ -230,9 +230,20 @@ TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 (can run in parallel)
 
 - **Parent:** [FEAT-002: CLAUDE.md Optimization](../FEAT-002-claude-md-optimization.md)
 
+### Bugs (Source Defects to Fix)
+
+Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rewrite:
+
+| ID | Title | Severity | Priority |
+|----|-------|----------|----------|
+| [BUG-001](./BUG-001-relationships-typo.md) | "relationships to to" typo (line 221) | trivial | low |
+| [BUG-002](./BUG-002-story-folder-id-mismatch.md) | Story folder uses {EnablerId} instead of {StoryId} (line 232) | minor | medium |
+| [BUG-003](./BUG-003-template-path-inconsistency.md) | Template path inconsistency (docs/ vs .context/) | minor | medium |
+
 ### Reference
 
 - Appendix A in PLAN-CLAUDE-MD-OPTIMIZATION.md contains proposed structure
+- [EN-201:DEC-001](../EN-201-worktracker-skill-extraction/DEC-001-faithful-extraction-principle.md) - Decision to preserve defects during extraction
 
 ---
 

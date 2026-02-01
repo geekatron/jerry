@@ -259,6 +259,30 @@ See `FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/qu
 
 - **Parent:** [FEAT-002: CLAUDE.md Optimization](../FEAT-002-claude-md-optimization.md)
 
+### Discoveries
+
+| ID | Title | Status | Impact |
+|----|-------|--------|--------|
+| [DISC-001](./DISC-001-redundant-template-sections.md) | Redundant Template Sections in CLAUDE.md | DOCUMENTED | Medium |
+| [DISC-002](./DISC-002-skill-md-outdated-refs.md) | SKILL.md Had Outdated File References | DOCUMENTED | High |
+
+### Decisions
+
+| ID | Title | Status |
+|----|-------|--------|
+| [DEC-001](./DEC-001-faithful-extraction-principle.md) | Faithful Extraction Preserves Source Defects | ACCEPTED |
+| [DEC-002](./DEC-002-risk-identification-deferred.md) | Risk Identification Deferred to EN-202 | ACCEPTED |
+
+### Bugs Created (for EN-202)
+
+Source defects discovered during extraction, deferred to EN-202 per DEC-001:
+
+| ID | Title | Severity |
+|----|-------|----------|
+| [EN-202:BUG-001](../EN-202-claude-md-rewrite/BUG-001-relationships-typo.md) | "relationships to to" typo | trivial |
+| [EN-202:BUG-002](../EN-202-claude-md-rewrite/BUG-002-story-folder-id-mismatch.md) | Story folder uses {EnablerId} instead of {StoryId} | minor |
+| [EN-202:BUG-003](../EN-202-claude-md-rewrite/BUG-003-template-path-inconsistency.md) | Template path inconsistency | minor |
+
 ### Source Content
 
 Current CLAUDE.md sections to extract:
