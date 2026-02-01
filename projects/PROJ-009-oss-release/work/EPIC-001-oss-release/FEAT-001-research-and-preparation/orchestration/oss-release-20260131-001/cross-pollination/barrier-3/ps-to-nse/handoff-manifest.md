@@ -400,6 +400,21 @@ POST-RELEASE (Days 5-7+) - 15 items, ~8 hours
 
 For NSE agents entering Phase 3:
 
+### Priority 0: Phase 0 Best Practices (FOUNDATIONAL)
+
+> **READ THESE FIRST** - They contain the industry knowledge that informed all ADRs.
+
+| # | Document | Path |
+|---|----------|------|
+| 0a | OSS Best Practices Research | `ps/phase-0/ps-researcher/best-practices-research.md` |
+| 0b | Claude Code CLI Best Practices | `ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md` |
+| 0c | CLAUDE.md Best Practices | `ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md` |
+| 0d | Plugins Best Practices | `ps/phase-0/ps-researcher-plugins/plugins-best-practices.md` |
+| 0e | Skills Best Practices | `ps/phase-0/ps-researcher-skills/skills-best-practices.md` |
+| 0f | Decomposition Best Practices | `ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md` |
+
+### Priority 1+: Phase 2 ADRs
+
 1. **ADR-OSS-007** (Master Synthesis) - READ FIRST
    - Provides complete checklist with all items, VRs, and risk mappings
    - Executive summary of entire Phase 2 output
@@ -432,7 +447,21 @@ For NSE agents entering Phase 3:
 
 ## Best Practice Sources
 
-These Phase 0/1 artifacts informed the Phase 2 ADRs:
+These Phase 0/1 artifacts informed the Phase 2 ADRs and **MUST be followed** by Phase 3 agents.
+
+### From PS Pipeline Phase 0 (CRITICAL - Latest Industry Knowledge)
+
+> **MANDATORY**: Phase 3 agents MUST read these best practices documents before implementation.
+> They contain the latest industry knowledge and patterns that inform all ADRs.
+
+| Artifact | Path | Key Contribution | MUST READ |
+|----------|------|------------------|-----------|
+| OSS Best Practices Research | `ps/phase-0/ps-researcher/best-practices-research.md` | Industry standards for OSS release, dual-repo patterns | ✓ |
+| Claude Code CLI Best Practices | `ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md` | Claude Code CLI integration patterns, hooks, MCP | ✓ |
+| CLAUDE.md Best Practices | `ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md` | CLAUDE.md structure, progressive disclosure, context optimization | ✓ |
+| Plugins Best Practices | `ps/phase-0/ps-researcher-plugins/plugins-best-practices.md` | Plugin architecture, manifest patterns, distribution | ✓ |
+| Skills Best Practices | `ps/phase-0/ps-researcher-skills/skills-best-practices.md` | Skills patterns, SKILL.md structure, invocation | ✓ |
+| Decomposition Best Practices | `ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md` | File decomposition with imports, modular CLAUDE.md | ✓ |
 
 ### From PS Pipeline Phase 1
 
