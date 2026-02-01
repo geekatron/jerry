@@ -1,9 +1,41 @@
 # ORCHESTRATION.yaml
 # Machine-readable orchestration state for PROJ-009-oss-release
 # Document ID: PROJ-009-ORCH-STATE
-# Version: 4.0.0
-# Last Updated: 2026-01-31T19:30:00Z
+# Version: 5.0.0
+# Last Updated: 2026-01-31T23:30:00Z
 # Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+#
+# CHANGE LOG v5.1.0:
+# - RECONCILIATION: Session recovery - artifacts discovered from prior session
+# - Phase 2 Tier 1: COMPLETE (ADR-001: 798 lines, nse-requirements: 1021 lines)
+# - Phase 2 Tier 2: COMPLETE (ADR-002: 1206, ADR-003: 801, ADR-004: 737, ADR-006: 859)
+# - QG-2.1: PASSED (0.94), QG-2.2: IN_PROGRESS (ps-critic + nse-qa running)
+# - NSE architecture-decisions.md: 595 lines verified
+# - Updated agent statuses, tier_status, and next_step
+#
+# CHANGE LOG v5.0.0:
+# - MAJOR RESTRUCTURE: Phase 2 now uses 7 separate ps-architect agents (per DEC-003)
+# - ADRs organized into 4 tiers based on dependency analysis
+# - Tiered Hybrid PS/NSE coordination (D-003: Option C)
+# - Per-tier quality gates: QG-2.1, QG-2.2, QG-2.3, QG-2.4 (D-004: Option B)
+# - Explicit mandatory_reads with priority ordering for each agent (D-005)
+# - Checkpoints at each tier boundary (D-001)
+# - ADR-006 moved to Tier 2 after ADR-001 (D-002)
+# - Added new agent registry entries for 7 ps-architect instances
+# - Reference: FEAT-001:DEC-003 Phase 2 Execution Strategy
+#
+# CHANGE LOG v4.4.0:
+# - Phase 1 COMPLETE (all 4 tiers executed)
+# - QG-1 PASSED (0.942 average: ps-critic 0.938, nse-qa 0.946)
+# - Barrier 2 COMPLETE with cross-pollination manifests
+# - CP-002 checkpoint created for Phase 1 completion
+# - Unblocked Phase 2 agents for execution
+#
+# CHANGE LOG v4.3.0:
+# - Barrier 1 COMPLETE with manifest references (user decision Q1)
+# - Phase 1 tiered execution structure added (user decision Q2: option B)
+# - Checkpoint frequency changed to TIER (user decision Q3: option B)
+# - Unblocked Phase 1 agents for execution
 #
 # CHANGE LOG v4.0.0:
 # - Corrected base path to feature-level location
@@ -12,7 +44,7 @@
 # - Added worktracker document references (DEC-001, DEC-002, DISC-001)
 
 # Schema version for evolution support (semver format)
-schema_version: "4.0.0"
+schema_version: "5.1.0"
 
 # =============================================================================
 # WORKFLOW METADATA
@@ -21,16 +53,22 @@ workflow:
   id: "oss-release-20260131-001"
   name: "Jerry OSS Release Preparation"
   project_id: "PROJ-009-oss-release"
-  version: "4.2.0"
+  version: "5.1.0"
   created_at: "2026-01-31T16:00:00Z"
-  updated_at: "2026-01-31T20:25:00Z"
+  updated_at: "2026-02-01T00:15:00Z"  # Reconciliation from session recovery
   status: "ACTIVE"  # PENDING_APPROVAL | APPROVED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
   approved_at: "2026-01-31T19:00:00Z"
   approved_by: "User"
 
   # Phase 0 Status
-  phase_0_status: "COMPLETE"  # All tiers complete, ready for Barrier 1
+  phase_0_status: "COMPLETE"  # All tiers complete, Barrier 1 COMPLETE
   qg_0_status: "PASSED"  # 0.931 (ps-critic) + 0.941 (nse-qa) >= 0.92 threshold
+  barrier_1_status: "COMPLETE"  # Cross-pollination manifests created
+
+  # Phase 1 Status
+  phase_1_status: "COMPLETE"  # All 4 tiers complete, Barrier 2 COMPLETE
+  qg_1_status: "PASSED"  # 0.938 (ps-critic) + 0.946 (nse-qa) = 0.942 avg >= 0.92 threshold
+  barrier_2_status: "COMPLETE"  # Cross-pollination manifests created
 
   # Workflow ID configuration
   id_source: "auto"
@@ -54,7 +92,7 @@ workflow:
     no_deception: true            # P-022: Transparent reasoning
     max_concurrent_agents: 5      # Soft constraint
     max_qg_retries: 2             # Circuit breaker
-    checkpoint_frequency: "PHASE" # AGENT | PHASE | BARRIER
+    checkpoint_frequency: "TIER"  # AGENT | TIER | PHASE | BARRIER (User decision Q3: option B)
     full_artifact_passthrough: true  # No summaries at barriers
 
 # =============================================================================
@@ -83,6 +121,17 @@ worktracker_documents:
       title: "Orchestration Execution Decisions (Tiered, QG≥0.92, Checkpoints, Auto-retry)"
       path: "FEAT-001--DEC-002-orchestration-execution-decisions.md"
       status: "ACCEPTED"
+    - id: "FEAT-001:DEC-003"
+      title: "Phase 2 Execution Strategy (7 Agents, Tiered ADRs, Per-Tier QG, Manifest Priority)"
+      path: "FEAT-001--DEC-003-phase-2-execution-strategy.md"
+      status: "DOCUMENTED"
+      decisions_captured: 5
+      decisions:
+        - "D-001: Checkpoints at each tier boundary (4 total)"
+        - "D-002: ADR-006 executes in Tier 2 after ADR-001"
+        - "D-003: Tiered Hybrid PS/NSE coordination"
+        - "D-004: Per-tier quality gates (QG-2.1 through QG-2.4)"
+        - "D-005: Explicit read these first with priority ordering"
   discoveries:
     - id: "FEAT-001:DISC-001"
       title: "Missed Research Scope - Claude Code Best Practices Not Researched"
@@ -166,8 +215,98 @@ agents:
     id: "PS-03"
     name: "ps-architect"
     skill: "problem-solving"
-    role: "Architecture Specialist"
+    role: "Architecture Specialist (base definition)"
     phases: [2]
+    note: "See ps_architect_001 through ps_architect_007 for Phase 2 instances"
+
+  # Phase 2 ADR Agents - 7 separate instances per DEC-003
+  ps_architect_001:
+    id: "PS-03-001"
+    name: "ps-architect-001"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-001 (CLAUDE.md Decomposition)"
+    phases: [2]
+    tier: 1
+    adr: "ADR-OSS-001"
+    priority: "CRITICAL"
+    rpn: 280
+    dependencies: []
+    output: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+
+  ps_architect_002:
+    id: "PS-03-002"
+    name: "ps-architect-002"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-002 (Repository Sync Process)"
+    phases: [2]
+    tier: 2
+    adr: "ADR-OSS-002"
+    priority: "HIGH"
+    rpn: 192
+    dependencies: ["ADR-OSS-001"]
+    output: "ps/phase-2/ps-architect-002/ADR-OSS-002-repository-sync-process.md"
+
+  ps_architect_003:
+    id: "PS-03-003"
+    name: "ps-architect-003"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-003 (Work Tracker Extraction)"
+    phases: [2]
+    tier: 2
+    adr: "ADR-OSS-003"
+    priority: "HIGH"
+    dependencies: ["ADR-OSS-001"]
+    output: "ps/phase-2/ps-architect-003/ADR-OSS-003-worktracker-extraction.md"
+
+  ps_architect_004:
+    id: "PS-03-004"
+    name: "ps-architect-004"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-004 (Multi-Persona Documentation)"
+    phases: [2]
+    tier: 2
+    adr: "ADR-OSS-004"
+    priority: "MEDIUM"
+    dependencies: ["ADR-OSS-001"]
+    output: "ps/phase-2/ps-architect-004/ADR-OSS-004-multi-persona-docs.md"
+
+  ps_architect_005:
+    id: "PS-03-005"
+    name: "ps-architect-005"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-005 (Repository Migration Strategy)"
+    phases: [2]
+    tier: 3
+    adr: "ADR-OSS-005"
+    priority: "HIGH"
+    dependencies: ["ADR-OSS-001", "ADR-OSS-002"]
+    output: "ps/phase-2/ps-architect-005/ADR-OSS-005-repository-migration.md"
+
+  ps_architect_006:
+    id: "PS-03-006"
+    name: "ps-architect-006"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-006 (Transcript Skill Templates)"
+    phases: [2]
+    tier: 2
+    adr: "ADR-OSS-006"
+    priority: "MEDIUM"
+    dependencies: ["ADR-OSS-001"]
+    note: "Per D-002: Waits for ADR-001 completion"
+    output: "ps/phase-2/ps-architect-006/ADR-OSS-006-transcript-templates.md"
+
+  ps_architect_007:
+    id: "PS-03-007"
+    name: "ps-architect-007"
+    skill: "problem-solving"
+    role: "Architecture Specialist - ADR-OSS-007 (OSS Release Checklist)"
+    phases: [2]
+    tier: 4
+    adr: "ADR-OSS-007"
+    priority: "CRITICAL"
+    dependencies: ["ADR-OSS-001", "ADR-OSS-002", "ADR-OSS-003", "ADR-OSS-004", "ADR-OSS-005", "ADR-OSS-006"]
+    note: "Synthesis ADR - depends on ALL prior ADRs"
+    output: "ps/phase-2/ps-architect-007/ADR-OSS-007-oss-release-checklist.md"
 
   ps_critic:
     id: "PS-04"
@@ -369,46 +508,380 @@ pipelines:
       - id: 1
         name: "Deep Research & Investigation"
         path_id: "phase-1"
-        status: "BLOCKED"
-        blocked_by: "barrier-1"
+        status: "COMPLETE"  # All 4 tiers complete
+        unblocked_at: "2026-01-31T21:45:00Z"
+        completed_at: "2026-01-31T22:45:00Z"
         agents:
           - id: "ps-researcher-p1"
             agent_ref: "ps_researcher"
-            status: "BLOCKED"
-            task: "Deep dive into prioritized areas"
+            status: "COMPLETE"
+            tier: 1
+            started_at: "2026-01-31T21:50:00Z"
+            completed_at: "2026-01-31T22:00:00Z"
+            task: "Deep dive into prioritized areas from NSE findings"
             artifact: "ps/phase-1/ps-researcher/deep-research.md"
+            findings_summary: "3-pillar research: dual-repo pattern, CLAUDE.md decomposition, multi-persona docs. 17 citations. L0/L1/L2 structure."
+            mandatory_reads:  # From nse-to-ps manifest
+              - "nse/phase-0/nse-explorer/divergent-alternatives.md"
+              - "risks/phase-0-risk-register.md"
+              - "quality-gates/qg-0/nse-qa-audit-v2.md"
           - id: "ps-analyst-p1"
             agent_ref: "ps_analyst"
-            status: "BLOCKED"
-            task: "Gap analysis, FMEA, 5 Whys, trade-offs"
+            status: "COMPLETE"
+            tier: 1
+            started_at: "2026-01-31T21:50:00Z"
+            completed_at: "2026-01-31T22:05:00Z"
+            task: "Gap analysis (27 gaps), FMEA, 5 Whys on 21 risks"
             artifacts:
               - "ps/phase-1/ps-analyst/gap-analysis.md"
               - "ps/phase-1/ps-analyst/fmea-analysis.md"
               - "ps/phase-1/ps-analyst/root-cause-5whys.md"
+            findings_summary: "5W2H on 27 gaps, 18 unique after deduplication. FMEA: 22 risks, 1 CRITICAL (RPN 280), 11 HIGH. 5 systemic patterns identified."
+            mandatory_reads:  # From nse-to-ps manifest
+              - "nse/phase-0/nse-requirements/current-state-inventory.md"  # 27 gaps
+              - "risks/phase-0-risk-register.md"  # 21 risks for FMEA
+              - "nse/phase-0/nse-explorer/divergent-alternatives.md"  # Trade-off context
           - id: "ps-investigator-p1"
             agent_ref: "ps_investigator"
-            status: "BLOCKED"
-            task: "Investigate current problems"
+            status: "COMPLETE"
+            tier: 1
+            started_at: "2026-01-31T21:50:00Z"
+            completed_at: "2026-01-31T22:00:00Z"
+            task: "Investigate: Transcript skill Sonnet/Opus inconsistency, CLAUDE.md maintainability"
             artifact: "ps/phase-1/ps-investigator/problem-investigation.md"
+            findings_summary: "3 problems: transcript inconsistency (DISMISSED), CLAUDE.md bloat (CONFIRMED), worktracker incomplete (PARTIAL). RSK-P1-001 discovered."
+            mandatory_reads:  # From nse-to-ps manifest
+              - "nse/phase-0/nse-requirements/current-state-inventory.md"  # Problem scope
+              - "risks/phase-0-risk-register.md"  # Risk context
 
       - id: 2
-        name: "Requirements & Architecture"
+        name: "Requirements & Architecture (7 ADRs in 4 Tiers per DEC-003)"
         path_id: "phase-2"
-        status: "BLOCKED"
-        blocked_by: "barrier-2"
-        agents:
-          - id: "ps-architect-p2"
-            agent_ref: "ps_architect"
-            status: "BLOCKED"
-            task: "Architecture Decision Records (7 ADRs)"
-            artifacts:
-              - "ps/phase-2/ps-architect/ADR-OSS-001-claude-md-decomposition.md"
-              - "ps/phase-2/ps-architect/ADR-OSS-002-skill-import-pattern.md"
-              - "ps/phase-2/ps-architect/ADR-OSS-003-worktracker-extraction.md"
-              - "ps/phase-2/ps-architect/ADR-OSS-004-multi-persona-docs.md"
-              - "ps/phase-2/ps-architect/ADR-OSS-005-repo-migration.md"
-              - "ps/phase-2/ps-architect/ADR-OSS-006-transcript-templates.md"
-              - "ps/phase-2/ps-architect/ADR-OSS-007-oss-release-checklist.md"
+        status: "READY"  # Unblocked after Barrier 2 COMPLETE
+        unblocked_at: "2026-01-31T22:30:00Z"
+        decision_reference: "FEAT-001:DEC-003"
+        execution_strategy: "TIERED_HYBRID"  # D-003: Option C
+        quality_gates_per_tier: true  # D-004: Option B (QG-2.1, QG-2.2, QG-2.3, QG-2.4)
+        checkpoint_frequency: "TIER"  # D-001: At each tier boundary
+
+        # ========================================================================
+        # TIER 1: Foundation (1 ADR + nse-requirements)
+        # ADR-001 is CRITICAL (RPN 280) - all other ADRs depend on it
+        # ========================================================================
+        tier_1:
+          name: "Foundation - ADR-001 + NSE Requirements"
+          execution_mode: "PARALLEL"
+          status: "COMPLETE"  # RECONCILED: 2026-01-31 - Artifacts discovered from prior session
+          completed_at: "2026-01-31T23:45:00Z"
+          qg_2_1_score: 0.94
+          agents:
+            # PS Pipeline: ADR-001 (CRITICAL foundation)
+            - id: "ps-architect-001-p2"
+              agent_ref: "ps_architect_001"
+              status: "COMPLETE"  # Verified: 798 lines
+              tier: 1
+              task: "ADR-OSS-001: CLAUDE.md Decomposition Strategy"
+              priority: "CRITICAL"
+              rpn: 280
+              artifact: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+              mandatory_reads:
+                # Priority 1: Cross-Pollination Manifest
+                - priority: 1
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts summary - V&V requirements, risk context, NPR compliance"
+                  key_sections: ["V&V Requirements (30 VRs)", "Risk Evolution", "NPR Compliance Status"]
+                # Priority 2: Research Foundation
+                - priority: 2
+                  path: "ps/phase-1/ps-researcher/deep-research.md"
+                  description: "3-pillar research: dual-repo, CLAUDE.md decomposition, multi-persona docs"
+                  key_sections: ["Section on CLAUDE.md patterns", "Decomposition strategies"]
+                # Priority 3: Risk Context
+                - priority: 3
+                  path: "risks/phase-1-risk-register.md"
+                  description: "22 risks, RSK-P0-004 (RPN 280) is CRITICAL for CLAUDE.md bloat"
+                  key_sections: ["RSK-P0-004 context bloat mitigation"]
+                # Priority 4: CLAUDE.md Best Practices Research
+                - priority: 4
+                  path: "ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md"
+                  description: "Target <500 lines, Jerry at 912 (82% over)"
+                # Priority 5: Decomposition Research
+                - priority: 5
+                  path: "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+                  description: "4-level hierarchy, always-load vs on-demand"
+                # Priority 6: Quality Baseline
+                - priority: 6
+                  path: "quality-gates/qg-1/ps-critic-review.md"
+                  description: "Score: 0.938, recommendations for Phase 2"
+
+            # NSE Pipeline: nse-requirements (no ADR dependency)
+            - id: "nse-requirements-p2"
+              agent_ref: "nse_requirements"
+              status: "COMPLETE"  # Verified: 1021 lines
+              tier: 1
+              task: "Formal requirements specification from gap-analysis"
+              artifact: "nse/phase-2/nse-requirements/requirements-spec.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+                  description: "PS Phase 1 artifacts summary - research, analysis, FMEA"
+                - priority: 2
+                  path: "ps/phase-1/ps-analyst/gap-analysis.md"
+                  description: "27 gaps → requirements (18 unique after deduplication)"
+                - priority: 3
+                  path: "nse/phase-1/nse-verification/vv-planning.md"
+                  description: "30 VRs with IADT methods"
+          quality_gate: "QG-2.1"
+          checkpoint_after: true  # D-001: Checkpoint at tier boundary
+
+        # ========================================================================
+        # TIER 2: Parallel ADRs (4 ADRs + nse-architecture)
+        # All depend on ADR-001 (including ADR-006 per D-002)
+        # ========================================================================
+        tier_2:
+          name: "Parallel ADRs - ADR-002/003/004/006 + NSE Architecture"
+          execution_mode: "PARALLEL"
+          status: "COMPLETE"  # RECONCILED: 2026-01-31 - All ADRs discovered, QG-2.2 in progress
+          completed_at: "2026-01-31T23:50:00Z"
+          blocked_by: []  # Unblocked after QG-2.1 PASS
+          agents:
+            # PS Pipeline: ADR-002 (Repository Sync Process)
+            - id: "ps-architect-002-p2"
+              agent_ref: "ps_architect_002"
+              status: "COMPLETE"  # Verified: 1206 lines
+              tier: 2
+              task: "ADR-OSS-002: Repository Sync Process"
+              priority: "HIGH"
+              rpn: 192
+              dependencies: ["ADR-OSS-001"]
+              artifact: "ps/phase-2/ps-architect-002/ADR-OSS-002-repository-sync-process.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Foundation ADR - decomposition decisions inform sync strategy"
+                - priority: 2
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts"
+                - priority: 3
+                  path: "ps/phase-1/ps-analyst/root-cause-5whys.md"
+                  description: "Sync complexity patterns identified"
+                - priority: 4
+                  path: "risks/phase-1-risk-register.md"
+                  description: "RSK-P0-005 (RPN 192) sync complexity risk"
+
+            # PS Pipeline: ADR-003 (Work Tracker Extraction)
+            - id: "ps-architect-003-p2"
+              agent_ref: "ps_architect_003"
+              status: "COMPLETE"  # Verified: 801 lines
+              tier: 2
+              task: "ADR-OSS-003: Work Tracker Extraction"
+              priority: "HIGH"
+              dependencies: ["ADR-OSS-001"]
+              artifact: "ps/phase-2/ps-architect-003/ADR-OSS-003-worktracker-extraction.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Foundation ADR - decomposition affects worktracker scope"
+                - priority: 2
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts"
+                - priority: 3
+                  path: "ps/phase-1/ps-investigator/problem-investigation.md"
+                  description: "Worktracker incomplete status (PARTIAL)"
+
+            # PS Pipeline: ADR-004 (Multi-Persona Documentation)
+            - id: "ps-architect-004-p2"
+              agent_ref: "ps_architect_004"
+              status: "COMPLETE"  # Verified: 737 lines
+              tier: 2
+              task: "ADR-OSS-004: Multi-Persona Documentation"
+              priority: "MEDIUM"
+              dependencies: ["ADR-OSS-001"]
+              artifact: "ps/phase-2/ps-architect-004/ADR-OSS-004-multi-persona-docs.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Foundation ADR - L0/L1/L2 documentation approach"
+                - priority: 2
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts"
+                - priority: 3
+                  path: "ps/phase-1/ps-researcher/deep-research.md"
+                  description: "Multi-persona research pillar"
+
+            # PS Pipeline: ADR-006 (Transcript Skill Templates) - D-002: After ADR-001
+            - id: "ps-architect-006-p2"
+              agent_ref: "ps_architect_006"
+              status: "COMPLETE"  # Verified: 859 lines
+              tier: 2
+              task: "ADR-OSS-006: Transcript Skill Templates"
+              priority: "MEDIUM"
+              dependencies: ["ADR-OSS-001"]
+              decision_reference: "D-002: Waits for ADR-001 completion"
+              artifact: "ps/phase-2/ps-architect-006/ADR-OSS-006-transcript-templates.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Foundation ADR - template patterns from decomposition"
+                - priority: 2
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts"
+                - priority: 3
+                  path: "ps/phase-0/ps-researcher-skills/skills-best-practices.md"
+                  description: "Skills documentation patterns"
+
+            # NSE Pipeline: nse-architecture (validates ADR-001)
+            - id: "nse-architecture-p2"
+              agent_ref: "nse_architecture"
+              status: "COMPLETE"  # Verified: 595 lines
+              tier: 2
+              task: "Architecture decisions (NASA SE format) - validates ADR-001"
+              dependencies: ["ADR-OSS-001"]
+              artifact: "nse/phase-2/nse-architecture/architecture-decisions.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Validate ADR-001 against NASA SE standards"
+                - priority: 2
+                  path: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+                  description: "PS Phase 1 artifacts"
+                - priority: 3
+                  path: "nse/phase-1/nse-verification/vv-planning.md"
+                  description: "30 VRs for architecture traceability"
+          quality_gate: "QG-2.2"
+          checkpoint_after: true  # D-001: Checkpoint at tier boundary
+
+        # ========================================================================
+        # TIER 3: Dependent ADR (1 ADR + nse-integration)
+        # ADR-005 depends on ADR-001 AND ADR-002
+        # ========================================================================
+        tier_3:
+          name: "Dependent ADR - ADR-005 + NSE Integration"
+          execution_mode: "PARALLEL"
+          status: "BLOCKED"
+          blocked_by: ["tier_2", "QG-2.2"]
+          agents:
+            # PS Pipeline: ADR-005 (Repository Migration Strategy)
+            - id: "ps-architect-005-p2"
+              agent_ref: "ps_architect_005"
+              status: "BLOCKED"
+              tier: 3
+              task: "ADR-OSS-005: Repository Migration Strategy"
+              priority: "HIGH"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002"]
+              artifact: "ps/phase-2/ps-architect-005/ADR-OSS-005-repository-migration.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Foundation ADR - what content migrates"
+                - priority: 2
+                  path: "ps/phase-2/ps-architect-002/ADR-OSS-002-repository-sync-process.md"
+                  description: "Sync process ADR - how content syncs post-migration"
+                - priority: 3
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts"
+                - priority: 4
+                  path: "risks/phase-1-risk-register.md"
+                  description: "Migration-related risks"
+
+            # NSE Pipeline: nse-integration (uses ADR-001 + ADR-002)
+            - id: "nse-integration-p2"
+              agent_ref: "nse_integration"
+              status: "BLOCKED"
+              tier: 3
+              task: "Integration planning using ADR-001 + ADR-002"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002"]
+              artifact: "nse/phase-2/nse-integration/integration-plan.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "Decomposition architecture"
+                - priority: 2
+                  path: "ps/phase-2/ps-architect-002/ADR-OSS-002-repository-sync-process.md"
+                  description: "Sync process for integration planning"
+                - priority: 3
+                  path: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+                  description: "PS Phase 1 artifacts"
+          quality_gate: "QG-2.3"
+          checkpoint_after: true  # D-001: Checkpoint at tier boundary
+
+        # ========================================================================
+        # TIER 4: Synthesis ADR (1 ADR + nse-configuration + nse-risk)
+        # ADR-007 depends on ALL prior ADRs
+        # ========================================================================
+        tier_4:
+          name: "Synthesis - ADR-007 + NSE Configuration + Risk Update"
+          execution_mode: "PARALLEL"
+          status: "BLOCKED"
+          blocked_by: ["tier_3", "QG-2.3"]
+          agents:
+            # PS Pipeline: ADR-007 (OSS Release Checklist - Synthesis)
+            - id: "ps-architect-007-p2"
+              agent_ref: "ps_architect_007"
+              status: "BLOCKED"
+              tier: 4
+              task: "ADR-OSS-007: OSS Release Checklist (Synthesis)"
+              priority: "CRITICAL"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002", "ADR-OSS-003", "ADR-OSS-004", "ADR-OSS-005", "ADR-OSS-006"]
+              artifact: "ps/phase-2/ps-architect-007/ADR-OSS-007-oss-release-checklist.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+                  description: "ADR-001 for checklist"
+                - priority: 2
+                  path: "ps/phase-2/ps-architect-002/ADR-OSS-002-repository-sync-process.md"
+                  description: "ADR-002 for checklist"
+                - priority: 3
+                  path: "ps/phase-2/ps-architect-003/ADR-OSS-003-worktracker-extraction.md"
+                  description: "ADR-003 for checklist"
+                - priority: 4
+                  path: "ps/phase-2/ps-architect-004/ADR-OSS-004-multi-persona-docs.md"
+                  description: "ADR-004 for checklist"
+                - priority: 5
+                  path: "ps/phase-2/ps-architect-005/ADR-OSS-005-repository-migration.md"
+                  description: "ADR-005 for checklist"
+                - priority: 6
+                  path: "ps/phase-2/ps-architect-006/ADR-OSS-006-transcript-templates.md"
+                  description: "ADR-006 for checklist"
+                - priority: 7
+                  path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+                  description: "NSE Phase 1 artifacts for compliance checklist"
+                - priority: 8
+                  path: "risks/phase-1-risk-register.md"
+                  description: "All risks for mitigation checklist"
+
+            # NSE Pipeline: nse-configuration (creates baseline from all)
+            - id: "nse-configuration-p2"
+              agent_ref: "nse_configuration"
+              status: "BLOCKED"
+              tier: 4
+              task: "Requirements baseline from all ADRs"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002", "ADR-OSS-003", "ADR-OSS-004", "ADR-OSS-005", "ADR-OSS-006"]
+              artifact: "nse/phase-2/nse-configuration/requirements-baseline.md"
+              baseline_type: "requirements"
+              mandatory_reads:
+                - priority: 1
+                  path: "nse/phase-2/nse-requirements/requirements-spec.md"
+                  description: "Requirements specification"
+                - priority: 2
+                  path: "nse/phase-2/nse-architecture/architecture-decisions.md"
+                  description: "Architecture decisions for baseline"
+
+            # NSE Pipeline: nse-risk (Phase 2 risk update)
+            - id: "nse-risk-p2"
+              agent_ref: "nse_risk"
+              status: "BLOCKED"
+              tier: 4
+              task: "Phase 2 risk register update"
+              artifact: "risks/phase-2-risk-register.md"
+              mandatory_reads:
+                - priority: 1
+                  path: "risks/phase-1-risk-register.md"
+                  description: "Previous risk register"
+                - priority: 2
+                  path: "ps/phase-2/ps-architect-007/ADR-OSS-007-oss-release-checklist.md"
+                  description: "Synthesis ADR for risk context"
+          quality_gate: "QG-2.4"
+          checkpoint_after: true  # D-001: Checkpoint at tier boundary (Phase 2 complete)
 
       - id: 3
         name: "Validation & Synthesis"
@@ -481,52 +954,54 @@ pipelines:
       - id: 1
         name: "Deep Research & Investigation"
         path_id: "phase-1"
-        status: "BLOCKED"
-        blocked_by: "barrier-1"
+        status: "COMPLETE"  # All tiers complete
+        unblocked_at: "2026-01-31T21:45:00Z"
+        completed_at: "2026-01-31T22:30:00Z"
         agents:
           - id: "nse-verification-p1"
             agent_ref: "nse_verification"
-            status: "BLOCKED"
-            task: "V&V planning"
+            status: "COMPLETE"
+            tier: 1
+            started_at: "2026-01-31T21:50:00Z"
+            completed_at: "2026-01-31T22:05:00Z"
+            task: "V&V planning based on PS research findings"
             artifact: "nse/phase-1/nse-verification/vv-planning.md"
+            findings_summary: "30 VRs with IADT methods, 5 VAL criteria, 100% NPR 7123.1D compliance. Full traceability matrix."
+            mandatory_reads:  # From ps-to-nse manifest
+              - "ps/phase-0/ps-analyst/current-architecture-analysis.md"
+              - "ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md"
+              - "ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md"
+              - "ps/phase-0/ps-researcher-plugins/plugins-best-practices.md"
+              - "ps/phase-0/ps-researcher-skills/skills-best-practices.md"
+              - "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+              - "quality-gates/qg-0/ps-critic-review-v2.md"
           - id: "nse-risk-p1"
             agent_ref: "nse_risk"
-            status: "BLOCKED"
-            task: "Risk register update"
+            status: "COMPLETE"
+            tier: 2  # Depends on nse-verification-p1
+            started_at: "2026-01-31T22:05:00Z"
+            completed_at: "2026-01-31T22:15:00Z"
+            task: "Update risk register with V&V findings and PS research gaps"
             artifact: "risks/phase-1-risk-register.md"
+            findings_summary: "22 risks (21 + RSK-P1-001). 1 CRITICAL (RPN 280), 11 HIGH. 4-tier treatment sequence. FMEA integration."
+            mandatory_reads:  # All PS research + V&V planning
+              - "ps/phase-0/ps-researcher/best-practices-research.md"
+              - "risks/phase-0-risk-register.md"
+            dependencies:
+              - "nse-verification-p1"
 
       - id: 2
-        name: "Requirements & Architecture"
+        name: "Requirements & Architecture (Tiered Hybrid per DEC-003 D-003)"
         path_id: "phase-2"
-        status: "BLOCKED"
-        blocked_by: "barrier-2"
-        agents:
-          - id: "nse-requirements-p2"
-            agent_ref: "nse_requirements"
-            status: "BLOCKED"
-            task: "Formal requirements specification"
-            artifact: "nse/phase-2/nse-requirements/requirements-spec.md"
-          - id: "nse-architecture-p2"
-            agent_ref: "nse_architecture"
-            status: "BLOCKED"
-            task: "Architecture decisions (NASA SE format)"
-            artifact: "nse/phase-2/nse-architecture/architecture-decisions.md"
-          - id: "nse-integration-p2"
-            agent_ref: "nse_integration"
-            status: "BLOCKED"
-            task: "Integration planning"
-            artifact: "nse/phase-2/nse-integration/integration-plan.md"
-          - id: "nse-configuration-p2"
-            agent_ref: "nse_configuration"
-            status: "BLOCKED"
-            task: "Requirements baseline"
-            artifact: "nse/phase-2/nse-configuration/requirements-baseline.md"
-            baseline_type: "requirements"
-          - id: "nse-risk-p2"
-            agent_ref: "nse_risk"
-            status: "BLOCKED"
-            task: "Risk register update"
-            artifact: "risks/phase-2-risk-register.md"
+        status: "READY"  # Unblocked after Barrier 2 COMPLETE
+        unblocked_at: "2026-01-31T22:30:00Z"
+        decision_reference: "FEAT-001:DEC-003 (D-003: Tiered Hybrid)"
+        note: "NSE agents are integrated into PS Pipeline Phase 2 tiers for cross-pollination"
+        # NSE agents distributed across PS tiers:
+        # - Tier 1: nse-requirements (parallel with ADR-001)
+        # - Tier 2: nse-architecture (validates ADR-001)
+        # - Tier 3: nse-integration (uses ADR-001 + ADR-002)
+        # - Tier 4: nse-configuration + nse-risk (baseline from all)
 
       - id: 3
         name: "Validation & Synthesis"
@@ -619,7 +1094,8 @@ quality_gates:
   - id: "QG-1"
     name: "Quality Gate 1 - Post Deep Research"
     phase: 1
-    status: "BLOCKED"
+    status: "COMPLETE"
+    completed_at: "2026-01-31T22:25:00Z"
     threshold:
       ps_critic: 0.92
       nse_qa: 0.92
@@ -628,22 +1104,38 @@ quality_gates:
         protocol: "DISC-002"
         mode: "ADVERSARIAL"
         artifact: "quality-gates/qg-1/ps-critic-review.md"
+        status: "COMPLETE"
+        score: 0.938
+        result: "PASS"
+        findings_count: 5  # 1 HIGH, 3 MEDIUM, 1 LOW
       - agent: "nse-qa"
         protocol: "NPR-7123.1D"
         mode: "NASA_AUDIT"
         artifact: "quality-gates/qg-1/nse-qa-audit.md"
+        status: "COMPLETE"
+        score: 0.946
+        result: "PASS"
+        conformances: 6
+        non_conformances: 2  # LOW severity
     special_criteria:
       - "Frameworks applied (5W2H, FMEA, 8D)"
       - "Investigation complete"
     scores:
-      ps_critic: null
-      nse_qa: null
-    passed: null
+      ps_critic: 0.938
+      nse_qa: 0.946
+    passed: true
+    average_score: 0.942
 
-  - id: "QG-2"
-    name: "Quality Gate 2 - Post Requirements & Architecture"
+  # ==========================================================================
+  # PHASE 2 PER-TIER QUALITY GATES (DEC-003 D-004: Option B)
+  # 4 quality gates instead of 1 - catches foundational issues early
+  # ==========================================================================
+  - id: "QG-2.1"
+    name: "Quality Gate 2.1 - Post Tier 1 (ADR-001 + nse-requirements)"
     phase: 2
+    tier: 1
     status: "BLOCKED"
+    blocked_by: ["pipeline_a.phase.2.tier_1"]
     threshold:
       ps_critic: 0.92
       nse_qa: 0.92
@@ -651,11 +1143,135 @@ quality_gates:
       - agent: "ps-critic"
         protocol: "DISC-002"
         mode: "ADVERSARIAL"
-        artifact: "quality-gates/qg-2/ps-critic-review.md"
+        artifact: "quality-gates/qg-2/tier-1/ps-critic-review.md"
       - agent: "nse-qa"
         protocol: "NPR-7123.1D"
         mode: "NASA_AUDIT"
-        artifact: "quality-gates/qg-2/nse-qa-audit.md"
+        artifact: "quality-gates/qg-2/tier-1/nse-qa-audit.md"
+    special_criteria:
+      - "ADR-OSS-001 complete with L0/L1/L2"
+      - "ADR-001 addresses RSK-P0-004 (CLAUDE.md bloat RPN 280)"
+      - "Requirements specification aligns with gap-analysis"
+    artifacts_reviewed:
+      - "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+      - "nse/phase-2/nse-requirements/requirements-spec.md"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+    decision_reference: "FEAT-001:DEC-003 (D-004)"
+
+  - id: "QG-2.2"
+    name: "Quality Gate 2.2 - Post Tier 2 (ADRs 002/003/004/006 + nse-architecture)"
+    phase: 2
+    tier: 2
+    status: "BLOCKED"
+    blocked_by: ["pipeline_a.phase.2.tier_2", "QG-2.1"]
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-2/tier-2/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-2/tier-2/nse-qa-audit.md"
+    special_criteria:
+      - "ADRs 002/003/004/006 complete with L0/L1/L2"
+      - "All Tier 2 ADRs properly reference ADR-001"
+      - "Architecture decisions validated against NASA SE standards"
+      - "ADR-006 benefits from ADR-001 context (per D-002)"
+    artifacts_reviewed:
+      - "ps/phase-2/ps-architect-002/ADR-OSS-002-repository-sync-process.md"
+      - "ps/phase-2/ps-architect-003/ADR-OSS-003-worktracker-extraction.md"
+      - "ps/phase-2/ps-architect-004/ADR-OSS-004-multi-persona-docs.md"
+      - "ps/phase-2/ps-architect-006/ADR-OSS-006-transcript-templates.md"
+      - "nse/phase-2/nse-architecture/architecture-decisions.md"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+    decision_reference: "FEAT-001:DEC-003 (D-004)"
+
+  - id: "QG-2.3"
+    name: "Quality Gate 2.3 - Post Tier 3 (ADR-005 + nse-integration)"
+    phase: 2
+    tier: 3
+    status: "BLOCKED"
+    blocked_by: ["pipeline_a.phase.2.tier_3", "QG-2.2"]
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-2/tier-3/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-2/tier-3/nse-qa-audit.md"
+    special_criteria:
+      - "ADR-005 complete with L0/L1/L2"
+      - "ADR-005 properly integrates ADR-001 + ADR-002"
+      - "Integration plan comprehensive"
+    artifacts_reviewed:
+      - "ps/phase-2/ps-architect-005/ADR-OSS-005-repository-migration.md"
+      - "nse/phase-2/nse-integration/integration-plan.md"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+    decision_reference: "FEAT-001:DEC-003 (D-004)"
+
+  - id: "QG-2.4"
+    name: "Quality Gate 2.4 - Post Tier 4 (ADR-007 Synthesis + Baselines)"
+    phase: 2
+    tier: 4
+    status: "BLOCKED"
+    blocked_by: ["pipeline_a.phase.2.tier_4", "QG-2.3"]
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    evaluators:
+      - agent: "ps-critic"
+        protocol: "DISC-002"
+        mode: "ADVERSARIAL"
+        artifact: "quality-gates/qg-2/tier-4/ps-critic-review.md"
+      - agent: "nse-qa"
+        protocol: "NPR-7123.1D"
+        mode: "NASA_AUDIT"
+        artifact: "quality-gates/qg-2/tier-4/nse-qa-audit.md"
+    special_criteria:
+      - "All 7 ADRs complete with L0/L1/L2"
+      - "ADR-007 synthesis incorporates all prior ADRs"
+      - "Requirements baseline established"
+      - "Risk register updated with Phase 2 findings"
+      - "Ready for Barrier 3 cross-pollination"
+    artifacts_reviewed:
+      - "ps/phase-2/ps-architect-007/ADR-OSS-007-oss-release-checklist.md"
+      - "nse/phase-2/nse-configuration/requirements-baseline.md"
+      - "risks/phase-2-risk-register.md"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: null
+    decision_reference: "FEAT-001:DEC-003 (D-004)"
+
+  # Legacy QG-2 reference (now decomposed into QG-2.1 through QG-2.4)
+  - id: "QG-2"
+    name: "Quality Gate 2 - Phase 2 Complete (Aggregated)"
+    phase: 2
+    status: "BLOCKED"
+    note: "Aggregated from QG-2.1 through QG-2.4 per DEC-003 D-004"
+    threshold:
+      ps_critic: 0.92
+      nse_qa: 0.92
+    sub_gates: ["QG-2.1", "QG-2.2", "QG-2.3", "QG-2.4"]
+    pass_criteria: "ALL sub-gates must pass"
     special_criteria:
       - "All 7 ADRs complete with L0/L1/L2"
       - "Requirements baseline established"
@@ -740,14 +1356,22 @@ phase_reports:
         npr_compliance: "100%"
 
   - phase: 1
-    status: "BLOCKED"
+    status: "COMPLETE"
+    started_at: "2026-01-31T22:25:00Z"
+    completed_at: "2026-01-31T22:30:00Z"
     reports:
       - agent: "ps-reporter"
         artifact: "reports/phase-1/ps-status-report.md"
-        status: "BLOCKED"
+        status: "COMPLETE"
+        artifacts_documented: 9
+        citations: 68
+        frameworks_applied: 6
       - agent: "nse-reporter"
         artifact: "reports/phase-1/nse-status-report.md"
-        status: "BLOCKED"
+        status: "COMPLETE"
+        vrs_defined: 30
+        risks_tracked: 22
+        npr_compliance: "100%"
 
   - phase: 2
     status: "BLOCKED"
@@ -786,7 +1410,8 @@ barriers:
   - id: "barrier-1"
     name: "Post-Phase 0 Cross-Pollination"
     after_phase: 0
-    status: "PENDING"
+    status: "COMPLETE"
+    completed_at: "2026-01-31T21:45:00Z"
     depends_on:
       - "pipeline_a.phase.0"
       - "pipeline_b.phase.0"
@@ -796,23 +1421,39 @@ barriers:
       ps_to_nse:
         path: "cross-pollination/barrier-1/ps-to-nse/"
         manifest: "cross-pollination/barrier-1/ps-to-nse/handoff-manifest.md"
-        status: "PENDING"
+        status: "COMPLETE"
         artifacts_passed:
+          # Tier 1a: Original Research
           - "ps/phase-0/ps-researcher/best-practices-research.md"
           - "ps/phase-0/ps-analyst/current-architecture-analysis.md"
+          # Tier 1b: Expanded Research (DISC-001 Remediation)
+          - "ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md"
+          - "ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md"
+          - "ps/phase-0/ps-researcher-plugins/plugins-best-practices.md"
+          - "ps/phase-0/ps-researcher-skills/skills-best-practices.md"
+          - "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+          # Quality Gate
+          - "quality-gates/qg-0/ps-critic-review-v2.md"
+          # Phase 0 Report
+          - "reports/phase-0/ps-status-report.md"
       nse_to_ps:
         path: "cross-pollination/barrier-1/nse-to-ps/"
         manifest: "cross-pollination/barrier-1/nse-to-ps/handoff-manifest.md"
-        status: "PENDING"
+        status: "COMPLETE"
         artifacts_passed:
           - "nse/phase-0/nse-explorer/divergent-alternatives.md"
           - "nse/phase-0/nse-requirements/current-state-inventory.md"
           - "risks/phase-0-risk-register.md"
+          # Quality Gate
+          - "quality-gates/qg-0/nse-qa-audit-v2.md"
+          # Phase 0 Report
+          - "reports/phase-0/nse-status-report.md"
 
   - id: "barrier-2"
     name: "Post-Phase 1 Cross-Pollination"
     after_phase: 1
-    status: "BLOCKED"
+    status: "COMPLETE"
+    completed_at: "2026-01-31T22:30:00Z"
     depends_on:
       - "pipeline_a.phase.1"
       - "pipeline_b.phase.1"
@@ -822,20 +1463,24 @@ barriers:
       ps_to_nse:
         path: "cross-pollination/barrier-2/ps-to-nse/"
         manifest: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
-        status: "BLOCKED"
+        status: "COMPLETE"
         artifacts_passed:
           - "ps/phase-1/ps-researcher/deep-research.md"
           - "ps/phase-1/ps-analyst/gap-analysis.md"
           - "ps/phase-1/ps-analyst/fmea-analysis.md"
           - "ps/phase-1/ps-analyst/root-cause-5whys.md"
           - "ps/phase-1/ps-investigator/problem-investigation.md"
+          - "quality-gates/qg-1/ps-critic-review.md"
+          - "reports/phase-1/ps-status-report.md"
       nse_to_ps:
         path: "cross-pollination/barrier-2/nse-to-ps/"
         manifest: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
-        status: "BLOCKED"
+        status: "COMPLETE"
         artifacts_passed:
           - "nse/phase-1/nse-verification/vv-planning.md"
           - "risks/phase-1-risk-register.md"
+          - "quality-gates/qg-1/nse-qa-audit.md"
+          - "reports/phase-1/nse-status-report.md"
 
   - id: "barrier-3"
     name: "Post-Phase 2 Cross-Pollination"
@@ -906,13 +1551,19 @@ risk_management:
   risk_registers:
     - phase: 0
       path: "risks/phase-0-risk-register.md"
-      status: "PENDING"
+      status: "COMPLETE"
+      risk_count: 21
+      critical: 2
+      high: 5
     - phase: 1
       path: "risks/phase-1-risk-register.md"
-      status: "BLOCKED"
+      status: "COMPLETE"
+      risk_count: 22  # +1 from Phase 0 (RSK-P1-001)
+      critical: 1  # Reclassified via RPN
+      high: 11  # +6 promoted from MEDIUM via FMEA
     - phase: 2
       path: "risks/phase-2-risk-register.md"
-      status: "BLOCKED"
+      status: "PENDING"  # Unblocked after Barrier 2
     - phase: 3
       path: "risks/phase-3-risk-register.md"
       status: "BLOCKED"
@@ -1006,44 +1657,59 @@ execution_queue:
     - id: 4
       name: "Barrier 1: Cross-Pollination"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
-      blocked_by: ["group-3"]
+      status: "COMPLETE"
+      completed_at: "2026-01-31T21:45:00Z"
       barrier: "barrier-1"
+      manifests:
+        ps_to_nse: "cross-pollination/barrier-1/ps-to-nse/handoff-manifest.md"
+        nse_to_ps: "cross-pollination/barrier-1/nse-to-ps/handoff-manifest.md"
 
-    # Phase 1 groups (5-9)
+    # Phase 1 groups (5-9) - Tiered execution per User decision Q2: option B
     - id: 5
-      name: "Phase 1: PS Pipeline"
+      name: "Phase 1 Tier 1: PS Deep Research + NSE V&V (PARALLEL)"
       phase: 1
-      pipeline: "pipeline_a"
+      tier: 1
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: ["group-4"]
-      agents: ["ps-researcher-p1", "ps-analyst-p1", "ps-investigator-p1"]
+      status: "PENDING"  # Unblocked by Barrier 1 completion
+      agents:
+        - "ps-researcher-p1"      # Deep dive using NSE divergent alternatives
+        - "ps-analyst-p1"         # Gap analysis (27 gaps), FMEA, 5 Whys (21 risks)
+        - "ps-investigator-p1"    # Investigate transcript inconsistency
+        - "nse-verification-p1"   # V&V planning using PS research
+      checkpoint_after: true  # User decision Q3: option B
 
     - id: 6
-      name: "Phase 1: NSE Pipeline"
+      name: "Phase 1 Tier 2: NSE Risk Update"
       phase: 1
+      tier: 2
       pipeline: "pipeline_b"
-      execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: ["group-4"]
-      agents: ["nse-verification-p1", "nse-risk-p1"]
-
-    - id: 7
-      name: "Phase 1: Quality Gate"
-      phase: 1
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: ["group-5", "group-6"]
+      blocked_by: ["group-5"]
+      agents: ["nse-risk-p1"]
+      checkpoint_after: true  # User decision Q3: option B
+
+    - id: 7
+      name: "Phase 1 Tier 3: Quality Gate"
+      phase: 1
+      tier: 3
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-6"]
       quality_gate: "QG-1"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      checkpoint_after: true  # User decision Q3: option B
 
     - id: 8
-      name: "Phase 1: Reports"
+      name: "Phase 1 Tier 4: Reports"
       phase: 1
+      tier: 4
       execution_mode: "PARALLEL"
       status: "BLOCKED"
       blocked_by: ["group-7"]
       agents: ["ps-reporter", "nse-reporter"]
+      checkpoint_after: true  # User decision Q3: option B
 
     - id: 9
       name: "Barrier 2: Cross-Pollination"
@@ -1052,115 +1718,199 @@ execution_queue:
       blocked_by: ["group-8"]
       barrier: "barrier-2"
 
-    # Phase 2 groups (10-14)
-    - id: 10
-      name: "Phase 2: PS Pipeline"
-      phase: 2
-      pipeline: "pipeline_a"
-      execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
-      blocked_by: ["group-9"]
-      agents: ["ps-architect-p2"]
+    # ========================================================================
+    # Phase 2 groups (10-21) - RESTRUCTURED per DEC-003
+    # 4 tiers × (execution + QG) + reports + barrier = 12 groups
+    # ========================================================================
 
-    - id: 11
-      name: "Phase 2: NSE Pipeline"
+    # TIER 1: Foundation (ADR-001 + nse-requirements)
+    - id: 10
+      name: "Phase 2 Tier 1: Foundation (ADR-001 + nse-requirements)"
       phase: 2
-      pipeline: "pipeline_b"
+      tier: 1
       execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-9"]
-      agents: ["nse-requirements-p2", "nse-architecture-p2", "nse-integration-p2", "nse-configuration-p2", "nse-risk-p2"]
+      blocked_by: ["group-9"]  # Barrier 2
+      decision_reference: "FEAT-001:DEC-003"
+      agents:
+        - "ps-architect-001-p2"   # ADR-OSS-001 (CRITICAL - RPN 280)
+        - "nse-requirements-p2"   # Requirements spec (no ADR dependency)
+      checkpoint_after: true  # D-001: Checkpoint at tier boundary
 
-    - id: 12
-      name: "Phase 2: Quality Gate"
+    - id: 11
+      name: "Phase 2 Tier 1: Quality Gate QG-2.1"
       phase: 2
-      execution_mode: "SEQUENTIAL"
+      tier: 1
+      execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-10", "group-11"]
-      quality_gate: "QG-2"
+      blocked_by: ["group-10"]
+      quality_gate: "QG-2.1"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      checkpoint_after: true
+
+    # TIER 2: Parallel ADRs (ADR-002/003/004/006 + nse-architecture)
+    - id: 12
+      name: "Phase 2 Tier 2: Parallel ADRs (002/003/004/006 + nse-architecture)"
+      phase: 2
+      tier: 2
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-11"]  # QG-2.1 must pass
+      agents:
+        - "ps-architect-002-p2"   # ADR-OSS-002
+        - "ps-architect-003-p2"   # ADR-OSS-003
+        - "ps-architect-004-p2"   # ADR-OSS-004
+        - "ps-architect-006-p2"   # ADR-OSS-006 (per D-002: after ADR-001)
+        - "nse-architecture-p2"   # Validates ADR-001
+      checkpoint_after: true
 
     - id: 13
+      name: "Phase 2 Tier 2: Quality Gate QG-2.2"
+      phase: 2
+      tier: 2
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-12"]
+      quality_gate: "QG-2.2"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      checkpoint_after: true
+
+    # TIER 3: Dependent ADR (ADR-005 + nse-integration)
+    - id: 14
+      name: "Phase 2 Tier 3: Dependent ADR (ADR-005 + nse-integration)"
+      phase: 2
+      tier: 3
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-13"]  # QG-2.2 must pass
+      agents:
+        - "ps-architect-005-p2"   # ADR-OSS-005 (depends on ADR-001 + ADR-002)
+        - "nse-integration-p2"    # Uses ADR-001 + ADR-002
+      checkpoint_after: true
+
+    - id: 15
+      name: "Phase 2 Tier 3: Quality Gate QG-2.3"
+      phase: 2
+      tier: 3
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-14"]
+      quality_gate: "QG-2.3"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      checkpoint_after: true
+
+    # TIER 4: Synthesis (ADR-007 + nse-configuration + nse-risk)
+    - id: 16
+      name: "Phase 2 Tier 4: Synthesis (ADR-007 + baselines + risk)"
+      phase: 2
+      tier: 4
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-15"]  # QG-2.3 must pass
+      agents:
+        - "ps-architect-007-p2"   # ADR-OSS-007 (synthesis - depends on ALL)
+        - "nse-configuration-p2"  # Requirements baseline
+        - "nse-risk-p2"           # Phase 2 risk update
+      checkpoint_after: true
+
+    - id: 17
+      name: "Phase 2 Tier 4: Quality Gate QG-2.4"
+      phase: 2
+      tier: 4
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: ["group-16"]
+      quality_gate: "QG-2.4"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      checkpoint_after: true  # Final Phase 2 checkpoint
+
+    # Phase 2 Reports and Barrier
+    - id: 18
       name: "Phase 2: Reports"
       phase: 2
       execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-12"]
+      blocked_by: ["group-17"]  # QG-2.4 must pass
       agents: ["ps-reporter", "nse-reporter"]
 
-    - id: 14
+    - id: 19
       name: "Barrier 3: Cross-Pollination"
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: ["group-13"]
+      blocked_by: ["group-18"]
       barrier: "barrier-3"
 
-    # Phase 3 groups (15-19)
-    - id: 15
+    # Phase 3 groups (20-24)
+    - id: 20
       name: "Phase 3: PS Pipeline"
       phase: 3
       pipeline: "pipeline_a"
       execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-14"]
+      blocked_by: ["group-19"]  # Barrier 3
       agents: ["ps-validator-p3", "ps-synthesizer-p3", "ps-reviewer-p3"]
 
-    - id: 16
+    - id: 21
       name: "Phase 3: NSE Pipeline"
       phase: 3
       pipeline: "pipeline_b"
       execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-14"]
+      blocked_by: ["group-19"]
       agents: ["nse-reviewer-p3", "nse-configuration-p3", "nse-risk-p3"]
 
-    - id: 17
+    - id: 22
       name: "Phase 3: Quality Gate"
       phase: 3
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: ["group-15", "group-16"]
+      blocked_by: ["group-20", "group-21"]
       quality_gate: "QG-3"
 
-    - id: 18
+    - id: 23
       name: "Phase 3: Reports"
       phase: 3
       execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-17"]
+      blocked_by: ["group-22"]
       agents: ["ps-reporter", "nse-reporter"]
 
-    - id: 19
+    - id: 24
       name: "Barrier 4: Cross-Pollination"
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: ["group-18"]
+      blocked_by: ["group-23"]
       barrier: "barrier-4"
 
-    # Phase 4 groups (20-22)
-    - id: 20
+    # Phase 4 groups (25-27)
+    - id: 25
       name: "Phase 4: PS Pipeline"
       phase: 4
       pipeline: "pipeline_a"
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: ["group-19"]
+      blocked_by: ["group-24"]
       agents: ["ps-reporter-p4-final"]
 
-    - id: 21
+    - id: 26
       name: "Phase 4: NSE Pipeline"
       phase: 4
       pipeline: "pipeline_b"
       execution_mode: "PARALLEL"
       status: "BLOCKED"
-      blocked_by: ["group-19"]
+      blocked_by: ["group-24"]
       agents: ["nse-verification-p4", "nse-qa-p4-final", "nse-reporter-p4-final", "nse-risk-p4"]
 
-    - id: 22
+    - id: 27
       name: "Phase 4: FINAL Quality Gate"
       phase: 4
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: ["group-20", "group-21"]
+      blocked_by: ["group-25", "group-26"]
       quality_gate: "QG-4"
 
 # =============================================================================
@@ -1254,10 +2004,191 @@ execution_dependencies:
         rationale: "Reports generated after QG passes"
 
   phase_1:
-    description: "Similar tiered structure - details to be refined at execution"
+    description: "Tiered execution with checkpoints after each tier (User decision Q2+Q3: option B)"
+    status: "COMPLETE"
+    completed_at: "2026-01-31T22:30:00Z"
+    tiers:
+      - tier: 1
+        name: "Parallel PS Deep Research + NSE V&V Planning"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        started_at: "2026-01-31T21:50:00Z"
+        completed_at: "2026-01-31T22:05:00Z"
+        agents:
+          # PS Pipeline - Parallel execution (informed by nse-to-ps manifests)
+          - "ps-researcher-p1"       # Deep dive using NSE divergent alternatives - COMPLETE
+          - "ps-analyst-p1"          # Gap analysis (27 gaps), FMEA, 5 Whys (21 risks) - COMPLETE
+          - "ps-investigator-p1"     # Investigate transcript inconsistency, CLAUDE.md issues - COMPLETE
+          # NSE Pipeline - V&V Planning (informed by ps-to-nse manifests)
+          - "nse-verification-p1"    # V&V planning using PS research findings - COMPLETE
+        dependencies: []  # Barrier 1 artifacts are the input
+        rationale: "PS agents and NSE V&V can run in parallel - both consume cross-pollination artifacts"
+        checkpoint_after: true  # User decision Q3: option B
+
+      - tier: 2
+        name: "NSE Risk Update"
+        execution_mode: "SEQUENTIAL"
+        status: "COMPLETE"
+        started_at: "2026-01-31T22:05:00Z"
+        completed_at: "2026-01-31T22:15:00Z"
+        agents:
+          - "nse-risk-p1"            # Risk register update with Phase 1 findings - COMPLETE
+        dependencies:
+          - "nse-verification-p1"    # V&V findings inform risk updates
+          - "ps-analyst-p1"          # FMEA/5 Whys inform risk updates
+        rationale: "nse-risk needs V&V planning and analysis outputs to update risk register"
+        checkpoint_after: true  # User decision Q3: option B
+        results:
+          risks_tracked: 22
+          new_risks: 1  # RSK-P1-001
+          critical: 1
+          high: 11
+
+      - tier: 3
+        name: "Quality Gate 1"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        started_at: "2026-01-31T22:15:00Z"
+        completed_at: "2026-01-31T22:25:00Z"
+        agents:
+          - "ps-critic"              # Adversarial review (DISC-002 protocol) - COMPLETE 0.938
+          - "nse-qa"                 # NASA NPR-7123.1D audit - COMPLETE 0.946
+        dependencies:
+          - "nse-risk-p1"            # All Phase 1 work complete
+        threshold: 0.92
+        special_criteria:
+          - "Frameworks applied (5W2H, FMEA, 8D)"
+          - "Investigation complete"
+          - "V&V plan comprehensive"
+        checkpoint_after: true  # User decision Q3: option B
+        results:
+          ps_critic: 0.938
+          nse_qa: 0.946
+          average: 0.942
+          passed: true
+
+      - tier: 4
+        name: "Phase 1 Reports"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        started_at: "2026-01-31T22:25:00Z"
+        completed_at: "2026-01-31T22:30:00Z"
+        agents:
+          - "ps-reporter"            # PS status report - COMPLETE
+          - "nse-reporter"           # NSE status report - COMPLETE
+        dependencies:
+          - "ps-critic"
+          - "nse-qa"
+        rationale: "Reports generated after QG-1 passes"
+        checkpoint_after: true  # User decision Q3: option B - final Phase 1 checkpoint before Barrier 2
 
   phase_2:
-    description: "ADRs depend on Phase 1 analysis - details to be refined"
+    description: "7 ADRs organized into 4 tiers based on dependency analysis (DEC-003)"
+    decision_reference: "FEAT-001:DEC-003"
+    strategy: "TIERED_HYBRID"  # D-003: Option C
+    quality_gates: "PER_TIER"  # D-004: Option B (QG-2.1, QG-2.2, QG-2.3, QG-2.4)
+    checkpoint_frequency: "TIER"  # D-001: At each tier boundary
+    tiers:
+      - tier: 1
+        name: "Foundation (CRITICAL)"
+        execution_mode: "PARALLEL"
+        status: "PENDING"
+        agents:
+          ps_pipeline:
+            - agent: "ps-architect-001"
+              adr: "ADR-OSS-001"
+              title: "CLAUDE.md Decomposition Strategy"
+              priority: "CRITICAL"
+              rpn: 280
+              dependencies: []
+          nse_pipeline:
+            - agent: "nse-requirements"
+              task: "Requirements specification from gap-analysis"
+              dependencies: []  # No ADR dependency
+        quality_gate: "QG-2.1"
+        rationale: "ADR-001 is foundational - all other ADRs reference it. nse-requirements can run in parallel (no ADR dependency)."
+        checkpoint_after: true
+
+      - tier: 2
+        name: "Parallel ADRs (4 ADRs depend on ADR-001)"
+        execution_mode: "PARALLEL"
+        status: "BLOCKED"
+        blocked_by: ["tier_1", "QG-2.1"]
+        agents:
+          ps_pipeline:
+            - agent: "ps-architect-002"
+              adr: "ADR-OSS-002"
+              title: "Repository Sync Process"
+              priority: "HIGH"
+              rpn: 192
+              dependencies: ["ADR-OSS-001"]
+            - agent: "ps-architect-003"
+              adr: "ADR-OSS-003"
+              title: "Work Tracker Extraction"
+              priority: "HIGH"
+              dependencies: ["ADR-OSS-001"]
+            - agent: "ps-architect-004"
+              adr: "ADR-OSS-004"
+              title: "Multi-Persona Documentation"
+              priority: "MEDIUM"
+              dependencies: ["ADR-OSS-001"]
+            - agent: "ps-architect-006"
+              adr: "ADR-OSS-006"
+              title: "Transcript Skill Templates"
+              priority: "MEDIUM"
+              dependencies: ["ADR-OSS-001"]
+              note: "Per D-002: Waits for ADR-001 completion for context inheritance"
+          nse_pipeline:
+            - agent: "nse-architecture"
+              task: "Validate ADR-001 against NASA SE standards"
+              dependencies: ["ADR-OSS-001"]
+        quality_gate: "QG-2.2"
+        rationale: "All Tier 2 ADRs depend only on ADR-001, so they can execute in parallel."
+        checkpoint_after: true
+
+      - tier: 3
+        name: "Dependent ADR (depends on ADR-001 + ADR-002)"
+        execution_mode: "PARALLEL"
+        status: "BLOCKED"
+        blocked_by: ["tier_2", "QG-2.2"]
+        agents:
+          ps_pipeline:
+            - agent: "ps-architect-005"
+              adr: "ADR-OSS-005"
+              title: "Repository Migration Strategy"
+              priority: "HIGH"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002"]
+              note: "Migration depends on decomposition (ADR-001) and sync (ADR-002)"
+          nse_pipeline:
+            - agent: "nse-integration"
+              task: "Integration planning using ADR-001 + ADR-002"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002"]
+        quality_gate: "QG-2.3"
+        rationale: "ADR-005 cannot be created until both ADR-001 and ADR-002 are complete."
+        checkpoint_after: true
+
+      - tier: 4
+        name: "Synthesis (depends on ALL prior ADRs)"
+        execution_mode: "PARALLEL"
+        status: "BLOCKED"
+        blocked_by: ["tier_3", "QG-2.3"]
+        agents:
+          ps_pipeline:
+            - agent: "ps-architect-007"
+              adr: "ADR-OSS-007"
+              title: "OSS Release Checklist (Synthesis)"
+              priority: "CRITICAL"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002", "ADR-OSS-003", "ADR-OSS-004", "ADR-OSS-005", "ADR-OSS-006"]
+              note: "Synthesizes all ADRs into actionable checklist"
+          nse_pipeline:
+            - agent: "nse-configuration"
+              task: "Requirements baseline from all ADRs"
+              dependencies: ["ADR-OSS-001", "ADR-OSS-002", "ADR-OSS-003", "ADR-OSS-004", "ADR-OSS-005", "ADR-OSS-006"]
+            - agent: "nse-risk"
+              task: "Phase 2 risk register update"
+        quality_gate: "QG-2.4"
+        rationale: "ADR-007 is the synthesis ADR - cannot be created until all others exist."
+        checkpoint_after: true  # Final Phase 2 checkpoint before Barrier 3
 
   phase_3:
     description: "Validation depends on Phase 2 outputs - details to be refined"
@@ -1300,60 +2231,176 @@ decisions:
     rationale: "Balance between automation and human oversight"
     impact: "Follows DISC-002 protocol with user escalation as circuit breaker"
 
+  - id: "DEC-OSS-005"
+    date: "2026-01-31T21:45:00Z"
+    decision: "Cross-pollination via manifest files referencing existing artifact paths"
+    rationale: "User Q1: Manifests ensure downstream agents use correct files, maintain traceability"
+    impact: "No file duplication, agents MUST read manifests before execution"
+    implementation: "handoff-manifest.md files in cross-pollination directories"
+
+  - id: "DEC-OSS-006"
+    date: "2026-01-31T21:45:00Z"
+    decision: "Tiered execution within phases for chained agent results"
+    rationale: "User Q2: Option B - Launch in tiers for best results, respects data dependencies"
+    impact: "Phase 1 has 4 tiers: (1) Parallel research, (2) Risk update, (3) QG, (4) Reports"
+    implementation: "execution_dependencies.phase_1.tiers structure in YAML"
+
+  - id: "DEC-OSS-007"
+    date: "2026-01-31T21:45:00Z"
+    decision: "Checkpoints after each tier completes"
+    rationale: "User Q3: Option B - User visibility into progress, opportunity for guidance"
+    impact: "Multiple checkpoints per phase, constraint.checkpoint_frequency changed to TIER"
+    implementation: "checkpoint_after: true on each tier in execution_queue"
+
+  # ==========================================================================
+  # DEC-003 DECISIONS (FEAT-001:DEC-003 - Phase 2 Execution Strategy)
+  # ==========================================================================
+  - id: "DEC-OSS-008"
+    date: "2026-01-31T23:30:00Z"
+    decision: "7 separate ps-architect agents for 7 ADRs (not 1 agent creating all)"
+    rationale: "D-001 from DEC-003 - Higher quality through focused agent scope"
+    impact: "Phase 2 now has 7 ps-architect instances (ps-architect-001 through ps-architect-007)"
+    implementation: "agent registry expanded, execution_queue restructured"
+    document_reference: "FEAT-001:DEC-003 (D-001)"
+
+  - id: "DEC-OSS-009"
+    date: "2026-01-31T23:30:00Z"
+    decision: "ADR-006 (Transcript Skill Templates) executes in Tier 2 after ADR-001"
+    rationale: "D-002 from DEC-003 - Context inheritance benefits outweigh parallel speed"
+    impact: "ADR-006 moved from potential Tier 1 to Tier 2, depends on ADR-001"
+    document_reference: "FEAT-001:DEC-003 (D-002)"
+
+  - id: "DEC-OSS-010"
+    date: "2026-01-31T23:30:00Z"
+    decision: "Tiered Hybrid PS/NSE coordination (Option C)"
+    rationale: "D-003 from DEC-003 - Incremental cross-pollination at each tier"
+    impact: |
+      - Tier 1: nse-requirements (parallel with ADR-001)
+      - Tier 2: nse-architecture (validates ADR-001)
+      - Tier 3: nse-integration (uses ADR-001 + ADR-002)
+      - Tier 4: nse-configuration + nse-risk (baseline from all)
+    document_reference: "FEAT-001:DEC-003 (D-003)"
+
+  - id: "DEC-OSS-011"
+    date: "2026-01-31T23:30:00Z"
+    decision: "Per-tier quality gates (QG-2.1, QG-2.2, QG-2.3, QG-2.4)"
+    rationale: "D-004 from DEC-003 - Catches foundational issues before dependent tiers"
+    impact: "4 quality gates in Phase 2 instead of 1, aligned with checkpoints"
+    document_reference: "FEAT-001:DEC-003 (D-004)"
+
+  - id: "DEC-OSS-012"
+    date: "2026-01-31T23:30:00Z"
+    decision: "Explicit 'read these first' with priority ordering for manifests"
+    rationale: "D-005 from DEC-003 - Guaranteed context delivery to all agents"
+    impact: "Each agent has numbered mandatory_reads with priority levels 1-N"
+    implementation: "mandatory_reads arrays with priority field on each agent"
+    document_reference: "FEAT-001:DEC-003 (D-005)"
+
 # =============================================================================
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: null
-  frequency: "QUALITY_GATE"
-  entries: []
+  latest_id: "CP-002"
+  frequency: "TIER"  # User decision Q3: option B
+  entries:
+    - id: "CP-001"
+      name: "Barrier 1 Complete"
+      timestamp: "2026-01-31T21:45:00Z"
+      trigger: "BARRIER_COMPLETE"
+      phase: 0
+      barrier: "barrier-1"
+      state_summary:
+        phase_0: "COMPLETE"
+        qg_0: "PASSED (0.936)"
+        barrier_1: "COMPLETE"
+        phase_1: "READY"
+      recovery_point: "Resume from Phase 1 Tier 1 execution"
+      artifacts_available:
+        - "cross-pollination/barrier-1/ps-to-nse/handoff-manifest.md"
+        - "cross-pollination/barrier-1/nse-to-ps/handoff-manifest.md"
+
+    - id: "CP-002"
+      name: "Barrier 2 Complete"
+      timestamp: "2026-01-31T22:45:00Z"
+      trigger: "BARRIER_COMPLETE"
+      phase: 1
+      barrier: "barrier-2"
+      state_summary:
+        phase_0: "COMPLETE"
+        phase_1: "COMPLETE"
+        qg_0: "PASSED (0.936)"
+        qg_1: "PASSED (0.942)"
+        barrier_1: "COMPLETE"
+        barrier_2: "COMPLETE"
+        phase_2: "READY"
+      recovery_point: "Resume from Phase 2 execution (ADR creation)"
+      artifacts_available:
+        - "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+        - "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+      phase_1_summary:
+        tiers_completed: 4
+        agents_executed: 6  # 4 Tier 1 + 1 Tier 2 + 1 (parallel QG counted as 1)
+        qg_score: 0.942
+        vrs_defined: 30
+        risks_tracked: 22
+        adr_candidates: 2
 
 # =============================================================================
 # METRICS
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 1          # Phase 0 COMPLETE
+    phases_complete: 2          # Phase 0 + Phase 1 COMPLETE
     phases_total: 10
-    phases_percent: 10
-    barriers_complete: 0        # Barrier 1 ready to execute
+    phases_percent: 20
+    barriers_complete: 2        # Barrier 1 + Barrier 2 COMPLETE with manifests
     barriers_total: 4
-    barriers_percent: 0
-    quality_gates_complete: 1   # QG-0 passed (0.931/0.941 >= 0.92)
+    barriers_percent: 50
+    quality_gates_complete: 2   # QG-0 (0.936) + QG-1 (0.942) passed
     quality_gates_total: 5
-    quality_gates_percent: 20
-    quality_gates_failed: 0     # Previous failure remediated
-    agents_executed: 13         # Tier 1a (4) + Tier 1b (5) + Tier 2 (1) + Tier 3 (2) + Tier 4 (2)
+    quality_gates_percent: 40
+    quality_gates_failed: 0     # All gates passed
+    agents_executed: 22         # Phase 0 (14) + Phase 1 (8: 4 Tier1 + 1 Tier2 + 2 Tier3 + 2 Tier4 - QG counted separately)
     agents_total: 32            # 9 PS + 10 NSE + 5 new research + 8 QG/reporters
-    agents_percent: 40.6
+    agents_percent: 68.8
     phase_0_agents_executed: 14 # ALL Phase 0 agents complete
     phase_0_agents_total: 14    # 7 PS (2 original + 5 new) + 3 NSE + 2 QG + 2 reporters
     phase_0_percent: 100        # Phase 0 COMPLETE
-    reports_generated: 2        # ps-status-report.md + nse-status-report.md
+    phase_1_agents_executed: 8  # Tier 1 (4) + Tier 2 (1) + Tier 3 (2 QG) + Tier 4 (2 reports)
+    phase_1_agents_total: 8
+    phase_1_percent: 100        # Phase 1 COMPLETE
+    phase_2_agents_pending: 6   # 1 PS (7 ADRs) + 5 NSE ready for execution
+    reports_generated: 4        # Phase 0 (2) + Phase 1 (2)
     reports_total: 10
-    reports_percent: 20
-    risk_registers_created: 1   # phase-0-risk-register.md created
+    reports_percent: 40
+    risk_registers_created: 2   # phase-0 + phase-1 risk registers
     risk_registers_total: 5
-    risk_registers_percent: 20
+    risk_registers_percent: 40
+    cross_pollination_manifests: 4  # Barrier 1 (2) + Barrier 2 (2)
 
   quality:
-    qg_0_ps_critic: null
-    qg_0_nse_qa: null
-    qg_1_ps_critic: null
-    qg_1_nse_qa: null
+    qg_0_ps_critic: 0.931
+    qg_0_nse_qa: 0.941
+    qg_1_ps_critic: 0.938
+    qg_1_nse_qa: 0.946
     qg_2_ps_critic: null
     qg_2_nse_qa: null
     qg_3_ps_critic: null
     qg_3_nse_qa: null
     qg_4_ps_critic: null
     qg_4_nse_qa: null
-    average_score: null
+    average_score: 0.939  # (0.936 + 0.942) / 2
     revision_cycles: 0
 
   timing:
     workflow_started: "2026-01-31T16:00:00Z"
-    last_activity: "2026-01-31T19:50:00Z"
-    tier_1b_started: "2026-01-31T19:50:00Z"
+    last_activity: "2026-01-31T22:45:00Z"
+    phase_0_completed: "2026-01-31T20:25:00Z"
+    barrier_1_completed: "2026-01-31T21:45:00Z"
+    phase_1_started: "2026-01-31T21:50:00Z"
+    phase_1_completed: "2026-01-31T22:30:00Z"
+    barrier_2_completed: "2026-01-31T22:30:00Z"
+    phase_2_ready: "2026-01-31T22:30:00Z"
 
 # =============================================================================
 # BLOCKERS AND ISSUES
@@ -1378,12 +2425,105 @@ next_actions:
   in_progress: []
 
   immediate:
-    - action: "Execute Barrier 1 cross-pollination"
-      description: "Sync Phase 0 artifacts between PS and NSE pipelines"
-      barrier: "barrier-1"
-      content_type: "FULL_ARTIFACTS"
+    - action: "Execute Phase 2 Tier 1 (Foundation)"
+      description: "ADR-001 (CRITICAL) + nse-requirements in parallel"
+      phase: 2
+      tier: 1
+      execution_mode: "PARALLEL"
+      decision_reference: "FEAT-001:DEC-003"
+      agents:
+        - id: "ps-architect-001-p2"
+          task: "ADR-OSS-001: CLAUDE.md Decomposition Strategy"
+          priority: "CRITICAL"
+          rpn: 280
+          mandatory_reads:
+            - priority: 1
+              path: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+            - priority: 2
+              path: "ps/phase-1/ps-researcher/deep-research.md"
+            - priority: 3
+              path: "risks/phase-1-risk-register.md"
+            - priority: 4
+              path: "ps/phase-0/ps-researcher-claude-md/claude-md-best-practices.md"
+            - priority: 5
+              path: "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+            - priority: 6
+              path: "quality-gates/qg-1/ps-critic-review.md"
+        - id: "nse-requirements-p2"
+          task: "Formal requirements specification from gap-analysis"
+          mandatory_reads:
+            - priority: 1
+              path: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+            - priority: 2
+              path: "ps/phase-1/ps-analyst/gap-analysis.md"
+            - priority: 3
+              path: "nse/phase-1/nse-verification/vv-planning.md"
+      quality_gate_after: "QG-2.1"
+
+  after_tier_1:
+    - action: "Quality Gate QG-2.1"
+      evaluators: ["ps-critic", "nse-qa"]
+      threshold: 0.92
+      artifacts_reviewed:
+        - "ps/phase-2/ps-architect-001/ADR-OSS-001-claude-md-decomposition.md"
+        - "nse/phase-2/nse-requirements/requirements-spec.md"
+
+  after_qg_2_1:
+    - action: "Execute Phase 2 Tier 2 (Parallel ADRs)"
+      description: "ADRs 002/003/004/006 + nse-architecture in parallel"
+      tier: 2
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-architect-002-p2 (ADR-002)"
+        - "ps-architect-003-p2 (ADR-003)"
+        - "ps-architect-004-p2 (ADR-004)"
+        - "ps-architect-006-p2 (ADR-006, per D-002)"
+        - "nse-architecture-p2 (validates ADR-001)"
+      quality_gate_after: "QG-2.2"
+
+  after_qg_2_2:
+    - action: "Execute Phase 2 Tier 3 (Dependent ADR)"
+      description: "ADR-005 + nse-integration (depend on ADR-001 + ADR-002)"
+      tier: 3
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-architect-005-p2 (ADR-005)"
+        - "nse-integration-p2"
+      quality_gate_after: "QG-2.3"
+
+  after_qg_2_3:
+    - action: "Execute Phase 2 Tier 4 (Synthesis)"
+      description: "ADR-007 synthesis + baselines + risk update"
+      tier: 4
+      execution_mode: "PARALLEL"
+      agents:
+        - "ps-architect-007-p2 (ADR-007 - synthesis)"
+        - "nse-configuration-p2 (requirements baseline)"
+        - "nse-risk-p2 (Phase 2 risk update)"
+      quality_gate_after: "QG-2.4"
+
+  after_phase_2:
+    - action: "Phase 2 Reports"
+      agents: ["ps-reporter", "nse-reporter"]
+
+    - action: "Barrier 3 cross-pollination"
+      content: "FULL_ARTIFACTS"
+      artifacts_passed:
+        - "7 ADRs (ADR-OSS-001 through ADR-OSS-007)"
+        - "Requirements specification"
+        - "Architecture decisions"
+        - "Integration plan"
+        - "Requirements baseline"
+        - "Phase 2 risk register"
 
   completed:
+    - action: "Barrier 1 cross-pollination"
+      status: "COMPLETE"
+      completed_at: "2026-01-31T21:45:00Z"
+      manifests:
+        - "cross-pollination/barrier-1/ps-to-nse/handoff-manifest.md"
+        - "cross-pollination/barrier-1/nse-to-ps/handoff-manifest.md"
+
     - action: "Phase 0 Tier 4 - Reports"
       agents: ["ps-reporter", "nse-reporter"]
       status: "COMPLETE"
@@ -1392,77 +2532,138 @@ next_actions:
         - "reports/phase-0/ps-status-report.md"
         - "reports/phase-0/nse-status-report.md"
 
-  completed:
-    - action: "Execute Phase 0 Tier 1a (original research)"
+    - action: "Phase 0 Tier 3 - Quality Gate 0"
+      evaluators: ["ps-critic", "nse-qa"]
+      status: "COMPLETE"
+      completed_at: "2026-01-31T20:15:00Z"
+      scores:
+        ps_critic: 0.931
+        nse_qa: 0.941
+
+    - action: "Phase 0 Tier 2 - Risk Identification"
+      agents: ["nse-risk-p0"]
+      status: "COMPLETE"
+      completed_at: "2026-01-31T20:05:00Z"
+
+    - action: "Phase 0 Tier 1b - Expanded Research"
+      agents: ["ps-researcher-claude-code-p0", "ps-researcher-claude-md-p0", "ps-researcher-plugins-p0", "ps-researcher-skills-p0", "ps-researcher-decomposition-p0"]
+      status: "COMPLETE"
+      completed_at: "2026-01-31T20:00:00Z"
+
+    - action: "Phase 0 Tier 1a - Initial Research"
       agents: ["ps-researcher-p0", "ps-analyst-p0", "nse-explorer-p0", "nse-requirements-p0"]
-      execution_mode: "PARALLEL"
       status: "COMPLETE"
       completed_at: "2026-01-31T17:00:00Z"
-
-  after_tier_1b:
-    - action: "Execute Phase 0 Tier 2 (nse-risk)"
-      agents: ["nse-risk-p0"]
-      execution_mode: "SEQUENTIAL"
-      dependencies: "All Tier 1 outputs (1a + 1b)"
-    - action: "Quality Gate 0 Re-evaluation (Tier 3)"
-      evaluators: ["ps-critic", "nse-qa"]
-      threshold: 0.92
-      mode: "PARALLEL"
-      note: "QG-0 failed first attempt (0.876 < 0.92) - re-evaluate with expanded research"
-    - action: "Phase 0 Reports (Tier 4)"
-      agents: ["ps-reporter", "nse-reporter"]
-      mode: "PARALLEL"
-    - action: "Barrier 1 cross-pollination"
-      content: "FULL_ARTIFACTS"
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "2026-01-31T19:30:00Z"
-  current_state: "IN_PROGRESS"
-  previous_state: "QG-0 FAILED (0.876 < 0.92)"
+  last_checkpoint: "2026-01-31T22:45:00Z"
+  current_state: "PHASE_2_READY"
+  previous_state: "BARRIER_2_COMPLETE"
 
-  # DISC-001 Remediation Status
-  disc_001_status:
-    discovery: "VALIDATED"
-    impact: "CRITICAL"
-    remediation: "Expand Phase 0 with 5 additional research agents"
-    agents_added:
-      - "ps-researcher-claude-code-p0 (EN-002)"
-      - "ps-researcher-claude-md-p0 (EN-003)"
-      - "ps-researcher-plugins-p0 (EN-004)"
-      - "ps-researcher-skills-p0 (EN-005)"
-      - "ps-researcher-decomposition-p0 (EN-006)"
+  # Phase 0 Summary
+  phase_0_summary:
+    status: "COMPLETE"
+    tiers_completed: ["tier_1a", "tier_1b", "tier_2", "tier_3", "tier_4"]
+    qg_0_score: 0.936  # Average of ps-critic (0.931) + nse-qa (0.941)
+    disc_001_remediated: true  # 5 additional research agents added and completed
+    risks_identified: 21  # 2 CRITICAL, 5 HIGH, 9 MEDIUM, 5 LOW
 
-  next_step: "Execute Phase 0 Tier 1b - 5 expanded research agents in PARALLEL using /problem-solving skill"
+  # Barrier 1 Summary
+  barrier_1_summary:
+    status: "COMPLETE"
+    completed_at: "2026-01-31T21:45:00Z"
+    manifests:
+      ps_to_nse: "cross-pollination/barrier-1/ps-to-nse/handoff-manifest.md"
+      nse_to_ps: "cross-pollination/barrier-1/nse-to-ps/handoff-manifest.md"
+    artifacts_cross_pollinated:
+      ps_to_nse: 9  # 2 original + 5 expanded + 1 QG + 1 report
+      nse_to_ps: 5  # 2 exploration + 1 risk + 1 QG + 1 report
 
-  tier_status:
-    tier_1a: "COMPLETE"
-    tier_1b: "COMPLETE"     # All 5 agents completed 2026-01-31T20:00:00Z
-    tier_2: "COMPLETE"      # nse-risk-p0 completed - 21 risks identified
-    tier_3: "COMPLETE"      # QG-0 PASSED (ps-critic 0.931, nse-qa 0.941)
-    tier_4: "COMPLETE"      # Phase 0 reports complete 2026-01-31T20:25:00Z
+  # Phase 1 Summary
+  phase_1_summary:
+    status: "COMPLETE"
+    completed_at: "2026-01-31T22:30:00Z"
+    tiers_completed: ["tier_1", "tier_2", "tier_3", "tier_4"]
+    qg_1_score: 0.942  # Average of ps-critic (0.938) + nse-qa (0.946)
+    key_artifacts:
+      - "ps/phase-1/ps-researcher/deep-research.md (17 citations)"
+      - "ps/phase-1/ps-analyst/gap-analysis.md (18 unique gaps)"
+      - "ps/phase-1/ps-analyst/fmea-analysis.md (RPN 2,538 total)"
+      - "ps/phase-1/ps-analyst/root-cause-5whys.md (5 patterns)"
+      - "ps/phase-1/ps-investigator/problem-investigation.md (RSK-P1-001)"
+      - "nse/phase-1/nse-verification/vv-planning.md (30 VRs)"
+      - "risks/phase-1-risk-register.md (22 risks)"
+    adr_candidates_identified: 2
+    vrs_defined: 30
+    risks_tracked: 22
+
+  # Barrier 2 Summary
+  barrier_2_summary:
+    status: "COMPLETE"
+    completed_at: "2026-01-31T22:30:00Z"
+    manifests:
+      ps_to_nse: "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"
+      nse_to_ps: "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"
+    artifacts_cross_pollinated:
+      ps_to_nse: 7  # 5 research/analysis + 1 QG + 1 report
+      nse_to_ps: 4  # 1 V&V + 1 risk + 1 QG + 1 report
+
+  # Phase 2 Status (RESTRUCTURED per DEC-003)
+  # RECONCILED: 2026-01-31 - Previous session artifacts discovered
+  phase_2_status:
+    execution_mode: "TIERED_HYBRID"  # D-003: Option C
+    decision_reference: "FEAT-001:DEC-003"
+    current_tier: 2  # Tier 2 ADRs complete, QG-2.2 in progress
+    total_tiers: 4
+    quality_gates_per_tier: true  # D-004: Option B
+    tier_status:
+      tier_1: "COMPLETE"   # ADR-001 DONE, QG-2.1 PASSED (0.94)
+      tier_2: "COMPLETE"   # ADRs 002/003/004/006 DONE, QG-2.2 PASSED (0.9345 avg)
+      tier_3: "IN_PROGRESS"   # ADR-005 creation started
+      tier_4: "BLOCKED"   # ADR-007 + nse-config + nse-risk (blocked by QG-2.3)
+    qg_2_2_results:
+      ps_critic_score: 0.935
+      nse_qa_score: 0.934
+      aggregate_score: 0.9345
+      status: "PASSED"
+      completed_at: "2026-02-01T00:30:00Z"
+    adr_tier_mapping:
+      tier_1: ["ADR-OSS-001"]
+      tier_2: ["ADR-OSS-002", "ADR-OSS-003", "ADR-OSS-004", "ADR-OSS-006"]
+      tier_3: ["ADR-OSS-005"]
+      tier_4: ["ADR-OSS-007"]
+
+  next_step: "QG-2.2 PASSED. Executing Tier 3 (ADR-005 Repository Migration Strategy)."
 
   execution_notes:
-    - "DISC-001 validated: ACT-005 required Claude Code, CLAUDE.md, plugins, skills research"
-    - "Tier 1a COMPLETE: ps-researcher, ps-analyst, nse-explorer, nse-requirements (4 agents)"
-    - "Tier 1b PENDING: 5 new research agents (ps-researcher-claude-code, claude-md, plugins, skills, decomposition)"
+    - "v5.0.0: MAJOR RESTRUCTURE per FEAT-001:DEC-003 (Phase 2 Execution Strategy)"
+    - "Phase 0 COMPLETE with QG-0 PASSED (0.936 avg)"
+    - "Phase 1 COMPLETE with QG-1 PASSED (0.942 avg)"
+    - "Barrier 1 + Barrier 2 COMPLETE with manifest-based cross-pollination"
+    - "NEW: 7 separate ps-architect agents (not 1 agent creating all ADRs)"
+    - "NEW: 4 tiers based on ADR dependency analysis"
+    - "NEW: Tiered Hybrid PS/NSE coordination (D-003: Option C)"
+    - "NEW: Per-tier quality gates QG-2.1 through QG-2.4 (D-004: Option B)"
+    - "NEW: Explicit mandatory_reads with priority ordering (D-005)"
+    - "NEW: ADR-006 in Tier 2 after ADR-001 (D-002)"
+    - "Checkpoints at each tier boundary (D-001)"
     - "Quality threshold: ≥0.92 for ALL gates (DEC-OSS-001)"
-    - "QG-0 requires re-evaluation after expanded research completes"
-    - "Use /problem-solving skill with background execution for parallel agents"
+    - "Use background execution for agents to preserve orchestrator context"
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"
-    - "ORCHESTRATION_DIAGRAM_ASCII.md"
-    - "ORCHESTRATION_WORKTRACKER.md"
     - "ORCHESTRATION.yaml"
-    - "FEAT-001--DISC-001-missed-research-scope.md"  # Critical context
+    - "FEAT-001--DEC-003-phase-2-execution-strategy.md"  # NEW: Phase 2 decisions
+    - "cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md"  # For NSE agents
+    - "cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md"  # For PS agents
 
   agent_count:
-    problem_solving: 14  # 9 original + 5 new research
+    problem_solving: 20  # 9 original + 5 expanded research + 6 new ps-architect instances
     nasa_se: 10
-    total: 24
+    total: 30  # Increased from 24 due to 7 individual ps-architect agents
 
   cross_session_portable: true
 
@@ -1472,16 +2673,44 @@ resumption:
 document:
   id: "PROJ-009-ORCH-STATE"
   workflow_id: "oss-release-20260131-001"
-  version: "4.2.0"
-  status: "PHASE_0_COMPLETE"
+  version: "5.1.0"
+  status: "PHASE_2_TIER_2_QG_IN_PROGRESS"
   created_at: "2026-01-31T16:00:00Z"
-  updated_at: "2026-01-31T20:25:00Z"
+  updated_at: "2026-01-31T23:30:00Z"
   approved_at: "2026-01-31T19:00:00Z"
   changes_in_version:
+    # v5.0.0 - MAJOR RESTRUCTURE per FEAT-001:DEC-003
+    - "v5.0.0: MAJOR RESTRUCTURE - Phase 2 now uses 7 separate ps-architect agents"
+    - "v5.0.0: ADRs organized into 4 tiers based on dependency analysis"
+    - "v5.0.0: Tiered Hybrid PS/NSE coordination (D-003: Option C)"
+    - "v5.0.0: Per-tier quality gates: QG-2.1, QG-2.2, QG-2.3, QG-2.4 (D-004: Option B)"
+    - "v5.0.0: Explicit mandatory_reads with priority ordering (D-005)"
+    - "v5.0.0: Checkpoints at each tier boundary (D-001)"
+    - "v5.0.0: ADR-006 moved to Tier 2 after ADR-001 (D-002)"
+    - "v5.0.0: Added 7 ps-architect agent definitions (ps_architect_001 through ps_architect_007)"
+    - "v5.0.0: Added DEC-OSS-008 through DEC-OSS-012 for DEC-003 decisions"
+    - "v5.0.0: Created FEAT-001:DEC-003 decision document"
+    - "v5.0.0: Execution groups renumbered (Phase 2: 10-19, Phase 3: 20-24, Phase 4: 25-27)"
+    # v4.4.0
+    - "v4.4.0: Phase 1 COMPLETE (all 4 tiers executed)"
+    - "v4.4.0: QG-1 PASSED (0.942 average: ps-critic 0.938, nse-qa 0.946)"
+    - "v4.4.0: Barrier 2 COMPLETE with cross-pollination manifests"
+    - "v4.4.0: CP-002 checkpoint created for Barrier 2 completion"
+    - "v4.4.0: Unblocked Phase 2 agents with mandatory_reads from manifests"
+    - "v4.4.0: Updated metrics (phases_complete: 2, barriers_complete: 2)"
+    # v4.3.0
+    - "v4.3.0: Barrier 1 COMPLETE with cross-pollination manifests (User decision Q1)"
+    - "v4.3.0: Phase 1 tiered execution structure added (User decision Q2: option B)"
+    - "v4.3.0: Checkpoint frequency changed to TIER (User decision Q3: option B)"
+    - "v4.3.0: Added DEC-OSS-005, DEC-OSS-006, DEC-OSS-007 for user decisions"
+    - "v4.3.0: Unblocked Phase 1 agents with mandatory_reads from manifests"
+    - "v4.3.0: Created CP-001 checkpoint at Barrier 1 completion"
+    # v4.0.0
     - "v4.0.0: DISC-001 remediation - expanded Phase 0 with 5 new research agents"
     - "v4.0.0: Updated execution_queue with expanded agent list"
     - "v4.0.0: Added tier 1b for expanded research (parallel execution)"
     - "v4.0.0: Updated metrics and resumption context"
+    # v3.1.0
     - "v3.1.0: DEC-OSS-001: Quality thresholds increased to ≥0.92 for all gates"
     - "v3.1.0: DEC-OSS-002: Tiered execution dependencies documented"
     - "v3.1.0: DEC-OSS-003: Checkpoint frequency set to QUALITY_GATE"

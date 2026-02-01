@@ -3,13 +3,35 @@
 > **Document ID:** PROJ-009-ORCH-PLAN
 > **Project:** PROJ-009-oss-release
 > **Workflow ID:** `oss-release-20260131-001`
-> **Status:** ACTIVE - Phase 0 COMPLETE
-> **Version:** 4.1.0
+> **Status:** ACTIVE - Phase 1 COMPLETE, Phase 2 READY
+> **Version:** 5.0.0
 > **Created:** 2026-01-31
-> **Last Updated:** 2026-01-31T21:00:00Z
+> **Last Updated:** 2026-01-31T23:30:00Z
 > **Approved:** 2026-01-31T19:00:00Z
 
 ## Changelog
+
+### v5.0.0 (2026-01-31T23:30:00Z) - Phase 2 Restructure per DEC-003
+
+| Change | Description |
+|--------|-------------|
+| **7 Separate ps-architect Agents** | ADR creation now uses 7 separate agents (ps-architect-001 through ps-architect-007) for quality isolation |
+| **4-Tier ADR Execution** | ADRs organized by dependency: Tier 1 (ADR-001), Tier 2 (002/003/004/006), Tier 3 (005), Tier 4 (007) |
+| **Per-Tier Quality Gates** | QG-2.1, QG-2.2, QG-2.3, QG-2.4 replace single QG-2 (D-004: Option B) |
+| **Tiered Hybrid PS/NSE** | NSE agents interspersed at tier boundaries for cross-pollination (D-003: Option C) |
+| **Explicit Mandatory Reads** | Priority-ordered artifact reads for each agent (D-005) |
+| **Checkpoints at Tier Boundaries** | 4 checkpoints in Phase 2 (D-001) |
+| **Agent Count Updated** | 30 total agents (24 original + 6 additional ps-architect instances) |
+| **Decision Document Reference** | FEAT-001:DEC-003 captures 5 user decisions |
+
+### v4.4.0 (2026-01-31T22:30:00Z) - Phase 1 Complete
+
+| Change | Description |
+|--------|-------------|
+| Phase 1 Complete | All 4 tiers executed: Tier 1 (4 agents), Tier 2 (risk), Tier 3 (QG-1), Tier 4 (reports) |
+| QG-1 Passed | ps-critic: 0.938, nse-qa: 0.946 (avg: 0.942 >= 0.92) |
+| Barrier 2 Complete | Cross-pollination manifests created for PS and NSE pipelines |
+| Phase 2 Unblocked | Ready for tiered ADR execution |
 
 ### v4.1.0 (2026-01-31T21:00:00Z) - Adversarial Feedback Loops Visualized
 
@@ -19,28 +41,14 @@
 | QG-0 v1 FAIL Shown | Explicitly shows initial QG-0 failure (0.876 < 0.92) that triggered DISC-001 |
 | DISC-001 Visualized | Discovery node shows the 5 missed research topics that were remediated |
 | QG-0 v2 PASS Shown | Shows re-evaluation after remediation with +6.3% improvement |
-| All QGs Updated | Quality gates 1-3 now show potential DISC-* → Remediation feedback pattern |
-| Legend Updated | Added symbols for ❌ (failed), 📋 (discovery), and feedback loop explanation |
-| Styles Enhanced | Red tones for failed gates, orange tones for discovery nodes |
 
 ### v4.0.0 (2026-01-31T20:25:00Z) - Phase 0 Complete
 
 | Change | Description |
 |--------|-------------|
 | Phase 0 Complete | All 4 tiers executed: Tier 1a (4 agents), Tier 1b (5 agents), Tier 2 (risk), Tier 3 (QG), Tier 4 (reports) |
-| QG-0 Passed | ps-critic: 0.931, nse-qa: 0.941 (avg: 0.936 ≥ 0.92) |
+| QG-0 Passed | ps-critic: 0.931, nse-qa: 0.941 (avg: 0.936 >= 0.92) |
 | DISC-001 Remediated | 5 expanded research agents completed (EN-002 through EN-006) |
-| Mermaid Diagram | Updated with dark mode colors, current state indicators, tiered Phase 0 structure |
-| Risk Register | 21 risks identified (2 critical, 5 high) |
-
-### v3.1.0 (2026-01-31T19:00:00Z) - Approved
-
-| Decision | Description |
-|----------|-------------|
-| DEC-OSS-001 | Quality thresholds increased to ≥0.92 for ALL gates (was 0.85/0.88/0.90) |
-| DEC-OSS-002 | Tiered execution within phases to respect data dependencies |
-| DEC-OSS-003 | Checkpoint with user after each quality gate |
-| DEC-OSS-004 | Auto-retry quality gates 2x before user escalation |
 
 ---
 
@@ -50,59 +58,66 @@
 
 We're preparing Jerry to be shared with the world as open-source software. Think of it like preparing a house for sale - we need to:
 
-1. **Explore all options** (What's the best way to present the house?)
-2. **Research what buyers want** (What do developers expect from OSS projects?)
-3. **Understand our house** (What does Jerry look like today?)
-4. **Plan the renovation** (What needs to change?)
-5. **Do the work** (Make the changes)
-6. **Inspect everything** (Quality checks at every step)
+1. **Explore all options** (What's the best way to present the house?) - DONE
+2. **Research what buyers want** (What do developers expect from OSS projects?) - DONE
+3. **Understand our house** (What does Jerry look like today?) - DONE
+4. **Plan the renovation** (What needs to change?) - IN PROGRESS
+5. **Do the work** (Make the changes) - BLOCKED
+6. **Inspect everything** (Quality checks at every step) - ONGOING
 
-We have **19 specialized workers** (agents) who each do one job really well. Some research, some analyze, some design, some check quality. They all work together, sharing their findings so nothing gets missed.
+We have **30 specialized workers** (agents) who each do one job really well. Some research, some analyze, some design, some check quality. They all work together, sharing their findings so nothing gets missed.
 
 **Key Safety Features:**
 - Every step has TWO quality inspectors (one strict critic, one NASA-style auditor)
+- Phase 2 has FOUR quality checkpoints instead of one (catch problems early!)
 - A risk manager watches for problems at EVERY phase
 - Full reports are generated after each phase so you know exactly what's happening
 
 ### L1: Engineer Summary
 
-This orchestration coordinates a comprehensive multi-phase workflow using ALL available agents from `/problem-solving` (9 agents) and `/nasa-se` (10 agents) skills to prepare Jerry for OSS release.
+This orchestration coordinates a comprehensive multi-phase workflow using ALL available agents from `/problem-solving` (9 base + 5 expanded research + 7 Phase 2 ADR agents = 21 agents) and `/nasa-se` (10 agents) skills to prepare Jerry for OSS release.
 
 **Architecture:**
 - **2 Parallel Pipelines:** Pipeline A (Problem-Solving) and Pipeline B (NASA SE)
 - **5 Sequential Phases:** Each phase has parallel agent execution within pipelines
 - **Dual Quality Gates:** ps-critic (adversarial DISC-002) + nse-qa at each phase
+- **Per-Tier Quality Gates (Phase 2):** QG-2.1, QG-2.2, QG-2.3, QG-2.4 (4 gates instead of 1)
 - **Dual Reporting:** ps-reporter + nse-reporter at each phase completion
 - **Continuous Risk Management:** nse-risk runs at every phase
 - **Full Artifact Pass-Through:** Upstream artifacts passed downstream (not summaries)
 
-**Agent Distribution (19 Total):**
-- Phase 0: 5 agents (exploration, initial research)
-- Phase 1: 5 agents (deep research, investigation)
-- Phase 2: 6 agents (requirements, architecture)
-- Phase 3: 5 agents (validation, synthesis)
+**Agent Distribution (30 Total):**
+- Phase 0: 14 agents (9 original + 5 expanded research)
+- Phase 1: 5 agents (deep research, investigation, V&V)
+- Phase 2: 13 agents (7 ps-architect + 4 nse + 2 shared) - **TIERED EXECUTION**
+- Phase 3: 6 agents (validation, synthesis, review)
 - Phase 4: 5 agents (final V&V, reporting)
-- Quality Gates: ps-critic + nse-qa at each phase (10 invocations)
-- Reports: ps-reporter + nse-reporter at each phase (10 invocations)
+- Quality Gates: ps-critic + nse-qa at each phase + 4 per-tier in Phase 2
+- Reports: ps-reporter + nse-reporter at each phase
 
 ### L2: Architect Summary
 
-**Orchestration Pattern:** Cross-Pollinated Pipeline with Dual Quality Gates and Continuous Risk Management
+**Orchestration Pattern:** Cross-Pollinated Pipeline with Tiered Hybrid Execution and Per-Tier Quality Gates
 
-**Key Architectural Decisions:**
-1. **Divergent-then-Convergent:** Phase 0 uses nse-explorer for divergent thinking before converging on specific paths
-2. **Dual Quality Perspective:** Combining adversarial prompting (ps-critic with DISC-002) and NASA QA rigor (nse-qa) provides defense in depth
-3. **Risk-Driven Execution:** nse-risk maintains evolving risk register throughout, enabling risk-informed decisions
-4. **Configuration Baselines:** nse-configuration establishes baselines after requirements (Phase 2) and after design (Phase 3)
-5. **Full Artifact Traceability:** No summarization at barriers - full artifacts passed to maintain fidelity
+**Key Architectural Decisions (v5.0.0):**
+
+1. **7 Separate ps-architect Agents:** Each ADR created by dedicated agent for quality isolation (prevents cross-contamination)
+2. **4-Tier Dependency Analysis:** ADRs organized by dependency graph:
+   - Tier 1: ADR-001 (CRITICAL foundation, RPN 280)
+   - Tier 2: ADR-002, 003, 004, 006 (depend only on ADR-001)
+   - Tier 3: ADR-005 (depends on ADR-001 + ADR-002)
+   - Tier 4: ADR-007 (synthesis, depends on ALL)
+3. **Per-Tier Quality Gates:** QG-2.1 through QG-2.4 catches foundational issues before building on them
+4. **Tiered Hybrid PS/NSE:** NSE agents validate at tier boundaries (not wait until end)
+5. **Explicit Mandatory Reads:** Priority-ordered artifact consumption for each agent
 
 **Constitutional Compliance:**
 - P-002 (File Persistence): All agent outputs persisted
-- P-003 (No Recursion): Main context → worker agents only
+- P-003 (No Recursion): Main context -> worker agents only
 - P-020 (User Authority): User approval required at each quality gate
 - P-022 (No Deception): Transparent reasoning, honest quality scores
 
-**Current State:** APPROVED - Ready for execution with ≥0.92 quality threshold
+**Current State:** Phase 1 COMPLETE, Phase 2 READY with 4-tier execution plan
 
 ---
 
@@ -112,19 +127,28 @@ This orchestration coordinates a comprehensive multi-phase workflow using ALL av
 |-------|-------|--------|
 | Workflow ID | `oss-release-20260131-001` | auto |
 | ID Format | `{purpose}-{YYYYMMDD}-{NNN}` | semantic-date-seq |
-| Base Path | `projects/PROJ-009-oss-release/orchestration/oss-release-20260131-001/` | Dynamic |
-| Total Agents | 19 (9 PS + 10 NSE) | Full coverage |
+| Base Path | `projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/` | Dynamic |
+| Total Agents | 30 (21 PS + 10 NSE, with 1 shared ps-critic) | Full coverage |
 | Total Phases | 5 | Sequential with parallel tracks |
-| Quality Gates | 5 (dual: ps-critic + nse-qa each) | Every phase |
+| Quality Gates | 8 (QG-0, QG-1, QG-2.1-2.4, QG-3, QG-4) | Including 4 per-tier |
 | Barriers | 4 | Between each phase |
 
 **Artifact Output Locations:**
 ```
-projects/PROJ-009-oss-release/orchestration/oss-release-20260131-001/
+projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/
 ├── ps/                        # Pipeline A (Problem-Solving) artifacts
 ├── nse/                       # Pipeline B (NASA SE) artifacts
 ├── cross-pollination/         # Barrier handoff artifacts
-├── quality-gates/             # Dual QG artifacts (ps-critic + nse-qa)
+├── quality-gates/             # Dual QG artifacts (including per-tier for Phase 2)
+│   ├── qg-0/                  # Phase 0 gate
+│   ├── qg-1/                  # Phase 1 gate
+│   ├── qg-2/                  # Phase 2 per-tier gates
+│   │   ├── tier-1/            # QG-2.1
+│   │   ├── tier-2/            # QG-2.2
+│   │   ├── tier-3/            # QG-2.3
+│   │   └── tier-4/            # QG-2.4
+│   ├── qg-3/                  # Phase 3 gate
+│   └── qg-4/                  # Phase 4 gate
 ├── reports/                   # Phase completion reports
 └── risks/                     # Evolving risk register
 ```
@@ -133,19 +157,43 @@ projects/PROJ-009-oss-release/orchestration/oss-release-20260131-001/
 
 ## 3. Agent Registry
 
-### 3.1 Problem-Solving Agents (9)
+### 3.1 Problem-Solving Agents (21 total)
+
+#### Base PS Agents (9)
 
 | ID | Agent | Role | Phase(s) | Output |
 |----|-------|------|----------|--------|
 | PS-01 | `ps-researcher` | Research Specialist | 0, 1 | Research reports with citations |
 | PS-02 | `ps-analyst` | Analysis Specialist | 0, 1 | Gap analysis, 5 Whys, FMEA, trade-offs |
-| PS-03 | `ps-architect` | Architecture Specialist | 2 | ADRs (Nygard format) |
+| PS-03 | `ps-architect` | Architecture Specialist (base) | - | See Phase 2 instances below |
 | PS-04 | `ps-critic` | Quality Evaluator | QG 0-4 | Adversarial quality reviews (DISC-002) |
 | PS-05 | `ps-validator` | Validation Specialist | 3 | Constraint verification with evidence |
 | PS-06 | `ps-synthesizer` | Synthesis Specialist | 3 | Pattern extraction, knowledge synthesis |
 | PS-07 | `ps-reviewer` | Review Specialist | 3 | Design/architecture review |
 | PS-08 | `ps-investigator` | Investigation Specialist | 1 | Failure analysis, root cause |
 | PS-09 | `ps-reporter` | Reporting Specialist | 0-4 | Phase status reports |
+
+#### Expanded Research Agents (5) - DISC-001 Remediation
+
+| ID | Agent | Role | Phase | Output |
+|----|-------|------|-------|--------|
+| PS-01a | `ps-researcher-claude-code` | Claude Code CLI Research | 0 | `claude-code-best-practices.md` |
+| PS-01b | `ps-researcher-claude-md` | CLAUDE.md Optimization Research | 0 | `claude-md-best-practices.md` |
+| PS-01c | `ps-researcher-plugins` | Plugin Architecture Research | 0 | `plugins-best-practices.md` |
+| PS-01d | `ps-researcher-skills` | Skills Patterns Research | 0 | `skills-best-practices.md` |
+| PS-01e | `ps-researcher-decomposition` | Decomposition with Imports | 0 | `decomposition-best-practices.md` |
+
+#### Phase 2 ADR Agents (7) - NEW in v5.0.0
+
+| ID | Agent | ADR | Priority | RPN | Tier | Dependencies |
+|----|-------|-----|----------|-----|------|--------------|
+| PS-03-001 | `ps-architect-001` | ADR-OSS-001: CLAUDE.md Decomposition | CRITICAL | 280 | 1 | None |
+| PS-03-002 | `ps-architect-002` | ADR-OSS-002: Repository Sync Process | HIGH | 192 | 2 | ADR-001 |
+| PS-03-003 | `ps-architect-003` | ADR-OSS-003: Work Tracker Extraction | HIGH | - | 2 | ADR-001 |
+| PS-03-004 | `ps-architect-004` | ADR-OSS-004: Multi-Persona Documentation | MEDIUM | - | 2 | ADR-001 |
+| PS-03-005 | `ps-architect-005` | ADR-OSS-005: Repository Migration | HIGH | - | 3 | ADR-001, ADR-002 |
+| PS-03-006 | `ps-architect-006` | ADR-OSS-006: Transcript Templates | MEDIUM | - | 2 | ADR-001 |
+| PS-03-007 | `ps-architect-007` | ADR-OSS-007: OSS Release Checklist | CRITICAL | - | 4 | ALL prior ADRs |
 
 ### 3.2 NASA SE Agents (10)
 
@@ -162,33 +210,40 @@ projects/PROJ-009-oss-release/orchestration/oss-release-20260131-001/
 | NSE-09 | `nse-qa` | QA Specialist | QG 0-4 | Compliance audit, artifact validation |
 | NSE-10 | `nse-reporter` | SE Status Reporter | 0-4 | SE metrics, health status |
 
-### 3.3 Agent Phase Assignment Matrix
+### 3.3 Agent Phase Assignment Matrix (Updated for v5.0.0)
 
 ```
-                    │ Phase 0 │ Phase 1 │ Phase 2 │ Phase 3 │ Phase 4 │
-────────────────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
-ps-researcher       │    ●    │    ●    │         │         │         │
-ps-analyst          │    ●    │    ●    │         │         │         │
-ps-architect        │         │         │    ●    │         │         │
-ps-critic (QG)      │    ◆    │    ◆    │    ◆    │    ◆    │    ◆    │
-ps-validator        │         │         │         │    ●    │         │
-ps-synthesizer      │         │         │         │    ●    │         │
-ps-reviewer         │         │         │         │    ●    │         │
-ps-investigator     │         │    ●    │         │         │         │
-ps-reporter         │    ○    │    ○    │    ○    │    ○    │    ○    │
-────────────────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
-nse-requirements    │    ●    │         │    ●    │         │         │
-nse-verification    │         │    ●    │         │         │    ●    │
-nse-risk            │    ●    │    ●    │    ●    │    ●    │    ●    │
-nse-reviewer        │         │         │         │    ●    │         │
-nse-integration     │         │         │    ●    │         │         │
-nse-configuration   │         │         │    ●    │    ●    │         │
-nse-architecture    │         │         │    ●    │         │         │
-nse-explorer        │    ●    │         │         │         │         │
-nse-qa (QG)         │    ◆    │    ◆    │    ◆    │    ◆    │    ◆    │
-nse-reporter        │    ○    │    ○    │    ○    │    ○    │    ○    │
+                    │ Phase 0 │ Phase 1 │     Phase 2      │ Phase 3 │ Phase 4 │
+────────────────────┼─────────┼─────────┼──────────────────┼─────────┼─────────┤
+ps-researcher       │    ●    │    ●    │                  │         │         │
+ps-researcher-*     │    ●    │         │                  │         │         │  (5 expanded)
+ps-analyst          │    ●    │    ●    │                  │         │         │
+ps-architect-001    │         │         │ ● T1             │         │         │
+ps-architect-002    │         │         │    ● T2          │         │         │
+ps-architect-003    │         │         │    ● T2          │         │         │
+ps-architect-004    │         │         │    ● T2          │         │         │
+ps-architect-005    │         │         │       ● T3       │         │         │
+ps-architect-006    │         │         │    ● T2          │         │         │
+ps-architect-007    │         │         │          ● T4    │         │         │
+ps-critic (QG)      │    ◆    │    ◆    │ ◆ ◆ ◆ ◆ (4x)    │    ◆    │    ◆    │
+ps-validator        │         │         │                  │    ●    │         │
+ps-synthesizer      │         │         │                  │    ●    │         │
+ps-reviewer         │         │         │                  │    ●    │         │
+ps-investigator     │         │    ●    │                  │         │         │
+ps-reporter         │    ○    │    ○    │            ○     │    ○    │    ○    │
+────────────────────┼─────────┼─────────┼──────────────────┼─────────┼─────────┤
+nse-requirements    │    ●    │         │ ● T1             │         │         │
+nse-verification    │         │    ●    │                  │         │    ●    │
+nse-risk            │    ●    │    ●    │          ● T4    │    ●    │    ●    │
+nse-reviewer        │         │         │                  │    ●    │         │
+nse-integration     │         │         │       ● T3       │         │         │
+nse-configuration   │         │         │          ● T4    │    ●    │         │
+nse-architecture    │         │         │    ● T2          │         │         │
+nse-explorer        │    ●    │         │                  │         │         │
+nse-qa (QG)         │    ◆    │    ◆    │ ◆ ◆ ◆ ◆ (4x)    │    ◆    │    ◆    │
+nse-reporter        │    ○    │    ○    │            ○     │    ○    │    ○    │
 
-Legend: ● = Phase work  ◆ = Quality Gate  ○ = Phase Report
+Legend: ● = Phase work  ◆ = Quality Gate  ○ = Phase Report  T1-T4 = Tier
 ```
 
 ---
@@ -196,346 +251,164 @@ Legend: ● = Phase work  ◆ = Quality Gate  ○ = Phase Report
 ## 4. Workflow Diagram (Mermaid)
 
 > **Dark Mode Optimized:** Colors chosen for visibility in both light and dark IDE themes.
-> **Current State:** Phase 0 COMPLETE, Barrier 1 READY
-> **Feedback Loops Shown:** Adversarial critic iterations with DISC-* discoveries
+> **Current State:** Phase 1 COMPLETE, Phase 2 READY with 4-tier structure
+> **v5.0.0 Update:** Phase 2 shows 4-tier execution with 7 separate ps-architect agents
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#2d3748', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#4a5568', 'lineColor': '#718096', 'secondaryColor': '#1a202c', 'tertiaryColor': '#2d3748', 'background': '#1a202c', 'mainBkg': '#2d3748', 'textColor': '#e2e8f0'}}}%%
 flowchart TB
     %% ═══════════════════════════════════════════════════════════════════
-    %% APPROVAL GATE
+    %% PHASE 0 & 1 - COMPLETE
     %% ═══════════════════════════════════════════════════════════════════
-    subgraph APPROVAL["✅ APPROVED - 2026-01-31T19:00:00Z"]
-        START([User Approved Plan<br/>DEC-OSS-001: ≥0.92 threshold])
+    subgraph COMPLETE_PHASES["✅ PHASES 0-1 COMPLETE"]
+        direction TB
+        P0_DONE["✅ Phase 0 Complete<br/>9 research + 5 expanded<br/>21 risks identified"]
+        QG0_DONE["✅ QG-0 PASSED<br/>0.936 avg"]
+        P1_DONE["✅ Phase 1 Complete<br/>Deep research + V&V<br/>22 risks tracked"]
+        QG1_DONE["✅ QG-1 PASSED<br/>0.942 avg"]
+        B2_DONE["✅ Barrier 2 Complete<br/>Cross-pollination manifests"]
+
+        P0_DONE --> QG0_DONE --> P1_DONE --> QG1_DONE --> B2_DONE
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% PHASE 0: DIVERGENT EXPLORATION & INITIAL RESEARCH
-    %% Status: COMPLETE (All 4 Tiers Done)
-    %% Shows: ADVERSARIAL FEEDBACK LOOP (QG-0 v1 FAIL → DISC-001 → Remediation → QG-0 v2 PASS)
+    %% PHASE 2: TIERED ADR CREATION (v5.0.0 RESTRUCTURE)
     %% ═══════════════════════════════════════════════════════════════════
-    subgraph PHASE0["✅ PHASE 0: COMPLETE - Divergent Exploration & Research"]
+    subgraph PHASE2["⏳ PHASE 2: Requirements & Architecture (4-Tier DEC-003)"]
         direction TB
 
-        subgraph P0_TIER1["TIER 1a: Original Research (PARALLEL) ✅"]
-            P0_PS_R["✅ ps-researcher<br/>OSS Best Practices<br/>EN-001 COMPLETE"]
-            P0_PS_A["✅ ps-analyst<br/>Current Architecture<br/>EN-007 COMPLETE"]
-            P0_NSE_E["✅ nse-explorer<br/>DIVERGENT Alternatives<br/>60+ options explored"]
-            P0_NSE_REQ["✅ nse-requirements<br/>Current State Inventory<br/>27 gaps identified"]
+        %% TIER 1: Foundation
+        subgraph P2_T1["TIER 1: Foundation (PARALLEL)"]
+            PS_ARCH_001["⏳ ps-architect-001<br/>ADR-OSS-001<br/>CLAUDE.md Decomposition<br/>CRITICAL (RPN 280)"]
+            NSE_REQ["⏳ nse-requirements<br/>Requirements Spec"]
         end
 
-        %% ═══════════════════════════════════════════════════════════════
-        %% ADVERSARIAL FEEDBACK LOOP - QG-0 v1 FAILED
-        %% This is the CRITICAL critic loop that drove remediation
-        %% ═══════════════════════════════════════════════════════════════
-        subgraph P0_QG0_V1["❌ QG-0 v1: FAILED (0.876 < 0.92) - Triggered Remediation"]
-            P0_CRITIC_V1{{"❌ ps-critic v1<br/>Score: 0.876<br/>BELOW THRESHOLD"}}
-            P0_DISC001["📋 DISC-001 Created<br/>Missing Research Scope:<br/>• Claude Code CLI<br/>• CLAUDE.md patterns<br/>• Plugins architecture<br/>• Skills patterns<br/>• Decomposition"]
+        QG21["⏸️ QG-2.1<br/>Threshold ≥0.92"]
+
+        %% TIER 2: Parallel ADRs
+        subgraph P2_T2["TIER 2: Parallel ADRs (depend on ADR-001)"]
+            PS_ARCH_002["⏸️ ps-architect-002<br/>ADR-002: Repo Sync"]
+            PS_ARCH_003["⏸️ ps-architect-003<br/>ADR-003: Worktracker"]
+            PS_ARCH_004["⏸️ ps-architect-004<br/>ADR-004: Multi-Persona"]
+            PS_ARCH_006["⏸️ ps-architect-006<br/>ADR-006: Transcript"]
+            NSE_ARCH["⏸️ nse-architecture<br/>Validate ADR-001"]
         end
 
-        subgraph P0_TIER1B["TIER 1b: Expanded Research - DISC-001 Remediation (PARALLEL) ✅"]
-            P0_PS_CC["✅ ps-researcher-claude-code<br/>CLI Best Practices<br/>EN-002 COMPLETE"]
-            P0_PS_CMD["✅ ps-researcher-claude-md<br/>CLAUDE.md Optimization<br/>EN-003 COMPLETE"]
-            P0_PS_PLG["✅ ps-researcher-plugins<br/>Plugin Architecture<br/>EN-004 COMPLETE"]
-            P0_PS_SKL["✅ ps-researcher-skills<br/>Skills Best Practices<br/>EN-005 COMPLETE"]
-            P0_PS_DEC["✅ ps-researcher-decomposition<br/>Import Patterns<br/>EN-006 COMPLETE"]
+        QG22["⏸️ QG-2.2<br/>Threshold ≥0.92"]
+
+        %% TIER 3: Dependent ADR
+        subgraph P2_T3["TIER 3: Dependent (ADR-001 + ADR-002)"]
+            PS_ARCH_005["⏸️ ps-architect-005<br/>ADR-005: Migration"]
+            NSE_INT["⏸️ nse-integration<br/>Integration Plan"]
         end
 
-        subgraph P0_TIER2["TIER 2: Risk Identification (SEQUENTIAL) ✅"]
-            P0_NSE_RISK["✅ nse-risk<br/>21 Risks Identified<br/>2 CRITICAL, 5 HIGH"]
+        QG23["⏸️ QG-2.3<br/>Threshold ≥0.92"]
+
+        %% TIER 4: Synthesis
+        subgraph P2_T4["TIER 4: Synthesis (ALL ADRs)"]
+            PS_ARCH_007["⏸️ ps-architect-007<br/>ADR-007: OSS Checklist<br/>CRITICAL"]
+            NSE_CFG["⏸️ nse-configuration<br/>Requirements Baseline"]
+            NSE_RISK_P2["⏸️ nse-risk<br/>Phase 2 Risk Update"]
         end
 
-        %% Phase 0 Internal Flow with Feedback Loop
-        P0_TIER1 --> P0_QG0_V1
-        P0_CRITIC_V1 -->|"FAIL: 0.876"| P0_DISC001
-        P0_DISC001 -->|"Remediation"| P0_TIER1B
-        P0_TIER1B --> P0_TIER2
+        QG24["⏸️ QG-2.4<br/>Threshold ≥0.92"]
+
+        %% Tier Flow
+        P2_T1 --> QG21 --> P2_T2 --> QG22 --> P2_T3 --> QG23 --> P2_T4 --> QG24
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 0 v2: PASSED (After Remediation)
+    %% PHASES 3-4: BLOCKED
     %% ═══════════════════════════════════════════════════════════════════
-    subgraph QG0["✅ QUALITY GATE 0 v2 - PASSED (0.936 avg)"]
-        direction TB
-        subgraph QG0_EVAL["TIER 3: Dual Evaluation ✅"]
-            P0_CRITIC{{"✅ ps-critic v2<br/>ADVERSARIAL MODE<br/>Score: 0.931 ≥ 0.92<br/>+6.3% improvement"}}
-            P0_QA{{"✅ nse-qa<br/>NASA NPR-7123.1D<br/>Score: 0.941 ≥ 0.92"}}
-        end
-        subgraph QG0_RPT["TIER 4: Reports ✅"]
-            P0_RPT_PS["✅ ps-reporter<br/>Phase 0 Status Report"]
-            P0_RPT_NSE["✅ nse-reporter<br/>NASA SE Status Report"]
-        end
-        QG0_EVAL --> QG0_RPT
+    subgraph PHASE3_4["⏸️ PHASES 3-4 BLOCKED"]
+        B3["⏸️ Barrier 3"]
+        P3["⏸️ Phase 3<br/>Validation & Synthesis"]
+        QG3["⏸️ QG-3"]
+        B4["⏸️ Barrier 4"]
+        P4["⏸️ Phase 4<br/>Final V&V"]
+        QG4["⏸️ QG-4 FINAL"]
+        DONE["🎯 COMPLETE<br/>OSS Ready"]
+
+        B3 --> P3 --> QG3 --> B4 --> P4 --> QG4 --> DONE
     end
 
-    %% ═══════════════════════════════════════════════════════════════════
-    %% BARRIER 1: READY
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph BARRIER1["⏳ BARRIER 1: Cross-Pollination (READY)"]
-        direction LR
-        B1_PS_NSE["PS → NSE<br/>7 research artifacts<br/>+ architecture analysis"]
-        B1_NSE_PS["NSE → PS<br/>Alternatives + inventory<br/>+ 21 risks"]
-    end
+    %% Connections
+    COMPLETE_PHASES --> PHASE2
+    PHASE2 --> PHASE3_4
 
-    %% ═══════════════════════════════════════════════════════════════════
-    %% PHASE 1: DEEP RESEARCH & INVESTIGATION
-    %% Status: BLOCKED (awaiting Barrier 1)
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph PHASE1["⏸️ PHASE 1: Deep Research & Investigation (BLOCKED)"]
-        direction TB
+    %% Styles
+    style COMPLETE_PHASES fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
+    style PHASE2 fill:#553c9a,stroke:#b794f4,stroke-width:3px,color:#e9d8fd
+    style PHASE3_4 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
 
-        subgraph P1_PS["Pipeline A: Problem-Solving"]
-            P1_PS_R["⏸️ ps-researcher<br/>Deep Dive Research"]
-            P1_PS_A["⏸️ ps-analyst<br/>Gap Analysis + FMEA<br/>5 Whys + Trade-offs"]
-            P1_PS_I["⏸️ ps-investigator<br/>Problem Investigation<br/>Transcript issues"]
-        end
-
-        subgraph P1_NSE["Pipeline B: NASA SE"]
-            P1_NSE_V["⏸️ nse-verification<br/>V&V Planning"]
-            P1_NSE_RISK["⏸️ nse-risk<br/>Risk Register Update"]
-        end
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 1 - Shows potential feedback loop pattern
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph QG1["⏸️ QUALITY GATE 1 (≥0.92)"]
-        P1_CRITIC{{"⏸️ ps-critic<br/>ADVERSARIAL MODE<br/>Threshold: ≥0.92"}}
-        P1_QA{{"⏸️ nse-qa<br/>NASA NPR-7123.1D<br/>Threshold: ≥0.92"}}
-        P1_DISC["📋 DISC-* (if fail)<br/>Identify gaps for<br/>remediation"]
-        P1_RPT["⏸️ ps-reporter + nse-reporter"]
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% BARRIER 2
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph BARRIER2["⏸️ BARRIER 2: Cross-Pollination"]
-        B2_PS_NSE["PS → NSE: Gap analysis<br/>FMEA + Investigation"]
-        B2_NSE_PS["NSE → PS: V&V gaps<br/>Updated risks"]
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% PHASE 2: REQUIREMENTS & ARCHITECTURE
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph PHASE2["⏸️ PHASE 2: Requirements & Architecture (BLOCKED)"]
-        direction TB
-
-        subgraph P2_PS["Pipeline A: Problem-Solving"]
-            P2_PS_ARCH["⏸️ ps-architect<br/>7 ADRs:<br/>• CLAUDE.md Decomposition<br/>• Skill Import Pattern<br/>• Worktracker Extraction<br/>• Multi-Persona Docs<br/>• Repo Migration<br/>• Transcript Templates<br/>• OSS Checklist"]
-        end
-
-        subgraph P2_NSE["Pipeline B: NASA SE"]
-            P2_NSE_REQ["⏸️ nse-requirements<br/>Formal Requirements"]
-            P2_NSE_ARCH["⏸️ nse-architecture<br/>Architecture Decisions"]
-            P2_NSE_INT["⏸️ nse-integration<br/>Integration Planning"]
-            P2_NSE_CFG["⏸️ nse-configuration<br/>Requirements Baseline"]
-            P2_NSE_RISK["⏸️ nse-risk<br/>Risk Update"]
-        end
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 2 - Shows potential feedback loop pattern
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph QG2["⏸️ QUALITY GATE 2 (≥0.92)"]
-        P2_CRITIC{{"⏸️ ps-critic<br/>ADVERSARIAL MODE<br/>Threshold: ≥0.92"}}
-        P2_QA{{"⏸️ nse-qa<br/>NASA NPR-7123.1D<br/>Threshold: ≥0.92"}}
-        P2_DISC["📋 DISC-* (if fail)<br/>Identify gaps for<br/>remediation"]
-        P2_RPT["⏸️ ps-reporter + nse-reporter"]
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% BARRIER 3
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph BARRIER3["⏸️ BARRIER 3: Cross-Pollination"]
-        B3_PS_NSE["PS → NSE: ADRs for V&V"]
-        B3_NSE_PS["NSE → PS: Requirements"]
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% PHASE 3: VALIDATION & SYNTHESIS
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph PHASE3["⏸️ PHASE 3: Validation & Synthesis (BLOCKED)"]
-        direction TB
-
-        subgraph P3_PS["Pipeline A: Problem-Solving"]
-            P3_PS_V["⏸️ ps-validator<br/>Constraint Verification"]
-            P3_PS_S["⏸️ ps-synthesizer<br/>Pattern Synthesis"]
-            P3_PS_REV["⏸️ ps-reviewer<br/>Design Review"]
-        end
-
-        subgraph P3_NSE["Pipeline B: NASA SE"]
-            P3_NSE_REV["⏸️ nse-reviewer<br/>Technical Review Gate"]
-            P3_NSE_CFG["⏸️ nse-configuration<br/>Design Baseline"]
-            P3_NSE_RISK["⏸️ nse-risk<br/>Risk Update"]
-        end
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 3 - Shows potential feedback loop pattern
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph QG3["⏸️ QUALITY GATE 3 (≥0.92)"]
-        P3_CRITIC{{"⏸️ ps-critic<br/>ADVERSARIAL MODE<br/>Threshold: ≥0.92"}}
-        P3_QA{{"⏸️ nse-qa<br/>NASA NPR-7123.1D<br/>Threshold: ≥0.92"}}
-        P3_DISC["📋 DISC-* (if fail)<br/>Identify gaps for<br/>remediation"]
-        P3_RPT["⏸️ ps-reporter + nse-reporter"]
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% BARRIER 4
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph BARRIER4["⏸️ BARRIER 4: Cross-Pollination"]
-        B4_PS_NSE["PS → NSE: Validation + Synthesis"]
-        B4_NSE_PS["NSE → PS: Review + Baseline"]
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% PHASE 4: FINAL V&V & REPORTING
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph PHASE4["⏸️ PHASE 4: Final V&V & Reporting (BLOCKED)"]
-        direction TB
-
-        subgraph P4_PS["Pipeline A: Problem-Solving"]
-            P4_PS_RPT["⏸️ ps-reporter<br/>Final Comprehensive Report"]
-        end
-
-        subgraph P4_NSE["Pipeline B: NASA SE"]
-            P4_NSE_V["⏸️ nse-verification<br/>Final V&V + VCRM"]
-            P4_NSE_QA["⏸️ nse-qa<br/>Comprehensive QA Audit"]
-            P4_NSE_RPT["⏸️ nse-reporter<br/>Final SE Report"]
-            P4_NSE_RISK["⏸️ nse-risk<br/>Final Risk Assessment"]
-        end
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 4 (FINAL)
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph QG4["⏸️ QUALITY GATE 4 - FINAL (≥0.92)"]
-        P4_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>All Deliverables?"}}
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% WORKFLOW COMPLETE
-    %% ═══════════════════════════════════════════════════════════════════
-    subgraph COMPLETE["🎯 WORKFLOW COMPLETE"]
-        DONE([Ready for OSS Implementation<br/>Estimated: 7-10 days])
-    end
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% CONNECTIONS - Including Adversarial Feedback Loops
-    %% ═══════════════════════════════════════════════════════════════════
-    START --> PHASE0
-    PHASE0 --> QG0
-    QG0 --> BARRIER1
-
-    BARRIER1 --> PHASE1
-    PHASE1 --> QG1
-    P1_CRITIC -->|PASS| P1_RPT
-    P1_QA -->|PASS| P1_RPT
-    P1_CRITIC -.->|"FAIL < 0.92"| P1_DISC
-    P1_DISC -.->|"Remediation"| PHASE1
-    P1_RPT --> BARRIER2
-
-    BARRIER2 --> PHASE2
-    PHASE2 --> QG2
-    P2_CRITIC -->|PASS| P2_RPT
-    P2_QA -->|PASS| P2_RPT
-    P2_CRITIC -.->|"FAIL < 0.92"| P2_DISC
-    P2_DISC -.->|"Remediation"| PHASE2
-    P2_RPT --> BARRIER3
-
-    BARRIER3 --> PHASE3
-    PHASE3 --> QG3
-    P3_CRITIC -->|PASS| P3_RPT
-    P3_QA -->|PASS| P3_RPT
-    P3_CRITIC -.->|"FAIL < 0.92"| P3_DISC
-    P3_DISC -.->|"Remediation"| PHASE3
-    P3_RPT --> BARRIER4
-
-    BARRIER4 --> PHASE4
-    PHASE4 --> QG4
-    P4_QG -->|PASS| DONE
-    P4_QG -.->|"FAIL max 2x"| PHASE4
-
-    %% ═══════════════════════════════════════════════════════════════════
-    %% DARK MODE OPTIMIZED STYLES
-    %% Using HSL colors with good contrast for both light and dark themes
-    %% Includes: FAILED gates (red), DISCOVERIES (orange), feedback loops
-    %% ═══════════════════════════════════════════════════════════════════
-
-    %% Completed items - Green tones (high saturation, medium lightness)
-    style APPROVAL fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
-    style PHASE0 fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
-    style QG0 fill:#276749,stroke:#9ae6b4,stroke-width:3px,color:#c6f6d5
-    style P0_TIER1 fill:#2f855a,stroke:#68d391,color:#c6f6d5
-    style P0_TIER1B fill:#2f855a,stroke:#68d391,color:#c6f6d5
-    style P0_TIER2 fill:#2f855a,stroke:#68d391,color:#c6f6d5
-    style QG0_EVAL fill:#276749,stroke:#9ae6b4,color:#c6f6d5
-    style QG0_RPT fill:#276749,stroke:#9ae6b4,color:#c6f6d5
-
-    %% FAILED Quality Gate v1 - Red tones (shows the adversarial loop trigger)
-    style P0_QG0_V1 fill:#742a2a,stroke:#fc8181,stroke-width:3px,color:#fed7d7
-    style P0_CRITIC_V1 fill:#9b2c2c,stroke:#feb2b2,stroke-width:2px,color:#fed7d7
-
-    %% DISCOVERY nodes - Orange/Amber tones (remediation catalyst)
-    style P0_DISC001 fill:#7b341e,stroke:#ed8936,stroke-width:3px,color:#feebc8
-    style P1_DISC fill:#744210,stroke:#ecc94b,stroke-width:2px,color:#fefcbf
-    style P2_DISC fill:#744210,stroke:#ecc94b,stroke-width:2px,color:#fefcbf
-    style P3_DISC fill:#744210,stroke:#ecc94b,stroke-width:2px,color:#fefcbf
-
-    %% Ready/Pending items - Amber/Yellow tones
-    style BARRIER1 fill:#744210,stroke:#f6e05e,stroke-width:3px,color:#fefcbf
-
-    %% Blocked items - Blue/Gray tones (muted)
-    style PHASE1 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
-    style QG1 fill:#2b6cb0,stroke:#90cdf4,stroke-width:2px,color:#bee3f8
-    style BARRIER2 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
-
-    style PHASE2 fill:#553c9a,stroke:#b794f4,stroke-width:2px,color:#e9d8fd
-    style QG2 fill:#6b46c1,stroke:#d6bcfa,stroke-width:2px,color:#e9d8fd
-    style BARRIER3 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
-
-    style PHASE3 fill:#285e61,stroke:#4fd1c5,stroke-width:2px,color:#b2f5ea
-    style QG3 fill:#2c7a7b,stroke:#81e6d9,stroke-width:2px,color:#b2f5ea
-    style BARRIER4 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
-
-    style PHASE4 fill:#742a2a,stroke:#fc8181,stroke-width:2px,color:#fed7d7
-    style QG4 fill:#9b2c2c,stroke:#feb2b2,stroke-width:3px,color:#fed7d7
-
-    %% Final completion - Bright green
-    style COMPLETE fill:#22543d,stroke:#68d391,stroke-width:4px,color:#c6f6d5
-
-    %% Pipeline subgraph styles
-    style P1_PS fill:#1a365d,stroke:#4299e1,color:#bee3f8
-    style P1_NSE fill:#1a365d,stroke:#4299e1,color:#bee3f8
-    style P2_PS fill:#44337a,stroke:#9f7aea,color:#e9d8fd
-    style P2_NSE fill:#44337a,stroke:#9f7aea,color:#e9d8fd
-    style P3_PS fill:#234e52,stroke:#38b2ac,color:#b2f5ea
-    style P3_NSE fill:#234e52,stroke:#38b2ac,color:#b2f5ea
-    style P4_PS fill:#63171b,stroke:#f56565,color:#fed7d7
-    style P4_NSE fill:#63171b,stroke:#f56565,color:#fed7d7
+    style P2_T1 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style P2_T2 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style P2_T3 fill:#285e61,stroke:#4fd1c5,stroke-width:2px,color:#b2f5ea
+    style P2_T4 fill:#742a2a,stroke:#fc8181,stroke-width:2px,color:#fed7d7
 ```
 
-### 4.1 Diagram Legend
+### 4.1 Phase 2 Tier Dependency Diagram
 
-| Symbol | Meaning |
-|--------|---------|
-| ✅ | Complete |
-| ❌ | Failed (triggered remediation) |
-| 📋 | Discovery document (DISC-*) |
-| ⏳ | Ready/Pending |
-| ⏸️ | Blocked |
-| 🎯 | Final Goal |
+```
+PHASE 2 ADR DEPENDENCY GRAPH (DEC-003)
+══════════════════════════════════════
 
-**Feedback Loop Elements:**
-- Dashed lines (`-.->`) indicate feedback/remediation paths
-- `DISC-*` nodes capture identified gaps when quality gates fail
-- Remediation flows back to the phase for expanded work
-- Maximum 2 remediation cycles before user escalation
+TIER 1 (Foundation):
+┌─────────────────────────────────────────────────────────────────────┐
+│  ps-architect-001                    nse-requirements               │
+│  ┌───────────────────────┐          ┌──────────────────────────┐   │
+│  │ ADR-OSS-001           │          │ Requirements Spec        │   │
+│  │ CLAUDE.md Decomp      │          │ (No ADR dependency)      │   │
+│  │ CRITICAL (RPN 280)    │          │                          │   │
+│  └───────────┬───────────┘          └──────────────────────────┘   │
+│              │                                                      │
+└──────────────│──────────────────────────────────────────────────────┘
+               │
+        ┌──────┴──────┬──────────────┬──────────────┬──────────────┐
+        ▼             ▼              ▼              ▼              ▼
+TIER 2 (Parallel - All depend on ADR-001):
+┌─────────────────────────────────────────────────────────────────────┐
+│  ps-architect   ps-architect   ps-architect   ps-architect  nse-   │
+│       -002          -003           -004           -006     arch    │
+│  ┌──────────┐  ┌──────────┐   ┌──────────┐   ┌──────────┐ ┌─────┐ │
+│  │ ADR-002  │  │ ADR-003  │   │ ADR-004  │   │ ADR-006  │ │Valid│ │
+│  │ Repo     │  │ Work     │   │ Multi-   │   │Transcript│ │ADR-1│ │
+│  │ Sync     │  │ Tracker  │   │ Persona  │   │ Template │ │     │ │
+│  └────┬─────┘  └──────────┘   └──────────┘   └──────────┘ └─────┘ │
+│       │                                                            │
+└───────│────────────────────────────────────────────────────────────┘
+        │
+        ├─────────────────────┐
+        ▼                     ▼
+TIER 3 (Dependent - Needs ADR-001 + ADR-002):
+┌─────────────────────────────────────────────────────────────────────┐
+│  ps-architect-005                    nse-integration                │
+│  ┌───────────────────────┐          ┌──────────────────────────┐   │
+│  │ ADR-OSS-005           │          │ Integration Plan         │   │
+│  │ Repository Migration  │          │ (Uses ADR-001 + ADR-002) │   │
+│  │ HIGH priority         │          │                          │   │
+│  └───────────┬───────────┘          └──────────────────────────┘   │
+│              │                                                      │
+└──────────────│──────────────────────────────────────────────────────┘
+               │
+               └────────────────────────────┐
+                                            ▼
+TIER 4 (Synthesis - Needs ALL prior ADRs):
+┌─────────────────────────────────────────────────────────────────────┐
+│  ps-architect-007               nse-configuration    nse-risk      │
+│  ┌─────────────────────────┐   ┌──────────────────┐ ┌──────────┐  │
+│  │ ADR-OSS-007             │   │ Requirements     │ │ Phase 2  │  │
+│  │ OSS Release Checklist   │   │ Baseline         │ │ Risk     │  │
+│  │ CRITICAL (Synthesis)    │   │                  │ │ Update   │  │
+│  └─────────────────────────┘   └──────────────────┘ └──────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ### 4.2 Current Execution State
 
 ```
-WORKFLOW PROGRESS AS OF 2026-01-31T20:25:00Z
+WORKFLOW PROGRESS AS OF 2026-01-31T23:30:00Z
 ═════════════════════════════════════════════
 
 Phase 0 (Exploration & Research):   ████████████████████ 100% COMPLETE
@@ -545,668 +418,268 @@ Phase 0 (Exploration & Research):   ██████████████�
   ├─ Tier 3 (QG-0):                 ████████████████████ 100% (0.936 avg)
   └─ Tier 4 (Reports):              ████████████████████ 100% (2 reports)
 
-Barrier 1 (Cross-Pollination):      ░░░░░░░░░░░░░░░░░░░░   0% READY
+Barrier 1 (Cross-Pollination):      ████████████████████ 100% COMPLETE
 
-Phase 1 (Deep Research):            ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
-Phase 2 (Requirements & Arch):      ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
+Phase 1 (Deep Research):            ████████████████████ 100% COMPLETE
+  ├─ Tier 1 (Research + V&V):       ████████████████████ 100% (4 agents)
+  ├─ Tier 2 (Risk Update):          ████████████████████ 100% (22 risks)
+  ├─ Tier 3 (QG-1):                 ████████████████████ 100% (0.942 avg)
+  └─ Tier 4 (Reports):              ████████████████████ 100% (2 reports)
+
+Barrier 2 (Cross-Pollination):      ████████████████████ 100% COMPLETE
+
+Phase 2 (Requirements & Arch):      ░░░░░░░░░░░░░░░░░░░░   0% READY
+  ├─ Tier 1 (ADR-001 + nse-req):    ░░░░░░░░░░░░░░░░░░░░ READY
+  ├─ QG-2.1:                        ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+  ├─ Tier 2 (ADRs 002/003/004/006): ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+  ├─ QG-2.2:                        ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+  ├─ Tier 3 (ADR-005):              ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+  ├─ QG-2.3:                        ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+  ├─ Tier 4 (ADR-007 + baselines):  ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+  └─ QG-2.4:                        ░░░░░░░░░░░░░░░░░░░░ BLOCKED
+
 Phase 3 (Validation & Synthesis):   ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
 Phase 4 (Final V&V & Reporting):    ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
 
-Overall Progress:                   ████░░░░░░░░░░░░░░░░  20%
+Overall Progress:                   ████████░░░░░░░░░░░░  40%
 
-Quality Gates: 1/5 passed (QG-0: 0.936)
-Barriers: 0/4 complete
-Reports: 2/10 generated
-Risks: 21 identified (2 critical, 5 high)
+Quality Gates: 2/8 passed (QG-0: 0.936, QG-1: 0.942)
+Barriers: 2/4 complete
+Reports: 4/10 generated
+Risks: 22 tracked (1 critical, 11 high)
 ```
 
 ---
 
 ## 5. Phase Definitions
 
-### 5.1 Phase 0: Divergent Exploration & Initial Research (BLOCKING)
+### 5.1 Phase 0: Divergent Exploration & Initial Research - COMPLETE
 
-**Objective:** Explore ALL options before converging. Gather initial research and understand current state.
+**Status:** COMPLETE (2026-01-31T20:25:00Z)
+**Results:** 9 original + 5 expanded research agents, 21 risks identified, QG-0 passed (0.936)
 
-**This phase MUST complete before any subsequent phases begin.**
-
-#### Pipeline A: Problem-Solving
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **ps-researcher** | External best practices research | Transcript action items, CLAUDE.md context | `ps/phase-0/ps-researcher/best-practices-research.md` |
-| **ps-analyst** | Current architecture analysis | Jerry codebase, CLAUDE.md, skills/ | `ps/phase-0/ps-analyst/current-architecture-analysis.md` |
-
-**ps-researcher Focus Areas:**
-- Claude Code plugin best practices (Context7, Anthropic docs)
-- Skill authoring patterns and conventions
-- CLAUDE.md file conventions and decomposition patterns
-- OSS project documentation patterns
-- Multi-persona documentation (L0/L1/L2)
-
-**ps-analyst Focus Areas:**
-- Current CLAUDE.md structure and content analysis
-- Skills inventory (transcript, orchestration, problem-solving, nasa-se, worktracker)
-- Work tracker functionality embedded in CLAUDE.md
-- Dependency graph and coupling analysis
-
-#### Pipeline B: NASA SE
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **nse-explorer** | DIVERGENT exploration of all options | Transcript decisions, project scope | `nse/phase-0/nse-explorer/divergent-alternatives.md` |
-| **nse-requirements** | Current state inventory | Jerry codebase, CLAUDE.md | `nse/phase-0/nse-requirements/current-state-inventory.md` |
-| **nse-risk** | Initial risk identification | All Phase 0 outputs | `risks/phase-0-risk-register.md` |
-
-**nse-explorer DIVERGENT Thinking Areas:**
-- Repository structure alternatives (monorepo vs multi-repo vs current)
-- CLAUDE.md decomposition strategies (import patterns, skill references, etc.)
-- Documentation organization options
-- Work tracker extraction approaches
-- Migration path alternatives
-
-**nse-requirements Inventory Scope:**
-- CLAUDE.md sections inventory with token counts
-- Skills inventory with completeness assessment
-- Missing documentation gaps
-- Template compliance status
-
-#### Phase 0 Quality Gate
-
-| Component | Threshold | Criteria |
-|-----------|-----------|----------|
-| **ps-critic** (ADVERSARIAL) | ≥0.85 | DISC-002 protocol, ≥3 findings per artifact, citations required |
-| **nse-qa** (NASA QA) | ≥0.85 | NPR compliance, artifact completeness, traceability |
-
-#### Phase 0 Reports
-
-| Agent | Output |
-|-------|--------|
-| **ps-reporter** | `reports/phase-0/ps-status-report.md` |
-| **nse-reporter** | `reports/phase-0/nse-status-report.md` |
-
-#### Phase 0 Execution Tiers (DEC-OSS-002)
-
-> **Rationale:** nse-risk cannot identify risks without seeing exploration/research outputs first.
-
-```
-PHASE 0 TIERED EXECUTION
-========================
-
-TIER 1 (Parallel - No Dependencies):
-┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐
-│   ps-researcher     │  │    ps-analyst       │  │   nse-explorer      │  │  nse-requirements   │
-└──────────┬──────────┘  └──────────┬──────────┘  └──────────┬──────────┘  └──────────┬──────────┘
-           │                        │                        │                        │
-           └────────────────────────┴────────────────────────┴────────────────────────┘
-                                                    │
-                                                    ▼
-TIER 2 (Sequential - Depends on Tier 1):
-                         ┌──────────────────────────────────────────┐
-                         │              nse-risk                    │
-                         │  (reads all Tier 1 outputs to identify   │
-                         │   risks from exploration & research)     │
-                         └────────────────────┬─────────────────────┘
-                                              │
-                                              ▼
-TIER 3 (Parallel - Depends on Tier 2):
-                         ┌──────────────────────────────────────────┐
-                         │    ps-critic + nse-qa (DUAL QG)          │
-                         │    Threshold: ≥0.92 (DEC-OSS-001)        │
-                         └────────────────────┬─────────────────────┘
-                                              │
-                                              ▼
-TIER 4 (Parallel - Depends on QG passing):
-                         ┌──────────────────────────────────────────┐
-                         │    ps-reporter + nse-reporter            │
-                         └────────────────────┬─────────────────────┘
-                                              │
-                                              ▼
-                              BARRIER 1 (Cross-Pollination)
-```
+See v4.0.0 changelog for details.
 
 ---
 
-### 5.2 Phase 1: Deep Research & Investigation
+### 5.2 Phase 1: Deep Research & Investigation - COMPLETE
 
-**Objective:** Deep dive into identified areas. Investigate current problems. Plan verification approach.
+**Status:** COMPLETE (2026-01-31T22:30:00Z)
+**Results:** 4 PS agents + 2 NSE agents, 22 risks tracked, QG-1 passed (0.942)
 
-#### Pipeline A: Problem-Solving
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **ps-researcher** | Deep dive into prioritized areas | Phase 0 findings, barrier-1 artifacts | `ps/phase-1/ps-researcher/deep-research.md` |
-| **ps-analyst** | Gap analysis, FMEA, 5 Whys, trade-offs | Phase 0 findings, barrier-1 artifacts | `ps/phase-1/ps-analyst/gap-analysis.md`, `ps/phase-1/ps-analyst/fmea-analysis.md`, `ps/phase-1/ps-analyst/root-cause-5whys.md` |
-| **ps-investigator** | Investigate current problems | ACT-010, ACT-011 (transcript issues) | `ps/phase-1/ps-investigator/problem-investigation.md` |
-
-**ps-researcher Deep Dive Areas:**
-- Decomposition with imports pattern (detailed implementation)
-- Multi-persona documentation authoring (L0/L1/L2 writing guidelines)
-- OSS repository structure best practices
-
-**ps-analyst Frameworks Applied:**
-- **5W2H:** Who, What, When, Where, Why, How, How Much for each gap
-- **Ishikawa (Fishbone):** Root cause categorization
-- **FMEA:** Failure Mode and Effects Analysis for risks
-- **8D:** Eight Disciplines problem solving
-- **Pareto (80/20):** Prioritize high-impact gaps
-
-**ps-investigator Investigation Targets:**
-- Transcript skill output inconsistency (Sonnet vs Opus)
-- Current CLAUDE.md maintainability issues
-- Work tracker skill incompleteness
-
-#### Pipeline B: NASA SE
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **nse-verification** | V&V planning for identified gaps | Gap analysis, requirements | `nse/phase-1/nse-verification/vv-planning.md` |
-| **nse-risk** | Risk register update | All Phase 1 findings | `risks/phase-1-risk-register.md` |
-
-#### Phase 1 Quality Gate
-
-| Component | Threshold | Criteria |
-|-----------|-----------|----------|
-| **ps-critic** (ADVERSARIAL) | ≥0.85 | DISC-002 protocol, ≥3 findings per artifact, frameworks applied |
-| **nse-qa** (NASA QA) | ≥0.85 | Analysis completeness, risk coverage, V&V alignment |
-
-#### Phase 1 Reports
-
-| Agent | Output |
-|-------|--------|
-| **ps-reporter** | `reports/phase-1/ps-status-report.md` |
-| **nse-reporter** | `reports/phase-1/nse-status-report.md` |
+See v4.4.0 changelog for details.
 
 ---
 
-### 5.3 Phase 2: Requirements & Architecture
+### 5.3 Phase 2: Requirements & Architecture (4-Tier DEC-003)
 
-**Objective:** Define formal requirements. Create architecture decisions (ADRs). Establish requirements baseline.
+**Status:** READY
+**Objective:** Create 7 ADRs using 7 separate ps-architect agents in tiered execution.
 
-#### Pipeline A: Problem-Solving
+**Decision Reference:** `FEAT-001:DEC-003` captures 5 user decisions:
+- D-001: Checkpoints at each tier boundary (4 checkpoints)
+- D-002: ADR-006 executes in Tier 2 after ADR-001
+- D-003: Tiered Hybrid PS/NSE coordination
+- D-004: Per-tier quality gates (QG-2.1, QG-2.2, QG-2.3, QG-2.4)
+- D-005: Explicit "read these first" with priority ordering
 
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **ps-architect** | Architecture Decision Records | Phase 1 analysis, barrier-2 artifacts | `ps/phase-2/ps-architect/ADR-OSS-001-through-007.md` |
+#### Tier 1: Foundation (PARALLEL)
 
-**ps-architect ADRs to Create:**
-1. **ADR-OSS-001:** CLAUDE.md Decomposition Strategy
-2. **ADR-OSS-002:** Skill Import Pattern
-3. **ADR-OSS-003:** Work Tracker Skill Extraction
-4. **ADR-OSS-004:** Multi-Persona Documentation Strategy
-5. **ADR-OSS-005:** Repository Migration Strategy (jerry → source-repository → public jerry)
-6. **ADR-OSS-006:** Transcript Skill Template Standardization
-7. **ADR-OSS-007:** OSS Release Checklist
+| Agent | ADR/Task | Priority | Mandatory Reads (Priority Order) |
+|-------|----------|----------|----------------------------------|
+| **ps-architect-001** | ADR-OSS-001: CLAUDE.md Decomposition | CRITICAL (RPN 280) | 1. barrier-2/nse-to-ps/handoff-manifest.md<br/>2. ps/phase-1/ps-researcher/deep-research.md<br/>3. risks/phase-1-risk-register.md<br/>4. ps-researcher-claude-md output<br/>5. ps-researcher-decomposition output<br/>6. qg-1/ps-critic-review.md |
+| **nse-requirements** | Requirements Specification | HIGH | 1. barrier-2/ps-to-nse/handoff-manifest.md<br/>2. ps/phase-1/ps-analyst/gap-analysis.md<br/>3. nse/phase-1/nse-verification/vv-planning.md |
 
-Each ADR includes L0/L1/L2 sections.
+**Quality Gate:** QG-2.1 (ps-critic + nse-qa, threshold ≥0.92)
+**Checkpoint:** Yes (D-001)
 
-#### Pipeline B: NASA SE
+#### Tier 2: Parallel ADRs (PARALLEL - All depend on ADR-001)
 
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **nse-requirements** | Formal requirements specification | Gap analysis, ADRs | `nse/phase-2/nse-requirements/requirements-spec.md` |
-| **nse-architecture** | Architecture decisions (NASA SE format) | ADRs, requirements | `nse/phase-2/nse-architecture/architecture-decisions.md` |
-| **nse-integration** | Integration planning | Architecture, interfaces | `nse/phase-2/nse-integration/integration-plan.md` |
-| **nse-configuration** | Requirements baseline | Requirements spec | `nse/phase-2/nse-configuration/requirements-baseline.md` |
-| **nse-risk** | Risk register update | All Phase 2 outputs | `risks/phase-2-risk-register.md` |
+| Agent | ADR/Task | Priority | Key Dependencies |
+|-------|----------|----------|------------------|
+| **ps-architect-002** | ADR-OSS-002: Repository Sync Process | HIGH (RPN 192) | ADR-001, root-cause-5whys.md |
+| **ps-architect-003** | ADR-OSS-003: Work Tracker Extraction | HIGH | ADR-001, problem-investigation.md |
+| **ps-architect-004** | ADR-OSS-004: Multi-Persona Documentation | MEDIUM | ADR-001, deep-research.md |
+| **ps-architect-006** | ADR-OSS-006: Transcript Skill Templates | MEDIUM | ADR-001, skills-best-practices.md (D-002) |
+| **nse-architecture** | Validate ADR-001 against NASA SE | HIGH | ADR-001, 30 VRs from vv-planning.md |
 
-**nse-requirements Shall-Statements:**
-- REQ-OSS-001 through REQ-OSS-NNN
-- Verification method for each requirement
-- Parent traceability to action items
-- Acceptance criteria
+**Quality Gate:** QG-2.2 (ps-critic + nse-qa, threshold ≥0.92)
+**Checkpoint:** Yes (D-001)
 
-**nse-integration Planning:**
-- Interface between CLAUDE.md and skills
-- Interface between work tracker skill and work items
-- Migration interface (jerry → source-repository)
+#### Tier 3: Dependent ADR (PARALLEL - Depends on ADR-001 + ADR-002)
 
-#### Phase 2 Quality Gate
+| Agent | ADR/Task | Priority | Key Dependencies |
+|-------|----------|----------|------------------|
+| **ps-architect-005** | ADR-OSS-005: Repository Migration Strategy | HIGH | ADR-001 (what migrates), ADR-002 (how syncs) |
+| **nse-integration** | Integration Planning | HIGH | ADR-001, ADR-002 |
 
-| Component | Threshold | Criteria |
-|-----------|-----------|----------|
-| **ps-critic** (ADVERSARIAL) | ≥0.85 | ADRs complete with L0/L1/L2, DISC-002, ≥3 findings |
-| **nse-qa** (NASA QA) | ≥0.85 | Requirements traceable, baseline established, NPR compliance |
+**Quality Gate:** QG-2.3 (ps-critic + nse-qa, threshold ≥0.92)
+**Checkpoint:** Yes (D-001)
 
-#### Phase 2 Reports
+#### Tier 4: Synthesis (PARALLEL - Depends on ALL prior ADRs)
 
-| Agent | Output |
-|-------|--------|
-| **ps-reporter** | `reports/phase-2/ps-status-report.md` |
-| **nse-reporter** | `reports/phase-2/nse-status-report.md` |
+| Agent | ADR/Task | Priority | Key Dependencies |
+|-------|----------|----------|------------------|
+| **ps-architect-007** | ADR-OSS-007: OSS Release Checklist (Synthesis) | CRITICAL | ALL 6 prior ADRs, risk register |
+| **nse-configuration** | Requirements Baseline | HIGH | All ADRs, requirements spec |
+| **nse-risk** | Phase 2 Risk Register Update | HIGH | All Phase 2 outputs |
 
----
+**Quality Gate:** QG-2.4 (ps-critic + nse-qa, threshold ≥0.92)
+**Checkpoint:** Yes (D-001) - Final Phase 2 checkpoint before Barrier 3
 
-### 5.4 Phase 3: Validation & Synthesis
+#### Phase 2 Quality Gate Protocol
 
-**Objective:** Validate constraints. Synthesize patterns. Conduct design reviews. Establish design baseline.
-
-#### Pipeline A: Problem-Solving
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **ps-validator** | Constraint verification | Requirements, ADRs | `ps/phase-3/ps-validator/constraint-validation.md` |
-| **ps-synthesizer** | Pattern synthesis | All prior artifacts | `ps/phase-3/ps-synthesizer/pattern-synthesis.md` |
-| **ps-reviewer** | Design review | ADRs, architecture | `ps/phase-3/ps-reviewer/design-review.md` |
-
-**ps-validator Constraints to Verify:**
-- Jerry Constitution compliance (P-001 through P-022)
-- OSS licensing requirements (MIT)
-- Documentation completeness (L0/L1/L2 coverage)
-- Work tracker skill requirements
-
-**ps-synthesizer Synthesis Areas:**
-- Cross-artifact patterns
-- Implementation roadmap prioritization
-- Knowledge consolidation for downstream work
-
-**ps-reviewer Review Scope:**
-- ADR quality and completeness
-- Architecture coherence
-- Risk mitigation adequacy
-
-#### Pipeline B: NASA SE
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **nse-reviewer** | Technical review gate | All Phase 2 outputs | `nse/phase-3/nse-reviewer/technical-review.md` |
-| **nse-configuration** | Design baseline | Approved designs | `nse/phase-3/nse-configuration/design-baseline.md` |
-| **nse-risk** | Risk register update | Review findings | `risks/phase-3-risk-register.md` |
-
-**nse-reviewer Technical Review:**
-- SRR/PDR-style entrance criteria evaluation
-- Action item generation
-- Recommendation for proceeding
-
-#### Phase 3 Quality Gate
-
-| Component | Threshold | Criteria |
-|-----------|-----------|----------|
-| **ps-critic** (ADVERSARIAL) | ≥0.88 | Validation complete, synthesis coherent, DISC-002 |
-| **nse-qa** (NASA QA) | ≥0.88 | Review findings addressed, baselines established |
-
-#### Phase 3 Reports
-
-| Agent | Output |
-|-------|--------|
-| **ps-reporter** | `reports/phase-3/ps-status-report.md` |
-| **nse-reporter** | `reports/phase-3/nse-status-report.md` |
+| Gate | Tier | Artifacts Reviewed | Special Criteria |
+|------|------|-------------------|------------------|
+| QG-2.1 | 1 | ADR-001, Requirements Spec | ADR-001 addresses RSK-P0-004 (CLAUDE.md bloat) |
+| QG-2.2 | 2 | ADRs 002/003/004/006, Architecture | All Tier 2 ADRs properly reference ADR-001 |
+| QG-2.3 | 3 | ADR-005, Integration Plan | ADR-005 integrates ADR-001 + ADR-002 correctly |
+| QG-2.4 | 4 | ADR-007, Baseline, Risks | All 7 ADRs complete with L0/L1/L2, ready for Barrier 3 |
 
 ---
 
-### 5.5 Phase 4: Final V&V & Reporting
+### 5.4 Phase 3: Validation & Synthesis - BLOCKED
 
-**Objective:** Final verification and validation. Comprehensive QA audit. Final status reports. Final risk assessment.
+Awaiting Phase 2 completion.
 
-#### Pipeline A: Problem-Solving
+---
 
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **ps-reporter** | Final comprehensive status report | All artifacts | `reports/phase-4/ps-final-report.md` |
+### 5.5 Phase 4: Final V&V & Reporting - BLOCKED
 
-**ps-reporter Final Report Contents:**
-- Executive summary (L0)
-- Technical implementation roadmap (L1)
-- Strategic recommendations (L2)
-- Metrics and health status
-- Lessons learned
-
-#### Pipeline B: NASA SE
-
-| Agent | Focus | Inputs | Outputs |
-|-------|-------|--------|---------|
-| **nse-verification** | Final V&V | All requirements, validation results | `nse/phase-4/nse-verification/final-vv.md` |
-| **nse-qa** | Comprehensive QA audit | All artifacts | `nse/phase-4/nse-qa/comprehensive-qa-audit.md` |
-| **nse-reporter** | Final SE status report | All SE artifacts | `reports/phase-4/nse-final-report.md` |
-| **nse-risk** | Final risk assessment | All risks | `risks/phase-4-final-risk-assessment.md` |
-
-**nse-verification Final V&V:**
-- Verification Cross-Reference Matrix (VCRM) completion
-- All requirements verified
-- Evidence documented
-
-**nse-qa Comprehensive Audit:**
-- All artifacts validated
-- NPR compliance confirmed
-- Traceability complete
-- Quality metrics calculated
-
-#### Phase 4 Quality Gate (FINAL)
-
-| Component | Threshold | Criteria |
-|-----------|-----------|----------|
-| **ps-critic** (ADVERSARIAL) | ≥0.90 | All deliverables complete, implementation roadmap actionable |
-| **nse-qa** (NASA QA) | ≥0.90 | Full NPR compliance, VCRM complete, audit passed |
+Awaiting Phase 3 completion.
 
 ---
 
 ## 6. Quality Gate Protocol (DISC-002)
 
-### 6.1 Adversarial Prompting Protocol (ps-critic)
+### 6.1 Quality Gate Thresholds (DEC-OSS-001)
 
-Each quality gate uses ps-critic in **ADVERSARIAL MODE** with the following patterns:
-
-| Pattern | Description | Enforcement |
-|---------|-------------|-------------|
-| **Red Team Framing** | Critic assumes "find problems" mindset | Required |
-| **Mandatory Findings Quota** | ≥3 findings per artifact (no free passes) | Hard requirement |
-| **Devil's Advocate Protocol** | Challenge ALL assumptions explicitly | Required |
-| **Checklist Enforcement** | No partial credit on criteria - binary pass/fail | Enforced |
-| **Counter-Example Seeking** | Actively look for exceptions and edge cases | Required |
-| **Score Calibration** | Anchored scoring with explicit thresholds | Enforced |
-
-### 6.2 NASA QA Audit Protocol (nse-qa)
-
-Each quality gate uses nse-qa with NASA-style rigor:
-
-| Aspect | Description | Enforcement |
-|--------|-------------|-------------|
-| **Artifact Completeness** | All required sections present | Required |
-| **Traceability** | Bidirectional links verified | Required |
-| **NPR Compliance** | Alignment with NPR 7123.1D | Checked |
-| **Evidence Documentation** | All claims supported by evidence | Required |
-| **Configuration Status** | Baseline alignment verified | Checked |
-
-### 6.3 Quality Gate Thresholds
-
-> **DEC-OSS-001:** Quality thresholds increased to ≥0.92 for ALL gates.
+> **Decision:** Quality thresholds increased to ≥0.92 for ALL gates.
 > **Rationale:** Mission-critical software - quality is king.
 
-| Gate | Phase | ps-critic Threshold | nse-qa Threshold | Special Criteria |
-|------|-------|---------------------|------------------|------------------|
-| QG-0 | Phase 0 | ≥0.92 | ≥0.92 | Divergent exploration complete, risks identified |
-| QG-1 | Phase 1 | ≥0.92 | ≥0.92 | Frameworks applied (5W2H, FMEA, 8D), investigation complete |
-| QG-2 | Phase 2 | ≥0.92 | ≥0.92 | ADRs complete, requirements baselined |
-| QG-3 | Phase 3 | ≥0.92 | ≥0.92 | Validation complete, design baseline established |
-| QG-4 | Phase 4 | ≥0.92 | ≥0.92 | VCRM complete, comprehensive audit passed |
+| Gate | Phase | Tier | ps-critic | nse-qa | Status |
+|------|-------|------|-----------|--------|--------|
+| QG-0 | 0 | - | ≥0.92 | ≥0.92 | ✅ PASSED (0.936) |
+| QG-1 | 1 | - | ≥0.92 | ≥0.92 | ✅ PASSED (0.942) |
+| QG-2.1 | 2 | 1 | ≥0.92 | ≥0.92 | ⏸️ BLOCKED |
+| QG-2.2 | 2 | 2 | ≥0.92 | ≥0.92 | ⏸️ BLOCKED |
+| QG-2.3 | 2 | 3 | ≥0.92 | ≥0.92 | ⏸️ BLOCKED |
+| QG-2.4 | 2 | 4 | ≥0.92 | ≥0.92 | ⏸️ BLOCKED |
+| QG-3 | 3 | - | ≥0.92 | ≥0.92 | ⏸️ BLOCKED |
+| QG-4 | 4 | - | ≥0.92 | ≥0.92 | ⏸️ BLOCKED |
 
-### 6.4 Quality Gate Failure Protocol
+### 6.2 Per-Tier Quality Gates (Phase 2)
 
-If either ps-critic OR nse-qa fails the threshold:
-1. Generate specific improvement recommendations
-2. Return artifacts to originating agents for revision
-3. Maximum 2 revision cycles before escalation to user
-4. User may override with documented rationale
-5. All failures and overrides logged in risk register
+**Rationale (D-004):** Per-tier gates catch foundational issues before building on them. If ADR-001 has problems, we fix them before Tier 2 agents create ADRs that reference it.
+
+**Benefits:**
+- Early detection of foundational issues
+- Prevents cascade of errors
+- Aligns with dependency structure
+- 4 opportunities for course correction
 
 ---
 
 ## 7. Sync Barrier Protocol
 
-### 7.1 Full Artifact Pass-Through
+### 7.1 Barrier Status
 
-**CRITICAL:** Barriers pass FULL ARTIFACTS, not summaries. This ensures:
-- Complete information fidelity
-- No loss of nuance or detail
-- Downstream agents have full context
-- Traceability maintained
+| Barrier | After | Status | Completed |
+|---------|-------|--------|-----------|
+| Barrier 1 | Phase 0 | ✅ COMPLETE | 2026-01-31T21:45:00Z |
+| Barrier 2 | Phase 1 | ✅ COMPLETE | 2026-01-31T22:30:00Z |
+| Barrier 3 | Phase 2 | ⏸️ BLOCKED | - |
+| Barrier 4 | Phase 3 | ⏸️ BLOCKED | - |
 
-### 7.2 Barrier Definitions
+### 7.2 Cross-Pollination Manifests
 
-| Barrier | After | PS → NSE Artifacts | NSE → PS Artifacts |
-|---------|-------|--------------------|--------------------|
-| Barrier 1 | Phase 0 | Research findings, architecture analysis | Divergent alternatives, inventory, risks |
-| Barrier 2 | Phase 1 | Gap analysis, FMEA, investigation | V&V planning, updated risks |
-| Barrier 3 | Phase 2 | ADRs (all 7) | Requirements spec, architecture, integration plan, baseline |
-| Barrier 4 | Phase 3 | Validation, synthesis, review | Technical review, design baseline, risks |
+Phase 2 agents receive mandatory reads from:
+- **nse-to-ps manifest (barrier-2):** V&V requirements, risk register, NPR compliance status
+- **ps-to-nse manifest (barrier-2):** Research findings, gap analysis, FMEA, investigation results
 
-### 7.3 Cross-Pollination Artifact Structure
+**Consumption Protocol (D-005):**
+1. Read handoff-manifest.md FIRST (priority 1)
+2. Follow priority ordering in mandatory_reads
+3. Cite sources in ADR outputs
+
+---
+
+## 8. Resumption Context
+
+### 8.1 Current Execution State
 
 ```
-cross-pollination/barrier-N/
-├── ps-to-nse/
-│   ├── handoff-manifest.md       # List of artifacts being passed
-│   └── artifacts/                # Symlinks or copies of full artifacts
-└── nse-to-ps/
-    ├── handoff-manifest.md
-    └── artifacts/
-```
-
----
-
-## 8. Risk Management
-
-### 8.1 Continuous Risk Tracking
-
-**nse-risk runs at EVERY phase** to maintain an evolving risk register:
-
-| Phase | Risk Focus |
-|-------|------------|
-| Phase 0 | Initial risk identification from exploration |
-| Phase 1 | Risks from gap analysis and investigation findings |
-| Phase 2 | Architecture and integration risks |
-| Phase 3 | Validation and review-identified risks |
-| Phase 4 | Final risk assessment and residual risks |
-
-### 8.2 Risk Register Structure
-
-```
-risks/
-├── phase-0-risk-register.md
-├── phase-1-risk-register.md
-├── phase-2-risk-register.md
-├── phase-3-risk-register.md
-├── phase-4-final-risk-assessment.md
-└── risk-register-consolidated.md   # Cumulative view
-```
-
-### 8.3 Risk Categories
-
-| Category | Examples |
-|----------|----------|
-| Technical | Decomposition complexity, skill coupling, migration failure |
-| Schedule | Research taking longer than expected, revision cycles |
-| Quality | Documentation gaps, inconsistent outputs |
-| Scope | Scope creep, missing requirements |
-| External | Dependency changes, API changes |
-
----
-
-## 9. Configuration Management
-
-### 9.1 Baseline Strategy
-
-**nse-configuration establishes baselines at optimal points:**
-
-| Baseline | Phase | Contents | Purpose |
-|----------|-------|----------|---------|
-| Requirements Baseline | Phase 2 | Approved requirements spec | Control requirements changes |
-| Design Baseline | Phase 3 | Approved ADRs and architecture | Control design changes |
-
-### 9.2 Change Control
-
-After baseline establishment:
-1. Changes require documented change request
-2. Impact analysis performed by nse-risk
-3. Approval by user before implementation
-4. Baseline updated with change history
-
----
-
-## 10. Execution Constraints
-
-### 10.1 Hard Constraints (Jerry Constitution)
-
-| Constraint | ID | Enforcement |
-|------------|----|----|
-| Single agent nesting | P-003 | Main context → Worker agents only |
-| File persistence | P-002 | All outputs persisted to filesystem |
-| No deception | P-022 | Transparent reasoning, honest scores |
-| User authority | P-020 | User approves quality gates |
-
-### 10.2 Soft Constraints
-
-| Constraint | Value | Rationale |
-|------------|-------|-----------|
-| Max concurrent agents | 5 | Resource management |
-| Max QG retries | 2 | Prevent infinite loops |
-| Checkpoint frequency | PHASE | Balance recovery vs overhead |
-| Artifact size limit | None | Full pass-through required |
-
----
-
-## 11. Scope Coverage (Transcript Action Items)
-
-### 11.1 Action Items to Phase Mapping
-
-| ACT | Description | Phase | Agent(s) |
-|-----|-------------|-------|----------|
-| ACT-001 | Research Claude Code plugin, skill, CLAUDE.md best practices | 0, 1 | ps-researcher |
-| ACT-002 | Research transcript format best practices | 0, 1 | ps-researcher |
-| ACT-003 | Optimize CLAUDE.md (decomposition/imports) | 2 | ps-architect (ADR-OSS-001) |
-| ACT-004 | Optimize all skills (decomposition/imports) | 2 | ps-architect (ADR-OSS-002) |
-| ACT-005 | Separate optimization from documentation | 2 | ps-architect (ADR-OSS-004) |
-| ACT-006 | Extract work tracker into skill | 2 | ps-architect (ADR-OSS-003) |
-| ACT-007 | Automate work tracker document generation | 2 | nse-requirements, ps-architect |
-| ACT-008 | Create multi-persona documentation (L0/L1/L2) | 2 | ps-architect (ADR-OSS-004) |
-| ACT-009 | Plan repository migration | 2 | ps-architect (ADR-OSS-005) |
-| ACT-010 | Gap analysis (current vs desired) | 1 | ps-analyst |
-| ACT-011 | Investigate transcript skill problems | 1 | ps-investigator |
-| ACT-012 | Create consistent output templates | 2 | ps-architect (ADR-OSS-006) |
-
-### 11.2 Decisions Already Made
-
-| Decision | Status | Impact on Orchestration |
-|----------|--------|-------------------------|
-| MIT License | DECIDED | No further research needed |
-| Dual repository (jerry → source-repository) | DECIDED | Migration planning in Phase 2 |
-| Internal repo name: source-repository | DECIDED | Used in ADR-OSS-005 |
-| Orchestration with PS + NASA SE | DECIDED | This plan |
-
----
-
-## 12. Success Criteria
-
-### 12.1 Phase Exit Criteria
-
-| Phase | Exit Criteria |
-|-------|---------------|
-| Phase 0 | Divergent exploration complete, initial research done, risks identified, QG-0 passed |
-| Phase 1 | Deep research complete, gap analysis done, investigation complete, QG-1 passed |
-| Phase 2 | All ADRs approved, requirements baselined, architecture decisions made, QG-2 passed |
-| Phase 3 | Validation complete, synthesis done, reviews passed, design baseline established, QG-3 passed |
-| Phase 4 | Final V&V complete, comprehensive QA audit passed, final reports generated, QG-4 passed |
-
-### 12.2 Workflow Completion Criteria
-
-| Criterion | Validation Method |
-|-----------|-------------------|
-| All phases complete | All phase status = COMPLETE |
-| All quality gates passed | All QG scores ≥ threshold |
-| All barriers synced | All barrier status = COMPLETE |
-| All risks assessed | Final risk assessment exists |
-| All reports generated | 10 reports exist (2 per phase) |
-| Implementation roadmap ready | ps-synthesizer output exists |
-| User approval obtained | User sign-off documented |
-
----
-
-## 13. Resumption Context
-
-### 13.1 Current Execution State
-
-```
-WORKFLOW STATUS AS OF 2026-01-31T20:25:00Z
+WORKFLOW STATUS AS OF 2026-01-31T23:30:00Z
 ==========================================
 
-Status: ACTIVE - Phase 0 COMPLETE
+Status: ACTIVE - Phase 2 READY (4-Tier Execution per DEC-003)
 
 Phase 0 (Exploration & Research):   ✅ COMPLETE
-  ├─ Tier 1a (Original Research):   ✅ 4/4 agents complete
-  ├─ Tier 1b (DISC-001 Expanded):   ✅ 5/5 agents complete
-  ├─ Tier 2 (Risk Identification):  ✅ 21 risks (2 critical, 5 high)
-  ├─ Tier 3 (QG-0):                 ✅ PASSED (0.931 + 0.941 = 0.936 avg)
-  └─ Tier 4 (Reports):              ✅ 2/2 reports generated
+Phase 1 (Deep Research):            ✅ COMPLETE
+Barrier 2:                          ✅ COMPLETE
 
-Phase 1 (Deep Research):            ⏸️ BLOCKED (awaiting Barrier 1)
-Phase 2 (Requirements & Arch):      ⏸️ BLOCKED
-Phase 3 (Validation & Synthesis):   ⏸️ BLOCKED
-Phase 4 (Final V&V & Reporting):    ⏸️ BLOCKED
+Phase 2 (Requirements & Arch):      ⏳ READY (4-tier structure)
+  ├─ Execution Mode:                TIERED_HYBRID (D-003)
+  ├─ Tier 1 (ADR-001 + nse-req):    PENDING
+  ├─ Tier 2 (ADRs 002-006 + arch):  BLOCKED on Tier 1 + QG-2.1
+  ├─ Tier 3 (ADR-005 + int):        BLOCKED on Tier 2 + QG-2.2
+  └─ Tier 4 (ADR-007 + baseline):   BLOCKED on Tier 3 + QG-2.3
 
-Quality Gates:
-  QG-0: ✅ PASSED (ps-critic: 0.931, nse-qa: 0.941)
-  QG-1: ⏸️ BLOCKED
-  QG-2: ⏸️ BLOCKED
-  QG-3: ⏸️ BLOCKED
-  QG-4: ⏸️ BLOCKED
-
-Barriers:
-  Barrier 1: ⏳ READY (awaiting execution)
-  Barrier 2: ⏸️ BLOCKED
-  Barrier 3: ⏸️ BLOCKED
-  Barrier 4: ⏸️ BLOCKED
-
-Agents Executed: 13/24 (including expanded research)
-Reports Generated: 2/10
-Risk Registers: 1/5 (phase-0-risk-register.md)
+Quality Gates Passed: 2/8 (QG-0: 0.936, QG-1: 0.942)
+Barriers Passed: 2/4
+Reports Generated: 4/10
+Risks Tracked: 22 (1 critical, 11 high)
 ```
 
-### 13.2 Key Metrics
+### 8.2 Key Metrics
 
 | Metric | Value |
 |--------|-------|
-| Overall Progress | 20% |
-| Agents Executed | 13 (7 PS + 4 NSE + 2 QG) |
-| Quality Score (QG-0) | 0.936 average |
-| Risks Identified | 21 (2 critical, 5 high, 9 medium, 5 low) |
-| OSS Readiness | 68% (target: 85%) |
+| Overall Progress | 40% |
+| Agents Executed | 17 (Phase 0-1 complete) |
+| Agents Remaining | 13 (Phase 2-4) |
+| Quality Score Average | 0.939 |
+| ADRs to Create | 7 |
 | Research Citations | 130+ |
 
-### 13.3 Next Actions
+### 8.3 Next Actions
 
-1. **Execute Barrier 1:** Cross-pollination of Phase 0 artifacts
-   - PS → NSE: 7 research artifacts + architecture analysis
-   - NSE → PS: Divergent alternatives + inventory + 21 risks
+**Phase 2 Tier 1 Execution:**
 
-2. **Phase 1 Execution:** Deep Research & Investigation
-   - ps-researcher (deep dive)
-   - ps-analyst (gap analysis, FMEA, 5 Whys)
-   - ps-investigator (transcript issues)
-   - nse-verification (V&V planning)
-   - nse-risk (risk update)
+1. **Launch ps-architect-001** (PARALLEL with nse-requirements):
+   - Task: Create ADR-OSS-001 (CLAUDE.md Decomposition Strategy)
+   - CRITICAL priority (RPN 280)
+   - Must read cross-pollination manifests with priority ordering
 
-3. **Quality Gate 1:** ps-critic + nse-qa (≥0.92)
+2. **Launch nse-requirements** (PARALLEL with ps-architect-001):
+   - Task: Create formal requirements specification
+   - Convert 18 unique gaps from gap-analysis to shall-statements
 
-4. Continue sequential phase execution
+3. **Execute QG-2.1** (after Tier 1 agents complete):
+   - ps-critic: Adversarial review of ADR-001 + requirements
+   - nse-qa: NASA audit of ADR-001 + requirements
+   - Threshold: ≥0.92
 
----
-
-## 14. Related Documents
-
-- **ASCII Diagram:** `ORCHESTRATION_DIAGRAM_ASCII.md` (detailed ASCII visualization)
-- **Machine State:** `ORCHESTRATION.yaml` (SSOT)
-- **Execution Tracker:** `ORCHESTRATION_WORKTRACKER.md` (tactical tracking)
-- **DISC-002 Protocol:** `../../../PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-003-future-enhancements/FEAT-003--DISC-002-adversarial-prompting-protocol.md`
+4. **Checkpoint** (after QG-2.1 passes):
+   - Save state for recovery
+   - Proceed to Tier 2
 
 ---
 
-## 15. Approval Request
+## 9. Related Documents
 
-**This orchestration plan requires user approval before execution begins.**
-
-### Review Checklist
-
-- [ ] All 19 agents included and appropriately placed
-- [ ] Divergent exploration (nse-explorer) positioned early
-- [ ] Risk management (nse-risk) at every phase
-- [ ] Dual quality gates (ps-critic + nse-qa) at every phase
-- [ ] Dual reports (ps-reporter + nse-reporter) at every phase
-- [ ] Configuration baselines at optimal points
-- [ ] Full artifact pass-through (not summaries)
-- [ ] Phase structure aligns with project goals
-- [ ] Quality gate thresholds acceptable
-- [ ] Scope coverage complete (all action items mapped)
-
-**To approve:** Confirm this plan is acceptable and execution may begin.
-
-**To revise:** Specify which sections need modification.
+- **Decision Document:** `FEAT-001--DEC-003-phase-2-execution-strategy.md` (5 user decisions)
+- **Machine State:** `ORCHESTRATION.yaml` (SSOT, v5.0.0)
+- **Execution Tracker:** `ORCHESTRATION_WORKTRACKER.md`
+- **Cross-Pollination Manifests:**
+  - `cross-pollination/barrier-2/nse-to-ps/handoff-manifest.md`
+  - `cross-pollination/barrier-2/ps-to-nse/handoff-manifest.md`
 
 ---
 
 *Document ID: PROJ-009-ORCH-PLAN*
 *Workflow ID: oss-release-20260131-001*
-*Version: 4.1.0*
-*Status: ACTIVE - Phase 0 COMPLETE*
+*Version: 5.0.0*
+*Status: ACTIVE - Phase 2 READY*
+*Decision Reference: FEAT-001:DEC-003*
 *Cross-Session Portable: All paths are repository-relative*
-*Dark Mode Optimized: Mermaid diagram uses HSL colors compatible with dark IDE themes*
-*Feedback Loops: Adversarial critic iterations with DISC-* discoveries visualized*
