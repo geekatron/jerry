@@ -44,8 +44,8 @@ flowchart TB
         direction TB
         META_ID["Workflow: oss-release-20260131-001<br/>Status: COMPLETE<br/>Final Score: 0.944<br/>Recommendation: GO_FOR_OSS_RELEASE"]
         META_PATTERNS["Patterns: SEQUENTIAL | CONCURRENT | BARRIER_SYNC<br/>DUAL_QUALITY_GATE | CONTINUOUS_RISK | DUAL_REPORTING<br/>FULL_ARTIFACT_PASS"]
-        META_CONSTRAINTS["Constraints: max_nesting=1 P-003 | file_persistence=true P-002<br/>max_qg_retries=2 | checkpoint_freq=TIER<br/>threshold>=0.92 for ALL gates"]
-        META_METRICS["Final Metrics:<br/>Risk Reduction: 81.7% 2538->465 RPN<br/>VRs: 30/30 CLOSED<br/>8/8 Quality Gates PASSED"]
+        META_CONSTRAINTS["Constraints: max_nesting=1 P-003 | file_persistence=true P-002<br/>max_qg_retries=2 | checkpoint_freq=TIER<br/>threshold≥0.92 for ALL gates"]
+        META_METRICS["Final Metrics:<br/>Risk Reduction: 81.7% 2538→465 RPN<br/>VRs: 30/30 CLOSED<br/>8/8 Quality Gates PASSED"]
     end
 
     %% ═══════════════════════════════════════════════════════════════════════════════════════════
@@ -94,7 +94,7 @@ flowchart TB
     subgraph QG0_BLOCK["QG-0: Post-Exploration Quality Gate - PASSED 0.936 avg"]
         direction TB
 
-        subgraph QG0_V1["QG-0 v1: FAILED - 0.876 avg < 0.92 threshold"]
+        subgraph QG0_V1["QG-0 v1: FAILED - 0.876 avg below 0.92 threshold"]
             direction LR
             QG0_V1_CRITIC["PS-04<br/>ps-critic v1<br/>ADVERSARIAL DISC-002<br/>Score: 0.876 FAIL<br/>Below 0.92 threshold"]
             QG0_V1_QA["NSE-09<br/>nse-qa v1<br/>NPR-7123.1D Audit<br/>Score: 0.936 PASS"]
@@ -104,7 +104,7 @@ flowchart TB
             DISC001_NODE["DISCOVERY DISC-001<br/>Impact: CRITICAL<br/>5 Missed Research Topics:<br/>1. Claude Code CLI Best Practices<br/>2. CLAUDE.md Optimization<br/>3. Plugin Architecture Patterns<br/>4. Skills Documentation Patterns<br/>5. Decomposition with Imports<br/>Remediation: 5 new research agents"]
         end
 
-        subgraph QG0_V2["QG-0 v2: PASSED - 0.936 avg >= 0.92 threshold"]
+        subgraph QG0_V2["QG-0 v2: PASSED - 0.936 avg ≥ 0.92 threshold"]
             direction LR
             QG0_V2_CRITIC["PS-04<br/>ps-critic v2<br/>ADVERSARIAL DISC-002<br/>Score: 0.931 PASS<br/>+6.3% improvement"]
             QG0_V2_QA["NSE-09<br/>nse-qa v2<br/>NPR-7123.1D Audit<br/>Score: 0.941 PASS<br/>+0.5% improvement"]
@@ -386,7 +386,7 @@ flowchart TB
     subgraph QG3_BLOCK["QG-3: Post-Validation - PASSED v2 0.93 avg"]
         direction TB
 
-        subgraph QG3_V1["QG-3 v1: FAILED - 0.915 avg < 0.92 threshold"]
+        subgraph QG3_V1["QG-3 v1: FAILED - 0.915 avg below 0.92 threshold"]
             direction LR
             QG3_V1_CRITIC["PS-04 ps-critic v1<br/>0.85 FAIL<br/>CRIT-001: VR chaos<br/>CRIT-002: RPN error<br/>HIGH-001: self-review"]
             QG3_V1_QA["NSE-09 nse-qa v1<br/>0.98 PASS"]
@@ -396,7 +396,7 @@ flowchart TB
             QG3_REM["REMEDIATION APPLIED:<br/>1. vr-reconciliation.md SSOT<br/>   Single source of truth for VRs<br/>2. self-review-rationale.md<br/>   6 controls documented<br/>3. RPN corrected to 717<br/>   Calculation error fixed"]
         end
 
-        subgraph QG3_V2["QG-3 v2: PASSED - 0.93 avg >= 0.92 threshold"]
+        subgraph QG3_V2["QG-3 v2: PASSED - 0.93 avg ≥ 0.92 threshold"]
             direction LR
             QG3_V2_CRITIC["PS-04 ps-critic v2<br/>0.88 CONDITIONAL<br/>Minor gaps accepted"]
             QG3_V2_QA["NSE-09 nse-qa v2<br/>0.98 PASS"]
@@ -451,7 +451,7 @@ flowchart TB
         subgraph P4_NSE["NSE Pipeline - Final V&V - COMPLETE"]
             direction LR
             NSE_02_P4["NSE-02<br/>nse-verification<br/>FINAL V&V<br/>30/30 VRs CLOSED<br/>COMPLETE"]
-            NSE_03_P4["NSE-03<br/>nse-risk<br/>FINAL Risk Assessment<br/>81.7% reduction<br/>2538->465 RPN<br/>COMPLETE"]
+            NSE_03_P4["NSE-03<br/>nse-risk<br/>FINAL Risk Assessment<br/>81.7% reduction<br/>2538→465 RPN<br/>COMPLETE"]
             NSE_10_P4["NSE-10<br/>nse-reporter<br/>FINAL SE Report<br/>COMPLETE"]
         end
     end
@@ -506,7 +506,7 @@ flowchart TB
     %% ═══════════════════════════════════════════════════════════════════════════════════════════
     subgraph SCORES["QUALITY GATE SCORES SUMMARY"]
         direction TB
-        SCORE_TABLE["All Quality Gates >= 0.92 Threshold<br/>═══════════════════════════════════<br/>QG-0 v2: 0.936 avg ps:0.931 nse:0.941<br/>QG-1: 0.942 avg ps:0.938 nse:0.946<br/>QG-2.1: 0.94 avg ps:0.92 nse:0.96<br/>QG-2.2: 0.9345 avg ps:0.909 nse:0.96<br/>QG-2.3: 0.955 avg ps:0.93 nse:0.98<br/>QG-2.4: 0.96 avg ps:0.94 nse:0.98<br/>QG-3 v2: 0.93 avg ps:0.88 nse:0.98<br/>QG-4: 0.95 avg ps:0.92 nse:0.98<br/>═══════════════════════════════════<br/>FINAL AVERAGE: 0.944"]
+        SCORE_TABLE["All Quality Gates >= 0.92 Threshold<br/>═══════════════════════════════════<br/>QG-0 v2: 0.936 avg PS 0.931 NSE 0.941<br/>QG-1: 0.942 avg PS 0.938 NSE 0.946<br/>QG-2.1: 0.94 avg PS 0.92 NSE 0.96<br/>QG-2.2: 0.9345 avg PS 0.909 NSE 0.96<br/>QG-2.3: 0.955 avg PS 0.93 NSE 0.98<br/>QG-2.4: 0.96 avg PS 0.94 NSE 0.98<br/>QG-3 v2: 0.93 avg PS 0.88 NSE 0.98<br/>QG-4: 0.95 avg PS 0.92 NSE 0.98<br/>═══════════════════════════════════<br/>FINAL AVERAGE: 0.944"]
     end
 
     %% ═══════════════════════════════════════════════════════════════════════════════════════════
