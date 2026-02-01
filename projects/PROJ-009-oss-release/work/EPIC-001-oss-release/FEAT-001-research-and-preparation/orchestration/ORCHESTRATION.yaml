@@ -327,10 +327,12 @@ pipelines:
           # NEW AGENTS - IN_PROGRESS (DISC-001 remediation - launched 2026-01-31T19:50:00Z)
           - id: "ps-researcher-claude-code-p0"
             agent_ref: "ps_researcher_claude_code"
-            status: "IN_PROGRESS"
+            status: "COMPLETE"
             started_at: "2026-01-31T19:50:00Z"
+            completed_at: "2026-01-31T20:00:00Z"
             task: "Claude Code CLI best practices research"
             artifact: "ps/phase-0/ps-researcher-claude-code/claude-code-best-practices.md"
+            findings_summary: "Agentic CLI architecture, hierarchical settings, .claude/rules/ modularity, 97% token savings via skills, Tool Search 47% reduction"
           - id: "ps-researcher-claude-md-p0"
             agent_ref: "ps_researcher_claude_md"
             status: "COMPLETE"
@@ -357,10 +359,12 @@ pipelines:
             findings_summary: "SKILL.md structure, design patterns (single/multi-agent), P-003 compliance, agent definitions, L0/L1/L2 documentation"
           - id: "ps-researcher-decomposition-p0"
             agent_ref: "ps_researcher_decomposition"
-            status: "IN_PROGRESS"
+            status: "COMPLETE"
             started_at: "2026-01-31T19:50:00Z"
+            completed_at: "2026-01-31T19:58:00Z"
             task: "Decomposition with imports research"
             artifact: "ps/phase-0/ps-researcher-decomposition/decomposition-best-practices.md"
+            findings_summary: "4-level hierarchy, always-load vs on-demand, @import syntax, context rot evidence from Chroma Research"
 
       - id: 1
         name: "Deep Research & Investigation"
@@ -1164,14 +1168,15 @@ execution_dependencies:
       - tier: 1b
         name: "Expanded Research (DISC-001 Remediation)"
         execution_mode: "PARALLEL"
-        status: "IN_PROGRESS"  # Launched 2026-01-31T19:50:00Z
+        status: "COMPLETE"  # All 5 agents completed
         started_at: "2026-01-31T19:50:00Z"
+        completed_at: "2026-01-31T20:00:00Z"
         agents:
-          - "ps-researcher-claude-code-p0"    # EN-002: Claude Code CLI best practices
-          - "ps-researcher-claude-md-p0"      # EN-003: CLAUDE.md optimization
-          - "ps-researcher-plugins-p0"        # EN-004: Claude Code plugins
-          - "ps-researcher-skills-p0"         # EN-005: Claude Code skills
-          - "ps-researcher-decomposition-p0"  # EN-006: Decomposition with imports
+          - "ps-researcher-claude-code-p0"    # EN-002: Claude Code CLI best practices - COMPLETE
+          - "ps-researcher-claude-md-p0"      # EN-003: CLAUDE.md optimization - COMPLETE
+          - "ps-researcher-plugins-p0"        # EN-004: Claude Code plugins - COMPLETE
+          - "ps-researcher-skills-p0"         # EN-005: Claude Code skills - COMPLETE
+          - "ps-researcher-decomposition-p0"  # EN-006: Decomposition with imports - COMPLETE
         dependencies: []
         rationale: "DISC-001 identified missed scope - these can run in parallel with no dependencies"
 
@@ -1402,10 +1407,10 @@ resumption:
 
   tier_status:
     tier_1a: "COMPLETE"
-    tier_1b: "IN_PROGRESS"  # Started 2026-01-31T19:50:00Z - 5 agents running in parallel
-    tier_2: "BLOCKED"       # Awaiting Tier 1b completion
-    tier_3: "BLOCKED"       # QG-0 re-evaluation after expanded research
-    tier_4: "BLOCKED"       # Reports
+    tier_1b: "COMPLETE"     # All 5 agents completed 2026-01-31T20:00:00Z
+    tier_2: "READY"         # nse-risk-p0 can now execute
+    tier_3: "BLOCKED"       # QG-0 re-evaluation after Tier 2
+    tier_4: "BLOCKED"       # Reports after QG-0 passes
 
   execution_notes:
     - "DISC-001 validated: ACT-005 required Claude Code, CLAUDE.md, plugins, skills research"
