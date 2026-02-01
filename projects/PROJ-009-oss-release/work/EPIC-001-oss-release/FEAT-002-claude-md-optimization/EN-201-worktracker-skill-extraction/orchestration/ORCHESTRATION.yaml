@@ -110,16 +110,156 @@ paths:
   output: "skills/worktracker/rules/"
 
 # =============================================================================
+# EXECUTION MODEL (Explicit Per-Task and QG Loops)
+# =============================================================================
+execution_model:
+  description: |
+    Each task runs its own adversarial self-feedback loop IN PARALLEL.
+    Quality Gates (QG-1, QG-2) have SYNCHRONIZED dual-agent loops.
+    File-based feedback: reviewers write findings to files, generators read and remediate.
+
+  # Per-Task Adversarial Loop Pattern
+  per_task_loop:
+    pattern: "GENERATOR_CRITIC"
+    agents: ["ps-critic"]
+    execution: "PARALLEL"  # All 4 tasks run their loops concurrently
+    flow:
+      - step: "GENERATE"
+        action: "Extract content from CLAUDE.md to target file"
+        output: "{task.target_file}"
+      - step: "CRITIQUE"
+        agent: "ps-critic"
+        action: "Adversarial review with DISC-002 protocol"
+        output: "quality-gates/task-reviews/{task.id}/ps-critic-review-v{iteration}.md"
+        mode: "ADVERSARIAL"
+      - step: "EVALUATE"
+        condition: "score >= 0.92"
+        on_pass: "ACCEPT"
+        on_fail: "CHECK_ITERATION"
+      - step: "CHECK_ITERATION"
+        condition: "iteration < 3"
+        on_true: "REMEDIATE"
+        on_false: "ESCALATE"
+      - step: "REMEDIATE"
+        action: "Read REM-* items from critique, revise artifact"
+        input: "quality-gates/task-reviews/{task.id}/ps-critic-review-v{iteration}.md"
+        output: "{task.target_file}"  # Overwrite with improved version
+        increment: "iteration += 1"
+        next: "CRITIQUE"
+      - step: "ESCALATE"
+        action: "Create escalation artifact for human review"
+        output: "escalations/{task.id}-escalation.md"
+      - step: "ACCEPT"
+        action: "Mark task accepted, proceed to convergence"
+        set: "task.accepted = true"
+
+  # Quality Gate Synchronized Dual-Agent Loop Pattern
+  quality_gate_loop:
+    pattern: "SYNCHRONIZED_DUAL_REVIEW"
+    agents: ["ps-critic", "nse-qa"]
+    execution: "PARALLEL"  # Both agents review simultaneously
+    synchronization: "SYNCHRONIZED"  # If either fails, both re-review after remediation
+    flow:
+      - step: "DUAL_REVIEW"
+        parallel_actions:
+          - agent: "ps-critic"
+            action: "Adversarial quality review of all artifacts"
+            output: "quality-gates/{qg.id}/ps-critic-review-v{iteration}.md"
+            mode: "ADVERSARIAL"
+          - agent: "nse-qa"
+            action: "NASA SE compliance audit of all artifacts"
+            output: "quality-gates/{qg.id}/nse-qa-audit-v{iteration}.md"
+            mode: "ADVERSARIAL"
+      - step: "EVALUATE_BOTH"
+        condition: "ps_critic.score >= 0.92 AND nse_qa.score >= 0.92"
+        on_pass: "ACCEPT_GATE"
+        on_fail: "CHECK_ITERATION"
+      - step: "CHECK_ITERATION"
+        condition: "iteration < 3"
+        on_true: "SYNTHESIZE_REMEDIATION"
+        on_false: "ESCALATE"
+      - step: "SYNTHESIZE_REMEDIATION"
+        action: "Merge REM-* from ps-critic and NCR-* from nse-qa into unified remediation plan"
+        inputs:
+          - "quality-gates/{qg.id}/ps-critic-review-v{iteration}.md"
+          - "quality-gates/{qg.id}/nse-qa-audit-v{iteration}.md"
+        output: "quality-gates/{qg.id}/remediation-synthesis-v{iteration}.md"
+        next: "APPLY_REMEDIATION"
+      - step: "APPLY_REMEDIATION"
+        action: "Update source artifacts based on synthesized remediation"
+        increment: "iteration += 1"
+        next: "DUAL_REVIEW"
+      - step: "ESCALATE"
+        action: "Create escalation artifact for human review"
+        output: "escalations/{qg.id}-escalation.md"
+      - step: "ACCEPT_GATE"
+        action: "Mark gate passed, unblock next phase"
+        set: "qg.passed = true"
+
+  # File-Based Feedback Protocol
+  feedback_protocol:
+    description: "Structured remediation items passed via files for high-quality upstream feedback"
+
+    # ps-critic output structure
+    ps_critic_output:
+      file_pattern: "ps-critic-review-v{N}.md"
+      sections:
+        - "Executive Summary (score, verdict, gap)"
+        - "Per-Criterion Scores (C/A/CL/AC/T table)"
+        - "Adversarial Findings (min 3, with severity)"
+        - "Remediation Items (REM-001, REM-002, etc.)"
+        - "Quality Gate Verdict (ASCII box)"
+      remediation_format:
+        id_pattern: "REM-{NNN}"
+        fields:
+          - "severity: CRITICAL | HIGH | MEDIUM | LOW"
+          - "finding_type: BLIND_SPOT | WEAK_ASSUMPTION | MISSING_EVIDENCE | CONTRADICTION"
+          - "affected_artifact: path to artifact"
+          - "affected_section: specific section/line"
+          - "evidence: quote or reference from artifact"
+          - "required_action: specific fix instruction"
+          - "expected_improvement: estimated score delta"
+
+    # nse-qa output structure
+    nse_qa_output:
+      file_pattern: "nse-qa-audit-v{N}.md"
+      sections:
+        - "Executive Summary (compliance %, verdict)"
+        - "Per-Criterion Scores (TR/RT/VE/RI/DQ table)"
+        - "NPR 7123.1D Compliance Matrix"
+        - "Non-Conformances (NCR-001, NCR-002, etc.)"
+        - "Certification Statement"
+      non_conformance_format:
+        id_pattern: "NCR-{NNN}"
+        fields:
+          - "severity: CRITICAL | HIGH | MEDIUM | LOW"
+          - "criterion: TR | RT | VE | RI | DQ"
+          - "affected_artifact: path to artifact"
+          - "finding: description of non-conformance"
+          - "evidence: reference to artifact"
+          - "remediation: required corrective action"
+
+    # Remediation synthesis structure
+    synthesis_output:
+      file_pattern: "remediation-synthesis-v{N}.md"
+      sections:
+        - "Merged Findings (REM + NCR prioritized by severity)"
+        - "Artifact-by-Artifact Fix Plan"
+        - "Estimated Effort per Fix"
+        - "Expected Score Improvement"
+
+# =============================================================================
 # PHASE DEFINITIONS
 # =============================================================================
 phases:
   phase_1:
     id: 1
     name: "Content Extraction"
-    description: "Parallel extraction of worktracker content from CLAUDE.md"
+    description: "Parallel extraction with per-task adversarial loops"
     execution_mode: "PARALLEL"
-    status: "PENDING"
-    started_at: null
+    loop_pattern: "per_task_loop"  # Reference to execution_model
+    status: "IN_PROGRESS"
+    started_at: "2026-02-01T14:00:00Z"
     completed_at: null
 
     tasks:
@@ -133,11 +273,14 @@ phases:
           - "## 2: Entity Classification and Properties"
         target_file: "skills/worktracker/rules/worktracker-entity-hierarchy.md"
         expected_loc: 80
-        status: "PENDING"
-        iteration: 0
-        quality_scores: []
-        current_score: null
-        accepted: false
+        status: "ACCEPTED"
+        iteration: 1
+        max_iterations: 3
+        quality_scores: [0.936]
+        current_score: 0.936
+        accepted: true
+        review_artifacts:
+          - "quality-gates/task-reviews/TASK-002/ps-critic-review-v1.md"
 
       - id: "TASK-003"
         name: "Create worktracker-system-mappings.md"
@@ -148,11 +291,14 @@ phases:
           - "### 4.1. Entity Mapping by System"
         target_file: "skills/worktracker/rules/worktracker-system-mappings.md"
         expected_loc: 120
-        status: "PENDING"
-        iteration: 0
-        quality_scores: []
-        current_score: null
-        accepted: false
+        status: "ACCEPTED"
+        iteration: 1
+        max_iterations: 3
+        quality_scores: [0.92]
+        current_score: 0.92
+        accepted: true
+        review_artifacts:
+          - "quality-gates/task-reviews/TASK-003/ps-critic-review-v1.md"
 
       - id: "TASK-004"
         name: "Create worktracker-behavior-rules.md"
@@ -161,11 +307,14 @@ phases:
           - "## Work tracker (worktracker) Behavior"
         target_file: "skills/worktracker/rules/worktracker-behavior-rules.md"
         expected_loc: 60
-        status: "PENDING"
+        status: "IN_PROGRESS"
         iteration: 0
+        max_iterations: 3
         quality_scores: []
         current_score: null
         accepted: false
+        review_artifacts:
+          - "quality-gates/task-reviews/TASK-004/ps-critic-review-v1.md"
 
       - id: "TASK-005"
         name: "Create worktracker-directory-structure.md"
@@ -174,40 +323,108 @@ phases:
           - "## Work tracker (worktracker) Directory Structure"
         target_file: "skills/worktracker/rules/worktracker-directory-structure.md"
         expected_loc: 111
-        status: "PENDING"
+        status: "IN_PROGRESS"
         iteration: 0
+        max_iterations: 3
         quality_scores: []
         current_score: null
         accepted: false
+        review_artifacts:
+          - "quality-gates/task-reviews/TASK-005/ps-critic-review-v1.md"
+
+  # QG-1: Quality Gate after Phase 1 extraction
+  qg_1:
+    id: "QG-1"
+    name: "Extraction Quality Gate"
+    description: "Synchronized dual-agent adversarial review of all 4 extraction artifacts"
+    loop_pattern: "quality_gate_loop"  # Reference to execution_model
+    agents: ["ps-critic", "nse-qa"]
+    execution_mode: "PARALLEL"  # Both agents review simultaneously
+    synchronization: "SYNCHRONIZED"  # Both must pass; if either fails, both re-review
+    status: "BLOCKED"
+    blocked_by: "phase_1"
+    iteration: 0
+    max_iterations: 3
+    artifacts_to_review:
+      - "skills/worktracker/rules/worktracker-entity-hierarchy.md"
+      - "skills/worktracker/rules/worktracker-system-mappings.md"
+      - "skills/worktracker/rules/worktracker-behavior-rules.md"
+      - "skills/worktracker/rules/worktracker-directory-structure.md"
+    review_outputs:
+      ps_critic: "quality-gates/qg-1/ps-critic-review-v{iteration}.md"
+      nse_qa: "quality-gates/qg-1/nse-qa-audit-v{iteration}.md"
+      synthesis: "quality-gates/qg-1/remediation-synthesis-v{iteration}.md"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: false
 
   phase_2:
     id: 2
     name: "Integration Review"
-    description: "Batch validation of all extracted content"
+    description: "Batch integration validation with adversarial loop"
     execution_mode: "SEQUENTIAL"
+    loop_pattern: "quality_gate_loop"
     status: "BLOCKED"
-    blocked_by: "barrier-1"
+    blocked_by: "qg_1"
     started_at: null
     completed_at: null
 
-    agents:
-      - id: "nse-qa"
-        name: "Integration Quality Audit"
-        description: "Validate all 4 rule files for completeness and consistency"
-        status: "BLOCKED"
-        iteration: 0
-        compliance_scores: []
-        current_score: null
-        accepted: false
-        output: "orchestration/qa/integration-qa-report.md"
+    # Integration review is essentially QG-2
+    integration_review:
+      id: "nse-qa-integration"
+      name: "Integration Quality Audit"
+      description: "Validate all 4 rule files for completeness, consistency, no duplication"
+      status: "BLOCKED"
+      iteration: 0
+      max_iterations: 3
+      compliance_scores: []
+      current_score: null
+      accepted: false
+      checks:
+        - "INT-001: Complete Migration (371 lines)"
+        - "INT-002: No Information Loss"
+        - "INT-003: Consistent Formatting"
+        - "INT-004: Cross-References Valid"
+        - "INT-005: Template Compliance"
+        - "INT-006: No Duplication"
+      output: "quality-gates/qg-2/integration-qa-report-v{iteration}.md"
+
+  # QG-2: Quality Gate after Phase 2 integration
+  qg_2:
+    id: "QG-2"
+    name: "Integration Quality Gate"
+    description: "Synchronized dual-agent review of integration completeness"
+    loop_pattern: "quality_gate_loop"
+    agents: ["ps-critic", "nse-qa"]
+    execution_mode: "PARALLEL"
+    synchronization: "SYNCHRONIZED"
+    status: "BLOCKED"
+    blocked_by: "phase_2"
+    iteration: 0
+    max_iterations: 3
+    artifacts_to_review:
+      - "skills/worktracker/rules/worktracker-entity-hierarchy.md"
+      - "skills/worktracker/rules/worktracker-system-mappings.md"
+      - "skills/worktracker/rules/worktracker-behavior-rules.md"
+      - "skills/worktracker/rules/worktracker-directory-structure.md"
+    review_outputs:
+      ps_critic: "quality-gates/qg-2/ps-critic-review-v{iteration}.md"
+      nse_qa: "quality-gates/qg-2/nse-qa-audit-v{iteration}.md"
+      synthesis: "quality-gates/qg-2/remediation-synthesis-v{iteration}.md"
+    scores:
+      ps_critic: null
+      nse_qa: null
+    passed: false
 
   phase_3:
     id: 3
     name: "Navigation & Validation"
     description: "Update SKILL.md and validate skill loading"
     execution_mode: "SEQUENTIAL"
+    loop_pattern: "per_task_loop"
     status: "BLOCKED"
-    blocked_by: "barrier-2"
+    blocked_by: "qg_2"
     started_at: null
     completed_at: null
 
@@ -215,49 +432,67 @@ phases:
       - id: "TASK-006"
         name: "Update SKILL.md navigation"
         description: "Add navigation pointers to all rule files"
+        target_file: "skills/worktracker/SKILL.md"
         status: "BLOCKED"
         iteration: 0
+        max_iterations: 3
         quality_scores: []
         current_score: null
         accepted: false
+        review_artifacts:
+          - "quality-gates/task-reviews/TASK-006/ps-critic-review-v1.md"
 
       - id: "TASK-007"
         name: "Validate skill loading"
         description: "Test /worktracker skill invocation loads all content"
-        status: "BLOCKED"
         depends_on: "TASK-006"
+        status: "BLOCKED"
         iteration: 0
+        max_iterations: 3
         quality_scores: []
         current_score: null
         accepted: false
+        review_artifacts:
+          - "quality-gates/task-reviews/TASK-007/ps-critic-review-v1.md"
 
 # =============================================================================
-# SYNC BARRIERS
+# CONVERGENCE POINTS (formerly SYNC BARRIERS)
 # =============================================================================
-barriers:
-  - id: "barrier-1"
-    name: "Phase 1 → Phase 2 Gate"
+convergence_points:
+  - id: "convergence-1"
+    name: "Phase 1 Tasks → QG-1"
+    description: "All 4 per-task loops must complete (accepted) before QG-1 begins"
     status: "PENDING"
-    completed_at: null
     conditions:
       - "TASK-002.accepted == true"
       - "TASK-003.accepted == true"
       - "TASK-004.accepted == true"
       - "TASK-005.accepted == true"
-    artifacts:
-      - "skills/worktracker/rules/worktracker-entity-hierarchy.md"
-      - "skills/worktracker/rules/worktracker-system-mappings.md"
-      - "skills/worktracker/rules/worktracker-behavior-rules.md"
-      - "skills/worktracker/rules/worktracker-directory-structure.md"
+    unblocks: "qg_1"
 
-  - id: "barrier-2"
-    name: "Phase 2 → Phase 3 Gate"
+  - id: "convergence-2"
+    name: "QG-1 → Phase 2"
+    description: "QG-1 must pass before Phase 2 integration review"
     status: "PENDING"
-    completed_at: null
     conditions:
-      - "nse-qa.accepted == true"
-    artifacts:
-      - "orchestration/qa/integration-qa-report.md"
+      - "qg_1.passed == true"
+    unblocks: "phase_2"
+
+  - id: "convergence-3"
+    name: "Phase 2 → QG-2"
+    description: "Integration review must complete before QG-2"
+    status: "PENDING"
+    conditions:
+      - "phase_2.integration_review.accepted == true"
+    unblocks: "qg_2"
+
+  - id: "convergence-4"
+    name: "QG-2 → Phase 3"
+    description: "QG-2 must pass before Phase 3 navigation/validation"
+    status: "PENDING"
+    conditions:
+      - "qg_2.passed == true"
+    unblocks: "phase_3"
 
 # =============================================================================
 # EVALUATION CRITERIA (DISC-002 Protocol)
@@ -447,55 +682,142 @@ agents:
       acceptance_threshold: 92  # percentage
 
 # =============================================================================
-# EXECUTION QUEUE
+# EXECUTION QUEUE (Explicit Flow with Loops)
 # =============================================================================
 execution_queue:
   current_group: 1
   groups:
     - id: 1
-      name: "Phase 1: Parallel Extraction"
+      name: "Phase 1: Parallel Extraction with Per-Task Loops"
       execution_mode: "PARALLEL"
-      status: "READY"
+      status: "IN_PROGRESS"
+      description: |
+        Each task runs its own adversarial loop concurrently:
+        TASK-002 ──► [Generate → ps-critic → Revise]* ──► ≥0.92
+        TASK-003 ──► [Generate → ps-critic → Revise]* ──► ≥0.92
+        TASK-004 ──► [Generate → ps-critic → Revise]* ──► ≥0.92
+        TASK-005 ──► [Generate → ps-critic → Revise]* ──► ≥0.92
+        * Loop until score ≥0.92 or 3 iterations (then escalate)
       tasks:
-        - "TASK-002"
-        - "TASK-003"
-        - "TASK-004"
-        - "TASK-005"
+        - id: "TASK-002"
+          loop: "per_task_loop"
+          agent: "ps-critic"
+        - id: "TASK-003"
+          loop: "per_task_loop"
+          agent: "ps-critic"
+        - id: "TASK-004"
+          loop: "per_task_loop"
+          agent: "ps-critic"
+        - id: "TASK-005"
+          loop: "per_task_loop"
+          agent: "ps-critic"
 
     - id: 2
-      name: "Barrier 1: Quality Gate"
-      execution_mode: "SEQUENTIAL"
+      name: "Convergence 1: All Tasks → QG-1"
+      execution_mode: "BARRIER"
       status: "BLOCKED"
       blocked_by: "group-1"
+      description: "Wait for all 4 task loops to complete (accepted)"
+      conditions:
+        - "TASK-002.accepted"
+        - "TASK-003.accepted"
+        - "TASK-004.accepted"
+        - "TASK-005.accepted"
       actions:
-        - "verify_all_phase_1_accepted"
-        - "create_checkpoint"
+        - "create_checkpoint: phase-1-complete"
 
     - id: 3
+      name: "QG-1: Synchronized Dual-Agent Adversarial Review"
+      execution_mode: "SYNCHRONIZED_LOOP"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      description: |
+        Both agents review in parallel, synchronized iteration:
+        ┌─────────────────────────────────────────────────────────┐
+        │  ps-critic ──► review ──┐                               │
+        │                         ├──► BOTH ≥0.92? ──► PASS       │
+        │  nse-qa ────► audit ────┘         │                     │
+        │                                   ▼ NO                  │
+        │                         synthesize remediation          │
+        │                                   │                     │
+        │                         apply fixes to artifacts        │
+        │                                   │                     │
+        │                         iteration < 3? ──► LOOP         │
+        │                                   │ NO                  │
+        │                                   ▼                     │
+        │                              ESCALATE                   │
+        └─────────────────────────────────────────────────────────┘
+      agents:
+        - id: "ps-critic"
+          output: "quality-gates/qg-1/ps-critic-review-v{iteration}.md"
+        - id: "nse-qa"
+          output: "quality-gates/qg-1/nse-qa-audit-v{iteration}.md"
+      synthesis_output: "quality-gates/qg-1/remediation-synthesis-v{iteration}.md"
+      threshold: 0.92
+      max_iterations: 3
+
+    - id: 4
+      name: "Convergence 2: QG-1 → Phase 2"
+      execution_mode: "BARRIER"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      conditions:
+        - "qg_1.passed"
+      actions:
+        - "create_checkpoint: qg-1-complete"
+
+    - id: 5
       name: "Phase 2: Integration Review"
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: "group-2"
-      agents:
-        - "nse-qa"
-
-    - id: 4
-      name: "Barrier 2: Integration Gate"
-      execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
-      blocked_by: "group-3"
-      actions:
-        - "verify_integration_accepted"
-        - "create_checkpoint"
-
-    - id: 5
-      name: "Phase 3: Navigation & Validation"
-      execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
       blocked_by: "group-4"
+      description: "nse-qa validates integration completeness (INT-001 through INT-006)"
+      agents:
+        - id: "nse-qa"
+          mode: "integration"
+          output: "quality-gates/qg-2/integration-qa-report-v{iteration}.md"
+
+    - id: 6
+      name: "QG-2: Synchronized Dual-Agent Integration Gate"
+      execution_mode: "SYNCHRONIZED_LOOP"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      description: "Final quality gate before navigation/validation"
+      agents:
+        - id: "ps-critic"
+          output: "quality-gates/qg-2/ps-critic-review-v{iteration}.md"
+        - id: "nse-qa"
+          output: "quality-gates/qg-2/nse-qa-audit-v{iteration}.md"
+      synthesis_output: "quality-gates/qg-2/remediation-synthesis-v{iteration}.md"
+      threshold: 0.92
+      max_iterations: 3
+
+    - id: 7
+      name: "Convergence 3: QG-2 → Phase 3"
+      execution_mode: "BARRIER"
+      status: "BLOCKED"
+      blocked_by: "group-6"
+      conditions:
+        - "qg_2.passed"
+      actions:
+        - "create_checkpoint: qg-2-complete"
+
+    - id: 8
+      name: "Phase 3: Navigation & Validation with Per-Task Loops"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-7"
+      description: |
+        TASK-006 ──► [Generate → ps-critic → Revise]* ──► ≥0.92
+        TASK-007 ──► [Generate → ps-critic → Revise]* ──► ≥0.92
       tasks:
-        - "TASK-006"
-        - "TASK-007"
+        - id: "TASK-006"
+          loop: "per_task_loop"
+          agent: "ps-critic"
+        - id: "TASK-007"
+          loop: "per_task_loop"
+          agent: "ps-critic"
+          depends_on: "TASK-006"
 
 # =============================================================================
 # CHECKPOINTS
@@ -529,7 +851,7 @@ metrics:
 
   timing:
     workflow_started: "2026-02-01T12:00:00Z"
-    last_activity: "2026-02-01T12:00:00Z"
+    last_activity: "2026-02-01T14:00:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -568,8 +890,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "TASK-001 complete. Ready to execute Phase 1 parallel extraction."
-  next_step: "Execute TASK-002-005 with ps-critic review loops"
+  current_state: "Phase 1 IN PROGRESS. TASK-002-005 executing in parallel with adversarial loops."
+  next_step: "Await task completion, then execute QG-1 synchronized dual-agent review"
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"
