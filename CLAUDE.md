@@ -26,6 +26,7 @@ Jerry addresses this through:
 
 ## Worktracker
 
+
 <worktracker>
 
 ## 1: Entity Hierarchy
@@ -357,6 +358,7 @@ docs/knowledge/exemplars/templates/                                            #
 ---
 
 ## Work tracker (worktracker) Directory Structure
+For worktracker
 
 ```
 projects/

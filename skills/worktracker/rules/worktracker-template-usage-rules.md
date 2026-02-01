@@ -1,11 +1,11 @@
 # WORKTRACKER (a.k.a worktracker, work-tracker, work tracker) Templates (MANDATORY)
 
 1. **CRITICAL:** You MUST use the repository templates when creating ANY work items or artifacts. **ALWAYS** read the respective template before creating a new file.
-2. **DO NOT** make up your own formats. Always check for existing templates first.
+2. **NEVER** make up your own formats. Always check for existing templates first.
 3. **INCLUDE** all required sections from the template
 4. **REFERENCE** the template in the file's HTML comment header
 5. **ASK** the user if unsure which template to use
-6.
+
 
 ### WORKTRACKER Template Location
 **Location:** `.context/templates/worktracker/`
