@@ -13,10 +13,79 @@ PURPOSE: Document finding about markdown structure best practices for LLM consum
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-01T17:00:00Z
-> **Completed:** 2026-02-01T17:00:00Z
+> **Updated:** 2026-02-01T19:30:00Z
 > **Parent:** FEAT-002
 > **Owner:** Claude
-> **Source:** User feedback, industry research
+> **Source:** User feedback, industry research, Context7, Anthropic docs
+
+---
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Why This Matters (Human Explanation)](#why-this-matters-human-explanation) | Plain-language explanation for humans |
+| [Summary](#summary) | Technical summary of findings |
+| [Context](#context) | Background and research question |
+| [Finding](#finding) | Detailed evidence and sources |
+| [Evidence](#evidence) | Source documentation table |
+| [Implications](#implications) | Impact on project |
+| [Recommendations](#recommendations) | Actions to take |
+
+---
+
+## Why This Matters (Human Explanation)
+
+### The Problem
+
+When Claude reads a long markdown file, it processes text linearly from top to bottom. Without a map of what's in the document, Claude has to:
+1. Read everything to understand the structure
+2. Remember where information is located
+3. Mentally track relationships between sections
+
+This is inefficient and can lead to Claude missing relevant information or providing incomplete answers.
+
+### The Solution: Navigation Tables with Anchor Links
+
+A **navigation table with anchor links** at the top of the document gives Claude (and humans!) a clickable roadmap:
+
+```markdown
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this document covers |
+| [Details](#details) | Implementation specifics |
+```
+
+### Why Anchor Links Specifically?
+
+**Without anchors:** Claude sees a list of section names but can't easily jump to them.
+
+**With anchors (`[Section](#section)`):** Claude can:
+- **Jump directly** to the relevant section
+- **Build a mental map** of how sections relate
+- **Extract specific information** more precisely
+- **Quote relevant parts** without reading everything
+
+### The Analogy
+
+Think of it like a book:
+- **No table of contents** = You flip through pages hoping to find what you need
+- **Table of contents without page numbers** = You know chapters exist but still have to search
+- **Table of contents WITH page numbers (anchors)** = You go directly to page 47
+
+Anchor links are the "page numbers" that let Claude navigate efficiently.
+
+### Official Anthropic Guidance
+
+This isn't just a good idea - **Anthropic officially recommends it**:
+
+> "For reference files that exceed 100 lines, it's important to include a table of contents at the top... **A table of contents allows Claude to efficiently navigate and jump to specific sections as required.**"
+>
+> — [Claude Platform Documentation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+
+### Bottom Line
+
+**Navigation tables with anchor links help Claude help you better.** They reduce the chance of Claude missing information, improve response accuracy, and make long documents actually useful instead of overwhelming.
 
 ---
 
@@ -130,6 +199,37 @@ This SKILL.md serves multiple audiences:
 | **Efficient Navigation** | Claude can jump to relevant sections instead of reading linearly |
 | **Context Compression** | When summarizing, Claude knows which sections matter for which audiences |
 
+### Why Anchor Links Are Essential (Follow-up Research)
+
+During implementation, follow-up research confirmed that **anchor links** (`[Section](#section)`) are critical - not just the table itself.
+
+#### Source 5: Claude Platform Documentation (Authoritative)
+
+> "A table of contents allows Claude to **efficiently navigate and jump to specific sections** as required, ensuring it can access the necessary details without reading the entire lengthy document."
+
+**Citation:** [Claude Platform - Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+
+#### Source 6: Geeky Tech - LLM Skimming
+
+> "Anchor links enhance **extractability**, making it easier for LLMs to pinpoint and utilize specific information when generating responses."
+
+**Citation:** [Anchor Links and ToC for LLM Skimming](https://www.geekytech.co.uk/anchor-links-and-table-of-contents-for-llm-skimming/)
+
+#### Source 7: Microsoft MarkItDown
+
+> "Mainstream LLMs natively '_speak_' Markdown, and often incorporate Markdown into their responses unprompted. This suggests they have been trained on vast amounts of Markdown-formatted text, and understand it well."
+
+**Citation:** [Microsoft MarkItDown](https://github.com/microsoft/markitdown)
+
+### Anchor Link Benefits
+
+| Benefit | Without Anchors | With Anchors |
+|---------|----------------|--------------|
+| **Navigation** | Section list only | Direct jump to section |
+| **Extractability** | Scan entire doc | Pinpoint specific info |
+| **Knowledge Graph** | Flat list | Connected concepts |
+| **First-100-Words** | Passive overview | Active navigation aid |
+
 ---
 
 ## Evidence
@@ -197,6 +297,8 @@ This discovery affects ALL markdown files that Claude reads:
 | Type | Path | Description |
 |------|------|-------------|
 | Parent | [FEAT-002](./FEAT-002-claude-md-optimization.md) | Parent feature |
+| Research | [TASK-000 Research](./EN-202-claude-md-rewrite/TASK-000-research-navigation-table-optimization.md) | Full research with all sources |
+| Rule | [Navigation Standards](../../.claude/rules/markdown-navigation-standards.md) | Enforcement rule (v2.0) |
 | Pattern Example | skills/orchestration/SKILL.md | Triple-Lens implementation |
 | Pattern Example | skills/problem-solving/SKILL.md | Triple-Lens implementation |
 
@@ -224,6 +326,9 @@ This discovery affects ALL markdown files that Claude reads:
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-01T17:00:00Z | Claude | Created discovery |
+| 2026-02-01T19:30:00Z | Claude | Added anchor link research findings from Context7 and Claude Platform docs |
+| 2026-02-01T19:30:00Z | Claude | Added "Why This Matters (Human Explanation)" section |
+| 2026-02-01T19:30:00Z | Claude | Added navigation table with anchor links (leading by example) |
 
 ---
 
