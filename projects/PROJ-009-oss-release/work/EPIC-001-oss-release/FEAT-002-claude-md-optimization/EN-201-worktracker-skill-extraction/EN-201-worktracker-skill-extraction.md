@@ -273,6 +273,12 @@ See `FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/qu
 | [DEC-001](./DEC-001-faithful-extraction-principle.md) | Faithful Extraction Preserves Source Defects | ACCEPTED |
 | [DEC-002](./DEC-002-risk-identification-deferred.md) | Risk Identification Deferred to EN-202 | ACCEPTED |
 
+### Bugs (in EN-201)
+
+| ID | Title | Severity | Status |
+|----|-------|----------|--------|
+| [BUG-001](./BUG-001-deleted-user-files-without-review.md) | Deleted user's manual files without review | major | **FIXED** |
+
 ### Bugs Created (for EN-202)
 
 Source defects discovered during extraction, deferred to EN-202 per DEC-001:

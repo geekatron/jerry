@@ -2,12 +2,45 @@
 
 > Rule file for /worktracker skill
 > Source: CLAUDE.md lines 360-399 (EN-201 extraction)
+> Additional: User's manual decomposition (recovered from git history)
 > Extracted: 2026-02-01
 
 ---
 
-## Work tracker (worktracker) Directory Structure
-For worktracker
+## Folder Structure Patterns
+
+Worktracker supports two alternative placement patterns. Choose ONE based on your repository's needs.
+
+### Project-based Folder Structure (ONE-OF)
+
+Used for repositories like Jerry that require **project-based** work tracking hierarchy. Multiple projects can exist in the same repository.
+
+```
+{RepositoryRoot}/                               # Root of the Repository (e.g. Jerry, Forge, etc.)
+└── projects/                                   # Projects Folder
+    └── {ProjectId}/                            # e.g. PROJ-005-plugin-bugs
+        ├── PLAN.md                             # Initial Project Plan and Overview
+        ├── WORKTRACKER.md                      # Global Manifest for this project
+        └── work/                               # WORKTRACKER Directory Structure (see below)
+```
+
+### Repository-based Folder Structure (ONE-OF)
+
+Used for repositories like Knowledge that require **repository-based** work tracking hierarchy. The entire repository is the work context.
+
+```
+{RepositoryRoot}/                               # Root of the Repository (e.g. Knowledge)
+├── WORKTRACKER.md                              # Global Manifest for the repository
+└── work/                                       # WORKTRACKER Directory Structure (see below)
+```
+
+---
+
+## WORKTRACKER Directory Structure
+
+The detailed directory structure below applies to both patterns. It lives under the `work/` folder in either:
+- `projects/{ProjectId}/work/` (project-based)
+- `{RepositoryRoot}/work/` (repository-based)
 
 ```
 projects/
