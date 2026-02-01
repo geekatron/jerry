@@ -1,19 +1,4 @@
-%%{init: {'theme': 'dark', 'themeVariables': {
-  'primaryColor': '#2d3748',
-  'primaryTextColor': '#e2e8f0',
-  'primaryBorderColor': '#4a5568',
-  'lineColor': '#718096',
-  'secondaryColor': '#1a202c',
-  'tertiaryColor': '#2d3748',
-  'background': '#0d1117',
-  'mainBkg': '#161b22',
-  'textColor': '#e2e8f0',
-  'nodeBorder': '#30363d',
-  'clusterBkg': '#161b22',
-  'clusterBorder': '#30363d',
-  'titleColor': '#58a6ff',
-  'edgeLabelBackground': '#21262d'
-}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d3748', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#4a5568', 'lineColor': '#718096', 'secondaryColor': '#1a202c', 'tertiaryColor': '#2d3748', 'background': '#0d1117', 'mainBkg': '#161b22', 'textColor': '#e2e8f0', 'nodeBorder': '#30363d', 'clusterBkg': '#161b22', 'clusterBorder': '#30363d', 'titleColor': '#58a6ff', 'edgeLabelBackground': '#21262d'}}}%%
 
 flowchart TB
     %% ═══════════════════════════════════════════════════════════════════════════════════════════
@@ -43,8 +28,8 @@ flowchart TB
     subgraph METADATA["WORKFLOW METADATA - COMPLETE"]
         direction TB
         META_ID["Workflow: oss-release-20260131-001<br/>Status: COMPLETE<br/>Final Score: 0.944<br/>Recommendation: GO_FOR_OSS_RELEASE"]
-        META_PATTERNS["Patterns: SEQUENTIAL | CONCURRENT | BARRIER_SYNC<br/>DUAL_QUALITY_GATE | CONTINUOUS_RISK | DUAL_REPORTING<br/>FULL_ARTIFACT_PASS"]
-        META_CONSTRAINTS["Constraints: max_nesting=1 P-003 | file_persistence=true P-002<br/>max_qg_retries=2 | checkpoint_freq=TIER<br/>threshold≥0.92 for ALL gates"]
+        META_PATTERNS["Patterns: SEQUENTIAL • CONCURRENT • BARRIER_SYNC<br/>DUAL_QUALITY_GATE • CONTINUOUS_RISK • DUAL_REPORTING<br/>FULL_ARTIFACT_PASS"]
+        META_CONSTRAINTS["Constraints: max_nesting=1 P-003 • file_persistence=true P-002<br/>max_qg_retries=2 • checkpoint_freq=TIER<br/>threshold≥0.92 for ALL gates"]
         META_METRICS["Final Metrics:<br/>Risk Reduction: 81.7% 2538→465 RPN<br/>VRs: 30/30 CLOSED<br/>8/8 Quality Gates PASSED"]
     end
 
