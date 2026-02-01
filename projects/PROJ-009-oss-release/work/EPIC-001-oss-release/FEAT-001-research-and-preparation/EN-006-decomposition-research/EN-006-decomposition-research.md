@@ -22,6 +22,25 @@ PURPOSE: Research decomposition and import patterns for context optimization
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler researched |
+| [Enabler Type Classification](#enabler-type-classification) | EXPLORATION type classification |
+| [Problem Statement](#problem-statement) | Why this research was needed |
+| [Business Value](#business-value) | Features unlocked by this research |
+| [Technical Approach](#technical-approach) | Research methodology used |
+| [Children (Tasks)](#children-tasks) | Task inventory |
+| [Progress Summary](#progress-summary) | Completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables |
+| [Key Findings](#key-findings) | Import syntax, tiered strategy, token reduction |
+| [Related Items](#related-items) | Hierarchy and orchestration artifacts |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Research decomposition patterns and import mechanisms for optimizing context loading. Focuses on the @ import syntax, always-loaded vs contextual loading, and tiered information architecture.

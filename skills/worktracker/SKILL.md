@@ -46,12 +46,21 @@ Invoke `/worktracker` when you need to:
 
 ---
 
+## Core Rules (Always Loaded)
+
+The following rules are automatically loaded when this skill is invoked:
+
+@rules/worktracker-behavior-rules.md
+
+---
+
 ## Additional Resources
 
 ### Rule Files
 
+For detailed reference, the following rule files are available:
+
 - **Entity Hierarchy**: [worktracker-entity-hierarchy.md](./rules/worktracker-entity-hierarchy.md) - Work item types, classification matrix, and containment rules
 - **System Mappings**: [worktracker-system-mappings.md](./rules/worktracker-system-mappings.md) - ADO Scrum, SAFe, and JIRA mappings
-- **Behavior Rules**: [worktracker-behavior-rules.md](./rules/worktracker-behavior-rules.md) - WORKTRACKER.md usage and folder creation rules
 - **Directory Structure**: [worktracker-directory-structure.md](./rules/worktracker-directory-structure.md) - Complete folder hierarchy with examples
 - **Templates**: [worktracker-templates.md](./rules/worktracker-templates.md) - Template locations and usage rules

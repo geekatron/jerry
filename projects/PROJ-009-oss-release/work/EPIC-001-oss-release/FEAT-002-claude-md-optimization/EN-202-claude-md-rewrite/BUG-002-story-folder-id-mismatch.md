@@ -23,6 +23,22 @@ PURPOSE: Document defect requiring fix in CLAUDE.md rewrite
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Bug overview and key details |
+| [Reproduction Steps](#reproduction-steps) | How to reproduce the bug |
+| [Environment](#environment) | System configuration |
+| [Evidence](#evidence) | Bug documentation |
+| [Root Cause Analysis](#root-cause-analysis) | Cause identification |
+| [Acceptance Criteria](#acceptance-criteria) | Fix verification |
+| [Related Items](#related-items) | Hierarchy and references |
+| [History](#history) | Change log |
+| [System Mapping](#system-mapping) | External system mappings |
+
+---
+
 ## Summary
 
 CLAUDE.md line 232 incorrectly documents Story folder naming as `{EnablerId}-{slug}` instead of `{StoryId}-{slug}`. This creates inconsistency between Enabler and Story folder naming conventions.

@@ -22,6 +22,27 @@ PURPOSE: Validate the CLAUDE.md optimization achieves all targets
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler validates |
+| [Enabler Type Classification](#enabler-type-classification) | COMPLIANCE type classification |
+| [Problem Statement](#problem-statement) | Why validation is needed |
+| [Business Value](#business-value) | Features unlocked |
+| [Technical Approach](#technical-approach) | Quantitative and qualitative validation |
+| [Children (Tasks)](#children-tasks) | Task inventory and dependencies |
+| [Progress Summary](#progress-summary) | Completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Test Scenarios](#test-scenarios) | TS-1 through TS-5 test cases |
+| [Evidence](#evidence) | Deliverables and validation metrics |
+| [Risks and Mitigations](#risks-and-mitigations) | Risk management |
+| [Dependencies](#dependencies) | What this depends on and enables |
+| [Related Items](#related-items) | Hierarchy |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Validate that the CLAUDE.md optimization achieves all quantitative and qualitative targets. This includes token count verification, skill invocation testing, navigation pointer validation, and typical workflow testing.

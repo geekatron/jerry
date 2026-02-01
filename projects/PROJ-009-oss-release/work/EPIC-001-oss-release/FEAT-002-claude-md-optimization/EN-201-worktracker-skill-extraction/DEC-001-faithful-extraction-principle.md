@@ -18,6 +18,19 @@ PURPOSE: Document decision to preserve source defects during extraction
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Overview of 2 decisions |
+| [Decision Context](#decision-context) | Background, constraints, stakeholders |
+| [Decisions](#decisions) | D-001 and D-002 detailed decisions |
+| [Decision Summary](#decision-summary) | Quick reference table |
+| [Related Artifacts](#related-artifacts) | Parent, bugs, evidence |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Summary
 
 During EN-201 worktracker skill extraction, we decided that extraction should preserve source defects verbatim rather than fix them. Source defects are documented and deferred to the content rewrite phase (EN-202).

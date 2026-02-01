@@ -20,6 +20,20 @@ PURPOSE: Document finding about redundant content in CLAUDE.md
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What was discovered |
+| [Context](#context) | Background and investigation approach |
+| [Finding](#finding) | Detailed duplication pattern and impact |
+| [Evidence](#evidence) | Source documentation |
+| [Implications](#implications) | Impact and recommendations |
+| [Relationships](#relationships) | Created items and related artifacts |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Summary
 
 CLAUDE.md contains duplicated template content. Lines 9-31 and lines 35-117 in the `worktracker-templates.md` extraction contain overlapping information about worktracker templates, increasing cognitive load and document size.

@@ -22,6 +22,26 @@ PURPOSE: Research OSS release best practices from industry sources
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler researched |
+| [Enabler Type Classification](#enabler-type-classification) | EXPLORATION type classification |
+| [Problem Statement](#problem-statement) | Why this research was needed |
+| [Business Value](#business-value) | Features unlocked by this research |
+| [Technical Approach](#technical-approach) | Research methodology used |
+| [Children (Tasks)](#children-tasks) | Task inventory |
+| [Progress Summary](#progress-summary) | Completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
+| [Risks and Mitigations](#risks-and-mitigations) | Risk management |
+| [Dependencies](#dependencies) | What this depends on and enables |
+| [Related Items](#related-items) | Hierarchy and orchestration artifacts |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Research and document industry best practices for open-source software releases. This enabler focused on gathering evidence-based guidance from authoritative sources including GitHub, Apache Foundation, OpenSSF, and major tech companies.

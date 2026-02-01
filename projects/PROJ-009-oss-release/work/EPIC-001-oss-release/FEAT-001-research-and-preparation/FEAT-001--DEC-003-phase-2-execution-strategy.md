@@ -24,6 +24,21 @@ REQUIREMENTS SATISFIED:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Overview of 5 Phase 2 decisions |
+| [State Machine](#state-machine) | Decision document lifecycle |
+| [Decision Context](#decision-context) | Background, constraints, stakeholders |
+| [Decisions](#decisions) | D-001 through D-005 detailed decisions |
+| [Decision Summary](#decision-summary) | Quick reference table |
+| [ADR Tier Structure (Reference)](#adr-tier-structure-reference) | Tier organization for Phase 2 |
+| [Related Artifacts](#related-artifacts) | Cross-references |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml

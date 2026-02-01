@@ -18,6 +18,20 @@ PURPOSE: Establish standard for navigation tables in markdown files
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Overview of 2 decisions |
+| [Decision Context](#decision-context) | Background, constraints, stakeholders |
+| [Decisions](#decisions) | D-001 and D-002 detailed decisions |
+| [Decision Summary](#decision-summary) | Quick reference table |
+| [Affected Files](#affected-files) | What needs updating |
+| [Related Artifacts](#related-artifacts) | Cross-references and industry sources |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Summary
 
 All markdown files that Claude reads MUST include a navigation table immediately after the frontmatter. This improves Claude's comprehension of document structure and enables targeted reading.

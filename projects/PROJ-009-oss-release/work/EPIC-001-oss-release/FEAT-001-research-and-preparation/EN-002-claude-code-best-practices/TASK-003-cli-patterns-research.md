@@ -8,6 +8,16 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | Task metadata |
+| [Description](#description) | Key findings and acceptance criteria |
+| [History](#history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml

@@ -23,6 +23,22 @@ PURPOSE: Document process failure in EN-201 extraction
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Bug overview and key details |
+| [Files Deleted](#files-deleted) | Which files were lost |
+| [Root Cause Analysis](#root-cause-analysis) | Investigation and contributing factors |
+| [Content Lost](#content-lost) | Project-based vs Repository-based hierarchy |
+| [Fix Description](#fix-description) | Solution approach and changes made |
+| [Acceptance Criteria](#acceptance-criteria) | Fix verification checklist |
+| [Related Items](#related-items) | Hierarchy and recovery source |
+| [History](#history) | Change log |
+| [Lesson Learned](#lesson-learned) | Process improvement |
+
+---
+
 ## Summary
 
 During EN-201 QG-1 Iteration 2, Claude deleted 3 files created by the user without properly reviewing their content. The nse-qa audit flagged them as "obsolete" because they didn't match the new naming convention, but the files contained:

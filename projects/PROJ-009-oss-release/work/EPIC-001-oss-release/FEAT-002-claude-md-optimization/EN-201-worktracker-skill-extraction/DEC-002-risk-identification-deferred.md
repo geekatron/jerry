@@ -18,6 +18,20 @@ PURPOSE: Document decision to defer explicit risk documentation
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Overview of decision |
+| [Decision Context](#decision-context) | Background, constraints, stakeholders |
+| [Decisions](#decisions) | D-001 risk deferral decision |
+| [Decision Summary](#decision-summary) | Quick reference table |
+| [Related Artifacts](#related-artifacts) | Parent, target, evidence |
+| [NPR 7123.1D Reference](#npr-71231d-reference) | Compliance context and suggestions |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Summary
 
 During EN-201 QG-1, the nse-qa audit noted that the extracted content lacks explicit risk identification (NCR-008/NCR-009 findings). We decided to defer explicit risk documentation to the EN-202 content rewrite phase, as EN-201's extraction scope doesn't include content authorship.

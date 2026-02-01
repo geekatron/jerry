@@ -21,6 +21,20 @@ PURPOSE: Prepare Jerry Framework for open-source release
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Epic overview and key objectives |
+| [Business Outcome Hypothesis](#business-outcome-hypothesis) | Expected outcomes and success criteria |
+| [Lean Business Case](#lean-business-case) | Problem, solution, cost, benefit, risk |
+| [Children (Features)](#children-features) | Feature inventory and planned features |
+| [Progress Summary](#progress-summary) | Status overview and milestone tracking |
+| [Related Items](#related-items) | Hierarchy, source material, dependencies |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Prepare the Jerry Framework for public open-source release under MIT license. This epic encompasses all work required to transform Jerry from an internal development tool to a polished, well-documented open-source project that serves users across multiple expertise levels.

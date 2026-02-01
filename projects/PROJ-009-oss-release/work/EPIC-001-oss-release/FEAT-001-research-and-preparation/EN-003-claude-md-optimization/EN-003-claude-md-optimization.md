@@ -22,6 +22,25 @@ PURPOSE: Research CLAUDE.md optimization and context management best practices
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler researched |
+| [Enabler Type Classification](#enabler-type-classification) | EXPLORATION type classification |
+| [Problem Statement](#problem-statement) | Why this research was needed |
+| [Business Value](#business-value) | Features unlocked by this research |
+| [Technical Approach](#technical-approach) | Research methodology used |
+| [Children (Tasks)](#children-tasks) | Task inventory |
+| [Progress Summary](#progress-summary) | Completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables |
+| [Key Findings](#key-findings) | Tiered strategy and target metrics |
+| [Related Items](#related-items) | Hierarchy and orchestration artifacts |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Research CLAUDE.md best practices including context loading strategies, decomposition patterns, and optimization techniques. This is a CRITICAL enabler as Jerry's CLAUDE.md is currently 914 lines (~10,000 tokens), causing context rot.

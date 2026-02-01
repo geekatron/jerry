@@ -18,6 +18,19 @@ PURPOSE: Capture decisions made during orchestration planning and execution
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Overview of 4 orchestration decisions |
+| [Decision Context](#decision-context) | Background, constraints, stakeholders |
+| [Decisions](#decisions) | D-001 through D-004 detailed decisions |
+| [Decision Summary](#decision-summary) | Quick reference table |
+| [Related Artifacts](#related-artifacts) | Parent, related documents |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml

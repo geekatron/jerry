@@ -20,6 +20,21 @@ PURPOSE: Document the discovery that initial research missed critical topics
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What was discovered - missed research scope |
+| [Context](#context) | Background and investigation approach |
+| [Finding](#finding) | Detailed findings with root cause analysis |
+| [Evidence](#evidence) | Source documentation and user feedback |
+| [Implications](#implications) | Impact on project, design decisions, risks |
+| [Relationships](#relationships) | Created enablers, informs artifacts |
+| [Recommendations](#recommendations) | Immediate actions and long-term considerations |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml

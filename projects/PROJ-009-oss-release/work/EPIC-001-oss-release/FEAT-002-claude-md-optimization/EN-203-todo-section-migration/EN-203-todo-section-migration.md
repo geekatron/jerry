@@ -22,6 +22,26 @@ PURPOSE: Migrate TODO section content from CLAUDE.md to worktracker skill
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler delivers |
+| [Enabler Type Classification](#enabler-type-classification) | ARCHITECTURE type classification |
+| [Problem Statement](#problem-statement) | Why this migration is needed |
+| [Business Value](#business-value) | Features unlocked |
+| [Technical Approach](#technical-approach) | Target structure |
+| [Children (Tasks)](#children-tasks) | Task inventory and dependencies |
+| [Progress Summary](#progress-summary) | Completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
+| [Risks and Mitigations](#risks-and-mitigations) | Risk management |
+| [Dependencies](#dependencies) | What this depends on and enables |
+| [Related Items](#related-items) | Hierarchy |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Migrate the TODO section (~80 lines) from CLAUDE.md to the worktracker skill's rules directory. This includes all META TODO requirements and TODO behavior rules.

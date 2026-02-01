@@ -22,6 +22,26 @@ PURPOSE: Update supporting documentation for the CLAUDE.md optimization
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler delivers |
+| [Enabler Type Classification](#enabler-type-classification) | INFRASTRUCTURE type classification |
+| [Problem Statement](#problem-statement) | Why documentation update is needed |
+| [Business Value](#business-value) | Features unlocked |
+| [Technical Approach](#technical-approach) | Documentation scope |
+| [Children (Tasks)](#children-tasks) | Task inventory and dependencies |
+| [Progress Summary](#progress-summary) | Completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables |
+| [Risks and Mitigations](#risks-and-mitigations) | Risk management |
+| [Dependencies](#dependencies) | What this depends on and enables |
+| [Related Items](#related-items) | Hierarchy |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Update supporting documentation to reflect the new CLAUDE.md structure and help contributors understand the tiered context loading architecture.

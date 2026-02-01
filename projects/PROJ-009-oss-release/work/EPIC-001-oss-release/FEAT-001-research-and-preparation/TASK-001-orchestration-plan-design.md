@@ -18,6 +18,21 @@ PURPOSE: Design the orchestration plan for Jerry OSS release preparation
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | Task metadata |
+| [Description](#description) | What this task accomplishes |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Deliverables](#deliverables) | Expected outputs |
+| [Research Frameworks to Apply](#research-frameworks-to-apply) | Methodologies used |
+| [Related Items](#related-items) | Dependencies and references |
+| [Evidence](#evidence) | Deliverables and verification |
+| [History](#history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml

@@ -7,6 +7,16 @@ VERSION: 0.1.0
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | Task metadata |
+| [Description](#description) | Context rot science and token targets |
+| [History](#history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml

@@ -23,6 +23,22 @@ PURPOSE: Document defect requiring fix in CLAUDE.md rewrite
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Bug overview and key details |
+| [Reproduction Steps](#reproduction-steps) | How to reproduce the bug |
+| [Environment](#environment) | System configuration |
+| [Evidence](#evidence) | Bug documentation and path verification |
+| [Root Cause Analysis](#root-cause-analysis) | Cause identification |
+| [Acceptance Criteria](#acceptance-criteria) | Fix verification |
+| [Related Items](#related-items) | Hierarchy and references |
+| [History](#history) | Change log |
+| [System Mapping](#system-mapping) | External system mappings |
+
+---
+
 ## Summary
 
 CLAUDE.md contains conflicting template path references: `docs/templates/worktracker/` in description text versus `.context/templates/worktracker/` in Location headers and tables. This inconsistency could confuse Claude agents about where templates actually reside.

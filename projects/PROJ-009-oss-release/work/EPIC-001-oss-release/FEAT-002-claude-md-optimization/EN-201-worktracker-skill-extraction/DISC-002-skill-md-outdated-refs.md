@@ -20,6 +20,20 @@ PURPOSE: Document finding about SKILL.md reference maintenance
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What was discovered |
+| [Context](#context) | Background and investigation approach |
+| [Finding](#finding) | Reference mismatch pattern and lesson learned |
+| [Evidence](#evidence) | Source documentation |
+| [Implications](#implications) | Impact, risks, and recommendations |
+| [Relationships](#relationships) | Related discoveries and artifacts |
+| [Document History](#document-history) | Change log |
+
+---
+
 ## Summary
 
 During QG-2 integration testing, the nse-qa agent discovered that SKILL.md contained references to non-existent rule files. The SKILL.md was referencing outdated file names from before the extraction refactoring, causing potential 404 errors when agents tried to load the rules.

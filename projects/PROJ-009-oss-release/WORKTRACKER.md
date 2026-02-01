@@ -6,6 +6,23 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Active Work Items](#active-work-items) | Current epics, features, and enablers |
+| [Tasks (FEAT-001)](#tasks-feat-001) | Research phase tasks |
+| [Tasks (FEAT-002 - by Enabler)](#tasks-feat-002---by-enabler) | Implementation phase tasks by enabler |
+| [Discoveries](#discoveries) | Documented findings during work |
+| [Decisions](#decisions) | Key decisions and their rationale |
+| [Bugs](#bugs) | Tracked defects |
+| [Impediments](#impediments) | Blockers preventing progress |
+| [Orchestration](#orchestration) | Workflow coordination artifacts |
+| [Progress Summary](#progress-summary) | Overall project completion status |
+| [History](#history) | Change log |
+
+---
+
 ## Active Work Items
 
 ### Epic

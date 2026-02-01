@@ -22,6 +22,25 @@ PURPOSE: Deep research and preparation for Jerry OSS release
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Feature overview and current status |
+| [Decisions](#decisions) | Key decisions made for this feature |
+| [Discoveries](#discoveries) | Findings during research |
+| [Benefit Hypothesis](#benefit-hypothesis) | Expected value and success criteria |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [MVP Definition](#mvp-definition) | Scope boundaries |
+| [Children (Enablers/Tasks)](#children-enablerstasks) | Task and enabler inventory |
+| [Progress Summary](#progress-summary) | Status overview and metrics |
+| [Research Paths](#research-paths) | External vs internal research paths |
+| [Orchestration](#orchestration) | Workflow coordination details |
+| [Related Items](#related-items) | Dependencies and references |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 This feature encompasses the foundational research and analysis required before any optimization or implementation work. Research is BLOCKING - all subsequent phases depend on its completion.

@@ -116,10 +116,10 @@ skills/worktracker/
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
 | [TASK-001](./TASK-001-fix-skill-md-description.md) | Fix SKILL.md description bug | **DONE** | 1 | Claude |
-| [TASK-002](./TASK-002-create-entity-hierarchy-rules.md) | Create worktracker-entity-hierarchy.md | pending | 1 | - |
-| [TASK-003](./TASK-003-create-system-mappings-rules.md) | Create worktracker-system-mappings.md | pending | 2 | - |
-| [TASK-004](./TASK-004-create-behavior-rules.md) | Create worktracker-behavior-rules.md | pending | 1 | - |
-| [TASK-005](./TASK-005-create-directory-structure-rules.md) | Create worktracker-directory-structure.md | pending | 1 | - |
+| [TASK-002](./TASK-002-create-entity-hierarchy-rules.md) | Create worktracker-entity-hierarchy.md | **DONE** | 1 | Claude |
+| [TASK-003](./TASK-003-create-system-mappings-rules.md) | Create worktracker-system-mappings.md | **DONE** | 2 | Claude |
+| [TASK-004](./TASK-004-create-behavior-rules.md) | Create worktracker-behavior-rules.md | **DONE** | 1 | Claude |
+| [TASK-005](./TASK-005-create-directory-structure-rules.md) | Create worktracker-directory-structure.md | **DONE** | 1 | Claude |
 | [TASK-006](./TASK-006-update-skill-navigation.md) | Update SKILL.md with navigation pointers | pending | 1 | - |
 | [TASK-007](./TASK-007-validate-skill-loading.md) | Validate skill loads correctly | pending | 1 | - |
 
@@ -145,10 +145,10 @@ TASK-001 (Fix SKILL.md)
 +------------------------------------------------------------------+
 |                   ENABLER PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Tasks:     [##..................] 14% (1/7 completed)            |
-| Effort:    [##..................] 12% (1/8 points completed)     |
+| Tasks:     [##############......] 71% (5/7 completed)            |
+| Effort:    [##############......] 75% (6/8 points completed)     |
 +------------------------------------------------------------------+
-| Overall:   [##..................] 14%                            |
+| Overall:   [##############......] 71%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -157,10 +157,10 @@ TASK-001 (Fix SKILL.md)
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 7 |
-| **Completed Tasks** | 1 |
+| **Completed Tasks** | 5 |
 | **Total Effort (points)** | 8 |
-| **Completed Effort** | 1 |
-| **Completion %** | 14% |
+| **Completed Effort** | 6 |
+| **Completion %** | 71% |
 
 ---
 
@@ -169,10 +169,10 @@ TASK-001 (Fix SKILL.md)
 ### Definition of Done
 
 - [x] SKILL.md description fixed (no transcript copy-paste)
-- [ ] worktracker-entity-hierarchy.md created with complete hierarchy
-- [ ] worktracker-system-mappings.md created with ADO/SAFe/JIRA mappings
-- [ ] worktracker-behavior-rules.md created with behavior rules
-- [ ] worktracker-directory-structure.md created with directory conventions
+- [x] worktracker-entity-hierarchy.md created with complete hierarchy (104 lines)
+- [x] worktracker-system-mappings.md created with ADO/SAFe/JIRA mappings (92 lines)
+- [x] worktracker-behavior-rules.md created with behavior rules (148 lines, includes WTI-001 through WTI-006)
+- [x] worktracker-directory-structure.md created with directory conventions (81 lines)
 - [ ] SKILL.md updated with navigation pointers to all rules
 - [ ] /worktracker skill loads all entity and mapping information
 - [ ] Documentation updated
@@ -205,6 +205,11 @@ TASK-001 (Fix SKILL.md)
 
 | Criterion | Verification Method | Evidence | Verified By | Date |
 |-----------|---------------------|----------|-------------|------|
+| Entity hierarchy created | `wc -l` file check | 104 lines at `skills/worktracker/rules/worktracker-entity-hierarchy.md` | Claude | 2026-02-01 |
+| System mappings created | `wc -l` file check | 92 lines at `skills/worktracker/rules/worktracker-system-mappings.md` | Claude | 2026-02-01 |
+| Behavior rules created | `wc -l` file check | 148 lines at `skills/worktracker/rules/worktracker-behavior-rules.md` | Claude | 2026-02-01 |
+| Directory structure created | `wc -l` file check | 81 lines at `skills/worktracker/rules/worktracker-directory-structure.md` | Claude | 2026-02-01 |
+| WTI integrity rules added | Manual review | WTI-001 through WTI-006 in behavior-rules.md | Claude | 2026-02-01 |
 | Skill loads correctly | Manual invocation test | - | - | - |
 | All content migrated | Line count comparison | - | - | - |
 | No broken references | Navigation test | - | - | - |
@@ -295,6 +300,7 @@ See `FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/qu
 | ID | Title | Severity | Status |
 |----|-------|----------|--------|
 | [BUG-001](./BUG-001-deleted-user-files-without-review.md) | Deleted user's manual files without review | major | **FIXED** |
+| [BUG-002](./BUG-002-worktracker-state-drift.md) | Worktracker state drift - tasks completed but not updated | major | **FIXED** |
 
 ### Bugs Created (for EN-202)
 
@@ -326,6 +332,9 @@ Current CLAUDE.md sections to extract:
 | 2026-02-01T17:00:00Z | Claude | in_progress | Added DISC-001, DISC-002, DEC-001, DEC-002, BUG-001 |
 | 2026-02-01T17:30:00Z | Claude | in_progress | BUG-001 fixed - recovered content from git history |
 | 2026-02-01T18:30:00Z | Claude | in_progress | Added navigation table per FEAT-002:DEC-001 |
+| 2026-02-01T20:00:00Z | Claude | in_progress | TASK-002,003,004,005 completed via background agents (rule files created) |
+| 2026-02-01T21:00:00Z | Claude | in_progress | BUG-002 discovered - worktracker state drift (files completed but status not updated) |
+| 2026-02-01T21:00:00Z | Claude | in_progress | BUG-002 fixed - updated task status, added WTI-001 through WTI-006 integrity rules |
 
 ---
 

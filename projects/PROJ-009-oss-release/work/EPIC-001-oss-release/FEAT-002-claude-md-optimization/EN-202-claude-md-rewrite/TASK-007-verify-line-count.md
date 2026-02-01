@@ -8,6 +8,18 @@ VERSION: 1.0.0
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | Task metadata |
+| [Content](#content) | Description, verification steps, metrics |
+| [Time Tracking](#time-tracking) | Effort metrics |
+| [Evidence](#evidence) | Deliverables, metrics, verification |
+| [History](#history) | Change log |
+
+---
+
 ## Frontmatter
 
 ```yaml
