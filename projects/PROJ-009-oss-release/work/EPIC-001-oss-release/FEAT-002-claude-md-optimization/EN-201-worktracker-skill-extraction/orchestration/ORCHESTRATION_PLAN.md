@@ -4,15 +4,17 @@
 > **Project:** PROJ-009-oss-release
 > **Workflow ID:** `en201-extraction-20260201-001`
 > **Status:** ACTIVE
-> **Version:** 1.0
+> **Version:** 2.0
 > **Created:** 2026-02-01
 > **Last Updated:** 2026-02-01
+> **Protocol:** DISC-002 Adversarial Review
+> **Prior Art:** FEAT-001 Research Phase Quality Gates (qg-0 through qg-4)
 
 ---
 
 ## 1. Executive Summary
 
-This orchestration plan coordinates the parallel extraction of worktracker content from CLAUDE.md into modular rule files, with adversarial quality review loops ensuring 0.92+ quality threshold before integration.
+This orchestration plan coordinates the parallel extraction of worktracker content from CLAUDE.md into modular rule files, using the **DISC-002 Adversarial Review Protocol** established in the FEAT-001 research phase.
 
 **Problem:** CLAUDE.md contains 371 lines of worktracker content loaded at every session start, contributing to context rot.
 
@@ -20,7 +22,7 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
 
 **Current State:** TASK-001 complete (SKILL.md fixed). Ready to execute parallel extraction with quality gates.
 
-**Orchestration Pattern:** Fan-Out/Fan-In with Generator-Critic Review Loops
+**Orchestration Pattern:** Fan-Out/Fan-In with **DISC-002 Adversarial Review Loops**
 
 ### 1.1 Workflow Identification
 
@@ -29,23 +31,40 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
 | Workflow ID | `en201-extraction-20260201-001` | auto |
 | ID Format | `{enabler}-{purpose}-{YYYYMMDD}-{NNN}` | semantic-date-seq |
 | Base Path | `EN-201-worktracker-skill-extraction/orchestration/` | Enabler-scoped |
+| Protocol | **DISC-002** | Adversarial Review Protocol |
+| Prior Art | FEAT-001/orchestration/oss-release-20260131-001/quality-gates/ | Research Phase |
 
 **Artifact Output Locations:**
 - Extraction artifacts: `skills/worktracker/rules/`
-- Critique artifacts: `orchestration/critiques/`
-- QA artifacts: `orchestration/qa/`
+- Quality gate artifacts: `orchestration/quality-gates/`
+- Escalation artifacts: `orchestration/escalations/`
 
 ---
 
 ## 2. Workflow Architecture
 
-### 2.1 Pipeline Diagram
+### 2.1 DISC-002 Adversarial Review Protocol
+
+This workflow implements the **DISC-002 Adversarial Review Protocol** established in the FEAT-001 research phase. Key characteristics:
+
+| Protocol Element | Implementation |
+|------------------|----------------|
+| **Review Agents** | ps-critic (Quality Evaluator) + nse-qa (NASA SE Compliance) |
+| **Quality Threshold** | ≥ 0.92 (per DEC-OSS-001) |
+| **Max Iterations** | 3 per artifact (then human escalation per DEC-OSS-004) |
+| **Mandatory Findings** | Minimum 3 adversarial findings per review |
+| **Versioned Files** | `*-review.md` → `*-review-v2.md` → `*-review-v3.md` |
+| **Red Team Framing** | Actively seek weaknesses, blind spots, contradictions |
+
+**Prior Art:** See `FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/quality-gates/qg-0/` for implementation examples.
+
+### 2.2 Pipeline Diagram
 
 ```
-                         EN-201 ORCHESTRATION WORKFLOW
-                         =============================
-                              Quality Gate: 0.92
-                            Max Iterations: 3/task
+                     EN-201 ORCHESTRATION WORKFLOW (DISC-002)
+                     =========================================
+                          Quality Gate: 0.92 | Max Iterations: 3
+                          Protocol: DISC-002 Adversarial Review
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                        PHASE 1: CONTENT EXTRACTION (Fan-Out)                │
@@ -58,47 +77,67 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
 │  │     (~80 LOC)    │  │    (~120 LOC)    │  │     (~60 LOC)    │  │    (~111 LOC)    │
 │  └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘
 │           │                     │                     │                     │
-│           ▼                     ▼                     ▼                     ▼
-│  ┌──────────────────────────────────────────────────────────────────────────────────┐
-│  │                    GENERATOR-CRITIC LOOP (per task)                              │
-│  │  ┌─────────────────────────────────────────────────────────────────────────────┐ │
-│  │  │                                                                             │ │
-│  │  │     ┌─────────────┐         ┌─────────────┐         ┌─────────────┐        │ │
-│  │  │     │  GENERATOR  │────────►│  ps-critic  │────────►│  Score ≥    │        │ │
-│  │  │     │ (Extraction)│         │  (Evaluate) │         │   0.92?     │        │ │
-│  │  │     └─────────────┘         └─────────────┘         └──────┬──────┘        │ │
-│  │  │           ▲                                                │               │ │
-│  │  │           │                                         NO     │   YES         │ │
-│  │  │           │              ┌─────────────────────────────────┴───────┐       │ │
-│  │  │           │              │                                         │       │ │
-│  │  │           │              ▼                                         ▼       │ │
-│  │  │           │     ┌─────────────────┐                      ┌─────────────┐   │ │
-│  │  │           │     │ Iteration < 3?  │                      │   ACCEPT    │   │ │
-│  │  │           │     └────────┬────────┘                      │  (Pass Gate)│   │ │
-│  │  │           │              │                               └─────────────┘   │ │
-│  │  │           │       YES    │    NO                                           │ │
-│  │  │           │              ▼                                                 │ │
-│  │  │           │     ┌─────────────────┐                                        │ │
-│  │  │           └─────│  Revise with    │                                        │ │
-│  │  │                 │  Feedback       │                                        │ │
-│  │  │                 └─────────────────┘                                        │ │
-│  │  │                          │ NO (iter ≥ 3)                                   │ │
-│  │  │                          ▼                                                 │ │
-│  │  │                 ┌─────────────────┐                                        │ │
-│  │  │                 │ ESCALATE TO     │                                        │ │
-│  │  │                 │ HUMAN REVIEW    │                                        │ │
-│  │  │                 └─────────────────┘                                        │ │
-│  │  └─────────────────────────────────────────────────────────────────────────────┘ │
-│  └──────────────────────────────────────────────────────────────────────────────────┘
+│           └─────────────────────┴─────────────────────┴─────────────────────┘
+│                                         │
+│                                         ▼
+│  ┌─────────────────────────────────────────────────────────────────────────┐
+│  │                    DISC-002 ADVERSARIAL REVIEW LOOP                      │
+│  │                    (per task until ≥0.92 or escalation)                  │
+│  │  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │  │                                                                   │  │
+│  │  │   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐        │  │
+│  │  │   │  GENERATE   │────►│  ps-critic  │────►│ Score ≥0.92?│        │  │
+│  │  │   │  Content    │     │  REVIEW     │     └──────┬──────┘        │  │
+│  │  │   └─────────────┘     │             │            │               │  │
+│  │  │         ▲             │ Criteria:   │     YES    │   NO          │  │
+│  │  │         │             │ C/A/CL/AC/T │            │               │  │
+│  │  │         │             │ Min 3       │            ▼               │  │
+│  │  │         │             │ findings    │     ┌─────────────┐        │  │
+│  │  │         │             └─────────────┘     │ Iteration   │        │  │
+│  │  │         │                                 │   < 3?      │        │  │
+│  │  │         │                                 └──────┬──────┘        │  │
+│  │  │         │                                  YES   │   NO          │  │
+│  │  │         │                                        │               │  │
+│  │  │         │             ┌───────────────────┐      │               │  │
+│  │  │         └─────────────│ REVISE with       │◄─────┘               │  │
+│  │  │                       │ Feedback (REM-*)  │                      │  │
+│  │  │                       │ Create *-v{N}.md  │                      │  │
+│  │  │                       └───────────────────┘                      │  │
+│  │  │                                 │ NO (iter ≥ 3)                  │  │
+│  │  │                                 ▼                                │  │
+│  │  │                       ┌───────────────────┐        ┌──────────┐  │  │
+│  │  │                       │ ESCALATE TO HUMAN │        │  ACCEPT  │  │  │
+│  │  │                       │ Review Required   │        │(≥0.92)   │  │  │
+│  │  │                       └───────────────────┘        └──────────┘  │  │
+│  │  │                                                                   │  │
+│  │  └───────────────────────────────────────────────────────────────────┘  │
+│  └─────────────────────────────────────────────────────────────────────────┘
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
     ╔═════════════════════════════════════════════════════════════════════════╗
-    ║                         SYNC BARRIER 1                                   ║
+    ║                    QUALITY GATE 1 (QG-1): EXTRACTION                     ║
+    ║     DISC-002 Adversarial Review - Both ps-critic AND nse-qa             ║
     ║  ┌───────────────────────────────────────────────────────────────────┐  ║
-    ║  │ Condition: All 4 extractions ≥ 0.92 quality OR human-approved     │  ║
-    ║  │ Artifacts: 4 rule files in skills/worktracker/rules/              │  ║
+    ║  │                                                                   │  ║
+    ║  │  ┌─────────────────────┐     ┌─────────────────────┐             │  ║
+    ║  │  │     ps-critic       │     │      nse-qa         │             │  ║
+    ║  │  │  Quality Evaluator  │     │  NASA SE Compliance │             │  ║
+    ║  │  │  ──────────────────│     │  ─────────────────── │             │  ║
+    ║  │  │  Criteria:          │     │  Criteria:          │             │  ║
+    ║  │  │  • Completeness     │     │  • Technical Rigor  │             │  ║
+    ║  │  │  • Accuracy         │     │  • Req Traceability │             │  ║
+    ║  │  │  • Clarity          │     │  • Verification Evid│             │  ║
+    ║  │  │  • Actionability    │     │  • Risk Ident       │             │  ║
+    ║  │  │  • Traceability     │     │  • Doc Quality      │             │  ║
+    ║  │  │  ──────────────────│     │  ─────────────────── │             │  ║
+    ║  │  │  Output:            │     │  Output:            │             │  ║
+    ║  │  │  ps-critic-review.md│     │  nse-qa-audit.md    │             │  ║
+    ║  │  └─────────────────────┘     └─────────────────────┘             │  ║
+    ║  │                                                                   │  ║
+    ║  │  Pass Condition: Both reviews ≥0.92 OR human-approved            │  ║
+    ║  │  Location: quality-gates/qg-1/                                   │  ║
     ║  └───────────────────────────────────────────────────────────────────┘  ║
     ║  STATUS: PENDING                                                         ║
     ╚═════════════════════════════════════════════════════════════════════════╝
@@ -110,28 +149,31 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                           nse-qa                                       │  │
-│  │                    Integration Quality Audit                           │  │
+│  │            nse-qa: Integration Quality Audit (Batch Review)           │  │
 │  │  ┌─────────────────────────────────────────────────────────────────┐  │  │
-│  │  │ Validates:                                                       │  │  │
-│  │  │ • Complete content migration (no information loss)               │  │  │
-│  │  │ • Consistent formatting across all 4 rule files                  │  │  │
-│  │  │ • Cross-references between files are valid                       │  │  │
-│  │  │ • Total extracted lines ≈ 371 (matching source)                  │  │  │
-│  │  │ • Template compliance for each rule file                         │  │  │
+│  │  │ Validates all 4 rule files together:                             │  │  │
+│  │  │ • INT-001: Complete Migration (all 371 lines accounted for)      │  │  │
+│  │  │ • INT-002: No Information Loss (diff shows no missing content)   │  │  │
+│  │  │ • INT-003: Consistent Formatting (same style across all files)   │  │  │
+│  │  │ • INT-004: Cross-References Valid (all internal links work)      │  │  │
+│  │  │ • INT-005: Template Compliance (each file follows rules template)│  │  │
+│  │  │ • INT-006: No Duplication (content not duplicated across files)  │  │  │
 │  │  └─────────────────────────────────────────────────────────────────┘  │  │
 │  │                                                                       │  │
-│  │  Quality Threshold: 0.92 | Max Iterations: 3 | Escalate: Human       │  │
+│  │  Output: quality-gates/qg-2/integration-qa-report.md                  │  │
+│  │  Quality Threshold: 92% compliance | Max Iterations: 3                │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
                                       ▼
     ╔═════════════════════════════════════════════════════════════════════════╗
-    ║                         SYNC BARRIER 2                                   ║
+    ║                   QUALITY GATE 2 (QG-2): INTEGRATION                     ║
+    ║     Batch validation of all extraction artifacts                        ║
     ║  ┌───────────────────────────────────────────────────────────────────┐  ║
-    ║  │ Condition: Integration review ≥ 0.92 OR human-approved            │  ║
-    ║  │ Artifacts: QA report in orchestration/qa/                         │  ║
+    ║  │ Pass Condition: Integration review ≥92% OR human-approved         │  ║
+    ║  │ No critical findings | High findings ≤3                           │  ║
+    ║  │ Location: quality-gates/qg-2/                                     │  ║
     ║  └───────────────────────────────────────────────────────────────────┘  ║
     ║  STATUS: PENDING                                                         ║
     ╚═════════════════════════════════════════════════════════════════════════╝
@@ -148,7 +190,7 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
 │  │ Navigation Pointers      │       │ End-to-End Test          │           │
 │  └──────────────────────────┘       └──────────────────────────┘           │
 │                                                                             │
-│  ps-critic review loop for each task (0.92 threshold)                       │
+│  DISC-002 review loop for each task (ps-critic + verification)              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
@@ -156,6 +198,7 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
                          ┌────────────────────────┐
                          │     EN-201 COMPLETE    │
                          │  All 7 Tasks Done      │
+                         │  All QGs Passed        │
                          │  Enable EN-202, EN-203 │
                          └────────────────────────┘
 ```
@@ -235,85 +278,220 @@ This orchestration plan coordinates the parallel extraction of worktracker conte
 
 ---
 
-## 5. Quality Criteria
+## 5. DISC-002 Quality Criteria
 
-### 5.1 Task-Level Evaluation Criteria (ps-critic)
+> **Protocol:** DISC-002 Adversarial Review
+> **Prior Art:** FEAT-001 Quality Gates (qg-0 through qg-4)
 
-| Criterion | Weight | Description | 0.92+ Threshold |
-|-----------|--------|-------------|-----------------|
-| Completeness | 0.30 | All source content extracted | No missing sections |
-| Accuracy | 0.25 | Content matches source exactly | Zero content drift |
-| Structure | 0.20 | Proper markdown formatting | Valid headers, tables, code blocks |
-| Clarity | 0.15 | Clear and understandable | No ambiguous language |
-| Integration | 0.10 | Works with existing rules | No conflicts with existing files |
+### 5.1 ps-critic: Quality Evaluator Criteria
 
-**Quality Score Formula:** `Σ(criterion_score × criterion_weight)`
+Based on research phase implementation (see `qg-0/ps-critic-review.md`):
 
-### 5.2 Integration Evaluation Criteria (nse-qa)
+| Criterion | Code | Weight | Description | 0.92+ Threshold |
+|-----------|------|--------|-------------|-----------------|
+| Completeness | C | 0.30 | All source content extracted without omissions | 100% of source content present |
+| Accuracy | A | 0.25 | Content matches source exactly without drift | Zero content modifications |
+| Clarity | CL | 0.20 | Clear and understandable content | Crystal clear, well-organized |
+| Actionability | AC | 0.15 | Recommendations are implementable | Specific, measurable actions |
+| Traceability | T | 0.10 | Cross-references to source material | Direct links to CLAUDE.md sections |
 
-| Check ID | Criterion | Pass Condition |
-|----------|-----------|----------------|
-| INT-001 | Complete Migration | All 371 lines accounted for |
-| INT-002 | No Information Loss | Diff shows no missing content |
-| INT-003 | Consistent Formatting | Same style across all 4 files |
-| INT-004 | Cross-References Valid | All internal links work |
-| INT-005 | Template Compliance | Each file follows rules template |
-| INT-006 | No Duplication | Content not duplicated across files |
+**Quality Score Formula:** `Score = (C × 0.30) + (A × 0.25) + (CL × 0.20) + (AC × 0.15) + (T × 0.10)`
+
+**Scoring Rubric (per criterion):**
+
+| Score | Level | Description |
+|-------|-------|-------------|
+| 0.95+ | Excellent | Exceeds expectations, no improvements needed |
+| 0.90-0.94 | Good | Meets expectations, minor improvements possible |
+| 0.85-0.89 | Acceptable | Meets minimum bar, some improvements needed |
+| 0.80-0.84 | Needs Work | Below acceptable, specific improvements required |
+| < 0.80 | Poor | Significant rework required |
+
+### 5.2 nse-qa: NASA SE Compliance Criteria
+
+Based on research phase implementation (see `qg-0/nse-qa-audit.md`):
+
+| Criterion | Code | Weight | Description | Pass Condition |
+|-----------|------|--------|-------------|----------------|
+| Technical Rigor | TR | 0.20 | Systematic methodology, structured approach | Follows established extraction patterns |
+| Requirements Traceability | RT | 0.20 | Explicit linkages to source requirements | Every section traces to CLAUDE.md section |
+| Verification Evidence | VE | 0.20 | Evidence sufficient to support conclusions | Line counts, diffs, file comparisons |
+| Risk Identification | RI | 0.20 | Risks identified and assessed | Content loss, formatting issues documented |
+| Documentation Quality | DQ | 0.20 | Format supports technical review | NPR 7123.1D compliant structure |
+
+**Compliance Score Formula:** `Score = (TR + RT + VE + RI + DQ) / 5`
+
+### 5.3 Integration Checklist (INT-*)
+
+| Check ID | Criterion | Pass Condition | Verification Method |
+|----------|-----------|----------------|---------------------|
+| INT-001 | Complete Migration | All 371 lines accounted for | Line count comparison |
+| INT-002 | No Information Loss | Diff shows no missing content | Source/target diff |
+| INT-003 | Consistent Formatting | Same style across all 4 files | Style guide compliance |
+| INT-004 | Cross-References Valid | All internal links work | Link validation |
+| INT-005 | Template Compliance | Each file follows rules template | Template comparison |
+| INT-006 | No Duplication | Content not duplicated across files | Duplicate detection |
+
+### 5.4 DISC-002 Adversarial Findings Requirements
+
+Per DISC-002 protocol, each review MUST identify minimum findings:
+
+| Finding Type | Description | Minimum Required |
+|--------------|-------------|------------------|
+| **Blind Spots** | Areas not covered by artifact | 1+ |
+| **Weak Assumptions** | Unstated assumptions that could fail | 1+ |
+| **Missing Evidence** | Claims without supporting evidence | 0+ |
+| **Contradictions** | Internal or cross-artifact conflicts | 0+ |
+
+**Total Mandatory Findings:** Minimum 3 per review
+
+**Finding Severity Classification:**
+
+| Severity | Impact | Action Required |
+|----------|--------|-----------------|
+| CRITICAL | Score impact > 0.05 | Must fix before gate pass |
+| HIGH | Score impact 0.02-0.05 | Should fix, may pass with plan |
+| MEDIUM | Score impact 0.01-0.02 | Should fix, may defer |
+| LOW | Score impact < 0.01 | Optional improvement |
+
+### 5.5 Remediation Items (REM-*)
+
+When a review fails to meet threshold, remediation items are generated:
+
+| ID Format | Priority | Resolution Required |
+|-----------|----------|---------------------|
+| REM-001 to REM-005 | Critical | Must resolve for gate pass |
+| REM-006 to REM-010 | High | Should resolve before re-evaluation |
+| REM-011+ | Medium | Address in subsequent phase |
 
 ---
 
-## 6. Feedback Loop Protocol
+## 6. DISC-002 Adversarial Review Protocol
 
-### 6.1 Generator-Critic Loop (per task)
+### 6.1 Adversarial Mode Characteristics
+
+The DISC-002 protocol defines **Adversarial Mode** as distinct from standard constructive review:
+
+| # | Characteristic | Description | Enforcement |
+|---|----------------|-------------|-------------|
+| 1 | **RED TEAM FRAMING** | Assume problems exist, actively seek weaknesses | Required in prompt |
+| 2 | **MANDATORY FINDINGS** | Must identify ≥3 issues regardless of quality | Hard requirement |
+| 3 | **CHECKLIST ENFORCEMENT** | Evidence required for PASS, not assumptions | Verification required |
+| 4 | **DEVIL'S ADVOCATE** | "What could go wrong?" for every claim | Explicit section |
+| 5 | **COUNTER-EXAMPLES** | Identify failure scenarios even for good work | Required output |
+| 6 | **NO RUBBER STAMPS** | Perfect scores (0.95+) require explicit justification | Justified exceptions only |
+
+### 6.2 Adversarial Invocation Pattern
+
+When invoking `ps-critic` for DISC-002 review, use this prompt template:
 
 ```
-ITERATION PROTOCOL
-==================
+## ADVERSARIAL EVALUATION MODE (DISC-002)
+
+You are operating as an ADVERSARIAL CRITIC. Your role is to identify
+weaknesses, not validate strengths. Assume problems exist.
+
+### Red Team Framing
+- Actively seek weaknesses, blind spots, and contradictions
+- Challenge every claim for evidence
+- Ask "What could go wrong?" for each section
+- Identify unstated assumptions
+
+### Mandatory Requirements
+1. You MUST identify AT LEAST 3 adversarial findings
+2. Findings MUST include:
+   - At least 1 BLIND SPOT (area not covered)
+   - At least 1 WEAK ASSUMPTION (unstated assumption that could fail)
+   - Additional: MISSING EVIDENCE, CONTRADICTIONS as found
+
+3. For each finding, provide:
+   - Finding Type (Blind Spot / Weak Assumption / Missing Evidence / Contradiction)
+   - Severity (CRITICAL / HIGH / MEDIUM / LOW)
+   - Affected Section(s)
+   - Evidence / Quote from artifact
+   - Remediation Required
+
+### No Rubber Stamps
+- Scores of 0.95+ require EXPLICIT justification
+- Default assumption: there are always improvements to find
+- Perfect work is exceptional, not expected
+
+### Output Format
+1. Executive Summary (score, verdict, gap from threshold)
+2. Per-Criterion Scores (C/A/CL/AC/T with rationale)
+3. ADVERSARIAL FINDINGS (minimum 3, in table format)
+4. REMEDIATION ITEMS (REM-001, REM-002, etc.)
+5. Quality Gate Verdict (ASCII box with PASS/FAIL)
+
+Artifact to review: {artifact_path}
+Evaluation criteria: {criteria_reference}
+```
+
+### 6.3 Generator-Critic Loop (per task)
+
+```
+DISC-002 ITERATION PROTOCOL
+===========================
 
 1. GENERATE
    - Extract content from CLAUDE.md
    - Create/update rule file
    - Document extraction mapping
 
-2. CRITIQUE (ps-critic)
-   - Evaluate against 5 criteria
+2. ADVERSARIAL CRITIQUE (ps-critic)
+   - Invoke with DISC-002 adversarial prompt (section 6.2)
+   - Evaluate against 5 criteria (C/A/CL/AC/T)
    - Calculate weighted quality score
-   - Identify specific improvement areas
-   - Provide actionable feedback
+   - Identify MINIMUM 3 adversarial findings
+   - Generate REM-* remediation items
 
 3. DECISION
    IF score >= 0.92:
        → ACCEPT (proceed to barrier)
+       → Document acceptance justification if score >= 0.95
    ELIF iteration < 3:
-       → REVISE (apply feedback, iterate)
+       → REVISE (apply REM-* feedback, iterate)
+       → Version file: *-v{N}.md
    ELSE:
        → ESCALATE (human review required)
 
 4. FEEDBACK UPSTREAM
-   - Specific gaps identified
-   - Evidence from source/target
+   - Specific REM-* items to address
+   - Evidence from source/target comparison
    - Concrete revision instructions
-   - Expected score improvement
+   - Expected score improvement estimate
+   - Version tracking: v1 → v2 → v3
 ```
 
-### 6.2 Escalation Protocol
+### 6.4 Escalation Protocol
 
 ```
 HUMAN ESCALATION (after 3 iterations)
 =====================================
 
-When: Quality score < 0.92 after 3 iterations
-
-Actions:
-1. Document iteration history with scores
-2. Summarize blocking issues
-3. Present to user with options:
-   a) Accept with documented caveats
-   b) Provide specific guidance for revision
-   c) Take over manual editing
-4. User decision recorded in orchestration state
+Trigger: Quality score < 0.92 after 3 adversarial review iterations
 
 Artifact: orchestration/escalations/TASK-{N}-escalation.md
+
+Content:
+1. Iteration History
+   - v1 score, key findings
+   - v2 score, remediation applied, remaining gaps
+   - v3 score, blocking issues identified
+
+2. Adversarial Findings Summary
+   - All CRITICAL and HIGH findings across iterations
+   - Which were resolved, which remain
+
+3. Human Decision Options
+   a) Accept with documented caveats (record in ORCHESTRATION.yaml)
+   b) Provide specific guidance for v4 (exception to 3-iteration limit)
+   c) Take over manual editing (human-generated artifact)
+
+4. Decision Recording
+   - User decision captured in escalation artifact
+   - ORCHESTRATION.yaml updated with human_override: true
+   - Traceability maintained for audit
 ```
 
 ---
@@ -375,24 +553,68 @@ POST-BARRIER:
 | `ORCHESTRATION.yaml` | Machine-readable state (SSOT) | `orchestration/` |
 | `ORCHESTRATION_WORKTRACKER.md` | Tactical execution tracking | `orchestration/` |
 
-### 8.1 Artifact Locations
+### 8.1 Artifact Locations (DISC-002 Structure)
+
+Following the FEAT-001 research phase pattern:
 
 ```
 EN-201-worktracker-skill-extraction/
 ├── orchestration/
-│   ├── ORCHESTRATION_PLAN.md          # This file
-│   ├── ORCHESTRATION.yaml             # Machine state
-│   ├── ORCHESTRATION_WORKTRACKER.md   # Execution tracking
-│   ├── critiques/                     # ps-critic outputs
-│   │   ├── task-002-iter1-critique.md
-│   │   ├── task-002-iter2-critique.md
-│   │   └── ...
-│   ├── qa/                            # nse-qa outputs
-│   │   └── integration-qa-report.md
-│   └── escalations/                   # Human escalation docs
-│       └── (if needed)
-└── ...
+│   ├── ORCHESTRATION_PLAN.md          # This file (strategic context)
+│   ├── ORCHESTRATION.yaml             # Machine state (SSOT)
+│   ├── ORCHESTRATION_WORKTRACKER.md   # Execution tracking (tactical)
+│   │
+│   ├── quality-gates/                 # DISC-002 Review Artifacts
+│   │   │
+│   │   ├── qg-1/                      # Quality Gate 1: Extraction Review
+│   │   │   ├── ps-critic-review.md           # v1 critic review
+│   │   │   ├── ps-critic-review-v2.md        # v2 (if iteration needed)
+│   │   │   ├── ps-critic-review-v3.md        # v3 (max before escalation)
+│   │   │   ├── nse-qa-audit.md               # v1 NASA SE audit
+│   │   │   ├── nse-qa-audit-v2.md            # v2 (if iteration needed)
+│   │   │   └── remediation-log.md            # REM-* tracking
+│   │   │
+│   │   └── qg-2/                      # Quality Gate 2: Integration Review
+│   │       ├── integration-qa-report.md      # Batch integration review
+│   │       └── integration-qa-report-v2.md   # v2 (if iteration needed)
+│   │
+│   └── escalations/                   # Human escalation docs (if needed)
+│       └── TASK-{N}-escalation.md
+│
+└── (task files: TASK-001-*.md through TASK-007-*.md)
 ```
+
+### 8.2 File Naming Conventions (DISC-002)
+
+| Artifact Type | Naming Pattern | Version Pattern |
+|---------------|----------------|-----------------|
+| ps-critic review | `ps-critic-review.md` | `ps-critic-review-v{N}.md` |
+| nse-qa audit | `nse-qa-audit.md` | `nse-qa-audit-v{N}.md` |
+| Integration report | `integration-qa-report.md` | `integration-qa-report-v{N}.md` |
+| Escalation | `TASK-{N}-escalation.md` | N/A (single instance) |
+| Remediation log | `remediation-log.md` | Append-only |
+
+### 8.3 Quality Gate Folder Structure
+
+Each quality gate folder (`qg-{N}/`) contains:
+
+1. **ps-critic-review.md** - Quality evaluator output with:
+   - Executive Summary (score, threshold, verdict)
+   - Per-artifact scores (C/A/CL/AC/T)
+   - Adversarial findings (minimum 3)
+   - Remediation requirements (REM-*)
+   - Quality Gate Verdict (ASCII box)
+
+2. **nse-qa-audit.md** - NASA SE compliance output with:
+   - Overall determination (TR/RT/VE/RI/DQ)
+   - NPR 7123.1D compliance matrix
+   - Non-conformances (NCR-*)
+   - Certification statement
+
+3. **Versioned files** - When iteration needed:
+   - Previous score documented
+   - Improvement tracked
+   - Remediation status updated
 
 ---
 

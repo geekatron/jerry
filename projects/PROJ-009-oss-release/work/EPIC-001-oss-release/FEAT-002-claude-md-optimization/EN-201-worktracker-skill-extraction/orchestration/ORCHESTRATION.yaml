@@ -1,8 +1,10 @@
 # ORCHESTRATION.yaml - EN-201 Worktracker Skill Extraction
-# Machine-readable orchestration state for adversarial review workflow
+# Machine-readable orchestration state for DISC-002 adversarial review workflow
 # Document ID: EN-201-ORCH-STATE
-# Version: 1.0
-# Last Updated: 2026-02-01T12:00:00Z
+# Version: 2.0
+# Protocol: DISC-002 Adversarial Review
+# Prior Art: FEAT-001/orchestration/oss-release-20260131-001/quality-gates/
+# Last Updated: 2026-02-01T13:30:00Z
 
 schema_version: "2.0.0"
 
@@ -11,29 +13,83 @@ schema_version: "2.0.0"
 # =============================================================================
 workflow:
   id: "en201-extraction-20260201-001"
-  name: "EN-201 Worktracker Content Extraction with Adversarial Review"
+  name: "EN-201 Worktracker Content Extraction with DISC-002 Adversarial Review"
   project_id: "PROJ-009-oss-release"
   enabler_id: "EN-201"
-  version: "1.0"
+  version: "2.0"
   created_at: "2026-02-01T12:00:00Z"
-  updated_at: "2026-02-01T12:00:00Z"
+  updated_at: "2026-02-01T13:30:00Z"
   status: "ACTIVE"
 
   id_source: "auto"
   id_format: "enabler-purpose-YYYYMMDD-NNN"
+
+  # DISC-002 Adversarial Review Protocol
+  protocol:
+    id: "DISC-002"
+    name: "Adversarial Review Protocol"
+    prior_art: "FEAT-001/orchestration/oss-release-20260131-001/quality-gates/"
+    mandatory_findings: 3  # Minimum adversarial findings per review
+    versioned_files: true  # *-review.md → *-review-v2.md on iteration
+
+    # Adversarial Mode Characteristics
+    adversarial_mode:
+      enabled: true
+      characteristics:
+        - id: 1
+          name: "RED_TEAM_FRAMING"
+          description: "Assume problems exist, actively seek weaknesses"
+          enforcement: "Required in prompt"
+        - id: 2
+          name: "MANDATORY_FINDINGS"
+          description: "Must identify ≥3 issues regardless of quality"
+          enforcement: "Hard requirement"
+        - id: 3
+          name: "CHECKLIST_ENFORCEMENT"
+          description: "Evidence required for PASS, not assumptions"
+          enforcement: "Verification required"
+        - id: 4
+          name: "DEVILS_ADVOCATE"
+          description: "What could go wrong? for every claim"
+          enforcement: "Explicit section in output"
+        - id: 5
+          name: "COUNTER_EXAMPLES"
+          description: "Identify failure scenarios even for good work"
+          enforcement: "Required output section"
+        - id: 6
+          name: "NO_RUBBER_STAMPS"
+          description: "Perfect scores (0.95+) require explicit justification"
+          enforcement: "Justified exceptions only"
+
+    # Finding type requirements
+    finding_types:
+      - type: "BLIND_SPOT"
+        description: "Areas not covered by artifact"
+        minimum_required: 1
+      - type: "WEAK_ASSUMPTION"
+        description: "Unstated assumptions that could fail"
+        minimum_required: 1
+      - type: "MISSING_EVIDENCE"
+        description: "Claims without supporting evidence"
+        minimum_required: 0
+      - type: "CONTRADICTION"
+        description: "Internal or cross-artifact conflicts"
+        minimum_required: 0
 
   patterns:
     - FAN_OUT_FAN_IN
     - GENERATOR_CRITIC
     - BARRIER_SYNC
     - SEQUENTIAL
+    - DISC_002_ADVERSARIAL  # DISC-002 specific pattern
 
-  # Quality gate configuration
+  # Quality gate configuration (per DEC-OSS-001)
   quality_gate:
     threshold: 0.92
     max_iterations: 3
     escalation: "human"
     improvement_threshold: 0.05  # Min improvement to continue iterating
+    dual_review: true  # Both ps-critic AND nse-qa at gates
 
   constraints:
     max_agent_nesting: 1
@@ -43,12 +99,13 @@ workflow:
     checkpoint_frequency: "PHASE"
 
 # =============================================================================
-# PATH CONFIGURATION
+# PATH CONFIGURATION (DISC-002 Structure)
 # =============================================================================
 paths:
   base: "EN-201-worktracker-skill-extraction/orchestration/"
-  critiques: "{base}critiques/"
-  qa: "{base}qa/"
+  quality_gates: "{base}quality-gates/"
+  qg_1: "{base}quality-gates/qg-1/"
+  qg_2: "{base}quality-gates/qg-2/"
   escalations: "{base}escalations/"
   output: "skills/worktracker/rules/"
 
@@ -203,21 +260,26 @@ barriers:
       - "orchestration/qa/integration-qa-report.md"
 
 # =============================================================================
-# EVALUATION CRITERIA
+# EVALUATION CRITERIA (DISC-002 Protocol)
+# Based on FEAT-001 research phase implementation
 # =============================================================================
 evaluation_criteria:
-  task_level:
-    - name: "completeness"
+  # ps-critic criteria (Quality Evaluator)
+  # Prior art: qg-0/ps-critic-review.md
+  ps_critic:
+    - code: "C"
+      name: "completeness"
       weight: 0.30
       description: "All source content extracted without omissions"
       scoring_rubric:
-        excellent: "100% of source content present"
-        good: "95-99% content present"
-        acceptable: "90-94% content present"
-        needs_work: "80-89% content present"
-        poor: "Less than 80% content present"
+        excellent: "100% of source content present (0.95+)"
+        good: "95-99% content present (0.90-0.94)"
+        acceptable: "90-94% content present (0.85-0.89)"
+        needs_work: "80-89% content present (0.80-0.84)"
+        poor: "Less than 80% content present (<0.80)"
 
-    - name: "accuracy"
+    - code: "A"
+      name: "accuracy"
       weight: 0.25
       description: "Content matches source exactly without drift"
       scoring_rubric:
@@ -227,18 +289,9 @@ evaluation_criteria:
         needs_work: "Some content reworded"
         poor: "Significant content drift"
 
-    - name: "structure"
+    - code: "CL"
+      name: "clarity"
       weight: 0.20
-      description: "Proper markdown formatting"
-      scoring_rubric:
-        excellent: "Perfect formatting, all elements valid"
-        good: "Minor formatting issues"
-        acceptable: "Some formatting inconsistencies"
-        needs_work: "Multiple formatting problems"
-        poor: "Broken markdown structure"
-
-    - name: "clarity"
-      weight: 0.15
       description: "Clear and understandable content"
       scoring_rubric:
         excellent: "Crystal clear, well-organized"
@@ -247,16 +300,104 @@ evaluation_criteria:
         needs_work: "Some confusing sections"
         poor: "Difficult to understand"
 
-    - name: "integration"
-      weight: 0.10
-      description: "Works with existing rules files"
+    - code: "AC"
+      name: "actionability"
+      weight: 0.15
+      description: "Content enables action, not just information"
       scoring_rubric:
-        excellent: "Perfect integration, no conflicts"
-        good: "Minor integration considerations"
-        acceptable: "Some overlap to address"
-        needs_work: "Conflicts with existing files"
-        poor: "Major integration problems"
+        excellent: "Directly usable for implementation"
+        good: "Clear guidance with minor gaps"
+        acceptable: "Generally actionable"
+        needs_work: "Requires interpretation"
+        poor: "Too vague to act on"
 
+    - code: "T"
+      name: "traceability"
+      weight: 0.10
+      description: "Cross-references to source material"
+      scoring_rubric:
+        excellent: "All sections trace to CLAUDE.md"
+        good: "Most sections traced"
+        acceptable: "Key sections traced"
+        needs_work: "Some sections lack tracing"
+        poor: "No traceability"
+
+  # nse-qa criteria (NASA SE Compliance)
+  # Prior art: qg-0/nse-qa-audit.md
+  nse_qa:
+    - code: "TR"
+      name: "technical_rigor"
+      weight: 0.20
+      description: "Systematic methodology, structured approach"
+      scoring_rubric:
+        excellent: "Follows NASA SE patterns"
+        good: "Mostly systematic"
+        acceptable: "Generally structured"
+        needs_work: "Ad-hoc approach"
+        poor: "No methodology"
+
+    - code: "RT"
+      name: "requirements_traceability"
+      weight: 0.20
+      description: "Explicit linkages to source requirements"
+      scoring_rubric:
+        excellent: "Every section traces to CLAUDE.md"
+        good: "Most sections traced"
+        acceptable: "Key sections traced"
+        needs_work: "Some sections lack tracing"
+        poor: "No traceability"
+
+    - code: "VE"
+      name: "verification_evidence"
+      weight: 0.20
+      description: "Evidence sufficient to support conclusions"
+      scoring_rubric:
+        excellent: "Line counts, diffs, file comparisons"
+        good: "Most claims verified"
+        acceptable: "Key claims verified"
+        needs_work: "Limited verification"
+        poor: "No verification evidence"
+
+    - code: "RI"
+      name: "risk_identification"
+      weight: 0.20
+      description: "Risks identified and assessed"
+      scoring_rubric:
+        excellent: "All risks with severity ratings"
+        good: "Most risks identified"
+        acceptable: "Key risks identified"
+        needs_work: "Limited risk coverage"
+        poor: "No risk identification"
+
+    - code: "DQ"
+      name: "documentation_quality"
+      weight: 0.20
+      description: "Format supports technical review"
+      scoring_rubric:
+        excellent: "NPR 7123.1D compliant"
+        good: "Mostly structured"
+        acceptable: "Generally readable"
+        needs_work: "Formatting issues"
+        poor: "Poorly structured"
+
+  # DISC-002 Mandatory Findings
+  adversarial_findings:
+    minimum_required: 3
+    types:
+      - name: "blind_spots"
+        description: "Areas not covered by artifact"
+        minimum: 1
+      - name: "weak_assumptions"
+        description: "Unstated assumptions that could fail"
+        minimum: 1
+      - name: "missing_evidence"
+        description: "Claims without supporting evidence"
+        minimum: 0
+      - name: "contradictions"
+        description: "Internal or cross-artifact conflicts"
+        minimum: 0
+
+  # Integration-level checks
   integration_level:
     - id: "INT-001"
       name: "Complete Migration"

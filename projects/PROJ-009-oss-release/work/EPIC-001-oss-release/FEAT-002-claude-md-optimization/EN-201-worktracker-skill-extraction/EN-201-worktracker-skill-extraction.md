@@ -219,7 +219,7 @@ TASK-001 (Fix SKILL.md)
 
 ## Orchestration
 
-This enabler uses a multi-agent orchestration workflow with adversarial review loops.
+This enabler uses the **DISC-002 Adversarial Review Protocol** established in the FEAT-001 research phase.
 
 | Artifact | Purpose | Location |
 |----------|---------|----------|
@@ -227,14 +227,29 @@ This enabler uses a multi-agent orchestration workflow with adversarial review l
 | ORCHESTRATION.yaml | Machine-readable state (SSOT) | [orchestration/ORCHESTRATION.yaml](./orchestration/ORCHESTRATION.yaml) |
 | ORCHESTRATION_WORKTRACKER.md | Tactical execution tracking | [orchestration/ORCHESTRATION_WORKTRACKER.md](./orchestration/ORCHESTRATION_WORKTRACKER.md) |
 
-### Workflow Pattern
+### DISC-002 Adversarial Review Protocol
 
-- **Pattern:** Fan-Out/Fan-In with Generator-Critic Review Loops
-- **Quality Threshold:** 0.92
-- **Max Iterations:** 3 (then human escalation)
+- **Pattern:** Fan-Out/Fan-In with DISC-002 Adversarial Review Loops
+- **Quality Threshold:** 0.92 (per DEC-OSS-001)
+- **Max Iterations:** 3 (then human escalation per DEC-OSS-004)
 - **Agents Used:**
-  - `ps-critic` - Task-level quality evaluation
-  - `nse-qa` - Integration quality audit
+  - `ps-critic` - Adversarial quality evaluation (C/A/CL/AC/T criteria)
+  - `nse-qa` - NASA SE compliance audit (TR/RT/VE/RI/DQ criteria)
+
+### Adversarial Mode Characteristics
+
+| # | Characteristic | Description |
+|---|----------------|-------------|
+| 1 | RED TEAM FRAMING | Assume problems exist |
+| 2 | MANDATORY FINDINGS | Must identify ≥3 issues |
+| 3 | CHECKLIST ENFORCEMENT | Evidence required for PASS |
+| 4 | DEVIL'S ADVOCATE | "What could go wrong?" |
+| 5 | COUNTER-EXAMPLES | Identify failure scenarios |
+| 6 | NO RUBBER STAMPS | 0.95+ requires justification |
+
+### Prior Art
+
+See `FEAT-001-research-and-preparation/orchestration/oss-release-20260131-001/quality-gates/` for implementation examples (qg-0 through qg-4).
 
 ---
 

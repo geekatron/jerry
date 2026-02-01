@@ -2,8 +2,9 @@
 
 > **Document ID:** EN-201-ORCH-WORKTRACKER
 > **Workflow ID:** `en201-extraction-20260201-001`
+> **Protocol:** DISC-002 Adversarial Review
 > **Status:** ACTIVE
-> **Last Updated:** 2026-02-01T12:00:00Z
+> **Last Updated:** 2026-02-01T13:30:00Z
 
 ---
 
@@ -11,17 +12,31 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    EN-201 ORCHESTRATION PROGRESS                             │
+│              EN-201 ORCHESTRATION PROGRESS (DISC-002)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Overall:     [##....................] 14% (1/7 tasks complete)              │
 │ Phase 1:     [........................] 0% (0/4 extractions)                │
-│ Phase 2:     [........................] 0% (blocked)                        │
-│ Phase 3:     [........................] 0% (blocked)                        │
+│ QG-1:        [........................] 0% (blocked - waiting Phase 1)      │
+│ Phase 2:     [........................] 0% (blocked - waiting QG-1)         │
+│ QG-2:        [........................] 0% (blocked - waiting Phase 2)      │
+│ Phase 3:     [........................] 0% (blocked - waiting QG-2)         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Quality Gate: 0.92 | Max Iterations: 3 | Escalations: 0                     │
 │ Lines Extracted: 0/371 | Avg Quality: N/A                                   │
+│ Protocol: DISC-002 Adversarial Review | Mode: ADVERSARIAL                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### DISC-002 Protocol Status
+
+| Characteristic | Status | Notes |
+|----------------|--------|-------|
+| RED TEAM FRAMING | ⬜ READY | Invocation template defined |
+| MANDATORY FINDINGS (≥3) | ⬜ READY | Enforcement in prompt |
+| CHECKLIST ENFORCEMENT | ⬜ READY | Criteria defined |
+| DEVIL'S ADVOCATE | ⬜ READY | Required in output |
+| COUNTER-EXAMPLES | ⬜ READY | Required in output |
+| NO RUBBER STAMPS | ⬜ READY | 0.95+ requires justification |
 
 ---
 
@@ -103,7 +118,13 @@
 
 ---
 
-## Barrier 1: Phase 1 → Phase 2 Gate
+## Quality Gate 1 (QG-1): Extraction Review
+
+> **Protocol:** DISC-002 Adversarial Review
+> **Agents:** ps-critic + nse-qa (dual review)
+> **Location:** `orchestration/quality-gates/qg-1/`
+
+### Gate Entry Conditions
 
 | Condition | Status |
 |-----------|--------|
@@ -111,22 +132,51 @@
 | TASK-003 accepted (≥0.92) | ⬜ PENDING |
 | TASK-004 accepted (≥0.92) | ⬜ PENDING |
 | TASK-005 accepted (≥0.92) | ⬜ PENDING |
-| **BARRIER STATUS** | ⬜ PENDING |
+| **GATE ENTRY** | ⬜ PENDING |
+
+### ps-critic Adversarial Review
+
+| Metric | Value |
+|--------|-------|
+| **Status** | BLOCKED |
+| **Mode** | ADVERSARIAL |
+| **Iteration** | 0 |
+| **Score** | - |
+| **Mandatory Findings** | - (need ≥3) |
+| **Output** | `quality-gates/qg-1/ps-critic-review.md` |
+
+### nse-qa Compliance Audit
+
+| Metric | Value |
+|--------|-------|
+| **Status** | BLOCKED |
+| **Iteration** | 0 |
+| **Compliance** | - |
+| **Output** | `quality-gates/qg-1/nse-qa-audit.md` |
+
+### Gate Pass Conditions
+
+| Condition | Status |
+|-----------|--------|
+| ps-critic score ≥0.92 | ⬜ PENDING |
+| nse-qa compliance ≥92% | ⬜ PENDING |
+| All mandatory findings addressed | ⬜ PENDING |
+| **QG-1 STATUS** | ⬜ PENDING |
 
 ---
 
 ## Phase 2: Integration Review
 
-### nse-qa: Integration Quality Audit
+### nse-qa: Integration Quality Audit (Batch Review)
 
 | Metric | Value |
 |--------|-------|
 | **Status** | BLOCKED |
-| **Blocked By** | Barrier 1 |
+| **Blocked By** | QG-1 |
 | **Iteration** | 0 |
 | **Compliance Score** | - |
 | **Accepted** | No |
-| **Output** | `orchestration/qa/integration-qa-report.md` |
+| **Output** | `quality-gates/qg-2/integration-qa-report.md` |
 
 **Checklist Status:**
 
@@ -141,13 +191,18 @@
 
 ---
 
-## Barrier 2: Phase 2 → Phase 3 Gate
+## Quality Gate 2 (QG-2): Integration Gate
+
+> **Protocol:** DISC-002 Adversarial Review
+> **Agent:** nse-qa (batch validation)
+> **Location:** `orchestration/quality-gates/qg-2/`
 
 | Condition | Status |
 |-----------|--------|
 | nse-qa compliance ≥92% | ⬜ PENDING |
 | No critical findings | ⬜ PENDING |
-| **BARRIER STATUS** | ⬜ PENDING |
+| High findings ≤3 | ⬜ PENDING |
+| **QG-2 STATUS** | ⬜ PENDING |
 
 ---
 
