@@ -106,7 +106,7 @@ Optimize Jerry's CLAUDE.md file from its current **914 lines (~10,000 tokens)** 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
 | [EN-201](./EN-201-worktracker-skill-extraction/EN-201-worktracker-skill-extraction.md) | Enabler | Worktracker Skill Extraction | pending | critical | 8 |
-| [EN-202](./EN-202-claude-md-rewrite/EN-202-claude-md-rewrite.md) | Enabler | CLAUDE.md Rewrite | pending | critical | 8 |
+| [EN-202](./EN-202-claude-md-rewrite/EN-202-claude-md-rewrite.md) | Enabler | CLAUDE.md Rewrite | pending | critical | 10 |
 | [EN-203](./EN-203-todo-section-migration/EN-203-todo-section-migration.md) | Enabler | TODO Section Migration | pending | high | 3 |
 | [EN-204](./EN-204-validation-testing/EN-204-validation-testing.md) | Enabler | Validation & Testing | pending | critical | 5 |
 | [EN-205](./EN-205-documentation-update/EN-205-documentation-update.md) | Enabler | Documentation Update | pending | medium | 3 |
@@ -138,7 +138,7 @@ EN-201 -> EN-202 -> EN-204 (Must complete in sequence)
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
 | Enablers:  [....................] 0%  (0/5 completed)            |
-| Tasks:     [....................] 0%  (0/28 completed)           |
+| Tasks:     [....................] 0%  (0/29 completed)           |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                             |
 +------------------------------------------------------------------+
@@ -150,9 +150,9 @@ EN-201 -> EN-202 -> EN-204 (Must complete in sequence)
 |--------|-------|
 | **Total Enablers** | 5 |
 | **Completed Enablers** | 0 |
-| **Total Tasks** | 28 |
+| **Total Tasks** | 29 |
 | **Completed Tasks** | 0 |
-| **Total Effort (points)** | 27 |
+| **Total Effort (points)** | 29 |
 | **Completed Effort** | 0 |
 | **Completion %** | 0% |
 
@@ -211,6 +211,24 @@ This Feature implements a **Tiered Hybrid Loading Strategy**:
 - ADR-OSS-001: Decomposition Strategy
 - ADR-OSS-003: Worktracker Extraction
 - ADR-OSS-004: Multi-Persona Documentation
+
+### Feature-Level Discoveries
+
+| ID | Title | Status | Impact |
+|----|-------|--------|--------|
+| [FEAT-002:DISC-001](./FEAT-002--DISC-001-navigation-tables-for-llm-comprehension.md) | Navigation Tables Improve LLM Document Comprehension | VALIDATED | High |
+
+### Feature-Level Decisions
+
+| ID | Title | Status |
+|----|-------|--------|
+| [FEAT-002:DEC-001](./FEAT-002--DEC-001-navigation-table-standard.md) | Navigation Tables Required in Claude-Consumed Markdown | ACCEPTED |
+
+### Rules Created
+
+| Rule | Location | Description |
+|------|----------|-------------|
+| Navigation Standards | `.claude/rules/markdown-navigation-standards.md` | Mandates navigation tables for all Claude-consumed markdown |
 
 ---
 

@@ -18,7 +18,7 @@ PURPOSE: Rewrite CLAUDE.md from 914 lines to 60-80 lines
 > **Completed:** -
 > **Parent:** FEAT-002
 > **Owner:** -
-> **Effort:** 8
+> **Effort:** 10
 
 ---
 
@@ -113,6 +113,7 @@ Replace the current CLAUDE.md with a focused document containing only:
 
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
+| [TASK-000](./TASK-000-add-navigation-tables.md) | Add navigation tables to worktracker files | pending | 2 | - |
 | [TASK-001](./TASK-001-create-identity-section.md) | Create Identity section | pending | 1 | - |
 | [TASK-002](./TASK-002-create-navigation-section.md) | Create Navigation pointers section | pending | 2 | - |
 | [TASK-003](./TASK-003-create-active-project-section.md) | Create Active project section | pending | 1 | - |
@@ -124,11 +125,13 @@ Replace the current CLAUDE.md with a focused document containing only:
 ### Task Dependencies
 
 ```
-TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 (can run in parallel)
+TASK-000 (Add navigation tables - MUST complete first)
     |
-    +---> TASK-006 (Validate pointers)
+    +---> TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 (can run in parallel)
               |
-              +---> TASK-007 (Verify line count)
+              +---> TASK-006 (Validate pointers)
+                        |
+                        +---> TASK-007 (Verify line count)
 ```
 
 ---
@@ -141,8 +144,8 @@ TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 (can run in parallel)
 +------------------------------------------------------------------+
 |                   ENABLER PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Tasks:     [....................] 0% (0/7 completed)             |
-| Effort:    [....................] 0% (0/8 points completed)      |
+| Tasks:     [....................] 0% (0/8 completed)             |
+| Effort:    [....................] 0% (0/10 points completed)     |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                             |
 +------------------------------------------------------------------+
@@ -152,9 +155,9 @@ TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 (can run in parallel)
 
 | Metric | Value |
 |--------|-------|
-| **Total Tasks** | 7 |
+| **Total Tasks** | 8 |
 | **Completed Tasks** | 0 |
-| **Total Effort (points)** | 8 |
+| **Total Effort (points)** | 10 |
 | **Completed Effort** | 0 |
 | **Completion %** | 0% |
 
@@ -244,6 +247,14 @@ Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rew
 
 - Appendix A in PLAN-CLAUDE-MD-OPTIMIZATION.md contains proposed structure
 - [EN-201:DEC-001](../EN-201-worktracker-skill-extraction/DEC-001-faithful-extraction-principle.md) - Decision to preserve defects during extraction
+
+### FEAT-002 Standards (Apply in TASK-000)
+
+| Type | Path | Description |
+|------|------|-------------|
+| Discovery | [FEAT-002:DISC-001](../FEAT-002--DISC-001-navigation-tables-for-llm-comprehension.md) | Navigation tables improve LLM comprehension |
+| Decision | [FEAT-002:DEC-001](../FEAT-002--DEC-001-navigation-table-standard.md) | Navigation tables required in all Claude-consumed markdown |
+| Rule | `.claude/rules/markdown-navigation-standards.md` | Enforcement rule for navigation tables |
 
 ---
 
