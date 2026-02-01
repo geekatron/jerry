@@ -230,7 +230,7 @@ flowchart TB
         %% ═══════════════════════════════════════════════════════════════
         subgraph P0_QG0_V1["❌ QG-0 v1: FAILED (0.876 < 0.92) - Triggered Remediation"]
             P0_CRITIC_V1{{"❌ ps-critic v1<br/>Score: 0.876<br/>BELOW THRESHOLD"}}
-            P0_DISC001["📋 DISC-001 Created<br/>Missing Research Scope:<br/>• Claude Code CLI<br/>• CLAUDE.md patterns<br/>• Plugins architecture<br/>• Skills patterns<br/>• Decomposition""]
+            P0_DISC001["📋 DISC-001 Created<br/>Missing Research Scope:<br/>• Claude Code CLI<br/>• CLAUDE.md patterns<br/>• Plugins architecture<br/>• Skills patterns<br/>• Decomposition"]
         end
 
         subgraph P0_TIER1B["TIER 1b: Expanded Research - DISC-001 Remediation (PARALLEL) ✅"]
