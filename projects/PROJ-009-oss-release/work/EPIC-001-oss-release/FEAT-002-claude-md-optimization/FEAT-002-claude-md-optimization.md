@@ -21,6 +21,22 @@ PURPOSE: Optimize CLAUDE.md from 914 lines to 60-80 lines for OSS release
 
 ---
 
+## Document Sections
+
+| Section | Purpose | Key Information |
+|---------|---------|-----------------|
+| **Summary** | What this feature delivers | 91-93% reduction in CLAUDE.md size |
+| **Benefit Hypothesis** | Expected outcomes | Improved LLM performance, better onboarding |
+| **Acceptance Criteria** | Definition of done | Line count, token count, functionality |
+| **MVP Definition** | Scope boundaries | What's in vs out of scope |
+| **Children (Enablers)** | Work breakdown | 5 enablers with dependencies |
+| **Progress Summary** | Current status | 0% complete |
+| **Decomposition Strategy** | Technical approach | Tiered Hybrid Loading Strategy |
+| **Feature-Level Discoveries** | Research findings | DISC-001 navigation tables |
+| **Feature-Level Decisions** | Choices made | DEC-001 navigation standard |
+
+---
+
 ## Summary
 
 Optimize Jerry's CLAUDE.md file from its current **914 lines (~10,000 tokens)** to a target of **60-80 lines (~3,300-3,500 tokens)** - a **91-93% reduction**. This optimization is essential for OSS release readiness, developer onboarding experience, and preventing context rot that degrades LLM performance.
@@ -237,6 +253,10 @@ This Feature implements a **Tiered Hybrid Loading Strategy**:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-01T00:00:00Z | Claude | pending | Feature created from PLAN-CLAUDE-MD-OPTIMIZATION.md |
+| 2026-02-01T13:00:00Z | Claude | pending | Created EN-201 through EN-205 enablers |
+| 2026-02-01T18:00:00Z | Claude | pending | Added FEAT-002:DISC-001, FEAT-002:DEC-001, navigation standards rule |
+| 2026-02-01T18:15:00Z | Claude | pending | Added EN-202:TASK-000 for navigation table updates |
+| 2026-02-01T18:30:00Z | Claude | pending | Added navigation table per FEAT-002:DEC-001 |
 
 ---
 

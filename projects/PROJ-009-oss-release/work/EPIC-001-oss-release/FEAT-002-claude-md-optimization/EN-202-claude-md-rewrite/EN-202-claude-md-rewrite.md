@@ -22,6 +22,21 @@ PURPOSE: Rewrite CLAUDE.md from 914 lines to 60-80 lines
 
 ---
 
+## Document Sections
+
+| Section | Purpose | Key Information |
+|---------|---------|-----------------|
+| **Summary** | What this enabler does | Rewrite CLAUDE.md to 60-80 lines |
+| **Problem Statement** | Why this work is needed | 914 lines causes context rot |
+| **Technical Approach** | How to implement | Target structure with 5 sections |
+| **Children (Tasks)** | Task breakdown | 8 tasks with dependencies |
+| **Progress Summary** | Current status | 0% complete |
+| **Acceptance Criteria** | Definition of done | Line count, pointers, no duplication |
+| **Bugs** | Source defects to fix | 3 bugs from EN-201 extraction |
+| **FEAT-002 Standards** | Standards to apply | Navigation tables (TASK-000) |
+
+---
+
 ## Summary
 
 Rewrite CLAUDE.md from its current 914 lines to the target 60-80 lines following the Tiered Hybrid Loading Strategy. The new CLAUDE.md will contain only essential identity, navigation pointers, critical constraints, and quick reference information.
@@ -263,6 +278,9 @@ Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rew
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-01T00:00:00Z | Claude | pending | Enabler created |
+| 2026-02-01T13:00:00Z | Claude | pending | Added BUG-001, BUG-002, BUG-003 (source defects from EN-201) |
+| 2026-02-01T18:00:00Z | Claude | pending | Added TASK-000 (navigation tables), updated dependency graph, added FEAT-002 standards references |
+| 2026-02-01T18:30:00Z | Claude | pending | Added navigation table per FEAT-002:DEC-001 |
 
 ---
 
