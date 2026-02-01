@@ -15,6 +15,8 @@
 | `PROJ-005-plugin-bugs` | Plugin Installation Bugs | 🔄 IN PROGRESS | `cc/jerry-plugin-bugs` | 2026-01-13 |
 | `PROJ-006-worktracker-ontology` | Work Tracker Ontology | 🔄 IN PROGRESS | *(other worktree)* | 2026-01-13 |
 | `PROJ-007-jerry-bugs` | Jerry Performance and Plugin Bugs | 🔄 IN PROGRESS | `bugs/bugs-20260114-performance` | 2026-01-14 |
+| `PROJ-008-transcript-skill` | Transcript Skill | 🔄 IN PROGRESS | `feat/008-transcript-skill` | 2026-01-25 |
+| `PROJ-009-oss-release` | Jerry OSS Release Preparation | 🔄 IN PROGRESS | `feat/009-prepare-for-release` | 2026-01-31 |
 
 ---
 
@@ -98,4 +100,4 @@ If `JERRY_PROJECT` is not set, Claude will prompt you to specify which project t
 
 ---
 
-*Last Updated: 2026-01-12*
+*Last Updated: 2026-01-31*

@@ -12,11 +12,7 @@ activation-keywords:
   - "update the worktracker"
   - "/worktracker"
   - "/jerry:worktracker"
-  - "parse srt"
-  - "extract action items"
-  - "extract decisions"
-  - "analyze meeting"
-  - "/transcript"
+
 ---
 
 # Worktracker Skill
