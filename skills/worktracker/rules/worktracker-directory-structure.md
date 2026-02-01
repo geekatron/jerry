@@ -1,7 +1,7 @@
 # Worktracker Directory Structure
 
 > Rule file for /worktracker skill
-> Source: CLAUDE.md (EN-201 extraction)
+> Source: CLAUDE.md lines 360-399 (EN-201 extraction)
 > Extracted: 2026-02-01
 
 ---

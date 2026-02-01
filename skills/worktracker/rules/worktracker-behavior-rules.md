@@ -1,7 +1,7 @@
 # Worktracker Behavior Rules
 
 > Rule file for /worktracker skill
-> Source: CLAUDE.md (EN-201 extraction)
+> Source: CLAUDE.md lines 218-241 (EN-201 extraction)
 > Extracted: 2026-02-01
 
 ---
@@ -34,7 +34,7 @@ Use MCP Memory-Keeper to help you remember and maintain the structure and relati
 
 ## Cross-References
 
-- **Entity Hierarchy Rules**: `worktracker-entity-rules.md`
-- **Folder Structure Rules**: `worktracker-folder-structure-and-hierarchy-rules.md`
-- **Template Usage Rules**: `worktracker-template-usage-rules.md`
-- **Source Document**: `CLAUDE.md` lines 218-241
+- **Entity Hierarchy Rules**: `worktracker-entity-hierarchy.md`
+- **System Mappings Rules**: `worktracker-system-mappings.md`
+- **Directory Structure Rules**: `worktracker-directory-structure.md`
+- **Template Usage Rules**: `worktracker-templates.md`

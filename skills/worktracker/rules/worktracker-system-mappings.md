@@ -1,7 +1,7 @@
 # Worktracker System Mappings
 
 > Rule file for /worktracker skill
-> Source: CLAUDE.md (EN-201 extraction)
+> Source: CLAUDE.md lines 131-215 (EN-201 extraction)
 > Extracted: 2026-02-01
 
 ---
