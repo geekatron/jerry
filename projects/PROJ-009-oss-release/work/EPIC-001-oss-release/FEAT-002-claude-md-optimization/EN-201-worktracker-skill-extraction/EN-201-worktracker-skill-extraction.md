@@ -24,17 +24,18 @@ PURPOSE: Extract 371 lines of worktracker content from CLAUDE.md to /worktracker
 
 ## Document Sections
 
-| Section | Purpose | Key Information |
-|---------|---------|-----------------|
-| **Summary** | What this enabler does | Extract 371 lines to worktracker skill |
-| **Problem Statement** | Why this work is needed | Content loaded unnecessarily at session start |
-| **Technical Approach** | How to implement | Target structure with 5 rule files |
-| **Children (Tasks)** | Task breakdown | 7 tasks with dependencies |
-| **Progress Summary** | Current status | 14% complete (1/7 tasks) |
-| **Orchestration** | Workflow details | DISC-002 adversarial review protocol |
-| **Discoveries** | Findings during work | DISC-001, DISC-002 |
-| **Decisions** | Choices made | DEC-001, DEC-002 |
-| **Bugs** | Issues found | BUG-001 (EN-201), BUG-001-003 (EN-202) |
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler does - extract 371 lines to worktracker skill |
+| [Problem Statement](#problem-statement) | Why this work is needed - unnecessary context loading |
+| [Technical Approach](#technical-approach) | Target structure with 5 rule files |
+| [Children (Tasks)](#children-tasks) | 7 tasks with dependencies |
+| [Progress Summary](#progress-summary) | 14% complete (1/7 tasks) |
+| [Orchestration](#orchestration) | DISC-002 adversarial review protocol |
+| [Discoveries](#discoveries) | DISC-001, DISC-002 findings |
+| [Decisions](#decisions) | DEC-001, DEC-002 choices |
+| [Bugs (in EN-201)](#bugs-in-en-201) | BUG-001 process failure |
+| [Bugs Created (for EN-202)](#bugs-created-for-en-202) | BUG-001-003 source defects |
 
 ---
 

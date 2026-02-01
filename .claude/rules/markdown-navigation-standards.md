@@ -5,13 +5,14 @@
 
 ## Document Sections
 
-| Section | Purpose | Key Information |
-|---------|---------|-----------------|
-| **Intention** | Why this standard exists | LLM comprehension benefits |
-| **Strategy** | How to implement | Table formats and placement |
-| **Requirements** | What must be included | Mandatory elements |
-| **Examples** | Reference implementations | Jerry skill examples |
-| **Validation** | How to verify compliance | Checklist |
+| Section | Purpose |
+|---------|---------|
+| [Intention](#intention) | Why this standard exists - LLM comprehension benefits |
+| [Strategy](#strategy) | How to implement - Table formats, anchor links, placement |
+| [Requirements](#requirements) | What must be included - Mandatory elements |
+| [Examples](#examples) | Reference implementations - Jerry skill examples |
+| [Validation](#validation) | How to verify compliance - Checklist |
+| [References](#references) | Sources and citations |
 
 **Related Standards**:
 - [File Organization](file-organization.md) - Directory structure
@@ -19,28 +20,37 @@
 
 **Decision Reference**: [FEAT-002:DEC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DEC-001-navigation-table-standard.md)
 
+**Research**: [TASK-000 Research](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/EN-202-claude-md-rewrite/TASK-000-research-navigation-table-optimization.md)
+
 ---
 
 ## Intention
 
-### Why Navigation Tables Matter
+### Why Navigation Tables with Anchor Links Matter
 
-Claude reads markdown files linearly, but understanding document structure upfront significantly improves comprehension. A navigation table immediately after frontmatter serves as a "document map" that:
+Claude reads markdown files linearly, but understanding document structure upfront significantly improves comprehension. A navigation table with **anchor links** immediately after frontmatter serves as an active "document map" that:
 
-1. **Provides Section Visibility** - Claude sees all sections at a glance
-2. **Enables Targeted Reading** - Claude can focus on relevant sections
-3. **Shows Relationships** - Table format reveals how concepts relate
+1. **Enables Direct Navigation** - Claude can jump to specific sections via anchor links
+2. **Provides Section Visibility** - Claude sees all sections at a glance
+3. **Creates Knowledge Graph** - Table format reveals how concepts relate
 4. **Supports Audience Targeting** - Triple-Lens tables guide detail level
+5. **Improves Extractability** - LLMs can pinpoint specific information more efficiently
+
+### Anthropic Official Guidance
+
+> "For reference files that exceed 100 lines, it's important to include a table of contents at the top. This structure helps Claude understand the full scope of information available... **A table of contents allows Claude to efficiently navigate and jump to specific sections as required**, ensuring it can access the necessary details without reading the entire lengthy document."
+>
+> — [Claude Platform Documentation - Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
 
 ### Industry Evidence
 
-> "Markdown lets you structure content with nested lists, tables, and subheadings. This kind of **hierarchical structure is gold for LLMs** — it tells them how concepts relate to one another, what's a main idea, what's a subpoint, and what's a list of items to extract or reason over."
+> "Anchor links enhance extractability, making it easier for LLMs to pinpoint and utilize specific information when generating responses. A table of contents provides LLMs with a clear overview of the document's structure and organization, helping them understand the semantic relationships between different sections."
 >
-> — [Wetrocloud: Why Markdown is the Best Format for LLMs](https://medium.com/@wetrocloud/why-markdown-is-the-best-format-for-llms-aa0514a409a7)
+> — [Geeky Tech: Anchor Links and ToC for LLM Skimming](https://www.geekytech.co.uk/anchor-links-and-table-of-contents-for-llm-skimming/)
 
-> "Best practices include starting with a clear introduction about what the document covers, using consistent heading hierarchy to maintain logical structure, and **including a table of contents for long docs to enable easy navigation**."
+> "Markdown is extremely close to plain text... Mainstream LLMs natively '_speak_' Markdown, and often incorporate Markdown into their responses unprompted."
 >
-> — [Markdown Documentation Standards - Claude Skills](https://claude-plugins.dev/skills/@ai-digital-architect/awesome-claude-code/markdown-standards)
+> — [Microsoft MarkItDown](https://github.com/microsoft/markitdown)
 
 ---
 
@@ -52,6 +62,8 @@ The navigation table MUST appear:
 1. **After** the YAML frontmatter (if present)
 2. **After** the title and metadata blockquote
 3. **Before** the first content section
+
+This satisfies the **"First-100-Words Rule"** - include key navigation in the first 100 words to aid extraction.
 
 ```markdown
 ---
@@ -70,42 +82,66 @@ description: ...
 
 | Section | Purpose |
 |---------|---------|
-| ... | ... |
+| [Summary](#summary) | What this document covers |
+| [Details](#details) | Implementation specifics |
 
 ---
 
-## First Content Section    <-- Content starts AFTER
+## Summary                  <-- Content starts AFTER
 ```
+
+### Anchor Link Syntax
+
+Section names MUST be anchor links following GitHub-flavored markdown rules:
+
+| Rule | Description | Example |
+|------|-------------|---------|
+| Lowercase | Convert heading to lowercase | `Summary` → `summary` |
+| Hyphens | Replace spaces with hyphens | `Problem Statement` → `problem-statement` |
+| Remove special chars | Remove parentheses, colons, etc. | `Children (Tasks)` → `children-tasks` |
+
+**Anchor Examples:**
+
+| Heading | Anchor Link |
+|---------|-------------|
+| `## Summary` | `[Summary](#summary)` |
+| `## Problem Statement` | `[Problem Statement](#problem-statement)` |
+| `## Children (Tasks)` | `[Children (Tasks)](#children-tasks)` |
+| `## Acceptance Criteria` | `[Acceptance Criteria](#acceptance-criteria)` |
+| `## Related Items` | `[Related Items](#related-items)` |
 
 ### Table Formats
 
 Choose the format appropriate for your document type:
 
-#### Format 1: Section Index (General Documents)
+#### Format 1: Section Index with Anchors (General Documents)
 
-Use for rule files, knowledge documents, and general markdown:
+Use for rule files, enablers, features, and general markdown:
 
 ```markdown
 ## Document Sections
 
-| Section | Purpose | Key Information |
-|---------|---------|-----------------|
-| **Section Name** | What it covers | Summary of key content |
-| **Another Section** | What it covers | Summary of key content |
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this document covers |
+| [Problem Statement](#problem-statement) | Why this work is needed |
+| [Technical Approach](#technical-approach) | How we'll implement it |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Related Items](#related-items) | Cross-references and dependencies |
 ```
 
-#### Format 2: Triple-Lens Audience (Skills, Playbooks)
+#### Format 2: Triple-Lens Audience with Anchors (Skills, Playbooks)
 
 Use for documents serving multiple audience levels:
 
 ```markdown
 ## Document Audience (Triple-Lens)
 
-| Level | Audience | Sections to Focus On |
-|-------|----------|---------------------|
-| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, Quick Reference |
-| **L1 (Engineer)** | Developers, implementers | Quick Start, Details, Examples |
-| **L2 (Architect)** | Designers, reviewers | Patterns, Trade-offs, Compliance |
+| Level | Audience | Sections |
+|-------|----------|----------|
+| **L0 (ELI5)** | Stakeholders | [Purpose](#purpose), [When to Use](#when-to-use) |
+| **L1 (Engineer)** | Developers | [Quick Start](#quick-start), [Examples](#examples) |
+| **L2 (Architect)** | Designers | [Patterns](#patterns), [Trade-offs](#trade-offs) |
 ```
 
 #### Format 3: Hybrid (Complex Documents)
@@ -115,17 +151,17 @@ Combine both for large, complex documents:
 ```markdown
 ## Document Audience (Triple-Lens)
 
-| Level | Audience | Sections to Focus On |
-|-------|----------|---------------------|
-| **L0** | ... | ... |
-| **L1** | ... | ... |
-| **L2** | ... | ... |
+| Level | Audience | Sections |
+|-------|----------|----------|
+| **L0** | ... | [Section](#section), ... |
+| **L1** | ... | [Section](#section), ... |
+| **L2** | ... | [Section](#section), ... |
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
-| ... | ... |
+| [Section Name](#section-name) | What it covers |
 ```
 
 ---
@@ -141,18 +177,20 @@ All Claude-consumed markdown files MUST include:
 | **NAV-001** | Navigation table present | HARD |
 | **NAV-002** | Table appears after frontmatter, before content | HARD |
 | **NAV-003** | Table uses markdown table format | HARD |
-| **NAV-004** | Each major section listed | MEDIUM |
+| **NAV-004** | Each major section (## heading) listed | MEDIUM |
 | **NAV-005** | Purpose/description for each section | MEDIUM |
+| **NAV-006** | Section names use anchor links `[Name](#anchor)` | **HARD** |
 
 ### File Types Covered
 
 | File Type | Location | Table Format |
 |-----------|----------|--------------|
-| Skill files | `skills/*/SKILL.md` | Triple-Lens |
-| Playbooks | `skills/*/PLAYBOOK.md` | Triple-Lens |
-| Rule files | `.claude/rules/*.md` | Section Index |
-| Agent files | `skills/*/agents/*.md` | Section Index |
-| Worktracker templates | `.context/templates/worktracker/*.md` | Section Index |
+| Skill files | `skills/*/SKILL.md` | Triple-Lens with anchors |
+| Playbooks | `skills/*/PLAYBOOK.md` | Triple-Lens with anchors |
+| Rule files | `.claude/rules/*.md` | Section Index with anchors |
+| Agent files | `skills/*/agents/*.md` | Section Index with anchors |
+| Worktracker entities | `projects/**/EN-*.md`, `FEAT-*.md` | Section Index with anchors |
+| Worktracker templates | `.context/templates/worktracker/*.md` | Section Index with anchors |
 | Knowledge docs | `docs/**/*.md` | Section Index or Triple-Lens |
 
 ### Exceptions
@@ -172,41 +210,55 @@ Navigation tables are NOT required for:
 ```markdown
 ## Document Sections
 
-| Section | Purpose | Key Information |
-|---------|---------|-----------------|
-| **Intention** | Why this standard exists | LLM comprehension benefits |
-| **Strategy** | How to implement | Table formats and placement |
-| **Requirements** | What must be included | Mandatory elements |
-| **Examples** | Reference implementations | Jerry skill examples |
-| **Validation** | How to verify compliance | Checklist |
+| Section | Purpose |
+|---------|---------|
+| [Intention](#intention) | Why this standard exists |
+| [Strategy](#strategy) | How to implement |
+| [Requirements](#requirements) | What must be included |
+| [Examples](#examples) | Reference implementations |
+| [Validation](#validation) | How to verify compliance |
 ```
 
-### Example 2: Skill File (orchestration/SKILL.md)
+### Example 2: Enabler File
+
+```markdown
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler delivers |
+| [Problem Statement](#problem-statement) | Why this work is needed |
+| [Technical Approach](#technical-approach) | Implementation strategy |
+| [Children (Tasks)](#children-tasks) | Task breakdown with dependencies |
+| [Progress Summary](#progress-summary) | Current completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done checklist |
+| [Related Items](#related-items) | Bugs, discoveries, decisions |
+```
+
+### Example 3: Skill File (orchestration/SKILL.md)
 
 ```markdown
 ## Document Audience (Triple-Lens)
 
-This SKILL.md serves multiple audiences:
-
-| Level | Audience | Sections to Focus On |
-|-------|----------|---------------------|
-| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Core Artifacts |
-| **L1 (Engineer)** | Developers executing workflows | Quick Start, State Schema |
-| **L2 (Architect)** | Workflow designers | Workflow Patterns, Constitutional Compliance |
+| Level | Audience | Sections |
+|-------|----------|----------|
+| **L0 (ELI5)** | Stakeholders | [Purpose](#purpose), [When to Use](#when-to-use) |
+| **L1 (Engineer)** | Developers | [Quick Start](#quick-start), [State Schema](#state-schema) |
+| **L2 (Architect)** | Designers | [Workflow Patterns](#workflow-patterns), [Compliance](#constitutional-compliance) |
 ```
 
-### Example 3: Worktracker Template
+### Example 4: Worktracker Template
 
 ```markdown
 ## Template Sections
 
-| Section | Purpose | Required |
-|---------|---------|----------|
-| **Summary** | Brief description of work item | Yes |
-| **Acceptance Criteria** | Definition of done | Yes |
-| **Evidence** | Proof of completion | Yes |
-| **Related Items** | Links to parent/children | Yes |
-| **History** | Change log | Recommended |
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Brief description of work item |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Proof of completion |
+| [Related Items](#related-items) | Links to parent/children |
+| [History](#history) | Change log |
 ```
 
 ---
@@ -222,36 +274,55 @@ Before finalizing any Claude-consumed markdown file, verify:
 - [ ] **NAV-003**: Table uses proper markdown table syntax
 - [ ] **NAV-004**: All major sections (## headings) are listed
 - [ ] **NAV-005**: Each entry has a purpose/description
+- [ ] **NAV-006**: Section names are anchor links (`[Name](#anchor)`)
+
+### Anchor Link Verification
+
+Test that anchors resolve correctly:
+1. Click each anchor link in preview mode
+2. Verify it jumps to the correct section
+3. Check anchor follows naming rules (lowercase, hyphens, no special chars)
 
 ### Automated Validation (Future)
 
 Consider implementing:
 - Pre-commit hook to check for navigation table presence
-- CI validation for markdown structure
-- Linting rule for table placement
+- CI validation for anchor link format
+- Linting rule for table placement and structure
 
 ---
 
 ## References
 
-### Industry Sources
+### Primary Sources (Authoritative)
 
 | Source | URL | Key Finding |
 |--------|-----|-------------|
+| Claude Platform Docs | [Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) | ToC allows Claude to "jump to specific sections" |
+| Claude Platform Docs | [Long Context Tips](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/long-context-tips) | Structure with tags, quote-first pattern |
+| Anthropic Courses | [GitHub](https://github.com/anthropics/courses) | XML tags for structure |
+| Microsoft MarkItDown | [GitHub](https://github.com/microsoft/markitdown) | LLMs natively "speak" Markdown |
+
+### Secondary Sources (Industry)
+
+| Source | URL | Key Finding |
+|--------|-----|-------------|
+| Geeky Tech | [LLM Skimming](https://www.geekytech.co.uk/anchor-links-and-table-of-contents-for-llm-skimming/) | Anchor links enhance extractability |
+| ZC Marketing | [LLM Internal Linking 2025](https://zcmarketing.au/seo-tips/llm-internal-linking-2025/) | First-100-words rule, heading hierarchy |
 | Wetrocloud | [Medium Article](https://medium.com/@wetrocloud/why-markdown-is-the-best-format-for-llms-aa0514a409a7) | Hierarchical structure helps LLMs |
-| Anthropic | [Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) | Break up information, reference files |
-| Anthropic | [CLAUDE.md Guide](https://claude.com/blog/using-claude-md-files) | Structure aids comprehension |
-| Claude Plugins | [Markdown Standards](https://claude-plugins.dev/skills/@ai-digital-architect/awesome-claude-code/markdown-standards) | Include TOC for navigation |
+| llmstxt.org | [Standard](https://llmstxt.org/) | /llms.txt proposal |
 
 ### Jerry Internal Sources
 
-- [FEAT-002:DISC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DISC-001-navigation-tables-for-llm-comprehension.md) - Discovery
-- [FEAT-002:DEC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DEC-001-navigation-table-standard.md) - Decision
-- `skills/orchestration/SKILL.md` - Reference implementation
-- `skills/problem-solving/SKILL.md` - Reference implementation
+| Type | Path | Description |
+|------|------|-------------|
+| Research | [TASK-000 Research](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/EN-202-claude-md-rewrite/TASK-000-research-navigation-table-optimization.md) | Full research document |
+| Discovery | [FEAT-002:DISC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DISC-001-navigation-tables-for-llm-comprehension.md) | Initial findings |
+| Decision | [FEAT-002:DEC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DEC-001-navigation-table-standard.md) | Standard adoption |
 
 ---
 
-*Rule Version: 1.0.0*
+*Rule Version: 2.0.0*
 *Created: 2026-02-01*
+*Updated: 2026-02-01 (v2.0 - Added anchor link requirement NAV-006)*
 *Decision: FEAT-002:DEC-001*

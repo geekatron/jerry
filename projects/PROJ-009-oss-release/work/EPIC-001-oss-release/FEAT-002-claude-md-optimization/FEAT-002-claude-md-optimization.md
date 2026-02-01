@@ -23,17 +23,17 @@ PURPOSE: Optimize CLAUDE.md from 914 lines to 60-80 lines for OSS release
 
 ## Document Sections
 
-| Section | Purpose | Key Information |
-|---------|---------|-----------------|
-| **Summary** | What this feature delivers | 91-93% reduction in CLAUDE.md size |
-| **Benefit Hypothesis** | Expected outcomes | Improved LLM performance, better onboarding |
-| **Acceptance Criteria** | Definition of done | Line count, token count, functionality |
-| **MVP Definition** | Scope boundaries | What's in vs out of scope |
-| **Children (Enablers)** | Work breakdown | 5 enablers with dependencies |
-| **Progress Summary** | Current status | 0% complete |
-| **Decomposition Strategy** | Technical approach | Tiered Hybrid Loading Strategy |
-| **Feature-Level Discoveries** | Research findings | DISC-001 navigation tables |
-| **Feature-Level Decisions** | Choices made | DEC-001 navigation standard |
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this feature delivers - 91-93% reduction in CLAUDE.md size |
+| [Benefit Hypothesis](#benefit-hypothesis) | Expected outcomes - improved LLM performance |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done - line count, functionality |
+| [MVP Definition](#mvp-definition) | Scope boundaries - what's in vs out |
+| [Children (Enablers)](#children-enablers) | Work breakdown - 5 enablers with dependencies |
+| [Progress Summary](#progress-summary) | Current completion status |
+| [Decomposition Strategy](#decomposition-strategy) | Tiered Hybrid Loading Strategy |
+| [Feature-Level Discoveries](#feature-level-discoveries) | DISC-001 navigation tables |
+| [Feature-Level Decisions](#feature-level-decisions) | DEC-001 navigation standard |
 
 ---
 

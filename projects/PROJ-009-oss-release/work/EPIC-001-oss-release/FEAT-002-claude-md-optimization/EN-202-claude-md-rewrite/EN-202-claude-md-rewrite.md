@@ -24,16 +24,16 @@ PURPOSE: Rewrite CLAUDE.md from 914 lines to 60-80 lines
 
 ## Document Sections
 
-| Section | Purpose | Key Information |
-|---------|---------|-----------------|
-| **Summary** | What this enabler does | Rewrite CLAUDE.md to 60-80 lines |
-| **Problem Statement** | Why this work is needed | 914 lines causes context rot |
-| **Technical Approach** | How to implement | Target structure with 5 sections |
-| **Children (Tasks)** | Task breakdown | 8 tasks with dependencies |
-| **Progress Summary** | Current status | 0% complete |
-| **Acceptance Criteria** | Definition of done | Line count, pointers, no duplication |
-| **Bugs** | Source defects to fix | 3 bugs from EN-201 extraction |
-| **FEAT-002 Standards** | Standards to apply | Navigation tables (TASK-000) |
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler does - rewrite CLAUDE.md to 60-80 lines |
+| [Problem Statement](#problem-statement) | Why this work is needed - 914 lines causes context rot |
+| [Technical Approach](#technical-approach) | Target structure with 5 sections |
+| [Children (Tasks)](#children-tasks) | 8 tasks with dependencies |
+| [Progress Summary](#progress-summary) | Current completion status |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done checklist |
+| [Bugs (Source Defects to Fix)](#bugs-source-defects-to-fix) | 3 bugs from EN-201 extraction |
+| [FEAT-002 Standards (Apply in TASK-000)](#feat-002-standards-apply-in-task-000) | Navigation tables requirement |
 
 ---
 
