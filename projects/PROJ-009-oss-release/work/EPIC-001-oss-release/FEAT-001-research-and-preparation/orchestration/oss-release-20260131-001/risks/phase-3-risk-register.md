@@ -14,11 +14,14 @@
 | Metric | Phase 0 | Phase 1 | Phase 3 | Delta |
 |--------|---------|---------|---------|-------|
 | Total Risks | 21 | 22 | 22 | 0 |
-| Total RPN | 2,438 | 2,538 | 753 | -70% |
+| Total RPN | 2,438 | 2,538 | 717 | -72% |
 | Critical Risks | 1 | 1 | 0 | -100% |
 | High Risks | 11 | 11 | 3 | -73% |
 | Medium Risks | 6 | 7 | 8 | +14% |
 | Low Risks | 3 | 3 | 11 | +267% |
+
+> **QG-3 v2 Correction (CRIT-002):** Total RPN corrected from 753 to 717.
+> Sum verified: 56+48+60+42+18+30+30+36+45+24+96+16+24+27+18+18+21+20+18+14+16+40 = 717
 
 ### 1.2 Risk Burn-Down Summary
 
@@ -27,12 +30,12 @@ RPN Total Over Phases
 │
 2500 ┤ ████████████████████████████████████████ Phase 0 (2,438)
      │ ██████████████████████████████████████████ Phase 1 (2,538)
- 750 ┤ ████████████ Phase 3 (753)
+ 750 ┤ ██████████ Phase 3 (717)
      │
    0 ┼────────────────────────────────────────────
        Phase 0        Phase 1        Phase 3
 
-70% Overall Risk Reduction Achieved
+72% Overall Risk Reduction Achieved (2,538 → 717)
 ```
 
 ### 1.3 Key Findings
@@ -353,8 +356,8 @@ Phase 1 (Risk Register) ██████████████████�
 Phase 2 (ADRs)         [Architecture decisions created]
   └─ 7 ADRs addressing 22 risks
 
-Phase 3 (Assessment)   █████████ 753 RPN
-  └─ 70% overall reduction
+Phase 3 (Assessment)   █████████ 717 RPN
+  └─ 72% overall reduction (corrected)
   └─ 0 CRITICAL risks remaining
   └─ 3 HIGH risks → all now MONITORING status
 
@@ -406,16 +409,16 @@ Target (Release)       ████ <500 RPN
 | Gate | Max Total RPN | Max Single RPN | Status |
 |------|---------------|----------------|--------|
 | QG-0 | 3,000 | 300 | PASSED (2,438) |
-| QG-1 | 2,000 | 250 | PASSED (753 post-Phase 3) |
-| QG-2 | 1,000 | 150 | PASSED (753) |
-| QG-3 | 750 | 100 | PASSING (753) |
+| QG-1 | 2,000 | 250 | PASSED (717 post-Phase 3) |
+| QG-2 | 1,000 | 150 | PASSED (717) |
+| QG-3 | 750 | 100 | PASSED (717) |
 | QG-FINAL | 500 | 75 | PENDING |
 
 ### 5.2 QG-FINAL Requirements
 
 To pass QG-FINAL (Release Gate):
 
-1. **Total RPN < 500**: Currently 753, need additional mitigation
+1. **Total RPN < 500**: Currently 717, need additional mitigation
 2. **No single risk > 75 RPN**: Currently met (max is 96)
 3. **All CRITICAL risks closed**: MET (0 CRITICAL)
 4. **All HIGH risks at MONITORING or below**: MET
@@ -440,7 +443,7 @@ To pass QG-FINAL (Release Gate):
 
 | Indicator | Direction | Interpretation |
 |-----------|-----------|----------------|
-| Total RPN | ↓ 70% | Strong improvement |
+| Total RPN | ↓ 72% | Strong improvement (corrected: 717 total) |
 | Critical Risks | ↓ 100% | Excellent - all mitigated |
 | High Risks | ↓ 73% | Good - most mitigated |
 | New Risks | → 0 | Stable - no new risks |
@@ -537,6 +540,7 @@ Current Trajectory: ON TRACK for release
 | 2026-01-31 | Phase 0 - Initial FMEA (21 risks) | nse-risk |
 | 2026-01-31 | Phase 1 - Added RSK-P1-001 (22 risks) | nse-risk |
 | 2026-01-31 | Phase 3 - Post-ADR assessment | nse-risk |
+| 2026-01-31 | **QG-3 v2 CRIT-002 FIX**: RPN total corrected from 753 to 717 (verified sum of 22 residual RPNs) | Remediation |
 
 ### Appendix D: Document References
 
