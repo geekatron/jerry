@@ -4,12 +4,24 @@
 > **Project:** PROJ-009-oss-release
 > **Workflow ID:** `oss-release-20260131-001`
 > **Status:** ACTIVE - Phase 0 COMPLETE
-> **Version:** 4.0.0
+> **Version:** 4.1.0
 > **Created:** 2026-01-31
-> **Last Updated:** 2026-01-31T20:25:00Z
+> **Last Updated:** 2026-01-31T21:00:00Z
 > **Approved:** 2026-01-31T19:00:00Z
 
 ## Changelog
+
+### v4.1.0 (2026-01-31T21:00:00Z) - Adversarial Feedback Loops Visualized
+
+| Change | Description |
+|--------|-------------|
+| **Feedback Loops Added** | Mermaid diagram now shows adversarial critic feedback loops at each quality gate |
+| QG-0 v1 FAIL Shown | Explicitly shows initial QG-0 failure (0.876 < 0.92) that triggered DISC-001 |
+| DISC-001 Visualized | Discovery node shows the 5 missed research topics that were remediated |
+| QG-0 v2 PASS Shown | Shows re-evaluation after remediation with +6.3% improvement |
+| All QGs Updated | Quality gates 1-3 now show potential DISC-* → Remediation feedback pattern |
+| Legend Updated | Added symbols for ❌ (failed), 📋 (discovery), and feedback loop explanation |
+| Styles Enhanced | Red tones for failed gates, orange tones for discovery nodes |
 
 ### v4.0.0 (2026-01-31T20:25:00Z) - Phase 0 Complete
 
@@ -185,6 +197,7 @@ Legend: ● = Phase work  ◆ = Quality Gate  ○ = Phase Report
 
 > **Dark Mode Optimized:** Colors chosen for visibility in both light and dark IDE themes.
 > **Current State:** Phase 0 COMPLETE, Barrier 1 READY
+> **Feedback Loops Shown:** Adversarial critic iterations with DISC-* discoveries
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#2d3748', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#4a5568', 'lineColor': '#718096', 'secondaryColor': '#1a202c', 'tertiaryColor': '#2d3748', 'background': '#1a202c', 'mainBkg': '#2d3748', 'textColor': '#e2e8f0'}}}%%
@@ -199,6 +212,7 @@ flowchart TB
     %% ═══════════════════════════════════════════════════════════════════
     %% PHASE 0: DIVERGENT EXPLORATION & INITIAL RESEARCH
     %% Status: COMPLETE (All 4 Tiers Done)
+    %% Shows: ADVERSARIAL FEEDBACK LOOP (QG-0 v1 FAIL → DISC-001 → Remediation → QG-0 v2 PASS)
     %% ═══════════════════════════════════════════════════════════════════
     subgraph PHASE0["✅ PHASE 0: COMPLETE - Divergent Exploration & Research"]
         direction TB
@@ -208,6 +222,15 @@ flowchart TB
             P0_PS_A["✅ ps-analyst<br/>Current Architecture<br/>EN-007 COMPLETE"]
             P0_NSE_E["✅ nse-explorer<br/>DIVERGENT Alternatives<br/>60+ options explored"]
             P0_NSE_REQ["✅ nse-requirements<br/>Current State Inventory<br/>27 gaps identified"]
+        end
+
+        %% ═══════════════════════════════════════════════════════════════
+        %% ADVERSARIAL FEEDBACK LOOP - QG-0 v1 FAILED
+        %% This is the CRITICAL critic loop that drove remediation
+        %% ═══════════════════════════════════════════════════════════════
+        subgraph P0_QG0_V1["❌ QG-0 v1: FAILED (0.876 < 0.92) - Triggered Remediation"]
+            P0_CRITIC_V1{{"❌ ps-critic v1<br/>Score: 0.876<br/>BELOW THRESHOLD"}}
+            P0_DISC001["📋 DISC-001 Created<br/>Missing Research Scope:<br/>• Claude Code CLI<br/>• CLAUDE.md patterns<br/>• Plugins architecture<br/>• Skills patterns<br/>• Decomposition""]
         end
 
         subgraph P0_TIER1B["TIER 1b: Expanded Research - DISC-001 Remediation (PARALLEL) ✅"]
@@ -222,17 +245,20 @@ flowchart TB
             P0_NSE_RISK["✅ nse-risk<br/>21 Risks Identified<br/>2 CRITICAL, 5 HIGH"]
         end
 
-        P0_TIER1 --> P0_TIER1B
+        %% Phase 0 Internal Flow with Feedback Loop
+        P0_TIER1 --> P0_QG0_V1
+        P0_CRITIC_V1 -->|"FAIL: 0.876"| P0_DISC001
+        P0_DISC001 -->|"Remediation"| P0_TIER1B
         P0_TIER1B --> P0_TIER2
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 0: PASSED
+    %% QUALITY GATE 0 v2: PASSED (After Remediation)
     %% ═══════════════════════════════════════════════════════════════════
-    subgraph QG0["✅ QUALITY GATE 0 - PASSED (0.936 avg)"]
+    subgraph QG0["✅ QUALITY GATE 0 v2 - PASSED (0.936 avg)"]
         direction TB
         subgraph QG0_EVAL["TIER 3: Dual Evaluation ✅"]
-            P0_CRITIC{{"✅ ps-critic<br/>ADVERSARIAL MODE<br/>Score: 0.931 ≥ 0.92"}}
+            P0_CRITIC{{"✅ ps-critic v2<br/>ADVERSARIAL MODE<br/>Score: 0.931 ≥ 0.92<br/>+6.3% improvement"}}
             P0_QA{{"✅ nse-qa<br/>NASA NPR-7123.1D<br/>Score: 0.941 ≥ 0.92"}}
         end
         subgraph QG0_RPT["TIER 4: Reports ✅"]
@@ -271,10 +297,12 @@ flowchart TB
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 1
+    %% QUALITY GATE 1 - Shows potential feedback loop pattern
     %% ═══════════════════════════════════════════════════════════════════
     subgraph QG1["⏸️ QUALITY GATE 1 (≥0.92)"]
-        P1_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>Frameworks Applied?"}}
+        P1_CRITIC{{"⏸️ ps-critic<br/>ADVERSARIAL MODE<br/>Threshold: ≥0.92"}}
+        P1_QA{{"⏸️ nse-qa<br/>NASA NPR-7123.1D<br/>Threshold: ≥0.92"}}
+        P1_DISC["📋 DISC-* (if fail)<br/>Identify gaps for<br/>remediation"]
         P1_RPT["⏸️ ps-reporter + nse-reporter"]
     end
 
@@ -306,10 +334,12 @@ flowchart TB
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 2
+    %% QUALITY GATE 2 - Shows potential feedback loop pattern
     %% ═══════════════════════════════════════════════════════════════════
     subgraph QG2["⏸️ QUALITY GATE 2 (≥0.92)"]
-        P2_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>ADRs + Baseline?"}}
+        P2_CRITIC{{"⏸️ ps-critic<br/>ADVERSARIAL MODE<br/>Threshold: ≥0.92"}}
+        P2_QA{{"⏸️ nse-qa<br/>NASA NPR-7123.1D<br/>Threshold: ≥0.92"}}
+        P2_DISC["📋 DISC-* (if fail)<br/>Identify gaps for<br/>remediation"]
         P2_RPT["⏸️ ps-reporter + nse-reporter"]
     end
 
@@ -341,10 +371,12 @@ flowchart TB
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% QUALITY GATE 3
+    %% QUALITY GATE 3 - Shows potential feedback loop pattern
     %% ═══════════════════════════════════════════════════════════════════
     subgraph QG3["⏸️ QUALITY GATE 3 (≥0.92)"]
-        P3_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>Validation Complete?"}}
+        P3_CRITIC{{"⏸️ ps-critic<br/>ADVERSARIAL MODE<br/>Threshold: ≥0.92"}}
+        P3_QA{{"⏸️ nse-qa<br/>NASA NPR-7123.1D<br/>Threshold: ≥0.92"}}
+        P3_DISC["📋 DISC-* (if fail)<br/>Identify gaps for<br/>remediation"]
         P3_RPT["⏸️ ps-reporter + nse-reporter"]
     end
 
@@ -389,7 +421,7 @@ flowchart TB
     end
 
     %% ═══════════════════════════════════════════════════════════════════
-    %% CONNECTIONS
+    %% CONNECTIONS - Including Adversarial Feedback Loops
     %% ═══════════════════════════════════════════════════════════════════
     START --> PHASE0
     PHASE0 --> QG0
@@ -397,30 +429,37 @@ flowchart TB
 
     BARRIER1 --> PHASE1
     PHASE1 --> QG1
-    P1_QG -->|PASS| P1_RPT
+    P1_CRITIC -->|PASS| P1_RPT
+    P1_QA -->|PASS| P1_RPT
+    P1_CRITIC -.->|"FAIL < 0.92"| P1_DISC
+    P1_DISC -.->|"Remediation"| PHASE1
     P1_RPT --> BARRIER2
-    P1_QG -.->|FAIL max 2x| PHASE1
 
     BARRIER2 --> PHASE2
     PHASE2 --> QG2
-    P2_QG -->|PASS| P2_RPT
+    P2_CRITIC -->|PASS| P2_RPT
+    P2_QA -->|PASS| P2_RPT
+    P2_CRITIC -.->|"FAIL < 0.92"| P2_DISC
+    P2_DISC -.->|"Remediation"| PHASE2
     P2_RPT --> BARRIER3
-    P2_QG -.->|FAIL max 2x| PHASE2
 
     BARRIER3 --> PHASE3
     PHASE3 --> QG3
-    P3_QG -->|PASS| P3_RPT
+    P3_CRITIC -->|PASS| P3_RPT
+    P3_QA -->|PASS| P3_RPT
+    P3_CRITIC -.->|"FAIL < 0.92"| P3_DISC
+    P3_DISC -.->|"Remediation"| PHASE3
     P3_RPT --> BARRIER4
-    P3_QG -.->|FAIL max 2x| PHASE3
 
     BARRIER4 --> PHASE4
     PHASE4 --> QG4
     P4_QG -->|PASS| DONE
-    P4_QG -.->|FAIL max 2x| PHASE4
+    P4_QG -.->|"FAIL max 2x"| PHASE4
 
     %% ═══════════════════════════════════════════════════════════════════
     %% DARK MODE OPTIMIZED STYLES
     %% Using HSL colors with good contrast for both light and dark themes
+    %% Includes: FAILED gates (red), DISCOVERIES (orange), feedback loops
     %% ═══════════════════════════════════════════════════════════════════
 
     %% Completed items - Green tones (high saturation, medium lightness)
@@ -432,6 +471,16 @@ flowchart TB
     style P0_TIER2 fill:#2f855a,stroke:#68d391,color:#c6f6d5
     style QG0_EVAL fill:#276749,stroke:#9ae6b4,color:#c6f6d5
     style QG0_RPT fill:#276749,stroke:#9ae6b4,color:#c6f6d5
+
+    %% FAILED Quality Gate v1 - Red tones (shows the adversarial loop trigger)
+    style P0_QG0_V1 fill:#742a2a,stroke:#fc8181,stroke-width:3px,color:#fed7d7
+    style P0_CRITIC_V1 fill:#9b2c2c,stroke:#feb2b2,stroke-width:2px,color:#fed7d7
+
+    %% DISCOVERY nodes - Orange/Amber tones (remediation catalyst)
+    style P0_DISC001 fill:#7b341e,stroke:#ed8936,stroke-width:3px,color:#feebc8
+    style P1_DISC fill:#744210,stroke:#ecc94b,stroke-width:2px,color:#fefcbf
+    style P2_DISC fill:#744210,stroke:#ecc94b,stroke-width:2px,color:#fefcbf
+    style P3_DISC fill:#744210,stroke:#ecc94b,stroke-width:2px,color:#fefcbf
 
     %% Ready/Pending items - Amber/Yellow tones
     style BARRIER1 fill:#744210,stroke:#f6e05e,stroke-width:3px,color:#fefcbf
@@ -471,9 +520,17 @@ flowchart TB
 | Symbol | Meaning |
 |--------|---------|
 | ✅ | Complete |
+| ❌ | Failed (triggered remediation) |
+| 📋 | Discovery document (DISC-*) |
 | ⏳ | Ready/Pending |
 | ⏸️ | Blocked |
 | 🎯 | Final Goal |
+
+**Feedback Loop Elements:**
+- Dashed lines (`-.->`) indicate feedback/remediation paths
+- `DISC-*` nodes capture identified gaps when quality gates fail
+- Remediation flows back to the phase for expanded work
+- Maximum 2 remediation cycles before user escalation
 
 ### 4.2 Current Execution State
 
@@ -1148,7 +1205,8 @@ Risk Registers: 1/5 (phase-0-risk-register.md)
 
 *Document ID: PROJ-009-ORCH-PLAN*
 *Workflow ID: oss-release-20260131-001*
-*Version: 4.0.0*
+*Version: 4.1.0*
 *Status: ACTIVE - Phase 0 COMPLETE*
 *Cross-Session Portable: All paths are repository-relative*
 *Dark Mode Optimized: Mermaid diagram uses HSL colors compatible with dark IDE themes*
+*Feedback Loops: Adversarial critic iterations with DISC-* discoveries visualized*
