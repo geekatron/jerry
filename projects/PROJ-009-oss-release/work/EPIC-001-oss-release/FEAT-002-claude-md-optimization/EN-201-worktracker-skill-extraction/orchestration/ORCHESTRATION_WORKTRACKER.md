@@ -3,8 +3,8 @@
 > **Document ID:** EN-201-ORCH-WORKTRACKER
 > **Workflow ID:** `en201-extraction-20260201-001`
 > **Protocol:** DISC-002 Adversarial Review
-> **Status:** ACTIVE - Phase 1 Executing
-> **Last Updated:** 2026-02-01T14:00:00Z
+> **Status:** ACTIVE - QG-1 Iteration 2
+> **Last Updated:** 2026-02-01T15:30:00Z
 
 ---
 
@@ -14,19 +14,22 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │              EN-201 ORCHESTRATION PROGRESS (DISC-002)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ Overall:     [##....................] 14% (1/7 tasks complete)              │
-│ Phase 1:     [████████████████████] ✅ COMPLETE (4/4 accepted)             │
+│ Overall:     [######................] 30% (5/7 tasks + templates)           │
+│ Phase 1:     [████████████████████] ✅ COMPLETE (5/5 files extracted)      │
 │   TASK-002:  [████████████████████] ✅ ACCEPTED (0.936)                    │
 │   TASK-003:  [████████████████████] ✅ ACCEPTED (0.92)                     │
 │   TASK-004:  [████████████████████] ⚠️ ACCEPTED (0.9115*)                  │
 │   TASK-005:  [████████████████████] ⚠️ ACCEPTED (0.90*)                    │
-│ QG-1:        [▶▶▶▶....................] READY (unblocked)                  │
+│   TEMPLATES: [████████████████████] ✅ CREATED (remediation)               │
+│ QG-1:        [████████████........] 40% (Iter 2 - post remediation)        │
+│   Iter 1:    [████████████████████] ❌ FAIL (ps:0.88, nse:84%)             │
+│   Iter 2:    [▶▶▶▶................] IN PROGRESS                            │
 │ Phase 2:     [........................] 0% (blocked - waiting QG-1)         │
 │ QG-2:        [........................] 0% (blocked - waiting Phase 2)      │
 │ Phase 3:     [........................] 0% (blocked - waiting QG-2)         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ Quality Gate: 0.92 | Max Iterations: 3 | Escalations: 0                     │
-│ Lines Extracted: 0/371 | Avg Quality: N/A                                   │
+│ Lines Extracted: 383/371 | Avg Quality: 0.92                                │
 │ Protocol: DISC-002 Adversarial Review | Mode: ADVERSARIAL                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -149,30 +152,55 @@
 
 | Metric | Value |
 |--------|-------|
-| **Status** | BLOCKED |
+| **Status** | ▶ ITERATION 2 |
 | **Mode** | ADVERSARIAL |
-| **Iteration** | 0 |
-| **Score** | - |
-| **Mandatory Findings** | - (need ≥3) |
-| **Output** | `quality-gates/qg-1/ps-critic-review.md` |
+| **Iteration** | 2 |
+| **Score** | 0.88 → pending |
+| **Mandatory Findings** | 5 (REM-001 to REM-005) |
+| **Output** | `quality-gates/qg-1/ps-critic-review-v1.md` |
+
+**Iteration 1 Results (FAIL - 0.88):**
+- REM-001 (CRITICAL): Templates section missing (112 LOC) → ✅ REMEDIATED
+- REM-002 (HIGH): Broken cross-references in behavior-rules.md → ✅ REMEDIATED
+- REM-003 (HIGH): Source line numbers not in headers → ✅ REMEDIATED
+- REM-004 (MEDIUM): Missing extraction rationale → ✅ REMEDIATED
+- REM-005 (MEDIUM): Inconsistent section numbering → ⚠️ SOURCE DEFECT
 
 ### nse-qa Compliance Audit
 
 | Metric | Value |
 |--------|-------|
-| **Status** | BLOCKED |
-| **Iteration** | 0 |
-| **Compliance** | - |
-| **Output** | `quality-gates/qg-1/nse-qa-audit.md` |
+| **Status** | ▶ ITERATION 2 |
+| **Iteration** | 2 |
+| **Compliance** | 84% / 77.25% adj → pending |
+| **Output** | `quality-gates/qg-1/nse-qa-audit-v1.md` |
+
+**Iteration 1 Results (FAIL - 84% / 77.25% adjusted):**
+- NCR-001 (CRITICAL): Broken cross-references → ✅ REMEDIATED
+- NCR-002 (HIGH): Missing risk identification → ⚠️ DEFERRED (EN-202 scope)
+- NCR-003 (HIGH): Missing verification audit trail → ✅ REMEDIATED
+- NCR-004 (MEDIUM): Section numbering inconsistent → ⚠️ SOURCE DEFECT
+- NCR-005 (MEDIUM): Missing line traceability → ✅ REMEDIATED
+
+### Remediation Synthesis (Iteration 1 → 2)
+
+| SYNTH ID | Finding | Status | Action |
+|----------|---------|--------|--------|
+| SYNTH-001 | Templates missing (112 LOC) | ✅ COMPLETE | Created worktracker-templates.md |
+| SYNTH-002 | Broken cross-references | ✅ COMPLETE | Fixed in behavior-rules.md |
+| SYNTH-003 | Missing line traceability | ✅ COMPLETE | Added to all 5 files |
+| SYNTH-004 | Missing verification report | ✅ COMPLETE | Created extraction-verification-report.md |
+| SYNTH-005 | Risk identification missing | ⚠️ DEFERRED | Outside extraction scope (EN-202) |
+| SYNTH-006 | Section numbering | ⚠️ DOCUMENTED | Source defect, preserved faithfully |
 
 ### Gate Pass Conditions
 
 | Condition | Status |
 |-----------|--------|
-| ps-critic score ≥0.92 | ⬜ PENDING |
-| nse-qa compliance ≥92% | ⬜ PENDING |
-| All mandatory findings addressed | ⬜ PENDING |
-| **QG-1 STATUS** | ⬜ PENDING |
+| ps-critic score ≥0.92 | ❌ ITER1: 0.88 → ⬜ ITER2: PENDING |
+| nse-qa compliance ≥92% | ❌ ITER1: 77.25% → ⬜ ITER2: PENDING |
+| All mandatory findings addressed | ✅ 4/5 remediated, 1 deferred |
+| **QG-1 STATUS** | ⬜ ITERATION 2 IN PROGRESS |
 
 ---
 
@@ -277,14 +305,25 @@
 | 2026-02-01T14:15:00Z | TASK-005 Complete | Directory structure extracted, score 0.90 (below threshold, accepted) |
 | 2026-02-01T14:18:00Z | TASK-004 Complete | Behavior rules extracted, score 0.9115 (source bugs identified) |
 | 2026-02-01T14:18:00Z | CONVERGENCE-1 | All 4 Phase 1 tasks accepted. QG-1 unblocked. |
+| 2026-02-01T14:20:00Z | QG-1 Iter 1 Start | ps-critic + nse-qa dual review launched |
+| 2026-02-01T14:45:00Z | ps-critic FAIL | Score 0.88 < 0.92. 5 findings (1 CRITICAL, 2 HIGH, 2 MEDIUM) |
+| 2026-02-01T14:50:00Z | nse-qa FAIL | Score 84%/77.25% adj < 92%. 5 NCRs (1 CRITICAL, 2 HIGH, 2 MEDIUM) |
+| 2026-02-01T14:55:00Z | Remediation Synthesis | Merged findings → SYNTH-001 to SYNTH-006 |
+| 2026-02-01T15:00:00Z | SYNTH-001 Complete | Created worktracker-templates.md (112 LOC) |
+| 2026-02-01T15:05:00Z | SYNTH-002 Complete | Fixed cross-references in behavior-rules.md |
+| 2026-02-01T15:10:00Z | SYNTH-003 Complete | Added line traceability to all 5 files |
+| 2026-02-01T15:15:00Z | SYNTH-004 Complete | Created extraction-verification-report.md |
+| 2026-02-01T15:20:00Z | Git Commit 030e331 | QG-1 Iteration 1 reviews (FAIL documentation) |
+| 2026-02-01T15:25:00Z | Git Commit fad867f | QG-1 Iteration 2 remediation |
+| 2026-02-01T15:30:00Z | QG-1 Iter 2 Start | Launching ps-critic + nse-qa dual review (background) |
 
 ---
 
 ## Next Actions
 
-1. **Immediate:** Execute TASK-002-005 in parallel with ps-critic review loops
-2. **On Phase 1 Complete:** Pass Barrier 1, execute nse-qa integration review
-3. **On Phase 2 Complete:** Pass Barrier 2, execute TASK-006-007
+1. **Immediate:** Execute QG-1 Iteration 2 dual-agent review (background agents)
+2. **If PASS:** Proceed to Convergence Point 2 → Phase 2 integration review
+3. **If FAIL:** Synthesize remediation, iterate (max 3 iterations, then escalate)
 
 ---
 
