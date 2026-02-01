@@ -1,0 +1,250 @@
+# EN-201: Worktracker Skill Extraction
+
+<!--
+TEMPLATE: Enabler
+VERSION: 1.0.0
+SOURCE: ONTOLOGY-v1.md Section 3.4.9
+CREATED: 2026-02-01 (Claude)
+PURPOSE: Extract 371 lines of worktracker content from CLAUDE.md to /worktracker skill
+-->
+
+> **Type:** enabler
+> **Status:** pending
+> **Priority:** critical
+> **Impact:** critical
+> **Enabler Type:** architecture
+> **Created:** 2026-02-01T00:00:00Z
+> **Due:** 2026-02-07T00:00:00Z
+> **Completed:** -
+> **Parent:** FEAT-002
+> **Owner:** -
+> **Effort:** 8
+
+---
+
+## Summary
+
+Extract 371 lines (40.6%) of worktracker content from CLAUDE.md into the `/worktracker` skill's rules directory. This is the largest single extraction and the foundation for the CLAUDE.md optimization effort.
+
+**Technical Scope:**
+- Fix existing SKILL.md description bug (transcript copy-paste)
+- Create 5 new rule files in `skills/worktracker/rules/`
+- Update SKILL.md with proper navigation pointers
+- Validate skill loads correctly on invocation
+
+---
+
+## Enabler Type Classification
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| **INFRASTRUCTURE** | Platform, tooling, DevOps enablers | CI/CD pipelines, monitoring setup |
+| **EXPLORATION** | Research and proof-of-concept work | Technology spikes, prototypes |
+| **ARCHITECTURE** | Architectural runway and design work | Service decomposition, API design |
+| **COMPLIANCE** | Security, regulatory, and compliance requirements | GDPR implementation, SOC2 controls |
+
+**This Enabler Type:** ARCHITECTURE (restructuring context loading architecture)
+
+---
+
+## Problem Statement
+
+CLAUDE.md currently contains 371 lines of worktracker content that is:
+1. Loaded at every session start (unnecessary overhead)
+2. Only relevant when doing work tracking activities
+3. Contributing to context rot that degrades LLM performance
+4. Duplicating content that should live in the worktracker skill
+
+---
+
+## Business Value
+
+Extracting worktracker content to the skill enables:
+- 40% reduction in CLAUDE.md size
+- On-demand loading when worktracker features needed
+- Single source of truth for worktracker documentation
+- Better OSS contributor onboarding experience
+
+### Features Unlocked
+
+- Lean CLAUDE.md (60-80 lines target)
+- Progressive disclosure architecture
+- Context-efficient session starts
+
+---
+
+## Technical Approach
+
+Create modular rule files in `skills/worktracker/rules/` that are loaded when the `/worktracker` skill is invoked. Each file focuses on one aspect of worktracker functionality.
+
+### Target Structure
+
+```
+skills/worktracker/
+├── SKILL.md                              # Skill entry point (fix description)
+└── rules/
+    ├── worktracker-entity-hierarchy.md    # Entity types and hierarchy (80 lines)
+    ├── worktracker-system-mappings.md     # ADO/SAFe/JIRA mappings (120 lines)
+    ├── worktracker-behavior-rules.md      # WORKTRACKER.md behavior (60 lines)
+    ├── worktracker-directory-structure.md # Directory conventions (111 lines)
+    └── worktracker-template-usage-rules.md # Template requirements (existing)
+```
+
+---
+
+## Children (Tasks)
+
+### Task Inventory
+
+| ID | Title | Status | Effort | Owner |
+|----|-------|--------|--------|-------|
+| [TASK-001](./TASK-001-fix-skill-md-description.md) | Fix SKILL.md description bug | pending | 1 | - |
+| [TASK-002](./TASK-002-create-entity-hierarchy-rules.md) | Create worktracker-entity-hierarchy.md | pending | 1 | - |
+| [TASK-003](./TASK-003-create-system-mappings-rules.md) | Create worktracker-system-mappings.md | pending | 2 | - |
+| [TASK-004](./TASK-004-create-behavior-rules.md) | Create worktracker-behavior-rules.md | pending | 1 | - |
+| [TASK-005](./TASK-005-create-directory-structure-rules.md) | Create worktracker-directory-structure.md | pending | 1 | - |
+| [TASK-006](./TASK-006-update-skill-navigation.md) | Update SKILL.md with navigation pointers | pending | 1 | - |
+| [TASK-007](./TASK-007-validate-skill-loading.md) | Validate skill loads correctly | pending | 1 | - |
+
+### Task Dependencies
+
+```
+TASK-001 (Fix SKILL.md)
+    |
+    +---> TASK-002, TASK-003, TASK-004, TASK-005 (can run in parallel)
+              |
+              +---> TASK-006 (Update navigation)
+                        |
+                        +---> TASK-007 (Validation)
+```
+
+---
+
+## Progress Summary
+
+### Status Overview
+
+```
++------------------------------------------------------------------+
+|                   ENABLER PROGRESS TRACKER                        |
++------------------------------------------------------------------+
+| Tasks:     [....................] 0% (0/7 completed)             |
+| Effort:    [....................] 0% (0/8 points completed)      |
++------------------------------------------------------------------+
+| Overall:   [....................] 0%                             |
++------------------------------------------------------------------+
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| **Total Tasks** | 7 |
+| **Completed Tasks** | 0 |
+| **Total Effort (points)** | 8 |
+| **Completed Effort** | 0 |
+| **Completion %** | 0% |
+
+---
+
+## Acceptance Criteria
+
+### Definition of Done
+
+- [ ] SKILL.md description fixed (no transcript copy-paste)
+- [ ] worktracker-entity-hierarchy.md created with complete hierarchy
+- [ ] worktracker-system-mappings.md created with ADO/SAFe/JIRA mappings
+- [ ] worktracker-behavior-rules.md created with behavior rules
+- [ ] worktracker-directory-structure.md created with directory conventions
+- [ ] SKILL.md updated with navigation pointers to all rules
+- [ ] /worktracker skill loads all entity and mapping information
+- [ ] Documentation updated
+
+### Technical Criteria
+
+| # | Criterion | Verified |
+|---|-----------|----------|
+| TC-1 | /worktracker skill invocation loads all rules | [ ] |
+| TC-2 | All entity hierarchy information accessible via skill | [ ] |
+| TC-3 | All system mappings (ADO/SAFe/JIRA) accessible via skill | [ ] |
+| TC-4 | All template references work correctly | [ ] |
+| TC-5 | No worktracker content remains in CLAUDE.md | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| Deliverable | Type | Description | Link |
+|-------------|------|-------------|------|
+| SKILL.md | Documentation | Fixed skill entry point | skills/worktracker/SKILL.md |
+| Entity Hierarchy Rules | Documentation | Entity types and hierarchy | skills/worktracker/rules/worktracker-entity-hierarchy.md |
+| System Mappings Rules | Documentation | ADO/SAFe/JIRA mappings | skills/worktracker/rules/worktracker-system-mappings.md |
+| Behavior Rules | Documentation | WORKTRACKER.md behavior | skills/worktracker/rules/worktracker-behavior-rules.md |
+| Directory Structure Rules | Documentation | Directory conventions | skills/worktracker/rules/worktracker-directory-structure.md |
+
+### Technical Verification
+
+| Criterion | Verification Method | Evidence | Verified By | Date |
+|-----------|---------------------|----------|-------------|------|
+| Skill loads correctly | Manual invocation test | - | - | - |
+| All content migrated | Line count comparison | - | - | - |
+| No broken references | Navigation test | - | - | - |
+
+---
+
+## Risks and Mitigations
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| Content loss during extraction | Low | High | Keep original CLAUDE.md backup, verify line-by-line |
+| Rule files not loading | Low | Medium | Test skill invocation, verify Claude Code rules mechanism |
+| Navigation pointers broken | Low | Medium | Test each pointer resolves correctly |
+
+---
+
+## Dependencies
+
+### Depends On
+
+- None (first Enabler in chain)
+
+### Enables
+
+- [EN-202: CLAUDE.md Rewrite](../EN-202-claude-md-rewrite/EN-202-claude-md-rewrite.md)
+- [EN-203: TODO Section Migration](../EN-203-todo-section-migration/EN-203-todo-section-migration.md)
+
+---
+
+## Related Items
+
+### Hierarchy
+
+- **Parent:** [FEAT-002: CLAUDE.md Optimization](../FEAT-002-claude-md-optimization.md)
+
+### Source Content
+
+Current CLAUDE.md sections to extract:
+- Entity Hierarchy (~80 lines)
+- Entity Classification (~60 lines)
+- System Mappings (~120 lines)
+- Directory Structure (~111 lines)
+
+---
+
+## History
+
+| Date | Author | Status | Notes |
+|------|--------|--------|-------|
+| 2026-02-01T00:00:00Z | Claude | pending | Enabler created |
+
+---
+
+## System Mapping
+
+| System | Mapping |
+|--------|---------|
+| **Azure DevOps** | PBI with ValueArea=Architectural |
+| **SAFe** | Enabler (ARCHITECTURE type) |
+| **JIRA** | Story with 'enabler' label |
