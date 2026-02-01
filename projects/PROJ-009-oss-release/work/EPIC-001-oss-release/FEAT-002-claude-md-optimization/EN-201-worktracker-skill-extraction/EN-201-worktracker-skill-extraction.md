@@ -217,6 +217,27 @@ TASK-001 (Fix SKILL.md)
 
 ---
 
+## Orchestration
+
+This enabler uses a multi-agent orchestration workflow with adversarial review loops.
+
+| Artifact | Purpose | Location |
+|----------|---------|----------|
+| ORCHESTRATION_PLAN.md | Strategic workflow design | [orchestration/ORCHESTRATION_PLAN.md](./orchestration/ORCHESTRATION_PLAN.md) |
+| ORCHESTRATION.yaml | Machine-readable state (SSOT) | [orchestration/ORCHESTRATION.yaml](./orchestration/ORCHESTRATION.yaml) |
+| ORCHESTRATION_WORKTRACKER.md | Tactical execution tracking | [orchestration/ORCHESTRATION_WORKTRACKER.md](./orchestration/ORCHESTRATION_WORKTRACKER.md) |
+
+### Workflow Pattern
+
+- **Pattern:** Fan-Out/Fan-In with Generator-Critic Review Loops
+- **Quality Threshold:** 0.92
+- **Max Iterations:** 3 (then human escalation)
+- **Agents Used:**
+  - `ps-critic` - Task-level quality evaluation
+  - `nse-qa` - Integration quality audit
+
+---
+
 ## Related Items
 
 ### Hierarchy
@@ -239,6 +260,7 @@ Current CLAUDE.md sections to extract:
 |------|--------|--------|-------|
 | 2026-02-01T00:00:00Z | Claude | pending | Enabler created |
 | 2026-02-01T12:00:00Z | Claude | in_progress | TASK-001 completed - Fixed SKILL.md description bug |
+| 2026-02-01T13:00:00Z | Claude | in_progress | Orchestration plan created with adversarial review loops (ps-critic + nse-qa) |
 
 ---
 

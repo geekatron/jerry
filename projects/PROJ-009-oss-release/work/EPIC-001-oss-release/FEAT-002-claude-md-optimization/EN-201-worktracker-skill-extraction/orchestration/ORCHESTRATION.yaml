@@ -1,0 +1,439 @@
+# ORCHESTRATION.yaml - EN-201 Worktracker Skill Extraction
+# Machine-readable orchestration state for adversarial review workflow
+# Document ID: EN-201-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-02-01T12:00:00Z
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "en201-extraction-20260201-001"
+  name: "EN-201 Worktracker Content Extraction with Adversarial Review"
+  project_id: "PROJ-009-oss-release"
+  enabler_id: "EN-201"
+  version: "1.0"
+  created_at: "2026-02-01T12:00:00Z"
+  updated_at: "2026-02-01T12:00:00Z"
+  status: "ACTIVE"
+
+  id_source: "auto"
+  id_format: "enabler-purpose-YYYYMMDD-NNN"
+
+  patterns:
+    - FAN_OUT_FAN_IN
+    - GENERATOR_CRITIC
+    - BARRIER_SYNC
+    - SEQUENTIAL
+
+  # Quality gate configuration
+  quality_gate:
+    threshold: 0.92
+    max_iterations: 3
+    escalation: "human"
+    improvement_threshold: 0.05  # Min improvement to continue iterating
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_tasks: 4
+    checkpoint_frequency: "PHASE"
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "EN-201-worktracker-skill-extraction/orchestration/"
+  critiques: "{base}critiques/"
+  qa: "{base}qa/"
+  escalations: "{base}escalations/"
+  output: "skills/worktracker/rules/"
+
+# =============================================================================
+# PHASE DEFINITIONS
+# =============================================================================
+phases:
+  phase_1:
+    id: 1
+    name: "Content Extraction"
+    description: "Parallel extraction of worktracker content from CLAUDE.md"
+    execution_mode: "PARALLEL"
+    status: "PENDING"
+    started_at: null
+    completed_at: null
+
+    tasks:
+      - id: "TASK-002"
+        name: "Create worktracker-entity-hierarchy.md"
+        description: "Extract entity hierarchy content (~80 lines)"
+        source_sections:
+          - "## 1: Entity Hierarchy"
+          - "### 1.1 Complete Hierarchy Tree"
+          - "### 1.2 Hierarchy Levels"
+          - "## 2: Entity Classification and Properties"
+        target_file: "skills/worktracker/rules/worktracker-entity-hierarchy.md"
+        expected_loc: 80
+        status: "PENDING"
+        iteration: 0
+        quality_scores: []
+        current_score: null
+        accepted: false
+
+      - id: "TASK-003"
+        name: "Create worktracker-system-mappings.md"
+        description: "Extract system mappings content (~120 lines)"
+        source_sections:
+          - "## 3: System Mapping Summary"
+          - "## 4. System Mappings"
+          - "### 4.1. Entity Mapping by System"
+        target_file: "skills/worktracker/rules/worktracker-system-mappings.md"
+        expected_loc: 120
+        status: "PENDING"
+        iteration: 0
+        quality_scores: []
+        current_score: null
+        accepted: false
+
+      - id: "TASK-004"
+        name: "Create worktracker-behavior-rules.md"
+        description: "Extract behavior rules content (~60 lines)"
+        source_sections:
+          - "## Work tracker (worktracker) Behavior"
+        target_file: "skills/worktracker/rules/worktracker-behavior-rules.md"
+        expected_loc: 60
+        status: "PENDING"
+        iteration: 0
+        quality_scores: []
+        current_score: null
+        accepted: false
+
+      - id: "TASK-005"
+        name: "Create worktracker-directory-structure.md"
+        description: "Extract directory structure content (~111 lines)"
+        source_sections:
+          - "## Work tracker (worktracker) Directory Structure"
+        target_file: "skills/worktracker/rules/worktracker-directory-structure.md"
+        expected_loc: 111
+        status: "PENDING"
+        iteration: 0
+        quality_scores: []
+        current_score: null
+        accepted: false
+
+  phase_2:
+    id: 2
+    name: "Integration Review"
+    description: "Batch validation of all extracted content"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    blocked_by: "barrier-1"
+    started_at: null
+    completed_at: null
+
+    agents:
+      - id: "nse-qa"
+        name: "Integration Quality Audit"
+        description: "Validate all 4 rule files for completeness and consistency"
+        status: "BLOCKED"
+        iteration: 0
+        compliance_scores: []
+        current_score: null
+        accepted: false
+        output: "orchestration/qa/integration-qa-report.md"
+
+  phase_3:
+    id: 3
+    name: "Navigation & Validation"
+    description: "Update SKILL.md and validate skill loading"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    blocked_by: "barrier-2"
+    started_at: null
+    completed_at: null
+
+    tasks:
+      - id: "TASK-006"
+        name: "Update SKILL.md navigation"
+        description: "Add navigation pointers to all rule files"
+        status: "BLOCKED"
+        iteration: 0
+        quality_scores: []
+        current_score: null
+        accepted: false
+
+      - id: "TASK-007"
+        name: "Validate skill loading"
+        description: "Test /worktracker skill invocation loads all content"
+        status: "BLOCKED"
+        depends_on: "TASK-006"
+        iteration: 0
+        quality_scores: []
+        current_score: null
+        accepted: false
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "Phase 1 → Phase 2 Gate"
+    status: "PENDING"
+    completed_at: null
+    conditions:
+      - "TASK-002.accepted == true"
+      - "TASK-003.accepted == true"
+      - "TASK-004.accepted == true"
+      - "TASK-005.accepted == true"
+    artifacts:
+      - "skills/worktracker/rules/worktracker-entity-hierarchy.md"
+      - "skills/worktracker/rules/worktracker-system-mappings.md"
+      - "skills/worktracker/rules/worktracker-behavior-rules.md"
+      - "skills/worktracker/rules/worktracker-directory-structure.md"
+
+  - id: "barrier-2"
+    name: "Phase 2 → Phase 3 Gate"
+    status: "PENDING"
+    completed_at: null
+    conditions:
+      - "nse-qa.accepted == true"
+    artifacts:
+      - "orchestration/qa/integration-qa-report.md"
+
+# =============================================================================
+# EVALUATION CRITERIA
+# =============================================================================
+evaluation_criteria:
+  task_level:
+    - name: "completeness"
+      weight: 0.30
+      description: "All source content extracted without omissions"
+      scoring_rubric:
+        excellent: "100% of source content present"
+        good: "95-99% content present"
+        acceptable: "90-94% content present"
+        needs_work: "80-89% content present"
+        poor: "Less than 80% content present"
+
+    - name: "accuracy"
+      weight: 0.25
+      description: "Content matches source exactly without drift"
+      scoring_rubric:
+        excellent: "Zero content modifications"
+        good: "Minor formatting changes only"
+        acceptable: "Small clarifications added"
+        needs_work: "Some content reworded"
+        poor: "Significant content drift"
+
+    - name: "structure"
+      weight: 0.20
+      description: "Proper markdown formatting"
+      scoring_rubric:
+        excellent: "Perfect formatting, all elements valid"
+        good: "Minor formatting issues"
+        acceptable: "Some formatting inconsistencies"
+        needs_work: "Multiple formatting problems"
+        poor: "Broken markdown structure"
+
+    - name: "clarity"
+      weight: 0.15
+      description: "Clear and understandable content"
+      scoring_rubric:
+        excellent: "Crystal clear, well-organized"
+        good: "Clear with minor ambiguities"
+        acceptable: "Generally understandable"
+        needs_work: "Some confusing sections"
+        poor: "Difficult to understand"
+
+    - name: "integration"
+      weight: 0.10
+      description: "Works with existing rules files"
+      scoring_rubric:
+        excellent: "Perfect integration, no conflicts"
+        good: "Minor integration considerations"
+        acceptable: "Some overlap to address"
+        needs_work: "Conflicts with existing files"
+        poor: "Major integration problems"
+
+  integration_level:
+    - id: "INT-001"
+      name: "Complete Migration"
+      description: "All 371 lines from CLAUDE.md accounted for"
+    - id: "INT-002"
+      name: "No Information Loss"
+      description: "Diff shows no missing content"
+    - id: "INT-003"
+      name: "Consistent Formatting"
+      description: "Same style across all 4 files"
+    - id: "INT-004"
+      name: "Cross-References Valid"
+      description: "All internal links work"
+    - id: "INT-005"
+      name: "Template Compliance"
+      description: "Each file follows rules template"
+    - id: "INT-006"
+      name: "No Duplication"
+      description: "Content not duplicated across files"
+
+# =============================================================================
+# AGENT CONFIGURATION
+# =============================================================================
+agents:
+  ps_critic:
+    id: "ps-critic"
+    family: "ps"
+    role: "Task-level quality evaluator"
+    model: "sonnet"
+    cognitive_mode: "convergent"
+    output_location: "{paths.critiques}"
+    circuit_breaker:
+      max_iterations: 3
+      improvement_threshold: 0.05
+      acceptance_threshold: 0.92
+
+  nse_qa:
+    id: "nse-qa"
+    family: "nse"
+    role: "Integration quality auditor"
+    model: "sonnet"
+    cognitive_mode: "convergent"
+    output_location: "{paths.qa}"
+    circuit_breaker:
+      max_iterations: 3
+      improvement_threshold: 5  # percentage
+      acceptance_threshold: 92  # percentage
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 1: Parallel Extraction"
+      execution_mode: "PARALLEL"
+      status: "READY"
+      tasks:
+        - "TASK-002"
+        - "TASK-003"
+        - "TASK-004"
+        - "TASK-005"
+
+    - id: 2
+      name: "Barrier 1: Quality Gate"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      actions:
+        - "verify_all_phase_1_accepted"
+        - "create_checkpoint"
+
+    - id: 3
+      name: "Phase 2: Integration Review"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "nse-qa"
+
+    - id: 4
+      name: "Barrier 2: Integration Gate"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      actions:
+        - "verify_integration_accepted"
+        - "create_checkpoint"
+
+    - id: 5
+      name: "Phase 3: Navigation & Validation"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      tasks:
+        - "TASK-006"
+        - "TASK-007"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    tasks_complete: 1
+    tasks_total: 7
+    tasks_percent: 14
+    phases_complete: 0
+    phases_total: 3
+    phases_percent: 0
+    barriers_complete: 0
+    barriers_total: 2
+    barriers_percent: 0
+    total_iterations: 0
+    human_escalations: 0
+
+  quality:
+    phase_1_avg_score: null
+    phase_2_compliance: null
+    total_loc_extracted: 0
+    target_loc: 371
+
+  timing:
+    workflow_started: "2026-02-01T12:00:00Z"
+    last_activity: "2026-02-01T12:00:00Z"
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+escalations:
+  active: []
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute TASK-002 through TASK-005 in parallel"
+      tasks: ["TASK-002", "TASK-003", "TASK-004", "TASK-005"]
+      execution_mode: "PARALLEL"
+      description: "Generate content, evaluate with ps-critic, iterate until ≥0.92"
+
+  subsequent:
+    - action: "Pass Barrier 1 when all Phase 1 tasks accepted"
+      depends_on: "All Phase 1 tasks ≥ 0.92"
+    - action: "Execute nse-qa integration review"
+      depends_on: "Barrier 1 complete"
+    - action: "Execute TASK-006 and TASK-007"
+      depends_on: "Barrier 2 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "TASK-001 complete. Ready to execute Phase 1 parallel extraction."
+  next_step: "Execute TASK-002-005 with ps-critic review loops"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"
+    - "ORCHESTRATION.yaml"
+    - "ORCHESTRATION_WORKTRACKER.md"
+
+  cross_session_portable: true
+  ephemeral_references: false
