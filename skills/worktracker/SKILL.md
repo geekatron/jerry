@@ -48,7 +48,10 @@ Invoke `/worktracker` when you need to:
 
 ## Additional Resources
 
-- For folder structure and hierarchy, see [worktracker-folder-structure-and-hierarchy-rules.md](./rules/worktracker-folder-structure-and-hierarchy-rules.md)
-- For template usage rules, see [worktracker-template-usage-rules.md](./rules/worktracker-template-usage-rules.md)
-- For rules on worktracker entities, see [worktracker-entity-rules.md](./rules/worktracker-entity-rules.md)
-- For usage examples, see [examples.md](examples.md)
+### Rule Files
+
+- **Entity Hierarchy**: [worktracker-entity-hierarchy.md](./rules/worktracker-entity-hierarchy.md) - Work item types, classification matrix, and containment rules
+- **System Mappings**: [worktracker-system-mappings.md](./rules/worktracker-system-mappings.md) - ADO Scrum, SAFe, and JIRA mappings
+- **Behavior Rules**: [worktracker-behavior-rules.md](./rules/worktracker-behavior-rules.md) - WORKTRACKER.md usage and folder creation rules
+- **Directory Structure**: [worktracker-directory-structure.md](./rules/worktracker-directory-structure.md) - Complete folder hierarchy with examples
+- **Templates**: [worktracker-templates.md](./rules/worktracker-templates.md) - Template locations and usage rules
