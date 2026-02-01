@@ -3,13 +3,25 @@
 > **Document ID:** PROJ-009-ORCH-PLAN
 > **Project:** PROJ-009-oss-release
 > **Workflow ID:** `oss-release-20260131-001`
-> **Status:** APPROVED
-> **Version:** 3.1.0
+> **Status:** ACTIVE - Phase 0 COMPLETE
+> **Version:** 4.0.0
 > **Created:** 2026-01-31
-> **Last Updated:** 2026-01-31
+> **Last Updated:** 2026-01-31T20:25:00Z
 > **Approved:** 2026-01-31T19:00:00Z
 
-## Changelog (v3.1.0)
+## Changelog
+
+### v4.0.0 (2026-01-31T20:25:00Z) - Phase 0 Complete
+
+| Change | Description |
+|--------|-------------|
+| Phase 0 Complete | All 4 tiers executed: Tier 1a (4 agents), Tier 1b (5 agents), Tier 2 (risk), Tier 3 (QG), Tier 4 (reports) |
+| QG-0 Passed | ps-critic: 0.931, nse-qa: 0.941 (avg: 0.936 ≥ 0.92) |
+| DISC-001 Remediated | 5 expanded research agents completed (EN-002 through EN-006) |
+| Mermaid Diagram | Updated with dark mode colors, current state indicators, tiered Phase 0 structure |
+| Risk Register | 21 risks identified (2 critical, 5 high) |
+
+### v3.1.0 (2026-01-31T19:00:00Z) - Approved
 
 | Decision | Description |
 |----------|-------------|
@@ -171,189 +183,324 @@ Legend: ● = Phase work  ◆ = Quality Gate  ○ = Phase Report
 
 ## 4. Workflow Diagram (Mermaid)
 
+> **Dark Mode Optimized:** Colors chosen for visibility in both light and dark IDE themes.
+> **Current State:** Phase 0 COMPLETE, Barrier 1 READY
+
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#2d3748', 'primaryTextColor': '#e2e8f0', 'primaryBorderColor': '#4a5568', 'lineColor': '#718096', 'secondaryColor': '#1a202c', 'tertiaryColor': '#2d3748', 'background': '#1a202c', 'mainBkg': '#2d3748', 'textColor': '#e2e8f0'}}}%%
 flowchart TB
-    subgraph APPROVAL["🔒 APPROVAL GATE"]
-        START([User Approves Plan])
+    %% ═══════════════════════════════════════════════════════════════════
+    %% APPROVAL GATE
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph APPROVAL["✅ APPROVED - 2026-01-31T19:00:00Z"]
+        START([User Approved Plan<br/>DEC-OSS-001: ≥0.92 threshold])
     end
 
-    subgraph PHASE0["📊 PHASE 0: DIVERGENT EXPLORATION & INITIAL RESEARCH"]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% PHASE 0: DIVERGENT EXPLORATION & INITIAL RESEARCH
+    %% Status: COMPLETE (All 4 Tiers Done)
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph PHASE0["✅ PHASE 0: COMPLETE - Divergent Exploration & Research"]
         direction TB
 
-        subgraph P0_PS["Pipeline A: Problem-Solving"]
-            P0_PS_R[ps-researcher<br/>External Best Practices]
-            P0_PS_A[ps-analyst<br/>Current Architecture Analysis]
+        subgraph P0_TIER1["TIER 1a: Original Research (PARALLEL) ✅"]
+            P0_PS_R["✅ ps-researcher<br/>OSS Best Practices<br/>EN-001 COMPLETE"]
+            P0_PS_A["✅ ps-analyst<br/>Current Architecture<br/>EN-007 COMPLETE"]
+            P0_NSE_E["✅ nse-explorer<br/>DIVERGENT Alternatives<br/>60+ options explored"]
+            P0_NSE_REQ["✅ nse-requirements<br/>Current State Inventory<br/>27 gaps identified"]
         end
 
-        subgraph P0_NSE["Pipeline B: NASA SE"]
-            P0_NSE_E[nse-explorer<br/>DIVERGENT: Explore All Options]
-            P0_NSE_REQ[nse-requirements<br/>Current State Inventory]
-            P0_NSE_RISK[nse-risk<br/>Initial Risk Identification]
+        subgraph P0_TIER1B["TIER 1b: Expanded Research - DISC-001 Remediation (PARALLEL) ✅"]
+            P0_PS_CC["✅ ps-researcher-claude-code<br/>CLI Best Practices<br/>EN-002 COMPLETE"]
+            P0_PS_CMD["✅ ps-researcher-claude-md<br/>CLAUDE.md Optimization<br/>EN-003 COMPLETE"]
+            P0_PS_PLG["✅ ps-researcher-plugins<br/>Plugin Architecture<br/>EN-004 COMPLETE"]
+            P0_PS_SKL["✅ ps-researcher-skills<br/>Skills Best Practices<br/>EN-005 COMPLETE"]
+            P0_PS_DEC["✅ ps-researcher-decomposition<br/>Import Patterns<br/>EN-006 COMPLETE"]
         end
 
-        P0_PS_R --> P0_QG
-        P0_PS_A --> P0_QG
-        P0_NSE_E --> P0_QG
-        P0_NSE_REQ --> P0_QG
-        P0_NSE_RISK --> P0_QG
+        subgraph P0_TIER2["TIER 2: Risk Identification (SEQUENTIAL) ✅"]
+            P0_NSE_RISK["✅ nse-risk<br/>21 Risks Identified<br/>2 CRITICAL, 5 HIGH"]
+        end
+
+        P0_TIER1 --> P0_TIER1B
+        P0_TIER1B --> P0_TIER2
     end
 
-    subgraph QG0["🚫 QUALITY GATE 0"]
-        P0_QG{{"ps-critic (ADVERSARIAL)<br/>+ nse-qa (NASA QA)<br/>Score ≥ 0.85"}}
-        P0_RPT[ps-reporter + nse-reporter<br/>Phase 0 Reports]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% QUALITY GATE 0: PASSED
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph QG0["✅ QUALITY GATE 0 - PASSED (0.936 avg)"]
+        direction TB
+        subgraph QG0_EVAL["TIER 3: Dual Evaluation ✅"]
+            P0_CRITIC{{"✅ ps-critic<br/>ADVERSARIAL MODE<br/>Score: 0.931 ≥ 0.92"}}
+            P0_QA{{"✅ nse-qa<br/>NASA NPR-7123.1D<br/>Score: 0.941 ≥ 0.92"}}
+        end
+        subgraph QG0_RPT["TIER 4: Reports ✅"]
+            P0_RPT_PS["✅ ps-reporter<br/>Phase 0 Status Report"]
+            P0_RPT_NSE["✅ nse-reporter<br/>NASA SE Status Report"]
+        end
+        QG0_EVAL --> QG0_RPT
     end
 
-    subgraph BARRIER1["⇄ BARRIER 1: Full Artifact Cross-Pollination"]
-        B1_PS_NSE[PS → NSE: Research findings]
-        B1_NSE_PS[NSE → PS: Exploration alternatives, risks]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% BARRIER 1: READY
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph BARRIER1["⏳ BARRIER 1: Cross-Pollination (READY)"]
+        direction LR
+        B1_PS_NSE["PS → NSE<br/>7 research artifacts<br/>+ architecture analysis"]
+        B1_NSE_PS["NSE → PS<br/>Alternatives + inventory<br/>+ 21 risks"]
     end
 
-    subgraph PHASE1["🔬 PHASE 1: DEEP RESEARCH & INVESTIGATION"]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% PHASE 1: DEEP RESEARCH & INVESTIGATION
+    %% Status: BLOCKED (awaiting Barrier 1)
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph PHASE1["⏸️ PHASE 1: Deep Research & Investigation (BLOCKED)"]
         direction TB
 
         subgraph P1_PS["Pipeline A: Problem-Solving"]
-            P1_PS_R[ps-researcher<br/>Deep Dive Research]
-            P1_PS_A[ps-analyst<br/>Gap Analysis, FMEA, 5 Whys]
-            P1_PS_I[ps-investigator<br/>Problem Investigation]
+            P1_PS_R["⏸️ ps-researcher<br/>Deep Dive Research"]
+            P1_PS_A["⏸️ ps-analyst<br/>Gap Analysis + FMEA<br/>5 Whys + Trade-offs"]
+            P1_PS_I["⏸️ ps-investigator<br/>Problem Investigation<br/>Transcript issues"]
         end
 
         subgraph P1_NSE["Pipeline B: NASA SE"]
-            P1_NSE_V[nse-verification<br/>V&V Planning]
-            P1_NSE_RISK[nse-risk<br/>Risk Register Update]
+            P1_NSE_V["⏸️ nse-verification<br/>V&V Planning"]
+            P1_NSE_RISK["⏸️ nse-risk<br/>Risk Register Update"]
         end
     end
 
-    subgraph QG1["🚫 QUALITY GATE 1"]
-        P1_QG{{"ps-critic (ADVERSARIAL)<br/>+ nse-qa (NASA QA)<br/>Score ≥ 0.85"}}
-        P1_RPT[ps-reporter + nse-reporter<br/>Phase 1 Reports]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% QUALITY GATE 1
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph QG1["⏸️ QUALITY GATE 1 (≥0.92)"]
+        P1_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>Frameworks Applied?"}}
+        P1_RPT["⏸️ ps-reporter + nse-reporter"]
     end
 
-    subgraph BARRIER2["⇄ BARRIER 2: Full Artifact Cross-Pollination"]
-        B2_PS_NSE[PS → NSE: Gap analysis, investigation findings]
-        B2_NSE_PS[NSE → PS: V&V gaps, updated risks]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% BARRIER 2
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph BARRIER2["⏸️ BARRIER 2: Cross-Pollination"]
+        B2_PS_NSE["PS → NSE: Gap analysis<br/>FMEA + Investigation"]
+        B2_NSE_PS["NSE → PS: V&V gaps<br/>Updated risks"]
     end
 
-    subgraph PHASE2["📐 PHASE 2: REQUIREMENTS & ARCHITECTURE"]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% PHASE 2: REQUIREMENTS & ARCHITECTURE
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph PHASE2["⏸️ PHASE 2: Requirements & Architecture (BLOCKED)"]
         direction TB
 
         subgraph P2_PS["Pipeline A: Problem-Solving"]
-            P2_PS_ARCH[ps-architect<br/>ADRs: CLAUDE.md, Skills, Migration]
+            P2_PS_ARCH["⏸️ ps-architect<br/>7 ADRs:<br/>• CLAUDE.md Decomposition<br/>• Skill Import Pattern<br/>• Worktracker Extraction<br/>• Multi-Persona Docs<br/>• Repo Migration<br/>• Transcript Templates<br/>• OSS Checklist"]
         end
 
         subgraph P2_NSE["Pipeline B: NASA SE"]
-            P2_NSE_REQ[nse-requirements<br/>Formal Requirements Spec]
-            P2_NSE_ARCH[nse-architecture<br/>Architecture Decisions]
-            P2_NSE_INT[nse-integration<br/>Integration Planning]
-            P2_NSE_CFG[nse-configuration<br/>Requirements Baseline]
-            P2_NSE_RISK[nse-risk<br/>Risk Register Update]
+            P2_NSE_REQ["⏸️ nse-requirements<br/>Formal Requirements"]
+            P2_NSE_ARCH["⏸️ nse-architecture<br/>Architecture Decisions"]
+            P2_NSE_INT["⏸️ nse-integration<br/>Integration Planning"]
+            P2_NSE_CFG["⏸️ nse-configuration<br/>Requirements Baseline"]
+            P2_NSE_RISK["⏸️ nse-risk<br/>Risk Update"]
         end
     end
 
-    subgraph QG2["🚫 QUALITY GATE 2"]
-        P2_QG{{"ps-critic (ADVERSARIAL)<br/>+ nse-qa (NASA QA)<br/>Score ≥ 0.85"}}
-        P2_RPT[ps-reporter + nse-reporter<br/>Phase 2 Reports]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% QUALITY GATE 2
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph QG2["⏸️ QUALITY GATE 2 (≥0.92)"]
+        P2_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>ADRs + Baseline?"}}
+        P2_RPT["⏸️ ps-reporter + nse-reporter"]
     end
 
-    subgraph BARRIER3["⇄ BARRIER 3: Full Artifact Cross-Pollination"]
-        B3_PS_NSE[PS → NSE: ADRs for V&V test design]
-        B3_NSE_PS[NSE → PS: Requirements for validation]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% BARRIER 3
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph BARRIER3["⏸️ BARRIER 3: Cross-Pollination"]
+        B3_PS_NSE["PS → NSE: ADRs for V&V"]
+        B3_NSE_PS["NSE → PS: Requirements"]
     end
 
-    subgraph PHASE3["✅ PHASE 3: VALIDATION & SYNTHESIS"]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% PHASE 3: VALIDATION & SYNTHESIS
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph PHASE3["⏸️ PHASE 3: Validation & Synthesis (BLOCKED)"]
         direction TB
 
         subgraph P3_PS["Pipeline A: Problem-Solving"]
-            P3_PS_V[ps-validator<br/>Constraint Verification]
-            P3_PS_S[ps-synthesizer<br/>Pattern Synthesis]
-            P3_PS_REV[ps-reviewer<br/>Design Review]
+            P3_PS_V["⏸️ ps-validator<br/>Constraint Verification"]
+            P3_PS_S["⏸️ ps-synthesizer<br/>Pattern Synthesis"]
+            P3_PS_REV["⏸️ ps-reviewer<br/>Design Review"]
         end
 
         subgraph P3_NSE["Pipeline B: NASA SE"]
-            P3_NSE_REV[nse-reviewer<br/>Technical Review Gate]
-            P3_NSE_CFG[nse-configuration<br/>Design Baseline]
-            P3_NSE_RISK[nse-risk<br/>Risk Register Update]
+            P3_NSE_REV["⏸️ nse-reviewer<br/>Technical Review Gate"]
+            P3_NSE_CFG["⏸️ nse-configuration<br/>Design Baseline"]
+            P3_NSE_RISK["⏸️ nse-risk<br/>Risk Update"]
         end
     end
 
-    subgraph QG3["🚫 QUALITY GATE 3"]
-        P3_QG{{"ps-critic (ADVERSARIAL)<br/>+ nse-qa (NASA QA)<br/>Score ≥ 0.88"}}
-        P3_RPT[ps-reporter + nse-reporter<br/>Phase 3 Reports]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% QUALITY GATE 3
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph QG3["⏸️ QUALITY GATE 3 (≥0.92)"]
+        P3_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>Validation Complete?"}}
+        P3_RPT["⏸️ ps-reporter + nse-reporter"]
     end
 
-    subgraph BARRIER4["⇄ BARRIER 4: Full Artifact Cross-Pollination"]
-        B4_PS_NSE[PS → NSE: Validation results, synthesis]
-        B4_NSE_PS[NSE → PS: Review findings, baseline status]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% BARRIER 4
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph BARRIER4["⏸️ BARRIER 4: Cross-Pollination"]
+        B4_PS_NSE["PS → NSE: Validation + Synthesis"]
+        B4_NSE_PS["NSE → PS: Review + Baseline"]
     end
 
-    subgraph PHASE4["📋 PHASE 4: FINAL V&V & REPORTING"]
+    %% ═══════════════════════════════════════════════════════════════════
+    %% PHASE 4: FINAL V&V & REPORTING
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph PHASE4["⏸️ PHASE 4: Final V&V & Reporting (BLOCKED)"]
         direction TB
 
         subgraph P4_PS["Pipeline A: Problem-Solving"]
-            P4_PS_RPT[ps-reporter<br/>Final Status Report]
+            P4_PS_RPT["⏸️ ps-reporter<br/>Final Comprehensive Report"]
         end
 
         subgraph P4_NSE["Pipeline B: NASA SE"]
-            P4_NSE_V[nse-verification<br/>Final V&V]
-            P4_NSE_QA[nse-qa<br/>Comprehensive QA Audit]
-            P4_NSE_RPT[nse-reporter<br/>Final SE Report]
-            P4_NSE_RISK[nse-risk<br/>Final Risk Assessment]
+            P4_NSE_V["⏸️ nse-verification<br/>Final V&V + VCRM"]
+            P4_NSE_QA["⏸️ nse-qa<br/>Comprehensive QA Audit"]
+            P4_NSE_RPT["⏸️ nse-reporter<br/>Final SE Report"]
+            P4_NSE_RISK["⏸️ nse-risk<br/>Final Risk Assessment"]
         end
     end
 
-    subgraph QG4["🚫 QUALITY GATE 4 (FINAL)"]
-        P4_QG{{"ps-critic (ADVERSARIAL)<br/>+ nse-qa (NASA QA)<br/>Score ≥ 0.90"}}
+    %% ═══════════════════════════════════════════════════════════════════
+    %% QUALITY GATE 4 (FINAL)
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph QG4["⏸️ QUALITY GATE 4 - FINAL (≥0.92)"]
+        P4_QG{{"⏸️ ps-critic + nse-qa<br/>Threshold: ≥0.92<br/>All Deliverables?"}}
     end
 
-    subgraph COMPLETE["✨ WORKFLOW COMPLETE"]
-        DONE([Ready for Implementation])
+    %% ═══════════════════════════════════════════════════════════════════
+    %% WORKFLOW COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════
+    subgraph COMPLETE["🎯 WORKFLOW COMPLETE"]
+        DONE([Ready for OSS Implementation<br/>Estimated: 7-10 days])
     end
 
+    %% ═══════════════════════════════════════════════════════════════════
+    %% CONNECTIONS
+    %% ═══════════════════════════════════════════════════════════════════
     START --> PHASE0
     PHASE0 --> QG0
-    QG0 --> P0_QG
-    P0_QG -->|PASS| P0_RPT
-    P0_RPT --> BARRIER1
-    P0_QG -->|FAIL| PHASE0
+    QG0 --> BARRIER1
 
     BARRIER1 --> PHASE1
     PHASE1 --> QG1
-    QG1 --> P1_QG
     P1_QG -->|PASS| P1_RPT
     P1_RPT --> BARRIER2
-    P1_QG -->|FAIL| PHASE1
+    P1_QG -.->|FAIL max 2x| PHASE1
 
     BARRIER2 --> PHASE2
     PHASE2 --> QG2
-    QG2 --> P2_QG
     P2_QG -->|PASS| P2_RPT
     P2_RPT --> BARRIER3
-    P2_QG -->|FAIL| PHASE2
+    P2_QG -.->|FAIL max 2x| PHASE2
 
     BARRIER3 --> PHASE3
     PHASE3 --> QG3
-    QG3 --> P3_QG
     P3_QG -->|PASS| P3_RPT
     P3_RPT --> BARRIER4
-    P3_QG -->|FAIL| PHASE3
+    P3_QG -.->|FAIL max 2x| PHASE3
 
     BARRIER4 --> PHASE4
     PHASE4 --> QG4
-    QG4 --> P4_QG
     P4_QG -->|PASS| DONE
-    P4_QG -->|FAIL| PHASE4
+    P4_QG -.->|FAIL max 2x| PHASE4
 
-    style APPROVAL fill:#fff3cd,stroke:#856404
-    style PHASE0 fill:#d4edda,stroke:#155724
-    style PHASE1 fill:#cce5ff,stroke:#004085
-    style PHASE2 fill:#e2d5f1,stroke:#6f42c1
-    style PHASE3 fill:#d1ecf1,stroke:#0c5460
-    style PHASE4 fill:#f8d7da,stroke:#721c24
-    style QG0 fill:#fff,stroke:#dc3545,stroke-width:3px
-    style QG1 fill:#fff,stroke:#dc3545,stroke-width:3px
-    style QG2 fill:#fff,stroke:#dc3545,stroke-width:3px
-    style QG3 fill:#fff,stroke:#dc3545,stroke-width:3px
-    style QG4 fill:#fff,stroke:#dc3545,stroke-width:3px
-    style COMPLETE fill:#d4edda,stroke:#155724,stroke-width:3px
+    %% ═══════════════════════════════════════════════════════════════════
+    %% DARK MODE OPTIMIZED STYLES
+    %% Using HSL colors with good contrast for both light and dark themes
+    %% ═══════════════════════════════════════════════════════════════════
+
+    %% Completed items - Green tones (high saturation, medium lightness)
+    style APPROVAL fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style PHASE0 fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
+    style QG0 fill:#276749,stroke:#9ae6b4,stroke-width:3px,color:#c6f6d5
+    style P0_TIER1 fill:#2f855a,stroke:#68d391,color:#c6f6d5
+    style P0_TIER1B fill:#2f855a,stroke:#68d391,color:#c6f6d5
+    style P0_TIER2 fill:#2f855a,stroke:#68d391,color:#c6f6d5
+    style QG0_EVAL fill:#276749,stroke:#9ae6b4,color:#c6f6d5
+    style QG0_RPT fill:#276749,stroke:#9ae6b4,color:#c6f6d5
+
+    %% Ready/Pending items - Amber/Yellow tones
+    style BARRIER1 fill:#744210,stroke:#f6e05e,stroke-width:3px,color:#fefcbf
+
+    %% Blocked items - Blue/Gray tones (muted)
+    style PHASE1 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style QG1 fill:#2b6cb0,stroke:#90cdf4,stroke-width:2px,color:#bee3f8
+    style BARRIER2 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
+
+    style PHASE2 fill:#553c9a,stroke:#b794f4,stroke-width:2px,color:#e9d8fd
+    style QG2 fill:#6b46c1,stroke:#d6bcfa,stroke-width:2px,color:#e9d8fd
+    style BARRIER3 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
+
+    style PHASE3 fill:#285e61,stroke:#4fd1c5,stroke-width:2px,color:#b2f5ea
+    style QG3 fill:#2c7a7b,stroke:#81e6d9,stroke-width:2px,color:#b2f5ea
+    style BARRIER4 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
+
+    style PHASE4 fill:#742a2a,stroke:#fc8181,stroke-width:2px,color:#fed7d7
+    style QG4 fill:#9b2c2c,stroke:#feb2b2,stroke-width:3px,color:#fed7d7
+
+    %% Final completion - Bright green
+    style COMPLETE fill:#22543d,stroke:#68d391,stroke-width:4px,color:#c6f6d5
+
+    %% Pipeline subgraph styles
+    style P1_PS fill:#1a365d,stroke:#4299e1,color:#bee3f8
+    style P1_NSE fill:#1a365d,stroke:#4299e1,color:#bee3f8
+    style P2_PS fill:#44337a,stroke:#9f7aea,color:#e9d8fd
+    style P2_NSE fill:#44337a,stroke:#9f7aea,color:#e9d8fd
+    style P3_PS fill:#234e52,stroke:#38b2ac,color:#b2f5ea
+    style P3_NSE fill:#234e52,stroke:#38b2ac,color:#b2f5ea
+    style P4_PS fill:#63171b,stroke:#f56565,color:#fed7d7
+    style P4_NSE fill:#63171b,stroke:#f56565,color:#fed7d7
+```
+
+### 4.1 Diagram Legend
+
+| Symbol | Meaning |
+|--------|---------|
+| ✅ | Complete |
+| ⏳ | Ready/Pending |
+| ⏸️ | Blocked |
+| 🎯 | Final Goal |
+
+### 4.2 Current Execution State
+
+```
+WORKFLOW PROGRESS AS OF 2026-01-31T20:25:00Z
+═════════════════════════════════════════════
+
+Phase 0 (Exploration & Research):   ████████████████████ 100% COMPLETE
+  ├─ Tier 1a (Original):            ████████████████████ 100% (4 agents)
+  ├─ Tier 1b (Expanded/DISC-001):   ████████████████████ 100% (5 agents)
+  ├─ Tier 2 (Risk):                 ████████████████████ 100% (21 risks)
+  ├─ Tier 3 (QG-0):                 ████████████████████ 100% (0.936 avg)
+  └─ Tier 4 (Reports):              ████████████████████ 100% (2 reports)
+
+Barrier 1 (Cross-Pollination):      ░░░░░░░░░░░░░░░░░░░░   0% READY
+
+Phase 1 (Deep Research):            ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
+Phase 2 (Requirements & Arch):      ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
+Phase 3 (Validation & Synthesis):   ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
+Phase 4 (Final V&V & Reporting):    ░░░░░░░░░░░░░░░░░░░░   0% BLOCKED
+
+Overall Progress:                   ████░░░░░░░░░░░░░░░░  20%
+
+Quality Gates: 1/5 passed (QG-0: 0.936)
+Barriers: 0/4 complete
+Reports: 2/10 generated
+Risks: 21 identified (2 critical, 5 high)
 ```
 
 ---
@@ -902,48 +1049,68 @@ After baseline establishment:
 ### 13.1 Current Execution State
 
 ```
-WORKFLOW STATUS AS OF 2026-01-31
-================================
+WORKFLOW STATUS AS OF 2026-01-31T20:25:00Z
+==========================================
 
-Status: PENDING_APPROVAL
+Status: ACTIVE - Phase 0 COMPLETE
 
-Phase 0 (Exploration & Research):   PENDING
-Phase 1 (Deep Research):            BLOCKED
-Phase 2 (Requirements & Arch):      BLOCKED
-Phase 3 (Validation & Synthesis):   BLOCKED
-Phase 4 (Final V&V & Reporting):    BLOCKED
+Phase 0 (Exploration & Research):   ✅ COMPLETE
+  ├─ Tier 1a (Original Research):   ✅ 4/4 agents complete
+  ├─ Tier 1b (DISC-001 Expanded):   ✅ 5/5 agents complete
+  ├─ Tier 2 (Risk Identification):  ✅ 21 risks (2 critical, 5 high)
+  ├─ Tier 3 (QG-0):                 ✅ PASSED (0.931 + 0.941 = 0.936 avg)
+  └─ Tier 4 (Reports):              ✅ 2/2 reports generated
+
+Phase 1 (Deep Research):            ⏸️ BLOCKED (awaiting Barrier 1)
+Phase 2 (Requirements & Arch):      ⏸️ BLOCKED
+Phase 3 (Validation & Synthesis):   ⏸️ BLOCKED
+Phase 4 (Final V&V & Reporting):    ⏸️ BLOCKED
 
 Quality Gates:
-  QG-0: PENDING
-  QG-1: BLOCKED
-  QG-2: BLOCKED
-  QG-3: BLOCKED
-  QG-4: BLOCKED
+  QG-0: ✅ PASSED (ps-critic: 0.931, nse-qa: 0.941)
+  QG-1: ⏸️ BLOCKED
+  QG-2: ⏸️ BLOCKED
+  QG-3: ⏸️ BLOCKED
+  QG-4: ⏸️ BLOCKED
 
 Barriers:
-  Barrier 1: PENDING
-  Barrier 2: BLOCKED
-  Barrier 3: BLOCKED
-  Barrier 4: BLOCKED
+  Barrier 1: ⏳ READY (awaiting execution)
+  Barrier 2: ⏸️ BLOCKED
+  Barrier 3: ⏸️ BLOCKED
+  Barrier 4: ⏸️ BLOCKED
 
-Agents Executed: 0/19
-Reports Generated: 0/10
-Risk Registers: 0/5
+Agents Executed: 13/24 (including expanded research)
+Reports Generated: 2/10
+Risk Registers: 1/5 (phase-0-risk-register.md)
 ```
 
-### 13.2 Next Actions (After Approval)
+### 13.2 Key Metrics
 
-1. **Execute Phase 0 agents in parallel (within pipelines):**
-   - Pipeline A: ps-researcher, ps-analyst
-   - Pipeline B: nse-explorer, nse-requirements, nse-risk
+| Metric | Value |
+|--------|-------|
+| Overall Progress | 20% |
+| Agents Executed | 13 (7 PS + 4 NSE + 2 QG) |
+| Quality Score (QG-0) | 0.936 average |
+| Risks Identified | 21 (2 critical, 5 high, 9 medium, 5 low) |
+| OSS Readiness | 68% (target: 85%) |
+| Research Citations | 130+ |
 
-2. **Quality Gate 0:** ps-critic + nse-qa evaluation
+### 13.3 Next Actions
 
-3. **Reports:** ps-reporter + nse-reporter
+1. **Execute Barrier 1:** Cross-pollination of Phase 0 artifacts
+   - PS → NSE: 7 research artifacts + architecture analysis
+   - NSE → PS: Divergent alternatives + inventory + 21 risks
 
-4. **Barrier 1:** Full artifact cross-pollination
+2. **Phase 1 Execution:** Deep Research & Investigation
+   - ps-researcher (deep dive)
+   - ps-analyst (gap analysis, FMEA, 5 Whys)
+   - ps-investigator (transcript issues)
+   - nse-verification (V&V planning)
+   - nse-risk (risk update)
 
-5. Continue sequential phase execution
+3. **Quality Gate 1:** ps-critic + nse-qa (≥0.92)
+
+4. Continue sequential phase execution
 
 ---
 
@@ -981,6 +1148,7 @@ Risk Registers: 0/5
 
 *Document ID: PROJ-009-ORCH-PLAN*
 *Workflow ID: oss-release-20260131-001*
-*Version: 3.0.0*
-*Status: PENDING_APPROVAL*
+*Version: 4.0.0*
+*Status: ACTIVE - Phase 0 COMPLETE*
 *Cross-Session Portable: All paths are repository-relative*
+*Dark Mode Optimized: Mermaid diagram uses HSL colors compatible with dark IDE themes*
