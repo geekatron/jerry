@@ -321,8 +321,8 @@ flowchart TD
         FEAT-002 --> EN-001
         FEAT-002 --> EN-002
 
-        TASK-001["TASK-001: Create wt-planner"]
-        TASK-002["TASK-002: Create wt-verifier"]
+        TASK-001["TASK-001: Create wt-verifier"]
+        TASK-002["TASK-002: Create wt-visualizer"]
         EN-001 --> TASK-001
         EN-001 --> TASK-002
     end
@@ -446,7 +446,7 @@ visualizer_output:
 
 **Downstream Agents:**
 - `wt-auditor` - Can validate diagram accuracy
-- `wt-planner` - Can use diagrams for planning context
+- `wt-verifier` - Can use diagrams for verification context
 </state_management>
 
 </agent>

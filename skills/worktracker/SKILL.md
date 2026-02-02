@@ -1,7 +1,7 @@
 ---
 name: worktracker
 description: Work item tracking and task management using the Jerry Framework hierarchy (Initiative, Epic, Feature, Story, Task, Enabler, Bug, Impediment). Manages WORKTRACKER.md manifests, tracks progress, and enforces template usage for consistent work decomposition.
-version: "1.0.0"
+version: "1.1.0"
 allowed-tools: Read, Write, Glob, Task, Edit
 activation-keywords:
   - "work tracker"
@@ -17,7 +17,7 @@ activation-keywords:
 
 # Worktracker Skill
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Framework:** Jerry Worktracking Framework v1.0
 > **Constitutional Compliance:** Jerry Constitution v1.0 (P-002, P-003, P-020)
 
@@ -118,6 +118,8 @@ Agents enforce Worktracker Integrity (WTI) rules defined in `.context/templates/
 | WTI-001 | Real-Time State | wt-auditor |
 | WTI-002 | No Closure Without Verification | wt-verifier |
 | WTI-003 | Truthful State | wt-verifier, wt-auditor |
+| WTI-004 | Synchronize Before Reporting | wt-auditor |
+| WTI-005 | Atomic State Updates | wt-auditor |
 | WTI-006 | Evidence-Based Closure | wt-verifier |
 
 ### Output Templates
