@@ -31,8 +31,8 @@ description: |
   entity mappings for the canonical worktracker model.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: HIGH
 assignee: null
 created_by: "Claude"

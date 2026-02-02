@@ -258,6 +258,7 @@ Simulate new contributor experience.
 - [EN-201: Worktracker Skill Extraction](../EN-201-worktracker-skill-extraction/EN-201-worktracker-skill-extraction.md)
 - [EN-202: CLAUDE.md Rewrite](../EN-202-claude-md-rewrite/EN-202-claude-md-rewrite.md)
 - [EN-203: TODO Section Migration](../EN-203-todo-section-migration/EN-203-todo-section-migration.md)
+- [EN-206: Context Distribution Strategy](../EN-206-context-distribution-strategy/EN-206-context-distribution-strategy.md) - Validate context distribution works
 
 ### Enables
 

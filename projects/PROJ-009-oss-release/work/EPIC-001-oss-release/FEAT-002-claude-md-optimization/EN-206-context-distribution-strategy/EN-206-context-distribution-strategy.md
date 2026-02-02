@@ -323,6 +323,7 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-005 → TASK-004
 
 ### Enables
 
+- [EN-204: Validation & Testing](../EN-204-validation-testing/EN-204-validation-testing.md) - Validate context distribution works
 - [EN-205: Documentation Update](../EN-205-documentation-update/EN-205-documentation-update.md) - Bootstrap docs
 - Full OSS adoption with guardrails
 - Windows developer support
