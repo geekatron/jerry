@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "packet_id": "k8-network-policies",
+  "anchors": {
+    "segments": {
+      "seg-001": "02-transcript.md#seg-001",
+      "seg-002": "02-transcript.md#seg-002",
+      "seg-003": "02-transcript.md#seg-003",
+      "seg-004": "02-transcript.md#seg-004",
+      "seg-005": "02-transcript.md#seg-005",
+      "seg-006": "02-transcript.md#seg-006",
+      "seg-007": "02-transcript.md#seg-007",
+      "seg-008": "02-transcript.md#seg-008",
+      "seg-009": "02-transcript.md#seg-009",
+      "seg-010": "02-transcript.md#seg-010",
+      "seg-011": "02-transcript.md#seg-011",
+      "seg-012": "02-transcript.md#seg-012",
+      "seg-013": "02-transcript.md#seg-013",
+      "seg-014": "02-transcript.md#seg-014",
+      "seg-015": "02-transcript.md#seg-015",
+      "seg-016": "02-transcript.md#seg-016",
+      "seg-017": "02-transcript.md#seg-017"
+    },
+    "speakers": {
+      "spk-001": "03-speakers.md#spk-001",
+      "spk-002": "03-speakers.md#spk-002"
+    },
+    "action_items": {
+      "act-001": "04-action-items.md#act-001",
+      "act-002": "04-action-items.md#act-002"
+    },
+    "decisions": {
+      "dec-001": "05-decisions.md#dec-001"
+    },
+    "questions": {
+      "que-001": "06-questions.md#que-001"
+    },
+    "topics": {
+      "top-001": "07-topics.md#top-001",
+      "top-002": "07-topics.md#top-002"
+    }
+  }
+}

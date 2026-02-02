@@ -1,0 +1,70 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/voice_tag_with_class.vtt"
+  },
+  "metadata": {
+    "duration_ms": 3000,
+    "segment_count": 3,
+    "detected_speakers": 3
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": "Boss",
+      "text": "Where is the report?",
+      "raw_text": "<v.loud Boss>Where is the report?</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": "Employee",
+      "text": "It's almost ready, sir.",
+      "raw_text": "<v.whisper.urgent Employee>It's almost ready, sir.</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": "Multi-Class Speaker",
+      "text": "This has three classes.",
+      "raw_text": "<v.first.second.third Multi-Class Speaker>This has three classes.</v>"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "partial",
+    "parse_warnings": [
+      {
+        "code": "WARN-004",
+        "message": "Voice tag with class annotation - class stripped",
+        "cue_index": 1,
+        "severity": "warning",
+        "raw_value": "<v.loud Boss>Where is the report?</v>",
+        "class_stripped": ".loud"
+      },
+      {
+        "code": "WARN-004",
+        "message": "Voice tag with multiple class annotations - classes stripped",
+        "cue_index": 2,
+        "severity": "warning",
+        "raw_value": "<v.whisper.urgent Employee>It's almost ready, sir.</v>",
+        "class_stripped": ".whisper.urgent"
+      },
+      {
+        "code": "WARN-004",
+        "message": "Voice tag with multiple class annotations - classes stripped",
+        "cue_index": 3,
+        "severity": "warning",
+        "raw_value": "<v.first.second.third Multi-Class Speaker>This has three classes.</v>",
+        "class_stripped": ".first.second.third"
+      }
+    ],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

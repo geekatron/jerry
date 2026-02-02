@@ -1,0 +1,672 @@
+{
+  "version": "1.0",
+  "packet_id": "meeting-006-all-hands",
+  "generated_at": "2026-01-30T03:00:00.000Z",
+  "anchors": {
+    "speakers": {
+      "robert-chen": {
+        "id": "spk-001",
+        "name": "Robert Chen",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:robert-chen-robert-chen",
+        "segment_count": 1005,
+        "related_decisions": ["dec-001", "dec-002", "dec-007"],
+        "related_actions": ["act-006", "act-007"]
+      },
+      "diana-martinez": {
+        "id": "spk-002",
+        "name": "Diana Martinez",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:diana-martinez-diana-martinez",
+        "segment_count": 491,
+        "related_decisions": ["dec-004", "dec-010"],
+        "related_actions": ["act-001", "act-002", "act-012", "act-013", "act-014", "act-015"]
+      },
+      "jennifer-adams": {
+        "id": "spk-003",
+        "name": "Jennifer Adams",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:jennifer-adams-jennifer-adams",
+        "segment_count": 317,
+        "related_decisions": ["dec-003", "dec-011"],
+        "related_actions": ["act-003", "act-004", "act-005", "act-008", "act-009"]
+      },
+      "michelle-taylor": {
+        "id": "spk-004",
+        "name": "Michelle Taylor",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:michelle-taylor-michelle-taylor",
+        "segment_count": 309,
+        "related_decisions": [],
+        "related_actions": []
+      },
+      "james-wilson": {
+        "id": "spk-005",
+        "name": "James Wilson",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:james-wilson-james-wilson",
+        "segment_count": 258,
+        "related_decisions": ["dec-005", "dec-006", "dec-008", "dec-012"],
+        "related_actions": []
+      },
+      "sarah-mitchell": {
+        "id": "spk-006",
+        "name": "Sarah Mitchell",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:sarah-mitchell-sarah-mitchell",
+        "segment_count": 163,
+        "related_decisions": ["dec-009"],
+        "related_actions": ["act-010", "act-011"]
+      },
+      "linda-chen": {
+        "id": "spk-007",
+        "name": "Linda Chen",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:linda-chen-linda-chen",
+        "segment_count": 149,
+        "related_decisions": [],
+        "related_actions": []
+      },
+      "kevin-obrien": {
+        "id": "spk-008",
+        "name": "Kevin O'Brien",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:kevin-obrien-kevin-obrien",
+        "segment_count": 136,
+        "related_decisions": [],
+        "related_actions": []
+      },
+      "kevin-morrison": {
+        "id": "spk-009",
+        "name": "Kevin Morrison",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:kevin-morrison-kevin-morrison",
+        "segment_count": 59,
+        "related_decisions": [],
+        "related_actions": []
+      },
+      "kevin-marketing-vp": {
+        "id": "spk-010",
+        "name": "Kevin Marketing VP",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:kevin-marketing-vp",
+        "segment_count": 27,
+        "related_decisions": [],
+        "related_actions": []
+      },
+      "employee-six": {
+        "id": "spk-025",
+        "name": "Employee Six",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:employee-six",
+        "segment_count": 1,
+        "related_questions": ["que-001"]
+      },
+      "employee-seven": {
+        "id": "spk-026",
+        "name": "Employee Seven",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:employee-seven",
+        "segment_count": 1,
+        "related_questions": ["que-002"]
+      },
+      "employee-eight": {
+        "id": "spk-027",
+        "name": "Employee Eight",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:employee-eight",
+        "segment_count": 1,
+        "related_questions": ["que-003"]
+      },
+      "employee-fourteen": {
+        "id": "spk-033",
+        "name": "Employee Fourteen",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:employee-fourteen",
+        "segment_count": 1,
+        "related_questions": ["que-004"]
+      },
+      "employee-fifteen": {
+        "id": "spk-034",
+        "name": "Employee Fifteen",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:employee-fifteen",
+        "segment_count": 1,
+        "related_questions": ["que-005"]
+      },
+      "employee-sixteen": {
+        "id": "spk-035",
+        "name": "Employee Sixteen",
+        "file": "02-speakers.md",
+        "anchor": "#speaker:employee-sixteen",
+        "segment_count": 1,
+        "related_questions": ["que-006"]
+      }
+    },
+    "actions": {
+      "act-001": {
+        "id": "act-001",
+        "text": "Complete full cloud migration by end of Q1 next year",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-001-complete-full-cloud-migration",
+        "assignee": "diana-martinez",
+        "due_date": "Q1 2027",
+        "tier": 1,
+        "confidence": 0.92,
+        "topic": "top-004",
+        "citation_segment": "seg-1001"
+      },
+      "act-002": {
+        "id": "act-002",
+        "text": "Achieve ISO 27001 certification by end of Q4",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-002-achieve-iso-27001-certification",
+        "assignee": "diana-martinez",
+        "due_date": "Q4 2026",
+        "tier": 1,
+        "confidence": 0.94,
+        "topic": "top-004",
+        "citation_segment": "seg-1020"
+      },
+      "act-003": {
+        "id": "act-003",
+        "text": "Launch AI-powered meeting summaries with action item extraction feature",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-003-launch-ai-powered-meeting-summaries",
+        "assignee": "jennifer-adams",
+        "due_date": "Q4 2026",
+        "tier": 1,
+        "confidence": 0.91,
+        "topic": "top-005",
+        "citation_segment": "seg-1030"
+      },
+      "act-004": {
+        "id": "act-004",
+        "text": "Complete mobile app redesign based on user research findings",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-004-complete-mobile-app-redesign",
+        "assignee": "jennifer-adams",
+        "due_date": null,
+        "tier": 1,
+        "confidence": 0.89,
+        "topic": "top-005",
+        "citation_segment": "seg-1032"
+      },
+      "act-005": {
+        "id": "act-005",
+        "text": "Launch advanced admin controls and compliance features for enterprise customers",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-005-launch-enterprise-admin-controls",
+        "assignee": "jennifer-adams",
+        "due_date": "Q4 2026",
+        "tier": 1,
+        "confidence": 0.88,
+        "topic": "top-005",
+        "citation_segment": "seg-1036"
+      },
+      "act-006": {
+        "id": "act-006",
+        "text": "Track vacation usage and follow up with employees not taking enough time off",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-006-track-vacation-usage",
+        "assignee": "robert-chen",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.85,
+        "topic": "top-007",
+        "citation_segment": "seg-1522"
+      },
+      "act-007": {
+        "id": "act-007",
+        "text": "Continue gathering feedback on hybrid work model and adjust as needed",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-007-gather-hybrid-work-feedback",
+        "assignee": "robert-chen",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.83,
+        "topic": "top-007",
+        "citation_segment": "seg-1532"
+      },
+      "act-008": {
+        "id": "act-008",
+        "text": "Ship 23 major features across all product lines in Q4 release",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-008-ship-q4-release-with-23-features",
+        "assignee": "jennifer-adams",
+        "due_date": "Q4 2026",
+        "tier": 1,
+        "confidence": 0.93,
+        "topic": "top-005",
+        "citation_segment": "seg-1027"
+      },
+      "act-009": {
+        "id": "act-009",
+        "text": "Launch real-time co-editing for documents and spreadsheets in collaboration suite",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-009-launch-real-time-co-editing",
+        "assignee": "jennifer-adams",
+        "due_date": "Q4 2026",
+        "tier": 1,
+        "confidence": 0.92,
+        "topic": "top-005",
+        "citation_segment": "seg-1028"
+      },
+      "act-010": {
+        "id": "act-010",
+        "text": "Train managers to facilitate difficult conversations",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-010-train-managers-on-difficult-conversations",
+        "assignee": "sarah-mitchell",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.84,
+        "topic": "top-008",
+        "citation_segment": "seg-2018"
+      },
+      "act-011": {
+        "id": "act-011",
+        "text": "Make job postings visible to all employees first for internal mobility",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-011-internal-job-posting-visibility",
+        "assignee": "sarah-mitchell",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.86,
+        "topic": "top-008",
+        "citation_segment": "seg-2025"
+      },
+      "act-012": {
+        "id": "act-012",
+        "text": "Continue adopting AI thoughtfully where it adds genuine value",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-012-thoughtful-ai-adoption",
+        "assignee": "diana-martinez",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.82,
+        "topic": "top-008",
+        "citation_segment": "seg-2005"
+      },
+      "act-013": {
+        "id": "act-013",
+        "text": "Prepare for post-quantum cryptography to ensure future security",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-013-post-quantum-cryptography-preparation",
+        "assignee": "diana-martinez",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.80,
+        "topic": "top-009",
+        "citation_segment": "seg-2503"
+      },
+      "act-014": {
+        "id": "act-014",
+        "text": "Fund PhD fellowships in research areas of strategic importance",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-014-fund-phd-fellowships",
+        "assignee": "diana-martinez",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.78,
+        "topic": "top-009",
+        "citation_segment": "seg-2510"
+      },
+      "act-015": {
+        "id": "act-015",
+        "text": "Continue expanding university collaborations including internships and joint projects",
+        "file": "03-action-items.md",
+        "anchor": "#action:act-015-expand-university-collaborations",
+        "assignee": "diana-martinez",
+        "due_date": null,
+        "tier": 2,
+        "confidence": 0.79,
+        "topic": "top-009",
+        "citation_segment": "seg-2509"
+      }
+    },
+    "decisions": {
+      "dec-001": {
+        "id": "dec-001",
+        "text": "Adopted hybrid work as the operating model going forward with 2-3 days in office per week",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-001-hybrid-work-operating-model",
+        "decided_by": "robert-chen",
+        "confidence": 0.95,
+        "topic": "top-007",
+        "citation_segment": "seg-1527"
+      },
+      "dec-002": {
+        "id": "dec-002",
+        "text": "Implemented no-meeting Fridays to provide focused time for employees",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-002-no-meeting-fridays",
+        "decided_by": "robert-chen",
+        "confidence": 0.94,
+        "topic": "top-007",
+        "citation_segment": "seg-1519"
+      },
+      "dec-003": {
+        "id": "dec-003",
+        "text": "Pivoted from building more customization to building better defaults based on user role",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-003-better-defaults-over-customization",
+        "decided_by": "jennifer-adams",
+        "confidence": 0.93,
+        "topic": "top-003",
+        "citation_segment": "seg-536"
+      },
+      "dec-004": {
+        "id": "dec-004",
+        "text": "Implemented zero-trust networking across all production environments",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-004-zero-trust-networking",
+        "decided_by": "diana-martinez",
+        "confidence": 0.94,
+        "topic": "top-004",
+        "citation_segment": "seg-1015"
+      },
+      "dec-005": {
+        "id": "dec-005",
+        "text": "Reorganized engineering into a squad-based model with autonomous cross-functional teams",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-005-squad-based-engineering-model",
+        "decided_by": "james-wilson",
+        "confidence": 0.92,
+        "topic": "top-002",
+        "citation_segment": "seg-501"
+      },
+      "dec-006": {
+        "id": "dec-006",
+        "text": "Created guilds (backend, frontend, data) for coordination across squads",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-006-engineering-guilds",
+        "decided_by": "james-wilson",
+        "confidence": 0.91,
+        "topic": "top-002",
+        "citation_segment": "seg-503"
+      },
+      "dec-007": {
+        "id": "dec-007",
+        "text": "Use unlimited PTO policy with active encouragement to take time off",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-007-unlimited-pto-policy",
+        "decided_by": "robert-chen",
+        "confidence": 0.90,
+        "topic": "top-007",
+        "citation_segment": "seg-1521"
+      },
+      "dec-008": {
+        "id": "dec-008",
+        "text": "Rebuilt search infrastructure using Elasticsearch improving latency from 800ms to under 100ms",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-008-elasticsearch-search-infrastructure",
+        "decided_by": "james-wilson",
+        "confidence": 0.93,
+        "topic": "top-002",
+        "citation_segment": "seg-509"
+      },
+      "dec-009": {
+        "id": "dec-009",
+        "text": "Internal mobility strongly encouraged with 30%+ of open roles filled internally",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-009-internal-mobility-encouraged",
+        "decided_by": "sarah-mitchell",
+        "confidence": 0.89,
+        "topic": "top-008",
+        "citation_segment": "seg-2023"
+      },
+      "dec-010": {
+        "id": "dec-010",
+        "text": "File patents strategically rather than just counting them",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-010-strategic-patent-filing",
+        "decided_by": "diana-martinez",
+        "confidence": 0.87,
+        "topic": "top-009",
+        "citation_segment": "seg-2512"
+      },
+      "dec-011": {
+        "id": "dec-011",
+        "text": "Adopted data-driven product development with A/B testing before full rollout",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-011-data-driven-development-with-ab-testing",
+        "decided_by": "jennifer-adams",
+        "confidence": 0.91,
+        "topic": "top-003",
+        "citation_segment": "seg-529"
+      },
+      "dec-012": {
+        "id": "dec-012",
+        "text": "Separation of product work and people management in engineering organization",
+        "file": "04-decisions.md",
+        "anchor": "#decision:dec-012-separation-of-product-and-people-management",
+        "decided_by": "james-wilson",
+        "confidence": 0.88,
+        "topic": "top-002",
+        "citation_segment": "seg-507"
+      }
+    },
+    "questions": {
+      "que-001": {
+        "id": "que-001",
+        "text": "Are there concerns about burnout and work-life balance?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-001-burnout-and-work-life-balance-concerns",
+        "asked_by": "employee-six",
+        "answered": true,
+        "confidence": 0.95,
+        "topic": "top-007",
+        "citation_segment": "seg-1517",
+        "answer_segment": "seg-1518"
+      },
+      "que-002": {
+        "id": "que-002",
+        "text": "What's our approach to remote work long-term?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-002-long-term-remote-work-approach",
+        "asked_by": "employee-seven",
+        "answered": true,
+        "confidence": 0.95,
+        "topic": "top-007",
+        "citation_segment": "seg-1526",
+        "answer_segment": "seg-1527"
+      },
+      "que-003": {
+        "id": "que-003",
+        "text": "How do we maintain culture as we grow so quickly?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-003-maintaining-culture-during-growth",
+        "asked_by": "employee-eight",
+        "answered": true,
+        "confidence": 0.94,
+        "topic": "top-007",
+        "citation_segment": "seg-1533",
+        "answer_segment": "seg-1534"
+      },
+      "que-004": {
+        "id": "que-004",
+        "text": "What's our approach to AI and automation in our own operations?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-004-ai-and-automation-approach",
+        "asked_by": "employee-fourteen",
+        "answered": true,
+        "confidence": 0.93,
+        "topic": "top-008",
+        "citation_segment": "seg-2004",
+        "answer_segment": "seg-2005"
+      },
+      "que-005": {
+        "id": "que-005",
+        "text": "How do we handle disagreements or conflicts in teams?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-005-handling-team-disagreements",
+        "asked_by": "employee-fifteen",
+        "answered": true,
+        "confidence": 0.92,
+        "topic": "top-008",
+        "citation_segment": "seg-2015",
+        "answer_segment": "seg-2016"
+      },
+      "que-006": {
+        "id": "que-006",
+        "text": "What opportunities exist for rotation or new roles?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-006-role-rotation-opportunities",
+        "asked_by": "employee-sixteen",
+        "answered": true,
+        "confidence": 0.92,
+        "topic": "top-008",
+        "citation_segment": "seg-2022",
+        "answer_segment": "seg-2023"
+      },
+      "que-007": {
+        "id": "que-007",
+        "text": "Can you elaborate on the product research process?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-007-product-research-process",
+        "asked_by": "robert-chen",
+        "answered": true,
+        "confidence": 0.90,
+        "topic": "top-003",
+        "citation_segment": "seg-518",
+        "answer_segment": "seg-519"
+      },
+      "que-008": {
+        "id": "que-008",
+        "text": "If you're interested in a different role, should you have that conversation?",
+        "file": "05-questions.md",
+        "anchor": "#question:que-008-career-interest-conversations",
+        "asked_by": "robert-chen",
+        "answered": true,
+        "confidence": 0.85,
+        "topic": "top-008",
+        "citation_segment": "seg-2029",
+        "answer_segment": "seg-2030"
+      }
+    },
+    "topics": {
+      "top-001": {
+        "id": "top-001",
+        "title": "CEO Welcome and Q3 Financial Results",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-001-ceo-welcome-and-q3-financial-results",
+        "start_ms": 0,
+        "end_ms": 200000,
+        "chunk_ids": ["chunk-001"]
+      },
+      "top-002": {
+        "id": "top-002",
+        "title": "Engineering Organization and Squad Model",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-002-engineering-organization-and-squad-model",
+        "start_ms": 2750000,
+        "end_ms": 2850000,
+        "chunk_ids": ["chunk-002"],
+        "related_decisions": ["dec-005", "dec-006", "dec-008", "dec-012"]
+      },
+      "top-003": {
+        "id": "top-003",
+        "title": "Product Research and Data-Driven Development",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-003-product-research-and-data-driven-development",
+        "start_ms": 2849000,
+        "end_ms": 2950000,
+        "chunk_ids": ["chunk-002"],
+        "related_decisions": ["dec-003", "dec-011"],
+        "related_questions": ["que-007"]
+      },
+      "top-004": {
+        "id": "top-004",
+        "title": "Infrastructure and Cloud Migration",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-004-infrastructure-and-cloud-migration",
+        "start_ms": 5542000,
+        "end_ms": 5700000,
+        "chunk_ids": ["chunk-003"],
+        "related_actions": ["act-001", "act-002"],
+        "related_decisions": ["dec-004"]
+      },
+      "top-005": {
+        "id": "top-005",
+        "title": "Q4 Product Roadmap and Features",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-005-q4-product-roadmap-and-features",
+        "start_ms": 5692000,
+        "end_ms": 5800000,
+        "chunk_ids": ["chunk-003"],
+        "related_actions": ["act-003", "act-004", "act-005", "act-008", "act-009"]
+      },
+      "top-006": {
+        "id": "top-006",
+        "title": "Partnership Ecosystem and Cloud Provider Integrations",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-006-partnership-ecosystem-and-cloud-provider-integrations",
+        "start_ms": 8550000,
+        "end_ms": 8650000,
+        "chunk_ids": ["chunk-004"]
+      },
+      "top-007": {
+        "id": "top-007",
+        "title": "Employee Q&A: Work-Life Balance and Remote Work",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-007-employee-qa-work-life-balance-and-remote-work",
+        "start_ms": 8646000,
+        "end_ms": 8760000,
+        "chunk_ids": ["chunk-004"],
+        "related_actions": ["act-006", "act-007"],
+        "related_decisions": ["dec-001", "dec-002", "dec-007"],
+        "related_questions": ["que-001", "que-002", "que-003"]
+      },
+      "top-008": {
+        "id": "top-008",
+        "title": "HR and People Operations Updates",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-008-hr-and-people-operations-updates",
+        "start_ms": 11604000,
+        "end_ms": 11800000,
+        "chunk_ids": ["chunk-005"],
+        "related_actions": ["act-010", "act-011", "act-012"],
+        "related_decisions": ["dec-009"],
+        "related_questions": ["que-004", "que-005", "que-006", "que-008"]
+      },
+      "top-009": {
+        "id": "top-009",
+        "title": "Innovation and R&D Strategy",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-009-innovation-and-rd-strategy",
+        "start_ms": 14706000,
+        "end_ms": 14900000,
+        "chunk_ids": ["chunk-006"],
+        "related_actions": ["act-013", "act-014", "act-015"],
+        "related_decisions": ["dec-010"]
+      },
+      "top-010": {
+        "id": "top-010",
+        "title": "Innovation Labs and Future Projects",
+        "file": "06-topics.md",
+        "anchor": "#topic:top-010-innovation-labs-and-future-projects",
+        "start_ms": 17806000,
+        "end_ms": 18231500,
+        "chunk_ids": ["chunk-007"]
+      }
+    }
+  },
+  "statistics": {
+    "total_anchors": 95,
+    "by_type": {
+      "speakers": 16,
+      "actions": 15,
+      "decisions": 12,
+      "questions": 8,
+      "topics": 10
+    },
+    "bidirectional_links": {
+      "speaker_to_action": 15,
+      "speaker_to_decision": 12,
+      "action_to_decision": 8,
+      "question_to_decision": 4,
+      "topic_to_all": 45
+    }
+  }
+}

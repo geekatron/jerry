@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+.mypy_cache/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+
+# Dependencies (Node)
+node_modules/
+
+# Build output
+lib/
+dist/
+build/
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+
+# Linting/Formatting caches
+.ruff_cache/
+
+# Testing
+.tox/
+.nox/
+
+# Misc
+*.tgz
+*.bak
+
+# Jerry local data (locks, sessions)
+.jerry/local/
+projects/*/.jerry/
+logs/hook-errors.log

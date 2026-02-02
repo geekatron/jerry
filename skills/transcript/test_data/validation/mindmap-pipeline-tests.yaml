@@ -1,0 +1,507 @@
+# EN-024 Mindmap Pipeline Integration - Test Suite
+# Per TASK-246: Integration Tests for Mindmap Pipeline
+# Tests pipeline flow, parameter handling, and ps-critic integration
+# Reference: ADR-006 Mindmap Pipeline Integration
+
+test_suite:
+  name: "EN-024 Mindmap Pipeline Integration Tests"
+  version: "1.0.0"
+  description: "Integration tests for mindmap pipeline from invocation to quality review"
+  enabler: "EN-024"
+  source: "TASK-246"
+  adr_reference: "ADR-006"
+
+# =============================================================================
+# PIPELINE INVOCATION TESTS
+# =============================================================================
+
+pipeline_tests:
+  - id: "TC-001"
+    name: "Default Mindmap Generation (Both Formats)"
+    category: "pipeline-default"
+    description: "Verifies default invocation generates both mindmap formats"
+    adr_reference: "ADR-006 Section 4 (Default Behavior)"
+    priority: "critical"
+
+    preconditions:
+      - "Golden dataset transcript meeting-001.vtt available"
+      - "No existing output directory"
+
+    input:
+      command: "/transcript meeting-001.vtt"
+      flags: []  # No flags - default behavior
+      transcript_file: "test_data/transcripts/golden/meeting-001.vtt"
+
+    expected:
+      files_created:
+        - path: "transcript-meeting-001/08-mindmap/mindmap.mmd"
+          assertions:
+            - type: "file_exists"
+            - type: "starts_with"
+              value: "mindmap"
+            - type: "contains"
+              value: "root(("
+        - path: "transcript-meeting-001/08-mindmap/mindmap.ascii.txt"
+          assertions:
+            - type: "file_exists"
+            - type: "contains"
+              value: "Legend:"
+            - type: "max_line_length"
+              value: 80
+
+      state:
+        ts_mindmap_output:
+          enabled: true
+          format_requested: "both"
+          mermaid:
+            status: "complete"
+          ascii:
+            status: "complete"
+          overall_status: "complete"
+
+    verification:
+      - "Both mindmap files exist in 08-mindmap/"
+      - "Mermaid file has valid syntax"
+      - "ASCII file has legend and proper width"
+      - "State reflects complete status"
+
+  - id: "TC-002"
+    name: "Mermaid Only Format Selection"
+    category: "pipeline-format"
+    description: "Verifies --mindmap-format mermaid generates only Mermaid"
+    adr_reference: "ADR-006 Section 5.1 (Format Parameter)"
+    priority: "high"
+
+    input:
+      command: "/transcript meeting-001.vtt --mindmap-format mermaid"
+      flags:
+        - name: "--mindmap-format"
+          value: "mermaid"
+      transcript_file: "test_data/transcripts/golden/meeting-001.vtt"
+
+    expected:
+      files_created:
+        - path: "transcript-meeting-001/08-mindmap/mindmap.mmd"
+          assertions:
+            - type: "file_exists"
+      files_not_created:
+        - path: "transcript-meeting-001/08-mindmap/mindmap.ascii.txt"
+
+      state:
+        ts_mindmap_output:
+          enabled: true
+          format_requested: "mermaid"
+          mermaid:
+            status: "complete"
+          ascii:
+            status: "skipped"
+          overall_status: "complete"
+
+    verification:
+      - "Only Mermaid file exists"
+      - "ASCII file does NOT exist"
+      - "State shows ASCII as skipped"
+
+  - id: "TC-003"
+    name: "ASCII Only Format Selection"
+    category: "pipeline-format"
+    description: "Verifies --mindmap-format ascii generates only ASCII"
+    adr_reference: "ADR-006 Section 5.1 (Format Parameter)"
+    priority: "high"
+
+    input:
+      command: "/transcript meeting-001.vtt --mindmap-format ascii"
+      flags:
+        - name: "--mindmap-format"
+          value: "ascii"
+      transcript_file: "test_data/transcripts/golden/meeting-001.vtt"
+
+    expected:
+      files_created:
+        - path: "transcript-meeting-001/08-mindmap/mindmap.ascii.txt"
+          assertions:
+            - type: "file_exists"
+      files_not_created:
+        - path: "transcript-meeting-001/08-mindmap/mindmap.mmd"
+
+      state:
+        ts_mindmap_output:
+          enabled: true
+          format_requested: "ascii"
+          mermaid:
+            status: "skipped"
+          ascii:
+            status: "complete"
+          overall_status: "complete"
+
+    verification:
+      - "Only ASCII file exists"
+      - "Mermaid file does NOT exist"
+      - "State shows Mermaid as skipped"
+
+  - id: "TC-004"
+    name: "Opt-Out via --no-mindmap Flag"
+    category: "pipeline-optout"
+    description: "Verifies --no-mindmap flag skips mindmap generation entirely"
+    adr_reference: "ADR-006 Section 4 (Opt-Out Mechanism)"
+    priority: "critical"
+
+    input:
+      command: "/transcript meeting-001.vtt --no-mindmap"
+      flags:
+        - name: "--no-mindmap"
+          value: null  # Flag only, no value
+      transcript_file: "test_data/transcripts/golden/meeting-001.vtt"
+
+    expected:
+      files_created:
+        # Core packet files should exist
+        - path: "transcript-meeting-001/00-index.md"
+          assertions:
+            - type: "file_exists"
+        - path: "transcript-meeting-001/01-summary.md"
+          assertions:
+            - type: "file_exists"
+        - path: "transcript-meeting-001/07-topics.md"
+          assertions:
+            - type: "file_exists"
+
+      directories_not_created:
+        - path: "transcript-meeting-001/08-mindmap/"
+
+      state:
+        ts_mindmap_output:
+          enabled: false
+          overall_status: "skipped"
+
+    verification:
+      - "Core packet files (00-07) exist normally"
+      - "08-mindmap/ directory does NOT exist"
+      - "State shows mindmaps as disabled/skipped"
+      - "No mindmap validation in ps-critic output"
+
+# =============================================================================
+# FAILURE HANDLING TESTS
+# =============================================================================
+
+failure_tests:
+  - id: "TC-005"
+    name: "Mindmap Failure Graceful Degradation"
+    category: "failure-handling"
+    description: "Verifies pipeline continues with warning when mindmap generation fails"
+    adr_reference: "ADR-006 Section 5.4 (Graceful Degradation)"
+    priority: "high"
+
+    preconditions:
+      - "Simulate condition that causes mindmap generation to fail"
+      - "For example: extraction report with no topics"
+
+    input:
+      command: "/transcript empty-topics.vtt"
+      transcript_file: "test_data/transcripts/edge_cases/empty-topics.vtt"
+      notes: "Use transcript that produces empty topics list"
+
+    expected:
+      behavior: "graceful_degradation"
+
+      files_created:
+        # Core packet files MUST still exist
+        - path: "transcript-empty-topics/00-index.md"
+          assertions:
+            - type: "file_exists"
+        - path: "transcript-empty-topics/01-summary.md"
+          assertions:
+            - type: "file_exists"
+
+      state:
+        ts_mindmap_output:
+          overall_status: "failed"  # OR "partial"
+          mermaid:
+            status: "failed"
+            error_message: "not_null"
+          ascii:
+            status: "failed"
+            error_message: "not_null"
+
+      output_contains:
+        - type: "warning"
+          pattern: "Mindmap generation"
+        - type: "instructions"
+          pattern: "regenerate"
+
+    verification:
+      - "Pipeline completes (does NOT abort)"
+      - "Core packet files generated"
+      - "Warning message in output"
+      - "Regeneration instructions provided"
+      - "Error captured in state"
+
+# =============================================================================
+# PS-CRITIC INTEGRATION TESTS
+# =============================================================================
+
+critic_tests:
+  - id: "TC-006"
+    name: "ps-critic Validates Mindmaps When Present"
+    category: "critic-integration"
+    description: "Verifies ps-critic applies MM-*/AM-* criteria when mindmaps exist"
+    adr_reference: "ADR-006 Section 5.5 (ps-critic Integration)"
+    priority: "high"
+
+    preconditions:
+      - "Transcript processed with default (mindmaps enabled)"
+      - "Both mindmap files generated successfully"
+
+    input:
+      packet_path: "transcript-meeting-001/"
+      mindmaps_present: true
+      mindmap_files:
+        - "08-mindmap/mindmap.mmd"
+        - "08-mindmap/mindmap.ascii.txt"
+      critic_extension: "skills/transcript/validation/ts-critic-extension.md"
+
+    expected:
+      critic_output:
+        mindmap_validation:
+          mermaid_criteria:
+            - "MM-001"  # Valid syntax
+            - "MM-002"  # Root node
+            - "MM-003"  # Deep links
+            - "MM-004"  # Topic hierarchy
+            - "MM-005"  # Entity symbols
+            - "MM-006"  # Overflow handling
+            - "MM-007"  # Token limit
+          ascii_criteria:
+            - "AM-001"  # Line width
+            - "AM-002"  # Legend
+            - "AM-003"  # UTF-8 chars
+            - "AM-004"  # Tree balance
+            - "AM-005"  # Symbol consistency
+
+        score_composition:
+          core_weight: 0.85
+          mindmap_weight: 0.15
+
+    verification:
+      - "MM-001..007 criteria evaluated"
+      - "AM-001..005 criteria evaluated"
+      - "Quality score includes 15% mindmap contribution"
+      - "Mermaid syntax errors flagged as MM-001 failure"
+
+  - id: "TC-007"
+    name: "ps-critic Skips Mindmap Validation When Opted Out"
+    category: "critic-integration"
+    description: "Verifies ps-critic skips mindmap criteria when --no-mindmap used"
+    adr_reference: "ADR-006 Section 5.5 (Conditional Validation)"
+    priority: "high"
+
+    preconditions:
+      - "Transcript processed with --no-mindmap flag"
+      - "No mindmap files in packet"
+
+    input:
+      packet_path: "transcript-meeting-001/"
+      mindmaps_present: false
+      command_used: "/transcript meeting-001.vtt --no-mindmap"
+
+    expected:
+      critic_output:
+        mindmap_validation:
+          status: "skipped"
+          reason: "Mindmaps disabled via --no-mindmap"
+
+        score_composition:
+          core_weight: 1.00  # 100% core
+          mindmap_weight: 0.00  # No mindmap contribution
+
+        no_penalty: true  # Explicit opt-out, no penalty
+
+    verification:
+      - "MM-*/AM-* criteria NOT checked"
+      - "Quality score based on 100% core files"
+      - "No penalty for missing mindmaps"
+      - "Critic output notes opt-out"
+
+# =============================================================================
+# OUTPUT DIRECTORY VALIDATION
+# =============================================================================
+
+directory_tests:
+  - id: "TC-008"
+    name: "Output Directory is 08-mindmap/"
+    category: "directory-structure"
+    description: "Verifies mindmap output uses correct directory per DISC-001"
+    adr_reference: "DISC-001 (Directory Numbering Correction)"
+    priority: "critical"
+
+    input:
+      command: "/transcript meeting-001.vtt"
+      transcript_file: "test_data/transcripts/golden/meeting-001.vtt"
+
+    expected:
+      correct_directory: "transcript-meeting-001/08-mindmap/"
+      wrong_directory: "transcript-meeting-001/07-mindmap/"  # This should NOT exist
+
+    assertions:
+      - type: "directory_exists"
+        path: "transcript-meeting-001/08-mindmap/"
+      - type: "directory_not_exists"
+        path: "transcript-meeting-001/07-mindmap/"
+      - type: "file_in_directory"
+        directory: "08-mindmap/"
+        file: "mindmap.mmd"
+      - type: "file_in_directory"
+        directory: "08-mindmap/"
+        file: "mindmap.ascii.txt"
+
+    verification:
+      - "08-mindmap/ directory created (DISC-001 compliant)"
+      - "07-mindmap/ directory does NOT exist"
+      - "Both mindmap files in correct location"
+
+# =============================================================================
+# STATE PASSING VALIDATION
+# =============================================================================
+
+state_tests:
+  - id: "TC-009"
+    name: "ts_mindmap_output State Key Populated"
+    category: "state-passing"
+    description: "Verifies ts_mindmap_output state passed correctly to ps-critic"
+    adr_reference: "ADR-006 Section 5.2 (State Passing)"
+    priority: "medium"
+
+    input:
+      command: "/transcript meeting-001.vtt"
+      transcript_file: "test_data/transcripts/golden/meeting-001.vtt"
+
+    expected:
+      state_schema:
+        ts_mindmap_output:
+          enabled:
+            type: "boolean"
+            value: true
+          format_requested:
+            type: "string"
+            values: ["mermaid", "ascii", "both"]
+          mermaid:
+            path:
+              type: "string"
+              pattern: ".*08-mindmap/mindmap\\.mmd$"
+            status:
+              type: "string"
+              values: ["complete", "failed", "skipped"]
+            topic_count:
+              type: "integer"
+              min: 0
+            deep_link_count:
+              type: "integer"
+              min: 0
+          ascii:
+            path:
+              type: "string"
+              pattern: ".*08-mindmap/mindmap\\.ascii\\.txt$"
+            status:
+              type: "string"
+              values: ["complete", "failed", "skipped"]
+            max_line_width:
+              type: "integer"
+              max: 80
+          overall_status:
+            type: "string"
+            values: ["complete", "partial", "failed", "skipped"]
+
+    verification:
+      - "ts_mindmap_output key exists in state"
+      - "All required fields populated"
+      - "Status values are valid"
+      - "Paths match expected patterns"
+
+# =============================================================================
+# TEST EXECUTION METADATA
+# =============================================================================
+
+execution:
+  runner: "yaml_test_runner"
+  timeout_seconds: 300  # 5 minutes for integration tests
+  parallel: false  # Sequential for state consistency
+  fail_fast: true  # Stop on critical test failure
+  categories:
+    - pipeline-default
+    - pipeline-format
+    - pipeline-optout
+    - failure-handling
+    - critic-integration
+    - directory-structure
+    - state-passing
+
+  priority_order:
+    critical:
+      - "TC-001"  # Default behavior
+      - "TC-004"  # Opt-out
+      - "TC-008"  # Directory
+    high:
+      - "TC-002"  # Mermaid format
+      - "TC-003"  # ASCII format
+      - "TC-005"  # Failure handling
+      - "TC-006"  # Critic validation
+      - "TC-007"  # Critic skip
+    medium:
+      - "TC-009"  # State passing
+
+reporting:
+  format: "json"
+  output_file: "test_data/results/mindmap-pipeline-test-results.json"
+  coverage:
+    track: true
+    minimum: 90
+
+# =============================================================================
+# TEST DATA REQUIREMENTS
+# =============================================================================
+
+test_data:
+  description: "Required test data files"
+  files:
+    - path: "test_data/transcripts/golden/meeting-001.vtt"
+      description: "Golden dataset transcript for standard tests"
+    - path: "test_data/transcripts/edge_cases/empty-topics.vtt"
+      description: "Transcript that produces no topics for failure test"
+      notes: "May need to create if doesn't exist"
+
+  expected_outputs:
+    - path: "test_data/expected_output/transcript-meeting-001/08-mindmap/"
+      description: "Expected mindmap output for comparison"
+      notes: "Create after first successful pipeline run"
+
+# =============================================================================
+# CROSS-REFERENCES
+# =============================================================================
+
+references:
+  - document: "ADR-006"
+    path: "docs/adrs/ADR-006-mindmap-pipeline-integration.md"
+    sections:
+      - "Section 4: Decision (Default Behavior)"
+      - "Section 5.1: Parameter Specification"
+      - "Section 5.2: State Passing"
+      - "Section 5.4: Graceful Degradation"
+      - "Section 5.5: ps-critic Integration"
+
+  - document: "DISC-001"
+    path: "projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-024-mindmap-pipeline-integration/EN-024--DISC-001-mindmap-directory-numbering-discrepancy.md"
+    description: "07 → 08 directory numbering correction"
+
+  - document: "ts-critic-extension"
+    path: "skills/transcript/validation/ts-critic-extension.md"
+    description: "MM-*/AM-* validation criteria for ps-critic"
+
+  - document: "mindmap-tests"
+    path: "skills/transcript/test_data/validation/mindmap-tests.yaml"
+    description: "Unit-level mindmap agent tests (complementary)"
+
+# Version History
+version_history:
+  - version: "1.0.0"
+    date: "2026-01-30"
+    changes: "Initial creation per TASK-246"

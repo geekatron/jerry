@@ -1,0 +1,25 @@
+{
+  "name": "jerry",
+  "version": "0.1.0",
+  "description": "Framework for behavior and workflow guardrails with knowledge accrual",
+  "author": {
+    "name": "Jerry Framework Contributors",
+    "url": "https://github.com/geekatron/jerry"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/geekatron/jerry",
+  "keywords": [
+    "jerry",
+    "workflow",
+    "guardrails",
+    "knowledge-management",
+    "problem-solving",
+    "work-tracker",
+    "hexagonal-architecture"
+  ],
+  "skills": "./skills/",
+  "commands": [
+    "./commands/architect.md",
+    "./commands/release.md"
+    ]
+}

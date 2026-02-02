@@ -1,0 +1,35 @@
+
+DOMAIN PLAYBOOKS (CLI / vi)
+
+USAGE:
+- Frame with 5W1H
+- Classify: Simple / Complicated / Complex / Chaotic
+- Apply domain loop
+- Verify + Learn
+
+--- SOFTWARE ---
+Triage->Diagnose->Fix->Verify->Learn
+- Stabilize users first (rollback/flag/rate-limit)
+- Hypothesis-driven debugging (logs/metrics/traces)
+- Blameless postmortem, action items
+
+--- SECURITY ---
+Prepare->Detect/Analyze->Contain->Eradicate->Recover->Post-incident
+- Preserve evidence
+- Contain fast; reduce attacker movement
+- Rotate secrets, patch, monitor relapse
+
+--- SCIENCE ---
+Observe->Hypothesize (competing)->Design test->Run->Analyze->Replicate->Revise
+- Define falsification criteria
+- Separate measurement error vs model error
+
+--- SKILLS ACQUISITION ---
+Define standard->Decompose->Pick 1 subskill->Deliberate practice->Measure->Integrate->Review
+- Short reps + fast feedback
+- Avoid skipping stages
+
+--- COOKING ---
+Goal->Identify CCPs (time/temp/contamination)->Measure->Adjust 1 variable->Document
+- Safety first (temps, danger zone, cooling rules)
+- Treat recipe as spec (version it)

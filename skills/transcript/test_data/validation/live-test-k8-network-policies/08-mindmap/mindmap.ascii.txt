@@ -1,0 +1,53 @@
+K8s Network Policies Discussion
+═══════════════════════════════
+
+                          ┌─────────────────────┐
+                          │  K8s Network        │
+                          │  Policies           │
+                          └──────────┬──────────┘
+                                     │
+         ┌───────────────┬───────────┼───────────┬───────────────┐
+         │               │           │           │               │
+         ▼               ▼           ▼           ▼               ▼
+    ┌─────────┐    ┌─────────┐ ┌─────────┐ ┌─────────┐    ┌─────────┐
+    │Speakers │    │ Topics  │ │ Actions │ │Decisions│    │Questions│
+    └────┬────┘    └────┬────┘ └────┬────┘ └────┬────┘    └────┬────┘
+         │              │           │           │               │
+    ┌────┴────┐    ┌────┴────┐     │           │               │
+    │         │    │         │     │           │               │
+    ▼         ▼    ▼         ▼     ▼           ▼               ▼
+┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
+│ Adam  │ │Brendan│ │  CNI  │ │ Eval  │ │Walk   │ │ CNI   │ │Cilium/│
+│ Nowak │ │Bennett│ │ Impl  │ │Matrix │ │through│ │Select │ │Kyverno│
+└───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘
+    │         │         │         │         │         │         │
+    ▼         ▼         ▼         ▼         ▼         ▼         ▼
+──►spk-001 ──►spk-002 ──►top-001 ──►top-002 ──►act-001 ──►dec-001 ──►que-001
+
+
+ENTITY LINKS (ADR-003 Compliance)
+─────────────────────────────────
+
+SPEAKERS:
+  Adam Nowak ──────────────► 03-speakers.md#spk-001
+  Brendan Bennett ─────────► 03-speakers.md#spk-002
+
+ACTION ITEMS:
+  Walk through decision tree ► 04-action-items.md#act-001
+  Share screen for artifacts ► 04-action-items.md#act-002
+
+DECISIONS:
+  CNI selection via tree ────► 05-decisions.md#dec-001
+
+QUESTIONS:
+  Cilium/Kyverno recommended? ► 06-questions.md#que-001
+
+TOPICS:
+  CNI Implementation ────────► 07-topics.md#top-001
+  Evaluation Matrix ─────────► 07-topics.md#top-002
+
+TRANSCRIPT SEGMENT LINKS:
+  seg-010 (decision tree) ───► 02-transcript.md#seg-010
+  seg-011 (artifacts) ───────► 02-transcript.md#seg-011
+  seg-016 (Microsoft rec) ───► 02-transcript.md#seg-016
+  seg-017 (share screen) ────► 02-transcript.md#seg-017
