@@ -9,7 +9,7 @@ PURPOSE: Rewrite CLAUDE.md from 914 lines to 60-80 lines
 -->
 
 > **Type:** enabler
-> **Status:** complete
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** architecture
@@ -261,11 +261,29 @@ TASK-000 (Add navigation tables - MUST complete first)
 
 Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rewrite:
 
-| ID | Title | Severity | Priority |
-|----|-------|----------|----------|
-| [BUG-001](./BUG-001-relationships-typo.md) | "relationships to to" typo (line 221) | trivial | low |
-| [BUG-002](./BUG-002-story-folder-id-mismatch.md) | Story folder uses {EnablerId} instead of {StoryId} (line 232) | minor | medium |
-| [BUG-003](./BUG-003-template-path-inconsistency.md) | Template path inconsistency (docs/ vs .context/) | minor | medium |
+| ID | Title | Severity | Priority | Status |
+|----|-------|----------|----------|--------|
+| [BUG-001](./BUG-001-relationships-typo.md) | "relationships to to" typo (line 221) | trivial | low | CLOSED (N/A) |
+| [BUG-002](./BUG-002-story-folder-id-mismatch.md) | Story folder uses {EnablerId} instead of {StoryId} (line 232) | minor | medium | CLOSED (N/A) |
+| [BUG-003](./BUG-003-template-path-inconsistency.md) | Template path inconsistency (docs/ vs .context/) | minor | medium | CLOSED (FIXED) |
+
+### Bugs (Gap Analysis - Content Preservation)
+
+Bugs discovered during gap analysis (GAP-001 through GAP-005) identifying content NOT preserved:
+
+| ID | Title | Severity | Priority | Status |
+|----|-------|----------|----------|--------|
+| [BUG-004](./BUG-004-todo-section-not-migrated.md) | TODO Section Not Migrated (EN-203 pending) | critical | critical | PENDING |
+| [BUG-005](./BUG-005-mandatory-skill-usage-lost.md) | Mandatory Skill Usage Section Lost (108 lines) | critical | critical | PENDING |
+| [BUG-006](./BUG-006-working-with-jerry-lost.md) | Working with Jerry Section Lost (46 lines) | major | critical | PENDING |
+| [BUG-007](./BUG-007-problem-solving-templates-lost.md) | Problem-Solving Templates Reference Lost (18 lines) | minor | high | PENDING |
+| [BUG-008](./BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion Flow Lost (24 lines) | minor | high | PENDING |
+
+### Gap Analysis
+
+| Artifact | Description | Link |
+|----------|-------------|------|
+| traceability-matrix.md | Full section-by-section disposition analysis | [gap-analysis/](./gap-analysis/traceability-matrix.md) |
 
 ### Orchestration
 
@@ -310,6 +328,7 @@ Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rew
 | 2026-02-02T03:30:00Z | Claude | in_progress | QG-1 PASSED: ps-critic (0.944), nse-qa (0.94) |
 | 2026-02-02T03:45:00Z | Claude | in_progress | Phase 2 complete. 5 sections assembled into 80-line CLAUDE.md. Backup created. |
 | 2026-02-02T04:00:00Z | Claude | complete | Phase 3 complete. TASK-006 (12/12 pointers verified) and TASK-007 (80 lines, 91.2% reduction) PASSED. EN-202 COMPLETE. |
+| 2026-02-02T05:00:00Z | Claude | in_progress | Gap analysis revealed 5 new bugs (BUG-004 through BUG-008). CRITICAL: 108 lines of mandatory skill usage content + 46 lines of project workflow content NOT preserved. Reopened for gap closure. |
 
 ---
 
