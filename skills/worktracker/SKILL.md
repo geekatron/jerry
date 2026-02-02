@@ -30,6 +30,7 @@ activation-keywords:
 | [Overview](#overview) | What this skill does and core capabilities |
 | [When to Use This Skill](#when-to-use-this-skill) | Activation triggers and use cases |
 | [Core Rules (Always Loaded)](#core-rules-always-loaded) | Behavior rules loaded via `@` import |
+| [Worktracker Agents](#worktracker-agents) | Specialized agents for verification, visualization, auditing |
 | [Quick Reference](#quick-reference) | Entity hierarchy, templates, key locations |
 | [Additional Resources](#additional-resources) | Links to detailed rule files |
 
@@ -63,6 +64,80 @@ Invoke `/worktracker` when you need to:
 The following rules are automatically loaded when this skill is invoked:
 
 @rules/worktracker-behavior-rules.md
+
+---
+
+## Worktracker Agents
+
+The worktracker skill includes specialized agents for advanced operations. These agents follow the **worker pattern** and are invoked by MAIN CONTEXT (Claude) via the Task tool, maintaining P-003 compliance.
+
+### Available Agents
+
+| Agent | Model | Purpose | Invocation Example |
+|-------|-------|---------|-------------------|
+| `wt-verifier` | sonnet | Validate acceptance criteria before closure | "Verify EN-001 is ready for closure" |
+| `wt-visualizer` | haiku | Generate Mermaid diagrams for hierarchies | "Create a hierarchy diagram for FEAT-002" |
+| `wt-auditor` | sonnet | Audit cross-file integrity and templates | "Audit the worktracker for PROJ-009" |
+
+### Agent Selection Guide
+
+| User Intent | Keywords | Agent |
+|-------------|----------|-------|
+| Verify completion readiness | "verify", "check ready", "validate AC" | wt-verifier |
+| Generate visual diagrams | "diagram", "visualize", "show hierarchy" | wt-visualizer |
+| Check integrity/compliance | "audit", "check integrity", "find orphans" | wt-auditor |
+| Full status report | "status of", "progress on" | wt-verifier + wt-visualizer |
+
+### Agent Files
+
+| Agent | Location |
+|-------|----------|
+| wt-verifier | `skills/worktracker/agents/wt-verifier.md` |
+| wt-visualizer | `skills/worktracker/agents/wt-visualizer.md` |
+| wt-auditor | `skills/worktracker/agents/wt-auditor.md` |
+
+### P-003 Compliance (Critical)
+
+**Agents are workers, NOT orchestrators:**
+- Agents are invoked via `Task` tool from MAIN CONTEXT
+- Agents **DO NOT** spawn subagents
+- Agents return results to MAIN CONTEXT for presentation to user
+
+```
+User Request --> MAIN CONTEXT --> Task(wt-verifier) --> Report --> User
+                     |
+                     +-- Agents never invoke other agents (P-003)
+```
+
+### WTI Rules Enforced
+
+Agents enforce Worktracker Integrity (WTI) rules defined in `.context/templates/worktracker/WTI_RULES.md`:
+
+| Rule | Description | Enforcing Agent |
+|------|-------------|-----------------|
+| WTI-001 | Real-Time State | wt-auditor |
+| WTI-002 | No Closure Without Verification | wt-verifier |
+| WTI-003 | Truthful State | wt-verifier, wt-auditor |
+| WTI-006 | Evidence-Based Closure | wt-verifier |
+
+### Output Templates
+
+Agent outputs use standardized templates:
+
+| Template | Purpose | Location |
+|----------|---------|----------|
+| VERIFICATION_REPORT.md | wt-verifier output | `.context/templates/worktracker/` |
+| AUDIT_REPORT.md | wt-auditor output | `.context/templates/worktracker/` |
+
+### When to Use Agents vs Rules
+
+| Scenario | Recommendation |
+|----------|----------------|
+| Simple work item creation | Use rules only |
+| Pre-closure verification | Use wt-verifier |
+| Understanding work structure | Use wt-visualizer |
+| Finding integrity issues | Use wt-auditor |
+| Full project health check | Use all three agents |
 
 ---
 
