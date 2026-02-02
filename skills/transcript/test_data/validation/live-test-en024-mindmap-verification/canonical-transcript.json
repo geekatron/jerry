@@ -1,0 +1,320 @@
+{
+  "format": "vtt",
+  "encoding": "utf-8-sig",
+  "duration_ms": 505000,
+  "segment_count": 39,
+  "segments": [
+    {
+      "id": "1",
+      "start_ms": 0,
+      "end_ms": 5500,
+      "speaker": "Alice",
+      "text": "Good morning everyone. Let's start our daily standup.",
+      "raw_text": "<v Alice>Good morning everyone. Let's start our daily standup."
+    },
+    {
+      "id": "2",
+      "start_ms": 5500,
+      "end_ms": 12000,
+      "speaker": "Alice",
+      "text": "Bob, would you like to kick us off with your update?",
+      "raw_text": "<v Alice>Bob, would you like to kick us off with your update?"
+    },
+    {
+      "id": "3",
+      "start_ms": 12000,
+      "end_ms": 25500,
+      "speaker": "Bob",
+      "text": "Sure. Yesterday I finished the API authentication module. Today I'll work on the database migration scripts. No blockers for me.",
+      "raw_text": "<v Bob>Sure. Yesterday I finished the API authentication module. Today I'll work on the database migration scripts. No blockers for me."
+    },
+    {
+      "id": "4",
+      "start_ms": 25500,
+      "end_ms": 32000,
+      "speaker": "Alice",
+      "text": "Great progress on the auth module. Charlie, you're up next.",
+      "raw_text": "<v Alice>Great progress on the auth module. Charlie, you're up next."
+    },
+    {
+      "id": "5",
+      "start_ms": 32000,
+      "end_ms": 52000,
+      "speaker": "Charlie",
+      "text": "Yesterday I completed the login form UI. I'm waiting on Bob's API to test the integration. Today I need to implement the password reset flow.",
+      "raw_text": "<v Charlie>Yesterday I completed the login form UI. I'm waiting on Bob's API to test the integration. Today I need to implement the password reset flow."
+    },
+    {
+      "id": "6",
+      "start_ms": 52000,
+      "end_ms": 65000,
+      "speaker": "Bob",
+      "text": "The authentication endpoints are ready. I'll send you the Swagger documentation after this meeting.",
+      "raw_text": "<v Bob>The authentication endpoints are ready. I'll send you the Swagger documentation after this meeting."
+    },
+    {
+      "id": "7",
+      "start_ms": 65000,
+      "end_ms": 72000,
+      "speaker": "Charlie",
+      "text": "Perfect, that will unblock me. Thanks Bob.",
+      "raw_text": "<v Charlie>Perfect, that will unblock me. Thanks Bob."
+    },
+    {
+      "id": "8",
+      "start_ms": 72000,
+      "end_ms": 85000,
+      "speaker": "Alice",
+      "text": "Diana, how is the test planning going?",
+      "raw_text": "<v Alice>Diana, how is the test planning going?"
+    },
+    {
+      "id": "9",
+      "start_ms": 85000,
+      "end_ms": 108000,
+      "speaker": "Diana",
+      "text": "I've drafted the test cases for the authentication flow. I need to review them with the team. Can we schedule a test case review session this week?",
+      "raw_text": "<v Diana>I've drafted the test cases for the authentication flow. I need to review them with the team. Can we schedule a test case review session this week?"
+    },
+    {
+      "id": "10",
+      "start_ms": 108000,
+      "end_ms": 125000,
+      "speaker": "Alice",
+      "text": "Good question. Let's go with Thursday afternoon for the review. Does that work for everyone?",
+      "raw_text": "<v Alice>Good question. Let's go with Thursday afternoon for the review. Does that work for everyone?"
+    },
+    {
+      "id": "11",
+      "start_ms": 125000,
+      "end_ms": 130000,
+      "speaker": "Bob",
+      "text": "Thursday works for me.",
+      "raw_text": "<v Bob>Thursday works for me."
+    },
+    {
+      "id": "12",
+      "start_ms": 130000,
+      "end_ms": 135000,
+      "speaker": "Charlie",
+      "text": "I'm free Thursday afternoon.",
+      "raw_text": "<v Charlie>I'm free Thursday afternoon."
+    },
+    {
+      "id": "13",
+      "start_ms": 135000,
+      "end_ms": 140000,
+      "speaker": "Diana",
+      "text": "Perfect. I'll send out the calendar invite.",
+      "raw_text": "<v Diana>Perfect. I'll send out the calendar invite."
+    },
+    {
+      "id": "14",
+      "start_ms": 140000,
+      "end_ms": 165000,
+      "speaker": "Alice",
+      "text": "Before we wrap up, we need to discuss the deployment timeline. The stakeholders are asking about the release date.",
+      "raw_text": "<v Alice>Before we wrap up, we need to discuss the deployment timeline. The stakeholders are asking about the release date."
+    },
+    {
+      "id": "15",
+      "start_ms": 165000,
+      "end_ms": 185000,
+      "speaker": "Bob",
+      "text": "Based on current progress, I think we can have the backend ready by next Friday. The migration will need a weekend window though.",
+      "raw_text": "<v Bob>Based on current progress, I think we can have the backend ready by next Friday. The migration will need a weekend window though."
+    },
+    {
+      "id": "16",
+      "start_ms": 185000,
+      "end_ms": 202000,
+      "speaker": "Charlie",
+      "text": "The frontend should be ready by Wednesday if the API integration goes smoothly today.",
+      "raw_text": "<v Charlie>The frontend should be ready by Wednesday if the API integration goes smoothly today."
+    },
+    {
+      "id": "17",
+      "start_ms": 202000,
+      "end_ms": 220000,
+      "speaker": "Diana",
+      "text": "I'll need at least three days for regression testing after integration. So if integration completes Wednesday, I can finish testing by Monday.",
+      "raw_text": "<v Diana>I'll need at least three days for regression testing after integration. So if integration completes Wednesday, I can finish testing by Monday."
+    },
+    {
+      "id": "18",
+      "start_ms": 220000,
+      "end_ms": 240000,
+      "speaker": "Alice",
+      "text": "So we're looking at a Monday release. We decided to target Monday the 15th for production deployment.",
+      "raw_text": "<v Alice>So we're looking at a Monday release. We decided to target Monday the 15th for production deployment."
+    },
+    {
+      "id": "19",
+      "start_ms": 240000,
+      "end_ms": 258000,
+      "speaker": "Bob",
+      "text": "Sounds good. I will prepare the rollback scripts as a safety measure. That's assigned to me for tomorrow.",
+      "raw_text": "<v Bob>Sounds good. I will prepare the rollback scripts as a safety measure. That's assigned to me for tomorrow."
+    },
+    {
+      "id": "20",
+      "start_ms": 258000,
+      "end_ms": 275000,
+      "speaker": "Alice",
+      "text": "Excellent. Charlie, can you work with Diana to create a smoke test checklist for the deployment?",
+      "raw_text": "<v Alice>Excellent. Charlie, can you work with Diana to create a smoke test checklist for the deployment?"
+    },
+    {
+      "id": "21",
+      "start_ms": 275000,
+      "end_ms": 285000,
+      "speaker": "Charlie",
+      "text": "Will do. Diana, let's sync after this meeting.",
+      "raw_text": "<v Charlie>Will do. Diana, let's sync after this meeting."
+    },
+    {
+      "id": "22",
+      "start_ms": 285000,
+      "end_ms": 292000,
+      "speaker": "Diana",
+      "text": "Agreed. I'll block some time on our calendars.",
+      "raw_text": "<v Diana>Agreed. I'll block some time on our calendars."
+    },
+    {
+      "id": "23",
+      "start_ms": 292000,
+      "end_ms": 310000,
+      "speaker": "Alice",
+      "text": "One more thing. How do we want to handle the feature flag for the new authentication? Should we do a gradual rollout?",
+      "raw_text": "<v Alice>One more thing. How do we want to handle the feature flag for the new authentication? Should we do a gradual rollout?"
+    },
+    {
+      "id": "24",
+      "start_ms": 310000,
+      "end_ms": 332000,
+      "speaker": "Bob",
+      "text": "I recommend a phased approach. We can start with internal users, then expand to 10% of production traffic.",
+      "raw_text": "<v Bob>I recommend a phased approach. We can start with internal users, then expand to 10% of production traffic."
+    },
+    {
+      "id": "25",
+      "start_ms": 332000,
+      "end_ms": 345000,
+      "speaker": "Diana",
+      "text": "That aligns with our testing strategy. We agreed to use the phased rollout approach.",
+      "raw_text": "<v Diana>That aligns with our testing strategy. We agreed to use the phased rollout approach."
+    },
+    {
+      "id": "26",
+      "start_ms": 345000,
+      "end_ms": 360000,
+      "speaker": "Alice",
+      "text": "Perfect. I'll update the release plan document with these decisions.",
+      "raw_text": "<v Alice>Perfect. I'll update the release plan document with these decisions."
+    },
+    {
+      "id": "27",
+      "start_ms": 360000,
+      "end_ms": 375000,
+      "speaker": "Charlie",
+      "text": "Quick question - what about the legacy login endpoint? Are we deprecating it immediately?",
+      "raw_text": "<v Charlie>Quick question - what about the legacy login endpoint? Are we deprecating it immediately?"
+    },
+    {
+      "id": "28",
+      "start_ms": 375000,
+      "end_ms": 395000,
+      "speaker": "Bob",
+      "text": "We should keep it running in parallel for at least two weeks. I need to add deprecation warnings to the API response headers.",
+      "raw_text": "<v Bob>We should keep it running in parallel for at least two weeks. I need to add deprecation warnings to the API response headers."
+    },
+    {
+      "id": "29",
+      "start_ms": 395000,
+      "end_ms": 408000,
+      "speaker": "Alice",
+      "text": "Good thinking. Add that to your task list, Bob.",
+      "raw_text": "<v Alice>Good thinking. Add that to your task list, Bob."
+    },
+    {
+      "id": "30",
+      "start_ms": 408000,
+      "end_ms": 415000,
+      "speaker": "Bob",
+      "text": "Already on it. I'll create the ticket after this meeting.",
+      "raw_text": "<v Bob>Already on it. I'll create the ticket after this meeting."
+    },
+    {
+      "id": "31",
+      "start_ms": 415000,
+      "end_ms": 430000,
+      "speaker": "Alice",
+      "text": "Alright team, great discussion. Let's recap the action items.",
+      "raw_text": "<v Alice>Alright team, great discussion. Let's recap the action items."
+    },
+    {
+      "id": "32",
+      "start_ms": 430000,
+      "end_ms": 445000,
+      "speaker": "Alice",
+      "text": "Bob will send API documentation to Charlie, prepare rollback scripts, and add deprecation warnings to the legacy endpoint.",
+      "raw_text": "<v Alice>Bob will send API documentation to Charlie, prepare rollback scripts, and add deprecation warnings to the legacy endpoint."
+    },
+    {
+      "id": "33",
+      "start_ms": 445000,
+      "end_ms": 458000,
+      "speaker": "Alice",
+      "text": "Charlie will implement password reset and work with Diana on the smoke test checklist.",
+      "raw_text": "<v Alice>Charlie will implement password reset and work with Diana on the smoke test checklist."
+    },
+    {
+      "id": "34",
+      "start_ms": 458000,
+      "end_ms": 470000,
+      "speaker": "Alice",
+      "text": "Diana will send the test review invite for Thursday and complete the test case documentation.",
+      "raw_text": "<v Alice>Diana will send the test review invite for Thursday and complete the test case documentation."
+    },
+    {
+      "id": "35",
+      "start_ms": 470000,
+      "end_ms": 480000,
+      "speaker": "Alice",
+      "text": "And I'll update the release plan with our decisions. Any questions?",
+      "raw_text": "<v Alice>And I'll update the release plan with our decisions. Any questions?"
+    },
+    {
+      "id": "36",
+      "start_ms": 480000,
+      "end_ms": 485000,
+      "speaker": "Bob",
+      "text": "All clear from my side.",
+      "raw_text": "<v Bob>All clear from my side."
+    },
+    {
+      "id": "37",
+      "start_ms": 485000,
+      "end_ms": 490000,
+      "speaker": "Charlie",
+      "text": "Good to go.",
+      "raw_text": "<v Charlie>Good to go."
+    },
+    {
+      "id": "38",
+      "start_ms": 490000,
+      "end_ms": 495000,
+      "speaker": "Diana",
+      "text": "No questions here.",
+      "raw_text": "<v Diana>No questions here."
+    },
+    {
+      "id": "39",
+      "start_ms": 495000,
+      "end_ms": 505000,
+      "speaker": "Alice",
+      "text": "Great work everyone. Let's have a productive day. Meeting adjourned.",
+      "raw_text": "<v Alice>Great work everyone. Let's have a productive day. Meeting adjourned."
+    }
+  ]
+}

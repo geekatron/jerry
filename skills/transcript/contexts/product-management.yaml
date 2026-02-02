@@ -1,0 +1,352 @@
+# Domain Schema: Product Management Transcript Analysis
+# Version: 1.0.0
+# TASK-152: EN-014 Artifact Promotion
+# Source: EN-006/docs/specs/domain-contexts/03-product-management/
+# Implements: SPEC-context-injection.md Section 3.3, TDD-EN014 Schema V1.1.0
+
+schema_version: "1.0.0"
+domain: "product-management"
+display_name: "Product Management Transcript Analysis"
+extends: "transcript"  # Inherits base entities (speaker, topic, question)
+
+# Domain metadata (TDD-EN014 Section 4.2)
+metadata:
+  target_users:
+    - "Product Managers"
+    - "Product Owners"
+    - "Business Analysts"
+    - "Strategy Teams"
+  transcript_types:
+    - "Product strategy session"
+    - "Roadmap planning"
+    - "Feature prioritization"
+    - "Stakeholder interview"
+    - "Competitive analysis"
+  key_use_cases:
+    - "Track feature requests"
+    - "Capture user needs"
+    - "Document roadmap items"
+    - "Record stakeholder feedback"
+    - "Analyze competitive landscape"
+
+# Entity definitions
+entity_definitions:
+  feature_request:
+    description: "A requested product capability from internal or external sources"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Feature name or identifier"
+      - name: "description"
+        type: "string"
+        required: true
+        description: "What the feature does"
+      - name: "requester"
+        type: "string"
+        description: "Who requested (customer, sales, exec, etc.)"
+      - name: "business_value"
+        type: "string"
+        description: "Why it's valuable"
+      - name: "priority"
+        type: "enum"
+        values: ["P0", "P1", "P2", "P3", "must-have", "should-have", "could-have", "wont-have"]
+        description: "Priority level (P0-P3 or MoSCoW)"
+      - name: "target_persona"
+        type: "string"
+        description: "Primary user persona"
+    extraction_patterns:
+      - "We need {{feature}} to {{benefit}}"
+      - "Customers are asking for {{feature}}"
+      - "Feature request: {{feature}}"
+      - "{{requester}} wants {{feature}}"
+      - "Request for {{feature}}"
+      - "Can we add {{feature}}"
+    relationships:
+      - type: "addresses"
+        target: "user_need"
+      - type: "becomes"
+        target: "roadmap_item"
+
+  user_need:
+    description: "Identified user requirement or job-to-be-done"
+    attributes:
+      - name: "persona"
+        type: "string"
+        required: true
+        description: "User type or segment"
+      - name: "need"
+        type: "string"
+        required: true
+        description: "What they need to accomplish"
+      - name: "pain_point"
+        type: "string"
+        description: "Current problem or frustration"
+      - name: "frequency"
+        type: "enum"
+        values: ["always", "often", "sometimes", "rarely"]
+        description: "How often encountered"
+      - name: "impact"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Impact on user success"
+    extraction_patterns:
+      - "Users need {{need}}"
+      - "Pain point: {{issue}}"
+      - "The problem is {{issue}}"
+      - "{{persona}} struggle with {{issue}}"
+      - "Job to be done: {{job}}"
+    relationships:
+      - type: "addressed_by"
+        target: "feature_request"
+
+  roadmap_item:
+    description: "Planned product work with timeline"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Item name or epic"
+      - name: "quarter"
+        type: "string"
+        required: true
+        description: "Target quarter (Q1, Q2, Q3, Q4 + Year)"
+      - name: "dependencies"
+        type: "array"
+        items: "string"
+        description: "What it depends on"
+      - name: "success_metric"
+        type: "string"
+        description: "How to measure success (OKR, KPI)"
+      - name: "confidence"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Delivery confidence"
+    extraction_patterns:
+      - "Targeting Q{{quarter}} for {{item}}"
+      - "On the roadmap for {{timeframe}}"
+      - "Planning to ship {{item}} in {{quarter}}"
+      - "{{item}} is scheduled for {{time}}"
+      - "Roadmap: {{item}}"
+    relationships:
+      - type: "informed_by"
+        target: "stakeholder_feedback"
+      - type: "considers"
+        target: "competitive_insight"
+
+  stakeholder_feedback:
+    description: "Input from customers, executives, or partners"
+    attributes:
+      - name: "stakeholder"
+        type: "string"
+        required: true
+        description: "Who provided feedback (name, role, company)"
+      - name: "topic"
+        type: "string"
+        required: true
+        description: "Subject of feedback"
+      - name: "sentiment"
+        type: "enum"
+        values: ["positive", "neutral", "negative"]
+        description: "Overall sentiment"
+      - name: "key_points"
+        type: "array"
+        items: "string"
+        description: "Main points made"
+      - name: "urgency"
+        type: "enum"
+        values: ["urgent", "soon", "someday"]
+        description: "Expressed urgency"
+    extraction_patterns:
+      - "{{stakeholder}} said {{feedback}}"
+      - "Feedback from {{stakeholder}}: {{feedback}}"
+      - "{{customer}} mentioned {{topic}}"
+      - "According to {{source}}, {{insight}}"
+    relationships:
+      - type: "informs"
+        target: "roadmap_item"
+      - type: "creates"
+        target: "feature_request"
+
+  competitive_insight:
+    description: "Intelligence about competitors and market"
+    attributes:
+      - name: "competitor"
+        type: "string"
+        required: true
+        description: "Which competitor"
+      - name: "feature"
+        type: "string"
+        required: true
+        description: "What they have or announced"
+      - name: "our_position"
+        type: "enum"
+        values: ["ahead", "parity", "behind"]
+        description: "How we compare"
+      - name: "action"
+        type: "string"
+        description: "Suggested response"
+      - name: "source"
+        type: "string"
+        description: "Where this came from"
+    extraction_patterns:
+      - "{{competitor}} has {{feature}}"
+      - "{{competitor}} just announced {{feature}}"
+      - "Competitive gap: {{gap}}"
+      - "We're behind on {{feature}}"
+    relationships:
+      - type: "influences"
+        target: "roadmap_item"
+
+# Extraction rules with confidence thresholds
+extraction_rules:
+  - id: "feature_requests"
+    entity_type: "feature_request"
+    confidence_threshold: 0.75
+    priority: 1
+    tier: "rule"
+    description: "Extract requested product capabilities"
+
+  - id: "user_needs"
+    entity_type: "user_need"
+    confidence_threshold: 0.75
+    priority: 2
+    tier: "rule"
+    description: "Identify user requirements and jobs-to-be-done"
+
+  - id: "roadmap_items"
+    entity_type: "roadmap_item"
+    confidence_threshold: 0.8
+    priority: 3
+    tier: "rule"
+    description: "Document planned product work with timelines"
+
+  - id: "stakeholder_feedback"
+    entity_type: "stakeholder_feedback"
+    confidence_threshold: 0.7
+    priority: 4
+    tier: "rule"
+    description: "Capture input from stakeholders"
+
+  - id: "competitive_insights"
+    entity_type: "competitive_insight"
+    confidence_threshold: 0.75
+    priority: 5
+    tier: "llm"
+    description: "Document competitive intelligence"
+
+# Context-specific rules (TDD-EN014 Section 4.3)
+context_rules:
+  strategy_session:
+    primary_focus:
+      - roadmap_item
+      - competitive_insight
+    secondary_focus:
+      - feature_request
+    extraction_emphasis: |
+      In strategy sessions, prioritize:
+      1. Strategic roadmap decisions
+      2. Competitive positioning discussions
+      3. High-level feature directions
+      4. Market analysis insights
+
+  roadmap_planning:
+    primary_focus:
+      - roadmap_item
+      - feature_request
+    secondary_focus:
+      - user_need
+    extraction_emphasis: |
+      In roadmap planning, capture:
+      1. Scheduled deliverables with quarters
+      2. Feature prioritization decisions
+      3. Dependencies between items
+      4. Success metrics (OKRs, KPIs)
+
+  stakeholder_interview:
+    primary_focus:
+      - stakeholder_feedback
+      - feature_request
+    secondary_focus:
+      - user_need
+    extraction_emphasis: |
+      In stakeholder interviews, focus on:
+      1. Verbatim feedback with attribution
+      2. Feature requests with requester
+      3. Urgency and priority signals
+      4. Sentiment (positive/negative)
+
+  feature_prioritization:
+    primary_focus:
+      - feature_request
+      - user_need
+    secondary_focus:
+      - stakeholder_feedback
+    extraction_emphasis: |
+      In prioritization sessions, document:
+      1. Features being ranked
+      2. Priority assignments (P0-P3, MoSCoW)
+      3. User needs addressed
+      4. Business value justifications
+
+# Validation rules (TDD-EN014 Section 4.4)
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - feature_request
+    - user_need
+    - roadmap_item
+
+# Prompt guidance for ts-extractor agent
+prompt_guidance: |
+  ## Product Management Transcript Analysis
+
+  When analyzing product management transcripts, apply domain expertise:
+
+  ### Feature Request Detection
+  - Look for explicit requests from customers, sales, or executives
+  - Capture the requester for attribution
+  - Note business value justifications
+  - Map to priority levels (P0-P3 or MoSCoW)
+  - Link to target user personas
+
+  ### User Need Identification
+  - Apply Jobs-to-be-Done (JTBD) framework
+  - Capture user personas and segments
+  - Document pain points and frustrations
+  - Note frequency and impact of needs
+  - Link needs to features that address them
+
+  ### Roadmap Item Capture
+  - Extract timeline commitments (quarters, dates)
+  - Document dependencies between items
+  - Capture success metrics (OKRs, KPIs)
+  - Note confidence levels for delivery
+  - Track scope changes and adjustments
+
+  ### Stakeholder Feedback Recording
+  - Preserve attribution (who said what)
+  - Capture sentiment (positive, neutral, negative)
+  - Document urgency signals
+  - Note key points and themes
+  - Link to resulting actions
+
+  ### Competitive Intelligence
+  - Identify competitor mentions
+  - Capture feature comparisons
+  - Note our position (ahead, parity, behind)
+  - Document suggested responses
+  - Track information sources
+
+  ### Confidence Scoring Guidelines
+  - 0.9+: Explicit roadmap commitments with dates
+  - 0.7-0.9: Clear feature discussions with context
+  - 0.5-0.7: Implicit requests, flag for review
+  - <0.5: Do not extract
+
+  ### Anti-Hallucination Rules (PAT-004)
+  - Every extraction MUST have a source segment citation
+  - Do not infer features not explicitly requested
+  - When uncertain, use lower confidence scores
+  - Preserve original speaker attribution

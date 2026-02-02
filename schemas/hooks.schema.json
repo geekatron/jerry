@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/hooks.schema.json",
+  "title": "Claude Code Plugin Hooks Configuration",
+  "description": "JSON Schema for hooks/hooks.json configuration files. Based on Claude Code plugin specification via Context7.",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Description of the hooks configuration."
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Hook definitions organized by hook type.",
+      "properties": {
+        "PreToolUse": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed before a tool is used. Matcher is a regex pattern matching tool names."
+        },
+        "PostToolUse": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed after a tool is used. Matcher is a regex pattern matching tool names."
+        },
+        "SessionStart": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed when a session starts. Matcher typically uses '*' for all sessions."
+        },
+        "Stop": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed when agent stops. Matcher can be 'subagent:*' for subagent completion."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hookTypeArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hookMatcher"
+      },
+      "description": "Array of hook matchers for this hook type."
+    },
+    "hookMatcher": {
+      "type": "object",
+      "required": ["matcher", "hooks"],
+      "properties": {
+        "matcher": {
+          "type": "string",
+          "description": "Regex pattern to match against. Use '*' for all, '|' for alternatives (e.g., 'Write|Edit')."
+        },
+        "hooks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/hookDefinition"
+          },
+          "description": "Array of hook definitions to execute when matcher matches."
+        }
+      },
+      "additionalProperties": false
+    },
+    "hookDefinition": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["command", "prompt"],
+          "description": "Hook type: 'command' executes a shell command, 'prompt' sends a prompt."
+        },
+        "command": {
+          "type": "string",
+          "description": "Shell command to execute. Required when type is 'command'. Supports env vars like ${CLAUDE_PLUGIN_ROOT}."
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt text to send. Required when type is 'prompt'."
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 300000,
+          "default": 60000,
+          "description": "Timeout in milliseconds (1000-300000, default 60000)."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "command" } }
+          },
+          "then": {
+            "required": ["command"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "prompt" } }
+          },
+          "then": {
+            "required": ["prompt"]
+          }
+        }
+      ]
+    }
+  }
+}

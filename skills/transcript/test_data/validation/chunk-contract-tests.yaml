@@ -1,0 +1,258 @@
+# Chunk Schema Contract Tests Specification
+#
+# Reference: TASK-215 Schema Validation Tests
+# Location: skills/transcript/test_data/validation/chunk-contract-tests.yaml
+# Schema: TDD-FEAT-004 Section 5
+#
+# Test Categories:
+#   - Index Schema Validation (CON-IDX-*)
+#   - Chunk Schema Validation (CON-CHK-*)
+#   - Navigation Links Validation (CON-NAV-*)
+#   - Negative/Error Detection (CON-NEG-*)
+#   - Integration Tests (CON-INT-*)
+#
+# Test Ratio (per testing-standards.md):
+#   - Contract tests: 5% of total coverage
+#   - Focus: Schema compliance, external interface validation
+
+version: "1.0"
+contract_type: "json-schema"
+schemas:
+  index: "skills/transcript/test_data/schemas/index.schema.json"
+  chunk: "skills/transcript/test_data/schemas/chunk.schema.json"
+
+test_suite: "TranscriptChunker Schema Compliance"
+
+# =============================================================================
+# Index Schema Contract Tests
+# =============================================================================
+
+index_schema_tests:
+  - id: "CON-IDX-001"
+    name: "Index validates against schema"
+    description: "Generated index.json MUST conform to index.schema.json"
+    type: "happy_path"
+    validation:
+      schema: "index"
+      document: "generated/index.json"
+    expected: "PASS"
+
+  - id: "CON-IDX-002"
+    name: "Index has required fields"
+    description: "Index.json MUST have schema_version, total_segments, total_chunks, chunk_size, chunks"
+    type: "happy_path"
+    validation:
+      required_fields:
+        - "schema_version"
+        - "total_segments"
+        - "total_chunks"
+        - "chunk_size"
+        - "chunks"
+    expected: "PASS"
+
+  - id: "CON-IDX-003"
+    name: "Index schema_version is 1.0"
+    description: "schema_version MUST be exactly '1.0'"
+    type: "happy_path"
+    validation:
+      field: "schema_version"
+      value: "1.0"
+    expected: "PASS"
+
+  - id: "CON-IDX-004"
+    name: "Index chunks array not empty"
+    description: "chunks array MUST have at least one entry"
+    type: "happy_path"
+    validation:
+      field: "chunks"
+      min_items: 1
+    expected: "PASS"
+
+  - id: "CON-IDX-005"
+    name: "Chunk pointers have required fields"
+    description: "Each chunk pointer needs chunk_id, segment_range, file"
+    type: "happy_path"
+    validation:
+      array_field: "chunks"
+      item_required_fields:
+        - "chunk_id"
+        - "segment_range"
+        - "file"
+    expected: "PASS"
+
+# =============================================================================
+# Chunk Schema Contract Tests
+# =============================================================================
+
+chunk_schema_tests:
+  - id: "CON-CHK-001"
+    name: "All chunks validate against schema"
+    description: "Every chunk-NNN.json MUST conform to chunk.schema.json"
+    type: "happy_path"
+    validation:
+      schema: "chunk"
+      documents: "generated/chunks/chunk-*.json"
+    expected: "PASS"
+
+  - id: "CON-CHK-002"
+    name: "Chunk has required fields"
+    description: "Each chunk MUST have chunk_id, schema_version, segment_range, segments, navigation"
+    type: "happy_path"
+    validation:
+      required_fields:
+        - "chunk_id"
+        - "schema_version"
+        - "segment_range"
+        - "segments"
+        - "navigation"
+    expected: "PASS"
+
+  - id: "CON-CHK-003"
+    name: "Chunk ID format valid"
+    description: "chunk_id MUST match pattern ^chunk-\\d{3}$"
+    type: "happy_path"
+    validation:
+      field: "chunk_id"
+      pattern: "^chunk-\\d{3}$"
+    expected: "PASS"
+
+  - id: "CON-CHK-004"
+    name: "Segment range valid"
+    description: "segment_range[0] MUST be <= segment_range[1]"
+    type: "edge_case"
+    validation:
+      field: "segment_range"
+      constraint: "start_lte_end"
+    expected: "PASS"
+
+  - id: "CON-CHK-005"
+    name: "Segments array not empty"
+    description: "Each chunk MUST have at least one segment"
+    type: "happy_path"
+    validation:
+      field: "segments"
+      min_items: 1
+    expected: "PASS"
+
+# =============================================================================
+# Navigation Link Contract Tests
+# =============================================================================
+
+navigation_tests:
+  - id: "CON-NAV-001"
+    name: "Navigation has index link"
+    description: "All chunks MUST have navigation.index pointing to index.json"
+    type: "happy_path"
+    validation:
+      field: "navigation.index"
+      not_null: true
+    expected: "PASS"
+
+  - id: "CON-NAV-002"
+    name: "First chunk has no previous"
+    description: "chunk-001 MUST have navigation.previous = null"
+    type: "edge_case"
+    validation:
+      document: "generated/chunks/chunk-001.json"
+      field: "navigation.previous"
+      value: null
+    expected: "PASS"
+
+  - id: "CON-NAV-003"
+    name: "Last chunk has no next"
+    description: "Final chunk MUST have navigation.next = null"
+    type: "edge_case"
+    validation:
+      document: "generated/chunks/chunk-{last}.json"
+      field: "navigation.next"
+      value: null
+    expected: "PASS"
+
+# =============================================================================
+# Negative/Error Detection Tests
+# =============================================================================
+
+negative_tests:
+  - id: "CON-NEG-001"
+    name: "Missing required field detected"
+    description: "Index without schema_version MUST fail validation"
+    type: "negative"
+    input:
+      total_segments: 10
+      total_chunks: 1
+      chunk_size: 500
+      chunks:
+        - chunk_id: "chunk-001"
+          segment_range: [1, 10]
+          file: "chunks/chunk-001.json"
+      # Missing: schema_version
+    expected: "FAIL"
+    expected_error: "required property 'schema_version'"
+
+  - id: "CON-NEG-002"
+    name: "Invalid schema_version detected"
+    description: "schema_version other than '1.0' MUST fail validation"
+    type: "negative"
+    input:
+      schema_version: "2.0"  # Invalid
+      total_segments: 10
+      total_chunks: 1
+      chunk_size: 500
+      chunks:
+        - chunk_id: "chunk-001"
+          segment_range: [1, 10]
+          file: "chunks/chunk-001.json"
+    expected: "FAIL"
+    expected_error: "const"
+
+  - id: "CON-NEG-003"
+    name: "Invalid chunk_id format detected"
+    description: "chunk_id not matching ^chunk-\\d{3}$ MUST fail"
+    type: "negative"
+    input:
+      chunk_id: "chunk-1"  # Invalid (should be chunk-001)
+      schema_version: "1.0"
+      segment_range: [1, 10]
+      segments:
+        - id: "1"
+          text: "test"
+      navigation:
+        index: "../index.json"
+    expected: "FAIL"
+    expected_error: "pattern"
+
+# =============================================================================
+# Integration Tests
+# =============================================================================
+
+integration_tests:
+  - id: "CON-INT-001"
+    name: "meeting-006 produces valid output"
+    description: "Golden dataset (3071 segments) MUST produce 7 schema-compliant chunks"
+    type: "integration"
+    input:
+      source: "skills/transcript/test_data/transcripts/golden/meeting-006-all-hands.vtt"
+      chunk_size: 500
+    validation:
+      total_segments: 3071
+      expected_chunks: 7
+      schema_compliance: true
+    expected: "PASS"
+
+# =============================================================================
+# Summary
+# =============================================================================
+
+summary:
+  total_tests: 16
+  by_category:
+    index_schema: 5
+    chunk_schema: 5
+    navigation: 3
+    negative: 3
+    integration: 1
+  by_type:
+    happy_path: 9
+    edge_case: 3
+    negative: 3
+    integration: 1

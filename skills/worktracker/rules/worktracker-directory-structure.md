@@ -1,0 +1,90 @@
+# Worktracker Directory Structure
+
+> Rule file for /worktracker skill
+> Source: CLAUDE.md lines 360-399 (EN-201 extraction)
+> Additional: User's manual decomposition (recovered from git history)
+> Extracted: 2026-02-01
+
+---
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Folder Structure Patterns](#folder-structure-patterns) | Project-based vs repository-based placement |
+| [WORKTRACKER Directory Structure](#worktracker-directory-structure) | Detailed folder hierarchy for work items |
+
+---
+
+## Folder Structure Patterns
+
+Worktracker supports two alternative placement patterns. Choose ONE based on your repository's needs.
+
+### Project-based Folder Structure (ONE-OF)
+
+Used for repositories like Jerry that require **project-based** work tracking hierarchy. Multiple projects can exist in the same repository.
+
+```
+{RepositoryRoot}/                               # Root of the Repository (e.g. Jerry, Forge, etc.)
+└── projects/                                   # Projects Folder
+    └── {ProjectId}/                            # e.g. PROJ-005-plugin-bugs
+        ├── PLAN.md                             # Initial Project Plan and Overview
+        ├── WORKTRACKER.md                      # Global Manifest for this project
+        └── work/                               # WORKTRACKER Directory Structure (see below)
+```
+
+### Repository-based Folder Structure (ONE-OF)
+
+Used for repositories like Knowledge that require **repository-based** work tracking hierarchy. The entire repository is the work context.
+
+```
+{RepositoryRoot}/                               # Root of the Repository (e.g. Knowledge)
+├── WORKTRACKER.md                              # Global Manifest for the repository
+└── work/                                       # WORKTRACKER Directory Structure (see below)
+```
+
+---
+
+## WORKTRACKER Directory Structure
+
+The detailed directory structure below applies to both patterns. It lives under the `work/` folder in either:
+- `projects/{ProjectId}/work/` (project-based)
+- `{RepositoryRoot}/work/` (repository-based)
+
+```
+projects/
+└── {ProjectId}/ e.g. PROJ-005-plugin-bugs                                                                      # Project Context Folder
+    ├── PLAN.md                                                                                                 # Initial Project Plan and Overview.
+    ├── WORKTRACKER.md                                                                                          # Global Manifest tracking all work items. Also a pointer with relationships to all decomposed work items.
+    └── work/                                                                                                   # Project Worktracker Decomposition Folder
+        └── {EpicId}-{slug}/ e.g. EPIC-001-forge-developer-experience                                           # Epic Folder. Large body of work spanning multiple sprints or months.
+            ├── {EpicId}-{slug}.md                                                                              # Epic tracking Features. Also a pointer with relationships to all respective Feature artifacts of the Epic.
+            ├── {EpicId}--{BugId}-{slug}.md           e.g. EPIC-001:BUG-001-slugs-too-long.md                    # Bug File documenting identified bugs. Discovered at the Epic Level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+            ├── {EpicId}--{DiscoveryId}-{slug}.md     e.g. EPIC-001:DISC-001-need-claude-md.md                   # Discovery File documenting discoveries made. Discovered at the Epic Level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts..
+            ├── {EpicId}--{ImpedimentId}-{slug}.md    e.g. EPIC-001:IMP-001-missing-claude.md                    # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Epic Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+            ├── {EpicId}--{DecisionId}-{slug}.md    e.g. EPIC-001:DEC-001-worktracker-planning.md                # Decision File documenting decisions between the User and Claude. Discovered at the Epic Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+            ├── plans/                                                                                          # Folder for plans that we generate while working in the Epic. As we work through the project and enouncter complexity we generate plans to help us navigate the complexity.
+            │   └── PLAN-{PlanId}-{slug}.md e.g. PLAN-001-holy-lazer-cats.md                                    # Plan that we generate anytime we have to do something complicated. References the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task. Also referenced by the respective Strategic Theme, Initiative, Solution Epic, Feature, Unit of Work, Enabler and/or Task to easily and effectively traverse.
+            └── {FeatureId}-{slug}/         e.g. FEAT-001-worktracker                                           # Feature Folder. Program-level functionality deliverable within 1-3 sprints. Primary decomposition target for Stories.
+                ├── {FeatureId}-{slug}.md                                                                       # Feature tracking Stories, Enablers, Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries. Also a pointer with relationships to all respective artifacts of the Feature.
+                ├── {FeatureId}--{BugId}-{slug}.md           e.g. FEAT-001:BUG-001-id-bad-casing.md              # Bug File documenting identified bugs. Discovered at the Feature Level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+                ├── {FeatureId}--{DiscoveryId}-{slug}.md     e.g. FEAT-001:DISC-001-missing-templates.md         # Discovery File documenting discoveries made. Discovered at the Feature Level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts.
+                ├── {FeatureId}--{ImpedimentId}-{slug}.md    e.g. FEAT-001:IMP-001-need-impediment-template.md   # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Feature Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+                ├── {FeatureId}--{DecisionId}-{slug}.md    e.g. FEAT-001:DEC-001-id-scheme.md                    # Decision File documenting decisions between the User and Claude. Discovered at the Feature Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+                ├── {EnablerId}-{slug}/     e.g. EN-001-claude-md-debt-fixes                                    # Enabler Folder - Technical/infrastructure work that enables future value delivery. SAFe concept for architectural runway, tech debt, etc.
+                │   ├── {EnablerId}-{slug}.md                                                                   # Enabler tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries. Also a pointer with relationships to all respective artifacts of the Enabler.
+                │   ├── {TaskId}-{slug}.md          e.g. TASK-001-tests-for-session-hooks.md                    # Task file. Must have verifiable evidence before Task can be Closed. Contains relationships to related artifacts.
+                │   ├── {BugId}-{slug}.md           e.g. BUG-001-session-hook-failure.md                        # Bug File documenting identified bugs. Discovered at the Enabler level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+                │   ├── {DiscoveryId}-{slug}.md     e.g. DISC-001-insufficient-coverage.md                      # Discovery File documenting discoveries made. Discovered at the Enabler level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts.
+                │   ├── {ImpedimentId}-{slug}.md    e.g. IMP-001-missing-cli-implementation.md                  # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Enabler Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+                │   ├── {DecisionId}-{slug}.md      e.g. DEC-001-cli-hook.md                                    # Decision File documenting decisions between the User and Claude. Discovered at the Enabler Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+                │   └── {SpikeId}-{slug}.md         e.g. SPIKE-001-multiple-claude-md-files.md                  # Spike file representing timeboxed research or exploration activity. Does NOT require quality gates (unlike other work types). Outputs knowledge/decisions, not production code. Contains relationships to related artifacts.
+                └── {StoryId}-{slug}/       e.g. STORY-001-worktracker-todo-integration                         # Story Folder - User-valuable increment deliverable within a sprint.
+                    ├── {StoryId}-{slug}.md                                                                     # Story tracking Tasks, Sub-Tasks, Spikes, Bugs, Impediments and Discoveries. Also a pointer with relationships to all respective artifacts of the Story.
+                    ├── {TaskId}-{slug}.md          e.g. TASK-001-tests-for-worktracker.md                      # Task file. Must have verifiable evidence before Task can be Closed. Contains relationships to related artifacts.
+                    ├── {BugId}-{slug}.md           e.g. BUG-001-missing-work-items.md                          # Bug File documenting identified bugs. Discovered at the Story level. Enablers or Story MUST be created to address documented bugs. Contains relationships to related artifacts.
+                    ├── {DiscoveryId}-{slug}.md     e.g. DISC-001-missing-worktracker-instructions.md           # Discovery File documenting discoveries made. Discovered at the Story level. Discoveries MAY lead to creation of Enablers or Stories. Contains relationships to related artifacts..
+                    ├── {ImpedimentId}-{slug}.md    e.g. IMP-001-missing-templates.md                           # Impediment File documenting identified blockers preventing progress on one or more work items. Discovered at the Story Level. Valuable for visibility and tracking resolution time. Enablers or Story MUST be created to address documented impediments. Contains relationships to related artifacts.
+                    ├── {DecisionId}-{slug}.md      e.g. DEC-001-template-fidelity.md                           # Decision File documenting decisions between the User and Claude. Discovered at the Story Level. Captures decisions when Claude asks for clarification. Must provide enough context regarding the questions and decision tree. Contains relationships to related artifacts.
+                    └── {SpikeId}-{slug}.md         e.g. SPIKE-001-templates-for-work-items.md                  # Spike file representing timeboxed research or exploration activity. Does NOT require quality gates (unlike other work types). Outputs knowledge/decisions, not production code. Contains relationships to related artifacts.
+```

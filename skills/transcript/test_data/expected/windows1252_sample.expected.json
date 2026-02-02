@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "source": {
+    "format": "vtt",
+    "encoding": "windows-1252",
+    "file_path": "transcripts/edge_cases/windows1252_sample.vtt"
+  },
+  "metadata": {
+    "duration_ms": 10000,
+    "segment_count": 2,
+    "detected_speakers": 2
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 5000,
+      "speaker": "Müller",
+      "text": "The price is €50 "exactly"",
+      "raw_text": "<v Müller>The price is €50 "exactly""
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 5000,
+      "end_ms": 10000,
+      "speaker": "François",
+      "text": "That's very reasonable!",
+      "raw_text": "<v François>That's very reasonable!"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [
+      {
+        "code": "WARN-003",
+        "message": "Fallback encoding used",
+        "severity": "warning",
+        "details": "UTF-8 decode failed, using windows-1252"
+      }
+    ],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

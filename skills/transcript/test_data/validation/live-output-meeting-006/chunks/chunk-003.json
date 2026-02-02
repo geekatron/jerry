@@ -1,0 +1,4019 @@
+{
+  "chunk_id": "chunk-003",
+  "schema_version": "1.0",
+  "segment_range": [
+    1001,
+    1500
+  ],
+  "timestamp_range": {
+    "start_ms": 5542000,
+    "end_ms": 8549500
+  },
+  "segments": [
+    {
+      "id": "1001",
+      "start_ms": 5542000,
+      "end_ms": 5547500,
+      "speaker": "Diana Martinez",
+      "text": "We expect to complete the full migration by end of Q1 next year.",
+      "raw_text": "<v Diana Martinez>We expect to complete the full migration by end of Q1 next year."
+    },
+    {
+      "id": "1002",
+      "start_ms": 5548000,
+      "end_ms": 5553500,
+      "speaker": "Diana Martinez",
+      "text": "Our API gateway has been upgraded to handle significantly higher throughput.",
+      "raw_text": "<v Diana Martinez>Our API gateway has been upgraded to handle significantly higher throughput."
+    },
+    {
+      "id": "1003",
+      "start_ms": 5554000,
+      "end_ms": 5559500,
+      "speaker": "Diana Martinez",
+      "text": "We can now process over one hundred thousand requests per second at peak.",
+      "raw_text": "<v Diana Martinez>We can now process over one hundred thousand requests per second at peak."
+    },
+    {
+      "id": "1004",
+      "start_ms": 5560000,
+      "end_ms": 5565500,
+      "speaker": "Diana Martinez",
+      "text": "That's a three hundred percent improvement from our previous architecture.",
+      "raw_text": "<v Diana Martinez>That's a three hundred percent improvement from our previous architecture."
+    },
+    {
+      "id": "1005",
+      "start_ms": 5566000,
+      "end_ms": 5571500,
+      "speaker": "Diana Martinez",
+      "text": "Response latency has improved by forty-two percent, with p99 now under fifty milliseconds.",
+      "raw_text": "<v Diana Martinez>Response latency has improved by forty-two percent, with p99 now under fifty milliseconds."
+    },
+    {
+      "id": "1006",
+      "start_ms": 5572000,
+      "end_ms": 5577500,
+      "speaker": "Diana Martinez",
+      "text": "These performance improvements directly translate to better user experience.",
+      "raw_text": "<v Diana Martinez>These performance improvements directly translate to better user experience."
+    },
+    {
+      "id": "1007",
+      "start_ms": 5578000,
+      "end_ms": 5583500,
+      "speaker": "James Wilson",
+      "text": "Let me add some context on our machine learning infrastructure investments.",
+      "raw_text": "<v James Wilson>Let me add some context on our machine learning infrastructure investments."
+    },
+    {
+      "id": "1008",
+      "start_ms": 5584000,
+      "end_ms": 5589500,
+      "speaker": "James Wilson",
+      "text": "We've built a new feature store that serves over fifty million feature vectors daily.",
+      "raw_text": "<v James Wilson>We've built a new feature store that serves over fifty million feature vectors daily."
+    },
+    {
+      "id": "1009",
+      "start_ms": 5590000,
+      "end_ms": 5595500,
+      "speaker": "James Wilson",
+      "text": "This enables real-time personalization across all our products.",
+      "raw_text": "<v James Wilson>This enables real-time personalization across all our products."
+    },
+    {
+      "id": "1010",
+      "start_ms": 5596000,
+      "end_ms": 5601500,
+      "speaker": "James Wilson",
+      "text": "Our model training pipeline now supports experiments at ten times our previous scale.",
+      "raw_text": "<v James Wilson>Our model training pipeline now supports experiments at ten times our previous scale."
+    },
+    {
+      "id": "1011",
+      "start_ms": 5602000,
+      "end_ms": 5607500,
+      "speaker": "James Wilson",
+      "text": "We can train and evaluate thousands of model variants simultaneously.",
+      "raw_text": "<v James Wilson>We can train and evaluate thousands of model variants simultaneously."
+    },
+    {
+      "id": "1012",
+      "start_ms": 5608000,
+      "end_ms": 5613500,
+      "speaker": "James Wilson",
+      "text": "GPU utilization has improved from forty percent to seventy-eight percent.",
+      "raw_text": "<v James Wilson>GPU utilization has improved from forty percent to seventy-eight percent."
+    },
+    {
+      "id": "1013",
+      "start_ms": 5614000,
+      "end_ms": 5619500,
+      "speaker": "James Wilson",
+      "text": "That optimization alone saved us over two million dollars annually in cloud costs.",
+      "raw_text": "<v James Wilson>That optimization alone saved us over two million dollars annually in cloud costs."
+    },
+    {
+      "id": "1014",
+      "start_ms": 5620000,
+      "end_ms": 5625500,
+      "speaker": "Diana Martinez",
+      "text": "Security remains a top priority in all our architectural decisions.",
+      "raw_text": "<v Diana Martinez>Security remains a top priority in all our architectural decisions."
+    },
+    {
+      "id": "1015",
+      "start_ms": 5626000,
+      "end_ms": 5631500,
+      "speaker": "Diana Martinez",
+      "text": "We've implemented zero-trust networking across all production environments.",
+      "raw_text": "<v Diana Martinez>We've implemented zero-trust networking across all production environments."
+    },
+    {
+      "id": "1016",
+      "start_ms": 5632000,
+      "end_ms": 5637500,
+      "speaker": "Diana Martinez",
+      "text": "Every service-to-service communication is now encrypted and authenticated.",
+      "raw_text": "<v Diana Martinez>Every service-to-service communication is now encrypted and authenticated."
+    },
+    {
+      "id": "1017",
+      "start_ms": 5638000,
+      "end_ms": 5643500,
+      "speaker": "Diana Martinez",
+      "text": "Our security operations center now monitors over three billion events daily.",
+      "raw_text": "<v Diana Martinez>Our security operations center now monitors over three billion events daily."
+    },
+    {
+      "id": "1018",
+      "start_ms": 5644000,
+      "end_ms": 5649500,
+      "speaker": "Diana Martinez",
+      "text": "Machine learning models help identify anomalies and potential threats in real-time.",
+      "raw_text": "<v Diana Martinez>Machine learning models help identify anomalies and potential threats in real-time."
+    },
+    {
+      "id": "1019",
+      "start_ms": 5650000,
+      "end_ms": 5655500,
+      "speaker": "Diana Martinez",
+      "text": "We completed our SOC 2 Type 2 audit with zero findings this year.",
+      "raw_text": "<v Diana Martinez>We completed our SOC 2 Type 2 audit with zero findings this year."
+    },
+    {
+      "id": "1020",
+      "start_ms": 5656000,
+      "end_ms": 5661500,
+      "speaker": "Diana Martinez",
+      "text": "ISO 27001 certification is expected by end of Q4.",
+      "raw_text": "<v Diana Martinez>ISO 27001 certification is expected by end of Q4."
+    },
+    {
+      "id": "1021",
+      "start_ms": 5662000,
+      "end_ms": 5667500,
+      "speaker": "James Wilson",
+      "text": "On the data platform side, we've made significant investments in data quality.",
+      "raw_text": "<v James Wilson>On the data platform side, we've made significant investments in data quality."
+    },
+    {
+      "id": "1022",
+      "start_ms": 5668000,
+      "end_ms": 5673500,
+      "speaker": "James Wilson",
+      "text": "Our data lineage system now tracks over twelve thousand data assets.",
+      "raw_text": "<v James Wilson>Our data lineage system now tracks over twelve thousand data assets."
+    },
+    {
+      "id": "1023",
+      "start_ms": 5674000,
+      "end_ms": 5679500,
+      "speaker": "James Wilson",
+      "text": "Data freshness has improved with ninety-eight percent of tables updating within SLA.",
+      "raw_text": "<v James Wilson>Data freshness has improved with ninety-eight percent of tables updating within SLA."
+    },
+    {
+      "id": "1024",
+      "start_ms": 5680000,
+      "end_ms": 5685500,
+      "speaker": "James Wilson",
+      "text": "We've reduced data incidents by sixty-five percent through automated testing.",
+      "raw_text": "<v James Wilson>We've reduced data incidents by sixty-five percent through automated testing."
+    },
+    {
+      "id": "1025",
+      "start_ms": 5686000,
+      "end_ms": 5691500,
+      "speaker": "James Wilson",
+      "text": "Our data catalog is now used by over four hundred employees across the company.",
+      "raw_text": "<v James Wilson>Our data catalog is now used by over four hundred employees across the company."
+    },
+    {
+      "id": "1026",
+      "start_ms": 5692000,
+      "end_ms": 5697500,
+      "speaker": "Jennifer Adams",
+      "text": "Let me expand on the product roadmap I mentioned earlier with more specific features.",
+      "raw_text": "<v Jennifer Adams>Let me expand on the product roadmap I mentioned earlier with more specific features."
+    },
+    {
+      "id": "1027",
+      "start_ms": 5698000,
+      "end_ms": 5703500,
+      "speaker": "Jennifer Adams",
+      "text": "Our Q4 release includes twenty-three major features across all product lines.",
+      "raw_text": "<v Jennifer Adams>Our Q4 release includes twenty-three major features across all product lines."
+    },
+    {
+      "id": "1028",
+      "start_ms": 5704000,
+      "end_ms": 5709500,
+      "speaker": "Jennifer Adams",
+      "text": "The collaboration suite will get real-time co-editing for documents and spreadsheets.",
+      "raw_text": "<v Jennifer Adams>The collaboration suite will get real-time co-editing for documents and spreadsheets."
+    },
+    {
+      "id": "1029",
+      "start_ms": 5710000,
+      "end_ms": 5715500,
+      "speaker": "Jennifer Adams",
+      "text": "This feature has been requested by over three hundred enterprise customers.",
+      "raw_text": "<v Jennifer Adams>This feature has been requested by over three hundred enterprise customers."
+    },
+    {
+      "id": "1030",
+      "start_ms": 5716000,
+      "end_ms": 5721500,
+      "speaker": "Jennifer Adams",
+      "text": "We're also launching AI-powered meeting summaries that automatically extract action items.",
+      "raw_text": "<v Jennifer Adams>We're also launching AI-powered meeting summaries that automatically extract action items."
+    },
+    {
+      "id": "1031",
+      "start_ms": 5722000,
+      "end_ms": 5727500,
+      "speaker": "Jennifer Adams",
+      "text": "Early beta testing shows ninety-two percent accuracy in action item identification.",
+      "raw_text": "<v Jennifer Adams>Early beta testing shows ninety-two percent accuracy in action item identification."
+    },
+    {
+      "id": "1032",
+      "start_ms": 5728000,
+      "end_ms": 5733500,
+      "speaker": "Jennifer Adams",
+      "text": "The mobile app is getting a complete redesign based on extensive user research.",
+      "raw_text": "<v Jennifer Adams>The mobile app is getting a complete redesign based on extensive user research."
+    },
+    {
+      "id": "1033",
+      "start_ms": 5734000,
+      "end_ms": 5739500,
+      "speaker": "Jennifer Adams",
+      "text": "We conducted over two hundred user interviews to inform the new design.",
+      "raw_text": "<v Jennifer Adams>We conducted over two hundred user interviews to inform the new design."
+    },
+    {
+      "id": "1034",
+      "start_ms": 5740000,
+      "end_ms": 5745500,
+      "speaker": "Jennifer Adams",
+      "text": "Key improvements include faster navigation, better offline support, and biometric login.",
+      "raw_text": "<v Jennifer Adams>Key improvements include faster navigation, better offline support, and biometric login."
+    },
+    {
+      "id": "1035",
+      "start_ms": 5746000,
+      "end_ms": 5751500,
+      "speaker": "Jennifer Adams",
+      "text": "Mobile engagement is expected to increase by thirty percent with the new experience.",
+      "raw_text": "<v Jennifer Adams>Mobile engagement is expected to increase by thirty percent with the new experience."
+    },
+    {
+      "id": "1036",
+      "start_ms": 5752000,
+      "end_ms": 5757500,
+      "speaker": "Jennifer Adams",
+      "text": "For enterprise customers, we're launching advanced admin controls and compliance features.",
+      "raw_text": "<v Jennifer Adams>For enterprise customers, we're launching advanced admin controls and compliance features."
+    },
+    {
+      "id": "1037",
+      "start_ms": 5758000,
+      "end_ms": 5763500,
+      "speaker": "Jennifer Adams",
+      "text": "Data residency options will expand to include four new regions including Brazil and India.",
+      "raw_text": "<v Jennifer Adams>Data residency options will expand to include four new regions including Brazil and India."
+    },
+    {
+      "id": "1038",
+      "start_ms": 5764000,
+      "end_ms": 5769500,
+      "speaker": "Jennifer Adams",
+      "text": "Single sign-on integration will support all major identity providers out of the box.",
+      "raw_text": "<v Jennifer Adams>Single sign-on integration will support all major identity providers out of the box."
+    },
+    {
+      "id": "1039",
+      "start_ms": 5770000,
+      "end_ms": 5775500,
+      "speaker": "Jennifer Adams",
+      "text": "Audit logging is being enhanced to meet FedRAMP requirements.",
+      "raw_text": "<v Jennifer Adams>Audit logging is being enhanced to meet FedRAMP requirements."
+    },
+    {
+      "id": "1040",
+      "start_ms": 5776000,
+      "end_ms": 5781500,
+      "speaker": "Jennifer Adams",
+      "text": "Our API platform is getting significant enhancements for developers.",
+      "raw_text": "<v Jennifer Adams>Our API platform is getting significant enhancements for developers."
+    },
+    {
+      "id": "1041",
+      "start_ms": 5782000,
+      "end_ms": 5787500,
+      "speaker": "Jennifer Adams",
+      "text": "We're launching a new GraphQL API alongside our existing REST endpoints.",
+      "raw_text": "<v Jennifer Adams>We're launching a new GraphQL API alongside our existing REST endpoints."
+    },
+    {
+      "id": "1042",
+      "start_ms": 5788000,
+      "end_ms": 5793500,
+      "speaker": "Jennifer Adams",
+      "text": "Rate limiting is being improved to provide better predictability for integrations.",
+      "raw_text": "<v Jennifer Adams>Rate limiting is being improved to provide better predictability for integrations."
+    },
+    {
+      "id": "1043",
+      "start_ms": 5794000,
+      "end_ms": 5799500,
+      "speaker": "Jennifer Adams",
+      "text": "Webhook reliability is being enhanced with retry policies and delivery guarantees.",
+      "raw_text": "<v Jennifer Adams>Webhook reliability is being enhanced with retry policies and delivery guarantees."
+    },
+    {
+      "id": "1044",
+      "start_ms": 5800000,
+      "end_ms": 5805500,
+      "speaker": "Jennifer Adams",
+      "text": "The analytics dashboard is being completely rebuilt with new visualization options.",
+      "raw_text": "<v Jennifer Adams>The analytics dashboard is being completely rebuilt with new visualization options."
+    },
+    {
+      "id": "1045",
+      "start_ms": 5806000,
+      "end_ms": 5811500,
+      "speaker": "Jennifer Adams",
+      "text": "Users will be able to create custom dashboards with drag-and-drop components.",
+      "raw_text": "<v Jennifer Adams>Users will be able to create custom dashboards with drag-and-drop components."
+    },
+    {
+      "id": "1046",
+      "start_ms": 5812000,
+      "end_ms": 5817500,
+      "speaker": "Jennifer Adams",
+      "text": "Export options will include PDF reports and scheduled email summaries.",
+      "raw_text": "<v Jennifer Adams>Export options will include PDF reports and scheduled email summaries."
+    },
+    {
+      "id": "1047",
+      "start_ms": 5818000,
+      "end_ms": 5823500,
+      "speaker": "Jennifer Adams",
+      "text": "Real-time dashboards will update automatically without page refresh.",
+      "raw_text": "<v Jennifer Adams>Real-time dashboards will update automatically without page refresh."
+    },
+    {
+      "id": "1048",
+      "start_ms": 5824000,
+      "end_ms": 5829500,
+      "speaker": "Jennifer Adams",
+      "text": "We're also investing heavily in accessibility improvements across all products.",
+      "raw_text": "<v Jennifer Adams>We're also investing heavily in accessibility improvements across all products."
+    },
+    {
+      "id": "1049",
+      "start_ms": 5830000,
+      "end_ms": 5835500,
+      "speaker": "Jennifer Adams",
+      "text": "Our goal is WCAG 2.1 AA compliance across one hundred percent of features.",
+      "raw_text": "<v Jennifer Adams>Our goal is WCAG 2.1 AA compliance across one hundred percent of features."
+    },
+    {
+      "id": "1050",
+      "start_ms": 5836000,
+      "end_ms": 5841500,
+      "speaker": "Jennifer Adams",
+      "text": "Keyboard navigation is being enhanced for power users who prefer not to use mouse.",
+      "raw_text": "<v Jennifer Adams>Keyboard navigation is being enhanced for power users who prefer not to use mouse."
+    },
+    {
+      "id": "1051",
+      "start_ms": 5842000,
+      "end_ms": 5847500,
+      "speaker": "Jennifer Adams",
+      "text": "Screen reader support is being tested with actual users who rely on assistive technology.",
+      "raw_text": "<v Jennifer Adams>Screen reader support is being tested with actual users who rely on assistive technology."
+    },
+    {
+      "id": "1052",
+      "start_ms": 5848000,
+      "end_ms": 5853500,
+      "speaker": "Michelle Taylor",
+      "text": "I want to share some additional color on our sales performance and pipeline.",
+      "raw_text": "<v Michelle Taylor>I want to share some additional color on our sales performance and pipeline."
+    },
+    {
+      "id": "1053",
+      "start_ms": 5854000,
+      "end_ms": 5859500,
+      "speaker": "Michelle Taylor",
+      "text": "We closed forty-seven new enterprise deals this quarter, up from thirty-two last quarter.",
+      "raw_text": "<v Michelle Taylor>We closed forty-seven new enterprise deals this quarter, up from thirty-two last quarter."
+    },
+    {
+      "id": "1054",
+      "start_ms": 5860000,
+      "end_ms": 5865500,
+      "speaker": "Michelle Taylor",
+      "text": "The average deal size increased to four hundred twenty-three thousand dollars.",
+      "raw_text": "<v Michelle Taylor>The average deal size increased to four hundred twenty-three thousand dollars."
+    },
+    {
+      "id": "1055",
+      "start_ms": 5866000,
+      "end_ms": 5871500,
+      "speaker": "Michelle Taylor",
+      "text": "Our win rate against primary competitors improved to sixty-two percent.",
+      "raw_text": "<v Michelle Taylor>Our win rate against primary competitors improved to sixty-two percent."
+    },
+    {
+      "id": "1056",
+      "start_ms": 5872000,
+      "end_ms": 5877500,
+      "speaker": "Michelle Taylor",
+      "text": "Competitive displacement deals accounted for eighteen percent of new business.",
+      "raw_text": "<v Michelle Taylor>Competitive displacement deals accounted for eighteen percent of new business."
+    },
+    {
+      "id": "1057",
+      "start_ms": 5878000,
+      "end_ms": 5883500,
+      "speaker": "Michelle Taylor",
+      "text": "The sales cycle has shortened by twelve percent thanks to improved demo automation.",
+      "raw_text": "<v Michelle Taylor>The sales cycle has shortened by twelve percent thanks to improved demo automation."
+    },
+    {
+      "id": "1058",
+      "start_ms": 5884000,
+      "end_ms": 5889500,
+      "speaker": "Michelle Taylor",
+      "text": "Our new product-led growth motion is generating significant pipeline.",
+      "raw_text": "<v Michelle Taylor>Our new product-led growth motion is generating significant pipeline."
+    },
+    {
+      "id": "1059",
+      "start_ms": 5890000,
+      "end_ms": 5895500,
+      "speaker": "Michelle Taylor",
+      "text": "Thirty-four percent of enterprise opportunities now start as self-service trials.",
+      "raw_text": "<v Michelle Taylor>Thirty-four percent of enterprise opportunities now start as self-service trials."
+    },
+    {
+      "id": "1060",
+      "start_ms": 5896000,
+      "end_ms": 5901500,
+      "speaker": "Michelle Taylor",
+      "text": "These deals close faster and have higher retention rates.",
+      "raw_text": "<v Michelle Taylor>These deals close faster and have higher retention rates."
+    },
+    {
+      "id": "1061",
+      "start_ms": 5902000,
+      "end_ms": 5907500,
+      "speaker": "Michelle Taylor",
+      "text": "Our partner ecosystem contributed twenty-two percent of total bookings.",
+      "raw_text": "<v Michelle Taylor>Our partner ecosystem contributed twenty-two percent of total bookings."
+    },
+    {
+      "id": "1062",
+      "start_ms": 5908000,
+      "end_ms": 5913500,
+      "speaker": "Michelle Taylor",
+      "text": "We added forty-seven new reseller and integration partners this quarter.",
+      "raw_text": "<v Michelle Taylor>We added forty-seven new reseller and integration partners this quarter."
+    },
+    {
+      "id": "1063",
+      "start_ms": 5914000,
+      "end_ms": 5919500,
+      "speaker": "Michelle Taylor",
+      "text": "The partner program is being expanded with better enablement and incentives.",
+      "raw_text": "<v Michelle Taylor>The partner program is being expanded with better enablement and incentives."
+    },
+    {
+      "id": "1064",
+      "start_ms": 5920000,
+      "end_ms": 5925500,
+      "speaker": "Michelle Taylor",
+      "text": "Looking at vertical markets, financial services remains our largest segment.",
+      "raw_text": "<v Michelle Taylor>Looking at vertical markets, financial services remains our largest segment."
+    },
+    {
+      "id": "1065",
+      "start_ms": 5926000,
+      "end_ms": 5931500,
+      "speaker": "Michelle Taylor",
+      "text": "Healthcare has become our fastest-growing vertical at forty-five percent growth.",
+      "raw_text": "<v Michelle Taylor>Healthcare has become our fastest-growing vertical at forty-five percent growth."
+    },
+    {
+      "id": "1066",
+      "start_ms": 5932000,
+      "end_ms": 5937500,
+      "speaker": "Michelle Taylor",
+      "text": "Manufacturing and retail are emerging opportunities we're investing in.",
+      "raw_text": "<v Michelle Taylor>Manufacturing and retail are emerging opportunities we're investing in."
+    },
+    {
+      "id": "1067",
+      "start_ms": 5938000,
+      "end_ms": 5943500,
+      "speaker": "Michelle Taylor",
+      "text": "Our customer success team has achieved a net promoter score of sixty-eight.",
+      "raw_text": "<v Michelle Taylor>Our customer success team has achieved a net promoter score of sixty-eight."
+    },
+    {
+      "id": "1068",
+      "start_ms": 5944000,
+      "end_ms": 5949500,
+      "speaker": "Michelle Taylor",
+      "text": "That's up from fifty-four last year and puts us in the top quartile for B2B SaaS.",
+      "raw_text": "<v Michelle Taylor>That's up from fifty-four last year and puts us in the top quartile for B2B SaaS."
+    },
+    {
+      "id": "1069",
+      "start_ms": 5950000,
+      "end_ms": 5955500,
+      "speaker": "Michelle Taylor",
+      "text": "Customer health scores have improved across all segments.",
+      "raw_text": "<v Michelle Taylor>Customer health scores have improved across all segments."
+    },
+    {
+      "id": "1070",
+      "start_ms": 5956000,
+      "end_ms": 5961500,
+      "speaker": "Michelle Taylor",
+      "text": "We've reduced time-to-value by thirty percent through improved onboarding.",
+      "raw_text": "<v Michelle Taylor>We've reduced time-to-value by thirty percent through improved onboarding."
+    },
+    {
+      "id": "1071",
+      "start_ms": 5962000,
+      "end_ms": 5967500,
+      "speaker": "Michelle Taylor",
+      "text": "Proactive outreach based on usage patterns has prevented significant churn.",
+      "raw_text": "<v Michelle Taylor>Proactive outreach based on usage patterns has prevented significant churn."
+    },
+    {
+      "id": "1072",
+      "start_ms": 5968000,
+      "end_ms": 5973500,
+      "speaker": "Michelle Taylor",
+      "text": "Our premium support offering is seeing strong adoption at forty-two percent of enterprise.",
+      "raw_text": "<v Michelle Taylor>Our premium support offering is seeing strong adoption at forty-two percent of enterprise."
+    },
+    {
+      "id": "1073",
+      "start_ms": 5974000,
+      "end_ms": 5979500,
+      "speaker": "Michelle Taylor",
+      "text": "Response times have improved with ninety-seven percent of tickets resolved within SLA.",
+      "raw_text": "<v Michelle Taylor>Response times have improved with ninety-seven percent of tickets resolved within SLA."
+    },
+    {
+      "id": "1074",
+      "start_ms": 5980000,
+      "end_ms": 5985500,
+      "speaker": "Robert Chen",
+      "text": "The combination of strong sales execution and customer success is a competitive advantage.",
+      "raw_text": "<v Robert Chen>The combination of strong sales execution and customer success is a competitive advantage."
+    },
+    {
+      "id": "1075",
+      "start_ms": 5986000,
+      "end_ms": 5991500,
+      "speaker": "Robert Chen",
+      "text": "Happy customers are our best salespeople, and the data clearly shows that.",
+      "raw_text": "<v Robert Chen>Happy customers are our best salespeople, and the data clearly shows that."
+    },
+    {
+      "id": "1076",
+      "start_ms": 5992000,
+      "end_ms": 5997500,
+      "speaker": "Robert Chen",
+      "text": "I'd like to bring Sarah from People Operations up to share some important updates.",
+      "raw_text": "<v Robert Chen>I'd like to bring Sarah from People Operations up to share some important updates."
+    },
+    {
+      "id": "1077",
+      "start_ms": 5998000,
+      "end_ms": 6003500,
+      "speaker": "Sarah Mitchell",
+      "text": "Thank you Robert. I'm excited to share several people initiatives we're launching.",
+      "raw_text": "<v Sarah Mitchell>Thank you Robert. I'm excited to share several people initiatives we're launching."
+    },
+    {
+      "id": "1078",
+      "start_ms": 6004000,
+      "end_ms": 6009500,
+      "speaker": "Sarah Mitchell",
+      "text": "We've just completed our annual employee engagement survey with eighty-six percent participation.",
+      "raw_text": "<v Sarah Mitchell>We've just completed our annual employee engagement survey with eighty-six percent participation."
+    },
+    {
+      "id": "1079",
+      "start_ms": 6010000,
+      "end_ms": 6015500,
+      "speaker": "Sarah Mitchell",
+      "text": "Overall engagement scores improved by seven points to seventy-four percent.",
+      "raw_text": "<v Sarah Mitchell>Overall engagement scores improved by seven points to seventy-four percent."
+    },
+    {
+      "id": "1080",
+      "start_ms": 6016000,
+      "end_ms": 6021500,
+      "speaker": "Sarah Mitchell",
+      "text": "The areas of highest satisfaction were team collaboration and manager effectiveness.",
+      "raw_text": "<v Sarah Mitchell>The areas of highest satisfaction were team collaboration and manager effectiveness."
+    },
+    {
+      "id": "1081",
+      "start_ms": 6022000,
+      "end_ms": 6027500,
+      "speaker": "Sarah Mitchell",
+      "text": "Areas for improvement include career development visibility and cross-team communication.",
+      "raw_text": "<v Sarah Mitchell>Areas for improvement include career development visibility and cross-team communication."
+    },
+    {
+      "id": "1082",
+      "start_ms": 6028000,
+      "end_ms": 6033500,
+      "speaker": "Sarah Mitchell",
+      "text": "We're launching a new learning and development platform in Q4.",
+      "raw_text": "<v Sarah Mitchell>We're launching a new learning and development platform in Q4."
+    },
+    {
+      "id": "1083",
+      "start_ms": 6034000,
+      "end_ms": 6039500,
+      "speaker": "Sarah Mitchell",
+      "text": "Every employee will have access to thousands of courses from top providers.",
+      "raw_text": "<v Sarah Mitchell>Every employee will have access to thousands of courses from top providers."
+    },
+    {
+      "id": "1084",
+      "start_ms": 6040000,
+      "end_ms": 6045500,
+      "speaker": "Sarah Mitchell",
+      "text": "We're also creating internal learning paths aligned with our career frameworks.",
+      "raw_text": "<v Sarah Mitchell>We're also creating internal learning paths aligned with our career frameworks."
+    },
+    {
+      "id": "1085",
+      "start_ms": 6046000,
+      "end_ms": 6051500,
+      "speaker": "Sarah Mitchell",
+      "text": "Managers will receive enhanced training on coaching and feedback skills.",
+      "raw_text": "<v Sarah Mitchell>Managers will receive enhanced training on coaching and feedback skills."
+    },
+    {
+      "id": "1086",
+      "start_ms": 6052000,
+      "end_ms": 6057500,
+      "speaker": "Sarah Mitchell",
+      "text": "Our diversity, equity, and inclusion efforts continue to make progress.",
+      "raw_text": "<v Sarah Mitchell>Our diversity, equity, and inclusion efforts continue to make progress."
+    },
+    {
+      "id": "1087",
+      "start_ms": 6058000,
+      "end_ms": 6063500,
+      "speaker": "Sarah Mitchell",
+      "text": "Women now represent thirty-nine percent of our workforce, up from thirty-four percent.",
+      "raw_text": "<v Sarah Mitchell>Women now represent thirty-nine percent of our workforce, up from thirty-four percent."
+    },
+    {
+      "id": "1088",
+      "start_ms": 6064000,
+      "end_ms": 6069500,
+      "speaker": "Sarah Mitchell",
+      "text": "We've increased representation from underrepresented groups by twenty-three percent.",
+      "raw_text": "<v Sarah Mitchell>We've increased representation from underrepresented groups by twenty-three percent."
+    },
+    {
+      "id": "1089",
+      "start_ms": 6070000,
+      "end_ms": 6075500,
+      "speaker": "Sarah Mitchell",
+      "text": "Our employee resource groups have grown to eight active communities.",
+      "raw_text": "<v Sarah Mitchell>Our employee resource groups have grown to eight active communities."
+    },
+    {
+      "id": "1090",
+      "start_ms": 6076000,
+      "end_ms": 6081500,
+      "speaker": "Sarah Mitchell",
+      "text": "The new parental leave policy has been very well received.",
+      "raw_text": "<v Sarah Mitchell>The new parental leave policy has been very well received."
+    },
+    {
+      "id": "1091",
+      "start_ms": 6082000,
+      "end_ms": 6087500,
+      "speaker": "Sarah Mitchell",
+      "text": "Primary caregivers now receive sixteen weeks of fully paid leave.",
+      "raw_text": "<v Sarah Mitchell>Primary caregivers now receive sixteen weeks of fully paid leave."
+    },
+    {
+      "id": "1092",
+      "start_ms": 6088000,
+      "end_ms": 6093500,
+      "speaker": "Sarah Mitchell",
+      "text": "Secondary caregivers receive eight weeks, up from four previously.",
+      "raw_text": "<v Sarah Mitchell>Secondary caregivers receive eight weeks, up from four previously."
+    },
+    {
+      "id": "1093",
+      "start_ms": 6094000,
+      "end_ms": 6099500,
+      "speaker": "Sarah Mitchell",
+      "text": "We're also piloting a returnship program for parents re-entering the workforce.",
+      "raw_text": "<v Sarah Mitchell>We're also piloting a returnship program for parents re-entering the workforce."
+    },
+    {
+      "id": "1094",
+      "start_ms": 6100000,
+      "end_ms": 6105500,
+      "speaker": "Sarah Mitchell",
+      "text": "Mental health support has been expanded with additional counseling sessions.",
+      "raw_text": "<v Sarah Mitchell>Mental health support has been expanded with additional counseling sessions."
+    },
+    {
+      "id": "1095",
+      "start_ms": 6106000,
+      "end_ms": 6111500,
+      "speaker": "Sarah Mitchell",
+      "text": "Our employee assistance program now includes financial wellness coaching.",
+      "raw_text": "<v Sarah Mitchell>Our employee assistance program now includes financial wellness coaching."
+    },
+    {
+      "id": "1096",
+      "start_ms": 6112000,
+      "end_ms": 6117500,
+      "speaker": "Sarah Mitchell",
+      "text": "The wellness stipend has been increased to help with fitness and self-care.",
+      "raw_text": "<v Sarah Mitchell>The wellness stipend has been increased to help with fitness and self-care."
+    },
+    {
+      "id": "1097",
+      "start_ms": 6118000,
+      "end_ms": 6123500,
+      "speaker": "Sarah Mitchell",
+      "text": "Our flexible work policy continues to evolve based on team feedback.",
+      "raw_text": "<v Sarah Mitchell>Our flexible work policy continues to evolve based on team feedback."
+    },
+    {
+      "id": "1098",
+      "start_ms": 6124000,
+      "end_ms": 6129500,
+      "speaker": "Sarah Mitchell",
+      "text": "Most teams are operating in a hybrid model with two to three office days.",
+      "raw_text": "<v Sarah Mitchell>Most teams are operating in a hybrid model with two to three office days."
+    },
+    {
+      "id": "1099",
+      "start_ms": 6130000,
+      "end_ms": 6135500,
+      "speaker": "Sarah Mitchell",
+      "text": "We've invested in better collaboration tools to support distributed teams.",
+      "raw_text": "<v Sarah Mitchell>We've invested in better collaboration tools to support distributed teams."
+    },
+    {
+      "id": "1100",
+      "start_ms": 6136000,
+      "end_ms": 6141500,
+      "speaker": "Sarah Mitchell",
+      "text": "Home office equipment stipends have helped employees create productive workspaces.",
+      "raw_text": "<v Sarah Mitchell>Home office equipment stipends have helped employees create productive workspaces."
+    },
+    {
+      "id": "1101",
+      "start_ms": 6142000,
+      "end_ms": 6147500,
+      "speaker": "Robert Chen",
+      "text": "Thank you Sarah. Our people are truly our greatest asset and these investments reflect that.",
+      "raw_text": "<v Robert Chen>Thank you Sarah. Our people are truly our greatest asset and these investments reflect that."
+    },
+    {
+      "id": "1102",
+      "start_ms": 6148000,
+      "end_ms": 6153500,
+      "speaker": "Robert Chen",
+      "text": "We have a special treat today - three of our customers have joined to share their experiences.",
+      "raw_text": "<v Robert Chen>We have a special treat today - three of our customers have joined to share their experiences."
+    },
+    {
+      "id": "1103",
+      "start_ms": 6154000,
+      "end_ms": 6159500,
+      "speaker": "Robert Chen",
+      "text": "Please welcome Maria from GlobalBank, Tom from HealthFirst, and Lisa from RetailMax.",
+      "raw_text": "<v Robert Chen>Please welcome Maria from GlobalBank, Tom from HealthFirst, and Lisa from RetailMax."
+    },
+    {
+      "id": "1104",
+      "start_ms": 6160000,
+      "end_ms": 6165500,
+      "speaker": "Maria Chen",
+      "text": "Thank you for having us. GlobalBank has been using the platform for three years now.",
+      "raw_text": "<v Maria Chen>Thank you for having us. GlobalBank has been using the platform for three years now."
+    },
+    {
+      "id": "1105",
+      "start_ms": 6166000,
+      "end_ms": 6171500,
+      "speaker": "Maria Chen",
+      "text": "We started with a small pilot in our wealth management division.",
+      "raw_text": "<v Maria Chen>We started with a small pilot in our wealth management division."
+    },
+    {
+      "id": "1106",
+      "start_ms": 6172000,
+      "end_ms": 6177500,
+      "speaker": "Maria Chen",
+      "text": "Today, over fifteen thousand employees across the bank use the platform daily.",
+      "raw_text": "<v Maria Chen>Today, over fifteen thousand employees across the bank use the platform daily."
+    },
+    {
+      "id": "1107",
+      "start_ms": 6178000,
+      "end_ms": 6183500,
+      "speaker": "Maria Chen",
+      "text": "The impact on productivity has been remarkable - we've saved an estimated forty thousand hours monthly.",
+      "raw_text": "<v Maria Chen>The impact on productivity has been remarkable - we've saved an estimated forty thousand hours monthly."
+    },
+    {
+      "id": "1108",
+      "start_ms": 6184000,
+      "end_ms": 6189500,
+      "speaker": "Maria Chen",
+      "text": "Compliance and security features were critical for our regulated environment.",
+      "raw_text": "<v Maria Chen>Compliance and security features were critical for our regulated environment."
+    },
+    {
+      "id": "1109",
+      "start_ms": 6190000,
+      "end_ms": 6195500,
+      "speaker": "Maria Chen",
+      "text": "The audit trail capabilities have actually simplified our regulatory reporting.",
+      "raw_text": "<v Maria Chen>The audit trail capabilities have actually simplified our regulatory reporting."
+    },
+    {
+      "id": "1110",
+      "start_ms": 6196000,
+      "end_ms": 6201500,
+      "speaker": "Maria Chen",
+      "text": "We're now expanding to additional use cases in risk management and operations.",
+      "raw_text": "<v Maria Chen>We're now expanding to additional use cases in risk management and operations."
+    },
+    {
+      "id": "1111",
+      "start_ms": 6202000,
+      "end_ms": 6207500,
+      "speaker": "Tom Williams",
+      "text": "HealthFirst had unique requirements given the sensitive nature of healthcare data.",
+      "raw_text": "<v Tom Williams>HealthFirst had unique requirements given the sensitive nature of healthcare data."
+    },
+    {
+      "id": "1112",
+      "start_ms": 6208000,
+      "end_ms": 6213500,
+      "speaker": "Tom Williams",
+      "text": "HIPAA compliance was non-negotiable, and your team worked closely with us on that.",
+      "raw_text": "<v Tom Williams>HIPAA compliance was non-negotiable, and your team worked closely with us on that."
+    },
+    {
+      "id": "1113",
+      "start_ms": 6214000,
+      "end_ms": 6219500,
+      "speaker": "Tom Williams",
+      "text": "We now have over twenty thousand clinicians using the platform across our network.",
+      "raw_text": "<v Tom Williams>We now have over twenty thousand clinicians using the platform across our network."
+    },
+    {
+      "id": "1114",
+      "start_ms": 6220000,
+      "end_ms": 6225500,
+      "speaker": "Tom Williams",
+      "text": "The mobile experience has been particularly valuable for staff working across facilities.",
+      "raw_text": "<v Tom Williams>The mobile experience has been particularly valuable for staff working across facilities."
+    },
+    {
+      "id": "1115",
+      "start_ms": 6226000,
+      "end_ms": 6231500,
+      "speaker": "Tom Williams",
+      "text": "Integration with our electronic health records system was smoother than expected.",
+      "raw_text": "<v Tom Williams>Integration with our electronic health records system was smoother than expected."
+    },
+    {
+      "id": "1116",
+      "start_ms": 6232000,
+      "end_ms": 6237500,
+      "speaker": "Tom Williams",
+      "text": "Patient care coordination has improved significantly since implementation.",
+      "raw_text": "<v Tom Williams>Patient care coordination has improved significantly since implementation."
+    },
+    {
+      "id": "1117",
+      "start_ms": 6238000,
+      "end_ms": 6243500,
+      "speaker": "Tom Williams",
+      "text": "We're seeing measurable improvements in clinical outcomes related to communication.",
+      "raw_text": "<v Tom Williams>We're seeing measurable improvements in clinical outcomes related to communication."
+    },
+    {
+      "id": "1118",
+      "start_ms": 6244000,
+      "end_ms": 6249500,
+      "speaker": "Lisa Park",
+      "text": "RetailMax operates over two thousand stores across North America.",
+      "raw_text": "<v Lisa Park>RetailMax operates over two thousand stores across North America."
+    },
+    {
+      "id": "1119",
+      "start_ms": 6250000,
+      "end_ms": 6255500,
+      "speaker": "Lisa Park",
+      "text": "Communication between headquarters and store teams was a major challenge.",
+      "raw_text": "<v Lisa Park>Communication between headquarters and store teams was a major challenge."
+    },
+    {
+      "id": "1120",
+      "start_ms": 6256000,
+      "end_ms": 6261500,
+      "speaker": "Lisa Park",
+      "text": "The platform has transformed how we share information and best practices.",
+      "raw_text": "<v Lisa Park>The platform has transformed how we share information and best practices."
+    },
+    {
+      "id": "1121",
+      "start_ms": 6262000,
+      "end_ms": 6267500,
+      "speaker": "Lisa Park",
+      "text": "Store managers can now collaborate directly with peers facing similar challenges.",
+      "raw_text": "<v Lisa Park>Store managers can now collaborate directly with peers facing similar challenges."
+    },
+    {
+      "id": "1122",
+      "start_ms": 6268000,
+      "end_ms": 6273500,
+      "speaker": "Lisa Park",
+      "text": "Training new employees has become much more efficient with shared resources.",
+      "raw_text": "<v Lisa Park>Training new employees has become much more efficient with shared resources."
+    },
+    {
+      "id": "1123",
+      "start_ms": 6274000,
+      "end_ms": 6279500,
+      "speaker": "Lisa Park",
+      "text": "Our employee retention has actually improved since implementing better communication tools.",
+      "raw_text": "<v Lisa Park>Our employee retention has actually improved since implementing better communication tools."
+    },
+    {
+      "id": "1124",
+      "start_ms": 6280000,
+      "end_ms": 6285500,
+      "speaker": "Lisa Park",
+      "text": "The analytics help us understand engagement patterns across different regions.",
+      "raw_text": "<v Lisa Park>The analytics help us understand engagement patterns across different regions."
+    },
+    {
+      "id": "1125",
+      "start_ms": 6286000,
+      "end_ms": 6291500,
+      "speaker": "Robert Chen",
+      "text": "Thank you all for sharing. Hearing directly from customers is incredibly valuable.",
+      "raw_text": "<v Robert Chen>Thank you all for sharing. Hearing directly from customers is incredibly valuable."
+    },
+    {
+      "id": "1126",
+      "start_ms": 6292000,
+      "end_ms": 6297500,
+      "speaker": "Robert Chen",
+      "text": "Your feedback shapes our product roadmap and helps us serve you better.",
+      "raw_text": "<v Robert Chen>Your feedback shapes our product roadmap and helps us serve you better."
+    },
+    {
+      "id": "1127",
+      "start_ms": 6298000,
+      "end_ms": 6303500,
+      "speaker": "Alex Rivera",
+      "text": "Question for the panel - what advice would you give to organizations just starting?",
+      "raw_text": "<v Alex Rivera>Question for the panel - what advice would you give to organizations just starting?"
+    },
+    {
+      "id": "1128",
+      "start_ms": 6304000,
+      "end_ms": 6309500,
+      "speaker": "Maria Chen",
+      "text": "Start small with a clear use case and success metrics before expanding.",
+      "raw_text": "<v Maria Chen>Start small with a clear use case and success metrics before expanding."
+    },
+    {
+      "id": "1129",
+      "start_ms": 6310000,
+      "end_ms": 6315500,
+      "speaker": "Tom Williams",
+      "text": "Get executive sponsorship early - change management is as important as technology.",
+      "raw_text": "<v Tom Williams>Get executive sponsorship early - change management is as important as technology."
+    },
+    {
+      "id": "1130",
+      "start_ms": 6316000,
+      "end_ms": 6321500,
+      "speaker": "Lisa Park",
+      "text": "Involve frontline workers in the design process - they know what they need.",
+      "raw_text": "<v Lisa Park>Involve frontline workers in the design process - they know what they need."
+    },
+    {
+      "id": "1131",
+      "start_ms": 6322000,
+      "end_ms": 6327500,
+      "speaker": "Diana Martinez",
+      "text": "We'd like to showcase some cutting-edge technical innovations our labs team has developed.",
+      "raw_text": "<v Diana Martinez>We'd like to showcase some cutting-edge technical innovations our labs team has developed."
+    },
+    {
+      "id": "1132",
+      "start_ms": 6328000,
+      "end_ms": 6333500,
+      "speaker": "Diana Martinez",
+      "text": "These are experimental projects that may shape our product roadmap in the future.",
+      "raw_text": "<v Diana Martinez>These are experimental projects that may shape our product roadmap in the future."
+    },
+    {
+      "id": "1133",
+      "start_ms": 6334000,
+      "end_ms": 6339500,
+      "speaker": "Diana Martinez",
+      "text": "First is Project Aurora - an advanced natural language interface for our platform.",
+      "raw_text": "<v Diana Martinez>First is Project Aurora - an advanced natural language interface for our platform."
+    },
+    {
+      "id": "1134",
+      "start_ms": 6340000,
+      "end_ms": 6345500,
+      "speaker": "Diana Martinez",
+      "text": "Users can ask questions in plain English and get instant answers from their data.",
+      "raw_text": "<v Diana Martinez>Users can ask questions in plain English and get instant answers from their data."
+    },
+    {
+      "id": "1135",
+      "start_ms": 6346000,
+      "end_ms": 6351500,
+      "speaker": "Diana Martinez",
+      "text": "Early testing shows users complete tasks forty percent faster with natural language.",
+      "raw_text": "<v Diana Martinez>Early testing shows users complete tasks forty percent faster with natural language."
+    },
+    {
+      "id": "1136",
+      "start_ms": 6352000,
+      "end_ms": 6357500,
+      "speaker": "Diana Martinez",
+      "text": "The accuracy of intent detection is currently at ninety-four percent.",
+      "raw_text": "<v Diana Martinez>The accuracy of intent detection is currently at ninety-four percent."
+    },
+    {
+      "id": "1137",
+      "start_ms": 6358000,
+      "end_ms": 6363500,
+      "speaker": "Diana Martinez",
+      "text": "Second is Project Lighthouse - predictive analytics for business insights.",
+      "raw_text": "<v Diana Martinez>Second is Project Lighthouse - predictive analytics for business insights."
+    },
+    {
+      "id": "1138",
+      "start_ms": 6364000,
+      "end_ms": 6369500,
+      "speaker": "Diana Martinez",
+      "text": "It automatically identifies trends and anomalies in your data without manual configuration.",
+      "raw_text": "<v Diana Martinez>It automatically identifies trends and anomalies in your data without manual configuration."
+    },
+    {
+      "id": "1139",
+      "start_ms": 6370000,
+      "end_ms": 6375500,
+      "speaker": "Diana Martinez",
+      "text": "Machine learning models learn from historical patterns to surface actionable insights.",
+      "raw_text": "<v Diana Martinez>Machine learning models learn from historical patterns to surface actionable insights."
+    },
+    {
+      "id": "1140",
+      "start_ms": 6376000,
+      "end_ms": 6381500,
+      "speaker": "Diana Martinez",
+      "text": "Beta customers have discovered revenue opportunities they would have otherwise missed.",
+      "raw_text": "<v Diana Martinez>Beta customers have discovered revenue opportunities they would have otherwise missed."
+    },
+    {
+      "id": "1141",
+      "start_ms": 6382000,
+      "end_ms": 6387500,
+      "speaker": "James Wilson",
+      "text": "Project Nexus is our work on advanced integration capabilities.",
+      "raw_text": "<v James Wilson>Project Nexus is our work on advanced integration capabilities."
+    },
+    {
+      "id": "1142",
+      "start_ms": 6388000,
+      "end_ms": 6393500,
+      "speaker": "James Wilson",
+      "text": "We're building a universal connector that works with any API-enabled system.",
+      "raw_text": "<v James Wilson>We're building a universal connector that works with any API-enabled system."
+    },
+    {
+      "id": "1143",
+      "start_ms": 6394000,
+      "end_ms": 6399500,
+      "speaker": "James Wilson",
+      "text": "Configuration is mostly automatic through API schema discovery.",
+      "raw_text": "<v James Wilson>Configuration is mostly automatic through API schema discovery."
+    },
+    {
+      "id": "1144",
+      "start_ms": 6400000,
+      "end_ms": 6405500,
+      "speaker": "James Wilson",
+      "text": "Data transformation and mapping are handled intelligently without code.",
+      "raw_text": "<v James Wilson>Data transformation and mapping are handled intelligently without code."
+    },
+    {
+      "id": "1145",
+      "start_ms": 6406000,
+      "end_ms": 6411500,
+      "speaker": "James Wilson",
+      "text": "This could dramatically reduce integration time from weeks to hours.",
+      "raw_text": "<v James Wilson>This could dramatically reduce integration time from weeks to hours."
+    },
+    {
+      "id": "1146",
+      "start_ms": 6412000,
+      "end_ms": 6417500,
+      "speaker": "Diana Martinez",
+      "text": "Project Shield is our next-generation security initiative.",
+      "raw_text": "<v Diana Martinez>Project Shield is our next-generation security initiative."
+    },
+    {
+      "id": "1147",
+      "start_ms": 6418000,
+      "end_ms": 6423500,
+      "speaker": "Diana Martinez",
+      "text": "It uses behavioral analysis to detect and prevent unauthorized access.",
+      "raw_text": "<v Diana Martinez>It uses behavioral analysis to detect and prevent unauthorized access."
+    },
+    {
+      "id": "1148",
+      "start_ms": 6424000,
+      "end_ms": 6429500,
+      "speaker": "Diana Martinez",
+      "text": "The system learns normal usage patterns and flags anomalies in real-time.",
+      "raw_text": "<v Diana Martinez>The system learns normal usage patterns and flags anomalies in real-time."
+    },
+    {
+      "id": "1149",
+      "start_ms": 6430000,
+      "end_ms": 6435500,
+      "speaker": "Diana Martinez",
+      "text": "Early results show we can detect potential breaches sixty percent faster.",
+      "raw_text": "<v Diana Martinez>Early results show we can detect potential breaches sixty percent faster."
+    },
+    {
+      "id": "1150",
+      "start_ms": 6436000,
+      "end_ms": 6441500,
+      "speaker": "Diana Martinez",
+      "text": "We're also exploring quantum-resistant encryption for future-proofing.",
+      "raw_text": "<v Diana Martinez>We're also exploring quantum-resistant encryption for future-proofing."
+    },
+    {
+      "id": "1151",
+      "start_ms": 6442000,
+      "end_ms": 6447500,
+      "speaker": "James Wilson",
+      "text": "Finally, Project Harmony focuses on accessibility and inclusive design.",
+      "raw_text": "<v James Wilson>Finally, Project Harmony focuses on accessibility and inclusive design."
+    },
+    {
+      "id": "1152",
+      "start_ms": 6448000,
+      "end_ms": 6453500,
+      "speaker": "James Wilson",
+      "text": "We're using AI to automatically generate alt text for images and charts.",
+      "raw_text": "<v James Wilson>We're using AI to automatically generate alt text for images and charts."
+    },
+    {
+      "id": "1153",
+      "start_ms": 6454000,
+      "end_ms": 6459500,
+      "speaker": "James Wilson",
+      "text": "Voice navigation allows complete hands-free operation of the platform.",
+      "raw_text": "<v James Wilson>Voice navigation allows complete hands-free operation of the platform."
+    },
+    {
+      "id": "1154",
+      "start_ms": 6460000,
+      "end_ms": 6465500,
+      "speaker": "James Wilson",
+      "text": "Cognitive load analysis helps simplify complex interfaces automatically.",
+      "raw_text": "<v James Wilson>Cognitive load analysis helps simplify complex interfaces automatically."
+    },
+    {
+      "id": "1155",
+      "start_ms": 6466000,
+      "end_ms": 6471500,
+      "speaker": "James Wilson",
+      "text": "These technologies ensure our products work for everyone, regardless of ability.",
+      "raw_text": "<v James Wilson>These technologies ensure our products work for everyone, regardless of ability."
+    },
+    {
+      "id": "1156",
+      "start_ms": 6472000,
+      "end_ms": 6477500,
+      "speaker": "Robert Chen",
+      "text": "Innovation is core to our identity as a company.",
+      "raw_text": "<v Robert Chen>Innovation is core to our identity as a company."
+    },
+    {
+      "id": "1157",
+      "start_ms": 6478000,
+      "end_ms": 6483500,
+      "speaker": "Robert Chen",
+      "text": "These projects represent our commitment to solving tomorrow's problems today.",
+      "raw_text": "<v Robert Chen>These projects represent our commitment to solving tomorrow's problems today."
+    },
+    {
+      "id": "1158",
+      "start_ms": 6484000,
+      "end_ms": 6489500,
+      "speaker": "Robert Chen",
+      "text": "Let me share updates on our global operations and international expansion.",
+      "raw_text": "<v Robert Chen>Let me share updates on our global operations and international expansion."
+    },
+    {
+      "id": "1159",
+      "start_ms": 6490000,
+      "end_ms": 6495500,
+      "speaker": "Robert Chen",
+      "text": "We now have offices in twelve countries across four continents.",
+      "raw_text": "<v Robert Chen>We now have offices in twelve countries across four continents."
+    },
+    {
+      "id": "1160",
+      "start_ms": 6496000,
+      "end_ms": 6501500,
+      "speaker": "Robert Chen",
+      "text": "Our newest office in Singapore opened last month and is already fully staffed.",
+      "raw_text": "<v Robert Chen>Our newest office in Singapore opened last month and is already fully staffed."
+    },
+    {
+      "id": "1161",
+      "start_ms": 6502000,
+      "end_ms": 6507500,
+      "speaker": "Robert Chen",
+      "text": "The Sydney office has doubled in size to support Asia Pacific growth.",
+      "raw_text": "<v Robert Chen>The Sydney office has doubled in size to support Asia Pacific growth."
+    },
+    {
+      "id": "1162",
+      "start_ms": 6508000,
+      "end_ms": 6513500,
+      "speaker": "Robert Chen",
+      "text": "Our London team is leading European expansion efforts post-Brexit.",
+      "raw_text": "<v Robert Chen>Our London team is leading European expansion efforts post-Brexit."
+    },
+    {
+      "id": "1163",
+      "start_ms": 6514000,
+      "end_ms": 6519500,
+      "speaker": "Robert Chen",
+      "text": "Berlin has become a hub for engineering talent with fifty developers now.",
+      "raw_text": "<v Robert Chen>Berlin has become a hub for engineering talent with fifty developers now."
+    },
+    {
+      "id": "1164",
+      "start_ms": 6520000,
+      "end_ms": 6525500,
+      "speaker": "Robert Chen",
+      "text": "We're exploring office locations in Amsterdam and Dublin for next year.",
+      "raw_text": "<v Robert Chen>We're exploring office locations in Amsterdam and Dublin for next year."
+    },
+    {
+      "id": "1165",
+      "start_ms": 6526000,
+      "end_ms": 6531500,
+      "speaker": "Robert Chen",
+      "text": "In Latin America, our Mexico City office supports Spanish-speaking markets.",
+      "raw_text": "<v Robert Chen>In Latin America, our Mexico City office supports Spanish-speaking markets."
+    },
+    {
+      "id": "1166",
+      "start_ms": 6532000,
+      "end_ms": 6537500,
+      "speaker": "Robert Chen",
+      "text": "Brazil remains a priority with plans for a Sao Paulo presence in Q2.",
+      "raw_text": "<v Robert Chen>Brazil remains a priority with plans for a Sao Paulo presence in Q2."
+    },
+    {
+      "id": "1167",
+      "start_ms": 6538000,
+      "end_ms": 6543500,
+      "speaker": "Robert Chen",
+      "text": "Our support operations run around the clock with teams in three time zones.",
+      "raw_text": "<v Robert Chen>Our support operations run around the clock with teams in three time zones."
+    },
+    {
+      "id": "1168",
+      "start_ms": 6544000,
+      "end_ms": 6549500,
+      "speaker": "Robert Chen",
+      "text": "This ensures customers get fast responses regardless of their location.",
+      "raw_text": "<v Robert Chen>This ensures customers get fast responses regardless of their location."
+    },
+    {
+      "id": "1169",
+      "start_ms": 6550000,
+      "end_ms": 6555500,
+      "speaker": "Robert Chen",
+      "text": "Localization has expanded to eighteen languages with more planned.",
+      "raw_text": "<v Robert Chen>Localization has expanded to eighteen languages with more planned."
+    },
+    {
+      "id": "1170",
+      "start_ms": 6556000,
+      "end_ms": 6561500,
+      "speaker": "Robert Chen",
+      "text": "We use local translation teams rather than automated translation for quality.",
+      "raw_text": "<v Robert Chen>We use local translation teams rather than automated translation for quality."
+    },
+    {
+      "id": "1171",
+      "start_ms": 6562000,
+      "end_ms": 6567500,
+      "speaker": "Robert Chen",
+      "text": "Cultural adaptation goes beyond language to include local business practices.",
+      "raw_text": "<v Robert Chen>Cultural adaptation goes beyond language to include local business practices."
+    },
+    {
+      "id": "1172",
+      "start_ms": 6568000,
+      "end_ms": 6573500,
+      "speaker": "Robert Chen",
+      "text": "Data residency options now cover all major regulatory requirements globally.",
+      "raw_text": "<v Robert Chen>Data residency options now cover all major regulatory requirements globally."
+    },
+    {
+      "id": "1173",
+      "start_ms": 6574000,
+      "end_ms": 6579500,
+      "speaker": "Robert Chen",
+      "text": "GDPR compliance has been strengthened with enhanced data subject rights.",
+      "raw_text": "<v Robert Chen>GDPR compliance has been strengthened with enhanced data subject rights."
+    },
+    {
+      "id": "1174",
+      "start_ms": 6580000,
+      "end_ms": 6585500,
+      "speaker": "Robert Chen",
+      "text": "We're working toward compliance with emerging regulations in various regions.",
+      "raw_text": "<v Robert Chen>We're working toward compliance with emerging regulations in various regions."
+    },
+    {
+      "id": "1175",
+      "start_ms": 6586000,
+      "end_ms": 6591500,
+      "speaker": "Robert Chen",
+      "text": "Supply chain considerations have led to multi-region infrastructure redundancy.",
+      "raw_text": "<v Robert Chen>Supply chain considerations have led to multi-region infrastructure redundancy."
+    },
+    {
+      "id": "1176",
+      "start_ms": 6592000,
+      "end_ms": 6597500,
+      "speaker": "Robert Chen",
+      "text": "No single regional failure can take down the entire platform.",
+      "raw_text": "<v Robert Chen>No single regional failure can take down the entire platform."
+    },
+    {
+      "id": "1177",
+      "start_ms": 6598000,
+      "end_ms": 6603500,
+      "speaker": "Robert Chen",
+      "text": "This architecture also improves performance by serving from nearest data center.",
+      "raw_text": "<v Robert Chen>This architecture also improves performance by serving from nearest data center."
+    },
+    {
+      "id": "1178",
+      "start_ms": 6604000,
+      "end_ms": 6609500,
+      "speaker": "Sam Kim",
+      "text": "I have a question about the AI features - what safeguards are in place for accuracy?",
+      "raw_text": "<v Sam Kim>I have a question about the AI features - what safeguards are in place for accuracy?"
+    },
+    {
+      "id": "1179",
+      "start_ms": 6610000,
+      "end_ms": 6615500,
+      "speaker": "Diana Martinez",
+      "text": "Great question. We have multiple layers of validation for all AI outputs.",
+      "raw_text": "<v Diana Martinez>Great question. We have multiple layers of validation for all AI outputs."
+    },
+    {
+      "id": "1180",
+      "start_ms": 6616000,
+      "end_ms": 6621500,
+      "speaker": "Diana Martinez",
+      "text": "Human review is required for any AI-generated content that affects decisions.",
+      "raw_text": "<v Diana Martinez>Human review is required for any AI-generated content that affects decisions."
+    },
+    {
+      "id": "1181",
+      "start_ms": 6622000,
+      "end_ms": 6627500,
+      "speaker": "Diana Martinez",
+      "text": "We maintain detailed audit trails showing what AI contributed and what humans approved.",
+      "raw_text": "<v Diana Martinez>We maintain detailed audit trails showing what AI contributed and what humans approved."
+    },
+    {
+      "id": "1182",
+      "start_ms": 6628000,
+      "end_ms": 6633500,
+      "speaker": "Diana Martinez",
+      "text": "Confidence scores are displayed so users know when to be more skeptical.",
+      "raw_text": "<v Diana Martinez>Confidence scores are displayed so users know when to be more skeptical."
+    },
+    {
+      "id": "1183",
+      "start_ms": 6634000,
+      "end_ms": 6639500,
+      "speaker": "Diana Martinez",
+      "text": "We're also working on explainability features to show reasoning behind recommendations.",
+      "raw_text": "<v Diana Martinez>We're also working on explainability features to show reasoning behind recommendations."
+    },
+    {
+      "id": "1184",
+      "start_ms": 6640000,
+      "end_ms": 6645500,
+      "speaker": "Jordan Lee",
+      "text": "What's our approach to competitors who are moving faster in certain areas?",
+      "raw_text": "<v Jordan Lee>What's our approach to competitors who are moving faster in certain areas?"
+    },
+    {
+      "id": "1185",
+      "start_ms": 6646000,
+      "end_ms": 6651500,
+      "speaker": "Robert Chen",
+      "text": "We focus on sustainable innovation rather than rushing features to market.",
+      "raw_text": "<v Robert Chen>We focus on sustainable innovation rather than rushing features to market."
+    },
+    {
+      "id": "1186",
+      "start_ms": 6652000,
+      "end_ms": 6657500,
+      "speaker": "Robert Chen",
+      "text": "Quality and reliability are competitive advantages that matter to enterprise customers.",
+      "raw_text": "<v Robert Chen>Quality and reliability are competitive advantages that matter to enterprise customers."
+    },
+    {
+      "id": "1187",
+      "start_ms": 6658000,
+      "end_ms": 6663500,
+      "speaker": "Robert Chen",
+      "text": "We watch competitors closely but make decisions based on customer needs.",
+      "raw_text": "<v Robert Chen>We watch competitors closely but make decisions based on customer needs."
+    },
+    {
+      "id": "1188",
+      "start_ms": 6664000,
+      "end_ms": 6669500,
+      "speaker": "Robert Chen",
+      "text": "Sometimes being second with a better solution wins over being first with problems.",
+      "raw_text": "<v Robert Chen>Sometimes being second with a better solution wins over being first with problems."
+    },
+    {
+      "id": "1189",
+      "start_ms": 6670000,
+      "end_ms": 6675500,
+      "speaker": "Alex Rivera",
+      "text": "Can you talk more about the technical debt reduction efforts?",
+      "raw_text": "<v Alex Rivera>Can you talk more about the technical debt reduction efforts?"
+    },
+    {
+      "id": "1190",
+      "start_ms": 6676000,
+      "end_ms": 6681500,
+      "speaker": "James Wilson",
+      "text": "Absolutely. We've allocated twenty percent of engineering capacity to debt reduction.",
+      "raw_text": "<v James Wilson>Absolutely. We've allocated twenty percent of engineering capacity to debt reduction."
+    },
+    {
+      "id": "1191",
+      "start_ms": 6682000,
+      "end_ms": 6687500,
+      "speaker": "James Wilson",
+      "text": "We've identified over two hundred items in our technical debt backlog.",
+      "raw_text": "<v James Wilson>We've identified over two hundred items in our technical debt backlog."
+    },
+    {
+      "id": "1192",
+      "start_ms": 6688000,
+      "end_ms": 6693500,
+      "speaker": "James Wilson",
+      "text": "Priority is given to items that affect reliability and developer productivity.",
+      "raw_text": "<v James Wilson>Priority is given to items that affect reliability and developer productivity."
+    },
+    {
+      "id": "1193",
+      "start_ms": 6694000,
+      "end_ms": 6699500,
+      "speaker": "James Wilson",
+      "text": "So far this year, we've retired twelve deprecated APIs and migrated all consumers.",
+      "raw_text": "<v James Wilson>So far this year, we've retired twelve deprecated APIs and migrated all consumers."
+    },
+    {
+      "id": "1194",
+      "start_ms": 6700000,
+      "end_ms": 6705500,
+      "speaker": "James Wilson",
+      "text": "Code coverage has improved from sixty-eight percent to eighty-two percent.",
+      "raw_text": "<v James Wilson>Code coverage has improved from sixty-eight percent to eighty-two percent."
+    },
+    {
+      "id": "1195",
+      "start_ms": 6706000,
+      "end_ms": 6711500,
+      "speaker": "James Wilson",
+      "text": "Build times have been cut in half through optimization work.",
+      "raw_text": "<v James Wilson>Build times have been cut in half through optimization work."
+    },
+    {
+      "id": "1196",
+      "start_ms": 6712000,
+      "end_ms": 6717500,
+      "speaker": "Employee Four",
+      "text": "What support is available for employees dealing with burnout?",
+      "raw_text": "<v Employee Four>What support is available for employees dealing with burnout?"
+    },
+    {
+      "id": "1197",
+      "start_ms": 6718000,
+      "end_ms": 6723500,
+      "speaker": "Sarah Mitchell",
+      "text": "This is something we take very seriously. Several resources are available.",
+      "raw_text": "<v Sarah Mitchell>This is something we take very seriously. Several resources are available."
+    },
+    {
+      "id": "1198",
+      "start_ms": 6724000,
+      "end_ms": 6729500,
+      "speaker": "Sarah Mitchell",
+      "text": "Our employee assistance program offers counseling and mental health support.",
+      "raw_text": "<v Sarah Mitchell>Our employee assistance program offers counseling and mental health support."
+    },
+    {
+      "id": "1199",
+      "start_ms": 6730000,
+      "end_ms": 6735500,
+      "speaker": "Sarah Mitchell",
+      "text": "Managers are trained to recognize signs of burnout and have conversations.",
+      "raw_text": "<v Sarah Mitchell>Managers are trained to recognize signs of burnout and have conversations."
+    },
+    {
+      "id": "1200",
+      "start_ms": 6736000,
+      "end_ms": 6741500,
+      "speaker": "Sarah Mitchell",
+      "text": "We encourage taking time off and have implemented no-meeting days.",
+      "raw_text": "<v Sarah Mitchell>We encourage taking time off and have implemented no-meeting days."
+    },
+    {
+      "id": "1201",
+      "start_ms": 6742000,
+      "end_ms": 6747500,
+      "speaker": "Sarah Mitchell",
+      "text": "Workload discussions should happen regularly in one-on-ones.",
+      "raw_text": "<v Sarah Mitchell>Workload discussions should happen regularly in one-on-ones."
+    },
+    {
+      "id": "1202",
+      "start_ms": 6748000,
+      "end_ms": 6753500,
+      "speaker": "Sarah Mitchell",
+      "text": "If you're struggling, please reach out - there's no stigma attached to asking for help.",
+      "raw_text": "<v Sarah Mitchell>If you're struggling, please reach out - there's no stigma attached to asking for help."
+    },
+    {
+      "id": "1203",
+      "start_ms": 6754000,
+      "end_ms": 6759500,
+      "speaker": "Employee Five",
+      "text": "How are decisions made about which features make it to the roadmap?",
+      "raw_text": "<v Employee Five>How are decisions made about which features make it to the roadmap?"
+    },
+    {
+      "id": "1204",
+      "start_ms": 6760000,
+      "end_ms": 6765500,
+      "speaker": "Jennifer Adams",
+      "text": "We use a combination of customer feedback, data, and strategic alignment.",
+      "raw_text": "<v Jennifer Adams>We use a combination of customer feedback, data, and strategic alignment."
+    },
+    {
+      "id": "1205",
+      "start_ms": 6766000,
+      "end_ms": 6771500,
+      "speaker": "Jennifer Adams",
+      "text": "Every feature request is logged and tracked in our product management system.",
+      "raw_text": "<v Jennifer Adams>Every feature request is logged and tracked in our product management system."
+    },
+    {
+      "id": "1206",
+      "start_ms": 6772000,
+      "end_ms": 6777500,
+      "speaker": "Jennifer Adams",
+      "text": "We look at frequency of requests, revenue impact, and strategic fit.",
+      "raw_text": "<v Jennifer Adams>We look at frequency of requests, revenue impact, and strategic fit."
+    },
+    {
+      "id": "1207",
+      "start_ms": 6778000,
+      "end_ms": 6783500,
+      "speaker": "Jennifer Adams",
+      "text": "Customer advisory board input is weighted heavily for enterprise features.",
+      "raw_text": "<v Jennifer Adams>Customer advisory board input is weighted heavily for enterprise features."
+    },
+    {
+      "id": "1208",
+      "start_ms": 6784000,
+      "end_ms": 6789500,
+      "speaker": "Jennifer Adams",
+      "text": "We also reserve capacity for innovation and technical foundation work.",
+      "raw_text": "<v Jennifer Adams>We also reserve capacity for innovation and technical foundation work."
+    },
+    {
+      "id": "1209",
+      "start_ms": 6790000,
+      "end_ms": 6795500,
+      "speaker": "Jennifer Adams",
+      "text": "Transparency is improving - we're working on a public roadmap for customers.",
+      "raw_text": "<v Jennifer Adams>Transparency is improving - we're working on a public roadmap for customers."
+    },
+    {
+      "id": "1210",
+      "start_ms": 6796000,
+      "end_ms": 6801500,
+      "speaker": "Robert Chen",
+      "text": "Now for one of my favorite parts - recognizing outstanding contributions.",
+      "raw_text": "<v Robert Chen>Now for one of my favorite parts - recognizing outstanding contributions."
+    },
+    {
+      "id": "1211",
+      "start_ms": 6802000,
+      "end_ms": 6807500,
+      "speaker": "Robert Chen",
+      "text": "We have several awards to present today acknowledging exceptional work.",
+      "raw_text": "<v Robert Chen>We have several awards to present today acknowledging exceptional work."
+    },
+    {
+      "id": "1212",
+      "start_ms": 6808000,
+      "end_ms": 6813500,
+      "speaker": "Robert Chen",
+      "text": "First, the Innovation Award goes to the team that created Project Aurora.",
+      "raw_text": "<v Robert Chen>First, the Innovation Award goes to the team that created Project Aurora."
+    },
+    {
+      "id": "1213",
+      "start_ms": 6814000,
+      "end_ms": 6819500,
+      "speaker": "Robert Chen",
+      "text": "Diana, James, and the entire labs team - your creativity inspires us all.",
+      "raw_text": "<v Robert Chen>Diana, James, and the entire labs team - your creativity inspires us all."
+    },
+    {
+      "id": "1214",
+      "start_ms": 6820000,
+      "end_ms": 6825500,
+      "speaker": "Robert Chen",
+      "text": "The Customer Champion Award goes to the support team in Dublin.",
+      "raw_text": "<v Robert Chen>The Customer Champion Award goes to the support team in Dublin."
+    },
+    {
+      "id": "1215",
+      "start_ms": 6826000,
+      "end_ms": 6831500,
+      "speaker": "Robert Chen",
+      "text": "Their dedication to customer success has directly impacted our NPS scores.",
+      "raw_text": "<v Robert Chen>Their dedication to customer success has directly impacted our NPS scores."
+    },
+    {
+      "id": "1216",
+      "start_ms": 6832000,
+      "end_ms": 6837500,
+      "speaker": "Robert Chen",
+      "text": "The Collaboration Award recognizes the cross-functional mobile app team.",
+      "raw_text": "<v Robert Chen>The Collaboration Award recognizes the cross-functional mobile app team."
+    },
+    {
+      "id": "1217",
+      "start_ms": 6838000,
+      "end_ms": 6843500,
+      "speaker": "Robert Chen",
+      "text": "Engineering, design, and product worked seamlessly to deliver an amazing experience.",
+      "raw_text": "<v Robert Chen>Engineering, design, and product worked seamlessly to deliver an amazing experience."
+    },
+    {
+      "id": "1218",
+      "start_ms": 6844000,
+      "end_ms": 6849500,
+      "speaker": "Robert Chen",
+      "text": "The Rising Star Award goes to three employees who've made exceptional impact.",
+      "raw_text": "<v Robert Chen>The Rising Star Award goes to three employees who've made exceptional impact."
+    },
+    {
+      "id": "1219",
+      "start_ms": 6850000,
+      "end_ms": 6855500,
+      "speaker": "Robert Chen",
+      "text": "Emily in engineering, Marcus in sales, and Priya in customer success.",
+      "raw_text": "<v Robert Chen>Emily in engineering, Marcus in sales, and Priya in customer success."
+    },
+    {
+      "id": "1220",
+      "start_ms": 6856000,
+      "end_ms": 6861500,
+      "speaker": "Robert Chen",
+      "text": "Your fresh perspectives and energy make our culture stronger.",
+      "raw_text": "<v Robert Chen>Your fresh perspectives and energy make our culture stronger."
+    },
+    {
+      "id": "1221",
+      "start_ms": 6862000,
+      "end_ms": 6867500,
+      "speaker": "Robert Chen",
+      "text": "The Leadership Award goes to Michelle Taylor for building an incredible sales organization.",
+      "raw_text": "<v Robert Chen>The Leadership Award goes to Michelle Taylor for building an incredible sales organization."
+    },
+    {
+      "id": "1222",
+      "start_ms": 6868000,
+      "end_ms": 6873500,
+      "speaker": "Robert Chen",
+      "text": "Under her leadership, we've more than doubled our sales capacity while improving performance.",
+      "raw_text": "<v Robert Chen>Under her leadership, we've more than doubled our sales capacity while improving performance."
+    },
+    {
+      "id": "1223",
+      "start_ms": 6874000,
+      "end_ms": 6879500,
+      "speaker": "Robert Chen",
+      "text": "Finally, our Lifetime Achievement Award goes to someone who's been here since day one.",
+      "raw_text": "<v Robert Chen>Finally, our Lifetime Achievement Award goes to someone who's been here since day one."
+    },
+    {
+      "id": "1224",
+      "start_ms": 6880000,
+      "end_ms": 6885500,
+      "speaker": "Robert Chen",
+      "text": "David Chen, our founding engineer, is celebrating ten years with the company.",
+      "raw_text": "<v Robert Chen>David Chen, our founding engineer, is celebrating ten years with the company."
+    },
+    {
+      "id": "1225",
+      "start_ms": 6886000,
+      "end_ms": 6891500,
+      "speaker": "Robert Chen",
+      "text": "David's technical vision has shaped everything we've built.",
+      "raw_text": "<v Robert Chen>David's technical vision has shaped everything we've built."
+    },
+    {
+      "id": "1226",
+      "start_ms": 6892000,
+      "end_ms": 6897500,
+      "speaker": "Robert Chen",
+      "text": "He's mentored dozens of engineers who've gone on to lead teams themselves.",
+      "raw_text": "<v Robert Chen>He's mentored dozens of engineers who've gone on to lead teams themselves."
+    },
+    {
+      "id": "1227",
+      "start_ms": 6898000,
+      "end_ms": 6903500,
+      "speaker": "Robert Chen",
+      "text": "David, thank you for your dedication and for believing in this journey.",
+      "raw_text": "<v Robert Chen>David, thank you for your dedication and for believing in this journey."
+    },
+    {
+      "id": "1228",
+      "start_ms": 6904000,
+      "end_ms": 6909500,
+      "speaker": "Robert Chen",
+      "text": "Please join me in congratulating all of our award winners today.",
+      "raw_text": "<v Robert Chen>Please join me in congratulating all of our award winners today."
+    },
+    {
+      "id": "1229",
+      "start_ms": 6910000,
+      "end_ms": 6915500,
+      "speaker": "Robert Chen",
+      "text": "You represent the best of what this company can be.",
+      "raw_text": "<v Robert Chen>You represent the best of what this company can be."
+    },
+    {
+      "id": "1230",
+      "start_ms": 6916000,
+      "end_ms": 6921500,
+      "speaker": "Robert Chen",
+      "text": "As we look ahead to next year, I want to share our strategic priorities.",
+      "raw_text": "<v Robert Chen>As we look ahead to next year, I want to share our strategic priorities."
+    },
+    {
+      "id": "1231",
+      "start_ms": 6922000,
+      "end_ms": 6927500,
+      "speaker": "Robert Chen",
+      "text": "First, customer experience excellence remains our north star.",
+      "raw_text": "<v Robert Chen>First, customer experience excellence remains our north star."
+    },
+    {
+      "id": "1232",
+      "start_ms": 6928000,
+      "end_ms": 6933500,
+      "speaker": "Robert Chen",
+      "text": "Everything we build should make our customers more successful.",
+      "raw_text": "<v Robert Chen>Everything we build should make our customers more successful."
+    },
+    {
+      "id": "1233",
+      "start_ms": 6934000,
+      "end_ms": 6939500,
+      "speaker": "Robert Chen",
+      "text": "Second, we'll continue investing heavily in AI and machine learning capabilities.",
+      "raw_text": "<v Robert Chen>Second, we'll continue investing heavily in AI and machine learning capabilities."
+    },
+    {
+      "id": "1234",
+      "start_ms": 6940000,
+      "end_ms": 6945500,
+      "speaker": "Robert Chen",
+      "text": "Third, international expansion will accelerate, particularly in Asia and Europe.",
+      "raw_text": "<v Robert Chen>Third, international expansion will accelerate, particularly in Asia and Europe."
+    },
+    {
+      "id": "1235",
+      "start_ms": 6946000,
+      "end_ms": 6951500,
+      "speaker": "Robert Chen",
+      "text": "Fourth, we're committed to achieving profitability while maintaining growth.",
+      "raw_text": "<v Robert Chen>Fourth, we're committed to achieving profitability while maintaining growth."
+    },
+    {
+      "id": "1236",
+      "start_ms": 6952000,
+      "end_ms": 6957500,
+      "speaker": "Robert Chen",
+      "text": "Fifth, our people and culture will remain a top priority.",
+      "raw_text": "<v Robert Chen>Fifth, our people and culture will remain a top priority."
+    },
+    {
+      "id": "1237",
+      "start_ms": 6958000,
+      "end_ms": 6963500,
+      "speaker": "Robert Chen",
+      "text": "We're targeting revenue growth of twenty-five to thirty percent next year.",
+      "raw_text": "<v Robert Chen>We're targeting revenue growth of twenty-five to thirty percent next year."
+    },
+    {
+      "id": "1238",
+      "start_ms": 6964000,
+      "end_ms": 6969500,
+      "speaker": "Robert Chen",
+      "text": "New product innovations will contribute fifteen percent of that growth.",
+      "raw_text": "<v Robert Chen>New product innovations will contribute fifteen percent of that growth."
+    },
+    {
+      "id": "1239",
+      "start_ms": 6970000,
+      "end_ms": 6975500,
+      "speaker": "Robert Chen",
+      "text": "Customer retention will contribute the remaining through expansion revenue.",
+      "raw_text": "<v Robert Chen>Customer retention will contribute the remaining through expansion revenue."
+    },
+    {
+      "id": "1240",
+      "start_ms": 6976000,
+      "end_ms": 6981500,
+      "speaker": "Robert Chen",
+      "text": "We plan to grow the team by approximately three hundred people.",
+      "raw_text": "<v Robert Chen>We plan to grow the team by approximately three hundred people."
+    },
+    {
+      "id": "1241",
+      "start_ms": 6982000,
+      "end_ms": 6987500,
+      "speaker": "Robert Chen",
+      "text": "Engineering will see the largest growth followed by sales and customer success.",
+      "raw_text": "<v Robert Chen>Engineering will see the largest growth followed by sales and customer success."
+    },
+    {
+      "id": "1242",
+      "start_ms": 6988000,
+      "end_ms": 6993500,
+      "speaker": "Robert Chen",
+      "text": "We're also investing in our technical infrastructure for long-term scalability.",
+      "raw_text": "<v Robert Chen>We're also investing in our technical infrastructure for long-term scalability."
+    },
+    {
+      "id": "1243",
+      "start_ms": 6994000,
+      "end_ms": 6999500,
+      "speaker": "Kevin O'Brien",
+      "text": "From a financial perspective, we're projecting positive operating income by Q3.",
+      "raw_text": "<v Kevin O'Brien>From a financial perspective, we're projecting positive operating income by Q3."
+    },
+    {
+      "id": "1244",
+      "start_ms": 7000000,
+      "end_ms": 7005500,
+      "speaker": "Kevin O'Brien",
+      "text": "This will be a significant milestone in our company's history.",
+      "raw_text": "<v Kevin O'Brien>This will be a significant milestone in our company's history."
+    },
+    {
+      "id": "1245",
+      "start_ms": 7006000,
+      "end_ms": 7011500,
+      "speaker": "Kevin O'Brien",
+      "text": "We'll maintain disciplined spending while investing in high-impact areas.",
+      "raw_text": "<v Kevin O'Brien>We'll maintain disciplined spending while investing in high-impact areas."
+    },
+    {
+      "id": "1246",
+      "start_ms": 7012000,
+      "end_ms": 7017500,
+      "speaker": "Kevin O'Brien",
+      "text": "Capital allocation will favor initiatives with clear return on investment.",
+      "raw_text": "<v Kevin O'Brien>Capital allocation will favor initiatives with clear return on investment."
+    },
+    {
+      "id": "1247",
+      "start_ms": 7018000,
+      "end_ms": 7023500,
+      "speaker": "Diana Martinez",
+      "text": "Technically, we're planning several major platform enhancements.",
+      "raw_text": "<v Diana Martinez>Technically, we're planning several major platform enhancements."
+    },
+    {
+      "id": "1248",
+      "start_ms": 7024000,
+      "end_ms": 7029500,
+      "speaker": "Diana Martinez",
+      "text": "A new real-time event system will enable instant updates across the platform.",
+      "raw_text": "<v Diana Martinez>A new real-time event system will enable instant updates across the platform."
+    },
+    {
+      "id": "1249",
+      "start_ms": 7030000,
+      "end_ms": 7035500,
+      "speaker": "Diana Martinez",
+      "text": "Our mobile infrastructure will be rebuilt on a modern reactive architecture.",
+      "raw_text": "<v Diana Martinez>Our mobile infrastructure will be rebuilt on a modern reactive architecture."
+    },
+    {
+      "id": "1250",
+      "start_ms": 7036000,
+      "end_ms": 7041500,
+      "speaker": "Diana Martinez",
+      "text": "Developer experience improvements will make building integrations much easier.",
+      "raw_text": "<v Diana Martinez>Developer experience improvements will make building integrations much easier."
+    },
+    {
+      "id": "1251",
+      "start_ms": 7042000,
+      "end_ms": 7047500,
+      "speaker": "Jennifer Adams",
+      "text": "Product-wise, we have over a hundred features planned for next year.",
+      "raw_text": "<v Jennifer Adams>Product-wise, we have over a hundred features planned for next year."
+    },
+    {
+      "id": "1252",
+      "start_ms": 7048000,
+      "end_ms": 7053500,
+      "speaker": "Jennifer Adams",
+      "text": "Major releases will happen quarterly with smaller updates monthly.",
+      "raw_text": "<v Jennifer Adams>Major releases will happen quarterly with smaller updates monthly."
+    },
+    {
+      "id": "1253",
+      "start_ms": 7054000,
+      "end_ms": 7059500,
+      "speaker": "Jennifer Adams",
+      "text": "We'll launch two entirely new product lines addressing adjacent markets.",
+      "raw_text": "<v Jennifer Adams>We'll launch two entirely new product lines addressing adjacent markets."
+    },
+    {
+      "id": "1254",
+      "start_ms": 7060000,
+      "end_ms": 7065500,
+      "speaker": "Jennifer Adams",
+      "text": "Customer co-development programs will influence at least half of major features.",
+      "raw_text": "<v Jennifer Adams>Customer co-development programs will influence at least half of major features."
+    },
+    {
+      "id": "1255",
+      "start_ms": 7066000,
+      "end_ms": 7071500,
+      "speaker": "Michelle Taylor",
+      "text": "Sales capacity will nearly double with expanded coverage globally.",
+      "raw_text": "<v Michelle Taylor>Sales capacity will nearly double with expanded coverage globally."
+    },
+    {
+      "id": "1256",
+      "start_ms": 7072000,
+      "end_ms": 7077500,
+      "speaker": "Michelle Taylor",
+      "text": "New verticals including education and government will be prioritized.",
+      "raw_text": "<v Michelle Taylor>New verticals including education and government will be prioritized."
+    },
+    {
+      "id": "1257",
+      "start_ms": 7078000,
+      "end_ms": 7083500,
+      "speaker": "Michelle Taylor",
+      "text": "Partner ecosystem growth will be a major focus for indirect channel.",
+      "raw_text": "<v Michelle Taylor>Partner ecosystem growth will be a major focus for indirect channel."
+    },
+    {
+      "id": "1258",
+      "start_ms": 7084000,
+      "end_ms": 7089500,
+      "speaker": "Robert Chen",
+      "text": "As we close today's all-hands meeting, I want to leave you with some thoughts.",
+      "raw_text": "<v Robert Chen>As we close today's all-hands meeting, I want to leave you with some thoughts."
+    },
+    {
+      "id": "1259",
+      "start_ms": 7090000,
+      "end_ms": 7095500,
+      "speaker": "Robert Chen",
+      "text": "We've covered a lot of ground today - finances, products, technology, and people.",
+      "raw_text": "<v Robert Chen>We've covered a lot of ground today - finances, products, technology, and people."
+    },
+    {
+      "id": "1260",
+      "start_ms": 7096000,
+      "end_ms": 7101500,
+      "speaker": "Robert Chen",
+      "text": "But what really matters is the impact we have on our customers and each other.",
+      "raw_text": "<v Robert Chen>But what really matters is the impact we have on our customers and each other."
+    },
+    {
+      "id": "1261",
+      "start_ms": 7102000,
+      "end_ms": 7107500,
+      "speaker": "Robert Chen",
+      "text": "Every feature we build, every customer we serve, every colleague we help.",
+      "raw_text": "<v Robert Chen>Every feature we build, every customer we serve, every colleague we help."
+    },
+    {
+      "id": "1262",
+      "start_ms": 7108000,
+      "end_ms": 7113500,
+      "speaker": "Robert Chen",
+      "text": "That's what creates lasting value and meaningful work.",
+      "raw_text": "<v Robert Chen>That's what creates lasting value and meaningful work."
+    },
+    {
+      "id": "1263",
+      "start_ms": 7114000,
+      "end_ms": 7119500,
+      "speaker": "Robert Chen",
+      "text": "This company exists because a small group of people believed in an idea.",
+      "raw_text": "<v Robert Chen>This company exists because a small group of people believed in an idea."
+    },
+    {
+      "id": "1264",
+      "start_ms": 7120000,
+      "end_ms": 7125500,
+      "speaker": "Robert Chen",
+      "text": "That belief has grown into something that impacts millions of users daily.",
+      "raw_text": "<v Robert Chen>That belief has grown into something that impacts millions of users daily."
+    },
+    {
+      "id": "1265",
+      "start_ms": 7126000,
+      "end_ms": 7131500,
+      "speaker": "Robert Chen",
+      "text": "But we're just getting started. The opportunity ahead is enormous.",
+      "raw_text": "<v Robert Chen>But we're just getting started. The opportunity ahead is enormous."
+    },
+    {
+      "id": "1266",
+      "start_ms": 7132000,
+      "end_ms": 7137500,
+      "speaker": "Robert Chen",
+      "text": "The markets we serve are growing. The problems we solve matter.",
+      "raw_text": "<v Robert Chen>The markets we serve are growing. The problems we solve matter."
+    },
+    {
+      "id": "1267",
+      "start_ms": 7138000,
+      "end_ms": 7143500,
+      "speaker": "Robert Chen",
+      "text": "And the team we've built is capable of achieving remarkable things.",
+      "raw_text": "<v Robert Chen>And the team we've built is capable of achieving remarkable things."
+    },
+    {
+      "id": "1268",
+      "start_ms": 7144000,
+      "end_ms": 7149500,
+      "speaker": "Robert Chen",
+      "text": "I'm grateful every day to work alongside such talented and dedicated people.",
+      "raw_text": "<v Robert Chen>I'm grateful every day to work alongside such talented and dedicated people."
+    },
+    {
+      "id": "1269",
+      "start_ms": 7150000,
+      "end_ms": 7155500,
+      "speaker": "Robert Chen",
+      "text": "Your commitment to excellence shows in everything we do.",
+      "raw_text": "<v Robert Chen>Your commitment to excellence shows in everything we do."
+    },
+    {
+      "id": "1270",
+      "start_ms": 7156000,
+      "end_ms": 7161500,
+      "speaker": "Robert Chen",
+      "text": "As you go back to your work, remember why we're here.",
+      "raw_text": "<v Robert Chen>As you go back to your work, remember why we're here."
+    },
+    {
+      "id": "1271",
+      "start_ms": 7162000,
+      "end_ms": 7167500,
+      "speaker": "Robert Chen",
+      "text": "We're here to help organizations communicate and collaborate better.",
+      "raw_text": "<v Robert Chen>We're here to help organizations communicate and collaborate better."
+    },
+    {
+      "id": "1272",
+      "start_ms": 7168000,
+      "end_ms": 7173500,
+      "speaker": "Robert Chen",
+      "text": "We're here to empower people to do their best work.",
+      "raw_text": "<v Robert Chen>We're here to empower people to do their best work."
+    },
+    {
+      "id": "1273",
+      "start_ms": 7174000,
+      "end_ms": 7179500,
+      "speaker": "Robert Chen",
+      "text": "We're here to build something that will outlast any individual.",
+      "raw_text": "<v Robert Chen>We're here to build something that will outlast any individual."
+    },
+    {
+      "id": "1274",
+      "start_ms": 7180000,
+      "end_ms": 7185500,
+      "speaker": "Robert Chen",
+      "text": "Take care of yourselves and each other. Support your teammates.",
+      "raw_text": "<v Robert Chen>Take care of yourselves and each other. Support your teammates."
+    },
+    {
+      "id": "1275",
+      "start_ms": 7186000,
+      "end_ms": 7191500,
+      "speaker": "Robert Chen",
+      "text": "Celebrate wins, learn from setbacks, and keep pushing forward.",
+      "raw_text": "<v Robert Chen>Celebrate wins, learn from setbacks, and keep pushing forward."
+    },
+    {
+      "id": "1276",
+      "start_ms": 7192000,
+      "end_ms": 7197500,
+      "speaker": "Robert Chen",
+      "text": "If you have questions or concerns, my door is always open.",
+      "raw_text": "<v Robert Chen>If you have questions or concerns, my door is always open."
+    },
+    {
+      "id": "1277",
+      "start_ms": 7198000,
+      "end_ms": 7203500,
+      "speaker": "Robert Chen",
+      "text": "Let's make the next quarter even better than this one.",
+      "raw_text": "<v Robert Chen>Let's make the next quarter even better than this one."
+    },
+    {
+      "id": "1278",
+      "start_ms": 7204000,
+      "end_ms": 7209500,
+      "speaker": "Robert Chen",
+      "text": "Thank you all for being part of this incredible journey.",
+      "raw_text": "<v Robert Chen>Thank you all for being part of this incredible journey."
+    },
+    {
+      "id": "1279",
+      "start_ms": 7210000,
+      "end_ms": 7215500,
+      "speaker": "Robert Chen",
+      "text": "This concludes our Q3 quarterly all-hands meeting.",
+      "raw_text": "<v Robert Chen>This concludes our Q3 quarterly all-hands meeting."
+    },
+    {
+      "id": "1280",
+      "start_ms": 7216000,
+      "end_ms": 7221500,
+      "speaker": "Robert Chen",
+      "text": "Have a wonderful rest of your day. Take care everyone.",
+      "raw_text": "<v Robert Chen>Have a wonderful rest of your day. Take care everyone."
+    },
+    {
+      "id": "1281",
+      "start_ms": 7230000,
+      "end_ms": 7235500,
+      "speaker": "James Wilson",
+      "text": "I want to take a deeper dive into our platform architecture for the technical folks.",
+      "raw_text": "<v James Wilson>I want to take a deeper dive into our platform architecture for the technical folks."
+    },
+    {
+      "id": "1282",
+      "start_ms": 7236000,
+      "end_ms": 7241500,
+      "speaker": "James Wilson",
+      "text": "Our microservices architecture now comprises over two hundred individual services.",
+      "raw_text": "<v James Wilson>Our microservices architecture now comprises over two hundred individual services."
+    },
+    {
+      "id": "1283",
+      "start_ms": 7242000,
+      "end_ms": 7247500,
+      "speaker": "James Wilson",
+      "text": "These services are organized into fifteen distinct bounded contexts following domain-driven design principles.",
+      "raw_text": "<v James Wilson>These services are organized into fifteen distinct bounded contexts following domain-driven design principles."
+    },
+    {
+      "id": "1284",
+      "start_ms": 7248000,
+      "end_ms": 7253500,
+      "speaker": "James Wilson",
+      "text": "Each bounded context has a dedicated team responsible for its evolution and maintenance.",
+      "raw_text": "<v James Wilson>Each bounded context has a dedicated team responsible for its evolution and maintenance."
+    },
+    {
+      "id": "1285",
+      "start_ms": 7254000,
+      "end_ms": 7259500,
+      "speaker": "James Wilson",
+      "text": "Communication between services uses a combination of synchronous REST APIs and asynchronous messaging.",
+      "raw_text": "<v James Wilson>Communication between services uses a combination of synchronous REST APIs and asynchronous messaging."
+    },
+    {
+      "id": "1286",
+      "start_ms": 7260000,
+      "end_ms": 7265500,
+      "speaker": "James Wilson",
+      "text": "Our message broker handles over fifty million messages per day with sub-millisecond latency.",
+      "raw_text": "<v James Wilson>Our message broker handles over fifty million messages per day with sub-millisecond latency."
+    },
+    {
+      "id": "1287",
+      "start_ms": 7266000,
+      "end_ms": 7271500,
+      "speaker": "James Wilson",
+      "text": "We've implemented the saga pattern for distributed transactions across services.",
+      "raw_text": "<v James Wilson>We've implemented the saga pattern for distributed transactions across services."
+    },
+    {
+      "id": "1288",
+      "start_ms": 7272000,
+      "end_ms": 7277500,
+      "speaker": "James Wilson",
+      "text": "This ensures data consistency even when individual services fail temporarily.",
+      "raw_text": "<v James Wilson>This ensures data consistency even when individual services fail temporarily."
+    },
+    {
+      "id": "1289",
+      "start_ms": 7278000,
+      "end_ms": 7283500,
+      "speaker": "James Wilson",
+      "text": "Our database strategy involves a mix of PostgreSQL, MongoDB, and Redis.",
+      "raw_text": "<v James Wilson>Our database strategy involves a mix of PostgreSQL, MongoDB, and Redis."
+    },
+    {
+      "id": "1290",
+      "start_ms": 7284000,
+      "end_ms": 7289500,
+      "speaker": "James Wilson",
+      "text": "PostgreSQL handles transactional data with strong consistency requirements.",
+      "raw_text": "<v James Wilson>PostgreSQL handles transactional data with strong consistency requirements."
+    },
+    {
+      "id": "1291",
+      "start_ms": 7290000,
+      "end_ms": 7295500,
+      "speaker": "James Wilson",
+      "text": "MongoDB is used for document storage where schema flexibility is important.",
+      "raw_text": "<v James Wilson>MongoDB is used for document storage where schema flexibility is important."
+    },
+    {
+      "id": "1292",
+      "start_ms": 7296000,
+      "end_ms": 7301500,
+      "speaker": "James Wilson",
+      "text": "Redis provides caching and real-time session management capabilities.",
+      "raw_text": "<v James Wilson>Redis provides caching and real-time session management capabilities."
+    },
+    {
+      "id": "1293",
+      "start_ms": 7302000,
+      "end_ms": 7307500,
+      "speaker": "James Wilson",
+      "text": "We've invested heavily in observability with distributed tracing across all services.",
+      "raw_text": "<v James Wilson>We've invested heavily in observability with distributed tracing across all services."
+    },
+    {
+      "id": "1294",
+      "start_ms": 7308000,
+      "end_ms": 7313500,
+      "speaker": "James Wilson",
+      "text": "Every request can be traced from the edge to the database and back.",
+      "raw_text": "<v James Wilson>Every request can be traced from the edge to the database and back."
+    },
+    {
+      "id": "1295",
+      "start_ms": 7314000,
+      "end_ms": 7319500,
+      "speaker": "James Wilson",
+      "text": "Our alerting system monitors over three thousand custom metrics in real-time.",
+      "raw_text": "<v James Wilson>Our alerting system monitors over three thousand custom metrics in real-time."
+    },
+    {
+      "id": "1296",
+      "start_ms": 7320000,
+      "end_ms": 7325500,
+      "speaker": "James Wilson",
+      "text": "Mean time to detection for incidents has improved from fifteen minutes to under two.",
+      "raw_text": "<v James Wilson>Mean time to detection for incidents has improved from fifteen minutes to under two."
+    },
+    {
+      "id": "1297",
+      "start_ms": 7326000,
+      "end_ms": 7331500,
+      "speaker": "Diana Martinez",
+      "text": "Let me add some context on our infrastructure automation.",
+      "raw_text": "<v Diana Martinez>Let me add some context on our infrastructure automation."
+    },
+    {
+      "id": "1298",
+      "start_ms": 7332000,
+      "end_ms": 7337500,
+      "speaker": "Diana Martinez",
+      "text": "We use Terraform for infrastructure as code with over forty thousand lines of configuration.",
+      "raw_text": "<v Diana Martinez>We use Terraform for infrastructure as code with over forty thousand lines of configuration."
+    },
+    {
+      "id": "1299",
+      "start_ms": 7338000,
+      "end_ms": 7343500,
+      "speaker": "Diana Martinez",
+      "text": "All infrastructure changes go through code review and automated testing.",
+      "raw_text": "<v Diana Martinez>All infrastructure changes go through code review and automated testing."
+    },
+    {
+      "id": "1300",
+      "start_ms": 7344000,
+      "end_ms": 7349500,
+      "speaker": "Diana Martinez",
+      "text": "Our CI/CD pipeline runs over eight thousand builds per day across all repositories.",
+      "raw_text": "<v Diana Martinez>Our CI/CD pipeline runs over eight thousand builds per day across all repositories."
+    },
+    {
+      "id": "1301",
+      "start_ms": 7350000,
+      "end_ms": 7355500,
+      "speaker": "Diana Martinez",
+      "text": "Average build time has been reduced from twelve minutes to four minutes.",
+      "raw_text": "<v Diana Martinez>Average build time has been reduced from twelve minutes to four minutes."
+    },
+    {
+      "id": "1302",
+      "start_ms": 7356000,
+      "end_ms": 7361500,
+      "speaker": "Diana Martinez",
+      "text": "We deploy to production over one hundred times per day with zero-downtime releases.",
+      "raw_text": "<v Diana Martinez>We deploy to production over one hundred times per day with zero-downtime releases."
+    },
+    {
+      "id": "1303",
+      "start_ms": 7362000,
+      "end_ms": 7367500,
+      "speaker": "Diana Martinez",
+      "text": "Feature flags control the rollout of new functionality to specific segments.",
+      "raw_text": "<v Diana Martinez>Feature flags control the rollout of new functionality to specific segments."
+    },
+    {
+      "id": "1304",
+      "start_ms": 7368000,
+      "end_ms": 7373500,
+      "speaker": "Diana Martinez",
+      "text": "This allows us to test features with small user groups before full release.",
+      "raw_text": "<v Diana Martinez>This allows us to test features with small user groups before full release."
+    },
+    {
+      "id": "1305",
+      "start_ms": 7374000,
+      "end_ms": 7379500,
+      "speaker": "Diana Martinez",
+      "text": "Our incident response process has been refined based on SRE best practices.",
+      "raw_text": "<v Diana Martinez>Our incident response process has been refined based on SRE best practices."
+    },
+    {
+      "id": "1306",
+      "start_ms": 7380000,
+      "end_ms": 7385500,
+      "speaker": "Diana Martinez",
+      "text": "We conduct blameless postmortems for all incidents affecting customers.",
+      "raw_text": "<v Diana Martinez>We conduct blameless postmortems for all incidents affecting customers."
+    },
+    {
+      "id": "1307",
+      "start_ms": 7386000,
+      "end_ms": 7391500,
+      "speaker": "Diana Martinez",
+      "text": "Lessons learned are systematically incorporated into our systems and processes.",
+      "raw_text": "<v Diana Martinez>Lessons learned are systematically incorporated into our systems and processes."
+    },
+    {
+      "id": "1308",
+      "start_ms": 7392000,
+      "end_ms": 7397500,
+      "speaker": "Diana Martinez",
+      "text": "Our on-call rotation ensures engineers are never burned out by excessive paging.",
+      "raw_text": "<v Diana Martinez>Our on-call rotation ensures engineers are never burned out by excessive paging."
+    },
+    {
+      "id": "1309",
+      "start_ms": 7398000,
+      "end_ms": 7403500,
+      "speaker": "James Wilson",
+      "text": "From a cost optimization perspective, we've made significant improvements.",
+      "raw_text": "<v James Wilson>From a cost optimization perspective, we've made significant improvements."
+    },
+    {
+      "id": "1310",
+      "start_ms": 7404000,
+      "end_ms": 7409500,
+      "speaker": "James Wilson",
+      "text": "Reserved instance coverage is now at eighty-five percent, saving millions annually.",
+      "raw_text": "<v James Wilson>Reserved instance coverage is now at eighty-five percent, saving millions annually."
+    },
+    {
+      "id": "1311",
+      "start_ms": 7410000,
+      "end_ms": 7415500,
+      "speaker": "James Wilson",
+      "text": "Spot instances handle our batch processing workloads at seventy percent discount.",
+      "raw_text": "<v James Wilson>Spot instances handle our batch processing workloads at seventy percent discount."
+    },
+    {
+      "id": "1312",
+      "start_ms": 7416000,
+      "end_ms": 7421500,
+      "speaker": "James Wilson",
+      "text": "Auto-scaling ensures we only pay for capacity we actually need.",
+      "raw_text": "<v James Wilson>Auto-scaling ensures we only pay for capacity we actually need."
+    },
+    {
+      "id": "1313",
+      "start_ms": 7422000,
+      "end_ms": 7427500,
+      "speaker": "James Wilson",
+      "text": "Our cloud cost per transaction has decreased by forty percent year over year.",
+      "raw_text": "<v James Wilson>Our cloud cost per transaction has decreased by forty percent year over year."
+    },
+    {
+      "id": "1314",
+      "start_ms": 7428000,
+      "end_ms": 7433500,
+      "speaker": "Jennifer Adams",
+      "text": "I want to share our product design philosophy that guides all our decisions.",
+      "raw_text": "<v Jennifer Adams>I want to share our product design philosophy that guides all our decisions."
+    },
+    {
+      "id": "1315",
+      "start_ms": 7434000,
+      "end_ms": 7439500,
+      "speaker": "Jennifer Adams",
+      "text": "We believe that great products start with deep understanding of user needs.",
+      "raw_text": "<v Jennifer Adams>We believe that great products start with deep understanding of user needs."
+    },
+    {
+      "id": "1316",
+      "start_ms": 7440000,
+      "end_ms": 7445500,
+      "speaker": "Jennifer Adams",
+      "text": "Our research team conducts ongoing studies with customers across all segments.",
+      "raw_text": "<v Jennifer Adams>Our research team conducts ongoing studies with customers across all segments."
+    },
+    {
+      "id": "1317",
+      "start_ms": 7446000,
+      "end_ms": 7451500,
+      "speaker": "Jennifer Adams",
+      "text": "We maintain a continuous feedback loop through in-app surveys and interviews.",
+      "raw_text": "<v Jennifer Adams>We maintain a continuous feedback loop through in-app surveys and interviews."
+    },
+    {
+      "id": "1318",
+      "start_ms": 7452000,
+      "end_ms": 7457500,
+      "speaker": "Jennifer Adams",
+      "text": "Every major feature begins with problem definition, not solution ideation.",
+      "raw_text": "<v Jennifer Adams>Every major feature begins with problem definition, not solution ideation."
+    },
+    {
+      "id": "1319",
+      "start_ms": 7458000,
+      "end_ms": 7463500,
+      "speaker": "Jennifer Adams",
+      "text": "We ask what problem we're solving and for whom before any design work.",
+      "raw_text": "<v Jennifer Adams>We ask what problem we're solving and for whom before any design work."
+    },
+    {
+      "id": "1320",
+      "start_ms": 7464000,
+      "end_ms": 7469500,
+      "speaker": "Jennifer Adams",
+      "text": "Prototyping happens early and often with increasing fidelity over time.",
+      "raw_text": "<v Jennifer Adams>Prototyping happens early and often with increasing fidelity over time."
+    },
+    {
+      "id": "1321",
+      "start_ms": 7470000,
+      "end_ms": 7475500,
+      "speaker": "Jennifer Adams",
+      "text": "We test with real users at every stage, not just before launch.",
+      "raw_text": "<v Jennifer Adams>We test with real users at every stage, not just before launch."
+    },
+    {
+      "id": "1322",
+      "start_ms": 7476000,
+      "end_ms": 7481500,
+      "speaker": "Jennifer Adams",
+      "text": "Accessibility is considered from the beginning, not added as an afterthought.",
+      "raw_text": "<v Jennifer Adams>Accessibility is considered from the beginning, not added as an afterthought."
+    },
+    {
+      "id": "1323",
+      "start_ms": 7482000,
+      "end_ms": 7487500,
+      "speaker": "Jennifer Adams",
+      "text": "Performance is a feature - slow experiences are broken experiences.",
+      "raw_text": "<v Jennifer Adams>Performance is a feature - slow experiences are broken experiences."
+    },
+    {
+      "id": "1324",
+      "start_ms": 7488000,
+      "end_ms": 7493500,
+      "speaker": "Jennifer Adams",
+      "text": "We measure success through outcome metrics, not output metrics.",
+      "raw_text": "<v Jennifer Adams>We measure success through outcome metrics, not output metrics."
+    },
+    {
+      "id": "1325",
+      "start_ms": 7494000,
+      "end_ms": 7499500,
+      "speaker": "Jennifer Adams",
+      "text": "It's not about shipping features, it's about solving problems.",
+      "raw_text": "<v Jennifer Adams>It's not about shipping features, it's about solving problems."
+    },
+    {
+      "id": "1326",
+      "start_ms": 7500000,
+      "end_ms": 7505500,
+      "speaker": "Jennifer Adams",
+      "text": "Our design system ensures consistency across all our products.",
+      "raw_text": "<v Jennifer Adams>Our design system ensures consistency across all our products."
+    },
+    {
+      "id": "1327",
+      "start_ms": 7506000,
+      "end_ms": 7511500,
+      "speaker": "Jennifer Adams",
+      "text": "Components are reusable, accessible, and documented extensively.",
+      "raw_text": "<v Jennifer Adams>Components are reusable, accessible, and documented extensively."
+    },
+    {
+      "id": "1328",
+      "start_ms": 7512000,
+      "end_ms": 7517500,
+      "speaker": "Jennifer Adams",
+      "text": "Designers and engineers collaborate closely throughout the process.",
+      "raw_text": "<v Jennifer Adams>Designers and engineers collaborate closely throughout the process."
+    },
+    {
+      "id": "1329",
+      "start_ms": 7518000,
+      "end_ms": 7523500,
+      "speaker": "Jennifer Adams",
+      "text": "There's no handoff - it's a continuous partnership from idea to launch.",
+      "raw_text": "<v Jennifer Adams>There's no handoff - it's a continuous partnership from idea to launch."
+    },
+    {
+      "id": "1330",
+      "start_ms": 7524000,
+      "end_ms": 7529500,
+      "speaker": "Jennifer Adams",
+      "text": "We embrace iteration and learning from what doesn't work.",
+      "raw_text": "<v Jennifer Adams>We embrace iteration and learning from what doesn't work."
+    },
+    {
+      "id": "1331",
+      "start_ms": 7530000,
+      "end_ms": 7535500,
+      "speaker": "Jennifer Adams",
+      "text": "Failure is valuable feedback when we learn and adapt quickly.",
+      "raw_text": "<v Jennifer Adams>Failure is valuable feedback when we learn and adapt quickly."
+    },
+    {
+      "id": "1332",
+      "start_ms": 7536000,
+      "end_ms": 7541500,
+      "speaker": "Jennifer Adams",
+      "text": "Data informs our decisions but doesn't replace good judgment.",
+      "raw_text": "<v Jennifer Adams>Data informs our decisions but doesn't replace good judgment."
+    },
+    {
+      "id": "1333",
+      "start_ms": 7542000,
+      "end_ms": 7547500,
+      "speaker": "Jennifer Adams",
+      "text": "We balance quantitative insights with qualitative understanding.",
+      "raw_text": "<v Jennifer Adams>We balance quantitative insights with qualitative understanding."
+    },
+    {
+      "id": "1334",
+      "start_ms": 7548000,
+      "end_ms": 7553500,
+      "speaker": "Jennifer Adams",
+      "text": "Long-term user value takes priority over short-term engagement metrics.",
+      "raw_text": "<v Jennifer Adams>Long-term user value takes priority over short-term engagement metrics."
+    },
+    {
+      "id": "1335",
+      "start_ms": 7554000,
+      "end_ms": 7559500,
+      "speaker": "Jennifer Adams",
+      "text": "We won't build features that are good for numbers but bad for users.",
+      "raw_text": "<v Jennifer Adams>We won't build features that are good for numbers but bad for users."
+    },
+    {
+      "id": "1336",
+      "start_ms": 7560000,
+      "end_ms": 7565500,
+      "speaker": "Jennifer Adams",
+      "text": "Privacy and trust are central to our design principles.",
+      "raw_text": "<v Jennifer Adams>Privacy and trust are central to our design principles."
+    },
+    {
+      "id": "1337",
+      "start_ms": 7566000,
+      "end_ms": 7571500,
+      "speaker": "Jennifer Adams",
+      "text": "We minimize data collection and are transparent about how we use information.",
+      "raw_text": "<v Jennifer Adams>We minimize data collection and are transparent about how we use information."
+    },
+    {
+      "id": "1338",
+      "start_ms": 7572000,
+      "end_ms": 7577500,
+      "speaker": "Jennifer Adams",
+      "text": "Our products should empower users, not create dependency.",
+      "raw_text": "<v Jennifer Adams>Our products should empower users, not create dependency."
+    },
+    {
+      "id": "1339",
+      "start_ms": 7578000,
+      "end_ms": 7583500,
+      "speaker": "Jennifer Adams",
+      "text": "The goal is to help people accomplish their goals efficiently.",
+      "raw_text": "<v Jennifer Adams>The goal is to help people accomplish their goals efficiently."
+    },
+    {
+      "id": "1340",
+      "start_ms": 7584000,
+      "end_ms": 7589500,
+      "speaker": "Michelle Taylor",
+      "text": "I want to share how we've evolved our sales methodology this year.",
+      "raw_text": "<v Michelle Taylor>I want to share how we've evolved our sales methodology this year."
+    },
+    {
+      "id": "1341",
+      "start_ms": 7590000,
+      "end_ms": 7595500,
+      "speaker": "Michelle Taylor",
+      "text": "We've moved from product-focused selling to solution-focused selling.",
+      "raw_text": "<v Michelle Taylor>We've moved from product-focused selling to solution-focused selling."
+    },
+    {
+      "id": "1342",
+      "start_ms": 7596000,
+      "end_ms": 7601500,
+      "speaker": "Michelle Taylor",
+      "text": "Our sales process starts with understanding the customer's business challenges.",
+      "raw_text": "<v Michelle Taylor>Our sales process starts with understanding the customer's business challenges."
+    },
+    {
+      "id": "1343",
+      "start_ms": 7602000,
+      "end_ms": 7607500,
+      "speaker": "Michelle Taylor",
+      "text": "We don't lead with features - we lead with outcomes and value.",
+      "raw_text": "<v Michelle Taylor>We don't lead with features - we lead with outcomes and value."
+    },
+    {
+      "id": "1344",
+      "start_ms": 7608000,
+      "end_ms": 7613500,
+      "speaker": "Michelle Taylor",
+      "text": "Every account executive receives extensive training on consultative selling.",
+      "raw_text": "<v Michelle Taylor>Every account executive receives extensive training on consultative selling."
+    },
+    {
+      "id": "1345",
+      "start_ms": 7614000,
+      "end_ms": 7619500,
+      "speaker": "Michelle Taylor",
+      "text": "They learn to ask great questions and truly listen to the answers.",
+      "raw_text": "<v Michelle Taylor>They learn to ask great questions and truly listen to the answers."
+    },
+    {
+      "id": "1346",
+      "start_ms": 7620000,
+      "end_ms": 7625500,
+      "speaker": "Michelle Taylor",
+      "text": "We use a qualification framework to ensure we focus on the right opportunities.",
+      "raw_text": "<v Michelle Taylor>We use a qualification framework to ensure we focus on the right opportunities."
+    },
+    {
+      "id": "1347",
+      "start_ms": 7626000,
+      "end_ms": 7631500,
+      "speaker": "Michelle Taylor",
+      "text": "Time is precious, and we want to help customers who will truly benefit.",
+      "raw_text": "<v Michelle Taylor>Time is precious, and we want to help customers who will truly benefit."
+    },
+    {
+      "id": "1348",
+      "start_ms": 7632000,
+      "end_ms": 7637500,
+      "speaker": "Michelle Taylor",
+      "text": "Our sales engineers are technical experts who can address complex requirements.",
+      "raw_text": "<v Michelle Taylor>Our sales engineers are technical experts who can address complex requirements."
+    },
+    {
+      "id": "1349",
+      "start_ms": 7638000,
+      "end_ms": 7643500,
+      "speaker": "Michelle Taylor",
+      "text": "They work alongside account executives to design the right solutions.",
+      "raw_text": "<v Michelle Taylor>They work alongside account executives to design the right solutions."
+    },
+    {
+      "id": "1350",
+      "start_ms": 7644000,
+      "end_ms": 7649500,
+      "speaker": "Michelle Taylor",
+      "text": "We've implemented value selling methodology throughout the organization.",
+      "raw_text": "<v Michelle Taylor>We've implemented value selling methodology throughout the organization."
+    },
+    {
+      "id": "1351",
+      "start_ms": 7650000,
+      "end_ms": 7655500,
+      "speaker": "Michelle Taylor",
+      "text": "Every proposal includes a business case with expected return on investment.",
+      "raw_text": "<v Michelle Taylor>Every proposal includes a business case with expected return on investment."
+    },
+    {
+      "id": "1352",
+      "start_ms": 7656000,
+      "end_ms": 7661500,
+      "speaker": "Michelle Taylor",
+      "text": "Customer references are shared proactively with similar use cases.",
+      "raw_text": "<v Michelle Taylor>Customer references are shared proactively with similar use cases."
+    },
+    {
+      "id": "1353",
+      "start_ms": 7662000,
+      "end_ms": 7667500,
+      "speaker": "Michelle Taylor",
+      "text": "Proof of concepts are designed to demonstrate value, not just features.",
+      "raw_text": "<v Michelle Taylor>Proof of concepts are designed to demonstrate value, not just features."
+    },
+    {
+      "id": "1354",
+      "start_ms": 7668000,
+      "end_ms": 7673500,
+      "speaker": "Michelle Taylor",
+      "text": "We track customer success metrics after the sale, not just bookings.",
+      "raw_text": "<v Michelle Taylor>We track customer success metrics after the sale, not just bookings."
+    },
+    {
+      "id": "1355",
+      "start_ms": 7674000,
+      "end_ms": 7679500,
+      "speaker": "Michelle Taylor",
+      "text": "Compensation is partially tied to customer retention and expansion.",
+      "raw_text": "<v Michelle Taylor>Compensation is partially tied to customer retention and expansion."
+    },
+    {
+      "id": "1356",
+      "start_ms": 7680000,
+      "end_ms": 7685500,
+      "speaker": "Michelle Taylor",
+      "text": "Our channel partner program has matured significantly this year.",
+      "raw_text": "<v Michelle Taylor>Our channel partner program has matured significantly this year."
+    },
+    {
+      "id": "1357",
+      "start_ms": 7686000,
+      "end_ms": 7691500,
+      "speaker": "Michelle Taylor",
+      "text": "Partners receive the same training and enablement as our direct team.",
+      "raw_text": "<v Michelle Taylor>Partners receive the same training and enablement as our direct team."
+    },
+    {
+      "id": "1358",
+      "start_ms": 7692000,
+      "end_ms": 7697500,
+      "speaker": "Michelle Taylor",
+      "text": "Joint business planning ensures alignment on targets and strategy.",
+      "raw_text": "<v Michelle Taylor>Joint business planning ensures alignment on targets and strategy."
+    },
+    {
+      "id": "1359",
+      "start_ms": 7698000,
+      "end_ms": 7703500,
+      "speaker": "Michelle Taylor",
+      "text": "Partner deal registration protects investments in opportunity development.",
+      "raw_text": "<v Michelle Taylor>Partner deal registration protects investments in opportunity development."
+    },
+    {
+      "id": "1360",
+      "start_ms": 7704000,
+      "end_ms": 7709500,
+      "speaker": "Michelle Taylor",
+      "text": "We're selective about partnerships - quality over quantity.",
+      "raw_text": "<v Michelle Taylor>We're selective about partnerships - quality over quantity."
+    },
+    {
+      "id": "1361",
+      "start_ms": 7710000,
+      "end_ms": 7715500,
+      "speaker": "Michelle Taylor",
+      "text": "Every partner must demonstrate technical competence and customer success.",
+      "raw_text": "<v Michelle Taylor>Every partner must demonstrate technical competence and customer success."
+    },
+    {
+      "id": "1362",
+      "start_ms": 7716000,
+      "end_ms": 7721500,
+      "speaker": "Michelle Taylor",
+      "text": "Our marketing team creates content that sales can use effectively.",
+      "raw_text": "<v Michelle Taylor>Our marketing team creates content that sales can use effectively."
+    },
+    {
+      "id": "1363",
+      "start_ms": 7722000,
+      "end_ms": 7727500,
+      "speaker": "Michelle Taylor",
+      "text": "Case studies, ROI calculators, and competitive battlecards are updated regularly.",
+      "raw_text": "<v Michelle Taylor>Case studies, ROI calculators, and competitive battlecards are updated regularly."
+    },
+    {
+      "id": "1364",
+      "start_ms": 7728000,
+      "end_ms": 7733500,
+      "speaker": "Michelle Taylor",
+      "text": "Sales and marketing alignment has never been better than it is today.",
+      "raw_text": "<v Michelle Taylor>Sales and marketing alignment has never been better than it is today."
+    },
+    {
+      "id": "1365",
+      "start_ms": 7734000,
+      "end_ms": 7739500,
+      "speaker": "Michelle Taylor",
+      "text": "We operate as one revenue team with shared goals and metrics.",
+      "raw_text": "<v Michelle Taylor>We operate as one revenue team with shared goals and metrics."
+    },
+    {
+      "id": "1366",
+      "start_ms": 7740000,
+      "end_ms": 7745500,
+      "speaker": "Robert Chen",
+      "text": "Let's hear more about our customer success strategies from the team.",
+      "raw_text": "<v Robert Chen>Let's hear more about our customer success strategies from the team."
+    },
+    {
+      "id": "1367",
+      "start_ms": 7746000,
+      "end_ms": 7751500,
+      "speaker": "Linda Chen",
+      "text": "Thank you Robert. Customer success is about ensuring customers achieve their goals.",
+      "raw_text": "<v Linda Chen>Thank you Robert. Customer success is about ensuring customers achieve their goals."
+    },
+    {
+      "id": "1368",
+      "start_ms": 7752000,
+      "end_ms": 7757500,
+      "speaker": "Linda Chen",
+      "text": "We've implemented a health scoring model that predicts churn risk.",
+      "raw_text": "<v Linda Chen>We've implemented a health scoring model that predicts churn risk."
+    },
+    {
+      "id": "1369",
+      "start_ms": 7758000,
+      "end_ms": 7763500,
+      "speaker": "Linda Chen",
+      "text": "The model incorporates usage data, support tickets, NPS scores, and more.",
+      "raw_text": "<v Linda Chen>The model incorporates usage data, support tickets, NPS scores, and more."
+    },
+    {
+      "id": "1370",
+      "start_ms": 7764000,
+      "end_ms": 7769500,
+      "speaker": "Linda Chen",
+      "text": "Customers in the red zone receive proactive outreach from their success manager.",
+      "raw_text": "<v Linda Chen>Customers in the red zone receive proactive outreach from their success manager."
+    },
+    {
+      "id": "1371",
+      "start_ms": 7770000,
+      "end_ms": 7775500,
+      "speaker": "Linda Chen",
+      "text": "We intervene before problems become irreversible.",
+      "raw_text": "<v Linda Chen>We intervene before problems become irreversible."
+    },
+    {
+      "id": "1372",
+      "start_ms": 7776000,
+      "end_ms": 7781500,
+      "speaker": "Linda Chen",
+      "text": "Our onboarding program has been completely redesigned this year.",
+      "raw_text": "<v Linda Chen>Our onboarding program has been completely redesigned this year."
+    },
+    {
+      "id": "1373",
+      "start_ms": 7782000,
+      "end_ms": 7787500,
+      "speaker": "Linda Chen",
+      "text": "New customers receive dedicated attention during their first ninety days.",
+      "raw_text": "<v Linda Chen>New customers receive dedicated attention during their first ninety days."
+    },
+    {
+      "id": "1374",
+      "start_ms": 7788000,
+      "end_ms": 7793500,
+      "speaker": "Linda Chen",
+      "text": "Success plans are created collaboratively with clear milestones.",
+      "raw_text": "<v Linda Chen>Success plans are created collaboratively with clear milestones."
+    },
+    {
+      "id": "1375",
+      "start_ms": 7794000,
+      "end_ms": 7799500,
+      "speaker": "Linda Chen",
+      "text": "We celebrate wins and address challenges as they emerge.",
+      "raw_text": "<v Linda Chen>We celebrate wins and address challenges as they emerge."
+    },
+    {
+      "id": "1376",
+      "start_ms": 7800000,
+      "end_ms": 7805500,
+      "speaker": "Linda Chen",
+      "text": "Quarterly business reviews keep executive sponsors engaged.",
+      "raw_text": "<v Linda Chen>Quarterly business reviews keep executive sponsors engaged."
+    },
+    {
+      "id": "1377",
+      "start_ms": 7806000,
+      "end_ms": 7811500,
+      "speaker": "Linda Chen",
+      "text": "We review progress toward goals and identify new opportunities.",
+      "raw_text": "<v Linda Chen>We review progress toward goals and identify new opportunities."
+    },
+    {
+      "id": "1378",
+      "start_ms": 7812000,
+      "end_ms": 7817500,
+      "speaker": "Linda Chen",
+      "text": "These meetings often lead to expansion discussions organically.",
+      "raw_text": "<v Linda Chen>These meetings often lead to expansion discussions organically."
+    },
+    {
+      "id": "1379",
+      "start_ms": 7818000,
+      "end_ms": 7823500,
+      "speaker": "Linda Chen",
+      "text": "Our advocacy program turns satisfied customers into references and case studies.",
+      "raw_text": "<v Linda Chen>Our advocacy program turns satisfied customers into references and case studies."
+    },
+    {
+      "id": "1380",
+      "start_ms": 7824000,
+      "end_ms": 7829500,
+      "speaker": "Linda Chen",
+      "text": "Customer advisory boards provide strategic input on our roadmap.",
+      "raw_text": "<v Linda Chen>Customer advisory boards provide strategic input on our roadmap."
+    },
+    {
+      "id": "1381",
+      "start_ms": 7830000,
+      "end_ms": 7835500,
+      "speaker": "Linda Chen",
+      "text": "We genuinely listen and incorporate their feedback into our plans.",
+      "raw_text": "<v Linda Chen>We genuinely listen and incorporate their feedback into our plans."
+    },
+    {
+      "id": "1382",
+      "start_ms": 7836000,
+      "end_ms": 7841500,
+      "speaker": "Linda Chen",
+      "text": "User communities have grown significantly with active forums and events.",
+      "raw_text": "<v Linda Chen>User communities have grown significantly with active forums and events."
+    },
+    {
+      "id": "1383",
+      "start_ms": 7842000,
+      "end_ms": 7847500,
+      "speaker": "Linda Chen",
+      "text": "Customers help each other and share best practices openly.",
+      "raw_text": "<v Linda Chen>Customers help each other and share best practices openly."
+    },
+    {
+      "id": "1384",
+      "start_ms": 7848000,
+      "end_ms": 7853500,
+      "speaker": "Linda Chen",
+      "text": "Training and certification programs help customers maximize value.",
+      "raw_text": "<v Linda Chen>Training and certification programs help customers maximize value."
+    },
+    {
+      "id": "1385",
+      "start_ms": 7854000,
+      "end_ms": 7859500,
+      "speaker": "Linda Chen",
+      "text": "Certified users become internal champions who drive adoption.",
+      "raw_text": "<v Linda Chen>Certified users become internal champions who drive adoption."
+    },
+    {
+      "id": "1386",
+      "start_ms": 7860000,
+      "end_ms": 7865500,
+      "speaker": "Linda Chen",
+      "text": "We measure customer effort score to identify friction in our processes.",
+      "raw_text": "<v Linda Chen>We measure customer effort score to identify friction in our processes."
+    },
+    {
+      "id": "1387",
+      "start_ms": 7866000,
+      "end_ms": 7871500,
+      "speaker": "Linda Chen",
+      "text": "Reducing effort is as important as increasing satisfaction.",
+      "raw_text": "<v Linda Chen>Reducing effort is as important as increasing satisfaction."
+    },
+    {
+      "id": "1388",
+      "start_ms": 7872000,
+      "end_ms": 7877500,
+      "speaker": "Linda Chen",
+      "text": "Our renewal process starts months before the contract expires.",
+      "raw_text": "<v Linda Chen>Our renewal process starts months before the contract expires."
+    },
+    {
+      "id": "1389",
+      "start_ms": 7878000,
+      "end_ms": 7883500,
+      "speaker": "Linda Chen",
+      "text": "We focus on demonstrated value, not just timing the ask.",
+      "raw_text": "<v Linda Chen>We focus on demonstrated value, not just timing the ask."
+    },
+    {
+      "id": "1390",
+      "start_ms": 7884000,
+      "end_ms": 7889500,
+      "speaker": "Linda Chen",
+      "text": "Expansion opportunities are identified through usage analysis.",
+      "raw_text": "<v Linda Chen>Expansion opportunities are identified through usage analysis."
+    },
+    {
+      "id": "1391",
+      "start_ms": 7890000,
+      "end_ms": 7895500,
+      "speaker": "Linda Chen",
+      "text": "We suggest additional capabilities when we see genuine fit.",
+      "raw_text": "<v Linda Chen>We suggest additional capabilities when we see genuine fit."
+    },
+    {
+      "id": "1392",
+      "start_ms": 7896000,
+      "end_ms": 7901500,
+      "speaker": "Kevin Morrison",
+      "text": "Let me expand on our marketing and brand strategy for the coming year.",
+      "raw_text": "<v Kevin Morrison>Let me expand on our marketing and brand strategy for the coming year."
+    },
+    {
+      "id": "1393",
+      "start_ms": 7902000,
+      "end_ms": 7907500,
+      "speaker": "Kevin Morrison",
+      "text": "Our brand positioning has evolved to emphasize productivity and collaboration.",
+      "raw_text": "<v Kevin Morrison>Our brand positioning has evolved to emphasize productivity and collaboration."
+    },
+    {
+      "id": "1394",
+      "start_ms": 7908000,
+      "end_ms": 7913500,
+      "speaker": "Kevin Morrison",
+      "text": "We want to be known as the platform that helps teams work smarter.",
+      "raw_text": "<v Kevin Morrison>We want to be known as the platform that helps teams work smarter."
+    },
+    {
+      "id": "1395",
+      "start_ms": 7914000,
+      "end_ms": 7919500,
+      "speaker": "Kevin Morrison",
+      "text": "Content marketing remains our most effective lead generation channel.",
+      "raw_text": "<v Kevin Morrison>Content marketing remains our most effective lead generation channel."
+    },
+    {
+      "id": "1396",
+      "start_ms": 7920000,
+      "end_ms": 7925500,
+      "speaker": "Kevin Morrison",
+      "text": "We publish over fifty pieces of high-quality content each month.",
+      "raw_text": "<v Kevin Morrison>We publish over fifty pieces of high-quality content each month."
+    },
+    {
+      "id": "1397",
+      "start_ms": 7926000,
+      "end_ms": 7931500,
+      "speaker": "Kevin Morrison",
+      "text": "Our blog attracts two million unique visitors monthly.",
+      "raw_text": "<v Kevin Morrison>Our blog attracts two million unique visitors monthly."
+    },
+    {
+      "id": "1398",
+      "start_ms": 7932000,
+      "end_ms": 7937500,
+      "speaker": "Kevin Morrison",
+      "text": "Webinars and virtual events have proven incredibly effective.",
+      "raw_text": "<v Kevin Morrison>Webinars and virtual events have proven incredibly effective."
+    },
+    {
+      "id": "1399",
+      "start_ms": 7938000,
+      "end_ms": 7943500,
+      "speaker": "Kevin Morrison",
+      "text": "Last year we hosted over one hundred twenty webinars with strong attendance.",
+      "raw_text": "<v Kevin Morrison>Last year we hosted over one hundred twenty webinars with strong attendance."
+    },
+    {
+      "id": "1400",
+      "start_ms": 7944000,
+      "end_ms": 7949500,
+      "speaker": "Kevin Morrison",
+      "text": "Podcast sponsorships reach audiences we couldn't access otherwise.",
+      "raw_text": "<v Kevin Morrison>Podcast sponsorships reach audiences we couldn't access otherwise."
+    },
+    {
+      "id": "1401",
+      "start_ms": 7950000,
+      "end_ms": 7955500,
+      "speaker": "Kevin Morrison",
+      "text": "We're selective about which shows align with our target audience.",
+      "raw_text": "<v Kevin Morrison>We're selective about which shows align with our target audience."
+    },
+    {
+      "id": "1402",
+      "start_ms": 7956000,
+      "end_ms": 7961500,
+      "speaker": "Kevin Morrison",
+      "text": "Our customer conference is our flagship marketing event each year.",
+      "raw_text": "<v Kevin Morrison>Our customer conference is our flagship marketing event each year."
+    },
+    {
+      "id": "1403",
+      "start_ms": 7962000,
+      "end_ms": 7967500,
+      "speaker": "Kevin Morrison",
+      "text": "Last year's conference had three thousand attendees and excellent feedback.",
+      "raw_text": "<v Kevin Morrison>Last year's conference had three thousand attendees and excellent feedback."
+    },
+    {
+      "id": "1404",
+      "start_ms": 7968000,
+      "end_ms": 7973500,
+      "speaker": "Kevin Morrison",
+      "text": "Digital advertising has become more sophisticated with better targeting.",
+      "raw_text": "<v Kevin Morrison>Digital advertising has become more sophisticated with better targeting."
+    },
+    {
+      "id": "1405",
+      "start_ms": 7974000,
+      "end_ms": 7979500,
+      "speaker": "Kevin Morrison",
+      "text": "Account-based marketing focuses on high-value accounts with personalized campaigns.",
+      "raw_text": "<v Kevin Morrison>Account-based marketing focuses on high-value accounts with personalized campaigns."
+    },
+    {
+      "id": "1406",
+      "start_ms": 7980000,
+      "end_ms": 7985500,
+      "speaker": "Kevin Morrison",
+      "text": "We use intent data to identify accounts actively researching solutions.",
+      "raw_text": "<v Kevin Morrison>We use intent data to identify accounts actively researching solutions."
+    },
+    {
+      "id": "1407",
+      "start_ms": 7986000,
+      "end_ms": 7991500,
+      "speaker": "Kevin Morrison",
+      "text": "Social media strategy emphasizes LinkedIn for B2B reach.",
+      "raw_text": "<v Kevin Morrison>Social media strategy emphasizes LinkedIn for B2B reach."
+    },
+    {
+      "id": "1408",
+      "start_ms": 7992000,
+      "end_ms": 7997500,
+      "speaker": "Kevin Morrison",
+      "text": "Our executives are active thought leaders with growing followings.",
+      "raw_text": "<v Kevin Morrison>Our executives are active thought leaders with growing followings."
+    },
+    {
+      "id": "1409",
+      "start_ms": 7998000,
+      "end_ms": 8003500,
+      "speaker": "Kevin Morrison",
+      "text": "Analyst relations ensure we're included in key industry reports.",
+      "raw_text": "<v Kevin Morrison>Analyst relations ensure we're included in key industry reports."
+    },
+    {
+      "id": "1410",
+      "start_ms": 8004000,
+      "end_ms": 8009500,
+      "speaker": "Kevin Morrison",
+      "text": "We've been recognized as a leader in multiple Gartner and Forrester reports.",
+      "raw_text": "<v Kevin Morrison>We've been recognized as a leader in multiple Gartner and Forrester reports."
+    },
+    {
+      "id": "1411",
+      "start_ms": 8010000,
+      "end_ms": 8015500,
+      "speaker": "Kevin Morrison",
+      "text": "Public relations generates earned media coverage regularly.",
+      "raw_text": "<v Kevin Morrison>Public relations generates earned media coverage regularly."
+    },
+    {
+      "id": "1412",
+      "start_ms": 8016000,
+      "end_ms": 8021500,
+      "speaker": "Kevin Morrison",
+      "text": "Our communications team places stories in major business publications.",
+      "raw_text": "<v Kevin Morrison>Our communications team places stories in major business publications."
+    },
+    {
+      "id": "1413",
+      "start_ms": 8022000,
+      "end_ms": 8027500,
+      "speaker": "Kevin Morrison",
+      "text": "Brand consistency is maintained through detailed guidelines and assets.",
+      "raw_text": "<v Kevin Morrison>Brand consistency is maintained through detailed guidelines and assets."
+    },
+    {
+      "id": "1414",
+      "start_ms": 8028000,
+      "end_ms": 8033500,
+      "speaker": "Kevin Morrison",
+      "text": "Every piece of content reflects our voice and visual identity.",
+      "raw_text": "<v Kevin Morrison>Every piece of content reflects our voice and visual identity."
+    },
+    {
+      "id": "1415",
+      "start_ms": 8034000,
+      "end_ms": 8039500,
+      "speaker": "Kevin Morrison",
+      "text": "Marketing attribution helps us understand what's working and what isn't.",
+      "raw_text": "<v Kevin Morrison>Marketing attribution helps us understand what's working and what isn't."
+    },
+    {
+      "id": "1416",
+      "start_ms": 8040000,
+      "end_ms": 8045500,
+      "speaker": "Kevin Morrison",
+      "text": "We invest more in high-performing channels and experiment with new ones.",
+      "raw_text": "<v Kevin Morrison>We invest more in high-performing channels and experiment with new ones."
+    },
+    {
+      "id": "1417",
+      "start_ms": 8046000,
+      "end_ms": 8051500,
+      "speaker": "Kevin Morrison",
+      "text": "Customer marketing leverages success stories across all channels.",
+      "raw_text": "<v Kevin Morrison>Customer marketing leverages success stories across all channels."
+    },
+    {
+      "id": "1418",
+      "start_ms": 8052000,
+      "end_ms": 8057500,
+      "speaker": "Kevin Morrison",
+      "text": "Happy customers are our most credible marketing asset.",
+      "raw_text": "<v Kevin Morrison>Happy customers are our most credible marketing asset."
+    },
+    {
+      "id": "1419",
+      "start_ms": 8058000,
+      "end_ms": 8063500,
+      "speaker": "Diana Martinez",
+      "text": "Security is everyone's responsibility, not just the security team's.",
+      "raw_text": "<v Diana Martinez>Security is everyone's responsibility, not just the security team's."
+    },
+    {
+      "id": "1420",
+      "start_ms": 8064000,
+      "end_ms": 8069500,
+      "speaker": "Diana Martinez",
+      "text": "Let me share some important updates on our security posture.",
+      "raw_text": "<v Diana Martinez>Let me share some important updates on our security posture."
+    },
+    {
+      "id": "1421",
+      "start_ms": 8070000,
+      "end_ms": 8075500,
+      "speaker": "Diana Martinez",
+      "text": "We've achieved SOC 2 Type 2 certification with zero findings.",
+      "raw_text": "<v Diana Martinez>We've achieved SOC 2 Type 2 certification with zero findings."
+    },
+    {
+      "id": "1422",
+      "start_ms": 8076000,
+      "end_ms": 8081500,
+      "speaker": "Diana Martinez",
+      "text": "This demonstrates our commitment to security, availability, and privacy.",
+      "raw_text": "<v Diana Martinez>This demonstrates our commitment to security, availability, and privacy."
+    },
+    {
+      "id": "1423",
+      "start_ms": 8082000,
+      "end_ms": 8087500,
+      "speaker": "Diana Martinez",
+      "text": "ISO 27001 certification is in progress and expected by year end.",
+      "raw_text": "<v Diana Martinez>ISO 27001 certification is in progress and expected by year end."
+    },
+    {
+      "id": "1424",
+      "start_ms": 8088000,
+      "end_ms": 8093500,
+      "speaker": "Diana Martinez",
+      "text": "FedRAMP authorization is underway for government customers.",
+      "raw_text": "<v Diana Martinez>FedRAMP authorization is underway for government customers."
+    },
+    {
+      "id": "1425",
+      "start_ms": 8094000,
+      "end_ms": 8099500,
+      "speaker": "Diana Martinez",
+      "text": "Our security team has grown to twenty-three dedicated professionals.",
+      "raw_text": "<v Diana Martinez>Our security team has grown to twenty-three dedicated professionals."
+    },
+    {
+      "id": "1426",
+      "start_ms": 8100000,
+      "end_ms": 8105500,
+      "speaker": "Diana Martinez",
+      "text": "We have experts in application security, infrastructure security, and compliance.",
+      "raw_text": "<v Diana Martinez>We have experts in application security, infrastructure security, and compliance."
+    },
+    {
+      "id": "1427",
+      "start_ms": 8106000,
+      "end_ms": 8111500,
+      "speaker": "Diana Martinez",
+      "text": "Penetration testing is conducted quarterly by external experts.",
+      "raw_text": "<v Diana Martinez>Penetration testing is conducted quarterly by external experts."
+    },
+    {
+      "id": "1428",
+      "start_ms": 8112000,
+      "end_ms": 8117500,
+      "speaker": "Diana Martinez",
+      "text": "Any findings are remediated within strict SLA timeframes.",
+      "raw_text": "<v Diana Martinez>Any findings are remediated within strict SLA timeframes."
+    },
+    {
+      "id": "1429",
+      "start_ms": 8118000,
+      "end_ms": 8123500,
+      "speaker": "Diana Martinez",
+      "text": "Bug bounty program rewards researchers who find vulnerabilities.",
+      "raw_text": "<v Diana Martinez>Bug bounty program rewards researchers who find vulnerabilities."
+    },
+    {
+      "id": "1430",
+      "start_ms": 8124000,
+      "end_ms": 8129500,
+      "speaker": "Diana Martinez",
+      "text": "We've paid over two hundred thousand dollars in bounties this year.",
+      "raw_text": "<v Diana Martinez>We've paid over two hundred thousand dollars in bounties this year."
+    },
+    {
+      "id": "1431",
+      "start_ms": 8130000,
+      "end_ms": 8135500,
+      "speaker": "Diana Martinez",
+      "text": "Secure development lifecycle is embedded in our engineering process.",
+      "raw_text": "<v Diana Martinez>Secure development lifecycle is embedded in our engineering process."
+    },
+    {
+      "id": "1432",
+      "start_ms": 8136000,
+      "end_ms": 8141500,
+      "speaker": "Diana Martinez",
+      "text": "Security reviews happen at design, implementation, and deployment stages.",
+      "raw_text": "<v Diana Martinez>Security reviews happen at design, implementation, and deployment stages."
+    },
+    {
+      "id": "1433",
+      "start_ms": 8142000,
+      "end_ms": 8147500,
+      "speaker": "Diana Martinez",
+      "text": "Automated security scanning runs on every code change.",
+      "raw_text": "<v Diana Martinez>Automated security scanning runs on every code change."
+    },
+    {
+      "id": "1434",
+      "start_ms": 8148000,
+      "end_ms": 8153500,
+      "speaker": "Diana Martinez",
+      "text": "Known vulnerabilities in dependencies are patched promptly.",
+      "raw_text": "<v Diana Martinez>Known vulnerabilities in dependencies are patched promptly."
+    },
+    {
+      "id": "1435",
+      "start_ms": 8154000,
+      "end_ms": 8159500,
+      "speaker": "Diana Martinez",
+      "text": "Employee security training is mandatory and updated annually.",
+      "raw_text": "<v Diana Martinez>Employee security training is mandatory and updated annually."
+    },
+    {
+      "id": "1436",
+      "start_ms": 8160000,
+      "end_ms": 8165500,
+      "speaker": "Diana Martinez",
+      "text": "Phishing simulations test and improve our human defenses.",
+      "raw_text": "<v Diana Martinez>Phishing simulations test and improve our human defenses."
+    },
+    {
+      "id": "1437",
+      "start_ms": 8166000,
+      "end_ms": 8171500,
+      "speaker": "Diana Martinez",
+      "text": "Multi-factor authentication is required for all internal systems.",
+      "raw_text": "<v Diana Martinez>Multi-factor authentication is required for all internal systems."
+    },
+    {
+      "id": "1438",
+      "start_ms": 8172000,
+      "end_ms": 8177500,
+      "speaker": "Diana Martinez",
+      "text": "Zero trust principles mean no implicit trust, even inside our network.",
+      "raw_text": "<v Diana Martinez>Zero trust principles mean no implicit trust, even inside our network."
+    },
+    {
+      "id": "1439",
+      "start_ms": 8178000,
+      "end_ms": 8183500,
+      "speaker": "Diana Martinez",
+      "text": "Incident response plans are tested regularly through tabletop exercises.",
+      "raw_text": "<v Diana Martinez>Incident response plans are tested regularly through tabletop exercises."
+    },
+    {
+      "id": "1440",
+      "start_ms": 8184000,
+      "end_ms": 8189500,
+      "speaker": "Diana Martinez",
+      "text": "We know exactly what to do if something goes wrong.",
+      "raw_text": "<v Diana Martinez>We know exactly what to do if something goes wrong."
+    },
+    {
+      "id": "1441",
+      "start_ms": 8190000,
+      "end_ms": 8195500,
+      "speaker": "Diana Martinez",
+      "text": "Data encryption protects information at rest and in transit.",
+      "raw_text": "<v Diana Martinez>Data encryption protects information at rest and in transit."
+    },
+    {
+      "id": "1442",
+      "start_ms": 8196000,
+      "end_ms": 8201500,
+      "speaker": "Diana Martinez",
+      "text": "Key management follows industry best practices.",
+      "raw_text": "<v Diana Martinez>Key management follows industry best practices."
+    },
+    {
+      "id": "1443",
+      "start_ms": 8202000,
+      "end_ms": 8207500,
+      "speaker": "Diana Martinez",
+      "text": "We're transparent with customers about our security practices.",
+      "raw_text": "<v Diana Martinez>We're transparent with customers about our security practices."
+    },
+    {
+      "id": "1444",
+      "start_ms": 8208000,
+      "end_ms": 8213500,
+      "speaker": "Diana Martinez",
+      "text": "Security documentation is available through our trust center.",
+      "raw_text": "<v Diana Martinez>Security documentation is available through our trust center."
+    },
+    {
+      "id": "1445",
+      "start_ms": 8214000,
+      "end_ms": 8219500,
+      "speaker": "Sarah Mitchell",
+      "text": "Career development is a top priority based on employee feedback.",
+      "raw_text": "<v Sarah Mitchell>Career development is a top priority based on employee feedback."
+    },
+    {
+      "id": "1446",
+      "start_ms": 8220000,
+      "end_ms": 8225500,
+      "speaker": "Sarah Mitchell",
+      "text": "We've created clear career frameworks for every function.",
+      "raw_text": "<v Sarah Mitchell>We've created clear career frameworks for every function."
+    },
+    {
+      "id": "1447",
+      "start_ms": 8226000,
+      "end_ms": 8231500,
+      "speaker": "Sarah Mitchell",
+      "text": "Employees can see exactly what's expected at each level.",
+      "raw_text": "<v Sarah Mitchell>Employees can see exactly what's expected at each level."
+    },
+    {
+      "id": "1448",
+      "start_ms": 8232000,
+      "end_ms": 8237500,
+      "speaker": "Sarah Mitchell",
+      "text": "Dual tracks allow people to grow as individual contributors or managers.",
+      "raw_text": "<v Sarah Mitchell>Dual tracks allow people to grow as individual contributors or managers."
+    },
+    {
+      "id": "1449",
+      "start_ms": 8238000,
+      "end_ms": 8243500,
+      "speaker": "Sarah Mitchell",
+      "text": "Not everyone wants to manage people, and that's perfectly fine.",
+      "raw_text": "<v Sarah Mitchell>Not everyone wants to manage people, and that's perfectly fine."
+    },
+    {
+      "id": "1450",
+      "start_ms": 8244000,
+      "end_ms": 8249500,
+      "speaker": "Sarah Mitchell",
+      "text": "Our learning and development platform launches next month.",
+      "raw_text": "<v Sarah Mitchell>Our learning and development platform launches next month."
+    },
+    {
+      "id": "1451",
+      "start_ms": 8250000,
+      "end_ms": 8255500,
+      "speaker": "Sarah Mitchell",
+      "text": "It includes thousands of courses from top providers like Coursera and LinkedIn Learning.",
+      "raw_text": "<v Sarah Mitchell>It includes thousands of courses from top providers like Coursera and LinkedIn Learning."
+    },
+    {
+      "id": "1452",
+      "start_ms": 8256000,
+      "end_ms": 8261500,
+      "speaker": "Sarah Mitchell",
+      "text": "Internal learning paths are aligned with our career frameworks.",
+      "raw_text": "<v Sarah Mitchell>Internal learning paths are aligned with our career frameworks."
+    },
+    {
+      "id": "1453",
+      "start_ms": 8262000,
+      "end_ms": 8267500,
+      "speaker": "Sarah Mitchell",
+      "text": "Managers receive training on coaching, feedback, and development conversations.",
+      "raw_text": "<v Sarah Mitchell>Managers receive training on coaching, feedback, and development conversations."
+    },
+    {
+      "id": "1454",
+      "start_ms": 8268000,
+      "end_ms": 8273500,
+      "speaker": "Sarah Mitchell",
+      "text": "Great managers are developed, not just discovered.",
+      "raw_text": "<v Sarah Mitchell>Great managers are developed, not just discovered."
+    },
+    {
+      "id": "1455",
+      "start_ms": 8274000,
+      "end_ms": 8279500,
+      "speaker": "Sarah Mitchell",
+      "text": "Mentorship programs connect senior leaders with high-potential employees.",
+      "raw_text": "<v Sarah Mitchell>Mentorship programs connect senior leaders with high-potential employees."
+    },
+    {
+      "id": "1456",
+      "start_ms": 8280000,
+      "end_ms": 8285500,
+      "speaker": "Sarah Mitchell",
+      "text": "These relationships accelerate growth and build networks.",
+      "raw_text": "<v Sarah Mitchell>These relationships accelerate growth and build networks."
+    },
+    {
+      "id": "1457",
+      "start_ms": 8286000,
+      "end_ms": 8291500,
+      "speaker": "Sarah Mitchell",
+      "text": "Internal mobility is encouraged - we want people to grow here.",
+      "raw_text": "<v Sarah Mitchell>Internal mobility is encouraged - we want people to grow here."
+    },
+    {
+      "id": "1458",
+      "start_ms": 8292000,
+      "end_ms": 8297500,
+      "speaker": "Sarah Mitchell",
+      "text": "Over thirty percent of open roles are filled internally.",
+      "raw_text": "<v Sarah Mitchell>Over thirty percent of open roles are filled internally."
+    },
+    {
+      "id": "1459",
+      "start_ms": 8298000,
+      "end_ms": 8303500,
+      "speaker": "Sarah Mitchell",
+      "text": "Leadership development programs prepare future leaders.",
+      "raw_text": "<v Sarah Mitchell>Leadership development programs prepare future leaders."
+    },
+    {
+      "id": "1460",
+      "start_ms": 8304000,
+      "end_ms": 8309500,
+      "speaker": "Sarah Mitchell",
+      "text": "Participants receive executive coaching and stretch assignments.",
+      "raw_text": "<v Sarah Mitchell>Participants receive executive coaching and stretch assignments."
+    },
+    {
+      "id": "1461",
+      "start_ms": 8310000,
+      "end_ms": 8315500,
+      "speaker": "Sarah Mitchell",
+      "text": "We invest in conferences and external learning opportunities.",
+      "raw_text": "<v Sarah Mitchell>We invest in conferences and external learning opportunities."
+    },
+    {
+      "id": "1462",
+      "start_ms": 8316000,
+      "end_ms": 8321500,
+      "speaker": "Sarah Mitchell",
+      "text": "Every employee has a budget for professional development.",
+      "raw_text": "<v Sarah Mitchell>Every employee has a budget for professional development."
+    },
+    {
+      "id": "1463",
+      "start_ms": 8322000,
+      "end_ms": 8327500,
+      "speaker": "Sarah Mitchell",
+      "text": "Education reimbursement supports degree and certification programs.",
+      "raw_text": "<v Sarah Mitchell>Education reimbursement supports degree and certification programs."
+    },
+    {
+      "id": "1464",
+      "start_ms": 8328000,
+      "end_ms": 8333500,
+      "speaker": "Sarah Mitchell",
+      "text": "Several employees are pursuing advanced degrees with company support.",
+      "raw_text": "<v Sarah Mitchell>Several employees are pursuing advanced degrees with company support."
+    },
+    {
+      "id": "1465",
+      "start_ms": 8334000,
+      "end_ms": 8339500,
+      "speaker": "Sarah Mitchell",
+      "text": "Communities of practice connect people with shared interests.",
+      "raw_text": "<v Sarah Mitchell>Communities of practice connect people with shared interests."
+    },
+    {
+      "id": "1466",
+      "start_ms": 8340000,
+      "end_ms": 8345500,
+      "speaker": "Sarah Mitchell",
+      "text": "Engineers can join guilds for specific technologies or domains.",
+      "raw_text": "<v Sarah Mitchell>Engineers can join guilds for specific technologies or domains."
+    },
+    {
+      "id": "1467",
+      "start_ms": 8346000,
+      "end_ms": 8351500,
+      "speaker": "Sarah Mitchell",
+      "text": "Hackathons and innovation time encourage creative exploration.",
+      "raw_text": "<v Sarah Mitchell>Hackathons and innovation time encourage creative exploration."
+    },
+    {
+      "id": "1468",
+      "start_ms": 8352000,
+      "end_ms": 8357500,
+      "speaker": "Sarah Mitchell",
+      "text": "Some of our best features started as hackathon projects.",
+      "raw_text": "<v Sarah Mitchell>Some of our best features started as hackathon projects."
+    },
+    {
+      "id": "1469",
+      "start_ms": 8358000,
+      "end_ms": 8363500,
+      "speaker": "Sarah Mitchell",
+      "text": "Development is a two-way street - we invest, and employees commit to growth.",
+      "raw_text": "<v Sarah Mitchell>Development is a two-way street - we invest, and employees commit to growth."
+    },
+    {
+      "id": "1470",
+      "start_ms": 8364000,
+      "end_ms": 8369500,
+      "speaker": "Sarah Mitchell",
+      "text": "Together, we're building the skills needed for the future.",
+      "raw_text": "<v Sarah Mitchell>Together, we're building the skills needed for the future."
+    },
+    {
+      "id": "1471",
+      "start_ms": 8370000,
+      "end_ms": 8375500,
+      "speaker": "Robert Chen",
+      "text": "Let me share some analysis of our market and competitive landscape.",
+      "raw_text": "<v Robert Chen>Let me share some analysis of our market and competitive landscape."
+    },
+    {
+      "id": "1472",
+      "start_ms": 8376000,
+      "end_ms": 8381500,
+      "speaker": "Robert Chen",
+      "text": "The total addressable market for our solutions exceeds fifty billion dollars.",
+      "raw_text": "<v Robert Chen>The total addressable market for our solutions exceeds fifty billion dollars."
+    },
+    {
+      "id": "1473",
+      "start_ms": 8382000,
+      "end_ms": 8387500,
+      "speaker": "Robert Chen",
+      "text": "We currently address about thirty billion of that with our product portfolio.",
+      "raw_text": "<v Robert Chen>We currently address about thirty billion of that with our product portfolio."
+    },
+    {
+      "id": "1474",
+      "start_ms": 8388000,
+      "end_ms": 8393500,
+      "speaker": "Robert Chen",
+      "text": "Adjacent markets present opportunities for expansion over time.",
+      "raw_text": "<v Robert Chen>Adjacent markets present opportunities for expansion over time."
+    },
+    {
+      "id": "1475",
+      "start_ms": 8394000,
+      "end_ms": 8399500,
+      "speaker": "Robert Chen",
+      "text": "The market is growing at twelve percent annually, driven by digital transformation.",
+      "raw_text": "<v Robert Chen>The market is growing at twelve percent annually, driven by digital transformation."
+    },
+    {
+      "id": "1476",
+      "start_ms": 8400000,
+      "end_ms": 8405500,
+      "speaker": "Robert Chen",
+      "text": "Remote and hybrid work has accelerated demand for collaboration tools.",
+      "raw_text": "<v Robert Chen>Remote and hybrid work has accelerated demand for collaboration tools."
+    },
+    {
+      "id": "1477",
+      "start_ms": 8406000,
+      "end_ms": 8411500,
+      "speaker": "Robert Chen",
+      "text": "AI and automation are creating new categories of value.",
+      "raw_text": "<v Robert Chen>AI and automation are creating new categories of value."
+    },
+    {
+      "id": "1478",
+      "start_ms": 8412000,
+      "end_ms": 8417500,
+      "speaker": "Robert Chen",
+      "text": "Customer expectations continue to rise with consumer-grade experiences.",
+      "raw_text": "<v Robert Chen>Customer expectations continue to rise with consumer-grade experiences."
+    },
+    {
+      "id": "1479",
+      "start_ms": 8418000,
+      "end_ms": 8423500,
+      "speaker": "Robert Chen",
+      "text": "Our primary competitors are well-funded and aggressive.",
+      "raw_text": "<v Robert Chen>Our primary competitors are well-funded and aggressive."
+    },
+    {
+      "id": "1480",
+      "start_ms": 8424000,
+      "end_ms": 8429500,
+      "speaker": "Robert Chen",
+      "text": "We compete on value delivered, not just feature counts.",
+      "raw_text": "<v Robert Chen>We compete on value delivered, not just feature counts."
+    },
+    {
+      "id": "1481",
+      "start_ms": 8430000,
+      "end_ms": 8435500,
+      "speaker": "Robert Chen",
+      "text": "Enterprise buyers increasingly want integrated platforms, not point solutions.",
+      "raw_text": "<v Robert Chen>Enterprise buyers increasingly want integrated platforms, not point solutions."
+    },
+    {
+      "id": "1482",
+      "start_ms": 8436000,
+      "end_ms": 8441500,
+      "speaker": "Robert Chen",
+      "text": "Our platform approach is a strategic advantage in this environment.",
+      "raw_text": "<v Robert Chen>Our platform approach is a strategic advantage in this environment."
+    },
+    {
+      "id": "1483",
+      "start_ms": 8442000,
+      "end_ms": 8447500,
+      "speaker": "Robert Chen",
+      "text": "Consolidation in the market is creating opportunities.",
+      "raw_text": "<v Robert Chen>Consolidation in the market is creating opportunities."
+    },
+    {
+      "id": "1484",
+      "start_ms": 8448000,
+      "end_ms": 8453500,
+      "speaker": "Robert Chen",
+      "text": "Customers are looking to reduce vendor complexity and cost.",
+      "raw_text": "<v Robert Chen>Customers are looking to reduce vendor complexity and cost."
+    },
+    {
+      "id": "1485",
+      "start_ms": 8454000,
+      "end_ms": 8459500,
+      "speaker": "Robert Chen",
+      "text": "Emerging players are innovating in specific niches.",
+      "raw_text": "<v Robert Chen>Emerging players are innovating in specific niches."
+    },
+    {
+      "id": "1486",
+      "start_ms": 8460000,
+      "end_ms": 8465500,
+      "speaker": "Robert Chen",
+      "text": "We watch them closely and learn from their approaches.",
+      "raw_text": "<v Robert Chen>We watch them closely and learn from their approaches."
+    },
+    {
+      "id": "1487",
+      "start_ms": 8466000,
+      "end_ms": 8471500,
+      "speaker": "Robert Chen",
+      "text": "Regulatory requirements are increasing, especially around data privacy.",
+      "raw_text": "<v Robert Chen>Regulatory requirements are increasing, especially around data privacy."
+    },
+    {
+      "id": "1488",
+      "start_ms": 8472000,
+      "end_ms": 8477500,
+      "speaker": "Robert Chen",
+      "text": "Compliance capabilities are becoming table stakes for enterprise.",
+      "raw_text": "<v Robert Chen>Compliance capabilities are becoming table stakes for enterprise."
+    },
+    {
+      "id": "1489",
+      "start_ms": 8478000,
+      "end_ms": 8483500,
+      "speaker": "Robert Chen",
+      "text": "Industry verticals have specific requirements we're learning to address.",
+      "raw_text": "<v Robert Chen>Industry verticals have specific requirements we're learning to address."
+    },
+    {
+      "id": "1490",
+      "start_ms": 8484000,
+      "end_ms": 8489500,
+      "speaker": "Robert Chen",
+      "text": "Financial services, healthcare, and government each have unique needs.",
+      "raw_text": "<v Robert Chen>Financial services, healthcare, and government each have unique needs."
+    },
+    {
+      "id": "1491",
+      "start_ms": 8490000,
+      "end_ms": 8495500,
+      "speaker": "Robert Chen",
+      "text": "Geographic expansion requires local presence and understanding.",
+      "raw_text": "<v Robert Chen>Geographic expansion requires local presence and understanding."
+    },
+    {
+      "id": "1492",
+      "start_ms": 8496000,
+      "end_ms": 8501500,
+      "speaker": "Robert Chen",
+      "text": "We're investing in building teams in key international markets.",
+      "raw_text": "<v Robert Chen>We're investing in building teams in key international markets."
+    },
+    {
+      "id": "1493",
+      "start_ms": 8502000,
+      "end_ms": 8507500,
+      "speaker": "Robert Chen",
+      "text": "Pricing pressure exists, but customers pay for proven value.",
+      "raw_text": "<v Robert Chen>Pricing pressure exists, but customers pay for proven value."
+    },
+    {
+      "id": "1494",
+      "start_ms": 8508000,
+      "end_ms": 8513500,
+      "speaker": "Robert Chen",
+      "text": "Our job is to continuously demonstrate and communicate that value.",
+      "raw_text": "<v Robert Chen>Our job is to continuously demonstrate and communicate that value."
+    },
+    {
+      "id": "1495",
+      "start_ms": 8514000,
+      "end_ms": 8519500,
+      "speaker": "Robert Chen",
+      "text": "The opportunity ahead is enormous for those who execute well.",
+      "raw_text": "<v Robert Chen>The opportunity ahead is enormous for those who execute well."
+    },
+    {
+      "id": "1496",
+      "start_ms": 8520000,
+      "end_ms": 8525500,
+      "speaker": "Robert Chen",
+      "text": "I'm confident we have the team and strategy to win.",
+      "raw_text": "<v Robert Chen>I'm confident we have the team and strategy to win."
+    },
+    {
+      "id": "1497",
+      "start_ms": 8526000,
+      "end_ms": 8531500,
+      "speaker": "Diana Martinez",
+      "text": "Technology partnerships are increasingly important to our strategy.",
+      "raw_text": "<v Diana Martinez>Technology partnerships are increasingly important to our strategy."
+    },
+    {
+      "id": "1498",
+      "start_ms": 8532000,
+      "end_ms": 8537500,
+      "speaker": "Diana Martinez",
+      "text": "We integrate with over two hundred third-party applications.",
+      "raw_text": "<v Diana Martinez>We integrate with over two hundred third-party applications."
+    },
+    {
+      "id": "1499",
+      "start_ms": 8538000,
+      "end_ms": 8543500,
+      "speaker": "Diana Martinez",
+      "text": "Our marketplace has grown to include one hundred fifty partner solutions.",
+      "raw_text": "<v Diana Martinez>Our marketplace has grown to include one hundred fifty partner solutions."
+    },
+    {
+      "id": "1500",
+      "start_ms": 8544000,
+      "end_ms": 8549500,
+      "speaker": "Diana Martinez",
+      "text": "Strategic partnerships with major platforms extend our reach.",
+      "raw_text": "<v Diana Martinez>Strategic partnerships with major platforms extend our reach."
+    }
+  ],
+  "navigation": {
+    "previous": "chunk-002.json",
+    "next": "chunk-004.json",
+    "index": "../index.json"
+  }
+}

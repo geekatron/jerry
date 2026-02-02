@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allowed_tools": [
+      "Read",
+      "Write",
+      "Edit",
+      "MultiEdit",
+      "Glob",
+      "Grep",
+      "Bash",
+      "Task",
+      "TodoWrite",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "require_approval": [
+      "Bash:rm",
+      "Bash:git push",
+      "Write:.env"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "python3 .claude/statusline.py",
+    "padding": 0
+  },
+  "version": "1.0",
+  "project": {
+    "name": "jerry",
+    "description": "Framework for behavior and workflow guardrails with knowledge accrual"
+  },
+  "rules": {
+    "files": [
+      ".claude/rules/coding-standards.md"
+    ],
+    "always_apply": true
+  },
+  "commands": {
+    "available": [
+      {
+        "name": "architect",
+        "file": ".claude/commands/architect.md",
+        "description": "Create PLAN.md in active project (requires JERRY_PROJECT)"
+      },
+      {
+        "name": "release",
+        "file": ".claude/commands/release.md",
+        "description": "Prepare release and CI/CD handoff"
+      }
+    ]
+  },
+  "context": {
+    "always_load": [
+      "CLAUDE.md",
+      "AGENTS.md",
+      "GOVERNANCE.md"
+    ],
+    "load_on_demand": [
+      "projects/README.md",
+      "projects/*/PLAN.md",
+      "projects/*/WORKTRACKER.md"
+    ]
+  },
+  "preferences": {
+    "model": {
+      "default": "opus-4-5",
+      "fast_tasks": "sonnet"
+    },
+    "output": {
+      "max_line_length": 100,
+      "prefer_markdown": true
+    },
+    "behavior": {
+      "require_plan_for_multi_file": true,
+      "require_citations": true,
+      "capture_learnings": true
+    }
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true
+  }
+}

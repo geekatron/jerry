@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "source": {
+    "format": "vtt",
+    "encoding": "iso-8859-1",
+    "file_path": "transcripts/edge_cases/iso88591_sample.vtt"
+  },
+  "metadata": {
+    "duration_ms": 10000,
+    "segment_count": 2,
+    "detected_speakers": 2
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 5000,
+      "speaker": "Dörte",
+      "text": "Guten Tag, wie geht's?",
+      "raw_text": "<v Dörte>Guten Tag, wie geht's?"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 5000,
+      "end_ms": 10000,
+      "speaker": "René",
+      "text": "Très bien, merci à vous!",
+      "raw_text": "<v René>Très bien, merci à vous!"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [
+      {
+        "code": "WARN-003",
+        "message": "Fallback encoding used",
+        "severity": "warning",
+        "details": "UTF-8 decode failed, using iso-8859-1"
+      }
+    ],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}
