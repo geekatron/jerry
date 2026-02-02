@@ -1,18 +1,19 @@
 {
-  "name": "saucer-boy",
+  "name": "jerry",
   "version": "1.0.0",
-  "description": "Local plugin marketplace for Jerry framework development",
+  "description": "Jerry Framework - Claude Code plugin for behavior and workflow guardrails with knowledge accrual",
   "owner": {
-    "name": "geekatron",
+    "name": "Jerry Framework Contributors",
     "email": "geekatron@gmail.com"
   },
   "plugins": [
     {
       "name": "jerry-framework",
-      "description": "Adds problem solving capabilities with behavior and workflow guardrails, knowledge accrual, and work tracking.",
+      "description": "Adds structured problem-solving, work tracking, and knowledge management capabilities. Includes 8 specialized agents (researcher, analyst, architect, etc.), NASA Systems Engineering processes, and multi-agent orchestration.",
       "source": "./",
       "version": "0.1.0",
-      "category": "productivity"
+      "category": "productivity",
+      "keywords": ["problem-solving", "work-tracking", "knowledge-management", "agents", "workflows"]
     }
   ]
 }

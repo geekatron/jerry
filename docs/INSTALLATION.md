@@ -1,426 +1,452 @@
 # Jerry Framework Installation Guide
 
-> Jerry is a Claude Code Plugin for behavior and workflow guardrails.
+> Jerry is a Claude Code plugin for behavior and workflow guardrails.
+
+---
+
+## Table of Contents
+
+| Section | Description |
+|---------|-------------|
+| [Prerequisites](#prerequisites) | What you need before installing |
+| [Installation](#installation) | Platform-specific setup instructions |
+| [Verification](#verification) | How to confirm installation succeeded |
+| [Configuration](#configuration) | Post-installation setup |
+| [Using Jerry](#using-jerry) | Getting started with skills |
+| [Troubleshooting](#troubleshooting) | Common issues and solutions |
+| [For Developers](#for-developers) | Contributing and development setup |
+| [Uninstallation](#uninstallation) | How to remove Jerry |
 
 ---
 
 ## Prerequisites
 
-- **Claude Code** (CLI) installed and configured
-- **Python 3.11+** (required - see [Python Version Requirements](#python-version-requirements))
-- **Git** (for version control integration)
-- **uv** (required for plugin mode - see [uv Requirements](#uv-requirements))
+### Required Software
 
-### Python Version Requirements
+| Software | Version | Purpose | Install Guide |
+|----------|---------|---------|---------------|
+| [Claude Code](https://code.claude.com) | Latest | The AI coding assistant Jerry extends | [Setup Guide](https://code.claude.com/docs/en/setup) |
+| [Git](https://git-scm.com/) | 2.0+ | Clone the Jerry repository | [Download](https://git-scm.com/downloads) |
+| [uv](https://docs.astral.sh/uv/) | Latest | Python dependency management for hooks | See platform instructions below |
 
-Jerry requires **Python 3.11 or later**. This is enforced in `pyproject.toml`:
+> **Note:** You do NOT need Python installed to use Jerry as an end user. Python and uv are used internally by Jerry's hooks. The uv installer handles Python automatically.
 
-```toml
-requires-python = ">=3.11"
-```
+### System Requirements
 
-**Why Python 3.11+?**
-- Enhanced type hints (Self, TypeVarTuple)
-- Performance improvements (10-60% faster)
-- Better error messages
-- tomllib in stdlib (PEP 680)
+| Requirement | Minimum |
+|-------------|---------|
+| Disk Space | ~100 MB |
+| Internet | Required for initial clone |
 
-**Verify your Python version:**
+---
 
-```bash
-python3 --version
-# Should show Python 3.11.x or later
+## Installation
 
-# On macOS, system Python is 3.9.6 (too old)
-# Install via Homebrew or uv:
-brew install python@3.14
-# or
-uv python install 3.14
-```
+Jerry is installed as a **Claude Code plugin** via a local marketplace. This is a two-step process:
 
-**Supported versions:**
-| Version | Status | Notes |
-|---------|--------|-------|
-| 3.14 | Supported | Latest, recommended |
-| 3.13 | Supported | Stable |
-| 3.12 | Supported | LTS-like stability |
-| 3.11 | Supported | Minimum version |
-| 3.10 | Not supported | Missing required features |
+1. **Add the marketplace** - Registers Jerry's plugin catalog with Claude Code
+2. **Install the plugin** - Downloads and activates Jerry's skills
 
-### uv Requirements
+Choose your platform below:
 
-Jerry's plugin hooks use [uv](https://docs.astral.sh/uv/) to run Python scripts with automatic dependency resolution. This is **required** for plugin mode (when installed via Claude Code's plugin system).
+---
 
-**Why uv is required:**
-- The SessionStart hook uses `uv run` to execute Python scripts
-- uv automatically resolves dependencies using PEP 723 inline script metadata
-- No manual `pip install -e .` required after installation
-- Works immediately on fresh clones
+### macOS
 
-**Install uv:**
+#### Step 1: Install uv
+
+uv is required for Jerry's hooks to execute Python scripts with automatic dependency resolution.
 
 ```bash
-# macOS/Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+Restart your terminal (close and reopen), then verify:
 
-# Verify installation
+```bash
 uv --version
+# Should output: uv 0.x.x
 ```
 
-**Note:** For development (git clone), you can use either uv or pip. For plugin mode (installed via Claude Code marketplace), uv is required.
+#### Step 2: Clone Jerry
+
+Clone the repository to a location on your system. We recommend `~/plugins/`:
+
+```bash
+mkdir -p ~/plugins
+git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
+```
+
+#### Step 3: Verify the Plugin Manifest
+
+Confirm Jerry's plugin manifest exists:
+
+```bash
+cat ~/plugins/jerry/.claude-plugin/plugin.json
+```
+
+You should see JSON output with `"name": "jerry"`.
+
+#### Step 4: Add the Local Marketplace
+
+Open Claude Code and run:
+
+```
+/plugin marketplace add ~/plugins/jerry
+```
+
+This registers Jerry's plugin catalog. No plugins are installed yet—you're just adding the "app store."
+
+#### Step 5: Install the Plugin
+
+Install Jerry from the marketplace:
+
+```
+/plugin install jerry-framework@jerry
+```
+
+**Alternative: Interactive Installation**
+1. Run `/plugin`
+2. Go to the **Discover** tab
+3. Find `jerry-framework`
+4. Press Enter and select your installation scope:
+   - **User** (recommended): Install for yourself across all projects
+   - **Project**: Install for all collaborators on this repository
+   - **Local**: Install for yourself in this repository only
 
 ---
 
-## Installation Methods
+### Windows
 
-### Method 1: GitHub Release (Recommended)
+#### Step 1: Install uv
 
-1. **Download the release archive** from [GitHub Releases](https://github.com/geekatron/jerry/releases)
+Open **PowerShell** (not Command Prompt) and run:
 
-   ```bash
-   # Download the latest release
-   curl -LO https://github.com/geekatron/jerry/releases/latest/download/jerry-plugin-X.Y.Z.tar.gz
-   ```
-
-2. **Verify the download** (optional but recommended)
-
-   ```bash
-   curl -LO https://github.com/geekatron/jerry/releases/latest/download/checksums.sha256
-   sha256sum -c checksums.sha256
-   ```
-
-3. **Extract to your project directory**
-
-   ```bash
-   # Extract to current directory
-   tar -xzf jerry-plugin-X.Y.Z.tar.gz
-
-   # Or extract to a specific location
-   tar -xzf jerry-plugin-X.Y.Z.tar.gz -C /path/to/your/project
-   ```
-
-4. **Verify installation**
-
-   ```bash
-   # Check that CLAUDE.md exists
-   ls -la CLAUDE.md
-
-   # Check plugin structure
-   ls -la .claude/ skills/ src/
-   ```
-
-### Method 2: Git Clone (Development)
-
-For development or contributing, you have two options: **uv (recommended)** or **standard pip**.
-
-#### Option A: Using uv (Recommended)
-
-[uv](https://docs.astral.sh/uv/) is a fast Python package manager that creates standard virtual environments.
-
-```bash
-# Clone the repository
-git clone https://github.com/geekatron/jerry.git
-cd jerry
-
-# Install uv if you don't have it
-# macOS/Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Sync dependencies (creates .venv automatically)
-uv sync
-
-# Run tests
-uv run pytest
-
-# Run Jerry CLI
-uv run jerry --help
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-**Why uv?**
-- 10-100x faster than pip ([benchmark](https://realpython.com/uv-vs-pip/))
-- Creates PEP 405 compliant virtual environments
-- Built-in Python version management
-- Single binary, no Python dependency to install uv itself
+**Important:** Close and reopen PowerShell to update your PATH.
 
-#### Option B: Using Standard pip/venv
+Verify the installation:
 
-If you prefer the standard Python tools or don't have uv:
-
-```bash
-# Clone the repository
-git clone https://github.com/geekatron/jerry.git
-cd jerry
-
-# Create virtual environment (Python 3.11+ required)
-python3 -m venv .venv
-
-# Activate the environment
-source .venv/bin/activate  # Linux/macOS
-# or
-.venv\Scripts\activate  # Windows
-
-# Install dependencies
-pip install -r requirements-test.txt  # Test dependencies
-pip install -e .                       # Install jerry in editable mode
-
-# Verify installation
-pytest
-jerry --help
+```powershell
+uv --version
+# Should output: uv 0.x.x
 ```
 
-**Requirements files available:**
-| File | Contents |
-|------|----------|
-| `requirements.txt` | Core dependencies (minimal) |
-| `requirements-dev.txt` | Development tools (mypy, ruff) |
-| `requirements-test.txt` | Testing tools (pytest, coverage) |
+If you see "command not found," ensure this path is in your system PATH:
+```
+%USERPROFILE%\.local\bin
+```
+
+#### Step 2: Clone Jerry
+
+Clone the repository using PowerShell:
+
+```powershell
+# Create plugins directory
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\plugins"
+
+# Clone Jerry
+git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
+```
+
+**Alternative using Git Bash:**
+```bash
+mkdir -p ~/plugins
+git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
+```
+
+#### Step 3: Verify the Plugin Manifest
+
+Confirm Jerry's plugin manifest exists:
+
+```powershell
+Get-Content "$env:USERPROFILE\plugins\jerry\.claude-plugin\plugin.json"
+```
+
+You should see JSON output with `"name": "jerry"`.
+
+#### Step 4: Add the Local Marketplace
+
+Open Claude Code and run (note: use **forward slashes** in Claude Code):
+
+```
+/plugin marketplace add C:/Users/YOUR_USERNAME/plugins/jerry
+```
+
+Replace `YOUR_USERNAME` with your actual Windows username.
+
+**Tip:** You can find your username by running `echo $env:USERNAME` in PowerShell.
+
+#### Step 5: Install the Plugin
+
+Install Jerry from the marketplace:
+
+```
+/plugin install jerry-framework@jerry
+```
 
 ---
 
-## Directory Structure
+## Verification
 
-After installation, your project should have:
+### Check Plugin Installation
+
+1. In Claude Code, run `/plugin`
+2. Go to the **Installed** tab
+3. Verify `jerry-framework` appears in the list
+
+### Check for Errors
+
+1. Run `/plugin`
+2. Go to the **Errors** tab
+3. Verify no errors related to `jerry-framework`
+
+### Test a Skill
+
+Run a simple skill to verify everything works:
 
 ```
-your-project/
-├── .claude/                 # Claude Code hooks and configuration
-│   ├── settings.json        # Claude Code settings
-│   ├── hooks/               # SessionStart, PreToolUse, etc.
-│   ├── agents/              # Agent definitions
-│   └── rules/               # Coding standards, principles
-├── .claude-plugin/          # Plugin manifest (optional)
-├── skills/                  # Natural language interfaces
-│   ├── worktracker/         # Work tracking skill
-│   ├── architecture/        # Architecture guidance skill
-│   └── problem-solving/     # Problem solving skill
-├── src/                     # Hexagonal core (Python)
-│   ├── domain/              # Pure business logic
-│   ├── application/         # Use cases (CQRS)
-│   ├── infrastructure/      # Adapters
-│   └── interface/           # Primary adapters (CLI)
-├── docs/                    # Documentation
-├── CLAUDE.md                # Context for Claude Code
-├── AGENTS.md                # Agent registry
-└── GOVERNANCE.md            # Governance principles
+/problem-solving
 ```
+
+You should see the problem-solving skill activate with information about available agents.
 
 ---
 
 ## Configuration
 
-### Project Setup
+### Installation Scopes Explained
 
-Jerry uses project-based workflows. To start working on a project:
+When installing plugins, you choose a scope that determines where the plugin is available:
 
-1. **Set the project environment variable**
+| Scope | Where Installed | Use Case |
+|-------|-----------------|----------|
+| **User** (default) | Your user settings | Personal use across all your projects |
+| **Project** | `.claude/settings.json` | Shared with team—all collaborators get the plugin |
+| **Local** | Your local repo config | Testing—only you, only this repo |
+
+**Recommendation:** Use **User** scope for personal use. Use **Project** scope when you want your whole team to have Jerry available.
+
+### Project Setup (Optional)
+
+Jerry uses project-based workflows for organizing work. To set up a project:
+
+1. **Set the project environment variable:**
 
    ```bash
+   # macOS/Linux
    export JERRY_PROJECT=PROJ-001-my-project
+
+   # Windows PowerShell
+   $env:JERRY_PROJECT = "PROJ-001-my-project"
    ```
 
-2. **Create the project directory** (if new)
+2. **Create project structure:**
 
    ```bash
+   # macOS/Linux
    mkdir -p projects/PROJ-001-my-project/.jerry/data/items
+
+   # Windows PowerShell
+   New-Item -ItemType Directory -Force -Path "projects\PROJ-001-my-project\.jerry\data\items"
    ```
 
-3. **Create project files**
-
-   - `projects/PROJ-001-my-project/PLAN.md` - Implementation plan
-   - `projects/PROJ-001-my-project/WORKTRACKER.md` - Work tracking
-
-### Verify Configuration
-
-Use the Jerry CLI to verify your setup:
-
-```bash
-# Check project context
-jerry init
-
-# List available projects
-jerry projects list
-
-# Validate a project
-jerry projects validate PROJ-001-my-project
-```
+The SessionStart hook will automatically load project context when you start Claude Code.
 
 ---
 
-## Using Jerry with Claude Code
+## Using Jerry
 
-Once installed, Jerry enhances your Claude Code experience:
+### Available Skills
 
-### Skills
+After installation, these skills are available via slash commands:
 
-Skills provide natural language interfaces:
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Problem-Solving | `/problem-solving` | Research, analysis, architecture decisions |
+| Work Tracker | `/worktracker` | Task and work item management |
+| NASA SE | `/nasa-se` | Systems engineering processes (NPR 7123.1D) |
+| Orchestration | `/orchestration` | Multi-phase workflow coordination |
+| Architecture | `/architecture` | Design decisions and ADRs |
+| Transcript | `/transcript` | Meeting transcript parsing |
 
+### Example Usage
+
+**Research a topic:**
 ```
-# In Claude Code conversation
+/problem-solving research OAuth2 implementation patterns for Python
+```
+
+**Create a work item:**
+```
 /worktracker add "Implement user authentication"
-/architecture review "src/domain/user.py"
-/problem-solving analyze "Why is the test failing?"
 ```
 
-### Hooks
+**Make an architecture decision:**
+```
+/architecture create ADR for choosing PostgreSQL over SQLite
+```
 
-Hooks run automatically at key points:
+### Persistent Artifacts
 
-- **SessionStart**: Loads project context
-- **PreToolUse**: Validates tool usage
-- **PostToolUse**: Updates work tracking
+All skill outputs are saved to files in your project:
 
-### Agents
+| Output Type | Location |
+|-------------|----------|
+| Research | `docs/research/` |
+| Analysis | `docs/analysis/` |
+| Decisions (ADRs) | `docs/decisions/` |
+| Reviews | `docs/reviews/` |
+| Reports | `docs/reports/` |
 
-Agents handle specialized tasks:
-
-- **Orchestrator**: Coordinates multi-step workflows
-- **QA Engineer**: Test validation
-- **Security Auditor**: Security review
+These files survive context compaction and session boundaries, building your project's knowledge base over time.
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
+### Plugin Command Not Recognized
 
-1. **"JERRY_PROJECT not set"**
+**Symptom:** `/plugin` command not found or doesn't work
 
-   ```bash
-   export JERRY_PROJECT=PROJ-001-my-project
-   ```
+**Solution:** Update Claude Code to the latest version:
+- **macOS (Homebrew):** `brew upgrade claude-code`
+- **npm:** `npm update -g @anthropic-ai/claude-code`
 
-2. **"Project not found"**
+Plugin support requires Claude Code version 1.0.33 or later.
 
-   ```bash
-   # List available projects
-   jerry projects list
+### Plugin Not Found After Adding Marketplace
 
-   # Create the project directory
-   mkdir -p projects/PROJ-XXX-name/.jerry/data/items
-   ```
+**Symptom:** `/plugin install jerry-framework@jerry` returns "plugin not found"
 
-3. **"Python version mismatch" or "requires-python>=3.11"**
+**Solutions:**
+1. Verify the marketplace was added: `/plugin marketplace list`
+2. Check the path is correct and Jerry was cloned successfully
+3. Refresh the marketplace: `/plugin marketplace update jerry`
+4. Verify the manifest exists: `cat ~/plugins/jerry/.claude-plugin/plugin.json`
 
-   Jerry requires Python 3.11+. Check your version:
+### uv: command not found
 
-   ```bash
-   python3 --version
-   # If below 3.11, install a newer version:
+**Symptom:** Hooks fail with "uv: command not found"
 
-   # macOS (Homebrew)
-   brew install python@3.14
+**Solution (macOS):**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Restart your terminal
+```
 
-   # Or using uv
-   uv python install 3.14
-   ```
+**Solution (Windows):**
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Close and reopen PowerShell
+```
 
-4. **"Dependencies not found" (pip)**
+If still not found, add to PATH manually:
+- macOS: `export PATH="$HOME/.local/bin:$PATH"` (add to `~/.zshrc`)
+- Windows: Add `%USERPROFILE%\.local\bin` to System PATH
 
-   Install dependencies using requirements files:
+### Skills Not Appearing
 
-   ```bash
-   pip install -r requirements-test.txt
-   pip install -e .
-   ```
+**Symptom:** Installed plugin but `/problem-solving` doesn't work
 
-5. **"uv: command not found"**
+**Solutions:**
+1. Check the **Errors** tab in `/plugin`
+2. Clear the plugin cache:
+   - macOS: `rm -rf ~/.claude/plugins/cache`
+   - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
+3. Restart Claude Code
+4. Reinstall the plugin: `/plugin uninstall jerry-framework@jerry` then `/plugin install jerry-framework@jerry`
 
-   Install uv:
+### Path Issues on Windows
 
-   ```bash
-   # macOS/Linux
-   curl -LsSf https://astral.sh/uv/install.sh | sh
+**Symptom:** "path not found" when adding marketplace
 
-   # Add to PATH (if needed)
-   export PATH="$HOME/.cargo/bin:$PATH"
-   ```
-
-6. **"ModuleNotFoundError: No module named 'src'"**
-
-   The package isn't installed in editable mode. Fix:
-
-   ```bash
-   # With uv
-   uv pip install -e .
-
-   # With pip
-   pip install -e .
-   ```
-
-7. **Tests fail with import errors**
-
-   Ensure you're using the virtual environment:
-
-   ```bash
-   # Check which Python is being used
-   which python
-   # Should show .venv/bin/python
-
-   # If not, activate the environment
-   source .venv/bin/activate
-   ```
-
-### Getting Help
-
-- **GitHub Issues**: [github.com/geekatron/jerry/issues](https://github.com/geekatron/jerry/issues)
-- **Documentation**: `docs/` directory
-- **Claude Code**: `/help` for built-in help
+**Solutions:**
+- Use forward slashes in Claude Code: `C:/Users/name/plugins/jerry`
+- Or use short path: `~/plugins/jerry` (if using Git Bash paths)
+- Avoid using backslashes or environment variables in the Claude Code command
 
 ---
 
-## Upgrading
+## For Developers
 
-To upgrade to a new version:
+If you want to contribute to Jerry development, you'll need Python 3.11+.
 
-1. **Download the new release**
+### Development Setup
 
-   ```bash
-   curl -LO https://github.com/geekatron/jerry/releases/latest/download/jerry-plugin-X.Y.Z.tar.gz
-   ```
+```bash
+# Clone repository
+git clone https://github.com/geekatron/jerry.git
+cd jerry
 
-2. **Backup your projects** (optional)
+# Install dependencies (includes Python if needed)
+uv sync
 
-   ```bash
-   cp -r projects/ projects.backup/
-   ```
+# Run tests
+uv run pytest
 
-3. **Extract over existing installation**
+# Run type checking
+uv run mypy src/
 
-   ```bash
-   tar -xzf jerry-plugin-X.Y.Z.tar.gz --overwrite
-   ```
+# Run linting
+uv run ruff check src/
+```
 
-4. **Verify upgrade**
+### Architecture Overview
 
-   ```bash
-   jerry --version
-   ```
+Jerry follows hexagonal architecture:
+
+```
+src/
+├── domain/           # Pure business logic (no external deps)
+├── application/      # Use cases (CQRS commands/queries)
+├── infrastructure/   # Adapters (persistence, messaging)
+└── interface/        # Primary adapters (CLI)
+```
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines and coding standards.
 
 ---
 
 ## Uninstallation
 
-To remove Jerry:
+### Remove the Plugin
 
-1. **Remove plugin files**
+```
+/plugin uninstall jerry-framework@jerry
+```
 
-   ```bash
-   rm -rf .claude/ .claude-plugin/ skills/ src/ docs/ scripts/ hooks/
-   rm -f CLAUDE.md AGENTS.md GOVERNANCE.md pyproject.toml pytest.ini
-   ```
+### Remove the Marketplace
 
-2. **Keep your projects** (optional)
+```
+/plugin marketplace remove jerry
+```
 
-   The `projects/` directory contains your work and is not part of the plugin.
+### Delete Local Files (Optional)
+
+**macOS/Linux:**
+```bash
+rm -rf ~/plugins/jerry
+```
+
+**Windows PowerShell:**
+```powershell
+Remove-Item -Recurse -Force "$env:USERPROFILE\plugins\jerry"
+```
+
+---
+
+## Getting Help
+
+- **GitHub Issues:** [github.com/geekatron/jerry/issues](https://github.com/geekatron/jerry/issues)
+- **Documentation:** `docs/` directory in the repository
+- **Claude Code Help:** Run `/help` in Claude Code
 
 ---
 
 ## License
 
-Jerry Framework is open source. See the LICENSE file for details.
+Jerry Framework is open source under the MIT License.
