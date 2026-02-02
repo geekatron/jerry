@@ -121,22 +121,29 @@ Optimize Jerry's CLAUDE.md file from its current **914 lines (~10,000 tokens)** 
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| [EN-201](./EN-201-worktracker-skill-extraction/EN-201-worktracker-skill-extraction.md) | Enabler | Worktracker Skill Extraction | pending | critical | 8 |
-| [EN-202](./EN-202-claude-md-rewrite/EN-202-claude-md-rewrite.md) | Enabler | CLAUDE.md Rewrite | pending | critical | 10 |
-| [EN-203](./EN-203-todo-section-migration/EN-203-todo-section-migration.md) | Enabler | TODO Section Migration | pending | high | 3 |
+| [EN-201](./EN-201-worktracker-skill-extraction/EN-201-worktracker-skill-extraction.md) | Enabler | Worktracker Skill Extraction | complete | critical | 8 |
+| [EN-202](./EN-202-claude-md-rewrite/EN-202-claude-md-rewrite.md) | Enabler | CLAUDE.md Rewrite | complete | critical | 10 |
+| [EN-203](./EN-203-todo-section-migration/EN-203-todo-section-migration.md) | Enabler | TODO Section Migration | complete | high | 3 |
 | [EN-204](./EN-204-validation-testing/EN-204-validation-testing.md) | Enabler | Validation & Testing | pending | critical | 5 |
 | [EN-205](./EN-205-documentation-update/EN-205-documentation-update.md) | Enabler | Documentation Update | pending | medium | 3 |
+| [EN-206](./EN-206-context-distribution-strategy/EN-206-context-distribution-strategy.md) | Enabler | Context Distribution Strategy | pending | critical | 13 |
 
 ### Enabler Dependencies
 
 ```
-EN-201 (Worktracker Extraction)
+EN-201 (Worktracker Extraction) ✓
     |
-    +---> EN-202 (CLAUDE.md Rewrite) ---> EN-204 (Validation)
-    |                                          |
-    +---> EN-203 (TODO Migration) ------------+
-                                               |
-                                               +---> EN-205 (Documentation)
+    +---> EN-202 (CLAUDE.md Rewrite) ✓ ---> EN-204 (Validation)
+    |                                              |
+    +---> EN-203 (TODO Migration) ✓ --------------+
+    |                                              |
+    +---> EN-206 (Context Distribution) ----------+---> EN-205 (Documentation)
+              |
+              +---> SPIKE-001 (Research)
+              +---> TASK-001 (Restructure)
+              +---> TASK-002 (Sync Mechanism)
+              +---> TASK-003 (Bootstrap Skill)
+              +---> TASK-004 (User Docs)
 ```
 
 ### Critical Path
