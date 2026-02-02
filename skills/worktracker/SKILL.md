@@ -23,6 +23,18 @@ activation-keywords:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Overview](#overview) | What this skill does and core capabilities |
+| [When to Use This Skill](#when-to-use-this-skill) | Activation triggers and use cases |
+| [Core Rules (Always Loaded)](#core-rules-always-loaded) | Behavior rules loaded via `@` import |
+| [Quick Reference](#quick-reference) | Entity hierarchy, templates, key locations |
+| [Additional Resources](#additional-resources) | Links to detailed rule files |
+
+---
+
 ## Overview
 
 The Worktracker skill provides comprehensive work item tracking and task management capabilities within the Jerry Framework. It implements a hierarchical work decomposition structure compatible with ADO Scrum, SAFe, and JIRA methodologies.
@@ -51,6 +63,44 @@ Invoke `/worktracker` when you need to:
 The following rules are automatically loaded when this skill is invoked:
 
 @rules/worktracker-behavior-rules.md
+
+---
+
+## Quick Reference
+
+### Entity Containment (What Can Contain What)
+
+| Parent | Allowed Children |
+|--------|------------------|
+| Initiative | Epic |
+| Epic | Capability, Feature |
+| Feature | Story, Enabler |
+| Story | Task, Subtask |
+| Enabler | Task |
+| Task | Subtask |
+| Bug | Task |
+
+### Template Locations
+
+| Template | Path |
+|----------|------|
+| All worktracker templates | `.context/templates/worktracker/` |
+| Epic | `.context/templates/worktracker/EPIC.md` |
+| Feature | `.context/templates/worktracker/FEATURE.md` |
+| Enabler | `.context/templates/worktracker/ENABLER.md` |
+| Story | `.context/templates/worktracker/STORY.md` |
+| Task | `.context/templates/worktracker/TASK.md` |
+| Bug | `.context/templates/worktracker/BUG.md` |
+| Discovery | `.context/templates/worktracker/DISCOVERY.md` |
+| Decision | `.context/templates/worktracker/DECISION.md` |
+
+### Key File Locations
+
+| File | Purpose |
+|------|---------|
+| `projects/{ProjectId}/WORKTRACKER.md` | Global manifest for project |
+| `projects/{ProjectId}/work/` | Work decomposition folder |
+| `.context/templates/worktracker/` | All worktracker templates |
 
 ---
 
