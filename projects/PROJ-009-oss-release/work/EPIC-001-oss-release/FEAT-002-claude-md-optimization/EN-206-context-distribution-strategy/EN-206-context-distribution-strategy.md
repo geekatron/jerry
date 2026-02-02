@@ -18,7 +18,7 @@ PURPOSE: Enable cross-platform distribution of .claude/rules/ and .claude/patter
 > **Completed:** -
 > **Parent:** FEAT-002
 > **Owner:** Claude
-> **Effort:** 13
+> **Effort:** 20
 
 ---
 
@@ -30,7 +30,7 @@ PURPOSE: Enable cross-platform distribution of .claude/rules/ and .claude/patter
 | [Problem Statement](#problem-statement) | Why .claude/ doesn't distribute via plugins |
 | [Business Value](#business-value) | Enabling OSS adoption with Jerry's behavioral guardrails |
 | [Technical Approach](#technical-approach) | .context/ canonical source with sync strategies |
-| [Children (Tasks)](#children-tasks) | 5 work items: research, restructure, sync, bootstrap skill, docs |
+| [Children (Tasks)](#children-tasks) | 7 work items: research, restructure, sync, bootstrap skill, docs, testing, rollback |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done for distribution strategy |
 | [Risks and Mitigations](#risks-and-mitigations) | Platform compatibility and adoption risks |
 | [Dependencies](#dependencies) | EN-202 completion, platform research |
@@ -191,6 +191,8 @@ Reference: `projects/PROJ-007-jerry-bugs/orchestration/jerry-persona-20260114/ps
 | [TASK-002](./TASK-002-implement-sync-mechanism.md) | Implement Chosen Sync Mechanism | pending | 3 | Task | Claude |
 | [TASK-003](./TASK-003-create-bootstrap-skill.md) | Create /bootstrap Skill with Jerry Personality | pending | 3 | Task | Claude |
 | [TASK-004](./TASK-004-user-documentation.md) | Create User Documentation | pending | 2 | Task | Claude |
+| [TASK-005](./TASK-005-integration-testing.md) | Integration Testing and Platform Verification | pending | 5 | Task | Claude |
+| [TASK-006](./TASK-006-rollback-documentation.md) | Rollback and Recovery Documentation | pending | 2 | Task | Claude |
 
 ### Discoveries
 
@@ -207,18 +209,22 @@ Reference: `projects/PROJ-007-jerry-bugs/orchestration/jerry-persona-20260114/ps
 ### Task Dependencies
 
 ```
-SPIKE-001 (Research Strategies)
+SPIKE-001 (Research Strategies) ✓
     │
     ├──► TASK-001 (Restructure to .context/)
     │        │
-    │        └──► TASK-002 (Implement Sync) ──► TASK-004 (Documentation)
+    │        └──► TASK-002 (Implement Sync) ───┬──► TASK-004 (Documentation)
+    │                  │                        │
+    │                  └──► TASK-005 (Testing) ─┤
+    │                  │                        │
+    │                  └──► TASK-006 (Rollback)─┘
     │
-    └──► TASK-003 (Bootstrap Skill) ──────────► TASK-004 (Documentation)
+    └──► TASK-003 (Bootstrap Skill) ───────────► TASK-004 (Documentation)
 ```
 
 ### Critical Path
 
-SPIKE-001 → TASK-001 → TASK-002 → TASK-004
+SPIKE-001 → TASK-001 → TASK-002 → TASK-005 → TASK-004
 
 ---
 
@@ -230,10 +236,10 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-004
 +------------------------------------------------------------------+
 |                   ENABLER PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Tasks:     [####................] 20%  (1/5 completed)           |
-| Effort:    [####................] 23%  (3/13 points)             |
+| Tasks:     [###.................] 14%  (1/7 completed)           |
+| Effort:    [###.................] 15%  (3/20 points)             |
 +------------------------------------------------------------------+
-| Overall:   [####................] 20%                            |
+| Overall:   [###.................] 15%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -241,11 +247,11 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-004
 
 | Metric | Value |
 |--------|-------|
-| **Total Tasks** | 5 |
+| **Total Tasks** | 7 |
 | **Completed Tasks** | 1 (SPIKE-001) |
-| **Total Effort (points)** | 13 |
+| **Total Effort (points)** | 20 |
 | **Completed Effort** | 3 |
-| **Completion %** | 23% |
+| **Completion %** | 15% |
 
 ---
 
@@ -341,6 +347,10 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-004
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
+| 2026-02-02T10:00:00Z | Claude | in_progress | **QG-1 PASSED:** ps-critic (0.91), nse-qa (0.93) - combined 0.92 meets threshold |
+| 2026-02-02T09:45:00Z | Claude | in_progress | Added TASK-005 (Integration Testing) and TASK-006 (Rollback) from QG-1 gap analysis |
+| 2026-02-02T09:00:00Z | Claude | in_progress | QG-1 remediation: Created addendum addressing all critical gaps |
+| 2026-02-02T08:30:00Z | Claude | in_progress | QG-1 adversarial review: ps-critic (0.71), nse-qa (0.78) - 7 gaps, 6 NCs identified |
 | 2026-02-02T08:00:00Z | Claude | in_progress | SPIKE-001 complete, DISC-001 and DEC-001 documented |
 | 2026-02-02T06:30:00Z | Claude | pending | Enabler created based on plugin loading research findings |
 
