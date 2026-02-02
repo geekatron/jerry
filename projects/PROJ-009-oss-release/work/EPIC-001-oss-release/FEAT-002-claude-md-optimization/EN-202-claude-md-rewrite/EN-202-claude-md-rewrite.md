@@ -270,6 +270,7 @@ Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rew
 | Discovery | [FEAT-002:DISC-001](../FEAT-002--DISC-001-navigation-tables-for-llm-comprehension.md) | Navigation tables improve LLM comprehension |
 | Decision | [FEAT-002:DEC-001](../FEAT-002--DEC-001-navigation-table-standard.md) | Navigation tables required in all Claude-consumed markdown |
 | Rule | `.claude/rules/markdown-navigation-standards.md` | Enforcement rule for navigation tables |
+| Research | [Navigation Table Research](./research-navigation-table-optimization.md) | Full research with anchor link findings |
 
 ---
 

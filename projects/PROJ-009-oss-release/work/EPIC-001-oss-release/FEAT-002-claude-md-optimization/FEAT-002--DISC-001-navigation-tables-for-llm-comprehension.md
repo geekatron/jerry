@@ -297,7 +297,7 @@ This discovery affects ALL markdown files that Claude reads:
 | Type | Path | Description |
 |------|------|-------------|
 | Parent | [FEAT-002](./FEAT-002-claude-md-optimization.md) | Parent feature |
-| Research | [TASK-000 Research](./EN-202-claude-md-rewrite/TASK-000-research-navigation-table-optimization.md) | Full research with all sources |
+| Research | [Navigation Table Research](./EN-202-claude-md-rewrite/research-navigation-table-optimization.md) | Full research with all sources |
 | Rule | [Navigation Standards](../../.claude/rules/markdown-navigation-standards.md) | Enforcement rule (v2.0) |
 | Pattern Example | skills/orchestration/SKILL.md | Triple-Lens implementation |
 | Pattern Example | skills/problem-solving/SKILL.md | Triple-Lens implementation |

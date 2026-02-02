@@ -1,4 +1,4 @@
-# TASK-000 Research: Navigation Table Optimization for LLM Comprehension
+# Research: Navigation Table Optimization for LLM Comprehension
 
 <!--
 TEMPLATE: Research
@@ -342,7 +342,7 @@ Navigation table placement per FEAT-002:DEC-001:
 ## Metadata
 
 ```yaml
-id: "TASK-000-research"
+id: "EN-202:research-navigation-table-optimization"
 parent_id: "EN-202:TASK-000"
 work_type: RESEARCH
 title: "Navigation Table Optimization for LLM Comprehension"

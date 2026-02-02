@@ -20,7 +20,7 @@
 
 **Decision Reference**: [FEAT-002:DEC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DEC-001-navigation-table-standard.md)
 
-**Research**: [TASK-000 Research](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/EN-202-claude-md-rewrite/TASK-000-research-navigation-table-optimization.md)
+**Research**: [Navigation Table Research](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/EN-202-claude-md-rewrite/research-navigation-table-optimization.md)
 
 ---
 
@@ -316,7 +316,7 @@ Consider implementing:
 
 | Type | Path | Description |
 |------|------|-------------|
-| Research | [TASK-000 Research](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/EN-202-claude-md-rewrite/TASK-000-research-navigation-table-optimization.md) | Full research document |
+| Research | [Navigation Table Research](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/EN-202-claude-md-rewrite/research-navigation-table-optimization.md) | Full research document |
 | Discovery | [FEAT-002:DISC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DISC-001-navigation-tables-for-llm-comprehension.md) | Initial findings |
 | Decision | [FEAT-002:DEC-001](../../projects/PROJ-009-oss-release/work/EPIC-001-oss-release/FEAT-002-claude-md-optimization/FEAT-002--DEC-001-navigation-table-standard.md) | Standard adoption |
 
