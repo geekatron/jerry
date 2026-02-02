@@ -186,11 +186,23 @@ Reference: `projects/PROJ-007-jerry-bugs/orchestration/jerry-persona-20260114/ps
 
 | ID | Title | Status | Effort | Type | Owner |
 |----|-------|--------|--------|------|-------|
-| [SPIKE-001](./SPIKE-001-research-sync-strategies.md) | Research 3-5 Cross-Platform Sync Strategies | pending | 3 | Spike | Claude |
+| [SPIKE-001](./SPIKE-001-research-sync-strategies.md) | Research 3-5 Cross-Platform Sync Strategies | **complete** | 3 | Spike | Claude |
 | [TASK-001](./TASK-001-restructure-to-context.md) | Restructure: Move rules/patterns to .context/ | pending | 2 | Task | Claude |
 | [TASK-002](./TASK-002-implement-sync-mechanism.md) | Implement Chosen Sync Mechanism | pending | 3 | Task | Claude |
 | [TASK-003](./TASK-003-create-bootstrap-skill.md) | Create /bootstrap Skill with Jerry Personality | pending | 3 | Task | Claude |
 | [TASK-004](./TASK-004-user-documentation.md) | Create User Documentation | pending | 2 | Task | Claude |
+
+### Discoveries
+
+| ID | Title | Status | Impact |
+|----|-------|--------|--------|
+| [DISC-001](./DISC-001-windows-junction-points-no-admin.md) | Windows Junction Points Work Without Admin | VALIDATED | CRITICAL |
+
+### Decisions
+
+| ID | Title | Status |
+|----|-------|--------|
+| [DEC-001](./DEC-001-sync-strategy-selection.md) | Sync Strategy Selection | ACCEPTED |
 
 ### Task Dependencies
 
@@ -218,10 +230,10 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-004
 +------------------------------------------------------------------+
 |                   ENABLER PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Tasks:     [....................] 0%  (0/5 completed)            |
-| Effort:    [....................] 0%  (0/13 points)              |
+| Tasks:     [####................] 20%  (1/5 completed)           |
+| Effort:    [####................] 23%  (3/13 points)             |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                             |
+| Overall:   [####................] 20%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -230,10 +242,10 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-004
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 5 |
-| **Completed Tasks** | 0 |
+| **Completed Tasks** | 1 (SPIKE-001) |
 | **Total Effort (points)** | 13 |
-| **Completed Effort** | 0 |
-| **Completion %** | 0% |
+| **Completed Effort** | 3 |
+| **Completion %** | 23% |
 
 ---
 
@@ -329,6 +341,7 @@ SPIKE-001 → TASK-001 → TASK-002 → TASK-004
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
+| 2026-02-02T08:00:00Z | Claude | in_progress | SPIKE-001 complete, DISC-001 and DEC-001 documented |
 | 2026-02-02T06:30:00Z | Claude | pending | Enabler created based on plugin loading research findings |
 
 ---

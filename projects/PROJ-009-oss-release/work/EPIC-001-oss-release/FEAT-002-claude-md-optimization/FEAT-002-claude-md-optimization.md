@@ -126,7 +126,7 @@ Optimize Jerry's CLAUDE.md file from its current **914 lines (~10,000 tokens)** 
 | [EN-203](./EN-203-todo-section-migration/EN-203-todo-section-migration.md) | Enabler | TODO Section Migration | complete | high | 3 |
 | [EN-204](./EN-204-validation-testing/EN-204-validation-testing.md) | Enabler | Validation & Testing | pending | critical | 5 |
 | [EN-205](./EN-205-documentation-update/EN-205-documentation-update.md) | Enabler | Documentation Update | pending | medium | 3 |
-| [EN-206](./EN-206-context-distribution-strategy/EN-206-context-distribution-strategy.md) | Enabler | Context Distribution Strategy | pending | critical | 13 |
+| [EN-206](./EN-206-context-distribution-strategy/EN-206-context-distribution-strategy.md) | Enabler | Context Distribution Strategy | in_progress | critical | 13 |
 
 ### Enabler Dependencies
 
@@ -137,9 +137,9 @@ EN-201 (Worktracker Extraction) ✓
     |                                              |
     +---> EN-203 (TODO Migration) ✓ --------------+
     |                                              |
-    +---> EN-206 (Context Distribution) ----------+---> EN-205 (Documentation)
-              |
-              +---> SPIKE-001 (Research)
+    +---> EN-206 (Context Distribution) [IN PROGRESS]
+              |                                    |
+              +---> SPIKE-001 (Research) ✓ -------+---> EN-205 (Documentation)
               +---> TASK-001 (Restructure)
               +---> TASK-002 (Sync Mechanism)
               +---> TASK-003 (Bootstrap Skill)
