@@ -27,6 +27,27 @@ REQUIREMENTS SATISFIED:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | YAML metadata schema for discoveries |
+| [State Machine](#state-machine) | Discovery status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Summary](#summary) | Brief statement of the core finding |
+| [Context](#context) | Background and research question |
+| [Finding](#finding) | Core discovery with supporting details |
+| [Evidence](#evidence) | Sources, dates, citations, validation |
+| [Implications](#implications) | Impact on project and decisions |
+| [Relationships](#relationships) | Related work items and discoveries |
+| [Recommendations](#recommendations) | Actionable recommendations |
+| [Open Questions](#open-questions) | Unanswered questions for follow-up |
+| [Detailed Investigation](#detailed-investigation) | Optional freeform investigation docs |
+| [Document History](#document-history) | Track changes to this discovery |
+| [Metadata](#metadata) | Machine-readable metadata |
+
+---
+
 ## Frontmatter
 
 ```yaml

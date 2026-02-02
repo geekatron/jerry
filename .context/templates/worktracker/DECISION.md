@@ -24,6 +24,23 @@ REQUIREMENTS SATISFIED:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | YAML metadata schema for decisions |
+| [State Machine](#state-machine) | Decision status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Summary](#summary) | Brief description of decisions captured |
+| [Decision Context](#decision-context) | Background and constraints |
+| [Decisions](#decisions) | Structured D-NNN decision entries |
+| [Decision Summary](#decision-summary) | Quick reference table of all decisions |
+| [Related Artifacts](#related-artifacts) | Traceability to parent and related items |
+| [Document History](#document-history) | Track changes to this document |
+| [Metadata](#metadata) | Machine-readable metadata |
+
+---
+
 ## Frontmatter
 
 ```yaml

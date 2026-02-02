@@ -41,6 +41,36 @@ EFFORT: Story points (1-13 Fibonacci recommended)
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Template Structure](#template-structure) | Visual structure reference for enabler |
+| [Frontmatter](#frontmatter) | YAML metadata schema for enablers |
+| [Summary](#summary) | Brief description and technical scope |
+| [Enabler Type Classification](#enabler-type-classification) | Infrastructure, exploration, architecture, compliance |
+| [Problem Statement](#problem-statement) | Why this enabler is needed |
+| [Business Value](#business-value) | How enabler supports feature delivery |
+| [Technical Approach](#technical-approach) | High-level technical approach |
+| [Non-Functional Requirements (NFRs) Addressed](#non-functional-requirements-nfrs-addressed) | NFRs this enabler addresses |
+| [Technical Debt Category](#technical-debt-category) | Tech debt being addressed |
+| [Children (Tasks)](#children-tasks) | Task inventory and tracking |
+| [Progress Summary](#progress-summary) | Overall enabler progress |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
+| [Implementation Plan](#implementation-plan) | Phased implementation approach |
+| [Risks and Mitigations](#risks-and-mitigations) | Known risks and mitigations |
+| [Dependencies](#dependencies) | Dependencies and items enabled |
+| [State Machine Reference](#state-machine-reference) | Enabler status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Related Items](#related-items) | Hierarchy and related work |
+| [Architecture Runway Impact](#architecture-runway-impact) | For architecture enablers |
+| [History](#history) | Status changes and key events |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+
+---
+
 ## Template Structure
 
 ```

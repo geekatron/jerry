@@ -15,6 +15,22 @@ EXTENDS: DeliveryItem -> WorkItem
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | YAML metadata schema for tasks |
+| [State Machine](#state-machine) | Task status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+| [Content](#content) | Description and acceptance criteria |
+| [Time Tracking](#time-tracking) | Original estimate, remaining, spent |
+| [Evidence](#evidence) | Deliverables and verification |
+| [History](#history) | Status changes and key events |
+
+---
+
 ## Frontmatter
 
 ```yaml

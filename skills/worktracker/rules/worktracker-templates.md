@@ -6,6 +6,16 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Work Tracker (worktracker) Templates](#work-tracker-worktracker-templates) | Template descriptions and directory structure |
+| [Templates (MANDATORY)](#templates-mandatory) | Template usage rules and complete reference |
+| [Cross-References](#cross-references) | Links to other worktracker rule files |
+
+---
+
 ## Work Tracker (worktracker) Templates
 
 Description:

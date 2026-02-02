@@ -6,6 +6,15 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [3: System Mapping Summary](#3-system-mapping-summary) | Entity mapping table and complexity overview |
+| [4. System Mappings](#4-system-mappings) | Complete entity mapping by system (ADO, SAFe, JIRA) |
+
+---
+
 ## 3: System Mapping Summary
 
 ### 3.1 Entity Mapping Table

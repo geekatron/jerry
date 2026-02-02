@@ -76,6 +76,28 @@ CONTAINMENT:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | YAML metadata schema for stories |
+| [User Story](#user-story) | As a/I want/So that format |
+| [Summary](#summary) | Additional context and scope |
+| [Acceptance Criteria](#acceptance-criteria) | Gherkin format and checklist |
+| [Children (Tasks)](#children-tasks) | Task inventory and tracking |
+| [Progress Summary](#progress-summary) | Overall story progress |
+| [Estimation](#estimation) | Story points and sprint |
+| [Definition of Done](#definition-of-done) | Code quality, documentation, verification |
+| [Evidence](#evidence) | Deliverables and verification record |
+| [State Machine Reference](#state-machine-reference) | Story status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Related Items](#related-items) | Hierarchy and related stories |
+| [History](#history) | Status changes and key events |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+
+---
+
 ## Frontmatter
 
 ```yaml

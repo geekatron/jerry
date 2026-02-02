@@ -7,6 +7,15 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Folder Structure Patterns](#folder-structure-patterns) | Project-based vs repository-based placement |
+| [WORKTRACKER Directory Structure](#worktracker-directory-structure) | Detailed folder hierarchy for work items |
+
+---
+
 ## Folder Structure Patterns
 
 Worktracker supports two alternative placement patterns. Choose ONE based on your repository's needs.

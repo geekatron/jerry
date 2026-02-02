@@ -32,6 +32,26 @@ CRITICAL INVARIANTS:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | YAML metadata schema for impediments |
+| [State Machine](#state-machine) | Impediment status transitions |
+| [Containment Rules](#containment-rules) | Standalone entity constraints |
+| [Summary](#summary) | Brief description of the blocker |
+| [Blocked Items](#blocked-items) | Work items blocked by this impediment |
+| [Impact Assessment](#impact-assessment) | Business and technical impact |
+| [Root Cause Analysis](#root-cause-analysis) | Understanding why impediment exists |
+| [Resolution](#resolution) | Resolution tracking and action items |
+| [Escalation History](#escalation-history) | Escalation timeline |
+| [Related Artifacts](#related-artifacts) | Links to blocked and resolution items |
+| [Document History](#document-history) | Track impediment lifecycle |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Metadata](#metadata) | Machine-readable metadata |
+
+---
+
 ## Frontmatter
 
 ```yaml

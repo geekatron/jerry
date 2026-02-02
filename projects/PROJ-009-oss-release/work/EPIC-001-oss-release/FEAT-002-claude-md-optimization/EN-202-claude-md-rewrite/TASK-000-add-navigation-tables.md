@@ -9,13 +9,13 @@ PURPOSE: Apply FEAT-002:DEC-001 navigation table standard to all worktracker fil
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** complete
 > **Priority:** high
 > **Created:** 2026-02-01T18:00:00Z
 > **Due:** -
-> **Completed:** -
+> **Completed:** 2026-02-02T02:00:00Z
 > **Parent:** EN-202
-> **Owner:** -
+> **Owner:** ps-writer
 > **Effort:** 2
 
 ---
@@ -111,34 +111,34 @@ description: ...
 
 ### Definition of Done
 
-- [ ] All worktracker rules have navigation tables
-- [ ] All worktracker templates have navigation table section
-- [ ] All Claude rules have navigation tables (verify/add)
-- [ ] Each navigation table appears after frontmatter, before content
-- [ ] Tables use proper markdown table syntax
+- [x] All worktracker rules have navigation tables
+- [x] All worktracker templates have navigation table section
+- [x] All Claude rules have navigation tables (verify/add)
+- [x] Each navigation table appears after frontmatter, before content
+- [x] Tables use proper markdown table syntax
 
 ### Files Checklist
 
 #### Worktracker Rules (`skills/worktracker/rules/`)
 
-- [ ] `worktracker-entity-hierarchy.md`
-- [ ] `worktracker-system-mappings.md`
-- [ ] `worktracker-behavior-rules.md`
-- [ ] `worktracker-directory-structure.md`
-- [ ] `worktracker-templates.md`
+- [x] `worktracker-entity-hierarchy.md`
+- [x] `worktracker-system-mappings.md`
+- [x] `worktracker-behavior-rules.md` (already had navigation)
+- [x] `worktracker-directory-structure.md`
+- [x] `worktracker-templates.md`
 
 #### Worktracker Templates (`.context/templates/worktracker/`)
 
-- [ ] `BUG.md`
-- [ ] `DECISION.md`
-- [ ] `DISCOVERY.md`
-- [ ] `ENABLER.md`
-- [ ] `EPIC.md`
-- [ ] `FEATURE.md`
-- [ ] `IMPEDIMENT.md`
-- [ ] `SPIKE.md`
-- [ ] `STORY.md`
-- [ ] `TASK.md`
+- [x] `BUG.md`
+- [x] `DECISION.md`
+- [x] `DISCOVERY.md`
+- [x] `ENABLER.md`
+- [x] `EPIC.md`
+- [x] `FEATURE.md`
+- [x] `IMPEDIMENT.md`
+- [x] `SPIKE.md`
+- [x] `STORY.md`
+- [x] `TASK.md`
 
 ---
 

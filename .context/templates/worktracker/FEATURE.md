@@ -34,6 +34,27 @@ TIMESTAMPS: Use ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Template Structure](#template-structure) | Visual structure reference for feature |
+| [Frontmatter](#frontmatter) | YAML metadata schema for features |
+| [Summary](#summary) | Brief description and value proposition |
+| [Benefit Hypothesis](#benefit-hypothesis) | Expected benefits from this feature |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done and criteria |
+| [MVP Definition](#mvp-definition) | Minimum viable product scope |
+| [Children (Stories/Enablers)](#children-storiesenablers) | Story/enabler inventory and tracking |
+| [Progress Summary](#progress-summary) | Overall feature progress |
+| [State Machine Reference](#state-machine-reference) | Feature status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Related Items](#related-items) | Hierarchy and related features |
+| [History](#history) | Status changes and key events |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+
+---
+
 ## Template Structure
 
 ```

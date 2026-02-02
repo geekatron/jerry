@@ -41,6 +41,29 @@ TIMESTAMPS: Use ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Template Structure](#template-structure) | Visual structure reference for bug template |
+| [Frontmatter](#frontmatter) | YAML metadata schema for bug work items |
+| [Summary](#summary) | Brief description and key details |
+| [Reproduction Steps](#reproduction-steps) | Steps to reproduce the issue |
+| [Environment](#environment) | Environment where bug occurs |
+| [Evidence](#evidence) | Bug documentation and fix verification |
+| [Root Cause Analysis](#root-cause-analysis) | Investigation and root cause details |
+| [Fix Description](#fix-description) | Solution approach and changes made |
+| [Acceptance Criteria](#acceptance-criteria) | Conditions for bug to be fixed |
+| [Related Items](#related-items) | Hierarchy and related work items |
+| [State Machine Reference](#state-machine-reference) | Bug status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Severity Guide](#severity-guide) | Severity levels and response times |
+| [History](#history) | Status changes and key events |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+
+---
+
 ## Template Structure
 
 ```

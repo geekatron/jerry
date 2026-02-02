@@ -35,6 +35,26 @@ TARGET_QUARTER: Format FY##-Q# (e.g., FY26-Q1)
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Template Structure](#template-structure) | Visual structure reference for epic |
+| [Frontmatter](#frontmatter) | YAML metadata schema for epics |
+| [Summary](#summary) | Brief description and key objectives |
+| [Business Outcome Hypothesis](#business-outcome-hypothesis) | Expected business outcomes (SAFe pattern) |
+| [Lean Business Case](#lean-business-case) | Economic justification (SAFe pattern) |
+| [Children (Features/Capabilities)](#children-featurescapabilities) | Feature inventory and tracking |
+| [Progress Summary](#progress-summary) | Overall epic progress |
+| [State Machine Reference](#state-machine-reference) | Epic status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Related Items](#related-items) | Hierarchy and related epics |
+| [History](#history) | Status changes and key events |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+
+---
+
 ## Template Structure
 
 ```

@@ -6,6 +6,15 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [1: Entity Hierarchy](#1-entity-hierarchy) | Complete hierarchy tree and level definitions |
+| [2: Entity Classification and Properties](#2-entity-classification-and-properties) | Classification matrix and containment rules |
+
+---
+
 ## 1: Entity Hierarchy
 
 ### 1.1 Complete Hierarchy Tree

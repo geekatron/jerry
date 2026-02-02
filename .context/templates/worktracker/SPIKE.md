@@ -18,6 +18,23 @@ IMPORTANT: Spikes are LEAF NODES - they cannot have children.
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Frontmatter](#frontmatter) | YAML metadata schema for spikes |
+| [State Machine](#state-machine) | Spike status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+| [Content](#content) | Research question, hypothesis, scope |
+| [Findings](#findings) | Summary and detailed findings |
+| [Recommendation](#recommendation) | Decision and recommended actions |
+| [Related Items](#related-items) | Hierarchy and related work |
+| [History](#history) | Status changes and key events |
+
+---
+
 ## Frontmatter
 
 ```yaml
