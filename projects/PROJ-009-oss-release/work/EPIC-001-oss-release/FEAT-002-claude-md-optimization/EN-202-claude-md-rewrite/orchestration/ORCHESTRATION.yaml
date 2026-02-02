@@ -1,0 +1,177 @@
+# ORCHESTRATION.yaml - EN-202 CLAUDE.md Rewrite
+# Machine-readable state (SSOT)
+# Workflow ID: en202-rewrite-20260201-001
+
+workflow:
+  id: "en202-rewrite-20260201-001"
+  name: "EN-202 CLAUDE.md Rewrite"
+  project_id: "PROJ-009-oss-release"
+  enabler_id: "EN-202"
+  status: ACTIVE
+  created_at: "2026-02-01T22:30:00Z"
+  updated_at: "2026-02-01T22:30:00Z"
+  protocol: "DISC-002"
+  quality_threshold: 0.92
+  max_iterations: 3
+
+pipelines:
+  pipeline_a:
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    role: "Content creation and quality review"
+    current_phase: 0
+
+  pipeline_b:
+    short_alias: "nse"
+    skill_source: "nasa-systems-engineering"
+    role: "Compliance verification"
+    current_phase: 0
+
+phases:
+  - id: 0
+    name: "Phase 0: Navigation Tables"
+    status: PENDING
+    execution_mode: SEQUENTIAL
+    agents:
+      - id: "task-000"
+        name: "Add navigation tables"
+        status: PENDING
+        artifact: null
+        score: null
+        iterations: 0
+
+  - id: 1
+    name: "Phase 1: Section Creation"
+    status: BLOCKED
+    execution_mode: PARALLEL
+    agents:
+      - id: "task-001"
+        name: "Identity Section"
+        status: BLOCKED
+        artifact: null
+        score: null
+        iterations: 0
+        target_loc: 10
+
+      - id: "task-002"
+        name: "Navigation Section"
+        status: BLOCKED
+        artifact: null
+        score: null
+        iterations: 0
+        target_loc: 20
+
+      - id: "task-003"
+        name: "Active Project Section"
+        status: BLOCKED
+        artifact: null
+        score: null
+        iterations: 0
+        target_loc: 15
+
+      - id: "task-004"
+        name: "Critical Constraints Section"
+        status: BLOCKED
+        artifact: null
+        score: null
+        iterations: 0
+        target_loc: 15
+
+      - id: "task-005"
+        name: "Quick Reference Section"
+        status: BLOCKED
+        artifact: null
+        score: null
+        iterations: 0
+        target_loc: 15
+
+  - id: 2
+    name: "Phase 2: Integration & Assembly"
+    status: BLOCKED
+    execution_mode: SEQUENTIAL
+    agents:
+      - id: "nse-qa-integration"
+        name: "Integration Quality Audit"
+        status: BLOCKED
+        artifact: null
+        score: null
+
+  - id: 3
+    name: "Phase 3: Validation"
+    status: BLOCKED
+    execution_mode: SEQUENTIAL
+    agents:
+      - id: "task-006"
+        name: "Validate Pointers"
+        status: BLOCKED
+        artifact: null
+
+      - id: "task-007"
+        name: "Verify Line Count"
+        status: BLOCKED
+        artifact: null
+
+quality_gates:
+  - id: "qg-1"
+    name: "Section Review"
+    status: PENDING
+    location: "quality-gates/qg-1/"
+    reviewers:
+      - agent: "ps-critic"
+        status: PENDING
+        artifact: null
+        score: null
+      - agent: "nse-qa"
+        status: PENDING
+        artifact: null
+        score: null
+
+  - id: "qg-2"
+    name: "Integration Review"
+    status: PENDING
+    location: "quality-gates/qg-2/"
+    reviewers:
+      - agent: "nse-qa"
+        status: PENDING
+        artifact: "integration-qa-report.md"
+        score: null
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+bugs_to_fix:
+  - id: "BUG-001"
+    description: "relationships to to typo"
+    severity: trivial
+    status: PENDING
+
+  - id: "BUG-002"
+    description: "Story folder uses {EnablerId} instead of {StoryId}"
+    severity: minor
+    status: PENDING
+
+  - id: "BUG-003"
+    description: "Template path inconsistency"
+    severity: minor
+    status: PENDING
+
+metrics:
+  tasks_total: 8
+  tasks_complete: 0
+  tasks_in_progress: 0
+  tasks_blocked: 7
+  tasks_pending: 1
+  phases_total: 4
+  phases_complete: 0
+  quality_gates_total: 2
+  quality_gates_passed: 0
+  target_line_count: "60-80"
+  target_token_count: "3300-3500"
+  current_line_count: 914
+  current_token_count: "~10000"
+
+execution_log:
+  - timestamp: "2026-02-01T22:30:00Z"
+    event: "workflow_created"
+    details: "EN-202 orchestration plan initialized"

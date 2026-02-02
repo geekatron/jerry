@@ -258,6 +258,18 @@ Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rew
 | [BUG-002](./BUG-002-story-folder-id-mismatch.md) | Story folder uses {EnablerId} instead of {StoryId} (line 232) | minor | medium |
 | [BUG-003](./BUG-003-template-path-inconsistency.md) | Template path inconsistency (docs/ vs .context/) | minor | medium |
 
+### Orchestration
+
+| Artifact | Purpose | Location |
+|----------|---------|----------|
+| ORCHESTRATION_PLAN.md | Strategic workflow design | [orchestration/ORCHESTRATION_PLAN.md](./orchestration/ORCHESTRATION_PLAN.md) |
+| ORCHESTRATION.yaml | Machine-readable state (SSOT) | [orchestration/ORCHESTRATION.yaml](./orchestration/ORCHESTRATION.yaml) |
+| ORCHESTRATION_WORKTRACKER.md | Tactical execution tracking | [orchestration/ORCHESTRATION_WORKTRACKER.md](./orchestration/ORCHESTRATION_WORKTRACKER.md) |
+
+**Workflow ID:** `en202-rewrite-20260201-001`
+**Protocol:** DISC-002 Adversarial Review
+**Quality Threshold:** 0.92
+
 ### Reference
 
 - Appendix A in PLAN-CLAUDE-MD-OPTIMIZATION.md contains proposed structure
@@ -282,6 +294,7 @@ Bugs discovered during EN-201 extraction that must be fixed in the CLAUDE.md rew
 | 2026-02-01T13:00:00Z | Claude | pending | Added BUG-001, BUG-002, BUG-003 (source defects from EN-201) |
 | 2026-02-01T18:00:00Z | Claude | pending | Added TASK-000 (navigation tables), updated dependency graph, added FEAT-002 standards references |
 | 2026-02-01T18:30:00Z | Claude | pending | Added navigation table per FEAT-002:DEC-001 |
+| 2026-02-01T22:30:00Z | Claude | pending | Created orchestration plan (en202-rewrite-20260201-001) with DISC-002 protocol |
 
 ---
 
