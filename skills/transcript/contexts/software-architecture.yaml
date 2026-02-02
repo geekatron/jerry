@@ -1,0 +1,353 @@
+# Domain Schema: Software Architecture Transcript Analysis
+# Version: 1.0.0
+# TASK-151: EN-014 Artifact Promotion
+# Source: EN-006/docs/specs/domain-contexts/02-software-architecture/
+# Implements: SPEC-context-injection.md Section 3.3, TDD-EN014 Schema V1.1.0
+
+schema_version: "1.0.0"
+domain: "software-architecture"
+display_name: "Software Architecture Transcript Analysis"
+extends: "transcript"  # Inherits base entities (speaker, topic, question)
+
+# Domain metadata (TDD-EN014 Section 4.2)
+metadata:
+  target_users:
+    - "Software Architects"
+    - "Principal Engineers"
+    - "Tech Leads"
+    - "Engineering Directors"
+  transcript_types:
+    - "Architecture review"
+    - "ADR discussion"
+    - "Design session"
+    - "Technical deep dive"
+    - "Trade-off analysis"
+  key_use_cases:
+    - "Document ADRs"
+    - "Record alternatives"
+    - "Track quality attributes"
+    - "Map components"
+    - "Flag technical debt"
+
+# Entity definitions
+entity_definitions:
+  architectural_decision:
+    description: "A significant architectural choice that affects system structure or behavior"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Decision title/summary (ADR title)"
+      - name: "context"
+        type: "string"
+        required: true
+        description: "Why this decision is needed (problem statement)"
+      - name: "decision"
+        type: "string"
+        required: true
+        description: "What was decided (the solution)"
+      - name: "consequences"
+        type: "object"
+        description: "Impact of the decision (positive and negative)"
+      - name: "status"
+        type: "enum"
+        values: ["proposed", "accepted", "deprecated", "superseded"]
+        description: "Decision status"
+      - name: "adr_number"
+        type: "string"
+        description: "ADR identifier if mentioned"
+    extraction_patterns:
+      - "We're going with {{decision}}"
+      - "The architecture decision is {{decision}}"
+      - "ADR: {{decision}}"
+      - "We chose {{decision}} because {{rationale}}"
+      - "Decision: {{decision}}"
+      - "We've decided to {{decision}}"
+    relationships:
+      - type: "rejects"
+        target: "alternative"
+      - type: "addresses"
+        target: "quality_attribute"
+
+  alternative:
+    description: "An option considered but not chosen for the decision"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Alternative name/identifier"
+      - name: "description"
+        type: "string"
+        required: true
+        description: "What the alternative entails"
+      - name: "pros"
+        type: "array"
+        items: "string"
+        description: "Benefits of this option"
+      - name: "cons"
+        type: "array"
+        items: "string"
+        description: "Drawbacks of this option"
+      - name: "rejection_reason"
+        type: "string"
+        description: "Why it was not chosen"
+    extraction_patterns:
+      - "We considered {{alternative}}"
+      - "Another option was {{alternative}}"
+      - "We rejected {{alternative}} because {{reason}}"
+      - "Alternative: {{alternative}}"
+      - "{{alternative}} was also on the table"
+      - "We ruled out {{alternative}}"
+    relationships:
+      - type: "rejected_by"
+        target: "architectural_decision"
+
+  quality_attribute:
+    description: "Non-functional requirement or system quality discussed"
+    attributes:
+      - name: "attribute"
+        type: "enum"
+        values: ["performance", "security", "maintainability", "reliability", "compatibility", "usability", "portability"]
+        required: true
+        description: "Quality category (ISO 25010)"
+      - name: "requirement"
+        type: "string"
+        required: true
+        description: "Specific requirement or target"
+      - name: "priority"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Priority level"
+      - name: "trade_offs"
+        type: "string"
+        description: "Trade-offs with other quality attributes"
+      - name: "measurement"
+        type: "string"
+        description: "How to measure (if discussed)"
+    extraction_patterns:
+      - "For {{attribute}}, we need {{requirement}}"
+      - "{{attribute}} is critical because {{reason}}"
+      - "We're prioritizing {{attribute}} over {{other}}"
+      - "The {{attribute}} requirement is {{requirement}}"
+      - "Trade-off between {{attr1}} and {{attr2}}"
+      - "NFR: {{requirement}}"
+    relationships:
+      - type: "addressed_by"
+        target: "architectural_decision"
+      - type: "influences"
+        target: "component"
+
+  component:
+    description: "System component or module discussed in the architecture"
+    attributes:
+      - name: "name"
+        type: "string"
+        required: true
+        description: "Component name or identifier"
+      - name: "responsibility"
+        type: "string"
+        required: true
+        description: "What the component does (single responsibility)"
+      - name: "interfaces"
+        type: "array"
+        items: "string"
+        description: "How it connects to other components"
+      - name: "constraints"
+        type: "string"
+        description: "Technical or business constraints"
+      - name: "technology"
+        type: "string"
+        description: "Technology stack if mentioned"
+    extraction_patterns:
+      - "The {{component}} is responsible for {{responsibility}}"
+      - "{{component}} component"
+      - "{{component}} service"
+      - "{{component}} will handle {{responsibility}}"
+      - "Interface between {{comp1}} and {{comp2}}"
+    relationships:
+      - type: "incurs"
+        target: "technical_debt"
+      - type: "implements"
+        target: "quality_attribute"
+
+  technical_debt:
+    description: "Identified technical debt or architectural concern"
+    attributes:
+      - name: "description"
+        type: "string"
+        required: true
+        description: "What is the debt/issue"
+      - name: "impact"
+        type: "string"
+        description: "How it affects the system"
+      - name: "remediation"
+        type: "string"
+        description: "Proposed fix or improvement"
+      - name: "priority"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Priority level"
+      - name: "cost"
+        type: "string"
+        description: "Estimated effort to address"
+    extraction_patterns:
+      - "Technical debt: {{description}}"
+      - "We're taking on debt by {{description}}"
+      - "This is a hack, we should {{remediation}}"
+      - "Tech debt: {{description}}"
+      - "We'll need to fix {{description}} later"
+    relationships:
+      - type: "incurred_by"
+        target: "component"
+      - type: "created_by"
+        target: "architectural_decision"
+
+# Extraction rules with confidence thresholds
+extraction_rules:
+  - id: "architectural_decisions"
+    entity_type: "architectural_decision"
+    confidence_threshold: 0.8
+    priority: 1
+    tier: "rule"
+    description: "Extract significant architectural choices"
+
+  - id: "alternatives"
+    entity_type: "alternative"
+    confidence_threshold: 0.75
+    priority: 2
+    tier: "rule"
+    description: "Document options considered but not chosen"
+
+  - id: "quality_attributes"
+    entity_type: "quality_attribute"
+    confidence_threshold: 0.75
+    priority: 3
+    tier: "rule"
+    description: "Identify non-functional requirements discussed"
+
+  - id: "components"
+    entity_type: "component"
+    confidence_threshold: 0.7
+    priority: 4
+    tier: "rule"
+    description: "Map system components and modules"
+
+  - id: "technical_debt"
+    entity_type: "technical_debt"
+    confidence_threshold: 0.75
+    priority: 5
+    tier: "llm"
+    description: "Flag technical debt and architectural concerns"
+
+# Context-specific rules (TDD-EN014 Section 4.3)
+context_rules:
+  architecture_review:
+    primary_focus:
+      - architectural_decision
+      - component
+    secondary_focus:
+      - quality_attribute
+      - technical_debt
+    extraction_emphasis: |
+      In architecture reviews, prioritize:
+      1. Key architectural decisions being reviewed
+      2. Components and their responsibilities
+      3. Quality attributes under discussion
+      4. Technical debt identified
+
+  adr_discussion:
+    primary_focus:
+      - architectural_decision
+      - alternative
+    secondary_focus:
+      - quality_attribute
+    extraction_emphasis: |
+      In ADR discussions, focus on:
+      1. The decision being documented (Nygard format)
+      2. Alternatives considered with pros/cons
+      3. Quality attributes being addressed
+      4. Capture full context and rationale
+
+  design_session:
+    primary_focus:
+      - component
+      - architectural_decision
+    secondary_focus:
+      - alternative
+      - quality_attribute
+    extraction_emphasis: |
+      In design sessions, capture:
+      1. Components being designed
+      2. Architectural decisions emerging
+      3. Trade-offs being evaluated
+      4. Interface definitions
+
+  trade_off_analysis:
+    primary_focus:
+      - quality_attribute
+      - alternative
+    secondary_focus:
+      - architectural_decision
+    extraction_emphasis: |
+      In trade-off analysis, document:
+      1. Quality attributes being balanced
+      2. Options and their implications
+      3. Final decisions with rationale
+      4. Accepted trade-offs
+
+# Validation rules (TDD-EN014 Section 4.4)
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - architectural_decision
+    - alternative
+    - quality_attribute
+
+# Prompt guidance for ts-extractor agent
+prompt_guidance: |
+  ## Software Architecture Transcript Analysis
+
+  When analyzing software architecture transcripts, apply domain expertise:
+
+  ### Architectural Decision Capture
+  - Structure decisions for Nygard ADR format (Title, Context, Decision, Consequences, Status)
+  - Capture full rationale - why was this decided?
+  - Note the status: proposed, accepted, deprecated, or superseded
+  - Link to ADR numbers when mentioned
+
+  ### Alternative Documentation
+  - Record ALL alternatives discussed, not just the chosen one
+  - Capture pros and cons for each option
+  - Document why alternatives were rejected
+  - Preserve the decision-making context
+
+  ### Quality Attribute Identification
+  - Map to ISO 25010 categories (performance, security, maintainability, etc.)
+  - Capture specific targets and thresholds
+  - Note trade-offs between competing attributes
+  - Record measurement approaches if discussed
+
+  ### Component Mapping
+  - Identify component names and responsibilities
+  - Document interfaces and connections
+  - Capture technology choices
+  - Note constraints and limitations
+
+  ### Technical Debt Recognition
+  - Flag intentional shortcuts and their rationale
+  - Capture impact assessments
+  - Document proposed remediation
+  - Track priority and cost estimates
+
+  ### Confidence Scoring Guidelines
+  - 0.9+: Explicit ADR language ("We decided", "ADR-001")
+  - 0.7-0.9: Strong architectural discussion with context
+  - 0.5-0.7: Implicit decisions, flag for review
+  - <0.5: Do not extract
+
+  ### Anti-Hallucination Rules (PAT-004)
+  - Every extraction MUST have a source segment citation
+  - Do not infer decisions not explicitly stated
+  - When uncertain, use lower confidence scores
+  - Preserve original speaker attribution

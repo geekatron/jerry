@@ -1,0 +1,853 @@
+# Cross-Skill Handoff Interface Contract
+# OpenAPI 3.0-inspired schema for ps-* <-> nse-* agent handoffs
+#
+# Version: 1.0.0
+# Reference: docs/schemas/session_context.json
+# Skills: problem-solving (ps-*), nasa-se (nse-*)
+
+openapi: "3.0.3"
+info:
+  title: Cross-Skill Handoff Contract
+  version: "1.0.0"
+  description: |
+    Interface contract for cross-skill handoffs between Problem-Solving (ps-*)
+    and NASA Systems Engineering (nse-*) agent families. This contract ensures
+    reliable agent chaining across skill boundaries with proper context
+    translation and validation.
+  contact:
+    name: Jerry Framework
+    url: https://github.com/jerry-framework
+
+# =============================================================================
+# SKILL FAMILY DEFINITIONS
+# =============================================================================
+
+skill_families:
+  ps:
+    name: "Problem-Solving"
+    description: "Structured problem-solving framework"
+    version: "2.1.0"
+    contract_reference: "skills/problem-solving/contracts/PS_SKILL_CONTRACT.yaml"
+    agents:
+      - ps-researcher
+      - ps-analyst
+      - ps-architect
+      - ps-critic
+      - ps-validator
+      - ps-synthesizer
+      - ps-reviewer
+      - ps-investigator
+      - ps-reporter
+    cognitive_modes:
+      divergent: [ps-researcher, ps-synthesizer]
+      convergent: [ps-analyst, ps-architect, ps-critic, ps-validator, ps-reviewer, ps-investigator, ps-reporter]
+
+  nse:
+    name: "NASA Systems Engineering"
+    description: "NASA SE processes per NPR 7123.1D"
+    version: "1.1.0"
+    contract_reference: "skills/nasa-se/contracts/NSE_SKILL_CONTRACT.yaml"
+    agents:
+      - nse-requirements
+      - nse-verification
+      - nse-risk
+      - nse-reviewer
+      - nse-integration
+      - nse-configuration
+      - nse-architecture
+      - nse-explorer
+      - nse-qa
+      - nse-reporter
+    cognitive_modes:
+      divergent: [nse-explorer]
+      convergent: [nse-requirements, nse-verification, nse-risk, nse-reviewer, nse-integration, nse-configuration, nse-architecture, nse-qa, nse-reporter]
+
+# =============================================================================
+# HANDOFF PATTERNS
+# =============================================================================
+
+handoff_patterns:
+  # ---------------------------------------------------------------------------
+  # PS -> NSE Handoffs (Research/Analysis to SE Artifacts)
+  # ---------------------------------------------------------------------------
+  ps_to_nse:
+    - pattern_id: "HANDOFF-001"
+      name: "Research to Requirements"
+      description: "Research findings inform stakeholder needs and requirements derivation"
+      source:
+        agent: ps-researcher
+        output_key: researcher_output
+      target:
+        agent: nse-requirements
+        input_key: stakeholder_needs
+      translation:
+        strategy: "findings_to_needs"
+        mapping:
+          - from: "findings[].summary"
+            to: "stakeholder_needs[].need"
+          - from: "findings[].category"
+            to: "stakeholder_needs[].priority"
+            transform:
+              insight: "Should"
+              best_practice: "Must"
+              warning: "Must"
+              recommendation: "Should"
+              pattern: "Could"
+        required_enrichment:
+          - field: "stakeholder_needs[].id"
+            generator: "STK-{sequence:3}"
+          - field: "stakeholder_needs[].stakeholder"
+            default: "System User"
+          - field: "stakeholder_needs[].source"
+            value: "ps-researcher artifact"
+      example:
+        input:
+          researcher_output:
+            findings:
+              - id: "F-001"
+                summary: "OAuth2 with PKCE is industry standard for SPAs"
+                category: "best_practice"
+                evidence: ["https://oauth.net/2/pkce/"]
+        output:
+          stakeholder_needs:
+            - id: "STK-001"
+              stakeholder: "Security Team"
+              need: "OAuth2 with PKCE is industry standard for SPAs"
+              priority: "Must"
+              source: "ps-researcher: projects/PROJ-002/research/work-024-e-001-auth.md"
+
+    - pattern_id: "HANDOFF-002"
+      name: "Analysis to Risk Assessment"
+      description: "Root cause analysis or trade-off analysis informs risk identification"
+      source:
+        agent: ps-analyst
+        output_key: analyst_output
+      target:
+        agent: nse-risk
+        input_key: risk_sources
+      translation:
+        strategy: "conclusions_to_risks"
+        mapping:
+          - from: "conclusions[].conclusion"
+            to: "potential_risks[].description"
+          - from: "conclusions[].confidence"
+            to: "potential_risks[].likelihood_hint"
+            transform:
+              "high": 2
+              "medium": 3
+              "low": 4
+          - from: "recommendations[].recommendation"
+            to: "potential_risks[].mitigation_hint"
+
+    - pattern_id: "HANDOFF-003"
+      name: "Architecture Decision to Design"
+      description: "ADR decisions inform SE design solution definition"
+      source:
+        agent: ps-architect
+        output_key: architect_output
+      target:
+        agent: nse-architecture
+        input_key: design_context
+      translation:
+        strategy: "adr_to_trade_study"
+        mapping:
+          - from: "adr.decision"
+            to: "design_context.selected_approach"
+          - from: "adr.alternatives_considered"
+            to: "design_context.evaluated_alternatives"
+          - from: "adr.consequences.negative"
+            to: "design_context.known_risks"
+
+    - pattern_id: "HANDOFF-004"
+      name: "Validation to Verification"
+      description: "Constraint validation informs verification planning"
+      source:
+        agent: ps-validator
+        output_key: validator_output
+      target:
+        agent: nse-verification
+        input_key: validation_context
+      translation:
+        strategy: "constraints_to_verification"
+        mapping:
+          - from: "validation_results[].constraint_id"
+            to: "verification_context[].requirement_reference"
+          - from: "validation_results[].status"
+            to: "verification_context[].prior_status"
+          - from: "validation_results[].evidence"
+            to: "verification_context[].existing_evidence"
+
+    - pattern_id: "HANDOFF-005"
+      name: "Synthesis to Requirements"
+      description: "Cross-document patterns inform requirements consolidation"
+      source:
+        agent: ps-synthesizer
+        output_key: synthesizer_output
+      target:
+        agent: nse-requirements
+        input_key: pattern_context
+      translation:
+        strategy: "patterns_to_requirements"
+        mapping:
+          - from: "patterns[].name"
+            to: "pattern_context[].pattern_name"
+          - from: "patterns[].description"
+            to: "pattern_context[].applicability"
+          - from: "themes[].theme"
+            to: "pattern_context[].cross_cutting_concerns"
+
+    - pattern_id: "HANDOFF-006"
+      name: "Review to Technical Review"
+      description: "Code/design review findings inform technical review packages"
+      source:
+        agent: ps-reviewer
+        output_key: reviewer_output
+      target:
+        agent: nse-reviewer
+        input_key: prior_reviews
+      translation:
+        strategy: "findings_to_rids"
+        mapping:
+          - from: "findings[].description"
+            to: "prior_reviews[].finding"
+          - from: "findings[].severity"
+            to: "prior_reviews[].category"
+            transform:
+              critical: "critical"
+              major: "major"
+              minor: "minor"
+              info: "observation"
+
+    - pattern_id: "HANDOFF-007"
+      name: "Investigation to Risk"
+      description: "Incident investigation informs risk register updates"
+      source:
+        agent: ps-investigator
+        output_key: investigator_output
+      target:
+        agent: nse-risk
+        input_key: incident_context
+      translation:
+        strategy: "root_cause_to_risk"
+        mapping:
+          - from: "root_cause.description"
+            to: "incident_context.root_cause"
+          - from: "contributing_factors"
+            to: "incident_context.contributing_factors"
+          - from: "corrective_actions"
+            to: "incident_context.proposed_mitigations"
+
+  # ---------------------------------------------------------------------------
+  # NSE -> PS Handoffs (SE Artifacts to Analysis)
+  # ---------------------------------------------------------------------------
+  nse_to_ps:
+    - pattern_id: "HANDOFF-101"
+      name: "Requirements to Research"
+      description: "Requirements TBDs/TBRs trigger research tasks"
+      source:
+        agent: nse-requirements
+        output_key: requirements_output
+      target:
+        agent: ps-researcher
+        input_key: research_questions
+      translation:
+        strategy: "tbds_to_research"
+        extraction:
+          - filter: "requirements[?status == 'Draft' && contains(requirement, 'TBD')]"
+            transform: "Extract TBD items as research questions"
+        mapping:
+          - from: "traceability.orphan_analysis.requirements_without_verification"
+            to: "research_questions"
+            transform: "Generate research question for each orphan"
+
+    - pattern_id: "HANDOFF-102"
+      name: "Risk to Analysis"
+      description: "High risks trigger root cause analysis"
+      source:
+        agent: nse-risk
+        output_key: risk_output
+      target:
+        agent: ps-analyst
+        input_key: analysis_subjects
+      translation:
+        strategy: "risks_to_analysis"
+        filter: "risk_register.risks[?score >= 15]"  # High risks only
+        mapping:
+          - from: "risks[].title"
+            to: "analysis_subjects[].subject"
+          - from: "risks[].description"
+            to: "analysis_subjects[].context"
+        enrichment:
+          - field: "analysis_type"
+            value: "root_cause"
+
+    - pattern_id: "HANDOFF-103"
+      name: "Review Findings to Investigation"
+      description: "Critical review findings trigger investigation"
+      source:
+        agent: nse-reviewer
+        output_key: review_output
+      target:
+        agent: ps-investigator
+        input_key: incident_context
+      translation:
+        strategy: "rids_to_investigation"
+        filter: "review_package.findings[?severity == 'critical']"
+        mapping:
+          - from: "findings[].description"
+            to: "incident_context.symptoms"
+          - from: "review_package.review_type"
+            to: "incident_context.context"
+
+    - pattern_id: "HANDOFF-104"
+      name: "Exploration to Synthesis"
+      description: "Multiple exploration concepts trigger synthesis"
+      source:
+        agent: nse-explorer
+        output_key: exploration_output
+      target:
+        agent: ps-synthesizer
+        input_key: input_artifacts
+      translation:
+        strategy: "concepts_to_synthesis"
+        condition: "exploration_results.summary.total_concepts >= 3"
+        mapping:
+          - from: "artifact_path"
+            to: "input_artifacts[].path"
+          - from: "exploration_results.concepts"
+            to: "synthesis_context.concepts"
+
+    - pattern_id: "HANDOFF-105"
+      name: "QA Findings to Review"
+      description: "QA non-conformances trigger focused code/design review"
+      source:
+        agent: nse-qa
+        output_key: qa_output
+      target:
+        agent: ps-reviewer
+        input_key: review_focus
+      translation:
+        strategy: "qa_to_review"
+        filter: "qa_report.findings[?type == 'non_conformance']"
+        mapping:
+          - from: "findings[].affected_artifact"
+            to: "review_focus[].target"
+          - from: "findings[].description"
+            to: "review_focus[].concern"
+
+    - pattern_id: "HANDOFF-106"
+      name: "Architecture to Critique"
+      description: "Trade study results trigger quality evaluation"
+      source:
+        agent: nse-architecture
+        output_key: architecture_output
+      target:
+        agent: ps-critic
+        input_key: artifact_to_critique
+      translation:
+        strategy: "trade_study_to_critique"
+        mapping:
+          - from: "artifact_path"
+            to: "artifact_to_critique.path"
+          - from: "trade_study.id"
+            to: "artifact_to_critique.summary"
+        enrichment:
+          - field: "quality_dimensions"
+            value: ["completeness", "evidence_based", "clarity", "actionable"]
+
+# =============================================================================
+# SESSION CONTEXT SCHEMA
+# =============================================================================
+
+session_context:
+  description: |
+    All cross-skill handoffs MUST use the session context schema for reliable chaining.
+    Reference: docs/schemas/session_context.json
+
+  schema_version: "1.0.0"
+
+  required_fields:
+    - schema_version
+    - session_id
+    - source_agent
+    - target_agent
+    - payload
+    - timestamp
+
+  structure:
+    schema_version:
+      type: string
+      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      description: "Schema version for evolution support"
+
+    session_id:
+      type: string
+      description: "Unique session identifier for mismatch detection"
+
+    source_agent:
+      type: object
+      required:
+        - id
+        - family
+      properties:
+        id:
+          type: string
+          pattern: "^(ps|nse|orch)-[a-z]+(-[a-z]+)*$"
+        family:
+          type: string
+          enum: [ps, nse, orch]
+        cognitive_mode:
+          type: string
+          enum: [convergent, divergent, mixed]
+        model:
+          type: string
+          enum: [opus, sonnet, haiku, auto]
+
+    target_agent:
+      type: object
+      required:
+        - id
+        - family
+      properties:
+        id:
+          type: string
+          pattern: "^(ps|nse|orch)-[a-z]+(-[a-z]+)*$"
+        family:
+          type: string
+          enum: [ps, nse, orch]
+
+    payload:
+      type: object
+      required:
+        - key_findings
+        - confidence
+      properties:
+        key_findings:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - summary
+            properties:
+              id:
+                type: string
+                pattern: "^F-\\d{3}$"
+              summary:
+                type: string
+              category:
+                type: string
+                enum: [insight, risk, requirement, decision, gap, recommendation]
+              traceability:
+                type: array
+                items:
+                  type: string
+        open_questions:
+          type: array
+          items:
+            type: object
+        blockers:
+          type: array
+          items:
+            type: object
+        confidence:
+          type: object
+          required:
+            - overall
+          properties:
+            overall:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+            reasoning:
+              type: string
+        artifacts:
+          type: array
+          items:
+            type: object
+            required:
+              - path
+              - type
+            properties:
+              path:
+                type: string
+              type:
+                type: string
+              summary:
+                type: string
+        context:
+          type: object
+          additionalProperties: true
+          description: "Domain-specific context for translation"
+
+    timestamp:
+      type: string
+      format: date-time
+
+# =============================================================================
+# VALIDATION RULES
+# =============================================================================
+
+validation:
+  on_receive:
+    description: "Validation performed by target agent before processing"
+    steps:
+      - name: "Schema Version Check"
+        action: |
+          IF schema_version != "1.0.0":
+            WARN "Potential schema mismatch"
+            ATTEMPT processing
+          IF schema_version missing:
+            REJECT "Invalid handoff: missing schema_version"
+
+      - name: "Cross-Skill Detection"
+        action: |
+          IF source_agent.family != target_agent.family:
+            LOG "Cross-skill handoff detected: {source} -> {target}"
+            APPLY translation rules from handoff_patterns
+
+      - name: "Session Identity Check"
+        action: |
+          IF session_id differs from current:
+            WARN "State from different session"
+            PROMPT user for decision
+
+      - name: "Source Agent Validation"
+        action: |
+          IF source_agent.id not in (ps-* | nse-* | orch-*):
+            REJECT "Invalid source agent ID format"
+
+      - name: "Payload Validation"
+        action: |
+          IF payload.key_findings not array:
+            REJECT "Malformed payload"
+          IF payload.confidence.overall not in [0.0, 1.0]:
+            REJECT "Invalid confidence score"
+
+      - name: "Cognitive Mode Translation"
+        action: |
+          IF source.cognitive_mode != target.cognitive_mode:
+            APPLY cognitive_translation rules
+            # Divergent outputs may need narrowing for convergent targets
+            # Convergent outputs may need expansion for divergent targets
+
+  on_send:
+    description: "Validation performed by source agent before handoff"
+    steps:
+      - name: "Populate Key Findings"
+        action: "Ensure key_findings array has at least summary for each finding"
+
+      - name: "Calculate Confidence"
+        action: "Set confidence.overall between 0.0 and 1.0 with reasoning"
+
+      - name: "List Artifacts (P-002)"
+        action: "Include artifacts array with paths to all created files"
+
+      - name: "Set Timestamp"
+        action: "Set ISO-8601 timestamp at completion time"
+
+      - name: "Add Traceability (P-040)"
+        action: |
+          IF target.family == "nse":
+            ENSURE traceability links in key_findings
+            FORMAT: REQ-*, RISK-*, TSR-*, ICD-*
+
+  error_handling:
+    - error_type: "Missing required field"
+      severity: CRITICAL
+      action: "Reject handoff, alert orchestrator"
+
+    - error_type: "Invalid schema_version"
+      severity: WARNING
+      action: "Log warning, attempt processing"
+
+    - error_type: "Session mismatch"
+      severity: WARNING
+      action: "Prompt user for decision (accept/reject)"
+
+    - error_type: "Malformed payload"
+      severity: CRITICAL
+      action: "Reject handoff, request retry"
+
+    - error_type: "Invalid agent ID"
+      severity: CRITICAL
+      action: "Reject handoff, halt workflow"
+
+    - error_type: "Translation failure"
+      severity: MAJOR
+      action: "Log error, pass raw data with warning"
+
+# =============================================================================
+# COGNITIVE MODE TRANSLATION
+# =============================================================================
+
+cognitive_translation:
+  description: |
+    When handoffs cross cognitive mode boundaries (divergent <-> convergent),
+    translation rules ensure proper interpretation of outputs.
+
+  divergent_to_convergent:
+    description: "Narrowing broad exploration to focused outputs"
+    rules:
+      - name: "Prioritize by confidence"
+        action: "Sort findings by confidence, take top 3"
+      - name: "Extract actionable items"
+        action: "Filter to findings with category in [requirement, decision, recommendation]"
+      - name: "Summarize alternatives"
+        action: "Consolidate explored options into evaluation matrix"
+    example:
+      from_agent: ps-researcher (divergent)
+      to_agent: nse-requirements (convergent)
+      translation: |
+        Research findings (broad) -> Stakeholder needs (focused)
+        Multiple sources -> Primary authoritative source
+        Open exploration -> Defined scope
+
+  convergent_to_divergent:
+    description: "Expanding focused outputs for broader exploration"
+    rules:
+      - name: "Identify gaps"
+        action: "Extract open_questions and blockers as exploration seeds"
+      - name: "Enumerate alternatives"
+        action: "Transform recommendations into exploration options"
+      - name: "Add context breadth"
+        action: "Include related concepts for wider exploration"
+    example:
+      from_agent: nse-requirements (convergent)
+      to_agent: ps-researcher (divergent)
+      translation: |
+        TBDs/TBRs -> Research questions
+        Constraints -> Exploration boundaries
+        Rationale gaps -> Investigation topics
+
+# =============================================================================
+# TESTING APPROACH
+# =============================================================================
+
+testing:
+  description: |
+    Validation approach for cross-skill handoff contracts.
+    Tests ensure reliable agent chaining across skill boundaries.
+
+  unit_tests:
+    - name: "Session context schema validation"
+      test: "Validate all required fields present"
+      valid_examples:
+        - schema_version: "1.0.0"
+          session_id: "sess-2026-01-12-abc123"
+          source_agent: { id: "ps-researcher", family: "ps" }
+          target_agent: { id: "nse-requirements", family: "nse" }
+          payload: { key_findings: [], confidence: { overall: 0.8 } }
+          timestamp: "2026-01-12T12:00:00Z"
+      invalid_examples:
+        - session_id: "sess-123"  # Missing schema_version
+          source_agent: { id: "ps-researcher", family: "ps" }
+        - schema_version: "1.0.0"
+          session_id: "sess-123"
+          source_agent: { id: "invalid-agent", family: "unknown" }  # Invalid agent
+
+    - name: "Cross-skill detection"
+      test: "Correctly identify when handoff crosses skill boundaries"
+      scenarios:
+        - source: { family: "ps" }
+          target: { family: "nse" }
+          expected: "Cross-skill handoff detected"
+        - source: { family: "ps" }
+          target: { family: "ps" }
+          expected: "Intra-skill handoff"
+
+    - name: "Translation mapping validation"
+      test: "Verify translation rules produce valid target input"
+      pattern: "HANDOFF-001"
+      input:
+        findings:
+          - id: "F-001"
+            summary: "Use OAuth2 PKCE"
+            category: "best_practice"
+      expected_output:
+        stakeholder_needs:
+          - id: "STK-001"
+            need: "Use OAuth2 PKCE"
+            priority: "Must"
+
+  integration_tests:
+    - name: "ps-researcher -> nse-requirements chain"
+      test: "End-to-end research to requirements flow"
+      steps:
+        - invoke: ps-researcher
+          input: { research_questions: ["What authentication methods are secure?"] }
+          expect: researcher_output with findings
+        - handoff: HANDOFF-001
+          expect: Translation applied, stakeholder_needs generated
+        - invoke: nse-requirements
+          input: { stakeholder_needs: "{translated_output}" }
+          expect: requirements_output with REQ-NSE-* IDs
+
+    - name: "nse-risk -> ps-analyst chain"
+      test: "High risk triggers root cause analysis"
+      steps:
+        - invoke: nse-risk
+          input: { scope: "Deployment" }
+          expect: risk_output with high risks (score >= 15)
+        - handoff: HANDOFF-102
+          expect: Filtered to high risks, analysis_type set
+        - invoke: ps-analyst
+          input: { analysis_type: "root_cause", subject: "{from_risk}" }
+          expect: analyst_output with root_cause
+
+    - name: "Bidirectional handoff cycle"
+      test: "ps -> nse -> ps cycle maintains context"
+      steps:
+        - invoke: ps-researcher
+        - handoff: HANDOFF-001
+        - invoke: nse-requirements
+        - handoff: HANDOFF-101 (TBDs to research)
+        - invoke: ps-researcher
+        - verify: session_id maintained throughout
+
+  contract_tests:
+    - name: "Schema version evolution"
+      test: "Handling of different schema versions"
+      scenarios:
+        - source_version: "1.0.0"
+          target_version: "1.0.0"
+          expected: "Process normally"
+        - source_version: "1.0.0"
+          target_version: "1.1.0"
+          expected: "Warn but process (forward compatible)"
+        - source_version: "2.0.0"
+          target_version: "1.0.0"
+          expected: "Warn, attempt processing (may fail)"
+
+    - name: "Cognitive mode boundary"
+      test: "Translation at cognitive mode boundaries"
+      scenarios:
+        - source: ps-researcher (divergent)
+          target: nse-requirements (convergent)
+          expected: "Apply narrowing rules"
+        - source: nse-requirements (convergent)
+          target: ps-researcher (divergent)
+          expected: "Apply expansion rules"
+
+    - name: "Traceability preservation (P-040)"
+      test: "NSE targets receive traceability links"
+      assertion: "When target.family == 'nse', key_findings must include traceability array"
+
+# =============================================================================
+# EXAMPLES
+# =============================================================================
+
+examples:
+  - name: "ps-researcher to nse-requirements"
+    description: "Research findings become stakeholder needs for requirements derivation"
+    session_context:
+      schema_version: "1.0.0"
+      session_id: "sess-2026-01-12-abc123"
+      source_agent:
+        id: "ps-researcher"
+        family: "ps"
+        cognitive_mode: "divergent"
+        model: "opus"
+      target_agent:
+        id: "nse-requirements"
+        family: "nse"
+        cognitive_mode: "convergent"
+        model: "sonnet"
+      timestamp: "2026-01-12T12:00:00Z"
+      workflow_id: "WF-001-auth-implementation"
+      payload:
+        key_findings:
+          - id: "F-001"
+            summary: "OAuth2 with PKCE is the recommended standard for SPA authentication"
+            category: "best_practice"
+            severity: "high"
+            evidence:
+              - "https://oauth.net/2/pkce/"
+              - "Context7 /auth0/docs - SPA Best Practices"
+            traceability:
+              - "REQ-NSE-AUTH-001"  # Pre-linked for NSE target
+          - id: "F-002"
+            summary: "JWT tokens should have short expiration (15 min) with refresh tokens"
+            category: "recommendation"
+            severity: "medium"
+            evidence:
+              - "https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/"
+        open_questions:
+          - id: "Q-001"
+            question: "What is the acceptable session timeout for this application?"
+            priority: "high"
+            suggested_approach: "Review user research for expected session duration"
+        blockers: []
+        confidence:
+          overall: 0.85
+          reasoning: "High confidence based on primary sources (OAuth.net, Auth0)"
+          breakdown:
+            source_quality: 0.95
+            completeness: 0.75
+        artifacts:
+          - path: "projects/PROJ-002/research/work-024-e-001-auth-patterns.md"
+            type: "research"
+            format: "markdown"
+            summary: "OAuth2/OIDC authentication patterns research"
+        context:
+          domain_translation:
+            source_domain: "research"
+            target_domain: "requirements"
+            translation_hints:
+              - "Convert best_practice findings to Must priority needs"
+              - "Convert recommendation findings to Should priority needs"
+        recommendations:
+          - "Derive formal requirements from F-001 and F-002 findings"
+          - "Address Q-001 before finalizing session management requirements"
+
+  - name: "nse-risk to ps-analyst"
+    description: "High risk triggers root cause analysis"
+    session_context:
+      schema_version: "1.0.0"
+      session_id: "sess-2026-01-12-def456"
+      source_agent:
+        id: "nse-risk"
+        family: "nse"
+        cognitive_mode: "convergent"
+        model: "sonnet"
+      target_agent:
+        id: "ps-analyst"
+        family: "ps"
+        cognitive_mode: "convergent"
+        model: "sonnet"
+      timestamp: "2026-01-12T14:30:00Z"
+      workflow_id: "WF-002-deployment-risks"
+      payload:
+        key_findings:
+          - id: "F-001"
+            summary: "Database migration may cause extended downtime (L:4, C:4, Score:16)"
+            category: "risk"
+            severity: "high"
+            evidence:
+              - "Prior migration took 4 hours vs planned 1 hour"
+              - "No rollback tested"
+            traceability:
+              - "RISK-001"
+              - "REQ-NSE-OPS-003"
+        open_questions:
+          - id: "Q-001"
+            question: "What caused the extended migration time in the prior deployment?"
+            priority: "critical"
+            suggested_approach: "5 Whys analysis on prior migration incident"
+        blockers: []
+        confidence:
+          overall: 0.80
+          reasoning: "Based on historical incident data"
+        artifacts:
+          - path: "projects/PROJ-002/risks/proj-002-e-201-deployment-risks.md"
+            type: "risk"
+            summary: "Deployment phase risk register"
+        context:
+          analysis_context:
+            suggested_type: "root_cause"
+            suggested_methodology: "5_whys"
+            incident_reference: "Prior migration incident 2025-12-15"
+        recommendations:
+          - "Perform root cause analysis on prior migration failure"
+          - "Identify contributing factors beyond primary cause"
+          - "Develop corrective actions to mitigate RISK-001"

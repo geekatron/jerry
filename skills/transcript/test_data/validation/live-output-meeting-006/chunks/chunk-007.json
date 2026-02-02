@@ -1,0 +1,587 @@
+{
+  "chunk_id": "chunk-007",
+  "schema_version": "1.0",
+  "segment_range": [
+    3001,
+    3071
+  ],
+  "timestamp_range": {
+    "start_ms": 17806000,
+    "end_ms": 18231500
+  },
+  "segments": [
+    {
+      "id": "3001",
+      "start_ms": 17806000,
+      "end_ms": 17811500,
+      "speaker": "Linda Chen",
+      "text": "Volunteers coordinate more effectively across locations.",
+      "raw_text": "<v Linda Chen>Volunteers coordinate more effectively across locations."
+    },
+    {
+      "id": "3002",
+      "start_ms": 17812000,
+      "end_ms": 17817500,
+      "speaker": "Linda Chen",
+      "text": "Donor communication improved significantly.",
+      "raw_text": "<v Linda Chen>Donor communication improved significantly."
+    },
+    {
+      "id": "3003",
+      "start_ms": 17818000,
+      "end_ms": 17823500,
+      "speaker": "Linda Chen",
+      "text": "They've been able to serve more people with the same resources.",
+      "raw_text": "<v Linda Chen>They've been able to serve more people with the same resources."
+    },
+    {
+      "id": "3004",
+      "start_ms": 17824000,
+      "end_ms": 17829500,
+      "speaker": "Linda Chen",
+      "text": "These impact stories motivate everything we do.",
+      "raw_text": "<v Linda Chen>These impact stories motivate everything we do."
+    },
+    {
+      "id": "3005",
+      "start_ms": 17830000,
+      "end_ms": 17835500,
+      "speaker": "Diana Martinez",
+      "text": "Let me showcase a few more innovations from our labs.",
+      "raw_text": "<v Diana Martinez>Let me showcase a few more innovations from our labs."
+    },
+    {
+      "id": "3006",
+      "start_ms": 17836000,
+      "end_ms": 17841500,
+      "speaker": "Diana Martinez",
+      "text": "Project Compass uses AI to help navigate complex information.",
+      "raw_text": "<v Diana Martinez>Project Compass uses AI to help navigate complex information."
+    },
+    {
+      "id": "3007",
+      "start_ms": 17842000,
+      "end_ms": 17847500,
+      "speaker": "Diana Martinez",
+      "text": "It learns from user behavior to surface relevant content.",
+      "raw_text": "<v Diana Martinez>It learns from user behavior to surface relevant content."
+    },
+    {
+      "id": "3008",
+      "start_ms": 17848000,
+      "end_ms": 17853500,
+      "speaker": "Diana Martinez",
+      "text": "Information finds users instead of requiring searches.",
+      "raw_text": "<v Diana Martinez>Information finds users instead of requiring searches."
+    },
+    {
+      "id": "3009",
+      "start_ms": 17854000,
+      "end_ms": 17859500,
+      "speaker": "Diana Martinez",
+      "text": "Project Bridge enables seamless cross-platform experiences.",
+      "raw_text": "<v Diana Martinez>Project Bridge enables seamless cross-platform experiences."
+    },
+    {
+      "id": "3010",
+      "start_ms": 17860000,
+      "end_ms": 17865500,
+      "speaker": "Diana Martinez",
+      "text": "Users can start on desktop and continue on mobile.",
+      "raw_text": "<v Diana Martinez>Users can start on desktop and continue on mobile."
+    },
+    {
+      "id": "3011",
+      "start_ms": 17866000,
+      "end_ms": 17871500,
+      "speaker": "Diana Martinez",
+      "text": "Context transfers automatically between devices.",
+      "raw_text": "<v Diana Martinez>Context transfers automatically between devices."
+    },
+    {
+      "id": "3012",
+      "start_ms": 17872000,
+      "end_ms": 17877500,
+      "speaker": "Diana Martinez",
+      "text": "Project Shield adds advanced security capabilities.",
+      "raw_text": "<v Diana Martinez>Project Shield adds advanced security capabilities."
+    },
+    {
+      "id": "3013",
+      "start_ms": 17878000,
+      "end_ms": 17883500,
+      "speaker": "Diana Martinez",
+      "text": "Behavioral analysis detects unusual account activity.",
+      "raw_text": "<v Diana Martinez>Behavioral analysis detects unusual account activity."
+    },
+    {
+      "id": "3014",
+      "start_ms": 17884000,
+      "end_ms": 17889500,
+      "speaker": "Diana Martinez",
+      "text": "Automated responses contain potential threats quickly.",
+      "raw_text": "<v Diana Martinez>Automated responses contain potential threats quickly."
+    },
+    {
+      "id": "3015",
+      "start_ms": 17890000,
+      "end_ms": 17895500,
+      "speaker": "Diana Martinez",
+      "text": "Project Harmony focuses on accessibility innovations.",
+      "raw_text": "<v Diana Martinez>Project Harmony focuses on accessibility innovations."
+    },
+    {
+      "id": "3016",
+      "start_ms": 17896000,
+      "end_ms": 17901500,
+      "speaker": "Diana Martinez",
+      "text": "AI generates accurate descriptions for visual content.",
+      "raw_text": "<v Diana Martinez>AI generates accurate descriptions for visual content."
+    },
+    {
+      "id": "3017",
+      "start_ms": 17902000,
+      "end_ms": 17907500,
+      "speaker": "Diana Martinez",
+      "text": "Voice control enables hands-free navigation.",
+      "raw_text": "<v Diana Martinez>Voice control enables hands-free navigation."
+    },
+    {
+      "id": "3018",
+      "start_ms": 17908000,
+      "end_ms": 17913500,
+      "speaker": "Diana Martinez",
+      "text": "Project Echo explores advanced voice and speech features.",
+      "raw_text": "<v Diana Martinez>Project Echo explores advanced voice and speech features."
+    },
+    {
+      "id": "3019",
+      "start_ms": 17914000,
+      "end_ms": 17919500,
+      "speaker": "Diana Martinez",
+      "text": "Natural language understanding becomes more sophisticated.",
+      "raw_text": "<v Diana Martinez>Natural language understanding becomes more sophisticated."
+    },
+    {
+      "id": "3020",
+      "start_ms": 17920000,
+      "end_ms": 17925500,
+      "speaker": "Diana Martinez",
+      "text": "Meeting transcription and summarization improve continuously.",
+      "raw_text": "<v Diana Martinez>Meeting transcription and summarization improve continuously."
+    },
+    {
+      "id": "3021",
+      "start_ms": 17926000,
+      "end_ms": 17931500,
+      "speaker": "Diana Martinez",
+      "text": "Project Prism explores data visualization innovations.",
+      "raw_text": "<v Diana Martinez>Project Prism explores data visualization innovations."
+    },
+    {
+      "id": "3022",
+      "start_ms": 17932000,
+      "end_ms": 17937500,
+      "speaker": "Diana Martinez",
+      "text": "Complex data becomes understandable through smart visualization.",
+      "raw_text": "<v Diana Martinez>Complex data becomes understandable through smart visualization."
+    },
+    {
+      "id": "3023",
+      "start_ms": 17938000,
+      "end_ms": 17943500,
+      "speaker": "Diana Martinez",
+      "text": "Insights emerge from patterns that were previously hidden.",
+      "raw_text": "<v Diana Martinez>Insights emerge from patterns that were previously hidden."
+    },
+    {
+      "id": "3024",
+      "start_ms": 17944000,
+      "end_ms": 17949500,
+      "speaker": "Diana Martinez",
+      "text": "These projects represent our investment in the future.",
+      "raw_text": "<v Diana Martinez>These projects represent our investment in the future."
+    },
+    {
+      "id": "3025",
+      "start_ms": 17950000,
+      "end_ms": 17955500,
+      "speaker": "Diana Martinez",
+      "text": "Some will become products; others inform our thinking.",
+      "raw_text": "<v Diana Martinez>Some will become products; others inform our thinking."
+    },
+    {
+      "id": "3026",
+      "start_ms": 17956000,
+      "end_ms": 17961500,
+      "speaker": "Diana Martinez",
+      "text": "Innovation requires experimentation and learning.",
+      "raw_text": "<v Diana Martinez>Innovation requires experimentation and learning."
+    },
+    {
+      "id": "3027",
+      "start_ms": 17962000,
+      "end_ms": 17967500,
+      "speaker": "Employee Twenty Nine",
+      "text": "How do we measure the success of our culture initiatives?",
+      "raw_text": "<v Employee Twenty Nine>How do we measure the success of our culture initiatives?"
+    },
+    {
+      "id": "3028",
+      "start_ms": 17968000,
+      "end_ms": 17973500,
+      "speaker": "Sarah Mitchell",
+      "text": "We use multiple metrics to assess cultural health.",
+      "raw_text": "<v Sarah Mitchell>We use multiple metrics to assess cultural health."
+    },
+    {
+      "id": "3029",
+      "start_ms": 17974000,
+      "end_ms": 17979500,
+      "speaker": "Sarah Mitchell",
+      "text": "Employee engagement surveys happen twice yearly.",
+      "raw_text": "<v Sarah Mitchell>Employee engagement surveys happen twice yearly."
+    },
+    {
+      "id": "3030",
+      "start_ms": 17980000,
+      "end_ms": 17985500,
+      "speaker": "Sarah Mitchell",
+      "text": "Pulse surveys track sentiment more frequently.",
+      "raw_text": "<v Sarah Mitchell>Pulse surveys track sentiment more frequently."
+    },
+    {
+      "id": "3031",
+      "start_ms": 17986000,
+      "end_ms": 17991500,
+      "speaker": "Sarah Mitchell",
+      "text": "Retention rates indicate whether people want to stay.",
+      "raw_text": "<v Sarah Mitchell>Retention rates indicate whether people want to stay."
+    },
+    {
+      "id": "3032",
+      "start_ms": 17992000,
+      "end_ms": 17997500,
+      "speaker": "Sarah Mitchell",
+      "text": "Internal promotion rates show career development success.",
+      "raw_text": "<v Sarah Mitchell>Internal promotion rates show career development success."
+    },
+    {
+      "id": "3033",
+      "start_ms": 17998000,
+      "end_ms": 18003500,
+      "speaker": "Sarah Mitchell",
+      "text": "Referral rates indicate whether employees recommend us.",
+      "raw_text": "<v Sarah Mitchell>Referral rates indicate whether employees recommend us."
+    },
+    {
+      "id": "3034",
+      "start_ms": 18004000,
+      "end_ms": 18009500,
+      "speaker": "Sarah Mitchell",
+      "text": "Glassdoor and other public reviews provide external perspective.",
+      "raw_text": "<v Sarah Mitchell>Glassdoor and other public reviews provide external perspective."
+    },
+    {
+      "id": "3035",
+      "start_ms": 18010000,
+      "end_ms": 18015500,
+      "speaker": "Employee Thirty",
+      "text": "What's the single most important thing for success here?",
+      "raw_text": "<v Employee Thirty>What's the single most important thing for success here?"
+    },
+    {
+      "id": "3036",
+      "start_ms": 18016000,
+      "end_ms": 18021500,
+      "speaker": "Robert Chen",
+      "text": "If I had to choose one thing, it would be customer focus.",
+      "raw_text": "<v Robert Chen>If I had to choose one thing, it would be customer focus."
+    },
+    {
+      "id": "3037",
+      "start_ms": 18022000,
+      "end_ms": 18027500,
+      "speaker": "Robert Chen",
+      "text": "Everything else follows from genuine customer obsession.",
+      "raw_text": "<v Robert Chen>Everything else follows from genuine customer obsession."
+    },
+    {
+      "id": "3038",
+      "start_ms": 18028000,
+      "end_ms": 18033500,
+      "speaker": "Robert Chen",
+      "text": "When we understand and serve customers well, we succeed.",
+      "raw_text": "<v Robert Chen>When we understand and serve customers well, we succeed."
+    },
+    {
+      "id": "3039",
+      "start_ms": 18034000,
+      "end_ms": 18039500,
+      "speaker": "Robert Chen",
+      "text": "When we lose sight of customers, we struggle.",
+      "raw_text": "<v Robert Chen>When we lose sight of customers, we struggle."
+    },
+    {
+      "id": "3040",
+      "start_ms": 18040000,
+      "end_ms": 18045500,
+      "speaker": "Robert Chen",
+      "text": "Every role connects to customer value somehow.",
+      "raw_text": "<v Robert Chen>Every role connects to customer value somehow."
+    },
+    {
+      "id": "3041",
+      "start_ms": 18046000,
+      "end_ms": 18051500,
+      "speaker": "Robert Chen",
+      "text": "Keep that connection front and center in your work.",
+      "raw_text": "<v Robert Chen>Keep that connection front and center in your work."
+    },
+    {
+      "id": "3042",
+      "start_ms": 18052000,
+      "end_ms": 18057500,
+      "speaker": "Employee Thirty One",
+      "text": "How do you stay motivated after leading for so long?",
+      "raw_text": "<v Employee Thirty One>How do you stay motivated after leading for so long?"
+    },
+    {
+      "id": "3043",
+      "start_ms": 18058000,
+      "end_ms": 18063500,
+      "speaker": "Robert Chen",
+      "text": "The mission continues to inspire me every day.",
+      "raw_text": "<v Robert Chen>The mission continues to inspire me every day."
+    },
+    {
+      "id": "3044",
+      "start_ms": 18064000,
+      "end_ms": 18069500,
+      "speaker": "Robert Chen",
+      "text": "Seeing customer impact renews my energy.",
+      "raw_text": "<v Robert Chen>Seeing customer impact renews my energy."
+    },
+    {
+      "id": "3045",
+      "start_ms": 18070000,
+      "end_ms": 18075500,
+      "speaker": "Robert Chen",
+      "text": "Working with this incredible team is motivating.",
+      "raw_text": "<v Robert Chen>Working with this incredible team is motivating."
+    },
+    {
+      "id": "3046",
+      "start_ms": 18076000,
+      "end_ms": 18081500,
+      "speaker": "Robert Chen",
+      "text": "The problems we're solving matter and are interesting.",
+      "raw_text": "<v Robert Chen>The problems we're solving matter and are interesting."
+    },
+    {
+      "id": "3047",
+      "start_ms": 18082000,
+      "end_ms": 18087500,
+      "speaker": "Robert Chen",
+      "text": "We're still just getting started on the opportunity.",
+      "raw_text": "<v Robert Chen>We're still just getting started on the opportunity."
+    },
+    {
+      "id": "3048",
+      "start_ms": 18088000,
+      "end_ms": 18093500,
+      "speaker": "Robert Chen",
+      "text": "There's so much more we can accomplish together.",
+      "raw_text": "<v Robert Chen>There's so much more we can accomplish together."
+    },
+    {
+      "id": "3049",
+      "start_ms": 18094000,
+      "end_ms": 18099500,
+      "speaker": "Robert Chen",
+      "text": "This has been our most comprehensive meeting in company history.",
+      "raw_text": "<v Robert Chen>This has been our most comprehensive meeting in company history."
+    },
+    {
+      "id": "3050",
+      "start_ms": 18100000,
+      "end_ms": 18105500,
+      "speaker": "Robert Chen",
+      "text": "Nearly five hours of content covering every aspect of our business.",
+      "raw_text": "<v Robert Chen>Nearly five hours of content covering every aspect of our business."
+    },
+    {
+      "id": "3051",
+      "start_ms": 18106000,
+      "end_ms": 18111500,
+      "speaker": "Robert Chen",
+      "text": "I hope you feel informed and inspired by what we've shared.",
+      "raw_text": "<v Robert Chen>I hope you feel informed and inspired by what we've shared."
+    },
+    {
+      "id": "3052",
+      "start_ms": 18112000,
+      "end_ms": 18117500,
+      "speaker": "Robert Chen",
+      "text": "The key takeaways are worth repeating one final time.",
+      "raw_text": "<v Robert Chen>The key takeaways are worth repeating one final time."
+    },
+    {
+      "id": "3053",
+      "start_ms": 18118000,
+      "end_ms": 18123500,
+      "speaker": "Robert Chen",
+      "text": "We are financially strong with resources to invest and grow.",
+      "raw_text": "<v Robert Chen>We are financially strong with resources to invest and grow."
+    },
+    {
+      "id": "3054",
+      "start_ms": 18124000,
+      "end_ms": 18129500,
+      "speaker": "Robert Chen",
+      "text": "Our products delight customers and solve real problems.",
+      "raw_text": "<v Robert Chen>Our products delight customers and solve real problems."
+    },
+    {
+      "id": "3055",
+      "start_ms": 18130000,
+      "end_ms": 18135500,
+      "speaker": "Robert Chen",
+      "text": "Our technology creates sustainable competitive advantage.",
+      "raw_text": "<v Robert Chen>Our technology creates sustainable competitive advantage."
+    },
+    {
+      "id": "3056",
+      "start_ms": 18136000,
+      "end_ms": 18141500,
+      "speaker": "Robert Chen",
+      "text": "Our go-to-market execution delivers predictable results.",
+      "raw_text": "<v Robert Chen>Our go-to-market execution delivers predictable results."
+    },
+    {
+      "id": "3057",
+      "start_ms": 18142000,
+      "end_ms": 18147500,
+      "speaker": "Robert Chen",
+      "text": "Our people are talented, dedicated, and collaborative.",
+      "raw_text": "<v Robert Chen>Our people are talented, dedicated, and collaborative."
+    },
+    {
+      "id": "3058",
+      "start_ms": 18148000,
+      "end_ms": 18153500,
+      "speaker": "Robert Chen",
+      "text": "Our culture attracts and retains exceptional individuals.",
+      "raw_text": "<v Robert Chen>Our culture attracts and retains exceptional individuals."
+    },
+    {
+      "id": "3059",
+      "start_ms": 18154000,
+      "end_ms": 18159500,
+      "speaker": "Robert Chen",
+      "text": "Our strategy is clear, compelling, and well-communicated.",
+      "raw_text": "<v Robert Chen>Our strategy is clear, compelling, and well-communicated."
+    },
+    {
+      "id": "3060",
+      "start_ms": 18160000,
+      "end_ms": 18165500,
+      "speaker": "Robert Chen",
+      "text": "The opportunity ahead is larger than what we've achieved.",
+      "raw_text": "<v Robert Chen>The opportunity ahead is larger than what we've achieved."
+    },
+    {
+      "id": "3061",
+      "start_ms": 18166000,
+      "end_ms": 18171500,
+      "speaker": "Robert Chen",
+      "text": "But opportunity means nothing without execution.",
+      "raw_text": "<v Robert Chen>But opportunity means nothing without execution."
+    },
+    {
+      "id": "3062",
+      "start_ms": 18172000,
+      "end_ms": 18177500,
+      "speaker": "Robert Chen",
+      "text": "That's where each of you makes the difference.",
+      "raw_text": "<v Robert Chen>That's where each of you makes the difference."
+    },
+    {
+      "id": "3063",
+      "start_ms": 18178000,
+      "end_ms": 18183500,
+      "speaker": "Robert Chen",
+      "text": "Your work, your commitment, your excellence.",
+      "raw_text": "<v Robert Chen>Your work, your commitment, your excellence."
+    },
+    {
+      "id": "3064",
+      "start_ms": 18184000,
+      "end_ms": 18189500,
+      "speaker": "Robert Chen",
+      "text": "Thank you for being part of this journey.",
+      "raw_text": "<v Robert Chen>Thank you for being part of this journey."
+    },
+    {
+      "id": "3065",
+      "start_ms": 18190000,
+      "end_ms": 18195500,
+      "speaker": "Robert Chen",
+      "text": "Thank you for believing in our mission.",
+      "raw_text": "<v Robert Chen>Thank you for believing in our mission."
+    },
+    {
+      "id": "3066",
+      "start_ms": 18196000,
+      "end_ms": 18201500,
+      "speaker": "Robert Chen",
+      "text": "Thank you for your patience with this very long meeting.",
+      "raw_text": "<v Robert Chen>Thank you for your patience with this very long meeting."
+    },
+    {
+      "id": "3067",
+      "start_ms": 18202000,
+      "end_ms": 18207500,
+      "speaker": "Robert Chen",
+      "text": "Take care of yourselves and each other.",
+      "raw_text": "<v Robert Chen>Take care of yourselves and each other."
+    },
+    {
+      "id": "3068",
+      "start_ms": 18208000,
+      "end_ms": 18213500,
+      "speaker": "Robert Chen",
+      "text": "Have a wonderful rest of your day and week.",
+      "raw_text": "<v Robert Chen>Have a wonderful rest of your day and week."
+    },
+    {
+      "id": "3069",
+      "start_ms": 18214000,
+      "end_ms": 18219500,
+      "speaker": "Robert Chen",
+      "text": "This concludes our Q3 quarterly all-hands meeting.",
+      "raw_text": "<v Robert Chen>This concludes our Q3 quarterly all-hands meeting."
+    },
+    {
+      "id": "3070",
+      "start_ms": 18220000,
+      "end_ms": 18225500,
+      "speaker": "Robert Chen",
+      "text": "Meeting is officially adjourned.",
+      "raw_text": "<v Robert Chen>Meeting is officially adjourned."
+    },
+    {
+      "id": "3071",
+      "start_ms": 18226000,
+      "end_ms": 18231500,
+      "speaker": "Robert Chen",
+      "text": "Thank you all. Goodbye everyone.",
+      "raw_text": "<v Robert Chen>Thank you all. Goodbye everyone."
+    }
+  ],
+  "navigation": {
+    "previous": "chunk-006.json",
+    "next": null,
+    "index": "../index.json"
+  }
+}

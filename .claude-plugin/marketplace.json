@@ -1,0 +1,18 @@
+{
+  "name": "saucer-boy",
+  "version": "1.0.0",
+  "description": "Local plugin marketplace for Jerry framework development",
+  "owner": {
+    "name": "geekatron",
+    "email": "geekatron@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "jerry-framework",
+      "description": "Adds problem solving capabilities with behavior and workflow guardrails, knowledge accrual, and work tracking.",
+      "source": "./",
+      "version": "0.1.0",
+      "category": "productivity"
+    }
+  ]
+}

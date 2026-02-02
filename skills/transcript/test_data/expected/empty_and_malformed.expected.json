@@ -1,0 +1,73 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/empty_and_malformed.vtt"
+  },
+  "metadata": {
+    "duration_ms": 5000,
+    "segment_count": 2,
+    "detected_speakers": 0
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 3000,
+      "end_ms": 4000,
+      "speaker": null,
+      "text": "Anonymous speaker with empty annotation",
+      "raw_text": "<v>Anonymous speaker with empty annotation</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 4000,
+      "end_ms": 5000,
+      "speaker": null,
+      "text": "Normal text after empty cues",
+      "raw_text": "Normal text after empty cues"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "partial",
+    "parse_warnings": [],
+    "parse_errors": [
+      {
+        "code": "ERR-001",
+        "message": "Invalid voice tag syntax - empty annotation",
+        "cue_index": 4,
+        "severity": "error",
+        "raw_value": "<v>Anonymous speaker with empty annotation</v>",
+        "recovery_action": "extracted_as_anonymous"
+      },
+      {
+        "code": "ERR-002",
+        "message": "Empty content after tag stripping",
+        "cue_index": 3,
+        "severity": "error",
+        "raw_value": "<v Speaker></v>",
+        "recovery_action": "skipped_segment"
+      }
+    ],
+    "skipped_segments": [
+      {
+        "cue_index": 1,
+        "reason": "empty_payload",
+        "code": "SKIP-001",
+        "raw_content": ""
+      },
+      {
+        "cue_index": 2,
+        "reason": "empty_payload",
+        "code": "SKIP-001",
+        "raw_content": ""
+      },
+      {
+        "cue_index": 3,
+        "reason": "empty_after_stripping",
+        "code": "ERR-002",
+        "raw_content": "<v Speaker></v>"
+      }
+    ]
+  }
+}

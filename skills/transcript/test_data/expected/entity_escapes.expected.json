@@ -1,0 +1,61 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/entity_escapes.vtt"
+  },
+  "metadata": {
+    "duration_ms": 5000,
+    "segment_count": 5,
+    "detected_speakers": 1
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": null,
+      "text": "Tom & Jerry",
+      "raw_text": "Tom &amp; Jerry"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": null,
+      "text": "3 < 5 and 10 > 2",
+      "raw_text": "3 &lt; 5 and 10 &gt; 2"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": null,
+      "text": "Non-breaking space here",
+      "raw_text": "Non-breaking&nbsp;space here"
+    },
+    {
+      "id": "seg-004",
+      "start_ms": 3000,
+      "end_ms": 4000,
+      "speaker": "Speaker",
+      "text": "&amp; is an escaped ampersand",
+      "raw_text": "<v Speaker>&amp;amp; is an escaped ampersand</v>"
+    },
+    {
+      "id": "seg-005",
+      "start_ms": 4000,
+      "end_ms": 5000,
+      "speaker": null,
+      "text": "Mixed: <tag> is not a real tag",
+      "raw_text": "Mixed: &lt;tag&gt; is not a real tag"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

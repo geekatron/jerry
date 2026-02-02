@@ -1,0 +1,81 @@
+{
+  "_metadata": {
+    "description": "Expected ts-parser output for srt_mixed_speakers.srt",
+    "source_file": "transcripts/edge_cases/srt_mixed_speakers.srt",
+    "derived_by": "Claude (deterministic derivation from SRT)",
+    "derived_at": "2026-01-27T21:00:00Z",
+    "purpose": "Golden test data for TASK-103 mixed speaker pattern verification",
+    "review_status": "PENDING_HUMAN_REVIEW",
+    "notes": [
+      "Tests multiple speaker detection patterns in SRT",
+      "Pattern 1: 'Speaker:' colon prefix",
+      "Pattern 2: '[Speaker]' bracket prefix",
+      "Pattern 3: 'SPEAKER:' all caps with colon",
+      "Pattern 4: No prefix (null speaker)"
+    ]
+  },
+  "version": "1.1",
+  "source": {
+    "format": "srt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/srt_mixed_speakers.srt"
+  },
+  "metadata": {
+    "duration_ms": 15000,
+    "segment_count": 5,
+    "detected_speakers": 4
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "cue_index": 1,
+      "start_ms": 0,
+      "end_ms": 3000,
+      "speaker": "Alice",
+      "text": "First pattern with colon.",
+      "raw_text": "Alice: First pattern with colon."
+    },
+    {
+      "id": "seg-002",
+      "cue_index": 2,
+      "start_ms": 3000,
+      "end_ms": 6000,
+      "speaker": "Bob",
+      "text": "Second pattern with brackets.",
+      "raw_text": "[Bob] Second pattern with brackets."
+    },
+    {
+      "id": "seg-003",
+      "cue_index": 3,
+      "start_ms": 6000,
+      "end_ms": 9000,
+      "speaker": "CHARLIE",
+      "text": "Third pattern with all caps and colon.",
+      "raw_text": "CHARLIE: Third pattern with all caps and colon."
+    },
+    {
+      "id": "seg-004",
+      "cue_index": 4,
+      "start_ms": 9000,
+      "end_ms": 12000,
+      "speaker": null,
+      "text": "No speaker prefix here, should be null.",
+      "raw_text": "No speaker prefix here, should be null."
+    },
+    {
+      "id": "seg-005",
+      "cue_index": 5,
+      "start_ms": 12000,
+      "end_ms": 15000,
+      "speaker": "Diana",
+      "text": "Back to normal colon pattern.",
+      "raw_text": "Diana: Back to normal colon pattern."
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

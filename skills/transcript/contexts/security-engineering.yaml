@@ -1,0 +1,418 @@
+# Domain Schema: Security Engineering Transcript Analysis
+# Version: 1.0.0
+# TASK-155: EN-014 Artifact Promotion
+# Source: EN-006/docs/specs/domain-contexts/06-security-engineering/
+# Implements: SPEC-context-injection.md Section 3.3, TDD-EN014 Schema V1.1.0
+
+schema_version: "1.0.0"
+domain: "security-engineering"
+display_name: "Security Engineering Transcript Analysis"
+extends: "transcript"  # Inherits base entities (speaker, topic, question)
+
+# Supports STRIDE threat modeling, CVSS scoring, and compliance frameworks.
+
+# Domain metadata (TDD-EN014 Section 4.2)
+metadata:
+  target_users:
+    - "Security Engineers"
+    - "Security Architects"
+    - "AppSec Engineers"
+    - "Compliance Officers"
+  transcript_types:
+    - "Security audit"
+    - "Threat modeling session"
+    - "Compliance review"
+    - "Vulnerability triage"
+    - "Security architecture review"
+  key_use_cases:
+    - "Document vulnerabilities"
+    - "Model threats (STRIDE)"
+    - "Track mitigations"
+    - "Identify compliance gaps"
+    - "Record risk decisions"
+  stride_support: true
+  cvss_support: true
+
+# Entity definitions
+entity_definitions:
+  vulnerability:
+    description: "Security vulnerability or weakness identified"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Vulnerability name or description"
+      - name: "cve"
+        type: "string"
+        description: "CVE identifier if applicable (CVE-YYYY-NNNNN)"
+      - name: "severity"
+        type: "enum"
+        values: ["critical", "high", "medium", "low", "informational"]
+        required: true
+        description: "CVSS qualitative rating"
+      - name: "cvss_score"
+        type: "number"
+        description: "CVSS v3.1 numeric score (0.0-10.0)"
+      - name: "affected_systems"
+        type: "array"
+        items: "string"
+        description: "Systems or components impacted"
+      - name: "status"
+        type: "enum"
+        values: ["open", "in_progress", "mitigated", "accepted"]
+        description: "Current status"
+      - name: "cwe"
+        type: "string"
+        description: "CWE identifier if applicable"
+    extraction_patterns:
+      - "CVE-{{year}}-{{id}}"
+      - "Vulnerability: {{title}}"
+      - "CVSS score: {{score}}"
+      - "Critical|High|Medium|Low severity"
+      - "CWE-{{id}}"
+      - "Affected: {{systems}}"
+    relationships:
+      - type: "exploited_by"
+        target: "threat"
+      - type: "remediated_by"
+        target: "mitigation"
+
+  threat:
+    description: "Threat identified during threat modeling"
+    attributes:
+      - name: "threat_id"
+        type: "string"
+        required: true
+        description: "STRIDE category or custom identifier"
+      - name: "description"
+        type: "string"
+        required: true
+        description: "Detailed threat description"
+      - name: "threat_actor"
+        type: "string"
+        description: "Who could exploit this (external attacker, insider, etc.)"
+      - name: "attack_vector"
+        type: "enum"
+        values: ["network", "local", "physical", "adjacent"]
+        description: "How they would attack"
+      - name: "likelihood"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Probability of occurrence"
+      - name: "impact"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Potential damage"
+      - name: "stride_category"
+        type: "enum"
+        values: ["S", "T", "R", "I", "D", "E"]
+        description: "STRIDE category"
+    note: |
+      STRIDE Categories:
+      - S (Spoofing): Identity impersonation
+      - T (Tampering): Data modification
+      - R (Repudiation): Denying actions
+      - I (Information Disclosure): Data exposure
+      - D (Denial of Service): Availability impact
+      - E (Elevation of Privilege): Unauthorized access
+    extraction_patterns:
+      - "Threat: {{description}}"
+      - "STRIDE: {{category}}"
+      - "Attack vector: {{vector}}"
+      - "Attacker could {{action}}"
+      - "Spoofing|Tampering|Repudiation|Information|Denial|Elevation"
+      - "Threat actor: {{actor}}"
+    relationships:
+      - type: "exploits"
+        target: "vulnerability"
+      - type: "mitigated_by"
+        target: "mitigation"
+
+  mitigation:
+    description: "Security control or remediation action"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Mitigation name or description"
+      - name: "type"
+        type: "enum"
+        values: ["preventive", "detective", "corrective"]
+        required: true
+        description: "Control type"
+      - name: "implementation"
+        type: "string"
+        description: "How to implement the control"
+      - name: "effectiveness"
+        type: "enum"
+        values: ["high", "medium", "low"]
+        description: "Expected effectiveness"
+      - name: "status"
+        type: "enum"
+        values: ["proposed", "approved", "implemented", "verified"]
+        description: "Implementation status"
+      - name: "cost"
+        type: "string"
+        description: "Estimated implementation effort"
+    note: |
+      Control types:
+      - Preventive: Stop attack before it happens
+      - Detective: Identify attack in progress
+      - Corrective: Respond and recover from attack
+    extraction_patterns:
+      - "Mitigation: {{title}}"
+      - "We should {{action}} to prevent {{threat}}"
+      - "Control: {{control}}"
+      - "Remediation: {{action}}"
+      - "Fix: {{action}}"
+      - "Preventive|Detective|Corrective control"
+    relationships:
+      - type: "mitigates"
+        target: "vulnerability"
+      - type: "mitigates"
+        target: "threat"
+
+  compliance_gap:
+    description: "Compliance requirement not met"
+    attributes:
+      - name: "framework"
+        type: "enum"
+        values: ["SOC2", "PCI-DSS", "HIPAA", "GDPR", "ISO27001"]
+        required: true
+        description: "Compliance framework"
+      - name: "requirement"
+        type: "string"
+        required: true
+        description: "Specific control or requirement ID"
+      - name: "current_state"
+        type: "string"
+        description: "What we currently have"
+      - name: "gap"
+        type: "string"
+        required: true
+        description: "What's missing or non-compliant"
+      - name: "remediation"
+        type: "string"
+        description: "How to achieve compliance"
+      - name: "due_date"
+        type: "date"
+        description: "Compliance deadline if applicable"
+    extraction_patterns:
+      - "SOC2|PCI|HIPAA|GDPR requirement"
+      - "Compliance gap: {{gap}}"
+      - "We're not compliant with {{requirement}}"
+      - "Audit finding: {{finding}}"
+      - "Control {{id}}: {{description}}"
+      - "Framework: {{framework}}"
+    relationships:
+      - type: "addressed_by"
+        target: "mitigation"
+
+  security_decision:
+    description: "Security architecture or risk decision"
+    attributes:
+      - name: "topic"
+        type: "string"
+        required: true
+        description: "What was being decided"
+      - name: "decision"
+        type: "string"
+        required: true
+        description: "The decision made"
+      - name: "risk_accepted"
+        type: "string"
+        description: "Any risk explicitly accepted"
+      - name: "rationale"
+        type: "string"
+        description: "Why this decision was made"
+      - name: "approver"
+        type: "string"
+        description: "Who approved (for risk acceptance)"
+      - name: "expiry"
+        type: "date"
+        description: "Review date for accepted risks"
+    note: |
+      IMPORTANT: Risk acceptance decisions must be explicitly documented
+      with approver and expiry date for audit purposes.
+    extraction_patterns:
+      - "Security decision: {{decision}}"
+      - "Risk accepted: {{risk}}"
+      - "Approved by {{approver}}"
+      - "Accept the risk of {{risk}}"
+      - "We decided to {{decision}}"
+    relationships:
+      - type: "addresses"
+        target: "vulnerability"
+      - type: "addresses"
+        target: "compliance_gap"
+
+# Extraction rules with confidence thresholds
+extraction_rules:
+  - id: "vulnerabilities"
+    entity_type: "vulnerability"
+    confidence_threshold: 0.85
+    priority: 1
+    tier: "rule"
+    description: "Extract security vulnerabilities with CVE and CVSS details"
+
+  - id: "threats"
+    entity_type: "threat"
+    confidence_threshold: 0.8
+    priority: 2
+    tier: "llm"
+    description: "Document threats using STRIDE framework"
+
+  - id: "mitigations"
+    entity_type: "mitigation"
+    confidence_threshold: 0.75
+    priority: 3
+    tier: "rule"
+    description: "Capture security controls and remediation actions"
+
+  - id: "compliance_gaps"
+    entity_type: "compliance_gap"
+    confidence_threshold: 0.8
+    priority: 4
+    tier: "rule"
+    description: "Identify compliance framework gaps"
+
+  - id: "security_decisions"
+    entity_type: "security_decision"
+    confidence_threshold: 0.8
+    priority: 5
+    tier: "rule"
+    description: "Document security and risk acceptance decisions"
+
+# Context-specific rules (TDD-EN014 Section 4.3)
+context_rules:
+  security_audit:
+    primary_focus:
+      - vulnerability
+      - mitigation
+    secondary_focus:
+      - compliance_gap
+    extraction_emphasis: |
+      In security audits, prioritize:
+      1. Vulnerabilities with CVE/CVSS details
+      2. Proposed mitigations with control types
+      3. Compliance gaps by framework
+      4. Remediation timelines
+
+  threat_modeling:
+    primary_focus:
+      - threat
+      - mitigation
+    secondary_focus:
+      - vulnerability
+    methodology: "STRIDE"
+    extraction_emphasis: |
+      In threat modeling sessions, apply STRIDE:
+      - Spoofing: Identity impersonation threats
+      - Tampering: Data modification threats
+      - Repudiation: Denying actions threats
+      - Information Disclosure: Data exposure threats
+      - Denial of Service: Availability threats
+      - Elevation of Privilege: Access escalation threats
+      Document threat actors, vectors, and mitigations.
+
+  compliance_review:
+    primary_focus:
+      - compliance_gap
+    secondary_focus:
+      - mitigation
+      - security_decision
+    extraction_emphasis: |
+      In compliance reviews, document:
+      1. Gaps mapped to specific framework controls
+      2. Current state vs required state
+      3. Remediation plans with deadlines
+      4. Risk acceptance decisions with approvers
+
+  vulnerability_triage:
+    primary_focus:
+      - vulnerability
+      - mitigation
+    secondary_focus:
+      - security_decision
+    prioritization: "CVSS"
+    extraction_emphasis: |
+      In vulnerability triage, focus on:
+      1. CVE identifiers and CVSS scores
+      2. Severity-based prioritization
+      3. Affected systems mapping
+      4. Remediation assignments and timelines
+
+# Validation rules (TDD-EN014 Section 4.4)
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 5
+  required_entities:
+    - vulnerability
+    - threat
+    - mitigation
+  stride_support: true
+  cvss_support: true
+
+# Prompt guidance for ts-extractor agent
+prompt_guidance: |
+  ## Security Engineering Transcript Analysis
+
+  When analyzing security engineering transcripts, apply security domain expertise:
+
+  ### Vulnerability Documentation
+  - Extract exact CVE identifiers (CVE-YYYY-NNNNN format)
+  - Capture CVSS v3.1 numeric scores (0.0-10.0)
+  - Map qualitative severity (critical/high/medium/low/informational)
+  - Note CWE identifiers when mentioned
+  - Document affected systems and components
+  - Track remediation status
+
+  ### Threat Modeling (STRIDE Framework)
+  Apply STRIDE categories systematically:
+  - **S (Spoofing)**: Identity impersonation attacks
+  - **T (Tampering)**: Unauthorized data modification
+  - **R (Repudiation)**: Denying actions without proof
+  - **I (Information Disclosure)**: Data exposure/leakage
+  - **D (Denial of Service)**: Availability impact
+  - **E (Elevation of Privilege)**: Unauthorized access escalation
+
+  Document:
+  - Threat actors (external attacker, malicious insider, etc.)
+  - Attack vectors (network, local, physical, adjacent)
+  - Likelihood and impact assessments
+
+  ### Security Control Categorization
+  - **Preventive**: Controls that stop attacks before they happen
+    - Examples: MFA, input validation, firewalls
+  - **Detective**: Controls that identify attacks in progress
+    - Examples: IDS, logging, SIEM alerts
+  - **Corrective**: Controls for response and recovery
+    - Examples: Incident response, backup restoration
+
+  ### Compliance Framework Mapping
+  - Identify framework references (SOC2, PCI-DSS, HIPAA, GDPR, ISO27001)
+  - Map to specific control requirements
+  - Document gaps with current vs required state
+  - Capture remediation plans and deadlines
+
+  ### ⚠️ Risk Acceptance Documentation
+  Risk acceptance decisions MUST be explicitly captured:
+  - Topic: What risk is being accepted
+  - Decision: The acceptance decision
+  - Approver: Who approved (CISO, VP Eng, etc.)
+  - Expiry: When the acceptance expires for re-review
+
+  **This is CRITICAL for audit trails.**
+
+  ### Confidence Scoring Guidelines
+  - 0.9+: Exact CVE/CVSS/CWE values, explicit STRIDE categories
+  - 0.7-0.9: Clear security discussion with technical details
+  - 0.5-0.7: Implicit security concerns, flag for review
+  - <0.5: Do not extract
+
+  ### Anti-Hallucination Rules (PAT-004)
+  - Every extraction MUST have a source segment citation
+  - Do not infer vulnerabilities or threats not explicitly discussed
+  - When uncertain, use lower confidence scores
+  - Preserve original speaker attribution
+  - CVSS scores MUST be directly quoted, not estimated
