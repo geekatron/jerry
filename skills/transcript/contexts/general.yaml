@@ -1,0 +1,61 @@
+# Domain Schema for General Text Analysis
+# Implements: REQ-CI-F-001
+# EN-013 TASK-121: General domain schema (default fallback)
+
+schema_version: "1.0.0"
+domain: "general"
+display_name: "General Text Analysis"
+
+# Generic entity definitions (broad applicability)
+entity_definitions:
+  mention:
+    description: "Named entity mentioned in text"
+    attributes:
+      - name: "text"
+        type: "string"
+        required: true
+      - name: "entity_type"
+        type: "string"
+        enum: ["person", "organization", "location", "date", "other"]
+      - name: "confidence"
+        type: "float"
+
+  topic:
+    description: "Topic or subject discussed"
+    attributes:
+      - name: "name"
+        type: "string"
+        required: true
+      - name: "keywords"
+        type: "array"
+      - name: "confidence"
+        type: "float"
+
+# Generic extraction rules
+extraction_rules:
+  - id: "mentions"
+    entity_type: "mention"
+    confidence_threshold: 0.6
+    priority: 1
+  - id: "topics"
+    entity_type: "topic"
+    confidence_threshold: 0.5
+    priority: 2
+
+# General guidance (domain-agnostic)
+prompt_guidance: |
+  When analyzing general text:
+
+  1. **Named Entities**: Identify people, organizations, locations, and dates.
+     Use standard NER patterns without domain-specific assumptions.
+
+  2. **Topics**: Extract main topics being discussed.
+     Look for recurring themes and subject matter.
+
+  3. **Confidence Scoring**:
+     - 0.8+ : Clear, unambiguous reference
+     - 0.6-0.8: Probable entity with context support
+     - 0.5-0.6: Possible entity, flag for review
+     - <0.5: Do not extract
+
+  This is a general domain - avoid domain-specific assumptions.

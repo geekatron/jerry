@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://jerry-framework.example.com/schemas/events/cloudevents-base.json",
+  "title": "CloudEvents Base Schema (CNCF Standard)",
+  "description": "Base CloudEvents 1.0 specification with Jerry extensions (IAuditable, IJerryTracked)",
+  "type": "object",
+  "required": [
+    "specversion",
+    "type",
+    "source",
+    "id",
+    "time",
+    "datacontenttype"
+  ],
+  "properties": {
+    "specversion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "CloudEvents specification version"
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^com\\.jerry\\.problem-statement\\.[a-z-]+$",
+      "description": "Event type (e.g., com.jerry.problem-statement.constraint-added)",
+      "examples": [
+        "com.jerry.problem-statement.created",
+        "com.jerry.problem-statement.constraint-added",
+        "com.jerry.problem-statement.question-answered"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^jerry://problem-statement/phase-[\\w-]+$",
+      "description": "Event source (aggregate stream)",
+      "examples": [
+        "jerry://problem-statement/phase-42",
+        "jerry://problem-statement/phase-37"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event identifier"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when event occurred (ISO 8601 UTC)"
+    },
+    "datacontenttype": {
+      "type": "string",
+      "const": "application/json",
+      "description": "Content type of data attribute"
+    },
+    "dataschema": {
+      "type": "string",
+      "format": "uri",
+      "description": "URI of the schema for the data attribute",
+      "examples": [
+        "https://jerry-framework.example.com/schemas/events/constraint-added-v1.json",
+        "https://jerry-framework.example.com/schemas/events/question-answered-v1.json"
+      ]
+    },
+    "subject": {
+      "type": "string",
+      "pattern": "^phase-[\\w-]+$",
+      "description": "Subject of the event (phase ID)",
+      "examples": ["phase-42", "phase-37"]
+    },
+    "data": {
+      "type": "object",
+      "description": "Event payload (schema defined by dataschema)"
+    },
+
+    "_comment_extensions": "Jerry-specific extension attributes for IAuditable and IJerryTracked",
+
+    "causedby": {
+      "type": "string",
+      "description": "IAuditable: Who caused this event (user email, 'Claude', 'System')",
+      "examples": ["Claude", "alice@example.com", "System"]
+    },
+    "jerryversion": {
+      "type": "string",
+      "pattern": "^v\\d+\\.\\d+\\.\\d+$",
+      "description": "IJerryTracked: Jerry version that generated this event",
+      "examples": ["v2.2.0", "v2.3.0"]
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{18,20}$",
+      "description": "IJerryTracked: Jerry fingerprint (9-component session hash)",
+      "examples": ["37bbd6057700000000", "4a12bc3def800000001"]
+    }
+  },
+  "additionalProperties": false,
+
+  "examples": [
+    {
+      "specversion": "1.0",
+      "type": "com.jerry.problem-statement.constraint-added",
+      "source": "jerry://problem-statement/phase-42",
+      "id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+      "time": "2025-12-21T05:30:00Z",
+      "datacontenttype": "application/json",
+      "dataschema": "https://jerry-framework.example.com/schemas/events/constraint-added-v1.json",
+      "subject": "phase-42",
+      "causedby": "Claude",
+      "jerryversion": "v2.2.0",
+      "fingerprint": "37bbd6057700000000",
+      "data": {
+        "constraint_id": "CON-001",
+        "description": "Must support OAuth 2.0",
+        "impact": "Cannot use simpler authentication methods",
+        "discovered": "2025-12-21",
+        "status": "HYPOTHESIS"
+      }
+    }
+  ]
+}

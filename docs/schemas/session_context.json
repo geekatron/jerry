@@ -1,0 +1,384 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://jerry.dev/schemas/session_context/v1.0.0",
+  "title": "Session Context Schema",
+  "description": "Canonical schema for agent-to-agent handoff context in the Jerry Framework. This schema defines the contract for reliable agent chaining across ps-* and nse-* agent families.",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["schema_version", "session_id", "source_agent", "target_agent", "payload", "timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version for evolution support (semver format)",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "examples": ["1.0.0"]
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Unique identifier for the current session. Used to detect session mismatch and prevent stale state issues.",
+      "minLength": 1,
+      "examples": ["sess-2026-01-10-abc123"]
+    },
+    "source_agent": {
+      "$ref": "#/definitions/agent_reference",
+      "description": "The agent producing this context (sender)"
+    },
+    "target_agent": {
+      "$ref": "#/definitions/agent_reference",
+      "description": "The intended recipient agent (receiver)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when this context was created"
+    },
+    "workflow_id": {
+      "type": "string",
+      "description": "Optional reference to the orchestration workflow this handoff belongs to",
+      "examples": ["WF-001-nasa-se"]
+    },
+    "payload": {
+      "$ref": "#/definitions/handoff_payload",
+      "description": "The actual context being handed off between agents"
+    },
+    "trace": {
+      "$ref": "#/definitions/trace_context",
+      "description": "Optional distributed tracing context for debugging"
+    }
+  },
+  "definitions": {
+    "agent_reference": {
+      "type": "object",
+      "required": ["id", "family"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Agent identifier (e.g., 'ps-researcher', 'nse-requirements')",
+          "pattern": "^(ps|nse|orch)-[a-z]+((-[a-z]+)*)$",
+          "examples": ["ps-researcher", "nse-requirements", "orch-planner"]
+        },
+        "family": {
+          "type": "string",
+          "description": "Agent family for cross-skill handoff detection",
+          "enum": ["ps", "nse", "orch"]
+        },
+        "cognitive_mode": {
+          "type": "string",
+          "description": "Agent's cognitive mode (affects output expectations)",
+          "enum": ["convergent", "divergent", "mixed"]
+        },
+        "model": {
+          "type": "string",
+          "description": "LLM model used by this agent",
+          "enum": ["opus", "sonnet", "haiku", "auto"]
+        }
+      }
+    },
+    "handoff_payload": {
+      "type": "object",
+      "required": ["key_findings", "confidence"],
+      "additionalProperties": true,
+      "properties": {
+        "key_findings": {
+          "type": "array",
+          "description": "Primary insights or outputs from the source agent",
+          "items": {
+            "$ref": "#/definitions/finding"
+          },
+          "minItems": 0
+        },
+        "open_questions": {
+          "type": "array",
+          "description": "Unresolved questions the target agent should address",
+          "items": {
+            "$ref": "#/definitions/question"
+          },
+          "default": []
+        },
+        "blockers": {
+          "type": "array",
+          "description": "Issues that may prevent the target agent from completing",
+          "items": {
+            "$ref": "#/definitions/blocker"
+          },
+          "default": []
+        },
+        "confidence": {
+          "$ref": "#/definitions/confidence_score",
+          "description": "Source agent's confidence in its findings"
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "File paths to artifacts produced by source agent",
+          "items": {
+            "$ref": "#/definitions/artifact_reference"
+          },
+          "default": []
+        },
+        "context": {
+          "type": "object",
+          "description": "Arbitrary context data specific to the domain",
+          "additionalProperties": true
+        },
+        "recommendations": {
+          "type": "array",
+          "description": "Suggested actions for the target agent",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["id", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique finding identifier",
+          "pattern": "^F-[0-9]{3}$",
+          "examples": ["F-001"]
+        },
+        "summary": {
+          "type": "string",
+          "description": "Brief description of the finding",
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "description": "Finding category for filtering",
+          "enum": ["insight", "risk", "requirement", "decision", "gap", "recommendation"]
+        },
+        "severity": {
+          "type": "string",
+          "description": "Severity level for prioritization",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Supporting evidence or references",
+          "items": {
+            "type": "string"
+          }
+        },
+        "traceability": {
+          "type": "array",
+          "description": "Related requirement/risk IDs (P-040 compliance)",
+          "items": {
+            "type": "string",
+            "pattern": "^(REQ|RISK|TSR|ICD)-[A-Z0-9-]+$"
+          }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": ["id", "question"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique question identifier",
+          "pattern": "^Q-[0-9]{3}$",
+          "examples": ["Q-001"]
+        },
+        "question": {
+          "type": "string",
+          "description": "The unresolved question"
+        },
+        "priority": {
+          "type": "string",
+          "description": "Priority for answering",
+          "enum": ["low", "medium", "high", "critical"],
+          "default": "medium"
+        },
+        "suggested_approach": {
+          "type": "string",
+          "description": "Optional hint on how to answer"
+        }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "required": ["id", "description", "severity"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique blocker identifier",
+          "pattern": "^BLK-[0-9]{3}$",
+          "examples": ["BLK-001"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of what is blocked"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "workaround": {
+          "type": "string",
+          "description": "Optional workaround if available"
+        },
+        "blocked_actions": {
+          "type": "array",
+          "description": "What actions this blocks",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "confidence_score": {
+      "type": "object",
+      "required": ["overall"],
+      "additionalProperties": false,
+      "properties": {
+        "overall": {
+          "type": "number",
+          "description": "Overall confidence score (0.0 to 1.0)",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Explanation for the confidence level"
+        },
+        "breakdown": {
+          "type": "object",
+          "description": "Component confidence scores",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      }
+    },
+    "artifact_reference": {
+      "type": "object",
+      "required": ["path", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Repository-relative path to artifact",
+          "pattern": "^[^/].*$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Artifact type for consumer",
+          "enum": ["requirement", "risk", "architecture", "verification", "review", "integration", "configuration", "report", "analysis", "synthesis"]
+        },
+        "format": {
+          "type": "string",
+          "description": "File format",
+          "enum": ["markdown", "yaml", "json", "text"],
+          "default": "markdown"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "description": "File size in bytes (for context window estimation)",
+          "minimum": 0
+        }
+      }
+    },
+    "trace_context": {
+      "type": "object",
+      "description": "Distributed tracing context for debugging agent chains",
+      "additionalProperties": false,
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "description": "Unique trace ID for the entire workflow"
+        },
+        "span_id": {
+          "type": "string",
+          "description": "Span ID for this specific handoff"
+        },
+        "parent_span_id": {
+          "type": "string",
+          "description": "Parent span ID (null for root)"
+        },
+        "depth": {
+          "type": "integer",
+          "description": "Nesting depth (P-003 compliance: must be <= 1)",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "1.0.0",
+      "session_id": "sess-2026-01-10-abc123",
+      "source_agent": {
+        "id": "ps-researcher",
+        "family": "ps",
+        "cognitive_mode": "divergent",
+        "model": "opus"
+      },
+      "target_agent": {
+        "id": "nse-requirements",
+        "family": "nse",
+        "cognitive_mode": "convergent",
+        "model": "sonnet"
+      },
+      "timestamp": "2026-01-10T12:00:00Z",
+      "workflow_id": "WF-001-nasa-se",
+      "payload": {
+        "key_findings": [
+          {
+            "id": "F-001",
+            "summary": "NASA NPR 7123.1D defines 17 Common Technical Processes for systems engineering",
+            "category": "insight",
+            "severity": "high",
+            "evidence": ["https://nodis3.gsfc.nasa.gov/displayDir.cfm?t=NPR&c=7123&s=1D"],
+            "traceability": ["REQ-NSE-001"]
+          }
+        ],
+        "open_questions": [
+          {
+            "id": "Q-001",
+            "question": "Which process areas should be prioritized for MVP implementation?",
+            "priority": "high",
+            "suggested_approach": "Analyze user research data to identify most frequently used processes"
+          }
+        ],
+        "blockers": [],
+        "confidence": {
+          "overall": 0.85,
+          "reasoning": "High confidence based on primary source documentation from NASA",
+          "breakdown": {
+            "source_quality": 0.95,
+            "completeness": 0.75
+          }
+        },
+        "artifacts": [
+          {
+            "path": "research/npr-7123-analysis.md",
+            "type": "analysis",
+            "format": "markdown",
+            "size_bytes": 15000
+          }
+        ],
+        "recommendations": [
+          "Focus on Processes 1, 2, and 11 for requirements engineering",
+          "Consider NASA-HDBK-1009A for work product templates"
+        ]
+      },
+      "trace": {
+        "trace_id": "tr-001-2026-01-10",
+        "span_id": "sp-001",
+        "parent_span_id": null,
+        "depth": 0
+      }
+    }
+  ]
+}

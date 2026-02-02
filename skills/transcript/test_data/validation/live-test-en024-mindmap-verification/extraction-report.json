@@ -1,0 +1,335 @@
+{
+  "version": "1.1",
+  "packet_id": "live-test-en024-mindmap-verification",
+  "input_format": "chunked",
+  "chunk_metadata": {
+    "index_path": "/Users/adam.nowak/workspace/GitHub/geekatron/jerry-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/validation/live-test-en024-mindmap-verification/index.json",
+    "chunks_processed": 1,
+    "chunks_total": 1,
+    "selection_strategy": "sequential",
+    "chunks": [
+      {
+        "chunk_id": "chunk-001",
+        "segment_range": [1, 39],
+        "entities_extracted": 39
+      }
+    ]
+  },
+  "extraction_stats": {
+    "speakers_identified": 4,
+    "action_items": 8,
+    "decisions": 3,
+    "questions": 3,
+    "topics": 5,
+    "confidence_summary": {
+      "average": 0.88,
+      "high_count": 17,
+      "medium_count": 2,
+      "low_count": 0,
+      "high_ratio": 0.89
+    }
+  },
+  "speakers": [
+    {
+      "id": "spk-001",
+      "name": "Alice",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 17
+    },
+    {
+      "id": "spk-002",
+      "name": "Bob",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 9
+    },
+    {
+      "id": "spk-003",
+      "name": "Charlie",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 7
+    },
+    {
+      "id": "spk-004",
+      "name": "Diana",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 6
+    }
+  ],
+  "action_items": [
+    {
+      "id": "act-001",
+      "text": "Send API Swagger documentation to Charlie",
+      "assignee": "Bob",
+      "due_date": "after this meeting",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-006",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-006",
+        "timestamp_ms": 52000,
+        "text_snippet": "I'll send you the Swagger documentation after this meeting."
+      }
+    },
+    {
+      "id": "act-002",
+      "text": "Send test review calendar invite for Thursday afternoon",
+      "assignee": "Diana",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-013",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-013",
+        "timestamp_ms": 135000,
+        "text_snippet": "I'll send out the calendar invite."
+      }
+    },
+    {
+      "id": "act-003",
+      "text": "Prepare rollback scripts for deployment",
+      "assignee": "Bob",
+      "due_date": "tomorrow",
+      "confidence": 0.92,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-019",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-019",
+        "timestamp_ms": 240000,
+        "text_snippet": "I will prepare the rollback scripts as a safety measure. That's assigned to me for tomorrow."
+      }
+    },
+    {
+      "id": "act-004",
+      "text": "Create smoke test checklist for deployment (with Diana)",
+      "assignee": "Charlie",
+      "due_date": null,
+      "confidence": 0.88,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-020",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-020",
+        "timestamp_ms": 258000,
+        "text_snippet": "Charlie, can you work with Diana to create a smoke test checklist for the deployment?"
+      }
+    },
+    {
+      "id": "act-005",
+      "text": "Block calendar time with Charlie for smoke test sync",
+      "assignee": "Diana",
+      "due_date": null,
+      "confidence": 0.85,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-022",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-022",
+        "timestamp_ms": 285000,
+        "text_snippet": "I'll block some time on our calendars."
+      }
+    },
+    {
+      "id": "act-006",
+      "text": "Update release plan document with deployment decisions",
+      "assignee": "Alice",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-026",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-026",
+        "timestamp_ms": 345000,
+        "text_snippet": "I'll update the release plan document with these decisions."
+      }
+    },
+    {
+      "id": "act-007",
+      "text": "Add deprecation warnings to legacy login API response headers",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.87,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-028",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-028",
+        "timestamp_ms": 375000,
+        "text_snippet": "I need to add deprecation warnings to the API response headers."
+      }
+    },
+    {
+      "id": "act-008",
+      "text": "Create ticket for legacy endpoint deprecation",
+      "assignee": "Bob",
+      "due_date": "after this meeting",
+      "confidence": 0.88,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-030",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-030",
+        "timestamp_ms": 408000,
+        "text_snippet": "I'll create the ticket after this meeting."
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "text": "Schedule test case review session for Thursday afternoon",
+      "decided_by": "Alice",
+      "rationale": "Team availability confirmed for Thursday afternoon",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-010",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-010",
+        "timestamp_ms": 108000,
+        "text_snippet": "Let's go with Thursday afternoon for the review. Does that work for everyone?"
+      }
+    },
+    {
+      "id": "dec-002",
+      "text": "Target Monday the 15th for production deployment",
+      "decided_by": "Team",
+      "rationale": "Based on backend ready next Friday, frontend ready Wednesday, and 3 days testing needed",
+      "confidence": 0.92,
+      "citation": {
+        "segment_id": "seg-018",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-018",
+        "timestamp_ms": 220000,
+        "text_snippet": "We decided to target Monday the 15th for production deployment."
+      }
+    },
+    {
+      "id": "dec-003",
+      "text": "Use phased rollout approach for new authentication",
+      "decided_by": "Team",
+      "rationale": "Start with internal users, then expand to 10% of production traffic to align with testing strategy",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-025",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-025",
+        "timestamp_ms": 332000,
+        "text_snippet": "We agreed to use the phased rollout approach."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "que-001",
+      "text": "Can we schedule a test case review session this week?",
+      "asked_by": "Diana",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-010",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-010",
+        "timestamp_ms": 108000,
+        "text_snippet": "Let's go with Thursday afternoon for the review."
+      },
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-009",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-009",
+        "timestamp_ms": 85000,
+        "text_snippet": "Can we schedule a test case review session this week?"
+      }
+    },
+    {
+      "id": "que-002",
+      "text": "Should we do a gradual rollout for the new authentication feature flag?",
+      "asked_by": "Alice",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-024",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-024",
+        "timestamp_ms": 310000,
+        "text_snippet": "I recommend a phased approach. We can start with internal users, then expand to 10% of production traffic."
+      },
+      "confidence": 0.92,
+      "citation": {
+        "segment_id": "seg-023",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-023",
+        "timestamp_ms": 292000,
+        "text_snippet": "How do we want to handle the feature flag for the new authentication? Should we do a gradual rollout?"
+      }
+    },
+    {
+      "id": "que-003",
+      "text": "Are we deprecating the legacy login endpoint immediately?",
+      "asked_by": "Charlie",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-028",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-028",
+        "timestamp_ms": 375000,
+        "text_snippet": "We should keep it running in parallel for at least two weeks."
+      },
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-027",
+        "chunk_id": "chunk-001",
+        "anchor": "#seg-027",
+        "timestamp_ms": 360000,
+        "text_snippet": "Quick question - what about the legacy login endpoint? Are we deprecating it immediately?"
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "top-001",
+      "title": "Daily Standup Updates",
+      "start_ms": 0,
+      "end_ms": 85000,
+      "segment_ids": ["seg-001", "seg-002", "seg-003", "seg-004", "seg-005", "seg-006", "seg-007", "seg-008"],
+      "chunk_ids": ["chunk-001"]
+    },
+    {
+      "id": "top-002",
+      "title": "Test Planning and Review Scheduling",
+      "start_ms": 85000,
+      "end_ms": 140000,
+      "segment_ids": ["seg-009", "seg-010", "seg-011", "seg-012", "seg-013"],
+      "chunk_ids": ["chunk-001"]
+    },
+    {
+      "id": "top-003",
+      "title": "Deployment Timeline and Release Planning",
+      "start_ms": 140000,
+      "end_ms": 292000,
+      "segment_ids": ["seg-014", "seg-015", "seg-016", "seg-017", "seg-018", "seg-019", "seg-020", "seg-021", "seg-022"],
+      "chunk_ids": ["chunk-001"]
+    },
+    {
+      "id": "top-004",
+      "title": "Feature Flag and Rollout Strategy",
+      "start_ms": 292000,
+      "end_ms": 360000,
+      "segment_ids": ["seg-023", "seg-024", "seg-025", "seg-026"],
+      "chunk_ids": ["chunk-001"]
+    },
+    {
+      "id": "top-005",
+      "title": "Legacy Endpoint Deprecation and Action Items Summary",
+      "start_ms": 360000,
+      "end_ms": 505000,
+      "segment_ids": ["seg-027", "seg-028", "seg-029", "seg-030", "seg-031", "seg-032", "seg-033", "seg-034", "seg-035", "seg-036", "seg-037", "seg-038", "seg-039"],
+      "chunk_ids": ["chunk-001"]
+    }
+  ]
+}

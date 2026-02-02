@@ -1,0 +1,42 @@
+
+UNIVERSAL PROBLEM SOLVING PLAYBOOK (CLI)
+
+1. FRAME
+   - Who?
+   - What?
+   - Where?
+   - When?
+   - Why?
+   - How?
+
+2. CLASSIFY
+   - Simple
+   - Complicated
+   - Complex
+   - Chaotic
+
+3. DIAGNOSE
+   - Linear? → 5 Whys
+   - Multi? → Fishbone
+   - Unknown? → Hypothesis
+
+4. IDEATE
+   - Generate options
+   - No judgement
+
+5. DECIDE
+   - Risk
+   - Cost
+   - Time
+   - Reversibility
+
+6. ACT
+   - Execute
+   - Monitor
+
+7. VERIFY
+   - Did it work?
+
+8. LEARN
+   - Document
+   - Prevent recurrence

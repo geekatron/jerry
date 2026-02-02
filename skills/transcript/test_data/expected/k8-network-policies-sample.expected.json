@@ -1,0 +1,217 @@
+{
+  "_metadata": {
+    "description": "Expected ts-parser output for k8-network-policies-sample.vtt",
+    "source_file": "transcripts/real/k8-network-policies-sample.vtt",
+    "derived_by": "Claude (deterministic derivation from VTT)",
+    "derived_at": "2026-01-27T14:30:00Z",
+    "updated_at": "2026-01-27T20:45:00Z",
+    "purpose": "Golden test data for TASK-102 VTT processing verification",
+    "review_status": "PENDING_HUMAN_REVIEW",
+    "notes": [
+      "Timestamps converted to milliseconds (HH:MM:SS.mmm -> ms)",
+      "Multi-line payloads joined with single space",
+      "Closing </v> tags stripped from text",
+      "Speaker extracted from <v Speaker> tag",
+      "Updated to v1.1 schema with parse_metadata (TASK-106)"
+    ]
+  },
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/real/k8-network-policies-sample.vtt"
+  },
+  "metadata": {
+    "duration_ms": 72768,
+    "segment_count": 20,
+    "detected_speakers": 2
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/7-0",
+      "start_ms": 3528,
+      "end_ms": 6448,
+      "speaker": "Adam Nowak",
+      "text": "It's it has started, right?",
+      "raw_text": "<v Adam Nowak>It's it has started, right?</v>"
+    },
+    {
+      "id": "seg-002",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/9-0",
+      "start_ms": 5608,
+      "end_ms": 10319,
+      "speaker": "Brendan Bennett",
+      "text": "All right. Yeah. So I guess I was a little interested in",
+      "raw_text": "<v Brendan Bennett>All right. Yeah.\nSo I guess I was a little interested in</v>"
+    },
+    {
+      "id": "seg-003",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/9-1",
+      "start_ms": 10319,
+      "end_ms": 16930,
+      "speaker": "Brendan Bennett",
+      "text": "where it's kind of recommended solutions and products rather than generic like,",
+      "raw_text": "<v Brendan Bennett>where it's kind of recommended solutions\nand products rather than generic like,</v>"
+    },
+    {
+      "id": "seg-004",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/9-2",
+      "start_ms": 16930,
+      "end_ms": 20401,
+      "speaker": "Brendan Bennett",
+      "text": "well, sorry, whether recommended specific",
+      "raw_text": "<v Brendan Bennett>well, sorry,\nwhether recommended specific</v>"
+    },
+    {
+      "id": "seg-005",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/9-3",
+      "start_ms": 20401,
+      "end_ms": 24368,
+      "speaker": "Brendan Bennett",
+      "text": "implementations rather than just like concepts.",
+      "raw_text": "<v Brendan Bennett>implementations rather than just like\nconcepts.</v>"
+    },
+    {
+      "id": "seg-006",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/10-0",
+      "start_ms": 24408,
+      "end_ms": 31578,
+      "speaker": "Brendan Bennett",
+      "text": "So for example I saw like Cuverno in there and Cillium and things like that.",
+      "raw_text": "<v Brendan Bennett>So for example I saw like Cuverno in\nthere and Cillium and things like that.</v>"
+    },
+    {
+      "id": "seg-007",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/8-0",
+      "start_ms": 25248,
+      "end_ms": 25368,
+      "speaker": "Adam Nowak",
+      "text": "OK.",
+      "raw_text": "<v Adam Nowak>OK.</v>"
+    },
+    {
+      "id": "seg-008",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/10-1",
+      "start_ms": 31578,
+      "end_ms": 38655,
+      "speaker": "Brendan Bennett",
+      "text": "I was wondering like are they have we have we recommended those if we if we",
+      "raw_text": "<v Brendan Bennett>I was wondering like are they have we\nhave we recommended those if we if we</v>"
+    },
+    {
+      "id": "seg-009",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/10-2",
+      "start_ms": 38655,
+      "end_ms": 41728,
+      "speaker": "Brendan Bennett",
+      "text": "like or is that just like a yeah.",
+      "raw_text": "<v Brendan Bennett>like or is that just like a yeah.</v>"
+    },
+    {
+      "id": "seg-010",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/12-0",
+      "start_ms": 39048,
+      "end_ms": 42699,
+      "speaker": "Adam Nowak",
+      "text": "No, we no, we didn't. So there's a decision tree in there that",
+      "raw_text": "<v Adam Nowak>No, we no, we didn't.\nSo there's a decision tree in there that</v>"
+    },
+    {
+      "id": "seg-011",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/12-1",
+      "start_ms": 42699,
+      "end_ms": 46872,
+      "speaker": "Adam Nowak",
+      "text": "I can walk you guys through. That's part of the like million artifacts.",
+      "raw_text": "<v Adam Nowak>I can walk you guys through.\nThat's part of the like million artifacts.</v>"
+    },
+    {
+      "id": "seg-012",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/12-2",
+      "start_ms": 46872,
+      "end_ms": 50291,
+      "speaker": "Adam Nowak",
+      "text": "So it actually did an analysis as part of it. It went out,",
+      "raw_text": "<v Adam Nowak>So it actually did an analysis as part of\nit. It went out,</v>"
+    },
+    {
+      "id": "seg-013",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/12-3",
+      "start_ms": 50291,
+      "end_ms": 55101,
+      "speaker": "Adam Nowak",
+      "text": "it looked at multiple Kubernetes network interface drivers. It did the evaluation.",
+      "raw_text": "<v Adam Nowak>it looked at multiple Kubernetes network\ninterface drivers. It did the evaluation.</v>"
+    },
+    {
+      "id": "seg-014",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/12-4",
+      "start_ms": 55101,
+      "end_ms": 58288,
+      "speaker": "Adam Nowak",
+      "text": "There's a matrix in here somewhere where it's like oh.",
+      "raw_text": "<v Adam Nowak>There's a matrix in here somewhere where\nit's like oh.</v>"
+    },
+    {
+      "id": "seg-015",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/11-0",
+      "start_ms": 56608,
+      "end_ms": 56728,
+      "speaker": "Brendan Bennett",
+      "text": "OK.",
+      "raw_text": "<v Brendan Bennett>OK.</v>"
+    },
+    {
+      "id": "seg-016",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/13-0",
+      "start_ms": 58808,
+      "end_ms": 62230,
+      "speaker": "Adam Nowak",
+      "text": "This is Microsoft's official one. This new one I recommend is because it's",
+      "raw_text": "<v Adam Nowak>This is Microsoft's official one.\nThis new one I recommend is because it's</v>"
+    },
+    {
+      "id": "seg-017",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/13-1",
+      "start_ms": 62230,
+      "end_ms": 65104,
+      "speaker": "Adam Nowak",
+      "text": "the one that's deprecating the official recommended Microsoft.",
+      "raw_text": "<v Adam Nowak>the one that's deprecating the official\nrecommended Microsoft.</v>"
+    },
+    {
+      "id": "seg-018",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/13-2",
+      "start_ms": 65104,
+      "end_ms": 68343,
+      "speaker": "Adam Nowak",
+      "text": "There are other ones and that was its decision tree and as part of the",
+      "raw_text": "<v Adam Nowak>There are other ones and that was its\ndecision tree and as part of the</v>"
+    },
+    {
+      "id": "seg-019",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/13-3",
+      "start_ms": 68343,
+      "end_ms": 72175,
+      "speaker": "Adam Nowak",
+      "text": "orchestration run. So if I you know what, let me share my screen so I'm not talking",
+      "raw_text": "<v Adam Nowak>orchestration run. So if I you know what,\nlet me share my screen so I'm not talking</v>"
+    },
+    {
+      "id": "seg-020",
+      "cue_id": "d9aef475-18c3-4c8c-bf99-88d578a2eb5b/13-4",
+      "start_ms": 72175,
+      "end_ms": 72768,
+      "speaker": "Adam Nowak",
+      "text": "to the ether.",
+      "raw_text": "<v Adam Nowak>to the ether.</v>"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

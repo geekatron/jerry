@@ -1,0 +1,154 @@
+# Domain Schema for Transcript Analysis
+# Implements: REQ-CI-F-001, REQ-CI-F-007
+# EN-013 TASK-122: Transcript-specific domain schema
+
+schema_version: "1.0.0"
+domain: "transcript"
+display_name: "Transcript Analysis"
+
+# Entity definitions (what to extract)
+entity_definitions:
+  action_item:
+    description: "Task or commitment made during conversation"
+    attributes:
+      - name: "text"
+        type: "string"
+        required: true
+      - name: "assignee"
+        type: "string"
+      - name: "due_date"
+        type: "date"
+      - name: "confidence"
+        type: "float"
+    extraction_patterns:
+      - "{{assignee}} will {{text}}"
+      - "{{assignee}}, can you {{text}}"
+      - "action item: {{text}}"
+      - "TODO: {{text}}"
+      - "@{{assignee}} {{text}}"
+
+  decision:
+    description: "Decision made during conversation"
+    attributes:
+      - name: "text"
+        type: "string"
+        required: true
+      - name: "decided_by"
+        type: "string"
+      - name: "rationale"
+        type: "string"
+      - name: "confidence"
+        type: "float"
+    extraction_patterns:
+      - "we've decided to {{text}}"
+      - "the decision is {{text}}"
+      - "let's go with {{text}}"
+      - "agreed that {{text}}"
+      - "conclusion: {{text}}"
+
+  question:
+    description: "Question raised during conversation"
+    attributes:
+      - name: "text"
+        type: "string"
+        required: true
+      - name: "asked_by"
+        type: "string"
+      - name: "answered"
+        type: "boolean"
+      - name: "confidence"
+        type: "float"
+
+  speaker:
+    description: "Person speaking in the transcript"
+    attributes:
+      - name: "name"
+        type: "string"
+        required: true
+      - name: "role"
+        type: "string"
+      - name: "segment_count"
+        type: "integer"
+      - name: "first_appearance_ms"
+        type: "integer"
+
+  topic:
+    description: "Topic segment in the conversation"
+    attributes:
+      - name: "name"
+        type: "string"
+        required: true
+      - name: "start_segment"
+        type: "integer"
+      - name: "end_segment"
+        type: "integer"
+      - name: "keywords"
+        type: "array"
+      - name: "confidence"
+        type: "float"
+
+# Extraction rules (how to find entities)
+extraction_rules:
+  - id: "action_items"
+    entity_type: "action_item"
+    confidence_threshold: 0.7
+    priority: 1
+    description: "Extract tasks with assignees and due dates"
+  - id: "decisions"
+    entity_type: "decision"
+    confidence_threshold: 0.8
+    priority: 2
+    description: "Extract decisions with consensus language"
+  - id: "questions"
+    entity_type: "question"
+    confidence_threshold: 0.75
+    priority: 3
+    description: "Extract open questions and track answered status"
+  - id: "speakers"
+    entity_type: "speaker"
+    confidence_threshold: 0.9
+    priority: 1
+    description: "Identify all speakers using PAT-003 detection chain"
+  - id: "topics"
+    entity_type: "topic"
+    confidence_threshold: 0.6
+    priority: 4
+    description: "Segment conversation by topic"
+
+# Expert guidance for agent prompts
+prompt_guidance: |
+  When analyzing transcripts for entity extraction:
+
+  1. **Action Items**: Look for commitments with specific owners and deadlines.
+     - Phrases like "will do", "by Friday", "I'll handle" indicate action items
+     - Explicit markers: "TODO:", "Action:", "@name will..."
+     - Confidence 0.9+ for explicit markers, 0.7-0.9 for implicit signals
+
+  2. **Decisions**: Identify explicit decisions with consensus language.
+     - Phrases like "we've decided", "let's go with", "agreed" indicate decisions
+     - Look for rationale and context around decisions
+     - Confidence 0.9+ for explicit "decided/agreed", 0.8-0.9 for implicit consensus
+
+  3. **Questions**: Track open questions and whether they were answered.
+     - Mark as answered if a response follows within the transcript
+     - Look for question marks and interrogative patterns
+     - Track unanswered questions for follow-up
+
+  4. **Speakers**: Use PAT-003 4-pattern detection chain:
+     - Pattern 1: VTT voice tags (<v Speaker>)
+     - Pattern 2: SRT prefixes (Speaker:)
+     - Pattern 3: Colon-delimited names
+     - Pattern 4: Context inference from names/roles
+
+  5. **Topics**: Segment conversation by subject matter.
+     - Identify topic transitions (new subject introduction)
+     - Group related segments under topic headers
+
+  6. **Confidence Scoring**:
+     - 0.9+ : Explicit indicator present ("action item:", "decision:")
+     - 0.7-0.9: Strong implicit signal with context
+     - 0.5-0.7: Ambiguous, flag for human review
+     - <0.5: Do not extract
+
+  7. **Citation Requirement (PAT-004)**:
+     Every extraction MUST cite its source segment for anti-hallucination.

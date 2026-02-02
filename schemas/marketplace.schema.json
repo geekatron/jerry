@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/marketplace.schema.json",
+  "title": "Claude Code Plugin Marketplace Manifest",
+  "description": "JSON Schema for .claude-plugin/marketplace.json manifest files. Based on Claude Code plugin specification via Context7.",
+  "type": "object",
+  "required": ["name", "plugins"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "JSON Schema reference URL."
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$|^[a-z]$",
+      "description": "Marketplace name in kebab-case format."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "description": "Semantic version (MAJOR.MINOR.PATCH) following semver 2.0 specification."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Brief description of the marketplace and its collection of plugins."
+    },
+    "owner": {
+      "type": "object",
+      "description": "Marketplace owner/organization information.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Owner or organization name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address."
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "plugins": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "source"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$|^[a-z]$",
+            "description": "Plugin name in kebab-case format."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Brief description of the plugin."
+          },
+          "source": {
+            "type": "string",
+            "pattern": "^\\./",
+            "description": "Relative path to plugin directory. Must start with './'."
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+            "description": "Plugin version (semver)."
+          },
+          "category": {
+            "type": "string",
+            "enum": ["development", "productivity", "automation", "testing", "documentation", "infrastructure", "security", "other"],
+            "description": "Plugin category for organization."
+          },
+          "author": {
+            "type": "object",
+            "description": "Plugin author information.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Author name."
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Author email."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Array of plugins in the marketplace."
+    }
+  },
+  "additionalProperties": false
+}

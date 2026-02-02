@@ -1,0 +1,341 @@
+# Domain Schema: Software Engineering Transcript Analysis
+# Version: 1.0.0
+# TASK-150: EN-006 Artifact Promotion
+# Source: EN-006/docs/specs/domain-contexts/01-software-engineering/
+# Implements: SPEC-context-injection.md Section 3.3, TDD-EN014 Schema V1.1.0
+
+schema_version: "1.0.0"
+domain: "software-engineering"
+display_name: "Software Engineering Transcript Analysis"
+extends: "transcript"  # Inherits base entities (speaker, topic, question)
+
+# Domain metadata (TDD-EN014 Section 4.2)
+metadata:
+  target_users:
+    - "Software Engineers"
+    - "Tech Leads"
+    - "Engineering Managers"
+    - "Scrum Masters"
+  transcript_types:
+    - "Daily standup"
+    - "Sprint planning"
+    - "Sprint retrospective"
+    - "Code review"
+    - "Pair programming session"
+  key_use_cases:
+    - "Track commitments"
+    - "Surface blockers"
+    - "Capture decisions"
+    - "Extract action items"
+    - "Identify risks"
+
+# Entity definitions
+entity_definitions:
+  commitment:
+    description: "Work item a team member commits to complete within a time period"
+    attributes:
+      - name: "assignee"
+        type: "string"
+        required: true
+        description: "Person making the commitment"
+      - name: "work_item"
+        type: "string"
+        required: true
+        description: "Description of the work being committed to"
+      - name: "sprint"
+        type: "string"
+        description: "Sprint or time period for completion"
+      - name: "confidence"
+        type: "enum"
+        values: ["high", "medium", "low"]
+      - name: "story_points"
+        type: "integer"
+        description: "Estimated effort if mentioned"
+    extraction_patterns:
+      - "I will {{work_item}}"
+      - "I'm going to {{work_item}}"
+      - "I'll take {{work_item}}"
+      - "I'm picking up {{work_item}}"
+      - "My focus is {{work_item}}"
+      - "I'm committing to {{work_item}}"
+    relationships:
+      - type: "blocked_by"
+        target: "blocker"
+      - type: "relates_to"
+        target: "decision"
+
+  blocker:
+    description: "Impediment preventing progress on work"
+    attributes:
+      - name: "reporter"
+        type: "string"
+        required: true
+        description: "Person reporting the blocker"
+      - name: "description"
+        type: "string"
+        required: true
+        description: "What is blocked or the blocking issue"
+      - name: "dependency"
+        type: "string"
+        description: "What or who is causing the block"
+      - name: "severity"
+        type: "enum"
+        values: ["critical", "major", "minor"]
+      - name: "status"
+        type: "enum"
+        values: ["active", "resolved", "escalated"]
+    extraction_patterns:
+      - "I'm blocked on {{dependency}}"
+      - "Waiting for {{dependency}}"
+      - "Can't proceed until {{dependency}}"
+      - "Dependency on {{dependency}}"
+      - "Stuck on {{description}}"
+      - "Need help with {{description}}"
+    relationships:
+      - type: "blocks"
+        target: "commitment"
+      - type: "resolved_by"
+        target: "action_item"
+
+  decision:
+    description: "Technical or process decision made during the meeting"
+    attributes:
+      - name: "topic"
+        type: "string"
+        required: true
+        description: "Subject of the decision"
+      - name: "outcome"
+        type: "string"
+        required: true
+        description: "The decision that was made"
+      - name: "rationale"
+        type: "string"
+        description: "Why this decision was made"
+      - name: "participants"
+        type: "array"
+        items: "string"
+        description: "Who was involved in making the decision"
+      - name: "scope"
+        type: "enum"
+        values: ["team", "project", "organization"]
+    extraction_patterns:
+      - "We decided to {{outcome}}"
+      - "The decision is {{outcome}}"
+      - "Going forward, we will {{outcome}}"
+      - "Consensus is {{outcome}}"
+      - "Let's go with {{outcome}}"
+      - "Agreed to {{outcome}}"
+    relationships:
+      - type: "triggers"
+        target: "action_item"
+      - type: "addresses"
+        target: "risk"
+
+  action_item:
+    description: "Follow-up task assigned during the meeting"
+    attributes:
+      - name: "owner"
+        type: "string"
+        required: true
+        description: "Person responsible for the action"
+      - name: "task"
+        type: "string"
+        required: true
+        description: "Description of what needs to be done"
+      - name: "due_date"
+        type: "date"
+        description: "When it should be completed"
+      - name: "context"
+        type: "string"
+        description: "Related discussion or decision"
+      - name: "priority"
+        type: "enum"
+        values: ["high", "medium", "low"]
+    extraction_patterns:
+      - "{{owner}} will {{task}}"
+      - "TODO: {{task}}"
+      - "Action item: {{task}}"
+      - "Can you {{task}}"
+      - "Please {{task}}"
+      - "Need to {{task}}"
+    relationships:
+      - type: "resolves"
+        target: "blocker"
+      - type: "mitigates"
+        target: "risk"
+
+  risk:
+    description: "Identified technical or schedule risk"
+    attributes:
+      - name: "description"
+        type: "string"
+        required: true
+        description: "Description of the risk"
+      - name: "likelihood"
+        type: "enum"
+        values: ["high", "medium", "low"]
+      - name: "impact"
+        type: "enum"
+        values: ["high", "medium", "low"]
+      - name: "mitigation"
+        type: "string"
+        description: "Proposed mitigation strategy"
+      - name: "owner"
+        type: "string"
+        description: "Person responsible for monitoring"
+    extraction_patterns:
+      - "Risk is {{description}}"
+      - "Concern about {{description}}"
+      - "Could impact {{description}}"
+      - "Worried about {{description}}"
+      - "Potential issue with {{description}}"
+      - "Red flag: {{description}}"
+    relationships:
+      - type: "mitigated_by"
+        target: "action_item"
+      - type: "addressed_by"
+        target: "decision"
+
+# Extraction rules with confidence thresholds
+extraction_rules:
+  - id: "commitments"
+    entity_type: "commitment"
+    confidence_threshold: 0.75
+    priority: 1
+    tier: "rule"
+    description: "Extract work commitments with assignees and sprints"
+
+  - id: "blockers"
+    entity_type: "blocker"
+    confidence_threshold: 0.8
+    priority: 2
+    tier: "rule"
+    description: "Identify impediments blocking progress"
+
+  - id: "decisions"
+    entity_type: "decision"
+    confidence_threshold: 0.8
+    priority: 3
+    tier: "rule"
+    description: "Capture technical and process decisions"
+
+  - id: "action_items"
+    entity_type: "action_item"
+    confidence_threshold: 0.7
+    priority: 4
+    tier: "rule"
+    description: "Extract follow-up tasks with owners"
+
+  - id: "risks"
+    entity_type: "risk"
+    confidence_threshold: 0.75
+    priority: 5
+    tier: "llm"
+    description: "Identify technical and schedule risks"
+
+# Context-specific rules (TDD-EN014 Section 4.3)
+context_rules:
+  standup:
+    primary_focus:
+      - commitment
+      - blocker
+    secondary_focus:
+      - action_item
+    extraction_emphasis: |
+      In standups, focus on the three questions:
+      1. What did they accomplish yesterday?
+      2. What will they work on today? (→ commitments)
+      3. What is blocking them? (→ blockers)
+
+  sprint_planning:
+    primary_focus:
+      - commitment
+      - risk
+    secondary_focus:
+      - decision
+    extraction_emphasis: |
+      In sprint planning, prioritize:
+      1. Work commitments and capacity
+      2. Risks to sprint goals
+      3. Key decisions on scope
+
+  retrospective:
+    primary_focus:
+      - decision
+      - action_item
+    secondary_focus:
+      - risk
+    extraction_emphasis: |
+      In retrospectives, focus on:
+      1. Process improvement decisions
+      2. Action items for next sprint
+      3. Risks identified for future
+
+  code_review:
+    primary_focus:
+      - decision
+      - action_item
+    secondary_focus:
+      - risk
+    extraction_emphasis: |
+      In code reviews, capture:
+      1. Technical decisions made
+      2. Required changes as action items
+      3. Quality or security risks identified
+
+# Validation rules (TDD-EN014 Section 4.4)
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 3
+  required_entities:
+    - commitment
+    - blocker
+    - action_item
+
+# Prompt guidance for ts-extractor agent
+prompt_guidance: |
+  ## Software Engineering Transcript Analysis
+
+  When analyzing software engineering transcripts, apply domain expertise:
+
+  ### Commitment Detection
+  - Look for explicit commitment language: "I will", "I'm going to", "I'll take"
+  - Track sprint/iteration context for timing
+  - Note confidence levels from language certainty
+  - Link commitments to specific work items (Jira, GitHub issues)
+
+  ### Blocker Identification
+  - Prioritize blockers as they need immediate attention
+  - Distinguish severity: critical (stops all work), major (delays work), minor (workaround exists)
+  - Identify dependencies: people, teams, external systems
+  - Track resolution path if discussed
+
+  ### Decision Capture
+  - Capture explicit decisions with consensus language
+  - Record rationale for context and future reference
+  - Note scope of impact: team-level, project-level, organization-level
+  - Link to action items that implement the decision
+
+  ### Action Item Extraction
+  - Always attribute to an owner when mentioned
+  - Capture due dates even if implicit ("by end of sprint")
+  - Link to parent decisions or blockers
+  - Track priority for triage
+
+  ### Risk Recognition
+  - Look for concern language: "worried", "risk", "potential issue"
+  - Assess likelihood and impact from context
+  - Capture mitigation strategies if discussed
+  - Link to decisions that address the risk
+
+  ### Confidence Scoring Guidelines
+  - 0.9+: Explicit keywords present ("action item:", "we decided")
+  - 0.7-0.9: Strong implicit signals with context
+  - 0.5-0.7: Ambiguous, flag for human review
+  - <0.5: Do not extract
+
+  ### Anti-Hallucination Rules (PAT-004)
+  - Every extraction MUST have a source segment citation
+  - Do not infer information not explicitly stated
+  - When uncertain, use lower confidence scores
+  - Preserve original speaker attribution

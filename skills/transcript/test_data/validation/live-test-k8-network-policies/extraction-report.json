@@ -1,0 +1,104 @@
+{
+  "version": "1.0",
+  "packet_id": "k8-network-policies",
+  "source_transcript": "canonical-transcript.json",
+  "extraction_timestamp": "2026-01-29T12:00:00Z",
+  "speakers": {
+    "identified": [
+      {
+        "id": "spk-001",
+        "name": "Adam Nowak",
+        "detection_method": "vtt_voice_tag",
+        "confidence": 1.0,
+        "segment_count": 10,
+        "first_appearance_ms": 3528
+      },
+      {
+        "id": "spk-002",
+        "name": "Brendan Bennett",
+        "detection_method": "vtt_voice_tag",
+        "confidence": 1.0,
+        "segment_count": 7,
+        "first_appearance_ms": 5608
+      }
+    ],
+    "unknown_count": 0
+  },
+  "action_items": [
+    {
+      "id": "act-001",
+      "text": "Adam to walk the team through the decision tree for CNI drivers",
+      "speaker": "Adam Nowak",
+      "assignee": "Adam Nowak",
+      "confidence": 0.85,
+      "source_segments": ["seg-010", "seg-011"],
+      "citation": "I can walk you guys through. That's part of the like million artifacts."
+    },
+    {
+      "id": "act-002",
+      "text": "Adam to share screen to show the artifacts and matrix",
+      "speaker": "Adam Nowak",
+      "assignee": "Adam Nowak",
+      "confidence": 0.90,
+      "source_segments": ["seg-017"],
+      "citation": "let me share my screen so I'm not talking to the ether."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "text": "Kubernetes CNI driver selection based on decision tree analysis - new recommended driver is deprecating the official Microsoft one",
+      "speaker": "Adam Nowak",
+      "confidence": 0.80,
+      "source_segments": ["seg-016"],
+      "citation": "This is Microsoft's official one. This new one I recommend is because it's the one that's deprecating the official recommended Microsoft.",
+      "rationale": "Analysis performed by automated system evaluated multiple K8s network interface drivers"
+    }
+  ],
+  "questions": [
+    {
+      "id": "que-001",
+      "text": "Are Cilium and Kyverno officially recommended implementations or just mentioned as concepts?",
+      "speaker": "Brendan Bennett",
+      "status": "answered",
+      "confidence": 0.90,
+      "source_segments": ["seg-003", "seg-004", "seg-005", "seg-006", "seg-008"],
+      "citation": "I was wondering like are they have we have we recommended those",
+      "answer": "No official recommendation - there's a decision tree that provides guidance"
+    }
+  ],
+  "topics": [
+    {
+      "id": "top-001",
+      "title": "Kubernetes Network Policy Implementation",
+      "description": "Discussion about specific CNI implementations vs generic concepts",
+      "confidence": 0.95,
+      "keywords": ["Kubernetes", "CNI", "Cilium", "Kyverno", "network policies"],
+      "segment_range": {
+        "start": "seg-001",
+        "end": "seg-017"
+      }
+    },
+    {
+      "id": "top-002",
+      "title": "CNI Driver Evaluation Matrix",
+      "description": "Automated analysis of multiple Kubernetes network interface drivers with decision tree",
+      "confidence": 0.90,
+      "keywords": ["CNI drivers", "evaluation matrix", "decision tree", "Microsoft recommendation"],
+      "segment_range": {
+        "start": "seg-010",
+        "end": "seg-016"
+      }
+    }
+  ],
+  "extraction_metadata": {
+    "total_segments_processed": 17,
+    "extraction_status": "complete",
+    "action_items_count": 2,
+    "decisions_count": 1,
+    "questions_count": 1,
+    "topics_count": 2,
+    "high_confidence_ratio": 0.83,
+    "low_confidence_extractions": []
+  }
+}

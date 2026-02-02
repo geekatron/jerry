@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.0.0",
+  "validation_modes": {
+    "block": {
+      "description": "Reject operation immediately",
+      "exit_code": 0,
+      "decision": "block"
+    },
+    "warn": {
+      "description": "Log warning, allow operation to proceed",
+      "exit_code": 0,
+      "decision": "approve",
+      "log_level": "WARNING"
+    },
+    "ask": {
+      "description": "Prompt user for confirmation before proceeding",
+      "exit_code": 0,
+      "decision": "ask"
+    }
+  },
+  "input_patterns": {
+    "pii_detection": {
+      "name": "PII Detection",
+      "description": "Detect personally identifiable information in tool inputs",
+      "mode": "warn",
+      "timeout_ms": 100,
+      "enabled": true,
+      "rules": [
+        {
+          "id": "pii-ssn",
+          "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+          "description": "US Social Security Number",
+          "severity": "high"
+        },
+        {
+          "id": "pii-email",
+          "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+          "description": "Email address",
+          "severity": "medium"
+        },
+        {
+          "id": "pii-phone-us",
+          "pattern": "\\b(?:\\+1[-.]?)?\\(?\\d{3}\\)?[-.]?\\d{3}[-.]?\\d{4}\\b",
+          "description": "US Phone number",
+          "severity": "medium"
+        },
+        {
+          "id": "pii-credit-card",
+          "pattern": "\\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\\b",
+          "description": "Credit card number",
+          "severity": "critical"
+        }
+      ]
+    },
+    "secrets_detection": {
+      "name": "Secrets Detection",
+      "description": "Detect API keys, tokens, passwords, and other secrets",
+      "mode": "block",
+      "timeout_ms": 100,
+      "enabled": true,
+      "rules": [
+        {
+          "id": "secret-openai",
+          "pattern": "sk-[a-zA-Z0-9]{20,}|sk-proj-[a-zA-Z0-9-_]{100,}",
+          "description": "OpenAI API Key",
+          "severity": "critical"
+        },
+        {
+          "id": "secret-anthropic",
+          "pattern": "sk-ant-[a-zA-Z0-9-_]{90,}",
+          "description": "Anthropic API Key",
+          "severity": "critical"
+        },
+        {
+          "id": "secret-github-pat",
+          "pattern": "ghp_[a-zA-Z0-9]{36}",
+          "description": "GitHub Personal Access Token",
+          "severity": "critical"
+        },
+        {
+          "id": "secret-aws-access-key",
+          "pattern": "AKIA[0-9A-Z]{16}",
+          "description": "AWS Access Key ID",
+          "severity": "critical"
+        },
+        {
+          "id": "secret-slack-token",
+          "pattern": "xox[baprs]-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*",
+          "description": "Slack Token",
+          "severity": "critical"
+        },
+        {
+          "id": "secret-generic-password",
+          "pattern": "(?i)(password|passwd|pwd)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+          "description": "Generic password assignment",
+          "severity": "high"
+        },
+        {
+          "id": "secret-private-key",
+          "pattern": "-----BEGIN (?:RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----",
+          "description": "Private key header",
+          "severity": "critical"
+        },
+        {
+          "id": "secret-jwt",
+          "pattern": "eyJ[A-Za-z0-9-_]+\\.eyJ[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+",
+          "description": "JSON Web Token",
+          "severity": "high"
+        }
+      ]
+    },
+    "format_validation": {
+      "name": "Format Validation",
+      "description": "Validate ID formats from agent guardrails",
+      "mode": "warn",
+      "timeout_ms": 50,
+      "enabled": true,
+      "rules": [
+        {
+          "id": "fmt-project-id",
+          "pattern": "^PROJ-\\d{3}$",
+          "description": "Project ID format",
+          "applies_to": ["nse-*", "ps-*", "orch-*"]
+        },
+        {
+          "id": "fmt-entry-id",
+          "pattern": "^e-\\d+$",
+          "description": "Entry ID format",
+          "applies_to": ["*"]
+        },
+        {
+          "id": "fmt-work-item-id",
+          "pattern": "^WI-SAO-\\d{3}$",
+          "description": "Work item ID format",
+          "applies_to": ["*"]
+        }
+      ]
+    }
+  },
+  "output_patterns": {
+    "no_secrets_in_output": {
+      "name": "No Secrets in Output",
+      "description": "Filter secrets from agent outputs before returning",
+      "mode": "block",
+      "timeout_ms": 100,
+      "enabled": true,
+      "action": "redact",
+      "replacement": "[REDACTED]",
+      "rules": [
+        {
+          "id": "out-inline-secret",
+          "pattern": "(?i)(password|secret|token|api[_-]?key|access[_-]?key)\\s*[:=]\\s*['\"][^'\"]+['\"]",
+          "description": "Inline secret assignment",
+          "severity": "high"
+        },
+        {
+          "id": "out-bearer-token",
+          "pattern": "Bearer\\s+[A-Za-z0-9-_.]+",
+          "description": "Bearer token in output",
+          "severity": "high"
+        }
+      ]
+    },
+    "executable_code_warning": {
+      "name": "Executable Code Warning",
+      "description": "Warn on potentially destructive executable code in outputs",
+      "mode": "warn",
+      "timeout_ms": 100,
+      "enabled": true,
+      "rules": [
+        {
+          "id": "out-destructive-bash",
+          "pattern": "```(?:bash|sh)\\s*\\n[^`]*\\b(?:rm|del|chmod|chown|mkfs|dd)\\b",
+          "description": "Destructive command in bash block",
+          "severity": "medium"
+        }
+      ]
+    }
+  },
+  "tool_rules": {
+    "Write": {
+      "input_patterns": ["secrets_detection", "format_validation"],
+      "fallback_mode": "block"
+    },
+    "Edit": {
+      "input_patterns": ["secrets_detection"],
+      "fallback_mode": "block"
+    },
+    "Bash": {
+      "input_patterns": ["secrets_detection", "pii_detection"],
+      "fallback_mode": "warn"
+    },
+    "Task": {
+      "input_patterns": ["format_validation"],
+      "fallback_mode": "warn"
+    },
+    "WebFetch": {
+      "input_patterns": ["pii_detection"],
+      "fallback_mode": "warn"
+    }
+  },
+  "metadata": {
+    "created": "2026-01-12",
+    "author": "WI-SAO-015",
+    "references": [
+      "AC-015-001: Async validation (subprocess model)",
+      "AC-015-002: timeout_ms: 100",
+      "AC-015-003: mode: warn",
+      "AC-015-004: Pattern library"
+    ]
+  }
+}

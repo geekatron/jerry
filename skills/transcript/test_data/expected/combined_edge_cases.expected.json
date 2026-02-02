@@ -1,0 +1,268 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/combined_edge_cases.vtt"
+  },
+  "metadata": {
+    "duration_ms": 26000,
+    "segment_count": 26,
+    "detected_speakers": 8
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": "John",
+      "text": "Hello world",
+      "raw_text": "<v John>Hello world</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": "Mary Jane Smith",
+      "text": "How are you?",
+      "raw_text": "<v Mary Jane Smith>How are you?</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": null,
+      "text": "Anonymous speaker text",
+      "raw_text": "<v>Anonymous speaker text</v>"
+    },
+    {
+      "id": "seg-004",
+      "start_ms": 3000,
+      "end_ms": 4000,
+      "speaker": "Bob",
+      "text": "Entire cue without closing tag",
+      "raw_text": "<v Bob>Entire cue without closing tag"
+    },
+    {
+      "id": "seg-005",
+      "start_ms": 4000,
+      "end_ms": 5000,
+      "speaker": "Boss",
+      "text": "Speak up!",
+      "raw_text": "<v.loud Boss>Speak up!</v>"
+    },
+    {
+      "id": "seg-006",
+      "start_ms": 5000,
+      "end_ms": 6000,
+      "speaker": "Speaker",
+      "text": "Multi-class voice",
+      "raw_text": "<v.first.second.third Speaker>Multi-class voice</v>"
+    },
+    {
+      "id": "seg-007",
+      "start_ms": 6000,
+      "end_ms": 7000,
+      "speaker": "Host",
+      "text": "Bold and italic",
+      "raw_text": "<v Host><b>Bold</b> and <i>italic</i></v>"
+    },
+    {
+      "id": "seg-008",
+      "start_ms": 7000,
+      "end_ms": 8000,
+      "speaker": "Alice",
+      "text": "Hello",
+      "raw_text": "<v Alice>Hello</v>"
+    },
+    {
+      "id": "seg-009",
+      "start_ms": 7000,
+      "end_ms": 8000,
+      "speaker": "Bob",
+      "text": "Hi there",
+      "raw_text": "<v Bob>Hi there</v>"
+    },
+    {
+      "id": "seg-010",
+      "start_ms": 8000,
+      "end_ms": 10000,
+      "speaker": "Speaker",
+      "text": "This is line one This is line two This is line three",
+      "raw_text": "<v Speaker>This is line one\nThis is line two\nThis is line three</v>"
+    },
+    {
+      "id": "seg-011",
+      "start_ms": 10000,
+      "end_ms": 11000,
+      "speaker": null,
+      "text": "Bold text normal text",
+      "raw_text": "<b>Bold text</b> normal text"
+    },
+    {
+      "id": "seg-012",
+      "start_ms": 11000,
+      "end_ms": 12000,
+      "speaker": null,
+      "text": "Italic text",
+      "raw_text": "<i>Italic text</i>"
+    },
+    {
+      "id": "seg-013",
+      "start_ms": 12000,
+      "end_ms": 13000,
+      "speaker": null,
+      "text": "Underlined text",
+      "raw_text": "<u>Underlined</u> text"
+    },
+    {
+      "id": "seg-014",
+      "start_ms": 13000,
+      "end_ms": 14000,
+      "speaker": null,
+      "text": "Highlighted text",
+      "raw_text": "<c.highlight>Highlighted</c> text"
+    },
+    {
+      "id": "seg-015",
+      "start_ms": 14000,
+      "end_ms": 15000,
+      "speaker": null,
+      "text": "English text",
+      "raw_text": "<lang en>English text</lang>"
+    },
+    {
+      "id": "seg-016",
+      "start_ms": 15000,
+      "end_ms": 16000,
+      "speaker": null,
+      "text": "Bold italic",
+      "raw_text": "<b><i>Bold italic</i></b>"
+    },
+    {
+      "id": "seg-017",
+      "start_ms": 16000,
+      "end_ms": 18000,
+      "speaker": null,
+      "text": "First line Second line Third line",
+      "raw_text": "First line\nSecond line\nThird line"
+    },
+    {
+      "id": "seg-018",
+      "start_ms": 18000,
+      "end_ms": 19000,
+      "speaker": null,
+      "text": "Indented line",
+      "raw_text": "   Indented line"
+    },
+    {
+      "id": "seg-019",
+      "start_ms": 19000,
+      "end_ms": 20000,
+      "speaker": null,
+      "text": "Trailing spaces",
+      "raw_text": "Trailing spaces"
+    },
+    {
+      "id": "seg-020",
+      "start_ms": 20000,
+      "end_ms": 21000,
+      "speaker": null,
+      "text": "Café résumé naïve",
+      "raw_text": "Café résumé naïve"
+    },
+    {
+      "id": "seg-021",
+      "start_ms": 21000,
+      "end_ms": 22000,
+      "speaker": null,
+      "text": "中文测试 日本語テスト 한국어",
+      "raw_text": "中文测试 日本語テスト 한국어"
+    },
+    {
+      "id": "seg-022",
+      "start_ms": 22000,
+      "end_ms": 23000,
+      "speaker": null,
+      "text": "Tom & Jerry",
+      "raw_text": "Tom &amp; Jerry"
+    },
+    {
+      "id": "seg-023",
+      "start_ms": 23000,
+      "end_ms": 24000,
+      "speaker": null,
+      "text": "3 < 5 > 2 test",
+      "raw_text": "3 &lt; 5 &gt; 2&nbsp;test"
+    },
+    {
+      "id": "seg-024",
+      "start_ms": 24000,
+      "end_ms": 24250,
+      "speaker": null,
+      "text": "Very short cue",
+      "raw_text": "Very short cue"
+    },
+    {
+      "id": "seg-025",
+      "start_ms": 24250,
+      "end_ms": 24251,
+      "speaker": null,
+      "text": "Minimal duration",
+      "raw_text": "Minimal duration"
+    },
+    {
+      "id": "seg-026",
+      "start_ms": 25500,
+      "end_ms": 26000,
+      "speaker": null,
+      "text": "End of combined test file",
+      "raw_text": "End of combined test file"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "partial",
+    "parse_warnings": [
+      {
+        "code": "WARN-004",
+        "message": "Voice tag with class annotation - class stripped",
+        "cue_index": 5,
+        "severity": "warning",
+        "raw_value": "<v.loud Boss>Speak up!</v>",
+        "class_stripped": ".loud"
+      },
+      {
+        "code": "WARN-004",
+        "message": "Voice tag with multiple class annotations - classes stripped",
+        "cue_index": 6,
+        "severity": "warning",
+        "raw_value": "<v.first.second.third Speaker>Multi-class voice</v>",
+        "class_stripped": ".first.second.third"
+      }
+    ],
+    "parse_errors": [
+      {
+        "code": "ERR-001",
+        "message": "Invalid voice tag syntax - empty annotation",
+        "cue_index": 3,
+        "severity": "error",
+        "raw_value": "<v>Anonymous speaker text</v>",
+        "recovery_action": "extracted_as_anonymous"
+      }
+    ],
+    "skipped_segments": [
+      {
+        "cue_index": 25,
+        "reason": "empty_payload",
+        "code": "SKIP-001",
+        "raw_content": ""
+      },
+      {
+        "cue_index": 26,
+        "reason": "empty_voice_annotation",
+        "code": "SKIP-003",
+        "raw_content": "<v></v>"
+      }
+    ]
+  }
+}

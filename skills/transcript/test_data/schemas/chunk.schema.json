@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/transcript/chunk.json",
+  "title": "TranscriptChunk",
+  "description": "Chunk file containing a batch of transcript segments with navigation links. Reference: TDD-FEAT-004 Section 5.",
+  "type": "object",
+  "required": [
+    "chunk_id",
+    "schema_version",
+    "segment_range",
+    "segments",
+    "navigation"
+  ],
+  "properties": {
+    "chunk_id": {
+      "type": "string",
+      "pattern": "^chunk-\\d{3}$",
+      "description": "Unique chunk identifier (e.g., 'chunk-001')"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version for compatibility checking"
+    },
+    "segment_range": {
+      "type": "array",
+      "items": {"type": "integer", "minimum": 1},
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "[start_segment_id, end_segment_id] (1-indexed, inclusive)"
+    },
+    "timestamp_range": {
+      "type": "object",
+      "properties": {
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Start time in milliseconds"
+        },
+        "end_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "End time in milliseconds"
+        }
+      },
+      "required": ["start_ms", "end_ms"]
+    },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Segment"
+      },
+      "description": "Array of transcript segments in this chunk"
+    },
+    "navigation": {
+      "type": "object",
+      "description": "Navigation links for chunk traversal",
+      "required": ["index"],
+      "properties": {
+        "previous": {
+          "type": ["string", "null"],
+          "description": "Relative path to previous chunk file (null for first chunk)"
+        },
+        "next": {
+          "type": ["string", "null"],
+          "description": "Relative path to next chunk file (null for last chunk)"
+        },
+        "index": {
+          "type": "string",
+          "description": "Relative path to index.json file"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Segment": {
+      "type": "object",
+      "description": "Single transcript segment (compatible with EN-020 ParsedSegment)",
+      "required": ["id", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique segment identifier (string for cross-reference compatibility)"
+        },
+        "start_ms": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Start time in milliseconds (null for plain text)"
+        },
+        "end_ms": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "End time in milliseconds (null for plain text)"
+        },
+        "speaker": {
+          "type": ["string", "null"],
+          "description": "Speaker name from voice tag (null if unknown)"
+        },
+        "text": {
+          "type": "string",
+          "description": "Cleaned text content (voice tags removed)"
+        },
+        "raw_text": {
+          "type": "string",
+          "description": "Original text with voice tags preserved"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "chunk_id": "chunk-001",
+      "schema_version": "1.0",
+      "segment_range": [1, 500],
+      "timestamp_range": {
+        "start_ms": 0,
+        "end_ms": 4523500
+      },
+      "segments": [
+        {
+          "id": "1",
+          "start_ms": 0,
+          "end_ms": 5500,
+          "speaker": "Robert Chen",
+          "text": "Good morning everyone.",
+          "raw_text": "<v Robert Chen>Good morning everyone.</v>"
+        },
+        {
+          "id": "2",
+          "start_ms": 5501,
+          "end_ms": 11000,
+          "speaker": "Robert Chen",
+          "text": "Welcome to our Q3 quarterly all-hands meeting.",
+          "raw_text": "<v Robert Chen>Welcome to our Q3 quarterly all-hands meeting.</v>"
+        }
+      ],
+      "navigation": {
+        "previous": null,
+        "next": "chunk-002.json",
+        "index": "../index.json"
+      }
+    }
+  ]
+}

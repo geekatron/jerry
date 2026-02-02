@@ -1,0 +1,273 @@
+{
+  "version": "1.1",
+  "packet_id": "k8-network-policies-v2",
+  "input_format": "single_file",
+  "extraction_stats": {
+    "speakers_identified": 2,
+    "action_items": 1,
+    "decisions": 1,
+    "questions": 3,
+    "topics": 4,
+    "confidence_summary": {
+      "average": 0.86,
+      "high_count": 8,
+      "medium_count": 1,
+      "low_count": 0,
+      "high_ratio": 0.89
+    }
+  },
+  "speakers": [
+    {
+      "name": "Adam Nowak",
+      "confidence": 0.95,
+      "segment_count": 10,
+      "first_appearance": {
+        "segment_id": "seg-001",
+        "timestamp_ms": 3528
+      },
+      "identification_method": "vtt_voice_tag",
+      "segments": [
+        "seg-001",
+        "seg-007",
+        "seg-010",
+        "seg-011",
+        "seg-012",
+        "seg-013",
+        "seg-014",
+        "seg-016",
+        "seg-017",
+        "seg-018",
+        "seg-019",
+        "seg-020"
+      ]
+    },
+    {
+      "name": "Brendan Bennett",
+      "confidence": 0.95,
+      "segment_count": 7,
+      "first_appearance": {
+        "segment_id": "seg-002",
+        "timestamp_ms": 5608
+      },
+      "identification_method": "vtt_voice_tag",
+      "segments": [
+        "seg-002",
+        "seg-003",
+        "seg-004",
+        "seg-005",
+        "seg-006",
+        "seg-008",
+        "seg-009",
+        "seg-015"
+      ]
+    }
+  ],
+  "action_items": [
+    {
+      "id": "action-001",
+      "text": "Walk through the decision tree for Kubernetes network interface drivers",
+      "assigned_to": "Adam Nowak",
+      "confidence": 0.85,
+      "extraction_tier": "tier_1",
+      "pattern_matched": "explicit_commitment",
+      "citation": {
+        "segment_id": "seg-011",
+        "anchor": "#seg-011",
+        "timestamp_ms": 42699,
+        "text_snippet": "I can walk you guys through. That's part of the like million artifacts."
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision-001",
+      "text": "Did not recommend specific Kubernetes network implementations; provided decision tree for evaluation",
+      "confidence": 0.90,
+      "extraction_tier": "tier_1",
+      "pattern_matched": "explicit_statement",
+      "participants": [
+        "Adam Nowak",
+        "Brendan Bennett"
+      ],
+      "citation": {
+        "segment_id": "seg-010",
+        "anchor": "#seg-010",
+        "timestamp_ms": 39048,
+        "text_snippet": "No, we no, we didn't. So there's a decision tree in there"
+      },
+      "supporting_context": [
+        {
+          "segment_id": "seg-013",
+          "timestamp_ms": 50291,
+          "text_snippet": "it looked at multiple Kubernetes network interface drivers. It did the evaluation."
+        },
+        {
+          "segment_id": "seg-016",
+          "timestamp_ms": 58808,
+          "text_snippet": "This is Microsoft's official one. This new one I recommend is because it's the one that's deprecating the official recommended Microsoft."
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "question-001",
+      "text": "Has the recording started?",
+      "asked_by": "Adam Nowak",
+      "confidence": 0.95,
+      "extraction_tier": "tier_1",
+      "pattern_matched": "question_mark",
+      "question_type": "confirmation",
+      "citation": {
+        "segment_id": "seg-001",
+        "anchor": "#seg-001",
+        "timestamp_ms": 3528,
+        "text_snippet": "It's it has started, right?"
+      }
+    },
+    {
+      "id": "question-002",
+      "text": "Whether the analysis recommended specific implementations or just concepts",
+      "asked_by": "Brendan Bennett",
+      "confidence": 0.85,
+      "extraction_tier": "tier_2",
+      "pattern_matched": "contextual_question",
+      "question_type": "clarification",
+      "citation": {
+        "segment_id": "seg-005",
+        "anchor": "#seg-005",
+        "timestamp_ms": 20401,
+        "text_snippet": "implementations rather than just like concepts."
+      },
+      "supporting_context": [
+        {
+          "segment_id": "seg-006",
+          "timestamp_ms": 24408,
+          "text_snippet": "So for example I saw like Cuverno in there and Cillium and things like that."
+        }
+      ]
+    },
+    {
+      "id": "question-003",
+      "text": "Have specific Kubernetes network tools like Cuverno and Cilium been officially recommended?",
+      "asked_by": "Brendan Bennett",
+      "confidence": 0.85,
+      "extraction_tier": "tier_2",
+      "pattern_matched": "implicit_question",
+      "question_type": "information_request",
+      "citation": {
+        "segment_id": "seg-008",
+        "anchor": "#seg-008",
+        "timestamp_ms": 31578,
+        "text_snippet": "I was wondering like are they have we have we recommended those if we if we"
+      },
+      "supporting_context": [
+        {
+          "segment_id": "seg-009",
+          "timestamp_ms": 38655,
+          "text_snippet": "like or is that just like a yeah."
+        }
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "topic-001",
+      "title": "Recording Setup Confirmation",
+      "confidence": 0.90,
+      "extraction_tier": "tier_1",
+      "segment_range": {
+        "start": "seg-001",
+        "end": "seg-001"
+      },
+      "duration_ms": 2920,
+      "keywords": [
+        "recording",
+        "started"
+      ],
+      "segments": [
+        "seg-001"
+      ]
+    },
+    {
+      "id": "topic-002",
+      "title": "Kubernetes Network Policy Implementation Recommendations",
+      "confidence": 0.92,
+      "extraction_tier": "tier_1",
+      "segment_range": {
+        "start": "seg-002",
+        "end": "seg-009"
+      },
+      "duration_ms": 36120,
+      "keywords": [
+        "implementations",
+        "concepts",
+        "Cuverno",
+        "Cilium",
+        "recommended"
+      ],
+      "segments": [
+        "seg-002",
+        "seg-003",
+        "seg-004",
+        "seg-005",
+        "seg-006",
+        "seg-007",
+        "seg-008",
+        "seg-009"
+      ]
+    },
+    {
+      "id": "topic-003",
+      "title": "Decision Tree and Analysis Artifacts",
+      "confidence": 0.88,
+      "extraction_tier": "tier_1",
+      "segment_range": {
+        "start": "seg-010",
+        "end": "seg-014"
+      },
+      "duration_ms": 18253,
+      "keywords": [
+        "decision tree",
+        "artifacts",
+        "analysis",
+        "network interface drivers",
+        "evaluation",
+        "matrix"
+      ],
+      "segments": [
+        "seg-010",
+        "seg-011",
+        "seg-012",
+        "seg-013",
+        "seg-014",
+        "seg-015"
+      ]
+    },
+    {
+      "id": "topic-004",
+      "title": "Microsoft's Official Kubernetes Network Recommendation",
+      "confidence": 0.85,
+      "extraction_tier": "tier_1",
+      "segment_range": {
+        "start": "seg-016",
+        "end": "seg-020"
+      },
+      "duration_ms": 13960,
+      "keywords": [
+        "Microsoft",
+        "official",
+        "deprecating",
+        "orchestration",
+        "screen share"
+      ],
+      "segments": [
+        "seg-016",
+        "seg-017",
+        "seg-018",
+        "seg-019",
+        "seg-020"
+      ]
+    }
+  ]
+}

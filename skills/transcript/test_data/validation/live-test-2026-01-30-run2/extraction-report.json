@@ -1,0 +1,1063 @@
+{
+  "version": "1.1",
+  "packet_id": "meeting-006-all-hands",
+  "input_format": "chunked",
+  "chunk_metadata": {
+    "index_path": "index.json",
+    "chunks_processed": 7,
+    "chunks_total": 7,
+    "selection_strategy": "sequential",
+    "chunks": [
+      {
+        "chunk_id": "chunk-001",
+        "segment_range": [1, 500],
+        "entities_extracted": 18
+      },
+      {
+        "chunk_id": "chunk-002",
+        "segment_range": [501, 1000],
+        "entities_extracted": 15
+      },
+      {
+        "chunk_id": "chunk-003",
+        "segment_range": [1001, 1500],
+        "entities_extracted": 12
+      },
+      {
+        "chunk_id": "chunk-004",
+        "segment_range": [1501, 2000],
+        "entities_extracted": 14
+      },
+      {
+        "chunk_id": "chunk-005",
+        "segment_range": [2001, 2500],
+        "entities_extracted": 11
+      },
+      {
+        "chunk_id": "chunk-006",
+        "segment_range": [2501, 3000],
+        "entities_extracted": 9
+      },
+      {
+        "chunk_id": "chunk-007",
+        "segment_range": [3001, 3071],
+        "entities_extracted": 5
+      }
+    ]
+  },
+  "extraction_stats": {
+    "speakers_identified": 50,
+    "action_items": 15,
+    "decisions": 12,
+    "questions": 8,
+    "topics": 10,
+    "confidence_summary": {
+      "average": 0.87,
+      "high_count": 38,
+      "medium_count": 6,
+      "low_count": 1,
+      "high_ratio": 0.84
+    }
+  },
+  "speakers": [
+    {
+      "id": "spk-001",
+      "name": "Robert Chen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 1005
+    },
+    {
+      "id": "spk-002",
+      "name": "Diana Martinez",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 491
+    },
+    {
+      "id": "spk-003",
+      "name": "Jennifer Adams",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 317
+    },
+    {
+      "id": "spk-004",
+      "name": "Michelle Taylor",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 309
+    },
+    {
+      "id": "spk-005",
+      "name": "James Wilson",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 258
+    },
+    {
+      "id": "spk-006",
+      "name": "Sarah Mitchell",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 163
+    },
+    {
+      "id": "spk-007",
+      "name": "Linda Chen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.99,
+      "segment_count": 149
+    },
+    {
+      "id": "spk-008",
+      "name": "Kevin O'Brien",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.98,
+      "segment_count": 136
+    },
+    {
+      "id": "spk-009",
+      "name": "Kevin Morrison",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.98,
+      "segment_count": 59
+    },
+    {
+      "id": "spk-010",
+      "name": "Kevin Marketing VP",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.95,
+      "segment_count": 27
+    },
+    {
+      "id": "spk-011",
+      "name": "Margaret Evans",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.98,
+      "segment_count": 25
+    },
+    {
+      "id": "spk-012",
+      "name": "Alex Rivera",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.98,
+      "segment_count": 20
+    },
+    {
+      "id": "spk-013",
+      "name": "Sam Kim",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.98,
+      "segment_count": 17
+    },
+    {
+      "id": "spk-014",
+      "name": "Jordan Lee",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.98,
+      "segment_count": 17
+    },
+    {
+      "id": "spk-015",
+      "name": "Maria Chen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 8
+    },
+    {
+      "id": "spk-016",
+      "name": "Tom Williams",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 8
+    },
+    {
+      "id": "spk-017",
+      "name": "Lisa Park",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 8
+    },
+    {
+      "id": "spk-018",
+      "name": "Emily Zhang",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 6
+    },
+    {
+      "id": "spk-019",
+      "name": "Marcus Thompson",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 5
+    },
+    {
+      "id": "spk-020",
+      "name": "Priya Sharma",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 5
+    },
+    {
+      "id": "spk-021",
+      "name": "David Kim",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 5
+    },
+    {
+      "id": "spk-022",
+      "name": "Lisa Chen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.97,
+      "segment_count": 5
+    },
+    {
+      "id": "spk-023",
+      "name": "Employee Four",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-024",
+      "name": "Employee Five",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-025",
+      "name": "Employee Six",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-026",
+      "name": "Employee Seven",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-027",
+      "name": "Employee Eight",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-028",
+      "name": "Employee Nine",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-029",
+      "name": "Employee Ten",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-030",
+      "name": "Employee Eleven",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-031",
+      "name": "Employee Twelve",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-032",
+      "name": "Employee Thirteen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-033",
+      "name": "Employee Fourteen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-034",
+      "name": "Employee Fifteen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-035",
+      "name": "Employee Sixteen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-036",
+      "name": "Employee Seventeen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-037",
+      "name": "Employee Eighteen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-038",
+      "name": "Employee Nineteen",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-039",
+      "name": "Employee Twenty",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-040",
+      "name": "Employee Twenty One",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-041",
+      "name": "Employee Twenty Two",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-042",
+      "name": "Employee Twenty Three",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-043",
+      "name": "Employee Twenty Four",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-044",
+      "name": "Employee Twenty Five",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-045",
+      "name": "Employee Twenty Six",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-046",
+      "name": "Employee Twenty Seven",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-047",
+      "name": "Employee Twenty Eight",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-048",
+      "name": "Employee Twenty Nine",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-049",
+      "name": "Employee Thirty",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    },
+    {
+      "id": "spk-050",
+      "name": "Employee Thirty One",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 0.90,
+      "segment_count": 1
+    }
+  ],
+  "action_items": [
+    {
+      "id": "act-001",
+      "text": "Complete full cloud migration by end of Q1 next year",
+      "assignee": "Diana Martinez",
+      "due_date": "Q1 2027",
+      "confidence": 0.92,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1001",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1001",
+        "timestamp_ms": 5542000,
+        "text_snippet": "We expect to complete the full migration by end of Q1 next year."
+      }
+    },
+    {
+      "id": "act-002",
+      "text": "Achieve ISO 27001 certification by end of Q4",
+      "assignee": "Diana Martinez",
+      "due_date": "Q4 2026",
+      "confidence": 0.94,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1020",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1020",
+        "timestamp_ms": 5656000,
+        "text_snippet": "ISO 27001 certification is expected by end of Q4."
+      }
+    },
+    {
+      "id": "act-003",
+      "text": "Launch AI-powered meeting summaries with action item extraction feature",
+      "assignee": "Jennifer Adams",
+      "due_date": "Q4 2026",
+      "confidence": 0.91,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1030",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1030",
+        "timestamp_ms": 5716000,
+        "text_snippet": "We're also launching AI-powered meeting summaries that automatically extract action items."
+      }
+    },
+    {
+      "id": "act-004",
+      "text": "Complete mobile app redesign based on user research findings",
+      "assignee": "Jennifer Adams",
+      "due_date": null,
+      "confidence": 0.89,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1032",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1032",
+        "timestamp_ms": 5728000,
+        "text_snippet": "The mobile app is getting a complete redesign based on extensive user research."
+      }
+    },
+    {
+      "id": "act-005",
+      "text": "Launch advanced admin controls and compliance features for enterprise customers",
+      "assignee": "Jennifer Adams",
+      "due_date": "Q4 2026",
+      "confidence": 0.88,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1036",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1036",
+        "timestamp_ms": 5752000,
+        "text_snippet": "For enterprise customers, we're launching advanced admin controls and compliance features."
+      }
+    },
+    {
+      "id": "act-006",
+      "text": "Track vacation usage and follow up with employees not taking enough time off",
+      "assignee": "Robert Chen",
+      "due_date": null,
+      "confidence": 0.85,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-1522",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1522",
+        "timestamp_ms": 8676000,
+        "text_snippet": "We track vacation usage and follow up with those not taking enough."
+      }
+    },
+    {
+      "id": "act-007",
+      "text": "Continue gathering feedback on hybrid work model and adjust as needed",
+      "assignee": "Robert Chen",
+      "due_date": null,
+      "confidence": 0.83,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-1532",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1532",
+        "timestamp_ms": 8736000,
+        "text_snippet": "We're continuously gathering feedback and adjusting as we learn."
+      }
+    },
+    {
+      "id": "act-008",
+      "text": "Ship 23 major features across all product lines in Q4 release",
+      "assignee": "Jennifer Adams",
+      "due_date": "Q4 2026",
+      "confidence": 0.93,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1027",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1027",
+        "timestamp_ms": 5698000,
+        "text_snippet": "Our Q4 release includes twenty-three major features across all product lines."
+      }
+    },
+    {
+      "id": "act-009",
+      "text": "Launch real-time co-editing for documents and spreadsheets in collaboration suite",
+      "assignee": "Jennifer Adams",
+      "due_date": "Q4 2026",
+      "confidence": 0.92,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-1028",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1028",
+        "timestamp_ms": 5704000,
+        "text_snippet": "The collaboration suite will get real-time co-editing for documents and spreadsheets."
+      }
+    },
+    {
+      "id": "act-010",
+      "text": "Train managers to facilitate difficult conversations",
+      "assignee": "Sarah Mitchell",
+      "due_date": null,
+      "confidence": 0.84,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-2018",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2018",
+        "timestamp_ms": 11706000,
+        "text_snippet": "Managers are trained to facilitate difficult conversations."
+      }
+    },
+    {
+      "id": "act-011",
+      "text": "Make job postings visible to all employees first for internal mobility",
+      "assignee": "Sarah Mitchell",
+      "due_date": null,
+      "confidence": 0.86,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-2025",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2025",
+        "timestamp_ms": 11748000,
+        "text_snippet": "Job postings are visible to all employees first."
+      }
+    },
+    {
+      "id": "act-012",
+      "text": "Continue adopting AI thoughtfully where it adds genuine value",
+      "assignee": "Diana Martinez",
+      "due_date": null,
+      "confidence": 0.82,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-2005",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2005",
+        "timestamp_ms": 11628000,
+        "text_snippet": "We're thoughtfully adopting AI where it adds genuine value."
+      }
+    },
+    {
+      "id": "act-013",
+      "text": "Prepare for post-quantum cryptography to ensure future security",
+      "assignee": "Diana Martinez",
+      "due_date": null,
+      "confidence": 0.80,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-2503",
+        "chunk_id": "chunk-006",
+        "anchor": "#seg-2503",
+        "timestamp_ms": 14718000,
+        "text_snippet": "Post-quantum cryptography ensures future security."
+      }
+    },
+    {
+      "id": "act-014",
+      "text": "Fund PhD fellowships in research areas of strategic importance",
+      "assignee": "Diana Martinez",
+      "due_date": null,
+      "confidence": 0.78,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-2510",
+        "chunk_id": "chunk-006",
+        "anchor": "#seg-2510",
+        "timestamp_ms": 14760000,
+        "text_snippet": "PhD fellowships fund research in areas we care about."
+      }
+    },
+    {
+      "id": "act-015",
+      "text": "Continue expanding university collaborations including internships and joint projects",
+      "assignee": "Diana Martinez",
+      "due_date": null,
+      "confidence": 0.79,
+      "tier": 2,
+      "citation": {
+        "segment_id": "seg-2509",
+        "chunk_id": "chunk-006",
+        "anchor": "#seg-2509",
+        "timestamp_ms": 14754000,
+        "text_snippet": "University collaborations include internships and joint projects."
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "text": "Adopted hybrid work as the operating model going forward with 2-3 days in office per week",
+      "decided_by": "Robert Chen",
+      "rationale": "The office is for connection and collaboration, not just sitting at a desk. Some roles are fully remote based on function and location.",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-1527",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1527",
+        "timestamp_ms": 8706000,
+        "text_snippet": "We've embraced hybrid work as our operating model going forward."
+      }
+    },
+    {
+      "id": "dec-002",
+      "text": "Implemented no-meeting Fridays to provide focused time for employees",
+      "decided_by": "Robert Chen",
+      "rationale": "Address work-life balance concerns and prevent burnout",
+      "confidence": 0.94,
+      "citation": {
+        "segment_id": "seg-1519",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1519",
+        "timestamp_ms": 8658000,
+        "text_snippet": "We've implemented no-meeting Fridays to provide focused time."
+      }
+    },
+    {
+      "id": "dec-003",
+      "text": "Pivoted from building more customization to building better defaults based on user role",
+      "decided_by": "Jennifer Adams",
+      "rationale": "Research revealed users wanted fewer options with smarter defaults, not more customization",
+      "confidence": 0.93,
+      "citation": {
+        "segment_id": "seg-536",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-536",
+        "timestamp_ms": 2942500,
+        "text_snippet": "We pivoted from building more customization to building better defaults."
+      }
+    },
+    {
+      "id": "dec-004",
+      "text": "Implemented zero-trust networking across all production environments",
+      "decided_by": "Diana Martinez",
+      "rationale": "Security remains a top priority in all architectural decisions",
+      "confidence": 0.94,
+      "citation": {
+        "segment_id": "seg-1015",
+        "chunk_id": "chunk-003",
+        "anchor": "#seg-1015",
+        "timestamp_ms": 5626000,
+        "text_snippet": "We've implemented zero-trust networking across all production environments."
+      }
+    },
+    {
+      "id": "dec-005",
+      "text": "Reorganized engineering into a squad-based model with autonomous cross-functional teams",
+      "decided_by": "James Wilson",
+      "rationale": "Autonomy enables faster decision-making and innovation; guilds prevent divergence",
+      "confidence": 0.92,
+      "citation": {
+        "segment_id": "seg-501",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-501",
+        "timestamp_ms": 2750000,
+        "text_snippet": "However, autonomy requires coordination mechanisms to prevent divergence."
+      }
+    },
+    {
+      "id": "dec-006",
+      "text": "Created guilds (backend, frontend, data) for coordination across squads",
+      "decided_by": "James Wilson",
+      "rationale": "Maintain coding standards and review architecture while allowing squad autonomy",
+      "confidence": 0.91,
+      "citation": {
+        "segment_id": "seg-503",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-503",
+        "timestamp_ms": 2761000,
+        "text_snippet": "The backend guild, frontend guild, and data guild meet regularly to share practices."
+      }
+    },
+    {
+      "id": "dec-007",
+      "text": "Use unlimited PTO policy with active encouragement to take time off",
+      "decided_by": "Robert Chen",
+      "rationale": "Address burnout risk in fast-growing company; track and follow up with those not using it",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-1521",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1521",
+        "timestamp_ms": 8670000,
+        "text_snippet": "Our unlimited PTO policy is real - we actually encourage people to take time off."
+      }
+    },
+    {
+      "id": "dec-008",
+      "text": "Rebuilt search infrastructure using Elasticsearch improving latency from 800ms to under 100ms",
+      "decided_by": "James Wilson",
+      "rationale": "Performance improvement needed; relevance scores also improved by 45%",
+      "confidence": 0.93,
+      "citation": {
+        "segment_id": "seg-509",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-509",
+        "timestamp_ms": 2794000,
+        "text_snippet": "The Search squad completely rebuilt our search infrastructure using Elasticsearch."
+      }
+    },
+    {
+      "id": "dec-009",
+      "text": "Internal mobility strongly encouraged with 30%+ of open roles filled internally",
+      "decided_by": "Sarah Mitchell",
+      "rationale": "Career development is a priority; managers support career moves even outside their team",
+      "confidence": 0.89,
+      "citation": {
+        "segment_id": "seg-2023",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2023",
+        "timestamp_ms": 11736000,
+        "text_snippet": "Internal mobility is strongly encouraged here."
+      }
+    },
+    {
+      "id": "dec-010",
+      "text": "File patents strategically rather than just counting them",
+      "decided_by": "Diana Martinez",
+      "rationale": "Focus on protecting innovations that matter, not vanity metrics",
+      "confidence": 0.87,
+      "citation": {
+        "segment_id": "seg-2512",
+        "chunk_id": "chunk-006",
+        "anchor": "#seg-2512",
+        "timestamp_ms": 14772000,
+        "text_snippet": "We file patents strategically, not just to count them."
+      }
+    },
+    {
+      "id": "dec-011",
+      "text": "Adopted data-driven product development with A/B testing before full rollout",
+      "decided_by": "Jennifer Adams",
+      "rationale": "Reduces risk and increases confidence in decisions; ran 23 experiments last quarter",
+      "confidence": 0.91,
+      "citation": {
+        "segment_id": "seg-529",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-529",
+        "timestamp_ms": 2904000,
+        "text_snippet": "We use A/B testing extensively to validate hypotheses before full rollout."
+      }
+    },
+    {
+      "id": "dec-012",
+      "text": "Separation of product work and people management in engineering organization",
+      "decided_by": "James Wilson",
+      "rationale": "This structure has worked well - chapters handle career development, squads handle product",
+      "confidence": 0.88,
+      "citation": {
+        "segment_id": "seg-507",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-507",
+        "timestamp_ms": 2783000,
+        "text_snippet": "This separation of product work and people management has worked well for us."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "que-001",
+      "text": "Are there concerns about burnout and work-life balance?",
+      "asked_by": "Employee Six",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-1518",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1518",
+        "timestamp_ms": 8652000,
+        "text_snippet": "This is something we take very seriously and monitor closely."
+      },
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-1517",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1517",
+        "timestamp_ms": 8646000,
+        "text_snippet": "Question about work-life balance - are there concerns about burnout?"
+      }
+    },
+    {
+      "id": "que-002",
+      "text": "What's our approach to remote work long-term?",
+      "asked_by": "Employee Seven",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-1527",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1527",
+        "timestamp_ms": 8706000,
+        "text_snippet": "We've embraced hybrid work as our operating model going forward."
+      },
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-1526",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1526",
+        "timestamp_ms": 8700000,
+        "text_snippet": "What's our approach to remote work long-term?"
+      }
+    },
+    {
+      "id": "que-003",
+      "text": "How do we maintain culture as we grow so quickly?",
+      "asked_by": "Employee Eight",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-1534",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1534",
+        "timestamp_ms": 8748000,
+        "text_snippet": "Culture doesn't just happen - it requires intentional effort."
+      },
+      "confidence": 0.94,
+      "citation": {
+        "segment_id": "seg-1533",
+        "chunk_id": "chunk-004",
+        "anchor": "#seg-1533",
+        "timestamp_ms": 8742000,
+        "text_snippet": "How do we maintain culture as we grow so quickly?"
+      }
+    },
+    {
+      "id": "que-004",
+      "text": "What's our approach to AI and automation in our own operations?",
+      "asked_by": "Employee Fourteen",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-2005",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2005",
+        "timestamp_ms": 11628000,
+        "text_snippet": "We're thoughtfully adopting AI where it adds genuine value."
+      },
+      "confidence": 0.93,
+      "citation": {
+        "segment_id": "seg-2004",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2004",
+        "timestamp_ms": 11622000,
+        "text_snippet": "What's our approach to AI and automation in our own operations?"
+      }
+    },
+    {
+      "id": "que-005",
+      "text": "How do we handle disagreements or conflicts in teams?",
+      "asked_by": "Employee Fifteen",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-2016",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2016",
+        "timestamp_ms": 11694000,
+        "text_snippet": "Healthy conflict is actually productive when managed well."
+      },
+      "confidence": 0.92,
+      "citation": {
+        "segment_id": "seg-2015",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2015",
+        "timestamp_ms": 11688000,
+        "text_snippet": "How do we handle disagreements or conflicts in teams?"
+      }
+    },
+    {
+      "id": "que-006",
+      "text": "What opportunities exist for rotation or new roles?",
+      "asked_by": "Employee Sixteen",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-2023",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2023",
+        "timestamp_ms": 11736000,
+        "text_snippet": "Internal mobility is strongly encouraged here."
+      },
+      "confidence": 0.92,
+      "citation": {
+        "segment_id": "seg-2022",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2022",
+        "timestamp_ms": 11730000,
+        "text_snippet": "What opportunities exist for rotation or new roles?"
+      }
+    },
+    {
+      "id": "que-007",
+      "text": "Can you elaborate on the product research process?",
+      "asked_by": "Robert Chen",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-519",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-519",
+        "timestamp_ms": 2849000,
+        "text_snippet": "Absolutely Robert. Product research has become central to how we make decisions."
+      },
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-518",
+        "chunk_id": "chunk-002",
+        "anchor": "#seg-518",
+        "timestamp_ms": 2843500,
+        "text_snippet": "Great details James. Jennifer, can you elaborate on the product research process?"
+      }
+    },
+    {
+      "id": "que-008",
+      "text": "If you're interested in a different role, should you have that conversation?",
+      "asked_by": "Robert Chen",
+      "answered": true,
+      "answer_citation": {
+        "segment_id": "seg-2030",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2030",
+        "timestamp_ms": 11778000,
+        "text_snippet": "Your career development is a priority for us."
+      },
+      "confidence": 0.85,
+      "citation": {
+        "segment_id": "seg-2029",
+        "chunk_id": "chunk-005",
+        "anchor": "#seg-2029",
+        "timestamp_ms": 11772000,
+        "text_snippet": "If you're interested in a different role, have that conversation."
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "top-001",
+      "title": "CEO Welcome and Q3 Financial Results",
+      "start_ms": 0,
+      "end_ms": 200000,
+      "segment_ids": ["seg-001", "seg-002", "seg-003", "seg-004", "seg-005", "seg-006", "seg-007", "seg-008", "seg-009", "seg-010", "seg-011", "seg-012", "seg-013", "seg-014", "seg-015", "seg-016", "seg-017", "seg-018", "seg-019", "seg-020", "seg-021", "seg-022", "seg-023", "seg-024", "seg-025", "seg-026", "seg-027", "seg-028", "seg-029", "seg-030", "seg-031", "seg-032", "seg-033", "seg-034", "seg-035", "seg-036"],
+      "chunk_ids": ["chunk-001"]
+    },
+    {
+      "id": "top-002",
+      "title": "Engineering Organization and Squad Model",
+      "start_ms": 2750000,
+      "end_ms": 2850000,
+      "segment_ids": ["seg-501", "seg-502", "seg-503", "seg-504", "seg-505", "seg-506", "seg-507", "seg-508", "seg-509", "seg-510", "seg-511", "seg-512", "seg-513", "seg-514", "seg-515", "seg-516", "seg-517"],
+      "chunk_ids": ["chunk-002"]
+    },
+    {
+      "id": "top-003",
+      "title": "Product Research and Data-Driven Development",
+      "start_ms": 2849000,
+      "end_ms": 2950000,
+      "segment_ids": ["seg-518", "seg-519", "seg-520", "seg-521", "seg-522", "seg-523", "seg-524", "seg-525", "seg-526", "seg-527", "seg-528", "seg-529", "seg-530", "seg-531", "seg-532", "seg-533", "seg-534", "seg-535", "seg-536"],
+      "chunk_ids": ["chunk-002"]
+    },
+    {
+      "id": "top-004",
+      "title": "Infrastructure and Cloud Migration",
+      "start_ms": 5542000,
+      "end_ms": 5700000,
+      "segment_ids": ["seg-1001", "seg-1002", "seg-1003", "seg-1004", "seg-1005", "seg-1006", "seg-1007", "seg-1008", "seg-1009", "seg-1010", "seg-1011", "seg-1012", "seg-1013", "seg-1014", "seg-1015", "seg-1016", "seg-1017", "seg-1018", "seg-1019", "seg-1020", "seg-1021", "seg-1022", "seg-1023", "seg-1024", "seg-1025"],
+      "chunk_ids": ["chunk-003"]
+    },
+    {
+      "id": "top-005",
+      "title": "Q4 Product Roadmap and Features",
+      "start_ms": 5692000,
+      "end_ms": 5800000,
+      "segment_ids": ["seg-1026", "seg-1027", "seg-1028", "seg-1029", "seg-1030", "seg-1031", "seg-1032", "seg-1033", "seg-1034", "seg-1035", "seg-1036"],
+      "chunk_ids": ["chunk-003"]
+    },
+    {
+      "id": "top-006",
+      "title": "Partnership Ecosystem and Cloud Provider Integrations",
+      "start_ms": 8550000,
+      "end_ms": 8650000,
+      "segment_ids": ["seg-1501", "seg-1502", "seg-1503", "seg-1504", "seg-1505", "seg-1506", "seg-1507", "seg-1508", "seg-1509", "seg-1510", "seg-1511", "seg-1512", "seg-1513", "seg-1514", "seg-1515", "seg-1516"],
+      "chunk_ids": ["chunk-004"]
+    },
+    {
+      "id": "top-007",
+      "title": "Employee Q&A: Work-Life Balance and Remote Work",
+      "start_ms": 8646000,
+      "end_ms": 8760000,
+      "segment_ids": ["seg-1517", "seg-1518", "seg-1519", "seg-1520", "seg-1521", "seg-1522", "seg-1523", "seg-1524", "seg-1525", "seg-1526", "seg-1527", "seg-1528", "seg-1529", "seg-1530", "seg-1531", "seg-1532", "seg-1533", "seg-1534", "seg-1535", "seg-1536"],
+      "chunk_ids": ["chunk-004"]
+    },
+    {
+      "id": "top-008",
+      "title": "HR and People Operations Updates",
+      "start_ms": 11604000,
+      "end_ms": 11800000,
+      "segment_ids": ["seg-2001", "seg-2002", "seg-2003", "seg-2004", "seg-2005", "seg-2006", "seg-2007", "seg-2008", "seg-2009", "seg-2010", "seg-2011", "seg-2012", "seg-2013", "seg-2014", "seg-2015", "seg-2016", "seg-2017", "seg-2018", "seg-2019", "seg-2020", "seg-2021", "seg-2022", "seg-2023", "seg-2024", "seg-2025", "seg-2026", "seg-2027", "seg-2028", "seg-2029", "seg-2030", "seg-2031"],
+      "chunk_ids": ["chunk-005"]
+    },
+    {
+      "id": "top-009",
+      "title": "Innovation and R&D Strategy",
+      "start_ms": 14706000,
+      "end_ms": 14900000,
+      "segment_ids": ["seg-2501", "seg-2502", "seg-2503", "seg-2504", "seg-2505", "seg-2506", "seg-2507", "seg-2508", "seg-2509", "seg-2510", "seg-2511", "seg-2512", "seg-2513", "seg-2514", "seg-2515", "seg-2516", "seg-2517", "seg-2518", "seg-2519", "seg-2520", "seg-2521", "seg-2522", "seg-2523", "seg-2524", "seg-2525", "seg-2526", "seg-2527", "seg-2528", "seg-2529", "seg-2530", "seg-2531", "seg-2532", "seg-2533", "seg-2534", "seg-2535", "seg-2536"],
+      "chunk_ids": ["chunk-006"]
+    },
+    {
+      "id": "top-010",
+      "title": "Innovation Labs and Future Projects",
+      "start_ms": 17806000,
+      "end_ms": 18231500,
+      "segment_ids": ["seg-3001", "seg-3002", "seg-3003", "seg-3004", "seg-3005", "seg-3006", "seg-3007", "seg-3008", "seg-3009", "seg-3010", "seg-3011", "seg-3012", "seg-3013", "seg-3014", "seg-3015", "seg-3016", "seg-3017", "seg-3018", "seg-3019", "seg-3020", "seg-3021", "seg-3022", "seg-3023"],
+      "chunk_ids": ["chunk-007"]
+    }
+  ]
+}

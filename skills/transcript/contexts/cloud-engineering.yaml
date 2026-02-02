@@ -1,0 +1,387 @@
+# Domain Schema: Cloud Engineering Transcript Analysis
+# Version: 1.0.0
+# TASK-154: EN-014 Artifact Promotion
+# Source: EN-006/docs/specs/domain-contexts/05-cloud-engineering/
+# Implements: SPEC-context-injection.md Section 3.3, TDD-EN014 Schema V1.1.0
+
+schema_version: "1.0.0"
+domain: "cloud-engineering"
+display_name: "Cloud Engineering Transcript Analysis"
+extends: "transcript"  # Inherits base entities (speaker, topic, question)
+
+# Supports blameless post-mortem culture and SRE best practices.
+
+# Domain metadata (TDD-EN014 Section 4.2)
+metadata:
+  target_users:
+    - "Site Reliability Engineers (SREs)"
+    - "Cloud Engineers"
+    - "Platform Engineers"
+    - "DevOps Engineers"
+  transcript_types:
+    - "Incident post-mortem"
+    - "Capacity planning"
+    - "Infrastructure review"
+    - "On-call handoff"
+    - "SLO review"
+  key_use_cases:
+    - "Document incidents"
+    - "Identify root causes"
+    - "Track action items"
+    - "Monitor capacity"
+    - "Review SLO compliance"
+  blameless_culture: true
+
+# Entity definitions
+entity_definitions:
+  incident:
+    description: "Production incident or service degradation"
+    attributes:
+      - name: "incident_id"
+        type: "string"
+        required: true
+        description: "Incident identifier (INC-XXXX)"
+      - name: "severity"
+        type: "enum"
+        values: ["SEV1", "SEV2", "SEV3", "SEV4"]
+        required: true
+        description: "Severity level"
+      - name: "impact"
+        type: "string"
+        required: true
+        description: "Customer/business impact description"
+      - name: "duration"
+        type: "string"
+        description: "Time to detection + time to resolution"
+      - name: "services_affected"
+        type: "array"
+        items: "string"
+        description: "List of affected services"
+      - name: "detection_method"
+        type: "enum"
+        values: ["monitoring", "customer", "internal"]
+        description: "How it was detected"
+    extraction_patterns:
+      - "Incident {{id}} was caused by {{cause}}"
+      - "SEV{{level}} incident"
+      - "Root cause: {{cause}}"
+      - "Impact: {{impact}}"
+      - "Outage: {{description}}"
+      - "Duration: {{time}}"
+    relationships:
+      - type: "caused_by"
+        target: "root_cause"
+      - type: "generates"
+        target: "action_item"
+
+  root_cause:
+    description: "Underlying cause of incident (blameless)"
+    attributes:
+      - name: "cause"
+        type: "string"
+        required: true
+        description: "What caused the issue (not who)"
+      - name: "category"
+        type: "enum"
+        values: ["human", "process", "system", "external", "unknown"]
+        required: true
+        description: "Category of root cause"
+      - name: "contributing_factors"
+        type: "array"
+        items: "string"
+        description: "Other factors that contributed"
+      - name: "preventable"
+        type: "enum"
+        values: ["yes", "no", "partially"]
+        description: "Could this have been prevented"
+      - name: "five_whys"
+        type: "array"
+        items: "string"
+        description: "5 Whys analysis if performed"
+    note: |
+      IMPORTANT: Root cause analysis should be BLAMELESS.
+      Focus on systems and processes, not individuals.
+      Ask "what" not "who".
+    extraction_patterns:
+      - "The root cause was {{cause}}"
+      - "Because {{cause}}"
+      - "5 Whys: {{analysis}}"
+      - "Contributing factor: {{factor}}"
+      - "System failure: {{description}}"
+    relationships:
+      - type: "causes"
+        target: "incident"
+
+  action_item:
+    description: "Follow-up action from incident review"
+    attributes:
+      - name: "title"
+        type: "string"
+        required: true
+        description: "Action description"
+      - name: "owner"
+        type: "string"
+        required: true
+        description: "Person or team responsible"
+      - name: "priority"
+        type: "enum"
+        values: ["P0", "P1", "P2"]
+        description: "Priority level"
+      - name: "due_date"
+        type: "date"
+        description: "Target completion date"
+      - name: "type"
+        type: "enum"
+        values: ["fix", "prevention", "detection", "process"]
+        required: true
+        description: "Action type (SRE best practices)"
+      - name: "status"
+        type: "enum"
+        values: ["open", "in_progress", "done"]
+        description: "Current status"
+    note: |
+      Action types follow SRE best practices:
+      - fix: Immediate remediation
+      - prevention: Stop future occurrence
+      - detection: Improve monitoring/alerting
+      - process: Improve runbooks/procedures
+    extraction_patterns:
+      - "Action item: {{title}}"
+      - "{{owner}} will {{action}}"
+      - "TODO: {{action}}"
+      - "Follow-up: {{action}}"
+      - "P{{level}}: {{action}}"
+      - "Prevention: {{action}}"
+    relationships:
+      - type: "addresses"
+        target: "root_cause"
+      - type: "monitors"
+        target: "metric"
+
+  metric:
+    description: "SLO, SLA, or operational metric"
+    attributes:
+      - name: "name"
+        type: "string"
+        required: true
+        description: "Metric name (latency, error_rate, availability, etc.)"
+      - name: "current_value"
+        type: "string"
+        required: true
+        description: "Current measurement"
+      - name: "target_value"
+        type: "string"
+        description: "SLO/SLA target"
+      - name: "trend"
+        type: "enum"
+        values: ["improving", "stable", "degrading"]
+        description: "Direction"
+      - name: "breach"
+        type: "enum"
+        values: ["yes", "no", "at_risk"]
+        description: "Is SLO breached"
+    extraction_patterns:
+      - "SLO: {{metric}} at {{value}}"
+      - "Error rate: {{value}}"
+      - "Latency p{{percentile}}: {{value}}"
+      - "{{metric}} is {{trend}}"
+      - "Target: {{value}}"
+    relationships:
+      - type: "monitored_by"
+        target: "action_item"
+
+  capacity_concern:
+    description: "Resource capacity issue or projection"
+    attributes:
+      - name: "resource"
+        type: "string"
+        required: true
+        description: "What resource (CPU, memory, disk, connections, etc.)"
+      - name: "current_utilization"
+        type: "string"
+        required: true
+        description: "Current usage percentage or value"
+      - name: "threshold"
+        type: "string"
+        description: "Warning threshold"
+      - name: "projection"
+        type: "string"
+        description: "When limit will be reached"
+      - name: "mitigation"
+        type: "string"
+        description: "Proposed solution (scale, optimize, etc.)"
+    extraction_patterns:
+      - "{{resource}} is at {{percentage}}% utilization"
+      - "We'll hit capacity in {{timeframe}}"
+      - "Need to scale {{resource}}"
+      - "Capacity warning for {{resource}}"
+      - "{{resource}} headroom: {{amount}}"
+    relationships:
+      - type: "addressed_by"
+        target: "action_item"
+
+# Extraction rules with confidence thresholds
+extraction_rules:
+  - id: "incidents"
+    entity_type: "incident"
+    confidence_threshold: 0.85
+    priority: 1
+    tier: "rule"
+    description: "Document production incidents with severity and impact"
+
+  - id: "root_causes"
+    entity_type: "root_cause"
+    confidence_threshold: 0.8
+    priority: 2
+    tier: "llm"
+    description: "Identify underlying causes (blameless analysis)"
+
+  - id: "action_items"
+    entity_type: "action_item"
+    confidence_threshold: 0.75
+    priority: 3
+    tier: "rule"
+    description: "Extract follow-up actions with owners and priorities"
+
+  - id: "metrics"
+    entity_type: "metric"
+    confidence_threshold: 0.8
+    priority: 4
+    tier: "rule"
+    description: "Document SLO/SLA measurements and trends"
+
+  - id: "capacity_concerns"
+    entity_type: "capacity_concern"
+    confidence_threshold: 0.75
+    priority: 5
+    tier: "rule"
+    description: "Flag resource capacity issues and projections"
+
+# Context-specific rules (TDD-EN014 Section 4.3)
+context_rules:
+  post_mortem:
+    primary_focus:
+      - incident
+      - root_cause
+      - action_item
+    secondary_focus:
+      - metric
+    methodology: "5_whys"
+    extraction_emphasis: |
+      In post-mortems, prioritize:
+      1. Incident details (ID, severity, impact, duration)
+      2. Root cause analysis (BLAMELESS - what, not who)
+      3. Action items categorized by type (fix/prevention/detection/process)
+      4. SLO/SLA metrics affected
+      Apply 5 Whys methodology for root cause.
+
+  capacity_planning:
+    primary_focus:
+      - capacity_concern
+      - metric
+    secondary_focus:
+      - action_item
+    extraction_emphasis: |
+      In capacity planning, focus on:
+      1. Resource utilization levels
+      2. Projections for when limits reached
+      3. Proposed scaling or optimization actions
+      4. SLO targets and current performance
+
+  slo_review:
+    primary_focus:
+      - metric
+    secondary_focus:
+      - action_item
+      - incident
+    extraction_emphasis: |
+      In SLO reviews, document:
+      1. Current SLO values vs targets
+      2. Trending direction (improving/stable/degrading)
+      3. Breach status and error budget
+      4. Actions to improve metrics
+
+  on_call_handoff:
+    primary_focus:
+      - incident
+      - action_item
+    secondary_focus:
+      - metric
+      - capacity_concern
+    extraction_emphasis: |
+      In on-call handoffs, capture:
+      1. Active incidents and status
+      2. Outstanding action items
+      3. Key metrics to watch
+      4. Capacity concerns flagged
+
+# Validation rules (TDD-EN014 Section 4.4)
+validation:
+  min_entities: 4
+  min_attributes_per_entity: 4
+  required_entities:
+    - incident
+    - root_cause
+    - action_item
+  blameless_culture: true
+
+# Prompt guidance for ts-extractor agent
+prompt_guidance: |
+  ## Cloud Engineering Transcript Analysis
+
+  When analyzing cloud engineering transcripts, apply SRE domain expertise:
+
+  ### ⚠️ IMPORTANT: Blameless Culture
+
+  This analysis MUST support a BLAMELESS post-mortem culture:
+  - Focus on WHAT happened, not WHO did it
+  - Identify systemic issues, not individual mistakes
+  - Look for process improvements, not blame
+  - Frame root causes around systems and processes
+
+  ### Incident Documentation
+  - Capture incident ID format (INC-XXXX)
+  - Apply severity levels consistently (SEV1-SEV4)
+  - Document customer/business impact
+  - Calculate duration (TTD + TTR)
+  - List affected services
+
+  ### Root Cause Analysis (Blameless)
+  - Apply 5 Whys methodology
+  - Categorize: human, process, system, external, unknown
+  - Document contributing factors
+  - Assess preventability
+  - NEVER attribute blame to individuals
+
+  ### Action Item Categorization (SRE Best Practices)
+  - **Fix**: Immediate remediation to restore service
+  - **Prevention**: Changes to stop future occurrence
+  - **Detection**: Improved monitoring/alerting
+  - **Process**: Runbook and procedure updates
+  - Always capture owner and priority (P0/P1/P2)
+
+  ### Metric Capture
+  - Extract SLO/SLA values with targets
+  - Note percentiles for latency (p50, p95, p99)
+  - Track error rates and availability
+  - Assess trend direction
+  - Flag breaches and at-risk metrics
+
+  ### Capacity Analysis
+  - Document resource types (CPU, memory, disk, connections)
+  - Capture utilization percentages
+  - Note threshold warnings
+  - Record projections for capacity exhaustion
+  - Document mitigation strategies
+
+  ### Confidence Scoring Guidelines
+  - 0.9+: Explicit incident IDs, SEV levels, SLO values
+  - 0.7-0.9: Clear technical discussion with context
+  - 0.5-0.7: Implicit information, flag for review
+  - <0.5: Do not extract
+
+  ### Anti-Hallucination Rules (PAT-004)
+  - Every extraction MUST have a source segment citation
+  - Do not infer root causes not explicitly discussed
+  - When uncertain, use lower confidence scores
+  - Preserve original speaker attribution

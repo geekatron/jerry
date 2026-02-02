@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.framework/schemas/guardrail-patterns.json",
+  "title": "Guardrail Pattern Library Schema",
+  "description": "Schema for guardrail validation patterns (WI-SAO-015)",
+  "type": "object",
+  "required": ["schema_version", "validation_modes", "input_patterns"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "SemVer version of the pattern library schema"
+    },
+    "validation_modes": {
+      "type": "object",
+      "properties": {
+        "block": {
+          "$ref": "#/$defs/ValidationMode"
+        },
+        "warn": {
+          "$ref": "#/$defs/ValidationMode"
+        },
+        "ask": {
+          "$ref": "#/$defs/ValidationMode"
+        }
+      },
+      "required": ["block", "warn", "ask"]
+    },
+    "input_patterns": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/PatternGroup"
+      },
+      "description": "Patterns for validating tool inputs"
+    },
+    "output_patterns": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/PatternGroup"
+      },
+      "description": "Patterns for filtering tool outputs"
+    },
+    "tool_rules": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/ToolRule"
+      },
+      "description": "Tool-specific pattern configuration"
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    }
+  },
+  "$defs": {
+    "ValidationMode": {
+      "type": "object",
+      "required": ["description", "decision"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["approve", "block", "ask"]
+        },
+        "log_level": {
+          "type": "string",
+          "enum": ["DEBUG", "INFO", "WARNING", "ERROR"]
+        }
+      }
+    },
+    "PatternGroup": {
+      "type": "object",
+      "required": ["name", "description", "mode", "rules"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Human-readable name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Purpose of this pattern group"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["block", "warn", "ask"],
+          "description": "Default validation mode"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000,
+          "default": 100,
+          "description": "Timeout for pattern matching (AC-015-002)"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "action": {
+          "type": "string",
+          "enum": ["detect", "redact", "reject"],
+          "description": "Action to take on match"
+        },
+        "replacement": {
+          "type": "string",
+          "description": "Replacement text for redaction"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PatternRule"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "PatternRule": {
+      "type": "object",
+      "required": ["id", "pattern", "description"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]+-[a-z0-9-]+$",
+          "description": "Unique rule identifier"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Regular expression pattern"
+        },
+        "description": {
+          "type": "string",
+          "description": "What this pattern detects"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "default": "medium"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["block", "warn", "ask"],
+          "description": "Override default mode for this rule"
+        },
+        "applies_to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Agent patterns this rule applies to"
+        },
+        "example_match": {
+          "type": "string",
+          "description": "Example of text that matches this pattern"
+        }
+      }
+    },
+    "ToolRule": {
+      "type": "object",
+      "properties": {
+        "input_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Pattern groups to apply to this tool's input"
+        },
+        "output_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Pattern groups to apply to this tool's output"
+        },
+        "fallback_mode": {
+          "type": "string",
+          "enum": ["block", "warn", "ask"],
+          "description": "Default mode if pattern doesn't specify"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "author": {
+          "type": "string"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
