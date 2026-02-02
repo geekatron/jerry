@@ -9,14 +9,14 @@ PURPOSE: Document high-severity gap - Problem-solving templates reference not pr
 -->
 
 > **Type:** bug
-> **Status:** pending
-> **Resolution:** -
+> **Status:** closed
+> **Resolution:** fixed
 > **Priority:** high
 > **Impact:** medium
 > **Severity:** minor
 > **Created:** 2026-02-02T05:00:00Z
 > **Due:** 2026-02-05T00:00:00Z
-> **Completed:** -
+> **Completed:** 2026-02-02T06:00:00Z
 > **Parent:** EN-202
 > **Owner:** Claude
 > **Found In:** CLAUDE.md (rewritten)
@@ -197,6 +197,7 @@ Option B: Add to CLAUDE.md Navigation table
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-02T05:00:00Z | Claude | pending | Initial report from gap analysis (GAP-004) |
+| 2026-02-02T06:00:00Z | Claude | closed | FIXED: Added Templates section to `skills/problem-solving/SKILL.md` with all 9 template references. |
 
 ---
 

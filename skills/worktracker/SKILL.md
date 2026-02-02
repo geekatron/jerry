@@ -114,3 +114,4 @@ For detailed reference, the following rule files are available:
 - **System Mappings**: [worktracker-system-mappings.md](./rules/worktracker-system-mappings.md) - ADO Scrum, SAFe, and JIRA mappings
 - **Directory Structure**: [worktracker-directory-structure.md](./rules/worktracker-directory-structure.md) - Complete folder hierarchy with examples
 - **Templates**: [worktracker-templates.md](./rules/worktracker-templates.md) - Template locations and usage rules
+- **TODO Integration**: [todo-integration-rules.md](./rules/todo-integration-rules.md) - META TODO items, TODO↔Worktracker sync rules

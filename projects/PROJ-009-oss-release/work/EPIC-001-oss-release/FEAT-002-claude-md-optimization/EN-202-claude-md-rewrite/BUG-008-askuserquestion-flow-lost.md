@@ -9,14 +9,14 @@ PURPOSE: Document high-severity gap - AskUserQuestion project selection flow not
 -->
 
 > **Type:** bug
-> **Status:** pending
-> **Resolution:** -
+> **Status:** closed
+> **Resolution:** fixed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** minor
 > **Created:** 2026-02-02T05:00:00Z
 > **Due:** 2026-02-05T00:00:00Z
-> **Completed:** -
+> **Completed:** 2026-02-02T06:00:00Z
 > **Parent:** EN-202
 > **Owner:** Claude
 > **Found In:** CLAUDE.md (rewritten)
@@ -205,6 +205,7 @@ Include AskUserQuestion flow in `.claude/rules/project-workflow.md` alongside th
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-02T05:00:00Z | Claude | pending | Initial report from gap analysis (GAP-005) |
+| 2026-02-02T06:00:00Z | Claude | closed | FIXED: Added to `.claude/rules/project-workflow.md` with full AskUserQuestion flow (24 lines) and example YAML. |
 
 ---
 

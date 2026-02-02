@@ -327,6 +327,28 @@ All agents adhere to the **Jerry Constitution v1.0**:
 
 ---
 
+## Templates
+
+Problem-solving artifacts should use standardized templates to ensure consistency.
+
+**Location:** `docs/knowledge/exemplars/templates/`
+
+| Template | Use For | Path |
+|----------|---------|------|
+| `adr.md` | Architecture Decision Records | `docs/knowledge/exemplars/templates/adr.md` |
+| `research.md` | Research artifacts | `docs/knowledge/exemplars/templates/research.md` |
+| `analysis.md` | Analysis artifacts | `docs/knowledge/exemplars/templates/analysis.md` |
+| `deep-analysis.md` | Deep analysis | `docs/knowledge/exemplars/templates/deep-analysis.md` |
+| `synthesis.md` | Synthesis documents | `docs/knowledge/exemplars/templates/synthesis.md` |
+| `review.md` | Review artifacts | `docs/knowledge/exemplars/templates/review.md` |
+| `investigation.md` | Investigation reports | `docs/knowledge/exemplars/templates/investigation.md` |
+| `jrn.md` | Journal entries | `docs/knowledge/exemplars/templates/jrn.md` |
+| `use-case-template.md` | Use case specifications | `docs/knowledge/exemplars/templates/use-case-template.md` |
+
+**Usage:** When creating a new artifact, read the appropriate template first to ensure consistent structure and sections.
+
+---
+
 ## Agent Details
 
 For detailed agent specifications, see:

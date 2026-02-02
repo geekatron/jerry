@@ -9,7 +9,7 @@ PURPOSE: Rewrite CLAUDE.md from 914 lines to 60-80 lines
 -->
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** complete
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** architecture
@@ -273,11 +273,18 @@ Bugs discovered during gap analysis (GAP-001 through GAP-005) identifying conten
 
 | ID | Title | Severity | Priority | Status |
 |----|-------|----------|----------|--------|
-| [BUG-004](./BUG-004-todo-section-not-migrated.md) | TODO Section Not Migrated (EN-203 pending) | critical | critical | PENDING |
-| [BUG-005](./BUG-005-mandatory-skill-usage-lost.md) | Mandatory Skill Usage Section Lost (108 lines) | critical | critical | PENDING |
-| [BUG-006](./BUG-006-working-with-jerry-lost.md) | Working with Jerry Section Lost (46 lines) | major | critical | PENDING |
-| [BUG-007](./BUG-007-problem-solving-templates-lost.md) | Problem-Solving Templates Reference Lost (18 lines) | minor | high | PENDING |
-| [BUG-008](./BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion Flow Lost (24 lines) | minor | high | PENDING |
+| [BUG-004](./BUG-004-todo-section-not-migrated.md) | TODO Section Not Migrated | critical | critical | CLOSED (FIXED) |
+| [BUG-005](./BUG-005-mandatory-skill-usage-lost.md) | Mandatory Skill Usage Section Lost (108 lines) | critical | critical | CLOSED (FIXED) |
+| [BUG-006](./BUG-006-working-with-jerry-lost.md) | Working with Jerry Section Lost (46 lines) | major | critical | CLOSED (FIXED) |
+| [BUG-007](./BUG-007-problem-solving-templates-lost.md) | Problem-Solving Templates Reference Lost (18 lines) | minor | high | CLOSED (FIXED) |
+| [BUG-008](./BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion Flow Lost (24 lines) | minor | high | CLOSED (FIXED) |
+
+**Gap Closure Summary:**
+- BUG-004: Created `skills/worktracker/rules/todo-integration-rules.md`
+- BUG-005: Created `.claude/rules/mandatory-skill-usage.md`
+- BUG-006: Created `.claude/rules/project-workflow.md`
+- BUG-007: Added Templates section to `skills/problem-solving/SKILL.md`
+- BUG-008: Included in `.claude/rules/project-workflow.md`
 
 ### Gap Analysis
 
@@ -329,6 +336,7 @@ Bugs discovered during gap analysis (GAP-001 through GAP-005) identifying conten
 | 2026-02-02T03:45:00Z | Claude | in_progress | Phase 2 complete. 5 sections assembled into 80-line CLAUDE.md. Backup created. |
 | 2026-02-02T04:00:00Z | Claude | complete | Phase 3 complete. TASK-006 (12/12 pointers verified) and TASK-007 (80 lines, 91.2% reduction) PASSED. EN-202 COMPLETE. |
 | 2026-02-02T05:00:00Z | Claude | in_progress | Gap analysis revealed 5 new bugs (BUG-004 through BUG-008). CRITICAL: 108 lines of mandatory skill usage content + 46 lines of project workflow content NOT preserved. Reopened for gap closure. |
+| 2026-02-02T06:00:00Z | Claude | complete | All 5 gap closure bugs FIXED. Created: mandatory-skill-usage.md, project-workflow.md, todo-integration-rules.md. Added Templates to problem-solving skill. EN-202 COMPLETE with full content preservation. |
 
 ---
 
