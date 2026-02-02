@@ -9,15 +9,16 @@ PURPOSE: Document defect requiring fix in CLAUDE.md rewrite
 -->
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** closed
+> **Resolution:** fixed
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** minor
 > **Created:** 2026-02-01T14:30:00Z
 > **Due:** -
-> **Completed:** -
+> **Completed:** 2026-02-02T03:00:00Z
 > **Parent:** EN-202
-> **Owner:** -
+> **Owner:** Claude
 > **Found In:** CLAUDE.md (current)
 > **Fix Version:** EN-202
 
@@ -129,15 +130,19 @@ Documentation drift during repository evolution. The templates were originally i
 
 ### Fix Verification
 
-- [ ] All template paths use `.context/templates/worktracker/`
-- [ ] No references to `docs/templates/worktracker/` remain
-- [ ] Path references match actual filesystem location
+- [x] All template paths use `.context/templates/` (Navigation table line 26)
+- [x] No references to `docs/templates/` in new CLAUDE.md
+- [x] Path references match actual filesystem location
 
 ### Quality Checklist
 
-- [ ] Part of EN-202 rewrite deliverable
-- [ ] All path references validated against filesystem
-- [ ] Consistent path format throughout document
+- [x] Part of EN-202 rewrite deliverable
+- [x] All path references validated against filesystem
+- [x] Consistent path format throughout document
+
+### Resolution
+
+**Resolution:** FIXED - The new 80-line CLAUDE.md uses the correct `.context/templates/` path in the Navigation table (line 26). The conflicting `docs/templates/` references no longer exist because the detailed worktracker content was extracted to the `/worktracker` skill. Fix applied during TASK-002 (Navigation Section) in Phase 1.
 
 ---
 
@@ -160,6 +165,7 @@ Documentation drift during repository evolution. The templates were originally i
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-01T14:30:00Z | Claude | pending | Initial report from EN-201 QG-1 |
+| 2026-02-02T03:00:00Z | Claude | closed | FIXED in TASK-002 Navigation section. New CLAUDE.md uses `.context/templates/` consistently. |
 
 ---
 

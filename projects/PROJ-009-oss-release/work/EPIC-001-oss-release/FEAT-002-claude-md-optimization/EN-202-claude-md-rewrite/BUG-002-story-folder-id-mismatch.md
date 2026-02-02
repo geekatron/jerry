@@ -9,15 +9,16 @@ PURPOSE: Document defect requiring fix in CLAUDE.md rewrite
 -->
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** closed
+> **Resolution:** not_applicable
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** minor
 > **Created:** 2026-02-01T14:30:00Z
 > **Due:** -
-> **Completed:** -
+> **Completed:** 2026-02-02T04:00:00Z
 > **Parent:** EN-202
-> **Owner:** -
+> **Owner:** Claude
 > **Found In:** CLAUDE.md (current)
 > **Fix Version:** EN-202
 
@@ -113,15 +114,17 @@ Copy-paste error when duplicating the Enabler folder pattern to create the Story
 
 ### Fix Verification
 
-- [ ] `{EnablerId}` replaced with `{StoryId}` in Story folder section
-- [ ] Folder naming is consistent with directory structure examples
-- [ ] Pattern matches actual usage in repository
+- [x] N/A - Content containing error was removed in rewrite (worktracker section extracted to skill)
+- [x] New CLAUDE.md has no directory structure content
 
 ### Quality Checklist
 
-- [ ] Part of EN-202 rewrite deliverable
-- [ ] No similar copy-paste errors exist
-- [ ] All {ID} patterns use correct entity type
+- [x] Part of EN-202 rewrite deliverable
+- [x] No similar copy-paste errors exist
+
+### Resolution
+
+**Resolution:** NOT_APPLICABLE - The worktracker directory structure content containing this error was extracted to the `/worktracker` skill during EN-201. The new 80-line CLAUDE.md does not include this content, so the bug no longer applies. Note: The fix should be applied in the extracted worktracker skill rules file (`skills/worktracker/rules/worktracker-folder-structure-and-hierarchy-rules.md`) as a separate task.
 
 ---
 

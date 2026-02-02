@@ -31,8 +31,8 @@ description: |
   CLI command summary and skill invocation summary.
 
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: COMPLETE
+resolution: DONE
 priority: HIGH
 assignee: null
 created_by: "Claude"
@@ -54,8 +54,8 @@ due_date: null
 
 activity: DOCUMENTATION
 original_estimate: 1
-remaining_work: 1
-time_spent: null
+remaining_work: 0
+time_spent: 0.5
 ```
 
 ---
@@ -96,10 +96,10 @@ Create the Quick Reference section for the new lean CLAUDE.md. This section prov
 
 ### Acceptance Criteria
 
-- [ ] CLI commands listed concisely
-- [ ] All key skills listed
-- [ ] Format is scannable/compact
-- [ ] Line count ~15 lines
+- [x] CLI commands listed concisely
+- [x] All key skills listed
+- [x] Format is scannable/compact
+- [x] Line count ~15 lines
 
 ### Related Items
 
@@ -113,8 +113,8 @@ Create the Quick Reference section for the new lean CLAUDE.md. This section prov
 | Metric | Value |
 |---------|-------|
 | Original Estimate | 1 hour |
-| Remaining Work | 1 hour |
-| Time Spent | 0 hours |
+| Remaining Work | 0 hours |
+| Time Spent | 0.5 hours |
 
 ---
 
@@ -128,10 +128,10 @@ Create the Quick Reference section for the new lean CLAUDE.md. This section prov
 
 ### Verification
 
-- [ ] CLI commands accurate
-- [ ] Skills list complete
-- [ ] Line count verified
-- [ ] Reviewed by: -
+- [x] CLI commands accurate
+- [x] Skills list complete
+- [x] Line count verified (15 lines)
+- [x] Reviewed by: DISC-002 ps-critic (score: 0.95)
 
 ---
 
@@ -140,3 +140,4 @@ Create the Quick Reference section for the new lean CLAUDE.md. This section prov
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-01 | Created | Initial creation |
+| 2026-02-01 | COMPLETE | Created Quick Reference section. DISC-002 review: 2 iterations, final score 0.95. Addressed REM-001 (missing abandon cmd), REM-002 (missing /transcript skill), REM-003 (no doc pointers). Output: drafts/section-005-quick-reference.md |

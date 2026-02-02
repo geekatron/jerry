@@ -9,15 +9,16 @@ PURPOSE: Document defect requiring fix in CLAUDE.md rewrite
 -->
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** closed
+> **Resolution:** not_applicable
 > **Priority:** low
 > **Impact:** low
 > **Severity:** trivial
 > **Created:** 2026-02-01T14:30:00Z
 > **Due:** -
-> **Completed:** -
+> **Completed:** 2026-02-02T04:00:00Z
 > **Parent:** EN-202
-> **Owner:** -
+> **Owner:** Claude
 > **Found In:** CLAUDE.md (current)
 > **Fix Version:** EN-202
 
@@ -107,13 +108,17 @@ Copy-paste error or editing mistake in original CLAUDE.md authoring.
 
 ### Fix Verification
 
-- [ ] "to to" replaced with single "to" in new CLAUDE.md
-- [ ] Text reads grammatically correct
+- [x] N/A - Content containing typo was removed in rewrite (worktracker section extracted to skill)
+- [x] New CLAUDE.md has no worktracker content
 
 ### Quality Checklist
 
-- [ ] Part of EN-202 rewrite deliverable
-- [ ] No new typos introduced
+- [x] Part of EN-202 rewrite deliverable
+- [x] No new typos introduced
+
+### Resolution
+
+**Resolution:** NOT_APPLICABLE - The worktracker content containing this typo was extracted to the `/worktracker` skill during EN-201. The new 80-line CLAUDE.md does not include this content, so the bug no longer applies.
 
 ---
 
