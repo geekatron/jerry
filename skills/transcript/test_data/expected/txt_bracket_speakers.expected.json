@@ -1,0 +1,89 @@
+{
+  "_metadata": {
+    "description": "Expected ts-parser output for txt_bracket_speakers.txt",
+    "source_file": "transcripts/edge_cases/txt_bracket_speakers.txt",
+    "derived_by": "Claude (deterministic derivation from plain text)",
+    "derived_at": "2026-01-27T21:00:00Z",
+    "purpose": "Golden test data for TASK-104 plain text bracket prefix verification",
+    "review_status": "PENDING_HUMAN_REVIEW",
+    "notes": [
+      "Tests plain text format with '[Speaker]' bracket prefix pattern",
+      "No timestamps available (null for start_ms and end_ms)"
+    ]
+  },
+  "version": "1.1",
+  "source": {
+    "format": "plain",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/txt_bracket_speakers.txt"
+  },
+  "metadata": {
+    "duration_ms": null,
+    "segment_count": 7,
+    "detected_speakers": 3
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Alice",
+      "text": "Welcome to the team standup.",
+      "raw_text": "[Alice] Welcome to the team standup."
+    },
+    {
+      "id": "seg-002",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Bob",
+      "text": "Good morning everyone.",
+      "raw_text": "[Bob] Good morning everyone."
+    },
+    {
+      "id": "seg-003",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Charlie",
+      "text": "I finished the code review yesterday.",
+      "raw_text": "[Charlie] I finished the code review yesterday."
+    },
+    {
+      "id": "seg-004",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Alice",
+      "text": "Great work Charlie. Any blockers?",
+      "raw_text": "[Alice] Great work Charlie. Any blockers?"
+    },
+    {
+      "id": "seg-005",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Bob",
+      "text": "I need some clarification on the API spec.",
+      "raw_text": "[Bob] I need some clarification on the API spec."
+    },
+    {
+      "id": "seg-006",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Charlie",
+      "text": "I can help with that after the meeting.",
+      "raw_text": "[Charlie] I can help with that after the meeting."
+    },
+    {
+      "id": "seg-007",
+      "start_ms": null,
+      "end_ms": null,
+      "speaker": "Alice",
+      "text": "Perfect. Let's sync up after this call.",
+      "raw_text": "[Alice] Perfect. Let's sync up after this call."
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

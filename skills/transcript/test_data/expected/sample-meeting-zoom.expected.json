@@ -1,0 +1,124 @@
+{
+  "_metadata": {
+    "description": "Expected ts-parser output for sample-meeting-zoom.srt",
+    "source_file": "transcripts/real/sample-meeting-zoom.srt",
+    "derived_by": "Claude (deterministic derivation from SRT)",
+    "derived_at": "2026-01-27T21:00:00Z",
+    "purpose": "Golden test data for TASK-103 SRT processing verification",
+    "review_status": "PENDING_HUMAN_REVIEW",
+    "notes": [
+      "Tests standard SRT format with comma timestamps (00:00:03,528)",
+      "Speaker extraction from 'Speaker:' colon prefix pattern",
+      "Multi-line cue payloads joined with single space"
+    ]
+  },
+  "version": "1.1",
+  "source": {
+    "format": "srt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/real/sample-meeting-zoom.srt"
+  },
+  "metadata": {
+    "duration_ms": 50291,
+    "segment_count": 10,
+    "detected_speakers": 3
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "cue_index": 1,
+      "start_ms": 3528,
+      "end_ms": 6448,
+      "speaker": "Alice",
+      "text": "Good morning everyone, thanks for joining.",
+      "raw_text": "Alice: Good morning everyone, thanks for joining."
+    },
+    {
+      "id": "seg-002",
+      "cue_index": 2,
+      "start_ms": 6500,
+      "end_ms": 10319,
+      "speaker": "Bob",
+      "text": "Morning Alice! Ready to discuss the sprint.",
+      "raw_text": "Bob: Morning Alice! Ready to discuss the sprint."
+    },
+    {
+      "id": "seg-003",
+      "cue_index": 3,
+      "start_ms": 10319,
+      "end_ms": 16930,
+      "speaker": "Alice",
+      "text": "Yes, let's start with the backlog review. We have several items to prioritize.",
+      "raw_text": "Alice: Yes, let's start with the backlog review.\nWe have several items to prioritize."
+    },
+    {
+      "id": "seg-004",
+      "cue_index": 4,
+      "start_ms": 16930,
+      "end_ms": 20401,
+      "speaker": "Bob",
+      "text": "I noticed the API task is still pending. Should we tackle that first?",
+      "raw_text": "Bob: I noticed the API task is still pending.\nShould we tackle that first?"
+    },
+    {
+      "id": "seg-005",
+      "cue_index": 5,
+      "start_ms": 20401,
+      "end_ms": 24368,
+      "speaker": "Alice",
+      "text": "Good point. Let me share my screen.",
+      "raw_text": "Alice: Good point. Let me share my screen."
+    },
+    {
+      "id": "seg-006",
+      "cue_index": 6,
+      "start_ms": 24408,
+      "end_ms": 31578,
+      "speaker": "Charlie",
+      "text": "Hey team, sorry I'm late. Had a quick sync with the stakeholders.",
+      "raw_text": "Charlie: Hey team, sorry I'm late.\nHad a quick sync with the stakeholders."
+    },
+    {
+      "id": "seg-007",
+      "cue_index": 7,
+      "start_ms": 31578,
+      "end_ms": 38655,
+      "speaker": "Alice",
+      "text": "No worries Charlie. We were just starting. Bob raised a good point about the API.",
+      "raw_text": "Alice: No worries Charlie. We were just starting.\nBob raised a good point about the API."
+    },
+    {
+      "id": "seg-008",
+      "cue_index": 8,
+      "start_ms": 38655,
+      "end_ms": 41728,
+      "speaker": "Charlie",
+      "text": "The API work is critical for the demo.",
+      "raw_text": "Charlie: The API work is critical for the demo."
+    },
+    {
+      "id": "seg-009",
+      "cue_index": 9,
+      "start_ms": 41728,
+      "end_ms": 46872,
+      "speaker": "Bob",
+      "text": "Agreed. I can take the lead on that.",
+      "raw_text": "Bob: Agreed. I can take the lead on that."
+    },
+    {
+      "id": "seg-010",
+      "cue_index": 10,
+      "start_ms": 46872,
+      "end_ms": 50291,
+      "speaker": "Alice",
+      "text": "Perfect. Let's assign it now.",
+      "raw_text": "Alice: Perfect. Let's assign it now."
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

@@ -1,0 +1,390 @@
+{
+  "schema_version": "1.0",
+  "packet_id": "transcript-meeting-006-all-hands",
+  "generated_at": "2026-01-28T20:00:00Z",
+  "anchor_stats": {
+    "total_anchors": 3203,
+    "segment_anchors": 3071,
+    "speaker_anchors": 50,
+    "entity_anchors": 82,
+    "custom_anchors": 0
+  },
+  "segments": {
+    "seg-0001": {
+      "file": "02-transcript-part-1.md",
+      "line_number": 42,
+      "timestamp_ms": 0,
+      "speaker": "Robert Chen",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Meeting opening"
+        }
+      ]
+    },
+    "seg-0037": {
+      "file": "02-transcript-part-1.md",
+      "line_number": 152,
+      "timestamp_ms": 198000,
+      "speaker": "Robert Chen",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "No layoffs announcement"
+        },
+        {
+          "file": "05-decisions.md",
+          "context": "DEC-001 citation"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-001 key segment"
+        }
+      ]
+    },
+    "seg-0041": {
+      "file": "02-transcript-part-1.md",
+      "line_number": 168,
+      "timestamp_ms": 220000,
+      "speaker": "Robert Chen",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Team expansion"
+        },
+        {
+          "file": "04-action-items.md",
+          "context": "ACT-005 citation"
+        }
+      ]
+    },
+    "seg-0106": {
+      "file": "02-transcript-part-1.md",
+      "line_number": 422,
+      "timestamp_ms": 577500,
+      "speaker": "Diana Martinez",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Priority 1: Microservices migration"
+        },
+        {
+          "file": "04-action-items.md",
+          "context": "ACT-001 citation"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-002 key segment"
+        }
+      ]
+    },
+    "seg-0107": {
+      "file": "02-transcript-part-1.md",
+      "line_number": 424,
+      "timestamp_ms": 583000,
+      "speaker": "Diana Martinez",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Priority 2: AI automation"
+        },
+        {
+          "file": "04-action-items.md",
+          "context": "ACT-002 citation"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-002 key segment"
+        }
+      ]
+    },
+    "seg-2500": {
+      "file": "02-transcript-part-2.md",
+      "line_number": 98,
+      "timestamp_ms": 14940000,
+      "speaker": "Kevin Marketing VP",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Healthcare expansion"
+        },
+        {
+          "file": "05-decisions.md",
+          "context": "DEC-003 citation"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-003 key segment"
+        }
+      ]
+    },
+    "seg-2701": {
+      "file": "02-transcript-part-2.md",
+      "line_number": 142,
+      "timestamp_ms": 16205000,
+      "speaker": "Employee Five",
+      "backlinks": [
+        {
+          "file": "06-questions.md",
+          "context": "QUE-001 question"
+        }
+      ]
+    },
+    "seg-2704": {
+      "file": "02-transcript-part-2.md",
+      "line_number": 150,
+      "timestamp_ms": 16221500,
+      "speaker": "Diana Martinez",
+      "backlinks": [
+        {
+          "file": "05-decisions.md",
+          "context": "DEC-002 citation"
+        },
+        {
+          "file": "06-questions.md",
+          "context": "QUE-001 answer"
+        }
+      ]
+    },
+    "seg-3051": {
+      "file": "02-transcript-part-2.md",
+      "line_number": 224,
+      "timestamp_ms": 18125000,
+      "speaker": "Robert Chen",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Closing remarks"
+        }
+      ]
+    }
+  },
+  "speakers": {
+    "spk-robert-chen": {
+      "file": "03-speakers.md",
+      "line_number": 47,
+      "display_name": "Robert Chen",
+      "segment_count": 1005,
+      "backlinks": [
+        {
+          "file": "02-transcript-part-1.md",
+          "context": "Speaker section header"
+        }
+      ]
+    },
+    "spk-diana-martinez": {
+      "file": "03-speakers.md",
+      "line_number": 89,
+      "display_name": "Diana Martinez",
+      "segment_count": 491,
+      "backlinks": [
+        {
+          "file": "02-transcript-part-1.md",
+          "context": "Speaker section header"
+        }
+      ]
+    },
+    "spk-jennifer-adams": {
+      "file": "03-speakers.md",
+      "line_number": 111,
+      "display_name": "Jennifer Adams",
+      "segment_count": 317,
+      "backlinks": [
+        {
+          "file": "02-transcript-part-2.md",
+          "context": "Speaker section header"
+        }
+      ]
+    }
+  },
+  "entities": {
+    "act-001": {
+      "type": "action_item",
+      "file": "04-action-items.md",
+      "line_number": 38,
+      "description": "Complete Microservices Migration",
+      "owner": "Diana Martinez",
+      "priority": "high",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Action items summary"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-002 related actions"
+        }
+      ]
+    },
+    "act-002": {
+      "type": "action_item",
+      "file": "04-action-items.md",
+      "line_number": 64,
+      "description": "Ship AI Automation Features",
+      "owner": "Diana Martinez",
+      "priority": "high",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Action items summary"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-002 related actions"
+        }
+      ]
+    },
+    "act-005": {
+      "type": "action_item",
+      "file": "04-action-items.md",
+      "line_number": 144,
+      "description": "Reach 950 Employees Globally",
+      "owner": "Robert Chen",
+      "priority": "medium",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Action items summary"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-001 related actions"
+        }
+      ]
+    },
+    "dec-001": {
+      "type": "decision",
+      "file": "05-decisions.md",
+      "line_number": 22,
+      "description": "No Layoffs Planned",
+      "decision_maker": "Robert Chen",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Key decisions"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-001 related decisions"
+        }
+      ]
+    },
+    "dec-002": {
+      "type": "decision",
+      "file": "05-decisions.md",
+      "line_number": 46,
+      "description": "AI Automation Beta Delayed to Q4",
+      "decision_maker": "Diana Martinez",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Key decisions"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-002 related decisions"
+        }
+      ]
+    },
+    "dec-003": {
+      "type": "decision",
+      "file": "05-decisions.md",
+      "line_number": 70,
+      "description": "Healthcare Vertical Expansion Approved",
+      "decision_maker": "Kevin Marketing VP",
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Key decisions"
+        },
+        {
+          "file": "07-topics.md",
+          "context": "TOP-003 related decisions"
+        }
+      ]
+    },
+    "que-001": {
+      "type": "question",
+      "file": "06-questions.md",
+      "line_number": 32,
+      "description": "AI Automation Timeline",
+      "asker": "Employee Five",
+      "answerer": "Diana Martinez",
+      "status": "answered",
+      "backlinks": []
+    },
+    "que-002": {
+      "type": "question",
+      "file": "06-questions.md",
+      "line_number": 66,
+      "description": "Microservices Migration Challenges",
+      "asker": "Employee Twelve",
+      "answerer": "Michelle Taylor",
+      "status": "answered",
+      "backlinks": []
+    },
+    "top-001": {
+      "type": "topic",
+      "file": "07-topics.md",
+      "line_number": 27,
+      "description": "Company Performance and Culture",
+      "speaker": "Robert Chen",
+      "segment_count": 1005,
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Major topics"
+        }
+      ]
+    },
+    "top-002": {
+      "type": "topic",
+      "file": "07-topics.md",
+      "line_number": 90,
+      "description": "Technical Strategy and Infrastructure",
+      "speaker": "Diana Martinez",
+      "segment_count": 491,
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Major topics"
+        }
+      ]
+    },
+    "top-003": {
+      "type": "topic",
+      "file": "07-topics.md",
+      "line_number": 160,
+      "description": "Product Strategy and Roadmap",
+      "speaker": "Jennifer Adams",
+      "segment_count": 317,
+      "backlinks": [
+        {
+          "file": "01-summary.md",
+          "context": "Major topics"
+        }
+      ]
+    }
+  },
+  "navigation_links": {
+    "part_1_to_part_2": {
+      "file": "02-transcript-part-1.md",
+      "line_number": 999,
+      "target_file": "02-transcript-part-2.md",
+      "target_anchor": null
+    },
+    "part_2_to_part_1": {
+      "file": "02-transcript-part-2.md",
+      "line_number": 12,
+      "target_file": "02-transcript-part-1.md",
+      "target_anchor": null
+    }
+  },
+  "validation": {
+    "broken_links": 0,
+    "orphaned_anchors": 0,
+    "duplicate_anchors": 0,
+    "validation_timestamp": "2026-01-28T20:00:00Z",
+    "validation_status": "PASS"
+  }
+}

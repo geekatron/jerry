@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-01-30T05:09:34.585660+00:00",
+  "total_segments": 39,
+  "total_chunks": 1,
+  "chunk_size": 500,
+  "duration_ms": 505000,
+  "speakers": {
+    "count": 4,
+    "list": [
+      "Alice",
+      "Bob",
+      "Charlie",
+      "Diana"
+    ],
+    "segment_counts": {
+      "Alice": 17,
+      "Bob": 9,
+      "Charlie": 7,
+      "Diana": 6
+    }
+  },
+  "chunks": [
+    {
+      "chunk_id": "chunk-001",
+      "segment_range": [
+        1,
+        39
+      ],
+      "timestamp_range": {
+        "start_ms": 0,
+        "end_ms": 505000
+      },
+      "speaker_counts": {
+        "Alice": 17,
+        "Bob": 9,
+        "Charlie": 7,
+        "Diana": 6
+      },
+      "word_count": 512,
+      "file": "chunks/chunk-001.json"
+    }
+  ]
+}

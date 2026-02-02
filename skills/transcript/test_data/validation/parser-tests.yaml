@@ -1,0 +1,741 @@
+# =============================================================================
+# PARSER TEST SPECIFICATION
+# =============================================================================
+# Purpose: Test cases for ts-parser agent verification
+# Created: 2026-01-27
+# Updated: 2026-01-27 (Added edge case tests from W3C WebVTT research)
+# Source: EN-007 DISC-002 (Minimal test infrastructure)
+# Research: EN-007 webvtt-test-suite-research.md
+# Implements: FR-001 (VTT), FR-002 (SRT), FR-003 (Plain Text), FR-004 (Format Detection)
+# Reference: TDD-ts-parser.md, ts-parser.md
+#
+# REVIEW STATUS: PENDING_HUMAN_REVIEW
+# =============================================================================
+
+version: "1.4.0"
+agent: ts-parser
+created_at: "2026-01-27T14:30:00Z"
+updated_at: "2026-01-27T23:30:00Z"
+review_status: PENDING_HUMAN_REVIEW
+note: "v1.4.0 - Added encoding fallback tests (TASK-107) for NFR-007 verification"
+
+# =============================================================================
+# TEST SUITES
+# =============================================================================
+
+test_suites:
+
+  # ---------------------------------------------------------------------------
+  # VTT PARSING (FR-001) - Primary focus for TASK-102
+  # ---------------------------------------------------------------------------
+  vtt_parsing:
+    description: "WebVTT format parsing tests (FR-001)"
+    implements: "FR-001"
+    reference: "TDD-ts-parser.md Section 1.1"
+
+    tests:
+      # Test VTT-001: Basic VTT with voice tags
+      - id: vtt-001
+        name: "Parse VTT with voice tags and closing </v> tags"
+        description: |
+          Verify ts-parser correctly handles VTT files with:
+          - WEBVTT header
+          - Voice tags with closing </v> (per DISC-001 correction)
+          - Standard HH:MM:SS.mmm timestamps
+        input:
+          file: "transcripts/real/k8-network-policies-sample.vtt"
+          format: vtt
+        expected:
+          file: "../expected/k8-network-policies-sample.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "vtt"
+          - type: segment_count
+            expected: 20
+          - type: speakers_detected
+            expected: ["Adam Nowak", "Brendan Bennett"]
+          - type: no_parse_errors
+          - type: closing_tags_stripped
+            description: "Text should NOT contain </v> closing tags"
+        acceptance_criteria:
+          - "AC-1: WEBVTT header recognized"
+          - "AC-2: Voice tags parsed correctly"
+          - "AC-3: Closing </v> tags stripped from text"
+
+      # Test VTT-002: Multi-line cue payloads
+      - id: vtt-002
+        name: "Parse VTT with multi-line cue payloads"
+        description: |
+          Verify ts-parser correctly handles multi-line cue payloads:
+          - Voice tag opens on first line
+          - Closing tag on last line
+          - Lines joined with single space
+        input:
+          file: "transcripts/real/k8-network-policies-sample.vtt"
+          segment_filter: "seg-002"  # Multi-line example
+        expected:
+          segment:
+            id: "seg-002"
+            speaker: "Brendan Bennett"
+            text: "All right. Yeah. So I guess I was a little interested in"
+        assertions:
+          - type: text_no_newlines
+            description: "Multi-line payload joined with single space"
+          - type: text_no_closing_tag
+            description: "Closing </v> stripped from extracted text"
+        acceptance_criteria:
+          - "AC-4: Multi-line payloads joined correctly"
+
+      # Test VTT-003: Timestamp normalization
+      - id: vtt-003
+        name: "Timestamps normalized to milliseconds"
+        description: |
+          Verify ts-parser converts VTT timestamps to milliseconds:
+          - HH:MM:SS.mmm -> integer milliseconds
+          - Precision: 10ms (per NFR-006)
+        input:
+          file: "transcripts/real/k8-network-policies-sample.vtt"
+          segment_filter: "seg-001"
+        expected:
+          segment:
+            start_ms: 3528
+            end_ms: 6448
+        assertions:
+          - type: timestamp_format
+            expected: "milliseconds"
+          - type: start_before_end
+            description: "start_ms < end_ms for all segments"
+        acceptance_criteria:
+          - "AC-6: Timestamps normalized to milliseconds"
+
+      # Test VTT-004: Speaker extraction from voice tags
+      - id: vtt-004
+        name: "Speaker names extracted from <v> tags"
+        description: |
+          Verify ts-parser extracts speaker names correctly:
+          - Pattern: <v SPEAKER_NAME>text</v>
+          - Full name preserved (first and last)
+        input:
+          file: "transcripts/real/k8-network-policies-sample.vtt"
+        expected:
+          speakers: ["Adam Nowak", "Brendan Bennett"]
+        assertions:
+          - type: speaker_count
+            expected: 2
+          - type: full_names_preserved
+            description: "First and last names both present"
+        acceptance_criteria:
+          - "AC-2: Voice tags parsed correctly"
+
+      # Test VTT-005: Canonical JSON schema compliance
+      - id: vtt-005
+        name: "Output matches canonical JSON schema"
+        description: |
+          Verify ts-parser output conforms to TDD-ts-parser.md Section 3 schema:
+          - version field present
+          - source object with format, encoding, file_path
+          - metadata object with duration_ms, segment_count, detected_speakers
+          - segments array with required fields
+        input:
+          file: "transcripts/real/k8-network-policies-sample.vtt"
+        expected:
+          schema_compliance: true
+        assertions:
+          - type: has_version
+            expected: "1.0"
+          - type: has_source_object
+            required_fields: ["format", "encoding", "file_path"]
+          - type: has_metadata_object
+            required_fields: ["duration_ms", "segment_count", "detected_speakers"]
+          - type: has_segments_array
+            segment_required_fields: ["id", "start_ms", "end_ms", "speaker", "text"]
+        acceptance_criteria:
+          - "AC-5: Output matches canonical JSON schema"
+
+  # ---------------------------------------------------------------------------
+  # VTT EDGE CASES (From W3C WebVTT Research)
+  # Reference: EN-007 research/webvtt-test-suite-research.md
+  # ---------------------------------------------------------------------------
+  vtt_edge_cases:
+    description: "WebVTT edge case tests derived from W3C WebVTT spec research"
+    implements: "FR-001"
+    reference: "W3C WebVTT Spec, WPT test suite, webvtt-test-suite-research.md"
+    status: "READY"
+
+    tests:
+      # Test VTT-006: Voice tags without closing tag
+      - id: vtt-006
+        name: "Parse voice tags without closing </v> tag"
+        description: |
+          Per W3C spec, closing tag can be omitted if voice spans entire cue.
+          Tests VT-004 from research.
+        input:
+          file: "transcripts/edge_cases/voice_tag_no_close.vtt"
+        expected:
+          file: "../expected/voice_tag_no_close.expected.json"
+        assertions:
+          - type: speakers_extracted
+            expected: ["John", "Mary", "Bob"]
+          - type: all_segments_valid
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "VT-004: Voice tags without closing tag parsed correctly"
+
+      # Test VTT-007: Voice tags with CSS classes
+      - id: vtt-007
+        name: "Parse voice tags with class annotations"
+        description: |
+          Format: <v.class1.class2 Speaker>text</v>
+          Classes should be stripped, speaker name extracted.
+          Tests VT-006, VT-007 from research.
+        input:
+          file: "transcripts/edge_cases/voice_tag_with_class.vtt"
+        expected:
+          file: "../expected/voice_tag_with_class.expected.json"
+        assertions:
+          - type: speakers_extracted
+            expected: ["Boss", "Employee", "Multi-Class Speaker"]
+          - type: classes_stripped
+            description: "Text should not contain .loud, .whisper, etc."
+        acceptance_criteria:
+          - "VT-006: Voice tag classes stripped correctly"
+
+      # Test VTT-008: Multiple speakers in single cue
+      - id: vtt-008
+        name: "Parse multiple speakers in single cue"
+        description: |
+          Tests cues with multiple <v> tags.
+          Tests VT-009 from research.
+        input:
+          file: "transcripts/edge_cases/multi_speaker_cue.vtt"
+        expected:
+          file: "../expected/multi_speaker_cue.expected.json"
+        assertions:
+          - type: multi_speaker_extraction
+            description: "All speakers extracted from multi-speaker cues"
+        acceptance_criteria:
+          - "VT-009: Multiple speakers per cue supported"
+
+      # Test VTT-009: Nested formatting tags
+      - id: vtt-009
+        name: "Strip nested formatting tags from voice spans"
+        description: |
+          Format: <v Speaker><b>Bold</b> and <i>italic</i></v>
+          All formatting tags should be stripped, text preserved.
+          Tests VT-008, TT-008 from research.
+        input:
+          file: "transcripts/edge_cases/nested_formatting.vtt"
+        expected:
+          file: "../expected/nested_formatting.expected.json"
+        assertions:
+          - type: formatting_tags_stripped
+            tags: ["<b>", "</b>", "<i>", "</i>", "<u>", "</u>", "<c>", "</c>", "<lang>", "</lang>"]
+          - type: text_preserved
+        acceptance_criteria:
+          - "TT-008: Nested formatting tags stripped"
+
+      # Test VTT-010: Unicode speakers and content
+      - id: vtt-010
+        name: "Parse Unicode speaker names and content"
+        description: |
+          Tests i18n support with various scripts:
+          - Chinese, Arabic, Greek, German umlauts, Japanese, Emoji
+          Tests CE-003, CE-004 from research.
+        input:
+          file: "transcripts/edge_cases/unicode_speakers.vtt"
+        expected:
+          file: "../expected/unicode_speakers.expected.json"
+        assertions:
+          - type: unicode_speakers_extracted
+            expected_count: 6
+          - type: encoding_detected
+            expected: "utf-8"
+        acceptance_criteria:
+          - "CE-004: Unicode speaker names preserved"
+
+      # Test VTT-011: HTML entity decoding
+      - id: vtt-011
+        name: "Decode HTML entities in cue text"
+        description: |
+          Tests entity decoding: &amp; -> &, &lt; -> <, &gt; -> >, &nbsp; -> space
+          Tests CE-005, CE-006, CE-007 from research.
+        input:
+          file: "transcripts/edge_cases/entity_escapes.vtt"
+        expected:
+          file: "../expected/entity_escapes.expected.json"
+        assertions:
+          - type: entity_decoded
+            test_cases:
+              - input: "&amp;"
+                expected: "&"
+              - input: "&lt;"
+                expected: "<"
+              - input: "&gt;"
+                expected: ">"
+        acceptance_criteria:
+          - "CE-005: HTML entities decoded correctly"
+
+      # Test VTT-012: Timestamp edge cases
+      - id: vtt-012
+        name: "Parse timestamp edge cases"
+        description: |
+          Tests timestamp format variations:
+          - No hours format (MM:SS.mmm)
+          - With hours format (HH:MM:SS.mmm)
+          - Extended hours (>2 digits)
+          - Minute boundaries
+          - Short/minimal durations
+          Tests TS-001 through TS-005 from research.
+        input:
+          file: "transcripts/edge_cases/timestamp_edge_cases.vtt"
+        expected:
+          file: "../expected/timestamp_edge_cases.expected.json"
+        assertions:
+          - type: timestamps_normalized
+            format: "milliseconds"
+          - type: start_before_end
+            all_segments: true
+        acceptance_criteria:
+          - "TS-001: No-hours format parsed"
+          - "TS-002: With-hours format parsed"
+          - "TS-003: Extended hours supported"
+
+      # Test VTT-013: Empty and malformed cues
+      - id: vtt-013
+        name: "Handle empty and malformed cues gracefully"
+        description: |
+          Tests PAT-002 defensive parsing:
+          - Empty cue text
+          - Whitespace-only payloads
+          - Empty voice annotations
+          Parser should continue despite individual errors.
+        input:
+          file: "transcripts/edge_cases/empty_and_malformed.vtt"
+        expected:
+          file: "../expected/empty_and_malformed.expected.json"
+        assertions:
+          - type: no_fatal_error
+          - type: parse_warnings_captured
+            description: "Warnings for malformed cues should be logged"
+          - type: valid_segments_extracted
+            min_count: 1
+        acceptance_criteria:
+          - "PAT-002: Defensive parsing continues despite errors"
+
+      # Test VTT-014: Combined edge cases
+      - id: vtt-014
+        name: "Parse combined edge cases file"
+        description: |
+          Comprehensive test with all edge cases in single file:
+          - Voice tags (VT-*)
+          - Tag stripping (TT-*)
+          - Multiline (ML-*)
+          - Encoding (CE-*)
+          - Timestamps (TS-*)
+        input:
+          file: "transcripts/edge_cases/combined_edge_cases.vtt"
+        expected:
+          file: "../expected/combined_edge_cases.expected.json"
+        assertions:
+          - type: all_segments_valid
+          - type: no_fatal_error
+          - type: segment_count
+            minimum: 20
+        acceptance_criteria:
+          - "Comprehensive edge case coverage validated"
+
+  # ---------------------------------------------------------------------------
+  # FORMAT DETECTION (FR-004) - Placeholder for expansion
+  # ---------------------------------------------------------------------------
+  format_detection:
+    description: "Format auto-detection tests (FR-004)"
+    implements: "FR-004"
+    reference: "TDD-ts-parser.md Section 2"
+    status: "PLACEHOLDER - Expand in EN-015"
+
+    tests:
+      - id: det-001
+        name: "Auto-detect VTT format"
+        description: "Verify format detection for VTT files"
+        input:
+          file: "transcripts/real/k8-network-policies-sample.vtt"
+        assertions:
+          - type: format_detected
+            expected: "vtt"
+
+  # ---------------------------------------------------------------------------
+  # SRT PARSING (FR-002) - TASK-103 Verification
+  # ---------------------------------------------------------------------------
+  srt_parsing:
+    description: "SubRip format parsing tests (FR-002)"
+    implements: "FR-002"
+    reference: "TDD-ts-parser.md Section 1.2, ts-parser.md FR-002"
+    status: "READY"
+
+    tests:
+      # Test SRT-001: Standard SRT with comma timestamps (Zoom format)
+      - id: srt-001
+        name: "Parse SRT with comma timestamps and colon speaker prefix"
+        description: |
+          Verify ts-parser correctly handles standard SRT files with:
+          - Sequence numbers (1, 2, 3...)
+          - Comma timestamps: HH:MM:SS,mmm --> HH:MM:SS,mmm
+          - Speaker pattern: "Speaker: text"
+          - Multi-line cue payloads joined with single space
+        input:
+          file: "transcripts/real/sample-meeting-zoom.srt"
+          format: srt
+        expected:
+          file: "../expected/sample-meeting-zoom.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: segment_count
+            expected: 10
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "Charlie"]
+          - type: no_parse_errors
+          - type: timestamps_normalized
+            format: "milliseconds"
+        acceptance_criteria:
+          - "FR-002.1: Sequence numbers parsed"
+          - "FR-002.2: Comma timestamps normalized to milliseconds"
+          - "FR-002.3: Speaker colon prefix extracted"
+          - "FR-002.6: Multi-line payloads joined"
+
+      # Test SRT-002: SRT with period timestamps (Otter.ai format)
+      - id: srt-002
+        name: "Parse SRT with period timestamps and bracket speaker prefix"
+        description: |
+          Verify ts-parser handles Otter.ai style SRT files with:
+          - Period timestamps: HH:MM:SS.mmm --> HH:MM:SS.mmm
+          - Speaker pattern: "[Speaker] text"
+          Tests FR-002.4 (period timestamp support)
+        input:
+          file: "transcripts/edge_cases/srt_period_timestamps.srt"
+          format: srt
+        expected:
+          file: "../expected/srt_period_timestamps.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: segment_count
+            expected: 6
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "Charlie"]
+          - type: no_parse_errors
+          - type: timestamps_normalized
+            format: "milliseconds"
+        acceptance_criteria:
+          - "FR-002.4: Period timestamps parsed correctly"
+          - "FR-002.5: Bracket speaker prefix extracted"
+
+      # Test SRT-003: SRT with mixed speaker patterns
+      - id: srt-003
+        name: "Parse SRT with mixed speaker patterns"
+        description: |
+          Verify ts-parser handles mixed speaker patterns in SRT:
+          - Pattern 1: "Alice: text" (colon prefix)
+          - Pattern 2: "[Bob] text" (bracket prefix)
+          - Pattern 3: "CHARLIE: text" (all caps with colon)
+          - Pattern 4: No prefix (speaker = null)
+        input:
+          file: "transcripts/edge_cases/srt_mixed_speakers.srt"
+          format: srt
+        expected:
+          file: "../expected/srt_mixed_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: segment_count
+            expected: 5
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "CHARLIE", "Diana"]
+          - type: null_speaker_fallback
+            description: "Segment without speaker prefix has speaker=null"
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-002.3: Multiple speaker patterns supported"
+          - "FR-002.7: Fallback to null speaker when no pattern detected"
+
+  # ---------------------------------------------------------------------------
+  # PLAIN TEXT PARSING (FR-003) - TASK-104 Verification
+  # ---------------------------------------------------------------------------
+  plain_text_parsing:
+    description: "Plain text format parsing tests (FR-003)"
+    implements: "FR-003"
+    reference: "TDD-ts-parser.md Section 1.3, ts-parser.md FR-003"
+    status: "READY"
+
+    tests:
+      # Test TXT-001: Plain text with colon speaker prefix
+      - id: txt-001
+        name: "Parse plain text with colon speaker prefix"
+        description: |
+          Verify ts-parser correctly handles plain text files with:
+          - Pattern: "Speaker: text"
+          - No timestamps (start_ms, end_ms = null)
+          - Multi-line utterances joined with single space
+        input:
+          file: "transcripts/real/sample-interview.txt"
+          format: plain
+        expected:
+          file: "../expected/sample-interview.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 9
+          - type: speakers_detected
+            expected: ["Interviewer", "Candidate"]
+          - type: no_timestamps
+            description: "All start_ms and end_ms should be null"
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.1: Colon prefix speaker extracted"
+          - "FR-003.5: Multi-line utterances joined"
+          - "FR-003.6: Timestamps are null for plain text"
+
+      # Test TXT-002: Plain text with bracket speaker prefix
+      - id: txt-002
+        name: "Parse plain text with bracket speaker prefix"
+        description: |
+          Verify ts-parser handles bracket speaker pattern:
+          - Pattern: "[Speaker] text"
+          Tests FR-003.2 from ts-parser.md
+        input:
+          file: "transcripts/edge_cases/txt_bracket_speakers.txt"
+          format: plain
+        expected:
+          file: "../expected/txt_bracket_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 7
+          - type: speakers_detected
+            expected: ["Alice", "Bob", "Charlie"]
+          - type: no_timestamps
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.2: Bracket prefix speaker extracted"
+
+      # Test TXT-003: Plain text with ALL CAPS speaker pattern
+      - id: txt-003
+        name: "Parse plain text with ALL CAPS speaker on separate line"
+        description: |
+          Verify ts-parser handles ALL CAPS speaker pattern:
+          - Speaker name on separate line (all uppercase)
+          - Utterance follows on next line(s)
+          Tests FR-003.3 from ts-parser.md
+        input:
+          file: "transcripts/edge_cases/txt_allcaps_speakers.txt"
+          format: plain
+        expected:
+          file: "../expected/txt_allcaps_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 7
+          - type: speakers_detected
+            expected: ["ALICE", "BOB", "CHARLIE"]
+          - type: no_timestamps
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.3: ALL CAPS speaker pattern detected"
+
+      # Test TXT-004: Plain text with no speaker detection (fallback)
+      - id: txt-004
+        name: "Parse plain text with no speaker patterns (fallback)"
+        description: |
+          Verify ts-parser fallback behavior when no speaker patterns detected:
+          - All segments have speaker = null
+          - Text preserved in segments
+          Tests FR-003.4 from ts-parser.md
+        input:
+          file: "transcripts/edge_cases/txt_no_speakers.txt"
+          format: plain
+        expected:
+          file: "../expected/txt_no_speakers.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "plain"
+          - type: segment_count
+            expected: 7
+          - type: detected_speakers_count
+            expected: 0
+          - type: all_speakers_null
+            description: "All segments should have speaker=null"
+          - type: no_timestamps
+          - type: no_parse_errors
+        acceptance_criteria:
+          - "FR-003.4: Fallback to null speaker when undetected"
+
+  # ---------------------------------------------------------------------------
+  # ENCODING FALLBACK (NFR-007) - TASK-107 Verification
+  # ---------------------------------------------------------------------------
+  encoding_fallback:
+    description: "Encoding fallback chain tests (NFR-007)"
+    implements: "NFR-007"
+    reference: "TDD-ts-parser.md Section 5, EN-007:DEC-001"
+    status: "READY"
+    note: |
+      Tests the encoding fallback chain: UTF-8 → Windows-1252 → ISO-8859-1 → Latin-1
+      Files in this suite contain bytes that are INVALID UTF-8, forcing fallback.
+      See EN-007:DEC-001 for UTF-16 BOM scope exclusion.
+
+    tests:
+      # Test ENC-001: Windows-1252 VTT fallback
+      - id: enc-001
+        name: "Detect and decode Windows-1252 VTT file"
+        description: |
+          Verify ts-parser fallback to Windows-1252 encoding:
+          - File contains € (0x80), smart quotes (0x93/0x94), apostrophe (0x92)
+          - These bytes are INVALID in UTF-8, but valid in Windows-1252
+          - Parser should detect Windows-1252 and decode correctly
+          - WARN-003 should be emitted in parse_warnings
+        input:
+          file: "transcripts/edge_cases/windows1252_sample.vtt"
+          format: vtt
+        expected:
+          file: "../expected/windows1252_sample.expected.json"
+        assertions:
+          - type: encoding_detected
+            expected: "windows-1252"
+          - type: parse_warning
+            expected_code: "WARN-003"
+            expected_message: "Fallback encoding used"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Müller", "François"]
+          - type: text_contains
+            segment: 1
+            expected: "€50"
+            description: "Euro sign correctly decoded from 0x80"
+          - type: text_contains
+            segment: 1
+            expected: '"exactly"'
+            description: "Smart quotes correctly decoded from 0x93/0x94"
+        acceptance_criteria:
+          - "NFR-007.1: UTF-8 decode failure triggers fallback"
+          - "NFR-007.2: Windows-1252 encoding detected and used"
+          - "NFR-007.3: WARN-003 emitted in parse_warnings"
+
+      # Test ENC-002: ISO-8859-1 VTT fallback
+      - id: enc-002
+        name: "Detect and decode ISO-8859-1 VTT file"
+        description: |
+          Verify ts-parser fallback to ISO-8859-1 encoding:
+          - File contains German umlauts (ö=0xF6, é=0xE9, è=0xE8, à=0xE0)
+          - These bytes are INVALID in UTF-8 without proper multi-byte sequence
+          - Parser should detect ISO-8859-1 and decode correctly
+          - WARN-003 should be emitted in parse_warnings
+        input:
+          file: "transcripts/edge_cases/iso88591_sample.vtt"
+          format: vtt
+        expected:
+          file: "../expected/iso88591_sample.expected.json"
+        assertions:
+          - type: encoding_detected
+            expected: "iso-8859-1"
+          - type: parse_warning
+            expected_code: "WARN-003"
+            expected_message: "Fallback encoding used"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Dörte", "René"]
+          - type: text_contains
+            segment: 2
+            expected: "Très bien"
+            description: "French accented characters correctly decoded"
+        acceptance_criteria:
+          - "NFR-007.1: UTF-8 decode failure triggers fallback"
+          - "NFR-007.4: ISO-8859-1 encoding detected and used"
+          - "NFR-007.3: WARN-003 emitted in parse_warnings"
+
+      # Test ENC-003: Windows-1252 SRT fallback
+      - id: enc-003
+        name: "Detect and decode Windows-1252 SRT file"
+        description: |
+          Verify ts-parser fallback for SRT format with Windows-1252 encoding:
+          - Same encoding test as enc-001 but for SRT format
+          - Verifies encoding fallback works across formats
+        input:
+          file: "transcripts/edge_cases/windows1252_sample.srt"
+          format: srt
+        expected:
+          file: "../expected/windows1252_sample_srt.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: encoding_detected
+            expected: "windows-1252"
+          - type: parse_warning
+            expected_code: "WARN-003"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Müller", "François"]
+        acceptance_criteria:
+          - "NFR-007.2: Windows-1252 fallback works for SRT format"
+
+      # Test ENC-004: ISO-8859-1 SRT fallback
+      - id: enc-004
+        name: "Detect and decode ISO-8859-1 SRT file"
+        description: |
+          Verify ts-parser fallback for SRT format with ISO-8859-1 encoding:
+          - Same encoding test as enc-002 but for SRT format
+          - Verifies encoding fallback works across formats
+        input:
+          file: "transcripts/edge_cases/iso88591_sample.srt"
+          format: srt
+        expected:
+          file: "../expected/iso88591_sample_srt.expected.json"
+        assertions:
+          - type: format_detected
+            expected: "srt"
+          - type: encoding_detected
+            expected: "iso-8859-1"
+          - type: parse_warning
+            expected_code: "WARN-003"
+          - type: segment_count
+            expected: 2
+          - type: speakers_detected
+            expected: ["Dörte", "René"]
+        acceptance_criteria:
+          - "NFR-007.4: ISO-8859-1 fallback works for SRT format"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# VERSION HISTORY:
+# - v1.0.0: Initial VTT tests for TASK-102
+# - v1.1.0: Added VTT edge case tests from W3C WebVTT research
+# - v1.2.0: Added expected output JSON files for all edge case tests (TASK-106)
+# - v1.3.0: Added SRT (TASK-103) and Plain Text (TASK-104) test suites
+# - v1.4.0: Added encoding fallback tests (TASK-107) for NFR-007
+#
+# TEST DATA CREATED:
+# - SRT: sample-meeting-zoom.srt, srt_period_timestamps.srt, srt_mixed_speakers.srt
+# - Plain Text: sample-interview.txt, txt_bracket_speakers.txt,
+#               txt_allcaps_speakers.txt, txt_no_speakers.txt
+# - Encoding (TASK-107): windows1252_sample.vtt, windows1252_sample.srt,
+#                        iso88591_sample.vtt, iso88591_sample.srt
+#                        ⚠️ WARNING: These are BINARY files with specific byte sequences.
+#                        Do NOT edit with text editors - will corrupt encoding tests!
+# - Expected JSON: 11 expected output files in expected/ directory
+#
+# REMAINING FOR EN-015:
+# - Golden dataset (3 full meetings)
+# - Additional stress tests (large files, performance)
+#
+# HUMAN REVIEW REQUIRED:
+# - Verify expected JSON values are correct
+# - Confirm test assertions match acceptance criteria
+# - Approve before using for verification
+#
+# =============================================================================

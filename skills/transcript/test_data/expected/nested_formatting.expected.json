@@ -1,0 +1,53 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/nested_formatting.vtt"
+  },
+  "metadata": {
+    "duration_ms": 4000,
+    "segment_count": 4,
+    "detected_speakers": 4
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": "Speaker",
+      "text": "Bold text and italic text",
+      "raw_text": "<v Speaker><b>Bold text</b> and <i>italic text</i></v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": "Host",
+      "text": "Welcome to today's show!",
+      "raw_text": "<v Host>Welcome to <b><i>today's</i></b> show!</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": "Guest",
+      "text": "Underlined and highlighted text",
+      "raw_text": "<v Guest><u>Underlined</u> and <c.highlight>highlighted</c> text</v>"
+    },
+    {
+      "id": "seg-004",
+      "start_ms": 3000,
+      "end_ms": 4000,
+      "speaker": "Narrator",
+      "text": "The localized content here.",
+      "raw_text": "<v Narrator>The <lang en-US>localized</lang> content here.</v>"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

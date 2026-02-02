@@ -1,0 +1,61 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/multi_speaker_cue.vtt"
+  },
+  "metadata": {
+    "duration_ms": 4000,
+    "segment_count": 5,
+    "detected_speakers": 5
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "speaker": "John",
+      "text": "Hello",
+      "raw_text": "<v John>Hello</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "speaker": "Mary",
+      "text": "Hi there",
+      "raw_text": "<v Mary>Hi there</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 4000,
+      "speaker": "Alice",
+      "text": "What's happening?",
+      "raw_text": "<v Alice>What's happening?</v>"
+    },
+    {
+      "id": "seg-004",
+      "start_ms": 2000,
+      "end_ms": 4000,
+      "speaker": "Bob",
+      "text": "Not much.",
+      "raw_text": "<v Bob>Not much.</v>"
+    },
+    {
+      "id": "seg-005",
+      "start_ms": 2000,
+      "end_ms": 4000,
+      "speaker": "Charlie",
+      "text": "Same here.",
+      "raw_text": "<v Charlie>Same here.</v>"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

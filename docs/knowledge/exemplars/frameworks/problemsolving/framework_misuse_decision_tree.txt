@@ -1,0 +1,19 @@
+
+FRAMEWORK MISUSE DECISION TREE (CLI)
+
+Is there active danger/harm/security breach?
+- YES: CHAOTIC MODE
+  Stabilize first. Reduce blast radius. Establish control. Then reclassify.
+- NO:
+  Do we have a known playbook with high success?
+  - YES: SIMPLE MODE (best practices)
+  - NO:
+    Can experts analyze cause-effect reliably?
+    - YES: COMPLICATED MODE (expert analysis + tests)
+    - NO: COMPLEX MODE (safe-to-fail probes + learn)
+
+Common misuse:
+- RCA in chaos -> stabilize first
+- Best practices in complexity -> probe & measure
+- Improvisation forever -> turn into engineering
+- Brainstorm + judge -> separate diverge/converge

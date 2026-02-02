@@ -1,0 +1,69 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/unicode_speakers.vtt"
+  },
+  "metadata": {
+    "duration_ms": 6000,
+    "segment_count": 6,
+    "detected_speakers": 6
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": "李明",
+      "text": "你好，世界！",
+      "raw_text": "<v 李明>你好，世界！</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": "أحمد",
+      "text": "مرحبا بالعالم",
+      "raw_text": "<v أحمد>مرحبا بالعالم</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": "Ελένη",
+      "text": "Γεια σου κόσμε",
+      "raw_text": "<v Ελένη>Γεια σου κόσμε</v>"
+    },
+    {
+      "id": "seg-004",
+      "start_ms": 3000,
+      "end_ms": 4000,
+      "speaker": "Müller",
+      "text": "Hallo Welt mit Umlauten: äöü",
+      "raw_text": "<v Müller>Hallo Welt mit Umlauten: äöü</v>"
+    },
+    {
+      "id": "seg-005",
+      "start_ms": 4000,
+      "end_ms": 5000,
+      "speaker": "田中太郎",
+      "text": "日本語のテスト",
+      "raw_text": "<v 田中太郎>日本語のテスト</v>"
+    },
+    {
+      "id": "seg-006",
+      "start_ms": 5000,
+      "end_ms": 6000,
+      "speaker": "🎤 Emoji Host",
+      "text": "Let's have some fun! 🎉",
+      "raw_text": "<v 🎤 Emoji Host>Let's have some fun! 🎉</v>"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}
