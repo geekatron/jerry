@@ -62,3 +62,6 @@ htmlcov/
 .jerry/local/
 projects/*/.jerry/
 logs/hook-errors.log
+
+# User projects (not part of plugin distribution)
+projects/

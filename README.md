@@ -1,123 +1,144 @@
 # Jerry Framework
 
-> A framework for behavior and workflow guardrails with knowledge accrual.
+> A Claude Code plugin for behavior and workflow guardrails with knowledge accrual.
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blue.svg)](https://code.claude.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Architecture: Hexagonal](https://img.shields.io/badge/Architecture-Hexagonal-green.svg)](https://alistair.cockburn.us/hexagonal-architecture/)
 
-## Problem Statement
+## What is Jerry?
 
-**Context Rot** is the phenomenon where LLM performance degrades as the context window fills,
-even well within technical limits. Jerry addresses this through structured knowledge management
-and persistent work tracking.
+Jerry is a **Claude Code plugin** that adds structured problem-solving capabilities, work tracking, and knowledge management to your Claude Code sessions. It combats **Context Rot**—the phenomenon where LLM performance degrades as context fills—through persistent artifacts and filesystem-based memory.
 
-> "The effective context window where models perform optimally is often <256k tokens,
-> far below advertised limits."
+> **Note:** You do NOT need Python installed to use Jerry. The plugin runs within Claude Code using its built-in capabilities. Python is only required if you want to contribute to Jerry's development.
+
+> "The effective context window where models perform optimally is often <256k tokens, far below advertised limits."
 > — [Chroma Research](https://research.trychroma.com/context-rot)
-
-## Features
-
-- **Work Tracker**: Local Azure DevOps/JIRA equivalent for persistent task management
-- **Skills System**: Natural language interfaces to domain capabilities
-- **Agent Governance**: Hooks, rules, and sub-agent coordination
-- **Knowledge Accrual**: Structured documentation for wisdom capture
-- **Hexagonal Architecture**: Clean separation of concerns with ports and adapters
-
-## Architecture
-
-```
-jerry/
-├── .claude/                    # Agent Governance Layer
-│   ├── agents/                 # Sub-agent personas
-│   ├── commands/               # Slash commands
-│   ├── hooks/                  # Event-driven orchestration
-│   └── rules/                  # Persistent constraints
-│
-├── skills/                     # Interface Layer (Natural Language)
-│   ├── worktracker/            # Task management skill
-│   ├── architecture/           # System design skill
-│   └── problem-solving/        # Domain use case skill
-│
-├── src/                        # Hexagonal Core (Python)
-│   ├── domain/                 # Pure business logic (no deps)
-│   ├── application/            # Use cases (CQRS)
-│   ├── infrastructure/         # Adapters (persistence, messaging)
-│   └── interface/              # Primary adapters (CLI, API)
-│
-├── scripts/                    # Execution Layer (CLI shims)
-└── docs/                       # Knowledge Repository
-```
-
-## Installation
-
-**Requirements:** Python 3.11+ ([why?](docs/INSTALLATION.md#python-version-requirements))
-
-```bash
-# Clone the repository
-git clone https://github.com/geekatron/jerry.git
-cd jerry
-
-# Option 1: Using uv (recommended - 10-100x faster)
-uv sync
-uv run pytest  # verify
-
-# Option 2: Using pip
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements-test.txt && pip install -e .
-pytest  # verify
-```
-
-See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions.
 
 ## Quick Start
 
-```bash
-# Run Jerry CLI
-jerry --help
+### Prerequisites
 
-# Or invoke scripts directly
-python scripts/invoke_use_case.py <command>
+- [Claude Code](https://code.claude.com) installed and configured
+- [Git](https://git-scm.com/) for cloning the repository
+- [uv](https://docs.astral.sh/uv/) for Python dependency management (required for hooks)
+
+### Installation
+
+Jerry is installed via a **local marketplace**. Choose your platform:
+
+<details>
+<summary><strong>macOS</strong></summary>
+
+```bash
+# 1. Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. Clone Jerry to a local directory
+mkdir -p ~/plugins
+git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
+
+# 3. In Claude Code, add the local marketplace
+/plugin marketplace add ~/plugins/jerry
+
+# 4. Install the Jerry plugin
+/plugin install jerry-framework@jerry
 ```
 
-## Design Principles
+</details>
 
-1. **Zero-Dependency Core**: Domain layer uses Python stdlib only
-2. **Hexagonal Architecture**: Ports define contracts, adapters implement them
-3. **CQRS**: Commands for writes, queries for reads
-4. **Evidence-Based**: All decisions require citations and references
-5. **Knowledge Capture**: Learnings persist in structured documentation
+<details>
+<summary><strong>Windows (PowerShell)</strong></summary>
+
+```powershell
+# 1. Install uv (if not already installed)
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# 2. Restart your terminal to update PATH, then verify
+uv --version
+
+# 3. Clone Jerry to a local directory
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\plugins"
+git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
+
+# 4. In Claude Code, add the local marketplace (use forward slashes)
+/plugin marketplace add C:/Users/$env:USERNAME/plugins/jerry
+
+# 5. Install the Jerry plugin
+/plugin install jerry-framework@jerry
+```
+
+</details>
+
+### Verify Installation
+
+After installation, run `/plugin` in Claude Code and check the **Installed** tab. You should see `jerry-framework` listed.
+
+See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions and troubleshooting.
+
+## Using Jerry
+
+Jerry provides **skills**—natural language interfaces you invoke with slash commands:
+
+| Skill | Purpose | Example |
+|-------|---------|---------|
+| `/problem-solving` | Research, analysis, root cause investigation | "Research OAuth2 patterns" |
+| `/worktracker` | Task and work item management | "Create a task for login feature" |
+| `/nasa-se` | Systems engineering (NPR 7123.1D) | "Define requirements for API" |
+| `/orchestration` | Multi-phase workflow coordination | "Orchestrate the release pipeline" |
+| `/architecture` | Design decisions and ADRs | "Create ADR for caching strategy" |
+| `/transcript` | Meeting transcript parsing | "Parse the meeting notes" |
+
+### Example Session
+
+```
+You: /problem-solving analyze why the tests are failing
+
+Claude: I'll invoke the ps-analyst agent to investigate...
+        [Creates persistent analysis artifact]
+
+        Root cause identified: Missing mock for external API call in
+        test_auth_service.py:45. The test expects a response object
+        but receives None.
+
+        Analysis saved to: docs/analysis/EN-001-e-001-test-failures.md
+```
+
+All outputs are **persisted to files**, surviving context compaction and building your project's knowledge base.
+
+## Features
+
+- **Structured Problem-Solving**: 8 specialized agents (researcher, analyst, architect, validator, synthesizer, reviewer, investigator, reporter)
+- **Work Tracking**: Local task management with status, priorities, and dependencies
+- **Knowledge Accrual**: Persistent artifacts in `docs/` that survive session boundaries
+- **NASA Systems Engineering**: NPR 7123.1D processes for mission-grade rigor
+- **Multi-Agent Orchestration**: Coordinate complex workflows with checkpointing
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [CLAUDE.md](./CLAUDE.md) | Root context for Claude Code sessions |
-| [AGENTS.md](./AGENTS.md) | Registry of available sub-agents |
-| [GOVERNANCE.md](./GOVERNANCE.md) | Protocols for planning and handoffs |
-| [docs/research/](projects/archive/research/) | Research artifacts with citations |
+| [Installation Guide](docs/INSTALLATION.md) | Detailed setup instructions for all platforms |
+| [CLAUDE.md](CLAUDE.md) | Context for Claude Code sessions |
+| [AGENTS.md](AGENTS.md) | Registry of available agents |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute to Jerry development |
 
-## Technology Stack
+## For Contributors
 
-- **Language**: Python 3.11+ (zero-dependency core)
-- **Architecture**: Hexagonal (Ports & Adapters)
-- **Persistence**: SQLite (stdlib), Markdown files
-- **CLI**: argparse (stdlib)
-- **Testing**: unittest (stdlib)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution guidelines.
 
-See [docs/research/TECHNOLOGY_STACK_ANALYSIS.md](projects/archive/research/TECHNOLOGY_STACK_ANALYSIS.md) for the full analysis.
+Quick development setup:
 
-## Contributing
-
-1. Read [GOVERNANCE.md](./GOVERNANCE.md) for protocols
-2. Create a PLAN file for significant changes
-3. Follow coding standards in `.claude/rules/`
-4. Ensure all quality gates pass
+```bash
+git clone https://github.com/geekatron/jerry.git
+cd jerry
+uv sync
+uv run pytest
+```
 
 ## References
 
+- [Claude Code Plugin Documentation](https://code.claude.com/docs/en/discover-plugins)
 - Cockburn, A. (2005). "[Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)"
-- Anthropic. (2025). "[Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)"
 - Chroma. "[Context Rot Research](https://research.trychroma.com/context-rot)"
 
 ## License
