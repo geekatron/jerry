@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/plugin.schema.json",
+  "title": "Claude Code Plugin Manifest",
+  "description": "JSON Schema for .claude-plugin/plugin.json manifest files. Based on Claude Code plugin specification via Context7.",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$|^[a-z]$",
+      "description": "Plugin name in kebab-case format. Must start with lowercase letter, contain only lowercase letters, numbers, and hyphens."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "description": "Semantic version (MAJOR.MINOR.PATCH) following semver 2.0 specification."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Brief explanation of plugin purpose and capabilities."
+    },
+    "author": {
+      "type": "object",
+      "description": "Plugin author information.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Author or organization name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Author website or profile URL."
+        }
+      },
+      "additionalProperties": false
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to plugin documentation or homepage."
+    },
+    "repository": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "description": "Repository URL as a string."
+        },
+        {
+          "type": "object",
+          "description": "Repository information object.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["git", "svn", "hg"],
+              "description": "Version control system type."
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Repository URL."
+            }
+          },
+          "required": ["url"],
+          "additionalProperties": false
+        }
+      ],
+      "description": "Source code repository location."
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier (e.g., MIT, Apache-2.0, ISC)."
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "uniqueItems": true,
+      "description": "Keywords for plugin discovery and categorization."
+    },
+    "skills": {
+      "type": "string",
+      "pattern": "^\\./",
+      "description": "Relative path to skills directory. Must start with './'."
+    },
+    "commands": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\./",
+          "description": "Relative path to commands directory."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\./",
+            "description": "Relative path to command file or directory."
+          },
+          "description": "Array of relative paths to command files or directories."
+        }
+      ],
+      "description": "Command definitions. All paths must start with './'."
+    },
+    "agents": {
+      "type": "string",
+      "pattern": "^\\./",
+      "description": "Relative path to agents directory. Must start with './'."
+    },
+    "hooks": {
+      "type": "string",
+      "pattern": "^\\./",
+      "description": "Relative path to hooks.json configuration file. Must start with './'."
+    },
+    "mcpServers": {
+      "type": "string",
+      "pattern": "^\\./",
+      "description": "Relative path to MCP servers configuration file. Must start with './'."
+    }
+  },
+  "additionalProperties": false
+}

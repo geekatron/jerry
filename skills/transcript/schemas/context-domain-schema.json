@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/context-domain-1.0.0.json",
+  "title": "Domain Context Schema",
+  "description": "Schema for validating domain context YAML files. Implements REQ-CI-F-009.",
+  "type": "object",
+  "required": ["schema_version", "domain", "entity_definitions"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the schema (X.Y.Z format)"
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "pattern": "^[a-z][a-z0-9_-]*$",
+      "description": "Domain identifier (lowercase alphanumeric with hyphens/underscores)"
+    },
+    "display_name": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Human-readable domain name"
+    },
+    "entity_definitions": {
+      "type": "object",
+      "description": "Map of entity type to definition",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/entityDefinition"
+      }
+    },
+    "extraction_rules": {
+      "type": "array",
+      "description": "Ordered list of extraction rules",
+      "items": {
+        "$ref": "#/$defs/extractionRule"
+      }
+    },
+    "prompt_guidance": {
+      "type": "string",
+      "description": "Expert guidance for LLM prompts"
+    }
+  },
+  "$defs": {
+    "entityDefinition": {
+      "type": "object",
+      "required": ["description", "attributes"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the entity type"
+        },
+        "attributes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/attribute"
+          },
+          "description": "List of attributes for this entity type"
+        },
+        "extraction_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Patterns for extracting this entity type"
+        }
+      }
+    },
+    "attribute": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Attribute name"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string", "integer", "float", "boolean", "date", "array"],
+          "description": "Attribute data type"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this attribute is required"
+        },
+        "enum": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Allowed values for enum types"
+        }
+      }
+    },
+    "extractionRule": {
+      "type": "object",
+      "required": ["id", "entity_type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique rule identifier"
+        },
+        "entity_type": {
+          "type": "string",
+          "description": "Entity type this rule extracts"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the rule"
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum confidence for extraction (0.0-1.0)"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Processing priority (1 = highest)"
+        }
+      }
+    }
+  }
+}

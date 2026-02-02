@@ -1,0 +1,45 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/voice_tag_basic.vtt"
+  },
+  "metadata": {
+    "duration_ms": 3000,
+    "segment_count": 3,
+    "detected_speakers": 3
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 1000,
+      "speaker": "John",
+      "text": "Hello world",
+      "raw_text": "<v John>Hello world</v>"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 1000,
+      "end_ms": 2000,
+      "speaker": "Mary Smith",
+      "text": "How are you today?",
+      "raw_text": "<v Mary Smith>How are you today?</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 2000,
+      "end_ms": 3000,
+      "speaker": "Dr. Jane O'Brien",
+      "text": "I'm doing well, thank you.",
+      "raw_text": "<v Dr. Jane O'Brien>I'm doing well, thank you.</v>"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

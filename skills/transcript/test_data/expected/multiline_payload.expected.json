@@ -1,0 +1,45 @@
+{
+  "version": "1.1",
+  "source": {
+    "format": "vtt",
+    "encoding": "utf-8",
+    "file_path": "skills/transcript/test_data/transcripts/edge_cases/multiline_payload.vtt"
+  },
+  "metadata": {
+    "duration_ms": 6000,
+    "segment_count": 3,
+    "detected_speakers": 1
+  },
+  "segments": [
+    {
+      "id": "seg-001",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "speaker": null,
+      "text": "First line of text Second line of text Third line of text",
+      "raw_text": "First line of text\nSecond line of text\nThird line of text"
+    },
+    {
+      "id": "seg-002",
+      "start_ms": 2000,
+      "end_ms": 4000,
+      "speaker": "Speaker",
+      "text": "This is line one This is line two This is line three",
+      "raw_text": "<v Speaker>This is line one\nThis is line two\nThis is line three</v>"
+    },
+    {
+      "id": "seg-003",
+      "start_ms": 4000,
+      "end_ms": 6000,
+      "speaker": null,
+      "text": "Line with leading whitespace Line with no leading whitespace Both leading and trailing",
+      "raw_text": "   Line with leading whitespace\nLine with no leading whitespace\n   Both leading and trailing"
+    }
+  ],
+  "parse_metadata": {
+    "parse_status": "complete",
+    "parse_warnings": [],
+    "parse_errors": [],
+    "skipped_segments": []
+  }
+}

@@ -1,0 +1,374 @@
+{
+  "schema_version": "1.0",
+  "packet_id": "live-test-en024-mindmap-verification",
+  "generated_at": "2026-01-30T05:09:34Z",
+  "anchors": {
+    "segments": {
+      "seg-001": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 0,
+        "speaker": "Alice",
+        "text_preview": "Good morning everyone. Let's start our daily standup."
+      },
+      "seg-002": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 5500,
+        "speaker": "Alice",
+        "text_preview": "Bob, would you like to kick us off with your update?"
+      },
+      "seg-003": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 12000,
+        "speaker": "Bob",
+        "text_preview": "Sure. Yesterday I finished the API authentication module..."
+      },
+      "seg-004": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 25500,
+        "speaker": "Alice",
+        "text_preview": "Great progress on the auth module. Charlie, you're up next."
+      },
+      "seg-005": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 32000,
+        "speaker": "Charlie",
+        "text_preview": "Yesterday I completed the login form UI..."
+      },
+      "seg-006": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 52000,
+        "speaker": "Bob",
+        "text_preview": "The authentication endpoints are ready..."
+      },
+      "seg-007": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 65000,
+        "speaker": "Charlie",
+        "text_preview": "Perfect, that will unblock me. Thanks Bob."
+      },
+      "seg-008": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 72000,
+        "speaker": "Alice",
+        "text_preview": "Diana, how is the test planning going?"
+      },
+      "seg-009": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 85000,
+        "speaker": "Diana",
+        "text_preview": "I've drafted the test cases for the authentication flow..."
+      },
+      "seg-010": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 108000,
+        "speaker": "Alice",
+        "text_preview": "Good question. Let's go with Thursday afternoon..."
+      },
+      "seg-011": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 125000,
+        "speaker": "Bob",
+        "text_preview": "Thursday works for me."
+      },
+      "seg-012": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 130000,
+        "speaker": "Charlie",
+        "text_preview": "I'm free Thursday afternoon."
+      },
+      "seg-013": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 135000,
+        "speaker": "Diana",
+        "text_preview": "Perfect. I'll send out the calendar invite."
+      },
+      "seg-014": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 140000,
+        "speaker": "Alice",
+        "text_preview": "Before we wrap up, we need to discuss the deployment timeline..."
+      },
+      "seg-015": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 165000,
+        "speaker": "Bob",
+        "text_preview": "Based on current progress, I think we can have the backend ready..."
+      },
+      "seg-016": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 185000,
+        "speaker": "Charlie",
+        "text_preview": "The frontend should be ready by Wednesday..."
+      },
+      "seg-017": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 202000,
+        "speaker": "Diana",
+        "text_preview": "I'll need at least three days for regression testing..."
+      },
+      "seg-018": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 220000,
+        "speaker": "Alice",
+        "text_preview": "So we're looking at a Monday release..."
+      },
+      "seg-019": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 240000,
+        "speaker": "Bob",
+        "text_preview": "Sounds good. I will prepare the rollback scripts..."
+      },
+      "seg-020": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 258000,
+        "speaker": "Alice",
+        "text_preview": "Excellent. Charlie, can you work with Diana..."
+      },
+      "seg-021": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 275000,
+        "speaker": "Charlie",
+        "text_preview": "Will do. Diana, let's sync after this meeting."
+      },
+      "seg-022": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 285000,
+        "speaker": "Diana",
+        "text_preview": "Agreed. I'll block some time on our calendars."
+      },
+      "seg-023": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 292000,
+        "speaker": "Alice",
+        "text_preview": "One more thing. How do we want to handle the feature flag..."
+      },
+      "seg-024": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 310000,
+        "speaker": "Bob",
+        "text_preview": "I recommend a phased approach..."
+      },
+      "seg-025": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 332000,
+        "speaker": "Diana",
+        "text_preview": "That aligns with our testing strategy..."
+      },
+      "seg-026": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 345000,
+        "speaker": "Alice",
+        "text_preview": "Perfect. I'll update the release plan document..."
+      },
+      "seg-027": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 360000,
+        "speaker": "Charlie",
+        "text_preview": "Quick question - what about the legacy login endpoint?"
+      },
+      "seg-028": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 375000,
+        "speaker": "Bob",
+        "text_preview": "We should keep it running in parallel..."
+      },
+      "seg-029": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 395000,
+        "speaker": "Alice",
+        "text_preview": "Good thinking. Add that to your task list, Bob."
+      },
+      "seg-030": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 408000,
+        "speaker": "Bob",
+        "text_preview": "Already on it. I'll create the ticket after this meeting."
+      },
+      "seg-031": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 415000,
+        "speaker": "Alice",
+        "text_preview": "Alright team, great discussion. Let's recap the action items."
+      },
+      "seg-032": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 430000,
+        "speaker": "Alice",
+        "text_preview": "Bob will send API documentation to Charlie..."
+      },
+      "seg-033": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 445000,
+        "speaker": "Alice",
+        "text_preview": "Charlie will implement password reset..."
+      },
+      "seg-034": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 458000,
+        "speaker": "Alice",
+        "text_preview": "Diana will send the test review invite for Thursday..."
+      },
+      "seg-035": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 470000,
+        "speaker": "Alice",
+        "text_preview": "And I'll update the release plan with our decisions..."
+      },
+      "seg-036": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 480000,
+        "speaker": "Bob",
+        "text_preview": "All clear from my side."
+      },
+      "seg-037": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 485000,
+        "speaker": "Charlie",
+        "text_preview": "Good to go."
+      },
+      "seg-038": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 490000,
+        "speaker": "Diana",
+        "text_preview": "No questions here."
+      },
+      "seg-039": {
+        "type": "segment",
+        "file": "02-transcript.md",
+        "timestamp_ms": 495000,
+        "speaker": "Alice",
+        "text_preview": "Great work everyone. Let's have a productive day..."
+      }
+    },
+    "entities": {
+      "act-001": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-006"
+      },
+      "act-002": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-013"
+      },
+      "act-003": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-019"
+      },
+      "act-004": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-020"
+      },
+      "act-005": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-022"
+      },
+      "act-006": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-026"
+      },
+      "act-007": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-028"
+      },
+      "act-008": {
+        "type": "action_item",
+        "file": "04-action-items.md",
+        "source_segment": "seg-030"
+      },
+      "dec-001": {
+        "type": "decision",
+        "file": "05-decisions.md",
+        "source_segment": "seg-010"
+      },
+      "dec-002": {
+        "type": "decision",
+        "file": "05-decisions.md",
+        "source_segment": "seg-018"
+      },
+      "dec-003": {
+        "type": "decision",
+        "file": "05-decisions.md",
+        "source_segment": "seg-025"
+      },
+      "que-001": {
+        "type": "question",
+        "file": "06-questions.md",
+        "source_segment": "seg-009"
+      },
+      "que-002": {
+        "type": "question",
+        "file": "06-questions.md",
+        "source_segment": "seg-023"
+      },
+      "que-003": {
+        "type": "question",
+        "file": "06-questions.md",
+        "source_segment": "seg-027"
+      },
+      "top-001": {
+        "type": "topic",
+        "file": "07-topics.md"
+      },
+      "top-002": {
+        "type": "topic",
+        "file": "07-topics.md"
+      },
+      "top-003": {
+        "type": "topic",
+        "file": "07-topics.md"
+      },
+      "top-004": {
+        "type": "topic",
+        "file": "07-topics.md"
+      },
+      "top-005": {
+        "type": "topic",
+        "file": "07-topics.md"
+      }
+    }
+  }
+}

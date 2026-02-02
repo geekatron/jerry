@@ -1,0 +1,113 @@
+# Pre-commit configuration for Jerry Framework
+# See: https://pre-commit.com
+# ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-CI-001-cicd-pipeline.md
+#
+# Installation:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Manual run:
+#   pre-commit run --all-files
+#
+# Escape hatches:
+#   SKIP=pytest git commit -m "message"     # Skip tests only
+#   git commit --no-verify -m "message"     # Skip all hooks (emergency)
+
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  # =============================================================================
+  # Basic File Hygiene
+  # =============================================================================
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^\.claude/
+      - id: end-of-file-fixer
+        exclude: ^\.claude/
+      - id: check-yaml
+        args: [--unsafe]  # Allow custom tags
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: detect-private-key
+
+  # =============================================================================
+  # Ruff: Fast Linting and Formatting (replaces flake8, black, isort)
+  # =============================================================================
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.2
+    hooks:
+      # Linter - runs first, can auto-fix
+      - id: ruff
+        args: [--fix, --config=pyproject.toml]
+      # Formatter - runs after linter
+      - id: ruff-format
+        args: [--config=pyproject.toml]
+
+  # =============================================================================
+  # Type Checking (pyright via local hook)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright type checking
+        entry: .venv/bin/pyright
+        language: system
+        types: [python]
+        pass_filenames: false
+        # Only check src/ to avoid test type issues
+        args: [src/]
+
+  # =============================================================================
+  # Test Suite (configurable stage)
+  # Uses uv run to ensure correct dependency management (DISC-008)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (full suite via uv)
+        entry: uv run pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+        # Default: run on commit. Change to 'pre-push' for faster iteration.
+        # To skip: SKIP=pytest git commit -m "message"
+        stages: [pre-commit]
+        # Verbose output with short traceback
+        args: [--tb=short, -q]
+
+  # =============================================================================
+  # Plugin Manifest Validation (EN-005)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: validate-plugin-manifests
+        name: Validate plugin manifests
+        entry: uv run python scripts/validate_plugin_manifests.py
+        language: system
+        # Trigger on any manifest file change
+        files: (plugin\.json|marketplace\.json|hooks\.json)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
+  # Security Scanning (pip-audit)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: pip-audit
+        name: pip-audit security scan
+        entry: .venv/bin/pip-audit
+        language: system
+        pass_filenames: false
+        # Only run on push to avoid slowdown on every commit
+        stages: [pre-push]
+        # --skip-editable: Skip local packages not on PyPI (like jerry itself)
+        # Note: Removed --strict as it conflicts with --skip-editable
+        # (pip-audit treats skipped packages as failures in strict mode)
+        # Bug reported: https://github.com/pypa/pip-audit/issues/XXX
+        args: [--progress-spinner=off, --skip-editable]

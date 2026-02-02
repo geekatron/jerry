@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://jerry-framework.example.com/schemas/work-tracker-v1.json",
+  "title": "Work Tracker Schema V1 (Legacy)",
+  "description": "Legacy JSON Schema - detected by ABSENCE of schema_version field. This schema documents the pre-Hexagonal format for migration purposes.",
+  "type": "object",
+  "required": ["phases", "tasks"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "OPTIONAL in V1 - may only have title",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Tracker title"
+        },
+        "created": {
+          "type": "string",
+          "description": "Creation date"
+        },
+        "status": {
+          "type": "string",
+          "description": "Overall status"
+        }
+      }
+    },
+    "phases": {
+      "type": "array",
+      "description": "Work phases/milestones",
+      "items": {
+        "type": "object",
+        "required": ["number", "name"],
+        "properties": {
+          "number": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Phase number"
+          },
+          "name": {
+            "type": "string",
+            "description": "Phase name"
+          },
+          "status": {
+            "type": "string",
+            "description": "Phase status - V1 allowed various formats",
+            "enum": [
+              "pending", "in_progress", "complete", "blocked",
+              "Pending", "In Progress", "Complete", "Blocked",
+              "PENDING", "IN PROGRESS", "COMPLETE", "BLOCKED",
+              "in-progress", "IN-PROGRESS"
+            ]
+          },
+          "progress": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Progress percentage"
+          }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "description": "Work tasks within phases",
+      "items": {
+        "type": "object",
+        "required": ["id", "phase"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+$",
+            "description": "Task ID in format 'phase.task'"
+          },
+          "phase": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Phase number this task belongs to"
+          },
+          "name": {
+            "type": "string",
+            "description": "Task name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Task description"
+          },
+          "status": {
+            "type": "string",
+            "description": "Task status - V1 allowed various formats"
+          },
+          "verification": {
+            "type": "string",
+            "description": "Verification criteria"
+          },
+          "subtasks": {
+            "type": "array",
+            "description": "V1 EMBEDDED subtasks (extracted to top-level in V2)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Subtask name"
+                },
+                "completed": {
+                  "type": "boolean",
+                  "description": "Completion status"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Optional subtask ID"
+                }
+              }
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "description": "V1 EMBEDDED evidence (extracted to top-level in V2)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Evidence type"
+                },
+                "output": {
+                  "type": "string",
+                  "description": "Legacy - use 'content' in V2"
+                },
+                "file": {
+                  "type": "string",
+                  "description": "Legacy - use 'file_path' in V2"
+                },
+                "note": {
+                  "type": "string",
+                  "description": "Legacy - use 'content' in V2"
+                },
+                "verified": {
+                  "type": "boolean",
+                  "description": "Legacy - use 'verification_status' in V2"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "_migration": {
+    "note": "V1 data should be migrated to V2 using infrastructure/migration/schema_migrator.py",
+    "detection": "V1 is detected by ABSENCE of 'schema_version' field at root level",
+    "migration_function": "migrate_v1_to_v2(data)",
+    "key_differences": [
+      "V1 has no schema_version field",
+      "V1 has embedded subtasks in tasks (V2 extracts to top-level)",
+      "V1 has embedded evidence in tasks (V2 extracts to top-level)",
+      "V1 allows various status formats (V2 normalizes to lowercase_underscore)",
+      "V1 may lack 'meta' section or 'meta.title'",
+      "V1 has no 'events' array",
+      "V1 has no 'evidence' top-level array"
+    ]
+  }
+}

@@ -1,0 +1,231 @@
+# Context Injection Validation Tests
+# EN-013 TASK-125: Validation and Test Scenarios
+# Per SPEC-context-injection.md Appendix C
+
+test_suites:
+  context-schema-validation:
+    description: "Validate domain schema files against JSON Schema"
+    schema_path: "../../schemas/context-domain-schema.json"
+    tests:
+      - id: ci-001
+        name: "general.yaml validates against schema"
+        input: "../../contexts/general.yaml"
+        assertions:
+          - type: schema_valid
+            expected: true
+
+      - id: ci-002
+        name: "transcript.yaml validates against schema"
+        input: "../../contexts/transcript.yaml"
+        assertions:
+          - type: schema_valid
+            expected: true
+
+      - id: ci-003
+        name: "Invalid file rejected with descriptive error"
+        input:
+          schema_version: "invalid"  # Missing version format
+          # Missing domain field
+          entity_definitions: {}     # Empty object
+        assertions:
+          - type: schema_valid
+            expected: false
+          - type: error_count
+            minimum: 2  # Multiple validation errors
+
+  context-merge-order:
+    description: "Verify context merge priority (SKILL → domain → AGENT → invocation)"
+    tests:
+      - id: ci-004
+        name: "SKILL.md provides default context"
+        setup:
+          skill_context:
+            default_domain: "general"
+            template_variables:
+              - name: confidence_threshold
+                default: 0.5
+        assertions:
+          - type: context_value
+            path: "confidence_threshold"
+            expected: 0.5
+
+      - id: ci-005
+        name: "Domain context overrides skill defaults"
+        setup:
+          skill_context:
+            confidence_threshold: 0.5
+          domain_context:
+            extraction_rules:
+              - confidence_threshold: 0.7
+        assertions:
+          - type: context_value
+            path: "extraction_rules[0].confidence_threshold"
+            expected: 0.7
+
+      - id: ci-006
+        name: "Agent context overrides domain context"
+        setup:
+          domain_context:
+            confidence_threshold: 0.7
+          agent_context:
+            template_variables:
+              - name: confidence_threshold
+                default: 0.8
+        assertions:
+          - type: context_value
+            path: "confidence_threshold"
+            expected: 0.8
+
+      - id: ci-007
+        name: "Invocation arguments override all"
+        setup:
+          skill_context:
+            confidence_threshold: 0.5
+          domain_context:
+            confidence_threshold: 0.7
+          agent_context:
+            confidence_threshold: 0.8
+          invocation_args:
+            confidence: 0.9
+        assertions:
+          - type: context_value
+            path: "confidence_threshold"
+            expected: 0.9
+
+  template-variable-resolution:
+    description: "Verify template variable substitution"
+    tests:
+      - id: ci-008
+        name: "{{$domain}} resolves to domain identifier"
+        template: "Processing {{$domain}} data"
+        context:
+          domain: "transcript"
+        assertions:
+          - type: resolved_output
+            expected: "Processing transcript data"
+
+      - id: ci-009
+        name: "{{$entity_definitions}} resolves to YAML block"
+        template: "Entities: {{$entity_definitions}}"
+        context:
+          entity_definitions:
+            action_item:
+              description: "Task or commitment"
+        assertions:
+          - type: resolved_contains
+            expected: "action_item"
+          - type: resolved_contains
+            expected: "Task or commitment"
+
+      - id: ci-010
+        name: "{{$prompt_guidance}} resolves to text block"
+        template: "Guidance: {{$prompt_guidance}}"
+        context:
+          prompt_guidance: "Extract entities carefully"
+        assertions:
+          - type: resolved_output
+            expected: "Guidance: Extract entities carefully"
+
+  performance-requirements:
+    description: "Verify performance meets REQ-CI-P-001 and REQ-CI-P-002"
+    tests:
+      - id: ci-011
+        name: "Context load time < 500ms"
+        operation: "load_all_contexts"
+        assertions:
+          - type: performance
+            metric: "load_time_ms"
+            maximum: 500
+
+      - id: ci-012
+        name: "Context payload size < 50MB"
+        operation: "measure_context_size"
+        assertions:
+          - type: performance
+            metric: "payload_size_mb"
+            maximum: 50
+
+  edge-cases:
+    description: "Handle edge cases gracefully"
+    tests:
+      - id: edge-001
+        name: "No domain specified - use default_domain"
+        setup:
+          invocation_args: {}  # No --domain flag
+          skill_context:
+            default_domain: "general"
+        assertions:
+          - type: context_value
+            path: "domain"
+            expected: "general"
+
+      - id: edge-002
+        name: "Invalid domain name - error with message"
+        setup:
+          invocation_args:
+            domain: "unknown_domain"
+        assertions:
+          - type: error
+            contains: "Unknown domain: unknown_domain"
+
+      - id: edge-003
+        name: "Missing domain.yaml file - error with path"
+        setup:
+          domain: "missing"
+        assertions:
+          - type: error
+            contains: "Domain file not found"
+
+      - id: edge-004
+        name: "Empty template variable - use default or empty string"
+        template: "Value: {{$optional_var}}"
+        context: {}
+        assertions:
+          - type: resolved_output
+            expected: "Value: "
+
+      - id: edge-005
+        name: "Invalid YAML syntax - error with line number"
+        input: |
+          schema_version: "1.0.0"
+          domain: transcript
+          entity_definitions:
+            action_item
+              description: bad indentation
+        assertions:
+          - type: error
+            contains: "YAML"
+
+      - id: edge-006
+        name: "Missing required field - schema validation error"
+        input:
+          schema_version: "1.0.0"
+          # Missing domain
+          entity_definitions:
+            test:
+              description: "Test entity"
+              attributes:
+                - name: "text"
+                  type: "string"
+        assertions:
+          - type: schema_valid
+            expected: false
+          - type: error
+            contains: "domain"
+
+# Test Summary
+summary:
+  total_tests: 18
+  categories:
+    schema_validation: 3
+    merge_order: 4
+    template_resolution: 3
+    performance: 2
+    edge_cases: 6
+  requirements_covered:
+    - REQ-CI-F-001  # Static context loading
+    - REQ-CI-F-002  # SKILL.md context section
+    - REQ-CI-F-003  # Agent context merge
+    - REQ-CI-F-009  # Schema validation
+    - REQ-CI-P-001  # Load time < 500ms
+    - REQ-CI-P-002  # Payload size < 50MB

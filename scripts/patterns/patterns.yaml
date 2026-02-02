@@ -1,0 +1,278 @@
+# Guardrail Pattern Library
+# Schema Evolution: docs/schemas/SCHEMA_VERSIONING.md
+# Work Item: WI-SAO-015
+schema_version: "1.0.0"
+
+# =============================================================================
+# VALIDATION MODES
+# =============================================================================
+# Reference: AC-015-003 (warn mode requirement)
+
+validation_modes:
+  block:
+    description: "Reject operation immediately"
+    exit_code: 0
+    decision: "block"
+  warn:
+    description: "Log warning, allow operation to proceed"
+    exit_code: 0
+    decision: "approve"
+    log_level: "WARNING"
+  ask:
+    description: "Prompt user for confirmation before proceeding"
+    exit_code: 0
+    decision: "ask"
+
+# =============================================================================
+# INPUT VALIDATION PATTERNS
+# =============================================================================
+# Reference: AC-015-004 (pattern library requirement)
+
+input_patterns:
+
+  # ---------------------------------------------------------------------------
+  # PII Detection
+  # ---------------------------------------------------------------------------
+  pii_detection:
+    name: "PII Detection"
+    description: "Detect personally identifiable information in tool inputs"
+    mode: warn  # AC-015-003: warn mode
+    timeout_ms: 100  # AC-015-002: 100ms timeout
+    enabled: true
+    rules:
+      - id: pii-ssn
+        pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+        description: "US Social Security Number"
+        severity: high
+        example_match: "123-45-6789"
+
+      - id: pii-email
+        pattern: "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b"
+        description: "Email address"
+        severity: medium
+        example_match: "user@example.com"
+
+      - id: pii-phone-us
+        pattern: "\\b(?:\\+1[-.]?)?\\(?\\d{3}\\)?[-.]?\\d{3}[-.]?\\d{4}\\b"
+        description: "US Phone number"
+        severity: medium
+        example_match: "(555) 123-4567"
+
+      - id: pii-credit-card
+        pattern: "\\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\\b"
+        description: "Credit card number (Visa, MC, Amex, Discover)"
+        severity: critical
+        example_match: "4111111111111111"
+
+      - id: pii-ip-address
+        pattern: "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b"
+        description: "IPv4 address"
+        severity: low
+        example_match: "192.168.1.1"
+
+  # ---------------------------------------------------------------------------
+  # Secrets Detection
+  # ---------------------------------------------------------------------------
+  secrets_detection:
+    name: "Secrets Detection"
+    description: "Detect API keys, tokens, passwords, and other secrets"
+    mode: block  # Secrets should block by default
+    timeout_ms: 100
+    enabled: true
+    rules:
+      - id: secret-openai
+        pattern: "sk-[a-zA-Z0-9]{20,}|sk-proj-[a-zA-Z0-9-_]{100,}"
+        description: "OpenAI API Key"
+        severity: critical
+        example_match: "sk-abc123..."
+
+      - id: secret-anthropic
+        pattern: "sk-ant-[a-zA-Z0-9-_]{90,}"
+        description: "Anthropic API Key"
+        severity: critical
+        example_match: "sk-ant-..."
+
+      - id: secret-github-pat
+        pattern: "ghp_[a-zA-Z0-9]{36}"
+        description: "GitHub Personal Access Token"
+        severity: critical
+        example_match: "ghp_xxxx..."
+
+      - id: secret-github-oauth
+        pattern: "gho_[a-zA-Z0-9]{36}"
+        description: "GitHub OAuth Token"
+        severity: critical
+        example_match: "gho_xxxx..."
+
+      - id: secret-aws-access-key
+        pattern: "AKIA[0-9A-Z]{16}"
+        description: "AWS Access Key ID"
+        severity: critical
+        example_match: "AKIAIOSFODNN7EXAMPLE"
+
+      - id: secret-aws-secret-key
+        pattern: "(?<![A-Za-z0-9/+=])[A-Za-z0-9/+=]{40}(?![A-Za-z0-9/+=])"
+        description: "AWS Secret Access Key (40 char base64)"
+        severity: critical
+        mode: warn  # High false positive rate
+
+      - id: secret-slack-token
+        pattern: "xox[baprs]-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*"
+        description: "Slack Token"
+        severity: critical
+        example_match: "xoxb-..."
+
+      - id: secret-generic-password
+        pattern: "(?i)(password|passwd|pwd)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]"
+        description: "Generic password assignment"
+        severity: high
+        example_match: "password: 'secret123'"
+
+      - id: secret-private-key
+        pattern: "-----BEGIN (?:RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----"
+        description: "Private key header"
+        severity: critical
+        example_match: "-----BEGIN RSA PRIVATE KEY-----"
+
+      - id: secret-jwt
+        pattern: "eyJ[A-Za-z0-9-_]+\\.eyJ[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+"
+        description: "JSON Web Token"
+        severity: high
+        example_match: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+  # ---------------------------------------------------------------------------
+  # Format Validation
+  # ---------------------------------------------------------------------------
+  format_validation:
+    name: "Format Validation"
+    description: "Validate ID formats from agent guardrails"
+    mode: warn
+    timeout_ms: 50
+    enabled: true
+    rules:
+      - id: fmt-project-id
+        pattern: "^PROJ-\\d{3}$"
+        description: "Project ID format"
+        applies_to: ["nse-*", "ps-*", "orch-*"]
+        example_match: "PROJ-002"
+
+      - id: fmt-entry-id
+        pattern: "^e-\\d+$"
+        description: "Entry ID format"
+        applies_to: ["*"]
+        example_match: "e-123"
+
+      - id: fmt-ps-id
+        pattern: "^[a-z]+-\\d+(\\.\\d+)?$"
+        description: "Problem-solving session ID"
+        applies_to: ["ps-*"]
+        example_match: "research-001.2"
+
+      - id: fmt-work-item-id
+        pattern: "^WI-SAO-\\d{3}$"
+        description: "Work item ID format"
+        applies_to: ["*"]
+        example_match: "WI-SAO-015"
+
+      - id: fmt-initiative-id
+        pattern: "^SAO-INIT-\\d{3}$"
+        description: "Initiative ID format"
+        applies_to: ["*"]
+        example_match: "SAO-INIT-004"
+
+# =============================================================================
+# OUTPUT FILTERING PATTERNS
+# =============================================================================
+
+output_patterns:
+
+  # ---------------------------------------------------------------------------
+  # Secrets in Output
+  # ---------------------------------------------------------------------------
+  no_secrets_in_output:
+    name: "No Secrets in Output"
+    description: "Filter secrets from agent outputs before returning"
+    mode: block
+    timeout_ms: 100
+    enabled: true
+    action: redact
+    replacement: "[REDACTED]"
+    rules:
+      - id: out-inline-secret
+        pattern: "(?i)(password|secret|token|api[_-]?key|access[_-]?key)\\s*[:=]\\s*['\"][^'\"]+['\"]"
+        description: "Inline secret assignment"
+        severity: high
+
+      - id: out-bearer-token
+        pattern: "Bearer\\s+[A-Za-z0-9-_.]+"
+        description: "Bearer token in output"
+        severity: high
+
+  # ---------------------------------------------------------------------------
+  # Executable Code Warning
+  # ---------------------------------------------------------------------------
+  executable_code_warning:
+    name: "Executable Code Warning"
+    description: "Warn on potentially destructive executable code in outputs"
+    mode: warn
+    timeout_ms: 100
+    enabled: true
+    rules:
+      - id: out-destructive-bash
+        pattern: "```(?:bash|sh)\\s*\\n[^`]*\\b(?:rm|del|chmod|chown|mkfs|dd)\\b"
+        description: "Destructive command in bash block"
+        severity: medium
+
+      - id: out-sudo
+        pattern: "```(?:bash|sh)\\s*\\n[^`]*\\bsudo\\b"
+        description: "Sudo command in bash block"
+        severity: low
+
+# =============================================================================
+# TOOL-SPECIFIC CONFIGURATION
+# =============================================================================
+
+tool_rules:
+  Write:
+    input_patterns:
+      - secrets_detection
+      - format_validation
+    fallback_mode: block
+
+  Edit:
+    input_patterns:
+      - secrets_detection
+    fallback_mode: block
+
+  Bash:
+    input_patterns:
+      - secrets_detection
+      - pii_detection
+    fallback_mode: warn
+
+  Task:
+    input_patterns:
+      - format_validation
+    fallback_mode: warn
+
+  WebFetch:
+    input_patterns:
+      - pii_detection
+    fallback_mode: warn
+
+# =============================================================================
+# METADATA
+# =============================================================================
+
+metadata:
+  created: "2026-01-12"
+  author: "WI-SAO-015"
+  references:
+    - "AC-015-001: Async validation (subprocess model)"
+    - "AC-015-002: timeout_ms: 100"
+    - "AC-015-003: mode: warn"
+    - "AC-015-004: Pattern library"
+  sources:
+    - ".claude/hooks/pre_tool_use.py (existing security patterns)"
+    - "https://owasp.org/www-community/OWASP_Validation_Regex_Repository"
+    - "https://github.com/dxa4481/truffleHogRegexes (secret patterns)"
