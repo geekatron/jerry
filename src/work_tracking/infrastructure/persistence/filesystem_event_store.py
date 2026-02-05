@@ -11,8 +11,8 @@ Storage Format:
     - Append-only writes for durability
 
 Thread Safety:
-    Uses threading.RLock for in-process thread safety and fcntl.flock
-    for cross-process file locking on POSIX systems.
+    Uses threading.RLock for in-process thread safety and filelock.FileLock
+    for cross-platform cross-process file locking (Windows + POSIX).
 
 References:
     - PAT-001: Event Store Interface Pattern
@@ -23,12 +23,13 @@ References:
 
 from __future__ import annotations
 
-import fcntl
 import json
 import os
 import threading
 from collections.abc import Sequence
 from pathlib import Path
+
+from filelock import FileLock
 
 from src.work_tracking.domain.ports.event_store import (
     ConcurrencyError,
@@ -60,8 +61,8 @@ class FileSystemEventStore:
 
     Thread Safety:
         All public methods are protected by a threading.RLock for
-        in-process thread safety. File operations use fcntl.flock
-        for cross-process safety on POSIX systems.
+        in-process thread safety. File operations use filelock.FileLock
+        for cross-platform cross-process safety (Windows + POSIX).
 
     Concurrency Model:
         Uses optimistic concurrency - callers provide expected_version,
@@ -96,10 +97,12 @@ class FileSystemEventStore:
 
         self._base_path = base_path
         self._events_dir = base_path / ".jerry" / "data" / "events"
+        self._lock_dir = base_path / ".jerry" / "local" / "locks" / "events"
         self._lock = threading.RLock()
 
-        # Create events directory if it doesn't exist
+        # Create events and lock directories if they don't exist
         self._events_dir.mkdir(parents=True, exist_ok=True)
+        self._lock_dir.mkdir(parents=True, exist_ok=True)
 
     def _stream_file_path(self, stream_id: str) -> Path:
         """Get the file path for a stream."""
@@ -107,23 +110,24 @@ class FileSystemEventStore:
         safe_stream_id = stream_id.replace("/", "_").replace("\\", "_")
         return self._events_dir / f"{safe_stream_id}.jsonl"
 
+    def _stream_lock_path(self, stream_path: Path) -> Path:
+        """Get the lock file path for a stream file."""
+        return self._lock_dir / f"{stream_path.stem}.lock"
+
     def _read_stream_from_file(self, stream_path: Path) -> list[StoredEvent]:
         """Read all events from a stream file."""
         if not stream_path.exists():
             return []
 
+        lock_path = self._stream_lock_path(stream_path)
         events = []
-        with open(stream_path, encoding="utf-8") as f:
-            # Acquire shared lock for reading
-            fcntl.flock(f.fileno(), fcntl.LOCK_SH)
-            try:
+        with FileLock(str(lock_path)):
+            with open(stream_path, encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if line:
                         data = json.loads(line)
                         events.append(StoredEvent.from_dict(data))
-            finally:
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
         return events
 
@@ -189,18 +193,15 @@ class FileSystemEventStore:
                     )
 
             # Append all events to file
-            with open(stream_path, "a", encoding="utf-8") as f:
-                # Acquire exclusive lock for writing
-                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-                try:
+            lock_path = self._stream_lock_path(stream_path)
+            with FileLock(str(lock_path)):
+                with open(stream_path, "a", encoding="utf-8") as f:
                     for event in events:
                         json_line = json.dumps(event.to_dict(), separators=(",", ":"))
                         f.write(json_line + "\n")
                     # Ensure data is flushed to disk
                     f.flush()
                     os.fsync(f.fileno())
-                finally:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
     def read(
         self,
