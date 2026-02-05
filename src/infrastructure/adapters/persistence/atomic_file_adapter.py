@@ -1,11 +1,11 @@
 """
 AtomicFileAdapter - Safe Concurrent File Access with Locking
 
-Provides atomic file operations using fcntl locking and temp file patterns.
+Provides atomic file operations using cross-platform file locking and temp file patterns.
 This adapter ensures data integrity during concurrent access and crash recovery.
 
 Implementation Notes:
-    - Uses fcntl.lockf for POSIX-compliant file locking
+    - Uses filelock.FileLock for cross-platform file locking (Windows + POSIX)
     - Lock files are stored in a centralized lock directory (.jerry/local/locks/)
     - Atomic writes use tempfile + os.replace for crash safety
     - Locks auto-release on process termination (OS-level guarantee)
@@ -18,22 +18,25 @@ References:
 
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import os
+import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from filelock import FileLock
 
 if TYPE_CHECKING:
     pass
 
 
 class AtomicFileAdapter:
-    """Adapter for atomic file operations with POSIX file locking.
+    """Adapter for atomic file operations with cross-platform file locking.
 
     This adapter provides thread-safe and process-safe file operations
-    using fcntl.lockf for locking and tempfile + os.replace for atomic writes.
+    using filelock.FileLock for locking and tempfile + os.replace for atomic writes.
 
     Attributes:
         lock_dir: Directory for storing lock files
@@ -76,10 +79,10 @@ class AtomicFileAdapter:
         return self._lock_dir / lock_name
 
     def read_with_lock(self, path: Path) -> str:
-        """Read file content with a shared (read) lock.
+        """Read file content with a file lock.
 
-        Acquires a shared lock before reading to allow concurrent reads
-        but block writes during the read operation.
+        Acquires a lock before reading to prevent concurrent writes
+        during the read operation.
 
         Args:
             path: Path to the file to read
@@ -92,22 +95,17 @@ class AtomicFileAdapter:
             OSError: If file cannot be read
         """
         lock_path = self._get_lock_path(path)
-        lock_path.touch(exist_ok=True)
 
-        with open(lock_path, "r+") as lock_file:
-            fcntl.lockf(lock_file.fileno(), fcntl.LOCK_SH)
-            try:
-                if path.exists():
-                    return path.read_text(encoding="utf-8")
-                return ""
-            finally:
-                fcntl.lockf(lock_file.fileno(), fcntl.LOCK_UN)
+        with FileLock(str(lock_path)):
+            if path.exists():
+                return path.read_text(encoding="utf-8")
+            return ""
 
     def write_atomic(self, path: Path, content: str) -> None:
-        """Write content atomically with an exclusive (write) lock.
+        """Write content atomically with an exclusive lock.
 
         Uses the following pattern for crash-safe writes:
-        1. Acquire exclusive lock on lock file
+        1. Acquire exclusive lock via FileLock
         2. Write content to a temporary file in the same directory
         3. Flush and fsync to ensure data is on disk
         4. Atomically replace the target file with os.replace
@@ -122,33 +120,38 @@ class AtomicFileAdapter:
             OSError: If write operation fails
         """
         lock_path = self._get_lock_path(path)
-        lock_path.parent.mkdir(parents=True, exist_ok=True)
-        lock_path.touch(exist_ok=True)
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(lock_path, "r+") as lock_file:
-            fcntl.lockf(lock_file.fileno(), fcntl.LOCK_EX)
+        with FileLock(str(lock_path)):
+            # Create temp file in same directory for atomic replace
+            fd, temp_path = tempfile.mkstemp(
+                dir=path.parent,
+                prefix=f".{path.name}.",
+                suffix=".tmp",
+            )
             try:
-                # Create temp file in same directory for atomic replace
-                fd, temp_path = tempfile.mkstemp(
-                    dir=path.parent,
-                    prefix=f".{path.name}.",
-                    suffix=".tmp",
-                )
-                try:
-                    with os.fdopen(fd, "w", encoding="utf-8") as f:
-                        f.write(content)
-                        f.flush()
-                        os.fsync(f.fileno())
-                    # Atomic replace - this is a single syscall
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    f.write(content)
+                    f.flush()
+                    os.fsync(f.fileno())
+                # Atomic replace - on Windows, retry briefly if the target
+                # is held open by antivirus/indexer (WinError 5)
+                if sys.platform == "win32":
+                    for attempt in range(5):
+                        try:
+                            os.replace(temp_path, path)
+                            break
+                        except PermissionError:
+                            if attempt == 4:
+                                raise
+                            time.sleep(0.01 * (attempt + 1))
+                else:
                     os.replace(temp_path, path)
-                except Exception:
-                    # Clean up temp file on failure
-                    if os.path.exists(temp_path):
-                        os.unlink(temp_path)
-                    raise
-            finally:
-                fcntl.lockf(lock_file.fileno(), fcntl.LOCK_UN)
+            except Exception:
+                # Clean up temp file on failure
+                if os.path.exists(temp_path):
+                    os.unlink(temp_path)
+                raise
 
     def exists(self, path: Path) -> bool:
         """Check if a file exists.
@@ -175,14 +178,9 @@ class AtomicFileAdapter:
             OSError: If delete operation fails
         """
         lock_path = self._get_lock_path(path)
-        lock_path.touch(exist_ok=True)
 
-        with open(lock_path, "r+") as lock_file:
-            fcntl.lockf(lock_file.fileno(), fcntl.LOCK_EX)
-            try:
-                if path.exists():
-                    path.unlink()
-                    return True
-                return False
-            finally:
-                fcntl.lockf(lock_file.fileno(), fcntl.LOCK_UN)
+        with FileLock(str(lock_path)):
+            if path.exists():
+                path.unlink()
+                return True
+            return False

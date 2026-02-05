@@ -183,14 +183,14 @@ class TestConfigPathNavigation:
         base = ConfigPath(Path("/home/user"))
         full = ConfigPath(Path("/home/user/.jerry/config.toml"))
         relative = full.relative_to(base)
-        assert str(relative) == ".jerry/config.toml"
+        assert relative == Path(".jerry") / "config.toml"
 
     def test_relative_to_with_path(self, tmp_path: Path) -> None:
         """relative_to accepts Path object."""
         base = tmp_path
         full = ConfigPath(tmp_path / ".jerry" / "config.toml")
         relative = full.relative_to(base)
-        assert str(relative) == ".jerry/config.toml"
+        assert relative == Path(".jerry") / "config.toml"
 
 
 class TestConfigPathFilesystemOperations:
@@ -289,7 +289,8 @@ class TestConfigPathStringRepresentation:
         path = ConfigPath(Path("/home/user/config.toml"))
         result = str(path)
         assert "config.toml" in result
-        assert "/home/user" in result or "home/user" in result
+        # On Windows, Path("/home/user") resolves to e.g. C:\home\user
+        assert "home" in result and "user" in result
 
     def test_repr_includes_class_name(self) -> None:
         """repr() includes class name for debugging."""
