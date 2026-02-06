@@ -36,6 +36,7 @@ Configuration:
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import subprocess
@@ -43,6 +44,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+# =============================================================================
+# WINDOWS UTF-8 FIX: Force UTF-8 for stdin/stdout to handle emoji/Unicode
+# =============================================================================
+if sys.platform == "win32":
+    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8", errors="replace")
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # =============================================================================
 # VERSION
@@ -914,6 +923,10 @@ def build_status_line(data: dict, config: dict) -> str:
 def main() -> None:
     """Main entry point."""
     try:
+        # Force UTF-8 output on Windows to avoid UnicodeEncodeError with emoji/special chars
+        if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
         config = load_config()
 
         if config["advanced"]["debug"]:
