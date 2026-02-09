@@ -102,7 +102,7 @@ def validate_vtt(file_path: Path) -> ValidationResult:
                 duration_str="N/A",
             )
 
-    lines = content.split("\n")
+    lines = content.splitlines()
 
     # Check 1: WEBVTT header
     if not lines or not lines[0].startswith("WEBVTT"):
