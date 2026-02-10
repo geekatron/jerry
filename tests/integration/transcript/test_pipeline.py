@@ -413,6 +413,10 @@ class TestPythonPipeline:
         # All 6 datasets should complete in < 30 seconds
         assert total_elapsed < 30.0, f"All datasets took {total_elapsed:.2f}s, expected < 30s"
 
+        # Skip if golden datasets are not available (e.g., CI where VTT files are not committed)
+        if processed_count == 0:
+            pytest.skip("No golden VTT datasets available")
+
         # Verify we processed all available datasets
         assert processed_count >= 6, (
             f"Expected to process 6 datasets, only processed {processed_count}"
