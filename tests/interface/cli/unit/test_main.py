@@ -17,6 +17,7 @@ Note: Main routing tests are in test_main_v2.py (Phase 4.2)
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
 
 from src.bootstrap import get_projects_directory
@@ -80,7 +81,7 @@ class TestGetProjectsDirectory:
         """Should use CLAUDE_PROJECT_DIR environment variable if set."""
         with patch.dict("os.environ", {"CLAUDE_PROJECT_DIR": "/test/root"}):
             result = get_projects_directory()
-            assert result == "/test/root/projects"
+            assert result == str(Path("/test/root") / "projects")
 
     def test_falls_back_to_cwd_if_no_env(self):
         """Should use current working directory if CLAUDE_PROJECT_DIR not set."""
