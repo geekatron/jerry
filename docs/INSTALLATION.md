@@ -373,27 +373,38 @@ If still not found, add to PATH manually:
 
 ## For Developers
 
-If you want to contribute to Jerry development, you'll need Python 3.11+.
+If you want to contribute to Jerry development, you'll need Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ### Development Setup
 
+**macOS / Linux:**
 ```bash
-# Clone repository
 git clone https://github.com/geekatron/jerry.git
 cd jerry
-
-# Install dependencies (includes Python if needed)
-uv sync
-
-# Run tests
-uv run pytest
-
-# Run type checking
-uv run mypy src/
-
-# Run linting
-uv run ruff check src/
+make setup    # Installs deps + pre-commit hooks
+make test     # Run test suite
 ```
+
+**Windows (Git Bash or PowerShell):**
+```bash
+git clone https://github.com/geekatron/jerry.git
+cd jerry
+uv sync                        # Install dependencies
+uv run pre-commit install      # Install pre-commit hooks
+uv run pytest --tb=short -q    # Run test suite
+```
+
+> **Note:** Windows does not have `make` by default. Use the `uv run` commands directly. See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full Make target equivalents table.
+
+### Common Developer Commands
+
+| Task | macOS/Linux | Windows / All Platforms |
+|------|-------------|------------------------|
+| First-time setup | `make setup` | `uv sync && uv run pre-commit install` |
+| Run tests | `make test` | `uv run pytest --tb=short -q` |
+| Run linters | `make lint` | `uv run ruff check src/ tests/ && uv run pyright src/` |
+| Format code | `make format` | `uv run ruff check --fix src/ tests/ && uv run ruff format src/ tests/` |
+| All pre-commit hooks | `make pre-commit` | `uv run pre-commit run --all-files` |
 
 ### Architecture Overview
 
@@ -407,7 +418,7 @@ src/
 └── interface/        # Primary adapters (CLI)
 ```
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines and coding standards.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines, Windows-specific notes, and coding standards.
 
 ---
 

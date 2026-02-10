@@ -23,8 +23,6 @@ This directory contains test data and validation specifications for the transcri
 test_data/
 ├── README.md                              ← This file
 ├── transcripts/                           ← Test input files
-│   ├── real/                              ← Real VTT files from users
-│   │   └── internal-sample-sample.vtt
 │   ├── golden/                            ← Synthetic golden dataset (EN-017)
 │   │   ├── meeting-001.vtt                ← 8 min, ~1.6K tokens (no splits)
 │   │   ├── meeting-004-sprint-planning.vtt ← 126 min, ~23K tokens (no splits)
@@ -47,7 +45,6 @@ test_data/
 │       ├── iso88591_sample.vtt            ← ⚠️ BINARY: ISO-8859-1 encoding test
 │       └── iso88591_sample.srt            ← ⚠️ BINARY: ISO-8859-1 SRT test
 ├── expected/                              ← Expected parser outputs
-│   ├── internal-sample-sample.expected.json
 │   ├── windows1252_sample.expected.json   ← Encoding fallback expected output
 │   ├── windows1252_sample_srt.expected.json
 │   ├── iso88591_sample.expected.json
@@ -59,12 +56,6 @@ test_data/
 ---
 
 ## Current Contents
-
-### Real Transcript Sample
-
-| File | Source | Cues | Speakers | Purpose |
-|------|--------|------|----------|---------|
-| `transcripts/real/internal-sample-sample.vtt` | User VTT (first 20 cues) | 20 | 2 (Adam Nowak, Brendan Bennett) | VTT parsing verification |
 
 ### Large Transcript Golden Dataset (EN-017)
 
@@ -125,7 +116,6 @@ Created for testing file splitting behavior in ts-formatter. Token calculation u
 
 | File | Source | Purpose |
 |------|--------|---------|
-| `expected/internal-sample-sample.expected.json` | Derived from VTT (deterministic) | Golden output for comparison |
 | `expected/windows1252_sample.expected.json` | TASK-107 encoding tests | Windows-1252 VTT expected output |
 | `expected/windows1252_sample_srt.expected.json` | TASK-107 encoding tests | Windows-1252 SRT expected output |
 | `expected/iso88591_sample.expected.json` | TASK-107 encoding tests | ISO-8859-1 VTT expected output |
@@ -180,16 +170,6 @@ These files verify the encoding fallback chain per NFR-007:
 
 ## Test Case Summary
 
-### Core VTT Tests (5 - from DISC-002)
-
-| Test ID | Name | Input | Coverage |
-|---------|------|-------|----------|
-| vtt-001 | Voice tags with closing tags | internal-sample-sample.vtt | FR-001.3 |
-| vtt-002 | Multi-line cue payloads | internal-sample-sample.vtt | FR-001.4 |
-| vtt-003 | Timestamp normalization | internal-sample-sample.vtt | NFR-006 |
-| vtt-004 | Speaker extraction | internal-sample-sample.vtt | FR-001.3 |
-| vtt-005 | Canonical JSON schema | internal-sample-sample.vtt | TDD Section 3 |
-
 ### Edge Case Tests (9 - from W3C Research)
 
 | Test ID | Name | Input | Research ID |
@@ -221,18 +201,12 @@ These files verify the encoding fallback chain per NFR-007:
 
 ### Items Requiring Human Review
 
-1. **internal-sample-sample.expected.json**
-   - Verify speaker names extracted correctly
-   - Verify timestamps converted to milliseconds correctly
-   - Verify multi-line text joined correctly
-   - Verify closing `</v>` tags stripped
-
-2. **parser-tests.yaml (v1.1.0)**
+1. **parser-tests.yaml (v1.1.0)**
    - Verify test assertions match acceptance criteria
    - Confirm edge case test coverage is adequate
    - Review W3C-derived test cases for applicability
 
-3. **Edge case VTT files**
+2. **Edge case VTT files**
    - Verify files match W3C specification requirements
    - Confirm Unicode test data covers required scripts
 
@@ -281,13 +255,6 @@ This infrastructure will be expanded in EN-015 to include:
 ---
 
 ## Usage
-
-### For TASK-102 (VTT Processing Verification)
-
-1. Read `validation/parser-tests.yaml` for test cases (vtt-001 through vtt-005)
-2. Run ts-parser against `transcripts/real/internal-sample-sample.vtt`
-3. Compare output against `expected/internal-sample-sample.expected.json`
-4. Verify all assertions pass
 
 ### For Edge Case Testing
 

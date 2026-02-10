@@ -33,124 +33,15 @@ test_suites:
     implements: "FR-001"
     reference: "TDD-ts-parser.md Section 1.1"
 
+    # NOTE: Tests vtt-001 through vtt-005 REMOVED.
+    # These tests referenced transcripts/real/internal-sample-sample.vtt and
+    # expected/internal-sample-sample.expected.json, both removed during
+    # OSS release PII sanitization. The input VTT was never migrated from source-repository,
+    # making these tests non-executable. The expected output contained PII.
+    # Functionality is covered by golden dataset tests (meeting-001 through meeting-006)
+    # and edge case tests (vtt-006 through vtt-014) below.
+
     tests:
-      # Test VTT-001: Basic VTT with voice tags
-      - id: vtt-001
-        name: "Parse VTT with voice tags and closing </v> tags"
-        description: |
-          Verify ts-parser correctly handles VTT files with:
-          - WEBVTT header
-          - Voice tags with closing </v> (per DISC-001 correction)
-          - Standard HH:MM:SS.mmm timestamps
-        input:
-          file: "transcripts/real/internal-sample-sample.vtt"
-          format: vtt
-        expected:
-          file: "../expected/internal-sample-sample.expected.json"
-        assertions:
-          - type: format_detected
-            expected: "vtt"
-          - type: segment_count
-            expected: 20
-          - type: speakers_detected
-            expected: ["Adam Nowak", "Brendan Bennett"]
-          - type: no_parse_errors
-          - type: closing_tags_stripped
-            description: "Text should NOT contain </v> closing tags"
-        acceptance_criteria:
-          - "AC-1: WEBVTT header recognized"
-          - "AC-2: Voice tags parsed correctly"
-          - "AC-3: Closing </v> tags stripped from text"
-
-      # Test VTT-002: Multi-line cue payloads
-      - id: vtt-002
-        name: "Parse VTT with multi-line cue payloads"
-        description: |
-          Verify ts-parser correctly handles multi-line cue payloads:
-          - Voice tag opens on first line
-          - Closing tag on last line
-          - Lines joined with single space
-        input:
-          file: "transcripts/real/internal-sample-sample.vtt"
-          segment_filter: "seg-002"  # Multi-line example
-        expected:
-          segment:
-            id: "seg-002"
-            speaker: "Brendan Bennett"
-            text: "All right. Yeah. So I guess I was a little interested in"
-        assertions:
-          - type: text_no_newlines
-            description: "Multi-line payload joined with single space"
-          - type: text_no_closing_tag
-            description: "Closing </v> stripped from extracted text"
-        acceptance_criteria:
-          - "AC-4: Multi-line payloads joined correctly"
-
-      # Test VTT-003: Timestamp normalization
-      - id: vtt-003
-        name: "Timestamps normalized to milliseconds"
-        description: |
-          Verify ts-parser converts VTT timestamps to milliseconds:
-          - HH:MM:SS.mmm -> integer milliseconds
-          - Precision: 10ms (per NFR-006)
-        input:
-          file: "transcripts/real/internal-sample-sample.vtt"
-          segment_filter: "seg-001"
-        expected:
-          segment:
-            start_ms: 3528
-            end_ms: 6448
-        assertions:
-          - type: timestamp_format
-            expected: "milliseconds"
-          - type: start_before_end
-            description: "start_ms < end_ms for all segments"
-        acceptance_criteria:
-          - "AC-6: Timestamps normalized to milliseconds"
-
-      # Test VTT-004: Speaker extraction from voice tags
-      - id: vtt-004
-        name: "Speaker names extracted from <v> tags"
-        description: |
-          Verify ts-parser extracts speaker names correctly:
-          - Pattern: <v SPEAKER_NAME>text</v>
-          - Full name preserved (first and last)
-        input:
-          file: "transcripts/real/internal-sample-sample.vtt"
-        expected:
-          speakers: ["Adam Nowak", "Brendan Bennett"]
-        assertions:
-          - type: speaker_count
-            expected: 2
-          - type: full_names_preserved
-            description: "First and last names both present"
-        acceptance_criteria:
-          - "AC-2: Voice tags parsed correctly"
-
-      # Test VTT-005: Canonical JSON schema compliance
-      - id: vtt-005
-        name: "Output matches canonical JSON schema"
-        description: |
-          Verify ts-parser output conforms to TDD-ts-parser.md Section 3 schema:
-          - version field present
-          - source object with format, encoding, file_path
-          - metadata object with duration_ms, segment_count, detected_speakers
-          - segments array with required fields
-        input:
-          file: "transcripts/real/internal-sample-sample.vtt"
-        expected:
-          schema_compliance: true
-        assertions:
-          - type: has_version
-            expected: "1.0"
-          - type: has_source_object
-            required_fields: ["format", "encoding", "file_path"]
-          - type: has_metadata_object
-            required_fields: ["duration_ms", "segment_count", "detected_speakers"]
-          - type: has_segments_array
-            segment_required_fields: ["id", "start_ms", "end_ms", "speaker", "text"]
-        acceptance_criteria:
-          - "AC-5: Output matches canonical JSON schema"
 
   # ---------------------------------------------------------------------------
   # VTT EDGE CASES (From W3C WebVTT Research)
@@ -358,7 +249,7 @@ test_suites:
         name: "Auto-detect VTT format"
         description: "Verify format detection for VTT files"
         input:
-          file: "transcripts/real/internal-sample-sample.vtt"
+          file: "transcripts/golden/meeting-001.vtt"
         assertions:
           - type: format_detected
             expected: "vtt"
