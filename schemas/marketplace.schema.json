@@ -75,6 +75,16 @@
             "enum": ["development", "productivity", "automation", "testing", "documentation", "infrastructure", "security", "other"],
             "description": "Plugin category for organization."
           },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "maxItems": 20,
+            "uniqueItems": true,
+            "description": "Keywords for plugin discoverability in kebab-case format."
+          },
           "author": {
             "type": "object",
             "description": "Plugin author information.",
