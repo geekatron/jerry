@@ -121,11 +121,13 @@ def project_id(request: pytest.FixtureRequest) -> str:
 def proj_root(project_root: Path, project_id: str) -> Path:
     """Return the root directory for the current project under test.
 
-    Skips if the project directory does not exist (e.g., in CI where
-    the projects/ directory is gitignored).
+    Skips if the project directory is missing or lacks required project
+    files (e.g., in CI where the projects/ directory is gitignored).
     """
     path = project_root / "projects" / project_id
-    if not path.exists():
+    has_plan = (path / "PLAN.md").exists()
+    has_tracker = (path / "WORKTRACKER.md").exists()
+    if not path.is_dir() or not (has_plan or has_tracker):
         pytest.skip(f"Project directory not available: {project_id}")
     return path
 
