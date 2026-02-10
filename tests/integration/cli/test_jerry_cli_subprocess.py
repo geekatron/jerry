@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+from collections.abc import Generator
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -50,6 +51,24 @@ def project_root() -> Path:
     """Get the project root directory."""
     # Navigate from tests/integration/cli to project root
     return Path(__file__).parent.parent.parent.parent
+
+
+@pytest.fixture
+def ensure_projects_dir(project_root: Path) -> Generator[Path, None, None]:
+    """Ensure the projects/ directory exists for subprocess tests.
+
+    In CI the projects/ directory is gitignored and may not exist, causing
+    RepositoryError when CLI commands scan for projects. This fixture creates
+    the directory if missing and cleans it up afterward.
+    """
+    projects_dir = project_root / "projects"
+    created = False
+    if not projects_dir.exists():
+        projects_dir.mkdir()
+        created = True
+    yield projects_dir
+    if created:
+        projects_dir.rmdir()
 
 
 @pytest.fixture
@@ -132,6 +151,7 @@ class TestProjectsCommands:
         self,
         project_root: Path,
         env_with_pythonpath: dict[str, str],
+        ensure_projects_dir: Path,
     ) -> None:
         """jerry projects list returns exit code 0."""
         result = run_jerry(
@@ -146,6 +166,7 @@ class TestProjectsCommands:
         self,
         project_root: Path,
         env_with_pythonpath: dict[str, str],
+        ensure_projects_dir: Path,
     ) -> None:
         """jerry projects list --json returns object with 'projects' key."""
         result = run_jerry(
@@ -164,6 +185,7 @@ class TestProjectsCommands:
         self,
         project_root: Path,
         env_with_pythonpath: dict[str, str],
+        ensure_projects_dir: Path,
     ) -> None:
         """jerry projects validate with existing project returns 0."""
         # First get list of projects to find a valid one
@@ -525,6 +547,7 @@ class TestJsonOutput:
         self,
         project_root: Path,
         env_with_pythonpath: dict[str, str],
+        ensure_projects_dir: Path,
     ) -> None:
         """All --json outputs are parseable JSON."""
         commands = [
