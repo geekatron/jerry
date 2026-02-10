@@ -383,7 +383,7 @@ Single-line example:
   <v Alice>Good morning everyone.</v>
 
 Multi-line example (real-world pattern):
-  <v Brendan Bennett>All right. Yeah.
+  <v Sam Chen>All right. Yeah.
   So I guess I was a little interested in</v>
 
 MULTI-LINE PAYLOAD HANDLING:

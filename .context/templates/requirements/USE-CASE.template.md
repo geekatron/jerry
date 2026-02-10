@@ -23,7 +23,7 @@ REFERENCES:
   - Cockburn, A. (2001). "Writing Effective Use Cases"
   - Jacobson, I. et al. (2011). "Use Case 2.0: The Guide to Succeeding with Use Cases"
   - OMG UML 2.5.1 Specification
-  - Delinea.Registration/docs/design/Readme.LongLivedTokenDesign.template.md
+  - (Internal reference removed for OSS release)
 
 GOAL LEVELS (Cockburn Sea Metaphor):
   - Summary (+): Multi-session, orchestration-level (Kite/Cloud)
