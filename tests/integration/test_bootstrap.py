@@ -11,6 +11,8 @@ Test Distribution per impl-es-e-003:
 
 from __future__ import annotations
 
+from pathlib import Path
+
 # === Happy Path Tests (60%) ===
 
 
@@ -86,16 +88,21 @@ class TestBootstrapNegative:
 class TestBootstrapEdgeCases:
     """Edge case tests for bootstrap module."""
 
-    def test_dispatcher_can_dispatch_query_e2e(self) -> None:
+    def test_dispatcher_can_dispatch_query_e2e(self, tmp_path: Path) -> None:
         """Dispatcher can actually dispatch a query end-to-end.
 
         This is an integration test that exercises the full path.
+        Uses a temporary projects directory to avoid depending on local data.
         """
         from src.application.queries import ScanProjectsQuery
-        from src.bootstrap import create_query_dispatcher, get_projects_directory
+        from src.bootstrap import create_query_dispatcher
+
+        # Arrange - create a minimal projects directory so scan_projects succeeds
+        projects_dir = tmp_path / "projects"
+        projects_dir.mkdir()
 
         dispatcher = create_query_dispatcher()
-        query = ScanProjectsQuery(base_path=get_projects_directory())
+        query = ScanProjectsQuery(base_path=str(projects_dir))
 
         # Act - this exercises the full path
         # Note: may return empty list if no projects, but should not error

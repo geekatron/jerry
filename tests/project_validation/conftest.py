@@ -138,8 +138,15 @@ def project_id(request: pytest.FixtureRequest) -> str:
 
 @pytest.fixture
 def proj_root(project_root: Path, project_id: str) -> Path:
-    """Return the root directory for the current project under test."""
-    return project_root / "projects" / project_id
+    """Return the root directory for the current project under test.
+
+    Skips if the project directory does not exist (e.g., in CI where
+    the projects/ directory is gitignored).
+    """
+    path = project_root / "projects" / project_id
+    if not path.exists():
+        pytest.skip(f"Project directory not available: {project_id}")
+    return path
 
 
 # =============================================================================
