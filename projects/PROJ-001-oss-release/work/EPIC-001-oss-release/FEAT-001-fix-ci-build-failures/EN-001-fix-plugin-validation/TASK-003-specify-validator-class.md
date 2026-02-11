@@ -1,7 +1,7 @@
 # TASK-003: Specify Draft202012Validator in validation script (best practice)
 
 > **Type:** task
-> **Status:** IN_PROGRESS
+> **Status:** DONE
 > **Priority:** MEDIUM
 > **Created:** 2026-02-10
 > **Parent:** BUG-001
@@ -36,11 +36,11 @@ All three schemas use JSON Schema Draft 2020-12. Specifying the validator class 
 
 ### Acceptance Criteria
 
-- [ ] `validate_plugin_json()` (line ~90) uses `cls=jsonschema.Draft202012Validator`
-- [ ] `validate_marketplace_json()` (line ~137) uses `cls=jsonschema.Draft202012Validator`
-- [ ] `validate_hooks_json()` (line ~184) uses `cls=jsonschema.Draft202012Validator`
-- [ ] `uv run python scripts/validate_plugin_manifests.py` passes locally
-- [ ] No regressions
+- [x] `validate_plugin_json()` (line ~90) uses `cls=jsonschema.Draft202012Validator`
+- [x] `validate_marketplace_json()` (line ~137) uses `cls=jsonschema.Draft202012Validator`
+- [x] `validate_hooks_json()` (line ~184) uses `cls=jsonschema.Draft202012Validator`
+- [x] `uv run python scripts/validate_plugin_manifests.py` passes locally
+- [x] No regressions
 
 ### Implementation Notes
 
