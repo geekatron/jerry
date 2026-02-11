@@ -1,13 +1,13 @@
 # EN-001: Fix Plugin Validation
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-10
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-11
 > **Parent:** FEAT-001
 > **Owner:** —
 > **Effort:** —
