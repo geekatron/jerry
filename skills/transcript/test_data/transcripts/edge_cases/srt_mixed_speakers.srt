@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:03,000
+Alice: First pattern with colon.
+
+2
+00:00:03,000 --> 00:00:06,000
+[Bob] Second pattern with brackets.
+
+3
+00:00:06,000 --> 00:00:09,000
+CHARLIE: Third pattern with all caps and colon.
+
+4
+00:00:09,000 --> 00:00:12,000
+No speaker prefix here, should be null.
+
+5
+00:00:12,000 --> 00:00:15,000
+Diana: Back to normal colon pattern.

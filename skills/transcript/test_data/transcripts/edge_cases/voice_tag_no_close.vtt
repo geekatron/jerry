@@ -1,0 +1,13 @@
+WEBVTT
+
+NOTE Voice tag without closing tag (VT-004)
+NOTE Per W3C spec, closing tag can be omitted if voice spans entire cue
+
+00:00.000 --> 00:01.000
+<v John>This is the entire cue with no closing tag
+
+00:01.000 --> 00:02.000
+<v Mary>Another cue without closing tag
+
+00:02.000 --> 00:03.000
+<v Bob>Yet another example

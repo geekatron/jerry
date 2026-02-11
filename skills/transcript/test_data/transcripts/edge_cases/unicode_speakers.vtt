@@ -1,0 +1,22 @@
+WEBVTT
+
+NOTE Unicode speaker names and content (CE-003, CE-004)
+NOTE Tests i18n support with various scripts
+
+00:00.000 --> 00:01.000
+<v 李明>你好，世界！</v>
+
+00:01.000 --> 00:02.000
+<v أحمد>مرحبا بالعالم</v>
+
+00:02.000 --> 00:03.000
+<v Ελένη>Γεια σου κόσμε</v>
+
+00:03.000 --> 00:04.000
+<v Müller>Hallo Welt mit Umlauten: äöü</v>
+
+00:04.000 --> 00:05.000
+<v 田中太郎>日本語のテスト</v>
+
+00:05.000 --> 00:06.000
+<v 🎤 Emoji Host>Let's have some fun! 🎉</v>

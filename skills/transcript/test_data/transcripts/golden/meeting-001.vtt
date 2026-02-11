@@ -1,0 +1,125 @@
+WEBVTT - Team Standup Meeting (Golden Dataset)
+
+NOTE
+Golden dataset for ts-parser validation
+Speakers: Alice (PM), Bob (Backend), Charlie (Frontend), Diana (QA)
+Entities: 5 action items, 3 decisions, 2 questions
+Duration: ~15 minutes
+
+00:00:00.000 --> 00:00:05.500
+<v Alice>Good morning everyone. Let's start our daily standup.
+
+00:00:05.500 --> 00:00:12.000
+<v Alice>Bob, would you like to kick us off with your update?
+
+00:00:12.000 --> 00:00:25.500
+<v Bob>Sure. Yesterday I finished the API authentication module. Today I'll work on the database migration scripts. No blockers for me.
+
+00:00:25.500 --> 00:00:32.000
+<v Alice>Great progress on the auth module. Charlie, you're up next.
+
+00:00:32.000 --> 00:00:52.000
+<v Charlie>Yesterday I completed the login form UI. I'm waiting on Bob's API to test the integration. Today I need to implement the password reset flow.
+
+00:00:52.000 --> 00:01:05.000
+<v Bob>The authentication endpoints are ready. I'll send you the Swagger documentation after this meeting.
+
+00:01:05.000 --> 00:01:12.000
+<v Charlie>Perfect, that will unblock me. Thanks Bob.
+
+00:01:12.000 --> 00:01:25.000
+<v Alice>Diana, how is the test planning going?
+
+00:01:25.000 --> 00:01:48.000
+<v Diana>I've drafted the test cases for the authentication flow. I need to review them with the team. Can we schedule a test case review session this week?
+
+00:01:48.000 --> 00:02:05.000
+<v Alice>Good question. Let's go with Thursday afternoon for the review. Does that work for everyone?
+
+00:02:05.000 --> 00:02:10.000
+<v Bob>Thursday works for me.
+
+00:02:10.000 --> 00:02:15.000
+<v Charlie>I'm free Thursday afternoon.
+
+00:02:15.000 --> 00:02:20.000
+<v Diana>Perfect. I'll send out the calendar invite.
+
+00:02:20.000 --> 00:02:45.000
+<v Alice>Before we wrap up, we need to discuss the deployment timeline. The stakeholders are asking about the release date.
+
+00:02:45.000 --> 00:03:05.000
+<v Bob>Based on current progress, I think we can have the backend ready by next Friday. The migration will need a weekend window though.
+
+00:03:05.000 --> 00:03:22.000
+<v Charlie>The frontend should be ready by Wednesday if the API integration goes smoothly today.
+
+00:03:22.000 --> 00:03:40.000
+<v Diana>I'll need at least three days for regression testing after integration. So if integration completes Wednesday, I can finish testing by Monday.
+
+00:03:40.000 --> 00:04:00.000
+<v Alice>So we're looking at a Monday release. We decided to target Monday the 15th for production deployment.
+
+00:04:00.000 --> 00:04:18.000
+<v Bob>Sounds good. I will prepare the rollback scripts as a safety measure. That's assigned to me for tomorrow.
+
+00:04:18.000 --> 00:04:35.000
+<v Alice>Excellent. Charlie, can you work with Diana to create a smoke test checklist for the deployment?
+
+00:04:35.000 --> 00:04:45.000
+<v Charlie>Will do. Diana, let's sync after this meeting.
+
+00:04:45.000 --> 00:04:52.000
+<v Diana>Agreed. I'll block some time on our calendars.
+
+00:04:52.000 --> 00:05:10.000
+<v Alice>One more thing. How do we want to handle the feature flag for the new authentication? Should we do a gradual rollout?
+
+00:05:10.000 --> 00:05:32.000
+<v Bob>I recommend a phased approach. We can start with internal users, then expand to 10% of production traffic.
+
+00:05:32.000 --> 00:05:45.000
+<v Diana>That aligns with our testing strategy. We agreed to use the phased rollout approach.
+
+00:05:45.000 --> 00:06:00.000
+<v Alice>Perfect. I'll update the release plan document with these decisions.
+
+00:06:00.000 --> 00:06:15.000
+<v Charlie>Quick question - what about the legacy login endpoint? Are we deprecating it immediately?
+
+00:06:15.000 --> 00:06:35.000
+<v Bob>We should keep it running in parallel for at least two weeks. I need to add deprecation warnings to the API response headers.
+
+00:06:35.000 --> 00:06:48.000
+<v Alice>Good thinking. Add that to your task list, Bob.
+
+00:06:48.000 --> 00:06:55.000
+<v Bob>Already on it. I'll create the ticket after this meeting.
+
+00:06:55.000 --> 00:07:10.000
+<v Alice>Alright team, great discussion. Let's recap the action items.
+
+00:07:10.000 --> 00:07:25.000
+<v Alice>Bob will send API documentation to Charlie, prepare rollback scripts, and add deprecation warnings to the legacy endpoint.
+
+00:07:25.000 --> 00:07:38.000
+<v Alice>Charlie will implement password reset and work with Diana on the smoke test checklist.
+
+00:07:38.000 --> 00:07:50.000
+<v Alice>Diana will send the test review invite for Thursday and complete the test case documentation.
+
+00:07:50.000 --> 00:08:00.000
+<v Alice>And I'll update the release plan with our decisions. Any questions?
+
+00:08:00.000 --> 00:08:05.000
+<v Bob>All clear from my side.
+
+00:08:05.000 --> 00:08:10.000
+<v Charlie>Good to go.
+
+00:08:10.000 --> 00:08:15.000
+<v Diana>No questions here.
+
+00:08:15.000 --> 00:08:25.000
+<v Alice>Great work everyone. Let's have a productive day. Meeting adjourned.
+
