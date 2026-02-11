@@ -13,7 +13,7 @@
 | Attribute | Value |
 |-----------|-------|
 | **Decision** | Kubernetes CNI driver selection based on decision tree analysis |
-| **Speaker** | Adam Nowak |
+| **Speaker** | Alex Johnson |
 | **Confidence** | 80% |
 
 **Context:**

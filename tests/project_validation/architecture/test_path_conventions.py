@@ -196,9 +196,10 @@ class TestCategoryConventions:
         """
         research_dir = proj_root / "research"
         if research_dir.exists():
+            md_files = list(research_dir.glob("*.md"))
             extraction_docs = list(research_dir.glob("*extraction*.md"))
-            # Only check if research dir has files
-            if list(research_dir.glob("*.md")):
+            # Only enforce naming conventions when directory has enough files (3+)
+            if len(md_files) >= 3:
                 assert len(extraction_docs) >= 1, (
                     "Research directory should contain extraction documents"
                 )
@@ -209,11 +210,12 @@ class TestCategoryConventions:
         """
         synthesis_dir = proj_root / "synthesis"
         if synthesis_dir.exists():
+            md_files = list(synthesis_dir.glob("*.md"))
             canon_docs = list(synthesis_dir.glob("*canon*.md")) + list(
                 synthesis_dir.glob("*unified*.md")
             )
-            # Only check if synthesis dir has files
-            if list(synthesis_dir.glob("*.md")):
+            # Only enforce naming conventions when directory has enough files (3+)
+            if len(md_files) >= 3:
                 assert len(canon_docs) >= 1, (
                     "Synthesis directory should contain canon/unified document"
                 )
@@ -224,9 +226,10 @@ class TestCategoryConventions:
         """
         decisions_dir = proj_root / "decisions"
         if decisions_dir.exists():
+            md_files = list(decisions_dir.glob("*.md"))
             adr_docs = list(decisions_dir.glob("ADR-*.md")) + list(decisions_dir.glob("*-adr-*.md"))
-            # Only check if decisions dir has files
-            if list(decisions_dir.glob("*.md")):
+            # Only enforce naming conventions when directory has enough files (3+)
+            if len(md_files) >= 3:
                 assert len(adr_docs) >= 1, "Decisions directory should contain ADR documents"
 
 

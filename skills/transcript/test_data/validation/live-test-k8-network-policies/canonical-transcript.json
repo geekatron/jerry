@@ -15,137 +15,137 @@
       "id": "seg-001",
       "start_ms": 3528,
       "end_ms": 6448,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "It's it has started, right?",
-      "raw_text": "<v Adam Nowak>It's it has started, right?</v>"
+      "raw_text": "<v Alex Johnson>It's it has started, right?</v>"
     },
     {
       "id": "seg-002",
       "start_ms": 5608,
       "end_ms": 10319,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "All right. Yeah. So I guess I was a little interested in",
-      "raw_text": "<v Brendan Bennett>All right. Yeah.\nSo I guess I was a little interested in</v>"
+      "raw_text": "<v Sam Chen>All right. Yeah.\nSo I guess I was a little interested in</v>"
     },
     {
       "id": "seg-003",
       "start_ms": 10319,
       "end_ms": 16930,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "where it's kind of recommended solutions and products rather than generic like,",
-      "raw_text": "<v Brendan Bennett>where it's kind of recommended solutions\nand products rather than generic like,</v>"
+      "raw_text": "<v Sam Chen>where it's kind of recommended solutions\nand products rather than generic like,</v>"
     },
     {
       "id": "seg-004",
       "start_ms": 16930,
       "end_ms": 20401,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "well, sorry, whether recommended specific",
-      "raw_text": "<v Brendan Bennett>well, sorry,\nwhether recommended specific</v>"
+      "raw_text": "<v Sam Chen>well, sorry,\nwhether recommended specific</v>"
     },
     {
       "id": "seg-005",
       "start_ms": 20401,
       "end_ms": 24368,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "implementations rather than just like concepts.",
-      "raw_text": "<v Brendan Bennett>implementations rather than just like\nconcepts.</v>"
+      "raw_text": "<v Sam Chen>implementations rather than just like\nconcepts.</v>"
     },
     {
       "id": "seg-006",
       "start_ms": 24408,
       "end_ms": 31578,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "So for example I saw like Cuverno in there and Cillium and things like that.",
-      "raw_text": "<v Brendan Bennett>So for example I saw like Cuverno in\nthere and Cillium and things like that.</v>"
+      "raw_text": "<v Sam Chen>So for example I saw like Cuverno in\nthere and Cillium and things like that.</v>"
     },
     {
       "id": "seg-007",
       "start_ms": 25248,
       "end_ms": 25368,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "OK.",
-      "raw_text": "<v Adam Nowak>OK.</v>"
+      "raw_text": "<v Alex Johnson>OK.</v>"
     },
     {
       "id": "seg-008",
       "start_ms": 31578,
       "end_ms": 38655,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "I was wondering like are they have we have we recommended those if we if we",
-      "raw_text": "<v Brendan Bennett>I was wondering like are they have we\nhave we recommended those if we if we</v>"
+      "raw_text": "<v Sam Chen>I was wondering like are they have we\nhave we recommended those if we if we</v>"
     },
     {
       "id": "seg-009",
       "start_ms": 38655,
       "end_ms": 41728,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "like or is that just like a yeah.",
-      "raw_text": "<v Brendan Bennett>like or is that just like a yeah.</v>"
+      "raw_text": "<v Sam Chen>like or is that just like a yeah.</v>"
     },
     {
       "id": "seg-010",
       "start_ms": 39048,
       "end_ms": 42699,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "No, we no, we didn't. So there's a decision tree in there that",
-      "raw_text": "<v Adam Nowak>No, we no, we didn't.\nSo there's a decision tree in there that</v>"
+      "raw_text": "<v Alex Johnson>No, we no, we didn't.\nSo there's a decision tree in there that</v>"
     },
     {
       "id": "seg-011",
       "start_ms": 42699,
       "end_ms": 46872,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "I can walk you guys through. That's part of the like million artifacts.",
-      "raw_text": "<v Adam Nowak>I can walk you guys through.\nThat's part of the like million artifacts.</v>"
+      "raw_text": "<v Alex Johnson>I can walk you guys through.\nThat's part of the like million artifacts.</v>"
     },
     {
       "id": "seg-012",
       "start_ms": 46872,
       "end_ms": 50291,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "So it actually did an analysis as part of it. It went out,",
-      "raw_text": "<v Adam Nowak>So it actually did an analysis as part of\nit. It went out,</v>"
+      "raw_text": "<v Alex Johnson>So it actually did an analysis as part of\nit. It went out,</v>"
     },
     {
       "id": "seg-013",
       "start_ms": 50291,
       "end_ms": 55101,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "it looked at multiple Kubernetes network interface drivers. It did the evaluation.",
-      "raw_text": "<v Adam Nowak>it looked at multiple Kubernetes network\ninterface drivers. It did the evaluation.</v>"
+      "raw_text": "<v Alex Johnson>it looked at multiple Kubernetes network\ninterface drivers. It did the evaluation.</v>"
     },
     {
       "id": "seg-014",
       "start_ms": 55101,
       "end_ms": 58288,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "There's a matrix in here somewhere where it's like oh.",
-      "raw_text": "<v Adam Nowak>There's a matrix in here somewhere where\nit's like oh.</v>"
+      "raw_text": "<v Alex Johnson>There's a matrix in here somewhere where\nit's like oh.</v>"
     },
     {
       "id": "seg-015",
       "start_ms": 56608,
       "end_ms": 56728,
-      "speaker": "Brendan Bennett",
+      "speaker": "Sam Chen",
       "text": "OK.",
-      "raw_text": "<v Brendan Bennett>OK.</v>"
+      "raw_text": "<v Sam Chen>OK.</v>"
     },
     {
       "id": "seg-016",
       "start_ms": 58808,
       "end_ms": 68343,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "This is Microsoft's official one. This new one I recommend is because it's the one that's deprecating the official recommended Microsoft. There are other ones and that was its decision tree and as part of the",
-      "raw_text": "<v Adam Nowak>This is Microsoft's official one.\nThis new one I recommend is because it's the one that's deprecating the official recommended Microsoft. There are other ones and that was its decision tree and as part of the</v>"
+      "raw_text": "<v Alex Johnson>This is Microsoft's official one.\nThis new one I recommend is because it's the one that's deprecating the official recommended Microsoft. There are other ones and that was its decision tree and as part of the</v>"
     },
     {
       "id": "seg-017",
       "start_ms": 68343,
       "end_ms": 72768,
-      "speaker": "Adam Nowak",
+      "speaker": "Alex Johnson",
       "text": "orchestration run. So if I you know what, let me share my screen so I'm not talking to the ether.",
-      "raw_text": "<v Adam Nowak>orchestration run. So if I you know what,\nlet me share my screen so I'm not talking to the ether.</v>"
+      "raw_text": "<v Alex Johnson>orchestration run. So if I you know what,\nlet me share my screen so I'm not talking to the ether.</v>"
     }
   ],
   "parse_metadata": {

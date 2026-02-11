@@ -28,10 +28,10 @@ This 73-second conversation covers the methodology and approach used for evaluat
    - Decision tree accounts for vendor-specific considerations
 
 ## Action Required
-Adam Nowak committed to walking through the decision tree for Kubernetes network interface drivers ([see action-001](04-action-items.md#act-001))
+Alex Johnson committed to walking through the decision tree for Kubernetes network interface drivers ([see action-001](04-action-items.md#act-001))
 
 ## Context
-The conversation appears to be a technical discussion or presentation review, with Brendan Bennett seeking clarification on the recommendations and Adam Nowak explaining the evaluation methodology. The discussion transitions to a screen-sharing session to review the artifacts.
+The conversation appears to be a technical discussion or presentation review, with Sam Chen seeking clarification on the recommendations and Alex Johnson explaining the evaluation methodology. The discussion transitions to a screen-sharing session to review the artifacts.
 
 ## Related Sections
 - [Full Transcript](02-transcript.md)

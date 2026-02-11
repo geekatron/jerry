@@ -9,8 +9,12 @@ This script validates the following plugin artifacts:
 Schemas are stored in schemas/ directory and versioned with the repo.
 Uses official Claude Code schemas where available, custom schemas (via Context7) otherwise.
 
+All validation calls explicitly specify Draft202012Validator to ensure consistent
+interpretation of JSON Schema Draft 2020-12 features regardless of jsonschema library defaults.
+
 References:
     - EN-005: Pre-commit/CI hooks for plugin validation
+    - DEC-001: JSON Schema Validator Class Selection
     - DEC-002: Schema Validation Approach
 
 Exit Codes:
@@ -87,7 +91,7 @@ def validate_plugin_json(project_root: Path) -> ValidationResult:
                 error="Failed to load manifest",
             )
 
-        jsonschema.validate(manifest, schema)
+        jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
         return ValidationResult(file_path=str(manifest_path), passed=True)
 
     except jsonschema.ValidationError as e:
@@ -134,7 +138,7 @@ def validate_marketplace_json(project_root: Path) -> ValidationResult:
                 error="Failed to load manifest",
             )
 
-        jsonschema.validate(manifest, schema)
+        jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
         return ValidationResult(file_path=str(manifest_path), passed=True)
 
     except jsonschema.ValidationError as e:
@@ -181,7 +185,7 @@ def validate_hooks_json(project_root: Path) -> ValidationResult:
                 error="Failed to load manifest",
             )
 
-        jsonschema.validate(manifest, schema)
+        jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
         return ValidationResult(file_path=str(manifest_path), passed=True)
 
     except jsonschema.ValidationError as e:

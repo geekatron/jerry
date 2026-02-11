@@ -11,7 +11,7 @@ packet_id: "k8-network-policies-v2"
 
 | ID | Decision | Participants | Confidence |
 |----|----------|--------------|------------|
-| [dec-001](#dec-001) | Did not recommend specific Kubernetes network implementations; provided decision tree for evaluation | Adam Nowak, Brendan Bennett | 90% |
+| [dec-001](#dec-001) | Did not recommend specific Kubernetes network implementations; provided decision tree for evaluation | Alex Johnson, Sam Chen | 90% |
 
 ---
 
@@ -22,8 +22,8 @@ packet_id: "k8-network-policies-v2"
 **Did not recommend specific Kubernetes network implementations; provided decision tree for evaluation**
 
 **Participants:**
-- [Adam Nowak](03-speakers.md#spk-001)
-- [Brendan Bennett](03-speakers.md#spk-002)
+- [Alex Johnson](03-speakers.md#spk-001)
+- [Sam Chen](03-speakers.md#spk-002)
 
 **Confidence:** 90%
 
@@ -37,7 +37,7 @@ packet_id: "k8-network-policies-v2"
 - **Segment:** [seg-010](02-transcript.md#seg-010)
 - **Time:** 00:00:39 (39.0s)
 - **Quote:** "No, we no, we didn't. So there's a decision tree in there"
-- **Speaker:** [Adam Nowak](03-speakers.md#spk-001)
+- **Speaker:** [Alex Johnson](03-speakers.md#spk-001)
 
 ### Supporting Context
 
@@ -84,8 +84,8 @@ The decision appears to be strategic, allowing teams to make informed choices ba
 - [seg-016](02-transcript.md#seg-016) - Supporting evidence
 
 ### From Speakers
-- [Adam Nowak](03-speakers.md#spk-001) - Decision maker
-- [Brendan Bennett](03-speakers.md#spk-002) - Question asker
+- [Alex Johnson](03-speakers.md#spk-001) - Decision maker
+- [Sam Chen](03-speakers.md#spk-002) - Question asker
 
 ### From Questions
 - [question-002](06-questions.md#que-002) - Prompted this decision

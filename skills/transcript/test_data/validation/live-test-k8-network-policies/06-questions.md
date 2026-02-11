@@ -14,7 +14,7 @@
 | Attribute | Value |
 |-----------|-------|
 | **Question** | Are Cilium and Kyverno officially recommended implementations or just mentioned as concepts? |
-| **Asked By** | Brendan Bennett |
+| **Asked By** | Sam Chen |
 | **Status** | Answered |
 | **Confidence** | 90% |
 
@@ -25,7 +25,7 @@
 **Answer:**
 No official recommendation was made. There is a decision tree that provides guidance on CNI driver selection based on automated analysis.
 
-**Answered By:** Adam Nowak
+**Answered By:** Alex Johnson
 **Answer Source:** [seg-010](02-transcript.md#seg-010)
 
 ---

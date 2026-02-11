@@ -111,9 +111,28 @@ def all_projects(project_root: Path) -> list[Path]:
     return discover_projects(project_root)
 
 
-@pytest.fixture(params=["PROJ-001-plugin-cleanup"])  # Can be expanded dynamically
+# Module-level discovery for fixture parameterization.
+# Computed at test collection time, before fixtures are instantiated.
+# pytest constraint: @pytest.fixture(params=...) cannot reference other fixtures.
+_DISCOVERED_PROJECT_IDS: list[str] = []
+_SENTINEL_NO_PROJECTS = "__NO_PROJECTS__"
+
+try:
+    _test_root = _find_project_root(Path(__file__).parent)
+    _discovered_paths = discover_projects(_test_root)
+    _DISCOVERED_PROJECT_IDS = sorted([p.name for p in _discovered_paths])
+except (RuntimeError, OSError, PermissionError):
+    # Root detection or directory traversal failed; tests will skip gracefully.
+    pass
+
+
+@pytest.fixture(
+    params=_DISCOVERED_PROJECT_IDS if _DISCOVERED_PROJECT_IDS else [_SENTINEL_NO_PROJECTS]
+)
 def project_id(request: pytest.FixtureRequest) -> str:
-    """Parameterized fixture for project IDs."""
+    """Parameterized fixture that discovers all PROJ-* directories at collection time."""
+    if request.param == _SENTINEL_NO_PROJECTS:
+        pytest.skip("No PROJ-* directories found in repository")
     return request.param
 
 
@@ -185,6 +204,7 @@ def valid_categories() -> set[str]:
         "reviews",
         "work",  # Work tracking files
         "runbooks",  # Execution guides
+        "orchestration",  # Orchestration skill workflow state (per SKILL.md)
     }
 
 

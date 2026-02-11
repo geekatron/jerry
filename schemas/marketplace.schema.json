@@ -100,6 +100,17 @@
               }
             },
             "additionalProperties": false
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$",
+              "maxLength": 50
+            },
+            "maxItems": 20,
+            "uniqueItems": true,
+            "description": "Keywords for plugin discovery and categorization."
           }
         },
         "additionalProperties": false

@@ -18,7 +18,7 @@
   },
   "speakers": [
     {
-      "name": "Adam Nowak",
+      "name": "Alex Johnson",
       "confidence": 0.95,
       "segment_count": 10,
       "first_appearance": {
@@ -42,7 +42,7 @@
       ]
     },
     {
-      "name": "Brendan Bennett",
+      "name": "Sam Chen",
       "confidence": 0.95,
       "segment_count": 7,
       "first_appearance": {
@@ -66,7 +66,7 @@
     {
       "id": "action-001",
       "text": "Walk through the decision tree for Kubernetes network interface drivers",
-      "assigned_to": "Adam Nowak",
+      "assigned_to": "Alex Johnson",
       "confidence": 0.85,
       "extraction_tier": "tier_1",
       "pattern_matched": "explicit_commitment",
@@ -86,8 +86,8 @@
       "extraction_tier": "tier_1",
       "pattern_matched": "explicit_statement",
       "participants": [
-        "Adam Nowak",
-        "Brendan Bennett"
+        "Alex Johnson",
+        "Sam Chen"
       ],
       "citation": {
         "segment_id": "seg-010",
@@ -113,7 +113,7 @@
     {
       "id": "question-001",
       "text": "Has the recording started?",
-      "asked_by": "Adam Nowak",
+      "asked_by": "Alex Johnson",
       "confidence": 0.95,
       "extraction_tier": "tier_1",
       "pattern_matched": "question_mark",
@@ -128,7 +128,7 @@
     {
       "id": "question-002",
       "text": "Whether the analysis recommended specific implementations or just concepts",
-      "asked_by": "Brendan Bennett",
+      "asked_by": "Sam Chen",
       "confidence": 0.85,
       "extraction_tier": "tier_2",
       "pattern_matched": "contextual_question",
@@ -150,7 +150,7 @@
     {
       "id": "question-003",
       "text": "Have specific Kubernetes network tools like Cuverno and Cilium been officially recommended?",
-      "asked_by": "Brendan Bennett",
+      "asked_by": "Sam Chen",
       "confidence": 0.85,
       "extraction_tier": "tier_2",
       "pattern_matched": "implicit_question",

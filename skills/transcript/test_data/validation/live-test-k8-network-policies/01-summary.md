@@ -2,7 +2,7 @@
 
 > **Meeting:** Kubernetes Network Policies Discussion
 > **Duration:** ~1 minute
-> **Participants:** Adam Nowak, Brendan Bennett
+> **Participants:** Alex Johnson, Sam Chen
 
 ---
 
@@ -21,8 +21,8 @@ Brief discussion about Kubernetes network policy implementations, specifically w
 
 | ID | Action | Assignee | Status |
 |----|--------|----------|--------|
-| [act-001](04-action-items.md#act-001) | Walk team through CNI decision tree | Adam Nowak | Pending |
-| [act-002](04-action-items.md#act-002) | Share screen to show artifacts | Adam Nowak | Pending |
+| [act-001](04-action-items.md#act-001) | Walk team through CNI decision tree | Alex Johnson | Pending |
+| [act-002](04-action-items.md#act-002) | Share screen to show artifacts | Alex Johnson | Pending |
 
 ## Decisions Made
 

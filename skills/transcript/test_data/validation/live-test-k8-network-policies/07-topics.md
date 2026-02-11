@@ -21,8 +21,8 @@ Discussion about specific CNI implementations (Cilium, Kyverno) versus generic n
 **Keywords:** `Kubernetes`, `CNI`, `Cilium`, `Kyverno`, `network policies`
 
 **Key Points:**
-- Brendan asked whether specific tools were officially recommended
-- Adam clarified there are no official recommendations
+- Sam asked whether specific tools were officially recommended
+- Alex clarified there are no official recommendations
 - Decision tree provides guidance instead
 
 ---
