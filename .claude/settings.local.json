@@ -1,7 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Skill(jerry:orchestration)"
+      "Skill(jerry:orchestration)",
+      "Bash(export JERRY_PROJECT=PROJ-001-oss-release)",
+      "Bash(echo:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh run view:*)",
+      "Skill(jerry:worktracker)",
+      "Bash(git status:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh run list:*)",
+      "Bash(uv run python:*)",
+      "Bash(FEAT_DIR=\"projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures\":*)",
+      "Bash(git mv:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }

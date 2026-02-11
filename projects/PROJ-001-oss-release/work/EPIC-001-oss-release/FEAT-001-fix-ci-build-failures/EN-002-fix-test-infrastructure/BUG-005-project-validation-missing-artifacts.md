@@ -8,7 +8,7 @@
 > **Created:** 2026-02-10
 > **Due:** —
 > **Completed:** —
-> **Parent:** FEAT-001
+> **Parent:** EN-002
 > **Owner:** —
 > **Found In:** PR #6
 > **Fix Version:** —
@@ -128,7 +128,8 @@ The actual project in the repository is `PROJ-001-oss-release` (our new project)
 
 ### Hierarchy
 
-- **Parent:** [FEAT-001: Fix CI Build Failures](./FEAT-001-fix-ci-build-failures.md)
+- **Parent:** [EN-002: Fix Test Infrastructure](./EN-002-fix-test-infrastructure.md)
+- **Feature:** [FEAT-001: Fix CI Build Failures](../FEAT-001-fix-ci-build-failures.md)
 
 ### Related Bugs
 
