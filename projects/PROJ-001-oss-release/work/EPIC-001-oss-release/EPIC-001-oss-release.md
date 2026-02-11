@@ -70,7 +70,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
 | Features:  [####################] 100% (1/1 completed)            |
-| Bugs:      [####################] 100% (6/6 completed)            |
+| Bugs:      [####################] 100% (7/7 completed)            |
 | Enablers:  [####################] 100% (3/3 completed)            |
 +------------------------------------------------------------------+
 | Overall:   [####################] 100%                             |
@@ -86,8 +86,8 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | **In Progress Features** | 0 |
 | **Pending Features** | 0 |
 | **Feature Completion %** | 100% |
-| **Total Bugs** | 6 (5 original + 1 regression) |
-| **Completed Bugs** | 6 (BUG-001, BUG-002, BUG-003, BUG-004, BUG-005, BUG-006) |
+| **Total Bugs** | 7 (5 original + 2 regressions) |
+| **Completed Bugs** | 7 (BUG-001 through BUG-007) |
 | **Bug Completion %** | 100% |
 
 ---
@@ -109,3 +109,5 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-10 | Claude | in_progress | Progress sync: 2/5 bugs completed (BUG-002, BUG-003). FEAT-001 restructured with EN-001, EN-002 Enablers. |
 | 2026-02-11 | Claude | in_progress | EN-001 completed (BUG-001 + 3 tasks). EN-003 created and completed (BUG-006 regression from EN-001/TASK-002 + 2 tasks). Progress: 67% (4/6 bugs, 2/3 enablers). |
 | 2026-02-11 | Claude | done | EN-002 completed (BUG-004 + BUG-005, 3 tasks). FEAT-001 100%. All 6 bugs resolved, all 3 enablers done. Full test suite 2510 passed locally. Pending CI verification on PR #6. |
+| 2026-02-11 | Claude | in_progress | Reopened: BUG-007 filed for `test_synthesis_contains_canon_doc` failure. Content check threshold too low — triggers on 1 file. |
+| 2026-02-11 | Claude | done | BUG-007 resolved. Raised content check threshold to >= 3 files in all 3 content tests. 7/7 bugs completed. Pending CI verification. |
