@@ -101,6 +101,16 @@ Resolved by un-ignoring `projects/` in `.gitignore` and committing the project f
 
 ---
 
+## Evidence
+
+| Evidence | Type | Link |
+|----------|------|------|
+| CI run (push) | CI | [GitHub Actions #21888284410](https://github.com/geekatron/jerry/actions/runs/21888284410) |
+| Fix commit | Git | Commit `a8d309a` — committed `projects/` directory to git |
+| CLI Integration Tests | CI Job | PASS (all 3 tests) |
+
+---
+
 ## Related Items
 
 ### Hierarchy

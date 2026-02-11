@@ -57,9 +57,9 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | # | Criterion | Verified |
 |---|-----------|----------|
 | AC-1 | Plugin manifest schema validation passes | [ ] |
-| AC-2 | `jerry projects list` returns zero exit code | [ ] |
-| AC-3 | `jerry projects list --json` returns valid JSON | [ ] |
-| AC-4 | Bootstrap query dispatcher test passes | [ ] |
+| AC-2 | `jerry projects list` returns zero exit code | [x] |
+| AC-3 | `jerry projects list --json` returns valid JSON | [x] |
+| AC-4 | Bootstrap query dispatcher test passes | [x] |
 | AC-5 | Transcript pipeline processes all datasets | [ ] |
 | AC-6 | Project validation tests pass or are updated | [ ] |
 
@@ -71,7 +71,7 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 | ID | Title | Status | Priority | Children |
 |----|-------|--------|----------|----------|
-| [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | in_progress | high | BUG-001, TASK-001/002/003, DEC-001 |
+| [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | pending | high | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
 | [EN-002](./EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | pending | medium | BUG-004, BUG-005 |
 
 ### Completed Bugs (Feature-Level)

@@ -37,7 +37,7 @@
 
 | ID | Title | Status | Priority | Parent | Children |
 |----|-------|--------|----------|--------|----------|
-| [EN-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | in_progress | high | FEAT-001 | BUG-001, TASK-001/002/003, DEC-001 |
+| [EN-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | pending | high | FEAT-001 | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
 | [EN-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | pending | medium | FEAT-001 | BUG-004, BUG-005 |
 
 ---
@@ -46,7 +46,7 @@
 
 | ID | Title | Status | Priority | Severity | Parent |
 |----|-------|--------|----------|----------|--------|
-| [BUG-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/BUG-001-marketplace-manifest-schema-error.md) | Marketplace manifest schema error: `keywords` not allowed | in_progress | high | major | EN-001 |
+| [BUG-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/BUG-001-marketplace-manifest-schema-error.md) | Marketplace manifest schema error: `keywords` not allowed | pending | high | major | EN-001 |
 | [BUG-004](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-002-fix-test-infrastructure/BUG-004-transcript-pipeline-no-datasets.md) | Transcript pipeline test finds no datasets | pending | medium | major | EN-002 |
 | [BUG-005](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-002-fix-test-infrastructure/BUG-005-project-validation-missing-artifacts.md) | Project validation tests reference non-existent PROJ-001-plugin-cleanup | pending | medium | major | EN-002 |
 

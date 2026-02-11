@@ -91,6 +91,16 @@ Resolved by un-ignoring `projects/` in `.gitignore` and committing the PROJ-001 
 
 ---
 
+## Evidence
+
+| Evidence | Type | Link |
+|----------|------|------|
+| CI run (push) | CI | [GitHub Actions #21888284410](https://github.com/geekatron/jerry/actions/runs/21888284410) |
+| Fix commit | Git | Commit `a8d309a` — committed `projects/` directory to git |
+| Bootstrap test | CI Job | PASS (`test_dispatcher_can_dispatch_query_e2e`) |
+
+---
+
 ## Related Items
 
 ### Hierarchy
