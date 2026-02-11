@@ -28,7 +28,7 @@
 
 | ID | Title | Status | Priority | Features | Progress |
 |----|-------|--------|----------|----------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high | 1 | 0% |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high | 1 | 40% |
 
 ---
 
@@ -36,9 +36,7 @@
 
 | ID | Title | Status | Priority | Severity | Parent |
 |----|-------|--------|----------|----------|--------|
-| [BUG-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-001-plugin-manifest-schema-error.md) | Plugin manifest schema error: `keywords` not allowed | pending | high | major | FEAT-001 |
-| [BUG-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-002-cli-projects-list-crash.md) | CLI `projects list` crashes with unhandled exception | pending | high | major | FEAT-001 |
-| [BUG-003](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-003-bootstrap-test-missing-projects-dir.md) | Bootstrap test assumes `projects/` directory exists | pending | medium | major | FEAT-001 |
+| [BUG-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-001-plugin-manifest-schema-error.md) | Marketplace manifest schema error: `keywords` not allowed | in_progress | high | major | FEAT-001 |
 | [BUG-004](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-004-transcript-pipeline-no-datasets.md) | Transcript pipeline test finds no datasets | pending | medium | major | FEAT-001 |
 | [BUG-005](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-005-project-validation-missing-artifacts.md) | Project validation tests reference non-existent PROJ-001-plugin-cleanup | pending | medium | major | FEAT-001 |
 
@@ -46,4 +44,7 @@
 
 ## Completed
 
-*None yet.*
+| ID | Title | Completed | Resolution |
+|----|-------|-----------|------------|
+| [BUG-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-002-cli-projects-list-crash.md) | CLI `projects list` crashes with unhandled exception | 2026-02-10 | Resolved by committing `projects/` directory to git |
+| [BUG-003](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-003-bootstrap-test-missing-projects-dir.md) | Bootstrap test assumes `projects/` directory exists | 2026-02-10 | Resolved by committing `projects/` directory to git |

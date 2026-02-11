@@ -71,19 +71,23 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 | ID | Title | Status | Priority | Severity |
 |----|-------|--------|----------|----------|
-| BUG-001 | Plugin manifest schema error: `keywords` not allowed | pending | high | major |
-| BUG-002 | CLI `projects list` crashes with unhandled exception | pending | high | major |
-| BUG-003 | Bootstrap test assumes `projects/` directory exists | pending | medium | major |
+| BUG-001 | Marketplace manifest schema error: `keywords` not allowed | in_progress | high | major |
+| BUG-002 | CLI `projects list` crashes with unhandled exception | **completed** | high | major |
+| BUG-003 | Bootstrap test assumes `projects/` directory exists | **completed** | medium | major |
 | BUG-004 | Transcript pipeline test finds no datasets | pending | medium | major |
 | BUG-005 | Project validation tests reference non-existent PROJ-001-plugin-cleanup | pending | medium | major |
 
 ### Bug Links
 
-- [BUG-001: Plugin manifest schema error](./FEAT-001--BUG-001-plugin-manifest-schema-error.md)
-- [BUG-002: CLI projects list crash](./FEAT-001--BUG-002-cli-projects-list-crash.md)
-- [BUG-003: Bootstrap test missing projects dir](./FEAT-001--BUG-003-bootstrap-test-missing-projects-dir.md)
-- [BUG-004: Transcript pipeline no datasets](./FEAT-001--BUG-004-transcript-pipeline-no-datasets.md)
-- [BUG-005: Project validation missing artifacts](./FEAT-001--BUG-005-project-validation-missing-artifacts.md)
+- [BUG-001: Marketplace manifest schema error](./FEAT-001--BUG-001-plugin-manifest-schema-error.md) — 3 tasks, 1 decision (root cause corrected: missing `keywords` in marketplace schema)
+- [BUG-002: CLI projects list crash](./FEAT-001--BUG-002-cli-projects-list-crash.md) — **COMPLETED** (resolved by committing projects/ dir)
+- [BUG-003: Bootstrap test missing projects dir](./FEAT-001--BUG-003-bootstrap-test-missing-projects-dir.md) — **COMPLETED** (resolved by committing projects/ dir)
+- [BUG-004: Transcript pipeline no datasets](./FEAT-001--BUG-004-transcript-pipeline-no-datasets.md) — Root cause: 6 VTT files not committed to git
+- [BUG-005: Project validation missing artifacts](./FEAT-001--BUG-005-project-validation-missing-artifacts.md) — Root cause: `project_id` fixture hardcoded to stale `PROJ-001-plugin-cleanup`
+
+### Decisions
+
+- [FEAT-001:DEC-001: JSON Schema Validator Class Selection](./FEAT-001--DEC-001-json-schema-validator-class.md) — Use explicit `Draft202012Validator` (ACCEPTED)
 
 ---
 
@@ -95,9 +99,9 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Bugs:      [....................] 0% (0/5 completed)              |
+| Bugs:      [########............] 40% (2/5 completed)             |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [########............] 40%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -106,10 +110,10 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | Metric | Value |
 |--------|-------|
 | **Total Bugs** | 5 |
-| **Completed Bugs** | 0 |
-| **In Progress Bugs** | 0 |
-| **Pending Bugs** | 5 |
-| **Completion %** | 0% |
+| **Completed Bugs** | 2 (BUG-002, BUG-003) |
+| **In Progress Bugs** | 1 (BUG-001) |
+| **Pending Bugs** | 2 (BUG-004, BUG-005) |
+| **Completion %** | 40% |
 
 ---
 
@@ -131,3 +135,4 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Feature created |
 | 2026-02-10 | Claude | in_progress | 5 bugs triaged from PR #6 CI failures |
+| 2026-02-10 | Claude | in_progress | BUG-002 and BUG-003 resolved (committing projects/ dir). BUG-001 root cause corrected (marketplace schema, not draft mismatch). BUG-004 and BUG-005 root causes confirmed. Progress: 40% (2/5 bugs completed). |
