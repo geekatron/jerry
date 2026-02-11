@@ -17,7 +17,7 @@ workflow:
   project_id: "PROJ-001-oss-release"
   version: "2.0"
   created_at: "2026-02-10T00:00:00Z"
-  updated_at: "2026-02-11T02:51:00Z"
+  updated_at: "2026-02-11T03:45:00Z"
   status: "ACTIVE"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
 
   # Workflow ID configuration (WI-SAO-021)
@@ -70,7 +70,7 @@ pipelines:
     status: "PHASE_2_PENDING"
     current_phase: 2
     total_phases: 2
-    progress_percent: 33
+    progress_percent: 50
 
     phases:
       # =========================================================================
@@ -199,7 +199,8 @@ pipelines:
               name: "TASK-002 Creator"
               role: "creator"
               agent_spec: "skills/problem-solving/agents/ps-architect.md"
-              status: "BLOCKED"
+              status: "COMPLETE"
+              completed_at: "2026-02-11T03:40:00Z"
               artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task002/ps-architect-task002-implementation.md"
               inputs:
                 - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-002-add-validation-tests.md"
@@ -211,7 +212,7 @@ pipelines:
               name: "TASK-002 Adversarial Critic"
               role: "critic"
               agent_spec: "skills/problem-solving/agents/ps-critic.md"
-              status: "BLOCKED"
+              status: "PENDING"
               depends_on: ["ps-architect-task002"]
               artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-critic-task002/ps-critic-task002-critique.md"
               inputs:
@@ -261,7 +262,8 @@ pipelines:
               name: "TASK-003 Creator"
               role: "creator"
               agent_spec: "skills/problem-solving/agents/ps-architect.md"
-              status: "BLOCKED"
+              status: "COMPLETE"
+              completed_at: "2026-02-11T03:38:00Z"
               artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task003/ps-architect-task003-implementation.md"
               inputs:
                 - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-003-specify-validator-class.md"
@@ -274,7 +276,7 @@ pipelines:
               name: "TASK-003 Adversarial Critic"
               role: "critic"
               agent_spec: "skills/problem-solving/agents/ps-critic.md"
-              status: "BLOCKED"
+              status: "PENDING"
               depends_on: ["ps-architect-task003"]
               artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-critic-task003/ps-critic-task003-critique.md"
               inputs:
@@ -373,7 +375,7 @@ execution_queue:
     - id: 3
       name: "Phase 2: TASK-002 + TASK-003 Parallel Critique Cycles"
       execution_mode: "PARALLEL"
-      status: "READY"
+      status: "IN_PROGRESS"
       parallel_tracks:
         - name: "TASK-002 Critique Cycle"
           agents:
@@ -410,12 +412,12 @@ metrics:
     barriers_complete: 1
     barriers_total: 1
     barriers_percent: 100
-    agents_executed: 4
+    agents_executed: 6
     agents_total: 12  # 4 per task * 3 tasks
-    agents_percent: 33
-    artifacts_created: 5  # 4 phase-1 + 1 barrier gate check
+    agents_percent: 50
+    artifacts_created: 7  # 5 phase-1 + 2 phase-2 creators
     artifacts_total: 13  # 12 agent artifacts + 1 barrier gate check
-    artifacts_percent: 38
+    artifacts_percent: 54
 
   quality:
     task001_critique_score: 0.943
@@ -427,7 +429,7 @@ metrics:
 
   timing:
     workflow_started: "2026-02-11T02:50:00Z"
-    last_activity: "2026-02-11T03:20:00Z"
+    last_activity: "2026-02-11T03:45:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -444,19 +446,17 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Fan-out: Execute ps-architect-task002 and ps-architect-task003 in parallel"
+    - action: "Execute ps-critic-task002 and ps-critic-task003 in parallel (adversarial critique)"
       agents:
-        - "ps-architect-task002"
-        - "ps-architect-task003"
+        - "ps-critic-task002"
+        - "ps-critic-task003"
       phase: 2
       execution_mode: "PARALLEL"
 
   subsequent:
-    - action: "After creators: Execute ps-critic-task002 and ps-critic-task003 in parallel"
-      depends_on: "ps-architect-task002 and ps-architect-task003 complete"
-    - action: "After critics: Execute revisions in parallel"
-      depends_on: "critique cycles complete"
-    - action: "After revisions: Execute validators in parallel"
+    - action: "After critics: Execute revisions in parallel (ps-architect-task002-rev + ps-architect-task003-rev)"
+      depends_on: "ps-critic-task002 and ps-critic-task003 complete"
+    - action: "After revisions: Execute validators in parallel (ps-validator-task002 + ps-validator-task003)"
       depends_on: "revisions complete"
 
 # =============================================================================
@@ -464,8 +464,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Phase 1 COMPLETE. All 4 agents done: create→critique(0.943)→revise→validate(VALIDATED 100%). Barrier-1 COMPLETE. Phase 2 READY for fan-out."
-  next_step: "Execute ps-architect-task002 and ps-architect-task003 in PARALLEL (Phase 2 creators)"
+  current_state: "Phase 2 IN_PROGRESS. Both creators complete: ps-architect-task002 (11 tests, all pass) and ps-architect-task003 (3 call sites updated, all manifests validate). Ready for adversarial critique."
+  next_step: "Execute ps-critic-task002 and ps-critic-task003 in PARALLEL (Phase 2 critics)"
 
   files_to_read:
     - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION_PLAN.md"
