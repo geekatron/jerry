@@ -34,7 +34,7 @@
 |  Phase 1 (Root Cause Fix - TASK-001):                                         |
 |    ps-architect-task001:     [████████████] 100% COMPLETE                     |
 |    ps-critic-task001:        [████████████] 100% COMPLETE (0.943)             |
-|    ps-architect-task001-rev: [............] 0%   PENDING                      |
+|    ps-architect-task001-rev: [████████████] 100% COMPLETE                     |
 |    ps-validator-task001:     [............] 0%   PENDING                      |
 |                                                                               |
 |  BARRIER 1: [............] PENDING                                            |
@@ -43,7 +43,7 @@
 |    TASK-002 cycle:           [............] 0%  BLOCKED                        |
 |    TASK-003 cycle:           [............] 0%  BLOCKED                        |
 |                                                                               |
-|  Overall Progress: [██..........] 17%                                         |
+|  Overall Progress: [███.........] 25%                                         |
 |                                                                               |
 +===============================================================================+
 ```
@@ -91,7 +91,7 @@
 
 | Agent | Status | Started | Completed | Artifact | Notes |
 |-------|--------|---------|-----------|----------|-------|
-| ps-architect-task001-rev | PENDING | — | — | `ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md` | Revise based on critique feedback |
+| ps-architect-task001-rev | COMPLETE | 2026-02-11 03:05 | 2026-02-11 03:15 | `ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md` | Accepted: maxLength:50, maxItems:20. Rejected: minItems:1, pattern change, $ref reuse. Applied to BOTH schemas for consistency. |
 
 #### Step 4: VALIDATE — ps-validator-task001
 
@@ -176,9 +176,9 @@
 
 | Priority | Agent | Pipeline | Phase | Dependencies | Status |
 |----------|-------|----------|-------|--------------|--------|
-| 1 | ps-architect-task001 | ps | 1 | None | PENDING |
-| 2 | ps-critic-task001 | ps | 1 | ps-architect-task001 | PENDING |
-| 3 | ps-architect-task001-rev | ps | 1 | ps-critic-task001 | PENDING |
+| 1 | ps-architect-task001 | ps | 1 | None | COMPLETE |
+| 2 | ps-critic-task001 | ps | 1 | ps-architect-task001 | COMPLETE |
+| 3 | ps-architect-task001-rev | ps | 1 | ps-critic-task001 | COMPLETE |
 | 4 | ps-validator-task001 | ps | 1 | ps-architect-task001-rev | PENDING |
 | 5 | barrier-1-gate | — | — | ps-validator-task001 | PENDING |
 | 6 | ps-architect-task002 | ps | 2 | barrier-1 | BLOCKED |
@@ -259,8 +259,8 @@ GROUP 3 (Parallel — Phase 2 Fan-Out):
 |--------|-------|--------|--------|
 | Phases Complete | 0/2 | 2 | PENDING |
 | Barriers Complete | 0/1 | 1 | PENDING |
-| Agents Executed | 2/12 | 12 | IN PROGRESS |
-| Artifacts Created | 2/13 | 13 | IN PROGRESS |
+| Agents Executed | 3/12 | 12 | IN PROGRESS |
+| Artifacts Created | 3/13 | 13 | IN PROGRESS |
 
 ### 6.2 Quality Metrics
 
@@ -287,6 +287,8 @@ GROUP 3 (Parallel — Phase 2 Fan-Out):
 | 2026-02-11 02:52 | STATE_UPDATED | ORCHESTRATION.yaml: workflow ACTIVE, Phase 1 IN_PROGRESS |
 | 2026-02-11 02:52 | AGENT_STARTED | ps-critic-task001 launched (adversarial critique) |
 | 2026-02-11 02:57 | AGENT_COMPLETE | ps-critic-task001: Score 0.943 PASS. 4 critique modes completed. |
+| 2026-02-11 03:05 | AGENT_STARTED | ps-architect-task001-rev launched (revision based on critique) |
+| 2026-02-11 03:15 | AGENT_COMPLETE | ps-architect-task001-rev: Accepted maxLength:50+maxItems:20. Rejected minItems:1, pattern, $ref. Both schemas updated. |
 
 ### 7.2 Lessons Learned
 
@@ -302,8 +304,8 @@ GROUP 3 (Parallel — Phase 2 Fan-Out):
 
 1. [x] Execute ps-architect-task001: Create implementation for TASK-001 (add `keywords` to marketplace schema)
 2. [x] Execute ps-critic-task001: Adversarial critique — Score 0.943 PASS
-3. [ ] After critique, execute ps-architect-task001-rev: Revise implementation based on critique feedback
-4. [ ] After revision, execute ps-validator-task001: Validate against TASK-001 acceptance criteria
+3. [x] Execute ps-architect-task001-rev: Revision — accepted maxLength:50, maxItems:20; rejected minItems, pattern, $ref
+4. [ ] Execute ps-validator-task001: Validate against TASK-001 acceptance criteria
 
 ### 8.2 Subsequent
 
