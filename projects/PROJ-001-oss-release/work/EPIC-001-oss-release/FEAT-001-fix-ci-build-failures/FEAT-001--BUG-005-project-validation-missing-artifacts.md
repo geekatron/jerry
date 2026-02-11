@@ -78,19 +78,39 @@ AssertionError: Missing category directories. Found: [], expected at least 3 of:
 
 ## Root Cause Analysis
 
+### Investigation Summary
+
+The test file `tests/project_validation/conftest.py` contains:
+
+```python
+# Line 114-117
+@pytest.fixture(params=["PROJ-001-plugin-cleanup"])
+def project_id(request):
+    return request.param
+```
+
+The `project_id` fixture is hardcoded to `["PROJ-001-plugin-cleanup"]`. The conftest also has a `discover_projects()` function (lines 29-41) that can dynamically find projects in the `projects/` directory, but **it is not used** for the `project_id` fixture parameterization.
+
+The actual project in the repository is `PROJ-001-oss-release` (our new project), not `PROJ-001-plugin-cleanup` (which was a previous development-era project that was never committed to git).
+
 ### Root Cause
 
-The project validation tests are parameterized with `PROJ-001-plugin-cleanup`, but:
-1. The project directory and artifacts were never committed to git, OR
-2. They were removed/gitignored during cleanup, OR
-3. The tests need to discover projects dynamically rather than hardcoding
+**Hardcoded stale project ID.** The `project_id` fixture in `tests/project_validation/conftest.py` is hardcoded to `PROJ-001-plugin-cleanup`, which does not exist in the repository. The dynamic `discover_projects()` function exists but is not wired into the fixture. Tests validate structure against ADR-003 (category directories: research, synthesis, analysis, decisions, reports, design, etc.).
 
 ### Fix Options
 
-1. **Remove hardcoded project reference** — Make tests discover available projects
-2. **Commit minimal project artifacts** — Add PROJ-001-plugin-cleanup skeleton to git
-3. **Skip when no projects** — Skip validation tests when no projects directory exists
-4. **Use test fixtures** — Create temporary project structure in test setup
+1. **Use dynamic discovery** — Wire `discover_projects()` into the `project_id` fixture parameterization
+2. **Update hardcoded ID** — Change to `PROJ-001-oss-release` (the existing project)
+3. **Combine both** — Use dynamic discovery with fallback, and ensure PROJ-001-oss-release has required structure
+
+**Recommended:** Option 1 (dynamic discovery) — most robust and prevents future breakage.
+
+### Files Involved
+
+| File | Role | Change Needed |
+|------|------|---------------|
+| `tests/project_validation/conftest.py` | Test fixture | Change `project_id` fixture to use `discover_projects()` |
+| `projects/PROJ-001-oss-release/` | Project directory | May need category directories (research, analysis, etc.) |
 
 ---
 
@@ -121,3 +141,4 @@ The project validation tests are parameterized with `PROJ-001-plugin-cleanup`, b
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Bug triaged from PR #6 CI failure |
+| 2026-02-10 | Claude | pending | Root cause confirmed: `project_id` fixture in conftest.py hardcoded to `PROJ-001-plugin-cleanup` (doesn't exist). Dynamic `discover_projects()` exists but isn't used. |
