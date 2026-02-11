@@ -1,0 +1,20 @@
+Interviewer: Good morning. Thank you for coming in today.
+
+Candidate: Thank you for having me. I'm excited about this opportunity.
+
+Interviewer: Let's start with your background. Can you tell me about your experience?
+
+Candidate: Of course. I've been working as a software engineer for five years.
+I started at a startup where I learned full-stack development.
+Then I moved to a larger company to focus on backend systems.
+
+Interviewer: That sounds like a good progression. What technologies do you work with?
+
+Candidate: Primarily Python and Go for backend services.
+I also have experience with Kubernetes and cloud infrastructure.
+
+Interviewer: Excellent. We use similar technologies here.
+
+Candidate: That's great to hear. I noticed from your job posting that you're working on distributed systems.
+
+Interviewer: Yes, that's correct. It's a key area we're investing in.

@@ -1,0 +1,16 @@
+WEBVTT
+
+NOTE Nested formatting tags within voice tags (VT-008, TT-008)
+NOTE Parser should extract speaker and strip all nested formatting tags
+
+00:00.000 --> 00:01.000
+<v Speaker><b>Bold text</b> and <i>italic text</i></v>
+
+00:01.000 --> 00:02.000
+<v Host>Welcome to <b><i>today's</i></b> show!</v>
+
+00:02.000 --> 00:03.000
+<v Guest><u>Underlined</u> and <c.highlight>highlighted</c> text</v>
+
+00:03.000 --> 00:04.000
+<v Narrator>The <lang en-US>localized</lang> content here.</v>

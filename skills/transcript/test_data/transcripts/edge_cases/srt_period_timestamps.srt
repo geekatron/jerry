@@ -1,0 +1,25 @@
+1
+00:00:00.000 --> 00:00:05.250
+[Alice] Welcome to the design review session.
+
+2
+00:00:05.250 --> 00:00:10.500
+[Bob] Thanks Alice. I have the diagrams ready.
+
+3
+00:00:10.500 --> 00:00:15.750
+[Alice] Great. Let's walk through the architecture.
+
+4
+00:00:15.750 --> 00:00:22.000
+[Charlie] I have some questions about the data flow.
+
+5
+00:00:22.000 --> 00:00:28.500
+[Bob] Sure, let me explain. The data flows from
+the ingestion layer to the processing pipeline.
+
+6
+00:00:28.500 --> 00:00:35.000
+[Alice] And the storage layer handles persistence.
+We use event sourcing for audit trails.

@@ -1,0 +1,129 @@
+WEBVTT
+
+NOTE Combined Edge Cases Test File
+NOTE Reference: webvtt-test-suite-research.md
+NOTE Tests: VT-*, TT-*, ML-*, CE-*, TS-*
+
+NOTE === VOICE TAG TESTS (VT-001 through VT-010) ===
+
+NOTE VT-001: Basic voice tag
+00:00.000 --> 00:01.000
+<v John>Hello world</v>
+
+NOTE VT-002: Voice with spaces in name
+00:01.000 --> 00:02.000
+<v Mary Jane Smith>How are you?</v>
+
+NOTE VT-003: Empty annotation (anonymous)
+00:02.000 --> 00:03.000
+<v>Anonymous speaker text</v>
+
+NOTE VT-004: No closing tag
+00:03.000 --> 00:04.000
+<v Bob>Entire cue without closing tag
+
+NOTE VT-006: Voice with class
+00:04.000 --> 00:05.000
+<v.loud Boss>Speak up!</v>
+
+NOTE VT-007: Multiple classes
+00:05.000 --> 00:06.000
+<v.first.second.third Speaker>Multi-class voice</v>
+
+NOTE VT-008: Nested formatting
+00:06.000 --> 00:07.000
+<v Host><b>Bold</b> and <i>italic</i></v>
+
+NOTE VT-009: Multiple speakers in cue
+00:07.000 --> 00:08.000
+<v Alice>Hello</v> <v Bob>Hi there</v>
+
+NOTE VT-010: Multiline voice span
+00:08.000 --> 00:10.000
+<v Speaker>This is line one
+This is line two
+This is line three</v>
+
+NOTE === TAG STRIPPING TESTS (TT-001 through TT-009) ===
+
+NOTE TT-001: Bold tag
+00:10.000 --> 00:11.000
+<b>Bold text</b> normal text
+
+NOTE TT-002: Italic tag
+00:11.000 --> 00:12.000
+<i>Italic text</i>
+
+NOTE TT-003: Underline tag
+00:12.000 --> 00:13.000
+<u>Underlined</u> text
+
+NOTE TT-004: Class span
+00:13.000 --> 00:14.000
+<c.highlight>Highlighted</c> text
+
+NOTE TT-005: Language tag
+00:14.000 --> 00:15.000
+<lang en>English text</lang>
+
+NOTE TT-008: Nested tags
+00:15.000 --> 00:16.000
+<b><i>Bold italic</i></b>
+
+NOTE === MULTILINE TESTS (ML-001 through ML-006) ===
+
+NOTE ML-001, ML-002, ML-003: Various multiline
+00:16.000 --> 00:18.000
+First line
+Second line
+Third line
+
+NOTE ML-004: Leading whitespace
+00:18.000 --> 00:19.000
+   Indented line
+
+NOTE ML-005: Trailing whitespace
+00:19.000 --> 00:20.000
+Trailing spaces
+
+NOTE === ENCODING TESTS (CE-001 through CE-008) ===
+
+NOTE CE-003: Non-ASCII (Latin)
+00:20.000 --> 00:21.000
+Café résumé naïve
+
+NOTE CE-004: Unicode CJK
+00:21.000 --> 00:22.000
+中文测试 日本語テスト 한국어
+
+NOTE CE-005: Ampersand entity
+00:22.000 --> 00:23.000
+Tom &amp; Jerry
+
+NOTE CE-006, CE-007: Less than, greater than, nbsp
+00:23.000 --> 00:24.000
+3 &lt; 5 &gt; 2&nbsp;test
+
+NOTE === TIMESTAMP TESTS (edge cases in timing) ===
+
+NOTE Short duration (250ms)
+00:24.000 --> 00:24.250
+Very short cue
+
+NOTE Minimal duration (1ms)
+00:24.250 --> 00:24.251
+Minimal duration
+
+NOTE === EMPTY/MALFORMED (error handling) ===
+
+NOTE Empty cue text
+00:24.500 --> 00:25.000
+
+
+NOTE Empty voice annotation
+00:25.000 --> 00:25.500
+<v></v>
+
+NOTE Final cue - normal
+00:25.500 --> 00:26.000
+End of combined test file

@@ -1,0 +1,13 @@
+WEBVTT
+
+NOTE Voice tag with CSS classes (VT-006, VT-007)
+NOTE Parser should extract speaker name, strip class annotations
+
+00:00.000 --> 00:01.000
+<v.loud Boss>Where is the report?</v>
+
+00:01.000 --> 00:02.000
+<v.whisper.urgent Employee>It's almost ready, sir.</v>
+
+00:02.000 --> 00:03.000
+<v.first.second.third Multi-Class Speaker>This has three classes.</v>

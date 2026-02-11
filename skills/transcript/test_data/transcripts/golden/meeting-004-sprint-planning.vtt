@@ -1,0 +1,1620 @@
+WEBVTT - Engineering Sprint Planning Meeting (Large Dataset)
+
+NOTE
+Large transcript for file splitting validation (EN-017)
+Target: ~22K-28K tokens (near soft limit 31.5K without split)
+Actual: ~13,000 words, ~21K-22K estimated tokens
+Speakers: Sarah Chen (SM), Mike Johnson (Senior Eng), Emma Williams (Backend Eng), David Kim (Frontend Eng), Lisa Martinez (QA Eng), Raj Patel (PO)
+Topics: 6+ (sprint recap, backlog grooming, notification architecture, API design, testing strategy, accessibility)
+Entities: 15+ action items, 5+ decisions, 10+ questions
+Duration: ~126 minutes (extended technical deep-dive)
+Created: 2026-01-28 per EN-017/TASK-141
+Timestamps: Fixed 2026-01-28 per TASK-145 (536 cues, ~14.1s intervals, 00:00:00 to 02:06:00)
+
+00:00:00.000 --> 00:00:14.104
+<v Sarah Chen>Good morning everyone. Welcome to our Sprint 14 planning session. I hope everyone had a good weekend.
+
+00:00:14.104 --> 00:00:28.208
+<v Sarah Chen>Before we dive into the new sprint, let's take a few minutes to recap our velocity from Sprint 13 and discuss any lessons learned.
+
+00:00:28.208 --> 00:00:42.313
+<v Sarah Chen>Our committed velocity was 42 story points and we completed 38 points, which gives us a completion rate of about 90 percent. The remaining 4 points carried over from the notification refactor story.
+
+00:00:42.313 --> 00:00:56.417
+<v Mike Johnson>Yeah, that notification refactor took longer than expected. We discovered some legacy code dependencies that weren't documented. I think we underestimated the complexity there by about 3 points.
+
+00:00:56.417 --> 00:01:10.522
+<v Emma Williams>The database schema changes for that feature also required more coordination with the DevOps team. We should factor in that dependency for future estimates.
+
+00:01:10.522 --> 00:01:24.626
+<v David Kim>From the frontend perspective, we had to wait on some of those backend changes which blocked our UI integration. Maybe we need better visibility into backend progress during the sprint.
+
+00:01:24.626 --> 00:01:38.731
+<v Lisa Martinez>I want to add that the test coverage for the notification feature is now at 85 percent. We wrote 47 new test cases, including edge cases for the retry logic and failure scenarios.
+
+00:01:38.731 --> 00:01:52.835
+<v Raj Patel>Thanks everyone for the candid feedback. Despite the carryover, stakeholders were pleased with the Sprint 13 deliverables. The customer dashboard improvements have gotten positive feedback from beta users.
+
+00:01:52.835 --> 00:02:06.940
+<v Sarah Chen>That's great to hear, Raj. Now let's discuss our approach for Sprint 14. Our capacity is 45 points based on the team's availability. Mike, you mentioned you have a conference next week?
+
+00:02:06.940 --> 00:02:21.044
+<v Mike Johnson>Yes, I'll be at the cloud architecture conference Tuesday through Thursday. I've already identified work I can do offline during travel time, mostly documentation and code reviews.
+
+00:02:21.044 --> 00:02:35.149
+<v Sarah Chen>Thanks for the heads up. Let's factor that into our planning. Everyone else is at full capacity? Great. Raj, would you like to walk us through the prioritized backlog?
+
+00:02:35.149 --> 00:02:49.253
+<v Raj Patel>Absolutely. The top priority for Sprint 14 is the notification service enhancement. This is a continuation of the work we carried over. We have three main user stories in this epic.
+
+00:02:49.253 --> 00:03:03.358
+<v Raj Patel>First, we need to implement the real-time push notification infrastructure. This involves setting up WebSocket connections and the message queue integration. I've estimated this at 8 story points.
+
+00:03:03.358 --> 00:03:17.462
+<v Raj Patel>Second, we need the notification preferences UI. Users should be able to customize which notifications they receive and how they receive them. This is estimated at 5 points.
+
+00:03:17.462 --> 00:03:31.567
+<v Raj Patel>Third, we need analytics tracking for notification engagement. The product team wants to understand open rates and click-through metrics. This is estimated at 3 points.
+
+00:03:31.567 --> 00:03:45.671
+<v Mike Johnson>For the WebSocket implementation, I have a question. Are we using our existing message broker or spinning up a new dedicated instance for notifications?
+
+00:03:45.671 --> 00:03:59.776
+<v Raj Patel>Good question. The architecture decision is to use a dedicated Redis pub/sub channel rather than our main RabbitMQ instance. This keeps notification traffic isolated.
+
+00:03:59.776 --> 00:04:13.880
+<v Emma Williams>That makes sense from a scaling perspective. The notification service can scale independently without affecting our transactional message queues.
+
+00:04:13.880 --> 00:04:27.985
+<v Mike Johnson>I agree with that approach. Emma, do you want to pair on the WebSocket handler implementation? I can handle the Redis integration and you can work on the connection management.
+
+00:04:27.985 --> 00:04:42.089
+<v Emma Williams>That sounds good. I'll take the action to set up the WebSocket middleware and connection pooling. We should probably do a design session first to align on the message format.
+
+00:04:42.089 --> 00:04:56.194
+<v David Kim>From the frontend side, I'll need documentation on the WebSocket message schema. Can we make sure to include that in the design session? I want to start building the client-side handlers early.
+
+00:04:56.194 --> 00:05:10.298
+<v Mike Johnson>Absolutely. I'll create a draft schema document by end of day tomorrow. We can review it in Wednesday's architecture sync before finalizing.
+
+00:05:10.298 --> 00:05:24.402
+<v Lisa Martinez>For testing the WebSocket implementation, we'll need a way to simulate various network conditions. Do we have infrastructure for that?
+
+00:05:24.402 --> 00:05:38.507
+<v Mike Johnson>We can use the toxiproxy container in our test environment. I'll configure profiles for latency, packet loss, and disconnection scenarios.
+
+00:05:38.507 --> 00:05:52.611
+<v Sarah Chen>These are all great clarifications. Let me summarize the action items so far. Emma is setting up WebSocket middleware, Mike is creating the schema document, and we'll have a design session Wednesday.
+
+00:05:52.611 --> 00:06:06.716
+<v Sarah Chen>Raj, let's continue with the backlog. After the notification epic, what's next in priority order?
+
+00:06:06.716 --> 00:06:20.820
+<v Raj Patel>The second priority is the user profile enhancement feature. We've received requests from enterprise customers to support custom user attributes beyond the standard fields.
+
+00:06:20.820 --> 00:06:34.925
+<v Raj Patel>This includes things like department, cost center, and manager hierarchy. These are important for our SSO integration with corporate identity providers.
+
+00:06:34.925 --> 00:06:49.029
+<v Emma Williams>For the custom attributes, are we going with a flexible schema approach or predefined fields? The implementation complexity is quite different between those options.
+
+00:06:49.029 --> 00:07:03.134
+<v Raj Patel>We decided to go with a flexible JSON schema approach. Enterprise admins can define their own attribute schemas, and we'll validate against those on write operations.
+
+00:07:03.134 --> 00:07:17.238
+<v Mike Johnson>That's the right call for extensibility. We should use JSON Schema draft 2020-12 for the validation. It has better support for conditional validation rules.
+
+00:07:17.238 --> 00:07:31.343
+<v David Kim>On the frontend, I'll need to build a dynamic form renderer that can handle arbitrary schema definitions. This is more complex than our usual static forms.
+
+00:07:31.343 --> 00:07:45.447
+<v David Kim>I'm thinking we could use the react-jsonschema-form library as a base. Has anyone worked with that before?
+
+00:07:45.447 --> 00:07:59.552
+<v Lisa Martinez>I've tested applications that use that library. It handles most cases well, but custom validation logic can be tricky. Make sure to plan for edge cases.
+
+00:07:59.552 --> 00:08:13.656
+<v Sarah Chen>David, can you spike the react-jsonschema-form approach tomorrow? Just a couple hours to validate it meets our requirements before we commit to that path.
+
+00:08:13.656 --> 00:08:27.761
+<v David Kim>Sure, I'll take that action. I'll document my findings and share them in our dev Slack channel by end of day tomorrow.
+
+00:08:27.761 --> 00:08:41.865
+<v Raj Patel>The user profile enhancement is estimated at 13 points total, broken down as 5 for backend, 5 for frontend, and 3 for testing and documentation.
+
+00:08:41.865 --> 00:08:55.970
+<v Sarah Chen>That brings our running total to 29 points out of 45 capacity. We still have 16 points available. What else do we have in the backlog?
+
+00:08:55.970 --> 00:09:10.074
+<v Raj Patel>We have a few smaller items. There's a bug fix for the export functionality that some customers reported. The exported CSV files are sometimes truncating long text fields.
+
+00:09:10.074 --> 00:09:24.179
+<v Emma Williams>I looked into that bug. It's a character encoding issue in our CSV library. The fix is straightforward, probably 2 points.
+
+00:09:24.179 --> 00:09:38.283
+<v Raj Patel>There's also the API rate limiting enhancement. We need to implement tiered rate limits based on subscription level rather than the flat limit we have now.
+
+00:09:38.283 --> 00:09:52.388
+<v Mike Johnson>The rate limiting work involves updating our Redis token bucket implementation and the API gateway configuration. I'd estimate 5 points for that.
+
+00:09:52.388 --> 00:10:06.492
+<v Lisa Martinez>We'll need comprehensive testing for the rate limiting changes. Different subscription tiers, burst scenarios, and rate limit reset behavior. I'll add 2 points for test coverage.
+
+00:10:06.492 --> 00:10:20.597
+<v Sarah Chen>So we have the CSV bug at 2 points and rate limiting at 7 points total. That's 9 more points, bringing us to 38 out of 45. We have 7 points of buffer.
+
+00:10:20.597 --> 00:10:34.701
+<v David Kim>Should we pull in some of the accessibility improvements from the backlog? I've been wanting to address the screen reader issues on the dashboard.
+
+00:10:34.701 --> 00:10:48.805
+<v Raj Patel>That's a great suggestion. The accessibility improvements are estimated at 5 points and they've been in the backlog for a while. Let's include them.
+
+00:10:48.805 --> 00:11:02.910
+<v Sarah Chen>Perfect. That brings us to 43 points committed, with 2 points of buffer. Does everyone feel comfortable with this commitment?
+
+00:11:02.910 --> 00:11:17.014
+<v Mike Johnson>Given my reduced availability next week, I think we should be careful. But as long as Emma can cover some of my code reviews, we should be fine.
+
+00:11:17.014 --> 00:11:31.119
+<v Emma Williams>I can definitely help with code reviews while Mike is at the conference. Just make sure to tag me as backup reviewer on any PRs.
+
+00:11:31.119 --> 00:11:45.223
+<v Sarah Chen>Great collaboration. Let's move on to discuss the technical approach for the notification API design. Mike, you mentioned wanting to talk about this.
+
+00:11:45.223 --> 00:11:59.328
+<v Mike Johnson>Yes, I want to make sure we're aligned on the API contract before implementation starts. I've drafted a preliminary design that I'd like to walk through.
+
+00:11:59.328 --> 00:12:13.432
+<v Mike Johnson>The notification service will expose three main endpoints. First, a subscription endpoint where clients register for specific notification types.
+
+00:12:13.432 --> 00:12:27.537
+<v Mike Johnson>Second, a preferences endpoint where users can configure their notification settings. Third, a history endpoint for retrieving past notifications with pagination.
+
+00:12:27.537 --> 00:12:41.641
+<v Emma Williams>For the subscription endpoint, are we using server-sent events or WebSockets? The choice affects how we handle reconnection logic.
+
+00:12:41.641 --> 00:12:55.746
+<v Mike Johnson>WebSockets for the real-time stream. SSE doesn't handle bidirectional communication well, and we need that for acknowledgments and read receipts.
+
+00:12:55.746 --> 00:13:09.850
+<v David Kim>On the frontend, we'll need to handle WebSocket reconnection gracefully. What's the recommended reconnection strategy? Exponential backoff?
+
+00:13:09.850 --> 00:13:23.955
+<v Mike Johnson>Yes, exponential backoff with jitter. Start at 1 second, max out at 30 seconds. We should also implement a heartbeat mechanism to detect stale connections.
+
+00:13:23.955 --> 00:13:38.059
+<v Emma Williams>I suggest we add a connection health indicator in the UI so users know when they're temporarily disconnected from real-time updates.
+
+00:13:38.059 --> 00:13:52.164
+<v David Kim>Good idea. We could show a subtle banner or icon state when the connection is unstable. Similar to what Slack does with their connectivity indicator.
+
+00:13:52.164 --> 00:14:06.268
+<v Lisa Martinez>From a testing perspective, how do we verify that reconnection logic works correctly? Do we need specific test scenarios?
+
+00:14:06.268 --> 00:14:20.373
+<v Mike Johnson>We should test disconnection and reconnection, message buffering during disconnection, and order guarantee after reconnection. I'll add these to the acceptance criteria.
+
+00:14:20.373 --> 00:14:34.477
+<v Sarah Chen>These are important details. Mike, can you document these requirements in the technical specification before the design session Wednesday?
+
+00:14:34.477 --> 00:14:48.582
+<v Mike Johnson>I'll update the spec with connection lifecycle details, error handling, and the test scenarios Lisa mentioned. That's my action item for tomorrow.
+
+00:14:48.582 --> 00:15:02.686
+<v Raj Patel>Quick question about the notification preferences. Can users set preferences at both the category level and individual notification type level?
+
+00:15:02.686 --> 00:15:16.791
+<v Mike Johnson>The design supports hierarchical preferences. Users can set a default at the category level and override for specific types. More granular settings take precedence.
+
+00:15:16.791 --> 00:15:30.895
+<v David Kim>That's complex from a UI perspective but definitely user-friendly. I'll design it as an expandable tree structure with inherited state visualization.
+
+00:15:30.895 --> 00:15:45.000
+<v Emma Williams>For the backend, we need to be careful about preference lookup performance. If we're checking preferences for every notification, that's a hot path.
+
+00:15:45.000 --> 00:15:59.104
+<v Mike Johnson>Good point. We should cache resolved preferences in Redis with a short TTL. Invalidate on preference update. That keeps the notification dispatch fast.
+
+00:15:59.104 --> 00:16:13.208
+<v Emma Williams>Agreed. I'll design the caching layer for preferences. We can discuss the invalidation strategy in the Wednesday session.
+
+00:16:13.208 --> 00:16:27.313
+<v Sarah Chen>Moving on, let's talk about the testing strategy for this sprint. Lisa, what's your plan for the notification service testing?
+
+00:16:27.313 --> 00:16:41.417
+<v Lisa Martinez>I've outlined a comprehensive test plan covering unit tests, integration tests, and end-to-end scenarios. Let me walk through the key areas.
+
+00:16:41.417 --> 00:16:55.522
+<v Lisa Martinez>For unit tests, we need coverage for the WebSocket connection handler, message serialization, preference resolution, and the Redis caching layer.
+
+00:16:55.522 --> 00:17:09.626
+<v Lisa Martinez>Integration tests should cover the full flow from notification trigger to client delivery, including failure scenarios and retry behavior.
+
+00:17:09.626 --> 00:17:23.731
+<v Lisa Martinez>End-to-end tests will validate the complete user journey from subscribing to notifications through receiving them across different browsers.
+
+00:17:23.731 --> 00:17:37.835
+<v Emma Williams>For the integration tests, should we mock the Redis layer or use a real Redis instance in the test environment?
+
+00:17:37.835 --> 00:17:51.940
+<v Lisa Martinez>I prefer real Redis for integration tests. Mocking hides too many potential issues. We have the test Redis container already set up in our CI pipeline.
+
+00:17:51.940 --> 00:18:06.044
+<v Mike Johnson>Agreed. The Redis behavior for pub/sub is nuanced enough that mocking could give false confidence. Real Redis catches edge cases early.
+
+00:18:06.044 --> 00:18:20.149
+<v Sarah Chen>What about load testing? This is a real-time system, so we need confidence in its behavior under high message volume.
+
+00:18:20.149 --> 00:18:34.253
+<v Lisa Martinez>Good point. I'll set up k6 load tests that simulate concurrent WebSocket connections and message throughput. We should test up to 1000 concurrent connections.
+
+00:18:34.253 --> 00:18:48.358
+<v Mike Johnson>Our initial target is to support 500 concurrent connections per notification service instance. That gives us headroom for the load test scenarios.
+
+00:18:48.358 --> 00:19:02.462
+<v David Kim>From the frontend, I'll add performance tests for the message handling. We need to ensure the UI doesn't degrade when receiving high-frequency notifications.
+
+00:19:02.462 --> 00:19:16.567
+<v David Kim>I'm thinking of testing scenarios where we receive 10 notifications per second to verify rendering performance and memory usage.
+
+00:19:16.567 --> 00:19:30.671
+<v Lisa Martinez>That's a great addition. We should also test notification aggregation behavior. If someone gets many notifications quickly, do we batch them in the UI?
+
+00:19:30.671 --> 00:19:44.776
+<v David Kim>We'll implement notification grouping for the same type within a short time window. I'll discuss the UX details with the design team this week.
+
+00:19:44.776 --> 00:19:58.880
+<v Sarah Chen>Lisa, do you need any additional test infrastructure or tools for this sprint's testing scope?
+
+00:19:58.880 --> 00:20:12.985
+<v Lisa Martinez>I'll need access to the k6 cloud dashboard for analyzing load test results. Also, we might need additional parallel test runners for the WebSocket tests.
+
+00:20:12.985 --> 00:20:27.089
+<v Emma Williams>I can help set up the test infrastructure. We have credits on k6 cloud that aren't being used. I'll configure the project and send you access details.
+
+00:20:27.089 --> 00:20:41.194
+<v Lisa Martinez>Perfect, thanks Emma. I'll take the action to create the test plan document and share it with the team by Wednesday for review.
+
+00:20:41.194 --> 00:20:55.298
+<v Sarah Chen>Excellent. Let's discuss the deployment approach for the notification service. This is a new microservice, so we need to plan the rollout carefully.
+
+00:20:55.298 --> 00:21:09.402
+<v Mike Johnson>I recommend we deploy the notification service behind a feature flag initially. This lets us control the rollout and quickly disable it if issues arise.
+
+00:21:09.402 --> 00:21:23.507
+<v Raj Patel>That aligns with our stakeholder communication. They expect a phased rollout starting with internal users before external customers.
+
+00:21:23.507 --> 00:21:37.611
+<v Emma Williams>For the initial deployment, should we run the new service alongside the existing notification system or replace it completely?
+
+00:21:37.611 --> 00:21:51.716
+<v Mike Johnson>We should run them in parallel initially. The new service can shadow traffic, and we can compare results before switching over completely.
+
+00:21:51.716 --> 00:22:05.820
+<v David Kim>How will the frontend know which notification system to connect to? We need a clean switch mechanism.
+
+00:22:05.820 --> 00:22:19.925
+<v Mike Johnson>The feature flag will determine this. When the flag is enabled for a user, their session uses the new WebSocket endpoint. Otherwise, they get the legacy polling behavior.
+
+00:22:19.925 --> 00:22:34.029
+<v Lisa Martinez>We need to test this switchover behavior thoroughly. A user might start a session on one system and have the flag enabled mid-session.
+
+00:22:34.029 --> 00:22:48.134
+<v Mike Johnson>That's a good edge case. The frontend should check the flag on page refresh and gracefully transition. We shouldn't hot-swap mid-session to avoid confusion.
+
+00:22:48.134 --> 00:23:02.238
+<v Sarah Chen>Let's make sure to add that to the acceptance criteria. The transition between systems should be seamless from the user's perspective.
+
+00:23:02.238 --> 00:23:16.343
+<v David Kim>I'll add session persistence logic so users don't get reconnected unnecessarily. Refresh should maintain their existing connection if still valid.
+
+00:23:16.343 --> 00:23:30.447
+<v Raj Patel>When are we targeting the internal rollout? We should coordinate with the support team so they're prepared for potential questions.
+
+00:23:30.447 --> 00:23:44.552
+<v Sarah Chen>Based on our timeline, development should be complete by Sprint 14. Internal rollout could start the following week after QA sign-off.
+
+00:23:44.552 --> 00:23:58.656
+<v Lisa Martinez>I'll need at least three days for final verification before internal rollout. That includes regression testing on the existing notification paths.
+
+00:23:58.656 --> 00:24:12.761
+<v Mike Johnson>We decided that internal rollout will target Monday of Sprint 15, assuming QA sign-off by the preceding Thursday. That gives us the weekend for any final fixes.
+
+00:24:12.761 --> 00:24:26.865
+<v Sarah Chen>Good decision. Let's make sure to communicate this timeline to stakeholders. Raj, can you update the release calendar?
+
+00:24:26.865 --> 00:24:40.970
+<v Raj Patel>I'll update the release calendar and send a status update to the stakeholder distribution list this afternoon. That's my action item.
+
+00:24:40.970 --> 00:24:55.074
+<v Sarah Chen>Now let's talk about the user profile enhancement feature. Emma, you've worked on the user service before. Any concerns about the schema changes?
+
+00:24:55.074 --> 00:25:09.179
+<v Emma Williams>The main concern is backwards compatibility. We need to ensure existing API consumers aren't broken when we add the flexible schema support.
+
+00:25:09.179 --> 00:25:23.283
+<v Emma Williams>I propose we add the custom attributes as a new optional field in the user object. Legacy clients that don't send it will just ignore it.
+
+00:25:23.283 --> 00:25:37.388
+<v Mike Johnson>That's the safe approach. We should also version the API endpoint if the request format changes significantly. Maybe a v2 for the profile endpoints?
+
+00:25:37.388 --> 00:25:51.492
+<v Raj Patel>How will enterprise admins define their custom schemas? Do we need an admin UI for that?
+
+00:25:51.492 --> 00:26:05.597
+<v David Kim>There's already a settings section in the admin portal. I can add a schema builder UI there. It would be similar to our form builder component.
+
+00:26:05.597 --> 00:26:19.701
+<v Emma Williams>We should validate the schemas before they're applied. Invalid schemas could break user profile operations for that tenant.
+
+00:26:19.701 --> 00:26:33.805
+<v Mike Johnson>We can use a schema validation library to ensure the defined schemas are valid JSON Schema drafts. Reject invalid schemas at definition time.
+
+00:26:33.805 --> 00:26:47.910
+<v Lisa Martinez>For testing, we need various schema configurations. Simple attributes, nested objects, and attributes with different validation rules.
+
+00:26:47.910 --> 00:27:02.014
+<v Lisa Martinez>I'll create a set of test schemas that cover common patterns. Date fields, enum values, required fields, and custom formats.
+
+00:27:02.014 --> 00:27:16.119
+<v David Kim>Should we limit schema complexity? For example, maximum nesting depth or maximum number of attributes?
+
+00:27:16.119 --> 00:27:30.223
+<v Emma Williams>Yes, we should have reasonable limits. I'd suggest maximum 20 custom attributes and nesting depth of 2 levels. That covers most use cases without creating performance issues.
+
+00:27:30.223 --> 00:27:44.328
+<v Mike Johnson>Agreed. We can always increase limits later based on customer feedback. Starting conservative is the safer approach.
+
+00:27:44.328 --> 00:27:58.432
+<v Raj Patel>The enterprise customers I've talked to typically have 5-10 custom attributes. The 20 attribute limit should be plenty for now.
+
+00:27:58.432 --> 00:28:12.537
+<v Sarah Chen>Good constraints. These should be documented in the feature specification for alignment. Mike, can you add them to the tech spec?
+
+00:28:12.537 --> 00:28:26.641
+<v Mike Johnson>I'll document the schema limits and validation rules in the tech spec. I'll also add examples of valid and invalid schemas.
+
+00:28:26.641 --> 00:28:40.746
+<v Sarah Chen>Let's also discuss the API rate limiting enhancement. Mike, you estimated 5 points for this. Can you break down the work?
+
+00:28:40.746 --> 00:28:54.850
+<v Mike Johnson>Sure. The current implementation uses a simple fixed-window rate limiter. We need to add tier-based configuration and update the response headers.
+
+00:28:54.850 --> 00:29:08.955
+<v Mike Johnson>The work involves updating the rate limiter configuration service to pull limits from subscription data, and modifying the API gateway rules.
+
+00:29:08.955 --> 00:29:23.059
+<v Emma Williams>We also need to handle tier upgrades and downgrades gracefully. If a customer upgrades mid-billing cycle, their rate limits should reflect the new tier immediately.
+
+00:29:23.059 --> 00:29:37.164
+<v Mike Johnson>Good point. We'll need a cache invalidation trigger when subscription data changes. The billing service can publish an event that our rate limiter subscribes to.
+
+00:29:37.164 --> 00:29:51.268
+<v Raj Patel>What are the rate limit values for each tier? I need to confirm these with the pricing team.
+
+00:29:51.268 --> 00:30:05.373
+<v Mike Johnson>Currently proposed is Basic at 100 requests per minute, Professional at 500, and Enterprise at 2000. Enterprise also gets higher burst allowance.
+
+00:30:05.373 --> 00:30:19.477
+<v Raj Patel>Those numbers align with what we discussed. I'll confirm with pricing and get final approval before we implement.
+
+00:30:19.477 --> 00:30:33.582
+<v Lisa Martinez>For testing rate limiting, we need to simulate requests at just below, at, and just above each tier's limit. Verify correct behavior at boundaries.
+
+00:30:33.582 --> 00:30:47.686
+<v Lisa Martinez>We also need to test the rate limit reset behavior. When the window expires, limits should reset correctly.
+
+00:30:47.686 --> 00:31:01.791
+<v Mike Johnson>The reset behavior is tricky with sliding windows. I'll document the exact algorithm so testing can verify the implementation.
+
+00:31:01.791 --> 00:31:15.895
+<v Sarah Chen>Good discussion on rate limiting. Before we move to the bug fixes, I want to dive deeper into the notification service architecture since it's our largest story.
+
+00:31:15.895 --> 00:31:30.000
+<v Mike Johnson>Good idea. Let me walk through the complete data flow. When a trigger event occurs in the system, the event producer publishes to our main Kafka topic.
+
+00:31:30.000 --> 00:31:44.104
+<v Mike Johnson>The notification router service consumes these events and applies routing rules. Each rule maps event types to notification channels: email, push, SMS, or in-app.
+
+00:31:44.104 --> 00:31:58.208
+<v Emma Williams>The routing rules should support complex conditions. For example, send push notifications for high priority alerts, but only email for daily summaries.
+
+00:31:58.208 --> 00:32:12.313
+<v Mike Johnson>Exactly. We'll implement a rule engine using a simple DSL. Something like when event priority is high and user preferences push is true then send push notification.
+
+00:32:12.313 --> 00:32:26.417
+<v David Kim>How do we handle user notification preferences? The UI needs to let users configure their preferences across all channels.
+
+00:32:26.417 --> 00:32:40.522
+<v Raj Patel>User preferences are stored in the user profile service. We have a dedicated preferences collection with channel-specific settings.
+
+00:32:40.522 --> 00:32:54.626
+<v Mike Johnson>The notification router will cache preferences with a 5-minute TTL to avoid hitting the profile service on every notification.
+
+00:32:54.626 --> 00:33:08.731
+<v Emma Williams>What about preference changes? If a user disables push notifications, we need to honor that immediately, not after the cache expires.
+
+00:33:08.731 --> 00:33:22.835
+<v Mike Johnson>Good point. We'll implement cache invalidation via pub/sub. When preferences change, the profile service publishes an invalidation event.
+
+00:33:22.835 --> 00:33:36.940
+<v Lisa Martinez>I want to understand the retry strategy better. If a push notification fails, what's the retry sequence?
+
+00:33:36.940 --> 00:33:51.044
+<v Emma Williams>We use exponential backoff with jitter. First retry at 1 second plus random 0-500ms, then 2 seconds, 4 seconds, up to a max of 5 retries.
+
+00:33:51.044 --> 00:34:05.149
+<v Lisa Martinez>What happens after all retries are exhausted? Does the notification go to a dead letter queue?
+
+00:34:05.149 --> 00:34:19.253
+<v Mike Johnson>Yes, failed notifications go to a DLQ. We have a monitoring dashboard that alerts on DLQ depth and allows manual reprocessing.
+
+00:34:19.253 --> 00:34:33.358
+<v Sarah Chen>Let me capture some action items from this discussion. Mike, can you document the retry strategy and DLQ handling in our tech spec?
+
+00:34:33.358 --> 00:34:47.462
+<v Mike Johnson>I'll add a section on error handling and recovery patterns. Should be part of the tech spec update I'm doing for the design session.
+
+00:34:47.462 --> 00:35:01.567
+<v David Kim>For the frontend, I need to understand the WebSocket message format. What does a push notification payload look like?
+
+00:35:01.567 --> 00:35:15.671
+<v Emma Williams>The payload includes notification ID, type, title, body, action URL, timestamp, and priority. All fields are required except action URL.
+
+00:35:15.671 --> 00:35:29.776
+<v David Kim>Can you share a sample payload? I want to make sure our TypeScript interfaces match the backend schema.
+
+00:35:29.776 --> 00:35:43.880
+<v Emma Williams>I'll create an OpenAPI specification for all notification payloads. That way we can generate TypeScript types automatically.
+
+00:35:43.880 --> 00:35:57.985
+<v Lisa Martinez>The OpenAPI spec will help with contract testing too. I can use it to validate the actual payloads match the specification.
+
+00:35:57.985 --> 00:36:12.089
+<v Mike Johnson>That's a good point. Let's make the OpenAPI spec the single source of truth for notification data structures.
+
+00:36:12.089 --> 00:36:26.194
+<v Raj Patel>I have a question about notification templates. How do we handle dynamic content in notifications, like user names or order numbers?
+
+00:36:26.194 --> 00:36:40.298
+<v Emma Williams>We use Mustache templates stored in the database. Each notification type has a template with placeholders that get filled at send time.
+
+00:36:40.298 --> 00:36:54.402
+<v Raj Patel>Can product managers update the templates without a code deploy? We often need to tweak messaging based on user feedback.
+
+00:36:54.402 --> 00:37:08.507
+<v Emma Williams>Yes, templates are stored in our CMS. Changes take effect immediately after cache refresh, which is within 2 minutes.
+
+00:37:08.507 --> 00:37:22.611
+<v David Kim>For the notification center UI, we need to display notification history. How far back do we store notifications?
+
+00:37:22.611 --> 00:37:36.716
+<v Mike Johnson>We retain notifications for 90 days. After that, they're archived to cold storage but not available in the UI.
+
+00:37:36.716 --> 00:37:50.820
+<v David Kim>Is there pagination for the notification history endpoint? Users with many notifications could have thousands of records.
+
+00:37:50.820 --> 00:38:04.925
+<v Mike Johnson>Yes, we use cursor-based pagination with a default page size of 50. The UI can request more, up to a maximum of 200 per page.
+
+00:38:04.925 --> 00:38:19.029
+<v Lisa Martinez>For testing the pagination, I'll need to create users with varying notification counts. What's a realistic upper bound?
+
+00:38:19.029 --> 00:38:33.134
+<v Mike Johnson>Our most active users receive about 100 notifications per day. Over 90 days, that's about 9,000 notifications per user.
+
+00:38:33.134 --> 00:38:47.238
+<v Lisa Martinez>I'll create test scenarios for users with 0, 100, 1000, and 10000 notifications to verify pagination works correctly.
+
+00:38:47.238 --> 00:39:01.343
+<v Sarah Chen>Let's discuss notification grouping. We don't want to overwhelm users with individual notifications for related events.
+
+00:39:01.343 --> 00:39:15.447
+<v Mike Johnson>The grouping logic is handled by the notification aggregator service. It batches related notifications into a single digest.
+
+00:39:15.447 --> 00:39:29.552
+<v Mike Johnson>For example, multiple comments on the same post get grouped into 5 new comments on your post instead of 5 separate notifications.
+
+00:39:29.552 --> 00:39:43.656
+<v Emma Williams>The grouping window is configurable per notification type. Comments group for 15 minutes, likes group for 1 hour.
+
+00:39:43.656 --> 00:39:57.761
+<v David Kim>In the UI, when users click a grouped notification, where should they land? The most recent item or a summary view?
+
+00:39:57.761 --> 00:40:11.865
+<v Raj Patel>Summary view would be better for user experience. They can see all the related items and choose which to engage with.
+
+00:40:11.865 --> 00:40:25.970
+<v David Kim>That makes sense. I'll design a summary modal that shows the individual items within a grouped notification.
+
+00:40:25.970 --> 00:40:40.074
+<v Lisa Martinez>How do we test the grouping logic? Timing-dependent tests are notoriously flaky in CI environments.
+
+00:40:40.074 --> 00:40:54.179
+<v Emma Williams>We inject a clock abstraction into the aggregator service. In tests, we can advance time deterministically.
+
+00:40:54.179 --> 00:41:08.283
+<v Lisa Martinez>Perfect. I'll coordinate with Emma on the test infrastructure so our integration tests can control the clock.
+
+00:41:08.283 --> 00:41:22.388
+<v Sarah Chen>Great collaboration on test design. Let's move on to discuss the delivery guarantees for notifications.
+
+00:41:22.388 --> 00:41:36.492
+<v Mike Johnson>We're targeting at-least-once delivery. Some duplicate notifications are acceptable, but we can't afford to lose notifications.
+
+00:41:36.492 --> 00:41:50.597
+<v Mike Johnson>The trade-off is between exactly-once semantics, which is expensive to implement, and occasional duplicates which users can tolerate.
+
+00:41:50.597 --> 00:42:04.701
+<v Emma Williams>We'll add deduplication at the display layer. Even if the backend sends a duplicate, the UI will only show it once.
+
+00:42:04.701 --> 00:42:18.805
+<v David Kim>For the UI deduplication, I'll use the notification ID as a unique key. We can ignore any notification we've already displayed.
+
+00:42:18.805 --> 00:42:32.910
+<v Lisa Martinez>What about edge cases where a notification ID could legitimately repeat? For example, after a system restart?
+
+00:42:32.910 --> 00:42:47.014
+<v Mike Johnson>Notification IDs are globally unique UUIDs generated by the source system. They should never repeat regardless of system state.
+
+00:42:47.014 --> 00:43:01.119
+<v Lisa Martinez>Good. I'll include a test case to verify UUID uniqueness across multiple notification batches.
+
+00:43:01.119 --> 00:43:15.223
+<v Raj Patel>Let me ask about notification analytics. How do we track whether users are engaging with our notifications?
+
+00:43:15.223 --> 00:43:29.328
+<v Emma Williams>We track several metrics: delivery rate, open rate, click-through rate, and dismissal rate. All events go to our analytics pipeline.
+
+00:43:29.328 --> 00:43:43.432
+<v Raj Patel>Can we segment these metrics by notification type, user cohort, or channel? Product needs that level of granularity.
+
+00:43:43.432 --> 00:43:57.537
+<v Emma Williams>Yes, all events are tagged with those dimensions. The analytics team has Looker dashboards that slice data any way you need.
+
+00:43:57.537 --> 00:44:11.641
+<v Mike Johnson>We should also track time-to-engagement. How long after delivery does the user interact with the notification?
+
+00:44:11.641 --> 00:44:25.746
+<v Emma Williams>Good point. We already capture the delivery timestamp and interaction timestamp, so we can calculate that metric.
+
+00:44:25.746 --> 00:44:39.850
+<v David Kim>From a frontend perspective, I need to fire analytics events on notification click, dismiss, and bulk actions like mark-all-read.
+
+00:44:39.850 --> 00:44:53.955
+<v Emma Williams>Use our standard analytics SDK. I'll send you the event schema documentation so you know what parameters to include.
+
+00:44:53.955 --> 00:45:08.059
+<v Lisa Martinez>For testing analytics events, can we use a sandbox analytics endpoint that doesn't pollute production data?
+
+00:45:08.059 --> 00:45:22.164
+<v Emma Williams>Yes, we have a staging analytics pipeline. Just configure the SDK to point to the staging endpoint in test environments.
+
+00:45:22.164 --> 00:45:36.268
+<v Sarah Chen>Let's talk about the push notification infrastructure. We're using Firebase Cloud Messaging for mobile and our own WebSocket for web.
+
+00:45:36.268 --> 00:45:50.373
+<v Mike Johnson>Firebase handles the complexity of mobile push: device tokens, platform differences, battery optimization. It's the industry standard.
+
+00:45:50.373 --> 00:46:04.477
+<v Mike Johnson>For web, we manage our own WebSocket connections because we need features that the Push API doesn't support.
+
+00:46:04.477 --> 00:46:18.582
+<v Emma Williams>The WebSocket service maintains connection state in Redis. When we need to push to a user, we look up their active connections.
+
+00:46:18.582 --> 00:46:32.686
+<v David Kim>What happens if a user has multiple browser tabs open? Do they get the notification in all tabs?
+
+00:46:32.686 --> 00:46:46.791
+<v Emma Williams>Each tab establishes its own WebSocket connection. We track all connections per user and broadcast to all of them.
+
+00:46:46.791 --> 00:47:00.895
+<v David Kim>But visually, we probably only want to show the notification popup in one tab, right? Otherwise it's overwhelming.
+
+00:47:00.895 --> 00:47:15.000
+<v Emma Williams>We use the Broadcast Channel API to coordinate between tabs. The first tab that receives the notification claims it.
+
+00:47:15.000 --> 00:47:29.104
+<v Lisa Martinez>That coordination logic sounds complex. I want to test scenarios with 1, 2, 5, and 10 tabs to verify correct behavior.
+
+00:47:29.104 --> 00:47:43.208
+<v David Kim>Also test the case where the tab that claimed the notification gets closed. The notification should transfer to another tab.
+
+00:47:43.208 --> 00:47:57.313
+<v Lisa Martinez>Good edge case. I'll add that to my test matrix. We should also test what happens when all tabs close during delivery.
+
+00:47:57.313 --> 00:48:11.417
+<v Mike Johnson>If all tabs close, the notification gets queued. When the user opens a new tab, we replay any missed notifications.
+
+00:48:11.417 --> 00:48:25.522
+<v Emma Williams>The replay window is limited to 24 hours. After that, notifications are considered expired and don't get replayed.
+
+00:48:25.522 --> 00:48:39.626
+<v Raj Patel>Twenty-four hours seems reasonable. We don't want to bombard users with stale notifications from last week.
+
+00:48:39.626 --> 00:48:53.731
+<v Sarah Chen>Let's discuss notification sounds and vibration patterns. Mobile users expect feedback when notifications arrive.
+
+00:48:53.731 --> 00:49:07.835
+<v Mike Johnson>Firebase supports custom sounds and vibration patterns. We can configure them per notification type.
+
+00:49:07.835 --> 00:49:21.940
+<v Raj Patel>Product wants different sounds for different priorities. A gentle chime for low priority, a more urgent tone for high priority.
+
+00:49:21.940 --> 00:49:36.044
+<v David Kim>On web, we're more limited. The Web Audio API can play sounds, but browsers have strict autoplay policies.
+
+00:49:36.044 --> 00:49:50.149
+<v David Kim>Users need to interact with the page first before we can play any audio. We should design for silent fallback.
+
+00:49:50.149 --> 00:50:04.253
+<v Lisa Martinez>I'll test the audio policies across Chrome, Firefox, Safari, and Edge. Each browser has slightly different rules.
+
+00:50:04.253 --> 00:50:18.358
+<v Emma Williams>For now, let's keep web notifications silent by default. Users can opt into sounds in their preferences.
+
+00:50:18.358 --> 00:50:32.462
+<v Sarah Chen>That's a sensible default. Let's capture that as a product decision. Raj, can you document that in the requirements?
+
+00:50:32.462 --> 00:50:46.567
+<v Raj Patel>Will do. I'll also add the sound customization feature to our backlog for a future enhancement.
+
+00:50:46.567 --> 00:51:00.671
+<v Mike Johnson>One more topic: notification localization. Our app supports 12 languages, and notification content needs to be translated.
+
+00:51:00.671 --> 00:51:14.776
+<v Emma Williams>The template system I mentioned earlier supports localized templates. Each notification type has a template per locale.
+
+00:51:14.776 --> 00:51:28.880
+<v Emma Williams>When rendering a notification, we look up the user's preferred language and use the corresponding template.
+
+00:51:28.880 --> 00:51:42.985
+<v Raj Patel>What if a template isn't available in the user's language? We can't show them an empty notification.
+
+00:51:42.985 --> 00:51:57.089
+<v Emma Williams>We fall back to English if the user's preferred language isn't available. English is our default locale.
+
+00:51:57.089 --> 00:52:11.194
+<v Lisa Martinez>I'll test the fallback behavior with a user whose language has no templates. Verify they get the English version.
+
+00:52:11.194 --> 00:52:25.298
+<v Mike Johnson>We should also log when fallback occurs. It helps the localization team prioritize which languages need templates.
+
+00:52:25.298 --> 00:52:39.402
+<v Sarah Chen>Excellent discussion on the notification service architecture. Now let's move on to discuss the security considerations.
+
+00:52:39.402 --> 00:52:53.507
+<v Mike Johnson>Security is critical for notifications. We need to ensure users only receive notifications intended for them.
+
+00:52:53.507 --> 00:53:07.611
+<v Mike Johnson>All notification requests are authenticated. The sending service must prove it has permission to notify a specific user.
+
+00:53:07.611 --> 00:53:21.716
+<v Emma Williams>We use service-to-service authentication with JWTs. Each service has its own signing key registered in our key store.
+
+00:53:21.716 --> 00:53:35.820
+<v Lisa Martinez>How do we test for authorization bypass? Can one user somehow receive another user's notifications?
+
+00:53:35.820 --> 00:53:49.925
+<v Mike Johnson>Good question. We have a strict partition key scheme. Notifications are stored per-user and can only be queried by that user.
+
+00:53:49.925 --> 00:54:04.029
+<v Emma Williams>The user ID comes from the authenticated session, not from the request body. Users can't manipulate which notifications they fetch.
+
+00:54:04.029 --> 00:54:18.134
+<v Lisa Martinez>I'll add security test cases: attempt to fetch another user's notifications, inject user IDs, and check for information leakage.
+
+00:54:18.134 --> 00:54:32.238
+<v David Kim>What about the WebSocket connection? How do we ensure a malicious client can't connect and receive someone else's notifications?
+
+00:54:32.238 --> 00:54:46.343
+<v Emma Williams>WebSocket connections require the same authentication as HTTP requests. The connection is tied to an authenticated session.
+
+00:54:46.343 --> 00:55:00.447
+<v Mike Johnson>We also validate the session on a regular interval. If a session expires or is revoked, we close the WebSocket connection.
+
+00:55:00.447 --> 00:55:14.552
+<v Lisa Martinez>What's the session validation interval? We need to balance security with performance.
+
+00:55:14.552 --> 00:55:28.656
+<v Mike Johnson>Currently 5 minutes. That means a revoked session could receive notifications for up to 5 minutes after revocation.
+
+00:55:28.656 --> 00:55:42.761
+<v Emma Williams>We could reduce that interval for high-security scenarios, but it would increase load on the auth service.
+
+00:55:42.761 --> 00:55:56.865
+<v Sarah Chen>Five minutes seems like a reasonable trade-off. Let's document that as a known limitation in our security documentation.
+
+00:55:56.865 --> 00:56:10.970
+<v Raj Patel>Speaking of documentation, do we need to update our privacy policy for notification data collection?
+
+00:56:10.970 --> 00:56:25.074
+<v Mike Johnson>Good catch. Notification analytics includes user engagement data. Legal should review the privacy implications.
+
+00:56:25.074 --> 00:56:39.179
+<v Raj Patel>I'll flag this with our legal team. We might need to update the consent flow for users in GDPR regions.
+
+00:56:39.179 --> 00:56:53.283
+<v Sarah Chen>Let's also discuss the performance requirements. What latency SLA are we targeting for notification delivery?
+
+00:56:53.283 --> 00:57:07.388
+<v Mike Johnson>For push notifications, we target p99 latency under 2 seconds from trigger event to user device.
+
+00:57:07.388 --> 00:57:21.492
+<v Mike Johnson>For email notifications, the SLA is more relaxed at 5 minutes, since email delivery itself adds significant latency.
+
+00:57:21.492 --> 00:57:35.597
+<v Emma Williams>The WebSocket push is the critical path. The message goes from Kafka to the WebSocket service to the browser.
+
+00:57:35.597 --> 00:57:49.701
+<v Emma Williams>We need to optimize each hop. Kafka consumer latency, Redis lookup, WebSocket write - all need to be fast.
+
+00:57:49.701 --> 00:58:03.805
+<v Lisa Martinez>How do we measure latency end-to-end? We need to trace from the original event to the user's browser.
+
+00:58:03.805 --> 00:58:17.910
+<v Mike Johnson>We embed a correlation ID in every notification. The browser reports when it receives the notification with that ID.
+
+00:58:17.910 --> 00:58:32.014
+<v Mike Johnson>We can then trace the full journey through our observability stack: Kafka, processing, Redis, WebSocket.
+
+00:58:32.014 --> 00:58:46.119
+<v Emma Williams>For synthetic monitoring, we have a canary that triggers test notifications every minute and measures the round trip.
+
+00:58:46.119 --> 00:59:00.223
+<v Lisa Martinez>The canary will help catch regressions. We should alert if p99 latency exceeds our SLA for more than 5 minutes.
+
+00:59:00.223 --> 00:59:14.328
+<v Sarah Chen>Let's talk about capacity planning. How many notifications per second can the system handle?
+
+00:59:14.328 --> 00:59:28.432
+<v Mike Johnson>Our current target is 10,000 notifications per second at peak. That's based on projected user growth.
+
+00:59:28.432 --> 00:59:42.537
+<v Emma Williams>The Kafka cluster can handle 100,000 messages per second, so we have 10x headroom on the message bus.
+
+00:59:42.537 --> 00:59:56.641
+<v Emma Williams>The bottleneck is likely the WebSocket service. Each server can handle about 50,000 concurrent connections.
+
+00:59:56.641 --> 01:00:10.746
+<v Mike Johnson>With horizontal scaling, we can add more WebSocket servers. The connection state in Redis allows any server to send to any user.
+
+01:00:10.746 --> 01:00:24.850
+<v Lisa Martinez>Do we have load tests that verify we can handle 10,000 notifications per second without degradation?
+
+01:00:24.850 --> 01:00:38.955
+<v Emma Williams>Not yet. That's part of the performance validation we need before launch. I can set up k6 load testing.
+
+01:00:38.955 --> 01:00:53.059
+<v Sarah Chen>Let's add a performance testing task to our backlog. It should be done before we go to production.
+
+01:00:53.059 --> 01:01:07.164
+<v Mike Johnson>Agreed. We should also test failure scenarios: what happens when one WebSocket server goes down during peak load?
+
+01:01:07.164 --> 01:01:21.268
+<v Emma Williams>The connections on that server would reconnect to other servers. Redis has the connection mapping so state is preserved.
+
+01:01:21.268 --> 01:01:35.373
+<v Lisa Martinez>I'll add chaos engineering tests: kill a WebSocket server, verify connections reconnect, measure notification loss.
+
+01:01:35.373 --> 01:01:49.477
+<v David Kim>What's the expected reconnection time? The UI needs to show a reconnecting state if it takes more than a few seconds.
+
+01:01:49.477 --> 01:02:03.582
+<v Emma Williams>The client library has automatic reconnection with exponential backoff. Usually reconnects within 2-3 seconds.
+
+01:02:03.582 --> 01:02:17.686
+<v David Kim>I'll add a reconnecting indicator to the notification bell icon. Users should know if they might miss notifications.
+
+01:02:17.686 --> 01:02:31.791
+<v Sarah Chen>Great attention to UX detail. Let's move on to discuss the database schema for notifications.
+
+01:02:31.791 --> 01:02:45.895
+<v Mike Johnson>We're using MongoDB for notification storage. The schema is designed for fast reads by user ID.
+
+01:02:45.895 --> 01:03:00.000
+<v Mike Johnson>Each notification document contains: id, user_id, type, title, body, metadata, read status, created timestamp.
+
+01:03:00.000 --> 01:03:14.104
+<v Emma Williams>We have a compound index on user_id and created_at for efficient pagination. Most recent notifications first.
+
+01:03:14.104 --> 01:03:28.208
+<v Emma Williams>There's also an index on user_id and read status for counting unread notifications.
+
+01:03:28.208 --> 01:03:42.313
+<v Lisa Martinez>How do we handle the 90-day retention? Is it automatic or do we need a cleanup job?
+
+01:03:42.313 --> 01:03:56.417
+<v Mike Johnson>We use MongoDB TTL indexes. Documents older than 90 days are automatically deleted by the database.
+
+01:03:56.417 --> 01:04:10.522
+<v Lisa Martinez>Perfect. That's less operational overhead than running our own cleanup cron job.
+
+01:04:10.522 --> 01:04:24.626
+<v David Kim>What about the notification type field? Is that an enum or freeform string?
+
+01:04:24.626 --> 01:04:38.731
+<v Mike Johnson>It's a string, but we have a registry of valid types. The notification router validates types against the registry.
+
+01:04:38.731 --> 01:04:52.835
+<v Raj Patel>Who manages the type registry? Can product add new notification types without engineering involvement?
+
+01:04:52.835 --> 01:05:06.940
+<v Mike Johnson>Currently it requires a code change. But we could expose an admin API for managing types if that's needed.
+
+01:05:06.940 --> 01:05:21.044
+<v Raj Patel>Let's defer that for now. We can add it later if we're frequently adding new types.
+
+01:05:21.044 --> 01:05:35.149
+<v Sarah Chen>Good pragmatic decision. Let's not over-engineer before we understand the real need.
+
+01:05:35.149 --> 01:05:49.253
+<v Emma Williams>One more database topic: how do we handle the unread count? Counting documents can be slow at scale.
+
+01:05:49.253 --> 01:06:03.358
+<v Mike Johnson>We maintain a counter in a separate collection. It's updated atomically when notifications are created or marked read.
+
+01:06:03.358 --> 01:06:17.462
+<v Lisa Martinez>What if the counter gets out of sync with the actual count? Distributed systems are tricky.
+
+01:06:17.462 --> 01:06:31.567
+<v Mike Johnson>We have a reconciliation job that runs hourly. It recounts and fixes any drift in the counters.
+
+01:06:31.567 --> 01:06:45.671
+<v Lisa Martinez>I'll test the reconciliation job with scenarios where the counter is intentionally wrong. Verify it corrects.
+
+01:06:45.671 --> 01:06:59.776
+<v Sarah Chen>Excellent attention to edge cases. Now let's quickly cover the remaining items before we close out.
+
+01:06:59.776 --> 01:07:13.880
+<v Sarah Chen>We have the CSV export bug and accessibility improvements still to discuss. But first, let me mention some additional topics.
+
+01:07:13.880 --> 01:07:27.985
+<v Sarah Chen>We should discuss the CI/CD pipeline improvements that need to happen alongside the notification service work.
+
+01:07:27.985 --> 01:07:42.089
+<v Mike Johnson>Good point. The current pipeline takes about 12 minutes for a full run. We should look at parallelizing some stages.
+
+01:07:42.089 --> 01:07:56.194
+<v Mike Johnson>The integration tests are the bottleneck. They run sequentially and each test spins up its own database instance.
+
+01:07:56.194 --> 01:08:10.298
+<v Emma Williams>We could share database instances across tests if they don't modify the same data. Test isolation through data partitioning.
+
+01:08:10.298 --> 01:08:24.402
+<v Lisa Martinez>That sounds risky. If tests do overlap, we could have flaky failures that are hard to debug.
+
+01:08:24.402 --> 01:08:38.507
+<v Mike Johnson>True. An alternative is to use lighter-weight test fixtures. Replace real databases with in-memory alternatives.
+
+01:08:38.507 --> 01:08:52.611
+<v Emma Williams>We already use an in-memory Redis for most tests. We could do the same for MongoDB using mongomock.
+
+01:08:52.611 --> 01:09:06.716
+<v Lisa Martinez>In-memory databases don't perfectly replicate production behavior. We might miss issues that only occur with real databases.
+
+01:09:06.716 --> 01:09:20.820
+<v Mike Johnson>We could use a hybrid approach: most tests use in-memory for speed, a smaller set of canary tests use real databases.
+
+01:09:20.820 --> 01:09:34.925
+<v Sarah Chen>That's a pragmatic trade-off. Let's add a spike to investigate the hybrid testing approach. Who wants to take it?
+
+01:09:34.925 --> 01:09:49.029
+<v Emma Williams>I can do the spike. I have experience with mongomock from my previous project.
+
+01:09:49.029 --> 01:10:03.134
+<v Sarah Chen>Thanks Emma. Let's timebox that spike to 2 days. Report findings in the next sprint planning.
+
+01:10:03.134 --> 01:10:17.238
+<v David Kim>Speaking of testing, we should also discuss our frontend testing strategy for the notification UI.
+
+01:10:17.238 --> 01:10:31.343
+<v David Kim>Currently we have unit tests for components but limited end-to-end tests. We rely heavily on manual QA.
+
+01:10:31.343 --> 01:10:45.447
+<v Lisa Martinez>E2E tests are expensive to maintain but catch issues that unit tests miss. We should have at least critical path coverage.
+
+01:10:45.447 --> 01:10:59.552
+<v David Kim>I agree. The critical path for notifications is: receive notification, display popup, click to view, mark as read.
+
+01:10:59.552 --> 01:11:13.656
+<v Lisa Martinez>We can use Playwright for E2E testing. It's faster than Selenium and has better TypeScript support.
+
+01:11:13.656 --> 01:11:27.761
+<v David Kim>I've used Playwright before. Setting it up shouldn't take more than a day. We can start with the happy path.
+
+01:11:27.761 --> 01:11:41.865
+<v Sarah Chen>Let's include E2E test setup in this sprint. David, can you pair with Lisa on the implementation?
+
+01:11:41.865 --> 01:11:55.970
+<v David Kim>Sure, we can schedule time on Thursday after the WebSocket spike is complete.
+
+01:11:55.970 --> 01:12:10.074
+<v Raj Patel>I want to mention documentation. We need to update the developer portal with the new notification API.
+
+01:12:10.074 --> 01:12:24.179
+<v Raj Patel>External developers integrate with our API and need accurate documentation to do so.
+
+01:12:24.179 --> 01:12:38.283
+<v Mike Johnson>The OpenAPI spec Emma mentioned earlier can auto-generate documentation. We just need to keep the spec up to date.
+
+01:12:38.283 --> 01:12:52.388
+<v Emma Williams>I'll make sure the OpenAPI spec includes all the new notification endpoints. We can generate docs from that.
+
+01:12:52.388 --> 01:13:06.492
+<v Raj Patel>We also need conceptual documentation explaining how the notification system works. Not just API reference.
+
+01:13:06.492 --> 01:13:20.597
+<v Raj Patel>I'll draft the conceptual guide. Mike, can you review it for technical accuracy?
+
+01:13:20.597 --> 01:13:34.701
+<v Mike Johnson>Happy to review. Send it my way when you have a draft and I'll give feedback within a day.
+
+01:13:34.701 --> 01:13:48.805
+<v Sarah Chen>Let's also discuss the on-call rotation. With new services, we need to update our operational procedures.
+
+01:13:48.805 --> 01:14:02.910
+<v Mike Johnson>The notification service will need its own runbook. I'll document common failure scenarios and remediation steps.
+
+01:14:02.910 --> 01:14:17.014
+<v Emma Williams>We should also add the new services to our monitoring dashboards. I'll create Grafana dashboards for the notification pipeline.
+
+01:14:17.014 --> 01:14:31.119
+<v Lisa Martinez>What about alerting thresholds? We need to define when on-call should be paged.
+
+01:14:31.119 --> 01:14:45.223
+<v Mike Johnson>For the notification service, I'd suggest alerting on: delivery latency above 5 seconds, DLQ depth above 1000, error rate above 1%.
+
+01:14:45.223 --> 01:14:59.328
+<v Emma Williams>Those thresholds seem reasonable for production. We might need to tune them based on actual traffic patterns.
+
+01:14:59.328 --> 01:15:13.432
+<v Sarah Chen>Let's start with those thresholds and iterate. Better to be slightly noisy than miss critical issues.
+
+01:15:13.432 --> 01:15:27.537
+<v David Kim>On a related note, what's our rollback plan if the new notification system has issues in production?
+
+01:15:27.537 --> 01:15:41.641
+<v Mike Johnson>We'll deploy behind a feature flag. If issues arise, we can disable the new system and fall back to the old one.
+
+01:15:41.641 --> 01:15:55.746
+<v Emma Williams>The feature flag is per-user. We can gradually roll out to increasing percentages of users.
+
+01:15:55.746 --> 01:16:09.850
+<v Lisa Martinez>How do we ensure the old and new systems are in sync during the rollout? Users shouldn't miss notifications.
+
+01:16:09.850 --> 01:16:23.955
+<v Mike Johnson>During rollout, we'll run both systems in parallel. The feature flag determines which one the user sees.
+
+01:16:23.955 --> 01:16:38.059
+<v Mike Johnson>Once we're confident in the new system, we'll sunset the old one and remove the dual-write.
+
+01:16:38.059 --> 01:16:52.164
+<v Sarah Chen>Let's document the rollout plan. Raj, can you work with Mike to create a rollout checklist?
+
+01:16:52.164 --> 01:17:06.268
+<v Raj Patel>I'll create a launch checklist covering feature flags, monitoring, documentation, and support training.
+
+01:17:06.268 --> 01:17:20.373
+<v Sarah Chen>Now let's discuss the user research that product wants to conduct alongside the development.
+
+01:17:20.373 --> 01:17:34.477
+<v Raj Patel>We're planning usability testing of the notification center UI. We need prototype designs by the end of week 1.
+
+01:17:34.477 --> 01:17:48.582
+<v David Kim>I can have wireframes ready by Wednesday. We can iterate on visual design after usability feedback.
+
+01:17:48.582 --> 01:18:02.686
+<v Raj Patel>That timeline works. We have 5 user sessions scheduled for the following week.
+
+01:18:02.686 --> 01:18:16.791
+<v Lisa Martinez>Should QA participate in the usability sessions? It helps me understand user expectations.
+
+01:18:16.791 --> 01:18:30.895
+<v Raj Patel>Absolutely. I'll send you the session calendar. You can observe or ask follow-up questions.
+
+01:18:30.895 --> 01:18:45.000
+<v Sarah Chen>Let's also discuss cross-team dependencies. Are there any teams we need to coordinate with?
+
+01:18:45.000 --> 01:18:59.104
+<v Mike Johnson>The infrastructure team is migrating our Kafka cluster. We need to coordinate timing with them.
+
+01:18:59.104 --> 01:19:13.208
+<v Mike Johnson>The migration is scheduled for week 3. We should complete our Kafka integration work before that.
+
+01:19:13.208 --> 01:19:27.313
+<v Emma Williams>I'll check with the infra team on the exact migration window. We don't want to deploy during their maintenance.
+
+01:19:27.313 --> 01:19:41.417
+<v Raj Patel>The marketing team also needs advance notice for the notification feature launch. They're planning a blog post.
+
+01:19:41.417 --> 01:19:55.522
+<v Raj Patel>I'll coordinate with them on messaging and launch timing. They need at least 2 weeks notice.
+
+01:19:55.522 --> 01:20:09.626
+<v Sarah Chen>Let's plan for a launch announcement 3 weeks from now. That gives us buffer for unexpected issues.
+
+01:20:09.626 --> 01:20:23.731
+<v David Kim>Should we also prepare demo materials for the sales team? They might want to showcase the new feature.
+
+01:20:23.731 --> 01:20:37.835
+<v Raj Patel>Good idea. I'll create a feature overview video and demo script for sales enablement.
+
+01:20:37.835 --> 01:20:51.940
+<v Sarah Chen>Let's talk about the tech debt items we've been deferring. Should any be prioritized this sprint?
+
+01:20:51.940 --> 01:21:06.044
+<v Mike Johnson>We have the legacy event handler that needs refactoring. It's getting harder to add new event types.
+
+01:21:06.044 --> 01:21:20.149
+<v Mike Johnson>The notification work actually depends on cleaner event handling. We might need to tackle it first.
+
+01:21:20.149 --> 01:21:34.253
+<v Emma Williams>How much effort is the refactoring? We don't want it to delay the notification work.
+
+01:21:34.253 --> 01:21:48.358
+<v Mike Johnson>I estimate 2 days for a minimal refactor that unblocks notifications. Full cleanup can come later.
+
+01:21:48.358 --> 01:22:02.462
+<v Sarah Chen>Let's prioritize the minimal refactor at the start of the sprint. Mike, can you do that in the first 2 days?
+
+01:22:02.462 --> 01:22:16.567
+<v Mike Johnson>Yes, I'll start with the event handler refactor on day 1. Should be ready for review by end of day 2.
+
+01:22:16.567 --> 01:22:30.671
+<v Lisa Martinez>I have some test infrastructure tech debt too. Our test utilities are duplicated across several test files.
+
+01:22:30.671 --> 01:22:44.776
+<v Lisa Martinez>Consolidating them would make test maintenance easier. Probably a half-day effort.
+
+01:22:44.776 --> 01:22:58.880
+<v Sarah Chen>Let's include that in this sprint. It will pay dividends as we add more tests for the notification feature.
+
+01:22:58.880 --> 01:23:12.985
+<v David Kim>On the frontend side, we have some outdated dependencies. Nothing critical but should be updated soon.
+
+01:23:12.985 --> 01:23:27.089
+<v David Kim>I can do a dependency audit and update the non-breaking changes. Major version bumps would need more analysis.
+
+01:23:27.089 --> 01:23:41.194
+<v Sarah Chen>Let's defer major updates to next sprint. Focus on security patches and minor updates this sprint.
+
+01:23:41.194 --> 01:23:55.298
+<v Emma Williams>Speaking of security, we should review our dependencies for known vulnerabilities. npm audit, pip-audit.
+
+01:23:55.298 --> 01:24:09.402
+<v Lisa Martinez>I ran npm audit last week and found 3 moderate vulnerabilities. David, I'll send you the report.
+
+01:24:09.402 --> 01:24:23.507
+<v David Kim>Thanks. I'll address those as part of the dependency updates.
+
+01:24:23.507 --> 01:24:37.611
+<v Sarah Chen>Let's set a recurring security audit. Once per sprint, review and address any new vulnerabilities.
+
+01:24:37.611 --> 01:24:51.716
+<v Mike Johnson>I can automate the audit as part of our CI pipeline. It can fail the build if critical vulnerabilities are found.
+
+01:24:51.716 --> 01:25:05.820
+<v Sarah Chen>That would be great. Add it to your task list and we'll review in the next standup.
+
+01:25:05.820 --> 01:25:19.925
+<v Raj Patel>Before we wrap up, I want to mention some upcoming company events that affect our schedule.
+
+01:25:19.925 --> 01:25:34.029
+<v Raj Patel>We have the company all-hands next Friday afternoon. Plan to lose about 2 hours of work that day.
+
+01:25:34.029 --> 01:25:48.134
+<v Sarah Chen>Thanks for the reminder. Let's not schedule any demos or deadlines for that afternoon.
+
+01:25:48.134 --> 01:26:02.238
+<v Emma Williams>Also, the annual hackathon is in 3 weeks. Some of us might want to participate.
+
+01:26:02.238 --> 01:26:16.343
+<v David Kim>I'm interested in the hackathon. The notification work should be mostly complete by then.
+
+01:26:16.343 --> 01:26:30.447
+<v Sarah Chen>Let's make sure sprint commitments are met before hackathon. We can adjust capacity for that sprint.
+
+01:26:30.447 --> 01:26:44.552
+<v Mike Johnson>I have a conference presentation to prepare for. Can I allocate 4 hours this sprint for preparation?
+
+01:26:44.552 --> 01:26:58.656
+<v Sarah Chen>Of course. Professional development is important. Factor that into your availability.
+
+01:26:58.656 --> 01:27:12.761
+<v Lisa Martinez>I have some training scheduled for next Tuesday morning. I'll be unavailable until noon that day.
+
+01:27:12.761 --> 01:27:26.865
+<v Sarah Chen>Noted. Let's make sure to account for all these commitments when we finalize our sprint capacity.
+
+01:27:26.865 --> 01:27:40.970
+<v Sarah Chen>Now let's finally cover the remaining bug fixes and accessibility improvements before we wrap up this comprehensive session.
+
+01:27:40.970 --> 01:27:55.074
+<v Emma Williams>The CSV bug is straightforward. The UTF-8 BOM is being stripped by our CSV writer, which causes Excel to misinterpret unicode characters.
+
+01:27:55.074 --> 01:28:09.179
+<v Emma Williams>The fix is to add the BOM bytes at the start of the file. I can have a PR ready for review tomorrow morning.
+
+01:28:09.179 --> 01:28:23.283
+<v Lisa Martinez>I have a test case ready for this. I'll verify the fix with sample data containing Japanese, Arabic, and emoji characters.
+
+01:28:23.283 --> 01:28:37.388
+<v David Kim>For the accessibility improvements, I've audited the dashboard with screen readers and identified several issues. Missing ARIA labels, focus order problems, and color contrast issues.
+
+01:28:37.388 --> 01:28:51.492
+<v David Kim>The 5-point estimate covers fixing the critical WCAG 2.1 Level AA violations. We can address Level AAA in a future sprint.
+
+01:28:51.492 --> 01:29:05.597
+<v Lisa Martinez>I can help with accessibility testing. I have experience with screen readers and can verify the fixes meet WCAG guidelines.
+
+01:29:05.597 --> 01:29:19.701
+<v David Kim>That would be great. I'll pair with you on the testing once the fixes are in. We should do cross-browser verification too.
+
+01:29:19.701 --> 01:29:33.805
+<v Sarah Chen>Alright team, let's expand on the accessibility discussion since it's an important area.
+
+01:29:33.805 --> 01:29:47.910
+<v David Kim>There are four main areas of concern. First, keyboard navigation. Users should be able to navigate the entire UI without a mouse.
+
+01:29:47.910 --> 01:30:02.014
+<v David Kim>Second, screen reader compatibility. All interactive elements need proper labels and announcements.
+
+01:30:02.014 --> 01:30:16.119
+<v David Kim>Third, color contrast. Our current palette has some combinations that don't meet WCAG AA contrast ratios.
+
+01:30:16.119 --> 01:30:30.223
+<v David Kim>Fourth, focus indicators. When users tab through the interface, they need clear visual feedback on which element is focused.
+
+01:30:30.223 --> 01:30:44.328
+<v Lisa Martinez>For keyboard navigation, we should test with only the keyboard. No mouse at all during the test session.
+
+01:30:44.328 --> 01:30:58.432
+<v Lisa Martinez>I'll create a test matrix covering common user flows: login, navigate to dashboard, view notifications, take actions.
+
+01:30:58.432 --> 01:31:12.537
+<v David Kim>The notification center will be keyboard accessible. Tab order should follow logical reading order.
+
+01:31:12.537 --> 01:31:26.641
+<v David Kim>We'll also add keyboard shortcuts: escape to close modals, n to mark as read, delete to dismiss.
+
+01:31:26.641 --> 01:31:40.746
+<v Raj Patel>Those shortcuts should be discoverable. Can we show them in a help tooltip or documentation?
+
+01:31:40.746 --> 01:31:54.850
+<v David Kim>Good idea. I'll add a help icon that reveals available keyboard shortcuts when clicked or focused.
+
+01:31:54.850 --> 01:32:08.955
+<v Lisa Martinez>For screen reader testing, which screen readers should we target? There are significant differences between them.
+
+01:32:08.955 --> 01:32:23.059
+<v David Kim>NVDA on Windows and VoiceOver on Mac are our primary targets. They cover the majority of our user base.
+
+01:32:23.059 --> 01:32:37.164
+<v David Kim>JAWS is also popular in enterprise settings. We should test with that if we have time.
+
+01:32:37.164 --> 01:32:51.268
+<v Lisa Martinez>I have NVDA installed. I can handle Windows testing. David, can you do VoiceOver on Mac?
+
+01:32:51.268 --> 01:33:05.373
+<v David Kim>Yes, VoiceOver is built into macOS. I'll document any differences in behavior we find.
+
+01:33:05.373 --> 01:33:19.477
+<v Emma Williams>For the color contrast issues, do we need to involve our design team? They might have brand constraints.
+
+01:33:19.477 --> 01:33:33.582
+<v David Kim>I've already talked to the design team. They're supportive of accessibility improvements and willing to adjust colors.
+
+01:33:33.582 --> 01:33:47.686
+<v David Kim>We have three color pairs that don't meet AA contrast. The designer provided alternative colors that do.
+
+01:33:47.686 --> 01:34:01.791
+<v Raj Patel>Will the color changes affect our brand guidelines? Marketing is sensitive about color consistency.
+
+01:34:01.791 --> 01:34:15.895
+<v David Kim>The changes are subtle. We're darkening some text colors and lightening some backgrounds. Most users won't notice.
+
+01:34:15.895 --> 01:34:30.000
+<v Sarah Chen>Let's coordinate with marketing on the color updates. They should know about any visual changes.
+
+01:34:30.000 --> 01:34:44.104
+<v Lisa Martinez>What about focus indicators? Some of our custom components might not have visible focus states.
+
+01:34:44.104 --> 01:34:58.208
+<v David Kim>You're right. Our custom dropdown and modal components need focus styling. I'll add consistent focus rings.
+
+01:34:58.208 --> 01:35:12.313
+<v David Kim>We'll use a 2px solid outline in our primary color with a 2px offset. Visible on both light and dark backgrounds.
+
+01:35:12.313 --> 01:35:26.417
+<v Lisa Martinez>Don't forget to test focus visibility in high contrast mode. Windows has a high contrast theme.
+
+01:35:26.417 --> 01:35:40.522
+<v David Kim>Good catch. I'll test in Windows high contrast mode and ensure our focus indicators are still visible.
+
+01:35:40.522 --> 01:35:54.626
+<v Sarah Chen>This is a thorough accessibility discussion. Let's make sure these requirements are documented.
+
+01:35:54.626 --> 01:36:08.731
+<v David Kim>I'll update our accessibility requirements document with these specifics. It helps future development.
+
+01:36:08.731 --> 01:36:22.835
+<v Raj Patel>Should we consider doing an accessibility audit by an external specialist? They might find issues we miss.
+
+01:36:22.835 --> 01:36:36.940
+<v Sarah Chen>That's a good idea for a future sprint. Let's get the basics right first, then consider external audit.
+
+01:36:36.940 --> 01:36:51.044
+<v Mike Johnson>On a related note, we should ensure the notification API itself is accessible-friendly.
+
+01:36:51.044 --> 01:37:05.149
+<v Mike Johnson>That means including alt text for any images in notifications, and plain text alternatives for rich content.
+
+01:37:05.149 --> 01:37:19.253
+<v Emma Williams>The notification templates I mentioned earlier will require both HTML and plain text versions.
+
+01:37:19.253 --> 01:37:33.358
+<v Emma Williams>Screen readers and email clients that don't support HTML will get the plain text version.
+
+01:37:33.358 --> 01:37:47.462
+<v Lisa Martinez>I'll add accessibility-specific test cases to our notification testing matrix.
+
+01:37:47.462 --> 01:38:01.567
+<v Sarah Chen>Excellent. Now let's do our final sprint summary and action items review.
+
+01:38:01.567 --> 01:38:15.671
+<v Sarah Chen>We've committed to 45 story points this sprint covering notification service, user profiles, rate limiting, CSV fix, and accessibility improvements.
+
+01:38:15.671 --> 01:38:29.776
+<v Sarah Chen>The notification service is our primary focus with WebSocket infrastructure, routing rules, and preference management.
+
+01:38:29.776 --> 01:38:43.880
+<v Sarah Chen>We also have enabling work: event handler refactor, test infrastructure consolidation, and CI/CD investigation spike.
+
+01:38:43.880 --> 01:38:57.985
+<v Sarah Chen>Action items are Emma on WebSocket middleware, Mike on schema documentation, David on react-jsonschema-form spike, Lisa on test plan document, and Raj on stakeholder update.
+
+01:38:57.985 --> 01:39:12.089
+<v Mike Johnson>I also have the action to update the notification tech spec with connection lifecycle details before Wednesday's design session.
+
+01:39:12.089 --> 01:39:26.194
+<v Emma Williams>And I'm helping set up k6 cloud access for Lisa and configuring the test Redis infrastructure.
+
+01:39:26.194 --> 01:39:40.298
+<v Sarah Chen>Thanks for the additions. Before we close, any blockers or concerns that we haven't addressed?
+
+01:39:40.298 --> 01:39:54.402
+<v David Kim>I have a question about the design review schedule. With Mike at the conference, should we move the Wednesday architecture sync?
+
+01:39:54.402 --> 01:40:08.507
+<v Mike Johnson>I can join remotely from the conference. Let's keep it at the scheduled time. I'll have hotel WiFi for the video call.
+
+01:40:08.507 --> 01:40:22.611
+<v Sarah Chen>Perfect. We'll keep Wednesday's schedule. Any other questions? No? Great.
+
+01:40:22.611 --> 01:40:36.716
+<v Sarah Chen>Remember, our daily standups are at 9:30 AM. Please update your JIRA tickets by end of day so we have accurate burn-down tracking.
+
+01:40:36.716 --> 01:40:50.820
+<v Raj Patel>I want to thank everyone for a productive planning session. The stakeholders are excited about the notification service launch. Let's make it a great sprint.
+
+01:40:50.820 --> 01:41:04.925
+<v Emma Williams>Quick reminder that I'm out Friday afternoon for a dentist appointment. I'll be back online in the evening if anything urgent comes up.
+
+01:41:04.925 --> 01:41:19.029
+<v Lisa Martinez>And I'll be running the test automation workshop Thursday morning. Feel free to drop by if you want to learn about our new testing framework.
+
+01:41:19.029 --> 01:41:33.134
+<v David Kim>I might join for that. The new framework looks interesting from what I've seen in the documentation.
+
+01:41:33.134 --> 01:41:47.238
+<v Mike Johnson>Before we adjourn, I have a quick update on the tech debt initiative. The metrics show we've reduced our critical debt by 15% over the last quarter.
+
+01:41:47.238 --> 01:42:01.343
+<v Mike Johnson>We should continue allocating about 20% of our capacity to tech debt. It's paying off in reduced incident frequency.
+
+01:42:01.343 --> 01:42:15.447
+<v Sarah Chen>That's great progress on tech debt. Let's include that in our sprint retrospective discussion.
+
+01:42:15.447 --> 01:42:29.552
+<v Sarah Chen>Actually, before we wrap up completely, I want to make sure we haven't missed anything. Let's do a quick round of final thoughts.
+
+01:42:29.552 --> 01:42:43.656
+<v Mike Johnson>I'd like to discuss the database migration strategy for the notification service. We haven't talked about how we're handling the schema changes in production.
+
+01:42:43.656 --> 01:42:57.761
+<v Emma Williams>Good point. We need to ensure zero-downtime deployment. The new tables for notification preferences need to be backward compatible.
+
+01:42:57.761 --> 01:43:11.865
+<v Mike Johnson>I'm proposing we use a blue-green deployment approach with the database migrations. First, we add new columns without removing old ones.
+
+01:43:11.865 --> 01:43:25.970
+<v Mike Johnson>The application code writes to both old and new schemas during the transition period. Once all traffic is on the new version, we can clean up the old columns.
+
+01:43:25.970 --> 01:43:40.074
+<v Emma Williams>That's the expand-contract pattern. It adds complexity but ensures we can roll back safely if something goes wrong.
+
+01:43:40.074 --> 01:43:54.179
+<v David Kim>From the frontend perspective, we'll need to handle both old and new API response formats during the transition. Should I add feature detection logic?
+
+01:43:54.179 --> 01:44:08.283
+<v Mike Johnson>Yes, the API will return a version field in the response. The frontend should branch logic based on that version field until we complete the migration.
+
+01:44:08.283 --> 01:44:22.388
+<v Lisa Martinez>For testing the migration, we need to validate data integrity before and after. I'll create a data validation script that compares record counts and checksums.
+
+01:44:22.388 --> 01:44:36.492
+<v Raj Patel>How long will the dual-write period last? Stakeholders will want to know when the migration is fully complete.
+
+01:44:36.492 --> 01:44:50.597
+<v Mike Johnson>I estimate two weeks for the dual-write period. That gives us enough time to verify the new path is stable before removing the old code.
+
+01:44:50.597 --> 01:45:04.701
+<v Sarah Chen>Let's document this migration plan in our runbook. Mike, can you create a migration checklist that the on-call team can follow?
+
+01:45:04.701 --> 01:45:18.805
+<v Mike Johnson>I'll create the migration runbook with step-by-step instructions and rollback procedures. That's another action item for me this week.
+
+01:45:18.805 --> 01:45:32.910
+<v Emma Williams>Speaking of migrations, we should also talk about the Redis data model for the notification preferences cache. How are we structuring the keys?
+
+01:45:32.910 --> 01:45:47.014
+<v Mike Johnson>I'm thinking we use a hierarchical key structure. Something like user colon user ID colon notification colon preferences. This allows us to invalidate at different granularities.
+
+01:45:47.014 --> 01:46:01.119
+<v Emma Williams>Good approach. We should also set appropriate TTLs. I'd suggest 5 minutes for preferences since they don't change frequently.
+
+01:46:01.119 --> 01:46:15.223
+<v Mike Johnson>Agreed. We can use a longer TTL and invalidate explicitly on write. That balances cache hit ratio with data freshness.
+
+01:46:15.223 --> 01:46:29.328
+<v David Kim>What happens if Redis is unavailable? Do we fall back to the database or fail the request?
+
+01:46:29.328 --> 01:46:43.432
+<v Mike Johnson>We should have a circuit breaker pattern. If Redis is down, we fall back to database reads with degraded performance. Never fail the request due to cache unavailability.
+
+01:46:43.432 --> 01:46:57.537
+<v Lisa Martinez>I'll add test scenarios for Redis failure conditions. We need to verify the fallback behavior works correctly under different failure modes.
+
+01:46:57.537 --> 01:47:11.641
+<v Sarah Chen>Good defensive design thinking. Let's make sure all our external dependencies have proper fallback strategies documented.
+
+01:47:11.641 --> 01:47:25.746
+<v Raj Patel>On a different note, I wanted to mention that the marketing team is planning a blog post about the new notification features. They'll need screenshots and documentation.
+
+01:47:25.746 --> 01:47:39.850
+<v David Kim>I can prepare the UI screenshots once we have the preferences page implemented. Should I coordinate directly with marketing?
+
+01:47:39.850 --> 01:47:53.955
+<v Raj Patel>Yes, please loop them in once you have the design finalized. They'll want to see it before we go to production for their content planning.
+
+01:47:53.955 --> 01:48:08.059
+<v Sarah Chen>Good cross-team coordination. Let's make sure to include marketing in our release communications when we go live.
+
+01:48:08.059 --> 01:48:22.164
+<v Mike Johnson>I also want to discuss the monitoring and alerting strategy for the notification service. This is a critical new component.
+
+01:48:22.164 --> 01:48:36.268
+<v Mike Johnson>We need dashboards for WebSocket connection counts, message throughput, delivery latency, and error rates.
+
+01:48:36.268 --> 01:48:50.373
+<v Emma Williams>I'll set up the Grafana dashboards using our standard template. We should also create PagerDuty alerts for critical thresholds.
+
+01:48:50.373 --> 01:49:04.477
+<v Mike Johnson>Agree. Alert if connection error rate exceeds 5 percent or if message delivery latency goes above 500 milliseconds.
+
+01:49:04.477 --> 01:49:18.582
+<v Lisa Martinez>We should also have synthetic monitoring that simulates real user connections. This catches issues before users report them.
+
+01:49:18.582 --> 01:49:32.686
+<v Mike Johnson>Good idea. I'll add a synthetic test that establishes a WebSocket connection every minute and verifies message receipt. That's a canary for the overall system health.
+
+01:49:32.686 --> 01:49:46.791
+<v Sarah Chen>For on-call purposes, we need a runbook that covers common issues and their resolution steps. Mike, can you add that to your documentation tasks?
+
+01:49:46.791 --> 01:50:00.895
+<v Mike Johnson>Yes, I'll create an on-call playbook covering connection issues, message delivery failures, and Redis connectivity problems.
+
+01:50:00.895 --> 01:50:15.000
+<v David Kim>From the frontend, we should log client-side WebSocket errors to our error tracking system. This helps correlate server and client issues.
+
+01:50:15.000 --> 01:50:29.104
+<v Mike Johnson>Absolutely. Include the connection ID in client logs so we can trace issues across the full request path.
+
+01:50:29.104 --> 01:50:43.208
+<v Emma Williams>We should also implement correlation IDs for notifications. Each notification gets a unique ID that appears in logs at every stage of processing.
+
+01:50:43.208 --> 01:50:57.313
+<v Mike Johnson>I'll add that to the message schema. The correlation ID will be generated when the notification is created and preserved through delivery.
+
+01:50:57.313 --> 01:51:11.417
+<v Sarah Chen>Excellent observability planning. This will make debugging production issues much easier.
+
+01:51:11.417 --> 01:51:25.522
+<v Raj Patel>Quick update on the security review. The security team has completed their threat modeling for the notification service. They have a few recommendations.
+
+01:51:25.522 --> 01:51:39.626
+<v Raj Patel>First, they recommend rate limiting WebSocket connections per user to prevent denial of service from malicious clients.
+
+01:51:39.626 --> 01:51:53.731
+<v Mike Johnson>That's already in the design. We limit each user to 3 concurrent WebSocket connections. Additional connections are rejected with a descriptive error message.
+
+01:51:53.731 --> 01:52:07.835
+<v Raj Patel>Good. They also recommend validating message payloads against a schema to prevent injection attacks through notification content.
+
+01:52:07.835 --> 01:52:21.940
+<v Emma Williams>We're using strict JSON parsing with schema validation. Any malformed or unexpected fields are rejected at the gateway level.
+
+01:52:21.940 --> 01:52:36.044
+<v Raj Patel>Finally, they want audit logging for preference changes. We need to track who changed notification settings and when.
+
+01:52:36.044 --> 01:52:50.149
+<v Mike Johnson>I'll add that to the preferences API. Each preference change will be logged with timestamp, user ID, and the before/after values.
+
+01:52:50.149 --> 01:53:04.253
+<v Lisa Martinez>Should we add test cases for the security controls? I can include security-focused test scenarios in the test plan.
+
+01:53:04.253 --> 01:53:18.358
+<v Sarah Chen>Yes, please add security testing to the plan. Cover rate limiting validation, schema validation, and audit logging verification.
+
+01:53:18.358 --> 01:53:32.462
+<v David Kim>I want to bring up the localization requirements. The notification messages need to support multiple languages for our international users.
+
+01:53:32.462 --> 01:53:46.567
+<v Raj Patel>Right, we support English, Spanish, French, German, and Japanese. The notification templates should pull from our localization system.
+
+01:53:46.567 --> 01:54:00.671
+<v Mike Johnson>The message templates are stored with locale keys. When sending a notification, we resolve the template based on the user's language preference.
+
+01:54:00.671 --> 01:54:14.776
+<v Emma Williams>We need to handle fallback for missing translations. If a template doesn't exist in the user's language, fall back to English.
+
+01:54:14.776 --> 01:54:28.880
+<v David Kim>The frontend also needs to format dates and numbers according to locale. I'll use the standard internationalization libraries we already have.
+
+01:54:28.880 --> 01:54:42.985
+<v Lisa Martinez>I'll include multi-language testing in my test plan. We should verify all supported locales display correctly.
+
+01:54:42.985 --> 01:54:57.089
+<v Sarah Chen>Good coverage of internationalization. Let's make sure our test data includes non-ASCII characters to catch encoding issues early.
+
+01:54:57.089 --> 01:55:11.194
+<v Mike Johnson>Speaking of encoding, all our APIs use UTF-8 encoding throughout. We should document this explicitly in the API specification.
+
+01:55:11.194 --> 01:55:25.298
+<v Emma Williams>I'll add encoding requirements to the API documentation. We should also validate that the WebSocket frames are properly UTF-8 encoded.
+
+01:55:25.298 --> 01:55:39.402
+<v David Kim>On the topic of documentation, should we update the developer portal with the new notification API endpoints?
+
+01:55:39.402 --> 01:55:53.507
+<v Raj Patel>Yes, the developer portal needs updating before we launch to external developers. I'll coordinate with the documentation team on timing.
+
+01:55:53.507 --> 01:56:07.611
+<v Mike Johnson>I can provide the OpenAPI specification for the notification endpoints. The documentation team can generate the portal content from that.
+
+01:56:07.611 --> 01:56:21.716
+<v Sarah Chen>Perfect. Let's make sure documentation is included in our definition of done for the notification service.
+
+01:56:21.716 --> 01:56:35.820
+<v Lisa Martinez>I wanted to circle back to the performance requirements. What are our target latency numbers for notification delivery?
+
+01:56:35.820 --> 01:56:49.925
+<v Mike Johnson>Our target is P95 delivery latency under 200 milliseconds from the time a notification is triggered to when it appears on the client.
+
+01:56:49.925 --> 01:57:04.029
+<v Lisa Martinez>That's aggressive. Do we have baseline measurements from our current polling-based system for comparison?
+
+01:57:04.029 --> 01:57:18.134
+<v Mike Johnson>The current system has P95 latency of 30 seconds due to polling intervals. The WebSocket system should be dramatically faster.
+
+01:57:18.134 --> 01:57:32.238
+<v Emma Williams>We should set up performance benchmarking early in development. I'll add latency instrumentation to the notification service from day one.
+
+01:57:32.238 --> 01:57:46.343
+<v David Kim>From the client side, I'll add performance markers for when notifications are rendered. This gives us end-to-end latency measurements.
+
+01:57:46.343 --> 01:58:00.447
+<v Sarah Chen>Good performance focus. Let's make sure we have these benchmarks running in our CI pipeline to catch regressions.
+
+01:58:00.447 --> 01:58:14.552
+<v Mike Johnson>I want to discuss the message ordering guarantees. For notifications, do we need strict ordering or is best-effort acceptable?
+
+01:58:14.552 --> 01:58:28.656
+<v Raj Patel>From a product perspective, users expect notifications in roughly chronological order. But exact ordering isn't critical for most use cases.
+
+01:58:28.656 --> 01:58:42.761
+<v Mike Johnson>Then we'll go with per-user FIFO ordering but not global ordering across users. This simplifies the architecture significantly.
+
+01:58:42.761 --> 01:58:56.865
+<v Emma Williams>For per-user ordering, we can use a single Redis stream per user. Redis streams maintain insertion order naturally.
+
+01:58:56.865 --> 01:59:10.970
+<v Lisa Martinez>I'll add ordering validation to the test cases. Simulate sending multiple notifications to the same user and verify they arrive in order.
+
+01:59:10.970 --> 01:59:25.074
+<v David Kim>The UI should display notifications in the order received. I'll maintain a client-side queue that preserves server ordering.
+
+01:59:25.074 --> 01:59:39.179
+<v Sarah Chen>Good architectural decision. Per-user ordering with relaxed global ordering gives us the right trade-off between correctness and scalability.
+
+01:59:39.179 --> 01:59:53.283
+<v Raj Patel>What about notification deduplication? If the same notification is triggered multiple times, should we suppress duplicates?
+
+01:59:53.283 --> 02:00:07.388
+<v Mike Johnson>We should deduplicate based on a combination of notification type, target user, and content hash. A short window of 5 minutes should suffice.
+
+02:00:07.388 --> 02:00:21.492
+<v Emma Williams>I'll implement deduplication at the message producer level using Redis sets with TTL expiration for the dedup keys.
+
+02:00:21.492 --> 02:00:35.597
+<v Lisa Martinez>We need to test the edge case where a user legitimately receives two similar notifications close together. Make sure we don't accidentally suppress valid ones.
+
+02:00:35.597 --> 02:00:49.701
+<v Mike Johnson>Good point. The content hash should be specific enough to distinguish legitimately different notifications. I'll include the source event ID in the hash.
+
+02:00:49.701 --> 02:01:03.805
+<v Sarah Chen>Let's wrap up the extended discussion. We've covered migration strategy, caching, monitoring, security, localization, performance, and deduplication.
+
+02:01:03.805 --> 02:01:17.910
+<v Sarah Chen>These are all important considerations that will make our implementation more robust. Great collaborative thinking, team.
+
+02:01:17.910 --> 02:01:32.014
+<v Mike Johnson>To summarize my additional action items: migration runbook, on-call playbook, OpenAPI specification, and deduplication design document.
+
+02:01:32.014 --> 02:01:46.119
+<v Emma Williams>And I have Grafana dashboards, performance instrumentation, and the Redis caching layer design.
+
+02:01:46.119 --> 02:02:00.223
+<v David Kim>I'll handle UI screenshots for marketing, client-side performance markers, and the notification queue implementation.
+
+02:02:00.223 --> 02:02:14.328
+<v Lisa Martinez>My additions are security test scenarios, multi-language testing, ordering validation, and deduplication edge cases.
+
+02:02:14.328 --> 02:02:28.432
+<v Raj Patel>I'll coordinate with marketing on the blog post and update the developer portal timeline.
+
+02:02:28.432 --> 02:02:42.537
+<v Sarah Chen>Excellent summaries. Let's track these in JIRA and review progress during our daily standups.
+
+02:02:42.537 --> 02:02:56.641
+<v Sarah Chen>Now I think we've truly covered everything. Any final thoughts before we adjourn?
+
+02:02:56.641 --> 02:03:10.746
+<v David Kim>Just wanted to say this was a really productive planning session. The depth of discussion will help us avoid surprises during implementation.
+
+02:03:10.746 --> 02:03:24.850
+<v Emma Williams>Agreed. I appreciate everyone's thorough thinking about edge cases and failure scenarios. It makes the engineering work much clearer.
+
+02:03:24.850 --> 02:03:38.955
+<v Mike Johnson>Good collaboration across the team. Looking forward to building this notification service together.
+
+02:03:38.955 --> 02:03:53.059
+<v Lisa Martinez>From QA perspective, having the requirements and edge cases defined upfront helps me write better tests. Thanks for the detailed discussions.
+
+02:03:53.059 --> 02:04:07.164
+<v Raj Patel>I'll share notes from this session with stakeholders. They'll appreciate the thoroughness of our planning.
+
+02:04:07.164 --> 02:04:21.268
+<v Sarah Chen>Thank you all for your engagement and expertise. Let's execute on this plan and deliver a great Sprint 14.
+
+02:04:21.268 --> 02:04:35.373
+<v Sarah Chen>Remember, our standup is at 9:30 AM tomorrow. Come prepared with your day one progress and any blockers.
+
+02:04:35.373 --> 02:04:49.477
+<v Sarah Chen>Have a great rest of your day, everyone. Meeting is officially adjourned. Let's get to work!
+
+02:04:49.477 --> 02:05:03.582
+<v Mike Johnson>Thanks Sarah. See everyone at standup tomorrow.
+
+02:05:03.582 --> 02:05:17.686
+<v Emma Williams>Bye team! I'll be in the backend channel if anyone needs me this afternoon.
+
+02:05:17.686 --> 02:05:31.791
+<v David Kim>Catch you all later. Happy coding!
+
+02:05:31.791 --> 02:05:45.895
+<v Lisa Martinez>Good session everyone. Looking forward to this sprint!
+
+02:05:45.895 --> 02:06:00.000
+<v Raj Patel>Thanks team. Let's make it a great sprint. Talk to you all soon!

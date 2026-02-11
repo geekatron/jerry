@@ -1,0 +1,617 @@
+{
+  "_metadata": {
+    "description": "Ground truth extraction results for meeting-002.vtt golden dataset",
+    "source_file": "transcripts/golden/meeting-002.vtt",
+    "derived_by": "Claude (human-verified ground truth for TASK-132)",
+    "derived_at": "2026-01-29T14:30:00Z",
+    "purpose": "Golden test data for ts-extractor validation - precision/recall measurement",
+    "review_status": "GROUND_TRUTH",
+    "task_reference": "EN-015/TASK-132",
+    "notes": [
+      "Sprint 7 planning session with 6 speakers",
+      "VTT format with voice tags",
+      "Contains: 16 action items, 8 decisions, 5 questions, 12 topics",
+      "Comprehensive sprint planning scenario for stress testing"
+    ]
+  },
+  "version": "1.1",
+  "packet_id": "meeting-002",
+  "input_format": "single_file",
+  "chunk_metadata": null,
+  "extraction_stats": {
+    "speakers_identified": 6,
+    "action_items": 16,
+    "decisions": 8,
+    "questions": 5,
+    "topics": 12,
+    "confidence_summary": {
+      "average": 0.93,
+      "high_count": 29,
+      "medium_count": 0,
+      "low_count": 0,
+      "high_ratio": 1.0
+    }
+  },
+  "speakers": [
+    {
+      "id": "spk-001",
+      "name": "Alice",
+      "role": "PM",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 35
+    },
+    {
+      "id": "spk-002",
+      "name": "Bob",
+      "role": "Backend Developer",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 18
+    },
+    {
+      "id": "spk-003",
+      "name": "Charlie",
+      "role": "Frontend Developer",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 12
+    },
+    {
+      "id": "spk-004",
+      "name": "Diana",
+      "role": "QA",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 8
+    },
+    {
+      "id": "spk-005",
+      "name": "Eve",
+      "role": "DevOps",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 10
+    },
+    {
+      "id": "spk-006",
+      "name": "Frank",
+      "role": "Designer",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 7
+    }
+  ],
+  "action_items": [
+    {
+      "id": "act-001",
+      "text": "Review dashboard mockups in Figma and provide feedback",
+      "assignee": "Charlie",
+      "due_date": "end of day tomorrow",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-004",
+        "anchor": "#seg-004",
+        "timestamp_ms": 35000,
+        "text_snippet": "Charlie, can you review the mockups and provide feedback by end of day tomorrow?"
+      }
+    },
+    {
+      "id": "act-002",
+      "text": "Document Stripe integration requirements",
+      "assignee": "Bob",
+      "due_date": "Wednesday",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-010",
+        "anchor": "#seg-010",
+        "timestamp_ms": 160000,
+        "text_snippet": "I'll have the integration document ready by Wednesday."
+      }
+    },
+    {
+      "id": "act-003",
+      "text": "Send PCI compliance documentation to Diana for review",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-012",
+        "anchor": "#seg-012",
+        "timestamp_ms": 205000,
+        "text_snippet": "Diana, I'll send you the compliance documentation to review."
+      }
+    },
+    {
+      "id": "act-004",
+      "text": "Implement theme system for dark mode support",
+      "assignee": "Charlie",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-017",
+        "anchor": "#seg-017",
+        "timestamp_ms": 355000,
+        "text_snippet": "I'll implement the theme system first. It needs to be in place before the dashboard components."
+      }
+    },
+    {
+      "id": "act-005",
+      "text": "Create API specification document and share OpenAPI spec",
+      "assignee": "Bob",
+      "due_date": "tomorrow morning",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-024",
+        "anchor": "#seg-024",
+        "timestamp_ms": 580000,
+        "text_snippet": "I'll share the OpenAPI spec by tomorrow morning."
+      }
+    },
+    {
+      "id": "act-006",
+      "text": "Add Redis caching for dashboard summary endpoint",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-026",
+        "anchor": "#seg-026",
+        "timestamp_ms": 615000,
+        "text_snippet": "I'll add Redis caching for the summary endpoint."
+      }
+    },
+    {
+      "id": "act-007",
+      "text": "Provision Redis cluster",
+      "assignee": "Eve",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-027",
+        "anchor": "#seg-027",
+        "timestamp_ms": 645000,
+        "text_snippet": "I'll provision the Redis cluster."
+      }
+    },
+    {
+      "id": "act-008",
+      "text": "Share Stripe API keys with Eve through secrets management system",
+      "assignee": "Bob",
+      "due_date": "today",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-030",
+        "anchor": "#seg-030",
+        "timestamp_ms": 720000,
+        "text_snippet": "I'll send them through our secrets management system today."
+      }
+    },
+    {
+      "id": "act-009",
+      "text": "Set up test Stripe account and share access with Diana",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-032",
+        "anchor": "#seg-032",
+        "timestamp_ms": 765000,
+        "text_snippet": "I'll set up the test account and share access with Diana."
+      }
+    },
+    {
+      "id": "act-010",
+      "text": "Update design spec with animation priorities (P1 and P2)",
+      "assignee": "Frank",
+      "due_date": "tomorrow",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-039",
+        "anchor": "#seg-039",
+        "timestamp_ms": 960000,
+        "text_snippet": "please update the design spec with animation priorities by tomorrow"
+      }
+    },
+    {
+      "id": "act-011",
+      "text": "Document test card numbers and scenarios for Stripe testing",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-041",
+        "anchor": "#seg-041",
+        "timestamp_ms": 1005000,
+        "text_snippet": "I'll document the test card numbers and scenarios."
+      }
+    },
+    {
+      "id": "act-012",
+      "text": "Implement feature flag for payment rollout",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-044",
+        "anchor": "#seg-044",
+        "timestamp_ms": 1065000,
+        "text_snippet": "I'll implement a feature flag so we can disable payments without a deployment."
+      }
+    },
+    {
+      "id": "act-013",
+      "text": "Add feature flag to feature toggle system",
+      "assignee": "Eve",
+      "due_date": "today",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-045",
+        "anchor": "#seg-045",
+        "timestamp_ms": 1095000,
+        "text_snippet": "Yes, I'll add it today."
+      }
+    },
+    {
+      "id": "act-014",
+      "text": "Have Redis and feature flag system ready",
+      "assignee": "Eve",
+      "due_date": "Wednesday",
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-056",
+        "anchor": "#seg-056",
+        "timestamp_ms": 1440000,
+        "text_snippet": "I'll have Redis and the feature flag system ready by Wednesday."
+      }
+    },
+    {
+      "id": "act-015",
+      "text": "Coordinate with Bob on test data setup",
+      "assignee": "Diana",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-057",
+        "anchor": "#seg-057",
+        "timestamp_ms": 1455000,
+        "text_snippet": "I'll coordinate with Bob on the test data setup."
+      }
+    },
+    {
+      "id": "act-016",
+      "text": "Update sprint backlog and communicate timelines to stakeholders",
+      "assignee": "Alice",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-066",
+        "anchor": "#seg-066",
+        "timestamp_ms": 1680000,
+        "text_snippet": "I'll update the sprint backlog and communicate timelines to stakeholders."
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "text": "Use Stripe for payment processing",
+      "decided_by": "team consensus (Alice announced)",
+      "rationale": "Best API documentation and robust webhook system based on evaluation of Stripe, PayPal, and Adyen",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-009",
+        "anchor": "#seg-009",
+        "timestamp_ms": 160000,
+        "text_snippet": "We decided to use Stripe for payment processing."
+      }
+    },
+    {
+      "id": "dec-002",
+      "text": "Implement auto-detection with manual override for theme preference",
+      "decided_by": "team consensus (Frank recommended, Alice agreed)",
+      "rationale": "Auto-detection from system settings with user override option",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-016",
+        "anchor": "#seg-016",
+        "timestamp_ms": 340000,
+        "text_snippet": "We decided to implement auto-detection with manual override for theme preference."
+      }
+    },
+    {
+      "id": "dec-003",
+      "text": "Store theme preference in user profile for cross-device sync",
+      "decided_by": "team consensus (Bob recommended)",
+      "rationale": "Preferences sync across devices instead of local storage",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-019",
+        "anchor": "#seg-019",
+        "timestamp_ms": 415000,
+        "text_snippet": "We decided to store theme preference in user profile for cross-device sync."
+      }
+    },
+    {
+      "id": "dec-004",
+      "text": "Use JSON:API format for API consistency",
+      "decided_by": "team consensus",
+      "rationale": "Consistency across API endpoints",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-024",
+        "anchor": "#seg-024",
+        "timestamp_ms": 595000,
+        "text_snippet": "We agreed to use JSON:API format for consistency."
+      }
+    },
+    {
+      "id": "dec-005",
+      "text": "Use Redis for dashboard caching",
+      "decided_by": "team consensus (Eve confirmed)",
+      "rationale": "High traffic expected on dashboard once launched",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-027",
+        "anchor": "#seg-027",
+        "timestamp_ms": 660000,
+        "text_snippet": "We decided to use Redis for dashboard caching."
+      }
+    },
+    {
+      "id": "dec-006",
+      "text": "Payment stories take precedence over dashboard stories if time runs short",
+      "decided_by": "team consensus (Alice announced)",
+      "rationale": "Payment is the priority for this sprint",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-036",
+        "anchor": "#seg-036",
+        "timestamp_ms": 875000,
+        "text_snippet": "We decided that payment stories take precedence over dashboard stories if we run short on time."
+      }
+    },
+    {
+      "id": "dec-007",
+      "text": "Defer payment receipts to Sprint 8",
+      "decided_by": "team consensus (Bob suggested)",
+      "rationale": "Reduces sprint from 35 points to 32, within velocity of 30",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-051",
+        "anchor": "#seg-051",
+        "timestamp_ms": 1270000,
+        "text_snippet": "We agreed to defer payment receipts to Sprint 8."
+      }
+    },
+    {
+      "id": "dec-008",
+      "text": "Use feature flags for payment rollout",
+      "decided_by": "team consensus (Eve confirmed)",
+      "rationale": "Rollback strategy - can disable payments without deployment",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-045",
+        "anchor": "#seg-045",
+        "timestamp_ms": 1110000,
+        "text_snippet": "We decided to use feature flags for the payment rollout."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "que-001",
+      "text": "What about the infrastructure requirements? Does Stripe require any special setup on our end?",
+      "asked_by": "Eve",
+      "answered": true,
+      "answer_summary": "Need webhook endpoints and SSL certificates; Eve to create webhook infrastructure using Terraform",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-006",
+        "anchor": "#seg-006",
+        "timestamp_ms": 105000,
+        "text_snippet": "What about the infrastructure requirements? Does Stripe require any special setup on our end?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-007",
+        "anchor": "#seg-007",
+        "timestamp_ms": 120000,
+        "text_snippet": "We'll need to set up webhook endpoints and configure SSL certificates."
+      }
+    },
+    {
+      "id": "que-002",
+      "text": "What about PCI compliance? Do we need to handle card data directly?",
+      "asked_by": "Diana",
+      "answered": true,
+      "answer_summary": "No, use Stripe Elements - card data never touches servers",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-011",
+        "anchor": "#seg-011",
+        "timestamp_ms": 185000,
+        "text_snippet": "What about PCI compliance? Do we need to handle card data directly?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-012",
+        "anchor": "#seg-012",
+        "timestamp_ms": 205000,
+        "text_snippet": "No, we'll use Stripe Elements. Card data never touches our servers."
+      }
+    },
+    {
+      "id": "que-003",
+      "text": "Should we store theme preference in local storage or in the user profile on the backend?",
+      "asked_by": "Eve",
+      "answered": true,
+      "answer_summary": "Store in user profile for cross-device sync",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-018",
+        "anchor": "#seg-018",
+        "timestamp_ms": 375000,
+        "text_snippet": "Should we store the preference in local storage or in the user profile on the backend?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-019",
+        "anchor": "#seg-019",
+        "timestamp_ms": 395000,
+        "text_snippet": "Let's store it in the user profile. That way preferences sync across devices."
+      }
+    },
+    {
+      "id": "que-004",
+      "text": "What's the testing timeline for the dashboard? I need to coordinate with my team.",
+      "asked_by": "Diana",
+      "answered": true,
+      "answer_summary": "Dashboard ready Tuesday, testing Wednesday through Friday",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-020",
+        "anchor": "#seg-020",
+        "timestamp_ms": 430000,
+        "text_snippet": "What's the testing timeline for the dashboard?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-022",
+        "anchor": "#seg-022",
+        "timestamp_ms": 475000,
+        "text_snippet": "I can have the main dashboard ready by next Tuesday."
+      }
+    },
+    {
+      "id": "que-005",
+      "text": "What's our rollback strategy if the payment integration has issues in production?",
+      "asked_by": "Eve",
+      "answered": true,
+      "answer_summary": "Feature flag to disable payments without deployment",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-043",
+        "anchor": "#seg-043",
+        "timestamp_ms": 1045000,
+        "text_snippet": "What's our rollback strategy if the payment integration has issues in production?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-044",
+        "anchor": "#seg-044",
+        "timestamp_ms": 1065000,
+        "text_snippet": "I'll implement a feature flag so we can disable payments without a deployment."
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "top-001",
+      "title": "Sprint Objectives Introduction",
+      "start_ms": 0,
+      "end_ms": 35000,
+      "segment_ids": ["seg-001", "seg-002", "seg-003", "seg-004"],
+      "summary": "Alice introduces Sprint 7 focused on payment integration and dashboard redesign. Frank has completed mockups."
+    },
+    {
+      "id": "top-002",
+      "title": "Payment Gateway Selection",
+      "start_ms": 35000,
+      "end_ms": 165000,
+      "segment_ids": ["seg-005", "seg-006", "seg-007", "seg-008", "seg-009", "seg-010"],
+      "summary": "Bob recommends Stripe after evaluating Stripe, PayPal, Adyen. Decision made to use Stripe."
+    },
+    {
+      "id": "top-003",
+      "title": "PCI Compliance Discussion",
+      "start_ms": 165000,
+      "end_ms": 245000,
+      "segment_ids": ["seg-011", "seg-012", "seg-013"],
+      "summary": "Diana asks about PCI compliance. Decision: Use Stripe Elements so card data never touches servers."
+    },
+    {
+      "id": "top-004",
+      "title": "Dashboard Redesign Walkthrough",
+      "start_ms": 245000,
+      "end_ms": 340000,
+      "segment_ids": ["seg-014", "seg-015"],
+      "summary": "Frank presents new dashboard design: overview widgets, recent activity, quick actions, dark mode."
+    },
+    {
+      "id": "top-005",
+      "title": "Theme System and Preferences",
+      "start_ms": 340000,
+      "end_ms": 430000,
+      "segment_ids": ["seg-016", "seg-017", "seg-018", "seg-019"],
+      "summary": "Decisions: auto-detect with manual override for theme, store in user profile for cross-device sync."
+    },
+    {
+      "id": "top-006",
+      "title": "Dashboard Testing Timeline",
+      "start_ms": 430000,
+      "end_ms": 530000,
+      "segment_ids": ["seg-020", "seg-021", "seg-022", "seg-023"],
+      "summary": "Diana coordinates testing: dashboard ready Tuesday, testing Wednesday-Friday."
+    },
+    {
+      "id": "top-007",
+      "title": "API Dependencies and Caching",
+      "start_ms": 530000,
+      "end_ms": 700000,
+      "segment_ids": ["seg-024", "seg-025", "seg-026", "seg-027", "seg-028", "seg-029"],
+      "summary": "Three new API endpoints needed. Redis caching for summary, no caching for real-time activity feed."
+    },
+    {
+      "id": "top-008",
+      "title": "Staging Environment and Secrets",
+      "start_ms": 700000,
+      "end_ms": 785000,
+      "segment_ids": ["seg-030", "seg-031", "seg-032"],
+      "summary": "Staging ready with CI/CD. Bob to share Stripe keys, set up test account for Diana."
+    },
+    {
+      "id": "top-009",
+      "title": "User Stories Breakdown",
+      "start_ms": 785000,
+      "end_ms": 935000,
+      "segment_ids": ["seg-033", "seg-034", "seg-035", "seg-036"],
+      "summary": "15 stories identified: payment, dashboard, infrastructure. Payment takes priority if time short."
+    },
+    {
+      "id": "top-010",
+      "title": "Animation and Story Points",
+      "start_ms": 935000,
+      "end_ms": 1130000,
+      "segment_ids": ["seg-037", "seg-038", "seg-039", "seg-040", "seg-041", "seg-042", "seg-043", "seg-044", "seg-045", "seg-046", "seg-047", "seg-048", "seg-049", "seg-050", "seg-051"],
+      "summary": "Simple animations first. 35 points exceeds velocity of 30. Defer payment receipts to Sprint 8."
+    },
+    {
+      "id": "top-011",
+      "title": "Sprint Goals Confirmation",
+      "start_ms": 1330000,
+      "end_ms": 1425000,
+      "segment_ids": ["seg-052", "seg-053", "seg-054", "seg-055"],
+      "summary": "Three goals: Stripe integration, dashboard with theme support, infrastructure ready."
+    },
+    {
+      "id": "top-012",
+      "title": "Meeting Recap and Action Items",
+      "start_ms": 1545000,
+      "end_ms": 1760000,
+      "segment_ids": ["seg-056", "seg-057", "seg-058", "seg-059", "seg-060", "seg-061", "seg-062", "seg-063", "seg-064", "seg-065", "seg-066", "seg-067", "seg-068", "seg-069", "seg-070"],
+      "summary": "Alice recaps action items for Bob, Charlie, Eve, Diana, Frank, and herself."
+    }
+  ]
+}

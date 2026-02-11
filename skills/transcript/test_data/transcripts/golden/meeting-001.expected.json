@@ -1,0 +1,325 @@
+{
+  "_metadata": {
+    "description": "Ground truth extraction results for meeting-001.vtt golden dataset",
+    "source_file": "transcripts/golden/meeting-001.vtt",
+    "derived_by": "Claude (human-verified ground truth for TASK-132)",
+    "derived_at": "2026-01-29T14:00:00Z",
+    "purpose": "Golden test data for ts-extractor validation - precision/recall measurement",
+    "review_status": "GROUND_TRUTH",
+    "task_reference": "EN-015/TASK-132",
+    "notes": [
+      "Team standup meeting with 4 speakers",
+      "VTT format with voice tags",
+      "Contains: 8 action items, 3 decisions, 2 questions, 7 topics",
+      "All entities manually verified against transcript"
+    ]
+  },
+  "version": "1.1",
+  "packet_id": "meeting-001",
+  "input_format": "single_file",
+  "chunk_metadata": null,
+  "extraction_stats": {
+    "speakers_identified": 4,
+    "action_items": 8,
+    "decisions": 3,
+    "questions": 2,
+    "topics": 7,
+    "confidence_summary": {
+      "average": 0.95,
+      "high_count": 13,
+      "medium_count": 0,
+      "low_count": 0,
+      "high_ratio": 1.0
+    }
+  },
+  "speakers": [
+    {
+      "id": "spk-001",
+      "name": "Alice",
+      "role": "PM",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 16
+    },
+    {
+      "id": "spk-002",
+      "name": "Bob",
+      "role": "Backend Developer",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 10
+    },
+    {
+      "id": "spk-003",
+      "name": "Charlie",
+      "role": "Frontend Developer",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 7
+    },
+    {
+      "id": "spk-004",
+      "name": "Diana",
+      "role": "QA",
+      "detection_pattern": "vtt_voice_tag",
+      "confidence": 1.0,
+      "segment_count": 6
+    }
+  ],
+  "action_items": [
+    {
+      "id": "act-001",
+      "text": "Send API/Swagger documentation to Charlie",
+      "assignee": "Bob",
+      "due_date": "after this meeting",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-006",
+        "anchor": "#seg-006",
+        "timestamp_ms": 52000,
+        "text_snippet": "I'll send you the Swagger documentation after this meeting."
+      }
+    },
+    {
+      "id": "act-002",
+      "text": "Implement password reset flow",
+      "assignee": "Charlie",
+      "due_date": "today",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-005",
+        "anchor": "#seg-005",
+        "timestamp_ms": 32000,
+        "text_snippet": "Today I need to implement the password reset flow."
+      }
+    },
+    {
+      "id": "act-003",
+      "text": "Send calendar invite for Thursday test case review session",
+      "assignee": "Diana",
+      "due_date": "Thursday",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-013",
+        "anchor": "#seg-013",
+        "timestamp_ms": 135000,
+        "text_snippet": "Perfect. I'll send out the calendar invite."
+      }
+    },
+    {
+      "id": "act-004",
+      "text": "Prepare rollback scripts as safety measure for deployment",
+      "assignee": "Bob",
+      "due_date": "tomorrow",
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-019",
+        "anchor": "#seg-019",
+        "timestamp_ms": 240000,
+        "text_snippet": "I will prepare the rollback scripts as a safety measure. That's assigned to me for tomorrow."
+      }
+    },
+    {
+      "id": "act-005",
+      "text": "Create smoke test checklist for deployment",
+      "assignee": "Charlie",
+      "collaborator": "Diana",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-020",
+        "anchor": "#seg-020",
+        "timestamp_ms": 258000,
+        "text_snippet": "Charlie, can you work with Diana to create a smoke test checklist for the deployment?"
+      }
+    },
+    {
+      "id": "act-006",
+      "text": "Update release plan document with deployment decisions",
+      "assignee": "Alice",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-026",
+        "anchor": "#seg-026",
+        "timestamp_ms": 345000,
+        "text_snippet": "I'll update the release plan document with these decisions."
+      }
+    },
+    {
+      "id": "act-007",
+      "text": "Add deprecation warnings to legacy API response headers",
+      "assignee": "Bob",
+      "due_date": null,
+      "confidence": 0.95,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-028",
+        "anchor": "#seg-028",
+        "timestamp_ms": 375000,
+        "text_snippet": "I need to add deprecation warnings to the API response headers."
+      }
+    },
+    {
+      "id": "act-008",
+      "text": "Complete test case documentation",
+      "assignee": "Diana",
+      "due_date": null,
+      "confidence": 0.90,
+      "tier": 1,
+      "citation": {
+        "segment_id": "seg-034",
+        "anchor": "#seg-034",
+        "timestamp_ms": 458000,
+        "text_snippet": "Diana will send the test review invite for Thursday and complete the test case documentation."
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-001",
+      "text": "Target Monday the 15th for production deployment",
+      "decided_by": "team consensus (Alice announced)",
+      "rationale": "Based on backend ready by Friday, frontend by Wednesday, 3 days for regression testing",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-018",
+        "anchor": "#seg-018",
+        "timestamp_ms": 220000,
+        "text_snippet": "We decided to target Monday the 15th for production deployment."
+      }
+    },
+    {
+      "id": "dec-002",
+      "text": "Use phased rollout approach for new authentication feature",
+      "decided_by": "team consensus (Diana confirmed)",
+      "rationale": "Start with internal users, then expand to 10% of production traffic - aligns with testing strategy",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-025",
+        "anchor": "#seg-025",
+        "timestamp_ms": 332000,
+        "text_snippet": "We agreed to use the phased rollout approach."
+      }
+    },
+    {
+      "id": "dec-003",
+      "text": "Keep legacy login endpoint running in parallel for at least two weeks",
+      "decided_by": "Bob (proposal accepted)",
+      "rationale": "Provide transition period before deprecation",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-028",
+        "anchor": "#seg-028",
+        "timestamp_ms": 375000,
+        "text_snippet": "We should keep it running in parallel for at least two weeks."
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "que-001",
+      "text": "Can we schedule a test case review session this week?",
+      "asked_by": "Diana",
+      "answered": true,
+      "answer_summary": "Thursday afternoon",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-009",
+        "anchor": "#seg-009",
+        "timestamp_ms": 85000,
+        "text_snippet": "Can we schedule a test case review session this week?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-010",
+        "anchor": "#seg-010",
+        "timestamp_ms": 108000,
+        "text_snippet": "Let's go with Thursday afternoon for the review."
+      }
+    },
+    {
+      "id": "que-002",
+      "text": "What about the legacy login endpoint? Are we deprecating it immediately?",
+      "asked_by": "Charlie",
+      "answered": true,
+      "answer_summary": "Keep running in parallel for at least two weeks with deprecation warnings",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-027",
+        "anchor": "#seg-027",
+        "timestamp_ms": 360000,
+        "text_snippet": "what about the legacy login endpoint? Are we deprecating it immediately?"
+      },
+      "answer_citation": {
+        "segment_id": "seg-028",
+        "anchor": "#seg-028",
+        "timestamp_ms": 375000,
+        "text_snippet": "We should keep it running in parallel for at least two weeks. I need to add deprecation warnings to the API response headers."
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "top-001",
+      "title": "Daily Status Updates",
+      "start_ms": 0,
+      "end_ms": 72000,
+      "segment_ids": ["seg-001", "seg-002", "seg-003", "seg-004", "seg-005", "seg-006", "seg-007"],
+      "summary": "Bob completed API authentication module, will work on database migration. Charlie completed login form UI, waiting on API docs."
+    },
+    {
+      "id": "top-002",
+      "title": "Test Planning",
+      "start_ms": 72000,
+      "end_ms": 140000,
+      "segment_ids": ["seg-008", "seg-009", "seg-010", "seg-011", "seg-012", "seg-013"],
+      "summary": "Diana drafted test cases for authentication flow. Team scheduled Thursday afternoon review session."
+    },
+    {
+      "id": "top-003",
+      "title": "Deployment Timeline Discussion",
+      "start_ms": 140000,
+      "end_ms": 240000,
+      "segment_ids": ["seg-014", "seg-015", "seg-016", "seg-017", "seg-018"],
+      "summary": "Backend ready by Friday, frontend by Wednesday, 3 days regression testing. Decision: Target Monday the 15th for deployment."
+    },
+    {
+      "id": "top-004",
+      "title": "Deployment Safety Measures",
+      "start_ms": 240000,
+      "end_ms": 292000,
+      "segment_ids": ["seg-019", "seg-020", "seg-021", "seg-022"],
+      "summary": "Bob will prepare rollback scripts. Charlie and Diana will create smoke test checklist."
+    },
+    {
+      "id": "top-005",
+      "title": "Feature Flag and Rollout Strategy",
+      "start_ms": 292000,
+      "end_ms": 360000,
+      "segment_ids": ["seg-023", "seg-024", "seg-025", "seg-026"],
+      "summary": "Decision: Use phased rollout - internal users first, then 10% production traffic. Alice to update release plan."
+    },
+    {
+      "id": "top-006",
+      "title": "Legacy Endpoint Handling",
+      "start_ms": 360000,
+      "end_ms": 415000,
+      "segment_ids": ["seg-027", "seg-028", "seg-029", "seg-030"],
+      "summary": "Decision: Keep legacy endpoint parallel for 2 weeks. Bob to add deprecation warnings."
+    },
+    {
+      "id": "top-007",
+      "title": "Meeting Recap and Action Items",
+      "start_ms": 415000,
+      "end_ms": 505000,
+      "segment_ids": ["seg-031", "seg-032", "seg-033", "seg-034", "seg-035", "seg-036", "seg-037", "seg-038", "seg-039"],
+      "summary": "Alice summarized all action items: Bob (API docs, rollback scripts, deprecation warnings), Charlie (password reset, smoke test), Diana (Thursday invite, test docs), Alice (release plan update)."
+    }
+  ]
+}
