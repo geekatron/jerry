@@ -337,9 +337,9 @@ class TestValidationScriptIntegration:
         - Output contains "All validations passed!"
         - Each manifest shows [PASS] status
         """
-        # Act - run the validation script
+        # Act - run the validation script with uv
         result = subprocess.run(
-            ["python3", str(validation_script_path)],
+            ["uv", "run", "python", str(validation_script_path)],
             capture_output=True,
             text=True,
             cwd=str(project_root),
