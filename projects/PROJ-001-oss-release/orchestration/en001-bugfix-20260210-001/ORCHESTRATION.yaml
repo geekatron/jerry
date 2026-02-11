@@ -70,7 +70,7 @@ pipelines:
     status: "PHASE_1_IN_PROGRESS"
     current_phase: 1
     total_phases: 2
-    progress_percent: 8
+    progress_percent: 25
 
     phases:
       # =========================================================================
@@ -143,7 +143,8 @@ pipelines:
             name: "TASK-001 Revision"
             role: "reviser"
             agent_spec: "skills/problem-solving/agents/ps-architect.md"
-            status: "PENDING"
+            status: "COMPLETE"
+            completed_at: "2026-02-11T03:15:00Z"
             depends_on: ["ps-critic-task001"]
             artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md"
             inputs:
@@ -409,12 +410,12 @@ metrics:
     barriers_complete: 0
     barriers_total: 1
     barriers_percent: 0
-    agents_executed: 2
+    agents_executed: 3
     agents_total: 12  # 4 per task * 3 tasks
-    agents_percent: 17
-    artifacts_created: 2
+    agents_percent: 25
+    artifacts_created: 3
     artifacts_total: 13  # 12 agent artifacts + 1 barrier gate check
-    artifacts_percent: 15
+    artifacts_percent: 23
 
   quality:
     task001_critique_score: 0.943
@@ -426,7 +427,7 @@ metrics:
 
   timing:
     workflow_started: "2026-02-11T02:50:00Z"
-    last_activity: "2026-02-11T02:57:46Z"
+    last_activity: "2026-02-11T03:15:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -443,17 +444,14 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute ps-critic-task001: Adversarial critique of TASK-001 implementation"
-      agent: "ps-critic-task001"
+    - action: "Execute ps-validator-task001: Validate TASK-001 against acceptance criteria"
+      agent: "ps-validator-task001"
       phase: 1
       inputs:
-        - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001/ps-architect-task001-implementation.md"
+        - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md"
+        - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-001-add-keywords-to-marketplace-schema.md"
 
   subsequent:
-    - action: "Execute ps-architect-task001-rev: Revise based on critique"
-      depends_on: "ps-critic-task001 complete"
-    - action: "Execute ps-validator-task001: Validate TASK-001"
-      depends_on: "ps-architect-task001-rev complete"
     - action: "Check barrier-1 gate conditions"
       depends_on: "ps-validator-task001 reports VALIDATED"
     - action: "Fan-out: Execute TASK-002 and TASK-003 critique cycles in parallel"
@@ -464,8 +462,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Phase 1 in progress. ps-architect-task001 and ps-critic-task001 COMPLETE. Score: 0.943 PASS. Awaiting revision."
-  next_step: "Execute ps-architect-task001-rev (TASK-001 revision based on critique)"
+  current_state: "Phase 1 in progress. ps-architect-task001, ps-critic-task001 (0.943), ps-architect-task001-rev all COMPLETE. Accepted maxLength/maxItems, rejected minItems/pattern/$ref. Awaiting validation."
+  next_step: "Execute ps-validator-task001 (TASK-001 final validation against acceptance criteria)"
 
   files_to_read:
     - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION_PLAN.md"
