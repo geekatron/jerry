@@ -23,6 +23,7 @@ References:
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -315,6 +316,10 @@ class TestMarketplaceSchemaAdditionalProperties:
 # =============================================================================
 
 
+@pytest.mark.skipif(
+    shutil.which("uv") is None,
+    reason="uv not available in this environment",
+)
 class TestValidationScriptIntegration:
     """Contract: validate_plugin_manifests.py must validate all three manifests."""
 
@@ -367,7 +372,7 @@ class TestValidationScriptIntegration:
         ]
 
         for manifest in required_manifests:
-            assert f"[PASS]" in result.stdout and manifest in result.stdout, (
+            assert "[PASS]" in result.stdout and manifest in result.stdout, (
                 f"Expected [PASS] for {manifest} in output.\n"
                 f"stdout:\n{result.stdout}"
             )

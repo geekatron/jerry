@@ -35,8 +35,9 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 - Ensure CI pipeline passes green across all Python versions
 - Establish clean baseline for OSS release
 
-**Passing Checks:** Lint & Format, Type Check, Security Scan
-**Failing Checks:** Plugin Validation, CLI Integration Tests, Test pip (3.11-3.14), Test uv (3.11-3.14), Coverage Report (skipped)
+**Passing Checks:** Type Check, Security Scan, Plugin Validation, CLI Integration Tests, Test uv (3.11-3.14)
+**Failing Checks:** Lint & Format (BUG-006 regression), Test pip (3.11-3.14, BUG-006 regression), Coverage Report (skipped)
+**Recently Fixed:** Plugin Validation (EN-001), Lint & Format + Test pip (EN-003)
 
 ---
 
@@ -44,7 +45,7 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 ### Definition of Done
 
-- [ ] All 5 bugs resolved
+- [ ] All 6 bugs resolved (5 original + 1 regression)
 - [ ] CI pipeline passes green on PR #6
 - [ ] Tests pass across Python 3.11, 3.12, 3.13, 3.14
 - [ ] Tests pass with both pip and uv install methods
@@ -56,7 +57,7 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | Plugin manifest schema validation passes | [ ] |
+| AC-1 | Plugin manifest schema validation passes | [x] |
 | AC-2 | `jerry projects list` returns zero exit code | [x] |
 | AC-3 | `jerry projects list --json` returns valid JSON | [x] |
 | AC-4 | Bootstrap query dispatcher test passes | [x] |
@@ -71,8 +72,9 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 | ID | Title | Status | Priority | Children |
 |----|-------|--------|----------|----------|
-| [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | pending | high | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
+| [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | done | high | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
 | [EN-002](./EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | pending | medium | BUG-004, BUG-005 |
+| [EN-003](./EN-003-fix-validation-test-regressions/EN-003-fix-validation-test-regressions.md) | Fix Validation Test Regressions | done | high | BUG-006, TASK-001, TASK-002 |
 
 ### Completed Bugs (Feature-Level)
 
@@ -91,9 +93,11 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Bugs:      [########............] 40% (2/5 completed)             |
+| Bugs:      [############........] 67% (4/6 completed)             |
 +------------------------------------------------------------------+
-| Overall:   [########............] 40%                              |
+| Enablers:  [#############.......] 67% (2/3 completed)             |
++------------------------------------------------------------------+
+| Overall:   [############........] 67%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -101,11 +105,13 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 | Metric | Value |
 |--------|-------|
-| **Total Bugs** | 5 |
-| **Completed Bugs** | 2 (BUG-002, BUG-003) |
-| **In Progress Bugs** | 1 (BUG-001) |
+| **Total Bugs** | 6 (5 original + 1 regression) |
+| **Completed Bugs** | 4 (BUG-001, BUG-002, BUG-003, BUG-006) |
 | **Pending Bugs** | 2 (BUG-004, BUG-005) |
-| **Completion %** | 40% |
+| **Total Enablers** | 3 |
+| **Completed Enablers** | 2 (EN-001, EN-003) |
+| **Pending Enablers** | 1 (EN-002) |
+| **Completion %** | 67% |
 
 ---
 
@@ -129,3 +135,5 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | 2026-02-10 | Claude | in_progress | 5 bugs triaged from PR #6 CI failures |
 | 2026-02-10 | Claude | in_progress | BUG-002 and BUG-003 resolved (committing projects/ dir). BUG-001 root cause corrected (marketplace schema, not draft mismatch). BUG-004 and BUG-005 root causes confirmed. Progress: 40% (2/5 bugs completed). |
 | 2026-02-10 | Claude | in_progress | Restructured to use Enablers: EN-001 (Fix Plugin Validation) groups BUG-001 + tasks + decision; EN-002 (Fix Test Infrastructure) groups BUG-004 + BUG-005. Completed BUG-002/003 remain at Feature level. |
+| 2026-02-11 | Claude | in_progress | EN-001 completed (BUG-001, TASK-001/002/003 all DONE). AC-1 verified. Plugin Validation CI passes. |
+| 2026-02-11 | Claude | in_progress | EN-003 created for BUG-006 (validation test CI regressions from EN-001/TASK-002). Lint & Format and Test pip failures. TASK-001 (f-string fix) and TASK-002 (uv skipif) both completed. Progress: 67% (4/6 bugs, 2/3 enablers). |

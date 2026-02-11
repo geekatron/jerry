@@ -53,7 +53,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Fix CI Build Failures | in_progress | high | 40% |
+| FEAT-001 | Fix CI Build Failures | in_progress | high | 67% |
 
 ### Feature Links
 
@@ -70,9 +70,10 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
 | Features:  [....................] 0% (0/1 completed)              |
-| Bugs:      [########............] 40% (2/5 completed)            |
+| Bugs:      [#############.....] 67% (4/6 completed)              |
+| Enablers:  [#############.....] 67% (2/3 completed)              |
 +------------------------------------------------------------------+
-| Overall:   [####................] 20%                              |
+| Overall:   [#############.....] 67%                               |
 +------------------------------------------------------------------+
 ```
 
@@ -82,12 +83,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |--------|-------|
 | **Total Features** | 1 |
 | **Completed Features** | 0 |
-| **In Progress Features** | 1 (FEAT-001 at 40%) |
+| **In Progress Features** | 1 (FEAT-001 at 67%) |
 | **Pending Features** | 0 |
 | **Feature Completion %** | 0% |
-| **Total Bugs** | 5 |
-| **Completed Bugs** | 2 (BUG-002, BUG-003) |
-| **Bug Completion %** | 40% |
+| **Total Bugs** | 6 (5 original + 1 regression) |
+| **Completed Bugs** | 4 (BUG-001, BUG-002, BUG-003, BUG-006) |
+| **Bug Completion %** | 67% |
 
 ---
 
@@ -106,3 +107,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-10 | Claude | pending | Epic created |
 | 2026-02-10 | Claude | in_progress | FEAT-001 created with 5 bugs from PR #6 CI failures |
 | 2026-02-10 | Claude | in_progress | Progress sync: 2/5 bugs completed (BUG-002, BUG-003). FEAT-001 restructured with EN-001, EN-002 Enablers. |
+| 2026-02-11 | Claude | in_progress | EN-001 completed (BUG-001 + 3 tasks). EN-003 created and completed (BUG-006 regression from EN-001/TASK-002 + 2 tasks). Progress: 67% (4/6 bugs, 2/3 enablers). |
