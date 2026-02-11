@@ -1,7 +1,7 @@
 # TASK-002: Add tests for plugin manifest validation
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** IN_PROGRESS
 > **Priority:** HIGH
 > **Created:** 2026-02-10
 > **Parent:** BUG-001

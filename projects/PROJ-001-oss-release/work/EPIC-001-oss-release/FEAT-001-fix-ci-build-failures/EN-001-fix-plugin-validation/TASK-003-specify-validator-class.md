@@ -1,7 +1,7 @@
 # TASK-003: Specify Draft202012Validator in validation script (best practice)
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** IN_PROGRESS
 > **Priority:** MEDIUM
 > **Created:** 2026-02-10
 > **Parent:** BUG-001
