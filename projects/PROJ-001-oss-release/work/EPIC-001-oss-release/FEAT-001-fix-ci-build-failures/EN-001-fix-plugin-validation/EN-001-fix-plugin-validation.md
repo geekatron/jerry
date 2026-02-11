@@ -1,7 +1,7 @@
 # EN-001: Fix Plugin Validation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
