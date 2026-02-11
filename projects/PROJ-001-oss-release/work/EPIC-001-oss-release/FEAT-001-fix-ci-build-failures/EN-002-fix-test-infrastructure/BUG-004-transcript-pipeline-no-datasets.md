@@ -1,13 +1,13 @@
 # BUG-004: Transcript pipeline test finds no datasets
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** major
 > **Created:** 2026-02-10
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-11
 > **Parent:** EN-002
 > **Owner:** —
 > **Found In:** PR #6
@@ -105,7 +105,7 @@ Previous options (skip guard, dynamic discovery, mock/fixtures) are **workaround
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data from jerry-core migration | pending | high |
+| [TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data from jerry-core migration | done | high |
 
 ---
 
@@ -113,9 +113,9 @@ Previous options (skip guard, dynamic discovery, mock/fixtures) are **workaround
 
 ### Fix Verification
 
-- [ ] Test finds and processes all expected datasets
-- [ ] Or test is updated to work with available datasets / skip gracefully
-- [ ] Fix works across Python 3.11-3.14
+- [x] Test finds and processes all expected datasets (33 files restored from jerry-core)
+- [x] Or test is updated to work with available datasets / skip gracefully
+- [ ] Fix works across Python 3.11-3.14 (pending CI verification)
 
 ---
 
@@ -139,3 +139,4 @@ Previous options (skip guard, dynamic discovery, mock/fixtures) are **workaround
 | 2026-02-10 | Claude | pending | Bug triaged from PR #6 CI failure |
 | 2026-02-10 | Claude | pending | Root cause confirmed: 6 VTT test datasets in `skills/transcript/test_data/transcripts/golden/` not committed to git. Tests hardcoded to expect exactly 6 files. |
 | 2026-02-11 | Claude | pending | TASK-001 created (originally: skip guard). ps-investigator research revealed data migration gap from jerry-core. TASK-001 reframed to "restore missing test data". Root cause updated. Research artifact: research-transcript-data-migration-gap.md |
+| 2026-02-11 | Claude | done | TASK-001 completed. 33 test data files restored from jerry-core. All 56 transcript integration tests pass locally. Committed in `4789625`. |

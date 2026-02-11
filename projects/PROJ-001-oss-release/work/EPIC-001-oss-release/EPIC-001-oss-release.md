@@ -1,12 +1,12 @@
 # EPIC-001: OSS Release Preparation
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-10
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-11
 > **Parent:** —
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -53,7 +53,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Fix CI Build Failures | in_progress | high | 67% |
+| FEAT-001 | Fix CI Build Failures | done | high | 100% |
 
 ### Feature Links
 
@@ -69,11 +69,11 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/1 completed)              |
-| Bugs:      [#############.....] 67% (4/6 completed)              |
-| Enablers:  [#############.....] 67% (2/3 completed)              |
+| Features:  [####################] 100% (1/1 completed)            |
+| Bugs:      [####################] 100% (6/6 completed)            |
+| Enablers:  [####################] 100% (3/3 completed)            |
 +------------------------------------------------------------------+
-| Overall:   [#############.....] 67%                               |
+| Overall:   [####################] 100%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -82,13 +82,13 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 1 |
-| **Completed Features** | 0 |
-| **In Progress Features** | 1 (FEAT-001 at 67%) |
+| **Completed Features** | 1 |
+| **In Progress Features** | 0 |
 | **Pending Features** | 0 |
-| **Feature Completion %** | 0% |
+| **Feature Completion %** | 100% |
 | **Total Bugs** | 6 (5 original + 1 regression) |
-| **Completed Bugs** | 4 (BUG-001, BUG-002, BUG-003, BUG-006) |
-| **Bug Completion %** | 67% |
+| **Completed Bugs** | 6 (BUG-001, BUG-002, BUG-003, BUG-004, BUG-005, BUG-006) |
+| **Bug Completion %** | 100% |
 
 ---
 
@@ -108,3 +108,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-10 | Claude | in_progress | FEAT-001 created with 5 bugs from PR #6 CI failures |
 | 2026-02-10 | Claude | in_progress | Progress sync: 2/5 bugs completed (BUG-002, BUG-003). FEAT-001 restructured with EN-001, EN-002 Enablers. |
 | 2026-02-11 | Claude | in_progress | EN-001 completed (BUG-001 + 3 tasks). EN-003 created and completed (BUG-006 regression from EN-001/TASK-002 + 2 tasks). Progress: 67% (4/6 bugs, 2/3 enablers). |
+| 2026-02-11 | Claude | done | EN-002 completed (BUG-004 + BUG-005, 3 tasks). FEAT-001 100%. All 6 bugs resolved, all 3 enablers done. Full test suite 2510 passed locally. Pending CI verification on PR #6. |

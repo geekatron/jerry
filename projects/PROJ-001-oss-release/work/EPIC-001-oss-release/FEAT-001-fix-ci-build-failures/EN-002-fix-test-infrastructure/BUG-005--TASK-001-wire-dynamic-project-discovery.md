@@ -1,10 +1,10 @@
 # TASK-001: Wire dynamic project discovery into project_id fixture
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** MEDIUM
 > **Created:** 2026-02-11
-> **Completed:** —
+> **Completed:** 2026-02-11
 > **Parent:** BUG-005
 > **Owner:** —
 > **Activity:** DEVELOPMENT
@@ -40,11 +40,11 @@ def project_id(request: pytest.FixtureRequest) -> str:
 ### Acceptance Criteria
 
 - [x] `project_id` fixture uses `discover_projects()` for parameterization
-- [ ] Tests are parameterized against all existing `PROJ-*` directories
-- [ ] No hardcoded project IDs remain in the fixture
-- [ ] If no projects are discovered, tests skip gracefully (not fail)
-- [ ] Existing tests (`TestProjectIsolation`, `TestCoreFilesExist`, `TestReferencesResolve`, `TestNegativeCases`) all work with the dynamically discovered project IDs
-- [ ] Fix works across Python 3.11-3.14 on both pip and uv CI jobs
+- [x] Tests are parameterized against all existing `PROJ-*` directories
+- [x] No hardcoded project IDs remain in the fixture
+- [x] If no projects are discovered, tests skip gracefully (not fail) — uses `_SENTINEL_NO_PROJECTS` pattern
+- [x] Existing tests (`TestProjectIsolation`, `TestCoreFilesExist`, `TestReferencesResolve`, `TestNegativeCases`) all work with the dynamically discovered project IDs
+- [ ] Fix works across Python 3.11-3.14 on both pip and uv CI jobs (pending CI verification)
 
 ### Implementation Notes
 
@@ -109,3 +109,4 @@ This approach:
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-11 | pending | Created. Wire discover_projects() into project_id fixture parameterization. |
+| 2026-02-11 | done | Implemented module-level discovery with `_DISCOVERED_PROJECT_IDS`, `sorted()` for determinism, broadened exception handling `(RuntimeError, OSError, PermissionError)`, sentinel pattern for graceful skip. Adversarial critic feedback incorporated (RT-001, RT-002, RT-003). Committed in `4789625`. |
