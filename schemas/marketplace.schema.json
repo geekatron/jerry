@@ -90,6 +90,15 @@
               }
             },
             "additionalProperties": false
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "uniqueItems": true,
+            "description": "Keywords for plugin discovery and categorization."
           }
         },
         "additionalProperties": false
