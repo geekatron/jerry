@@ -1,7 +1,7 @@
 # TASK-001: Add `keywords` property to marketplace plugin item schema
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** IN_PROGRESS
 > **Priority:** HIGH
 > **Created:** 2026-02-10
 > **Parent:** BUG-001
