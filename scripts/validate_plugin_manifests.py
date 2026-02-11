@@ -87,7 +87,7 @@ def validate_plugin_json(project_root: Path) -> ValidationResult:
                 error="Failed to load manifest",
             )
 
-        jsonschema.validate(manifest, schema)
+        jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
         return ValidationResult(file_path=str(manifest_path), passed=True)
 
     except jsonschema.ValidationError as e:
@@ -134,7 +134,7 @@ def validate_marketplace_json(project_root: Path) -> ValidationResult:
                 error="Failed to load manifest",
             )
 
-        jsonschema.validate(manifest, schema)
+        jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
         return ValidationResult(file_path=str(manifest_path), passed=True)
 
     except jsonschema.ValidationError as e:
@@ -181,7 +181,7 @@ def validate_hooks_json(project_root: Path) -> ValidationResult:
                 error="Failed to load manifest",
             )
 
-        jsonschema.validate(manifest, schema)
+        jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
         return ValidationResult(file_path=str(manifest_path), passed=True)
 
     except jsonschema.ValidationError as e:
