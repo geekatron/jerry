@@ -1,0 +1,299 @@
+WEBVTT - Sprint Planning Session (Golden Dataset)
+
+NOTE
+Golden dataset for ts-parser validation
+Speakers: Alice (PM), Bob (Backend), Charlie (Frontend), Diana (QA), Eve (DevOps), Frank (Designer)
+Entities: 12 action items, 7 decisions, 5 questions
+Duration: ~45 minutes
+
+00:00:00.000 --> 00:00:08.000
+<v Alice>Welcome everyone to our Sprint 7 planning session. We have a lot to cover today.
+
+00:00:08.000 --> 00:00:22.000
+<v Alice>Let me share the objectives. This sprint we're focusing on the payment integration and user dashboard redesign.
+
+00:00:22.000 --> 00:00:35.000
+<v Frank>I've completed the dashboard mockups. They're ready for review in Figma.
+
+00:00:35.000 --> 00:00:50.000
+<v Alice>Perfect timing Frank. Charlie, can you review the mockups and provide feedback by end of day tomorrow?
+
+00:00:50.000 --> 00:00:58.000
+<v Charlie>Will do. I'll add my comments directly in Figma.
+
+00:00:58.000 --> 00:01:15.000
+<v Alice>Bob, what's the status on the payment gateway research? Have you made a recommendation?
+
+00:01:15.000 --> 00:01:45.000
+<v Bob>Yes, I've evaluated Stripe, PayPal, and Adyen. Based on our requirements, I recommend Stripe. They have the best API documentation and their webhook system is robust.
+
+00:01:45.000 --> 00:02:00.000
+<v Eve>What about the infrastructure requirements? Does Stripe require any special setup on our end?
+
+00:02:00.000 --> 00:02:25.000
+<v Bob>Good question. We'll need to set up webhook endpoints and configure SSL certificates. I'll need Eve's help with the infrastructure setup.
+
+00:02:25.000 --> 00:02:40.000
+<v Eve>I can handle that. I'll create the webhook infrastructure using Terraform. Let's go with Stripe.
+
+00:02:40.000 --> 00:02:55.000
+<v Alice>We decided to use Stripe for payment processing. Bob, please document the integration requirements.
+
+00:02:55.000 --> 00:03:05.000
+<v Bob>I'll have the integration document ready by Wednesday.
+
+00:03:05.000 --> 00:03:25.000
+<v Diana>What about PCI compliance? Do we need to handle card data directly?
+
+00:03:25.000 --> 00:03:50.000
+<v Bob>No, we'll use Stripe Elements. Card data never touches our servers. Diana, I'll send you the compliance documentation to review.
+
+00:03:50.000 --> 00:04:05.000
+<v Diana>That simplifies testing significantly. I'll prepare the test plan once I review the docs.
+
+00:04:05.000 --> 00:04:25.000
+<v Alice>Let's move to the dashboard redesign. Frank, walk us through the key changes.
+
+00:04:25.000 --> 00:05:00.000
+<v Frank>The new design has three main sections: overview widgets, recent activity, and quick actions. I've also added dark mode support based on user feedback.
+
+00:05:00.000 --> 00:05:20.000
+<v Charlie>The dark mode is a nice addition. How do we want to handle the theme preference? Should we auto-detect from system settings?
+
+00:05:20.000 --> 00:05:40.000
+<v Frank>I recommend auto-detection with a manual override. Let's go with that approach.
+
+00:05:40.000 --> 00:05:55.000
+<v Alice>Agreed. We decided to implement auto-detection with manual override for theme preference.
+
+00:05:55.000 --> 00:06:15.000
+<v Charlie>I'll implement the theme system first. It needs to be in place before the dashboard components.
+
+00:06:15.000 --> 00:06:35.000
+<v Eve>Should we store the preference in local storage or in the user profile on the backend?
+
+00:06:35.000 --> 00:06:55.000
+<v Bob>Let's store it in the user profile. That way preferences sync across devices.
+
+00:06:55.000 --> 00:07:10.000
+<v Alice>We decided to store theme preference in user profile for cross-device sync.
+
+00:07:10.000 --> 00:07:30.000
+<v Diana>What's the testing timeline for the dashboard? I need to coordinate with my team.
+
+00:07:30.000 --> 00:07:55.000
+<v Alice>Good question. Charlie, when do you expect the dashboard components to be ready for testing?
+
+00:07:55.000 --> 00:08:15.000
+<v Charlie>If I start the theme system today, I can have the main dashboard ready by next Tuesday.
+
+00:08:15.000 --> 00:08:30.000
+<v Diana>That gives me Wednesday through Friday for testing. I'll reserve those days.
+
+00:08:30.000 --> 00:08:50.000
+<v Alice>Let's discuss dependencies. Bob, does the dashboard need any new API endpoints?
+
+00:08:50.000 --> 00:09:20.000
+<v Bob>Yes, we need three new endpoints: dashboard summary, recent activity, and quick actions data. I'll create the API specification document.
+
+00:09:20.000 --> 00:09:40.000
+<v Charlie>Can we align on the response formats? I want to make sure the frontend models match.
+
+00:09:40.000 --> 00:09:55.000
+<v Bob>Absolutely. I'll share the OpenAPI spec by tomorrow morning. We agreed to use JSON:API format for consistency.
+
+00:09:55.000 --> 00:10:15.000
+<v Eve>What about caching? The dashboard will have high traffic once we launch.
+
+00:10:15.000 --> 00:10:45.000
+<v Bob>Good point. I'll add Redis caching for the summary endpoint. The activity feed will need real-time updates, so no caching there.
+
+00:10:45.000 --> 00:11:00.000
+<v Eve>I'll provision the Redis cluster. We decided to use Redis for dashboard caching.
+
+00:11:00.000 --> 00:11:20.000
+<v Alice>Speaking of infrastructure, Eve, what's the status on the staging environment?
+
+00:11:20.000 --> 00:11:45.000
+<v Eve>The staging environment is ready. I've set up the CI/CD pipeline for automatic deployments. I need to add the payment gateway secrets though.
+
+00:11:45.000 --> 00:12:00.000
+<v Alice>Perfect. Bob, please share the Stripe API keys with Eve securely.
+
+00:12:00.000 --> 00:12:10.000
+<v Bob>I'll send them through our secrets management system today.
+
+00:12:10.000 --> 00:12:30.000
+<v Diana>Can we get a test Stripe account for QA? I don't want to use production credentials for testing.
+
+00:12:30.000 --> 00:12:45.000
+<v Bob>Stripe provides test mode with test credentials. I'll set up the test account and share access with Diana.
+
+00:12:45.000 --> 00:13:05.000
+<v Alice>Let's break down the user stories. I've identified 15 stories for this sprint.
+
+00:13:05.000 --> 00:13:30.000
+<v Alice>Payment stories: integrate Stripe checkout, handle payment webhooks, display payment history, send payment receipts.
+
+00:13:30.000 --> 00:13:55.000
+<v Alice>Dashboard stories: overview widgets, activity feed, quick actions, theme switcher, responsive layout.
+
+00:13:55.000 --> 00:14:15.000
+<v Alice>Infrastructure stories: Redis setup, staging secrets, monitoring dashboard.
+
+00:14:15.000 --> 00:14:35.000
+<v Bob>That's a lot for one sprint. Should we prioritize the payment flow first?
+
+00:14:35.000 --> 00:14:55.000
+<v Alice>Yes, payment is the priority. We decided that payment stories take precedence over dashboard stories if we run short on time.
+
+00:14:55.000 --> 00:15:15.000
+<v Frank>The dashboard mockups include animations. How complex should the implementation be?
+
+00:15:15.000 --> 00:15:40.000
+<v Charlie>I'd prefer to keep animations simple for the first iteration. We can enhance them later.
+
+00:15:40.000 --> 00:15:55.000
+<v Frank>That works. I'll note which animations are nice-to-have versus must-have.
+
+00:15:55.000 --> 00:16:15.000
+<v Alice>Frank, please update the design spec with animation priorities by tomorrow.
+
+00:16:15.000 --> 00:16:25.000
+<v Frank>Will do. I'll mark them as P1 and P2 in the Figma file.
+
+00:16:25.000 --> 00:16:45.000
+<v Diana>For payment testing, do we need to test actual transactions? What about refunds?
+
+00:16:45.000 --> 00:17:10.000
+<v Bob>Stripe's test mode simulates real transactions. I'll document the test card numbers and scenarios.
+
+00:17:10.000 --> 00:17:25.000
+<v Diana>Great. I'll include refund testing in my test plan.
+
+00:17:25.000 --> 00:17:45.000
+<v Eve>What's our rollback strategy if the payment integration has issues in production?
+
+00:17:45.000 --> 00:18:15.000
+<v Bob>Good question. I'll implement a feature flag so we can disable payments without a deployment. Eve, can you add the flag to our feature toggle system?
+
+00:18:15.000 --> 00:18:30.000
+<v Eve>Yes, I'll add it today. We decided to use feature flags for the payment rollout.
+
+00:18:30.000 --> 00:18:50.000
+<v Alice>Excellent thinking on the rollback plan. Let's assign story points.
+
+00:18:50.000 --> 00:19:20.000
+<v Alice>Stripe checkout integration, any estimates Bob?
+
+00:19:20.000 --> 00:19:40.000
+<v Bob>I estimate 5 points. The API is well documented but there are edge cases to handle.
+
+00:19:40.000 --> 00:19:55.000
+<v Charlie>Theme system is probably 3 points. The hard part is the transition animations.
+
+00:19:55.000 --> 00:20:10.000
+<v Eve>Redis setup is 2 points if we use our existing Terraform modules.
+
+00:20:10.000 --> 00:20:30.000
+<v Diana>Test planning for payments will need 3 points given the complexity.
+
+00:20:30.000 --> 00:20:50.000
+<v Alice>Let's tally up. We're at 35 points total, which is above our velocity of 30.
+
+00:20:50.000 --> 00:21:10.000
+<v Bob>We could move the payment receipts to next sprint. That's 3 points.
+
+00:21:10.000 --> 00:21:30.000
+<v Alice>Good suggestion. We agreed to defer payment receipts to Sprint 8.
+
+00:21:30.000 --> 00:21:50.000
+<v Frank>I can help Charlie with the dashboard CSS if needed. I've done frontend work before.
+
+00:21:50.000 --> 00:22:05.000
+<v Charlie>That would be great. Let's pair on the responsive layout.
+
+00:22:05.000 --> 00:22:25.000
+<v Alice>Before we close, let's confirm the sprint goals.
+
+00:22:25.000 --> 00:22:45.000
+<v Alice>Goal one: Complete Stripe payment integration with checkout and webhooks.
+
+00:22:45.000 --> 00:23:05.000
+<v Alice>Goal two: Deliver dashboard redesign with theme support.
+
+00:23:05.000 --> 00:23:25.000
+<v Alice>Goal three: Infrastructure ready for payment processing.
+
+00:23:25.000 --> 00:23:45.000
+<v Bob>Clear goals. I'll start on the Stripe integration today.
+
+00:23:45.000 --> 00:24:00.000
+<v Charlie>I'll begin the theme system right after reviewing Frank's mockups.
+
+00:24:00.000 --> 00:24:15.000
+<v Eve>I'll have Redis and the feature flag system ready by Wednesday.
+
+00:24:15.000 --> 00:24:30.000
+<v Diana>I'll coordinate with Bob on the test data setup.
+
+00:24:30.000 --> 00:24:45.000
+<v Frank>I'll update all the mockups with animation priorities by end of day tomorrow.
+
+00:24:45.000 --> 00:25:00.000
+<v Alice>Perfect. Any final questions before we wrap up?
+
+00:25:00.000 --> 00:25:15.000
+<v Diana>Just to confirm - we're not testing production payments this sprint, correct?
+
+00:25:15.000 --> 00:25:30.000
+<v Alice>Correct. Test mode only. Production payment testing is Sprint 8.
+
+00:25:30.000 --> 00:25:50.000
+<v Eve>Should I set up monitoring alerts for the payment endpoints?
+
+00:25:50.000 --> 00:26:10.000
+<v Bob>Yes, definitely. Alert on 5xx errors and latency above 2 seconds.
+
+00:26:10.000 --> 00:26:25.000
+<v Eve>I'll add that to my infrastructure tasks.
+
+00:26:25.000 --> 00:26:45.000
+<v Alice>Great planning session everyone. To summarize the key action items:
+
+00:26:45.000 --> 00:27:00.000
+<v Alice>Bob will document Stripe integration requirements, create API specs, and share credentials with Eve.
+
+00:27:00.000 --> 00:27:15.000
+<v Alice>Charlie will review mockups, implement theme system, and build dashboard components.
+
+00:27:15.000 --> 00:27:30.000
+<v Alice>Eve will provision Redis, add feature flags, and set up monitoring.
+
+00:27:30.000 --> 00:27:45.000
+<v Alice>Diana will prepare test plans and coordinate with Bob on test data.
+
+00:27:45.000 --> 00:28:00.000
+<v Alice>Frank will update mockups with animation priorities and support Charlie on CSS.
+
+00:28:00.000 --> 00:28:15.000
+<v Alice>And I'll update the sprint backlog and communicate timelines to stakeholders.
+
+00:28:15.000 --> 00:28:25.000
+<v Bob>Sounds like a solid plan. Let's execute.
+
+00:28:25.000 --> 00:28:35.000
+<v Charlie>Agreed. Looking forward to the new dashboard.
+
+00:28:35.000 --> 00:28:45.000
+<v Eve>Infrastructure will be ready to support it.
+
+00:28:45.000 --> 00:28:55.000
+<v Diana>Testing will be thorough as always.
+
+00:28:55.000 --> 00:29:05.000
+<v Frank>Great collaboration team. The designs will shine.
+
+00:29:05.000 --> 00:29:20.000
+<v Alice>Excellent. Sprint 7 planning complete. Let's reconvene at tomorrow's standup. Meeting adjourned.
+

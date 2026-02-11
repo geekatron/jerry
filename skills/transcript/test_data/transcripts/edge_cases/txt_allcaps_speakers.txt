@@ -1,0 +1,20 @@
+ALICE
+Welcome everyone to the quarterly review.
+
+BOB
+Thanks Alice. Let me share the metrics.
+
+CHARLIE
+The numbers look good this quarter.
+
+ALICE
+Agreed. Revenue is up fifteen percent.
+
+BOB
+Customer satisfaction also improved.
+
+CHARLIE
+What's driving the improvement?
+
+ALICE
+The new features we launched in Q2.

@@ -1,0 +1,13 @@
+WEBVTT
+
+NOTE Voice tag basic test cases (VT-001, VT-002)
+NOTE Tests speaker extraction from <v> tags
+
+00:00.000 --> 00:01.000
+<v John>Hello world</v>
+
+00:01.000 --> 00:02.000
+<v Mary Smith>How are you today?</v>
+
+00:02.000 --> 00:03.000
+<v Dr. Jane O'Brien>I'm doing well, thank you.</v>
