@@ -1,7 +1,7 @@
 # BUG-001: Marketplace manifest schema error — `keywords` not allowed
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
