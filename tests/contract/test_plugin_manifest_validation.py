@@ -150,10 +150,7 @@ class TestMarketplaceSchemaKeywordsField:
         try:
             jsonschema.validate(valid_marketplace, marketplace_schema)
         except jsonschema.ValidationError as e:
-            pytest.fail(
-                f"Validation failed for manifest without keywords.\n"
-                f"Error: {e.message}"
-            )
+            pytest.fail(f"Validation failed for manifest without keywords.\nError: {e.message}")
 
     def test_marketplace_json_with_invalid_keyword_format_fails_validation(
         self,
@@ -181,9 +178,10 @@ class TestMarketplaceSchemaKeywordsField:
             jsonschema.validate(invalid_marketplace, marketplace_schema)
 
         # Verify the error is about the keyword pattern
-        assert "pattern" in str(exc_info.value).lower() or "does not match" in str(
-            exc_info.value
-        ).lower()
+        assert (
+            "pattern" in str(exc_info.value).lower()
+            or "does not match" in str(exc_info.value).lower()
+        )
 
     def test_marketplace_json_with_too_many_keywords_fails_validation(
         self,
@@ -210,9 +208,9 @@ class TestMarketplaceSchemaKeywordsField:
             jsonschema.validate(invalid_marketplace, marketplace_schema)
 
         # Verify the error is about maxItems
-        assert "maxitems" in str(exc_info.value).lower() or "too long" in str(
-            exc_info.value
-        ).lower()
+        assert (
+            "maxitems" in str(exc_info.value).lower() or "too long" in str(exc_info.value).lower()
+        )
 
     def test_marketplace_json_with_duplicate_keywords_fails_validation(
         self,
@@ -360,8 +358,7 @@ class TestValidationScriptIntegration:
 
         # Assert - success message present
         assert "All validations passed!" in result.stdout, (
-            f"Expected success message not found in output.\n"
-            f"stdout:\n{result.stdout}"
+            f"Expected success message not found in output.\nstdout:\n{result.stdout}"
         )
 
         # Assert - each manifest shows [PASS]
@@ -373,8 +370,7 @@ class TestValidationScriptIntegration:
 
         for manifest in required_manifests:
             assert "[PASS]" in result.stdout and manifest in result.stdout, (
-                f"Expected [PASS] for {manifest} in output.\n"
-                f"stdout:\n{result.stdout}"
+                f"Expected [PASS] for {manifest} in output.\nstdout:\n{result.stdout}"
             )
 
     def test_validation_script_uses_uv_run(
@@ -431,9 +427,7 @@ class TestActualMarketplaceManifest:
         # Arrange
         marketplace_path = project_root / ".claude-plugin" / "marketplace.json"
 
-        assert marketplace_path.exists(), (
-            f"marketplace.json not found at {marketplace_path}"
-        )
+        assert marketplace_path.exists(), f"marketplace.json not found at {marketplace_path}"
 
         marketplace_data = json.loads(marketplace_path.read_text())
 
@@ -465,14 +459,10 @@ class TestActualMarketplaceManifest:
         plugins = marketplace_data.get("plugins", [])
         assert len(plugins) > 0, "marketplace.json has no plugins"
 
-        jerry_plugin = next(
-            (p for p in plugins if p.get("name") == "jerry-framework"), None
-        )
+        jerry_plugin = next((p for p in plugins if p.get("name") == "jerry-framework"), None)
 
         # Assert
         assert jerry_plugin is not None, "jerry-framework plugin not found"
         assert "keywords" in jerry_plugin, "jerry-framework plugin missing keywords"
-        assert isinstance(
-            jerry_plugin["keywords"], list
-        ), "keywords must be an array"
+        assert isinstance(jerry_plugin["keywords"], list), "keywords must be an array"
         assert len(jerry_plugin["keywords"]) > 0, "keywords array is empty"
