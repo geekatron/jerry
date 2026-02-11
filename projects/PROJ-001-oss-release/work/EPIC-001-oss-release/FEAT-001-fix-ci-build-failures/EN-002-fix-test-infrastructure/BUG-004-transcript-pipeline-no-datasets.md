@@ -82,14 +82,15 @@ The test asserts exactly 6 datasets processed with a 30-second time limit.
 
 ### Root Cause
 
-**Test data not committed to git.** The `skills/transcript/test_data/transcripts/golden/` directory and its 6 VTT files do not exist in the repository. These files are either gitignored or were never committed. The test has hardcoded file references and no skip/discovery logic when files are missing.
+**Data migration gap from source-repository.** The entire `skills/transcript/test_data/transcripts/` directory (34 files, 606 KB) was not copied during the source-repository -> jerry repository migration. The data exists in the source repository at `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/`. The `.gitignore` does NOT exclude these files — they were simply omitted during migration. Other test_data/ subdirectories (contexts/, expected/, schemas/, expected_output/, validation/) were migrated correctly.
 
-### Fix Options
+See [research-transcript-data-migration-gap.md](./research-transcript-data-migration-gap.md) for full 5W2H investigation.
 
-1. **Commit test data** — Add the 6 VTT test files to git (if they exist locally and are not too large)
-2. **Skip when missing** — Add `pytest.mark.skipif` when golden dataset directory doesn't exist
-3. **Dynamic discovery** — Change parametrize to discover available datasets, skip if none found
-4. **Mock/fixtures** — Generate minimal test VTT files in test setup
+### Fix (Corrected)
+
+**Restore the 34 missing files from source-repository source.** Data is 606 KB total (git-friendly).
+
+Previous options (skip guard, dynamic discovery, mock/fixtures) are **workarounds** that hide the migration gap. The correct fix is to restore the data.
 
 ### Files Involved
 
@@ -97,6 +98,14 @@ The test asserts exactly 6 datasets processed with a 30-second time limit.
 |------|------|---------------|
 | `tests/integration/transcript/test_pipeline.py` | Test file | Skip or discover datasets dynamically |
 | `skills/transcript/test_data/transcripts/golden/` | Test data directory | Commit VTT files or skip tests |
+
+---
+
+## Children (Tasks)
+
+| ID | Title | Status | Priority |
+|----|-------|--------|----------|
+| [TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data from source-repository migration | pending | high |
 
 ---
 
@@ -117,6 +126,10 @@ The test asserts exactly 6 datasets processed with a 30-second time limit.
 - **Parent:** [EN-002: Fix Test Infrastructure](./EN-002-fix-test-infrastructure.md)
 - **Feature:** [FEAT-001: Fix CI Build Failures](../FEAT-001-fix-ci-build-failures.md)
 
+### Children
+
+- [TASK-001: Skip transcript pipeline combined test when golden datasets missing](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md)
+
 ---
 
 ## History
@@ -125,3 +138,4 @@ The test asserts exactly 6 datasets processed with a 30-second time limit.
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Bug triaged from PR #6 CI failure |
 | 2026-02-10 | Claude | pending | Root cause confirmed: 6 VTT test datasets in `skills/transcript/test_data/transcripts/golden/` not committed to git. Tests hardcoded to expect exactly 6 files. |
+| 2026-02-11 | Claude | pending | TASK-001 created (originally: skip guard). ps-investigator research revealed data migration gap from source-repository. TASK-001 reframed to "restore missing test data". Root cause updated. Research artifact: research-transcript-data-migration-gap.md |

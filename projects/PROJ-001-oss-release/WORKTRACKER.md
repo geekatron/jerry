@@ -38,7 +38,7 @@
 | ID | Title | Status | Priority | Parent | Children |
 |----|-------|--------|----------|--------|----------|
 | [EN-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | done | high | FEAT-001 | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
-| [EN-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | pending | medium | FEAT-001 | BUG-004, BUG-005 |
+| [EN-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | in_progress | medium | FEAT-001 | BUG-004 (TASK-001), BUG-005 (TASK-001, TASK-002) |
 | [EN-003](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-003-fix-validation-test-regressions/EN-003-fix-validation-test-regressions.md) | Fix Validation Test Regressions | done | high | FEAT-001 | BUG-006, TASK-001, TASK-002 |
 
 ---
