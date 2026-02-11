@@ -19,7 +19,7 @@
 |---------|---------|
 | [Summary](#summary) | Brief description and value proposition |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
-| [Children (Bugs)](#children-bugs) | Bug inventory and tracking |
+| [Children](#children) | Enablers and completed bugs |
 | [Progress Summary](#progress-summary) | Overall feature progress |
 | [Related Items](#related-items) | Hierarchy and dependencies |
 | [History](#history) | Status changes and key events |
@@ -65,29 +65,21 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 ---
 
-## Children (Bugs)
+## Children
 
-### Bug Inventory
+### Enablers
 
-| ID | Title | Status | Priority | Severity |
+| ID | Title | Status | Priority | Children |
 |----|-------|--------|----------|----------|
-| BUG-001 | Marketplace manifest schema error: `keywords` not allowed | in_progress | high | major |
-| BUG-002 | CLI `projects list` crashes with unhandled exception | **completed** | high | major |
-| BUG-003 | Bootstrap test assumes `projects/` directory exists | **completed** | medium | major |
-| BUG-004 | Transcript pipeline test finds no datasets | pending | medium | major |
-| BUG-005 | Project validation tests reference non-existent PROJ-001-plugin-cleanup | pending | medium | major |
+| [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | in_progress | high | BUG-001, TASK-001/002/003, DEC-001 |
+| [EN-002](./EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | pending | medium | BUG-004, BUG-005 |
 
-### Bug Links
+### Completed Bugs (Feature-Level)
 
-- [BUG-001: Marketplace manifest schema error](./FEAT-001--BUG-001-plugin-manifest-schema-error.md) — 3 tasks, 1 decision (root cause corrected: missing `keywords` in marketplace schema)
-- [BUG-002: CLI projects list crash](./FEAT-001--BUG-002-cli-projects-list-crash.md) — **COMPLETED** (resolved by committing projects/ dir)
-- [BUG-003: Bootstrap test missing projects dir](./FEAT-001--BUG-003-bootstrap-test-missing-projects-dir.md) — **COMPLETED** (resolved by committing projects/ dir)
-- [BUG-004: Transcript pipeline no datasets](./FEAT-001--BUG-004-transcript-pipeline-no-datasets.md) — Root cause: 6 VTT files not committed to git
-- [BUG-005: Project validation missing artifacts](./FEAT-001--BUG-005-project-validation-missing-artifacts.md) — Root cause: `project_id` fixture hardcoded to stale `PROJ-001-plugin-cleanup`
-
-### Decisions
-
-- [FEAT-001:DEC-001: JSON Schema Validator Class Selection](./FEAT-001--DEC-001-json-schema-validator-class.md) — Use explicit `Draft202012Validator` (ACCEPTED)
+| ID | Title | Completed | Resolution |
+|----|-------|-----------|------------|
+| [BUG-002](./FEAT-001--BUG-002-cli-projects-list-crash.md) | CLI `projects list` crashes with unhandled exception | 2026-02-10 | Resolved by committing `projects/` directory |
+| [BUG-003](./FEAT-001--BUG-003-bootstrap-test-missing-projects-dir.md) | Bootstrap test assumes `projects/` directory exists | 2026-02-10 | Resolved by committing `projects/` directory |
 
 ---
 
@@ -136,3 +128,4 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | 2026-02-10 | Claude | pending | Feature created |
 | 2026-02-10 | Claude | in_progress | 5 bugs triaged from PR #6 CI failures |
 | 2026-02-10 | Claude | in_progress | BUG-002 and BUG-003 resolved (committing projects/ dir). BUG-001 root cause corrected (marketplace schema, not draft mismatch). BUG-004 and BUG-005 root causes confirmed. Progress: 40% (2/5 bugs completed). |
+| 2026-02-10 | Claude | in_progress | Restructured to use Enablers: EN-001 (Fix Plugin Validation) groups BUG-001 + tasks + decision; EN-002 (Fix Test Infrastructure) groups BUG-004 + BUG-005. Completed BUG-002/003 remain at Feature level. |

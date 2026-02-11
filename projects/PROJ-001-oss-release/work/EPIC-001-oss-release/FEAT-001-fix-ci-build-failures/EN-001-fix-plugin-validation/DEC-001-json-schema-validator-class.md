@@ -1,10 +1,10 @@
-# FEAT-001:DEC-001: JSON Schema Validator Class Selection
+# EN-001:DEC-001: JSON Schema Validator Class Selection
 
 > **Type:** decision
 > **Status:** ACCEPTED
 > **Priority:** HIGH
 > **Created:** 2026-02-10
-> **Parent:** FEAT-001
+> **Parent:** EN-001
 > **Owner:** Adam Nowak
 > **Related:** BUG-001
 
@@ -109,8 +109,9 @@ Claude initially recommended Option 1 (downgrade) as "simpler and more portable.
 
 | Type | Path | Description |
 |------|------|-------------|
-| Parent | [FEAT-001](./FEAT-001-fix-ci-build-failures.md) | Fix CI Build Failures |
-| Bug | [BUG-001](./FEAT-001--BUG-001-plugin-manifest-schema-error.md) | Plugin manifest schema error |
+| Parent | [EN-001](./EN-001-fix-plugin-validation.md) | Fix Plugin Validation |
+| Feature | [FEAT-001](../FEAT-001-fix-ci-build-failures.md) | Fix CI Build Failures |
+| Bug | [BUG-001](./BUG-001-marketplace-manifest-schema-error.md) | Marketplace manifest schema error |
 | File | `scripts/validate_plugin_manifests.py` | Validation script to fix |
 | File | `schemas/plugin.schema.json` | Schema (correct, no changes needed) |
 | File | `.claude-plugin/plugin.json` | Manifest (correct, no changes needed) |
@@ -137,8 +138,8 @@ Claude initially recommended Option 1 (downgrade) as "simpler and more portable.
 ## Metadata
 
 ```yaml
-id: "FEAT-001:DEC-001"
-parent_id: "FEAT-001"
+id: "EN-001:DEC-001"
+parent_id: "EN-001"
 work_type: DECISION
 title: "JSON Schema Validator Class Selection"
 status: ACCEPTED

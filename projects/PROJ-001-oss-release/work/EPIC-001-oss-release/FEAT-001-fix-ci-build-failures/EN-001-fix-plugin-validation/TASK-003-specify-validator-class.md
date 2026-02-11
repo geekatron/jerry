@@ -56,9 +56,10 @@ jsonschema.validate(manifest, schema, cls=jsonschema.Draft202012Validator)
 
 ### Related Items
 
-- Parent: [BUG-001: Marketplace manifest schema error](./FEAT-001--BUG-001-plugin-manifest-schema-error.md)
-- Decision: [DEC-001: JSON Schema Validator Class Selection](./FEAT-001--DEC-001-json-schema-validator-class.md)
-- Depends On: [TASK-001: Add keywords to marketplace schema](./BUG-001--TASK-001-add-keywords-to-marketplace-schema.md) (TASK-001 is the actual fix)
+- Parent: [BUG-001: Marketplace manifest schema error](./BUG-001-marketplace-manifest-schema-error.md)
+- Enabler: [EN-001: Fix Plugin Validation](./EN-001-fix-plugin-validation.md)
+- Decision: [DEC-001: JSON Schema Validator Class Selection](./DEC-001-json-schema-validator-class.md)
+- Depends On: [TASK-001: Add keywords to marketplace schema](./TASK-001-add-keywords-to-marketplace-schema.md) (TASK-001 is the actual fix)
 
 ---
 

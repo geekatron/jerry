@@ -8,7 +8,7 @@
 > **Created:** 2026-02-10
 > **Due:** —
 > **Completed:** —
-> **Parent:** FEAT-001
+> **Parent:** EN-001
 > **Owner:** —
 > **Found In:** PR #6
 > **Fix Version:** —
@@ -113,9 +113,9 @@ The original analysis concluded the issue was a JSON Schema draft mismatch requi
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [TASK-001](./BUG-001--TASK-001-add-keywords-to-marketplace-schema.md) | Add `keywords` property to marketplace plugin item schema | BACKLOG | HIGH |
-| [TASK-002](./BUG-001--TASK-002-add-validation-tests.md) | Add tests for plugin manifest validation | BACKLOG | HIGH |
-| [TASK-003](./BUG-001--TASK-003-specify-validator-class.md) | Specify Draft202012Validator in validation script (best practice) | BACKLOG | MEDIUM |
+| [TASK-001](./TASK-001-add-keywords-to-marketplace-schema.md) | Add `keywords` property to marketplace plugin item schema | BACKLOG | HIGH |
+| [TASK-002](./TASK-002-add-validation-tests.md) | Add tests for plugin manifest validation | BACKLOG | HIGH |
+| [TASK-003](./TASK-003-specify-validator-class.md) | Specify Draft202012Validator in validation script (best practice) | BACKLOG | MEDIUM |
 
 ---
 
@@ -136,11 +136,12 @@ The original analysis concluded the issue was a JSON Schema draft mismatch requi
 
 ### Hierarchy
 
-- **Parent:** [FEAT-001: Fix CI Build Failures](./FEAT-001-fix-ci-build-failures.md)
+- **Parent:** [EN-001: Fix Plugin Validation](./EN-001-fix-plugin-validation.md)
+- **Feature:** [FEAT-001: Fix CI Build Failures](../FEAT-001-fix-ci-build-failures.md)
 
 ### Decision
 
-- [FEAT-001:DEC-001: JSON Schema Validator Class Selection](./FEAT-001--DEC-001-json-schema-validator-class.md) — Decided to use explicit `Draft202012Validator` (Option B)
+- [DEC-001: JSON Schema Validator Class Selection](./DEC-001-json-schema-validator-class.md) — Decided to use explicit `Draft202012Validator` (Option B)
 
 ### CI Reference
 
