@@ -1,10 +1,10 @@
 # TASK-002: Create required category directories in PROJ-001-oss-release
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** MEDIUM
 > **Created:** 2026-02-11
-> **Completed:** —
+> **Completed:** 2026-02-11
 > **Parent:** BUG-005
 > **Owner:** —
 > **Activity:** DEVELOPMENT
@@ -43,13 +43,15 @@ Additionally, the `TestCategoryConventions.test_only_valid_categories_used` test
 
 ### Acceptance Criteria
 
-- [ ] At least 3 category directories created in `PROJ-001-oss-release/` from: research, synthesis, analysis, decisions, reports, design
-- [ ] Each directory contains a `.gitkeep` file (so empty dirs are committed to git)
-- [ ] `orchestration/` directory is either moved inside `work/` or added to the `valid_categories` fixture — needs decision (see Implementation Notes)
-- [ ] `test_project_has_required_structure` passes
-- [ ] `test_directory_structure_complete` passes
-- [ ] `test_only_valid_categories_used` passes
-- [ ] Fix works across Python 3.11-3.14 on both pip and uv CI jobs
+- [x] At least 3 category directories created in `PROJ-001-oss-release/`: synthesis, analysis, decisions
+- [x] Each directory contains a `.gitkeep` file (so empty dirs are committed to git)
+- [x] `orchestration` added to `valid_categories` fixture in conftest.py (per SKILL.md, confirmed by adversarial critic)
+- [x] `test_project_has_required_structure` passes
+- [x] `test_directory_structure_complete` passes
+- [x] `test_only_valid_categories_used` passes
+- [ ] Fix works across Python 3.11-3.14 on both pip and uv CI jobs (pending CI verification)
+
+**Note:** Originally planned `research/` but swapped to `synthesis/` because `test_file_resolution.py:90` has a mandatory content assertion on research/ (`assert len(docs) >= 1`). Synthesis tests skip gracefully for empty directories.
 
 ### Implementation Notes
 
@@ -119,3 +121,4 @@ Option 1 is recommended since `orchestration/` is a first-class project director
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-11 | pending | Created. Category directories + orchestration valid_categories fix. |
+| 2026-02-11 | done | Created synthesis/, analysis/, decisions/ with .gitkeep. Added `orchestration` to valid_categories (per SKILL.md, confirmed by adversarial critic DA-001). Swapped research/ → synthesis/ after test_file_resolution.py mandatory content assertion failure. All 68 project validation tests pass. Committed in `4789625`. |
