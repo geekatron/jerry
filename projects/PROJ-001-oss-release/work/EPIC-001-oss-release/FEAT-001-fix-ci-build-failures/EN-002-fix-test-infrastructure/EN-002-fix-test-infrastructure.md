@@ -1,7 +1,7 @@
 # EN-002: Fix Test Infrastructure
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
@@ -79,10 +79,32 @@ Recommended approach:
 
 ## Bugs
 
-| ID | Title | Status | Priority |
-|----|-------|--------|----------|
-| [BUG-004](./BUG-004-transcript-pipeline-no-datasets.md) | Transcript pipeline test finds no datasets | pending | medium |
-| [BUG-005](./BUG-005-project-validation-missing-artifacts.md) | Project validation tests reference non-existent PROJ-001-plugin-cleanup | pending | medium |
+| ID | Title | Status | Priority | Children |
+|----|-------|--------|----------|----------|
+| [BUG-004](./BUG-004-transcript-pipeline-no-datasets.md) | Transcript pipeline test finds no datasets | pending | medium | TASK-001 |
+| [BUG-005](./BUG-005-project-validation-missing-artifacts.md) | Project validation tests reference non-existent PROJ-001-plugin-cleanup | pending | medium | TASK-001, TASK-002 |
+
+### Tasks
+
+| ID | Title | Parent | Status | Priority |
+|----|-------|--------|--------|----------|
+| [BUG-004/TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data from jerry-core | BUG-004 | pending | high |
+| [BUG-005/TASK-001](./BUG-005--TASK-001-wire-dynamic-project-discovery.md) | Wire dynamic project discovery into fixture | BUG-005 | pending | medium |
+| [BUG-005/TASK-002](./BUG-005--TASK-002-create-category-directories.md) | Create category directories in PROJ-001-oss-release | BUG-005 | pending | medium |
+
+### Dependency Chain
+
+```
+BUG-004 ── TASK-001 (restore test data)        [independent - do first]
+
+BUG-005 ── TASK-001 (dynamic discovery)  ──┐
+                                            ├── Both needed for tests to pass
+BUG-005 ── TASK-002 (category dirs)     ──┘
+```
+
+BUG-004/TASK-001 is fully independent and should be done first (data copy). BUG-005/TASK-001 and BUG-005/TASK-002 are co-dependent (both needed, but implementable in parallel).
+
+**Research:** [Transcript Data Migration Gap](./research-transcript-data-migration-gap.md) — ps-investigator 5W2H analysis confirming BUG-004 root cause is data migration gap, not missing test infrastructure.
 
 ---
 
@@ -95,6 +117,7 @@ Recommended approach:
 |                   ENABLER PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
 | Bugs:      [....................] 0% (0/2 resolved)               |
+| Tasks:     [....................] 0% (0/3 completed)              |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                               |
 +------------------------------------------------------------------+
@@ -106,6 +129,8 @@ Recommended approach:
 |--------|-------|
 | **Total Bugs** | 2 |
 | **Resolved Bugs** | 0 |
+| **Total Tasks** | 3 |
+| **Completed Tasks** | 0 |
 | **Completion %** | 0% |
 
 ---
@@ -151,3 +176,4 @@ Recommended approach:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Enabler created from FEAT-001 restructure. Groups BUG-004 and BUG-005. |
+| 2026-02-11 | Claude | in_progress | 3 tasks created: BUG-004/TASK-001 (skip guard), BUG-005/TASK-001 (dynamic discovery), BUG-005/TASK-002 (category dirs). Dependency chain established. |
