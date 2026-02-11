@@ -109,7 +109,9 @@ pipelines:
             name: "TASK-001 Adversarial Critic"
             role: "critic"
             agent_spec: "skills/problem-solving/agents/ps-critic.md"
-            status: "PENDING"
+            status: "COMPLETE"
+            completed_at: "2026-02-11T02:57:46Z"
+            quality_score: 0.943
             depends_on: ["ps-architect-task001"]
             artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-critic-task001/ps-critic-task001-critique.md"
             inputs:
@@ -407,15 +409,15 @@ metrics:
     barriers_complete: 0
     barriers_total: 1
     barriers_percent: 0
-    agents_executed: 1
+    agents_executed: 2
     agents_total: 12  # 4 per task * 3 tasks
-    agents_percent: 8
-    artifacts_created: 1
+    agents_percent: 17
+    artifacts_created: 2
     artifacts_total: 13  # 12 agent artifacts + 1 barrier gate check
-    artifacts_percent: 8
+    artifacts_percent: 15
 
   quality:
-    task001_critique_score: null
+    task001_critique_score: 0.943
     task002_critique_score: null
     task003_critique_score: null
     task001_validated: false
@@ -424,7 +426,7 @@ metrics:
 
   timing:
     workflow_started: "2026-02-11T02:50:00Z"
-    last_activity: "2026-02-11T02:51:49Z"
+    last_activity: "2026-02-11T02:57:46Z"
     estimated_completion: null
 
 # =============================================================================
@@ -462,8 +464,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Phase 1 in progress. ps-architect-task001 COMPLETE. Awaiting critic."
-  next_step: "Execute ps-critic-task001 (TASK-001 adversarial critique)"
+  current_state: "Phase 1 in progress. ps-architect-task001 and ps-critic-task001 COMPLETE. Score: 0.943 PASS. Awaiting revision."
+  next_step: "Execute ps-architect-task001-rev (TASK-001 revision based on critique)"
 
   files_to_read:
     - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION_PLAN.md"
