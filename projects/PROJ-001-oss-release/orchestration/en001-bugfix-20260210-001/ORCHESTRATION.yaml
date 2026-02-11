@@ -1,0 +1,483 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for EN-001 Fix Plugin Validation
+# Document ID: PROJ-001-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-02-10T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+# Schema version for evolution support (semver format)
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "en001-bugfix-20260210-001"
+  name: "EN-001 Fix Plugin Validation"
+  project_id: "PROJ-001-oss-release"
+  version: "2.0"
+  created_at: "2026-02-10T00:00:00Z"
+  updated_at: "2026-02-10T00:00:00Z"
+  status: "PLANNED"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Workflow ID configuration (WI-SAO-021)
+  id_source: "user"
+  id_format: "semantic-date-seq"
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL         # Phase 1 must complete before Phase 2
+    - FAN_OUT            # TASK-002 and TASK-003 run in parallel in Phase 2
+    - BARRIER_SYNC       # Barrier-1 gates Phase 1 -> Phase 2
+    - ADVERSARIAL_CRITIQUE  # Each task has create-critique-revise-validate cycle
+
+  # Context references
+  enabler: "EN-001"
+  parent_bug: "BUG-001"
+  tasks:
+    - "TASK-001"
+    - "TASK-002"
+    - "TASK-003"
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_concurrent_agents: 2      # TASK-002 + TASK-003 parallel in Phase 2
+    max_critique_iterations: 1    # Single create-critique-revise-validate cycle
+    quality_threshold: 0.85       # Minimum critique quality score
+    checkpoint_frequency: "PHASE" # PHASE-level checkpoints
+
+# =============================================================================
+# PATH CONFIGURATION (WI-SAO-021)
+# =============================================================================
+paths:
+  base: "orchestration/en001-bugfix-20260210-001/"
+  pipeline: "{base}ps/{phase_id}/{agent_id}/"
+  barrier: "{base}barriers/{barrier_id}/"
+
+# =============================================================================
+# PIPELINE DEFINITION
+# =============================================================================
+pipelines:
+  ps:
+    id: "pipeline-ps"
+    name: "Problem-Solving Pipeline"
+    description: "Sequential pipeline with adversarial critique loops for BUG-001 fix"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    status: "PHASE_1_PENDING"
+    current_phase: 1
+    total_phases: 2
+    progress_percent: 0
+
+    phases:
+      # =========================================================================
+      # PHASE 1: Root Cause Fix (TASK-001)
+      # =========================================================================
+      - id: 1
+        name: "Root Cause Fix"
+        path_id: "phase-1-root-cause-fix"
+        task_ref: "TASK-001"
+        status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+        started_at: null
+        completed_at: null
+
+        critique_cycle:
+          pattern: "create-critique-revise-validate"
+          max_iterations: 1
+          quality_threshold: 0.85
+
+        agents:
+          # Step 1: CREATE
+          - id: "ps-architect-task001"
+            name: "TASK-001 Creator"
+            role: "creator"
+            agent_spec: "skills/problem-solving/agents/ps-architect.md"
+            status: "PENDING"
+            artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001/ps-architect-task001-implementation.md"
+            inputs:
+              - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-001-add-keywords-to-marketplace-schema.md"
+              - "schemas/marketplace.schema.json"
+              - "schemas/plugin.schema.json"
+            task_description: "Add keywords property to marketplace.schema.json plugin item properties, matching the existing keywords definition in plugin.schema.json"
+
+          # Step 2: ADVERSARIAL CRITIQUE
+          - id: "ps-critic-task001"
+            name: "TASK-001 Adversarial Critic"
+            role: "critic"
+            agent_spec: "skills/problem-solving/agents/ps-critic.md"
+            status: "PENDING"
+            depends_on: ["ps-architect-task001"]
+            artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-critic-task001/ps-critic-task001-critique.md"
+            inputs:
+              - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001/ps-architect-task001-implementation.md"
+            critique_modes:
+              - "devils_advocate"
+              - "steelman"
+              - "red_team"
+              - "blue_team"
+            evaluation_criteria:
+              - name: "Correctness"
+                weight: 0.30
+                description: "Does the change correctly add keywords to marketplace schema?"
+              - name: "Completeness"
+                weight: 0.25
+                description: "Are all acceptance criteria addressed?"
+              - name: "Consistency"
+                weight: 0.20
+                description: "Is the change consistent with plugin.schema.json?"
+              - name: "Safety"
+                weight: 0.15
+                description: "Does the change introduce any regressions?"
+              - name: "Clarity"
+                weight: 0.10
+                description: "Is the implementation clear and maintainable?"
+
+          # Step 3: REVISE
+          - id: "ps-architect-task001-rev"
+            name: "TASK-001 Revision"
+            role: "reviser"
+            agent_spec: "skills/problem-solving/agents/ps-architect.md"
+            status: "PENDING"
+            depends_on: ["ps-critic-task001"]
+            artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md"
+            inputs:
+              - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001/ps-architect-task001-implementation.md"
+              - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-critic-task001/ps-critic-task001-critique.md"
+
+          # Step 4: VALIDATE
+          - id: "ps-validator-task001"
+            name: "TASK-001 Validator"
+            role: "validator"
+            agent_spec: "skills/problem-solving/agents/ps-validator.md"
+            status: "PENDING"
+            depends_on: ["ps-architect-task001-rev"]
+            artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-validator-task001/ps-validator-task001-validation.md"
+            inputs:
+              - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md"
+              - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-001-add-keywords-to-marketplace-schema.md"
+            validation_scope:
+              - "keywords property present in marketplace.schema.json"
+              - "keywords definition matches plugin.schema.json format"
+              - "uv run python scripts/validate_plugin_manifests.py passes all 3 manifests"
+              - "Schema is valid JSON"
+
+        artifacts: []
+
+      # =========================================================================
+      # PHASE 2: Parallel Improvements (TASK-002 + TASK-003)
+      # =========================================================================
+      - id: 2
+        name: "Parallel Improvements"
+        path_id: "phase-2-parallel-improvements"
+        task_refs:
+          - "TASK-002"
+          - "TASK-003"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        execution_mode: "PARALLEL"  # TASK-002 and TASK-003 run in parallel
+
+        # --- TASK-002 Critique Cycle ---
+        task002_cycle:
+          task_ref: "TASK-002"
+          pattern: "create-critique-revise-validate"
+          max_iterations: 1
+          quality_threshold: 0.85
+          agents:
+            # Step 1: CREATE
+            - id: "ps-architect-task002"
+              name: "TASK-002 Creator"
+              role: "creator"
+              agent_spec: "skills/problem-solving/agents/ps-architect.md"
+              status: "BLOCKED"
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task002/ps-architect-task002-implementation.md"
+              inputs:
+                - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-002-add-validation-tests.md"
+                - "schemas/marketplace.schema.json"
+              task_description: "Add validation tests for plugin manifests covering keywords acceptance, unknown property rejection, and all-manifest validation"
+
+            # Step 2: ADVERSARIAL CRITIQUE
+            - id: "ps-critic-task002"
+              name: "TASK-002 Adversarial Critic"
+              role: "critic"
+              agent_spec: "skills/problem-solving/agents/ps-critic.md"
+              status: "BLOCKED"
+              depends_on: ["ps-architect-task002"]
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-critic-task002/ps-critic-task002-critique.md"
+              inputs:
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task002/ps-architect-task002-implementation.md"
+              critique_modes:
+                - "devils_advocate"
+                - "red_team"
+
+            # Step 3: REVISE
+            - id: "ps-architect-task002-rev"
+              name: "TASK-002 Revision"
+              role: "reviser"
+              agent_spec: "skills/problem-solving/agents/ps-architect.md"
+              status: "BLOCKED"
+              depends_on: ["ps-critic-task002"]
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task002-rev/ps-architect-task002-rev-revision.md"
+              inputs:
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task002/ps-architect-task002-implementation.md"
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-critic-task002/ps-critic-task002-critique.md"
+
+            # Step 4: VALIDATE
+            - id: "ps-validator-task002"
+              name: "TASK-002 Validator"
+              role: "validator"
+              agent_spec: "skills/problem-solving/agents/ps-validator.md"
+              status: "BLOCKED"
+              depends_on: ["ps-architect-task002-rev"]
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-validator-task002/ps-validator-task002-validation.md"
+              inputs:
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task002-rev/ps-architect-task002-rev-revision.md"
+                - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-002-add-validation-tests.md"
+              validation_scope:
+                - "Test verifies keywords accepted in marketplace plugin items"
+                - "Test verifies unknown properties rejected"
+                - "Test verifies all 3 manifests pass validation"
+                - "uv run pytest passes with new tests"
+
+        # --- TASK-003 Critique Cycle ---
+        task003_cycle:
+          task_ref: "TASK-003"
+          pattern: "create-critique-revise-validate"
+          max_iterations: 1
+          quality_threshold: 0.85
+          agents:
+            # Step 1: CREATE
+            - id: "ps-architect-task003"
+              name: "TASK-003 Creator"
+              role: "creator"
+              agent_spec: "skills/problem-solving/agents/ps-architect.md"
+              status: "BLOCKED"
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task003/ps-architect-task003-implementation.md"
+              inputs:
+                - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-003-specify-validator-class.md"
+                - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/DEC-001-json-schema-validator-class.md"
+                - "scripts/validate_plugin_manifests.py"
+              task_description: "Specify cls=jsonschema.Draft202012Validator at all 3 jsonschema.validate() call sites in validate_plugin_manifests.py"
+
+            # Step 2: ADVERSARIAL CRITIQUE
+            - id: "ps-critic-task003"
+              name: "TASK-003 Adversarial Critic"
+              role: "critic"
+              agent_spec: "skills/problem-solving/agents/ps-critic.md"
+              status: "BLOCKED"
+              depends_on: ["ps-architect-task003"]
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-critic-task003/ps-critic-task003-critique.md"
+              inputs:
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task003/ps-architect-task003-implementation.md"
+              critique_modes:
+                - "devils_advocate"
+                - "red_team"
+
+            # Step 3: REVISE
+            - id: "ps-architect-task003-rev"
+              name: "TASK-003 Revision"
+              role: "reviser"
+              agent_spec: "skills/problem-solving/agents/ps-architect.md"
+              status: "BLOCKED"
+              depends_on: ["ps-critic-task003"]
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task003-rev/ps-architect-task003-rev-revision.md"
+              inputs:
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task003/ps-architect-task003-implementation.md"
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-critic-task003/ps-critic-task003-critique.md"
+
+            # Step 4: VALIDATE
+            - id: "ps-validator-task003"
+              name: "TASK-003 Validator"
+              role: "validator"
+              agent_spec: "skills/problem-solving/agents/ps-validator.md"
+              status: "BLOCKED"
+              depends_on: ["ps-architect-task003-rev"]
+              artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-validator-task003/ps-validator-task003-validation.md"
+              inputs:
+                - "orchestration/en001-bugfix-20260210-001/ps/phase-2-parallel-improvements/ps-architect-task003-rev/ps-architect-task003-rev-revision.md"
+                - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-003-specify-validator-class.md"
+              validation_scope:
+                - "validate_plugin_json() uses cls=jsonschema.Draft202012Validator"
+                - "validate_marketplace_json() uses cls=jsonschema.Draft202012Validator"
+                - "validate_hooks_json() uses cls=jsonschema.Draft202012Validator"
+                - "uv run python scripts/validate_plugin_manifests.py passes"
+
+        agents:
+          - "ps-architect-task002"
+          - "ps-critic-task002"
+          - "ps-architect-task002-rev"
+          - "ps-validator-task002"
+          - "ps-architect-task003"
+          - "ps-critic-task003"
+          - "ps-architect-task003-rev"
+          - "ps-validator-task003"
+
+        artifacts: []
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "TASK-001 Completion Gate"
+    status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE
+    completed_at: null
+    depends_on:
+      - "ps.phase.1"
+    gate_conditions:
+      - "ps-validator-task001 reports VALIDATED"
+      - "marketplace.schema.json contains keywords property"
+      - "uv run python scripts/validate_plugin_manifests.py passes all 3 manifests"
+    releases:
+      - "ps.phase.2"
+    artifact:
+      path: "orchestration/en001-bugfix-20260210-001/barriers/barrier-1/barrier-1-gate-check.md"
+      status: "PENDING"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    # Group 1: Phase 1 critique cycle (SEQUENTIAL within group)
+    - id: 1
+      name: "Phase 1: TASK-001 Critique Cycle"
+      execution_mode: "SEQUENTIAL"
+      status: "READY"
+      agents:
+        - "ps-architect-task001"
+        - "ps-critic-task001"
+        - "ps-architect-task001-rev"
+        - "ps-validator-task001"
+
+    # Group 2: Barrier-1 gate check
+    - id: 2
+      name: "Barrier 1: TASK-001 Completion Gate"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      tasks:
+        - "verify-barrier-1-conditions"
+
+    # Group 3: Phase 2 fan-out (PARALLEL between task cycles, SEQUENTIAL within each)
+    - id: 3
+      name: "Phase 2: TASK-002 + TASK-003 Parallel Critique Cycles"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      parallel_tracks:
+        - name: "TASK-002 Critique Cycle"
+          agents:
+            - "ps-architect-task002"
+            - "ps-critic-task002"
+            - "ps-architect-task002-rev"
+            - "ps-validator-task002"
+        - name: "TASK-003 Critique Cycle"
+          agents:
+            - "ps-architect-task003"
+            - "ps-critic-task003"
+            - "ps-architect-task003-rev"
+            - "ps-validator-task003"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  # Expected checkpoints:
+  # - CP-001: Phase 1 complete (after ps-validator-task001)
+  # - CP-002: Barrier 1 complete (after gate check passes)
+  # - CP-003: Workflow complete (after all Phase 2 validators)
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 2
+    phases_percent: 0
+    barriers_complete: 0
+    barriers_total: 1
+    barriers_percent: 0
+    agents_executed: 0
+    agents_total: 12  # 4 per task * 3 tasks
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 13  # 12 agent artifacts + 1 barrier gate check
+    artifacts_percent: 0
+
+  quality:
+    task001_critique_score: null
+    task002_critique_score: null
+    task003_critique_score: null
+    task001_validated: false
+    task002_validated: false
+    task003_validated: false
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute ps-architect-task001: Create TASK-001 implementation"
+      agent: "ps-architect-task001"
+      phase: 1
+      inputs:
+        - "TASK-001-add-keywords-to-marketplace-schema.md"
+        - "schemas/marketplace.schema.json"
+        - "schemas/plugin.schema.json"
+
+  subsequent:
+    - action: "Execute ps-critic-task001: Adversarial critique of TASK-001"
+      depends_on: "ps-architect-task001 complete"
+    - action: "Execute ps-architect-task001-rev: Revise based on critique"
+      depends_on: "ps-critic-task001 complete"
+    - action: "Execute ps-validator-task001: Validate TASK-001"
+      depends_on: "ps-architect-task001-rev complete"
+    - action: "Check barrier-1 gate conditions"
+      depends_on: "ps-validator-task001 reports VALIDATED"
+    - action: "Fan-out: Execute TASK-002 and TASK-003 critique cycles in parallel"
+      depends_on: "barrier-1 COMPLETE"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow planned, not started"
+  next_step: "Execute ps-architect-task001 (TASK-001 creator)"
+
+  files_to_read:
+    - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION_PLAN.md"
+    - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION_WORKTRACKER.md"
+    - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+# =============================================================================
+# DISCLAIMER
+# =============================================================================
+# This orchestration state file was generated by orch-planner agent (v2.1.0).
+# Human review recommended before execution. All paths are repository-relative.
