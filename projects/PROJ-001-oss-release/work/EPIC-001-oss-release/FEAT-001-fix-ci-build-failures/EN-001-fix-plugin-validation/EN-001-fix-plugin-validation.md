@@ -1,7 +1,7 @@
 # EN-001: Fix Plugin Validation
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -22,7 +22,7 @@
 | [Problem Statement](#problem-statement) | Why this enabler is needed |
 | [Business Value](#business-value) | How enabler supports feature delivery |
 | [Technical Approach](#technical-approach) | High-level technical approach |
-| [Children (Tasks)](#children-tasks) | Task inventory and tracking |
+| [Tasks](#tasks) | Task inventory (children of BUG-001) |
 | [Bugs](#bugs) | Bugs addressed by this enabler |
 | [Decisions](#decisions) | Decisions made in this enabler |
 | [Progress Summary](#progress-summary) | Overall enabler progress |
@@ -68,15 +68,15 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 
 ---
 
-## Children (Tasks)
+## Tasks
 
-### Task Inventory
+> Tasks are children of [BUG-001](./BUG-001-marketplace-manifest-schema-error.md) and listed here for enabler-level visibility.
 
-| ID | Title | Status | Priority | Owner |
-|----|-------|--------|----------|-------|
-| [TASK-001](./TASK-001-add-keywords-to-marketplace-schema.md) | Add `keywords` property to marketplace plugin item schema | BACKLOG | HIGH | — |
-| [TASK-002](./TASK-002-add-validation-tests.md) | Add tests for plugin manifest validation | BACKLOG | HIGH | — |
-| [TASK-003](./TASK-003-specify-validator-class.md) | Specify Draft202012Validator in validation script | BACKLOG | MEDIUM | — |
+| ID | Title | Status | Priority | Parent | Owner |
+|----|-------|--------|----------|--------|-------|
+| [TASK-001](./TASK-001-add-keywords-to-marketplace-schema.md) | Add `keywords` property to marketplace plugin item schema | BACKLOG | HIGH | BUG-001 | — |
+| [TASK-002](./TASK-002-add-validation-tests.md) | Add tests for plugin manifest validation | BACKLOG | HIGH | BUG-001 | — |
+| [TASK-003](./TASK-003-specify-validator-class.md) | Specify Draft202012Validator in validation script | BACKLOG | MEDIUM | BUG-001 | — |
 
 ---
 
@@ -132,6 +132,24 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 
 ---
 
+## Evidence
+
+### Deliverables
+
+| Deliverable | Type | Link |
+|-------------|------|------|
+| Updated marketplace schema | Code | `schemas/marketplace.schema.json` (TASK-001) |
+| Validation tests | Code | TBD (TASK-002) |
+| Updated validation script | Code | `scripts/validate_plugin_manifests.py` (TASK-003) |
+
+### Verification
+
+- [ ] `uv run python scripts/validate_plugin_manifests.py` passes all 3 manifests
+- [ ] Plugin Validation CI check passes
+- [ ] `uv run pytest` includes new validation tests
+
+---
+
 ## Related Items
 
 ### Hierarchy
@@ -145,3 +163,4 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | in_progress | Enabler created from FEAT-001 restructure. Groups BUG-001, 3 tasks, and DEC-001. |
+| 2026-02-10 | Claude | pending | Status corrected: no task work started yet. Tasks clarified as BUG-001 children (EN-001 references for visibility). Evidence section added. |

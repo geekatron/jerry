@@ -1,7 +1,7 @@
 # BUG-001: Marketplace manifest schema error — `keywords` not allowed
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
@@ -166,3 +166,4 @@ The original analysis concluded the issue was a JSON Schema draft mismatch requi
 | 2026-02-10 | Claude | pending | Bug triaged from PR #6 CI failure |
 | 2026-02-10 | Claude | pending | Root cause analysis: initially identified as JSON Schema draft mismatch |
 | 2026-02-10 | Claude | in_progress | **CORRECTED**: Root cause is missing `keywords` in marketplace schema, not draft mismatch. Local verification confirmed plugin.json passes, marketplace.json fails with both default and Draft202012 validators. Tasks reorganized. |
+| 2026-02-10 | Claude | pending | Status corrected per audit: investigation complete but no task work started. All 3 child tasks remain BACKLOG. |

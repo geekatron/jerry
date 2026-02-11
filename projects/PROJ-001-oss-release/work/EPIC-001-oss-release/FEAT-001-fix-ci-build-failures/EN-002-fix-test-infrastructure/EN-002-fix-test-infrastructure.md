@@ -121,6 +121,23 @@ Recommended approach:
 
 ---
 
+## Evidence
+
+### Deliverables
+
+| Deliverable | Type | Link |
+|-------------|------|------|
+| Updated test pipeline | Code | `tests/integration/transcript/test_pipeline.py` (BUG-004) |
+| Updated conftest.py | Code | `tests/project_validation/conftest.py` (BUG-005) |
+
+### Verification
+
+- [ ] `uv run pytest tests/integration/transcript/` passes or skips gracefully
+- [ ] `uv run pytest tests/project_validation/` passes with dynamic discovery
+- [ ] All Test pip/uv CI jobs pass
+
+---
+
 ## Related Items
 
 ### Hierarchy

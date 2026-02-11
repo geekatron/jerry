@@ -53,7 +53,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Fix CI Build Failures | in_progress | high | 0% |
+| FEAT-001 | Fix CI Build Failures | in_progress | high | 40% |
 
 ### Feature Links
 
@@ -70,9 +70,9 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
 | Features:  [....................] 0% (0/1 completed)              |
-| Bugs:      [....................] 0% (0/5 completed)              |
+| Bugs:      [########............] 40% (2/5 completed)            |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [####................] 20%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -82,9 +82,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |--------|-------|
 | **Total Features** | 1 |
 | **Completed Features** | 0 |
-| **In Progress Features** | 1 |
+| **In Progress Features** | 1 (FEAT-001 at 40%) |
 | **Pending Features** | 0 |
 | **Feature Completion %** | 0% |
+| **Total Bugs** | 5 |
+| **Completed Bugs** | 2 (BUG-002, BUG-003) |
+| **Bug Completion %** | 40% |
 
 ---
 
@@ -102,3 +105,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Epic created |
 | 2026-02-10 | Claude | in_progress | FEAT-001 created with 5 bugs from PR #6 CI failures |
+| 2026-02-10 | Claude | in_progress | Progress sync: 2/5 bugs completed (BUG-002, BUG-003). FEAT-001 restructured with EN-001, EN-002 Enablers. |
