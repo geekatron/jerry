@@ -67,10 +67,10 @@ pipelines:
     description: "Sequential pipeline with adversarial critique loops for BUG-001 fix"
     short_alias: "ps"
     skill_source: "problem-solving"
-    status: "PHASE_1_IN_PROGRESS"
-    current_phase: 1
+    status: "PHASE_2_PENDING"
+    current_phase: 2
     total_phases: 2
-    progress_percent: 25
+    progress_percent: 33
 
     phases:
       # =========================================================================
@@ -80,9 +80,9 @@ pipelines:
         name: "Root Cause Fix"
         path_id: "phase-1-root-cause-fix"
         task_ref: "TASK-001"
-        status: "IN_PROGRESS"  # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+        status: "COMPLETE"
         started_at: "2026-02-11T02:50:00Z"
-        completed_at: null
+        completed_at: "2026-02-11T03:08:00Z"
 
         critique_cycle:
           pattern: "create-critique-revise-validate"
@@ -156,7 +156,10 @@ pipelines:
             name: "TASK-001 Validator"
             role: "validator"
             agent_spec: "skills/problem-solving/agents/ps-validator.md"
-            status: "PENDING"
+            status: "COMPLETE"
+            completed_at: "2026-02-11T03:08:00Z"
+            validation_verdict: "VALIDATED"
+            confidence: 1.0
             depends_on: ["ps-architect-task001-rev"]
             artifact: "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-validator-task001/ps-validator-task001-validation.md"
             inputs:
@@ -179,9 +182,8 @@ pipelines:
         task_refs:
           - "TASK-002"
           - "TASK-003"
-        status: "BLOCKED"
-        blocked_by: "barrier-1"
-        started_at: null
+        status: "IN_PROGRESS"
+        started_at: "2026-02-11T03:20:00Z"
         completed_at: null
         execution_mode: "PARALLEL"  # TASK-002 and TASK-003 run in parallel
 
@@ -328,8 +330,8 @@ pipelines:
 barriers:
   - id: "barrier-1"
     name: "TASK-001 Completion Gate"
-    status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE
-    completed_at: null
+    status: "COMPLETE"
+    completed_at: "2026-02-11T03:20:00Z"
     depends_on:
       - "ps.phase.1"
     gate_conditions:
@@ -340,19 +342,19 @@ barriers:
       - "ps.phase.2"
     artifact:
       path: "orchestration/en001-bugfix-20260210-001/barriers/barrier-1/barrier-1-gate-check.md"
-      status: "PENDING"
+      status: "COMPLETE"
 
 # =============================================================================
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 1
+  current_group: 3
   groups:
     # Group 1: Phase 1 critique cycle (SEQUENTIAL within group)
     - id: 1
       name: "Phase 1: TASK-001 Critique Cycle"
       execution_mode: "SEQUENTIAL"
-      status: "READY"
+      status: "COMPLETE"
       agents:
         - "ps-architect-task001"
         - "ps-critic-task001"
@@ -363,8 +365,7 @@ execution_queue:
     - id: 2
       name: "Barrier 1: TASK-001 Completion Gate"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
-      blocked_by: "group-1"
+      status: "COMPLETE"
       tasks:
         - "verify-barrier-1-conditions"
 
@@ -372,8 +373,7 @@ execution_queue:
     - id: 3
       name: "Phase 2: TASK-002 + TASK-003 Parallel Critique Cycles"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "group-2"
+      status: "READY"
       parallel_tracks:
         - name: "TASK-002 Critique Cycle"
           agents:
@@ -404,30 +404,30 @@ checkpoints:
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 0
+    phases_complete: 1
     phases_total: 2
-    phases_percent: 0
-    barriers_complete: 0
+    phases_percent: 50
+    barriers_complete: 1
     barriers_total: 1
-    barriers_percent: 0
-    agents_executed: 3
+    barriers_percent: 100
+    agents_executed: 4
     agents_total: 12  # 4 per task * 3 tasks
-    agents_percent: 25
-    artifacts_created: 3
+    agents_percent: 33
+    artifacts_created: 5  # 4 phase-1 + 1 barrier gate check
     artifacts_total: 13  # 12 agent artifacts + 1 barrier gate check
-    artifacts_percent: 23
+    artifacts_percent: 38
 
   quality:
     task001_critique_score: 0.943
     task002_critique_score: null
     task003_critique_score: null
-    task001_validated: false
+    task001_validated: true
     task002_validated: false
     task003_validated: false
 
   timing:
     workflow_started: "2026-02-11T02:50:00Z"
-    last_activity: "2026-02-11T03:15:00Z"
+    last_activity: "2026-02-11T03:20:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -444,26 +444,28 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute ps-validator-task001: Validate TASK-001 against acceptance criteria"
-      agent: "ps-validator-task001"
-      phase: 1
-      inputs:
-        - "orchestration/en001-bugfix-20260210-001/ps/phase-1-root-cause-fix/ps-architect-task001-rev/ps-architect-task001-rev-revision.md"
-        - "projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-001-fix-plugin-validation/TASK-001-add-keywords-to-marketplace-schema.md"
+    - action: "Fan-out: Execute ps-architect-task002 and ps-architect-task003 in parallel"
+      agents:
+        - "ps-architect-task002"
+        - "ps-architect-task003"
+      phase: 2
+      execution_mode: "PARALLEL"
 
   subsequent:
-    - action: "Check barrier-1 gate conditions"
-      depends_on: "ps-validator-task001 reports VALIDATED"
-    - action: "Fan-out: Execute TASK-002 and TASK-003 critique cycles in parallel"
-      depends_on: "barrier-1 COMPLETE"
+    - action: "After creators: Execute ps-critic-task002 and ps-critic-task003 in parallel"
+      depends_on: "ps-architect-task002 and ps-architect-task003 complete"
+    - action: "After critics: Execute revisions in parallel"
+      depends_on: "critique cycles complete"
+    - action: "After revisions: Execute validators in parallel"
+      depends_on: "revisions complete"
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Phase 1 in progress. ps-architect-task001, ps-critic-task001 (0.943), ps-architect-task001-rev all COMPLETE. Accepted maxLength/maxItems, rejected minItems/pattern/$ref. Awaiting validation."
-  next_step: "Execute ps-validator-task001 (TASK-001 final validation against acceptance criteria)"
+  current_state: "Phase 1 COMPLETE. All 4 agents done: create→critique(0.943)→revise→validate(VALIDATED 100%). Barrier-1 COMPLETE. Phase 2 READY for fan-out."
+  next_step: "Execute ps-architect-task002 and ps-architect-task003 in PARALLEL (Phase 2 creators)"
 
   files_to_read:
     - "orchestration/en001-bugfix-20260210-001/ORCHESTRATION_PLAN.md"
