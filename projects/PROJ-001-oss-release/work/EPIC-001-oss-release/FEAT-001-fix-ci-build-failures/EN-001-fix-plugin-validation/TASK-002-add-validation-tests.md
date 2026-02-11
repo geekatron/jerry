@@ -1,7 +1,7 @@
 # TASK-002: Add tests for plugin manifest validation
 
 > **Type:** task
-> **Status:** IN_PROGRESS
+> **Status:** DONE
 > **Priority:** HIGH
 > **Created:** 2026-02-10
 > **Parent:** BUG-001
@@ -32,11 +32,11 @@ Add or update unit tests to verify that plugin manifest validation works correct
 
 ### Acceptance Criteria
 
-- [ ] Test exists verifying `keywords` field is accepted in marketplace plugin items
-- [ ] Test exists verifying unknown properties are still rejected
-- [ ] Test exists verifying all three manifests pass the validation script
-- [ ] All tests pass with `uv run pytest`
-- [ ] No regressions in existing test suite
+- [x] Test exists verifying `keywords` field is accepted in marketplace plugin items
+- [x] Test exists verifying unknown properties are still rejected
+- [x] Test exists verifying all three manifests pass the validation script
+- [x] All tests pass with `uv run pytest`
+- [x] No regressions in existing test suite
 
 ### Implementation Notes
 
