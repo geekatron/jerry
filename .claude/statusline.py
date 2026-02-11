@@ -919,7 +919,7 @@ def get_git_info(data: dict, config: dict) -> tuple[str, bool, int] | None:
             timeout=timeout,
         )
 
-        uncommitted_lines = [line for line in result.stdout.strip().split("\n") if line]
+        uncommitted_lines = [line for line in result.stdout.strip().splitlines() if line]
         uncommitted_count = len(uncommitted_lines)
         is_clean = uncommitted_count == 0
 
