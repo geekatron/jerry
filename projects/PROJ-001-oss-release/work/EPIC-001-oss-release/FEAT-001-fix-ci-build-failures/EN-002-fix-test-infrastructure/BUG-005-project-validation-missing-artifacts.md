@@ -114,6 +114,17 @@ The actual project in the repository is `PROJ-001-oss-release` (our new project)
 
 ---
 
+## Children (Tasks)
+
+| ID | Title | Status | Priority |
+|----|-------|--------|----------|
+| [TASK-001](./BUG-005--TASK-001-wire-dynamic-project-discovery.md) | Wire dynamic project discovery into project_id fixture | pending | medium |
+| [TASK-002](./BUG-005--TASK-002-create-category-directories.md) | Create required category directories in PROJ-001-oss-release | pending | medium |
+
+**Dependency:** Both TASK-001 and TASK-002 are required for tests to pass. TASK-001 makes the fixture discover `PROJ-001-oss-release`. TASK-002 ensures it has the required structure. They can be implemented in parallel but both must be committed together.
+
+---
+
 ## Acceptance Criteria
 
 ### Fix Verification
@@ -131,6 +142,11 @@ The actual project in the repository is `PROJ-001-oss-release` (our new project)
 - **Parent:** [EN-002: Fix Test Infrastructure](./EN-002-fix-test-infrastructure.md)
 - **Feature:** [FEAT-001: Fix CI Build Failures](../FEAT-001-fix-ci-build-failures.md)
 
+### Children
+
+- [TASK-001: Wire dynamic project discovery into project_id fixture](./BUG-005--TASK-001-wire-dynamic-project-discovery.md)
+- [TASK-002: Create required category directories in PROJ-001-oss-release](./BUG-005--TASK-002-create-category-directories.md)
+
 ### Related Bugs
 
 - **BUG-003:** Bootstrap test assumes `projects/` dir exists — related missing directory issue
@@ -143,3 +159,4 @@ The actual project in the repository is `PROJ-001-oss-release` (our new project)
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Bug triaged from PR #6 CI failure |
 | 2026-02-10 | Claude | pending | Root cause confirmed: `project_id` fixture in conftest.py hardcoded to `PROJ-001-plugin-cleanup` (doesn't exist). Dynamic `discover_projects()` exists but isn't used. |
+| 2026-02-11 | Claude | pending | TASK-001 (dynamic discovery) and TASK-002 (category directories) created. Both required for tests to pass. |

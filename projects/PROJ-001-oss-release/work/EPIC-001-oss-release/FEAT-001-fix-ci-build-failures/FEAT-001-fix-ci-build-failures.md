@@ -73,7 +73,7 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | ID | Title | Status | Priority | Children |
 |----|-------|--------|----------|----------|
 | [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | done | high | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
-| [EN-002](./EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | pending | medium | BUG-004, BUG-005 |
+| [EN-002](./EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | in_progress | medium | BUG-004 (TASK-001), BUG-005 (TASK-001, TASK-002) |
 | [EN-003](./EN-003-fix-validation-test-regressions/EN-003-fix-validation-test-regressions.md) | Fix Validation Test Regressions | done | high | BUG-006, TASK-001, TASK-002 |
 
 ### Completed Bugs (Feature-Level)
@@ -137,3 +137,4 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | 2026-02-10 | Claude | in_progress | Restructured to use Enablers: EN-001 (Fix Plugin Validation) groups BUG-001 + tasks + decision; EN-002 (Fix Test Infrastructure) groups BUG-004 + BUG-005. Completed BUG-002/003 remain at Feature level. |
 | 2026-02-11 | Claude | in_progress | EN-001 completed (BUG-001, TASK-001/002/003 all DONE). AC-1 verified. Plugin Validation CI passes. |
 | 2026-02-11 | Claude | in_progress | EN-003 created for BUG-006 (validation test CI regressions from EN-001/TASK-002). Lint & Format and Test pip failures. TASK-001 (f-string fix) and TASK-002 (uv skipif) both completed. Progress: 67% (4/6 bugs, 2/3 enablers). |
+| 2026-02-11 | Claude | in_progress | EN-002 tasks created: BUG-004/TASK-001 (skip guard), BUG-005/TASK-001 (dynamic discovery), BUG-005/TASK-002 (category dirs). EN-002 moved to in_progress. |
