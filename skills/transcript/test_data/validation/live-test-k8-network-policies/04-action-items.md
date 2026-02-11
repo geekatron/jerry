@@ -13,8 +13,8 @@
 | Attribute | Value |
 |-----------|-------|
 | **Action** | Walk the team through the decision tree for CNI drivers |
-| **Assignee** | Adam Nowak |
-| **Speaker** | Adam Nowak |
+| **Assignee** | Alex Johnson |
+| **Speaker** | Alex Johnson |
 | **Confidence** | 85% |
 | **Status** | Pending |
 
@@ -30,8 +30,8 @@
 | Attribute | Value |
 |-----------|-------|
 | **Action** | Share screen to show the artifacts and matrix |
-| **Assignee** | Adam Nowak |
-| **Speaker** | Adam Nowak |
+| **Assignee** | Alex Johnson |
+| **Speaker** | Alex Johnson |
 | **Confidence** | 90% |
 | **Status** | Pending |
 

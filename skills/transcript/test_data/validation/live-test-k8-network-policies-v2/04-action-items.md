@@ -11,7 +11,7 @@ packet_id: "k8-network-policies-v2"
 
 | ID | Action | Assigned To | Status | Confidence |
 |----|--------|-------------|--------|------------|
-| [act-001](#act-001) | Walk through the decision tree for Kubernetes network interface drivers | Adam Nowak | Pending | 85% |
+| [act-001](#act-001) | Walk through the decision tree for Kubernetes network interface drivers | Alex Johnson | Pending | 85% |
 
 ---
 
@@ -21,7 +21,7 @@ packet_id: "k8-network-policies-v2"
 
 **Action:** Walk through the decision tree for Kubernetes network interface drivers
 
-**Assigned To:** [Adam Nowak](03-speakers.md#spk-001)
+**Assigned To:** [Alex Johnson](03-speakers.md#spk-001)
 
 **Status:** Pending
 
@@ -63,7 +63,7 @@ This action item represents an explicit commitment to provide a walkthrough of t
 - [seg-011](02-transcript.md#seg-011) - Primary citation
 
 ### From Speakers
-- [Adam Nowak](03-speakers.md#spk-001) - Assignee
+- [Alex Johnson](03-speakers.md#spk-001) - Assignee
 
 ### From Topics
 - [topic-003](07-topics.md#top-003) - Decision Tree and Analysis Artifacts

@@ -17,8 +17,8 @@ K8s Network Policies Discussion
     │         │    │         │     │           │               │
     ▼         ▼    ▼         ▼     ▼           ▼               ▼
 ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
-│ Adam  │ │Brendan│ │  CNI  │ │ Eval  │ │Walk   │ │ CNI   │ │Cilium/│
-│ Nowak │ │Bennett│ │ Impl  │ │Matrix │ │through│ │Select │ │Kyverno│
+│ Alex  │ │  Sam  │ │  CNI  │ │ Eval  │ │Walk   │ │ CNI   │ │Cilium/│
+│ Nowak │ │ Chen  │ │ Impl  │ │Matrix │ │through│ │Select │ │Kyverno│
 └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘
     │         │         │         │         │         │         │
     ▼         ▼         ▼         ▼         ▼         ▼         ▼
@@ -29,8 +29,8 @@ ENTITY LINKS (ADR-003 Compliance)
 ─────────────────────────────────
 
 SPEAKERS:
-  Adam Nowak ──────────────► 03-speakers.md#spk-001
-  Brendan Bennett ─────────► 03-speakers.md#spk-002
+  Alex Johnson ──────────────► 03-speakers.md#spk-001
+  Sam Chen ─────────► 03-speakers.md#spk-002
 
 ACTION ITEMS:
   Walk through decision tree ► 04-action-items.md#act-001

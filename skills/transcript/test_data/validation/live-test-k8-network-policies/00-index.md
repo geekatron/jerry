@@ -38,8 +38,8 @@
 ## Key Highlights
 
 ### Action Items
-- [act-001](#act-001): Adam to walk the team through the decision tree for CNI drivers
-- [act-002](#act-002): Adam to share screen to show the artifacts and matrix
+- [act-001](#act-001): Alex to walk the team through the decision tree for CNI drivers
+- [act-002](#act-002): Alex to share screen to show the artifacts and matrix
 
 ### Decisions
 - [dec-001](#dec-001): CNI driver selection based on decision tree - new driver deprecating Microsoft's official

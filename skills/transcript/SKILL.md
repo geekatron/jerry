@@ -1439,15 +1439,15 @@ transcript-{id}/
   "duration_ms": 2263888,
   "speakers": {
     "count": 3,
-    "list": ["Adam Nowak", "Brendan Bennett", "Viktor Subota"],
-    "segment_counts": {"Adam Nowak": 459, "Brendan Bennett": 156, "Viktor Subota": 95}
+    "list": ["Alex Johnson", "Sam Chen", "Jordan Lee"],
+    "segment_counts": {"Alex Johnson": 459, "Sam Chen": 156, "Jordan Lee": 95}
   },
   "chunks": [
     {
       "chunk_id": "chunk-001",
       "segment_range": [1, 229],
       "timestamp_range": {"start_ms": 3528, "end_ms": 721925},
-      "speaker_counts": {"Adam Nowak": 151, "Brendan Bennett": 39, "Viktor Subota": 39},
+      "speaker_counts": {"Alex Johnson": 151, "Sam Chen": 39, "Jordan Lee": 39},
       "word_count": 2193,
       "file": "chunks/chunk-001.json"
     }

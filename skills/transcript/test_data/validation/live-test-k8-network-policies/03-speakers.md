@@ -7,7 +7,7 @@
 
 ## Participants
 
-### Adam Nowak
+### Alex Johnson
 <a id="spk-001"></a>
 
 | Attribute | Value |
@@ -26,7 +26,7 @@
 
 ---
 
-### Brendan Bennett
+### Sam Chen
 <a id="spk-002"></a>
 
 | Attribute | Value |

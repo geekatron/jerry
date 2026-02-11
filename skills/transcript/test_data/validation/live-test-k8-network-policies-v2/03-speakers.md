@@ -11,19 +11,19 @@ packet_id: "k8-network-policies-v2"
 
 | ID | Name | Segments | First Appearance | Confidence |
 |----|------|----------|------------------|------------|
-| [spk-001](#spk-001) | Adam Nowak | 12 | 00:00:03 (seg-001) | 95% |
-| [spk-002](#spk-002) | Brendan Bennett | 8 | 00:00:05 (seg-002) | 95% |
+| [spk-001](#spk-001) | Alex Johnson | 12 | 00:00:03 (seg-001) | 95% |
+| [spk-002](#spk-002) | Sam Chen | 8 | 00:00:05 (seg-002) | 95% |
 
 ## Speaker Participation
 
 ```
-Adam Nowak      ████████████ (60%)
-Brendan Bennett ████████ (40%)
+Alex Johnson      ████████████ (60%)
+Sam Chen ████████ (40%)
 ```
 
 ---
 
-## <a id="spk-001"></a>Speaker: Adam Nowak
+## <a id="spk-001"></a>Speaker: Alex Johnson
 
 **Identification Method:** VTT Voice Tag
 **Confidence:** 95%
@@ -66,7 +66,7 @@ Brendan Bennett ████████ (40%)
 
 ---
 
-## <a id="spk-002"></a>Speaker: Brendan Bennett
+## <a id="spk-002"></a>Speaker: Sam Chen
 
 **Identification Method:** VTT Voice Tag
 **Confidence:** 95%
@@ -110,15 +110,15 @@ Brendan Bennett ████████ (40%)
 - [02-transcript.md](02-transcript.md) - All speaker segments
 
 ### From Action Items
-- [04-action-items.md](04-action-items.md#act-001) - Adam Nowak assigned
+- [04-action-items.md](04-action-items.md#act-001) - Alex Johnson assigned
 
 ### From Decisions
 - [05-decisions.md](05-decisions.md#dec-001) - Both speakers participated
 
 ### From Questions
-- [06-questions.md](06-questions.md#que-001) - Adam Nowak asked
-- [06-questions.md](06-questions.md#que-002) - Brendan Bennett asked
-- [06-questions.md](06-questions.md#que-003) - Brendan Bennett asked
+- [06-questions.md](06-questions.md#que-001) - Alex Johnson asked
+- [06-questions.md](06-questions.md#que-002) - Sam Chen asked
+- [06-questions.md](06-questions.md#que-003) - Sam Chen asked
 
 ### From Topics
 - [07-topics.md](07-topics.md) - All topic participation

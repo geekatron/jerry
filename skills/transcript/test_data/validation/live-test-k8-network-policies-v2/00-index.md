@@ -40,11 +40,11 @@ packet_id: "k8-network-policies-v2"
 Kubernetes Network Policy implementation recommendations and evaluation methodology
 
 ### Main Participants
-- **Adam Nowak** - 10 segments (50%)
-- **Brendan Bennett** - 7 segments (35%)
+- **Alex Johnson** - 10 segments (50%)
+- **Sam Chen** - 7 segments (35%)
 
 ### Critical Decision
 Did not recommend specific Kubernetes network implementations; provided decision tree for evaluation instead
 
 ### Next Action
-Walk through the decision tree for Kubernetes network interface drivers (assigned to Adam Nowak)
+Walk through the decision tree for Kubernetes network interface drivers (assigned to Alex Johnson)
