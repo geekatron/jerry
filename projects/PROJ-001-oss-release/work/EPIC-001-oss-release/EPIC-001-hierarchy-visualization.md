@@ -2,7 +2,7 @@
 
 **Generated:** 2026-02-10
 **Root Entity:** EPIC-001
-**Diagram Type:** hierarchy
+**Diagram Types:** hierarchy, dependencies, gantt, state, progress (pie)
 **Entities Included:** 14
 **Max Depth Reached:** 5 (EPIC -> FEAT -> EN -> BUG -> TASK)
 **Scope:** Full EPIC-001 (OSS Release Preparation)
@@ -13,16 +13,21 @@
 
 | Section | Purpose |
 |---------|---------|
-| [Hierarchy Diagram](#hierarchy-diagram) | Complete Mermaid flowchart of EPIC-001 entity tree |
+| [1. Hierarchy Flowchart](#1-hierarchy-flowchart) | Complete Mermaid flowchart (TD) of EPIC-001 entity tree |
+| [2. Dependency Map](#2-dependency-map) | Dependency chains (LR) between entities |
+| [3. Gantt Chart](#3-gantt-chart) | Timeline/status view of all work items |
+| [4. State Diagram](#4-state-diagram) | State machine showing status progression |
+| [5. Pie Chart](#5-pie-chart) | Distribution of items by status |
 | [Legend](#legend) | Color coding and line style explanation |
 | [Entity Inventory](#entity-inventory) | Tabular listing of all entities with metadata |
-| [Dependency Map](#dependency-map) | Dependency relationships between entities |
 | [Key Observations](#key-observations) | Critical path, progress, and blockers |
 | [Metadata](#metadata) | Generation details |
 
 ---
 
-## Hierarchy Diagram
+## 1. Hierarchy Flowchart
+
+Parent-child relationships from EPIC down to leaf tasks.
 
 ```mermaid
 flowchart TD
@@ -38,11 +43,11 @@ flowchart TD
     FEAT001["FEAT-001\nFix CI Build Failures\n(in_progress | 40%)"]
 
     %% --- Enabler Layer ---
-    EN001["EN-001\nFix Plugin Validation\n(in_progress)"]
+    EN001["EN-001\nFix Plugin Validation\n(pending)"]
     EN002["EN-002\nFix Test Infrastructure\n(pending)"]
 
     %% --- Bug Layer ---
-    BUG001["BUG-001\nMarketplace manifest schema error\n(in_progress | major)"]
+    BUG001["BUG-001\nMarketplace manifest schema error\n(pending | major)"]
     BUG002["BUG-002\nCLI projects list crash\n(completed)"]
     BUG003["BUG-003\nBootstrap test missing projects dir\n(completed)"]
     BUG004["BUG-004\nTranscript pipeline no datasets\n(pending | major)"]
@@ -112,11 +117,11 @@ flowchart TD
     %% In-progress items: blue (#87CEEB)
     style EPIC001 fill:#87CEEB,stroke:#4682B4,color:#000
     style FEAT001 fill:#87CEEB,stroke:#4682B4,color:#000
-    style EN001 fill:#87CEEB,stroke:#4682B4,color:#000
-    style BUG001 fill:#87CEEB,stroke:#4682B4,color:#000
 
     %% Pending / backlog items: gray (#D3D3D3)
+    style EN001 fill:#D3D3D3,stroke:#808080,color:#000
     style EN002 fill:#D3D3D3,stroke:#808080,color:#000
+    style BUG001 fill:#D3D3D3,stroke:#808080,color:#000
     style BUG004 fill:#D3D3D3,stroke:#808080,color:#000
     style BUG005 fill:#D3D3D3,stroke:#808080,color:#000
     style TASK001 fill:#D3D3D3,stroke:#808080,color:#000
@@ -125,6 +130,141 @@ flowchart TD
 
     %% Decision: light purple for accepted decisions
     style DEC001 fill:#DDA0DD,stroke:#800080,color:#000
+```
+
+---
+
+## 2. Dependency Map
+
+Dependency chains and blocking relationships between entities.
+
+```mermaid
+flowchart LR
+    %% ========================================
+    %% Critical dependency chain for EN-001
+    %% ========================================
+    TASK001["TASK-001\nAdd keywords to schema\n(backlog)"] --> TASK002["TASK-002\nAdd validation tests\n(backlog)"]
+    TASK001 --> TASK003["TASK-003\nSpecify validator class\n(backlog)"]
+    DEC001["DEC-001\nValidator class decision\n(ACCEPTED)"] -.->|informs| TASK003
+
+    %% ========================================
+    %% Cross-references between bugs
+    %% ========================================
+    BUG002["BUG-002\nCLI crash\n(completed)"] -.->|same root cause| BUG003["BUG-003\nBootstrap test\n(completed)"]
+    BUG005["BUG-005\nProject validation\n(pending)"] -.->|related| BUG003
+
+    %% ========================================
+    %% Enabler sequencing (suggested, not hard)
+    %% ========================================
+    EN001["EN-001\nPlugin Validation\n(pending)"] -.->|suggested before| EN002["EN-002\nTest Infrastructure\n(pending)"]
+
+    %% ========================================
+    %% Enabler -> Feature completion
+    %% ========================================
+    EN001 -->|"completes"| FEAT001["FEAT-001\nFix CI Build Failures"]
+    EN002 -->|"completes"| FEAT001
+
+    %% ========================================
+    %% STATUS COLOR CODING
+    %% ========================================
+    style TASK001 fill:#D3D3D3,stroke:#808080,color:#000
+    style TASK002 fill:#D3D3D3,stroke:#808080,color:#000
+    style TASK003 fill:#D3D3D3,stroke:#808080,color:#000
+    style DEC001 fill:#DDA0DD,stroke:#800080,color:#000
+    style BUG002 fill:#90EE90,stroke:#228B22,color:#000
+    style BUG003 fill:#90EE90,stroke:#228B22,color:#000
+    style BUG005 fill:#D3D3D3,stroke:#808080,color:#000
+    style EN001 fill:#D3D3D3,stroke:#808080,color:#000
+    style EN002 fill:#D3D3D3,stroke:#808080,color:#000
+    style FEAT001 fill:#87CEEB,stroke:#4682B4,color:#000
+```
+
+---
+
+## 3. Gantt Chart
+
+Timeline and status view of all work items. Items are grouped by parent and show current status (done, active, or pending).
+
+```mermaid
+gantt
+    title EPIC-001 OSS Release Preparation - Work Item Status
+    dateFormat YYYY-MM-DD
+
+    section FEAT-001 (Completed Bugs)
+    BUG-002 CLI crash fix               :done,    bug002, 2026-02-10, 1d
+    BUG-003 Bootstrap test fix           :done,    bug003, 2026-02-10, 1d
+
+    section EN-001 Plugin Validation
+    BUG-001 Marketplace schema error     :         bug001, 2026-02-11, 2d
+    TASK-001 Add keywords to schema      :crit,    task001, 2026-02-11, 1d
+    TASK-002 Add validation tests        :         task002, after task001, 1d
+    TASK-003 Specify validator class     :         task003, after task001, 1d
+
+    section EN-002 Test Infrastructure
+    BUG-004 Transcript pipeline datasets :         bug004, 2026-02-13, 2d
+    BUG-005 Project validation fixtures  :         bug005, 2026-02-13, 2d
+```
+
+---
+
+## 4. State Diagram
+
+State machine showing the worktracker item status progression. Annotated with current item counts per state.
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending : create item
+
+    pending --> in_progress : start work
+    pending --> backlog : defer
+
+    backlog --> pending : prioritize
+    backlog --> in_progress : start work
+
+    in_progress --> blocked : impediment found
+    in_progress --> completed : finish work
+    in_progress --> cancelled : cancel
+
+    blocked --> in_progress : impediment resolved
+    blocked --> cancelled : cancel
+
+    completed --> [*]
+    cancelled --> [*]
+
+    note right of pending
+        EN-001, EN-002
+        BUG-001, BUG-004, BUG-005
+        (5 items)
+    end note
+
+    note right of in_progress
+        EPIC-001, FEAT-001
+        (2 items)
+    end note
+
+    note right of backlog
+        TASK-001, TASK-002, TASK-003
+        (3 items)
+    end note
+
+    note right of completed
+        BUG-002, BUG-003
+        (2 items)
+    end note
+```
+
+---
+
+## 5. Pie Chart
+
+Distribution of deliverable work items by status. DEC-001 excluded (decision artifact, not deliverable).
+
+```mermaid
+pie title EPIC-001 Work Item Status Distribution
+    "Completed" : 2
+    "In Progress" : 2
+    "Pending" : 5
+    "Backlog" : 3
 ```
 
 ---
@@ -148,9 +288,9 @@ flowchart TD
 |---|-----|------|-------|--------|----------|--------|-------|
 | 1 | EPIC-001 | Epic | OSS Release Preparation | in_progress | high | -- | Blue |
 | 2 | FEAT-001 | Feature | Fix CI Build Failures | in_progress | high | EPIC-001 | Blue |
-| 3 | EN-001 | Enabler | Fix Plugin Validation | in_progress | high | FEAT-001 | Blue |
+| 3 | EN-001 | Enabler | Fix Plugin Validation | pending | high | FEAT-001 | Gray |
 | 4 | EN-002 | Enabler | Fix Test Infrastructure | pending | medium | FEAT-001 | Gray |
-| 5 | BUG-001 | Bug | Marketplace manifest schema error: `keywords` not allowed | in_progress | high | EN-001 | Blue |
+| 5 | BUG-001 | Bug | Marketplace manifest schema error: `keywords` not allowed | pending | high | EN-001 | Gray |
 | 6 | BUG-002 | Bug | CLI `projects list` crashes with unhandled exception | completed | high | FEAT-001 | Green |
 | 7 | BUG-003 | Bug | Bootstrap test assumes `projects/` directory exists | completed | medium | FEAT-001 | Green |
 | 8 | BUG-004 | Bug | Transcript pipeline test finds no datasets | pending | medium | EN-002 | Gray |
@@ -165,41 +305,13 @@ flowchart TD
 
 | Status | Count | Percentage |
 |--------|-------|------------|
-| Completed | 2 | 15% |
-| In Progress | 4 | 31% |
-| Pending / Backlog | 7 | 54% |
-| **Total** | **13** | **100%** |
+| Completed | 2 | 17% |
+| In Progress | 2 | 17% |
+| Pending | 5 | 41% |
+| Backlog | 3 | 25% |
+| **Total** | **12** | **100%** |
 
-(DEC-001 excluded from status distribution as it is a decision artifact, not a deliverable work item.)
-
----
-
-## Dependency Map
-
-```mermaid
-flowchart LR
-    %% Critical dependency chain for EN-001
-    TASK001["TASK-001\nAdd keywords to schema"] --> TASK002["TASK-002\nAdd validation tests"]
-    TASK001 --> TASK003["TASK-003\nSpecify validator class"]
-    DEC001["DEC-001\nValidator class decision"] -.->|informs| TASK003
-
-    %% Cross-references
-    BUG002["BUG-002\nCLI crash"] -.->|same root cause| BUG003["BUG-003\nBootstrap test"]
-    BUG005["BUG-005\nProject validation"] -.->|related| BUG003
-
-    %% Enabler sequencing
-    EN001["EN-001\nPlugin Validation"] -.->|suggested before| EN002["EN-002\nTest Infrastructure"]
-
-    style TASK001 fill:#D3D3D3,stroke:#808080,color:#000
-    style TASK002 fill:#D3D3D3,stroke:#808080,color:#000
-    style TASK003 fill:#D3D3D3,stroke:#808080,color:#000
-    style DEC001 fill:#DDA0DD,stroke:#800080,color:#000
-    style BUG002 fill:#90EE90,stroke:#228B22,color:#000
-    style BUG003 fill:#90EE90,stroke:#228B22,color:#000
-    style BUG005 fill:#D3D3D3,stroke:#808080,color:#000
-    style EN001 fill:#87CEEB,stroke:#4682B4,color:#000
-    style EN002 fill:#D3D3D3,stroke:#808080,color:#000
-```
+(DEC-001 excluded from status distribution as it is a decision artifact, not a deliverable work item. EPIC-001 and FEAT-001 counted as in_progress containers.)
 
 ---
 
@@ -213,7 +325,7 @@ The critical path to unblocking PR #6 is:
 TASK-001 (add keywords to schema)
   -> TASK-002 (add validation tests)
   -> TASK-003 (specify validator class)
-  -> EN-001 complete
+  -> BUG-001 resolved -> EN-001 complete
   -> BUG-004 fix (transcript pipeline)
   -> BUG-005 fix (project validation)
   -> EN-002 complete
@@ -225,9 +337,9 @@ TASK-001 (add keywords to schema)
 
 ### 2. Progress Assessment
 
-- **Overall Progress:** ~15% (2 of 13 deliverable items completed)
+- **Overall Progress:** ~17% (2 of 12 deliverable items completed)
 - **Completed:** BUG-002 and BUG-003 (both resolved by committing `projects/` directory to git -- same root cause, single fix)
-- **Active Work:** EN-001 / BUG-001 is the current focus area with 3 tasks in backlog
+- **Active Work:** None currently in_progress at the leaf level. EN-001 and BUG-001 have been corrected to `pending` (no task work has started).
 - **Waiting:** EN-002 (BUG-004 + BUG-005) has not started yet
 
 ### 3. Blockers and Risks
@@ -258,7 +370,9 @@ DEC-001 (JSON Schema Validator Class Selection) is **ACCEPTED** but has an impor
 
 - **Entities Visualized:** EPIC-001, FEAT-001, EN-001, EN-002, BUG-001, BUG-002, BUG-003, BUG-004, BUG-005, TASK-001, TASK-002, TASK-003, DEC-001
 - **Relationships Shown:** 11 parent-child, 5 dependency/cross-reference
+- **Diagram Types Generated:** 5 (hierarchy flowchart, dependency map, gantt chart, state diagram, pie chart)
 - **Status Color Coding:** Enabled (Blue=in_progress, Green=completed, Gray=pending/backlog, Purple=decision)
+- **Status Corrections Applied:** EN-001 and BUG-001 corrected from `in_progress` to `pending` per source files
 - **Warnings:** None
 
 ---
