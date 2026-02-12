@@ -13,7 +13,7 @@
 #   SKIP=pytest git commit -m "message"     # Skip tests only
 #   git commit --no-verify -m "message"     # Skip all hooks (emergency)
 
-default_install_hook_types: [pre-commit, pre-push]
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
 default_stages: [pre-commit]
 
 repos:
@@ -96,6 +96,15 @@ repos:
         files: (plugin\.json|marketplace\.json|hooks\.json)$
         pass_filenames: false
         stages: [pre-commit]
+
+  # =============================================================================
+  # Conventional Commit Message Linting (EN-108)
+  # =============================================================================
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.4.1
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
 
   # =============================================================================
   # Security Scanning (pip-audit)

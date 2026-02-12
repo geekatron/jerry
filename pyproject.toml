@@ -110,6 +110,70 @@ markers = [
     "boundary: marks tests as boundary value scenarios",
 ]
 
+# =============================================================================
+# Commitizen Configuration (EN-108)
+# =============================================================================
+# Used for commit message linting (pre-commit hook) only.
+# Version bumping is handled by bump-my-version, NOT commitizen.
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "pep621"
+tag_format = "v$version"
+
+# =============================================================================
+# Version Bumping Configuration (EN-108)
+# =============================================================================
+# Uses bump-my-version for multi-file version synchronization.
+# SSOT: [project].version above.
+# Trigger: .github/workflows/version-bump.yml
+# Validation: scripts/sync_versions.py --check
+#
+# References:
+#   - EN-108: Version Bumping Strategy
+#   - design-version-bumping-process.md
+
+[tool.bumpversion]
+current_version = "0.2.0"
+commit = true
+tag = true
+tag_name = "v{new_version}"
+commit_message = "chore(release): bump version to v{new_version} [skip-bump]"
+tag_message = "Release v{new_version}"
+allow_dirty = false
+
+# Pre-release version support (SemVer format)
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)(-(?P<pre_l>alpha|beta|rc)\\.(?P<pre_n>\\d+))?"
+serialize = [
+    "{major}.{minor}.{patch}-{pre_l}.{pre_n}",
+    "{major}.{minor}.{patch}",
+]
+
+# --- File 1: pyproject.toml (SSOT) ---
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+# --- File 2: .claude-plugin/plugin.json ---
+[[tool.bumpversion.files]]
+filename = ".claude-plugin/plugin.json"
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
+
+# --- File 3: .claude-plugin/marketplace.json (plugins[0].version only) ---
+# NOTE: Top-level "version" (1.0.0) is a marketplace schema version and is
+# intentionally NOT synced with the framework version (REV-1 from adversarial review).
+[[tool.bumpversion.files]]
+filename = ".claude-plugin/marketplace.json"
+search = '"source": "./",\n      "version": "{current_version}"'
+replace = '"source": "./",\n      "version": "{new_version}"'
+
+# --- File 4: CLAUDE.md (inline CLI version reference) ---
+[[tool.bumpversion.files]]
+filename = "CLAUDE.md"
+search = "(v{current_version})"
+replace = "(v{new_version})"
+
 [dependency-groups]
 dev = [
     "pip-audit>=2.10.0",
