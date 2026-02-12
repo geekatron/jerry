@@ -148,11 +148,11 @@ Exit Codes:
 ```bash
 $ uv run python scripts/validate_plugin_manifests.py
 Validating plugin manifests...
-Project root: /Users/adam.nowak/workspace/GitHub/geekatron/jerry
+Project root: .
 
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/plugin.json
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/marketplace.json
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/hooks/hooks.json
+[PASS] .claude-plugin/plugin.json
+[PASS] .claude-plugin/marketplace.json
+[PASS] hooks/hooks.json
 
 All validations passed!
 ```

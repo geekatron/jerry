@@ -100,7 +100,7 @@ The revised implementation of TASK-001, which adds the `keywords` property to `s
 **Requirement:**
 > `schemas/marketplace.schema.json` plugin item properties include `keywords`
 
-**File Under Test:** `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/marketplace.schema.json`
+**File Under Test:** `schemas/marketplace.schema.json`
 
 **Location:** Lines 94-104 (within `properties.plugins.items.properties`)
 
@@ -137,8 +137,8 @@ The revised implementation of TASK-001, which adds the `keywords` property to `s
 > `keywords` definition matches `plugin.schema.json` format (array of kebab-case strings, unique)
 
 **Files Under Test:**
-- Reference: `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/plugin.schema.json` (lines 82-91)
-- Target: `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/marketplace.schema.json` (lines 94-104)
+- Reference: `schemas/plugin.schema.json` (lines 82-91)
+- Target: `schemas/marketplace.schema.json` (lines 94-104)
 
 **Side-by-Side Comparison:**
 
@@ -188,11 +188,11 @@ uv run python scripts/validate_plugin_manifests.py
 **Full Output:**
 ```
 Validating plugin manifests...
-Project root: /Users/adam.nowak/workspace/GitHub/geekatron/jerry
+Project root: .
 
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/plugin.json
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/marketplace.json
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/hooks/hooks.json
+[PASS] .claude-plugin/plugin.json
+[PASS] .claude-plugin/marketplace.json
+[PASS] hooks/hooks.json
 
 All validations passed!
 ```
@@ -232,7 +232,7 @@ All validations passed!
 **Requirement:**
 > Verify `schemas/marketplace.schema.json` is valid JSON (parseable without errors)
 
-**File Under Test:** `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/marketplace.schema.json`
+**File Under Test:** `schemas/marketplace.schema.json`
 
 **Command:**
 ```bash
@@ -265,7 +265,7 @@ Valid JSON: True
 **Requirement:**
 > Verify `additionalProperties: false` is set on the plugins items object, confirming unknown properties are rejected
 
-**File Under Test:** `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/marketplace.schema.json`
+**File Under Test:** `schemas/marketplace.schema.json`
 
 **Location:** Line 106 (within `properties.plugins.items`)
 

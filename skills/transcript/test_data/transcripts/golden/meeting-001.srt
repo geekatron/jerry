@@ -153,4 +153,3 @@
 39
 00:08:15,000 --> 00:08:25,000
 [Alice] Great work everyone. Let's have a productive day. Meeting adjourned.
-

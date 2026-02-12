@@ -121,7 +121,7 @@ result = subprocess.run(
 ## Code Changes Applied
 
 ### File Modified
-**Path:** `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/tests/contract/test_plugin_manifest_validation.py`
+**Path:** `tests/contract/test_plugin_manifest_validation.py`
 
 **Change Summary:**
 - Modified 1 line (line 342)
