@@ -6,7 +6,7 @@
 > **Author:** ps-investigator (Claude)
 > **Related Bug:** [BUG-004: Transcript pipeline test finds no datasets](./BUG-004-transcript-pipeline-no-datasets.md)
 > **Related Task:** [TASK-001: Skip pipeline test](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md)
-> **Source:** source-repository → jerry migration investigation
+> **Source:** Transcript test data gap investigation
 > **Framework Reference:** Jerry Constitution P-002 (Persist Everything), P-004 (Provenance)
 
 ---
@@ -22,7 +22,7 @@
 | [File Inventory](#file-inventory) | Detailed missing file catalog |
 | [Size Analysis](#size-analysis) | Git-friendliness of test data |
 | [.gitignore Analysis](#gitignore-analysis) | Exclusion pattern investigation |
-| [Recommended Fix](#recommended-fix) | Copy strategy from source |
+| [Recommended Fix](#recommended-fix) | Strategy to add missing files |
 | [Updated BUG-004 Recommendation](#updated-bug-004-recommendation) | Corrected fix approach |
 | [References](#references) | Evidence and citations |
 
@@ -32,34 +32,27 @@
 
 ### Key Finding
 
-**34 transcript test data files** were NOT migrated from `source-repository` to `jerry` during the repository split. This is the **root cause of BUG-004** (transcript pipeline test finds no datasets).
+**34 transcript test data files** were never committed to git. This is the **root cause of BUG-004** (transcript pipeline test finds no datasets).
 
-### Migration Gap
+### Data Gap
 
-**Source Location (source-repository):**
+**Missing directory:**
 ```
-source-repository-gitwt/PROJ-008-transcript-skill/
-skills/transcript/test_data/transcripts/
-```
-
-**Missing in jerry:**
-```
-
 skills/transcript/test_data/transcripts/  ← DOES NOT EXIST
 ```
 
-### What Was Migrated ✓
+### What Was Committed ✓
 
 | Directory | Files | Status |
 |-----------|-------|--------|
-| `test_data/contexts/` | 10 files | ✓ Migrated |
-| `test_data/expected/` | 21 files | ✓ Migrated |
-| `test_data/schemas/` | 5 files | ✓ Migrated |
-| `test_data/expected_output/` | 9 files | ✓ Migrated |
-| `test_data/validation/` | Many files | ✓ Migrated |
-| `test_data/README.md` | 1 file | ✓ Migrated |
+| `test_data/contexts/` | 10 files | ✓ Committed |
+| `test_data/expected/` | 21 files | ✓ Committed |
+| `test_data/schemas/` | 5 files | ✓ Committed |
+| `test_data/expected_output/` | 9 files | ✓ Committed |
+| `test_data/validation/` | Many files | ✓ Committed |
+| `test_data/README.md` | 1 file | ✓ Committed |
 
-### What Was NOT Migrated ✗
+### What Was NOT Committed ✗
 
 | Directory | Files | Status |
 |-----------|-------|--------|
@@ -70,7 +63,7 @@ skills/transcript/test_data/transcripts/  ← DOES NOT EXIST
 
 ### Recommendation
 
-**Copy the missing 34 files from source-repository to jerry.** The data is small (606 KB total), git-friendly, and essential for test suite integrity.
+**Add the missing 34 files to the repository.** The data is small (606 KB total), git-friendly, and essential for test suite integrity.
 
 **Do NOT use the skip guard approach from TASK-001.** That was a workaround based on incomplete information. The correct fix is to restore the missing data.
 
@@ -81,7 +74,7 @@ skills/transcript/test_data/transcripts/  ← DOES NOT EXIST
 ### What (Problem)
 
 **What happened?**
-During the source-repository → jerry migration, the entire `skills/transcript/test_data/transcripts/` directory (34 files, 606 KB) was not copied to the new repository.
+The entire `skills/transcript/test_data/transcripts/` directory (34 files, 606 KB) was never committed to the repository.
 
 **What is the impact?**
 - BUG-004: Pipeline integration test `test_all_datasets_complete_under_30_seconds` expects 6 VTT files, finds 0
@@ -91,7 +84,7 @@ During the source-repository → jerry migration, the entire `skills/transcript/
 
 ### Why (Root Cause)
 
-**Why were the transcripts not migrated?**
+**Why were the transcripts not committed?**
 
 **5 Whys Analysis:**
 
@@ -102,19 +95,18 @@ During the source-repository → jerry migration, the entire `skills/transcript/
    - Because the `transcripts/` directory does not exist in jerry's `test_data/` folder.
 
 3. **Why does the directory not exist?**
-   - Because it was not copied during the source-repository → jerry repository migration.
+   - Because the test data files were never committed to git.
 
-4. **Why was it not copied during migration?**
+4. **Why were they not committed?**
    - Likely because:
-     - The migration script/process selectively copied files
-     - The `transcripts/` directory was inadvertently excluded
-     - No migration checklist verified completeness of test_data/ subdirectories
+     - The files were inadvertently excluded when committing test data
+     - No checklist verified completeness of test_data/ subdirectories
 
 5. **Why was there no verification?**
-   - The migration did not include a test data inventory checklist comparing source vs. destination.
-   - The CI pipeline did not run integration tests immediately after migration (would have caught this).
+   - No test data inventory checklist was used to verify completeness.
+   - The CI pipeline did not run integration tests immediately after the initial commit (would have caught this).
 
-**Conclusion:** Process gap in migration — no systematic verification of test data completeness.
+**Conclusion:** Process gap -- no systematic verification of test data completeness when committing.
 
 ### Who (Stakeholders)
 
@@ -124,7 +116,7 @@ During the source-repository → jerry migration, the entire `skills/transcript/
 - **QA/Testing:** Cannot verify transcript parsing edge cases, encoding fallback, or performance
 
 **Who created the test data?**
-- Original creator: source-repository PROJ-008-transcript-skill team
+- Original creator: PROJ-008-transcript-skill team
 - Test data version: 1.3.0 (updated 2026-01-28 per README.md)
 
 ### When (Timeline)
@@ -133,8 +125,7 @@ During the source-repository → jerry migration, the entire `skills/transcript/
 - Initial creation: 2026-01-27 (version 1.0.0)
 - Large golden dataset added: 2026-01-28 (version 1.3.0, EN-017)
 
-**When did migration occur?**
-- Repository split: Unknown exact date (between 2026-01-28 and 2026-02-10)
+**When was the gap discovered?**
 - BUG-004 discovered: 2026-02-10 (PR #6 CI failures)
 
 **When was the gap discovered?**
@@ -142,18 +133,16 @@ During the source-repository → jerry migration, the entire `skills/transcript/
 
 ### Where (Locations)
 
-**Source (source-repository):**
+**Expected directory structure:**
 ```
-source-repository-gitwt/PROJ-008-transcript-skill/
 skills/transcript/test_data/transcripts/
 ├── golden/          (11 files, 593 KB)
 ├── edge_cases/      (20 files, 8 KB)
 └── real/            (3 files, 5 KB)
 ```
 
-**Destination (jerry):**
+**Actual state in repository:**
 ```
-
 skills/transcript/test_data/
 ├── contexts/        ✓ EXISTS
 ├── expected/        ✓ EXISTS
@@ -166,16 +155,15 @@ skills/transcript/test_data/
 
 ### How (Mechanism)
 
-**How did migration occur?**
-- Unknown exact migration mechanism (git filter-branch, git subtree, manual copy, etc.)
-- Partial test_data/ migration: 6 items migrated, 1 item (transcripts/) omitted
+**How did this happen?**
+- Partial test_data/ commit: 6 items committed, 1 item (transcripts/) omitted
 
 **How was the gap detected?**
 - CI pipeline failure: `test_all_datasets_complete_under_30_seconds` assertion error
-- Investigation: Directory listing comparison between source-repository and jerry
+- Investigation: Directory listing comparison revealed missing subdirectory
 
 **How should it be fixed?**
-- Copy the 34 missing files from source-repository source to jerry destination
+- Add the 34 missing files to the repository
 - Verify .gitignore does not exclude these files
 - Commit to git (files are small and text-based)
 
@@ -203,19 +191,19 @@ skills/transcript/test_data/
 
 ## Root Cause Analysis
 
-### Migration Process Gap
+### Incomplete Test Data Commit
 
 **Evidence:**
-1. **Selective migration:** Some test_data/ subdirectories were migrated (contexts/, expected/, schemas/, expected_output/, validation/), but transcripts/ was omitted.
-2. **No migration manifest:** No checklist or manifest comparing source vs. destination test data.
-3. **CI not run post-migration:** Integration tests were not executed immediately after migration to verify completeness.
+1. **Selective commit:** Some test_data/ subdirectories were committed (contexts/, expected/, schemas/, expected_output/, validation/), but transcripts/ was omitted.
+2. **No manifest:** No checklist or manifest verifying completeness of test_data/ subdirectories.
+3. **CI not run immediately:** Integration tests were not executed immediately after the initial commit to verify completeness.
 
 **Root Cause:**
-Incomplete migration process lacking systematic verification of test data dependencies.
+Incomplete commit process lacking systematic verification of test data dependencies.
 
 ### Why Transcripts Were Critical
 
-Per the test_data/README.md (identical in both source-repository and jerry):
+Per the test_data/README.md:
 
 ```
 test_data/
@@ -229,12 +217,11 @@ test_data/
 
 The `transcripts/` directory contains the **input files** for all transcript skill tests. The `expected/` directory contains the **golden outputs** for comparison. Without inputs, tests cannot run.
 
-### Why Other Test Data Was Migrated
+### Why Other Test Data Was Committed
 
 Possible explanations:
-1. **Alphabetical ordering:** `contexts/`, `expected/`, `expected_output/`, `schemas/`, `validation/` come before `transcripts/` alphabetically — may have been copied first and process stopped before transcripts/.
-2. **Directory depth:** `transcripts/` has 3 subdirectories (golden/, edge_cases/, real/), others are flatter — may have been excluded by a shallow copy script.
-3. **Timing:** README.md shows "Updated: 2026-01-28 (Added large transcript golden dataset - EN-017)" — if migration occurred before 2026-01-28, the transcripts/ directory may not have existed yet. However, BUG-004 was discovered 2026-02-10, suggesting migration occurred after the data was created.
+1. **Alphabetical ordering:** `contexts/`, `expected/`, `expected_output/`, `schemas/`, `validation/` come before `transcripts/` alphabetically -- may have been staged first and process stopped before transcripts/.
+2. **Directory depth:** `transcripts/` has 3 subdirectories (golden/, edge_cases/, real/), others are flatter -- may have been excluded by a shallow staging operation.
 
 ---
 
@@ -248,13 +235,13 @@ Based on test_data/README.md test case summary:
 
 | Test ID | Name | Input File | Requirement | Status |
 |---------|------|------------|-------------|--------|
-| vtt-001 | Voice tags with closing tags | internal-sample-sample.vtt | FR-001.3 | ✗ Missing input |
-| vtt-002 | Multi-line cue payloads | internal-sample-sample.vtt | FR-001.4 | ✗ Missing input |
-| vtt-003 | Timestamp normalization | internal-sample-sample.vtt | NFR-006 | ✗ Missing input |
-| vtt-004 | Speaker extraction | internal-sample-sample.vtt | FR-001.3 | ✗ Missing input |
-| vtt-005 | Canonical JSON schema | internal-sample-sample.vtt | TDD Section 3 | ✗ Missing input |
+| vtt-001 | Voice tags with closing tags | _(removed — PII)_ | FR-001.3 | ✗ Removed |
+| vtt-002 | Multi-line cue payloads | _(removed — PII)_ | FR-001.4 | ✗ Removed |
+| vtt-003 | Timestamp normalization | _(removed — PII)_ | NFR-006 | ✗ Removed |
+| vtt-004 | Speaker extraction | _(removed — PII)_ | FR-001.3 | ✗ Removed |
+| vtt-005 | Canonical JSON schema | _(removed — PII)_ | TDD Section 3 | ✗ Removed |
 
-**File:** `transcripts/real/internal-sample-sample.vtt` (2.9 KB) — MISSING
+**Note:** Tests vtt-001 through vtt-005 and their input file were removed during OSS PII sanitization. Functionality covered by golden dataset tests.
 
 #### 2. Edge Case Tests (BLOCKED)
 
@@ -356,15 +343,14 @@ Based on test_data/README.md test case summary:
 
 These files contain **intentionally invalid UTF-8 byte sequences** to test encoding fallback (NFR-007). They MUST be copied in binary mode.
 
-### Real Samples (3 files, ~5 KB)
+### Real Samples (2 files, ~2 KB)
 
 | File | Size | Format | Description |
 |------|------|--------|-------------|
-| `internal-sample-sample.vtt` | 2.9 KB | VTT | Real user VTT (first 20 cues, 2 speakers) |
 | `sample-meeting-zoom.srt` | 924 B | SRT | Real Zoom meeting SRT |
 | `sample-interview.txt` | 873 B | TXT | Real interview plain text |
 
-**Purpose:** Core VTT parsing verification (vtt-001 through vtt-005).
+**Note:** One VTT sample was removed during OSS PII sanitization.
 
 ---
 
@@ -429,30 +415,27 @@ git check-ignore -v skills/transcript/test_data/transcripts/golden/meeting-001.v
 # Expected: No match (file not ignored)
 ```
 
-**Result:** The files are NOT gitignored. They simply were never added during migration.
+**Result:** The files are NOT gitignored. They simply were never committed to git.
 
 ---
 
 ## Recommended Fix
 
-### Strategy: Copy Missing Files from Source
+### Strategy: Add Missing Files to Repository
 
-**Approach:** Copy the 34 missing files from source-repository to jerry, preserving directory structure.
+**Approach:** Add the 34 missing test data files to the repository, preserving directory structure.
 
-### Copy Commands
+### Setup Commands
 
 ```bash
-# Define paths
-SOURCE="source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data"
 DEST="skills/transcript/test_data"
 
-# Create destination directory
-mkdir -p "${DEST}/transcripts"
+# Create destination directory structure
+mkdir -p "${DEST}/transcripts/golden" "${DEST}/transcripts/edge_cases" "${DEST}/transcripts/real"
 
-# Copy entire transcripts/ directory structure
-cp -R "${SOURCE}/transcripts/" "${DEST}/transcripts/"
+# Add test data files to each subdirectory
 
-# Verify copy
+# Verify structure
 ls -lR "${DEST}/transcripts/"
 ```
 
@@ -472,19 +455,17 @@ transcripts/
    # Expected: 34
    ```
 
-2. **Check sizes match:**
+2. **Check sizes:**
    ```bash
-   du -sh "${SOURCE}/transcripts/"
    du -sh "${DEST}/transcripts/"
-   # Expected: Both ~606 KB (756K per du output)
+   # Expected: ~606 KB (756K per du output)
    ```
 
 3. **Verify binary files (encoding tests):**
    ```bash
-   # These MUST be binary identical
-   diff "${SOURCE}/transcripts/edge_cases/windows1252_sample.vtt" \
-        "${DEST}/transcripts/edge_cases/windows1252_sample.vtt"
-   # Expected: No output (files identical)
+   # These MUST be valid binary encoding test files
+   file "${DEST}/transcripts/edge_cases/windows1252_sample.vtt"
+   # Expected: Non-UTF-8 text (Windows-1252 encoded)
    ```
 
 4. **Run affected test:**
@@ -496,26 +477,23 @@ transcripts/
 ### Git Commit
 
 ```bash
-cd jerry
-
 # Stage files
 git add skills/transcript/test_data/transcripts/
 
 # Commit
-git commit -m "fix(transcript): restore missing test data from source-repository migration
+git commit -m "fix(transcript): add missing test data files
 
-Restore 34 transcript test input files that were omitted during source-repository → jerry migration:
+Add 34 transcript test input files that were never committed to git:
 
 - Golden datasets (11 files, 593 KB): meeting-001 through meeting-006 VTT/SRT/TXT/JSON
 - Edge cases (20 files, 8 KB): W3C WebVTT edge case tests, encoding fallback tests
-- Real samples (3 files, 5 KB): internal-sample-sample.vtt and others
+- Real samples (2 files, 2 KB): sample-meeting-zoom.srt and sample-interview.txt
 
-Root cause: Incomplete migration process lacking test data verification.
+Root cause: Incomplete commit process lacking test data verification.
 
 Fixes: BUG-004 (Transcript pipeline test finds no datasets)
 Unblocks: 19 test cases across 4 categories (Core VTT, Edge Cases, Encoding, Integration)
 
-Source: source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/
 Research: projects/PROJ-001-oss-release/.../research-transcript-data-migration-gap.md
 "
 ```
@@ -545,44 +523,44 @@ def test_all_datasets_complete_under_30_seconds(...):
 
 **Rationale:**
 1. **Data is git-friendly:** 606 KB total, largest file 338 KB (well within limits)
-2. **Data exists in source:** All 34 files present in source-repository with version 1.3.0
-3. **Tests are valid:** They were designed and validated in source-repository (PROJ-008)
-4. **Migration gap:** This is a migration defect, not a design decision
+2. **Data exists:** All 34 files are available and were created for PROJ-008 (version 1.3.0)
+3. **Tests are valid:** They were designed and validated as part of PROJ-008
+4. **Data gap:** This is a process defect, not a design decision
 
 **Action Items:**
 1. **Abandon TASK-001** — Skip guard is a workaround, not a fix
-2. **Execute copy strategy** — Restore 34 missing files from source-repository
+2. **Execute add strategy** — Add 34 missing files to the repository
 3. **Update BUG-004 status** → Resolved (once files are committed)
-4. **Add migration checklist** — Prevent future test data gaps
+4. **Add commit checklist** — Prevent future test data gaps
 
 ### TASK-001 Disposition
 
 **Status:** OBSOLETE / SUPERSEDED
 
-**Reason:** Original analysis was based on incomplete information (assumed data was intentionally excluded). Investigation revealed the data exists, is git-friendly, and should be migrated.
+**Reason:** Original analysis was based on incomplete information (assumed data was intentionally excluded). Investigation revealed the data exists, is git-friendly, and should be committed.
 
 **Recommended Action:** Close TASK-001 as "Won't Fix - Root cause addressed by restoring missing data"
 
-**Alternative:** If TASK-001 is kept, reframe it as: "TASK-001: Restore missing transcript test data from source-repository migration"
+**Alternative:** If TASK-001 is kept, reframe it as: "TASK-001: Restore missing transcript test data files"
 
 ---
 
 ## References
 
-### Source Files (source-repository)
+### Expected Test Data Files
 
 | File | Path | Purpose |
 |------|------|---------|
-| Test Data README | `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/README.md` | Test data structure and inventory (v1.3.0) |
-| Golden datasets | `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/golden/` | 11 VTT/SRT/TXT/JSON files (593 KB) |
-| Edge cases | `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/edge_cases/` | 20 VTT/SRT files (8 KB, includes binary) |
-| Real samples | `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/real/` | 3 VTT/SRT/TXT files (5 KB) |
+| Test Data README | `skills/transcript/test_data/README.md` | Test data structure and inventory (v1.3.0) |
+| Golden datasets | `skills/transcript/test_data/transcripts/golden/` | 11 VTT/SRT/TXT/JSON files (593 KB) |
+| Edge cases | `skills/transcript/test_data/transcripts/edge_cases/` | 20 VTT/SRT files (8 KB, includes binary) |
+| Real samples | `skills/transcript/test_data/transcripts/real/` | 3 VTT/SRT/TXT files (5 KB) |
 
-### Destination Files (jerry)
+### Repository State (at time of investigation)
 
 | File | Path | Status |
 |------|------|--------|
-| Test Data README | `skills/transcript/test_data/README.md` | ✓ Migrated (identical to source) |
+| Test Data README | `skills/transcript/test_data/README.md` | ✓ Committed |
 | Transcripts directory | `skills/transcript/test_data/transcripts/` | ✗ MISSING (does not exist) |
 
 ### Bug Reports
@@ -598,13 +576,12 @@ def test_all_datasets_complete_under_30_seconds(...):
 |------|------|-------------|
 | Pipeline integration test | `tests/integration/transcript/test_pipeline.py` | Contains `test_all_datasets_complete_under_30_seconds` (expects 6 VTT files) |
 
-### Migration Evidence
+### Gap Evidence
 
 | Evidence | Finding |
 |----------|---------|
-| Source directory exists | `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/` contains 34 files |
-| Destination directory missing | `skills/transcript/test_data/transcripts/` does not exist |
-| Partial migration | 6/7 test_data/ subdirectories migrated, transcripts/ omitted |
+| Directory missing | `skills/transcript/test_data/transcripts/` does not exist in repository |
+| Partial commit | 6/7 test_data/ subdirectories committed, transcripts/ omitted |
 | .gitignore clean | No patterns in `.gitignore` match transcript files |
 
 ### Jerry Framework References
@@ -612,7 +589,7 @@ def test_all_datasets_complete_under_30_seconds(...):
 | Principle | Relevance |
 |-----------|-----------|
 | P-002: Persist Everything | Test data MUST be persisted to enable reproducible testing |
-| P-004: Provenance | Test data source (source-repository PROJ-008, EN-017) documented in README.md |
+| P-004: Provenance | Test data source (PROJ-008, EN-017) documented in README.md |
 | P-022: No Deception | Must not skip tests without explaining why data is missing |
 
 ### Jerry Design Patterns
@@ -627,11 +604,11 @@ def test_all_datasets_complete_under_30_seconds(...):
 
 ## Conclusion
 
-The transcript test data migration gap is a **process defect**, not a design decision. The correct fix is to **restore the missing 34 files** (606 KB total) from source-repository to jerry. This will:
+The transcript test data gap is a **process defect**, not a design decision. The correct fix is to **add the missing 34 files** (606 KB total) to the repository. This will:
 
 1. **Resolve BUG-004** (test finds 0 of 6 expected datasets)
 2. **Unblock 19 test cases** across Core VTT, Edge Cases, Encoding, and Integration categories
-3. **Restore test suite integrity** to match source-repository PROJ-008 validation framework
+3. **Restore test suite integrity** to match the PROJ-008 validation framework
 4. **Prevent technical debt** from accumulating (skip guards are workarounds, not solutions)
 
 **Recommended Action:** Execute the copy strategy outlined in [Recommended Fix](#recommended-fix) section.
@@ -641,4 +618,4 @@ The transcript test data migration gap is a **process defect**, not a design dec
 *Research completed: 2026-02-11*
 *Investigator: ps-investigator (Claude)*
 *Framework: Jerry Constitution P-002, P-004*
-*Evidence: source-repository source files, jerry destination inspection, .gitignore analysis, BUG-004 symptoms*
+*Evidence: Repository inspection, .gitignore analysis, BUG-004 symptoms*

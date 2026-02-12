@@ -2516,10 +2516,8 @@ agents/
 
 **Mitigation:**
 
-1. **Regression Test Suite:** Run full transcript pipeline on 3+ test files after each phase
-   - `live-output-meeting-006/` (existing validation)
-   - `live-test-internal-sample/` (new test)
-   - `live-test-internal-sample-v2/` (edge cases)
+1. **Regression Test Suite:** Run full transcript pipeline on test files after each phase
+   - `live-output-meeting-006/`
 
 2. **Golden Outputs:** Compare outputs to pre-remediation golden files
 
