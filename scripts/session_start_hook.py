@@ -137,6 +137,25 @@ def check_precommit_hooks(plugin_root: Path) -> str | None:
             "(Windows: uv sync && uv run pre-commit install)"
         )
 
+    # Check for stale Python path in hook (common after worktree creation or venv rebuild)
+    try:
+        hook_content = precommit_hook.read_text(encoding="utf-8")
+        for line in hook_content.splitlines():
+            if line.startswith("INSTALL_PYTHON="):
+                # Extract the path between quotes
+                python_path = line.split("=", 1)[1].strip().strip("'\"")
+                if python_path and not Path(python_path).exists():
+                    return (
+                        "Pre-commit hook has a stale Python path "
+                        f"({python_path}).\n"
+                        "This happens after creating a worktree or "
+                        "rebuilding the venv.\n"
+                        "Fix: uv sync && uv run pre-commit install"
+                    )
+                break
+    except OSError:
+        pass  # If we can't read the hook, don't block the session
+
     return None
 
 

@@ -360,6 +360,26 @@ If still not found, add to PATH manually:
 3. Restart Claude Code
 4. Reinstall the plugin: `/plugin uninstall jerry-framework@jerry` then `/plugin install jerry-framework@jerry`
 
+### Pre-commit Hooks Failing or Not Running
+
+**Symptom:** Commits succeed without running tests, or hooks fail with "python not found" / "No such file or directory"
+
+**Cause:** The `pre-commit install` command stamps an absolute path to the Python interpreter into `.git/hooks/pre-commit`. This path goes stale when you:
+- Create a **git worktree** (the new worktree doesn't have the venv at the stamped path)
+- **Rebuild** the virtual environment (`rm -rf .venv && uv sync`)
+- **Move** the repository to a different directory
+
+**Solution:**
+```bash
+# macOS / Linux
+make setup
+
+# Windows
+uv sync && uv run pre-commit install
+```
+
+This regenerates the hook file with the correct Python path. The Jerry session start hook will also warn you automatically if it detects a stale path.
+
 ### Path Issues on Windows
 
 **Symptom:** "path not found" when adding marketplace
