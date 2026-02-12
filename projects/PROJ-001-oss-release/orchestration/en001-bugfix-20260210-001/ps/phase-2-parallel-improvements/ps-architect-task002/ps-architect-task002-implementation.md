@@ -11,7 +11,7 @@
 
 Implemented comprehensive contract tests for plugin manifest validation. Created test file at:
 
-**Test File:** `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/tests/contract/test_plugin_manifest_validation.py`
+**Test File:** `tests/contract/test_plugin_manifest_validation.py`
 
 ---
 
@@ -181,9 +181,9 @@ def test_all_manifests_pass_validation(
 - `pytest` - Already in project dependencies
 
 ### Files Referenced
-- `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/marketplace.schema.json` - Schema to test against
-- `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/scripts/validate_plugin_manifests.py` - Validation script to test
-- `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/marketplace.json` - Actual manifest to validate
+- `schemas/marketplace.schema.json` - Schema to test against
+- `scripts/validate_plugin_manifests.py` - Validation script to test
+- `.claude-plugin/marketplace.json` - Actual manifest to validate
 
 ---
 

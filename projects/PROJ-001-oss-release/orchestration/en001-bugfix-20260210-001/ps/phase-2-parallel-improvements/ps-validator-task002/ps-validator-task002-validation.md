@@ -249,7 +249,7 @@ uv run pytest tests/contract/test_plugin_manifest_validation.py -v
 **Output:**
 ```
 platform darwin -- Python 3.14.0, pytest-9.0.2, pluggy-1.6.0
-rootdir: /Users/adam.nowak/workspace/GitHub/geekatron/jerry
+rootdir: .
 configfile: pytest.ini
 
 collected 11 items

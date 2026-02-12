@@ -255,7 +255,7 @@ Based on Context7 research (referenced in schema descriptions), `keywords` is a 
 
 ### File Edit Confirmation
 
-**File Modified:** `/Users/adam.nowak/workspace/GitHub/geekatron/jerry/schemas/marketplace.schema.json`
+**File Modified:** `schemas/marketplace.schema.json`
 
 **Tool Used:** Edit tool (exact string replacement)
 
@@ -285,11 +285,11 @@ uv run python scripts/validate_plugin_manifests.py
 **Full Output:**
 ```
 Validating plugin manifests...
-Project root: /Users/adam.nowak/workspace/GitHub/geekatron/jerry
+Project root: .
 
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/plugin.json
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.claude-plugin/marketplace.json
-[PASS] /Users/adam.nowak/workspace/GitHub/geekatron/jerry/hooks/hooks.json
+[PASS] .claude-plugin/plugin.json
+[PASS] .claude-plugin/marketplace.json
+[PASS] hooks/hooks.json
 
 All validations passed!
 ```

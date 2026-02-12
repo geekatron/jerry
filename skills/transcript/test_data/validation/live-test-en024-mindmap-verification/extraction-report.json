@@ -3,7 +3,7 @@
   "packet_id": "live-test-en024-mindmap-verification",
   "input_format": "chunked",
   "chunk_metadata": {
-    "index_path": "/Users/adam.nowak/workspace/GitHub/geekatron/jerry-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/validation/live-test-en024-mindmap-verification/index.json",
+    "index_path": "skills/transcript/test_data/validation/live-test-en024-mindmap-verification/index.json",
     "chunks_processed": 1,
     "chunks_total": 1,
     "selection_strategy": "sequential",
