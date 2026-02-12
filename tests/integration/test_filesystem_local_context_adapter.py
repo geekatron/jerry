@@ -99,7 +99,9 @@ class TestLocalContextReaderHappyPath:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text('[context]\nactive_project = "PROJ-007-jerry-bugs"\n', encoding="utf-8")
+        context_file.write_text(
+            '[context]\nactive_project = "PROJ-007-jerry-bugs"\n', encoding="utf-8"
+        )
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
