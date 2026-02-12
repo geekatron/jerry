@@ -358,7 +358,7 @@
 | BUG-001 (FEAT-001) | Marketplace manifest schema error | 2026-02-11 | Added keywords to marketplace schema, validation tests, Draft202012Validator |
 | BUG-002 (FEAT-001) | CLI `projects list` crashes | 2026-02-10 | Resolved by committing `projects/` directory to git |
 | BUG-003 (FEAT-001) | Bootstrap test assumes `projects/` dir | 2026-02-10 | Resolved by committing `projects/` directory to git |
-| BUG-004 (FEAT-001) | Transcript pipeline test finds no datasets | 2026-02-11 | Restored 33 test data files from prior repository migration |
+| BUG-004 (FEAT-001) | Transcript pipeline test finds no datasets | 2026-02-11 | Added 33 missing test data files |
 | BUG-005 (FEAT-001) | Project validation tests reference non-existent project | 2026-02-11 | Dynamic project discovery + category directories |
 | BUG-006 (FEAT-001) | Validation test CI regressions | 2026-02-11 | Removed f-prefix, added uv skipif |
 | BUG-007 (FEAT-001) | Synthesis content test overly prescriptive | 2026-02-11 | Raised content check threshold to >= 3 files |
