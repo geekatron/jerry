@@ -1,0 +1,355 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2B5B84', 'primaryTextColor': '#FFFFFF', 'primaryBorderColor': '#5B8BB4', 'lineColor': '#CCCCCC', 'secondaryColor': '#4A6741', 'tertiaryColor': '#7B4B94', 'background': 'transparent', 'mainBkg': 'transparent', 'nodeBorder': '#5B8BB4', 'clusterBkg': '#1A1A2E', 'clusterBorder': '#5B8BB4', 'titleColor': '#FFFFFF', 'edgeLabelBackground': '#1A1A2E'}}}%%
+
+%% =============================================================================
+%% EN-201 WORKTRACKER SKILL EXTRACTION - ORCHESTRATION WORKFLOW
+%% Document ID: EN-201-ORCH-DIAGRAM
+%% Version: 2.0
+%% Protocol: DISC-002 Adversarial Review
+%% =============================================================================
+
+flowchart TB
+    %% =========================================================================
+    %% STYLING DEFINITIONS (Dark Theme)
+    %% =========================================================================
+    classDef phaseNode fill:#2B5B84,stroke:#5B8BB4,stroke-width:2px,color:#FFFFFF,font-weight:bold
+    classDef taskNode fill:#4A6741,stroke:#6B8761,stroke-width:2px,color:#FFFFFF
+    classDef qgNode fill:#8B4513,stroke:#AB6533,stroke-width:2px,color:#FFFFFF,font-weight:bold
+    classDef convergenceNode fill:#7B4B94,stroke:#9B6BB4,stroke-width:3px,color:#FFFFFF,font-weight:bold
+    classDef decisionNode fill:#B8860B,stroke:#D8A62B,stroke-width:2px,color:#FFFFFF
+    classDef escalationNode fill:#8B0000,stroke:#AB2020,stroke-width:2px,color:#FFFFFF,font-weight:bold
+    classDef acceptNode fill:#228B22,stroke:#42AB42,stroke-width:2px,color:#FFFFFF,font-weight:bold
+    classDef agentNode fill:#4169E1,stroke:#6189F1,stroke-width:2px,color:#FFFFFF
+    classDef loopNode fill:#483D8B,stroke:#685DAB,stroke-width:2px,color:#FFFFFF
+    classDef startNode fill:#2F4F4F,stroke:#4F6F6F,stroke-width:3px,color:#FFFFFF,font-weight:bold
+    classDef endNode fill:#006400,stroke:#228B22,stroke-width:3px,color:#FFFFFF,font-weight:bold
+    classDef synthNode fill:#9932CC,stroke:#B952EC,stroke-width:2px,color:#FFFFFF
+
+    %% =========================================================================
+    %% WORKFLOW START
+    %% =========================================================================
+    START((("START<br/>EN-201<br/>Workflow"))):::startNode
+
+    %% =========================================================================
+    %% PHASE 1: PARALLEL EXTRACTION (4 Parallel Task Loops)
+    %% =========================================================================
+    START --> P1_START
+
+    subgraph PHASE1["PHASE 1: Content Extraction (PARALLEL)"]
+        direction TB
+        P1_START[/"Phase 1 Start:<br/>4 Parallel Task Loops"/]:::phaseNode
+
+        %% =====================================================================
+        %% TASK-002: Entity Hierarchy Extraction Loop
+        %% =====================================================================
+        subgraph TASK002_LOOP["TASK-002: Entity Hierarchy Loop"]
+            direction TB
+            T002_GEN["GENERATE<br/>Extract entity-hierarchy.md<br/>(~80 lines)"]:::taskNode
+            T002_CRIT{{"ps-critic<br/>CRITIQUE<br/>(Adversarial)"}}:::agentNode
+            T002_EVAL{"Score >= 0.92?"}:::decisionNode
+            T002_ITER{"Iteration < 3?"}:::decisionNode
+            T002_REM["REMEDIATE<br/>Read REM-* items<br/>Revise artifact"]:::loopNode
+            T002_ESC[/"ESCALATE<br/>Human Review<br/>Required"/]:::escalationNode
+            T002_ACC(["ACCEPT<br/>TASK-002"]):::acceptNode
+
+            T002_GEN --> T002_CRIT
+            T002_CRIT --> T002_EVAL
+            T002_EVAL -->|"YES"| T002_ACC
+            T002_EVAL -->|"NO"| T002_ITER
+            T002_ITER -->|"YES"| T002_REM
+            T002_ITER -->|"NO"| T002_ESC
+            T002_REM -->|"iteration++"| T002_CRIT
+        end
+
+        %% =====================================================================
+        %% TASK-003: System Mappings Extraction Loop
+        %% =====================================================================
+        subgraph TASK003_LOOP["TASK-003: System Mappings Loop"]
+            direction TB
+            T003_GEN["GENERATE<br/>Extract system-mappings.md<br/>(~120 lines)"]:::taskNode
+            T003_CRIT{{"ps-critic<br/>CRITIQUE<br/>(Adversarial)"}}:::agentNode
+            T003_EVAL{"Score >= 0.92?"}:::decisionNode
+            T003_ITER{"Iteration < 3?"}:::decisionNode
+            T003_REM["REMEDIATE<br/>Read REM-* items<br/>Revise artifact"]:::loopNode
+            T003_ESC[/"ESCALATE<br/>Human Review<br/>Required"/]:::escalationNode
+            T003_ACC(["ACCEPT<br/>TASK-003"]):::acceptNode
+
+            T003_GEN --> T003_CRIT
+            T003_CRIT --> T003_EVAL
+            T003_EVAL -->|"YES"| T003_ACC
+            T003_EVAL -->|"NO"| T003_ITER
+            T003_ITER -->|"YES"| T003_REM
+            T003_ITER -->|"NO"| T003_ESC
+            T003_REM -->|"iteration++"| T003_CRIT
+        end
+
+        %% =====================================================================
+        %% TASK-004: Behavior Rules Extraction Loop
+        %% =====================================================================
+        subgraph TASK004_LOOP["TASK-004: Behavior Rules Loop"]
+            direction TB
+            T004_GEN["GENERATE<br/>Extract behavior-rules.md<br/>(~60 lines)"]:::taskNode
+            T004_CRIT{{"ps-critic<br/>CRITIQUE<br/>(Adversarial)"}}:::agentNode
+            T004_EVAL{"Score >= 0.92?"}:::decisionNode
+            T004_ITER{"Iteration < 3?"}:::decisionNode
+            T004_REM["REMEDIATE<br/>Read REM-* items<br/>Revise artifact"]:::loopNode
+            T004_ESC[/"ESCALATE<br/>Human Review<br/>Required"/]:::escalationNode
+            T004_ACC(["ACCEPT<br/>TASK-004"]):::acceptNode
+
+            T004_GEN --> T004_CRIT
+            T004_CRIT --> T004_EVAL
+            T004_EVAL -->|"YES"| T004_ACC
+            T004_EVAL -->|"NO"| T004_ITER
+            T004_ITER -->|"YES"| T004_REM
+            T004_ITER -->|"NO"| T004_ESC
+            T004_REM -->|"iteration++"| T004_CRIT
+        end
+
+        %% =====================================================================
+        %% TASK-005: Directory Structure Extraction Loop
+        %% =====================================================================
+        subgraph TASK005_LOOP["TASK-005: Directory Structure Loop"]
+            direction TB
+            T005_GEN["GENERATE<br/>Extract directory-structure.md<br/>(~111 lines)"]:::taskNode
+            T005_CRIT{{"ps-critic<br/>CRITIQUE<br/>(Adversarial)"}}:::agentNode
+            T005_EVAL{"Score >= 0.92?"}:::decisionNode
+            T005_ITER{"Iteration < 3?"}:::decisionNode
+            T005_REM["REMEDIATE<br/>Read REM-* items<br/>Revise artifact"]:::loopNode
+            T005_ESC[/"ESCALATE<br/>Human Review<br/>Required"/]:::escalationNode
+            T005_ACC(["ACCEPT<br/>TASK-005"]):::acceptNode
+
+            T005_GEN --> T005_CRIT
+            T005_CRIT --> T005_EVAL
+            T005_EVAL -->|"YES"| T005_ACC
+            T005_EVAL -->|"NO"| T005_ITER
+            T005_ITER -->|"YES"| T005_REM
+            T005_ITER -->|"NO"| T005_ESC
+            T005_REM -->|"iteration++"| T005_CRIT
+        end
+
+        %% Parallel Execution Indicator
+        P1_START --> T002_GEN & T003_GEN & T004_GEN & T005_GEN
+    end
+
+    %% =========================================================================
+    %% CONVERGENCE POINT 1: Phase 1 → QG-1
+    %% =========================================================================
+    T002_ACC & T003_ACC & T004_ACC & T005_ACC --> CONV1
+    T002_ESC & T003_ESC & T004_ESC & T005_ESC --> CONV1_BLOCKED
+
+    CONV1{{"CONVERGENCE 1<br/>━━━━━━━━━━━━━━━━━━━━<br/>All 4 Tasks Accepted?<br/>━━━━━━━━━━━━━━━━━━━━<br/>TASK-002.accepted<br/>TASK-003.accepted<br/>TASK-004.accepted<br/>TASK-005.accepted"}}:::convergenceNode
+
+    CONV1_BLOCKED[/"BLOCKED<br/>Awaiting<br/>Escalation<br/>Resolution"/]:::escalationNode
+
+    %% =========================================================================
+    %% QG-1: SYNCHRONIZED DUAL-AGENT REVIEW
+    %% =========================================================================
+    CONV1 -->|"All Accepted"| QG1_START
+
+    subgraph QG1["QG-1: Extraction Quality Gate (SYNCHRONIZED DUAL-AGENT)"]
+        direction TB
+        QG1_START[/"QG-1 Start:<br/>Synchronized Dual Review"/]:::qgNode
+
+        %% Parallel Agent Reviews
+        subgraph QG1_DUAL["Parallel Agent Reviews"]
+            direction LR
+            QG1_PSC{{"ps-critic<br/>━━━━━━━━━━━━━━<br/>Adversarial Review<br/>All 4 Artifacts<br/>━━━━━━━━━━━━━━<br/>Criteria:<br/>C/A/CL/AC/T"}}:::agentNode
+            QG1_NSE{{"nse-qa<br/>━━━━━━━━━━━━━━<br/>NASA SE Audit<br/>All 4 Artifacts<br/>━━━━━━━━━━━━━━<br/>Criteria:<br/>TR/RT/VE/RI/DQ"}}:::agentNode
+        end
+
+        QG1_START --> QG1_PSC & QG1_NSE
+
+        %% Evaluation
+        QG1_EVAL{"BOTH >= 0.92?<br/>━━━━━━━━━━━━━━<br/>ps-critic.score >= 0.92<br/>AND<br/>nse-qa.score >= 0.92"}:::decisionNode
+
+        QG1_PSC & QG1_NSE --> QG1_EVAL
+
+        %% Decision Branches
+        QG1_ITER{"Iteration < 3?"}:::decisionNode
+        QG1_SYNTH["SYNTHESIZE<br/>Remediation<br/>━━━━━━━━━━━━━━<br/>Merge:<br/>- REM-* from ps-critic<br/>- NCR-* from nse-qa"]:::synthNode
+        QG1_APPLY["APPLY<br/>Remediation<br/>━━━━━━━━━━━━━━<br/>Update all 4<br/>source artifacts"]:::loopNode
+        QG1_ESC[/"ESCALATE<br/>QG-1<br/>Human Review"/]:::escalationNode
+        QG1_PASS(["ACCEPT GATE<br/>QG-1 PASSED"]):::acceptNode
+
+        QG1_EVAL -->|"YES"| QG1_PASS
+        QG1_EVAL -->|"NO"| QG1_ITER
+        QG1_ITER -->|"YES"| QG1_SYNTH
+        QG1_ITER -->|"NO"| QG1_ESC
+        QG1_SYNTH --> QG1_APPLY
+        QG1_APPLY -->|"iteration++"| QG1_PSC & QG1_NSE
+    end
+
+    %% =========================================================================
+    %% CONVERGENCE POINT 2: QG-1 → Phase 2
+    %% =========================================================================
+    QG1_PASS --> CONV2
+    QG1_ESC --> CONV2_BLOCKED
+
+    CONV2{{"CONVERGENCE 2<br/>━━━━━━━━━━━━━━━━━━━━<br/>QG-1 Passed?<br/>━━━━━━━━━━━━━━━━━━━━<br/>qg_1.passed == true"}}:::convergenceNode
+
+    CONV2_BLOCKED[/"BLOCKED<br/>Awaiting<br/>QG-1 Escalation<br/>Resolution"/]:::escalationNode
+
+    %% =========================================================================
+    %% PHASE 2: INTEGRATION REVIEW
+    %% =========================================================================
+    CONV2 -->|"QG-1 Passed"| P2_START
+
+    subgraph PHASE2["PHASE 2: Integration Review (SEQUENTIAL)"]
+        direction TB
+        P2_START[/"Phase 2 Start:<br/>Integration Validation"/]:::phaseNode
+
+        %% Integration Review
+        P2_NSE{{"nse-qa<br/>Integration Audit<br/>━━━━━━━━━━━━━━━━━━━━<br/>INT-001: Complete Migration (371 lines)<br/>INT-002: No Information Loss<br/>INT-003: Consistent Formatting<br/>INT-004: Cross-References Valid<br/>INT-005: Template Compliance<br/>INT-006: No Duplication"}}:::agentNode
+
+        P2_START --> P2_NSE
+
+        P2_EVAL{"Integration<br/>Score >= 0.92?"}:::decisionNode
+        P2_ITER{"Iteration < 3?"}:::decisionNode
+        P2_FIX["FIX<br/>Integration<br/>Issues"]:::loopNode
+        P2_ESC[/"ESCALATE<br/>Integration<br/>Human Review"/]:::escalationNode
+        P2_ACC(["ACCEPT<br/>Integration<br/>Review"]):::acceptNode
+
+        P2_NSE --> P2_EVAL
+        P2_EVAL -->|"YES"| P2_ACC
+        P2_EVAL -->|"NO"| P2_ITER
+        P2_ITER -->|"YES"| P2_FIX
+        P2_ITER -->|"NO"| P2_ESC
+        P2_FIX -->|"iteration++"| P2_NSE
+    end
+
+    %% =========================================================================
+    %% QG-2: SYNCHRONIZED DUAL-AGENT INTEGRATION GATE
+    %% =========================================================================
+    P2_ACC --> QG2_START
+    P2_ESC --> CONV3_BLOCKED_INT
+
+    subgraph QG2["QG-2: Integration Quality Gate (SYNCHRONIZED DUAL-AGENT)"]
+        direction TB
+        QG2_START[/"QG-2 Start:<br/>Synchronized Dual Review"/]:::qgNode
+
+        %% Parallel Agent Reviews
+        subgraph QG2_DUAL["Parallel Agent Reviews"]
+            direction LR
+            QG2_PSC{{"ps-critic<br/>━━━━━━━━━━━━━━<br/>Final Quality Review<br/>All 4 Artifacts<br/>━━━━━━━━━━━━━━<br/>Criteria:<br/>C/A/CL/AC/T"}}:::agentNode
+            QG2_NSE{{"nse-qa<br/>━━━━━━━━━━━━━━<br/>Final SE Audit<br/>All 4 Artifacts<br/>━━━━━━━━━━━━━━<br/>Criteria:<br/>TR/RT/VE/RI/DQ"}}:::agentNode
+        end
+
+        QG2_START --> QG2_PSC & QG2_NSE
+
+        %% Evaluation
+        QG2_EVAL{"BOTH >= 0.92?<br/>━━━━━━━━━━━━━━<br/>ps-critic.score >= 0.92<br/>AND<br/>nse-qa.score >= 0.92"}:::decisionNode
+
+        QG2_PSC & QG2_NSE --> QG2_EVAL
+
+        %% Decision Branches
+        QG2_ITER{"Iteration < 3?"}:::decisionNode
+        QG2_SYNTH["SYNTHESIZE<br/>Remediation<br/>━━━━━━━━━━━━━━<br/>Merge:<br/>- REM-* from ps-critic<br/>- NCR-* from nse-qa"]:::synthNode
+        QG2_APPLY["APPLY<br/>Remediation<br/>━━━━━━━━━━━━━━<br/>Update all 4<br/>source artifacts"]:::loopNode
+        QG2_ESC[/"ESCALATE<br/>QG-2<br/>Human Review"/]:::escalationNode
+        QG2_PASS(["ACCEPT GATE<br/>QG-2 PASSED"]):::acceptNode
+
+        QG2_EVAL -->|"YES"| QG2_PASS
+        QG2_EVAL -->|"NO"| QG2_ITER
+        QG2_ITER -->|"YES"| QG2_SYNTH
+        QG2_ITER -->|"NO"| QG2_ESC
+        QG2_SYNTH --> QG2_APPLY
+        QG2_APPLY -->|"iteration++"| QG2_PSC & QG2_NSE
+    end
+
+    %% =========================================================================
+    %% CONVERGENCE POINT 3: QG-2 → Phase 3
+    %% =========================================================================
+    QG2_PASS --> CONV3
+    QG2_ESC --> CONV3_BLOCKED_QG
+
+    CONV3{{"CONVERGENCE 3<br/>━━━━━━━━━━━━━━━━━━━━<br/>QG-2 Passed?<br/>━━━━━━━━━━━━━━━━━━━━<br/>qg_2.passed == true"}}:::convergenceNode
+
+    CONV3_BLOCKED_INT[/"BLOCKED<br/>Awaiting<br/>Integration Escalation<br/>Resolution"/]:::escalationNode
+
+    CONV3_BLOCKED_QG[/"BLOCKED<br/>Awaiting<br/>QG-2 Escalation<br/>Resolution"/]:::escalationNode
+
+    %% =========================================================================
+    %% PHASE 3: NAVIGATION & VALIDATION (Sequential with Loops)
+    %% =========================================================================
+    CONV3 -->|"QG-2 Passed"| P3_START
+
+    subgraph PHASE3["PHASE 3: Navigation & Validation (SEQUENTIAL)"]
+        direction TB
+        P3_START[/"Phase 3 Start:<br/>Sequential Task Loops"/]:::phaseNode
+
+        %% =====================================================================
+        %% TASK-006: Update SKILL.md Navigation
+        %% =====================================================================
+        subgraph TASK006_LOOP["TASK-006: Update SKILL.md Navigation"]
+            direction TB
+            T006_GEN["GENERATE<br/>Update SKILL.md<br/>Add navigation pointers"]:::taskNode
+            T006_CRIT{{"ps-critic<br/>CRITIQUE<br/>(Adversarial)"}}:::agentNode
+            T006_EVAL{"Score >= 0.92?"}:::decisionNode
+            T006_ITER{"Iteration < 3?"}:::decisionNode
+            T006_REM["REMEDIATE<br/>Read REM-* items<br/>Revise SKILL.md"]:::loopNode
+            T006_ESC[/"ESCALATE<br/>Human Review<br/>Required"/]:::escalationNode
+            T006_ACC(["ACCEPT<br/>TASK-006"]):::acceptNode
+
+            T006_GEN --> T006_CRIT
+            T006_CRIT --> T006_EVAL
+            T006_EVAL -->|"YES"| T006_ACC
+            T006_EVAL -->|"NO"| T006_ITER
+            T006_ITER -->|"YES"| T006_REM
+            T006_ITER -->|"NO"| T006_ESC
+            T006_REM -->|"iteration++"| T006_CRIT
+        end
+
+        P3_START --> T006_GEN
+
+        %% =====================================================================
+        %% TASK-007: Validate Skill Loading (depends on TASK-006)
+        %% =====================================================================
+        subgraph TASK007_LOOP["TASK-007: Validate Skill Loading"]
+            direction TB
+            T007_GEN["GENERATE<br/>Test /worktracker<br/>skill invocation"]:::taskNode
+            T007_CRIT{{"ps-critic<br/>CRITIQUE<br/>(Adversarial)"}}:::agentNode
+            T007_EVAL{"Score >= 0.92?"}:::decisionNode
+            T007_ITER{"Iteration < 3?"}:::decisionNode
+            T007_REM["REMEDIATE<br/>Read REM-* items<br/>Fix loading issues"]:::loopNode
+            T007_ESC[/"ESCALATE<br/>Human Review<br/>Required"/]:::escalationNode
+            T007_ACC(["ACCEPT<br/>TASK-007"]):::acceptNode
+
+            T007_GEN --> T007_CRIT
+            T007_CRIT --> T007_EVAL
+            T007_EVAL -->|"YES"| T007_ACC
+            T007_EVAL -->|"NO"| T007_ITER
+            T007_ITER -->|"YES"| T007_REM
+            T007_ITER -->|"NO"| T007_ESC
+            T007_REM -->|"iteration++"| T007_CRIT
+        end
+
+        T006_ACC -->|"depends_on"| T007_GEN
+    end
+
+    %% =========================================================================
+    %% WORKFLOW END
+    %% =========================================================================
+    T007_ACC --> WORKFLOW_END
+    T006_ESC --> WORKFLOW_BLOCKED_T006
+    T007_ESC --> WORKFLOW_BLOCKED_T007
+
+    WORKFLOW_END((("END<br/>EN-201<br/>Complete<br/>━━━━━━━━━━━<br/>371 LOC<br/>Extracted"))):::endNode
+
+    WORKFLOW_BLOCKED_T006[/"WORKFLOW BLOCKED<br/>TASK-006 Escalated"/]:::escalationNode
+    WORKFLOW_BLOCKED_T007[/"WORKFLOW BLOCKED<br/>TASK-007 Escalated"/]:::escalationNode
+
+    %% =========================================================================
+    %% LEGEND
+    %% =========================================================================
+    subgraph LEGEND["LEGEND"]
+        direction LR
+        L_PHASE["Phase"]:::phaseNode
+        L_TASK["Task"]:::taskNode
+        L_QG["Quality Gate"]:::qgNode
+        L_CONV["Convergence Point"]:::convergenceNode
+        L_DEC{"Decision"}:::decisionNode
+        L_ESC[/"Escalation"/]:::escalationNode
+        L_ACC(["Accept/Pass"]):::acceptNode
+        L_AGENT{{"Agent"}}:::agentNode
+        L_LOOP["Loop/Remediate"]:::loopNode
+        L_SYNTH["Synthesis"]:::synthNode
+    end

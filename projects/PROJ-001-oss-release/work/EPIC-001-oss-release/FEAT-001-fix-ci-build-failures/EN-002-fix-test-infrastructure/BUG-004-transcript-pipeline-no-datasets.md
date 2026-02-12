@@ -1,13 +1,13 @@
 # BUG-004: Transcript pipeline test finds no datasets
 
 > **Type:** bug
-> **Status:** done
+> **Status:** in_progress
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** major
 > **Created:** 2026-02-10
 > **Due:** —
-> **Completed:** 2026-02-11
+> **Completed:** —
 > **Parent:** EN-002
 > **Owner:** —
 > **Found In:** PR #6
@@ -82,15 +82,15 @@ The test asserts exactly 6 datasets processed with a 30-second time limit.
 
 ### Root Cause
 
-**Data migration gap from jerry-core.** The entire `skills/transcript/test_data/transcripts/` directory (34 files, 606 KB) was not copied during the jerry-core -> jerry repository migration. The data exists in the source repository at `/Users/adam.nowak/workspace/GitHub/geekatron/jerry-core-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/`. The `.gitignore` does NOT exclude these files — they were simply omitted during migration. Other test_data/ subdirectories (contexts/, expected/, schemas/, expected_output/, validation/) were migrated correctly.
+**Test data not committed to git.** The entire `skills/transcript/test_data/transcripts/` directory (34 files, 606 KB) was never committed to the repository. The `.gitignore` does NOT exclude these files -- they were simply omitted. Other test_data/ subdirectories (contexts/, expected/, schemas/, expected_output/, validation/) were committed correctly.
 
 See [research-transcript-data-migration-gap.md](./research-transcript-data-migration-gap.md) for full 5W2H investigation.
 
 ### Fix (Corrected)
 
-**Restore the 34 missing files from jerry-core source.** Data is 606 KB total (git-friendly).
+**Add the 34 missing test data files to the repository.** Data is 606 KB total (git-friendly).
 
-Previous options (skip guard, dynamic discovery, mock/fixtures) are **workarounds** that hide the migration gap. The correct fix is to restore the data.
+Previous options (skip guard, dynamic discovery, mock/fixtures) are **workarounds** that hide the data gap. The correct fix is to add the data.
 
 ### Files Involved
 
@@ -105,7 +105,7 @@ Previous options (skip guard, dynamic discovery, mock/fixtures) are **workaround
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data from jerry-core migration | done | high |
+| [TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data files | done | high |
 
 ---
 
@@ -113,7 +113,7 @@ Previous options (skip guard, dynamic discovery, mock/fixtures) are **workaround
 
 ### Fix Verification
 
-- [x] Test finds and processes all expected datasets (33 files restored from jerry-core)
+- [x] Test finds and processes all expected datasets (33 files added to repository)
 - [x] Or test is updated to work with available datasets / skip gracefully
 - [ ] Fix works across Python 3.11-3.14 (pending CI verification)
 
@@ -138,5 +138,6 @@ Previous options (skip guard, dynamic discovery, mock/fixtures) are **workaround
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Bug triaged from PR #6 CI failure |
 | 2026-02-10 | Claude | pending | Root cause confirmed: 6 VTT test datasets in `skills/transcript/test_data/transcripts/golden/` not committed to git. Tests hardcoded to expect exactly 6 files. |
-| 2026-02-11 | Claude | pending | TASK-001 created (originally: skip guard). ps-investigator research revealed data migration gap from jerry-core. TASK-001 reframed to "restore missing test data". Root cause updated. Research artifact: research-transcript-data-migration-gap.md |
-| 2026-02-11 | Claude | done | TASK-001 completed. 33 test data files restored from jerry-core. All 56 transcript integration tests pass locally. Committed in `4789625`. |
+| 2026-02-11 | Claude | pending | TASK-001 created (originally: skip guard). ps-investigator research revealed test data was never committed to git. TASK-001 reframed to "restore missing test data". Root cause updated. Research artifact: research-transcript-data-migration-gap.md |
+| 2026-02-11 | Claude | done | TASK-001 completed. 33 test data files added to repository. All 56 transcript integration tests pass locally. Committed in `4789625`. |
+| 2026-02-11 | Claude | in_progress | Reopened: unnecessary test data directories still contained PII (surname leak in mindmap, local paths with username in canonical JSON). Directories removed. References in parser-tests.yaml, index.schema.json, and research doc cleaned. |

@@ -1,0 +1,400 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#1e3a5f', 'primaryTextColor': '#fff', 'primaryBorderColor': '#7C0000', 'lineColor': '#F8B229', 'secondaryColor': '#006100', 'tertiaryColor': '#fff'}}}%%
+flowchart TB
+    %% ============================================================
+    %% EN-202 CLAUDE.md REWRITE - DETAILED BPMN WORKFLOW
+    %% Workflow ID: en202-rewrite-20260201-001
+    %% Protocol: DISC-002 Adversarial Review
+    %% Quality Threshold: 0.92 | Max Iterations: 3
+    %% Target: 914 LOC -> 60-80 LOC | ~10K tokens -> ~3.5K tokens
+    %% ============================================================
+
+    %% START EVENT
+    START([START: EN-202 Workflow])
+
+    %% ============================================================
+    %% PHASE 0: NAVIGATION TABLES - PREREQUISITE
+    %% ============================================================
+    subgraph PHASE0[PHASE 0: Navigation Tables - PREREQUISITE]
+        direction TB
+
+        subgraph TASK000_LOOP[TASK-000: Add Navigation Tables - 23 files]
+            direction TB
+            T000_GEN[ps-writer: Generate Navigation Tables]
+            T000_REV{ps-critic Review}
+            T000_SCORE{Score >= 0.92?}
+            T000_ITER{Iteration < 3?}
+            T000_REVISE[ps-writer: Revise per REM-* findings]
+            T000_ESC[ESCALATE to Human]
+            T000_ACC[ACCEPT: Navigation Tables Complete]
+
+            T000_GEN --> T000_REV
+            T000_REV --> T000_SCORE
+            T000_SCORE -->|YES| T000_ACC
+            T000_SCORE -->|NO| T000_ITER
+            T000_ITER -->|YES| T000_REVISE
+            T000_ITER -->|NO| T000_ESC
+            T000_REVISE --> T000_REV
+        end
+
+        T000_SCOPE["Scope: 5 worktracker rules + 10 templates + 8 Claude rules"]
+    end
+
+    %% CHECKPOINT 0
+    CP0{{CHECKPOINT CP-0: TASK-000 Complete}}
+
+    %% ============================================================
+    %% PHASE 1: SECTION CREATION - PARALLEL EXECUTION
+    %% ============================================================
+    subgraph PHASE1[PHASE 1: Section Creation - PARALLEL Fan-Out]
+        direction TB
+
+        %% TASK-001: IDENTITY SECTION
+        subgraph TASK001_LOOP[TASK-001: Identity Section - 10 LOC]
+            direction TB
+            T001_GEN[ps-writer: Generate Identity]
+            T001_REV{ps-critic Review - C/A/CL/AC/T}
+            T001_SCORE{Score >= 0.92?}
+            T001_ITER{Iteration < 3?}
+            T001_REVISE[Revise: Apply REM-* findings]
+            T001_ESC[ESCALATE]
+            T001_ACC[ACCEPT]
+
+            T001_GEN --> T001_REV
+            T001_REV --> T001_SCORE
+            T001_SCORE -->|YES| T001_ACC
+            T001_SCORE -->|NO| T001_ITER
+            T001_ITER -->|YES| T001_REVISE
+            T001_ITER -->|NO| T001_ESC
+            T001_REVISE --> T001_REV
+        end
+
+        %% TASK-002: NAVIGATION SECTION
+        subgraph TASK002_LOOP[TASK-002: Navigation Section - 20 LOC]
+            direction TB
+            T002_GEN[ps-writer: Generate Navigation]
+            T002_REV{ps-critic Review - C/A/CL/AC/T}
+            T002_SCORE{Score >= 0.92?}
+            T002_ITER{Iteration < 3?}
+            T002_REVISE[Revise: Apply REM-* findings]
+            T002_ESC[ESCALATE]
+            T002_ACC[ACCEPT]
+
+            T002_GEN --> T002_REV
+            T002_REV --> T002_SCORE
+            T002_SCORE -->|YES| T002_ACC
+            T002_SCORE -->|NO| T002_ITER
+            T002_ITER -->|YES| T002_REVISE
+            T002_ITER -->|NO| T002_ESC
+            T002_REVISE --> T002_REV
+        end
+
+        %% TASK-003: ACTIVE PROJECT SECTION
+        subgraph TASK003_LOOP[TASK-003: Active Project Section - 15 LOC]
+            direction TB
+            T003_GEN[ps-writer: Generate Active Project]
+            T003_REV{ps-critic Review - C/A/CL/AC/T}
+            T003_SCORE{Score >= 0.92?}
+            T003_ITER{Iteration < 3?}
+            T003_REVISE[Revise: Apply REM-* findings]
+            T003_ESC[ESCALATE]
+            T003_ACC[ACCEPT]
+
+            T003_GEN --> T003_REV
+            T003_REV --> T003_SCORE
+            T003_SCORE -->|YES| T003_ACC
+            T003_SCORE -->|NO| T003_ITER
+            T003_ITER -->|YES| T003_REVISE
+            T003_ITER -->|NO| T003_ESC
+            T003_REVISE --> T003_REV
+        end
+
+        %% TASK-004: CRITICAL CONSTRAINTS SECTION
+        subgraph TASK004_LOOP[TASK-004: Critical Constraints - 15 LOC]
+            direction TB
+            T004_GEN[ps-writer: Generate Constraints]
+            T004_REV{ps-critic Review - C/A/CL/AC/T}
+            T004_SCORE{Score >= 0.92?}
+            T004_ITER{Iteration < 3?}
+            T004_REVISE[Revise: Apply REM-* findings]
+            T004_ESC[ESCALATE]
+            T004_ACC[ACCEPT]
+
+            T004_GEN --> T004_REV
+            T004_REV --> T004_SCORE
+            T004_SCORE -->|YES| T004_ACC
+            T004_SCORE -->|NO| T004_ITER
+            T004_ITER -->|YES| T004_REVISE
+            T004_ITER -->|NO| T004_ESC
+            T004_REVISE --> T004_REV
+        end
+
+        %% TASK-005: QUICK REFERENCE SECTION
+        subgraph TASK005_LOOP[TASK-005: Quick Reference - 15 LOC]
+            direction TB
+            T005_GEN[ps-writer: Generate Quick Ref]
+            T005_REV{ps-critic Review - C/A/CL/AC/T}
+            T005_SCORE{Score >= 0.92?}
+            T005_ITER{Iteration < 3?}
+            T005_REVISE[Revise: Apply REM-* findings]
+            T005_ESC[ESCALATE]
+            T005_ACC[ACCEPT]
+
+            T005_GEN --> T005_REV
+            T005_REV --> T005_SCORE
+            T005_SCORE -->|YES| T005_ACC
+            T005_SCORE -->|NO| T005_ITER
+            T005_ITER -->|YES| T005_REVISE
+            T005_ITER -->|NO| T005_ESC
+            T005_REVISE --> T005_REV
+        end
+
+        %% BUG FIXES
+        subgraph BUGFIXES[Bug Fixes - Applied During Creation]
+            direction LR
+            BUG001["BUG-001: relationships to to typo"]
+            BUG002["BUG-002: Story folder EnablerId -> StoryId"]
+            BUG003["BUG-003: Template path inconsistency"]
+        end
+    end
+
+    %% SYNC BARRIER
+    SYNC_BARRIER{{SYNC BARRIER: All 5 Tasks Must Complete}}
+
+    %% ============================================================
+    %% QUALITY GATE 1: SECTION REVIEW - DUAL AGENT
+    %% ============================================================
+    subgraph QG1[QUALITY GATE 1: Section Review - DUAL AGENT]
+        direction TB
+
+        subgraph QG1_CRITICS[Dual Agent Review]
+            direction LR
+            PS_CRITIC1["ps-critic: Quality Evaluator
+            - Completeness 0.30
+            - Accuracy 0.25
+            - Clarity 0.20
+            - Actionability 0.15
+            - Traceability 0.10"]
+
+            NSE_QA1["nse-qa: NASA SE Compliance
+            - Technical Rigor
+            - Req Traceability
+            - Verification Evidence
+            - Risk Identification
+            - Doc Quality"]
+        end
+
+        QG1_BOTH{Both Reviews >= 0.92?}
+        QG1_PASS[QG-1 PASSED]
+        QG1_FAIL[Remediation Required]
+
+        PS_CRITIC1 --> QG1_BOTH
+        NSE_QA1 --> QG1_BOTH
+        QG1_BOTH -->|YES| QG1_PASS
+        QG1_BOTH -->|NO| QG1_FAIL
+        QG1_FAIL -->|Revise| PS_CRITIC1
+    end
+
+    %% CHECKPOINT 1
+    CP1{{CHECKPOINT CP-1: Phase 1 + QG-1 Complete}}
+
+    %% ============================================================
+    %% PHASE 2: INTEGRATION & ASSEMBLY
+    %% ============================================================
+    subgraph PHASE2[PHASE 2: Integration and Assembly - SEQUENTIAL]
+        direction TB
+
+        ASSEMBLE[Assemble CLAUDE.md from 5 Sections]
+
+        subgraph INT_AUDIT[nse-qa: Integration Quality Audit]
+            direction TB
+            INT001["INT-001: Line Count 60-80"]
+            INT002["INT-002: Token Count 3300-3500"]
+            INT003["INT-003: All Pointers Resolve"]
+            INT004["INT-004: No Duplicated Content"]
+            INT005["INT-005: Bug Fixes Applied"]
+            INT006["INT-006: Consistent Formatting"]
+            INT007["INT-007: Critical Constraints P-003/P-020/P-022"]
+        end
+
+        ASSEMBLE --> INT_AUDIT
+    end
+
+    %% ============================================================
+    %% QUALITY GATE 2: INTEGRATION REVIEW
+    %% ============================================================
+    subgraph QG2[QUALITY GATE 2: Integration Review]
+        direction TB
+
+        QG2_CHECK{92% Compliance?}
+        QG2_DETAIL["Criteria:
+        - No Critical Findings
+        - High Findings <= 3
+        - Line Count Verified"]
+        QG2_PASS[QG-2 PASSED]
+        QG2_FAIL[Integration Remediation]
+
+        QG2_DETAIL --> QG2_CHECK
+        QG2_CHECK -->|YES| QG2_PASS
+        QG2_CHECK -->|NO| QG2_FAIL
+        QG2_FAIL -->|Revise| INT_AUDIT
+    end
+
+    %% CHECKPOINT 2
+    CP2{{CHECKPOINT CP-2: Integration Complete}}
+
+    %% ============================================================
+    %% PHASE 3: VALIDATION - SEQUENTIAL
+    %% ============================================================
+    subgraph PHASE3[PHASE 3: Validation - SEQUENTIAL]
+        direction TB
+
+        %% TASK-006: VALIDATE POINTERS
+        subgraph TASK006_LOOP[TASK-006: Validate All Pointers Resolve]
+            direction TB
+            T006_GEN[Execute: Test All Navigation Links]
+            T006_REV{ps-critic Review}
+            T006_SCORE{Score >= 0.92?}
+            T006_ITER{Iteration < 3?}
+            T006_REVISE[Fix Broken Pointers]
+            T006_ESC[ESCALATE]
+            T006_ACC[ACCEPT: Pointers Valid]
+
+            T006_GEN --> T006_REV
+            T006_REV --> T006_SCORE
+            T006_SCORE -->|YES| T006_ACC
+            T006_SCORE -->|NO| T006_ITER
+            T006_ITER -->|YES| T006_REVISE
+            T006_ITER -->|NO| T006_ESC
+            T006_REVISE --> T006_REV
+        end
+
+        %% TASK-007: VERIFY LINE COUNT
+        subgraph TASK007_LOOP[TASK-007: Verify Line Count Target]
+            direction TB
+            T007_GEN["Execute: wc -l CLAUDE.md"]
+            T007_REV{ps-critic Review}
+            T007_SCORE{60-80 Lines?}
+            T007_ITER{Iteration < 3?}
+            T007_REVISE[Trim Content]
+            T007_ESC[ESCALATE]
+            T007_ACC[ACCEPT: Line Count Met]
+
+            T007_GEN --> T007_REV
+            T007_REV --> T007_SCORE
+            T007_SCORE -->|YES| T007_ACC
+            T007_SCORE -->|NO| T007_ITER
+            T007_ITER -->|YES| T007_REVISE
+            T007_ITER -->|NO| T007_ESC
+            T007_REVISE --> T007_REV
+        end
+
+        T006_ACC --> TASK007_LOOP
+    end
+
+    %% ============================================================
+    %% METRICS AND END
+    %% ============================================================
+    subgraph METRICS[Final Metrics Verification]
+        direction LR
+        M1["Tasks: 8/8 Complete"]
+        M2["QGs: 2/2 Passed"]
+        M3["LOC: 914 -> 60-80"]
+        M4["Tokens: 10K -> 3.5K"]
+        M5["Bugs: 3/3 Fixed"]
+    end
+
+    %% END EVENT
+    COMPLETE([END: EN-202 Complete - EN-204 Unblocked])
+
+    %% ============================================================
+    %% FLOW CONNECTIONS
+    %% ============================================================
+
+    START --> PHASE0
+    TASK000_LOOP --> CP0
+
+    CP0 -->|Unblock Phase 1| PHASE1
+
+    %% Parallel execution indicator
+    T000_ACC --> TASK001_LOOP
+    T000_ACC --> TASK002_LOOP
+    T000_ACC --> TASK003_LOOP
+    T000_ACC --> TASK004_LOOP
+    T000_ACC --> TASK005_LOOP
+
+    %% Bug fixes applied during section creation
+    BUGFIXES -.->|Applied in| TASK002_LOOP
+    BUGFIXES -.->|Applied in| TASK005_LOOP
+
+    %% Sync barrier connections
+    T001_ACC --> SYNC_BARRIER
+    T002_ACC --> SYNC_BARRIER
+    T003_ACC --> SYNC_BARRIER
+    T004_ACC --> SYNC_BARRIER
+    T005_ACC --> SYNC_BARRIER
+
+    SYNC_BARRIER --> QG1
+    QG1_PASS --> CP1
+
+    CP1 --> PHASE2
+    INT_AUDIT --> QG2
+    QG2_PASS --> CP2
+
+    CP2 --> PHASE3
+    T007_ACC --> METRICS
+    METRICS --> COMPLETE
+
+    %% ============================================================
+    %% STYLING
+    %% ============================================================
+
+    %% Start/End events
+    style START fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style COMPLETE fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+
+    %% Checkpoints
+    style CP0 fill:#FF8C00,stroke:#fff,stroke-width:2px,color:#fff
+    style CP1 fill:#FF8C00,stroke:#fff,stroke-width:2px,color:#fff
+    style CP2 fill:#FF8C00,stroke:#fff,stroke-width:2px,color:#fff
+    style SYNC_BARRIER fill:#FF8C00,stroke:#fff,stroke-width:2px,color:#fff
+
+    %% Quality Gates
+    style QG1 fill:#4B0082,stroke:#FFD700,stroke-width:3px
+    style QG2 fill:#4B0082,stroke:#FFD700,stroke-width:3px
+
+    %% Phases
+    style PHASE0 fill:#1e3a5f,stroke:#fff,stroke-width:2px
+    style PHASE1 fill:#1e3a5f,stroke:#fff,stroke-width:2px
+    style PHASE2 fill:#1e3a5f,stroke:#fff,stroke-width:2px
+    style PHASE3 fill:#1e3a5f,stroke:#fff,stroke-width:2px
+
+    %% Accept nodes
+    style T000_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T001_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T002_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T003_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T004_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T005_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T006_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style T007_ACC fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style QG1_PASS fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+    style QG2_PASS fill:#228B22,stroke:#fff,stroke-width:2px,color:#fff
+
+    %% Escalation nodes
+    style T000_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T001_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T002_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T003_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T004_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T005_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T006_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+    style T007_ESC fill:#8B0000,stroke:#fff,stroke-width:2px,color:#fff
+
+    %% Bug fixes
+    style BUGFIXES fill:#8B4513,stroke:#FFD700,stroke-width:2px
+    style BUG001 fill:#8B4513,stroke:#fff,color:#fff
+    style BUG002 fill:#8B4513,stroke:#fff,color:#fff
+    style BUG003 fill:#8B4513,stroke:#fff,color:#fff
+
+    %% Metrics
+    style METRICS fill:#006400,stroke:#FFD700,stroke-width:2px
