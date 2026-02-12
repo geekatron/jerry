@@ -80,7 +80,7 @@ class TestLocalContextReaderHappyPath:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text('[context]\nactive_project = "PROJ-001-test"\n')
+        context_file.write_text('[context]\nactive_project = "PROJ-001-test"\n', encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -102,7 +102,7 @@ class TestLocalContextReaderHappyPath:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text('[context]\nactive_project = "PROJ-007-jerry-bugs"\n')
+        context_file.write_text('[context]\nactive_project = "PROJ-007-jerry-bugs"\n', encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -128,7 +128,8 @@ class TestLocalContextReaderHappyPath:
             "\n"
             "[preferences]\n"
             "auto_save = true\n"
-            'theme = "dark"\n'
+            'theme = "dark"\n',
+            encoding="utf-8",
         )
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
@@ -173,7 +174,7 @@ class TestLocalContextReaderNegative:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text("invalid toml [[[")
+        context_file.write_text("invalid toml [[[", encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -193,7 +194,7 @@ class TestLocalContextReaderNegative:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text('[preferences]\ntheme = "light"\n')
+        context_file.write_text('[preferences]\ntheme = "light"\n', encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -220,7 +221,7 @@ class TestLocalContextReaderEdgeCases:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text("")
+        context_file.write_text("", encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -259,7 +260,7 @@ class TestLocalContextReaderEdgeCases:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text("[context]\nactive_project = 123\n")
+        context_file.write_text("[context]\nactive_project = 123\n", encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -283,7 +284,7 @@ class TestLocalContextReaderEdgeCases:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text('[context]\nactive_project = "PROJ-001-日本語"\n')
+        context_file.write_text('[context]\nactive_project = "PROJ-001-日本語"\n', encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -307,7 +308,7 @@ class TestLocalContextReaderEdgeCases:
         local_dir = tmp_path / ".jerry" / "local"
         local_dir.mkdir(parents=True)
         context_file = local_dir / "context.toml"
-        context_file.write_text('[context]\nactive_project = "   "\n')
+        context_file.write_text('[context]\nactive_project = "   "\n', encoding="utf-8")
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
 
@@ -334,7 +335,8 @@ class TestLocalContextReaderEdgeCases:
             "# This is a comment\n"
             "[context]\n"
             "# Active project for this machine\n"
-            'active_project = "PROJ-001-test"\n'
+            'active_project = "PROJ-001-test"\n',
+            encoding="utf-8",
         )
 
         adapter = FilesystemLocalContextAdapter(base_path=tmp_path)
