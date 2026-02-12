@@ -1,0 +1,580 @@
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#2d3748',
+  'primaryTextColor': '#e2e8f0',
+  'primaryBorderColor': '#4a5568',
+  'lineColor': '#718096',
+  'secondaryColor': '#1a202c',
+  'tertiaryColor': '#2d3748',
+  'background': '#1a202c',
+  'mainBkg': '#2d3748',
+  'textColor': '#e2e8f0',
+  'nodeBorder': '#4a5568',
+  'clusterBkg': '#1a202c',
+  'clusterBorder': '#4a5568',
+  'titleColor': '#e2e8f0',
+  'edgeLabelBackground': '#2d3748'
+}}}%%
+
+flowchart TB
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% PROJ-001 OSS Release Orchestration - COMPREHENSIVE WORKFLOW VISUALIZATION
+    %% Version: 5.4.0 | Workflow ID: oss-release-20260131-001
+    %% 30 Agents | 5 Phases | 4 Barriers | 8 Quality Gates | 5 Checkpoints
+    %% ═══════════════════════════════════════════════════════════════════════════
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% PHASE 0: DIVERGENT EXPLORATION & INITIAL RESEARCH - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph PHASE_0["PHASE 0: Divergent Exploration & Initial Research - COMPLETE"]
+        direction TB
+
+        subgraph P0_TIER1A["Tier 1a: Original Research - COMPLETE"]
+            direction LR
+            PS_RESEARCHER_P0["ps-researcher<br/>PS-01<br/>OSS Best Practices<br/>COMPLETE"]
+            PS_ANALYST_P0["ps-analyst<br/>PS-02<br/>Architecture Analysis<br/>COMPLETE"]
+            NSE_EXPLORER_P0["nse-explorer<br/>NSE-08<br/>Divergent Alternatives<br/>COMPLETE"]
+            NSE_REQUIREMENTS_P0["nse-requirements<br/>NSE-01<br/>Current State Inventory<br/>COMPLETE"]
+        end
+
+        subgraph P0_TIER1B["Tier 1b: Expanded Research DISC-001 Remediation - COMPLETE"]
+            direction LR
+            PS_RESEARCHER_CC["ps-researcher-claude-code<br/>PS-01a<br/>Claude Code CLI<br/>COMPLETE"]
+            PS_RESEARCHER_CMD["ps-researcher-claude-md<br/>PS-01b<br/>CLAUDE.md Optimization<br/>COMPLETE"]
+            PS_RESEARCHER_PLG["ps-researcher-plugins<br/>PS-01c<br/>Plugin Architecture<br/>COMPLETE"]
+            PS_RESEARCHER_SKL["ps-researcher-skills<br/>PS-01d<br/>Skills Patterns<br/>COMPLETE"]
+            PS_RESEARCHER_DEC["ps-researcher-decomposition<br/>PS-01e<br/>Decomposition<br/>COMPLETE"]
+        end
+
+        subgraph P0_TIER2["Tier 2: Risk Identification - COMPLETE"]
+            NSE_RISK_P0["nse-risk<br/>NSE-03<br/>21 Risks Identified<br/>2 CRITICAL, 5 HIGH<br/>COMPLETE"]
+        end
+
+        %% Tier 1 flows to Tier 2
+        P0_TIER1A --> P0_TIER2
+        P0_TIER1B --> P0_TIER2
+    end
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% QG-0: QUALITY GATE 0 - COMPLETE WITH REMEDIATION
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph QG0_BLOCK["QG-0: Post-Exploration Quality Gate"]
+        direction TB
+
+        subgraph QG0_V1["QG-0 v1: FAILED - 0.876 avg"]
+            QG0_V1_CRITIC["ps-critic v1<br/>0.876 FAIL<br/>Below 0.92"]
+            QG0_V1_QA["nse-qa v1<br/>0.936<br/>PASS"]
+        end
+
+        subgraph DISC001["DISC-001: Missed Research Scope"]
+            DISC001_NODE["DISCOVERY<br/>5 Missed Topics:<br/>1. Claude Code CLI<br/>2. CLAUDE.md Optimization<br/>3. Plugin Architecture<br/>4. Skills Patterns<br/>5. Decomposition"]
+        end
+
+        subgraph QG0_V2["QG-0 v2: PASSED - 0.936 avg"]
+            QG0_V2_CRITIC["ps-critic v2<br/>0.931 PASS<br/>+6.3% improvement"]
+            QG0_V2_QA["nse-qa v2<br/>0.941 PASS<br/>+0.5% improvement"]
+        end
+
+        QG0_V1 --> DISC001
+        DISC001 --> QG0_V2
+
+        %% Adversarial Feedback Loop
+        QG0_V1_CRITIC -.->|"ADVERSARIAL<br/>FEEDBACK"| DISC001
+    end
+
+    subgraph P0_TIER3["Tier 3: Phase 0 Reports - COMPLETE"]
+        direction LR
+        PS_REPORTER_P0["ps-reporter<br/>PS-09<br/>Status Report<br/>COMPLETE"]
+        NSE_REPORTER_P0["nse-reporter<br/>NSE-10<br/>SE Report<br/>COMPLETE"]
+    end
+
+    CP001["CP-001<br/>Checkpoint<br/>Barrier 1 Complete<br/>2026-01-31T21:45:00Z"]
+
+    PHASE_0 --> QG0_BLOCK
+    QG0_BLOCK --> P0_TIER3
+    P0_TIER3 --> CP001
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% BARRIER 1: CROSS-POLLINATION - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph BARRIER1["BARRIER 1: Post-Phase 0 Cross-Pollination - COMPLETE"]
+        direction TB
+
+        subgraph B1_PS_TO_NSE["PS to NSE Manifest"]
+            B1_PS_NSE["9 Artifacts<br/>Research + Analysis<br/>QG-0 Review"]
+        end
+
+        subgraph B1_NSE_TO_PS["NSE to PS Manifest"]
+            B1_NSE_PS["5 Artifacts<br/>Explorer + Requirements<br/>Risk Register<br/>QA Audit"]
+        end
+    end
+
+    CP001 --> BARRIER1
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% PHASE 1: DEEP RESEARCH & INVESTIGATION - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph PHASE_1["PHASE 1: Deep Research & Investigation - COMPLETE"]
+        direction TB
+
+        subgraph P1_TIER1["Tier 1: PS Deep Research + NSE V&V - COMPLETE"]
+            direction TB
+
+            subgraph P1_PS["PS Pipeline"]
+                PS_RESEARCHER_P1["ps-researcher<br/>PS-01<br/>Deep Research<br/>3-Pillar Analysis<br/>17 Citations<br/>COMPLETE"]
+                PS_ANALYST_P1["ps-analyst<br/>PS-02<br/>Gap Analysis 27 gaps<br/>FMEA 22 risks<br/>5 Whys<br/>COMPLETE"]
+                PS_INVESTIGATOR_P1["ps-investigator<br/>PS-08<br/>Problem Investigation<br/>COMPLETE"]
+            end
+
+            subgraph P1_NSE["NSE Pipeline"]
+                NSE_VERIFICATION_P1["nse-verification<br/>NSE-02<br/>V&V Planning<br/>30 VRs with IADT<br/>COMPLETE"]
+            end
+        end
+
+        subgraph P1_TIER2["Tier 2: Risk Update - COMPLETE"]
+            NSE_RISK_P1["nse-risk<br/>NSE-03<br/>22 Risks +1<br/>1 CRITICAL RPN 280<br/>11 HIGH<br/>COMPLETE"]
+        end
+
+        P1_TIER1 --> P1_TIER2
+    end
+
+    BARRIER1 --> PHASE_1
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% QG-1: QUALITY GATE 1 - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph QG1_BLOCK["QG-1: Post-Deep Research - PASSED 0.942 avg"]
+        direction LR
+        QG1_CRITIC["ps-critic<br/>PS-04<br/>0.938 PASS<br/>ADVERSARIAL"]
+        QG1_QA["nse-qa<br/>NSE-09<br/>0.946 PASS<br/>NPR-7123.1D"]
+    end
+
+    subgraph P1_TIER4["Tier 4: Phase 1 Reports - COMPLETE"]
+        direction LR
+        PS_REPORTER_P1["ps-reporter<br/>Status Report<br/>9 Artifacts<br/>68 Citations<br/>COMPLETE"]
+        NSE_REPORTER_P1["nse-reporter<br/>SE Report<br/>30 VRs<br/>22 Risks<br/>COMPLETE"]
+    end
+
+    CP002["CP-002<br/>Checkpoint<br/>Barrier 2 Complete<br/>2026-01-31T22:45:00Z"]
+
+    PHASE_1 --> QG1_BLOCK
+    QG1_BLOCK --> P1_TIER4
+    P1_TIER4 --> CP002
+
+    %% Adversarial Feedback Loop for QG-1
+    QG1_CRITIC -.->|"ADVERSARIAL<br/>FEEDBACK LOOP"| P1_TIER1
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% BARRIER 2: CROSS-POLLINATION - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph BARRIER2["BARRIER 2: Post-Phase 1 Cross-Pollination - COMPLETE"]
+        direction TB
+
+        subgraph B2_PS_TO_NSE["PS to NSE Manifest"]
+            B2_PS_NSE["7 Artifacts<br/>Deep Research<br/>Gap Analysis<br/>FMEA + 5 Whys<br/>Investigation"]
+        end
+
+        subgraph B2_NSE_TO_PS["NSE to PS Manifest"]
+            B2_NSE_PS["4 Artifacts<br/>V&V Planning<br/>30 VRs<br/>Risk Register<br/>QA Audit"]
+        end
+    end
+
+    CP002 --> BARRIER2
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% PHASE 2: REQUIREMENTS & ARCHITECTURE - COMPLETE
+    %% 4 Tiers with 7 ADRs + 4 NSE Agents
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph PHASE_2["PHASE 2: Requirements & Architecture - 4-Tier DEC-003 - COMPLETE"]
+        direction TB
+
+        %% ═══════════════════════════════════════════════════════════════════════
+        %% TIER 1: Foundation
+        %% ═══════════════════════════════════════════════════════════════════════
+        subgraph P2_TIER1["TIER 1: Foundation - COMPLETE"]
+            direction LR
+            PS_ARCH_001["ps-architect-001<br/>PS-03-001<br/>ADR-OSS-001<br/>CLAUDE.md Decomposition<br/>CRITICAL RPN 280<br/>798 lines<br/>COMPLETE"]
+            NSE_REQ_P2["nse-requirements<br/>NSE-01<br/>Requirements Spec<br/>36 Reqs, 42 CIs<br/>1021 lines<br/>COMPLETE"]
+        end
+
+        subgraph QG21_BLOCK["QG-2.1: Tier 1 Gate - PASSED 0.94"]
+            direction LR
+            QG21_CRITIC["ps-critic<br/>0.92 PASS"]
+            QG21_QA["nse-qa<br/>0.96 PASS"]
+        end
+
+        P2_TIER1 --> QG21_BLOCK
+
+        %% ═══════════════════════════════════════════════════════════════════════
+        %% TIER 2: Parallel ADRs
+        %% ═══════════════════════════════════════════════════════════════════════
+        subgraph P2_TIER2["TIER 2: Parallel ADRs depend on ADR-001 - COMPLETE"]
+            direction TB
+
+            subgraph T2_PS["PS Architects"]
+                direction LR
+                PS_ARCH_002["ps-architect-002<br/>PS-03-002<br/>ADR-OSS-002<br/>Repo Sync<br/>HIGH RPN 192<br/>1206 lines<br/>COMPLETE"]
+                PS_ARCH_003["ps-architect-003<br/>PS-03-003<br/>ADR-OSS-003<br/>Worktracker<br/>HIGH<br/>801 lines<br/>COMPLETE"]
+                PS_ARCH_004["ps-architect-004<br/>PS-03-004<br/>ADR-OSS-004<br/>Multi-Persona<br/>MEDIUM<br/>737 lines<br/>COMPLETE"]
+                PS_ARCH_006["ps-architect-006<br/>PS-03-006<br/>ADR-OSS-006<br/>Transcript<br/>MEDIUM D-002<br/>859 lines<br/>COMPLETE"]
+            end
+
+            subgraph T2_NSE["NSE Architecture"]
+                NSE_ARCH_P2["nse-architecture<br/>NSE-07<br/>Validate ADR-001<br/>NASA SE Format<br/>595 lines<br/>COMPLETE"]
+            end
+        end
+
+        subgraph QG22_BLOCK["QG-2.2: Tier 2 Gate - PASSED 0.9345"]
+            direction LR
+            QG22_CRITIC["ps-critic<br/>0.909 PASS"]
+            QG22_QA["nse-qa<br/>0.96 PASS"]
+        end
+
+        QG21_BLOCK --> P2_TIER2
+        P2_TIER2 --> QG22_BLOCK
+
+        %% ═══════════════════════════════════════════════════════════════════════
+        %% TIER 3: Dependent ADR
+        %% ═══════════════════════════════════════════════════════════════════════
+        subgraph P2_TIER3["TIER 3: Dependent ADR-001 + ADR-002 - COMPLETE"]
+            direction LR
+            PS_ARCH_005["ps-architect-005<br/>PS-03-005<br/>ADR-OSS-005<br/>Repo Migration<br/>HIGH<br/>COMPLETE"]
+            NSE_INT_P2["nse-integration<br/>NSE-05<br/>Integration Plan<br/>Uses ADR-001/002<br/>COMPLETE"]
+        end
+
+        subgraph QG23_BLOCK["QG-2.3: Tier 3 Gate - PASSED 0.955"]
+            direction LR
+            QG23_CRITIC["ps-critic<br/>0.93 PASS"]
+            QG23_QA["nse-qa<br/>0.98 PASS"]
+        end
+
+        QG22_BLOCK --> P2_TIER3
+        P2_TIER3 --> QG23_BLOCK
+
+        %% ═══════════════════════════════════════════════════════════════════════
+        %% TIER 4: Synthesis
+        %% ═══════════════════════════════════════════════════════════════════════
+        subgraph P2_TIER4["TIER 4: Synthesis ALL ADRs - COMPLETE"]
+            direction LR
+            PS_ARCH_007["ps-architect-007<br/>PS-03-007<br/>ADR-OSS-007<br/>OSS Checklist<br/>CRITICAL Synthesis<br/>COMPLETE"]
+            NSE_CFG_P2["nse-configuration<br/>NSE-06<br/>Requirements Baseline<br/>COMPLETE"]
+            NSE_RISK_P2["nse-risk<br/>NSE-03<br/>Phase 2 Risk Update<br/>COMPLETE"]
+        end
+
+        subgraph QG24_BLOCK["QG-2.4: Tier 4 Gate - PASSED 0.96"]
+            direction LR
+            QG24_CRITIC["ps-critic<br/>0.94 PASS"]
+            QG24_QA["nse-qa<br/>0.98 PASS"]
+        end
+
+        QG23_BLOCK --> P2_TIER4
+        P2_TIER4 --> QG24_BLOCK
+    end
+
+    BARRIER2 --> PHASE_2
+
+    %% Adversarial Feedback Loops in Phase 2
+    QG21_CRITIC -.->|"ADVERSARIAL"| P2_TIER1
+    QG22_CRITIC -.->|"ADVERSARIAL"| P2_TIER2
+    QG23_CRITIC -.->|"ADVERSARIAL"| P2_TIER3
+    QG24_CRITIC -.->|"ADVERSARIAL"| P2_TIER4
+
+    subgraph P2_REPORTS["Phase 2 Reports - COMPLETE"]
+        direction LR
+        PS_REPORTER_P2["ps-reporter<br/>7 ADRs<br/>~30k words<br/>COMPLETE"]
+        NSE_REPORTER_P2["nse-reporter<br/>36 Reqs<br/>42 CIs<br/>COMPLETE"]
+    end
+
+    CP003["CP-003<br/>Checkpoint<br/>Barrier 3 Complete<br/>2026-02-01"]
+
+    QG24_BLOCK --> P2_REPORTS
+    P2_REPORTS --> CP003
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% BARRIER 3: CROSS-POLLINATION - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph BARRIER3["BARRIER 3: Post-Phase 2 Cross-Pollination - COMPLETE"]
+        direction TB
+
+        subgraph B3_PS_TO_NSE["PS to NSE Manifest"]
+            B3_PS_NSE["7 ADRs<br/>~30k words<br/>100% VR Coverage<br/>100% Risk Coverage"]
+        end
+
+        subgraph B3_NSE_TO_PS["NSE to PS Manifest"]
+            B3_NSE_PS["4 Artifacts<br/>36 Requirements<br/>42 CIs<br/>12 Failure Modes"]
+        end
+    end
+
+    CP003 --> BARRIER3
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% PHASE 3: VALIDATION & SYNTHESIS - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph PHASE_3["PHASE 3: Validation & Synthesis - COMPLETE"]
+        direction TB
+
+        subgraph P3_PS["PS Pipeline - COMPLETE"]
+            direction LR
+            PS_VALIDATOR_P3["ps-validator<br/>PS-05<br/>Constraint Validation<br/>COMPLETE"]
+            PS_SYNTHESIZER_P3["ps-synthesizer<br/>PS-06<br/>Pattern Synthesis<br/>COMPLETE"]
+            PS_REVIEWER_P3["ps-reviewer<br/>PS-07<br/>Design Review<br/>COMPLETE"]
+        end
+
+        subgraph P3_NSE["NSE Pipeline - COMPLETE"]
+            direction LR
+            NSE_REVIEWER_P3["nse-reviewer<br/>NSE-04<br/>Technical Review<br/>COMPLETE"]
+            NSE_CFG_P3["nse-configuration<br/>NSE-06<br/>Design Baseline<br/>COMPLETE"]
+            NSE_RISK_P3["nse-risk<br/>NSE-03<br/>Phase 3 Risk Update<br/>COMPLETE"]
+        end
+    end
+
+    BARRIER3 --> PHASE_3
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% QG-3: QUALITY GATE 3 - PASSED WITH REMEDIATION
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph QG3_BLOCK["QG-3: Post-Validation - PASSED v2 0.93 avg"]
+        direction TB
+
+        subgraph QG3_V1["QG-3 v1: FAILED - 0.915 avg"]
+            QG3_V1_CRITIC["ps-critic v1<br/>0.85 FAIL<br/>CRIT-001 VR chaos<br/>CRIT-002 RPN error<br/>HIGH-001 self-review"]
+            QG3_V1_QA["nse-qa v1<br/>0.98 PASS"]
+        end
+
+        subgraph QG3_REMEDIATION["Remediation Actions"]
+            QG3_REM["REMEDIATION:<br/>1. vr-reconciliation.md SSOT<br/>2. self-review-rationale.md<br/>6 controls<br/>3. RPN corrected 717"]
+        end
+
+        subgraph QG3_V2["QG-3 v2: PASSED - 0.93 avg"]
+            QG3_V2_CRITIC["ps-critic v2<br/>0.88 CONDITIONAL<br/>Minor gaps accepted"]
+            QG3_V2_QA["nse-qa v2<br/>0.98 PASS"]
+        end
+
+        QG3_V1 --> QG3_REMEDIATION
+        QG3_REMEDIATION --> QG3_V2
+
+        %% Adversarial Feedback Loop
+        QG3_V1_CRITIC -.->|"ADVERSARIAL<br/>FEEDBACK"| QG3_REMEDIATION
+    end
+
+    subgraph P3_REPORTS["Phase 3 Reports - COMPLETE"]
+        direction LR
+        PS_REPORTER_P3["ps-reporter<br/>Phase 3 Report<br/>COMPLETE"]
+        NSE_REPORTER_P3["nse-reporter<br/>Phase 3 Report<br/>COMPLETE"]
+    end
+
+    CP004["CP-004<br/>Checkpoint<br/>Barrier 4 Complete<br/>2026-02-01"]
+
+    PHASE_3 --> QG3_BLOCK
+    QG3_BLOCK --> P3_REPORTS
+    P3_REPORTS --> CP004
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% BARRIER 4: CROSS-POLLINATION - COMPLETE
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph BARRIER4["BARRIER 4: Post-Phase 3 Cross-Pollination - COMPLETE"]
+        direction TB
+
+        subgraph B4_PS_TO_NSE["PS to NSE Manifest"]
+            B4_PS_NSE["Validation<br/>Synthesis<br/>Design Review"]
+        end
+
+        subgraph B4_NSE_TO_PS["NSE to PS Manifest"]
+            B4_NSE_PS["Technical Review<br/>Design Baseline<br/>Risk Register"]
+        end
+    end
+
+    CP004 --> BARRIER4
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% PHASE 4: FINAL V&V & REPORTING - READY
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph PHASE_4["PHASE 4: Final V&V & Reporting - READY"]
+        direction TB
+
+        subgraph P4_PS["PS Pipeline - READY"]
+            PS_REPORTER_P4["ps-reporter<br/>PS-09<br/>Final Report<br/>READY"]
+        end
+
+        subgraph P4_NSE["NSE Pipeline - READY"]
+            direction LR
+            NSE_VERIFICATION_P4["nse-verification<br/>NSE-02<br/>Final V&V<br/>READY"]
+            NSE_QA_P4["nse-qa<br/>NSE-09<br/>Comprehensive Audit<br/>READY"]
+            NSE_REPORTER_P4["nse-reporter<br/>NSE-10<br/>Final SE Report<br/>READY"]
+            NSE_RISK_P4["nse-risk<br/>NSE-03<br/>Final Risk Assessment<br/>READY"]
+        end
+    end
+
+    BARRIER4 --> PHASE_4
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% QG-4: FINAL QUALITY GATE - PENDING
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph QG4_BLOCK["QG-4: FINAL Quality Gate - PENDING"]
+        direction LR
+        QG4_CRITIC["ps-critic<br/>PS-04<br/>Final Review<br/>ADVERSARIAL<br/>PENDING"]
+        QG4_QA["nse-qa<br/>NSE-09<br/>Final Audit<br/>NPR-7123.1D<br/>PENDING"]
+    end
+
+    CP005["CP-005<br/>Checkpoint<br/>Workflow Complete<br/>PENDING"]
+
+    COMPLETE["OSS RELEASE<br/>READY<br/>Workflow Complete"]
+
+    PHASE_4 --> QG4_BLOCK
+    QG4_BLOCK --> CP005
+    CP005 --> COMPLETE
+
+    %% Adversarial Feedback Loop for QG-4
+    QG4_CRITIC -.->|"ADVERSARIAL<br/>FEEDBACK LOOP"| PHASE_4
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% CONTINUOUS AGENTS
+    %% ═══════════════════════════════════════════════════════════════════════════
+    subgraph CONTINUOUS["CONTINUOUS AGENTS - All Phases"]
+        direction TB
+
+        subgraph CONT_RISK["Continuous Risk Management"]
+            NSE_RISK_CONT["nse-risk<br/>NSE-03<br/>5 Invocations<br/>P0, P1, P2, P3, P4"]
+        end
+
+        subgraph CONT_QG["Quality Gate Evaluators"]
+            direction LR
+            PS_CRITIC_CONT["ps-critic<br/>PS-04<br/>ADVERSARIAL DISC-002<br/>8 Gates"]
+            NSE_QA_CONT["nse-qa<br/>NSE-09<br/>NPR-7123.1D Audit<br/>8 Gates"]
+        end
+
+        subgraph CONT_REPORT["Dual Reporters"]
+            direction LR
+            PS_REPORTER_CONT["ps-reporter<br/>PS-09<br/>5 Reports"]
+            NSE_REPORTER_CONT["nse-reporter<br/>NSE-10<br/>5 Reports"]
+        end
+    end
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% ARTIFACT FLOW VISUALIZATION
+    %% ═══════════════════════════════════════════════════════════════════════════
+
+    %% Phase 0 to Barrier 1
+    PS_RESEARCHER_P0 -.->|"best-practices<br/>research.md"| B1_PS_NSE
+    PS_ANALYST_P0 -.->|"architecture<br/>analysis.md"| B1_PS_NSE
+    NSE_EXPLORER_P0 -.->|"divergent<br/>alternatives.md"| B1_NSE_PS
+    NSE_REQUIREMENTS_P0 -.->|"current-state<br/>inventory.md"| B1_NSE_PS
+    NSE_RISK_P0 -.->|"phase-0<br/>risk-register.md"| B1_NSE_PS
+
+    %% Barrier 1 to Phase 1
+    B1_NSE_PS -.->|"mandatory<br/>reads"| PS_RESEARCHER_P1
+    B1_NSE_PS -.->|"mandatory<br/>reads"| PS_ANALYST_P1
+    B1_PS_NSE -.->|"mandatory<br/>reads"| NSE_VERIFICATION_P1
+
+    %% Phase 1 to Barrier 2
+    PS_ANALYST_P1 -.->|"gap-analysis<br/>fmea-analysis<br/>5whys.md"| B2_PS_NSE
+    PS_INVESTIGATOR_P1 -.->|"problem<br/>investigation.md"| B2_PS_NSE
+    NSE_VERIFICATION_P1 -.->|"vv-planning.md<br/>30 VRs"| B2_NSE_PS
+    NSE_RISK_P1 -.->|"phase-1<br/>risk-register.md"| B2_NSE_PS
+
+    %% Barrier 2 to Phase 2
+    B2_NSE_PS -.->|"mandatory<br/>reads"| PS_ARCH_001
+    B2_PS_NSE -.->|"mandatory<br/>reads"| NSE_REQ_P2
+
+    %% ADR Dependencies
+    PS_ARCH_001 -.->|"ADR-001<br/>foundation"| PS_ARCH_002
+    PS_ARCH_001 -.->|"ADR-001<br/>foundation"| PS_ARCH_003
+    PS_ARCH_001 -.->|"ADR-001<br/>foundation"| PS_ARCH_004
+    PS_ARCH_001 -.->|"ADR-001<br/>foundation"| PS_ARCH_006
+    PS_ARCH_001 -.->|"ADR-001<br/>foundation"| NSE_ARCH_P2
+    PS_ARCH_001 -.->|"ADR-001"| PS_ARCH_005
+    PS_ARCH_002 -.->|"ADR-002"| PS_ARCH_005
+    PS_ARCH_002 -.->|"ADR-002"| NSE_INT_P2
+
+    %% Phase 2 to Barrier 3
+    PS_ARCH_007 -.->|"7 ADRs<br/>synthesis"| B3_PS_NSE
+    NSE_CFG_P2 -.->|"requirements<br/>baseline"| B3_NSE_PS
+
+    %% ═══════════════════════════════════════════════════════════════════════════
+    %% STYLES - Dark Theme Optimized
+    %% ═══════════════════════════════════════════════════════════════════════════
+
+    %% Phase containers - Green for complete, Purple for ready, Gray for blocked
+    style PHASE_0 fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
+    style PHASE_1 fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
+    style PHASE_2 fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
+    style PHASE_3 fill:#22543d,stroke:#68d391,stroke-width:3px,color:#c6f6d5
+    style PHASE_4 fill:#553c9a,stroke:#b794f4,stroke-width:3px,color:#e9d8fd
+
+    %% Phase 0 Tiers
+    style P0_TIER1A fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style P0_TIER1B fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style P0_TIER2 fill:#285e61,stroke:#4fd1c5,stroke-width:2px,color:#b2f5ea
+
+    %% Phase 1 Tiers
+    style P1_TIER1 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style P1_PS fill:#3c366b,stroke:#9f7aea,stroke-width:1px,color:#e9d8fd
+    style P1_NSE fill:#234e52,stroke:#81e6d9,stroke-width:1px,color:#e6fffa
+    style P1_TIER2 fill:#285e61,stroke:#4fd1c5,stroke-width:2px,color:#b2f5ea
+
+    %% Phase 2 Tiers
+    style P2_TIER1 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style P2_TIER2 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style T2_PS fill:#3c366b,stroke:#9f7aea,stroke-width:1px,color:#e9d8fd
+    style T2_NSE fill:#234e52,stroke:#81e6d9,stroke-width:1px,color:#e6fffa
+    style P2_TIER3 fill:#285e61,stroke:#4fd1c5,stroke-width:2px,color:#b2f5ea
+    style P2_TIER4 fill:#742a2a,stroke:#fc8181,stroke-width:2px,color:#fed7d7
+
+    %% Phase 3 Pipelines
+    style P3_PS fill:#3c366b,stroke:#9f7aea,stroke-width:2px,color:#e9d8fd
+    style P3_NSE fill:#234e52,stroke:#81e6d9,stroke-width:2px,color:#e6fffa
+
+    %% Phase 4 Pipelines
+    style P4_PS fill:#553c9a,stroke:#b794f4,stroke-width:2px,color:#e9d8fd
+    style P4_NSE fill:#234e52,stroke:#81e6d9,stroke-width:2px,color:#e6fffa
+
+    %% Quality Gates - PASSED green, PENDING gray
+    style QG0_BLOCK fill:#1a202c,stroke:#68d391,stroke-width:3px,color:#e2e8f0
+    style QG0_V1 fill:#742a2a,stroke:#fc8181,stroke-width:2px,color:#fed7d7
+    style QG0_V2 fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style DISC001 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style QG1_BLOCK fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style QG21_BLOCK fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style QG22_BLOCK fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style QG23_BLOCK fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style QG24_BLOCK fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style QG3_BLOCK fill:#1a202c,stroke:#68d391,stroke-width:3px,color:#e2e8f0
+    style QG3_V1 fill:#742a2a,stroke:#fc8181,stroke-width:2px,color:#fed7d7
+    style QG3_V2 fill:#22543d,stroke:#68d391,stroke-width:2px,color:#c6f6d5
+    style QG3_REMEDIATION fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style QG4_BLOCK fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
+
+    %% Barriers - Green for complete
+    style BARRIER1 fill:#1a202c,stroke:#68d391,stroke-width:2px,color:#e2e8f0
+    style BARRIER2 fill:#1a202c,stroke:#68d391,stroke-width:2px,color:#e2e8f0
+    style BARRIER3 fill:#1a202c,stroke:#68d391,stroke-width:2px,color:#e2e8f0
+    style BARRIER4 fill:#1a202c,stroke:#68d391,stroke-width:2px,color:#e2e8f0
+    style B1_PS_TO_NSE fill:#3c366b,stroke:#9f7aea,stroke-width:1px,color:#e9d8fd
+    style B1_NSE_TO_PS fill:#234e52,stroke:#81e6d9,stroke-width:1px,color:#e6fffa
+    style B2_PS_TO_NSE fill:#3c366b,stroke:#9f7aea,stroke-width:1px,color:#e9d8fd
+    style B2_NSE_TO_PS fill:#234e52,stroke:#81e6d9,stroke-width:1px,color:#e6fffa
+    style B3_PS_TO_NSE fill:#3c366b,stroke:#9f7aea,stroke-width:1px,color:#e9d8fd
+    style B3_NSE_TO_PS fill:#234e52,stroke:#81e6d9,stroke-width:1px,color:#e6fffa
+    style B4_PS_TO_NSE fill:#3c366b,stroke:#9f7aea,stroke-width:1px,color:#e9d8fd
+    style B4_NSE_TO_PS fill:#234e52,stroke:#81e6d9,stroke-width:1px,color:#e6fffa
+
+    %% Checkpoints - Orange
+    style CP001 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style CP002 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style CP003 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style CP004 fill:#744210,stroke:#f6e05e,stroke-width:2px,color:#fefcbf
+    style CP005 fill:#4a5568,stroke:#a0aec0,stroke-width:2px,color:#e2e8f0
+
+    %% Reports - Blue tinted
+    style P0_TIER3 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style P1_TIER4 fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style P2_REPORTS fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+    style P3_REPORTS fill:#2c5282,stroke:#63b3ed,stroke-width:2px,color:#bee3f8
+
+    %% Continuous agents
+    style CONTINUOUS fill:#1a202c,stroke:#718096,stroke-width:2px,color:#e2e8f0
+    style CONT_RISK fill:#742a2a,stroke:#fc8181,stroke-width:1px,color:#fed7d7
+    style CONT_QG fill:#553c9a,stroke:#b794f4,stroke-width:1px,color:#e9d8fd
+    style CONT_REPORT fill:#2c5282,stroke:#63b3ed,stroke-width:1px,color:#bee3f8
+
+    %% Final complete
+    style COMPLETE fill:#22543d,stroke:#68d391,stroke-width:4px,color:#c6f6d5

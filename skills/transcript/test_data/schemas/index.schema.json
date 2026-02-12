@@ -213,45 +213,6 @@
           "word_count": 4500
         }
       ]
-    },
-    {
-      "schema_version": "1.0",
-      "generated_at": "2026-01-30T18:00:00Z",
-      "generator": "transcript-chunker-2.0",
-      "total_segments": 710,
-      "total_chunks": 4,
-      "chunk_size": 500,
-      "target_tokens": 18000,
-      "source": {
-        "file": "k8-network-policies.vtt",
-        "format": "vtt",
-        "encoding": "utf-8"
-      },
-      "duration_ms": 2263888,
-      "speakers": {
-        "count": 3,
-        "list": ["Alex Johnson", "Sam Chen", "Jordan Lee"],
-        "segment_counts": {
-          "Alex Johnson": 459,
-          "Sam Chen": 156,
-          "Jordan Lee": 95
-        }
-      },
-      "word_count": 6855,
-      "chunks": [
-        {
-          "chunk_id": "chunk-001",
-          "segment_range": [1, 229],
-          "timestamp_range": {
-            "start_ms": 3528,
-            "end_ms": 721925
-          },
-          "file": "chunks/chunk-001.json",
-          "segment_count": 229,
-          "speaker_counts": {"Alex Johnson": 151, "Sam Chen": 39, "Jordan Lee": 39},
-          "word_count": 2193
-        }
-      ]
     }
   ]
 }

@@ -33,11 +33,7 @@ test_suites:
     implements: "FR-001"
     reference: "TDD-ts-parser.md Section 1.1"
 
-    # NOTE: Tests vtt-001 through vtt-005 REMOVED.
-    # These tests referenced transcripts/real/k8-network-policies-sample.vtt and
-    # expected/k8-network-policies-sample.expected.json, both removed during
-    # OSS release PII sanitization. The input VTT was never migrated from jerry-core,
-    # making these tests non-executable. The expected output contained PII.
+    # NOTE: Tests vtt-001 through vtt-005 REMOVED during OSS release PII sanitization.
     # Functionality is covered by golden dataset tests (meeting-001 through meeting-006)
     # and edge case tests (vtt-006 through vtt-014) below.
 

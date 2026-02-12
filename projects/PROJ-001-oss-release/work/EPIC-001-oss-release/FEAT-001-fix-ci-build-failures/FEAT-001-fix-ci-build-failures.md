@@ -35,9 +35,8 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 - Ensure CI pipeline passes green across all Python versions
 - Establish clean baseline for OSS release
 
-**Passing Checks:** Type Check, Security Scan, Plugin Validation, CLI Integration Tests, Test uv (3.11-3.14)
-**Recently Fixed:** Plugin Validation (EN-001), Lint & Format + Test pip (EN-003), Test Infrastructure (EN-002)
-**Pending CI Verification:** All checks after EN-002 push
+**All CI Checks Passing:** Type Check, Security Scan, Plugin Validation, CLI Integration Tests, Test uv (3.11-3.14), Lint & Format, Test pip (3.11-3.14), Coverage Report
+**PR #6 Status:** Merged to main
 
 ---
 
@@ -45,13 +44,15 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 ### Definition of Done
 
-- [x] All 6 bugs resolved (5 original + 1 regression)
-- [ ] CI pipeline passes green on PR #6 (pending CI verification after push)
-- [ ] Tests pass across Python 3.11, 3.12, 3.13, 3.14 (pending CI verification)
-- [ ] Tests pass with both pip and uv install methods (pending CI verification)
+- [x] All 7 original bugs resolved (5 original + 2 regressions)
+- [x] BUG-010 resolved (DEC-001: `make setup` already exists, warning improved)
+- [x] BUG-011 resolved (DEC-002: `types_or: [python, markdown]` applied)
+- [x] CI pipeline passes green on PR #6 (PR merged to main)
+- [x] Tests pass across Python 3.11, 3.12, 3.13, 3.14
+- [x] Tests pass with both pip and uv install methods
 - [x] Plugin Validation check passes
 - [x] CLI Integration Tests pass
-- [ ] Coverage Report generates successfully (pending CI verification)
+- [x] Coverage Report generates successfully
 
 ### Functional Criteria
 
@@ -75,6 +76,7 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | [EN-001](./EN-001-fix-plugin-validation/EN-001-fix-plugin-validation.md) | Fix Plugin Validation | done | high | BUG-001, TASK-001, TASK-002, TASK-003, DEC-001 |
 | [EN-002](./EN-002-fix-test-infrastructure/EN-002-fix-test-infrastructure.md) | Fix Test Infrastructure | done | medium | BUG-004 (TASK-001), BUG-005 (TASK-001, TASK-002) |
 | [EN-003](./EN-003-fix-validation-test-regressions/EN-003-fix-validation-test-regressions.md) | Fix Validation Test Regressions | done | high | BUG-006, TASK-001, TASK-002 |
+| [EN-004](./EN-004-fix-precommit-hook-coverage/EN-004-fix-precommit-hook-coverage.md) | Fix Pre-commit Hook Coverage | done | high | BUG-010 (TASK-001, done), BUG-011 (TASK-001, done), DEC-001, DEC-002 |
 
 ### Completed Bugs (Feature-Level)
 
@@ -94,11 +96,11 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Bugs:      [####################] 100% (7/7 completed)            |
+| Bugs:      [####################] 100% (9/9 completed)           |
 +------------------------------------------------------------------+
-| Enablers:  [####################] 100% (3/3 completed)            |
+| Enablers:  [####################] 100% (4/4 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [####################] 100%                             |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -106,12 +108,13 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 
 | Metric | Value |
 |--------|-------|
-| **Total Bugs** | 7 (5 original + 2 regressions) |
-| **Completed Bugs** | 7 (BUG-001 through BUG-007) |
+| **Total Bugs** | 9 (5 original + 2 regressions + 2 pre-commit gaps) |
+| **Completed Bugs** | 9 (BUG-001 through BUG-007, BUG-010, BUG-011) |
 | **Pending Bugs** | 0 |
-| **Total Enablers** | 3 |
-| **Completed Enablers** | 3 (EN-001, EN-002, EN-003) |
-| **Pending Enablers** | 0 |
+| **Total Enablers** | 4 |
+| **Completed Enablers** | 4 (EN-001, EN-002, EN-003, EN-004) |
+| **In Progress Enablers** | 0 |
+| **Decisions** | 2 (EN-004:DEC-001, EN-004:DEC-002) |
 | **Completion %** | 100% |
 
 ---
@@ -143,3 +146,6 @@ Fix all CI build failures on PR #6 (`feature/PROJ-001-vtt-troubleshooting`) to u
 | 2026-02-11 | Claude | in_progress | Reopened: BUG-007 filed — `test_synthesis_contains_canon_doc` fails when non-canon `.md` added to synthesis/. Content check threshold too low. |
 | 2026-02-11 | Claude | done | BUG-007 resolved: raised content check threshold to >= 3 files in all 3 tests. 7/7 bugs completed. Pending CI verification. |
 | 2026-02-11 | Claude | in_progress | Reopened: BUG-007 filed. `test_synthesis_contains_canon_doc` fails when non-canon `.md` added to synthesis/. Content check threshold too low (triggers on 1 file). Fix: raise threshold to >= 3 files for all content tests. |
+| 2026-02-11 | Claude | in_progress | Reopened: EN-004 (Fix Pre-commit Hook Coverage) created with BUG-010 (session hook no auto-install) and BUG-011 (pytest hook python-only). Pre-commit gap identified as root cause of repeated CI failures on markdown-only commits. Each bug has one task. |
+| 2026-02-11 | Claude | in_progress | DEC-001 (Pre-commit Installation Strategy) and DEC-002 (Pytest Hook File Type Coverage) created under EN-004. BUG-010 revised: `make setup` already exists, auto-install rejected, warning improved. BUG-010 done. Code changes: `session_start_hook.py` warning updated, `.pre-commit-config.yaml` types_or applied + header comment fixed. 8/9 bugs done, 1 pending (BUG-011). |
+| 2026-02-11 | Claude | done | FEAT-001 closed. All 9 bugs resolved, all 4 enablers done, all AC verified. BUG-011 resolved via `types_or: [python, markdown]`. PR #6 merged to main. Full test suite: 2514 passed. |
