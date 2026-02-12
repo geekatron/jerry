@@ -133,7 +133,8 @@ def check_precommit_hooks(plugin_root: Path) -> str | None:
     if not precommit_hook.exists() or precommit_hook.name.endswith(".sample"):
         return (
             "Pre-commit hooks are NOT installed. Tests will not run before commits.\n"
-            "Run 'uv run pre-commit install' to install hooks."
+            "Run 'make setup' to install dependencies and hooks.\n"
+            "(Windows: uv sync && uv run pre-commit install)"
         )
 
     return None

@@ -74,9 +74,9 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 
 | ID | Title | Status | Priority | Parent | Owner |
 |----|-------|--------|----------|--------|-------|
-| [TASK-001](./TASK-001-add-keywords-to-marketplace-schema.md) | Add `keywords` property to marketplace plugin item schema | BACKLOG | HIGH | BUG-001 | — |
-| [TASK-002](./TASK-002-add-validation-tests.md) | Add tests for plugin manifest validation | BACKLOG | HIGH | BUG-001 | — |
-| [TASK-003](./TASK-003-specify-validator-class.md) | Specify Draft202012Validator in validation script | BACKLOG | MEDIUM | BUG-001 | — |
+| [TASK-001](./TASK-001-add-keywords-to-marketplace-schema.md) | Add `keywords` property to marketplace plugin item schema | done | HIGH | BUG-001 | — |
+| [TASK-002](./TASK-002-add-validation-tests.md) | Add tests for plugin manifest validation | done | HIGH | BUG-001 | — |
+| [TASK-003](./TASK-003-specify-validator-class.md) | Specify Draft202012Validator in validation script | done | MEDIUM | BUG-001 | — |
 
 ---
 
@@ -84,7 +84,7 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [BUG-001](./BUG-001-marketplace-manifest-schema-error.md) | Marketplace manifest schema error: `keywords` not allowed | in_progress | high |
+| [BUG-001](./BUG-001-marketplace-manifest-schema-error.md) | Marketplace manifest schema error: `keywords` not allowed | done | high |
 
 ---
 
@@ -104,9 +104,9 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 +------------------------------------------------------------------+
 |                   ENABLER PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Tasks:     [....................] 0% (0/3 completed)              |
+| Tasks:     [####################] 100% (3/3 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -115,8 +115,8 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 3 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 3 |
+| **Completion %** | 100% |
 
 ---
 
@@ -124,11 +124,11 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 
 ### Definition of Done
 
-- [ ] `keywords` property added to marketplace plugin item schema (TASK-001)
-- [ ] Validation tests pass (TASK-002)
-- [ ] Draft202012Validator specified at all call sites (TASK-003)
-- [ ] `uv run python scripts/validate_plugin_manifests.py` passes locally (all 3 manifests)
-- [ ] Plugin Validation CI check passes
+- [x] `keywords` property added to marketplace plugin item schema (TASK-001)
+- [x] Validation tests pass (TASK-002)
+- [x] Draft202012Validator specified at all call sites (TASK-003)
+- [x] `uv run python scripts/validate_plugin_manifests.py` passes locally (all 3 manifests)
+- [x] Plugin Validation CI check passes
 
 ---
 
@@ -144,9 +144,9 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 
 ### Verification
 
-- [ ] `uv run python scripts/validate_plugin_manifests.py` passes all 3 manifests
-- [ ] Plugin Validation CI check passes
-- [ ] `uv run pytest` includes new validation tests
+- [x] `uv run python scripts/validate_plugin_manifests.py` passes all 3 manifests
+- [x] Plugin Validation CI check passes
+- [x] `uv run pytest` includes new validation tests
 
 ---
 
@@ -164,3 +164,4 @@ Unblocks the Plugin Validation CI check, which is one of the 5 failing CI catego
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | in_progress | Enabler created from FEAT-001 restructure. Groups BUG-001, 3 tasks, and DEC-001. |
 | 2026-02-10 | Claude | pending | Status corrected: no task work started yet. Tasks clarified as BUG-001 children (EN-001 references for visibility). Evidence section added. |
+| 2026-02-11 | Claude | done | All 3 tasks completed. Keywords added to marketplace schema, validation tests pass, Draft202012Validator applied. Plugin Validation CI check green. |

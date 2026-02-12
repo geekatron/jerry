@@ -88,7 +88,7 @@ Recommended approach:
 
 | ID | Title | Parent | Status | Priority |
 |----|-------|--------|--------|----------|
-| [BUG-004/TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data from source-repository | BUG-004 | done | high |
+| [BUG-004/TASK-001](./BUG-004--TASK-001-skip-pipeline-test-missing-datasets.md) | Restore missing transcript test data files | BUG-004 | done | high |
 | [BUG-005/TASK-001](./BUG-005--TASK-001-wire-dynamic-project-discovery.md) | Wire dynamic project discovery into fixture | BUG-005 | done | medium |
 | [BUG-005/TASK-002](./BUG-005--TASK-002-create-category-directories.md) | Create category directories in PROJ-001-oss-release | BUG-005 | done | medium |
 
@@ -104,7 +104,7 @@ BUG-005 ── TASK-002 (category dirs)     ──┘
 
 BUG-004/TASK-001 is fully independent and should be done first (data copy). BUG-005/TASK-001 and BUG-005/TASK-002 are co-dependent (both needed, but implementable in parallel).
 
-**Research:** [Transcript Data Migration Gap](./research-transcript-data-migration-gap.md) — ps-investigator 5W2H analysis confirming BUG-004 root cause is data migration gap, not missing test infrastructure.
+**Research:** [Transcript Test Data Gap](./research-transcript-data-migration-gap.md) — ps-investigator 5W2H analysis confirming BUG-004 root cause is uncommitted test data, not missing test infrastructure.
 
 ---
 
@@ -177,4 +177,5 @@ BUG-004/TASK-001 is fully independent and should be done first (data copy). BUG-
 |------|--------|--------|-------|
 | 2026-02-10 | Claude | pending | Enabler created from FEAT-001 restructure. Groups BUG-004 and BUG-005. |
 | 2026-02-11 | Claude | in_progress | 3 tasks created: BUG-004/TASK-001 (skip guard), BUG-005/TASK-001 (dynamic discovery), BUG-005/TASK-002 (category dirs). Dependency chain established. |
-| 2026-02-11 | Claude | done | All 3 tasks completed with adversarial critic feedback loops. BUG-004: 33 test data files restored from source-repository. BUG-005: Dynamic discovery with sentinel pattern + synthesis/analysis/decisions dirs + orchestration in valid_categories. Full test suite: 2510 passed, 34 skipped. Committed in `4789625`, pushed to origin. |
+| 2026-02-11 | Claude | done | All 3 tasks completed with adversarial critic feedback loops. BUG-004: 33 test data files added to repository. BUG-005: Dynamic discovery with sentinel pattern + synthesis/analysis/decisions dirs + orchestration in valid_categories. Full test suite: 2510 passed, 34 skipped. Committed in `4789625`, pushed to origin. |
+| 2026-02-11 | Claude | done | Entity closure: header status corrected to done, completed date set. All AC verified, progress 100%. |
