@@ -1,0 +1,262 @@
+# ORCHESTRATION.yaml - EN-202 CLAUDE.md Rewrite
+# Machine-readable state (SSOT)
+# Workflow ID: en202-rewrite-20260201-001
+
+workflow:
+  id: "en202-rewrite-20260201-001"
+  name: "EN-202 CLAUDE.md Rewrite"
+  project_id: "PROJ-001-oss-release"
+  enabler_id: "EN-202"
+  status: COMPLETE
+  created_at: "2026-02-01T22:30:00Z"
+  updated_at: "2026-02-02T04:00:00Z"
+  completed_at: "2026-02-02T04:00:00Z"
+  protocol: "DISC-002"
+  quality_threshold: 0.92
+  max_iterations: 3
+
+pipelines:
+  pipeline_a:
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    role: "Content creation and quality review"
+    current_phase: 0
+
+  pipeline_b:
+    short_alias: "nse"
+    skill_source: "nasa-systems-engineering"
+    role: "Compliance verification"
+    current_phase: 0
+
+phases:
+  - id: 0
+    name: "Phase 0: Navigation Tables"
+    status: COMPLETE
+    execution_mode: SEQUENTIAL
+    agents:
+      - id: "task-000"
+        name: "Add navigation tables"
+        status: COMPLETE
+        artifact: "TASK-000-add-navigation-tables.md"
+        score: 1.0
+        iterations: 1
+
+  - id: 1
+    name: "Phase 1: Section Creation"
+    status: COMPLETE
+    execution_mode: PARALLEL
+    agents:
+      - id: "task-001"
+        name: "Identity Section"
+        status: COMPLETE
+        artifact: "drafts/section-001-identity.md"
+        score: 0.94
+        iterations: 2
+        target_loc: 10
+        actual_loc: 8
+
+      - id: "task-002"
+        name: "Navigation Section"
+        status: COMPLETE
+        artifact: "drafts/section-002-navigation.md"
+        score: 0.948
+        iterations: 2
+        target_loc: 20
+        actual_loc: 19
+
+      - id: "task-003"
+        name: "Active Project Section"
+        status: COMPLETE
+        artifact: "drafts/section-003-active-project.md"
+        score: 0.942
+        iterations: 2
+        target_loc: 15
+        actual_loc: 15
+
+      - id: "task-004"
+        name: "Critical Constraints Section"
+        status: COMPLETE
+        artifact: "drafts/section-004-critical-constraints.md"
+        score: 0.9365
+        iterations: 2
+        target_loc: 15
+        actual_loc: 15
+
+      - id: "task-005"
+        name: "Quick Reference Section"
+        status: COMPLETE
+        artifact: "drafts/section-005-quick-reference.md"
+        score: 0.95
+        iterations: 2
+        target_loc: 15
+        actual_loc: 15
+
+  - id: 2
+    name: "Phase 2: Integration & Assembly"
+    status: COMPLETE
+    execution_mode: SEQUENTIAL
+    agents:
+      - id: "integration"
+        name: "Section Assembly"
+        status: COMPLETE
+        artifact: "CLAUDE.md"
+        score: null
+        notes: "Assembled 5 sections into 80-line CLAUDE.md"
+
+  - id: 3
+    name: "Phase 3: Validation"
+    status: COMPLETE
+    execution_mode: SEQUENTIAL
+    agents:
+      - id: "task-006"
+        name: "Validate Pointers"
+        status: COMPLETE
+        artifact: null
+        notes: "All 12 navigation pointers verified - 100% resolution"
+
+      - id: "task-007"
+        name: "Verify Line Count"
+        status: COMPLETE
+        artifact: null
+        notes: "80 lines (within 60-80 target), 91.2% reduction from 914"
+
+quality_gates:
+  - id: "qg-1"
+    name: "Section Review"
+    status: PASSED
+    location: "quality-gates/qg-1/"
+    reviewers:
+      - agent: "ps-critic"
+        status: COMPLETE
+        artifact: "quality-gates/qg-1/ps-critic-review.md"
+        score: 0.944
+      - agent: "nse-qa"
+        status: COMPLETE
+        artifact: "quality-gates/qg-1/nse-qa-audit.md"
+        score: 0.94
+
+  - id: "qg-2"
+    name: "Integration Review"
+    status: SKIPPED
+    location: "quality-gates/qg-2/"
+    notes: "Integration performed inline; validated via Phase 3"
+    reviewers:
+      - agent: "nse-qa"
+        status: SKIPPED
+        artifact: null
+        score: null
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+bugs_to_fix:
+  - id: "BUG-001"
+    description: "relationships to to typo"
+    severity: trivial
+    status: N/A
+    notes: "Content removed in rewrite (worktracker section extracted to skill)"
+
+  - id: "BUG-002"
+    description: "Story folder uses {EnablerId} instead of {StoryId}"
+    severity: minor
+    status: N/A
+    notes: "Content removed in rewrite (worktracker section extracted to skill)"
+
+  - id: "BUG-003"
+    description: "Template path inconsistency"
+    severity: minor
+    status: FIXED
+    notes: "Navigation section uses correct .context/templates/ path"
+
+metrics:
+  tasks_total: 8
+  tasks_complete: 8
+  tasks_in_progress: 0
+  tasks_blocked: 0
+  tasks_pending: 0
+  phases_total: 4
+  phases_complete: 4
+  quality_gates_total: 2
+  quality_gates_passed: 1
+  target_line_count: "60-80"
+  target_token_count: "3300-3500"
+  current_line_count: 80
+  current_token_count: "~3200"
+  reduction_percent: 91.2
+  original_line_count: 914
+  section_scores:
+    section_001: 0.94
+    section_002: 0.948
+    section_003: 0.942
+    section_004: 0.9365
+    section_005: 0.95
+    average: 0.9433
+  qg1_scores:
+    ps_critic: 0.944
+    nse_qa: 0.94
+
+execution_log:
+  - timestamp: "2026-02-01T22:30:00Z"
+    event: "workflow_created"
+    details: "EN-202 orchestration plan initialized"
+  - timestamp: "2026-02-02T02:00:00Z"
+    event: "task_complete"
+    details: "TASK-000 navigation tables added to 14 files"
+  - timestamp: "2026-02-02T02:00:00Z"
+    event: "phase_complete"
+    details: "Phase 0 complete, Phase 1 unblocked"
+  - timestamp: "2026-02-02T02:30:00Z"
+    event: "phase_started"
+    details: "Phase 1 started - 5 parallel agents launched for TASK-001-005"
+  - timestamp: "2026-02-02T03:00:00Z"
+    event: "task_complete"
+    details: "TASK-001 Identity complete - Score: 0.94, 2 iterations"
+  - timestamp: "2026-02-02T03:00:00Z"
+    event: "task_complete"
+    details: "TASK-002 Navigation complete - Score: 0.948, 2 iterations"
+  - timestamp: "2026-02-02T03:00:00Z"
+    event: "task_complete"
+    details: "TASK-003 Active Project complete - Score: 0.942, 2 iterations"
+  - timestamp: "2026-02-02T03:00:00Z"
+    event: "task_complete"
+    details: "TASK-004 Critical Constraints complete - Score: 0.9365, 2 iterations"
+  - timestamp: "2026-02-02T03:00:00Z"
+    event: "task_complete"
+    details: "TASK-005 Quick Reference complete - Score: 0.95, 2 iterations"
+  - timestamp: "2026-02-02T03:05:00Z"
+    event: "phase_complete"
+    details: "Phase 1 complete - All 5 sections created, total 72 lines, avg score 0.9433"
+  - timestamp: "2026-02-02T03:05:00Z"
+    event: "sync_barrier"
+    details: "SYNC_BARRIER reached - QG-1 ready"
+  - timestamp: "2026-02-02T03:30:00Z"
+    event: "qg1_complete"
+    details: "QG-1 PASSED - ps-critic: 0.944, nse-qa: 0.94"
+  - timestamp: "2026-02-02T03:35:00Z"
+    event: "phase2_started"
+    details: "Phase 2 Integration started"
+  - timestamp: "2026-02-02T03:40:00Z"
+    event: "backup_created"
+    details: "CLAUDE.md.backup created (914 lines)"
+  - timestamp: "2026-02-02T03:45:00Z"
+    event: "integration_complete"
+    details: "5 sections assembled into CLAUDE.md (80 lines, 91.2% reduction)"
+  - timestamp: "2026-02-02T03:45:00Z"
+    event: "phase2_complete"
+    details: "Phase 2 complete - CLAUDE.md ready for validation"
+  - timestamp: "2026-02-02T03:45:00Z"
+    event: "phase3_unblocked"
+    details: "Phase 3 unblocked - TASK-006 and TASK-007 ready"
+  - timestamp: "2026-02-02T03:50:00Z"
+    event: "task_complete"
+    details: "TASK-006 Validate Pointers - All 12 pointers verified"
+  - timestamp: "2026-02-02T03:55:00Z"
+    event: "task_complete"
+    details: "TASK-007 Verify Line Count - 80 lines (91.2% reduction)"
+  - timestamp: "2026-02-02T04:00:00Z"
+    event: "phase3_complete"
+    details: "Phase 3 complete - All validation passed"
+  - timestamp: "2026-02-02T04:00:00Z"
+    event: "workflow_complete"
+    details: "EN-202 CLAUDE.md Rewrite complete - 914 -> 80 lines (91.2% reduction)"

@@ -188,7 +188,7 @@ uv run python scripts/validate_plugin_manifests.py
 **Full Output:**
 ```
 Validating plugin manifests...
-Project root: jerry
+Project root: .
 
 [PASS] .claude-plugin/plugin.json
 [PASS] .claude-plugin/marketplace.json

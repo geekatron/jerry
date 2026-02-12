@@ -3,8 +3,8 @@
 # ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-CI-001-cicd-pipeline.md
 #
 # Installation:
-#   pip install pre-commit
-#   pre-commit install
+#   make setup                                   # macOS/Linux (recommended)
+#   uv sync && uv run pre-commit install         # Windows / manual
 #
 # Manual run:
 #   pre-commit run --all-files
@@ -72,7 +72,10 @@ repos:
         name: pytest (full suite via uv)
         entry: uv run pytest
         language: system
-        types: [python]
+        # Trigger on Python AND Markdown changes. Architecture tests (test_path_conventions.py)
+        # validate markdown content (hardcoded paths, cross-project refs). Without markdown
+        # in the trigger, markdown-only commits bypass local quality gates. See EN-004:DEC-002.
+        types_or: [python, markdown]
         pass_filenames: false
         # Default: run on commit. Change to 'pre-push' for faster iteration.
         # To skip: SKIP=pytest git commit -m "message"

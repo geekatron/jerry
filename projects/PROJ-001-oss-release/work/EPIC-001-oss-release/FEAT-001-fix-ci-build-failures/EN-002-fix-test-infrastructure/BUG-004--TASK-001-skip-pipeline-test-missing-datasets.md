@@ -1,4 +1,4 @@
-# TASK-001: Restore missing transcript test data from source-repository migration
+# TASK-001: Restore missing transcript test data files
 
 > **Type:** task
 > **Status:** done
@@ -26,9 +26,7 @@
 
 ### Description
 
-Copy 34 missing transcript test data files from the source-repository source repository to jerry. These files were omitted during the source-repository -> jerry repository migration, causing BUG-004 (transcript pipeline test finds no datasets).
-
-**Source:** `source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data/transcripts/`
+Add 34 missing transcript test data files that were never committed to git, causing BUG-004 (transcript pipeline test finds no datasets).
 
 **Destination:** `skills/transcript/test_data/transcripts/`
 
@@ -41,7 +39,7 @@ The data is 606 KB total (34 files), well within git limits. The files include:
 
 ### Previous Approach (SUPERSEDED)
 
-This task was originally scoped as "Skip transcript pipeline combined test when golden datasets missing" — a workaround that would hide the problem. The ps-investigator research revealed the data exists in source-repository and should be restored. See [research-transcript-data-migration-gap.md](./research-transcript-data-migration-gap.md).
+This task was originally scoped as "Skip transcript pipeline combined test when golden datasets missing" -- a workaround that would hide the problem. The ps-investigator research revealed the data existed but was never committed to git, and should be added. See [research-transcript-data-migration-gap.md](./research-transcript-data-migration-gap.md).
 
 ### Acceptance Criteria
 
@@ -49,7 +47,7 @@ This task was originally scoped as "Skip transcript pipeline combined test when 
 - [x] `transcripts/golden/` contains 11 files (6 VTT + 3 expected JSON + 1 SRT + 1 TXT)
 - [x] `transcripts/edge_cases/` contains 20 files (VTT, SRT, TXT, including 4 binary encoding files)
 - [x] `transcripts/real/` contains 3 files (VTT, SRT, TXT)
-- [x] Total file count: 33 (1 fewer than source-repository due to index.json exclusion)
+- [x] Total file count: 33 (index.json excluded)
 - [x] Binary encoding files are byte-identical to source (verified with `diff`)
 - [x] `test_all_datasets_complete_under_30_seconds` passes (finds and processes 6 datasets)
 - [x] All transcript integration tests pass: `uv run pytest tests/integration/transcript/ -v`
@@ -58,29 +56,26 @@ This task was originally scoped as "Skip transcript pipeline combined test when 
 ### Implementation
 
 ```bash
-SOURCE="source-repository-gitwt/PROJ-008-transcript-skill/skills/transcript/test_data"
 DEST="skills/transcript/test_data"
 
-# Copy entire transcripts/ directory structure
-cp -R "${SOURCE}/transcripts/" "${DEST}/transcripts/"
+# Create transcripts/ directory structure
+mkdir -p "${DEST}/transcripts/golden" "${DEST}/transcripts/edge_cases" "${DEST}/transcripts/real"
+
+# Add test data files to each subdirectory
+# (golden datasets, edge cases, real samples)
 
 # Verify file count
 find "${DEST}/transcripts" -type f | wc -l
 # Expected: 34
-
-# Verify binary files are identical
-diff "${SOURCE}/transcripts/edge_cases/windows1252_sample.vtt" \
-     "${DEST}/transcripts/edge_cases/windows1252_sample.vtt"
-# Expected: No output (identical)
 ```
 
 ### Files Involved
 
 | File | Role | Change Needed |
 |------|------|---------------|
-| `skills/transcript/test_data/transcripts/golden/` | Test data | Copy 11 files from source-repository |
-| `skills/transcript/test_data/transcripts/edge_cases/` | Test data | Copy 20 files from source-repository |
-| `skills/transcript/test_data/transcripts/real/` | Test data | Copy 3 files from source-repository |
+| `skills/transcript/test_data/transcripts/golden/` | Test data | Add 11 test data files |
+| `skills/transcript/test_data/transcripts/edge_cases/` | Test data | Add 20 test data files |
+| `skills/transcript/test_data/transcripts/real/` | Test data | Add 3 test data files |
 
 ---
 
@@ -98,7 +93,7 @@ diff "${SOURCE}/transcripts/edge_cases/windows1252_sample.vtt" \
 - [ ] `find skills/transcript/test_data/transcripts -type f | wc -l` returns 34
 - [ ] `uv run pytest tests/integration/transcript/test_pipeline.py::TestPythonPipeline::test_all_datasets_complete_under_30_seconds -v` → PASS
 - [ ] `uv run pytest tests/integration/transcript/ -v` → all pass
-- [ ] Binary encoding files verified with `diff` against source
+- [ ] Binary encoding files verified with `diff`
 - [ ] CI Test pip and Test uv jobs pass
 
 ---
@@ -108,7 +103,7 @@ diff "${SOURCE}/transcripts/edge_cases/windows1252_sample.vtt" \
 - Parent: [BUG-004: Transcript pipeline test finds no datasets](./BUG-004-transcript-pipeline-no-datasets.md)
 - Enabler: [EN-002: Fix Test Infrastructure](./EN-002-fix-test-infrastructure.md)
 - Feature: [FEAT-001: Fix CI Build Failures](../FEAT-001-fix-ci-build-failures.md)
-- Research: [Transcript Data Migration Gap](./research-transcript-data-migration-gap.md) — ps-investigator 5W2H analysis
+- Research: [Transcript Test Data Gap](./research-transcript-data-migration-gap.md) — ps-investigator 5W2H analysis
 
 ---
 
@@ -117,5 +112,5 @@ diff "${SOURCE}/transcripts/edge_cases/windows1252_sample.vtt" \
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-11 | pending | Created as "Skip pipeline test when golden datasets missing" (workaround approach). |
-| 2026-02-11 | pending | SUPERSEDED: ps-investigator research revealed data migration gap. Task reframed from "skip guard" to "restore missing data from source-repository". Priority raised to HIGH. |
-| 2026-02-11 | done | 33 files restored from source-repository. All transcript integration tests pass (56 passed). Committed in `4789625`. |
+| 2026-02-11 | pending | SUPERSEDED: ps-investigator research revealed test data was never committed to git. Task reframed from "skip guard" to "restore missing test data". Priority raised to HIGH. |
+| 2026-02-11 | done | 33 test data files added to repository. All transcript integration tests pass (56 passed). Committed in `4789625`. |

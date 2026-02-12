@@ -23,13 +23,13 @@
 #
 # EXAMPLES:
 #   # Pre-migration check (default)
-#   ./scripts/migration/verify-symlinks.sh /path/to/source-repository
+#   ./scripts/migration/verify-symlinks.sh /path/to/source-repo
 #
 #   # Post-migration check on target
-#   ./scripts/migration/verify-symlinks.sh --post-migration /path/to/jerry
+#   ./scripts/migration/verify-symlinks.sh --post-migration /path/to/target-repo
 #
 #   # Verbose output
-#   ./scripts/migration/verify-symlinks.sh -v /path/to/source-repository
+#   ./scripts/migration/verify-symlinks.sh -v /path/to/source-repo
 #
 # EXIT CODES:
 #   0 - All symlinks are safe (or no symlinks found)
