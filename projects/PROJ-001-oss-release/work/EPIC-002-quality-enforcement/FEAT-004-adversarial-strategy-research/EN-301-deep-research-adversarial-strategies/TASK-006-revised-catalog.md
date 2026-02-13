@@ -420,6 +420,7 @@ The following strategies were excluded from the active catalog but are identifie
 | R-3 | **Fagan Inspection** (as strategy, not just process) | TASK-002 #1 | Classified as process management pattern. | Promote if Jerry extends to multi-human review coordination, where Fagan's defined roles (author, inspector, moderator, reader) and formal meeting protocol become operationally necessary rather than analogical. |
 | R-4 | **ATAM** (Architecture Tradeoff Analysis Method) | TASK-002 #3 (excluded) | Scenario-based probing covered by S-008 and S-001. | Promote if Jerry develops dedicated architecture review workflows requiring quality attribute trees, sensitivity analysis, and formal tradeoff documentation. ATAM's structured output format may warrant standalone strategy status in that context. |
 | R-5 | **Ensemble Adversarial Meta-Review** | TASK-003 E8 | Orchestration pattern rather than distinct mechanism. Incorporated into L2 architecture. | Promote if empirical experience shows that independent multi-strategy review with formal disagreement analysis produces measurably better outcomes than sequential escalation (S-015). This would represent an alternative to S-015's graduated model. |
+| R-6 | **Blue Team (Defensive Adversarial Testing)** | EN-301 spec (foundational five); EN-301-DEV-001 | Originally specified as foundational strategy. Reclassified because Blue Team in security refers to the *defensive* team responding to Red Team findings, which maps to Jerry's creator-responds-to-critic workflow (the default, not a distinct strategy). However, Blue Team *can* be reframed as proactive defensive testing -- anticipating and hardening against anticipated adversarial attacks before they are applied. | Promote when Jerry develops a dedicated security review workflow where proactive defensive hardening (anticipating Red Team attacks before they occur) is operationally distinct from the standard creator-responds-to-critic flow. Also promote if threat modeling becomes a first-class Jerry capability, as Blue Team's anticipatory defense pairs naturally with Red Team's offensive probing. **User ratification note (2026-02-13):** User explicitly requested Blue Team be added as R-6 rather than discarded entirely. |
 
 ---
 
@@ -486,11 +487,23 @@ The deviation is accepted with the following conditions:
 2. **Reversibility**: Both Pre-Mortem (S-004) and Dialectical Inquiry (S-005) can be replaced with Blue Team and Strawman without structural impact to the catalog, as the Reserved Strategies framework supports catalog evolution.
 3. **Documentation**: This deviation record serves as the formal ADR for the decision.
 
+#### User Ratification (2026-02-13)
+
+**STATUS: RATIFIED WITH MODIFICATION**
+
+The user reviewed this deviation and provided the following decisions:
+
+1. **Pre-Mortem (S-004) and Dialectical Inquiry (S-005): CONFIRMED.** The user agrees these should remain as active strategies in the catalog.
+2. **Blue Team: Added as Reserved Strategy R-6.** The user recognizes Blue Team as a useful complementary strategy and explicitly requested it be preserved in the Reserved Strategies registry rather than discarded. Blue Team is now documented as R-6 in [Appendix A](#appendix-a-reserved-strategies) with promotion criteria tied to security review workflow development.
+3. **Strawman: No change.** The user did not request Strawman reinstatement. It remains excluded per the original deviation rationale (argumentative fallacy subsumed by Red Team S-001).
+
+This ratification resolves the P-020 (User Authority) concern raised by RT-001. The deviation is no longer pending user review.
+
 #### Revisitation Conditions
 
 This deviation should be revisited if:
-- The user explicitly requests Blue Team and/or Strawman inclusion
-- Jerry develops a dedicated security review workflow where Blue Team defensive testing is operationally distinct from the standard creator-responds-to-critic flow
+- ~~The user explicitly requests Blue Team and/or Strawman inclusion~~ (Blue Team addressed via R-6; Strawman remains open)
+- Jerry develops a dedicated security review workflow where Blue Team defensive testing is operationally distinct from the standard creator-responds-to-critic flow (triggers R-6 promotion evaluation)
 - A new use case emerges where deliberate strawmanning (presenting weakened arguments to test audience discernment) provides value that is not covered by Red Team (S-001)
 
 ---

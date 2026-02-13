@@ -156,7 +156,7 @@ Deep research into adversarial critic/review strategies from authoritative indus
 
 | ID | Type | Title | Status | Priority | Effort | Agents |
 |----|------|-------|--------|----------|--------|--------|
-| [EN-301](./EN-301-deep-research-adversarial-strategies/EN-301-deep-research-adversarial-strategies.md) | Enabler | Deep Research: 15 Adversarial Strategies | pending | critical | 13 | ps-researcher, ps-critic, ps-synthesizer, nse-explorer |
+| [EN-301](./EN-301-deep-research-adversarial-strategies/EN-301-deep-research-adversarial-strategies.md) | Enabler | Deep Research: 15 Adversarial Strategies | **done** | critical | 13 | ps-researcher, ps-critic, ps-synthesizer, nse-explorer |
 | [EN-302](./EN-302-strategy-selection-framework/EN-302-strategy-selection-framework.md) | Enabler | Strategy Selection & Decision Framework | pending | critical | 8 | ps-analyst, ps-critic, nse-architecture, nse-risk |
 | [EN-303](./EN-303-situational-applicability-mapping/EN-303-situational-applicability-mapping.md) | Enabler | Situational Applicability Mapping | pending | high | 5 | ps-architect, ps-critic, nse-requirements |
 | [EN-304](./EN-304-problem-solving-skill-enhancement/EN-304-problem-solving-skill-enhancement.md) | Enabler | /problem-solving Skill Enhancement | pending | critical | 10 | ps-architect, ps-critic, ps-reviewer, nse-verification |
@@ -193,10 +193,10 @@ EN-301 (Research)
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/6 completed)              |
-| Tasks:     [....................] 0% (0/? completed)              |
+| Enablers:  [###.................] 14% (1/7 completed)             |
+| Tasks:     [########............] 40% (8/20 EN-301 tasks done)   |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [###.................] ~14%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -205,10 +205,10 @@ EN-301 (Research)
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 7 |
-| **Completed Enablers** | 0 |
+| **Completed Enablers** | 1 (EN-301) |
 | **Total Effort (points)** | 57 |
-| **Completed Effort** | 0 |
-| **Completion %** | 0% |
+| **Completed Effort** | 13 |
+| **Completion %** | 23% (by effort) |
 
 ---
 
@@ -238,6 +238,7 @@ EN-301 (Research)
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Feature created under EPIC-002. 6 enablers defined (EN-301 through EN-306). |
 | 2026-02-12 | Claude | in_progress | Added EN-307 (/orchestration skill enhancement). Updated ACs to 18 functional + 8 non-functional criteria. Added requirements for full agent utilization (22 agents), DEC/DISC entity tracking, and detailed enabler/task decomposition. |
+| 2026-02-13 | Claude | in_progress | EN-301 completed: 15-strategy catalog with 2 adversarial review iterations (0.89→0.936), final validation PASS 8/8. User ratified EN-301-DEV-001 (Blue Team→R-6). EN-302 now unblocked. |
 
 ---
 
