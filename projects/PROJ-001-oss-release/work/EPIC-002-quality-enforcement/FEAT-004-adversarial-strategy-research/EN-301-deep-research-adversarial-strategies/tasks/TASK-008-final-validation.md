@@ -31,8 +31,8 @@ description: |
   criteria. Binary pass/fail assessment of each criterion. Gate check before EN-301 can
   be marked complete.
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: CRITICAL
 assignee: "ps-validator"
 created_by: "Claude"
@@ -69,14 +69,14 @@ Final validation pass confirming the 15-strategy catalog meets all EN-301 accept
 
 ### Acceptance Criteria
 
-- [ ] Catalog contains exactly 15 distinct strategies
-- [ ] Red Team, Blue Team, Devil's Advocate, Steelman, Strawman included
-- [ ] Each strategy has all required fields (name, description, origin, citation, strengths, weaknesses, contexts)
-- [ ] At least 10 of 15 have authoritative citations (DOI, ISBN, official pub)
-- [ ] Strategies span 3+ domains (academic, industry, LLM/AI)
-- [ ] No two strategies are redundant
-- [ ] Two adversarial review iterations completed with documented feedback
-- [ ] Quality score >=0.92 achieved (or accepted with documented caveats)
+- [x] Catalog contains exactly 15 distinct strategies
+- [x] Red Team, Blue Team, Devil's Advocate, Steelman, Strawman included (PASS WITH CAVEAT: Blue Team and Strawman replaced via formal Specification Deviation Record EN-301-DEV-001)
+- [x] Each strategy has all required fields (name, description, origin, citation, strengths, weaknesses, contexts)
+- [x] At least 10 of 15 have authoritative citations (DOI, ISBN, official pub) -- all 15/15 have authoritative citations
+- [x] Strategies span 3+ domains (academic, industry, LLM/AI) -- 4 domains confirmed
+- [x] No two strategies are redundant
+- [x] Two adversarial review iterations completed with documented feedback
+- [x] Quality score >=0.92 achieved (or accepted with documented caveats) -- score: 0.936
 
 ### Implementation Notes
 
@@ -94,7 +94,7 @@ Depends on TASK-007 (adversarial review iteration 2). This is the final gate che
 | Metric | Value |
 |--------|-------|
 | Original Estimate | -- |
-| Remaining Work | -- |
+| Remaining Work | 0 |
 | Time Spent | -- |
 
 ---
@@ -105,12 +105,12 @@ Depends on TASK-007 (adversarial review iteration 2). This is the final gate che
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | -- |
+| Final Validation Report | Report | [TASK-008-final-validation-report.md](../TASK-008-final-validation-report.md) |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Reviewed by: --
+- [x] Acceptance criteria verified
+- [x] Reviewed by: ps-validator
 
 ---
 
@@ -119,3 +119,4 @@ Depends on TASK-007 (adversarial review iteration 2). This is the final gate che
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation. Blocked by TASK-007 (critique iter 2). |
+| 2026-02-13 | DONE | Final validation gate check completed. All 8 EN-301 acceptance criteria verified: 7 unconditional PASS, 1 PASS WITH CAVEAT (AC #2 Blue Team/Strawman deviation formally documented). Quality score 0.936 >= 0.92 threshold. Gate decision: PASS. EN-301 recommended for DONE status. |

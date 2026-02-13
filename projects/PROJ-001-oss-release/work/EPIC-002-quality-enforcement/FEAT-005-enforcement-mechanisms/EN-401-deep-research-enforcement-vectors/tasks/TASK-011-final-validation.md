@@ -31,8 +31,8 @@ description: |
   all EN-401 acceptance criteria. Binary pass/fail assessment of each criterion.
   Gate check before EN-401 can be marked complete.
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: CRITICAL
 assignee: "ps-validator"
 created_by: "Claude"
@@ -68,19 +68,19 @@ Final validation pass confirming the unified enforcement vector catalog meets al
 
 ### Acceptance Criteria
 
-- [ ] All Claude Code hook types documented with capabilities and limitations
-- [ ] .claude/rules/ enforcement patterns cataloged with effectiveness ratings
-- [ ] At least 3 industry LLM guardrail frameworks surveyed with key findings
-- [ ] Prompt engineering enforcement patterns documented with examples
-- [ ] Platform portability assessment completed for each vector
-- [ ] Unified enforcement vector catalog produced with authoritative citations
-- [ ] Adversarial review completed with at least 2 iterations
-- [ ] All findings have authoritative citations
-- [ ] Quality score >=0.92 achieved (or accepted with documented caveats)
+- [x] All Claude Code hook types documented with capabilities and limitations
+- [x] .claude/rules/ enforcement patterns cataloged with effectiveness ratings
+- [x] At least 3 industry LLM guardrail frameworks surveyed with key findings
+- [x] Prompt engineering enforcement patterns documented with examples
+- [x] Platform portability assessment completed for each vector
+- [x] Unified enforcement vector catalog produced with authoritative citations
+- [x] Adversarial review completed with at least 2 iterations
+- [x] All findings have authoritative citations
+- [x] Quality score >=0.92 achieved (or accepted with documented caveats)
 
 ### Implementation Notes
 
-Blocked by TASK-010 (critique iter 2). This is the gate check before EN-401 can be marked complete.
+All 9 EN-401 acceptance criteria verified as PASS. Quality score 0.928 (exceeds 0.92 target). Two adversarial review iterations completed with all findings resolved. Gate verdict: PASS. EN-401 can be marked DONE.
 
 ### Related Items
 
@@ -94,7 +94,7 @@ Blocked by TASK-010 (critique iter 2). This is the gate check before EN-401 can 
 | Metric | Value |
 |--------|-------|
 | Original Estimate | -- |
-| Remaining Work | -- |
+| Remaining Work | 0 |
 | Time Spent | -- |
 
 ---
@@ -105,12 +105,12 @@ Blocked by TASK-010 (critique iter 2). This is the gate check before EN-401 can 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | -- |
+| Final Validation Report | Validation Report | [TASK-011-final-validation-report.md](../TASK-011-final-validation-report.md) |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Reviewed by: --
+- [x] Acceptance criteria verified
+- [x] Reviewed by: ps-validator (automated gate check)
 
 ---
 
@@ -119,3 +119,4 @@ Blocked by TASK-010 (critique iter 2). This is the gate check before EN-401 can 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation. Blocked by TASK-010 (critique iter 2). |
+| 2026-02-13 | DONE | All 9 EN-401 acceptance criteria verified PASS. Quality score 0.928 >= 0.92. Gate verdict: PASS. Validation report written to TASK-011-final-validation-report.md. |
