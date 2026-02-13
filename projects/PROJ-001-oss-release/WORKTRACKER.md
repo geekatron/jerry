@@ -48,14 +48,14 @@
 | [BUG-007](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/FEAT-001--BUG-007-synthesis-content-test-overly-prescriptive.md) | Synthesis content test overly prescriptive | done | high | FEAT-001 |
 | [BUG-010](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/BUG-010-session-hook-no-auto-install.md) | Session hook warning doesn't reference `make setup` | done | low | EN-004 |
 | [BUG-011](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/BUG-011-precommit-pytest-python-only.md) | Pre-commit pytest hook Python-only trigger | done | high | EN-004 |
-| [BUG-001](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-001-relationships-typo.md) | Relationships typo | pending | low | EN-202 |
-| [BUG-002](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-002-story-folder-id-mismatch.md) | Story folder ID mismatch | pending | low | EN-202 |
-| [BUG-003](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-003-template-path-inconsistency.md) | Template path inconsistency | pending | medium | EN-202 |
-| [BUG-004](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-004-todo-section-not-migrated.md) | TODO section not migrated | pending | medium | EN-202 |
-| [BUG-005](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-005-mandatory-skill-usage-lost.md) | Mandatory skill usage lost | pending | high | EN-202 |
-| [BUG-006](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-006-working-with-jerry-lost.md) | Working with Jerry section lost | pending | high | EN-202 |
-| [BUG-007](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-007-problem-solving-templates-lost.md) | Problem solving templates lost | pending | medium | EN-202 |
-| [BUG-008](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion flow lost | pending | medium | EN-202 |
+| [BUG-001](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-001-relationships-typo.md) | Relationships typo | done | low | EN-202 |
+| [BUG-002](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-002-story-folder-id-mismatch.md) | Story folder ID mismatch | done | low | EN-202 |
+| [BUG-003](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-003-template-path-inconsistency.md) | Template path inconsistency | done | medium | EN-202 |
+| [BUG-004](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-004-todo-section-not-migrated.md) | TODO section not migrated | done | medium | EN-202 |
+| [BUG-005](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-005-mandatory-skill-usage-lost.md) | Mandatory skill usage lost | done | high | EN-202 |
+| [BUG-006](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-006-working-with-jerry-lost.md) | Working with Jerry section lost | done | high | EN-202 |
+| [BUG-007](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-007-problem-solving-templates-lost.md) | Problem solving templates lost | done | medium | EN-202 |
+| [BUG-008](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion flow lost | done | medium | EN-202 |
 
 ---
 
@@ -97,6 +97,15 @@
 | BUG-010 (EN-004) | Session hook warning improved | 2026-02-11 | DEC-001: auto-install rejected, warning text updated |
 | BUG-011 (EN-004) | Pre-commit pytest hook Python-only trigger | 2026-02-11 | `types_or: [python, markdown]` applied per DEC-002 |
 | FEAT-001 | Fix CI Build Failures | 2026-02-11 | All 9 bugs resolved, 4 enablers done, PR #6 merged, CI green |
+| FEAT-002 | Research and Preparation | 2026-02-12 | All 8 enablers complete (EN-101 through EN-108). EN-108 version bumping merged via PR #12. |
+| BUG-001 (EN-202) | Relationships typo | 2026-02-02 | NOT_APPLICABLE — content extracted to /worktracker skill |
+| BUG-002 (EN-202) | Story folder ID mismatch | 2026-02-02 | NOT_APPLICABLE — content extracted to /worktracker skill |
+| BUG-003 (EN-202) | Template path inconsistency | 2026-02-02 | FIXED — paths corrected in new CLAUDE.md |
+| BUG-004 (EN-202) | TODO section not migrated | 2026-02-02 | FIXED — EN-203 executed, todo-integration-rules.md created |
+| BUG-005 (EN-202) | Mandatory skill usage lost | 2026-02-02 | FIXED — mandatory-skill-usage.md created in .claude/rules/ |
+| BUG-006 (EN-202) | Working with Jerry section lost | 2026-02-02 | FIXED — project-workflow.md created in .claude/rules/ |
+| BUG-007 (EN-202) | Problem solving templates lost | 2026-02-02 | FIXED — templates added to problem-solving SKILL.md |
+| BUG-008 (EN-202) | AskUserQuestion flow lost | 2026-02-02 | FIXED — added to project-workflow.md |
 
 ---
 
@@ -115,6 +124,9 @@
 | 2026-02-11 | Claude | FEAT-001 reopened: EN-004 created (BUG-010, BUG-011). Both resolved. FEAT-001 closed |
 | 2026-02-12 | Claude | EN-108 created under FEAT-002: Version Bumping Strategy (6 tasks) |
 | 2026-02-12 | Claude | WORKTRACKER.md restructured: slim pointer per behavior rules (line 121) |
+| 2026-02-12 | Claude | EN-108 complete. FEAT-002 closed (all 8 enablers done). PR #12 merged. |
+| 2026-02-12 | Claude | All 8 EN-202 bugs closed (resolved in earlier sessions). EN-207 confirmed complete. |
+| 2026-02-12 | Claude | Feature branch feature/PROJ-001-oss-release-feat003 created for remaining FEAT-003 work. |
 
 ---
 
