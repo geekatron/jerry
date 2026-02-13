@@ -71,7 +71,7 @@ def parse_agent_output(output: str) -> dict[str, Any]:
         "summary": "",
     }
 
-    lines = output.split("\n")
+    lines = output.splitlines()
     summary_lines = []
 
     for line in lines:

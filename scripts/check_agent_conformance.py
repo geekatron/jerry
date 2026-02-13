@@ -175,7 +175,7 @@ def parse_yaml_frontmatter(content: str) -> dict[str, Any] | None:
     result: dict[str, Any] = {}
     current_key: str = ""
 
-    lines = yaml_content.split("\n")
+    lines = yaml_content.splitlines()
     i = 0
 
     while i < len(lines):

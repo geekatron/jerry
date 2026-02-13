@@ -26,6 +26,21 @@
 
 set -o pipefail
 
+# =============================================================================
+# Platform Guard: Skip on Windows (Git Bash / MSYS2 / Cygwin)
+# =============================================================================
+# This script relies on rsync, tar, and other Unix tools that are not available
+# on Windows. On Windows, use WSL or skip this verification step.
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+        echo "[SKIP] verify-platform.sh: Windows detected ($(uname -s))"
+        echo "       This script requires rsync and GNU tar which are not"
+        echo "       available natively on Windows."
+        echo "       Run this script in WSL or on a Linux/macOS system."
+        exit 0
+        ;;
+esac
+
 # Colors for output (if terminal supports it)
 if [ -t 1 ]; then
     RED='\033[0;31m'

@@ -82,7 +82,7 @@ make setup
 uv sync && uv run pre-commit install
 ```
 
-Note: Pre-commit hooks are shared across all worktrees (they live in the main `.git/hooks/` directory). Running setup once installs hooks for ALL worktrees.
+**Important:** Pre-commit hooks live in the main `.git/hooks/` directory (shared across worktrees), but `pre-commit install` stamps an **absolute path** to the Python interpreter inside the hook file. If you create a new worktree or rebuild the venv, the path goes stale and hooks will silently fail. **Always run `uv run pre-commit install`** (or `make setup`) after creating a worktree or rebuilding the virtual environment. The session start hook will warn you if it detects a stale path.
 
 ## Development Workflow
 

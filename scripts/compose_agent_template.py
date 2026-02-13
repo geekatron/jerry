@@ -129,7 +129,7 @@ def parse_extension_file(content: str) -> dict[str, ExtensionPoint]:
         # Clean up the content
         # - Remove leading/trailing whitespace from each line while preserving indentation
         # - Handle empty content (comments only)
-        lines = raw_content.split("\n")
+        lines = raw_content.splitlines()
         cleaned_lines: list[str] = []
 
         for line in lines:
@@ -229,7 +229,7 @@ def validate_composition(composed_content: str) -> list[str]:
     # Check for YAML frontmatter
     if not composed_content.startswith("---"):
         # Skip header comment/title and check for frontmatter
-        lines = composed_content.split("\n")
+        lines = composed_content.splitlines()
         yaml_start = -1
         for i, line in enumerate(lines):
             if line.strip() == "---":

@@ -159,7 +159,7 @@ class TranscriptChunker:
             )
 
             # Write chunk file
-            chunk_file.write_text(json.dumps(chunk_data, indent=2))
+            chunk_file.write_text(json.dumps(chunk_data, indent=2), encoding="utf-8")
 
             # Collect metadata for index
             chunk_metadata.append(
@@ -176,7 +176,7 @@ class TranscriptChunker:
             chunk_metadata=chunk_metadata,
         )
         index_file = output_path / "index.json"
-        index_file.write_text(json.dumps(index_data, indent=2))
+        index_file.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
 
         return str(index_file)
 
