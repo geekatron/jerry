@@ -60,9 +60,9 @@ Jerry's quality framework requires enforcement mechanisms to ensure agents follo
 |----|-------|--------|----------|--------|
 | TASK-001 | Research Claude Code hooks API and capabilities | done | RESEARCH | ps-researcher |
 | TASK-002 | Research LLM guardrail frameworks (Guardrails AI, NeMo Guardrails, LangChain guardrails) | done | RESEARCH | ps-researcher |
-| TASK-003 | Research .claude/rules/ enforcement patterns and effectiveness | in_progress | RESEARCH | ps-researcher |
-| TASK-004 | Research prompt engineering enforcement patterns | in_progress | RESEARCH | ps-researcher |
-| TASK-005 | Explore alternative/emerging enforcement approaches | in_progress | RESEARCH | nse-explorer |
+| TASK-003 | Research .claude/rules/ enforcement patterns and effectiveness | done | RESEARCH | ps-researcher |
+| TASK-004 | Research prompt engineering enforcement patterns | done | RESEARCH | ps-researcher |
+| TASK-005 | Explore alternative/emerging enforcement approaches | done | RESEARCH | nse-explorer |
 | TASK-006 | Platform portability assessment for each vector | pending | RESEARCH | ps-analyst |
 | TASK-007 | Synthesize all research into unified enforcement vector catalog | pending | RESEARCH | ps-synthesizer |
 | TASK-008 | Adversarial review iteration 1 (Devil's Advocate + Red Team) | pending | TESTING | ps-critic |
@@ -121,3 +121,5 @@ TASK-006 ──┘
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
 | 2026-02-12 | Claude | in_progress | Research started. TASK-001 (Claude Code hooks) and TASK-002 (LLM guardrail frameworks) launched in parallel. |
+| 2026-02-13 | Claude | in_progress | TASK-005 (alternative enforcement) completed by nse-explorer. 18 mechanisms across 7 families. 36 references. NASA SE perspective applied. |
+| 2026-02-13 | Claude | in_progress | TASK-003 (rules enforcement) and TASK-004 (prompt engineering) completed. All 5 research tasks (TASK-001 through TASK-005) now done. Task entity files rewritten to use official /worktracker TASK template. |
