@@ -9,7 +9,7 @@ PURPOSE: Research and catalog 15 adversarial review strategies from authoritativ
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** exploration
@@ -57,9 +57,9 @@ Jerry's adversarial review capability currently lacks a rigorous, evidence-based
 
 | ID | Title | Status | Activity | Agents |
 |----|-------|--------|----------|--------|
-| TASK-001 | Research academic literature on adversarial review | pending | RESEARCH | ps-researcher |
-| TASK-002 | Research industry practices and LLM-specific patterns | pending | RESEARCH | ps-researcher |
-| TASK-003 | Research alternative/emerging adversarial approaches | pending | RESEARCH | nse-explorer |
+| TASK-001 | Research academic literature on adversarial review | in_progress | RESEARCH | ps-researcher |
+| TASK-002 | Research industry practices and LLM-specific patterns | in_progress | RESEARCH | ps-researcher |
+| TASK-003 | Research alternative/emerging adversarial approaches | in_progress | RESEARCH | nse-explorer |
 | TASK-004 | Synthesize findings into unified 15-strategy catalog | pending | RESEARCH | ps-synthesizer |
 | TASK-005 | Adversarial review iteration 1 (Red Team + Devil's Advocate) | pending | TESTING | ps-critic |
 | TASK-006 | Creator revision based on critic feedback | pending | DEVELOPMENT | ps-researcher |
@@ -114,3 +114,4 @@ TASK-003 ──┘
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. Entry point for FEAT-004 research pipeline. |
+| 2026-02-12 | Claude | in_progress | Research execution started. TASK-001 (academic), TASK-002 (industry), TASK-003 (emerging) launched in parallel. |

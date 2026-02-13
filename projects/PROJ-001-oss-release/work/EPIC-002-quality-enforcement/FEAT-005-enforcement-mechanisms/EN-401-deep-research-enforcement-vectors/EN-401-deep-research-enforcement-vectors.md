@@ -9,7 +9,7 @@ PURPOSE: Comprehensive research on all enforcement vectors available for Claude 
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** exploration
@@ -58,8 +58,8 @@ Jerry's quality framework requires enforcement mechanisms to ensure agents follo
 
 | ID | Title | Status | Activity | Agents |
 |----|-------|--------|----------|--------|
-| TASK-001 | Research Claude Code hooks API and capabilities | pending | RESEARCH | ps-researcher |
-| TASK-002 | Research LLM guardrail frameworks (Guardrails AI, NeMo Guardrails, LangChain guardrails) | pending | RESEARCH | ps-researcher |
+| TASK-001 | Research Claude Code hooks API and capabilities | in_progress | RESEARCH | ps-researcher |
+| TASK-002 | Research LLM guardrail frameworks (Guardrails AI, NeMo Guardrails, LangChain guardrails) | in_progress | RESEARCH | ps-researcher |
 | TASK-003 | Research .claude/rules/ enforcement patterns and effectiveness | pending | RESEARCH | ps-researcher |
 | TASK-004 | Research prompt engineering enforcement patterns | pending | RESEARCH | ps-researcher |
 | TASK-005 | Explore alternative/emerging enforcement approaches | pending | RESEARCH | nse-explorer |
@@ -120,3 +120,4 @@ TASK-006 ──┘
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
+| 2026-02-12 | Claude | in_progress | Research started. TASK-001 (Claude Code hooks) and TASK-002 (LLM guardrail frameworks) launched in parallel. |
