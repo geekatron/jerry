@@ -1,7 +1,7 @@
 # TASK-004: Synthesize Findings into Unified 15-Strategy Catalog
 
 > **Type:** task
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** critical
 > **Parent:** EN-301
 > **Agent:** ps-synthesizer
@@ -34,3 +34,4 @@ Path: `EN-301-deep-research-adversarial-strategies/TASK-004-unified-catalog.md`
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Task created. Blocked by TASK-001, TASK-002, TASK-003. |
+| 2026-02-12 | Claude | in_progress | All blockers resolved. ps-synthesizer dispatched (opus model). |

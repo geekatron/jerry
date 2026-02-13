@@ -1,7 +1,7 @@
 # TASK-004: Research Prompt Engineering Enforcement Patterns
 
 > **Type:** task
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Parent:** EN-401
 > **Agent:** ps-researcher
@@ -33,3 +33,4 @@ Path: `EN-401-deep-research-enforcement-vectors/TASK-004-prompt-engineering-enfo
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Task created. Awaiting launch after TASK-001/002 complete. |
+| 2026-02-12 | Claude | in_progress | ps-researcher agent dispatched (opus model). |

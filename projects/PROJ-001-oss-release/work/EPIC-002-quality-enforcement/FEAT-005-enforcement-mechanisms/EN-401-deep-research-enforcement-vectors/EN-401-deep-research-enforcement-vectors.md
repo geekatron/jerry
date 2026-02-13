@@ -60,9 +60,9 @@ Jerry's quality framework requires enforcement mechanisms to ensure agents follo
 |----|-------|--------|----------|--------|
 | TASK-001 | Research Claude Code hooks API and capabilities | done | RESEARCH | ps-researcher |
 | TASK-002 | Research LLM guardrail frameworks (Guardrails AI, NeMo Guardrails, LangChain guardrails) | done | RESEARCH | ps-researcher |
-| TASK-003 | Research .claude/rules/ enforcement patterns and effectiveness | pending | RESEARCH | ps-researcher |
-| TASK-004 | Research prompt engineering enforcement patterns | pending | RESEARCH | ps-researcher |
-| TASK-005 | Explore alternative/emerging enforcement approaches | pending | RESEARCH | nse-explorer |
+| TASK-003 | Research .claude/rules/ enforcement patterns and effectiveness | in_progress | RESEARCH | ps-researcher |
+| TASK-004 | Research prompt engineering enforcement patterns | in_progress | RESEARCH | ps-researcher |
+| TASK-005 | Explore alternative/emerging enforcement approaches | in_progress | RESEARCH | nse-explorer |
 | TASK-006 | Platform portability assessment for each vector | pending | RESEARCH | ps-analyst |
 | TASK-007 | Synthesize all research into unified enforcement vector catalog | pending | RESEARCH | ps-synthesizer |
 | TASK-008 | Adversarial review iteration 1 (Devil's Advocate + Red Team) | pending | TESTING | ps-critic |
