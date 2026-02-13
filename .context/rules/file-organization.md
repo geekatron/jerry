@@ -3,7 +3,7 @@
 > Directory structure and file naming conventions for Jerry.
 > Derived from Jerry Design Canon.
 
-**Authoritative Pattern Source**: `.claude/patterns/PATTERN-CATALOG.md`
+**Authoritative Pattern Source**: `.context/patterns/PATTERN-CATALOG.md`
 
 ---
 
@@ -11,9 +11,14 @@
 
 ```
 jerry/
-├── .claude/                   # Agent Governance Layer
-│   ├── rules/                 # Coding standards (this file)
+├── .context/                  # Canonical Source (version-controlled, distributable)
+│   ├── rules/                 # Behavioral rules (this file)
 │   ├── patterns/              # Pattern catalog
+│   └── templates/             # Worktracker and design templates
+│
+├── .claude/                   # Claude Code Config (synced from .context/)
+│   ├── rules/ → .context/rules/   # Symlinked
+│   ├── patterns/ → .context/patterns/ # Symlinked
 │   ├── agents/                # Agent definitions
 │   └── settings.json          # Claude Code settings
 │

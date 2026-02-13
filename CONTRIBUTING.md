@@ -151,7 +151,7 @@ git commit --no-verify -m "message"
 
 ## Code Standards
 
-- See `.claude/rules/coding-standards.md` for detailed standards
+- See `.context/rules/coding-standards.md` for detailed standards
 - Follow hexagonal architecture patterns in `.claude/patterns/`
 - Use type hints on all public functions
 - Write tests before implementation (TDD)

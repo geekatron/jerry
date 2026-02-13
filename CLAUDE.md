@@ -16,7 +16,7 @@
 
 | Need | Location |
 |------|----------|
-| Coding standards | `.claude/rules/` (A) |
+| Coding standards | `.context/rules/` → `.claude/rules/` (A) |
 | Work tracking | `/worktracker` skill |
 | Problem solving | `/problem-solving` skill |
 | Architecture | `/architecture` skill |
