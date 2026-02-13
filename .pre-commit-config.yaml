@@ -98,6 +98,19 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # Version Sync Validation (EN-108)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: version-sync
+        name: Validate version sync
+        entry: uv run python scripts/sync_versions.py --check
+        language: system
+        files: (pyproject\.toml|plugin\.json|marketplace\.json|CLAUDE\.md)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Conventional Commit Message Linting (EN-108)
   # =============================================================================
   - repo: https://github.com/commitizen-tools/commitizen
