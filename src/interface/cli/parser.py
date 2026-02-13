@@ -15,8 +15,12 @@ from __future__ import annotations
 
 import argparse
 
-# Version for v0.1.0 (breaking change from v0.0.1)
-__version__ = "0.1.0"
+try:
+    from importlib.metadata import version
+
+    __version__ = version("jerry")
+except Exception:
+    __version__ = "dev"
 
 
 def create_parser() -> argparse.ArgumentParser:

@@ -1,0 +1,198 @@
+# Jerry Framework Version Bump Pipeline
+# Triggers on push to main, determines bump type from Conventional Commits,
+# updates version across all files via bump-my-version, and creates a tag
+# that triggers release.yml.
+#
+# References:
+#   - EN-108: Version Bumping Strategy
+#   - TASK-003: Design Version Bumping Process
+
+name: Version Bump
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type (overrides commit-based detection)'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Pre-release label (alpha, beta, rc). Leave empty for stable.'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+# Prevent concurrent bumps
+concurrency:
+  group: version-bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Determine and Apply Version Bump
+    runs-on: ubuntu-latest
+
+    # Skip if this is a version bump commit (prevent infinite loop)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        !contains(github.event.head_commit.message, '[skip-bump]') &&
+        github.event.head_commit.author.name != 'github-actions[bot]'
+      )
+
+    steps:
+      # ------------------------------------------------------------------
+      # Checkout with PAT for push-through-branch-protection
+      # ------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.VERSION_BUMP_PAT }}
+
+      # ------------------------------------------------------------------
+      # Set up Python + UV + bump-my-version
+      # ------------------------------------------------------------------
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install bump-my-version
+        run: uv tool install bump-my-version
+
+      # ------------------------------------------------------------------
+      # Determine bump type from commits
+      # ------------------------------------------------------------------
+      - name: Determine bump type
+        id: bump
+        run: |
+          # Manual dispatch overrides commit-based detection
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "type=${{ github.event.inputs.bump_type }}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=${{ github.event.inputs.prerelease }}" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: type=${{ github.event.inputs.bump_type }}, prerelease=${{ github.event.inputs.prerelease }}"
+            exit 0
+          fi
+
+          # Find the last version tag
+          LAST_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "")
+
+          if [[ -z "$LAST_TAG" ]]; then
+            echo "No previous version tag found. Using all commits."
+            RANGE="HEAD"
+          else
+            echo "Last tag: $LAST_TAG"
+            RANGE="${LAST_TAG}..HEAD"
+          fi
+
+          # Read commit subjects since last tag
+          COMMITS=$(git log "$RANGE" --pretty=format:"%s" 2>/dev/null || echo "")
+
+          if [[ -z "$COMMITS" ]]; then
+            echo "No commits since last tag."
+            echo "type=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Commits since $LAST_TAG:"
+          echo "$COMMITS"
+          echo "---"
+
+          # Determine bump type (highest severity wins)
+          BUMP_TYPE="none"
+
+          # Check for BREAKING CHANGE (MAJOR)
+          if echo "$COMMITS" | grep -qE "^[a-z]+(\([a-z0-9_-]+\))?!:" || \
+             git log "$RANGE" --pretty=format:"%B" 2>/dev/null | grep -q "^BREAKING CHANGE:"; then
+            BUMP_TYPE="major"
+          # Check for feat (MINOR)
+          elif echo "$COMMITS" | grep -qE "^feat(\([a-z0-9_-]+\))?:"; then
+            BUMP_TYPE="minor"
+          # Check for fix or perf (PATCH)
+          elif echo "$COMMITS" | grep -qE "^(fix|perf)(\([a-z0-9_-]+\))?:"; then
+            BUMP_TYPE="patch"
+          fi
+
+          echo "Determined bump type: $BUMP_TYPE"
+          echo "type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
+          echo "prerelease=" >> "$GITHUB_OUTPUT"
+
+      # ------------------------------------------------------------------
+      # Apply version bump
+      # ------------------------------------------------------------------
+      - name: Apply version bump
+        if: steps.bump.outputs.type != 'none'
+        run: |
+          BUMP_TYPE="${{ steps.bump.outputs.type }}"
+          PRERELEASE="${{ steps.bump.outputs.prerelease }}"
+
+          # Configure git identity for the bump commit
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          echo "Applying $BUMP_TYPE bump..."
+
+          if [[ -n "$PRERELEASE" ]]; then
+            echo "Pre-release: $PRERELEASE"
+            bump-my-version bump "$BUMP_TYPE" --no-tag
+            bump-my-version bump pre_l --no-commit --no-tag --new-version "$(grep -oP 'version = "\K[^"]+' pyproject.toml | head -1)-${PRERELEASE}.1"
+          else
+            bump-my-version bump "$BUMP_TYPE"
+          fi
+
+      # ------------------------------------------------------------------
+      # Validate version consistency
+      # ------------------------------------------------------------------
+      - name: Validate version sync
+        if: steps.bump.outputs.type != 'none'
+        run: |
+          uv sync
+          uv run python scripts/sync_versions.py --check
+
+      # ------------------------------------------------------------------
+      # Extract new version for logging
+      # ------------------------------------------------------------------
+      - name: Extract new version
+        if: steps.bump.outputs.type != 'none'
+        id: version
+        run: |
+          NEW_VERSION=$(grep -oP '^version = "\K[^"]+' pyproject.toml | head -1)
+          echo "version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "New version: $NEW_VERSION"
+
+      # ------------------------------------------------------------------
+      # Push version commit and tag
+      # ------------------------------------------------------------------
+      - name: Push changes
+        if: steps.bump.outputs.type != 'none'
+        run: |
+          git push origin main --follow-tags
+          echo "Pushed version v${{ steps.version.outputs.version }}"
+
+      # ------------------------------------------------------------------
+      # Summary
+      # ------------------------------------------------------------------
+      - name: Job summary
+        if: always()
+        run: |
+          if [[ "${{ steps.bump.outputs.type }}" == "none" ]]; then
+            echo "## Version Bump: Skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "No bump-worthy commits since last tag." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Version Bump: v${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "- **Bump type:** ${{ steps.bump.outputs.type }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "- **Tag:** v${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "- **Trigger:** ${{ github.event_name }}" >> "$GITHUB_STEP_SUMMARY"
+          fi

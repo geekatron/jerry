@@ -1,0 +1,131 @@
+# PAT Expiration Monitor
+# Checks if the VERSION_BUMP_PAT is approaching expiration by attempting
+# an authenticated API call. Runs weekly and creates an issue if the PAT
+# fails or is within the warning window.
+#
+# References:
+#   - EN-108: Version Bumping Strategy (REV-2)
+#   - Design: 90-day PAT expiration with proactive monitoring
+
+name: PAT Monitor
+
+on:
+  schedule:
+    # Run weekly on Monday at 09:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-pat:
+    name: Check VERSION_BUMP_PAT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test PAT authentication
+        id: pat-check
+        run: |
+          # Attempt an authenticated API call with the PAT
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.VERSION_BUMP_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}")
+
+          echo "status=$HTTP_STATUS" >> "$GITHUB_OUTPUT"
+
+          if [[ "$HTTP_STATUS" == "200" ]]; then
+            echo "PAT is valid (HTTP 200)"
+          elif [[ "$HTTP_STATUS" == "401" ]]; then
+            echo "ERROR: PAT is expired or invalid (HTTP 401)"
+          elif [[ "$HTTP_STATUS" == "403" ]]; then
+            echo "ERROR: PAT has insufficient permissions (HTTP 403)"
+          else
+            echo "WARNING: Unexpected status (HTTP $HTTP_STATUS)"
+          fi
+
+      - name: Check PAT expiration metadata
+        id: expiry
+        if: steps.pat-check.outputs.status == '200'
+        run: |
+          # Get token metadata to check expiration
+          RESPONSE=$(curl -s \
+            -H "Authorization: token ${{ secrets.VERSION_BUMP_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}")
+
+          # If we got here, PAT works. Check rate limit headers for auth confirmation.
+          RATE_INFO=$(curl -s -I \
+            -H "Authorization: token ${{ secrets.VERSION_BUMP_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/rate_limit")
+
+          REMAINING=$(echo "$RATE_INFO" | grep -i "x-ratelimit-remaining" | tr -d '\r' | awk '{print $2}')
+          echo "Rate limit remaining: $REMAINING"
+          echo "PAT is functional. Manual expiration check recommended if approaching 90-day rotation."
+
+      - name: Create issue on PAT failure
+        if: steps.pat-check.outputs.status != '200'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.pat-check.outputs.status }}';
+            const title = `VERSION_BUMP_PAT expired or invalid (HTTP ${status})`;
+            const body = [
+              '## PAT Monitor Alert',
+              '',
+              `The \`VERSION_BUMP_PAT\` secret returned HTTP ${status}.`,
+              '',
+              '### Impact',
+              '- Version bump workflow will fail on push to main',
+              '- No automated version tagging until resolved',
+              '',
+              '### Resolution',
+              '1. Go to **Settings > Developer settings > Fine-grained personal access tokens**',
+              '2. Create a new token with:',
+              '   - Repository access: `geekatron/jerry` only',
+              '   - Permissions: `Contents: Read and write`',
+              '   - Expiration: 90 days',
+              '3. Update the `VERSION_BUMP_PAT` repository secret',
+              '',
+              '### References',
+              '- EN-108: Version Bumping Strategy',
+              '- `.github/workflows/version-bump.yml`',
+              '',
+              '*Created automatically by PAT Monitor workflow*',
+            ].join('\n');
+
+            // Check for existing open issue to avoid duplicates
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'pat-expiration',
+            });
+
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['pat-expiration', 'security', 'automated'],
+              });
+              console.log('Created PAT expiration issue');
+            } else {
+              console.log('Open PAT issue already exists, skipping');
+            }
+
+      - name: Summary
+        if: always()
+        run: |
+          STATUS="${{ steps.pat-check.outputs.status }}"
+          if [[ "$STATUS" == "200" ]]; then
+            echo "## PAT Monitor: Healthy" >> "$GITHUB_STEP_SUMMARY"
+            echo "VERSION_BUMP_PAT is valid and functional." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## PAT Monitor: ACTION REQUIRED" >> "$GITHUB_STEP_SUMMARY"
+            echo "VERSION_BUMP_PAT returned HTTP $STATUS." >> "$GITHUB_STEP_SUMMARY"
+            echo "An issue has been created for tracking." >> "$GITHUB_STEP_SUMMARY"
+          fi

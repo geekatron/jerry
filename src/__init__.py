@@ -22,5 +22,11 @@ References:
     - Evans, E. (2003). "Domain-Driven Design"
 """
 
-__version__ = "0.1.0"
+try:
+    from importlib.metadata import version
+
+    __version__ = version("jerry")
+except Exception:
+    __version__ = "dev"
+
 __author__ = "Jerry Framework Contributors"

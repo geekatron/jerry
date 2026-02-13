@@ -67,7 +67,7 @@ python script.py         # FORBIDDEN
 
 ## Quick Reference
 
-**CLI** (v0.1.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
+**CLI** (v0.2.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
 
 **Skills** (invoke proactively - see `skills/` for details):
 | Skill | Purpose |

@@ -1,4 +1,4 @@
-# FEAT-001: Research and Preparation
+# FEAT-002: Research and Preparation
 
 <!--
 TEMPLATE: Feature
@@ -166,6 +166,7 @@ This feature encompasses the foundational research and analysis required before 
 | [EN-105](./EN-105-skills-research/EN-105-skills-research.md) | Enabler | Claude Code Skills Research | COMPLETE | high | ps-researcher-skills | `./EN-105-skills-research/` |
 | [EN-106](./EN-106-decomposition-research/EN-106-decomposition-research.md) | Enabler | Decomposition with Imports Research | COMPLETE | CRITICAL | ps-researcher-decomposition | `./EN-106-decomposition-research/` |
 | [EN-107](./EN-107-current-state-analysis/EN-107-current-state-analysis.md) | Enabler | Current State Analysis | COMPLETE | high | ps-analyst | `./EN-107-current-state-analysis/` |
+| [EN-108](./EN-108-version-bumping-strategy/EN-108-version-bumping-strategy.md) | Enabler | Version Bumping Strategy | COMPLETE | high | orchestrated | `./EN-108-version-bumping-strategy/` |
 
 ### Task Inventory
 
@@ -186,7 +187,7 @@ This feature encompasses the foundational research and analysis required before 
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [####################] 100% (7/7 completed)           |
+| Enablers:  [####################] 100% (8/8 completed)           |
 | Tasks:     [####################] 100% (4/4 completed)           |
 | Decisions: [####################] 100% (3/3 documented)          |
 | Discovery: [####################] 100% (1/1 documented)          |

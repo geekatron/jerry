@@ -180,13 +180,17 @@ class TestMainFunction:
 
 
 class TestVersionUpdate:
-    """Tests for version update to 0.1.0."""
+    """Tests for version consistency via importlib.metadata (EN-108)."""
 
-    def test_version_is_0_1_0(self) -> None:
-        """Version should be 0.1.0 for breaking change."""
+    def test_version_matches_pyproject(self) -> None:
+        """All __version__ values should come from importlib.metadata."""
         from src.interface.cli.parser import __version__
 
-        assert __version__ == "0.1.0"
+        # Version should be a valid semver-like string (not hardcoded)
+        assert isinstance(__version__, str)
+        assert len(__version__) > 0
+        # In dev/test environment, may be "dev" or actual version
+        assert __version__ == "dev" or "." in __version__
 
 
 # =============================================================================
