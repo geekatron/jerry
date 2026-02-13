@@ -1,0 +1,116 @@
+# EN-402: Enforcement Priority Analysis & Decision
+
+<!--
+TEMPLATE: Enabler
+VERSION: 1.0.0
+SOURCE: ONTOLOGY-v1.md Section 3.4.9
+CREATED: 2026-02-12 (Claude)
+PURPOSE: Analyze enforcement vectors and produce prioritized decision record
+-->
+
+> **Type:** enabler
+> **Status:** pending
+> **Priority:** critical
+> **Impact:** critical
+> **Enabler Type:** architecture
+> **Created:** 2026-02-12
+> **Due:** —
+> **Completed:** —
+> **Parent:** FEAT-005
+> **Owner:** —
+> **Effort:** 8
+
+---
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this enabler delivers |
+| [Problem Statement](#problem-statement) | Why this work is needed |
+| [Technical Approach](#technical-approach) | How we'll implement it |
+| [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Agent Assignments](#agent-assignments) | Which agents are used |
+| [Related Items](#related-items) | Dependencies |
+| [History](#history) | Change log |
+
+---
+
+## Summary
+
+Analyze all researched enforcement vectors. Create priority matrix (effectiveness x implementation cost x platform portability x maintainability). Produce formal decision record (ADR) for enforcement vector prioritization. Risk assessment per vector.
+
+## Problem Statement
+
+The research from EN-401 will produce a comprehensive catalog of enforcement vectors. However, not all vectors are equal in effectiveness, cost, portability, or maintainability. Without rigorous analysis and a formal decision record, enforcement implementation risks being ad-hoc, inconsistent, or biased toward familiar-but-suboptimal approaches. This enabler transforms research into actionable, justified decisions with clear rationale and risk awareness.
+
+## Technical Approach
+
+1. **Define evaluation framework** - Establish weighted criteria (effectiveness, implementation cost, platform portability, maintainability) with clear scoring methodology.
+2. **Risk assessment** - Identify risks, failure modes, and mitigations for each enforcement vector using FMEA-style analysis.
+3. **Architecture trade study** - Evaluate how vectors compose, conflict, or reinforce each other in a layered enforcement architecture.
+4. **Priority matrix** - Score all vectors against criteria, producing a ranked priority list.
+5. **ADR creation** - Formalize the decision with context, options considered, decision rationale, and consequences.
+6. **Execution planning** - Create detailed implementation plans for the top-priority vectors.
+7. **Adversarial validation** - Apply Steelman and Devil's Advocate patterns to stress-test the analysis.
+
+## Children (Tasks)
+
+| ID | Title | Status | Activity | Agents |
+|----|-------|--------|----------|--------|
+| TASK-001 | Define evaluation criteria and weighting methodology | pending | DESIGN | ps-analyst |
+| TASK-002 | Risk assessment for each enforcement vector | pending | RESEARCH | nse-risk |
+| TASK-003 | Architecture trade study for vector prioritization | pending | DESIGN | nse-architecture |
+| TASK-004 | Create priority matrix and score all vectors | pending | RESEARCH | ps-analyst |
+| TASK-005 | Create formal decision record (ADR) | pending | DOCUMENTATION | ps-architect |
+| TASK-006 | Create detailed execution plans for top-priority vectors | pending | DESIGN | ps-architect |
+| TASK-007 | Adversarial review (Steelman + Devil's Advocate) | pending | TESTING | ps-critic |
+| TASK-008 | Creator revision based on critic feedback | pending | DEVELOPMENT | ps-analyst |
+| TASK-009 | Final validation | pending | TESTING | ps-validator |
+
+### Task Dependencies
+
+```
+TASK-001 ──► TASK-002 ──┐
+             TASK-003 ──┼──► TASK-004 ──► TASK-005 ──► TASK-006 ──► TASK-007 ──► TASK-008 ──► TASK-009
+```
+
+## Acceptance Criteria
+
+| # | Criterion | Verified |
+|---|-----------|----------|
+| 1 | Evaluation criteria defined with clear weighting methodology and justification | [ ] |
+| 2 | Risk assessment completed for each enforcement vector with FMEA-style analysis | [ ] |
+| 3 | Architecture trade study produced comparing vector composition strategies | [ ] |
+| 4 | Priority matrix completed with all vectors scored against all criteria | [ ] |
+| 5 | Formal ADR created following Jerry ADR template with full rationale | [ ] |
+| 6 | Detailed execution plans created for top 3 priority vectors | [ ] |
+| 7 | Adversarial review completed with Steelman and Devil's Advocate patterns | [ ] |
+
+## Agent Assignments
+
+| Agent | Skill | Role | Phase |
+|-------|-------|------|-------|
+| ps-analyst | problem-solving | Creator (analysis lead) | Design, Research, Revision |
+| ps-critic | problem-solving | Adversarial reviewer (Steelman + Devil's Advocate) | Review |
+| nse-risk | nasa-se | Risk assessment | Research |
+| nse-architecture | nasa-se | Architecture trade study | Design |
+| ps-architect | problem-solving | ADR and execution planning | Documentation, Design |
+| ps-validator | problem-solving | Final validation | Validation |
+
+## Related Items
+
+### Hierarchy
+- **Parent Feature:** [FEAT-005](../FEAT-005-enforcement-mechanisms.md)
+
+### Dependencies
+| Type | Item | Description |
+|------|------|-------------|
+| depends_on | EN-401 | Requires the unified enforcement vector catalog from EN-401 research. |
+
+## History
+
+| Date | Author | Status | Notes |
+|------|--------|--------|-------|
+| 2026-02-12 | Claude | pending | Enabler created with task decomposition. |

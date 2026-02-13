@@ -18,7 +18,15 @@
       "Bash(FEAT_DIR=\"projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures\":*)",
       "Bash(git mv:*)",
       "Bash(git ls-tree:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "mcp__context7__resolve-library-id",
+      "Bash(uv run pytest:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(test:*)",
+      "Bash(find:*)",
+      "Bash(git log:*)"
     ]
   }
 }

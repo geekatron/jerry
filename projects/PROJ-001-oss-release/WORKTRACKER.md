@@ -22,7 +22,7 @@
 | Field | Value |
 |-------|-------|
 | Project | PROJ-001-oss-release |
-| Status | COMPLETE |
+| Status | IN_PROGRESS |
 | Created | 2026-02-10 |
 
 ---
@@ -31,7 +31,8 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
+| [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | in_progress | critical |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -136,6 +137,11 @@
 | 2026-02-12 | Claude | EN-204 complete: Validation passed (80 lines, 13/13 pointers, 2540 tests, no worktracker content in CLAUDE.md) |
 | 2026-02-12 | Claude | EN-205 complete: docs/CLAUDE-MD-GUIDE.md, docs/BOOTSTRAP.md, INSTALLATION.md updated |
 | 2026-02-12 | Claude | FEAT-003 closed: All 7 enablers complete (100%). EPIC-001 closed: All 3 features complete (100%). |
+
+| 2026-02-12 | Claude | EPIC-001 REOPENED: Premature closure without quality gates. All EPIC-001 deliverables bypassed adversarial feedback loops, quality scoring (>=0.92), creator→critic→revision cycles, and multi-platform testing. |
+| 2026-02-12 | Claude | Project status reverted from COMPLETE to IN_PROGRESS. |
+| 2026-02-12 | Claude | EPIC-002 created: Quality Framework Enforcement & Course Correction. Addresses enforcement mechanisms, adversarial strategy research, retroactive quality review, and skill enhancement. |
+| 2026-02-12 | Claude | EPIC-002 expanded: FEAT-004 updated (18 FC + 8 NFC, EN-307 added for /orchestration), FEAT-005 updated (19 FC + 8 NFC). 13 enabler entity files created (EN-301–307, EN-401–406). FEAT-007 created (Advanced Adversarial Capabilities, 5 enablers EN-601–605). Total: 4 features, 23 enablers, 199 points. |
 
 ---
 

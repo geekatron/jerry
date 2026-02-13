@@ -1,7 +1,7 @@
 # EPIC-001: OSS Release Preparation
 
 > **Type:** epic
-> **Status:** done
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-10
@@ -123,3 +123,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-11 | Claude | in_progress | Added FEAT-002 (Research, 7 enablers EN-101-107) and FEAT-003 (CLAUDE.md Optimization, 7 enablers EN-201-207, 44 tasks). |
 | 2026-02-12 | Claude | in_progress | FEAT-002 closed (all 8 enablers done including EN-108 version bumping). PR #12 merged. 8 EN-202 bugs closed. EN-207 confirmed complete. FEAT-003 at 57%. |
 | 2026-02-12 | Claude | done | EN-206 complete (context distribution: .context/ restructure, bootstrap script, 22 integration tests). EN-204 complete (validation: 80 lines, 13/13 pointers, 2540 tests pass). EN-205 complete (docs: BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated). FEAT-003 100%. All 3 features, 20 enablers, 15 bugs complete. EPIC-001 closed. |
+| 2026-02-12 | Claude | in_progress | **REOPENED**: Premature closure. All EPIC-001 deliverables bypassed quality framework: no adversarial feedback loops, no quality scoring (>=0.92 target), no creator→critic→revision cycles, no multi-platform testing (Windows/Linux). Closure was invalid per Jerry quality standards. All deliverables require retroactive quality review under EPIC-002. |
