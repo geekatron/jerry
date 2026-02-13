@@ -406,6 +406,17 @@ uv run pytest --tb=short -q    # Run test suite
 | Format code | `make format` | `uv run ruff check --fix src/ tests/ && uv run ruff format src/ tests/` |
 | All pre-commit hooks | `make pre-commit` | `uv run pre-commit run --all-files` |
 
+### Context Distribution (Bootstrap)
+
+Jerry's behavioral rules live in `.context/` (canonical source) and are synced to `.claude/` via symlinks. After cloning, run the bootstrap:
+
+```bash
+uv run python scripts/bootstrap_context.py        # Set up symlinks
+uv run python scripts/bootstrap_context.py --check # Verify sync
+```
+
+See [Bootstrap Guide](BOOTSTRAP.md) for platform-specific details.
+
 ### Architecture Overview
 
 Jerry follows hexagonal architecture:

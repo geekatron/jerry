@@ -22,7 +22,7 @@
 | Field | Value |
 |-------|-------|
 | Project | PROJ-001-oss-release |
-| Status | IN_PROGRESS |
+| Status | COMPLETE |
 | Created | 2026-02-10 |
 
 ---
@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -106,6 +106,11 @@
 | BUG-006 (EN-202) | Working with Jerry section lost | 2026-02-02 | FIXED — project-workflow.md created in .claude/rules/ |
 | BUG-007 (EN-202) | Problem solving templates lost | 2026-02-02 | FIXED — templates added to problem-solving SKILL.md |
 | BUG-008 (EN-202) | AskUserQuestion flow lost | 2026-02-02 | FIXED — added to project-workflow.md |
+| EN-206 | Context Distribution Strategy | 2026-02-12 | .context/ restructure, bootstrap script, 22 integration tests |
+| EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
+| EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
+| FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
+| EPIC-001 | OSS Release Preparation | 2026-02-12 | All 3 features, 20 enablers, 15 bugs complete |
 
 ---
 
@@ -127,6 +132,10 @@
 | 2026-02-12 | Claude | EN-108 complete. FEAT-002 closed (all 8 enablers done). PR #12 merged. |
 | 2026-02-12 | Claude | All 8 EN-202 bugs closed (resolved in earlier sessions). EN-207 confirmed complete. |
 | 2026-02-12 | Claude | Feature branch feature/PROJ-001-oss-release-feat003 created for remaining FEAT-003 work. |
+| 2026-02-12 | Claude | EN-206 complete: .context/ restructure with symlinks, bootstrap_context.py, /bootstrap skill, 22 integration tests, docs/BOOTSTRAP.md |
+| 2026-02-12 | Claude | EN-204 complete: Validation passed (80 lines, 13/13 pointers, 2540 tests, no worktracker content in CLAUDE.md) |
+| 2026-02-12 | Claude | EN-205 complete: docs/CLAUDE-MD-GUIDE.md, docs/BOOTSTRAP.md, INSTALLATION.md updated |
+| 2026-02-12 | Claude | FEAT-003 closed: All 7 enablers complete (100%). EPIC-001 closed: All 3 features complete (100%). |
 
 ---
 
