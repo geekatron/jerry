@@ -1,0 +1,834 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for EPIC-002 Quality Framework Enforcement
+# Document ID: PROJ-001-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-02-13T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+# Schema version for evolution support (semver format)
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "epic002-crosspoll-20260213-001"
+  name: "EPIC-002 Quality Framework Enforcement & Course Correction"
+  project_id: "PROJ-001-oss-release"
+  version: "2.0"
+  created_at: "2026-02-13T00:00:00Z"
+  updated_at: "2026-02-13T00:00:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Workflow ID configuration (WI-SAO-021)
+  id_source: "auto"  # Auto-generated using semantic-date-seq format
+  id_format: "epic002-crosspoll-YYYYMMDD-NNN"
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL      # Phases execute in order within pipelines
+    - CONCURRENT      # Pipelines run in parallel between barriers
+    - BARRIER_SYNC    # Cross-pollination at strategic barriers
+    - HIERARCHICAL    # Orchestrator delegates to worker agents
+    - ADVERSARIAL_FEEDBACK  # Creator→Critic→Revision cycles
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting (orchestrator → worker)
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    adversarial_validation: true  # P-043: Mandatory adversarial feedback loops
+    max_concurrent_agents: 6      # Soft constraint
+    max_barrier_retries: 2        # Circuit breaker
+    checkpoint_frequency: "PHASE" # AGENT | PHASE | BARRIER
+    quality_gate_threshold: 0.92  # Minimum score for phase completion
+    adversarial_iteration_min: 3  # Minimum creator→critic→revision iterations
+
+# =============================================================================
+# PATH CONFIGURATION (WI-SAO-021)
+# =============================================================================
+paths:
+  # Base path for all orchestration artifacts
+  base: "orchestration/epic002-crosspoll-20260213-001/"
+
+  # Pipeline artifact path pattern
+  # {pipeline_alias} derived from pipelines.{key}.short_alias
+  # {phase_id} is the phase identifier (e.g., "phase-1-selection")
+  # {agent_id} provides agent-level isolation
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+
+  # Barrier artifact path pattern
+  # {barrier_id} is the barrier identifier (e.g., "barrier-1")
+  # {direction} is "{source_alias}-to-{target_alias}"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+  # Final synthesis artifacts
+  synthesis: "{base}cross-pollination/final-synthesis/"
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  # Pipeline A: Adversarial Strategy Research
+  pipeline_a:
+    id: "pipeline-a"
+    name: "Adversarial Strategy Research"
+    description: "Select, map, and integrate adversarial strategies into Jerry skills"
+
+    # Short alias for path construction
+    short_alias: "adv"
+    skill_source: "problem-solving"  # Primary skill driving this pipeline
+
+    status: "PHASE_1_PENDING"
+    current_phase: 1
+    total_phases: 4
+    progress_percent: 0
+
+    phases:
+      # PHASE 1: Strategy Selection Framework (EN-302)
+      - id: 1
+        name: "Strategy Selection Framework"
+        path_id: "phase-1-selection"
+        enabler: "EN-302"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-analyst-302"
+            name: "Problem-Solving Analyst"
+            role: "Creator (criteria, scoring, revision)"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-1-selection/ps-analyst-302/evaluation-framework.md"
+            inputs: ["EN-301 catalog"]
+            outputs: ["Evaluation framework", "Scoring matrix", "Revision docs"]
+          - id: "nse-risk-302"
+            name: "NASA SE Risk Assessor"
+            role: "Risk assessment"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-1-selection/nse-risk-302/risk-assessment.md"
+            inputs: ["EN-301 catalog"]
+            outputs: ["Risk assessment per strategy"]
+          - id: "nse-architecture-302"
+            name: "NASA SE Architect"
+            role: "Architecture trade study"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-1-selection/nse-architecture-302/trade-study.md"
+            inputs: ["EN-301 catalog"]
+            outputs: ["Architecture trade study"]
+          - id: "ps-architect-302"
+            name: "Problem-Solving Architect"
+            role: "ADR author"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-1-selection/ps-architect-302/ADR-strategy-selection.md"
+            inputs: ["Scoring matrix", "Risk assessment", "Trade study"]
+            outputs: ["Selection ADR"]
+          - id: "ps-critic-302"
+            name: "Problem-Solving Critic"
+            role: "Adversarial reviewer"
+            status: "PENDING"
+            adversarial_strategies: ["S-002 Devil's Advocate", "S-005 Dialectical Inquiry", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-1-selection/ps-critic-302/critique-iteration-1.md"
+            inputs: ["All phase 1 artifacts"]
+            outputs: ["Critique reports (3 iterations)"]
+          - id: "ps-validator-302"
+            name: "Problem-Solving Validator"
+            role: "Validator"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-1-selection/ps-validator-302/validation-report.md"
+            inputs: ["Final artifacts", "Critiques"]
+            outputs: ["Validation report"]
+        artifacts: []
+
+      # PHASE 2: Situational Applicability Mapping (EN-303)
+      - id: 2
+        name: "Situational Applicability Mapping"
+        path_id: "phase-2-mapping"
+        enabler: "EN-303"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-analyst-303"
+            name: "Problem-Solving Analyst"
+            role: "Creator (taxonomy, mapping)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-analyst-303/context-taxonomy.md"
+            inputs: ["Selected 10 strategies", "barrier-1 enf→adv handoff"]
+            outputs: ["Context taxonomy", "Situational mappings"]
+          - id: "ps-architect-303"
+            name: "Problem-Solving Architect"
+            role: "Decision tree author"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-architect-303/decision-tree.md"
+            inputs: ["Situational mappings"]
+            outputs: ["Decision tree"]
+          - id: "ps-critic-303"
+            name: "Problem-Solving Critic"
+            role: "Adversarial reviewer"
+            status: "BLOCKED"
+            adversarial_strategies: ["S-003 Steelman", "S-006 ACH", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-critic-303/critique-iteration-1.md"
+            inputs: ["All phase 2 artifacts"]
+            outputs: ["Critique reports (3 iterations)"]
+          - id: "ps-validator-303"
+            name: "Problem-Solving Validator"
+            role: "Validator"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-validator-303/validation-report.md"
+            inputs: ["Final artifacts", "Critiques"]
+            outputs: ["Validation report"]
+        artifacts: []
+
+      # PHASE 3: Skill Enhancements (EN-304, EN-305, EN-307)
+      - id: 3
+        name: "Skill Enhancements"
+        path_id: "phase-3-skills"
+        enablers: ["EN-304", "EN-305", "EN-307"]
+        status: "BLOCKED"
+        blocked_by: "barrier-2"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-architect-304"
+            name: "Problem-Solving Architect"
+            role: "Requirements/design (PS skill)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-architect-304/ps-requirements.md"
+            inputs: ["Situational mappings", "barrier-2 enf→adv handoff"]
+            outputs: ["PS skill requirements", "Adversarial mode design"]
+          - id: "ps-implementer-304"
+            name: "Problem-Solving Implementer"
+            role: "Implementation (PS skill)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-implementer-304/ps-implementation.md"
+            inputs: ["PS requirements"]
+            outputs: ["Adversarial invocation protocol", "Implementation"]
+          - id: "ps-architect-305"
+            name: "Problem-Solving Architect"
+            role: "Requirements/design (NSE skill)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-architect-305/nse-requirements.md"
+            inputs: ["Situational mappings"]
+            outputs: ["NSE skill requirements", "Agent designs"]
+          - id: "ps-implementer-305"
+            name: "Problem-Solving Implementer"
+            role: "Implementation (NSE skill)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-implementer-305/nse-implementation.md"
+            inputs: ["NSE requirements"]
+            outputs: ["NSE agent enhancements"]
+          - id: "ps-architect-307"
+            name: "Problem-Solving Architect"
+            role: "Requirements/design (ORCH skill)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-architect-307/orch-requirements.md"
+            inputs: ["Situational mappings"]
+            outputs: ["ORCH skill requirements", "Planner/gate designs"]
+          - id: "ps-implementer-307"
+            name: "Problem-Solving Implementer"
+            role: "Implementation (ORCH skill)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-implementer-307/orch-implementation.md"
+            inputs: ["ORCH requirements"]
+            outputs: ["ORCH skill enhancements"]
+          - id: "ps-critic-304-305-307"
+            name: "Problem-Solving Critic"
+            role: "Adversarial reviewer (all skills)"
+            status: "BLOCKED"
+            adversarial_strategies: ["S-001 Red Team", "S-004 Pre-Mortem", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-critic-304-305-307/critique-iteration-1.md"
+            inputs: ["All skill enhancement artifacts"]
+            outputs: ["Critique reports (3 iterations)"]
+          - id: "ps-validator-304-305-307"
+            name: "Problem-Solving Validator"
+            role: "Validator (all skills)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-3-skills/ps-validator-304-305-307/validation-report.md"
+            inputs: ["Implementations", "Critiques"]
+            outputs: ["Validation report"]
+        artifacts: []
+
+      # PHASE 4: Integration Testing (EN-306)
+      - id: 4
+        name: "Integration Testing"
+        path_id: "phase-4-testing"
+        enabler: "EN-306"
+        status: "BLOCKED"
+        blocked_by: "phase-3"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-validator-306"
+            name: "Problem-Solving Validator"
+            role: "Test plan/execution"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-4-testing/ps-validator-306/test-plan.md"
+            inputs: ["All skill enhancements"]
+            outputs: ["Test plan", "Test results (PS/NSE/ORCH)"]
+          - id: "ps-critic-306"
+            name: "Problem-Solving Critic"
+            role: "QA auditor"
+            status: "BLOCKED"
+            adversarial_strategies: ["S-012 FMEA", "S-001 Red Team", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-4-testing/ps-critic-306/qa-audit-report.md"
+            inputs: ["Test results"]
+            outputs: ["QA audit report"]
+        artifacts: []
+
+  # Pipeline B: Enforcement Mechanisms
+  pipeline_b:
+    id: "pipeline-b"
+    name: "Enforcement Mechanisms"
+    description: "Prioritize and implement enforcement vectors for Jerry quality framework"
+
+    # Short alias for path construction
+    short_alias: "enf"
+    skill_source: "problem-solving"  # Primary skill driving this pipeline
+
+    status: "PHASE_1_PENDING"
+    current_phase: 1
+    total_phases: 4
+    progress_percent: 0
+
+    phases:
+      # PHASE 1: Enforcement Priority Analysis (EN-402)
+      - id: 1
+        name: "Enforcement Priority Analysis"
+        path_id: "phase-1-priority"
+        enabler: "EN-402"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-analyst-402"
+            name: "Problem-Solving Analyst"
+            role: "Creator (criteria, priority, revision)"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-1-priority/ps-analyst-402/evaluation-framework.md"
+            inputs: ["EN-401 catalog"]
+            outputs: ["Evaluation framework", "Priority matrix", "Revision docs"]
+          - id: "nse-risk-402"
+            name: "NASA SE Risk Assessor"
+            role: "Risk assessment"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-1-priority/nse-risk-402/vector-risk-assessment.md"
+            inputs: ["EN-401 catalog"]
+            outputs: ["Vector risk assessment"]
+          - id: "nse-architecture-402"
+            name: "NASA SE Architect"
+            role: "Architecture trade study"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-1-priority/nse-architecture-402/vector-trade-study.md"
+            inputs: ["EN-401 catalog"]
+            outputs: ["Vector trade study"]
+          - id: "ps-architect-402"
+            name: "Problem-Solving Architect"
+            role: "ADR/plan author"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-1-priority/ps-architect-402/ADR-enforcement-priority.md"
+            inputs: ["Priority matrix", "Risk assessment", "Trade study"]
+            outputs: ["Enforcement ADR", "Execution plans (top 3)"]
+          - id: "ps-critic-402"
+            name: "Problem-Solving Critic"
+            role: "Adversarial reviewer"
+            status: "PENDING"
+            adversarial_strategies: ["S-002 Devil's Advocate", "S-012 FMEA", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-1-priority/ps-critic-402/critique-iteration-1.md"
+            inputs: ["All phase 1 artifacts"]
+            outputs: ["Critique reports (3 iterations)"]
+          - id: "ps-validator-402"
+            name: "Problem-Solving Validator"
+            role: "Validator"
+            status: "PENDING"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-1-priority/ps-validator-402/validation-report.md"
+            inputs: ["Final artifacts", "Critiques"]
+            outputs: ["Validation report"]
+        artifacts: []
+
+      # PHASE 2: Implementation (Hooks/Rules) (EN-403, EN-404)
+      - id: 2
+        name: "Implementation (Hooks/Rules)"
+        path_id: "phase-2-implementation"
+        enablers: ["EN-403", "EN-404"]
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-architect-403"
+            name: "Problem-Solving Architect"
+            role: "Requirements/design (hooks)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-architect-403/hook-requirements.md"
+            inputs: ["Priority matrix", "barrier-1 adv→enf handoff"]
+            outputs: ["Hook requirements", "Hook designs"]
+          - id: "ps-implementer-403"
+            name: "Problem-Solving Implementer"
+            role: "Implementation (hooks)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-implementer-403/hook-implementations.md"
+            inputs: ["Hook designs"]
+            outputs: ["Hook implementations"]
+          - id: "ps-architect-404"
+            name: "Problem-Solving Architect"
+            role: "Requirements/design (rules)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-architect-404/rule-requirements.md"
+            inputs: ["Priority matrix"]
+            outputs: ["Rule requirements", "HARD language spec"]
+          - id: "ps-implementer-404"
+            name: "Problem-Solving Implementer"
+            role: "Implementation (rules)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-implementer-404/rule-implementations.md"
+            inputs: ["Rule designs"]
+            outputs: ["Rule implementations"]
+          - id: "ps-critic-403-404"
+            name: "Problem-Solving Critic"
+            role: "Adversarial reviewer (hooks/rules)"
+            status: "BLOCKED"
+            adversarial_strategies: ["S-001 Red Team", "S-012 FMEA", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-critic-403-404/critique-iteration-1.md"
+            inputs: ["All EN-403, EN-404 artifacts"]
+            outputs: ["Critique reports (3 iterations)"]
+          - id: "ps-validator-403-404"
+            name: "Problem-Solving Validator"
+            role: "Verifier (hooks/rules)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-validator-403-404/verification-report.md"
+            inputs: ["Implementations", "Critiques"]
+            outputs: ["Verification report"]
+        artifacts: []
+
+      # PHASE 3: Session Context Enforcement (EN-405)
+      - id: 3
+        name: "Session Context Enforcement"
+        path_id: "phase-3-session"
+        enabler: "EN-405"
+        status: "BLOCKED"
+        blocked_by: "barrier-2"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-architect-405"
+            name: "Problem-Solving Architect"
+            role: "Requirements/design (session)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-3-session/ps-architect-405/session-requirements.md"
+            inputs: ["Enforcement patterns", "barrier-2 adv→enf handoff"]
+            outputs: ["Session preamble requirements", "Hook design"]
+          - id: "ps-implementer-405"
+            name: "Problem-Solving Implementer"
+            role: "Implementation (session)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-3-session/ps-implementer-405/session-implementation.md"
+            inputs: ["Session requirements"]
+            outputs: ["Preamble implementation", "Hook integration"]
+          - id: "ps-critic-405"
+            name: "Problem-Solving Critic"
+            role: "Adversarial reviewer (session)"
+            status: "BLOCKED"
+            adversarial_strategies: ["S-001 Red Team", "S-012 FMEA", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-3-session/ps-critic-405/critique-iteration-1.md"
+            inputs: ["All EN-405 artifacts"]
+            outputs: ["Critique reports (3 iterations)"]
+          - id: "ps-validator-405"
+            name: "Problem-Solving Validator"
+            role: "Validator (session)"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-3-session/ps-validator-405/testing-suite.md"
+            inputs: ["Implementation", "Critiques"]
+            outputs: ["Testing suite", "Validation report"]
+        artifacts: []
+
+      # PHASE 4: Integration Testing (EN-406)
+      - id: 4
+        name: "Integration Testing"
+        path_id: "phase-4-testing"
+        enabler: "EN-406"
+        status: "BLOCKED"
+        blocked_by: "phase-3"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-validator-406"
+            name: "Problem-Solving Validator"
+            role: "Test plan/execution"
+            status: "BLOCKED"
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-4-testing/ps-validator-406/test-plan.md"
+            inputs: ["All enforcement implementations"]
+            outputs: ["Test plan", "Test results (hooks/rules/session)", "Performance tests"]
+          - id: "ps-critic-406"
+            name: "Problem-Solving Critic"
+            role: "QA auditor"
+            status: "BLOCKED"
+            adversarial_strategies: ["S-012 FMEA", "S-001 Red Team", "S-014 LLM-as-Judge"]
+            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-4-testing/ps-critic-406/qa-audit-report.md"
+            inputs: ["Test results", "Performance tests"]
+            outputs: ["QA audit report"]
+        artifacts: []
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  # Barrier 1: Selection/Prioritization Complete
+  - id: "barrier-1"
+    name: "Selection/Prioritization Complete"
+    description: "Strategy selection and enforcement prioritization inform each other"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "pipeline_a.phase.1"
+      - "pipeline_b.phase.1"
+    artifacts:
+      adv_to_enf:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/adv-to-enf/barrier-1-adv-to-enf-handoff.md"
+        status: "PENDING"
+        description: "10 selected adversarial strategies with selection rationale, use cases, integration requirements, enforcement touchpoints"
+        key_content: null
+      enf_to_adv:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/enf-to-adv/barrier-1-enf-to-adv-handoff.md"
+        status: "PENDING"
+        description: "Priority matrix results with top 3 enforcement vectors, platform constraints, implementation capabilities, strategy feasibility constraints"
+        key_content: null
+
+  # Barrier 2: Mapping/Implementation Complete
+  - id: "barrier-2"
+    name: "Mapping/Implementation Complete"
+    description: "Situational mappings inform enforcement implementations and vice versa"
+    status: "BLOCKED"
+    blocked_by: "barrier-1"
+    completed_at: null
+    depends_on:
+      - "pipeline_a.phase.2"
+      - "pipeline_b.phase.2"
+    artifacts:
+      adv_to_enf:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/adv-to-enf/barrier-2-adv-to-enf-handoff.md"
+        status: "BLOCKED"
+        description: "Situational context mappings with context taxonomy, per-strategy triggers, decision tree, situational examples"
+        key_content: null
+      enf_to_adv:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/enf-to-adv/barrier-2-enf-to-adv-handoff.md"
+        status: "BLOCKED"
+        description: "Enforcement patterns with hook invocation points, rule enforcement patterns, session context requirements, integration examples"
+        key_content: null
+
+  # Final Synthesis Barrier: Integration Complete
+  - id: "final-synthesis"
+    name: "Final Synthesis - Integration Complete"
+    description: "Integration findings cross-pollinate for final quality assurance"
+    status: "BLOCKED"
+    blocked_by: "phase-4"
+    completed_at: null
+    depends_on:
+      - "pipeline_a.phase.4"
+      - "pipeline_b.phase.4"
+    artifacts:
+      final_synthesis:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/final-synthesis/epic002-final-synthesis.md"
+        status: "BLOCKED"
+        description: "Comprehensive summary of EPIC-002 outcomes"
+      integration_report:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/final-synthesis/epic002-integration-report.md"
+        status: "BLOCKED"
+        description: "Combined test results from both pipelines"
+      lessons_learned:
+        path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/final-synthesis/epic002-lessons-learned.md"
+        status: "BLOCKED"
+        description: "Process insights and recommendations"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    # Group 1: Phase 1 Creator Agents (Parallel)
+    - id: 1
+      name: "Phase 1 Creator Agents"
+      execution_mode: "PARALLEL"
+      status: "READY"
+      agents:
+        - "ps-analyst-302"  # adv
+        - "nse-risk-302"    # adv
+        - "nse-architecture-302"  # adv
+        - "ps-architect-302"  # adv
+        - "ps-analyst-402"  # enf
+        - "nse-risk-402"    # enf
+        - "nse-architecture-402"  # enf
+        - "ps-architect-402"  # enf
+
+    # Group 2: Phase 1 Adversarial Review (Sequential within pipeline)
+    - id: 2
+      name: "Phase 1 Adversarial Review - Iteration 1"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents:
+        - "ps-critic-302"  # adv (S-002 Devil's Advocate)
+        - "ps-critic-402"  # enf (S-002 Devil's Advocate)
+
+    # Group 3: Phase 1 Creator Revision - Iteration 1
+    - id: 3
+      name: "Phase 1 Creator Revision - Iteration 1"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "ps-analyst-302"  # adv
+        - "ps-analyst-402"  # enf
+
+    # Group 4: Phase 1 Adversarial Review - Iteration 2
+    - id: 4
+      name: "Phase 1 Adversarial Review - Iteration 2"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      agents:
+        - "ps-critic-302"  # adv (S-005 Dialectical Inquiry)
+        - "ps-critic-402"  # enf (S-012 FMEA)
+
+    # Group 5: Phase 1 Creator Revision - Iteration 2
+    - id: 5
+      name: "Phase 1 Creator Revision - Iteration 2"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      agents:
+        - "ps-analyst-302"  # adv
+        - "ps-analyst-402"  # enf
+
+    # Group 6: Phase 1 Adversarial Review - Iteration 3 (LLM-as-Judge)
+    - id: 6
+      name: "Phase 1 Adversarial Review - Iteration 3 (Scoring)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      agents:
+        - "ps-critic-302"  # adv (S-014 LLM-as-Judge)
+        - "ps-critic-402"  # enf (S-014 LLM-as-Judge)
+
+    # Group 7: Phase 1 Validation
+    - id: 7
+      name: "Phase 1 Validation"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-6"
+      agents:
+        - "ps-validator-302"  # adv
+        - "ps-validator-402"  # enf
+
+    # Group 8: Barrier 1 Cross-Pollination
+    - id: 8
+      name: "Barrier 1 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-7"
+      tasks:
+        - "create-barrier-1-adv-to-enf-artifact"
+        - "create-barrier-1-enf-to-adv-artifact"
+        - "validate-barrier-1-artifacts"
+
+    # Group 9: Phase 2 Agents (Parallel after Barrier 1)
+    - id: 9
+      name: "Phase 2 Agents"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-8"
+      agents:
+        - "ps-analyst-303"  # adv
+        - "ps-architect-303"  # adv
+        - "ps-architect-403"  # enf
+        - "ps-implementer-403"  # enf
+        - "ps-architect-404"  # enf
+        - "ps-implementer-404"  # enf
+
+    # Group 10: Phase 2 Adversarial Review (3 iterations similar to Phase 1)
+    - id: 10
+      name: "Phase 2 Adversarial Review Cycles"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-9"
+      note: "3 iterations of critic→revision→scoring for Phase 2"
+
+    # Group 11: Barrier 2 Cross-Pollination
+    - id: 11
+      name: "Barrier 2 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-10"
+      tasks:
+        - "create-barrier-2-adv-to-enf-artifact"
+        - "create-barrier-2-enf-to-adv-artifact"
+        - "validate-barrier-2-artifacts"
+
+    # Group 12: Phase 3 Agents (Parallel after Barrier 2)
+    - id: 12
+      name: "Phase 3 Agents"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-11"
+      agents:
+        - "ps-architect-304"  # adv
+        - "ps-implementer-304"  # adv
+        - "ps-architect-305"  # adv
+        - "ps-implementer-305"  # adv
+        - "ps-architect-307"  # adv
+        - "ps-implementer-307"  # adv
+        - "ps-architect-405"  # enf
+        - "ps-implementer-405"  # enf
+
+    # Group 13: Phase 3 Adversarial Review Cycles
+    - id: 13
+      name: "Phase 3 Adversarial Review Cycles"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-12"
+      note: "3 iterations of critic→revision→scoring for Phase 3"
+
+    # Group 14: Phase 4 Agents (Parallel after Phase 3)
+    - id: 14
+      name: "Phase 4 Integration Testing"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-13"
+      agents:
+        - "ps-validator-306"  # adv
+        - "ps-critic-306"  # adv
+        - "ps-validator-406"  # enf
+        - "ps-critic-406"  # enf
+
+    # Group 15: Final Synthesis
+    - id: 15
+      name: "Final Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-14"
+      tasks:
+        - "create-epic002-final-synthesis"
+        - "create-epic002-integration-report"
+        - "create-epic002-lessons-learned"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  # Checkpoints will be created at:
+  # - End of each phase (CP-adv-P1, CP-adv-P2, etc.)
+  # - End of each barrier (CP-barrier-1, CP-barrier-2, etc.)
+  # - After each adversarial iteration (CP-adv-P1-iter1, etc.)
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 8  # 4 per pipeline
+    phases_percent: 0
+    barriers_complete: 0
+    barriers_total: 3  # barrier-1, barrier-2, final-synthesis
+    barriers_percent: 0
+    agents_executed: 0
+    agents_total: 38  # Total unique agent invocations
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 50  # Estimated total artifacts
+    artifacts_percent: 0
+
+  quality:
+    agent_success_rate: 0
+    barrier_validation_pass_rate: 0
+    checkpoint_recovery_tested: false
+    adversarial_iterations_completed: 0
+    adversarial_iterations_total: 48  # 3 iterations × 8 enablers × 2 pipelines
+    quality_scores: []  # Will track LLM-as-Judge scores per artifact
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+    phase_durations: []
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+  # Example:
+  # - id: "BLK-001"
+  #   description: "Quality score < 0.92 after 3 adversarial iterations"
+  #   blocking: ["ps-validator-302"]
+  #   severity: "HIGH"
+  #   created_at: "2026-02-13T10:00:00Z"
+
+issues:
+  resolved: []
+  # Example:
+  # - id: "ISS-001"
+  #   description: "Cross-pollination artifact schema mismatch"
+  #   resolution: "Standardized schema documented in barrier protocol"
+  #   resolved_at: "2026-02-13T12:00:00Z"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 1 creator agents (Group 1)"
+      agents: ["ps-analyst-302", "nse-risk-302", "nse-architecture-302", "ps-architect-302", "ps-analyst-402", "nse-risk-402", "nse-architecture-402", "ps-architect-402"]
+      execution_mode: "PARALLEL"
+      priority: "HIGH"
+
+  subsequent:
+    - action: "Adversarial review iteration 1 (Group 2)"
+      depends_on: "Group 1 complete"
+      agents: ["ps-critic-302", "ps-critic-402"]
+      adversarial_strategy: "S-002 Devil's Advocate"
+
+    - action: "Creator revision iteration 1 (Group 3)"
+      depends_on: "Group 2 complete"
+      agents: ["ps-analyst-302", "ps-analyst-402"]
+
+    - action: "Complete adversarial feedback loop (Groups 4-6)"
+      depends_on: "Group 3 complete"
+      note: "2 more iterations with different strategies"
+
+    - action: "Phase 1 validation (Group 7)"
+      depends_on: "Group 6 complete"
+      agents: ["ps-validator-302", "ps-validator-402"]
+
+    - action: "Barrier 1 cross-pollination (Group 8)"
+      depends_on: "Group 7 complete"
+      note: "Create and validate handoff artifacts"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow initialized. Ready to execute Phase 1 creator agents."
+  next_step: "Execute Group 1: Phase 1 Creator Agents (8 agents in parallel)"
+
+  files_to_read:
+    - "orchestration/epic002-crosspoll-20260213-001/ORCHESTRATION_PLAN.md"
+    - "orchestration/epic002-crosspoll-20260213-001/ORCHESTRATION_WORKTRACKER.md"
+    - "orchestration/epic002-crosspoll-20260213-001/ORCHESTRATION.yaml"
+    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/EN-301-deep-research-adversarial-strategies/research-adversarial-strategies-catalog.md"
+    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-005-enforcement-mechanisms/EN-401-deep-research-enforcement-vectors/research-enforcement-vectors-catalog.md"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+  adversarial_feedback_status:
+    total_enablers: 8
+    enablers_complete: 0
+    current_enabler: "EN-302 / EN-402"
+    current_iteration: 0
+    iterations_complete: 0
+    iterations_total: 48
