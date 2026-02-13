@@ -1,7 +1,7 @@
 # TASK-001: Research Claude Code Hooks API and Capabilities
 
 > **Type:** task
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** critical
 > **Parent:** EN-401
 > **Agent:** ps-researcher
@@ -16,13 +16,13 @@ Comprehensive research on Claude Code's hooks API: UserPromptSubmit, PreToolUse,
 
 ## Acceptance Criteria
 
-- [ ] All hook types enumerated with full API documentation
-- [ ] Each hook: trigger conditions, execution context, input/output contracts
-- [ ] Limitations and failure modes documented for each hook type
-- [ ] Security model and trust boundaries documented
-- [ ] Real-world usage examples included
-- [ ] L0/L1/L2 output levels present
-- [ ] Research artifact persisted to filesystem (P-002)
+- [x] All hook types enumerated with full API documentation (4 plugin + settings hooks)
+- [x] Each hook: trigger conditions, execution context, input/output contracts
+- [x] Limitations and failure modes documented for each hook type
+- [x] Security model and trust boundaries documented
+- [x] Real-world usage examples included
+- [x] L0/L1/L2 output levels present
+- [x] Research artifact persisted to filesystem (P-002)
 
 ## Artifact
 
@@ -34,3 +34,4 @@ Path: `EN-401-deep-research-enforcement-vectors/TASK-001-claude-code-hooks-resea
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Task created |
 | 2026-02-12 | Claude | in_progress | ps-researcher agent dispatched (opus model) |
+| 2026-02-12 | Claude | done | Research complete. 729 lines. 4 plugin hook types documented (PreToolUse, PostToolUse, SessionStart, Stop) + settings hooks (UserPromptSubmit). 6-layer enforcement architecture proposed. 24 references. 6 open questions requiring empirical validation identified. |

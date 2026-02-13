@@ -57,9 +57,9 @@ Jerry's adversarial review capability currently lacks a rigorous, evidence-based
 
 | ID | Title | Status | Activity | Agents |
 |----|-------|--------|----------|--------|
-| TASK-001 | Research academic literature on adversarial review | in_progress | RESEARCH | ps-researcher |
-| TASK-002 | Research industry practices and LLM-specific patterns | in_progress | RESEARCH | ps-researcher |
-| TASK-003 | Research alternative/emerging adversarial approaches | in_progress | RESEARCH | nse-explorer |
+| TASK-001 | Research academic literature on adversarial review | done | RESEARCH | ps-researcher |
+| TASK-002 | Research industry practices and LLM-specific patterns | done | RESEARCH | ps-researcher |
+| TASK-003 | Research alternative/emerging adversarial approaches | done | RESEARCH | nse-explorer |
 | TASK-004 | Synthesize findings into unified 15-strategy catalog | pending | RESEARCH | ps-synthesizer |
 | TASK-005 | Adversarial review iteration 1 (Red Team + Devil's Advocate) | pending | TESTING | ps-critic |
 | TASK-006 | Creator revision based on critic feedback | pending | DEVELOPMENT | ps-researcher |
