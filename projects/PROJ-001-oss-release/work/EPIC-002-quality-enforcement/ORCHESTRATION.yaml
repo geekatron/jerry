@@ -17,7 +17,7 @@ workflow:
   project_id: "PROJ-001-oss-release"
   version: "2.0"
   created_at: "2026-02-13T00:00:00Z"
-  updated_at: "2026-02-14T09:00:00Z"
+  updated_at: "2026-02-14T10:00:00Z"
   status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
 
   # Workflow ID configuration (WI-SAO-021)
@@ -892,7 +892,7 @@ execution_queue:
       execution_mode: "PARALLEL"
       status: "IN_PROGRESS"
       blocked_by: "group-13a"  # UNBLOCKED: group-13a COMPLETE
-      note: "Creator agents COMPLETE. ADV: 8 deliverables (EN-306 TASK-001 through TASK-008). ENF: 12 deliverables (EN-406 TASK-001 through TASK-012). Self-assessed quality: ADV ~0.93, ENF ~0.937. Awaiting adversarial critics."
+      note: "Iteration 1 critics COMPLETE. ADV scored 0.848 FAIL (26 findings: 4 BLOCKING, 11 MAJOR). ENF scored 0.907 FAIL (31 findings: 2 BLOCKING, 15 MAJOR). Both below 0.92 threshold. Dispatching creator revision agents."
       agents:
         - id: "ps-validator-306"
           pipeline: "adv"
@@ -904,8 +904,18 @@ execution_queue:
           output: "12 deliverables: integration test plan (203 tests), hook E2E testing (43 tests), rule enforcement testing (44 tests), session context testing (37 tests), interaction testing (24 tests), performance benchmark (17 tests), platform validation (20 tests), CI/CD testing (18 tests), QA audit (19 ACs), NFC verification (8 NFCs), status report, configuration baseline. Closes EN-405 conditional ACs."
         - id: "ps-critic-306"
           pipeline: "adv"
-          status: "PENDING"
+          status: "COMPLETE"
+          adversarial_strategies: ["S-001 Red Team", "S-012 FMEA", "S-014 LLM-as-Judge"]
+          output: "0.848 FAIL. 26 findings (4 BLOCKING, 11 MAJOR, 8 MINOR, 3 OBS). Key: SSOT dimension naming violation, H-14/early-exit contradiction, cross-platform 'confirmed' without testing, self-audit independence violation."
         - id: "ps-critic-406"
+          pipeline: "enf"
+          status: "COMPLETE"
+          adversarial_strategies: ["S-001 Red Team", "S-012 FMEA", "S-014 LLM-as-Judge"]
+          output: "0.907 FAIL. 31 findings (2 BLOCKING, 15 MAJOR, 11 MINOR, 3 OBS). Key: VERIFIED/SPECIFIED terminology confusion, self-audit conflict of interest. EN-405 AC-4 partially sufficient (TC-COND-002 needs redesign), AC-5 sufficient, AC-8 sufficient."
+        - id: "ps-revision-306"
+          pipeline: "adv"
+          status: "PENDING"
+        - id: "ps-revision-406"
           pipeline: "enf"
           status: "PENDING"
 
@@ -939,12 +949,12 @@ metrics:
     phases_complete: 4  # adv Phase 1 (EN-302) + enf Phase 1 (EN-402) + adv Phase 2 (EN-303) + enf Phase 2 (EN-403/404)
     phases_total: 8  # 4 per pipeline
     phases_percent: 50
-    agents_executed: 32  # 30 + ps-validator-306 + ps-validator-406
+    agents_executed: 34  # 32 + ps-critic-306 + ps-critic-406
     agents_total: 38  # Total unique agent invocations
-    agents_percent: 84
-    artifacts_created: 67  # 47 + 8 (EN-306) + 12 (EN-406)
+    agents_percent: 89
+    artifacts_created: 71  # 67 + 2 critiques (EN-306 TASK-009) + 2 critiques (EN-406 TASK-013/entity)
     artifacts_total: 71  # Estimated total artifacts
-    artifacts_percent: 94
+    artifacts_percent: 100
     barriers_complete: 2  # barrier-1 COMPLETE + barrier-2 COMPLETE
     barriers_total: 3  # barrier-1, barrier-2, final-synthesis
     barriers_percent: 67
@@ -988,10 +998,18 @@ metrics:
         iteration_2: 0.936
         verdict: "PASS (0.936 >= 0.92)"
         validation: "CONDITIONAL PASS (6/9 ACs full, 3 conditional for Phase 4)"
+      - enabler: "EN-306"
+        iteration_1: 0.848
+        iteration_2: null
+        verdict: "FAIL (0.848 < 0.92) — awaiting revision"
+      - enabler: "EN-406"
+        iteration_1: 0.907
+        iteration_2: null
+        verdict: "FAIL (0.907 < 0.92) — awaiting revision"
 
   timing:
     workflow_started: "2026-02-13T00:00:00Z"
-    last_activity: "2026-02-14T09:00:00Z"
+    last_activity: "2026-02-14T10:00:00Z"
     estimated_completion: null
     phase_durations:
       - phase: "adv-phase-1"
@@ -1023,9 +1041,9 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Phase 4 Adversarial Critics (Group 14 continuation)"
+    - action: "Phase 4 Creator Revision (Group 14 iteration 1)"
       priority: "HIGH"
-      note: "Dispatch ps-critic-306 (ADV) and ps-critic-406 (ENF) to review creator deliverables. ADV has 8 deliverables, ENF has 12 deliverables. Self-assessed quality: ADV ~0.93, ENF ~0.937. Apply S-001/S-012/S-014 for iteration 1."
+      note: "Dispatch ps-revision-306 (ADV) and ps-revision-406 (ENF) to address critic findings. ADV: 0.848 → target 0.92+ (4 BLOCKING, 11 MAJOR to address). ENF: 0.907 → target 0.92+ (2 BLOCKING, 15 MAJOR to address)."
 
   subsequent:
     - action: "Final Synthesis (Group 15)"
@@ -1036,9 +1054,9 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-group-14-creators-complete"
-  current_state: "Group 14 IN_PROGRESS. Phase 4 creators COMPLETE. ADV: 8 deliverables for EN-306 (integration tests, QA audit, status report, config baseline). ENF: 12 deliverables for EN-406 (~203 test cases, closes EN-405 conditional ACs). Awaiting adversarial critics."
-  next_step: "Dispatch Phase 4 adversarial critics. ADV: ps-critic-306 reviews EN-306 TASK-001 through TASK-008. ENF: ps-critic-406 reviews EN-406 TASK-001 through TASK-012. Apply S-001 (Red Team), S-012 (FMEA), S-014 (LLM-as-Judge) for iteration 1."
+  last_checkpoint: "CP-group-14-critics-iter1-complete"
+  current_state: "Group 14 IN_PROGRESS. Iteration 1 critics COMPLETE. ADV: 0.848 FAIL (26 findings). ENF: 0.907 FAIL (31 findings). Both below 0.92 threshold. Dispatching creator revision agents to address BLOCKING and MAJOR findings."
+  next_step: "Dispatch Phase 4 creator revision agents. ADV: ps-revision-306 addresses 4 BLOCKING (SSOT naming, H-14 contradiction, cross-platform language, audit independence) + 11 MAJOR findings. ENF: ps-revision-406 addresses 2 BLOCKING (VERIFIED/SPECIFIED confusion, self-audit) + 15 MAJOR findings. Target: >= 0.92 at iteration 2."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/ORCHESTRATION.yaml"
@@ -1054,9 +1072,9 @@ resumption:
     enablers_in_progress: 2  # EN-306, EN-406
     enablers_validated: 6  # EN-302 (CONDITIONAL PASS), EN-402 (PASS), EN-303 (PASS), EN-403/404 (PASS), EN-304/305/307 (PASS), EN-405 (CONDITIONAL PASS)
     enablers_awaiting_validation: 0
-    current_enabler: "Phase 4 Integration Testing (EN-306/EN-406) - creators COMPLETE, awaiting critics"
-    current_iteration: "Group 14 - awaiting adversarial critique iteration 1"
-    iterations_complete: 20  # 18 + 2 creator passes
+    current_enabler: "Phase 4 Integration Testing (EN-306/EN-406) - iteration 1 critics COMPLETE, awaiting revision"
+    current_iteration: "Group 14 - iteration 1 critic COMPLETE (ADV 0.848, ENF 0.907), dispatching revision"
+    iterations_complete: 22  # 20 + 2 critic passes (ps-critic-306, ps-critic-406)
     iterations_total: 48
 
   adrs_ratified:
