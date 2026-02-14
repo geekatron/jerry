@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-306:TASK-003
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-validator-306
 DATE: 2026-02-13
 STATUS: Complete
@@ -13,7 +13,7 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: TESTING
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-validator-306
 > **Quality Target:** >= 0.92
 > **Purpose:** Detailed test specifications for all 10 adversarial strategies in the /nasa-se skill (nse-verification and nse-reviewer agents)
@@ -250,6 +250,27 @@ The nse-qa agent's adversarial modes were formally descoped per EN-305-F002. Tes
 | **Pass Criteria** | 1. Every finding is categorized as exactly one of: RFA, RFI, Comment. 2. CRITICAL/MAJOR severity findings are categorized as RFA. 3. Findings requiring clarification are categorized as RFI. 4. Observations without required action are categorized as Comment. |
 | **Evaluation Criteria** | Category assignment accuracy, NPR Appendix G compliance |
 
+### NSR-008: Dual S-014 Score Reconciliation Test
+
+> Added per F-008 finding from TASK-009 iteration 1 critique. Tests conflict resolution when both nse-verification and nse-reviewer produce S-014 scores for the same artifact.
+
+**Requirement:** FR-305-003, FR-305-015 (both agents have adversarial-scoring mode)
+
+| Field | Specification |
+|-------|---------------|
+| **Test ID** | NSR-008 |
+| **Strategy** | S-014 LLM-as-Judge (dual-agent) |
+| **Scenario** | Both NSV-003 (nse-verification) and NSR-006 (nse-reviewer) score the same artifact at CDR gate |
+| **Input** | V&V artifact reviewed at CDR (C3); both agents produce adversarial-scoring output |
+| **Expected Output** | Two S-014 scores with reconciliation protocol |
+| **Pass Criteria** | 1. Both scores are in range 0.00-1.00. 2. If scores diverge by > 0.10, a reconciliation note is generated documenting the discrepancy. 3. The LOWER score is used for quality gate determination (conservative approach per H-13 intent). 4. Per-dimension score comparison table produced showing where the two assessments differ. 5. If scores diverge by > 0.20, P-020 escalation is triggered for human review of the discrepancy. 6. Reconciliation metadata recorded: `dual_scoring: { nse_verification_score: X, nse_reviewer_score: Y, reconciled_score: min(X,Y), divergence: abs(X-Y) }`. |
+| **Evaluation Criteria** | Score reconciliation accuracy, conservative gate determination, escalation appropriateness |
+
+**Precedence Rule:** At gates where both agents score:
+- **nse-verification score** assesses V&V artifact technical quality (completeness, evidence, coverage).
+- **nse-reviewer score** assesses review readiness (design maturity, risk exposure, decision quality).
+- **Gate determination** uses `min(nse_verification_score, nse_reviewer_score)` -- the weakest-link principle.
+
 ---
 
 ## Review Gate Integration Tests
@@ -297,7 +318,7 @@ The nse-qa agent's adversarial modes were formally descoped per EN-305-F002. Tes
 | **Recommended** | S-013, S-004, S-001 |
 | **Optional** | S-011 |
 | **Pass Criteria** | 1. S-007 evaluates against architecture and coding standards. 2. S-012 enumerates design failure modes using 1-10 FMEA scale. 3. S-001 Red Team recommended at C3 for architecture reviews. 4. Token budget within C3 estimate (~27,200 tokens). |
-| **Agent Distribution** | nse-reviewer: S-007, S-012, S-002, S-003, S-004, S-001, S-014; nse-verification: S-010 |
+| **Agent Distribution** | nse-verification: S-007 (`adversarial-compliance` mode, per NSV-004 -- constitutional compliance is a V&V concern), S-010, S-014 (`adversarial-scoring`); nse-reviewer: S-012, S-002, S-003, S-004, S-001, S-014 (`adversarial-scoring` -- reviewer variant per NSR-006). **Clarification (F-007):** S-007 is assigned to nse-verification (not nse-reviewer) at CDR because constitutional compliance evaluation is a verification activity, consistent with NSV-004 mode definition in EN-305 TASK-002. |
 
 ### RGI-004: TRR Gate Strategy Activation
 
@@ -358,7 +379,20 @@ The nse-qa agent's adversarial modes were formally descoped per EN-305-F002. Tes
 | **Criticality** | C3 (Major) |
 | **nse-verification Active** | S-010 + S-007 + S-014 + S-013 + S-011 (per FR-305-007) |
 | **nse-reviewer Active** | All Recommended become Required per criticality overlay |
-| **Pass Criteria** | 1. nse-verification activates full mode set. 2. Recommended strategies promoted to Required at this gate. 3. Optional strategies promoted to Recommended. |
+| **Pass Criteria** | 1. nse-verification activates full mode set. 2. Recommended strategies promoted to Required at this gate per the promotion algorithm below. 3. Optional strategies promoted to Recommended. |
+
+**C3 Promotion Algorithm (per F-009 clarification):**
+
+| Gate | C2 Classification | C3 Promoted Classification | Affected Strategies |
+|------|-------------------|---------------------------|-------------------|
+| SRR | Required: S-014, S-013, S-007, S-010 | Required (unchanged) | S-014, S-013, S-007, S-010 |
+| SRR | Recommended: S-003, S-002 | **Promoted to Required** | S-003, S-002 |
+| SRR | Optional: S-004, S-012, S-011, S-001 | **Promoted to Recommended** | S-004, S-012, S-011, S-001 |
+| PDR | Required: S-014, S-002, S-004, S-003, S-010 | Required (unchanged) | S-014, S-002, S-004, S-003, S-010 |
+| PDR | Recommended: S-013, S-007, S-012 | **Promoted to Required** | S-013, S-007, S-012 |
+| PDR | Optional: S-011, S-001 | **Promoted to Recommended** | S-011, S-001 |
+
+**Rule:** At C3, every Recommended strategy at the given gate becomes Required. Every Optional becomes Recommended. At C4, ALL strategies become Required regardless of gate classification.
 
 ### CBA-004: C4 Full Activation
 

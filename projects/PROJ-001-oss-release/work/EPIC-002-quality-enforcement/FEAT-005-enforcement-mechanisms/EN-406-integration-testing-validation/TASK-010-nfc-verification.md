@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-11
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-027, F-028)
 PURPOSE: Verification of all 8 non-functional criteria from FEAT-005
 -->
 
@@ -45,16 +46,20 @@ This document verifies compliance with all 8 non-functional criteria (NFC-1 thro
 
 ## NFC Verification Matrix
 
+> **Terminology:** This document uses standardized verification statuses:
+> - **DESIGN VERIFIED**: Specification/design deliverables confirm the criterion; implementation testing pending.
+> - **DIRECTLY VERIFIED**: Criterion can be confirmed by direct observation (e.g., file existence) without implementation testing.
+
 | NFC | Criterion | Status | Evidence |
 |-----|-----------|--------|----------|
-| NFC-1 | < 2s enforcement overhead | VERIFIED | TASK-006 benchmarks; budget analysis |
-| NFC-2 | Platform portable | VERIFIED | TASK-007 platform validation |
-| NFC-3 | No CI/CD breakage | VERIFIED | TASK-008 non-regression tests |
-| NFC-4 | Tiered enforcement | VERIFIED | EN-404 TASK-003 tiered design |
-| NFC-5 | Enabler .md files exist | VERIFIED | File inventory |
-| NFC-6 | Task .md files exist | VERIFIED | File inventory |
-| NFC-7 | Configuration baselines tracked | VERIFIED | TASK-012 configuration baseline |
-| NFC-8 | Status reports generated | VERIFIED | TASK-011 status report |
+| NFC-1 | < 2s enforcement overhead | DESIGN VERIFIED (budget analysis; measurement pending) | TASK-006 benchmarks; budget analysis shows 71% margin |
+| NFC-2 | Platform portable | DESIGN VERIFIED (specifications complete) | TASK-007 platform validation specifications |
+| NFC-3 | No CI/CD breakage | DESIGN VERIFIED (specifications complete) | TASK-008 non-regression test specifications |
+| NFC-4 | Tiered enforcement | DESIGN VERIFIED | EN-404 TASK-003 tiered design |
+| NFC-5 | Enabler .md files exist | DIRECTLY VERIFIED | File inventory confirms all 6 files exist |
+| NFC-6 | Task .md files exist | DIRECTLY VERIFIED | File inventory confirms all task files exist |
+| NFC-7 | Configuration baselines tracked | DIRECTLY VERIFIED | TASK-012 configuration baseline document exists |
+| NFC-8 | Status reports generated | DIRECTLY VERIFIED | TASK-011 status report document exists |
 
 ---
 
@@ -76,9 +81,11 @@ This document verifies compliance with all 8 non-functional criteria (NFC-1 thro
 | Combined overhead | 587ms << 2,000ms | VERIFIED |
 | Test specifications | TC-PERF-001 through TC-CPERF-005 (17 benchmarks) | SPECIFIED |
 
-### Determination: PASS
+### Determination: CONDITIONALLY VERIFIED (pending implementation measurement)
 
-The performance budget analysis demonstrates 71% margin against the 2s threshold. Individual mechanism budgets are well-defined and supported by design analysis. Implementation verification pending via TASK-006 benchmark execution.
+The performance budget analysis demonstrates 71% margin against the 2s threshold. Individual mechanism budgets are well-defined and supported by design analysis. However, budget analysis alone is NOT equivalent to measured performance validation.
+
+**Condition for full PASS:** Implementation-phase benchmark execution per TASK-006 specifications MUST confirm that actual measured latencies fall within budget targets. Python subprocess startup overhead (not accounted for in current budget) should also be measured.
 
 ---
 
@@ -245,20 +252,20 @@ Status reports have been generated for predecessor enablers and a final comprehe
 
 ## Verification Summary
 
-| NFC | Criterion | Status | Confidence |
-|-----|-----------|--------|------------|
-| NFC-1 | < 2s overhead | PASS | HIGH (71% margin) |
-| NFC-2 | Platform portable | PASS | HIGH (macOS primary) |
-| NFC-3 | No CI/CD breakage | PASS | HIGH (hooks isolated) |
-| NFC-4 | Tiered enforcement | PASS | HIGH (fully designed) |
-| NFC-5 | Enabler files exist | PASS | HIGH (verified) |
-| NFC-6 | Task files exist | PASS | HIGH (verified) |
-| NFC-7 | Config baselines | PASS | HIGH (documented) |
-| NFC-8 | Status reports | PASS | HIGH (generated) |
+| NFC | Criterion | Status | Confidence | Verification Level |
+|-----|-----------|--------|------------|-------------------|
+| NFC-1 | < 2s overhead | CONDITIONALLY VERIFIED | HIGH (71% budget margin) | Design (measurement pending) |
+| NFC-2 | Platform portable | DESIGN VERIFIED | HIGH (macOS primary) | Design (execution pending) |
+| NFC-3 | No CI/CD breakage | DESIGN VERIFIED | HIGH (hooks isolated) | Design (execution pending) |
+| NFC-4 | Tiered enforcement | DESIGN VERIFIED | HIGH (fully designed) | Design |
+| NFC-5 | Enabler files exist | DIRECTLY VERIFIED | HIGH | Direct observation |
+| NFC-6 | Task files exist | DIRECTLY VERIFIED | HIGH | Direct observation |
+| NFC-7 | Config baselines | DIRECTLY VERIFIED | HIGH | Direct observation |
+| NFC-8 | Status reports | DIRECTLY VERIFIED | HIGH | Direct observation |
 
-### Overall NFC Compliance: 8/8 PASS
+### Overall NFC Compliance: 4/8 DIRECTLY VERIFIED, 3/8 DESIGN VERIFIED, 1/8 CONDITIONALLY VERIFIED
 
-All 8 non-functional criteria are verified at the design/specification level with high confidence.
+All 8 non-functional criteria are verified at their respective levels. NFCs 5-8 are directly verifiable by file existence. NFCs 1-4 require implementation-phase test execution for full verification.
 
 ---
 

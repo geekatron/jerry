@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-4
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-010, F-011)
 PURPOSE: End-to-end test specifications for session context enforcement mechanisms
 -->
 
@@ -84,15 +85,16 @@ These tests are specifically designed to close the 3 conditional ACs identified 
 | Field | Value |
 |-------|-------|
 | **ID** | TC-COND-002 |
-| **Objective** | Verify quality preamble content is accessible to Claude after session start |
+| **Objective** | Verify quality preamble content is programmatically present in session start output |
 | **EN-405 AC** | AC-4 (Integration) |
-| **Preconditions** | Session started with quality preamble |
-| **Steps** | 1. Start session. 2. Verify quality preamble appears in initial context. 3. Verify Claude can reference quality gate values from preamble. |
-| **Expected Output** | Quality context available in Claude's working memory after session start |
-| **Pass Criteria** | Preamble content verified in session context |
+| **Preconditions** | SessionQualityContextGenerator module exists and is importable |
+| **Steps** | 1. Execute `session_start_hook.py` programmatically (e.g., `uv run scripts/session_start_hook.py`). 2. Capture stdout output. 3. Parse output for quality preamble XML sections. 4. Verify `<quality-gate>` section contains ">= 0.92" or "0.92" threshold string. 5. Verify `<constitutional-principles>` section contains "P-003", "P-020", "P-022" references. 6. Verify `<adversarial-strategies>` section contains at least 10 strategy identifiers. 7. Verify `<decision-criticality>` section contains "C1", "C2", "C3", "C4" level definitions. |
+| **Expected Output** | All 4 XML sections present in session start output with expected content; content is programmatically verifiable by string/XML parsing |
+| **Pass Criteria** | All 4 sections present; threshold value "0.92" found; all 3 constitutional principles referenced; strategy count >= 10; all 4 criticality levels defined |
 | **Requirements** | IR-405-003 |
-| **Verification** | Test + Inspection |
+| **Verification** | Test |
 | **Closure** | Successfully passing this test, combined with TC-COND-001, fully closes EN-405 AC-4 |
+| **Note** | This test verifies programmatic accessibility of preamble content in session output (deterministic, reproducible), NOT whether Claude "understands" the content (non-deterministic LLM behavior, which cannot produce reliable PASS/FAIL). |
 
 ### TC-COND-003: EN-405 AC-5 - Auto-Loading Verification (Part 1)
 
@@ -434,7 +436,7 @@ These tests are specifically designed to close the 3 conditional ACs identified 
 | **Objective** | Verify per-section token distribution matches specification |
 | **Input** | Generated preamble, parsed by section |
 | **Expected Distribution** | quality-gate ~100 cal. tokens; constitutional-principles ~85; adversarial-strategies ~174; decision-criticality ~130 |
-| **Pass Criteria** | Each section within +/- 20% of target |
+| **Pass Criteria** | Each section within +/- 10% of target (e.g., quality-gate: 90-110 cal. tokens; adversarial-strategies: 157-191 cal. tokens) |
 | **Requirements** | PR-405-001 |
 | **Verification** | Analysis |
 

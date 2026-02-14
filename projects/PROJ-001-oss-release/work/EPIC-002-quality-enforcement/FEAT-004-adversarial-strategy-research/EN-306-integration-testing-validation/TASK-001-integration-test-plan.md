@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-306:TASK-001
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-validator-306
 DATE: 2026-02-13
 STATUS: Complete
@@ -13,7 +13,7 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: TESTING
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-validator-306
 > **Quality Target:** >= 0.92
 > **Purpose:** Comprehensive integration test plan covering all 10 adversarial strategies across all 3 enhanced skills (/problem-solving, /nasa-se, /orchestration)
@@ -145,7 +145,13 @@ Since this is a design-phase validation (markdown specifications, not executable
 | 8 | orch-tracker | Record iteration 2 scores | `scores: { artifact: 0.93 }`, `delta: +0.15`, `threshold_met: true` |
 | 9 | orch-tracker | Quality gate determination | PASS (0.93 >= 0.92) |
 
-**Pass Criteria:** All 9 steps trace correctly through EN-304 TASK-003 (invocation protocol), EN-307 TASK-002 (cycle generation), EN-307 TASK-003 (quality gate tracking).
+**Pass Criteria (Measurable):**
+1. Steps 1-2: orch-planner output YAML contains `adversarial_strategies: [S-003, S-007, S-002, S-014]` matching EN-304 TASK-003 C2 pipeline definition.
+2. Step 3: Creator artifact file exists at expected path; S-010 self-refine section present in output.
+3. Steps 4: Critic output contains exactly 4 mode sections (steelman, constitutional, devils-advocate, llm-as-judge) in order per SEQ-001/SEQ-003.
+4. Steps 5, 8: orch-tracker YAML `quality_scores` array has entries matching iteration number; `scores` field contains numeric value in range 0.00-1.00.
+5. Step 6: Revision artifact references at least 1 specific finding ID from iteration 1 critique.
+6. Step 9: `validation_verdict` field equals "PASS" when score >= 0.92; equals "REVISE" when score < 0.92.
 
 ### ITC-002: Creator (PS) to Critic (NSE) Cycle via Orchestration
 
@@ -187,7 +193,7 @@ Since this is a design-phase validation (markdown specifications, not executable
 | PDR | C2 | S-014, S-002, S-004, S-003, S-010 | ~15,200 |
 | CDR | C3 | S-014, S-007, S-012, S-002, S-003, S-010 + recommended | ~27,200-35,100 |
 | TRR | C2 | S-014, S-011, S-007, S-010 | ~18,000 |
-| FRR | C4 | All 10 strategies | ~50,300 |
+| FRR | C4 | All 10 strategies | ~50,300 **[CAVEAT: EN-305-F006 flags this estimate as uncertain; cross-agent budget analysis recommended before FRR usage]** |
 
 **Pass Criteria:** Strategy-to-gate mapping from EN-305 TASK-004 produces correct strategy sets; token budgets align with EN-304 TASK-002 canonical token cost table.
 
@@ -216,6 +222,62 @@ Since this is a design-phase validation (markdown specifications, not executable
 | 3 | Token budget adaptation | TOK-FULL: full C3 set (~31,300-38,900) | Per-gate C3 token budget | Budget estimation in plan |
 
 **Pass Criteria:** Auto-escalation produces consistent C3 behavior across all 3 skills per EN-303 TASK-004 escalation rules.
+
+---
+
+### Negative Inter-Skill Test Scenarios
+
+> Added per F-001 finding from TASK-009 iteration 1 critique. These scenarios test failure conditions and error propagation across skill boundaries.
+
+### ITC-007: Critic Produces Empty Output Mid-Pipeline
+
+**Scenario:** ps-critic executes steelman mode but produces an empty/malformed output, then DA mode attempts to consume it.
+
+| Step | Actor | Action | Expected Outcome |
+|------|-------|--------|-----------------|
+| 1 | orch-planner | Assign C2 pipeline to ps-critic | Pipeline: steelman -> DA -> llm-as-judge |
+| 2 | ps-critic | Steelman mode produces empty output | Empty steelman artifact |
+| 3 | ps-critic | DA mode receives empty steelman input | DA mode falls back to original artifact; warning emitted |
+| 4 | orch-tracker | Record iteration status | Status: COMPLETED_WITH_WARNINGS; warning documented |
+
+**Pass Criteria (Measurable):**
+1. DA mode does not crash or hang on empty steelman input.
+2. DA mode output contains a warning section: "Steelman output unavailable; challenging original artifact."
+3. orch-tracker records a warning in iteration metadata: `warnings: ["steelman_output_empty"]`.
+4. Pipeline continues to llm-as-judge despite upstream empty output.
+
+### ITC-008: Quality Score Returns NaN/Invalid
+
+**Scenario:** S-014 LLM-as-Judge returns a non-numeric score (NaN, null, or out-of-range value).
+
+| Step | Actor | Action | Expected Outcome |
+|------|-------|--------|-----------------|
+| 1 | ps-critic | llm-as-judge mode returns score: "N/A" (string, not numeric) | Invalid score detected |
+| 2 | orch-tracker | Attempt to record score | Score validation fails; escalation triggered |
+| 3 | orch-tracker | Escalation | P-020 human escalation; iteration marked INVALID |
+
+**Pass Criteria (Measurable):**
+1. orch-tracker rejects non-numeric scores (NaN, null, strings, negative, > 1.0).
+2. Iteration status set to INVALID (not PASS, not REVISE).
+3. Blocker created: `BLK-QG-INVALID-SCORE` with severity HIGH.
+4. P-020 escalation triggered with message referencing the invalid score value.
+5. Pipeline does not proceed to next iteration until score is resolved.
+
+### ITC-009: Strategy Mode Not Found in Agent Spec
+
+**Scenario:** orch-planner assigns a strategy mode that does not exist in the target agent spec (e.g., assigns `adversarial-fmea` to nse-verification when it is an nse-reviewer mode).
+
+| Step | Actor | Action | Expected Outcome |
+|------|-------|--------|-----------------|
+| 1 | orch-planner | Assign `adversarial-fmea` to nse-verification | Mode not in nse-verification registry |
+| 2 | nse-verification | Attempt mode activation | Mode not found; REJECT with available mode list |
+| 3 | orch-tracker | Record error | Error documented; fallback to available modes or escalation |
+
+**Pass Criteria (Measurable):**
+1. nse-verification returns error listing available modes: `[adversarial-challenge, adversarial-verification, adversarial-scoring, adversarial-compliance]`.
+2. Error is non-fatal: pipeline continues with remaining valid modes.
+3. orch-tracker records the mode assignment error in `errors` array.
+4. If no valid modes remain, escalation to P-020 is triggered.
 
 ---
 

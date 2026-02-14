@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-9
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-021, F-022)
 PURPOSE: CI/CD non-regression test specifications for enforcement mechanisms
 -->
 
@@ -316,19 +317,20 @@ This document specifies non-regression tests ensuring that enforcement mechanism
 
 ### Enforcement Kill Switch
 
-```yaml
-# .claude/settings.json - disable hooks
+```json
+// .claude/settings.json - disable hooks
 {
   "hooks": {
     "UserPromptSubmit": [],
     "PreToolUse": [],
     "SessionStart": {
       "command": "scripts/session_start_hook.py"
-      # Quality context controlled by QUALITY_CONTEXT_AVAILABLE flag
     }
   }
 }
 ```
+
+> **Note:** Quality context within SessionStart is controlled by the `QUALITY_CONTEXT_AVAILABLE` flag in the hook code. To disable quality context injection while preserving project context, set `QUALITY_CONTEXT_AVAILABLE = False` in `session_start_hook.py`.
 
 ### Recovery Verification
 
@@ -342,18 +344,26 @@ After re-enabling enforcement:
 
 ## Requirements Traceability
 
-| Test ID | Requirements Verified |
-|---------|----------------------|
-| TC-CICD-001 | NFC-3 |
-| TC-CICD-002 | NFC-3 |
-| TC-CICD-003 | NFC-3 |
-| TC-CICD-004 | NFC-3 |
-| TC-CICD-005 | NFC-3 |
-| TC-CICD-006 | NFC-3 |
-| TC-CICD-007 | NFC-3 |
-| TC-CICD-008 | NFC-3, REQ-403-080 |
-| TC-DEVW-001 through TC-DEVW-006 | NFC-3 |
-| TC-TOOL-001 through TC-TOOL-004 | NFC-3 |
+| Test ID | Requirements Verified | Specific Aspect |
+|---------|----------------------|-----------------|
+| TC-CICD-001 | NFC-3, REQ-403-080 | Test suite non-regression |
+| TC-CICD-002 | NFC-3, REQ-403-081 | Linting compatibility |
+| TC-CICD-003 | NFC-3, REQ-403-081 | Type-checking compatibility |
+| TC-CICD-004 | NFC-3, FEAT-005 AC-17 | CI pipeline non-regression |
+| TC-CICD-005 | NFC-3, REQ-403-082 | Dependency non-conflict |
+| TC-CICD-006 | NFC-3, REQ-403-082 | Build process non-regression |
+| TC-CICD-007 | NFC-3, REQ-403-083 | Hook system coexistence |
+| TC-CICD-008 | NFC-3, REQ-403-080 | Architecture boundary compliance |
+| TC-DEVW-001 | NFC-3, REQ-403-084 | Git commit workflow |
+| TC-DEVW-002 | NFC-3, REQ-403-084 | Git push workflow |
+| TC-DEVW-003 | NFC-3, REQ-403-084 | Branch operations |
+| TC-DEVW-004 | NFC-3, REQ-403-039 | Non-source file operations |
+| TC-DEVW-005 | NFC-3, FEAT-005 AC-17 | Claude Code session stability |
+| TC-DEVW-006 | NFC-3, REQ-403-070 | Emergency bypass mechanism |
+| TC-TOOL-001 | NFC-3, REQ-403-082 | UV tool chain compatibility |
+| TC-TOOL-002 | NFC-3, REQ-403-083 | IDE integration |
+| TC-TOOL-003 | NFC-3, REQ-403-083 | Documentation generation |
+| TC-TOOL-004 | NFC-3, REQ-403-080 | Coverage reporting |
 
 ---
 

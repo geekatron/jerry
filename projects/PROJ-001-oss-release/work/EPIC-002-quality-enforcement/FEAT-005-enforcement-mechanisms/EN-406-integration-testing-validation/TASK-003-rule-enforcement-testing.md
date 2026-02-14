@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-3
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-007, F-008, F-009)
 PURPOSE: End-to-end test specifications for rule-based enforcement mechanisms
 -->
 
@@ -45,12 +46,12 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 |----------|------------|----------|
 | Tier Enforcement | 12 | TC-TIER-001 through TC-TIER-012 |
 | Token Budget | 8 | TC-TBUDG-001 through TC-TBUDG-008 |
-| HARD Rule Inventory | 6 | TC-HARD-001 through TC-HARD-006 |
+| HARD Rule Inventory | 7 | TC-HARD-001 through TC-HARD-006 + TC-HARD-006-NEG |
 | L2 Re-injection | 5 | TC-L2R-001 through TC-L2R-005 |
 | Quality SSOT | 4 | TC-SSOT-001 through TC-SSOT-004 |
 | Content Quality | 5 | TC-CQUAL-001 through TC-CQUAL-005 |
 | Auto-Loading | 4 | TC-ALOAD-001 through TC-ALOAD-004 |
-| **Total** | **44** | |
+| **Total** | **45** | |
 
 ---
 
@@ -223,6 +224,7 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 |-------|-------|
 | **ID** | TC-TBUDG-002 |
 | **Objective** | Verify coding-standards.md within allocated budget (~2,100 tokens) |
+| **Precondition** | Rule files MUST be optimized per EN-404 TASK-002 audit recommendations before executing this test. Current state (~30,160 total tokens) will cause this test to FAIL. Target state after optimization: ~11,176 total tokens. |
 | **Input** | `.claude/rules/coding-standards.md` |
 | **Expected Output** | Token count <= 2,100 |
 | **Requirements** | REQ-404-003 |
@@ -234,6 +236,7 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 |-------|-------|
 | **ID** | TC-TBUDG-003 |
 | **Objective** | Verify architecture-standards.md within allocated budget (~2,200 tokens) |
+| **Precondition** | Rule files MUST be optimized per EN-404 TASK-002 audit recommendations before executing this test. |
 | **Input** | `.claude/rules/architecture-standards.md` |
 | **Expected Output** | Token count <= 2,200 |
 | **Requirements** | REQ-404-003 |
@@ -245,6 +248,7 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 |-------|-------|
 | **ID** | TC-TBUDG-004 |
 | **Objective** | Verify quality-enforcement.md within allocated budget (~2,200 tokens) |
+| **Precondition** | quality-enforcement.md MUST be created per EN-404 TASK-003 specifications before executing this test. |
 | **Input** | `.claude/rules/quality-enforcement.md` |
 | **Expected Output** | Token count <= 2,200 |
 | **Requirements** | REQ-404-003 |
@@ -256,6 +260,7 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 |-------|-------|
 | **ID** | TC-TBUDG-005 |
 | **Objective** | Verify testing-standards.md within allocated budget (~1,500 tokens) |
+| **Precondition** | Rule files MUST be optimized per EN-404 TASK-002 audit recommendations before executing this test. |
 | **Input** | `.claude/rules/testing-standards.md` |
 | **Expected Output** | Token count <= 1,500 |
 | **Requirements** | REQ-404-003 |
@@ -367,6 +372,19 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 | **Pass Criteria** | 7/7 mitigated |
 | **Requirements** | REQ-404-017 |
 | **Verification** | Analysis |
+
+### TC-HARD-006: Maliciously Modified HARD Rule Detection (Negative Test)
+
+| Field | Value |
+|-------|-------|
+| **ID** | TC-HARD-006-NEG |
+| **Objective** | Verify detection of HARD rules where mandatory language has been removed while retaining the H-xx identifier |
+| **Input** | Modified rule file where H-06 (import boundaries) has its MUST/SHALL/NEVER language replaced with SHOULD/MAY language while keeping the "H-06" identifier |
+| **Steps** | 1. Create test copy of rule file with H-06 language weakened (e.g., "domain SHOULD NOT import infrastructure"). 2. Run TC-TIER-001 language compliance check. 3. Verify the weakened rule is flagged as non-compliant. |
+| **Expected Output** | H-06 flagged as not meeting HARD tier language requirements despite retaining H-xx identifier |
+| **Pass Criteria** | Detection of language/tier mismatch; HARD rule without HARD language is identified as violation |
+| **Requirements** | REQ-404-010, REQ-404-011 |
+| **Verification** | Test |
 
 ### TC-HARD-006: Constitutional Principle Encoding
 
@@ -583,8 +601,8 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 | **Expected Output** | All rule files in `.claude/rules/` directory are loaded |
 | **Pass Criteria** | Every `.md` file in `.claude/rules/` present in session context |
 | **Requirements** | REQ-404-001 |
-| **Verification** | Test |
-| **Note** | This test closes EN-405 conditional AC-5 (auto-loading verification) |
+| **Verification** | Manual Inspection |
+| **Note** | This test closes EN-405 conditional AC-5 (auto-loading verification). Verification requires interactive Claude Code session inspection -- auto-loading is not programmatically testable from outside Claude Code. |
 
 ### TC-ALOAD-002: Symlink Resolution
 
@@ -597,7 +615,7 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 | **Expected Output** | Symlinks resolve; content identical through both paths |
 | **Pass Criteria** | Content accessible and identical |
 | **Requirements** | REQ-404-001 |
-| **Verification** | Test |
+| **Verification** | Manual Inspection |
 
 ### TC-ALOAD-003: New File Addition
 
@@ -610,7 +628,7 @@ This document specifies end-to-end test cases for rule-based enforcement mechani
 | **Expected Output** | New file appears in session context |
 | **Pass Criteria** | Auto-loading picks up new files |
 | **Requirements** | REQ-404-001 |
-| **Verification** | Test |
+| **Verification** | Manual Inspection |
 
 ### TC-ALOAD-004: Total Token Load Measurement
 

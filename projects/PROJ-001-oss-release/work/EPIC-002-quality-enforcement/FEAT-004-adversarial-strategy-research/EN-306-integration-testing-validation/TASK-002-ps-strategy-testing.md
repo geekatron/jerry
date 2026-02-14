@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-306:TASK-002
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-validator-306
 DATE: 2026-02-13
 STATUS: Complete
@@ -13,7 +13,7 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: TESTING
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-validator-306
 > **Quality Target:** >= 0.92
 > **Purpose:** Detailed test specifications for all 10 adversarial strategies in the /problem-solving skill (ps-critic agent v3.0.0)
@@ -326,7 +326,7 @@ This document provides detailed test specifications for all 10 adversarial strat
 - Anti-Leniency Check: Self-assessment of calibration
 
 **Pass Criteria:**
-- [ ] Score uses 6 dimensions: Completeness (0.20), Accuracy (0.20), Rigor (0.20), Actionability (0.15), Traceability (0.15), Clarity (0.10)
+- [ ] Score uses 6 canonical SSOT dimensions: completeness (0.20), internal_consistency (0.20), evidence_quality (0.15), methodological_rigor (0.20), actionability (0.15), traceability (0.10) -- per EN-304 TASK-003 and TASK-008 Configuration Baseline
 - [ ] Anti-leniency calibration text present in scoring prompt
 - [ ] Score of 0.92+ requires "genuinely excellent" evidence
 - [ ] Anomaly flags: jump > 0.20, consistent > 0.95, improvement without changes
@@ -361,6 +361,79 @@ This document provides detailed test specifications for all 10 adversarial strat
 - [ ] Each vulnerability has a defense recommendation
 - [ ] Executes AFTER steelman and inversion when all in pipeline
 - [ ] Token cost within ~6,500 template budget
+
+---
+
+### PST-011: Strategy Interaction Test -- Steelman to Devil's Advocate Pipeline Effect
+
+| Field | Value |
+|-------|-------|
+| **Strategy Pair:** | S-003 Steelman -> S-002 Devil's Advocate |
+| **Mode Names:** | `steelman` -> `devils-advocate` |
+| **Source:** | EN-304 TASK-002 SEQ-001; F-005 finding from TASK-009 iteration 1 critique |
+
+**Input:**
+- Artifact: Architecture decision document (TGT-ARCH)
+- Pipeline: `steelman` -> `devils-advocate` -> `llm-as-judge`
+- Criticality: C2
+
+**Expected Interaction Effect:**
+- DA output engages with the steelmanned argument, NOT the original artifact
+- DA challenges are more substantive because they address the strongest version of the argument
+- DA findings reference steelman output sections explicitly
+- Final S-014 score reflects the quality improvement from the interaction
+
+**Pass Criteria:**
+- [ ] DA output explicitly references steelman reconstruction (e.g., "The steelmanned argument states...")
+- [ ] DA challenges target the steelmanned version, not a weaker version of the original
+- [ ] At least 1 DA challenge directly addresses a strength identified by steelman
+- [ ] S-014 scoring accounts for interaction depth (not just individual mode outputs)
+- [ ] Output quality measurably differs from DA-only pipeline (DA without preceding steelman)
+
+**Evaluation Criteria Verification:**
+- Interaction Engagement (0.40): DA meaningfully engages with steelman output
+- Challenge Depth (0.30): Challenges are more substantive than without steelman input
+- Score Impact (0.30): Final score reflects interaction quality
+
+---
+
+### PST-009 Example Output (Reference)
+
+The following is a representative example output for PST-009 (LLM-as-Judge) to clarify expected format:
+
+```markdown
+## Quality Score: 0.87
+
+### Dimension Breakdown
+
+| Dimension | Score | Weight | Weighted | Evidence | Rationale |
+|-----------|-------|--------|----------|----------|-----------|
+| completeness | 0.90 | 0.20 | 0.180 | All 10 mode definitions present; sequencing constraints defined | Missing: no example outputs for modes |
+| internal_consistency | 0.82 | 0.20 | 0.164 | Mostly consistent; PST-009 dimension names diverge from SSOT | Naming inconsistency between sections |
+| evidence_quality | 0.88 | 0.15 | 0.132 | Citations to EN-304 TASK-002 present | Some citations referential, not quoted |
+| methodological_rigor | 0.85 | 0.20 | 0.170 | Good coverage of happy path and boundary | No strategy interaction tests |
+| actionability | 0.87 | 0.15 | 0.131 | Test specifications executable by reviewer | Pass criteria use some subjective language |
+| traceability | 0.92 | 0.10 | 0.092 | Requirement-to-test mapping explicit | FR-304 requirements fully traced |
+
+**Aggregate Score:** 0.869
+**Determination:** REVISE (0.869 < 0.92)
+
+### Strengths
+1. Comprehensive 10-strategy coverage with per-strategy test specs
+2. Backward compatibility test suite (BC-T-001 through BC-T-007)
+3. Pipeline tests cover all 4 criticality levels (C1-C4)
+
+### Improvement Areas
+| Area | Gap | Recommendation | Expected Impact |
+|------|-----|----------------|-----------------|
+| SSOT naming | Non-canonical dimension names | Align to EN-304 TASK-003 canonical names | +0.05 consistency |
+| Strategy interaction | No interaction tests | Add steelman->DA pipeline test | +0.03 rigor |
+| Example outputs | No reference outputs | Add 1+ example for critical tests | +0.02 actionability |
+
+### Anti-Leniency Check
+- Calibration: Applied. Score of 0.87 reflects genuine gaps, not anchoring bias.
+- No anomaly flags triggered.
+```
 
 ---
 

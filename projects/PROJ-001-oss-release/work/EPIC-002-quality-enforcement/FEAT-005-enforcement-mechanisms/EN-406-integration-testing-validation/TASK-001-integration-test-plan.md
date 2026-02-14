@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-1
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-001, F-002, F-003)
 PURPOSE: Master integration test plan for all enforcement mechanisms
 -->
 
@@ -163,10 +164,10 @@ L3 (Active Enforcement)
 | Session Context E2E Testing | TC-SESS | End-to-end test of session context injection | TASK-004 |
 | Interaction Testing | TC-IXTN | Cross-mechanism interaction and conflict tests | TASK-005 |
 | Performance Benchmarking | TC-PERF | <2s overhead validation | TASK-006 |
-| Platform Validation | TC-PLAT | macOS validation + cross-platform assessment | TASK-007, TASK-008 |
-| CI/CD Non-Regression | TC-CICD | Pipeline compatibility testing | TASK-008 (cross-ref TASK-009) |
-| QA Audit | TC-QA | FEAT-005 AC verification | TASK-009 (cross-ref TASK-010) |
-| NFC Verification | TC-NFC | NFC-1 through NFC-8 | TASK-010 (cross-ref TASK-011) |
+| Platform Validation | TC-PLAT | macOS validation + cross-platform assessment | TASK-007 |
+| CI/CD Non-Regression | TC-CICD | Pipeline compatibility testing | TASK-008 |
+| QA Audit | TC-QA | FEAT-005 AC verification | TASK-009 |
+| NFC Verification | TC-NFC | NFC-1 through NFC-8 | TASK-010 |
 
 ---
 
@@ -250,7 +251,7 @@ L3 (Active Enforcement)
 
 | Requirement | Description | Validation |
 |-------------|-------------|------------|
-| Python 3.11+ | Runtime for hooks and enforcement engines | `python --version` |
+| Python 3.11+ | Runtime for hooks and enforcement engines | `uv run python --version` |
 | UV | Python dependency management | `uv --version` |
 | Claude Code | Claude Code CLI with hook support | `claude --version` |
 | macOS | Primary validation platform | `uname -s` |
@@ -278,6 +279,17 @@ L3 (Active Enforcement)
 | Token budgets | Per-file and total token allocations | EN-404 TASK-003 |
 | Preamble content | Exact XML preamble text | EN-405 TASK-006 |
 | Requirements traceability | 44 + 44 + 34 requirements | EN-403/404/405 TASK-001 |
+
+### Test Data Management Plan
+
+| Aspect | Approach |
+|--------|----------|
+| **Test fixtures location** | `tests/fixtures/enforcement/` directory for all test data files |
+| **Test prompts** | Pre-defined prompt sets stored in `tests/fixtures/enforcement/prompts/` (C1-C4 examples, edge cases, adversarial inputs) |
+| **Expected output baselines** | Golden output files in `tests/fixtures/enforcement/expected/` for comparison-based verification |
+| **Mock data** | Mock enforcement engine inputs/outputs in `tests/fixtures/enforcement/mocks/` |
+| **Rule file snapshots** | Snapshot copies of rule files at baseline state for regression testing |
+| **Maintenance** | Test data versioned alongside test specifications; updated when baseline changes per TASK-012 change control process |
 
 ---
 
@@ -350,11 +362,11 @@ Phase 3: Performance & Platform (depends on Phase 2)
   └── TC-PLAT cross-platform (TASK-008)
 
 Phase 4: Compliance & Reporting (depends on Phase 3)
-  ├── TC-CICD (TASK-009)
-  ├── TC-QA (TASK-010)
-  ├── TC-NFC (TASK-011)
-  ├── Status Report (TASK-012)
-  └── Configuration Baseline (TASK-013)
+  ├── TC-CICD (TASK-008)
+  ├── TC-QA (TASK-009)
+  ├── TC-NFC (TASK-010)
+  ├── Status Report (TASK-011)
+  └── Configuration Baseline (TASK-012)
 ```
 
 ### Gating Rules

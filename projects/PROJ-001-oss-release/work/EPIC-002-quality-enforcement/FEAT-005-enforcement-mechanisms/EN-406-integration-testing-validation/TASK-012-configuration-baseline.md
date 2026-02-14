@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-13
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-032, F-033)
 PURPOSE: Configuration baseline for all enforcement mechanisms
 -->
 
@@ -136,10 +137,15 @@ This document establishes the configuration baseline for all enforcement mechani
     },
     "PreToolUse": {
       "command": "uv run hooks/pre-tool-use.py"
+    },
+    "SessionStart": {
+      "command": "uv run scripts/session_start_hook.py"
     }
   }
 }
 ```
+
+> **Note:** SessionStart is configured separately from UserPromptSubmit/PreToolUse. The SessionStart hook handles both project context injection and quality preamble generation. Quality context availability is controlled by the `QUALITY_CONTEXT_AVAILABLE` flag within the hook code.
 
 ---
 
@@ -147,18 +153,21 @@ This document establishes the configuration baseline for all enforcement mechani
 
 ### File Inventory
 
-| # | File | Location | Status | Tier Mix |
-|---|------|----------|--------|----------|
-| 1 | `coding-standards.md` | `.claude/rules/` (-> `.context/rules/`) | Existing | HARD + MEDIUM |
-| 2 | `architecture-standards.md` | `.claude/rules/` | Existing | HARD dominant |
-| 3 | `testing-standards.md` | `.claude/rules/` | Existing | HARD + MEDIUM |
-| 4 | `error-handling-standards.md` | `.claude/rules/` | Existing | HARD + MEDIUM |
-| 5 | `file-organization.md` | `.claude/rules/` | Existing | MEDIUM dominant |
-| 6 | `python-environment.md` | `.claude/rules/` | Existing | HARD dominant |
-| 7 | `mandatory-skill-usage.md` | `.claude/rules/` | Existing | MEDIUM dominant |
-| 8 | `quality-enforcement.md` | `.claude/rules/` | NEW (EN-404) | HARD dominant (SSOT) |
-| 9 | `markdown-navigation-standards.md` | `.claude/rules/` | Existing | HARD + MEDIUM |
-| 10 | `project-workflow.md` | `.claude/rules/` | Existing | MEDIUM |
+> **Current State vs. Target State:** The table below shows the **current state** (10 files, ~30,160 tokens) as the baseline. The **target state** after EN-404 TASK-002 optimization would consolidate to 8 files at ~11,176 tokens. The planned consolidations are listed separately below. Until optimization is executed, the current state is the operative baseline.
+
+| # | File | Location | Current State | Target State | Tier Mix |
+|---|------|----------|---------------|--------------|----------|
+| 1 | `coding-standards.md` | `.claude/rules/` (-> `.context/rules/`) | Existing (~6,100 tokens) | Optimized (~2,100 tokens, absorbs error-handling) | HARD + MEDIUM |
+| 2 | `architecture-standards.md` | `.claude/rules/` | Existing (~6,200 tokens) | Optimized (~2,200 tokens, absorbs file-org) | HARD dominant |
+| 3 | `testing-standards.md` | `.claude/rules/` | Existing (~4,500 tokens) | Optimized (~1,500 tokens, absorbs tool-config) | HARD + MEDIUM |
+| 4 | `error-handling-standards.md` | `.claude/rules/` | Existing (~3,200 tokens) | Merged into coding-standards | HARD + MEDIUM |
+| 5 | `file-organization.md` | `.claude/rules/` | Existing (~2,800 tokens) | Merged into architecture-standards | MEDIUM dominant |
+| 6 | `python-environment.md` | `.claude/rules/` | Existing (~1,500 tokens) | Optimized (~600 tokens) | HARD dominant |
+| 7 | `mandatory-skill-usage.md` | `.claude/rules/` | Existing (~1,800 tokens) | Optimized (~576 tokens) | MEDIUM dominant |
+| 8 | `quality-enforcement.md` | `.claude/rules/` | NEW (EN-404) | New (~2,200 tokens, SSOT) | HARD dominant (SSOT) |
+| 9 | `markdown-navigation-standards.md` | `.claude/rules/` | Existing (~2,500 tokens) | Retained, optimized | HARD + MEDIUM |
+| 10 | `project-workflow.md` | `.claude/rules/` | Existing (~1,560 tokens) | Retained, optimized | MEDIUM |
+| | **Total** | | **~30,160 tokens (10 files)** | **~11,176 tokens (8 files)** | |
 
 ### Planned Consolidations (EN-404 TASK-002)
 

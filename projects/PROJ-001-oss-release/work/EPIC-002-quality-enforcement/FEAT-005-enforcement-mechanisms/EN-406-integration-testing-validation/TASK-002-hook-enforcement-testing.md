@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-2
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-004, F-005, F-006)
 PURPOSE: End-to-end test specifications for all hook-based enforcement mechanisms
 -->
 
@@ -44,7 +45,8 @@ This document specifies end-to-end test cases for all three hook-based enforceme
 | UserPromptSubmit | L2 | 14 | TC-UPS-001 through TC-UPS-014 |
 | PreToolUse | L3 | 16 | TC-PTU-001 through TC-PTU-016 |
 | SessionStart | L1 | 10 | TC-SS-001 through TC-SS-010 |
-| **Total** | | **40** | |
+| Error Handling (cross-hook) | All | 3 | TC-ERR-001 through TC-ERR-003 |
+| **Total** | | **43** | |
 
 ---
 
@@ -135,12 +137,27 @@ This document specifies end-to-end test cases for all three hook-based enforceme
 | **ID** | TC-UPS-006 |
 | **Objective** | Verify that output never exceeds 600 token budget |
 | **Preconditions** | PromptReinforcementEngine with TOKEN_BUDGET = 600 |
-| **Input** | 10 diverse prompts across all criticality levels |
+| **Input** | 10 prompts across all criticality levels (see test data below) |
 | **Steps** | 1. Run hook for each prompt. 2. Measure output tokens using chars/4 approximation. |
 | **Expected Output** | All outputs <= 600 tokens |
 | **Pass Criteria** | No output exceeds 600 tokens; average output within expected range per criticality |
 | **Requirements** | REQ-403-012, REQ-403-013 |
 | **Verification** | Test |
+
+**Test Data (10 prompts):**
+
+| # | Prompt | Expected Criticality | Expected Token Range |
+|---|--------|---------------------|---------------------|
+| 1 | "Fix the typo in README.md" | C1 | <= 300 |
+| 2 | "Update the docstring on this function" | C1 | <= 300 |
+| 3 | "Add a unit test for the Priority value object" | C1 | <= 300 |
+| 4 | "Implement the repository adapter for WorkItem" | C2 | 200-500 |
+| 5 | "Refactor the command handler to use dependency injection" | C2 | 200-500 |
+| 6 | "Add a new domain event for task completion" | C2 | 200-500 |
+| 7 | "Modify the .claude/rules/coding-standards.md file" | C3 | 400-600 |
+| 8 | "Update the architecture-standards.md with new layer rules" | C3 | 400-600 |
+| 9 | "Update the JERRY_CONSTITUTION.md governance document" | C4 | 500-600 |
+| 10 | "Modify docs/governance/JERRY_CONSTITUTION.md to add a new principle" | C4 | 500-600 |
 
 ### TC-UPS-007: Adaptive Content Selection
 
@@ -150,11 +167,22 @@ This document specifies end-to-end test cases for all three hook-based enforceme
 | **Objective** | Verify content blocks are selected adaptively based on prompt keywords |
 | **Preconditions** | Keyword-to-content mapping configured |
 | **Input** | Prompt mentioning "architecture": "Design the hexagonal architecture for the new module" |
-| **Steps** | 1. Invoke hook. 2. Verify architecture-relevant blocks prioritized. |
+| **Steps** | 1. Invoke hook. 2. Verify architecture-relevant blocks prioritized. 3. Cross-reference against keyword-to-content mapping below. |
 | **Expected Output** | Architecture-relevant content blocks (e.g., steelman, deep-review) included before generic blocks |
-| **Pass Criteria** | Content selection demonstrates keyword sensitivity |
+| **Pass Criteria** | Content selection demonstrates keyword sensitivity per mapping table |
 | **Requirements** | REQ-403-014, REQ-403-015 |
 | **Verification** | Inspection |
+
+**Keyword-to-Content Block Mapping:**
+
+| Keyword Category | Example Keywords | Expected Content Blocks |
+|-----------------|------------------|------------------------|
+| Architecture | "hexagonal", "architecture", "layer", "boundary" | steelman, deep-review, constitutional-principles |
+| Governance | "constitution", "governance", "principle" | constitutional-principles, scoring-requirement, deep-review |
+| Testing | "test", "coverage", "pytest" | quality-gate, scoring-requirement |
+| Refactoring | "refactor", "restructure", "reorganize" | steelman, quality-gate, self-review |
+| Rules/Config | "rules", "standards", "configuration" | constitutional-principles, leniency-calibration, deep-review |
+| General Development | (default, no specific keywords) | quality-gate, self-review, scoring-requirement |
 
 ### TC-UPS-008: Empty Prompt Handling
 
@@ -441,9 +469,11 @@ This document specifies end-to-end test cases for all three hook-based enforceme
 | **ID** | TC-PTU-016 |
 | **Objective** | Verify PreToolUse adds zero tokens to context |
 | **Input** | Any tool use |
-| **Expected Output** | No text appended to conversation context; enforcement is side-channel only |
+| **Steps** | 1. Capture conversation context size before PreToolUse invocation. 2. Invoke PreToolUse hook. 3. Capture conversation context size after invocation. 4. Compute delta. |
+| **Expected Output** | No text appended to conversation context; enforcement is side-channel only; context size delta = 0 tokens |
+| **Pass Criteria** | Measured token cost delta is 0; PreToolUse hook returns EnforcementDecision via side-channel (not context injection) |
 | **Requirements** | REQ-403-031 |
-| **Verification** | Inspection |
+| **Verification** | Test |
 
 ---
 

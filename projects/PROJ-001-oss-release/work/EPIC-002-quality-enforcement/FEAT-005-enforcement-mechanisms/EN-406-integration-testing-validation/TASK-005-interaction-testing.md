@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-5
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-012, F-013, F-014)
 PURPOSE: Test specifications for enforcement mechanism interactions and conflict detection
 -->
 
@@ -43,6 +44,10 @@ This document specifies test cases for interactions between enforcement mechanis
 3. **Redundancy:** Is redundancy intentional (defense-in-depth) or wasteful?
 4. **Compensation:** Does the L1->L2->L3 compensation chain work correctly?
 5. **Performance:** Does the combined stack meet the <2s performance budget?
+
+### Verification Method Distribution
+
+> **Note on Analysis Verification:** 9 of 24 tests (37.5%) in this deliverable use Analysis or Analytical Assessment verification. This is intentional: interaction testing inherently involves cross-mechanism reasoning, gap analysis, and design rationale assessment that cannot be reduced to deterministic automated checks. Where possible, tests have been classified as Test (automated executable) or Inspection (manual review). The remaining Analysis-based tests address emergent properties (compensation chain effectiveness, enforcement gaps, context rot resilience) that require human judgment to evaluate.
 
 ### Mechanism Interaction Space
 
@@ -271,7 +276,8 @@ This document specifies test cases for interactions between enforcement mechanis
 | **Expected Behavior** | L2 re-injection compensates for L1 degradation; L3 continues deterministic enforcement |
 | **Pass Criteria** | L2 reinforcement effective; L3 enforcement unchanged |
 | **Requirements** | REQ-403-086 |
-| **Verification** | Analysis |
+| **Verification** | Analytical Assessment |
+| **Note** | Context rot cannot be reliably simulated in a test environment. This test verifies the *design rationale* that L2 re-injection compensates for L1 degradation, based on architectural analysis of the compensation chain. L3 deterministic behavior can be independently verified via TC-DID-003. |
 
 ### TC-DID-003: Compensation Chain - L1 + L2 Degraded
 
@@ -325,7 +331,7 @@ This document specifies test cases for interactions between enforcement mechanis
 | **Scenario** | Calculate combined token impact |
 | **Steps** | 1. Sum: L1 rules (~11,176) + session preamble (~435) + CLAUDE.md + L2 (~600) + other auto-loaded content. 2. Compare to available context window. |
 | **Expected Output** | Total context consumption documented and within acceptable limits |
-| **Pass Criteria** | Combined tokens do not crowd out user work context |
+| **Pass Criteria** | Combined enforcement token consumption MUST NOT exceed 15% of the available context window. For a 200K-token context window, this means total enforcement overhead (L1 + preamble + L2 per first prompt) MUST be <= 30,000 tokens. Current estimate: ~12,811 tokens (6.4% of 200K), well within threshold. |
 | **Requirements** | REQ-404-001, PR-405-001 |
 | **Verification** | Analysis |
 

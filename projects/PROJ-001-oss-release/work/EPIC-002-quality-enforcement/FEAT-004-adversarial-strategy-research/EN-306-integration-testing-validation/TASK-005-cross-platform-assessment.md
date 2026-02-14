@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-306:TASK-005
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-validator-306
 DATE: 2026-02-13
 STATUS: Complete
@@ -13,7 +13,7 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: TESTING
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-validator-306
 > **Quality Target:** >= 0.92
 > **Purpose:** Assess cross-platform compatibility of adversarial strategy integrations across macOS, Linux, and Windows environments
@@ -156,8 +156,12 @@ All 10 adversarial strategies are available on all platforms because they are im
 | Anti-leniency calibration | Full (L2 + spec) | Full (L2 + spec) | Full (L2 + spec) | Partial (spec only) |
 | Backward compatibility (BC-304-001 through BC-304-003) | Compatible | Compatible | Compatible | Compatible |
 
-**Platform-specific concerns for PS:**
-- None identified. All PS adversarial features are specification-level and prompt-based.
+**Verification Status:** Theoretical (design-phase assessment). No runtime testing performed on any platform.
+
+**Platform-specific concerns and edge cases for PS (per F-014):**
+- **Linux:** File path references in adversarial mode output (e.g., `finding_location: "EN-304/TASK-002.md"`) may break if case sensitivity differs between authoring platform (macOS, case-insensitive) and target platform (Linux, case-sensitive). Edge case: `en-304/task-002.md` vs `EN-304/TASK-002.md`.
+- **Windows:** CRLF line endings in agent spec files could cause YAML frontmatter parsing differences if `.gitattributes` is not correctly configured. Edge case: multi-line prompt templates with embedded newlines.
+- **PLAT-GENERIC:** Anti-leniency calibration ContentBlock (L2) not injected; spec-embedded calibration text may be less prominent in prompt context, potentially reducing anti-leniency effectiveness.
 
 ### /nasa-se (EN-305)
 
@@ -171,8 +175,12 @@ All 10 adversarial strategies are available on all platforms because they are im
 | Backward compatibility (BC-305-001 through BC-305-005) | Compatible | Compatible | Compatible | Compatible |
 | Governance file escalation (AE rules) | Full (L3 hooks) | Full (L3 hooks) | Full (L3 hooks) | Manual |
 
-**Platform-specific concerns for NSE:**
+**Verification Status:** Theoretical (design-phase assessment). No runtime testing performed on any platform.
+
+**Platform-specific concerns and edge cases for NSE (per F-014):**
 - Governance file escalation (FR-305-034) depends on PreToolEnforcementEngine hooks (L3). On PLAT-GENERIC, the user must manually declare elevated criticality when reviewing governance files.
+- **Linux:** NPR finding category output (RFA/RFI/Comment) uses structured markdown; sorting behavior may differ if locale-dependent string comparison is used.
+- **Windows:** Review gate mapping YAML files (10x5 matrix) must use UTF-8 encoding without BOM; Windows editors may add BOM by default.
 
 ### /orchestration (EN-307)
 
@@ -192,6 +200,8 @@ All 10 adversarial strategies are available on all platforms because they are im
 ---
 
 ## Configuration Portability Tests
+
+> **Execution Status (per F-015):** NOT EXECUTED. The following are design-phase test specifications. They define WHAT to test and HOW to verify. Actual execution will occur during implementation phase when runtime environments are available. Each test is currently in status: **Specified (Not Executed)**.
 
 ### CPT-001: Agent Spec Parsing Across Platforms
 
@@ -265,7 +275,7 @@ All 10 adversarial strategies are available on all platforms because they are im
 
 | EN-306 AC | Coverage |
 |-----------|----------|
-| AC-5 (Cross-platform compatibility confirmed) | This entire document |
+| AC-5 (Cross-platform compatibility assessed -- design-phase) | This entire document. **Note (F-013):** "Assessed" replaces "confirmed" because this is a design-phase architectural analysis, not empirical runtime testing. CPT-001 through CPT-005 are test specifications for future execution. Verification status: **Theoretical** (design-phase assessment). Runtime cross-platform testing should occur during implementation phase. |
 
 ### To FEAT-004 Non-Functional Criteria
 
@@ -296,7 +306,12 @@ All 10 adversarial strategies are available on all platforms because they are im
 
 ---
 
+**Agent Substitution Note (F-026):** This deliverable was produced by ps-validator-306 as a substitute for the originally specified agent. EN-306 task definitions assign specific agents (nse-verification for testing, nse-configuration for baseline, nse-qa for audit, ps-reporter for status report). Due to single-agent operational constraint, ps-validator-306 produced all 8 EN-306 deliverables. This substitution is documented here for traceability.
+
+---
+
 *Document ID: FEAT-004:EN-306:TASK-005*
-*Agent: ps-validator-306*
+*Agent: ps-validator-306 (substitute)*
 *Created: 2026-02-13*
+*Revised: 2026-02-14 (v1.1.0 per TASK-009 iteration 1 critique)*
 *Status: Complete*

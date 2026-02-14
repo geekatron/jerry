@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-306:TASK-004
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-validator-306
 DATE: 2026-02-13
 STATUS: Complete
@@ -13,7 +13,7 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: TESTING
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-validator-306
 > **Quality Target:** >= 0.92
 > **Purpose:** Test specifications for adversarial feedback loop integration in the /orchestration skill (orch-planner, orch-tracker, orch-synthesizer agents v3.0.0)
@@ -188,7 +188,7 @@ The test design is grounded in the EN-307 requirements (FR-307-001 through FR-30
 
 ## Iteration Control Tests
 
-### ITC-001: Minimum 3 Iterations Enforced
+### ITC-001: Minimum 3 Iteration Slots Planned
 
 **Requirement:** FR-307-003
 
@@ -198,7 +198,15 @@ The test design is grounded in the EN-307 requirements (FR-307-001 through FR-30
 | **Component** | orch-planner v3.0.0 |
 | **Input** | Adversarial cycle configuration |
 | **Expected Output** | Minimum 3 iteration slots generated |
-| **Pass Criteria** | 1. `adversarial_iteration_min: 3` in constraints. 2. At least 3 iteration entries in each cycle's iteration tracking. 3. Fewer than 3 iterations cannot be configured. |
+| **Pass Criteria** | 1. `adversarial_iteration_min: 3` in constraints (this is the default plan, not the minimum executed). 2. At least 3 iteration entries in each cycle's iteration tracking structure. 3. Fewer than 3 iteration SLOTS cannot be configured. |
+
+**H-14 Clarification (per F-010):** H-14 mandates "minimum 3 iterations" as the default planning parameter. This means 3 iteration SLOTS are always generated. However, FR-307-008 permits early exit at iteration 2 when the quality gate is met (score >= 0.92), resulting in 2 EXECUTED iterations with 1 SKIPPED. The rationale: H-14 ensures adversarial rigor is not circumvented by planning fewer iterations, while FR-307-008 allows efficiency when quality is genuinely achieved. This exception is bounded by ITC-003 (no early exit at iteration 1, which would be suspiciously lenient).
+
+**Constitutional Compliance Note:** This interpretation reconciles H-14 with FR-307-008 as follows:
+- **H-14 intent:** Prevent trivial single-iteration rubber-stamp reviews.
+- **FR-307-008 intent:** Avoid wasting resources when quality gate is genuinely met.
+- **Net effect:** Minimum 2 EXECUTED iterations (iteration 1 always suspicious per H-16; iteration 2 confirms). The 3rd iteration is a PLANNED slot that may be SKIPPED when quality gate is met at iteration 2.
+- **Anti-gaming:** ITC-003 prevents iteration 1 early exit. Anti-leniency flags (H-16) catch suspiciously high iteration 2 scores.
 
 ### ITC-002: Early Exit at Iteration 2
 
@@ -210,7 +218,7 @@ The test design is grounded in the EN-307 requirements (FR-307-001 through FR-30
 | **Component** | orch-tracker v3.0.0 |
 | **Input** | Quality score >= 0.92 at iteration 2 |
 | **Expected Output** | Iteration 3 marked as SKIPPED; cycle terminates |
-| **Pass Criteria** | 1. Iteration 3 status set to SKIPPED. 2. SKIPPED note documents rationale ("Quality gate met at iteration 2"). 3. Validation agent still executes after early exit. 4. Cycle is considered complete (not abandoned). |
+| **Pass Criteria** | 1. Iteration 3 status set to SKIPPED. 2. SKIPPED note documents rationale ("Quality gate met at iteration 2; H-14 3-slot plan fulfilled with 2 executed + 1 skipped"). 3. Validation agent still executes after early exit. 4. Cycle is considered complete (not abandoned). 5. Anti-leniency check: if iteration 2 score flagged as suspiciously high (jump > 0.20 from iteration 1), early exit is BLOCKED and iteration 3 proceeds. |
 
 ### ITC-003: No Early Exit at Iteration 1
 
@@ -350,6 +358,22 @@ The test design is grounded in the EN-307 requirements (FR-307-001 through FR-30
 
 ---
 
+### BQG-004: User Rejection of CONDITIONAL PASS at Barrier
+
+**Requirement:** FR-307-018, P-020 (User Authority)
+
+> Added per F-011 finding from TASK-009 iteration 1 critique. Covers the user's decision path after barrier hold.
+
+| Field | Specification |
+|-------|---------------|
+| **Test ID** | BQG-004 |
+| **Component** | orch-tracker v3.0.0 |
+| **Input** | Phase 1 quality score 0.88 (CONDITIONAL PASS); user rejects ratification |
+| **Expected Output** | Barrier remains closed; remediation path initiated |
+| **Pass Criteria** | 1. User rejection recorded in barrier metadata: `user_decision: "REJECTED"`. 2. Phase 1 status reverted to IN_PROGRESS (not left as CONDITIONAL PASS). 3. Additional adversarial iteration triggered (iteration 4, extending beyond min 3). 4. Blocker created: `BLK-QG-USER-REJECT` with `severity: HIGH`. 5. Downstream phases remain BLOCKED. 6. If user rejects 2 consecutive times, escalation to FAIL with mandatory remediation plan. |
+
+---
+
 ## Synthesizer Adversarial Tests
 
 ### SYN-001: Adversarial Review Summary in Synthesis
@@ -363,6 +387,7 @@ The test design is grounded in the EN-307 requirements (FR-307-001 through FR-30
 | **Input** | Completed workflow with adversarial cycles |
 | **Expected Output** | Adversarial Review Summary section in synthesis document |
 | **Pass Criteria** | 1. Summary table present with columns: Enabler, Iterations, Final Score, Key Findings, Resolution. 2. All enablers with adversarial cycles represented. 3. Scores match orch-tracker recorded values. |
+| **Expected Output Format** | Markdown document with: (a) `## Adversarial Review Summary` heading, (b) Summary table in markdown table format, (c) Per-enabler subsections with finding details, (d) Overall quality trajectory narrative (minimum 3 sentences). Required fields per row: enabler ID, iteration count (integer), final score (0.00-1.00), finding count by severity, resolution status (RESOLVED/DEFERRED/ACKNOWLEDGED). |
 
 ### SYN-002: Quality Score Trend Analysis
 
@@ -375,6 +400,7 @@ The test design is grounded in the EN-307 requirements (FR-307-001 through FR-30
 | **Input** | Multi-iteration quality score data |
 | **Expected Output** | Trend analysis showing improvement across iterations |
 | **Pass Criteria** | 1. Per-enabler trend data presented. 2. Improvement deltas calculated correctly. 3. Overall trend narrative provided. |
+| **Expected Output Format** | Markdown section with: (a) `## Quality Score Trend Analysis` heading, (b) Per-enabler trend table with columns: Enabler, Iter 1 Score, Iter 2 Score, Iter 3 Score, Delta, Trend (IMPROVING/PLATEAU/DECLINING), (c) Aggregate trend chart description (text-based), (d) Anomaly flags section if any scores trigger anti-leniency checks. |
 
 ### SYN-003: Cross-Pipeline Pattern Extraction
 

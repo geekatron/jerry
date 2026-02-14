@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-306:TASK-008
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-validator-306
 DATE: 2026-02-13
 STATUS: Complete
@@ -13,7 +13,7 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: DOCUMENTATION
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-validator-306
 > **Quality Target:** >= 0.92
 > **Purpose:** Configuration baseline documenting version matrix, configuration parameters, and baseline snapshot for all adversarial strategy integrations
@@ -105,14 +105,18 @@ The baseline covers: 6 agent specs (3 skills), 3 SKILL.md files, 3 PLAYBOOK.md f
 
 ### Score Dimensions
 
+> **Correction (F-023):** Previous version listed weights as "Equal (1/6)." The canonical weights from EN-304 TASK-003 and as used in adversarial critiques are UNEQUAL. Corrected below.
+
 | Dimension | Weight | Source |
 |-----------|--------|--------|
-| completeness | Equal (1/6) | EN-304 TASK-003 canonical dimensions |
-| internal_consistency | Equal (1/6) | EN-304 TASK-003 canonical dimensions |
-| evidence_quality | Equal (1/6) | EN-304 TASK-003 canonical dimensions |
-| methodological_rigor | Equal (1/6) | EN-304 TASK-003 canonical dimensions |
-| actionability | Equal (1/6) | EN-304 TASK-003 canonical dimensions |
-| traceability | Equal (1/6) | EN-304 TASK-003 canonical dimensions |
+| completeness | 0.20 | EN-304 TASK-003 canonical dimensions |
+| internal_consistency | 0.20 | EN-304 TASK-003 canonical dimensions |
+| evidence_quality | 0.15 | EN-304 TASK-003 canonical dimensions |
+| methodological_rigor | 0.20 | EN-304 TASK-003 canonical dimensions |
+| actionability | 0.15 | EN-304 TASK-003 canonical dimensions |
+| traceability | 0.10 | EN-304 TASK-003 canonical dimensions |
+
+**Total weight:** 1.00
 
 ### Criticality Levels
 
@@ -137,7 +141,7 @@ The baseline covers: 6 agent specs (3 skills), 3 SKILL.md files, 3 PLAYBOOK.md f
 | S-004 | Pre-Mortem | `pre-mortem` | Generative | ~5,600 | ADR-EPIC002-001 |
 | S-007 | Constitutional AI | `constitutional` | Analytical | ~8,000-16,000 | ADR-EPIC002-001 |
 | S-010 | Self-Refine | `self-refine` | Constructive | ~2,000 | ADR-EPIC002-001 |
-| S-011 | Chain-of-Verification | `chain-of-verification` | Analytical | ~6,000 | ADR-EPIC002-001 |
+| S-011 | Chain-of-Verification | `chain-of-verification` | Analytical | ~4,500 | ADR-EPIC002-001 **(Correction F-024: changed from ~6,000 to ~4,500 to match PST-008 in TASK-002 and EN-304 TASK-002 canonical token cost table)** |
 | S-012 | FMEA | `fmea` | Analytical | ~9,000 | ADR-EPIC002-001 |
 | S-013 | Inversion | `inversion` | Generative | ~2,100 | ADR-EPIC002-001 |
 | S-014 | LLM-as-Judge | `llm-as-judge` | Evaluative | ~2,000 | ADR-EPIC002-001 |
@@ -250,7 +254,9 @@ When modifying any SSOT artifact:
 
 ### Snapshot Date: 2026-02-13
 
-### File Checksums (Conceptual)
+### File Inventory
+
+> **Renamed (F-025):** Previously "File Checksums (Conceptual)." Renamed to "File Inventory" because no actual checksums are computed. For baseline verification, use git commit SHA as the anchor point (more practical than file checksums for markdown content). **Baseline Git Anchor:** The git commit SHA at the time of baseline creation serves as the definitive rollback reference.
 
 | File | Version | Status |
 |------|---------|--------|

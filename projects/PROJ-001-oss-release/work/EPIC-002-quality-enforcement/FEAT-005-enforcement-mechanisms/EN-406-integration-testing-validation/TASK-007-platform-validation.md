@@ -2,10 +2,11 @@
 
 <!--
 TEMPLATE: Task Deliverable
-VERSION: 1.0.0
+VERSION: 1.1.0
 ENABLER: EN-406
 AC: AC-7, AC-8
 CREATED: 2026-02-13 (ps-validator-406)
+REVISED: 2026-02-14 (ps-revision-406) -- Iteration 1 critique fixes (F-018, F-019, F-020)
 PURPOSE: Platform validation for macOS primary and cross-platform assessment
 -->
 
@@ -84,8 +85,8 @@ This document specifies platform validation tests for the enforcement framework.
 |-------|-------|
 | **ID** | TC-MAC-003 |
 | **Objective** | Verify POSIX path handling in all enforcement engines |
-| **Steps** | 1. Test paths with spaces. 2. Test paths with special characters. 3. Test case-insensitive filesystem behavior. |
-| **Expected Output** | All paths handled correctly; case-insensitive HFS+ compatibility |
+| **Steps** | 1. Test paths with spaces. 2. Test paths with special characters. 3. Test case-insensitive filesystem behavior. 4. Verify behavior on both APFS case-insensitive (default) and case-sensitive volumes. |
+| **Expected Output** | All paths handled correctly; APFS case-insensitive compatibility (default macOS). Note: macOS APFS supports both case-sensitive and case-insensitive volumes; enforcement code MUST use exact case matching in file references to work correctly on case-sensitive APFS volumes. |
 | **Requirements** | REQ-403-076 |
 | **Verification** | Test |
 
@@ -192,6 +193,8 @@ This document specifies platform validation tests for the enforcement framework.
 ---
 
 ## Cross-Platform Assessment
+
+> **Important Distinction:** The tests in this section are **portability assessments**, not **portability validations**. All 8 cross-platform tests use Analysis verification, meaning they evaluate compatibility characteristics through documented analysis rather than executable test execution. This is intentional per FEAT-005 NFC-2 which states enforcement mechanisms "SHOULD be portable" (advisory, not mandatory) and specifies macOS as the primary platform with Windows/Linux "assessed." Full cross-platform validation would require CI runners on each platform, which is planned for the implementation phase (see CI Matrix below).
 
 ### TC-XP-001: Linux Python Compatibility
 
@@ -310,6 +313,28 @@ This document specifies platform validation tests for the enforcement framework.
 | Case sensitivity | Insensitive (HFS+) | Sensitive (ext4) | Insensitive (NTFS) | May affect file matching |
 | Performance | BASELINE | COMPARABLE | COMPARABLE | Filesystem speed varies |
 | Claude Code | PASS | ASSESSMENT NEEDED | ASSESSMENT NEEDED | Availability varies |
+
+---
+
+## Cross-Platform CI Matrix (Implementation Phase)
+
+When enforcement mechanisms are implemented, the following GitHub Actions matrix strategy is recommended for cross-platform validation:
+
+```yaml
+# .github/workflows/enforcement-tests.yml
+strategy:
+  matrix:
+    os: [macos-latest, ubuntu-latest]
+    python-version: ["3.11", "3.12"]
+  # Windows excluded from CI matrix; assessed manually
+  # Windows workarounds documented in Known Platform Issues
+```
+
+| Platform | CI Runner | Test Scope | Priority |
+|----------|-----------|------------|----------|
+| macOS (latest) | `macos-latest` | Full validation (TC-MAC-001 through TC-MAC-012) | PRIMARY |
+| Linux (Ubuntu) | `ubuntu-latest` | Assessment subset (TC-XP-001 through TC-XP-004) | SECONDARY |
+| Windows | Manual assessment only | TC-XP-005 through TC-XP-008 documented analysis | TERTIARY |
 
 ---
 
