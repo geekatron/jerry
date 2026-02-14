@@ -550,8 +550,13 @@ Decompose the artifact into components and for each component:
 4. SEVERITY (S): Rate 1-10 (10 = catastrophic)
 5. OCCURRENCE (O): Rate 1-10 (10 = certain to occur)
 6. DETECTION (D): Rate 1-10 (10 = undetectable)
-7. RPN: Calculate S x O x D (Risk Priority Number)
+7. RPN: Calculate S x O x D (Risk Priority Number, max 1,000)
 8. RECOMMENDED ACTION: Mitigation for high-RPN items
+
+FMEA SCALE STANDARD: This 1-10 scale is the canonical FMEA scale for
+ALL Jerry adversarial modes across all skills (ps-critic, nse-reviewer,
+nse-qa). Source: quality-enforcement.md SSOT. All skills MUST use this
+scale to ensure cross-skill RPN comparability.
 
 Sort the output by RPN descending. Flag any item with RPN > 200 as
 requiring immediate attention. Flag any item with Severity >= 8 as
@@ -885,6 +890,8 @@ Each mode's output is appended to the pipeline context, making it available to s
 
 **Legend:** Required = always included; Recommended = included if budget allows; Optional = user/orchestrator choice; -- = not recommended at this level.
 
+**H-15 Scope Clarification (CE-004):** HARD rule H-15 states "S-014 LLM-as-Judge scoring REQUIRED." This applies to **C2+ criticality** -- any artifact entering adversarial review at C2 or higher MUST receive S-014 scoring. C1 (Routine) criticality is exempt from H-15 because C1 uses S-010 Self-Refine only and does not enter the adversarial review pipeline. At C1, `llm-as-judge` is Optional (available if the user explicitly requests it). This exemption is consistent with the definition of C1 as "routine work not requiring adversarial challenge" per EN-303 context taxonomy. All C1 references across EN-304, EN-305, and EN-307 correctly show S-010 only as the default strategy. This clarification should be reflected in quality-enforcement.md SSOT.
+
 ---
 
 ## ContentBlock Priority Integration
@@ -902,6 +909,36 @@ The adversarial modes align with the L2 PromptReinforcementEngine ContentBlocks 
 | `deep-review` | 7 | ~40 | Multi-mode pipeline | Triggers full adversarial pipeline at C3+ |
 
 **Key insight:** The ContentBlock system already encodes the most critical adversarial modes as per-prompt reinforcement. The mode architecture leverages this by ensuring that mode behavior matches the reinforced expectations.
+
+---
+
+## Canonical Token Cost Table
+
+> **SSOT Note:** The token costs listed per mode in this document are **template-only** costs (the token overhead of the adversarial prompt template and output structure, excluding the input artifact). The canonical token cost table below is the single source of truth for all enablers. EN-305 and EN-307 MUST reference this table rather than maintaining independent token cost estimates. Actual costs may vary based on input artifact size; the ranges below represent template-only overhead for typical artifacts.
+
+| Strategy | Mode | Template-Only Cost | Typical Range (incl. artifact) | Tier |
+|----------|------|--------------------|-------------------------------|------|
+| S-010 Self-Refine | self-refine | ~2,000 | 2,000-4,000 | Ultra-Low |
+| S-003 Steelman | steelman | ~1,600 | 3,000-7,500 | Ultra-Low |
+| S-013 Inversion | inversion | ~2,100 | 2,000-6,000 | Ultra-Low |
+| S-007 Constitutional AI | constitutional | ~8,000-16,000 | 8,000-16,000 | Medium |
+| S-002 Devil's Advocate | devils-advocate | ~4,600 | 4,600-6,000 | Low |
+| S-004 Pre-Mortem | pre-mortem | ~5,600 | 5,600-8,000 | Low |
+| S-012 FMEA | fmea | ~9,000 | 9,000-16,000 | Medium |
+| S-011 CoVe | chain-of-verification | ~4,500 | 4,500-12,000 | Low |
+| S-014 LLM-as-Judge | llm-as-judge | ~2,000 | 2,000-8,000 | Ultra-Low |
+| S-001 Red Team | red-team | ~6,500 | 6,500-12,000 | Low-Medium |
+
+**Usage guidance:**
+- EN-304 mode definitions use the "Template-Only Cost" column
+- EN-307 orch-planner budget estimation uses the "Typical Range" column (which includes artifact processing overhead)
+- Both columns are reconciled: the template-only cost is the lower bound of the typical range
+
+---
+
+## Canonical FMEA Scale
+
+> **SSOT Note:** All FMEA mode implementations across Jerry skills MUST use the **1-10 scale** (max RPN = 1,000). This applies to EN-304 ps-critic fmea mode, EN-305 nse-reviewer adversarial-fmea mode, and any future skill FMEA implementations. RPN thresholds: > 200 CRITICAL, 100-200 HIGH, 50-99 MEDIUM, < 50 LOW.
 
 ---
 

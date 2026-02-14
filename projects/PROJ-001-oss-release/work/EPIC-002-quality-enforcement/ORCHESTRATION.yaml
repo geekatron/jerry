@@ -205,9 +205,9 @@ pipelines:
         name: "Skill Enhancements"
         path_id: "phase-3-skills"
         enablers: ["EN-304", "EN-305", "EN-307"]
-        status: "BLOCKED"
-        blocked_by: "barrier-2"
-        started_at: null
+        status: "IN_PROGRESS"
+        blocked_by: "barrier-2"  # UNBLOCKED: barrier-2 COMPLETE
+        started_at: "2026-02-14T05:30:00Z"
         completed_at: null
         agents:
           - id: "ps-architect-304"
@@ -451,9 +451,9 @@ pipelines:
         name: "Session Context Enforcement"
         path_id: "phase-3-session"
         enabler: "EN-405"
-        status: "BLOCKED"
-        blocked_by: "barrier-2"
-        started_at: null
+        status: "IN_PROGRESS"
+        blocked_by: "barrier-2"  # UNBLOCKED: barrier-2 COMPLETE
+        started_at: "2026-02-14T05:30:00Z"
         completed_at: null
         agents:
           - id: "ps-architect-405"
@@ -543,23 +543,23 @@ barriers:
   - id: "barrier-2"
     name: "Mapping/Implementation Complete"
     description: "Situational mappings inform enforcement implementations and vice versa"
-    status: "BLOCKED"
-    blocked_by: "barrier-1"
-    completed_at: null
+    status: "COMPLETE"
+    blocked_by: "barrier-1"  # RESOLVED
+    completed_at: "2026-02-14T05:25:00Z"
     depends_on:
       - "pipeline_a.phase.2"
       - "pipeline_b.phase.2"
     artifacts:
       adv_to_enf:
         path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/adv-to-enf/barrier-2-adv-to-enf-handoff.md"
-        status: "BLOCKED"
+        status: "COMPLETE"
         description: "Situational context mappings with context taxonomy, per-strategy triggers, decision tree, situational examples"
-        key_content: null
+        key_content: "8-dimension context taxonomy (19,440 combinations), 10 strategy profiles, decision tree (12,960 combinations), situational mapping for EN-405 integration"
       enf_to_adv:
         path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/enf-to-adv/barrier-2-enf-to-adv-handoff.md"
-        status: "BLOCKED"
+        status: "COMPLETE"
         description: "Enforcement patterns with hook invocation points, rule enforcement patterns, session context requirements, integration examples"
-        key_content: null
+        key_content: "42 hook requirements, 44 rule requirements, 5-layer architecture, hook designs for UserPromptSubmit/PreToolUse/SessionStart"
 
   # Final Synthesis Barrier: Integration Complete
   - id: "final-synthesis"
@@ -589,7 +589,7 @@ barriers:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 12
+  current_group: 13
   groups:
     # Group 1: Phase 1 Creator Agents (Parallel)
     - id: 1
@@ -778,26 +778,85 @@ execution_queue:
     - id: 12
       name: "Phase 3 Agents"
       execution_mode: "PARALLEL"
-      status: "IN_PROGRESS"
+      status: "COMPLETE"
       blocked_by: "group-11"  # UNBLOCKED: group-11 COMPLETE
       started_at: "2026-02-14T05:30:00Z"
+      completed_at: "2026-02-14T06:00:00Z"
+      commit: "8b36ee4"
       agents:
-        - "ps-architect-304"  # adv
-        - "ps-implementer-304"  # adv
-        - "ps-architect-305"  # adv
-        - "ps-implementer-305"  # adv
-        - "ps-architect-307"  # adv
-        - "ps-implementer-307"  # adv
-        - "ps-architect-405"  # enf
-        - "ps-implementer-405"  # enf
+        - "ps-architect-304"  # adv - COMPLETE (6 task artifacts)
+        - "ps-implementer-304"  # adv - COMPLETE
+        - "ps-architect-305"  # adv - COMPLETE (7 task artifacts)
+        - "ps-implementer-305"  # adv - COMPLETE
+        - "ps-architect-307"  # adv - COMPLETE (9 task artifacts)
+        - "ps-implementer-307"  # adv - COMPLETE
+        - "ps-architect-405"  # enf - COMPLETE (6 task artifacts)
+        - "ps-implementer-405"  # enf - COMPLETE
+      artifacts:
+        - "EN-304/TASK-001 through TASK-006 (6 files)"
+        - "EN-305/TASK-001 through TASK-007 (7 files)"
+        - "EN-307/TASK-001 through TASK-009 (9 files)"
+        - "EN-405/TASK-001 through TASK-006 (6 files)"
 
     # Group 13: Phase 3 Adversarial Review Cycles
     - id: 13
       name: "Phase 3 Adversarial Review Cycles"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
-      blocked_by: "group-12"
+      status: "IN_PROGRESS"
+      blocked_by: "group-12"  # UNBLOCKED: group-12 COMPLETE
+      started_at: "2026-02-14T06:05:00Z"
       note: "3 iterations of critic→revision→scoring for Phase 3"
+      iterations:
+        - iteration: 1
+          status: "COMPLETE"
+          critique_agents: ["ps-critic-304-305-307", "ps-critic-405"]
+          revision_agents: ["ps-architect-304-305-307", "ps-architect-405"]
+          started_at: "2026-02-14T06:05:00Z"
+          completed_at: "2026-02-14T06:25:00Z"
+          critique_completed_at: "2026-02-14T06:10:00Z"
+          revision_completed_at: "2026-02-14T06:25:00Z"
+          scores:
+            EN-304-305-307: 0.827
+            EN-405: 0.871
+          estimated_post_revision:
+            EN-304-305-307: 0.919
+            EN-405: 0.944
+          findings:
+            EN-304-305-307:
+              blocking: 9
+              major: 13
+              minor: 12
+              advisory: 0
+              key_issues: "FMEA scale mismatch, S-005 in examples, nse-qa missing design, requirement numbering"
+              blocking_resolved: 9
+              major_resolved: 9
+              major_deferred: 5
+              minor_deferred: 12
+            EN-405:
+              blocking: 3
+              major: 5
+              minor: 5
+              advisory: 4
+              key_issues: "Token budget contradiction, ImportError-only catch, FR-405-021 false coverage"
+              blocking_resolved: 3
+              major_resolved: 5
+              minor_resolved: 3
+              advisory_resolved: 4
+              deferred: 2
+          revision_status: "COMPLETE"
+          artifacts:
+            critique_reports:
+              - "EN-304/TASK-007-critique-iteration-1.md"
+              - "EN-405/TASK-007-critique-iteration-1.md"
+            revision_reports:
+              - "EN-304/TASK-008-revision-report.md"
+              - "EN-405/TASK-008-revision-report.md"
+        - iteration: 2
+          status: "PENDING"
+          critique_agents: ["ps-critic-304-305-307", "ps-critic-405"]
+          started_at: null
+          completed_at: null
+          note: "Verify revised artifacts meet >= 0.92 threshold. ADV estimated 0.919 (borderline), ENF estimated 0.944 (comfortable PASS)."
 
     # Group 14: Phase 4 Agents (Parallel after Phase 3)
     - id: 14
@@ -859,7 +918,7 @@ metrics:
     agent_success_rate: 100
     barrier_validation_pass_rate: 0
     checkpoint_recovery_tested: false
-    adversarial_iterations_completed: 10  # 2 EN-302 + 2 EN-402 + 2 EN-303 (iter1 critic+rev) + 2 EN-403/404 (iter1 critic+rev) + 1 EN-303 iter2 + 1 EN-403/404 iter2
+    adversarial_iterations_completed: 14  # +2 EN-304/305/307 (iter1 critic+rev) + 2 EN-405 (iter1 critic+rev)
     adversarial_iterations_total: 48
     quality_scores:
       - enabler: "EN-302"
@@ -880,6 +939,14 @@ metrics:
         iteration_2: 0.93
         verdict: "PASS (0.93 >= 0.92)"
         validation: "PASS (with implementation conditions)"
+      - enabler: "EN-304/EN-305/EN-307"
+        iteration_1: 0.827
+        estimated_post_revision_1: 0.919
+        note: "Iteration 2 critic pending"
+      - enabler: "EN-405"
+        iteration_1: 0.871
+        estimated_post_revision_1: 0.944
+        note: "Iteration 2 critic pending"
 
   timing:
     workflow_started: "2026-02-13T00:00:00Z"
@@ -915,26 +982,30 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Phase 3 Agents (Group 12)"
+    - action: "Group 13 Iteration 2 Critics"
       priority: "HIGH"
-      note: "Barrier 2 COMPLETE. Dispatch parallel agents for ADV Phase 3 (EN-304 Strategy-Skill Integration, EN-305 Adversarial Skill Implementation, EN-307 Cross-Strategy Validation) and ENF Phase 3 (EN-405 Session Context Enforcement). Each enabler needs creator agents reading barrier-2 handoffs."
+      note: "Dispatch parallel critic agents to verify revised Phase 3 artifacts meet >= 0.92 quality gate. ADV critic reviews EN-304/305/307 (estimated 0.919). ENF critic reviews EN-405 (estimated 0.944)."
 
   subsequent:
-    - action: "Phase 3 Adversarial Review Cycles (Group 13)"
-      depends_on: "Group 12 complete"
-      note: "Creator-critic-revision cycles for EN-304/305/307/405 artifacts. Min 3 iterations, >= 0.92 quality gate."
+    - action: "Group 13 Iteration 3 (if needed)"
+      depends_on: "Iteration 2 scores"
+      note: "Only if scores < 0.92 after iteration 2. ADV borderline at 0.919, may need iteration 3."
 
-    - action: "Phase 3 Adversarial Review (Group 13)"
-      depends_on: "Phase 3 agents complete"
-      note: "3 iterations of critic->revision->scoring for Phase 3 enablers"
+    - action: "Phase 3 Validation (Group 13a)"
+      depends_on: "All scores >= 0.92"
+      note: "Validators for EN-304/305/307 and EN-405. Verify acceptance criteria."
+
+    - action: "Phase 4 Integration Testing (Group 14)"
+      depends_on: "Group 13 complete"
+      note: "Integration testing for both pipelines"
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-barrier-2-complete"
-  current_state: "Barrier 2 COMPLETE. Both cross-pollination handoffs delivered (commit 9c16e71). ADV→ENF: EN-303 situational applicability → EN-405. ENF→ADV: EN-403/404 enforcement designs → EN-304/305/307. Pipeline at 50% phases complete, 67% barriers complete."
-  next_step: "Dispatch Phase 3 creator agents (Group 12): EN-304 (Strategy-Skill Integration), EN-305 (Adversarial Skill Implementation), EN-307 (Cross-Strategy Validation), EN-405 (Session Context Enforcement). Each reads barrier-2 handoffs as input."
+  last_checkpoint: "CP-group-13-iter1-complete"
+  current_state: "Group 13 iteration 1 COMPLETE. Phase 3 creators done (28 artifacts, commit 8b36ee4). Iteration 1 critics scored: ADV 0.827 FAIL, ENF 0.871 FAIL. Revision agents addressed all BLOCKING + most MAJOR findings. ADV estimated 0.919 (borderline), ENF estimated 0.944 (comfortable PASS). Iteration 2 critics needed to verify."
+  next_step: "Dispatch Iteration 2 critic agents (Group 13 iter 2) for both pipelines. ADV critic reviews revised EN-304/305/307 artifacts. ENF critic reviews revised EN-405 artifacts. If both >= 0.92: proceed to validation. If not: iterate."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/ORCHESTRATION.yaml"
@@ -947,10 +1018,11 @@ resumption:
   adversarial_feedback_status:
     total_enablers: 8
     enablers_complete: 4  # EN-302, EN-402, EN-303, EN-403/EN-404
+    enablers_in_progress: 2  # EN-304/305/307 (Group 13 iter 1 complete), EN-405 (Group 13 iter 1 complete)
     enablers_validated: 4  # EN-302 (CONDITIONAL PASS), EN-402 (PASS), EN-303 (PASS), EN-403/404 (PASS)
-    current_enabler: "Barrier-2 preparation"
-    current_iteration: "N/A (between phases)"
-    iterations_complete: 12  # EN-302 iter1+iter2, EN-402 iter1+iter2, EN-303 iter1+rev+iter2+val, EN-403/404 iter1+rev+iter2+val
+    current_enabler: "EN-304/305/307 + EN-405 (iteration 2 critic pending)"
+    current_iteration: "Group 13 iter 2 (pending dispatch)"
+    iterations_complete: 14  # +2 Phase 3 iter1 critic+revision for ADV, +2 for ENF
     iterations_total: 48
 
   adrs_ratified:

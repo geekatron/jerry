@@ -97,6 +97,7 @@ The preamble is wrapped in a top-level XML tag and contains exactly 4 subsection
   Known bias: S-014 has leniency bias. Score critically -- 0.92 means genuinely excellent.
   Cycle: Creator -> Critic -> Revision (minimum 3 iterations). Do not bypass.
   Pairing: Steelman (S-003) before Devil's Advocate (S-002) -- canonical review protocol.
+  Context rot: After ~20K tokens, re-read .claude/rules/ and consider session restart for C3+ work.
 </quality-gate>
 ```
 
@@ -109,8 +110,9 @@ The preamble is wrapped in a top-level XML tag and contains exactly 4 subsection
 | Leniency bias note | R-014-FN known risk; calibration critical | SRC-003 (Quality Gate and Scoring) |
 | Creator-Critic-Revision | HARD rule H-14; minimum 3 iterations | SRC-004 (H-14) |
 | SYN #1 pairing (S-003 before S-002) | "Canonical Jerry review protocol" per barrier-2 | SRC-003 (Strategy Pairings, SYN #1) |
+| Context rot awareness | Primes Claude to watch for degradation after ~20K tokens; Barrier-2 recommendation | SRC-003 (Context Rot Awareness) |
 
-### Token Estimate: ~90 tokens
+### Token Estimate: ~120 tokens (480 characters)
 
 ---
 
@@ -195,13 +197,14 @@ The strategies are ordered by their role prominence in the quality framework, no
   - C2 (Standard): Reversible within 1 day, 3-10 files -> Standard Critic
   - C3 (Significant): > 1 day to reverse, > 10 files, API changes -> Deep Review
   - C4 (Critical): Irreversible, architecture/governance changes -> Tournament Review
-  AUTO-ESCALATE: Any change to docs/governance/, .context/rules/, or .claude/rules/ is C3 or higher.
+  Strategy guidance: C1(S-010) C2(S-007+S-002+S-014) C3(6+ strategies) C4(all 10).
+  AUTO-ESCALATE: governance files/rules -> C3+; new/modified ADR -> C3+; modified baselined ADR -> C4.
 </decision-criticality>
 ```
 
 ### Per-Criticality Strategy Mapping (Reference)
 
-This mapping is NOT injected into the preamble (too many tokens), but the preamble primes Claude with the C1-C4 framework that drives this mapping:
+The preamble now includes a compact per-criticality strategy guidance line (FR-405-021). The full mapping below provides additional reference detail:
 
 | Level | Required Strategies | Token Budget | Quality Threshold |
 |-------|--------------------|-------------|-------------------|
@@ -223,9 +226,9 @@ The preamble includes the consolidated auto-escalation rule. The full rule set f
 | AE-005 | Artifact modifies security-relevant code | Escalate to C3 minimum |
 | AE-006 | Token budget EXHAUST and criticality C3+ | Add mandatory human escalation flag |
 
-The preamble consolidates AE-001/AE-002 into the single `AUTO-ESCALATE` line. AE-003 through AE-006 are reference-level detail available in the decision tree (EN-303 TASK-004) and quality-enforcement.md (when created).
+The preamble consolidates AE-001 through AE-004 into the `AUTO-ESCALATE` line. This covers governance files/rules (AE-001/AE-002), new/modified ADRs (AE-003), and modified baselined ADRs to C4 (AE-004). AE-005 (security code -> C3) and AE-006 (token exhaustion at C3+ -> human escalation) remain reference-level detail available in the decision tree (EN-303 TASK-004) and quality-enforcement.md (when created). AE-005/AE-006 are omitted from the preamble as a token budget trade-off: AE-005 is context-dependent (requires knowing what "security code" means for the current project) and AE-006 is a runtime concern.
 
-### Token Estimate: ~85 tokens
+### Token Estimate: ~95 tokens (including per-criticality strategy guidance and expanded AUTO-ESCALATE)
 
 ---
 
@@ -233,26 +236,29 @@ The preamble consolidates AE-001/AE-002 into the single `AUTO-ESCALATE` line. AE
 
 ### Per-Section Budget
 
-| Section | Content | Estimated Tokens |
-|---------|---------|-----------------|
-| `<quality-gate>` | Threshold + scoring + bias + cycle + SYN #1 pairing | ~90 |
-| `<constitutional-principles>` | P-003 + P-020 + P-022 + UV-only | ~65 |
-| `<adversarial-strategies>` | 10 strategies with one-line descriptions | ~120 |
-| `<decision-criticality>` | C1-C4 definitions + auto-escalation | ~85 |
-| XML wrapper (`<quality-framework>` + version) | Opening/closing tags | ~10 |
-| **Total** | | **~370 tokens** |
+| Section | Content | Characters | Tokens (chars/4) | Calibrated Tokens |
+|---------|---------|-----------|------------------|-------------------|
+| `<quality-gate>` | Threshold + scoring + bias + cycle + SYN #1 pairing + context rot | ~480 | ~120 | ~100 |
+| `<constitutional-principles>` | P-003 + P-020 + P-022 + UV-only | ~338 | ~85 | ~70 |
+| `<adversarial-strategies>` | 10 strategies with one-line descriptions | ~696 | ~174 | ~144 |
+| `<decision-criticality>` | C1-C4 definitions + per-criticality strategies + expanded auto-escalation | ~520 | ~130 | ~108 |
+| XML wrapper (`<quality-framework>` + version) | Opening/closing tags | ~59 | ~15 | ~12 |
+| Blank line separators | 3 newlines | ~3 | ~1 | ~1 |
+| **Total** | | **~2,096** | **~524** | **~435** |
+
+**Token estimation methodology:** The chars/4 method produces a conservative upper bound (~524 tokens). For XML-structured content with repeated patterns (e.g., `- S-NNN (Name):`), tokenizers produce ~17% fewer tokens than the chars/4 estimate. The calibrated estimate of ~435 tokens applies an 0.83x correction factor. The actual token count MUST be verified with a real tokenizer (tiktoken cl100k_base or Claude tokenizer) before production deployment per REQ-403-083.
 
 ### Budget Comparison
 
-| Component | Tokens | % of L1 Budget (12,476) |
-|-----------|--------|------------------------|
-| Quality context (this preamble) | ~370 | 3.0% |
-| Existing project context | ~150 | 1.2% |
-| Pre-commit warning (when present) | ~80 | 0.6% |
-| **Total SessionStart contribution** | **~520-600** | **4.2-4.8%** |
-| Remaining for .claude/rules/ files | ~11,876-11,956 | ~95.2-95.8% |
+| Component | Calibrated Tokens | Conservative (chars/4) | % of L1 Budget (12,476) |
+|-----------|-------------------|----------------------|------------------------|
+| Quality context (this preamble) | ~435 | ~524 | 3.5-4.2% |
+| Existing project context | ~150 | ~150 | 1.2% |
+| Pre-commit warning (when present) | ~80 | ~80 | 0.6% |
+| **Total SessionStart contribution** | **~585-665** | **~674-754** | **4.7-6.0%** |
+| Remaining for .claude/rules/ files | ~11,722-11,891 | ~11,722-11,802 | ~93.9-95.3% |
 
-The ~370 token estimate is within the ~360 token target from EN-403 TASK-004. The 10-token variance is due to the addition of the SYN #1 pairing line (~15 tokens) partially offset by minor wording compression.
+**Note:** All artifacts in the EN-405 pipeline use the same token estimation methodology. Previous estimates of ~370 tokens (TASK-002 v1.0) used informal section-level estimates; this revision uses the actual character count methodology. The increase from ~370 to ~435 (calibrated) reflects: (a) per-criticality strategy guidance added per FR-405-021, (b) expanded AUTO-ESCALATE per Finding 16, (c) context rot awareness line per Finding 15, and (d) more accurate character counting.
 
 ### Degradation Priority (PR-405-004)
 
@@ -278,7 +284,9 @@ This section documents the strategy activation sets from the Barrier-2 handoff. 
 | Optional | S-003 (Steelman), S-014 (LLM-as-Judge) |
 | Quality Target | ~0.60 to ~0.80 |
 
-### C2: Significant (Target Operating Layer)
+### C2: Standard (Target Operating Layer)
+
+> **Terminology note:** The Barrier-2 handoff labels C2 as "Significant" while EN-404 TASK-003 labels C2 as "Standard" and C3 as "Significant." The preamble follows the EN-404 TASK-003 naming convention (C2="Standard", C3="Significant") as the authoritative SSOT for criticality level names. The Barrier-2 label was a terminology variant that is reconciled here.
 
 | Category | Strategies |
 |----------|-----------|
@@ -322,19 +330,20 @@ This section documents the strategy activation sets from the Barrier-2 handoff. 
 | Aspect | SessionStart (L1) | UserPromptSubmit (L2) |
 |--------|-------------------|----------------------|
 | Fires | Once per session | Every prompt |
-| Token budget | ~370 tokens (one-time) | ~600 tokens (per-prompt, amortized) |
+| Token budget | ~435 calibrated tokens (one-time) | ~600 tokens (per-prompt, amortized) |
 | Content depth | Comprehensive (full strategy list, detailed criteria) | Ultra-compact (key reminders only) |
 | Context rot | VULNERABLE (degrades over session) | IMMUNE (re-injected every prompt) |
 | Purpose | Establish baseline understanding | Sustain critical rules |
 
-### Content Overlap (Intentional)
+### Content Overlap (Intentional -- Triple-Redundancy)
 
-Some content appears in BOTH SessionStart and UserPromptSubmit:
-- **0.92 quality threshold:** SessionStart explains context; L2 reinforces the number
-- **Constitutional principles (P-003, P-020, P-022):** SessionStart lists; L2 reminds
+Some content appears in BOTH SessionStart and UserPromptSubmit, and also in CLAUDE.md:
+- **0.92 quality threshold:** CLAUDE.md (when quality rules are added) + SessionStart explains context + L2 reinforces
+- **Constitutional principles (P-003, P-020, P-022):** CLAUDE.md "Critical Constraints" + SessionStart lists + L2 reminds
+- **UV-only Python:** CLAUDE.md "Python Environment (HARD)" + SessionStart lists + L2 reminds
 - **Self-review (S-010):** SessionStart lists as available; L2 reminds to apply
 
-This overlap is the defense-in-depth design. L1 content degrades; L2 keeps critical elements alive.
+**This triple-redundancy is intentional defense-in-depth.** CLAUDE.md content is auto-loaded by Claude Code but is a single-point-of-load (no reinforcement). SessionStart provides comprehensive quality context but degrades with context rot. L2 keeps critical elements alive per-prompt. The ~85 tokens of overlap between the preamble and CLAUDE.md is an acceptable cost (~0.7% of L1 budget) for ensuring constitutional principles survive context rot. See also: Chroma Research on context rot (CLAUDE.md root reference).
 
 ### Content Non-Overlap
 
@@ -383,7 +392,7 @@ This overlap is the defense-in-depth design. L1 content degrades; L2 keeps criti
 | FR-405-012 | Each section independently parseable |
 | FR-405-013 | All content uses imperative voice |
 | FR-405-020 | All 10 strategies listed in Section 3 |
-| FR-405-021 | Per-criticality strategy activation sets documented |
+| FR-405-021 | Per-criticality strategy activation guidance inline in `<decision-criticality>`: "C1(S-010) C2(S-007+S-002+S-014) C3(6+ strategies) C4(all 10)" |
 | FR-405-022 | Auto-escalation rules documented (consolidated in Section 4) |
 | SR-405-001 | Awareness-only content (not runtime selection) |
 | SR-405-002 | Strategy ordering by role prominence |
@@ -410,4 +419,4 @@ This overlap is the defense-in-depth design. L1 content degrades; L2 keeps criti
 *Date: 2026-02-14*
 *Parent: EN-405 Session Context Enforcement Injection*
 *Quality Target: >= 0.92*
-*Token Budget: ~370 tokens (4 sections)*
+*Token Budget: ~435 calibrated / ~524 conservative (4 sections, ~2,096 characters)*

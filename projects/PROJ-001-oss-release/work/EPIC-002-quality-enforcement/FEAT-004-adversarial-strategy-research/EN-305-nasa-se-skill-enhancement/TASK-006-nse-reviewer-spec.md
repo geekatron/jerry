@@ -47,6 +47,8 @@ This document defines the exact specification content to be added to `skills/nas
 
 The 6 adversarial modes defined in TASK-003 are translated into concrete specification content including prompt templates, invocation examples, output templates, and per-gate behavior definitions. All content is at the markdown specification level per NFR-305-007.
 
+**Scope Note (EN-305-F002):** This document covers nse-reviewer only. The nse-qa agent adversarial design and spec (requirements FR-305-021 through FR-305-025) are formally **deferred to a follow-up enabler**. Rationale: nse-qa's 3 adversarial modes require a separate design cycle to maintain quality and avoid overloading EN-305 scope. The requirements are preserved in TASK-001 and will be addressed in the follow-up enabler.
+
 ---
 
 ## Specification Change Overview
@@ -191,6 +193,13 @@ Adversarial modes are activated by:
 **Output:** RFA/RFI findings. Steelmanned rationale documented as Comment.
 **Token Cost:** ~6,200 tokens (1,600 for S-003 + 4,600 for S-002).
 
+**SYN Pair Behavior (EN-305-F005 Fix):**
+- **Iteration Counting:** The SYN pair (S-003 + S-002) counts as ONE iteration, not two. The pair is a single analytical unit.
+- **Scoring:** The SYN pair produces ONE combined quality score. S-003 (Steelman) does not produce a standalone score; S-002 (DA) produces the findings against the steelmanned argument. The composite score covers the pair.
+- **Output Format:** Single output document with two sections: "Steelman Rationale" (S-003 output, documented as Comment) followed by "Devil's Advocate Findings" (S-002 output, documented as RFA/RFI). The composite score applies to the combined output.
+- **Partial Failure Handling:** If S-003 completes but S-002 fails (e.g., token exhaustion): the steelman rationale is preserved as a Comment finding, but no adversarial findings are produced. The orch-tracker records a partial result with a warning. If S-003 fails: the entire SYN pair fails; S-002 is NOT executed standalone (it would critique a non-steelmanned argument, violating the protocol).
+- **orch-tracker Recording:** The orch-tracker records one score entry for the SYN pair under the mode name `steelman-critique`, not separate entries for S-003 and S-002.
+
 ### Mode 3: adversarial-premortem (S-004 Pre-Mortem)
 
 **Purpose:** Imagine how the review could fail to catch critical issues.
@@ -224,7 +233,8 @@ Adversarial modes are activated by:
    - **Missing evidence:** Criterion evaluated without supporting artifact
    - **Stale evidence:** Evidence references outdated documents
    - **Ambiguous criterion:** Language allows multiple interpretations
-3. Score: Severity (1-5) x Occurrence (1-5) x Detection (1-5) = RPN
+3. Score: Severity (1-10) x Occurrence (1-10) x Detection (1-10) = RPN
+   **IMPORTANT:** This uses the standardized 1-10 FMEA scale per quality-enforcement.md SSOT, aligned with EN-304 ps-critic fmea mode. All FMEA scoring across Jerry skills MUST use this scale for cross-skill comparability.
 4. Produce risk-prioritized failure inventory sorted by RPN
 
 **Output:**
@@ -233,7 +243,7 @@ Adversarial modes are activated by:
 
 | Criterion | Failure Mode | S | O | D | RPN | Mitigation |
 |-----------|-------------|---|---|---|-----|------------|
-| {criterion} | {failure mode} | {1-5} | {1-5} | {1-5} | {RPN} | {mitigation} |
+| {criterion} | {failure mode} | {1-10} | {1-10} | {1-10} | {RPN} | {mitigation} |
 ```
 
 **Token Cost:** ~9,000 tokens (Medium tier).
@@ -295,6 +305,17 @@ Adversarial modes are activated by:
 ```
 
 **Token Cost:** ~2,000 tokens (Ultra-Low tier).
+
+**Anti-Leniency Calibration (EN-305-F010 Fix):**
+The adversarial-scoring mode MUST include anti-leniency calibration per H-16. Before scoring, inject the calibration directive:
+```
+ANTI-LENIENCY CALIBRATION: Score strictly against the 0.92 threshold. A PASS
+requires near-zero blocking findings and complete evidence for all criteria.
+Do NOT inflate scores to expedite review passage. Justify every dimension score
+with specific evidence from the review artifacts. Absence of evidence for a
+criterion scores that dimension at 0.00.
+```
+Anomaly detection flags from EN-304 TASK-003 apply: flag iteration-1 scores > 0.90 at C2+, flag score jumps > 0.20, flag consistent > 0.95 across reviews. The orch-tracker verifies anti-leniency indicators are present in scoring output.
 
 ### Criticality-Based Auto-Activation
 
@@ -623,16 +644,20 @@ Not for use in mission-critical decisions without SME validation.
 
 | # | Criterion | Failure Mode | Severity | Occurrence | Detection | RPN | Risk Level | Mitigation |
 |---|-----------|-------------|----------|-----------|-----------|-----|------------|------------|
-| 1 | {criterion} | {failure mode} | {1-5} | {1-5} | {1-5} | {S*O*D} | {H/M/L} | {action} |
+| 1 | {criterion} | {failure mode} | {1-10} | {1-10} | {1-10} | {S*O*D} | {H/M/L} | {action} |
 
-**RPN Thresholds:**
-- RPN >= 64: HIGH risk -- RFA finding, must address before review
-- RPN 27-63: MEDIUM risk -- RFI finding, investigate
-- RPN < 27: LOW risk -- Comment, monitor
+**FMEA Scale:** Standardized 1-10 scale per quality-enforcement.md SSOT (max RPN = 1,000). This aligns with EN-304 ps-critic fmea mode for cross-skill RPN comparability.
+
+**RPN Thresholds (1-10 scale):**
+- RPN > 200: CRITICAL risk -- RFA finding, requires immediate attention and design review
+- RPN 100-200: HIGH risk -- RFA finding, must address before review
+- RPN 50-99: MEDIUM risk -- RFI finding, investigate
+- RPN < 50: LOW risk -- Comment, monitor
 
 **Risk Level:**
-- HIGH: S >= 4 AND RPN >= 64
-- MEDIUM: S >= 3 OR RPN >= 27
+- CRITICAL: S >= 8 OR RPN > 200
+- HIGH: S >= 6 AND RPN >= 100
+- MEDIUM: S >= 4 OR RPN >= 50
 - LOW: All others
 ```
 ```

@@ -272,6 +272,63 @@ adversarial_modes:
       sequencing: "Execute AFTER steelman and inversion"
 ```
 
+### Mode Registry Validation Schema
+
+> **EN-304-F001 fix:** The mode registry MUST be validated at session start to prevent runtime failures from incomplete mode definitions. The following schema defines the required fields for each mode entry:
+
+**Required Fields per Mode Entry:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `strategy` | string | Yes | Strategy ID in format "S-NNN" or "none" |
+| `description` | string | Yes | Non-empty mode description |
+| `criticality` | string | Yes | Criticality mapping string |
+| `token_budget` | string | Yes | Token cost estimate |
+| `tier` | string | Yes | One of: Ultra-Low, Low, Low-Medium, Medium |
+| `family` | string | Yes (except standard) | Mechanistic family name |
+| `backward_compatible` | boolean | Only for standard | Must be true for standard mode |
+| `sequencing` | string | No | Sequencing constraint if applicable |
+| `team_note` | string | No | Team composition guidance |
+| `note` | string | No | Additional usage notes |
+
+**Validation Checklist (executed at SessionStart):**
+
+```python
+def validate_mode_registry(registry):
+    """Validate all mode definitions conform to required schema."""
+    REQUIRED_FIELDS = {"strategy", "description", "criticality", "token_budget"}
+    VALID_TIERS = {"Ultra-Low", "Low", "Low-Medium", "Medium"}
+    VALID_STRATEGIES = {"S-001", "S-002", "S-003", "S-004", "S-007",
+                        "S-010", "S-011", "S-012", "S-013", "S-014", "none (v2.2.0 default)"}
+    errors = []
+
+    for mode_name, definition in registry.items():
+        # Check required fields
+        for field in REQUIRED_FIELDS:
+            if field not in definition or not definition[field]:
+                errors.append(f"Mode '{mode_name}': missing required field '{field}'")
+
+        # Validate tier
+        if "tier" in definition and definition["tier"] not in VALID_TIERS:
+            errors.append(f"Mode '{mode_name}': invalid tier '{definition['tier']}'")
+
+        # Validate strategy ID
+        if "strategy" in definition:
+            strategy = definition["strategy"]
+            if strategy not in VALID_STRATEGIES:
+                errors.append(f"Mode '{mode_name}': invalid strategy '{strategy}'")
+
+        # Non-standard modes must have family
+        if mode_name != "standard" and "family" not in definition:
+            errors.append(f"Mode '{mode_name}': missing 'family' field")
+
+    if errors:
+        raise ModeRegistryValidationError(errors)
+    return True
+```
+
+**Enforcement:** If validation fails at session start, ps-critic MUST refuse to enter adversarial mode and fall back to `standard` mode with a warning listing the validation errors.
+
 ---
 
 ## Evaluation Criteria Updates
@@ -381,13 +438,16 @@ mode_configuration:
     adversarial_mode: 0.92  # HARD rule H-13
 
   # Circuit breaker configuration
+  # NOTE (EN-304-F002 fix): Uses `max_iterations` consistently across all modes.
+  # `max_iterations` means the total number of iterations (NOT retries after failure).
+  # This terminology is aligned with EN-307 orch-tracker and orch-planner.
   circuit_breaker:
     standard:
-      max_iterations: 3
+      max_iterations: 3           # 3 total iterations
       improvement_threshold: 0.10
       acceptance_threshold: 0.85
     adversarial:
-      max_iterations: 3      # H-14 minimum
+      max_iterations: 3           # H-14 minimum; 3 total iterations (not 3 retries)
       improvement_threshold: 0.05
       acceptance_threshold: 0.92  # H-13
       consecutive_no_improvement_limit: 2

@@ -173,7 +173,7 @@ execution_queue:
       agents:
         - id: "ps-critic-301"
           role: "critic"
-          adversarial_strategies: ["S-002 Devil's Advocate", "S-014 LLM-as-Judge"]
+          adversarial_strategies: ["S-002 Devil's Advocate", "S-007 Constitutional AI", "S-014 LLM-as-Judge"]
           target_artifacts: ["ps-architect-301/artifact.md"]
 ```
 
@@ -216,18 +216,20 @@ After the final adversarial iteration, a ps-validator agent is automatically inj
 
 The 10 selected strategies from ADR-EPIC002-001 are the candidate pool:
 
-| Strategy | Code | Token Cost | Primary Use |
-|----------|------|------------|-------------|
-| LLM-as-Judge | S-014 | 4,000-8,000 | Scoring (every iteration) |
+| Strategy | Code | Typical Range (incl. artifact) | Primary Use |
+|----------|------|-------------------------------|-------------|
+| LLM-as-Judge | S-014 | 2,000-8,000 | Scoring (every iteration) |
 | Steelman | S-003 | 3,000-7,500 | Strengthening arguments |
 | Inversion | S-013 | 2,000-6,000 | Reverse assumption testing |
-| Constitutional AI | S-007 | 3,500-7,500 | Rule compliance checking |
-| Devil's Advocate | S-002 | 2,500-6,000 | Challenging assumptions |
-| Pre-Mortem | S-004 | 3,000-8,000 | Failure scenario analysis |
-| Self-Refine | S-010 | 1,600-2,100 | Self-improvement (C1 only) |
-| FMEA | S-012 | 5,000-16,000 | Failure mode analysis |
-| CoVe | S-011 | 4,000-12,000 | Verification chain |
-| Red Team | S-001 | 4,000-12,000 | Adversarial attack simulation |
+| Constitutional AI | S-007 | 8,000-16,000 | Rule compliance checking |
+| Devil's Advocate | S-002 | 4,600-6,000 | Challenging assumptions |
+| Pre-Mortem | S-004 | 5,600-8,000 | Failure scenario analysis |
+| Self-Refine | S-010 | 2,000-4,000 | Self-improvement (C1 only) |
+| FMEA | S-012 | 9,000-16,000 | Failure mode analysis |
+| CoVe | S-011 | 4,500-12,000 | Verification chain |
+| Red Team | S-001 | 6,500-12,000 | Adversarial attack simulation |
+
+> **Token Cost Source:** These "Typical Range" values include both template overhead and artifact processing. They are sourced from the canonical token cost table in EN-304 TASK-002 (the SSOT for per-strategy token costs). The lower bound of each range corresponds to the template-only cost from EN-304.
 
 ### Selection Algorithm
 
@@ -277,6 +279,25 @@ def select_strategies(criticality, artifact_type, iteration, token_budget_state)
         return iteration_map.get(iteration, strategies)
 
     return strategies
+```
+
+### Strategy Validation Rule
+
+> **CRITICAL (CE-003 fix):** The orch-planner MUST validate all assigned strategies against the ADR-EPIC002-001 selection set. Only the following 10 strategy IDs are valid: S-001, S-002, S-003, S-004, S-007, S-010, S-011, S-012, S-013, S-014. Any strategy ID not in this set (e.g., S-005 Dialectical Inquiry, which was explicitly EXCLUDED by the ADR) MUST be rejected with an error. This prevents legacy ORCHESTRATION.yaml examples from propagating excluded strategies.
+
+```python
+VALID_STRATEGIES = {"S-001", "S-002", "S-003", "S-004", "S-007",
+                    "S-010", "S-011", "S-012", "S-013", "S-014"}
+
+def validate_strategy_assignment(strategies):
+    """Reject any strategy not in the ADR-EPIC002-001 selection set."""
+    for s in strategies:
+        strategy_id = s.split(" ")[0]  # Extract ID from "S-NNN Name" format
+        if strategy_id not in VALID_STRATEGIES:
+            raise ValueError(
+                f"Strategy '{s}' is not in the ADR-EPIC002-001 selection set. "
+                f"Valid strategies: {sorted(VALID_STRATEGIES)}"
+            )
 ```
 
 ### Artifact-Type Modifiers
@@ -621,7 +642,7 @@ The live EPIC-002 ORCHESTRATION.yaml (`epic002-crosspoll-20260213-001`) demonstr
 | Critic iteration 2 | Group 4: critic agents (PARALLEL, blocked_by: [3]) | `execution_queue.groups[3]` |
 | Early exit (SKIPPED) | Groups 5-6: `status: "SKIPPED"` | `execution_queue.groups[4-5]` |
 | Validation | Group 7: validation (PARALLEL, blocked_by: [6]) | `execution_queue.groups[6]` |
-| Strategy assignment | `adversarial_strategies: ["S-002", "S-005", "S-014"]` | Agent entries |
+| Strategy assignment | `adversarial_strategies: ["S-002 Devil's Advocate", "S-007 Constitutional AI", "S-014 LLM-as-Judge"]` | Agent entries |
 | Iteration scores | `iterations[].scores: {EN-302: 0.935}` | Group 10 |
 | Finding resolution | `findings_resolved: {EN-303: "3/3 blocking..."}` | Group 10 |
 | Resumption context | `adversarial_feedback_status` | `resumption` |

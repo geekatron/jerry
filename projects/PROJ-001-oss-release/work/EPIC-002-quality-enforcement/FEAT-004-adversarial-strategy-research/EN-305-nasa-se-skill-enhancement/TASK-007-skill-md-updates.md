@@ -162,7 +162,7 @@ The /nasa-se skill integrates 10 adversarial strategies from the Jerry Quality F
 |-------|------------------|-------------------|
 | nse-verification (v3.0.0) | adversarial-challenge, adversarial-verification, adversarial-scoring, adversarial-compliance | S-013, S-011, S-014, S-007, S-010 |
 | nse-reviewer (v3.0.0) | adversarial-critique, steelman-critique, adversarial-premortem, adversarial-fmea, adversarial-redteam, adversarial-scoring | S-002, S-003, S-004, S-012, S-001, S-014 |
-| nse-qa (v3.0.0) | adversarial-audit, adversarial-scoring, adversarial-verification | S-007, S-014, S-011 |
+| nse-qa | **DEFERRED** -- adversarial design/spec deferred to follow-up enabler (EN-305-F002) | S-007, S-014, S-011 (planned) |
 ```
 
 ---
@@ -184,13 +184,13 @@ The existing "Available Agents" table is updated with adversarial capability ann
 | `nse-configuration` | Config Management | 14, 15 | `configuration/` | -- |
 | `nse-architecture` | Technical Architect | 3, 4, 17 | `architecture/` | -- |
 | `nse-explorer` | **Exploration Engineer** | 5, 17 | `exploration/` | -- |
-| `nse-qa` | **Quality Assurance** | 14, 15, 16 | `qa/` | **v3.0.0** (3 modes) |
+| `nse-qa` | **Quality Assurance** | 14, 15, 16 | `qa/` | **Deferred** (see note) |
 | `nse-reporter` | SE Status Reporter | 16 | `reports/` | -- |
 
 **Adversarial Mode Summary:**
 - **nse-verification:** Anti-requirements (S-013), evidence verification (S-011), quality scoring (S-014), compliance (S-007)
 - **nse-reviewer:** Devil's Advocate (S-002), Steelman-DA (S-003+S-002), Pre-Mortem (S-004), FMEA (S-012), Red Team (S-001), scoring (S-014)
-- **nse-qa:** Constitutional audit (S-007), compliance scoring (S-014), meta-QA verification (S-011)
+- **nse-qa:** Adversarial enhancement DEFERRED to follow-up enabler. Requirements FR-305-021 through FR-305-025 are defined; design and spec artifacts will be delivered in a dedicated nse-qa enabler. Rationale: nse-qa's 3 adversarial modes (adversarial-audit, adversarial-process-check, adversarial-scoring) require a separate design cycle to avoid overloading EN-305 scope. See EN-305-F002 finding and descoping decision.
 ```
 
 ---
@@ -296,10 +296,10 @@ User Request: "Prepare for CDR on the API service with adversarial challenge"
    Output: reviews/proj-002-e-005-cdr-adversarial.md
    Adversarial: FMEA, compliance, steelman-DA, readiness score
 
-5. nse-qa → QA audit with adversarial scoring
-   Mode: adversarial-scoring
+5. nse-qa → QA audit with adversarial scoring (FUTURE -- nse-qa adversarial deferred)
+   Mode: adversarial-scoring (planned, not yet designed)
    Output: qa/proj-002-e-006-qa-adversarial.md
-   Adversarial: Compliance score against 0.92 threshold
+   Note: nse-qa adversarial enhancement deferred to follow-up enabler per EN-305-F002
 ```
 
 ### Adversarial Agent Coordination

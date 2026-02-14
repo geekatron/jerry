@@ -122,7 +122,21 @@ adversarial_context:
 ```
 FUNCTION select_modes(context_vector):
     # Step 1: Auto-escalation (AE-001 through AE-005)
+    # P-020 Reconciliation (EN-304-F006 fix):
+    # Auto-escalation sets a MINIMUM criticality floor based on artifact type.
+    # The user CAN set criticality HIGHER than the floor (P-020 respected).
+    # The user CANNOT set criticality LOWER than the floor for safety-relevant
+    # artifacts (governance, ADRs, security code). This is a documented
+    # constitutional exception: safety-related escalation rules take precedence
+    # over user-specified criticality reduction, analogous to a mandatory safety
+    # review that cannot be waived. When auto-escalation raises criticality,
+    # the system MUST emit a warning:
+    #   "Auto-escalation: Criticality raised from {user_specified} to {escalated}
+    #    for {reason}. The user may raise criticality further but not reduce below
+    #    {escalated} for this artifact type. See AE-{NNN} rule."
+    # This ensures transparency (P-022) while maintaining safety floors.
     criticality = context_vector.criticality
+    user_specified_criticality = context_vector.criticality
     IF artifact modifies JERRY_CONSTITUTION.md:
         criticality = max(criticality, C3)     # AE-001
     IF artifact modifies .claude/rules/*:
@@ -133,6 +147,9 @@ FUNCTION select_modes(context_vector):
         criticality = C4                       # AE-004
     IF artifact modifies security-relevant code:
         criticality = max(criticality, C3)     # AE-005
+    IF criticality > user_specified_criticality:
+        WARN("Auto-escalation: Criticality raised from {user_specified} to {criticality}. "
+             "User may raise further but cannot reduce below floor.")
 
     # Step 2: Phase modifier (with PR-001 precedence)
     original_criticality = context_vector.criticality
@@ -237,10 +254,89 @@ The pipeline engine enforces the following ordering constraints from TASK-002:
 | ID | Constraint | Effect |
 |----|-----------|--------|
 | SEQ-001 | `steelman` before `devils-advocate`, `constitutional`, `red-team` | Ensures critique engages with strongest argument formulation |
-| SEQ-002 | `inversion` before `constitutional`, `fmea`, `red-team` | Provides anti-pattern criteria for subsequent evaluation |
-| SEQ-003 | `llm-as-judge` last | Provides final authoritative quality score |
+| SEQ-002 | `inversion` NOT concurrent with `steelman`; `inversion` before `constitutional`, `fmea`, `red-team` | Provides anti-pattern criteria for subsequent evaluation; prevents conflicting analytical frames |
+| SEQ-003 | `constitutional` before `llm-as-judge` (when both in pipeline); `llm-as-judge` last | Compliance evaluation informs final scoring; final score is authoritative |
 | SEQ-004 | `self-refine` first | Creator self-improvement before external critique |
 | SEQ-005 | `chain-of-verification` is order-independent | Factual verification is context-isolated |
+
+### Sequencing Enforcement Pseudocode (EN-304-F003 Fix)
+
+```python
+def apply_sequencing_constraints(modes):
+    """
+    Enforce all 5 sequencing constraints on a mode list.
+
+    Args:
+        modes: List of mode names to execute in a pipeline.
+
+    Returns:
+        Reordered list satisfying all SEQ constraints.
+
+    Raises:
+        SequencingError: If constraints are mutually unsatisfiable.
+    """
+    ordered = list(modes)
+
+    # SEQ-004: self-refine FIRST (if present)
+    if "self-refine" in ordered:
+        ordered.remove("self-refine")
+        ordered.insert(0, "self-refine")
+
+    # SEQ-001: steelman BEFORE devils-advocate, constitutional, red-team
+    if "steelman" in ordered:
+        dependents = ["devils-advocate", "constitutional", "red-team"]
+        steelman_idx = ordered.index("steelman")
+        for dep in dependents:
+            if dep in ordered:
+                dep_idx = ordered.index(dep)
+                if dep_idx < steelman_idx:
+                    # Move steelman before the dependent
+                    ordered.remove("steelman")
+                    ordered.insert(ordered.index(dep), "steelman")
+                    steelman_idx = ordered.index("steelman")
+
+    # SEQ-002: inversion NOT concurrent with steelman;
+    # inversion BEFORE constitutional, fmea, red-team
+    if "inversion" in ordered and "steelman" in ordered:
+        # Ensure they are NOT in the same execution slot.
+        # In a sequential pipeline this is satisfied by ordering.
+        # Place inversion after steelman but before its dependents.
+        inv_dependents = ["constitutional", "fmea", "red-team"]
+        inversion_idx = ordered.index("inversion")
+        steelman_idx = ordered.index("steelman")
+        if inversion_idx < steelman_idx:
+            # Move inversion to after steelman
+            ordered.remove("inversion")
+            ordered.insert(steelman_idx, "inversion")
+    elif "inversion" in ordered:
+        inv_dependents = ["constitutional", "fmea", "red-team"]
+        inversion_idx = ordered.index("inversion")
+        for dep in inv_dependents:
+            if dep in ordered:
+                dep_idx = ordered.index(dep)
+                if dep_idx < inversion_idx:
+                    ordered.remove("inversion")
+                    ordered.insert(ordered.index(dep), "inversion")
+                    inversion_idx = ordered.index("inversion")
+
+    # SEQ-003: constitutional BEFORE llm-as-judge (when both present);
+    # llm-as-judge LAST (always)
+    if "constitutional" in ordered and "llm-as-judge" in ordered:
+        const_idx = ordered.index("constitutional")
+        judge_idx = ordered.index("llm-as-judge")
+        if const_idx > judge_idx:
+            ordered.remove("constitutional")
+            ordered.insert(judge_idx, "constitutional")
+
+    if "llm-as-judge" in ordered:
+        ordered.remove("llm-as-judge")
+        ordered.append("llm-as-judge")  # Always last
+
+    # SEQ-005: chain-of-verification is order-independent (no constraint)
+    # No action needed.
+
+    return ordered
+```
 
 ### Pipeline Context Accumulation
 
@@ -384,16 +480,47 @@ When multiple iteration scores are available, the protocol produces trend analys
 | Projected iterations to threshold | `(threshold - current) / avg_rate` | Estimate remaining effort |
 | Plateau detection | `delta < 0.05 for 2 consecutive` | Trigger early termination or escalation |
 
-### Anti-Leniency Monitoring
+### Anti-Leniency Calibration Mechanism (EN-304-F004 Fix)
 
-Per HARD rule H-16, the protocol monitors for leniency bias:
+Per HARD rule H-16, the protocol enforces anti-leniency calibration through three mechanisms:
 
-| Check | Action |
-|-------|--------|
-| Score jumps > 0.20 in one iteration | Flag for human review (unusual improvement) |
-| Scores consistently > 0.95 across artifacts | Flag for rubric recalibration |
-| Score improvement without corresponding artifact changes | Flag as potential leniency drift |
-| First-iteration scores > 0.90 | Flag for review (C2+ artifacts rarely score this high initially) |
+**1. Calibration Prompt Injection (~25 tokens)**
+
+The `leniency-calibration` ContentBlock from the barrier-2 L2 system injects the following text into every S-014 LLM-as-Judge scoring prompt:
+
+```
+ANTI-LENIENCY CALIBRATION: Score strictly. A score of 0.92+ requires near-zero
+blocking findings and demonstrated cross-enabler consistency. Do NOT inflate
+scores to avoid iteration. Justify every dimension score with specific evidence.
+Absence of evidence is scored as 0.00 for that dimension.
+```
+
+This text is injected BEFORE the scoring rubric in the prompt template, ensuring the critic reads the calibration directive before evaluating dimensions.
+
+**2. Anomaly Detection Flags**
+
+| Check | Threshold | Action |
+|-------|-----------|--------|
+| Score jump > 0.20 in one iteration | delta > 0.20 | Flag for human review: "Unusual improvement. Verify artifact changes justify score increase." |
+| Scores consistently > 0.95 | 3+ artifacts at > 0.95 | Flag for rubric recalibration: "Possible ceiling effect. Review rubric granularity." |
+| Score improvement without artifact changes | delta > 0.05 AND no new artifact version | Flag as leniency drift: "Score increased but artifact unchanged." |
+| First-iteration scores > 0.90 at C2+ | iteration == 1 AND score > 0.90 AND criticality >= C2 | Flag for review: "First-iteration C2+ scores rarely exceed 0.90. Verify rigor." |
+
+**3. Configuration Schema**
+
+The `anti_leniency` configuration in the ps-critic mode registry:
+
+```yaml
+anti_leniency:
+  enabled: true                    # Master switch (H-16 HARD: must be true)
+  score_threshold: 0.90            # Flag threshold: iteration-1 scores above this
+                                   # at C2+ criticality are flagged as suspiciously high
+  jump_threshold: 0.20             # Score delta above this triggers review
+  ceiling_count: 3                 # Number of > 0.95 scores before recalibration flag
+  calibration_prompt: "leniency-calibration"  # ContentBlock ID for injection
+```
+
+**Effectiveness Measurement:** Anti-leniency calibration effectiveness is tracked via the leniency flag rate. If fewer than 5% of reviews trigger any anomaly flag, the calibration prompt may be too weak. If more than 30% trigger flags, the thresholds may be too aggressive. The orch-tracker records flag counts in `metrics.quality.anti_leniency_flags`.
 
 ---
 
@@ -443,6 +570,22 @@ When `ADVERSARIAL CONTEXT` is present:
 - Threshold automatically becomes 0.92 (from SSOT via IR-304-003)
 - Mode selection follows the protocol defined in this document
 - Output includes mode-specific sections and pipeline results
+
+### Backward Compatibility Test Specifications (EN-304-F005 Fix)
+
+The following test scenarios MUST be validated before v3.0.0 deployment:
+
+| Test ID | Scenario | Expected Behavior | Requirement |
+|---------|----------|-------------------|-------------|
+| BC-T-001 | ps-critic invoked with v2.2.0 PS CONTEXT (no ADVERSARIAL CONTEXT section) | Standard mode activates. Default 5 quality dimensions (Completeness, Accuracy, Clarity, Actionability, Alignment). Threshold = 0.85. Output format identical to v2.2.0. | BC-304-001 |
+| BC-T-002 | ps-critic invoked with `--mode standard` explicitly | Same as BC-T-001. Standard mode is the explicit equivalent of default behavior. | BC-304-001 |
+| BC-T-003 | Existing orchestration workflow invokes ps-critic without changes | Workflow completes successfully. No errors from missing adversarial context. No change in output structure. | BC-304-002 |
+| BC-T-004 | ps-critic invoked with empty `--mode` parameter | Falls back to `standard` mode. No error. | BC-304-001 |
+| BC-T-005 | ps-critic invoked with ADVERSARIAL CONTEXT present | Threshold changes to 0.92. Mode selection follows adversarial protocol. Adversarial output sections appear. | BC-304-003 |
+| BC-T-006 | ps-critic invoked with ADVERSARIAL CONTEXT removed after running in adversarial mode | Returns to standard mode. No residual adversarial state. | BC-304-002 |
+| BC-T-007 | v2.2.0 caller sends session context to v3.0.0 ps-critic | v3.0.0 accepts the context. Missing adversarial fields default gracefully. | BC-304-001 |
+
+**Note:** These same backward compatibility test scenarios should be mirrored for EN-305 (nse-verification v3.0.0 and nse-reviewer v3.0.0) per finding EN-305-F008.
 
 ---
 

@@ -140,6 +140,18 @@ def calculate_phase_quality_score(iteration_scores):
 
 **Rationale:** Using minimum rather than average prevents a scenario where one enabler scores 0.98 and another scores 0.86, producing an average of 0.92 that passes the gate despite one enabler being below threshold.
 
+**Trade-Off Analysis (EN-307-F002 Fix):**
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| **min** (selected) | No enabler can hide below threshold; strict quality enforcement per H-13 | In phases with many enablers, a single marginal enabler (e.g., 0.91) forces CONDITIONAL PASS for the entire phase even when 90%+ of work exceeds threshold |
+| **avg** (rejected) | More forgiving for large phases; one weak enabler does not dominate | Allows averaging-up: one excellent enabler can compensate for one below threshold, violating the spirit of H-13 per-artifact quality |
+| **weighted avg** (rejected) | Could weight by enabler complexity or criticality | Adds configuration complexity; weight selection is subjective |
+
+**Decision:** `min` is the default and RECOMMENDED approach per H-13 ("quality gate score >= 0.92" applies to each artifact individually). The `min` function correctly models this per-artifact requirement at the phase level. The CONDITIONAL PASS path with user ratification (P-020) provides an escape valve for legitimate edge cases where one enabler is marginally below threshold (0.85-0.91).
+
+**Configuration Note:** The aggregation method is NOT configurable by default. Changing from `min` would weaken the quality gate contract. If a future use case requires a different aggregation, it should be proposed as a constitutional amendment with justification for why per-artifact quality assurance can be relaxed.
+
 ### Metrics Section Update
 
 The orch-tracker updates the global metrics section (FR-307-017):
@@ -302,11 +314,19 @@ Score < 0.92 after iteration 3
 The orch-tracker evaluates early exit conditions after each iteration (FR-307-008):
 
 ```python
-def should_early_exit(iteration, scores, criticality, max_iterations):
+def should_early_exit(iteration, scores, findings_resolved, criticality, max_iterations):
     """
     Determine if remaining iterations can be SKIPPED.
 
     Returns True if all conditions met for early exit.
+
+    Args:
+        iteration: Current iteration number (1-based).
+        scores: Dict of enabler_id -> quality score for this iteration.
+        findings_resolved: Dict of enabler_id -> findings resolution string
+            (e.g., "3/3 blocking, 5/5 major, 3/4 minor").
+        criticality: Criticality level (C1, C2, C3, C4).
+        max_iterations: Maximum allowed iterations.
     """
     THRESHOLD = 0.92
 
@@ -322,10 +342,37 @@ def should_early_exit(iteration, scores, criticality, max_iterations):
     if not all(score >= THRESHOLD for score in scores.values()):
         return False
 
-    # No blocking findings remaining
-    # (checked via findings_resolved tracking)
+    # No blocking findings remaining (MANDATORY -- EN-307-F003 fix)
+    # Parse findings_resolved strings to check for unresolved blocking findings.
+    # A blocking finding is unresolved if resolved_count < total_count.
+    if has_unresolved_blocking_findings(findings_resolved):
+        return False
 
     return True
+
+
+def has_unresolved_blocking_findings(findings_resolved):
+    """
+    Check if any enabler has unresolved blocking findings.
+
+    Args:
+        findings_resolved: Dict of enabler_id -> resolution string
+            (e.g., "3/3 blocking, 5/5 major, 3/4 minor").
+
+    Returns:
+        True if any enabler has unresolved blocking findings.
+    """
+    for enabler_id, resolution_str in findings_resolved.items():
+        # Parse "X/Y blocking" from the resolution string
+        parts = resolution_str.split(",")
+        for part in parts:
+            part = part.strip()
+            if "blocking" in part.lower():
+                fraction = part.split("blocking")[0].strip()
+                resolved, total = fraction.split("/")
+                if int(resolved.strip()) < int(total.strip()):
+                    return True
+    return False
 ```
 
 ### SKIPPED Status Recording
@@ -370,13 +417,15 @@ When the S-014 scoring produces per-dimension scores, the orch-tracker records t
 score_breakdown:
   EN-303:
     completeness: 0.95
-    consistency: 0.92
+    internal_consistency: 0.92    # CE-005 fix: canonical name per EN-304 TASK-003 SSOT
     evidence_quality: 0.88
-    rigor: 0.90
+    methodological_rigor: 0.90    # CE-005 fix: canonical name per EN-304 TASK-003 SSOT
     actionability: 0.94
     traceability: 0.96
     composite: 0.928
 ```
+
+**Canonical Dimension Names (CE-005 SSOT):** All quality score dimensions MUST use the canonical names defined in EN-304 TASK-003: `completeness`, `internal_consistency`, `evidence_quality`, `methodological_rigor`, `actionability`, `traceability`. Shortened forms (`consistency`, `rigor`) are NOT permitted to avoid key mismatch during cross-iteration and cross-pipeline score comparison.
 
 The composite score is the weighted average used for pass/fail determination. Individual dimension scores enable targeted improvement in revision iterations.
 
@@ -584,6 +633,16 @@ All quality-related updates MUST be atomic with the agent status update. The orc
 ---
 
 ## Traceability
+
+### Synthesis Phase Quality Review Note (EN-307-F004 Fix)
+
+The orch-synthesizer produces a final synthesis document summarizing the workflow's quality story. This synthesis is **exempt from the full adversarial review cycle** for the following reasons:
+
+1. **Derivative artifact:** The synthesis is a summary of already-reviewed artifacts. Each input artifact has already passed the >= 0.92 quality gate through adversarial review. The synthesis adds no new claims that are not traceable to reviewed sources.
+2. **Diminishing returns:** Applying a full S-002/S-012/S-014 pipeline to the synthesis would add an additional iteration cycle without proportional quality benefit, since the underlying quality data has already been validated.
+3. **Scope:** The synthesis phase is an aggregation activity, not a creation activity. It does not produce new requirements, designs, or specifications.
+
+**Mitigation:** The orch-synthesizer SHOULD apply S-014 LLM-as-Judge as a lightweight self-scoring step (not a full adversarial cycle) to verify that the synthesis accurately reflects the underlying quality data. This self-score is recorded in metrics but does NOT trigger the full pass/fail/escalation protocol. If the self-score < 0.85, the orch-tracker flags the synthesis for human review.
 
 ### Requirement Coverage
 

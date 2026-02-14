@@ -136,8 +136,8 @@ Requirements are derived from four authoritative sources:
 | Req ID | Requirement | Priority | Source | Rationale |
 |--------|-------------|----------|--------|-----------|
 | PR-405-001 | The quality context generation SHALL add less than 500ms overhead to the session start process. | HARD | EN-405 AC-9 | Session start must not noticeably slow down. The generator is stateless string concatenation; overhead should be negligible (<1ms). |
-| PR-405-002 | The quality context SHALL contribute approximately 360 tokens to the L1 Static Context budget. | MEDIUM | SRC-002 (Token Estimate); SRC-001 (REQ-403-055) | ~360 tokens is 4.7% of the 12,476 L1 budget, leaving ample room for .claude/rules/ files. |
-| PR-405-003 | The quality context token count SHALL be verified against the 12,476 token L1 target from ADR-EPIC002-002. Combined SessionStart contribution (project context + quality context) SHALL NOT exceed ~590 tokens. | MEDIUM | SRC-002 (Token Budget Contribution) | Total SessionStart contribution (~590 tokens) must fit within the L1 budget alongside ~11,886 tokens for rules files. |
+| PR-405-002 | The quality context SHALL contribute approximately 400 tokens (calibrated estimate) to the L1 Static Context budget, with a conservative upper bound of ~500 tokens by chars/4 method. The actual token count SHALL be verified with a real tokenizer (e.g., tiktoken cl100k_base) before production deployment. | MEDIUM | SRC-002 (Token Estimate); SRC-001 (REQ-403-055) | ~400 calibrated tokens is ~3.2% of the 12,476 L1 budget. The chars/4 approximation overestimates by ~17% for XML-structured content. |
+| PR-405-003 | The quality context token count SHALL be verified against the 12,476 token L1 target from ADR-EPIC002-002. Combined SessionStart contribution (project context + quality context) SHALL NOT exceed ~650 tokens (conservative) / ~580 tokens (calibrated). | MEDIUM | SRC-002 (Token Budget Contribution) | Total SessionStart contribution must fit within the L1 budget alongside ~11,826+ tokens for rules files. |
 | PR-405-004 | If the token budget requires trimming, the quality context SHALL support degradation in this priority: (1) remove full strategy list (saves ~120 tokens), (2) condense criticality to single line (saves ~65 tokens), (3) minimum viable: quality gate + constitutional principles = ~145 tokens. | LOW | SRC-002 (Budget Sensitivity) | Budget sensitivity plan ensures graceful degradation if rules optimization requires tighter budgets. |
 
 ---
@@ -237,6 +237,25 @@ These requirements integrate the ADV pipeline findings from the Barrier-2 handof
 | Error injection tests | EH-405-001 through EH-405-004 | T | TASK-005 implementation |
 | Code review for architecture compliance | IR-405-004, IR-405-005 | I | TASK-007 code review |
 | Content review for language patterns | FR-405-013 | I | TASK-008 adversarial review |
+
+---
+
+## Inspection Checklist
+
+Requirements verified by Inspection (I) require the following checks:
+
+| Requirement | Inspection Check | Inspector | Timing |
+|-------------|-----------------|-----------|--------|
+| FR-405-006 | Verify leniency bias note present in `<quality-gate>` section output | Code reviewer | TASK-007 |
+| FR-405-012 | Verify each XML section can be extracted independently; no cross-section dependencies | Code reviewer | TASK-007 |
+| FR-405-013 | Verify all content lines use imperative voice ("Score", "Assess", "Apply", "Check") | Content reviewer | TASK-008 |
+| IR-405-003 | Verify no reference to `systemMessage` in new code paths | Code reviewer | TASK-007 |
+| IR-405-004 | Verify module is at `src/infrastructure/internal/enforcement/session_quality_context.py` | Code reviewer | TASK-007 |
+| IR-405-006 | Verify quality context generation occurs after `format_hook_output()` and before `output_json()` | Code reviewer | TASK-007 |
+| PR-405-004 | Verify degradation priority steps are documented and feasible | Design reviewer | TASK-008 |
+| SR-405-001 | Verify content is awareness-only (no runtime selection logic) | Design reviewer | TASK-008 |
+| SR-405-002 | Verify strategy ordering: S-014 first, S-007 second, S-010 third | Code reviewer | TASK-007 |
+| SR-405-003 | Verify no per-strategy token cost data in preamble output | Code reviewer | TASK-007 |
 
 ---
 

@@ -114,15 +114,17 @@ Optional `<dev-environment-warning>` tag appended if pre-commit hooks are missin
 
 ### Primary Extension Point: Between `format_hook_output()` and `output_json()`
 
-The quality context injection occurs at **line 301-302** of the current implementation:
+The quality context injection occurs between the `format_hook_output()` return and the `output_json()` call. **Line numbers are approximate** based on the current hook state (324 lines) and must be re-evaluated at implementation time. Use pattern-based identification: find `system_message, additional_context = format_hook_output(...)` followed by `output_json(system_message, additional_context)`.
 
-**Current (line 301-302):**
+**EN-403 ordering dependency:** EN-403 also modifies `session_start_hook.py` (per EN-403 TASK-004). EN-405 hook modifications MUST be applied AFTER EN-403 modifications. The pattern-based insertion point is stable regardless of EN-403 line number changes.
+
+**Current (approximately line 301-302):**
 ```python
         system_message, additional_context = format_hook_output(cli_data, precommit_warning)
         output_json(system_message, additional_context)
 ```
 
-**Enhanced (lines 301-312):**
+**Enhanced:**
 ```python
         system_message, additional_context = format_hook_output(cli_data, precommit_warning)
 
@@ -142,34 +144,42 @@ The quality context injection occurs at **line 301-302** of the current implemen
         output_json(system_message, additional_context)
 ```
 
-### Secondary Extension Point: Import Section (After Line 22)
+### Secondary Extension Point: Import Section (After Existing Imports)
 
-**Current (line 22):**
+**Location:** After the last existing import (`from pathlib import Path`). Use pattern-based identification, not absolute line numbers.
+
+**Current:**
 ```python
 from pathlib import Path
 ```
 
-**Enhanced (lines 23-29):**
+**Enhanced:**
 ```python
 from pathlib import Path
 
 # Quality framework context injection (EN-405)
+_project_root = str(Path(__file__).resolve().parent.parent)
 try:
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    sys.path.insert(0, _project_root)
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
     QUALITY_CONTEXT_AVAILABLE = True
-except ImportError:
+except Exception:
     QUALITY_CONTEXT_AVAILABLE = False
+finally:
+    # Clean up sys.path to avoid shadowing stdlib modules
+    if _project_root in sys.path:
+        sys.path.remove(_project_root)
 ```
 
 ### Why These Extension Points Are Safe
 
 | Point | Risk | Mitigation |
 |-------|------|-----------|
-| Import block | Module not found | try/except handles ImportError; flag prevents any usage attempt |
-| Import block | sys.path pollution | Inserted ONCE at module load; path is the project root which should be on path |
+| Import block | Module not found | `except Exception` catches ALL import-time failures; flag prevents any usage attempt |
+| Import block | SyntaxError/AttributeError in module | `except Exception` catches these; user sees no error (fail-open) |
+| Import block | sys.path pollution | `finally` block removes project root from sys.path after import attempt |
 | main() block | Generator raises exception | try/except catches ALL exceptions; logs and continues |
 | main() block | Slow generation | Generator is pure string concat; << 1ms; no I/O |
 | main() block | Malformed output | Only appended if non-empty; `\n\n` separator keeps it distinct |
@@ -180,24 +190,28 @@ except ImportError:
 
 ### Change 1: Import Block
 
-**Location:** After line 22 (`from pathlib import Path`)
-**Lines added:** 8
+**Location:** After existing imports (anchor: `from pathlib import Path`). Use pattern-based identification.
+**Lines added:** 11
 
 ```python
 # Quality framework context injection (EN-405)
+_project_root = str(Path(__file__).resolve().parent.parent)
 try:
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    sys.path.insert(0, _project_root)
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
     QUALITY_CONTEXT_AVAILABLE = True
-except ImportError:
+except Exception:
     QUALITY_CONTEXT_AVAILABLE = False
+finally:
+    if _project_root in sys.path:
+        sys.path.remove(_project_root)
 ```
 
 ### Change 2: Quality Context Generation in `main()`
 
-**Location:** Between current line 301 and 302 (between `format_hook_output()` and `output_json()`)
+**Location:** Between `format_hook_output()` return and `output_json()` call. Use pattern-based identification (see Extension Points section).
 **Lines added:** 10
 
 ```python
@@ -219,7 +233,7 @@ except ImportError:
 
 | Metric | Value |
 |--------|-------|
-| Lines added | 18 (8 import + 10 main) |
+| Lines added | 21 (11 import block with sys.path cleanup + 10 main) |
 | Lines modified | 0 |
 | Lines removed | 0 |
 | Functions added | 0 |
@@ -328,15 +342,16 @@ The three content sources are completely independent. Quality context generation
 | **User visible** | No -- session starts normally |
 | **Recovery** | Deploy the module; next session will include quality context |
 
-### Failure Mode 2: Module Import Error (Not ImportError)
+### Failure Mode 2: Module Import Error (Non-ImportError)
 
 | Aspect | Detail |
 |--------|--------|
 | **Trigger** | Module exists but has syntax error or other import-time exception |
-| **Detection** | `except ImportError` will NOT catch SyntaxError, AttributeError, etc. |
-| **Risk** | Hook fails during module load with an unhandled exception |
-| **Mitigation** | Change `except ImportError` to `except Exception` for maximum safety |
-| **Decision** | Keep `except ImportError` per EN-403 TASK-004 design. A SyntaxError in the module indicates a deployment error that SHOULD be visible. The outer try/except in main() still catches all exceptions, so the hook will not crash. |
+| **Detection** | `except Exception` catches ALL import-time failures including SyntaxError, AttributeError, TypeError |
+| **Result** | `QUALITY_CONTEXT_AVAILABLE = False`; hook runs without quality context |
+| **Impact** | No quality context appended; existing content unaffected |
+| **User visible** | No -- fail-open design ensures no user-visible errors from quality context import failures |
+| **Decision** | Changed from `except ImportError` to `except Exception` per adversarial critique Finding 2. The fail-open design intent requires that quality context failures are invisible to the user. The outer `try/except` in `main()` would call `output_error()` which produces user-visible terminal output -- unacceptable for a quality context failure. |
 
 ### Failure Mode 3: Generator Raises Exception
 
@@ -380,22 +395,26 @@ The three content sources are completely independent. Quality context generation
 
 **Result:** Module exists but hook does not import it. No behavior change.
 
+**AC-5 status during Phase 1:** NOT SATISFIED. The quality preamble does not load at session start because the hook has not been modified to import it. This is an intentional intermediate state that enables independent testing of the generator module before integration. AC-5 is satisfied only after Phase 2 is complete.
+
 ### Phase 2: Hook Integration
 
-1. Add import block to session_start_hook.py
+1. Add import block to session_start_hook.py (with `except Exception` and sys.path cleanup)
 2. Add quality context generation block to main()
-3. Run integration tests
-4. Verify backward compatibility
+3. Run integration tests (including end-to-end: session start -> hook fires -> module loads -> preamble appears in Claude's context)
+4. Verify backward compatibility (BC-001 through BC-010)
 5. Commit hook changes
 
 **Result:** Hook now imports and uses the module. Quality context appears in additionalContext.
+
+**AC-5 status after Phase 2:** SATISFIED. The full path is verified: session start -> hook fires -> module loads -> preamble injected into `additionalContext` -> Claude receives quality framework context. The "every session" and "without manual intervention" aspects are verified by integration test (see Test Strategy below).
 
 ### Rollback Path
 
 | Scenario | Action | Time |
 |----------|--------|------|
 | Module has bugs | Delete or rename `session_quality_context.py` | Immediate; next session reverts to original |
-| Hook changes have bugs | Revert the 18 lines added to session_start_hook.py | 1 commit |
+| Hook changes have bugs | Revert the 21 lines added to session_start_hook.py | 1 commit |
 | Quality context content wrong | Modify `session_quality_context.py` only | No hook changes needed |
 
 ### Rollback Safety
@@ -501,7 +520,7 @@ def test_system_message_unchanged_with_quality_context():
 | EH-405-001 | Failure mode 3: except Exception -> empty string |
 | EH-405-002 | Failure mode 3: log_error() on generation failure |
 | EH-405-003 | L2 independence documented in failure cascade |
-| EH-405-004 | Failure mode 1: ImportError -> flag = False |
+| EH-405-004 | Failure mode 1 and 2: Any Exception (including ImportError) -> flag = False; sys.path cleaned up |
 
 ---
 
@@ -520,5 +539,5 @@ def test_system_message_unchanged_with_quality_context():
 *Date: 2026-02-14*
 *Parent: EN-405 Session Context Enforcement Injection*
 *Quality Target: >= 0.92*
-*Lines Added: 18 to session_start_hook.py (0 modified, 0 removed)*
+*Lines Added: 21 to session_start_hook.py (0 modified, 0 removed)*
 *Backward Compatibility Tests: 10*

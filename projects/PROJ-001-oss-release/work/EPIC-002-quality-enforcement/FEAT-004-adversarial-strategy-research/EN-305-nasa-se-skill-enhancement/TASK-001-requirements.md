@@ -39,7 +39,7 @@ ACTIVITY: DESIGN
 
 ## Summary
 
-This document defines 48 formal requirements (FR-305-001 through FR-305-038 functional, NFR-305-001 through NFR-305-010 non-functional) for enhancing the /nasa-se skill with adversarial strategy integration. The requirements are derived from three authoritative sources:
+This document defines 50 formal requirements: 35 functional (FR-305-001 through FR-305-035), 10 non-functional (NFR-305-001 through NFR-305-010), and 5 backward compatibility (BC-305-001 through BC-305-005) for enhancing the /nasa-se skill with adversarial strategy integration. The requirements are derived from three authoritative sources:
 
 1. **ADR-EPIC002-001** (ACCEPTED): The 10 selected adversarial strategies (S-001 through S-014) and their quality layer composition (L0-L4).
 2. **EN-303 TASK-001/TASK-003**: The 8-dimension context taxonomy, per-strategy applicability profiles, and decision criticality mapping (C1-C4).
