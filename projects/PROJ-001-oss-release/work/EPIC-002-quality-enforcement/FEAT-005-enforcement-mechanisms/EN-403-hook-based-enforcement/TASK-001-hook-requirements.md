@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-403:TASK-001
 TEMPLATE: Requirements Specification
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: nse-requirements (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-403 (Hook-Based Enforcement Implementation)
@@ -15,7 +15,7 @@ METHODOLOGY: NASA NPR 7123.1D (Requirements Engineering)
 CONSUMERS: TASK-002 (UserPromptSubmit design), TASK-003 (PreToolUse design), TASK-004 (SessionStart design), TASK-005/006/007 (implementation), TASK-011 (verification)
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** nse-requirements (Claude Opus 4.6)
 > **Status:** COMPLETE
 > **Created:** 2026-02-13
@@ -118,7 +118,7 @@ All requirements follow NASA NPR 7123.1D requirements engineering principles:
 | REQ-403-012 | The V-024 reinforcement content SHALL include the quality gate threshold value of >= 0.92. | HARD | SRC-002 (Quality Gate Integration); SRC-003 (FR-002) | The 0.92 threshold is the central quality requirement for EPIC-002. It must be present in every reinforcement injection to counteract context rot of the threshold value (SRC-002, "The 0.92 Threshold" section). |
 | REQ-403-013 | The V-024 reinforcement content SHALL include a reminder of applicable constitutional principles from `docs/governance/JERRY_CONSTITUTION.md`. | HARD | SRC-002 (S-007 touchpoint); SRC-003 (FR-002) | S-007 (Constitutional AI) requires principle-by-principle evaluation. The constitution reference must be refreshed on every prompt to counteract degradation (SRC-002, "Enforcement Touchpoints" UserPromptSubmit S-007: "Always"). |
 | REQ-403-014 | The V-024 reinforcement content SHALL include a self-review reminder. | HARD | SRC-002 (S-010 touchpoint); SRC-003 (FR-002) | S-010 (Self-Refine) is triggered "Always" per SRC-002 UserPromptSubmit touchpoints. Self-review is the baseline quality mechanism (L0, SRC-002 "Strategy Composition" table). |
-| REQ-403-015 | The V-024 reinforcement content SHALL NOT exceed 600 tokens per session. | HARD | SRC-001 (Token Budget); SRC-003 (FR-003, NFR-001) | ADR-EPIC002-002 allocates exactly 600 tokens to V-024 in the standard enforcement budget (SRC-001, "Standard Enforcement Budget" table). Exceeding this budget violates the 15,126 token envelope. |
+| REQ-403-015 | The V-024 reinforcement content SHALL NOT exceed 600 tokens per prompt submission. | HARD | SRC-001 (Token Budget); SRC-003 (FR-003, NFR-001) | ADR-EPIC002-002 allocates exactly 600 tokens to V-024 in the standard enforcement budget (SRC-001, "Standard Enforcement Budget" table). **Clarification (v1.1.0):** The 600-token budget is per-injection (per prompt), not cumulative across the session. Each UserPromptSubmit invocation independently generates content within this budget. The ADR's "Standard Enforcement Budget" column lists per-injection costs for all layers. |
 | REQ-403-016 | The UserPromptSubmit hook SHALL inject S-014 (LLM-as-Judge) scoring requirements when the current task context indicates a deliverable is expected. | MEDIUM | SRC-002 (S-014 touchpoint); SRC-003 (FR-008) | S-014 is the scoring backbone for the 0.92 quality gate (SRC-002, "S-014 as the Scoring Backbone"). Trigger condition: "When deliverable expected" (SRC-002, Enforcement Touchpoints). |
 | REQ-403-017 | The V-024 reinforcement content SHALL include a leniency bias calibration reminder for S-014 scoring. | MEDIUM | SRC-002 (Quality Gate Integration, R-014-FN); SRC-003 (FR-009) | S-014 has a known leniency bias (R-014-FN, Score=12, SRC-002). Without calibration reminders, quality scores will systematically exceed actual quality (SRC-003 "Leniency bias warning"). |
 | REQ-403-018 | The UserPromptSubmit hook SHALL inject S-003 (Steelman) reminders when the current task context indicates a review or critique is expected. | MEDIUM | SRC-002 (S-003 touchpoint) | S-003 ensures fair evaluation by requiring charitable reconstruction before critique. Trigger condition: "When review/critique expected" (SRC-002, Enforcement Touchpoints UserPromptSubmit). |
@@ -136,7 +136,9 @@ All requirements follow NASA NPR 7123.1D requirements engineering principles:
 | REQ-403-031 | The PreToolUse AST validation SHALL check all four hexagonal layer boundaries: (a) domain shall not import application, infrastructure, or interface; (b) application shall not import infrastructure or interface; (c) infrastructure shall not import interface; (d) shared_kernel shall not import infrastructure or interface. | HARD | SRC-008 (Dependency Rules table); SRC-004 (boundary rules) | These are the authoritative layer boundaries defined in `.context/rules/architecture-standards.md` (SRC-008). The V-038 boundary rule engine encodes these rules as data per SRC-004 TASK-038-02. |
 | REQ-403-032 | The PreToolUse hook SHALL verify that file write operations do not modify protected governance files (`docs/governance/JERRY_CONSTITUTION.md`, `.claude/rules/`) without triggering C3+ decision criticality escalation. | MEDIUM | SRC-002 (Mandatory escalation); SRC-003 (FR-005, FR-012) | Barrier-1 ADV-to-ENF requires mandatory escalation for governance files: "Any artifact touching `docs/governance/JERRY_CONSTITUTION.md` or `.claude/rules/` is automatically C3 or higher" (SRC-002, Decision Criticality Escalation). |
 | REQ-403-033 | The PreToolUse hook enforcement logic SHALL execute as an external Python process with zero LLM context token cost. | HARD | SRC-001 (L3 properties); SRC-003 (FR-010, NFR-003) | L3 enforcement is defined as "IMMUNE (external)" with "0" token cost (SRC-001, Layer Summary table). Determinism and context-rot-immunity are defining properties of L3. |
-| REQ-403-034 | The PreToolUse hook SHALL support AST validation for additional checks beyond import boundaries: (a) one-class-per-file (V-041), (b) type hint presence (V-039), (c) docstring presence (V-040). | MEDIUM | SRC-001 (V-039, V-040, V-041 at L3); SRC-004 (Phase 3 extended structural) | ADR-EPIC002-002 assigns V-039 (WCS 4.72), V-040 (WCS 4.72), and V-041 (WCS 4.72) to L3/L5. These extend the AST validation framework established by V-038. |
+| REQ-403-034 | The PreToolUse hook SHALL enforce one-class-per-file (V-041) via AST validation for Python files in `src/`. | MEDIUM | SRC-001 (V-041 at L3); SRC-004 (Phase 3 extended structural) | ADR-EPIC002-002 assigns V-041 (WCS 4.72) to L3/L5. This extends the AST validation framework established by V-038. Implemented in this phase. |
+| REQ-403-034a | The PreToolUse hook SHOULD support type hint presence validation (V-039) via AST analysis in a future phase. | MEDIUM | SRC-001 (V-039 at L3); SRC-004 | ADR-EPIC002-002 assigns V-039 (WCS 4.72) to L3/L5. **Deferred:** Not implemented in Phase 3. The engine architecture supports adding this check as an additional validation step in `_validate_content()`. Target: Phase 5 or later. |
+| REQ-403-034b | The PreToolUse hook SHOULD support docstring presence validation (V-040) via AST analysis in a future phase. | MEDIUM | SRC-001 (V-040 at L3); SRC-004 | ADR-EPIC002-002 assigns V-040 (WCS 4.72) to L3/L5. **Deferred:** Not implemented in Phase 3. The engine architecture supports adding this check as an additional validation step in `_validate_content()`. Target: Phase 5 or later. |
 | REQ-403-035 | The PreToolUse hook SHALL detect dynamic import patterns (`importlib.import_module()`, `__import__()`) and flag them as warnings. | MEDIUM | SRC-004 (FM-038-02, RPN=98); SRC-004 (AC-038-02-06) | Dynamic imports bypass static AST analysis (SRC-004, Risk FM-038-02). Supplementary grep-based detection is the specified mitigation. |
 | REQ-403-036 | The PreToolUse hook SHALL exempt the composition root (`src/bootstrap.py`) from import boundary validation. | HARD | SRC-008 (Composition Root section); SRC-004 (AC-038-02-04) | The composition root is the designated location for dependency wiring and must import from all layers (SRC-008, "bootstrap.py - The ONLY place infrastructure is instantiated"). |
 | REQ-403-037 | The PreToolUse hook SHALL exempt `TYPE_CHECKING` conditional imports from boundary validation. | HARD | SRC-004 (FM-038-NEW, RPN=36) | TYPE_CHECKING imports are compile-time only and do not create runtime dependencies (SRC-004). Jerry coding standards explicitly require the TYPE_CHECKING pattern for circular import avoidance (SRC-008, "TYPE_CHECKING Pattern" section). |
@@ -189,6 +191,12 @@ These requirements apply to ALL hook implementations (UserPromptSubmit, PreToolU
 | REQ-403-080 | All hook implementations SHALL follow Jerry's hexagonal architecture patterns with enforcement logic separated from hook infrastructure. | HARD | SRC-003 (FR-011); SRC-008 | Enforcement logic (domain-level rules, validation algorithms) must be in the application/domain layers. Hook infrastructure (stdin/stdout handling, JSON parsing, exit codes) must be in the interface layer (SRC-008, layer structure). |
 | REQ-403-081 | Enforcement logic SHALL be testable independently of hook infrastructure: enforcement functions SHALL accept typed parameters and return typed results, not read from stdin or write to stdout. | HARD | SRC-008 (testing standards); SRC-004 (V-038 design pattern) | The V-038 design separates the `ASTBoundaryValidator` class (testable library) from the `__main__.py` entry point (hook/CLI infrastructure) (SRC-004). This pattern must be followed by all hooks. |
 | REQ-403-082 | Hook entry points (scripts/) SHALL be thin adapters that: (a) read input from stdin, (b) invoke enforcement logic, (c) format output to hook JSON schema, (d) handle errors with fail-open behavior. | HARD | SRC-005 (existing pattern); SRC-008 (interface layer) | The existing PreToolUse hook (SRC-005, `main()` function) follows this thin-adapter pattern: read JSON, invoke check functions, format output. All new hooks must follow this pattern. |
+
+### Token Budget Validation
+
+| Req ID | Requirement | Priority | Source | Rationale |
+|--------|-------------|----------|--------|-----------|
+| REQ-403-083 | All token budget calculations for V-024 content SHALL be validated against an actual tokenizer (tiktoken cl100k_base or equivalent) during implementation verification. The ~4 chars/token approximation used in design is acceptable for design-phase estimation but SHALL NOT be the sole basis for production budget compliance. | MEDIUM | SRC-001 (Token Budget); Critique B-001/M-001 | The `len//4` approximation has a known ~17% variance from actual tokenizer counts, particularly for XML-tagged content and structured text. Final budget compliance must use actual token counts. |
 
 ### Defense-in-Depth
 
@@ -251,7 +259,9 @@ These requirements formalize the strategy-to-hook enforcement touchpoints define
 | REQ-403-031 | FR-004 | V-038 | -- | PreToolUse | Test (T) |
 | REQ-403-032 | FR-005, FR-012 | V-001 | S-007 | PreToolUse | Test (T) |
 | REQ-403-033 | FR-010, NFR-003 | V-001 | -- | PreToolUse | Analysis (A) |
-| REQ-403-034 | -- | V-039, V-040, V-041 | -- | PreToolUse | Test (T) |
+| REQ-403-034 | -- | V-041 | -- | PreToolUse | Test (T) |
+| REQ-403-034a | -- | V-039 | -- | PreToolUse | Test (T) -- deferred |
+| REQ-403-034b | -- | V-040 | -- | PreToolUse | Test (T) -- deferred |
 | REQ-403-035 | -- | V-038 | -- | PreToolUse | Test (T) |
 | REQ-403-036 | -- | V-038 | -- | PreToolUse | Test (T) |
 | REQ-403-037 | -- | V-038 | -- | PreToolUse | Test (T) |
@@ -289,11 +299,12 @@ These requirements formalize the strategy-to-hook enforcement touchpoints define
 | REQ-403-096 | -- | V-024, V-003 | S-014 | Cross-cutting | Test (T) |
 
 **Coverage summary:**
-- Total requirements: 42
-- Traced to EN-403 FR/NFR: 30 (71%)
-- Traced to ADR-EPIC002-002 vectors: 35 (83%)
-- Traced to Barrier-1 strategies: 20 (48%)
-- With defined verification method: 42 (100%)
+- Total requirements: 44 (42 original + 2 split from REQ-403-034)
+- Traced to EN-403 FR/NFR: 30 (68%)
+- Traced to ADR-EPIC002-002 vectors: 37 (84%)
+- Traced to Barrier-1 strategies: 20 (45%)
+- With defined verification method: 44 (100%)
+- Deferred requirements (V-039, V-040): 2 (explicitly marked for future implementation)
 
 ---
 

@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-303:TASK-004
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect
 DATE: 2026-02-13
 STATUS: Complete
@@ -16,7 +16,7 @@ TARGET-ACS: 4, 5, 6, 13
 INPUT: TASK-001 (context taxonomy), TASK-003 (strategy profiles), ADR-EPIC002-001, Barrier-1 ENF-to-ADV
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-architect
 > **Quality Target:** >= 0.92
 > **Purpose:** Build a deterministic decision tree that takes context inputs (from TASK-001 taxonomy) and recommends adversarial strategy sets, with enforcement layer integration, token budget optimization, platform adaptation, and escalation paths
@@ -30,7 +30,7 @@ INPUT: TASK-001 (context taxonomy), TASK-003 (strategy profiles), ADR-EPIC002-00
 | [Summary](#summary) | What the decision tree delivers and its design properties |
 | [Design Properties](#design-properties) | Determinism, completeness, minimality, traceability guarantees |
 | [Input Schema](#input-schema) | Context dimensions consumed by the decision tree |
-| [Auto-Escalation Rules](#auto-escalation-rules) | Rules that override criticality determination before tree traversal |
+| [Auto-Escalation Rules](#auto-escalation-rules) | Rules that override criticality determination before tree traversal, including PR-001 precedence rule and ENF-MIN override rules |
 | [Decision Tree: Primary Path](#decision-tree-primary-path) | The main decision tree branching on criticality (C1-C4) |
 | [Decision Tree: Token Budget Adaptation](#decision-tree-token-budget-adaptation) | Budget-constrained alternatives for each criticality level |
 | [Decision Tree: Platform Adaptation](#decision-tree-platform-adaptation) | Portable fallback paths for non-Claude-Code environments |
@@ -85,7 +85,7 @@ The decision tree consumes the following inputs from the TASK-001 context taxono
 | **Review Target Type** | TGT | CODE, ARCH, REQ, RES, DEC, PROC | **Context for guidance notes** -- does not change strategy set but adds context-specific guidance |
 | **Artifact Maturity** | MAT | DRAFT, REVIEW, APPR, BASE | **Gate check** -- restricts review scope for approved/baselined artifacts |
 | **Team Composition** | TEAM | SINGLE, MULTI, HIL | **Capability check** -- restricts strategies requiring multi-agent for single-agent contexts |
-| **Enforcement Layer Availability** | ENF | FULL, PORT, MIN | **Derived from PLAT** -- PLAT-CC maps to ENF-FULL; PLAT-GENERIC maps to ENF-PORT; degraded maps to ENF-MIN |
+| **Enforcement Layer Availability** | ENF | FULL, PORT, MIN | **Derived from PLAT with ENF-MIN override** -- Default: PLAT-CC/PLAT-CC-WIN -> ENF-FULL; PLAT-GENERIC -> ENF-PORT. **Override:** ENF-MIN may be explicitly specified on any platform when the environment is degraded (CI broken, hooks disabled, emergency session). See ENF-MIN Override Rules below. |
 
 ---
 
@@ -104,6 +104,21 @@ These rules fire BEFORE tree traversal and may override the initial criticality 
 
 **Processing order:** Apply AE-001 through AE-005 first (criticality overrides), then AE-006 (human escalation).
 
+**Precedence Rule (PR-001): Auto-escalation overrides phase downgrade.** If criticality was elevated by AE-001 through AE-005, phase modifiers SHALL NOT reduce the criticality below the auto-escalated level. For example: if AE-002 escalates a C1 artifact to C3 (because it modifies `.claude/rules/`), and the phase is PH-EXPLORE, the PH-EXPLORE downgrade rule ("downgrade to C2") does NOT apply. The artifact remains at C3 minimum. This ensures that governance protection provided by auto-escalation is never undermined by phase-based convenience downgrades. The rationale is that auto-escalation rules encode hard governance constraints (FR-011, JERRY_CONSTITUTION), while phase modifiers encode soft workflow optimization preferences.
+
+### ENF-MIN Override Rules
+
+When ENF-MIN is explicitly specified (degraded environment on any platform):
+
+| Rule | Condition | Effect |
+|------|-----------|--------|
+| **ENF-MIN-001** | ENF = MIN on any platform | Override default ENF derivation from PLAT. Treat delivery mechanisms as L1 only. |
+| **ENF-MIN-002** | ENF = MIN AND CRIT >= C3 | Add mandatory human escalation flag (same as AE-006). |
+| **ENF-MIN-003** | ENF = MIN | Apply PLAT-GENERIC portable stack treatment for all delivery mechanism lookups (L1, L5 if available, Process if available). |
+| **ENF-MIN-004** | ENF = MIN | Flag strategies infeasible under ENF-MIN per TASK-003 ENF-MIN handling notes: S-004, S-012, S-001 are infeasible; S-002 and S-011 are marginally feasible. |
+
+**Design Decision:** ENF is treated as derived from PLAT for the primary 7-dimensional decision space (4 x 3 x 3 x 5 x 6 x 4 x 3 = 12,960 combinations). ENF-MIN is handled as an explicit override that applies the ENF-MIN rules above, adding a bounded set of additional scenarios. This preserves the O(1) traversal property while ensuring ENF-MIN coverage. See TASK-001 "Design Decision -- ENF = f(PLAT)" for full rationale. The 8-dimensional total space (19,440 from TASK-001) represents the theoretical maximum; the practical decision space is 12,960 base combinations + ENF-MIN override handling.
+
 ---
 
 ## Decision Tree: Primary Path
@@ -121,7 +136,9 @@ CRITICALITY = C1
   |
   +-- TOKEN BUDGET: 2,000 required; 5,600 with all optional
   |
-  +-- QUALITY TARGET: ~0.60 to ~0.75
+  +-- QUALITY TARGET: ~0.60 to ~0.80
+  |     NOTE: Artifacts scoring 0.75-0.80 are in the C1/C2 transition zone.
+  |           If quality is critical, escalate to C2 review.
   |
   +-- PHASE MODIFIER:
   |     PH-EXPLORE: S-010 only (no scoring yet)
@@ -150,10 +167,12 @@ CRITICALITY = C2
   |
   +-- TOKEN BUDGET: 14,600 required; 18,200 with recommended
   |
-  +-- QUALITY TARGET: ~0.85 to ~0.92+
+  +-- QUALITY TARGET: ~0.80 to ~0.92+
+  |     NOTE: The C1/C2 boundary overlaps at ~0.80 to ensure no gap.
+  |           Artifacts in the 0.75-0.85 range should receive C2 review.
   |
   +-- PHASE MODIFIER:
-  |     PH-EXPLORE: Downgrade to C1 (adversarial critique premature)
+  |     PH-EXPLORE: Downgrade to C1 (adversarial critique premature; BUT see PR-001 -- if auto-escalated, do not downgrade below escalated level)
   |     PH-DESIGN: Full C2 set + consider S-013 (Inversion)
   |     PH-IMPL: Full C2 set
   |     PH-VALID: S-007 + S-014 (compliance + scoring)
@@ -183,7 +202,7 @@ CRITICALITY = C3
   +-- QUALITY TARGET: ~0.92 to ~0.96
   |
   +-- PHASE MODIFIER:
-  |     PH-EXPLORE: Downgrade to C2 (deep review premature; apply full C3 when design begins)
+  |     PH-EXPLORE: Downgrade to C2 (deep review premature; apply full C3 when design begins; BUT see PR-001 -- if auto-escalated, do not downgrade below escalated level)
   |     PH-DESIGN: Full C3 set (maximum value phase for deep review)
   |     PH-IMPL: Full C3 set minus S-004 (Pre-Mortem less applicable to implementation)
   |     PH-VALID: S-007 + S-014 + S-011 + S-012 (verification-heavy)
@@ -218,7 +237,7 @@ CRITICALITY = C4
   +-- QUALITY TARGET: ~0.96+
   |
   +-- PHASE MODIFIER:
-  |     PH-EXPLORE: Downgrade to C3 (tournament premature for exploration)
+  |     PH-EXPLORE: Downgrade to C3 (tournament premature for exploration; BUT see PR-001 -- if auto-escalated, do not downgrade below escalated level)
   |     PH-DESIGN: Full C4 set (primary application phase)
   |     PH-IMPL: Full C4 set (for security-critical implementation)
   |     PH-VALID: Full C4 set (all strategies for final validation)
@@ -295,6 +314,32 @@ When platform context is PLAT-GENERIC (no Claude Code hooks available), delivery
 | PLAT-GENERIC | MODERATE | L1, L5, Process | L3 real-time blocking, L4 auto-validation, L2 per-prompt reinforcement |
 
 **Key constraint:** Portable delivery at MODERATE level is sufficient for all 10 strategies. No strategy is inoperable on PLAT-GENERIC. The loss is in enforcement automation, not strategy capability.
+
+### ENF-MIN Adaptation (Degraded Environment)
+
+When ENF-MIN is explicitly specified (regardless of platform), delivery is restricted to L1 only:
+
+| Strategy | ENF-MIN Delivery | Feasibility | Substitute |
+|----------|------------------|-------------|-----------|
+| S-010 | L1 rule (self-review instruction) | **Feasible** -- most resilient strategy under ENF-MIN | N/A |
+| S-003 | L1 rule (steelman instruction) | **Feasible** -- single-pass, ultra-low cost | N/A |
+| S-013 | L1 rule (inversion prompt) | **Feasible** -- single-pass generative | N/A |
+| S-014 | L1 rule (rubric-based scoring) | **Feasible** -- advisory only, no Process gate | N/A |
+| S-007 | L1 rule (constitutional principles) | **Feasible** -- advisory only, no enforcement gating | N/A |
+| S-002 | L1 rule (critic role assignment) | **Marginally feasible** -- requires TEAM-MULTI; advisory only | S-010 (self-review) |
+| S-011 | L1 rule (verification prompt) | **Marginally feasible** -- no context isolation guarantee | Human-directed verification |
+| S-004 | None | **Infeasible** -- requires Process orchestration | S-013 (Inversion) as partial substitute |
+| S-012 | None | **Infeasible** -- requires Process/L5 | S-013 (Inversion) as partial substitute |
+| S-001 | None | **Infeasible** -- requires Process/L3 | Human-directed security review |
+
+**ENF-MIN Adapted Strategy Sets by Criticality:**
+
+| Criticality | ENF-MIN Strategy Set | Token Cost | Human Required? |
+|-------------|---------------------|------------|-----------------|
+| C1 | S-010 | 2,000 | No |
+| C2 | S-010 + S-007 (advisory) + S-014 (advisory) | 12,000 | Recommended |
+| C3 | S-010 + S-003 + S-013 + S-007 (advisory) + S-014 (advisory) | 15,700 | **Mandatory** (ENF-MIN-002) |
+| C4 | **End session. Human review mandatory.** | 0 | **Mandatory** |
 
 ---
 
@@ -559,13 +604,16 @@ The decision tree is complete because:
 6. **Team covers all values:** SINGLE, MULTI, HIL all have defined capability checks.
 7. **Fallback paths exist:** Every ambiguous or unknown input maps to a conservative default.
 
-**Proof of completeness:** The total context space is 4 (CRIT) x 3 (TOK) x 3 (PLAT) x 5 (PH) x 6 (TGT) x 4 (MAT) x 3 (TEAM) = 12,960 combinations (excluding ENF which is derived from PLAT). Each combination resolves through:
+**Proof of completeness:** The practical decision space is 4 (CRIT) x 3 (TOK) x 3 (PLAT) x 5 (PH) x 6 (TGT) x 4 (MAT) x 3 (TEAM) = **12,960 base combinations** (ENF is derived from PLAT by default; see Design Decision in Auto-Escalation Rules section). The theoretical 8-dimension space from TASK-001 is **19,440 combinations** (6 x 5 x 4 x 4 x 3 x 3 x 3 x 3). The difference (6,480) represents ENF-MIN and ENF-PORT override scenarios on platforms where the default derivation would assign a different ENF value. These are handled by the ENF-MIN Override Rules (ENF-MIN-001 through ENF-MIN-004) which modify the base recommendation without requiring additional tree branches, preserving O(1) traversal.
+
+Each of the 12,960 base combinations resolves through:
 - Primary branch on CRIT (4 paths, all defined)
 - Modifier 1 on TOK (3 states per CRIT, all defined)
 - Modifier 2 on PLAT (3 states per strategy, all defined)
 - Modifier 3 on PH (5 states per CRIT, all defined)
 - Gate check on MAT (4 states, all defined)
 - Capability check on TEAM (3 states, all defined)
+- ENF-MIN override (if applicable): applies ENF-MIN-001 through ENF-MIN-004
 
 No dead-end paths exist. Every terminal node produces a strategy recommendation (possibly "end session and escalate to human" for the most constrained C4 scenarios).
 
@@ -609,4 +657,5 @@ No dead-end paths exist. Every terminal node produces a strategy recommendation 
 *Document ID: FEAT-004:EN-303:TASK-004*
 *Agent: ps-architect*
 *Created: 2026-02-13*
+*Revised: 2026-02-13 (v1.1.0 -- ps-analyst-303 revision addressing critique iteration 1)*
 *Status: Complete*

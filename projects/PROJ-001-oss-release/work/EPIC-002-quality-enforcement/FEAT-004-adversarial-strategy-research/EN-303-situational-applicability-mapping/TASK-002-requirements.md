@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-303:TASK-002
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: nse-requirements
 DATE: 2026-02-13
 STATUS: Complete
@@ -15,7 +15,7 @@ REQUIREMENTS: FR-001 through FR-011, NFR-001 through NFR-007
 TARGET-ACS: 8, 12, 13
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** nse-requirements
 > **Quality Target:** >= 0.92
 > **Purpose:** Define formal "shall" requirements for the situational mapping with NASA SE rigor (NPR 7123.1D style), ensuring completeness, traceability, and verifiability
@@ -78,7 +78,7 @@ Each requirement traces to one or more of:
 - **FR-NNN**: Functional requirement from EN-303 enabler specification
 - **NFR-NNN**: Non-functional requirement from EN-303 enabler specification
 - **ADR-001**: ADR-EPIC002-001 (Strategy Selection)
-- **ADR-002**: ADR-EPIC002-002 (Enforcement Prioritization, PROPOSED)
+- **ADR-002**: ADR-EPIC002-002 (Enforcement Prioritization, ACCEPTED -- ratified 2026-02-13)
 - **B1-ENF**: Barrier-1 ENF-to-ADV handoff
 
 ---
@@ -459,10 +459,10 @@ The mapping **SHALL** be consumable by both: (a) human users reading markdown do
 
 ### REQ-303-042: Pairing Completeness
 
-The mapping **SHALL** document all 14 SYN pairs, 26 COM pairs, and 3 TEN pairs from ADR-EPIC002-001 within the per-strategy applicability profiles or a consolidated pairing reference.
+The mapping **SHALL** document all strategy pairs from the C(10,2) = 45 unique combinations within the selected 10 strategies, classified as SYN, COM, or TEN, within the per-strategy applicability profiles or a consolidated pairing reference. Per TASK-003 v1.1.0 analysis, the verified counts are: 14 SYN pairs, 29 COM pairs, and 2 TEN pairs (total: 45). **Note:** The original ADR-EPIC002-001 claimed 26 COM and 3 TEN; the corrected counts reflect resolution of a TEN pair duplication (S-001+S-002 was double-counted) which shifts 1 pair from TEN to the general pool and adjusts COM to 29.
 
 - **Parent:** FR-007
-- **Verification:** I -- Count documented pairs and verify against ADR-EPIC002-001 totals
+- **Verification:** I -- Count documented pairs and verify against C(10,2) = 45 total
 - **Priority:** MEDIUM
 
 ---
@@ -566,7 +566,7 @@ The mapping **SHALL** document all 14 SYN pairs, 26 COM pairs, and 3 TEN pairs f
 | Source | Key Input | REQ-303 Requirements |
 |--------|-----------|---------------------|
 | ADR-EPIC002-001 (Quality Layer Composition) | C1-C4 -> L0-L4 mapping | REQ-303-015, REQ-303-017, REQ-303-018 |
-| ADR-EPIC002-001 (Synergy/Tension) | 14 SYN, 26 COM, 3 TEN pairs | REQ-303-008, REQ-303-009, REQ-303-042 |
+| ADR-EPIC002-001 (Synergy/Tension) | 14 SYN, 29 COM, 2 TEN pairs (corrected from ADR's 26 COM, 3 TEN; see TASK-003 v1.1.0 deviation note) | REQ-303-008, REQ-303-009, REQ-303-042 |
 | ADR-EPIC002-001 (Token Budgets) | Per-strategy token costs | REQ-303-012, REQ-303-035 |
 | ADR-EPIC002-001 (Excluded Strategies) | 5 excluded with consequences | REQ-303-005 |
 | Barrier-1 ENF-to-ADV (5-Layer Architecture) | L1-L5 + Process layers | REQ-303-013, REQ-303-028, REQ-303-030 |
@@ -604,4 +604,5 @@ The mapping **SHALL** document all 14 SYN pairs, 26 COM pairs, and 3 TEN pairs f
 *Document ID: FEAT-004:EN-303:TASK-002*
 *Agent: nse-requirements*
 *Created: 2026-02-13*
+*Revised: 2026-02-13 (v1.1.0 -- ps-analyst-303 revision addressing critique iteration 1)*
 *Status: Complete*

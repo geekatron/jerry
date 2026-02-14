@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-403:TASK-004
 TEMPLATE: Architecture Design
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-403 (Hook-Based Enforcement Implementation)
@@ -15,7 +15,7 @@ CONSUMERS: TASK-007 (implementation), TASK-008 (code review), TASK-009 (adversar
 REQUIREMENTS-COVERED: REQ-403-050 through REQ-403-055, REQ-403-060, REQ-403-070/071, REQ-403-075-078, REQ-403-080-082, REQ-403-094/095/096
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-architect (Claude Opus 4.6)
 > **Status:** COMPLETE
 > **Created:** 2026-02-13
@@ -208,7 +208,7 @@ The quality context block is injected as a structured XML section within `additi
     - C2 (Standard): Reversible within 1 day, 3-10 files -> Standard Critic
     - C3 (Significant): > 1 day to reverse, > 10 files, API changes -> Deep Review
     - C4 (Critical): Irreversible, architecture/governance changes -> Tournament Review
-    AUTO-ESCALATE: Any change to docs/governance/ or .claude/rules/ is C3 or higher.
+    AUTO-ESCALATE: Any change to docs/governance/, .context/rules/, or .claude/rules/ is C3 or higher.
   </decision-criticality>
 </quality-framework>
 ```
@@ -379,7 +379,9 @@ The `<decision-criticality>` section provides Claude with the C1-C4 framework an
 
 The SessionStart context establishes the auto-escalation rule:
 
-> **AUTO-ESCALATE:** Any change to `docs/governance/` or `.claude/rules/` is C3 or higher.
+> **AUTO-ESCALATE:** Any change to `docs/governance/`, `.context/rules/`, or `.claude/rules/` is C3 or higher.
+
+**Note (v1.1.0 -- M-007 alignment):** `.claude/rules/` is a symlink to `.context/rules/` (the canonical source). Both paths are included in the auto-escalation rule to ensure coverage regardless of which path is used by the agent. EN-403 TASK-003 (PreToolUse) checks all four governance patterns: `docs/governance/JERRY_CONSTITUTION.md` (C4), `docs/governance/` (C3), `.claude/rules/` (C3), `.context/rules/` (C3). EN-404 TASK-003 mandatory escalation rules now align with this same set.
 
 This rule is enforced at two layers:
 1. **L1 (SessionStart):** Claude is aware of the rule from session start
@@ -611,8 +613,8 @@ class SessionQualityContextGenerator:
             "> 10 files, API changes -> Deep Review\n"
             "    - C4 (Critical): Irreversible, architecture/"
             "governance changes -> Tournament Review\n"
-            "    AUTO-ESCALATE: Any change to docs/governance/ "
-            "or .claude/rules/ is C3 or higher.\n"
+            "    AUTO-ESCALATE: Any change to docs/governance/, "
+            ".context/rules/, or .claude/rules/ is C3 or higher.\n"
             "  </decision-criticality>"
         )
 ```
@@ -647,6 +649,8 @@ class SessionQualityContextGenerator:
 ```
 
 The interface is deliberately simple: no parameters needed because the content is static. If future requirements add dynamic content (e.g., project-specific quality thresholds), the interface can be extended with optional parameters without breaking existing callers.
+
+**Future enhancement (m-003):** The current generator produces identical output regardless of the active project. REQ-403-054 asks for "initial decision criticality defaults," which the implementation satisfies with the C1-C4 framework description. A future iteration could provide project-specific adaptation -- for example, "This project (PROJ-001-oss-release) is in OSS release preparation; default to C3 for all changes." This would require reading the active project context from the hook input and mapping it to a criticality default. The generator's `generate()` method can accept an optional `project_context: str` parameter for this purpose.
 
 ---
 

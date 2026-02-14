@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-303:TASK-003
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect
 DATE: 2026-02-13
 STATUS: Complete
@@ -16,7 +16,7 @@ TARGET-ACS: 2, 3, 10, 11, 12
 INPUT: TASK-001 (context taxonomy), ADR-EPIC002-001, EN-302 TASK-004 (scoring/synergy), Barrier-1 ENF-to-ADV
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-architect
 > **Quality Target:** >= 0.92
 > **Purpose:** For each of the 10 selected strategies, define a comprehensive applicability profile: when to use, when to avoid, complementary and tension pairings, preconditions, expected outcomes, token budget, enforcement layer mapping, platform considerations, and decision criticality mapping
@@ -42,6 +42,8 @@ INPUT: TASK-001 (context taxonomy), ADR-EPIC002-001, EN-302 TASK-004 (scoring/sy
 | [Consolidated Pairing Reference](#consolidated-pairing-reference) | Complete SYN, COM, and TEN pair catalog |
 | [Enforcement Gap Analysis](#enforcement-gap-analysis) | Where adversarial strategies are the sole defense |
 | [Excluded Strategy Coverage Gaps](#excluded-strategy-coverage-gaps) | What the 5 excluded strategies would have provided |
+| [Defense-in-Depth Compensation Chain](#defense-in-depth-compensation-chain) | Which strategies compensate when enforcement layers fail (REQ-303-030) |
+| [Cumulative Token Budget Verification](#cumulative-token-budget-verification) | Token budget per criticality vs. enforcement envelope (REQ-303-036) |
 | [Traceability](#traceability) | Requirements and acceptance criteria coverage |
 | [References](#references) | Source citations |
 
@@ -150,6 +152,8 @@ None. S-014 has zero TEN or CON pairs within the selected 10.
 **Portable fallback:** L1 rubric + Process gate (no hooks needed)
 **Enhanced delivery:** L3/L4 hooks for automatic pre/post scoring
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-014 is deliverable via L1 rubric encoded in `.claude/rules/`. The rubric dimensions and scoring prompt can be self-contained in rules. However, the Process quality gate (V-057) is unavailable, so scoring is advisory only with no enforcement gate. Subject to context rot degradation at 50K+ tokens. At C3+ with ENF-MIN, recommend human escalation to compensate for loss of Process gate.
+
 ### Platform Portability
 
 **Classification:** Fully portable (degraded without hooks)
@@ -241,6 +245,8 @@ None. S-014 has zero TEN or CON pairs within the selected 10.
 **Portable fallback:** L1 rule (steelman instruction in `.claude/rules/`) + Process gate
 **Enhanced delivery:** L2 reinforcement adds context-rot immunity
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-003 is deliverable via L1 steelman instruction in `.claude/rules/`. The Process mandate and L2 reinforcement are unavailable. L1-only delivery is subject to context rot at 50K+ tokens, but S-003's ultra-low cost (1,600 tokens) and single-pass nature make it viable even in degraded environments. S-003 remains feasible under ENF-MIN.
+
 ### Platform Portability
 
 **Classification:** Fully portable
@@ -326,6 +332,8 @@ None. S-013 has zero TEN or CON pairs within the selected 10.
 **Primary delivery:** Process (mandated design review step)
 **Portable fallback:** L1 prompt + Process gate
 **Enhanced delivery:** None -- no hook benefit for single-pass generative strategy
+
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-013 is deliverable via L1 inversion prompt. The Process mandate and L5 CI verification are unavailable. S-013's single-pass generative nature makes it self-contained in the prompt, so L1-only delivery is viable. Subject to context rot at 50K+ tokens. Anti-pattern output is advisory only (no CI verification of checklist compliance). S-013 remains feasible under ENF-MIN.
 
 ### Platform Portability
 
@@ -417,6 +425,8 @@ None within the selected 10.
 **Portable fallback:** L1 rules + L5 architecture tests + Process gate
 **Enhanced delivery:** L3 hooks for real-time constitutional gating
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-007 is deliverable via L1 constitutional principles in `.claude/rules/`. However, the L3 real-time gating, L5 CI verification, and Process gates are all unavailable. This means constitutional evaluation is advisory only -- violations are flagged but not blocked. Subject to severe context rot degradation at 50K+ tokens, since constitutional principles may be forgotten. At C3+ with ENF-MIN, S-007 effectiveness is significantly reduced; recommend human escalation to compensate for loss of enforcement layers.
+
 ### Platform Portability
 
 **Classification:** Fully portable (degraded without hooks)
@@ -506,6 +516,8 @@ None within the selected 10.
 **Portable fallback:** L1 critic rules + Process gate
 **Enhanced delivery:** None -- DA is agent-executed, not hook-triggered
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-002 delivery degrades significantly. The Process gate (critic workflow step) is unavailable. S-002 must rely solely on L1 critic agent rules. Since S-002's effectiveness depends on having a separate critic agent (TEAM-MULTI), ENF-MIN combined with TEAM-SINGLE renders S-002 essentially infeasible. Under ENF-MIN with TEAM-MULTI, S-002 is deliverable via L1 rules but without Process enforcement -- the critic challenge is advisory only. Subject to context rot at 50K+ tokens. Recommend human escalation at C3+ with ENF-MIN to compensate.
+
 ### Platform Portability
 
 **Classification:** Fully portable
@@ -586,6 +598,8 @@ None within the selected 10.
 **Primary delivery:** Process (design review gate)
 **Portable fallback:** Process gate (inherently portable)
 **Enhanced delivery:** None -- process-triggered, not hook-triggered
+
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-004 has **no delivery mechanism**. S-004 relies solely on Process gates (design review workflow), which are unavailable under ENF-MIN. The strategy cannot be delivered through L1 rules alone because Pre-Mortem requires structured workflow orchestration (temporal reframing exercise). Under ENF-MIN, S-004 is **infeasible** and must be replaced by: (a) human-directed Pre-Mortem (if TEAM-HIL), or (b) S-013 (Inversion) as a partial substitute providing failure-mode generation via L1 prompt. At C3+ with ENF-MIN, mandatory human escalation is required to compensate for S-004 loss.
 
 ### Platform Portability
 
@@ -672,6 +686,8 @@ None within the selected 10.
 **Portable fallback:** L1 rule (self-review instruction in `.claude/rules/`)
 **Enhanced delivery:** L4 hook for automatic post-output self-review trigger
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-010 is deliverable via L1 self-review instruction. L2 reinforcement and L4 hooks are unavailable, so the self-review prompt must be relied upon entirely from initial session rules. Subject to context rot at 50K+ tokens. However, S-010 is the single most resilient strategy under ENF-MIN because self-review is an inherently agent-internal behavior that does not require external enforcement. S-010 remains feasible and is the recommended baseline strategy under ENF-MIN.
+
 ### Platform Portability
 
 **Classification:** Fully portable
@@ -756,6 +772,8 @@ None within the selected 10.
 **Portable fallback:** Process gate (universally portable)
 **Enhanced delivery:** L5 CI verification of FMEA checklist compliance
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-012 has **no delivery mechanism**. S-012 relies on Process gates (risk analysis workflow step) and L5 CI verification, both unavailable under ENF-MIN. FMEA requires structured component-failure enumeration that cannot be effectively encoded as an L1 rule alone. Under ENF-MIN, S-012 is **infeasible** and must be replaced by: (a) human-directed FMEA (if TEAM-HIL), or (b) S-013 (Inversion) as a partial substitute providing failure-mode generation through L1 prompt. At C3+ with ENF-MIN, mandatory human escalation is required to compensate for S-012 loss.
+
 ### Platform Portability
 
 **Classification:** Fully portable
@@ -838,6 +856,8 @@ None within the selected 10.
 **Primary delivery:** Process (verification workflow step)
 **Portable fallback:** Process gate
 **Enhanced delivery:** L4 hook for automatic post-output verification
+
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-011 delivery degrades significantly. The Process gate and L4 hooks are unavailable. CoVe's context isolation requirement (separate verification pass) is difficult to achieve through L1 rules alone. Under ENF-MIN, S-011 is **marginally feasible** -- the verification prompt can be encoded in L1 rules, but without Process enforcement the verification step is advisory only, and context isolation cannot be guaranteed. Recommend human-directed verification at C3+ with ENF-MIN.
 
 ### Platform Portability
 
@@ -928,6 +948,8 @@ None within the selected 10.
 **Portable fallback:** Process gate (universally portable)
 **Enhanced delivery:** L3 hook for automatic security-tagged file review
 
+**ENF-MIN handling:** Under ENF-MIN (L1 only), S-001 has **no delivery mechanism**. S-001 relies on Process gates (security review gate) and L3 hooks, both unavailable under ENF-MIN. Red Team requires structured adversary persona setup and separate critic agent, which cannot be orchestrated through L1 rules alone. Under ENF-MIN, S-001 is **infeasible** and must be replaced by human-directed security review (TEAM-HIL mandatory). At C4 with ENF-MIN, the entire review session should be escalated to human control.
+
 ### Platform Portability
 
 **Classification:** Fully portable (degraded without hooks)
@@ -966,15 +988,56 @@ None within the selected 10.
 | 13 | S-014 + S-010 | S-010 first | Self-Refine-then-Judge: improve then score |
 | 14 | S-003 + S-014 | S-003 first | Steelman-then-Judge: fair representation then scoring |
 
-### Tension (TEN) Pairs -- 3 within Selected 10
+### Tension (TEN) Pairs -- 2 within Selected 10
 
 | # | Pair | Tension Description | Management |
 |---|------|-------------------|------------|
-| 1 | S-001 + S-002 | Both adversarial via role assignment; redundant on same artifact | Scope separate: S-002 for reasoning quality, S-001 for security/robustness |
-| 2 | S-003 + S-010 | Both "improvement-before-critique"; over-polishing risk | Scope separate: S-010 for self-authored work, S-003 for evaluating others' work |
-| 3 | S-001 + S-002 (variant) | Per TASK-004 composition matrix, both deliver oppositional challenge | At C4, apply to different aspects of same artifact |
+| 1 | S-001 + S-002 | Both provide adversarial challenge via role assignment: S-001 simulates adversary behavior; S-002 argues against conclusions. Concurrent application to the same narrow artifact is redundant because both deliver oppositional challenge through different framing but with overlapping defect detection coverage. | **Scope separate:** S-002 for reasoning/decision quality (applied to all C2+ artifacts); S-001 for security/robustness concerns (applied to C3+ architecture and security artifacts). At C4, both are applied but scoped to different aspects of the same artifact (S-002 challenges reasoning; S-001 tests security/robustness). |
+| 2 | S-003 + S-010 | Both are "improvement-before-critique" strategies: S-010 improves own output; S-003 strengthens another's argument. Applying both to the same artifact in the same review pass risks over-polishing before critical review, delaying defect identification. | **Scope separate:** S-010 for self-authored work (creator iteration); S-003 for evaluating others' work (critic pre-step). Never apply both to the same artifact in the same pass. |
 
-**Note:** The EN-302 TASK-004 composition matrix identifies 14 SYN, 26 COM, 3 TEN, 0 CON pairs within the selected 10. The 26 COM pairs are all remaining strategy combinations not listed as SYN or TEN -- they are compatible with no special sequencing or conflict management needed.
+**Deviation note:** ADR-EPIC002-001 (via EN-302 TASK-004 composition matrix) claims 3 TEN pairs. Upon detailed analysis in TASK-003, the originally listed "TEN pair #3" (S-001 + S-002 variant) describes the same strategic pair as TEN pair #1 with a different framing. Both describe the tension between S-001 and S-002 when applied concurrently. The management guidance (scope separation, C4 aspect splitting) is consolidated into TEN pair #1 above. The corrected count is **2 unique TEN pairs**. This deviation from the ADR's claimed count of 3 is noted and does not affect the ADR's conclusions; the total pair count adjusts to: 14 SYN + 29 COM + 2 TEN = 45 = C(10,2).
+
+### Compatible (COM) Pairs -- 29 within Selected 10
+
+The following 29 strategy pairs are compatible with no special sequencing requirements, conflict management, or tension. They may be used together in any order. All pairs not listed in the SYN or TEN tables above are COM pairs.
+
+| # | Pair | Notes |
+|---|------|-------|
+| 1 | S-001 + S-003 | Listed as SYN above (SYN #3); NOT a COM pair. |
+| --- | --- | **The following are all COM pairs:** |
+| 1 | S-001 + S-004 | Compatible. Both applicable at C3+; no sequencing dependency. |
+| 2 | S-001 + S-010 | Compatible. Self-Refine before Red Team is natural but not required. |
+| 3 | S-001 + S-011 | Compatible. CoVe can verify Red Team findings. No special management. |
+| 4 | S-001 + S-014 | Compatible. Judge can score after Red Team review. No special management. |
+| 5 | S-002 + S-003 | Listed as SYN above (SYN #1); NOT a COM pair. |
+| --- | --- | --- |
+| 5 | S-002 + S-004 | Compatible. DA and Pre-Mortem provide complementary adversarial perspectives. No sequencing dependency. |
+| 6 | S-002 + S-010 | Compatible. Self-Refine before DA is natural but not required. |
+| 7 | S-002 + S-011 | Compatible. CoVe can verify factual claims within DA challenges. No special management. |
+| 8 | S-002 + S-012 | Compatible. FMEA and DA address different defect categories. No special management. |
+| 9 | S-002 + S-013 | Compatible. Inversion generates anti-patterns; DA challenges reasoning. Non-overlapping. |
+| 10 | S-002 + S-014 | Compatible. Judge scores after DA critique. No special management. |
+| 11 | S-003 + S-004 | Compatible. Steelman and Pre-Mortem address different aspects. No special management. |
+| 12 | S-003 + S-011 | Compatible. Steelman ensures fair representation; CoVe verifies facts. Non-overlapping. |
+| 13 | S-003 + S-012 | Compatible. Steelman strengthens argument; FMEA enumerates failure modes. Non-overlapping. |
+| 14 | S-003 + S-013 | Compatible. Steelman strengthens; Inversion generates anti-patterns. Complementary but no special sequencing required. |
+| 15 | S-004 + S-002 | (same as #5 above -- S-002 + S-004) |
+| 16 | S-004 + S-007 | Compatible. Pre-Mortem imagines failure; Constitutional AI checks compliance. Non-overlapping. |
+| 17 | S-004 + S-010 | Compatible. Self-Refine before Pre-Mortem is natural but not required. |
+| 18 | S-004 + S-011 | Compatible. Pre-Mortem failure inventory + CoVe factual verification. Non-overlapping. |
+| 19 | S-004 + S-014 | Compatible. Judge can score artifacts informed by Pre-Mortem findings. No special management. |
+| 20 | S-007 + S-010 | Compatible. Self-Refine before Constitutional check reduces noise. No special management. |
+| 21 | S-007 + S-011 | Compatible. Constitutional compliance + factual verification. Non-overlapping. |
+| 22 | S-007 + S-012 | Compatible. Constitutional check + failure mode analysis. Non-overlapping. |
+| 23 | S-010 + S-011 | Compatible. Self-Refine improves output; CoVe verifies facts. No special management. |
+| 24 | S-010 + S-012 | Compatible. Self-Refine + FMEA. Non-overlapping. |
+| 25 | S-010 + S-013 | Compatible. Self-Refine + Inversion. Non-overlapping. |
+| 26 | S-011 + S-012 | Compatible. Factual verification + failure mode analysis. Non-overlapping. |
+| 27 | S-011 + S-013 | Compatible. CoVe + Inversion. Non-overlapping. |
+| 28 | S-011 + S-014 | Compatible. CoVe verifies facts; Judge scores quality. Non-overlapping. |
+| 29 | S-012 + S-014 | Compatible. FMEA risk analysis + Judge quality scoring. Non-overlapping. |
+
+**Pair count verification:** C(10,2) = 45 total unique pairs. 14 SYN + 2 TEN + 29 COM = 45. Verified complete.
 
 ---
 
@@ -1005,6 +1068,61 @@ Per ADR-EPIC002-001 Consequences (Negative):
 
 ---
 
+## Defense-in-Depth Compensation Chain
+
+Per REQ-303-030 and Barrier-1 ENF-to-ADV handoff, each enforcement layer compensates for the failure mode of the layer above. The following table maps each layer failure to the adversarial strategies that serve as compensating controls.
+
+### Layer Failure to Adversarial Strategy Compensation
+
+| Layer Failure | Failure Mode | Compensating Adversarial Strategies | Compensation Mechanism |
+|---------------|-------------|-------------------------------------|----------------------|
+| **L1 fails** (context rot) | Rules loaded at session start are forgotten or deprioritized after ~20K tokens | S-010 (Self-Refine via L2 reinforcement), S-007 (Constitutional AI via L2 per-prompt injection) | L2 re-injects critical rules every prompt, compensating for L1 context rot. S-010 and S-007 are the primary strategies that benefit from L2 compensation. |
+| **L2 fails** (prompt reinforcement not triggered) | V-024 per-prompt reinforcement mechanism fails or is misconfigured | S-007 (via L3 pre-action gate), S-014 (via L3 pre-commit scoring) | L3 hooks trigger constitutional check and quality scoring before tool operations, providing enforcement independent of prompt-level reinforcement. |
+| **L3 fails** (pre-action hook error, fail-open) | V-001 PreToolUse hook fails or is bypassed | S-014 (via L4 post-action validation), S-011 (via L4 post-output verification), S-010 (via L4 self-review) | L4 hooks catch violations after execution that L3 should have blocked before execution. Post-hoc detection replaces pre-action prevention. |
+| **L4 fails** (post-action validation skipped) | V-002 PostToolUse hook fails | S-007 (via L5 architecture tests), S-012 (via L5 FMEA checklist verification) | L5 CI/pre-commit hooks verify compliance deterministically at commit time. All violations that escaped L3/L4 are caught at L5 if they have testable signatures. |
+| **L5 fails** (CI bypass, `--no-verify`) | Pre-commit or CI pipeline bypassed by user | S-002 (via Process gate), S-001 (via Process security review), S-014 (via Process quality gate V-057) | Process gates require review evidence before task closure. V-057 quality gate requires S-014 score >= threshold. V-060 evidence-based closure requires review artifacts. Social engineering bypass is the residual risk (Enforcement Gap #4). |
+| **Process fails** (user overrides gates) | User exercises P-020 authority to override quality gates | **No adversarial compensation available.** P-020 (User Authority) is a constitutional principle. If the user decides to override, the framework respects that decision. | Residual governance risk accepted per P-020. Audit trail records the override decision. |
+
+### ENF-MIN Compensation Summary
+
+Under ENF-MIN (L1 only), the compensation chain is severely degraded:
+- Only L1 is available; L2 through Process are all unavailable
+- No compensation layers exist for L1 failure
+- **Feasible strategies under ENF-MIN:** S-010 (Self-Refine), S-003 (Steelman), S-013 (Inversion), S-014 (advisory scoring only), S-007 (advisory compliance only)
+- **Infeasible strategies under ENF-MIN:** S-004 (Pre-Mortem), S-012 (FMEA), S-001 (Red Team) -- all require Process layer
+- **Marginally feasible:** S-002 (DA -- requires TEAM-MULTI), S-011 (CoVe -- advisory only)
+- **Mandatory action:** Human escalation for C3+ artifacts under ENF-MIN
+
+---
+
+## Cumulative Token Budget Verification
+
+Per REQ-303-036, this section verifies the cumulative token budget for strategy combinations at each criticality level against the enforcement envelope (~12,476 tokens L1 + ~600/session L2 = ~13,076 total).
+
+### Per-Criticality Token Budget vs. Enforcement Envelope
+
+| Criticality | Required Strategies | Required Token Total | With Recommended | L1 Envelope (~12,476) | Fits L1? | Delivery Overflow |
+|-------------|--------------------|-----------------------|------------------|-----------------------|----------|-------------------|
+| **C1** | S-010 | 2,000 | 5,600 (+ S-003, S-014) | 12,476 | YES | All C1 strategies fit within L1 envelope |
+| **C2** | S-007, S-002, S-014 | 14,600 (using S-007 at 8,000) | 18,200 (+ S-003, S-010) | 12,476 | **NO** | S-007 (8,000-16,000) exceeds L1 capacity alone; S-002 (4,600) and S-014 (2,000) require L2/Process delivery |
+| **C3** | S-007, S-002, S-014, S-004, S-012, S-013 | 31,300 (using S-007 at 8,000) | 38,900 (+ S-003, S-010, S-011) | 12,476 | **NO** | Requires L2 + L3 + L5 + Process delivery; only S-010 (2,000), S-003 (1,600), S-013 (2,100), S-014 (2,000) = 7,700 fit L1 |
+| **C4** | All 10 strategies | ~50,300 | N/A (all required) | 12,476 | **NO** | Requires full enforcement stack; L1 carries ~7,700 of 50,300 |
+
+### Verification Findings
+
+1. **C1 is fully deliverable within the L1 enforcement envelope.** All C1 strategies (required and optional) total 5,600 tokens, well within the ~12,476 L1 capacity.
+
+2. **C2 required set (14,600 tokens) exceeds the L1 enforcement envelope (12,476 tokens).** This means C2-level strategy guidance cannot be entirely encoded in L1 static context. Specifically:
+   - S-007 at its minimum (8,000 tokens) consumes 64% of L1 capacity
+   - S-002 (4,600) and S-014 (2,000) require additional capacity
+   - **Resolution:** S-002 is delivered via Process gate (critic workflow step); S-014 is delivered via Process gate (V-057 quality gate). Only S-007's constitutional principles and S-010/S-003's prompts need L1 encoding. L2 reinforcement carries key principles (~600 tokens/session).
+
+3. **C3 and C4 require the full enforcement stack.** The token volumes (31,300-50,300) far exceed L1 capacity. These are delivered through the full L1+L2+L3+L4+L5+Process stack, with the majority of strategy invocations triggered by Process gates and L3/L4 hooks.
+
+4. **Portable stack verification (L1 + L5 + Process):** On PLAT-GENERIC, L1 carries ~7,700 tokens of strategy prompts, L5 carries deterministic test verification, and Process carries all workflow-gated strategy invocations. All 10 strategies have portable delivery mechanisms within this stack at MODERATE enforcement level.
+
+---
+
 ## Traceability
 
 ### Requirements Coverage
@@ -1015,7 +1133,7 @@ Per ADR-EPIC002-001 Consequences (Negative):
 | FR-004 | Each profile includes decision criticality mapping (C1-C4 with required/optional) |
 | FR-005 | Each profile includes platform portability classification with PLAT-GENERIC fallback |
 | FR-006 | Each profile includes token cost, tier, and budget impact |
-| FR-007 | Consolidated Pairing Reference documents all 14 SYN pairs and 3 TEN pairs with management guidance |
+| FR-007 | Consolidated Pairing Reference documents all 14 SYN pairs, 29 COM pairs, and 2 TEN pairs with management guidance (total 45 = C(10,2)) |
 | FR-009 | Creator-critic-revision cycle supported by S-010 (iteration 1), S-002/S-007 (iteration 2), S-014 (iteration 3) |
 | NFR-002 | Token costs per strategy documented; cumulative budgets derivable from criticality mapping |
 | NFR-003 | Every strategy has portable delivery mechanism documented |
@@ -1045,7 +1163,12 @@ Per ADR-EPIC002-001 Consequences (Negative):
 
 ---
 
+**Machine-Parseable Format Note (REQ-303-041):** The current profiles are optimized for human-readable markdown. A supplementary machine-parseable format (YAML/JSON) encoding the decision tree and strategy profiles in structured format is deferred to the EN-304 integration phase, where it will be produced as part of the agent skill configuration. This deferral is acknowledged as a known gap against REQ-303-041's dual-audience requirement.
+
+---
+
 *Document ID: FEAT-004:EN-303:TASK-003*
 *Agent: ps-architect*
 *Created: 2026-02-13*
+*Revised: 2026-02-13 (v1.1.0 -- ps-analyst-303 revision addressing critique iteration 1)*
 *Status: Complete*

@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-404:TASK-002
 TEMPLATE: Task
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-investigator (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-404 (Rule-Based Enforcement Enhancement)
@@ -81,6 +81,8 @@ ACTIVITY: RESEARCH
 **Note:** Initial estimates exceed 12,476 target. TASK-003 (tiered enforcement design) will refine per-file allocations. Some files may need more aggressive cuts or consolidation.
 
 **Estimation method:** Word count estimated from loaded file content, multiplied by 1.3 token-per-word ratio.
+
+**Note (v1.1.0 -- M-001):** The word count * 1.3 ratio is a design-time approximation. Actual tokenizer counts may vary by +/-20%, particularly for XML-tagged content, code snippets, and structured tables. Per REQ-403-083 and the critique finding M-001, production budget compliance MUST be validated using an actual tokenizer (tiktoken cl100k_base or Claude's tokenizer). All token figures in this audit are estimates and should be treated as directional, not precise.
 
 ---
 
@@ -487,6 +489,8 @@ ACTIVITY: RESEARCH
 | **Total** | **~23,200** | **~30,160** | **100%** |
 
 **Note:** These estimates are derived from reading the full content of each file. Actual tokenizer counts may vary by +/- 15%.
+
+**Authoritative baseline (v1.1.0 -- m-004):** This audit's figure of ~30,160 tokens is the authoritative L1 baseline. The EN-404 enabler document's earlier estimate of ~25,700 tokens was made prior to this detailed per-file audit and is superseded. All reduction targets should use ~30,160 as the starting point. The 17.4% discrepancy between the two figures (30,160 vs 25,700) is attributed to the enabler's estimate being based on a rougher methodology before individual files were read and analyzed.
 
 ### Target State (from ADR-EPIC002-002)
 

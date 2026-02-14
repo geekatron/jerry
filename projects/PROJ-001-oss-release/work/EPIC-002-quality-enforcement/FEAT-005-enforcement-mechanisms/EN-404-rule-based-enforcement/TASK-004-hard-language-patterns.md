@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-404:TASK-004
 TEMPLATE: Task
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-404 (Rule-Based Enforcement Enhancement)
@@ -236,8 +236,10 @@ Failure to invoke: Work quality degradation. Rework required.
 
 **Working Example:**
 ```markdown
-**Mandatory Escalation (HARD).** Any artifact touching `docs/governance/` or `.context/rules/` is automatically C3+. CANNOT be overridden.
+**Mandatory Escalation (HARD).** Any artifact touching `docs/governance/`, `.context/rules/`, or `.claude/rules/` is automatically C3+. CANNOT be overridden.
 ```
+
+> **M-007 note (v1.1.0):** `.claude/rules/` is a symlink to `.context/rules/` but both are listed for completeness. This aligns with EN-403 TASK-003's `_check_governance_escalation()` which checks both paths.
 
 **Why It Works:**
 - "Mandatory" + "(HARD)" double-signals importance
@@ -393,6 +395,8 @@ Tests should have good coverage of the codebase.
 
 ### Jerry Operational Evidence
 
+> **Measurement methodology (m-005, v1.1.0):** The compliance rates below are qualitative estimates derived from review of ~30 Jerry development sessions (PROJ-001-oss-release, Jan-Feb 2026). "Compliance" is defined as: the agent's output conforms to the rule on the first attempt without rework. Rates are approximate (+-10%) and represent the reviewer's assessment of observed agent behavior, not automated measurement. Formal quantitative validation (automated compliance tracking, larger sample sizes, inter-rater reliability) is planned for post-implementation validation in EN-404 TASK-005+.
+
 The following observations are drawn from actual Jerry framework development sessions:
 
 | Observation | Rule File | Compliance | Pattern Used |
@@ -478,7 +482,7 @@ Use in quality-enforcement.md and reference from other files.
 | C3 | > 10 files, API changes | Deep review | >= 0.92 |
 | C4 | Irreversible, architecture, governance | Tournament | >= 0.92 |
 
-**Mandatory Escalation (HARD):** Artifacts touching `docs/governance/` or `.context/rules/` are automatically C3+.
+**Mandatory Escalation (HARD):** Artifacts touching `docs/governance/`, `.context/rules/`, or `.claude/rules/` are automatically C3+.
 ```
 
 ### Template 5: L2 Re-Injection Tag
@@ -573,12 +577,15 @@ Override requires documented justification.
 
 ## L2 Re-Injection Format
 
+> **Authoritative V-024 Content Source (B-004 resolution, v1.1.0).** This section and TASK-003's L2 Re-Injection Priorities section together define the **single authoritative** V-024 content sourcing strategy. EN-403 TASK-002's `PromptReinforcementEngine` SHALL extract content from `<!-- L2-REINJECT: ... -->` tags in `.context/rules/` files rather than maintaining hardcoded `ContentBlock` objects. Hardcoded content serves as fallback only (per fail-open design REQ-403-070). See FM-CROSS-01 (RPN 224) mitigation.
+
 ### Requirements
 
-- Total L2 re-injection content: <= 600 tokens (REQ-404-052)
+- Total L2 re-injection content: <= 600 tokens per prompt submission (REQ-404-052, REQ-403-015 v1.1.0)
 - Format: ultra-compact, no prose, maximum enforcement density
 - Delivered by V-024 via UserPromptSubmit hook (EN-403)
-- Content extracted from L2-REINJECT tags in rule files
+- Content extracted from L2-REINJECT tags in rule files (authoritative sourcing strategy)
+- EN-403 hardcoded `ContentBlock` objects serve as fallback only if tag extraction fails
 
 ### Proposed L2 Re-Injection Content (~510 tokens)
 
@@ -611,7 +618,7 @@ CRITICALITY ESCALATION:
 - C2 (Standard): 3-10 files, full critic cycle, >= 0.92.
 - C3 (Significant): > 10 files or API changes, deep review.
 - C4 (Critical): Irreversible/governance/architecture, tournament review.
-- governance/ or .context/rules/ changes = auto C3+. CANNOT override.
+- governance/ or .context/rules/ or .claude/rules/ changes = auto C3+. CANNOT override.
 ```
 
 ### Tag Extraction Algorithm (for EN-403)
@@ -688,6 +695,8 @@ Apply:
 - **Pattern 4** (Quality Gate Declaration) for 0.92 threshold
 - **Template 5** (L2 Re-Injection Tag) on all HARD rules
 - Target: 1,276 tokens
+
+> **M-006 SSOT designation (v1.1.0):** `quality-enforcement.md` is the **Single Source of Truth (SSOT)** for all shared enforcement constants: decision criticality levels (C1-C4), quality gate threshold (>= 0.92), adversarial strategy encodings (S-001 through S-014), creator-critic-revision cycle parameters (3 iterations minimum), and HARD/MEDIUM/SOFT tier vocabulary. EN-403 hook implementations MUST reference this file (or its L2-REINJECT tags) rather than defining these concepts independently. See TASK-003 "Shared Enforcement Data Model" section for the complete SSOT table. This resolves FM-CROSS-03 (RPN 210).
 
 ---
 

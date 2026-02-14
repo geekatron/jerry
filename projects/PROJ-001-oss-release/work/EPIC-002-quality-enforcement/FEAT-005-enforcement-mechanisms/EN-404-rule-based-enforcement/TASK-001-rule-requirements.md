@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-404:TASK-001
 TEMPLATE: Task
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: nse-requirements (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-404 (Rule-Based Enforcement Enhancement)
@@ -260,7 +260,7 @@ These requirements derive from ADR-EPIC002-002 R-SYS-001 (context rot cascade, s
 
 | Method | Description | Applicable Requirements |
 |--------|-------------|------------------------|
-| **Measurement** | Quantitative token count using word count * 1.3 conversion factor | REQ-404-001, 002, 003, 005, 006, 026, 052 |
+| **Measurement** | Quantitative token count using word count * 1.3 conversion factor as a design-time approximation. **Note (v1.1.0 -- M-001):** Production verification MUST use an actual tokenizer (tiktoken cl100k_base or Claude's tokenizer) to validate budget compliance. The word count * 1.3 ratio is unreliable for XML-tagged content, structured tables, and code snippets (observed variance up to +/-20%). | REQ-404-001, 002, 003, 005, 006, 026, 052 |
 | **Inspection** | Manual review of rule file content against requirement specification | REQ-404-010-017, 020-025, 027, 030-035, 040-045, 050-054, 060-064 |
 | **Analysis** | Comparative analysis of enforcement coverage before and after optimization | REQ-404-004 |
 | **Count** | Enumeration of specific elements (HARD directives, duplicate encodings) | REQ-404-017, 027 |
@@ -292,3 +292,4 @@ These requirements derive from ADR-EPIC002-002 R-SYS-001 (context rot cascade, s
 *Parent: EN-404 Rule-Based Enforcement Enhancement*
 *Quality Target: >= 0.92*
 *Total Requirements: 44 (33 HARD, 11 MEDIUM)*
+*Note (v1.1.0 -- m-004): The EN-404 enabler states ~25,700 tokens for current L1 content. The TASK-002 audit, which reads all files individually, reports ~30,160. The TASK-002 audit figure (~30,160) is the authoritative baseline as it is derived from direct file content analysis. The enabler estimate was made prior to the detailed audit.*

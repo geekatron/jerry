@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-403:TASK-002
 TEMPLATE: Architecture Design
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-403 (Hook-Based Enforcement Implementation)
@@ -15,7 +15,7 @@ CONSUMERS: TASK-005 (implementation), TASK-008 (code review), TASK-009 (adversar
 REQUIREMENTS-COVERED: REQ-403-010 through REQ-403-019, REQ-403-070/071, REQ-403-075-078, REQ-403-080-082, REQ-403-085, REQ-403-090/091, REQ-403-094/095/096
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-architect (Claude Opus 4.6)
 > **Status:** COMPLETE
 > **Created:** 2026-02-13
@@ -36,6 +36,7 @@ REQUIREMENTS-COVERED: REQ-403-010 through REQ-403-019, REQ-403-070/071, REQ-403-
 | [Adversarial Strategy Integration](#adversarial-strategy-integration) | S-007, S-014, S-003, S-010 touchpoint design |
 | [Decision Criticality Awareness](#decision-criticality-awareness) | C1-C4 escalation logic |
 | [Error Handling](#error-handling) | Fail-open behavior and logging |
+| [Accepted Risks](#accepted-risks) | V-024 effectiveness and keyword criticality as accepted risks |
 | [Platform Adaptation](#platform-adaptation) | Non-Claude-Code platform fallbacks |
 | [File Layout](#file-layout) | Where new code lives |
 | [Interface Contracts](#interface-contracts) | Input/output schemas |
@@ -58,7 +59,7 @@ L1 (Static Context) ──degrades at 20K+ tokens──> L2 (This Hook) re-injec
 L2 (This Hook) ──LLM ignores re-injected rules──> L3 (PreToolUse) blocks deterministically
 ```
 
-**Key constraint:** The entire V-024 reinforcement content budget is ~600 tokens per session. Content must be ultra-compact and focused on the highest-value reinforcement items.
+**Key constraint:** The entire V-024 reinforcement content budget is ~600 tokens per prompt submission (per REQ-403-015, clarified v1.1.0). Content must be ultra-compact and focused on the highest-value reinforcement items.
 
 ---
 
@@ -82,7 +83,7 @@ The UserPromptSubmit hook follows Jerry's hexagonal architecture with clear sepa
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                 │
 │                            ▼                                 │
-│                    APPLICATION LAYER                          │
+│           INFRASTRUCTURE LAYER (Enforcement Logic)           │
 │                                                              │
 │  src/infrastructure/internal/enforcement/                     │
 │  ┌─────────────────────────────────────────────────────┐    │
@@ -93,44 +94,25 @@ The UserPromptSubmit hook follows Jerry's hexagonal architecture with clear sepa
 │  │       context: PromptContext                        │    │
 │  │     ) -> ReinforcementContent                       │    │
 │  │                                                     │    │
-│  │   - Selects reinforcement content based on context  │    │
+│  │   - Extracts V-024 content from L2-REINJECT tags    │    │
+│  │     in .context/rules/ files (authoritative source) │    │
 │  │   - Applies token budget constraints                │    │
 │  │   - Applies decision criticality escalation         │    │
 │  │   - Composes strategy-specific reminders            │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                 │
-│                            ▼                                 │
-│                    DOMAIN LAYER (Data)                        │
-│                                                              │
 │  src/infrastructure/internal/enforcement/                     │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │ reinforcement_content.py                            │    │
 │  │                                                     │    │
-│  │   REINFORCEMENT_BLOCKS: dict[str, str]              │    │
-│  │   - Constitutional principles block                 │    │
-│  │   - Quality gate threshold block                    │    │
-│  │   - Self-review reminder block                      │    │
-│  │   - Leniency bias calibration block                 │    │
-│  │   - Steelman reminder block                         │    │
-│  │   - Pre-mortem reminder block (C3+)                 │    │
-│  │                                                     │    │
-│  │   TOKEN_BUDGET = 600                                │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                                                              │
-│                    INFRASTRUCTURE LAYER                       │
-│                                                              │
-│  src/infrastructure/internal/enforcement/                     │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │ context_provider.py                                 │    │
-│  │                                                     │    │
-│  │   class ContextProvider:                            │    │
-│  │     def get_active_rules() -> list[str]             │    │
-│  │     def get_project_context() -> ProjectInfo | None │    │
-│  │     def detect_deliverable_context() -> bool        │    │
-│  │     def detect_review_context() -> bool             │    │
+│  │   Fallback REINFORCEMENT_BLOCKS: dict[str, str]     │    │
+│  │   (used only if L2-REINJECT tag extraction fails)   │    │
+│  │   TOKEN_BUDGET = 600 (per prompt submission)        │    │
 │  └─────────────────────────────────────────────────────┘    │
 └──────────────────────────────────────────────────────────────┘
 ```
+
+**Note (v1.1.0 correction):** All code in `src/infrastructure/internal/enforcement/` resides in the **infrastructure layer** of the hexagonal architecture. The previous version of this diagram incorrectly labeled the engine as "APPLICATION LAYER" and the content data as "DOMAIN LAYER (Data)". Per Jerry's architecture standards, enforcement utilities are internal infrastructure concerns (consistent with the V-038 design decision in EN-402 TASK-006, Section 1.2).
 
 ### Design Rationale
 
@@ -389,7 +371,15 @@ class PromptReinforcementEngine:
         return "\n".join(parts)
 
     def _estimate_tokens(self, text: str) -> int:
-        """Estimate token count. Approximation: ~4 chars per token."""
+        """Estimate token count. Approximation: ~4 chars per token.
+
+        **Known limitation (M-001):** This approximation is unreliable for
+        XML-tagged content, code snippets, and structured tables where
+        subword tokenization differs significantly from character count.
+        Per REQ-403-083, production deployment MUST validate against an
+        actual tokenizer (tiktoken cl100k_base or Claude's tokenizer).
+        The ~4 chars/token ratio is a design-time placeholder only.
+        """
         return len(text) // 4
 
     def _trim_to_budget(
@@ -508,9 +498,11 @@ def _build_content_blocks() -> dict[str, ContentBlock]:
 
 The content blocks are defined inline in `_build_content_blocks()` above for simplicity. If content management becomes complex (e.g., loading from files, versioning), this can be extracted to a separate module.
 
-### Component 4: Context Provider (`context_provider.py`)
+### Component 4: Context Provider (`context_provider.py`) -- DEFERRED
 
 **Responsibility:** Read external state (file system, environment) to inform reinforcement decisions.
+
+**Note (v1.1.0):** The ContextProvider class is defined here for future use but is **not currently invoked** by the PromptReinforcementEngine. The V1 engine uses stateless, in-memory content generation without file system reads. When L2-REINJECT tag extraction from rule files is implemented (B-004 resolution), the ContextProvider will be integrated to locate and read `.context/rules/` files. Until then, the class serves as a design placeholder and is included in the file layout (Component 3 in File Layout table) but not in the active code path.
 
 ```python
 """Context provider for prompt reinforcement engine.
@@ -729,6 +721,40 @@ Exception in hook logic
 - It does NOT mean errors are silently swallowed (REQ-403-071 requires logging)
 - It does NOT mean enforcement is permanently disabled (next prompt tries again)
 - It does NOT mean the hook exits with non-zero code (which would signal Claude Code to potentially block)
+
+---
+
+## Accepted Risks
+
+### RISK-L2-001: V-024 Effectiveness is Unverifiable (M-002)
+
+**Risk:** The UserPromptSubmit hook injects V-024 reinforcement content via `additionalContext`, but there is no feedback mechanism to verify that Claude actually processes or applies the injected content. Under severe context rot (>100K tokens), the injected reinforcement may be present in the context window but deprioritized by Claude's attention mechanism.
+
+**FM-ID:** FM-403-07 (RPN 392 -- highest in FMEA)
+
+**Accepted because:**
+1. This is an inherent limitation of prompt-based enforcement -- no LLM provides a "did you read this?" callback.
+2. L3 (PreToolUse) provides a deterministic backstop for architecture violations, which are the highest-consequence enforcement targets.
+3. Soft enforcement (quality gate threshold, self-review reminders) has no deterministic equivalent -- it is fundamentally LLM-cooperative.
+
+**Monitoring plan:**
+- Track whether LLM outputs reference enforcement content (e.g., mentions of 0.92 threshold, self-review attestation) across sessions.
+- Periodically compare compliance rates in early-session vs. late-session prompts.
+- Adjust content formatting and positioning based on observed compliance patterns.
+- Consider periodic self-verification prompts ("Confirm you have processed the enforcement context") as a future enhancement.
+
+### RISK-L2-002: Keyword Criticality Assessment is Best-Effort (M-004)
+
+**Risk:** The `_assess_criticality()` method uses simple keyword matching on user prompt text. It cannot detect semantic intent, indirect language, or multi-turn criticality escalation. A user could (inadvertently or deliberately) receive C1-level reinforcement content while performing C4-level work.
+
+**FM-ID:** FM-403-02 (RPN 252)
+
+**Accepted because:**
+1. L3 (PreToolUse) provides a deterministic second check for governance file access (REQ-403-032, REQ-403-061) regardless of L2 criticality assessment.
+2. L2 criticality-based content escalation is best-effort, not guaranteed. The defense-in-depth model does not depend on L2 correctly classifying criticality.
+3. The keyword matching covers the most common phrasing patterns and checks C4 signals before C1 signals (priority ordering).
+
+**Caveat for REQ-403-062:** L2 criticality-based content escalation (C3+ triggers deep-review block) is a best-effort heuristic. It supplements but does not replace L3's deterministic governance enforcement.
 
 ---
 

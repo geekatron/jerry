@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-403:TASK-003
 TEMPLATE: Architecture Design
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-403 (Hook-Based Enforcement Implementation)
@@ -15,7 +15,7 @@ CONSUMERS: TASK-006 (implementation), TASK-008 (code review), TASK-009 (adversar
 REQUIREMENTS-COVERED: REQ-403-030 through REQ-403-039, REQ-403-060/061, REQ-403-070-073, REQ-403-075-078, REQ-403-080-082, REQ-403-086/087, REQ-403-092/093
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-architect (Claude Opus 4.6)
 > **Status:** COMPLETE
 > **Created:** 2026-02-13
@@ -110,7 +110,7 @@ The existing PreToolUse hook (`scripts/pre_tool_use.py`) provides:
 │  └─────────────────────────────────────────────────────┘    │
 │                            │                                 │
 │                            ▼                                 │
-│                ENFORCEMENT LIBRARY (L3 core)                 │
+│           INFRASTRUCTURE LAYER (Enforcement Logic)           │
 │                                                              │
 │  src/infrastructure/internal/enforcement/                     │
 │  ┌─────────────────────────────────────────────────────┐    │
@@ -129,19 +129,14 @@ The existing PreToolUse hook (`scripts/pre_tool_use.py`) provides:
 │  │   class PreToolEnforcementEngine:                   │    │
 │  │     evaluate_write(file_path, content)              │    │
 │  │       -> EnforcementDecision                        │    │
-│  │     evaluate_edit(file_path, old, new)              │    │
+│  │     evaluate_edit(file_path, old_str, new_str)      │    │
 │  │       -> EnforcementDecision                        │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                                                              │
-│                    DOMAIN LAYER (Data)                        │
-│                                                              │
-│  src/infrastructure/internal/enforcement/                     │
-│  ┌─────────────────────────────────────────────────────┐    │
+│  │                                                     │    │
 │  │ enforcement_rules.py (NEW)                          │    │
 │  │                                                     │    │
-│  │   GOVERNANCE_FILES: set[str]                        │    │
-│  │   PYTHON_FILE_EXTENSIONS: set[str]                  │    │
-│  │   ARCHITECTURE_CHECKS: dict[str, Callable]          │    │
+│  │   GOVERNANCE_FILES: dict[str, str]                  │    │
+│  │   PYTHON_EXTENSIONS: set[str]                       │    │
+│  │   ENFORCED_DIRECTORIES: set[str]                    │    │
 │  └─────────────────────────────────────────────────────┘    │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -277,22 +272,30 @@ class PreToolEnforcementEngine:
     def evaluate_edit(
         self,
         file_path: str,
-        new_content: str,
+        old_string: str,
+        new_string: str,
     ) -> EnforcementDecision:
         """Evaluate an Edit tool operation.
 
-        For edits, we validate the new content that will result
-        from the edit operation.
+        Reconstructs the full file content by reading the existing file,
+        applying the edit in-memory, and validating the resulting AST.
+        This ensures L3 enforcement coverage for Edit operations, which
+        are the most common file modification path.
 
         Args:
             file_path: Target file path.
-            new_content: The new string being inserted.
+            old_string: The text being replaced.
+            new_string: The replacement text.
 
         Returns:
             EnforcementDecision with action and reason.
+
+        Note (v1.1.0 -- B-002 fix): Previous version always approved
+        non-governance edits, deferring to L4/L5. This violated the
+        "prevent, then detect, then verify" principle from ADR-EPIC002-002.
+        The redesigned method reads the existing file, applies the edit
+        in-memory, and validates the resulting full file AST.
         """
-        # For edits, we can only validate the new_string portion.
-        # Full file validation happens at pre-commit (V-044) and CI (V-045).
         path = Path(file_path)
 
         # Governance escalation
@@ -304,9 +307,35 @@ class PreToolEnforcementEngine:
                 criticality_escalation=escalation,
             )
 
-        # For edits, we cannot fully parse the new content as standalone AST.
-        # Import validation requires full-file context.
-        # Defer to pre-commit (V-044) and CI (V-045) for edit validation.
+        # Only validate Python files in src/
+        if not self._is_validatable_python(path):
+            return EnforcementDecision(action="approve", reason="")
+
+        # Read existing file, apply edit in-memory, validate resulting AST
+        try:
+            existing_content = path.read_text(encoding="utf-8")
+        except (FileNotFoundError, PermissionError, OSError):
+            # File doesn't exist yet or can't be read -- fail-open
+            return EnforcementDecision(action="approve", reason="")
+
+        # Apply the edit in-memory
+        if old_string not in existing_content:
+            # old_string not found -- edit will fail anyway; approve
+            return EnforcementDecision(action="approve", reason="")
+
+        resulting_content = existing_content.replace(old_string, new_string, 1)
+
+        # Validate the resulting full file content
+        violations = self._validate_content(resulting_content, path)
+
+        if violations:
+            return EnforcementDecision(
+                action="block",
+                reason=self._format_violations(violations, path),
+                violations=violations,
+                criticality_escalation=escalation,
+            )
+
         return EnforcementDecision(action="approve", reason="")
 
     def _is_validatable_python(self, path: Path) -> bool:
@@ -464,7 +493,22 @@ class PreToolEnforcementEngine:
         return False
 
     def _is_dynamic_import(self, node: ast.Call) -> bool:
-        """Check if a Call node is a dynamic import."""
+        """Check if a Call node is a dynamic import.
+
+        **Known limitation (m-001):** This method detects only the two
+        most common dynamic import patterns:
+          1. __import__("module")
+          2. importlib.import_module("module")
+
+        Not detected (accepted risk for V1):
+          - Aliased importlib (e.g., `import importlib as il; il.import_module(...)`)
+          - exec-based imports (e.g., `exec("from src.infrastructure import ...")`)
+          - getattr/sys.modules access
+          - importlib via variable reference
+
+        Per REQ-403-035, dynamic import detection is flagged as warnings
+        (not blocking). Future iterations may add common evasion patterns.
+        """
         # __import__("module")
         if isinstance(node.func, ast.Name) and node.func.id == "__import__":
             return True
@@ -619,7 +663,8 @@ The existing `scripts/pre_tool_use.py` is modified to add Phase 3 and Phase 4 **
                 else:  # Edit
                     decision = enforcement.evaluate_edit(
                         file_path=tool_input.get("file_path", ""),
-                        new_content=tool_input.get("new_string", ""),
+                        old_string=tool_input.get("old_string", ""),
+                        new_string=tool_input.get("new_string", ""),
                     )
 
                 if decision.action == "block":
@@ -838,7 +883,7 @@ Per NFR-005 (EN-403): Hook execution latency SHALL NOT noticeably degrade user e
 ### Optimization Decisions
 
 1. **Parse only when needed:** AST parsing only runs for `.py` files in `src/`. Non-Python files and files outside `src/` skip Phase 3 entirely.
-2. **No disk I/O in Phase 3:** The content to validate is already provided in the tool input (stdin JSON). No additional file reads are needed.
+2. **Minimal disk I/O in Phase 3:** For Write operations, the content is already provided in the tool input (no file reads needed). For Edit operations (v1.1.0 B-002 fix), one file read is required to reconstruct the full file content. This adds ~5ms per edit, well within the 500ms target.
 3. **Lazy import:** The enforcement module is imported lazily inside `main()` to avoid import overhead on non-Write/Edit operations.
 
 ---
@@ -1013,7 +1058,9 @@ class EnforcementDecision:
 | REQ-403-031 | `_check_import_boundary()` with all 4 layer rules |
 | REQ-403-032 | `_check_governance_escalation()` for governance files |
 | REQ-403-033 | External Python execution, no LLM dependency |
-| REQ-403-034 | `_check_one_class_per_file()` (V-041); V-039/V-040 designed for future |
+| REQ-403-034 | `_check_one_class_per_file()` (V-041) -- this phase |
+| REQ-403-034a | V-039 (type hints) -- explicitly deferred to Phase 5+ (not covered this phase) |
+| REQ-403-034b | V-040 (docstrings) -- explicitly deferred to Phase 5+ (not covered this phase) |
 | REQ-403-035 | `_is_dynamic_import()` detection |
 | REQ-403-036 | `bootstrap.py` exemption in `_check_imports()` |
 | REQ-403-037 | `_is_type_checking_import()` exemption |

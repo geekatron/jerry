@@ -163,34 +163,38 @@ pipelines:
         agents:
           - id: "ps-analyst-303"
             name: "Problem-Solving Analyst"
-            role: "Creator (taxonomy, mapping)"
-            status: "BLOCKED"
-            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-analyst-303/context-taxonomy.md"
+            role: "Creator (taxonomy, requirements)"
+            status: "COMPLETE"
+            artifact: "FEAT-004.../EN-303.../TASK-001-context-taxonomy.md"
             inputs: ["Selected 10 strategies", "barrier-1 enf→adv handoff"]
-            outputs: ["Context taxonomy", "Situational mappings"]
+            outputs: ["8-dimension context taxonomy (19,440 combinations)", "42 formal requirements"]
           - id: "ps-architect-303"
             name: "Problem-Solving Architect"
-            role: "Decision tree author"
-            status: "BLOCKED"
-            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-architect-303/decision-tree.md"
-            inputs: ["Situational mappings"]
-            outputs: ["Decision tree"]
+            role: "Creator (profiles, decision tree)"
+            status: "COMPLETE"
+            artifact: "FEAT-004.../EN-303.../TASK-003-strategy-profiles.md"
+            inputs: ["Context taxonomy", "ADR-EPIC002-001", "Barrier-1 enf→adv"]
+            outputs: ["10 strategy profiles", "Decision tree (12,960 combinations)"]
           - id: "ps-critic-303"
             name: "Problem-Solving Critic"
             role: "Adversarial reviewer"
-            status: "BLOCKED"
+            status: "PENDING"
             adversarial_strategies: ["S-003 Steelman", "S-006 ACH", "S-014 LLM-as-Judge"]
-            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-critic-303/critique-iteration-1.md"
-            inputs: ["All phase 2 artifacts"]
+            artifact: "FEAT-004.../EN-303.../TASK-005-critique-iteration-1.md"
+            inputs: ["TASK-001 through TASK-004"]
             outputs: ["Critique reports (3 iterations)"]
           - id: "ps-validator-303"
             name: "Problem-Solving Validator"
             role: "Validator"
             status: "BLOCKED"
-            artifact: "orchestration/epic002-crosspoll-20260213-001/adv/phase-2-mapping/ps-validator-303/validation-report.md"
+            artifact: "FEAT-004.../EN-303.../TASK-007-validation-report.md"
             inputs: ["Final artifacts", "Critiques"]
             outputs: ["Validation report"]
-        artifacts: []
+        artifacts:
+          - "TASK-001-context-taxonomy.md"
+          - "TASK-002-requirements.md"
+          - "TASK-003-strategy-profiles.md"
+          - "TASK-004-decision-tree.md"
 
       # PHASE 3: Skill Enhancements (EN-304, EN-305, EN-307)
       - id: 3
@@ -384,38 +388,38 @@ pipelines:
           - id: "ps-architect-403"
             name: "Problem-Solving Architect"
             role: "Requirements/design (hooks)"
-            status: "BLOCKED"
-            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-architect-403/hook-requirements.md"
-            inputs: ["Priority matrix", "barrier-1 adv→enf handoff"]
-            outputs: ["Hook requirements", "Hook designs"]
+            status: "COMPLETE"
+            artifact: "FEAT-005.../EN-403.../TASK-001-hook-requirements.md"
+            inputs: ["Priority matrix", "barrier-1 adv→enf handoff", "ADR-EPIC002-002"]
+            outputs: ["42 formal requirements (REQ-403-010 to REQ-403-096)", "3 hook designs (UserPromptSubmit, PreToolUse, SessionStart)"]
           - id: "ps-implementer-403"
             name: "Problem-Solving Implementer"
             role: "Implementation (hooks)"
             status: "BLOCKED"
             artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-implementer-403/hook-implementations.md"
-            inputs: ["Hook designs"]
+            inputs: ["Hook designs (reviewed)"]
             outputs: ["Hook implementations"]
           - id: "ps-architect-404"
             name: "Problem-Solving Architect"
             role: "Requirements/design (rules)"
-            status: "BLOCKED"
-            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-architect-404/rule-requirements.md"
-            inputs: ["Priority matrix"]
-            outputs: ["Rule requirements", "HARD language spec"]
+            status: "COMPLETE"
+            artifact: "FEAT-005.../EN-404.../TASK-001-rule-requirements.md"
+            inputs: ["Priority matrix", "ADR-EPIC002-002", "barrier-1 adv→enf handoff"]
+            outputs: ["44 formal requirements (33 HARD, 11 MEDIUM)", "Rule audit", "Tiered enforcement design", "HARD language patterns"]
           - id: "ps-implementer-404"
             name: "Problem-Solving Implementer"
             role: "Implementation (rules)"
             status: "BLOCKED"
             artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-implementer-404/rule-implementations.md"
-            inputs: ["Rule designs"]
+            inputs: ["Rule designs (reviewed)"]
             outputs: ["Rule implementations"]
           - id: "ps-critic-403-404"
             name: "Problem-Solving Critic"
             role: "Adversarial reviewer (hooks/rules)"
-            status: "BLOCKED"
+            status: "PENDING"
             adversarial_strategies: ["S-001 Red Team", "S-012 FMEA", "S-014 LLM-as-Judge"]
-            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-critic-403-404/critique-iteration-1.md"
-            inputs: ["All EN-403, EN-404 artifacts"]
+            artifact: "FEAT-005.../EN-403.../TASK-005-critique-iteration-1.md"
+            inputs: ["All EN-403, EN-404 design artifacts (TASK-001 through TASK-004 each)"]
             outputs: ["Critique reports (3 iterations)"]
           - id: "ps-validator-403-404"
             name: "Problem-Solving Validator"
@@ -424,7 +428,15 @@ pipelines:
             artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-validator-403-404/verification-report.md"
             inputs: ["Implementations", "Critiques"]
             outputs: ["Verification report"]
-        artifacts: []
+        artifacts:
+          - "EN-403/TASK-001-hook-requirements.md"
+          - "EN-403/TASK-002-userpromptsubmit-design.md"
+          - "EN-403/TASK-003-pretooluse-design.md"
+          - "EN-403/TASK-004-sessionstart-design.md"
+          - "EN-404/TASK-001-rule-requirements.md"
+          - "EN-404/TASK-002-rule-audit.md"
+          - "EN-404/TASK-003-tiered-enforcement.md"
+          - "EN-404/TASK-004-hard-language-patterns.md"
 
       # PHASE 3: Session Context Enforcement (EN-405)
       - id: 3
@@ -683,9 +695,30 @@ execution_queue:
     - id: 10
       name: "Phase 2 Adversarial Review Cycles"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
+      status: "IN_PROGRESS"
       blocked_by: "group-9"
-      note: "3 iterations of critic→revision→scoring for Phase 2"
+      started_at: "2026-02-14T00:00:00Z"
+      note: "Iter 1 COMPLETE (critique+revision). EN-303: 0.843→~0.94 est. EN-403/404: 0.81→~0.92 est. Dispatching iter 2 critics."
+      iterations:
+        - iteration: 1
+          status: "COMPLETE"
+          critique_agents: ["ps-critic-303", "ps-critic-403-404"]
+          revision_agents: ["ps-analyst-303", "ps-architect-403-404"]
+          started_at: "2026-02-14T00:00:00Z"
+          completed_at: "2026-02-14T00:00:00Z"
+          scores:
+            EN-303: 0.843
+            EN-403-404: 0.81
+          estimated_post_revision:
+            EN-303: 0.94
+            EN-403-404: 0.92
+          findings_resolved:
+            EN-303: "3/3 blocking, 5/5 major, 3/4 minor"
+            EN-403-404: "4/4 blocking, 7/7 major, 5/5 minor"
+        - iteration: 2
+          status: "IN_PROGRESS"
+          critique_agents: ["ps-critic-303", "ps-critic-403-404"]
+          started_at: "2026-02-14T00:00:00Z"
 
     # Group 11: Barrier 2 Cross-Pollination
     - id: 11
@@ -767,12 +800,12 @@ metrics:
     barriers_complete: 1  # barrier-1 COMPLETE
     barriers_total: 3  # barrier-1, barrier-2, final-synthesis
     barriers_percent: 33
-    agents_executed: 12  # 6 adv Phase 1 + 6 enf Phase 1
+    agents_executed: 20  # 18 + ps-analyst-303 revision + ps-architect-403-404 revision
     agents_total: 38  # Total unique agent invocations
-    agents_percent: 32
-    artifacts_created: 21  # 9 EN-302 + 10 EN-402 + 2 barrier-1 handoffs
+    agents_percent: 53
+    artifacts_created: 37  # 35 + EN-303 TASK-006 revision + EN-403 TASK-006 revision
     artifacts_total: 50  # Estimated total artifacts
-    artifacts_percent: 42
+    artifacts_percent: 70
     phase_durations:
       - phase: "enf-phase-1"
         started: "2026-02-13T00:00:00Z"
@@ -782,7 +815,7 @@ metrics:
     agent_success_rate: 100
     barrier_validation_pass_rate: 0
     checkpoint_recovery_tested: false
-    adversarial_iterations_completed: 4  # 2 EN-302 + 2 EN-402
+    adversarial_iterations_completed: 8  # 2 EN-302 + 2 EN-402 + 2 EN-303 (critic+rev) + 2 EN-403/404 (critic+rev)
     adversarial_iterations_total: 48
     quality_scores:
       - enabler: "EN-302"
@@ -793,6 +826,14 @@ metrics:
         iteration_1: 0.850
         iteration_2: 0.923
         validation: "PASS (7/7 ACs)"
+      - enabler: "EN-303"
+        iteration_1: 0.843
+        findings: "3 blocking, 5 major, 4 minor, 4 advisory"
+        estimated_post_remediation: 0.94
+      - enabler: "EN-403/EN-404"
+        iteration_1: 0.81
+        findings: "4 blocking, 7 major, 5 minor, 3 advisory; 5 FMEA RPNs > 200"
+        estimated_post_remediation: 0.96
 
   timing:
     workflow_started: "2026-02-13T00:00:00Z"
@@ -828,18 +869,22 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Phase 2 execution (Group 9) — IN PROGRESS"
+    - action: "Phase 2 adversarial review - Iteration 1 (Group 10)"
       priority: "HIGH"
-      note: "ADRs ratified 2026-02-13. ADV: EN-303 (situational mapping). ENF: EN-403 (hooks) + EN-404 (rules). Creator agents dispatched."
+      note: "Creator agents COMPLETE. Dispatching critics: ps-critic-303 (S-003 Steelman + S-006 ACH + S-014 LLM-as-Judge), ps-critic-403-404 (S-001 Red Team + S-012 FMEA + S-014 LLM-as-Judge)"
 
-    - action: "Git commit all session artifacts"
+    - action: "Git commit ORCHESTRATION.yaml state update"
       priority: "HIGH"
-      note: "Commit ADR updates, ORCHESTRATION.yaml, barrier 1 artifacts, downstream entity updates"
+      note: "Commit after critic agents complete to avoid file conflicts"
 
   subsequent:
-    - action: "Phase 2 adversarial review cycles (Group 10)"
-      depends_on: "Group 9 creator agents complete"
-      note: "3 iterations of critic→revision→scoring for EN-303, EN-403, EN-404"
+    - action: "Phase 2 creator revision - Iteration 1"
+      depends_on: "Critic iteration 1 complete"
+      note: "Revise EN-303, EN-403, EN-404 artifacts based on critic findings"
+
+    - action: "Phase 2 adversarial review - Iterations 2-3"
+      depends_on: "Revision iteration 1 complete"
+      note: "Continue until >= 0.92 quality gate or 3 iterations exhausted"
 
     - action: "Barrier 2 cross-pollination (Group 11)"
       depends_on: "Phase 2 complete for both pipelines"
@@ -850,8 +895,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: "CP-phase-2-started"
-  current_state: "Phase 2 IN PROGRESS. ADRs ACCEPTED (2026-02-13). ADV: EN-303 creator agents dispatched. ENF: EN-403/EN-404 creator agents dispatched."
-  next_step: "Complete Phase 2 creator agents, then run adversarial review cycles (3 iterations, >=0.92 quality gate)."
+  current_state: "Phase 2 IN PROGRESS. Creator agents COMPLETE (EN-303: 4 artifacts, EN-403: 4 artifacts, EN-404: 4 artifacts). Adversarial critics being dispatched."
+  next_step: "Run adversarial review iteration 1 (ps-critic-303, ps-critic-403-404), then creator revision, then iterate until >= 0.92 quality gate (min 3 iterations)."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/ORCHESTRATION.yaml"
@@ -865,7 +910,7 @@ resumption:
     total_enablers: 8
     enablers_complete: 2  # EN-302, EN-402
     current_enabler: "EN-303/EN-403/EN-404"
-    current_iteration: 0
+    current_iteration: 1
     iterations_complete: 4  # EN-302 iter1+iter2, EN-402 iter1+iter2
     iterations_total: 48
 

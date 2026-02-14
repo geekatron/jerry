@@ -3,7 +3,7 @@
 <!--
 DOCUMENT-ID: FEAT-005:EN-404:TASK-003
 TEMPLATE: Task
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect (Claude Opus 4.6)
 DATE: 2026-02-13
 PARENT: EN-404 (Rule-Based Enforcement Enhancement)
@@ -36,11 +36,11 @@ TARGET-ACS: 2, 3, 4, 5, 9, 10
 | [Tier Classification Criteria](#tier-classification-criteria) | How to classify a rule into a tier |
 | [Decision Criticality Integration](#decision-criticality-integration) | C1-C4 levels mapped to enforcement tiers |
 | [Quality Layer Mapping](#quality-layer-mapping) | Review layers L0-L4 mapped to tiers and strategies |
-| [Adversarial Strategy Encoding Map](#adversarial-strategy-encoding-map) | How each strategy maps to enforcement tiers |
+| [Adversarial Strategy Encoding Map](#adversarial-strategy-encoding-map) | How each strategy maps to enforcement tiers + SSOT designation (M-006) |
 | [Task Complexity Thresholds](#task-complexity-thresholds) | When enforcement escalates |
 | [Enforcement Escalation Model](#enforcement-escalation-model) | How enforcement tightens with artifact maturity |
 | [Token Budget Allocation](#token-budget-allocation) | Per-tier and per-file token budgets |
-| [L2 Re-Injection Priorities](#l2-re-injection-priorities) | Which HARD rules need V-024 reinforcement |
+| [L2 Re-Injection Priorities](#l2-re-injection-priorities) | Which HARD rules need V-024 reinforcement (authoritative V-024 source, B-004) |
 | [File Consolidation Plan](#file-consolidation-plan) | How current 10+1 files become 8 optimized files |
 | [Traceability](#traceability) | Requirements coverage |
 | [References](#references) | Source documents |
@@ -58,6 +58,8 @@ The tiered enforcement strategy implements three enforcement tiers with distinct
 3. **Consequences are explicit.** Every HARD rule states what happens on violation. (REQ-404-016)
 4. **Single source of truth.** Each rule exists in exactly one file. Cross-references replace duplication. (REQ-404-027, REQ-404-062)
 5. **Context rot awareness.** HARD rules appear first in every file. (REQ-404-060)
+
+> **Methodology note (m-005, v1.1.0):** Compliance rates and bypass-impact assessments referenced throughout this document are derived from qualitative review of Jerry framework development sessions (PROJ-001-oss-release, Jan-Feb 2026). Rates are approximate and based on observed agent behavior across ~30 sessions. Formal quantitative measurement methodology (session sampling, compliance definition, inter-rater reliability) is deferred to post-implementation validation (EN-404 TASK-005+). See TASK-004 Evidence Base for detailed per-file compliance observations.
 
 ### Tier Summary
 
@@ -126,7 +128,7 @@ The following is the authoritative inventory of HARD directives for all L1 rule 
 | H-16 | **Steelman before critique.** Before criticizing any proposal, MUST first present the strongest version of the argument (S-003). | Barrier-1 ADV-to-ENF; FR-004 | Critique rejected as unfair. |
 | H-17 | **Quality scoring REQUIRED.** All deliverables for C2+ decisions MUST include explicit quality scores against rubrics (S-014). | Barrier-1 ADV-to-ENF; FR-006 | Deliverable incomplete without score. |
 | H-18 | **Constitutional compliance.** All outputs MUST be evaluated against applicable `.context/rules/` principles before presentation (S-007). | Barrier-1 ADV-to-ENF; FR-003 | Non-compliant output will be reworked. |
-| H-19 | **Governance escalation.** Any artifact touching `docs/governance/` or `.context/rules/` is automatically C3+ criticality. This CANNOT be overridden. | Barrier-1 ADV-to-ENF; FR-011 | Under-reviewed governance changes will be blocked. |
+| H-19 | **Governance escalation.** Any artifact touching `docs/governance/`, `.context/rules/`, or `.claude/rules/` is automatically C3+ criticality. This CANNOT be overridden. | Barrier-1 ADV-to-ENF; FR-011 | Under-reviewed governance changes will be blocked. |
 
 #### Testing HARD Rules (from testing-standards.md)
 
@@ -140,6 +142,8 @@ The following is the authoritative inventory of HARD directives for all L1 rule 
 | # | Rule | Source | Consequence |
 |---|------|--------|-------------|
 | H-22 | **Proactive skill invocation.** MUST invoke /problem-solving for research/analysis tasks. MUST invoke /nasa-se for requirements/design tasks. MUST invoke /orchestration for multi-phase workflows. | mandatory-skill-usage.md | Work quality degradation; rework required. |
+
+> **M-005 Design Decision (v1.1.0):** H-22 is intentionally kept as a single compound rule rather than split into H-22a/H-22b/H-22c. Rationale: (1) All three skill obligations share the same consequence, source file, and enforcement mechanism (keyword trigger detection). Splitting would consume 3 of the 25-rule budget for what is operationally a single "use skills proactively" directive. (2) The 24-rule inventory is already near the 25-rule cap (REQ-404-017); splitting would require removing another HARD rule to stay within budget. (3) The compound form mirrors the source file (`mandatory-skill-usage.md`) which presents all three as a unified behavioral requirement. If a future iteration needs finer-grained enforcement (e.g., different consequences per skill), H-22 can be split at that time.
 
 #### Navigation HARD Rules (from markdown-navigation-standards.md)
 
@@ -293,11 +297,14 @@ Decision criticality levels (C1-C4) determine which enforcement tiers and advers
 
 | Condition | Auto-Escalation | Source |
 |-----------|----------------|--------|
-| Artifact touches `docs/governance/JERRY_CONSTITUTION.md` | Auto-C3 minimum | FR-011 |
+| Artifact touches `docs/governance/JERRY_CONSTITUTION.md` | Auto-C4 | FR-011 |
 | Artifact touches `.context/rules/` | Auto-C3 minimum | FR-011 |
+| Artifact touches `.claude/rules/` | Auto-C3 minimum | FR-011 (symlink to `.context/rules/`; checked for completeness) |
 | Artifact touches `CLAUDE.md` | Auto-C3 minimum | Extension of FR-011 |
 | Artifact is an ADR | Auto-C3 minimum | ADR-EPIC002-001 precedent |
 | Artifact is for public release | Auto-C4 | Jerry Constitution |
+
+> **M-007 note (v1.1.0):** `.claude/rules/` is a symlink to `.context/rules/` in the Jerry repo. Both paths are listed here to align with EN-403 TASK-003's `_check_governance_escalation()` which checks both canonical and symlink paths. The constitution (`JERRY_CONSTITUTION.md`) is elevated to C4 per EN-403 TASK-003 alignment.
 
 ---
 
@@ -338,6 +345,22 @@ Per REQ-404-027 (no duplicate strategy encodings), all six strategies are encode
 3. **Update fragility:** Changing a strategy requires updating multiple files
 
 Other rule files reference `quality-enforcement.md` for quality framework definitions rather than restating them.
+
+### Shared Enforcement Data Model (M-006 Resolution)
+
+> **`quality-enforcement.md` is the SSOT (Single Source of Truth)** for all enforcement constants shared between EN-403 (Hook-Based) and EN-404 (Rule-Based). Both enablers MUST reference this file rather than defining enforcement concepts independently. See FM-CROSS-03 (RPN 210) mitigation.
+
+The following concepts are authoritative in `quality-enforcement.md` only:
+
+| Concept | Authoritative Definition | EN-403 Reference Approach |
+|---------|-------------------------|---------------------------|
+| Decision Criticality Levels (C1-C4) | quality-enforcement.md Decision Criticality section | EN-403 TASK-004 SessionStart generates context from quality-enforcement.md; EN-403 TASK-002 keyword mapping references the SSOT levels |
+| Quality Gate Threshold (>= 0.92) | quality-enforcement.md H-13 | EN-403 content blocks reference the SSOT value |
+| Adversarial Strategy Encodings (S-001 through S-014) | quality-enforcement.md Strategy Encoding table | EN-403 TASK-002 L2 content blocks are derived from SSOT encodings |
+| Creator-Critic-Revision Cycle (3 iterations) | quality-enforcement.md H-14 | EN-403 content blocks reference the SSOT cycle count |
+| HARD Rule Vocabulary (MUST/SHALL/NEVER/FORBIDDEN/REQUIRED/CRITICAL) | quality-enforcement.md Tier Definitions (this document, authoritative at design time) | Not directly referenced by EN-403 hooks |
+
+Any change to these values MUST be made in `quality-enforcement.md` first, then propagated to any EN-403 hardcoded fallback content.
 
 ---
 
@@ -408,7 +431,9 @@ Reduction: 56.3%
 
 ## L2 Re-Injection Priorities
 
-Content prioritized for V-024 re-injection (600 token budget), ranked by bypass impact if forgotten:
+> **Authoritative V-024 Content Source (B-004 resolution).** The L2-REINJECT tag extraction strategy defined in this section and in TASK-004 is the **single authoritative** sourcing mechanism for V-024 re-injection content. EN-403 TASK-002's `PromptReinforcementEngine` SHALL extract content from `<!-- L2-REINJECT: ... -->` tags in `.context/rules/` files rather than maintaining hardcoded `ContentBlock` objects. Hardcoded content blocks in EN-403 serve as a **fallback only** if tag extraction fails (per fail-open design REQ-403-070). See also: FM-CROSS-01 (RPN 224) mitigation.
+
+Content prioritized for V-024 re-injection (600 token budget per prompt submission, per REQ-403-015 v1.1.0), ranked by bypass impact if forgotten:
 
 | Priority | Content | Source | Tokens | Rationale |
 |----------|---------|--------|--------|-----------|
@@ -422,13 +447,15 @@ Content prioritized for V-024 re-injection (600 token budget), ranked by bypass 
 | 8 | Governance auto-escalation to C3+ | quality-enforcement.md H-19 | ~40 | Prevents governance bypass |
 | **Total** | | | **~510** | Within 600-token budget |
 
-### Re-Injection Tag Format
+### Re-Injection Tag Format (Authoritative)
+
+> This format is the **single source of truth** for V-024 content encoding. EN-403's `PromptReinforcementEngine` SHALL parse these tags using the extraction algorithm defined in TASK-004 (Tag Extraction Algorithm section).
 
 ```markdown
 <!-- L2-REINJECT: rank=1, tokens=80, content="P-003: No recursive subagents. P-020: User authority. P-022: No deception. Violations blocked." -->
 ```
 
-Tags are HTML comments (zero visual impact) with machine-readable attributes for V-024 extraction.
+Tags are HTML comments (zero visual impact) with machine-readable attributes for V-024 extraction. The `content` attribute contains the ultra-compact enforcement text injected into `additionalContext` by the UserPromptSubmit hook.
 
 ---
 

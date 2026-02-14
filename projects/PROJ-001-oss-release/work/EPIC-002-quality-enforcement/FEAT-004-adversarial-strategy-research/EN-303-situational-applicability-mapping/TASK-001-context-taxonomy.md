@@ -2,7 +2,7 @@
 
 <!--
 DOCUMENT-ID: FEAT-004:EN-303:TASK-001
-VERSION: 1.0.0
+VERSION: 1.1.0
 AGENT: ps-architect
 DATE: 2026-02-13
 STATUS: Complete
@@ -15,7 +15,7 @@ REQUIREMENTS: FR-001, FR-002, FR-008, NFR-001, NFR-005
 TARGET-ACS: 1, 10, 11
 -->
 
-> **Version:** 1.0.0
+> **Version:** 1.1.0
 > **Agent:** ps-architect
 > **Quality Target:** >= 0.92
 > **Purpose:** Define the dimensions that determine which adversarial strategy to apply in a given context, producing a formal taxonomy consumable by both human users and automated orchestration
@@ -77,6 +77,14 @@ The dimensions are derived from three authoritative sources:
 | **Process** | TGT-PROC | Workflow definitions, orchestration plans, skill configurations, agent definitions, runbooks | ORCHESTRATION.yaml, SKILL.md files, PLAYBOOK.md files | Favors operational strategies: S-004 (Pre-Mortem for process failure), S-012 (FMEA for process failure modes), S-007 (Constitutional AI against process rules). Process-layer enforcement is primary mechanism. |
 
 ### Strategy Affinity by Target Type
+
+**Affinity Classification Criteria:**
+
+| Affinity | Criteria |
+|----------|----------|
+| **High** | Strategy is listed as "Required" or "Recommended" for this target type in the TASK-003 per-profile Decision Criticality Mapping at C2; OR the strategy's TASK-003 "When to Use" section explicitly names this target type as a favorable value. |
+| **Medium** | Strategy is applicable to this target type per its TASK-003 profile (listed in "When to Use" as a secondary or conditional match), but is not Required/Recommended at C2 for this target type. |
+| **Low** | Strategy is not listed in the TASK-003 "When to Use" section for this target type, OR is explicitly listed in the "When to Avoid" section. Still deployable at elevated criticality (C3-C4) where all strategies are candidates. |
 
 | Target Type | High Affinity Strategies | Medium Affinity | Low Affinity |
 |-------------|-------------------------|-----------------|--------------|
@@ -245,15 +253,17 @@ The dimensions are derived from three authoritative sources:
 
 ### Context Rot Impact by Layer
 
-Per R-SYS-001 from Barrier-1 ENF-to-ADV handoff:
+Per R-SYS-001 from Barrier-1 ENF-to-ADV handoff and Chroma Research context rot findings:
 
-| Token Count | L1 Effectiveness | L2 Effectiveness | L3-L5/Process |
-|-------------|-----------------|-------------------|---------------|
+| Token Count | L1 Effectiveness (estimated) | L2 Effectiveness | L3-L5/Process |
+|-------------|------------------------------|-------------------|---------------|
 | 0-20K | ~100% | ~100% | ~100% |
-| 20K-50K | ~60-80% | ~100% | ~100% |
-| 50K+ | ~40-60% | ~100% | ~100% |
+| 20K-50K | ~60-80% (estimated) | ~100% | ~100% |
+| 50K+ | ~40-60% (estimated) | ~100% | ~100% |
 
-**Strategy mapping constraint (NFR-001):** Strategies that rely solely on L1 delivery (rule-encoded guidance) should be expected to have 40-60% effectiveness degradation at 50K+ tokens. Strategies delivered through L2-L5 or Process are context-rot-immune.
+**Estimation basis:** The effectiveness percentages above are estimates derived from: (a) the qualitative degradation described in R-SYS-001 ("L1 effectiveness degrades with context length"), (b) Chroma Research context rot findings (cited in CLAUDE.md), and (c) Barrier-1 classification of L1 as "VULNERABLE" to context rot. These are not empirically measured within Jerry and should be treated as structured estimates pending empirical validation in Phase 1 integration (EN-304).
+
+**Strategy mapping constraint (NFR-001):** Strategies that rely solely on L1 delivery (rule-encoded guidance) should be expected to have significant effectiveness degradation at 50K+ tokens (estimated ~40-60%). Strategies delivered through L2-L5 or Process are context-rot-immune.
 
 ---
 
@@ -367,9 +377,18 @@ While the 8 dimensions are designed to be orthogonal, certain combinations creat
 | 7 | Platform Context | PLAT-CC, PLAT-CC-WIN, PLAT-GENERIC | Barrier-1 ENF-to-ADV | Determines hook availability and enforcement level |
 | 8 | Token Budget State | TOK-FULL, TOK-CONST, TOK-EXHAUST | Barrier-1 ENF-to-ADV (R-SYS-002, R-SYS-004) | Constrains strategy selection by token cost |
 
-**Total context space:** 6 x 5 x 4 x 4 x 3 x 3 x 3 x 3 = **19,440 unique context combinations**.
+**Total context space (8-dimension):** 6 x 5 x 4 x 4 x 3 x 3 x 3 x 3 = **19,440 unique context combinations**.
 
-Not all combinations are equally plausible or require distinct strategy recommendations. The decision tree (TASK-004) will collapse this space into a tractable set of decision paths by using criticality as the primary branching dimension and other dimensions as secondary modifiers.
+**Derived-dimension reduction (7-dimension):** In the decision tree (TASK-004), ENF is treated as derived from PLAT (see Design Decision below), reducing the independent input space to 4 x 3 x 3 x 5 x 6 x 4 x 3 = **12,960 combinations**. The ENF-MIN override case (see below) adds a bounded set of additional scenarios handled via fallback rules, preserving completeness.
+
+**Design Decision -- ENF = f(PLAT):** The enforcement layer availability is strongly correlated with platform context. The default mapping is:
+- PLAT-CC -> ENF-FULL (all 5 layers + Process available)
+- PLAT-CC-WIN -> ENF-FULL (same, with WSL caveats)
+- PLAT-GENERIC -> ENF-PORT (L1, L5, Process only)
+
+**ENF-MIN Override:** ENF-MIN (degraded environment, L1 only) can occur on any platform when the environment is degraded (e.g., CI broken, hooks disabled, emergency session). ENF-MIN is NOT derivable from PLAT alone. The decision tree handles ENF-MIN as an explicit override case: when ENF-MIN is detected on a known platform (PLAT-CC or PLAT-CC-WIN), the tree applies the ENF-MIN fallback rules (PLAT-GENERIC portable stack treatment, plus a context rot warning and human escalation recommendation for C3+). This ensures the ENF-MIN scenario is not lost by the derivation assumption.
+
+Not all combinations are equally plausible or require distinct strategy recommendations. The decision tree (TASK-004) collapses this space into a tractable set of decision paths by using criticality as the primary branching dimension and other dimensions as secondary modifiers.
 
 ---
 
@@ -410,4 +429,5 @@ Not all combinations are equally plausible or require distinct strategy recommen
 *Document ID: FEAT-004:EN-303:TASK-001*
 *Agent: ps-architect*
 *Created: 2026-02-13*
+*Revised: 2026-02-13 (v1.1.0 -- ps-analyst-303 revision addressing critique iteration 1)*
 *Status: Complete*
