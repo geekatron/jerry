@@ -17,7 +17,7 @@ workflow:
   project_id: "PROJ-001-oss-release"
   version: "2.0"
   created_at: "2026-02-13T00:00:00Z"
-  updated_at: "2026-02-14T08:00:00Z"
+  updated_at: "2026-02-14T09:00:00Z"
   status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
 
   # Workflow ID configuration (WI-SAO-021)
@@ -890,13 +890,24 @@ execution_queue:
     - id: 14
       name: "Phase 4 Integration Testing"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "group-13a"
+      status: "IN_PROGRESS"
+      blocked_by: "group-13a"  # UNBLOCKED: group-13a COMPLETE
+      note: "Creator agents COMPLETE. ADV: 8 deliverables (EN-306 TASK-001 through TASK-008). ENF: 12 deliverables (EN-406 TASK-001 through TASK-012). Self-assessed quality: ADV ~0.93, ENF ~0.937. Awaiting adversarial critics."
       agents:
-        - "ps-validator-306"  # adv
-        - "ps-critic-306"  # adv
-        - "ps-validator-406"  # enf
-        - "ps-critic-406"  # enf
+        - id: "ps-validator-306"
+          pipeline: "adv"
+          status: "COMPLETE"
+          output: "8 deliverables: integration test plan, PS strategy testing (31 tests), NSE strategy testing (28+ tests), orchestration loop testing (38 tests), cross-platform assessment, QA audit (26 criteria PASS), status report, configuration baseline"
+        - id: "ps-validator-406"
+          pipeline: "enf"
+          status: "COMPLETE"
+          output: "12 deliverables: integration test plan (203 tests), hook E2E testing (43 tests), rule enforcement testing (44 tests), session context testing (37 tests), interaction testing (24 tests), performance benchmark (17 tests), platform validation (20 tests), CI/CD testing (18 tests), QA audit (19 ACs), NFC verification (8 NFCs), status report, configuration baseline. Closes EN-405 conditional ACs."
+        - id: "ps-critic-306"
+          pipeline: "adv"
+          status: "PENDING"
+        - id: "ps-critic-406"
+          pipeline: "enf"
+          status: "PENDING"
 
     # Group 15: Final Synthesis
     - id: 15
@@ -928,12 +939,12 @@ metrics:
     phases_complete: 4  # adv Phase 1 (EN-302) + enf Phase 1 (EN-402) + adv Phase 2 (EN-303) + enf Phase 2 (EN-403/404)
     phases_total: 8  # 4 per pipeline
     phases_percent: 50
-    agents_executed: 30  # 28 + ps-validator-304-305-307 + ps-validator-405
+    agents_executed: 32  # 30 + ps-validator-306 + ps-validator-406
     agents_total: 38  # Total unique agent invocations
-    agents_percent: 79
-    artifacts_created: 47  # 45 + EN-304/TASK-010 + EN-405/TASK-010
-    artifacts_total: 54  # Estimated total artifacts (including validation reports)
-    artifacts_percent: 87
+    agents_percent: 84
+    artifacts_created: 67  # 47 + 8 (EN-306) + 12 (EN-406)
+    artifacts_total: 71  # Estimated total artifacts
+    artifacts_percent: 94
     barriers_complete: 2  # barrier-1 COMPLETE + barrier-2 COMPLETE
     barriers_total: 3  # barrier-1, barrier-2, final-synthesis
     barriers_percent: 67
@@ -980,7 +991,7 @@ metrics:
 
   timing:
     workflow_started: "2026-02-13T00:00:00Z"
-    last_activity: "2026-02-14T08:00:00Z"
+    last_activity: "2026-02-14T09:00:00Z"
     estimated_completion: null
     phase_durations:
       - phase: "adv-phase-1"
@@ -1012,9 +1023,9 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Phase 4 Integration Testing (Group 14)"
+    - action: "Phase 4 Adversarial Critics (Group 14 continuation)"
       priority: "HIGH"
-      note: "Dispatch parallel agents: ps-validator-306 + ps-critic-306 (ADV), ps-validator-406 + ps-critic-406 (ENF). Phase 3 validation complete: ADV PASS (0.928, 32/32 ACs), ENF CONDITIONAL PASS (0.936, 6/9 full + 3 conditional). Group 13a COMPLETE."
+      note: "Dispatch ps-critic-306 (ADV) and ps-critic-406 (ENF) to review creator deliverables. ADV has 8 deliverables, ENF has 12 deliverables. Self-assessed quality: ADV ~0.93, ENF ~0.937. Apply S-001/S-012/S-014 for iteration 1."
 
   subsequent:
     - action: "Final Synthesis (Group 15)"
@@ -1025,9 +1036,9 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-group-13a-validation-complete"
-  current_state: "Group 13a COMPLETE. Phase 3 validation done. ADV PASS (0.928, 32/32 ACs). ENF CONDITIONAL PASS (0.936, 6/9 full + 3 conditional for Phase 4). All Phase 1-3 enablers validated. Ready for Phase 4 Integration Testing (Group 14)."
-  next_step: "Dispatch Phase 4 Integration Testing agents (Group 14). ADV: ps-validator-306 + ps-critic-306 for EN-306. ENF: ps-validator-406 + ps-critic-406 for EN-406. These will create integration test plans, execute tests, and perform QA audits."
+  last_checkpoint: "CP-group-14-creators-complete"
+  current_state: "Group 14 IN_PROGRESS. Phase 4 creators COMPLETE. ADV: 8 deliverables for EN-306 (integration tests, QA audit, status report, config baseline). ENF: 12 deliverables for EN-406 (~203 test cases, closes EN-405 conditional ACs). Awaiting adversarial critics."
+  next_step: "Dispatch Phase 4 adversarial critics. ADV: ps-critic-306 reviews EN-306 TASK-001 through TASK-008. ENF: ps-critic-406 reviews EN-406 TASK-001 through TASK-012. Apply S-001 (Red Team), S-012 (FMEA), S-014 (LLM-as-Judge) for iteration 1."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/ORCHESTRATION.yaml"
@@ -1040,12 +1051,12 @@ resumption:
   adversarial_feedback_status:
     total_enablers: 8
     enablers_complete: 6  # EN-302, EN-402, EN-303, EN-403/EN-404, EN-304/305/307, EN-405
-    enablers_in_progress: 0
+    enablers_in_progress: 2  # EN-306, EN-406
     enablers_validated: 6  # EN-302 (CONDITIONAL PASS), EN-402 (PASS), EN-303 (PASS), EN-403/404 (PASS), EN-304/305/307 (PASS), EN-405 (CONDITIONAL PASS)
     enablers_awaiting_validation: 0
-    current_enabler: "Phase 4 Integration Testing (EN-306/EN-406)"
-    current_iteration: "Group 14 (pending)"
-    iterations_complete: 18  # +2 validators
+    current_enabler: "Phase 4 Integration Testing (EN-306/EN-406) - creators COMPLETE, awaiting critics"
+    current_iteration: "Group 14 - awaiting adversarial critique iteration 1"
+    iterations_complete: 20  # 18 + 2 creator passes
     iterations_total: 48
 
   adrs_ratified:
