@@ -714,10 +714,24 @@ Every sync barrier has explicit entry and exit criteria that MUST be satisfied.
 | # | Criterion | Verification |
 |---|-----------|-------------|
 | 1 | Quality score >= 0.92 weighted composite (H-13) | Recorded in quality.barrier_scores |
-| 2 | Minimum 1 creator-critic-revision iteration completed | Iteration count >= 1 |
+| 2 | Minimum 3 creator-critic-revision iterations completed | Iteration count >= 3 |
 | 3 | Cross-pollination artifacts created for both directions | a_to_b and b_to_a artifacts exist |
 | 4 | Constitutional compliance verified (S-007, H-18) | No constitutional violations found |
 | 5 | Barrier marked COMPLETE in ORCHESTRATION.yaml | barrier.status == COMPLETE |
+
+### Quality Gates in Non-Barrier Patterns
+
+The adversarial quality gate protocol applies to all orchestration patterns, not only cross-pollinated pipelines with sync barriers. For patterns without explicit barriers, quality gates are enforced at phase boundaries.
+
+**Sequential Pipeline:** The quality gate is applied between each phase. Phase N output is reviewed before Phase N+1 begins. The same threshold (>= 0.92) and minimum iterations (3) apply.
+
+**Fan-Out / Fan-In:** At fan-out, the source deliverable passes through a quality gate before dispatch. At fan-in convergence, each incoming deliverable passes through a quality gate before synthesis begins.
+
+**Divergent-Convergent (Diamond):** All divergent outputs are reviewed at the diamond merge point before convergence proceeds.
+
+**Review Gate (Pattern 7):** The review gate IS the quality gate -- SRR/PDR/CDR reviews serve as the adversarial critic.
+
+**Generator-Critic (Pattern 8):** Each iteration of the loop IS a creator-critic-revision cycle. The loop exits when score >= 0.92 or circuit breaker triggers.
 
 ### Cross-Pollination Enhancement with Adversarial Strategy Selection
 
@@ -1040,7 +1054,7 @@ session_context:
 ```yaml
 circuit_breaker:
   max_iterations: 3          # Hard limit - prevents infinite loops
-  quality_threshold: 0.85    # Exit condition - "good enough"
+  quality_threshold: 0.92    # Exit condition - aligned with H-13 quality-enforcement SSOT
   escalation: human_review   # After 3 fails -> human intervention
 ```
 

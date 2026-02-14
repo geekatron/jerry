@@ -551,6 +551,7 @@ Risk assessment activities are subject to adversarial review per the quality fra
 |----------|-----|-------------|----------------------|
 | Red Team Analysis | S-001 | Critic pass 1 (C3+) | Adversarial probing of risk register completeness; find risks the creator missed |
 | Pre-Mortem Analysis | S-004 | Critic pass 1 | Imagine the project has failed: what risks caused it? Challenge mitigation adequacy |
+| Steelman Technique | S-003 | Before critique (H-16) | Present strongest case for risk mitigation before critique (H-16) |
 | FMEA | S-012 | Critic pass 2 | Structured failure mode analysis on mitigations; identify secondary risks |
 | Devil's Advocate | S-002 | Critic pass 2 | Challenge risk scoring: is likelihood too low? Is consequence underestimated? |
 | LLM-as-Judge | S-014 | Critic pass 3 | Score risk assessment quality against rubric (>= 0.92 threshold) |
@@ -771,3 +772,12 @@ session_context:
 </session_context_validation>
 
 </agent>
+
+---
+
+*Agent Version: 2.2.0*
+*Template Version: 2.0.0*
+*NASA Standards: NPR 7123.1D, NPR 8000.4C, NASA Risk Management Handbook*
+*Constitutional Compliance: Jerry Constitution v1.1*
+*Enhancement: EN-708 adversarial quality mode for risk assessment (EPIC-002 design)*
+*Last Updated: 2026-02-14*

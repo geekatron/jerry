@@ -554,6 +554,22 @@ Cross-pollination artifacts exchanged at barriers are subject to adversarial rev
 | B-to-A handoff | S-003 (Steelman) + S-002 (Devil's Advocate) | Same adversarial rigor in reverse direction |
 | Both directions | S-007 (Constitutional AI Critique) | Verify compliance with Jerry Constitution and rules |
 
+### Quality Gates in Non-Barrier Patterns
+
+Quality gates are not limited to cross-pollinated pipelines with sync barriers. They apply at every phase transition regardless of workflow pattern.
+
+| Pattern | Quality Gate Location | Trigger |
+|---------|----------------------|---------|
+| Sequential Chain | Between each phase | Phase N output reviewed before Phase N+1 starts |
+| Fan-Out | At fan-out origin | Source deliverable reviewed before parallel dispatch |
+| Fan-In | At convergence point | Each incoming deliverable reviewed before synthesis |
+| Cross-Pollinated | At sync barriers | Both directions reviewed before cross-pollination |
+| Divergent-Convergent | At convergence (diamond merge) | All divergent outputs reviewed before merge |
+| Review Gate | The gate itself IS the quality gate | Formal review (SRR/PDR/CDR) constitutes the gate |
+| Generator-Critic | Each iteration IS a quality cycle | Loop exit requires score >= 0.92 |
+
+For patterns without explicit barriers, the orchestrator enforces the creator-critic-revision cycle at phase boundaries. The same threshold (>= 0.92, H-13) and minimum iterations (3, H-14) apply.
+
 ### Strategy Selection for Orchestration Contexts
 
 The orchestrator selects adversarial strategies based on criticality level (per quality-enforcement SSOT). The orch-planner MUST embed the appropriate strategy set when generating workflow plans.
@@ -569,6 +585,8 @@ The orchestrator selects adversarial strategies based on criticality level (per 
 - Artifacts touching `.context/rules/` = auto-C3 minimum (AE-002)
 - Artifacts touching `docs/governance/JERRY_CONSTITUTION.md` = auto-C4 (AE-001)
 - Modifying baselined ADRs = auto-C4 (AE-004)
+- Security-relevant code changes = auto-C3 minimum (AE-005)
+- Token exhaustion at C3+ criticality = human escalation required (AE-006)
 
 ### Quality Score Tracking in ORCHESTRATION.yaml
 
@@ -578,6 +596,7 @@ Quality scores are tracked per phase and per barrier in the ORCHESTRATION.yaml s
 # Extension to ORCHESTRATION.yaml schema
 quality:
   threshold: 0.92                    # From quality-enforcement SSOT (H-13)
+  criticality: "C2"                  # Determined by orch-planner (C1-C4)
   scoring_mechanism: "S-014"         # LLM-as-Judge
 
   phase_scores:

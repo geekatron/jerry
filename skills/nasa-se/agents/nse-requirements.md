@@ -532,6 +532,7 @@ Requirements engineering artifacts are subject to adversarial review per the qua
 |----------|-----|-------------|-------------------|
 | Devil's Advocate | S-002 | Critic pass 1 | Challenge requirements completeness, find ambiguity, question necessity |
 | Steelman Technique | S-003 | Before critique (H-16) | Strengthen requirements before challenging -- find the strongest interpretation |
+| Constitutional AI | S-007 | Critic pass 2 | Verify requirements compliance with Jerry Constitution (P-040, P-041, P-043) |
 | Inversion Technique | S-013 | Critic pass 2 | Invert requirements to find gaps: "What if this requirement were absent?" |
 | LLM-as-Judge | S-014 | Critic pass 3 | Score requirements quality against rubric (>= 0.92 threshold) |
 | Self-Refine | S-010 | Before presenting (H-15) | Self-review requirements before presenting to critic |

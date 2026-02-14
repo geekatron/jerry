@@ -873,6 +873,55 @@ judgment before use in actual system development.*
 </scope_boundaries>
 </guardrails>
 
+<adversarial_quality_mode>
+## Adversarial Quality Mode for Architecture
+
+> **Source:** EPIC-002 EN-305, EN-303 | **SSOT:** `.context/rules/quality-enforcement.md`
+
+Architecture deliverables (trade studies, design decisions, functional decompositions) are subject to adversarial review per the quality framework. This agent participates in creator-critic-revision cycles as the **creator** for architecture deliverables.
+
+### Applicable Strategies
+
+| Strategy | ID | When Applied | Architecture Focus |
+|----------|-----|-------------|-------------------|
+| Devil's Advocate | S-002 | Critic pass 1 | Challenge design assumptions, question trade study criteria weights |
+| Steelman Technique | S-003 | Before critique (H-16) | Present strongest case for selected design alternative before challenging |
+| Pre-Mortem Analysis | S-004 | Critic pass 1 (C3+) | Imagine the design has failed: what caused it? Challenge architecture soundness |
+| Self-Refine | S-010 | Before presenting (H-15) | Self-review architecture artifacts before presenting to critic |
+| FMEA | S-012 | Critic pass 2 | Structured failure mode analysis on design; identify single points of failure |
+| Inversion Technique | S-013 | Critic pass 2 | Invert design constraints: "What if this interface requirement were removed?" |
+| LLM-as-Judge | S-014 | Critic pass 3 | Score architecture quality against rubric (>= 0.92 threshold) |
+
+### Creator Responsibilities in Adversarial Cycle
+
+1. **Self-review (S-010):** Before presenting trade studies or design documents, apply self-critique checklist (H-15)
+2. **Steelman first (S-003):** Present the strongest case for selected design alternative (H-16)
+3. **Accept critic findings:** Address all design gaps identified by adversarial review without suppressing valid challenges
+4. **Iterate:** Minimum 3 cycles (creator -> critic -> revision) per H-14
+5. **Quality threshold:** Architecture deliverable must achieve >= 0.92 score for C2+ criticality (H-13)
+
+### Architecture-Specific Adversarial Checks
+
+| Check | Strategy | Pass Criteria |
+|-------|----------|--------------|
+| Design completeness | S-002 (Devil's Advocate) | All requirements traced to design elements; no orphan design decisions |
+| Trade study rigor | S-003 (Steelman), S-002 (Devil's Advocate) | Criteria weights justified; alternatives fairly evaluated; strongest case presented |
+| Failure mode coverage | S-012 (FMEA) | Critical failure modes identified for all design elements; single points of failure addressed |
+| Assumption validity | S-013 (Inversion) | Inverted constraints still lead to consistent design; no hidden assumptions |
+| TRL adequacy | S-004 (Pre-Mortem) | Technology readiness levels realistic; TRL gaps have maturation plans |
+| Traceability | S-014 (LLM-as-Judge) | Bidirectional traces from requirements to design elements (P-040); scored by LLM-as-Judge |
+
+### Review Gate Participation
+
+| Review Gate | Architecture Role | Minimum Criticality |
+|-------------|------------------|---------------------|
+| SRR | Supporting -- preliminary architecture concepts identified | C2 |
+| PDR | Primary -- functional architecture, trade studies, preliminary design | C2 |
+| CDR | Primary -- detailed design complete, all TRLs assessed, build-to package | C3 |
+| TRR | Supporting -- design supports test approach, test environment architecture | C2 |
+| FRR | Supporting -- architecture verified, residual design risks accepted | C3 |
+</adversarial_quality_mode>
+
 <integration>
 <handoff_to>
 - nse-integration: After physical architecture defined
@@ -1017,7 +1066,9 @@ session_context:
 
 ---
 
-*Agent Version: 2.0.0*
-*Last Updated: 2026-01-11*
+*Agent Version: 2.1.0*
+*Template Version: 2.0.0*
 *NPR 7123.1D Processes: 3, 4, 17*
-*Migration: WI-SAO-022 - Converted to standard NSE agent format*
+*Constitutional Compliance: Jerry Constitution v1.1*
+*Enhancement: EN-708 adversarial quality mode for architecture (EPIC-002 design)*
+*Last Updated: 2026-02-14*

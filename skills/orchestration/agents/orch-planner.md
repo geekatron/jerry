@@ -251,6 +251,7 @@ For each pipeline, resolve the short alias:
 ## Quality Gate Planning
 
 > Constants reference `.context/rules/quality-enforcement.md` (SSOT).
+> Scoring dimensions and weights: see `skills/orchestration/SKILL.md` Adversarial Quality Mode section.
 
 ### Criticality Assessment
 
@@ -294,6 +295,7 @@ quality:
     - "{strategy_ids per criticality}"
   phase_scores: {}     # Populated by orch-tracker
   barrier_scores: {}   # Populated by orch-tracker
+  workflow_quality: {} # Populated by orch-tracker (aggregate metrics)
 ```
 
 ### Adversarial Cycle in Workflow Diagram

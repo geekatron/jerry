@@ -574,6 +574,7 @@ V&V activities are subject to adversarial review per the quality framework. This
 | Chain-of-Verification | S-011 | Critic pass 1 | Verify each claim in the VCRM; challenge evidence completeness |
 | Inversion Technique | S-013 | Critic pass 1 | Invert verification assumptions: "What if this test passes for the wrong reason?" |
 | Devil's Advocate | S-002 | Critic pass 2 | Challenge V&V coverage gaps, question test adequacy |
+| Steelman Technique | S-003 | Before critique (H-16) | Present strongest case for V&V completeness before critique (H-16) |
 | LLM-as-Judge | S-014 | Critic pass 3 | Score V&V quality against rubric (>= 0.92 threshold) |
 | Self-Refine | S-010 | Before presenting (H-15) | Self-review verification artifacts before presenting to critic |
 | FMEA | S-012 | Deep review (C3+) | Structured failure mode analysis for verification approach |
@@ -775,3 +776,12 @@ session_context:
 </session_context_validation>
 
 </agent>
+
+---
+
+*Agent Version: 2.2.0*
+*Template Version: 2.0.0*
+*NASA Standards: NPR 7123.1D, NASA-HDBK-1009A, NASA SWEHB 7.9*
+*Constitutional Compliance: Jerry Constitution v1.1*
+*Enhancement: EN-708 adversarial quality mode for verification (EPIC-002 design)*
+*Last Updated: 2026-02-14*

@@ -24,7 +24,7 @@ agents_covered:
 > **Version:** 2.2.0
 > **Skill:** nasa-se
 > **Purpose:** Systems engineering guidance based on NASA NPR 7123.1D and SE Handbook
-> **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-064), Triple-lens refactoring (SAO-INIT-007)
+> **Updated:** 2026-02-14 - EN-708 adversarial quality mode: TRR/FRR entry/exit criteria, strategy reconciliation
 
 ---
 
@@ -603,6 +603,28 @@ CREATOR-CRITIC-REVISION CYCLE (Minimum 3 Iterations):
 | **Exit** | All RFAs closed; score >= 0.92; build-to package approved | -- | nse-reviewer sign-off |
 
 **Note:** CDR is minimum C3 criticality, requiring deep review strategies per the SSOT.
+
+#### TRR (Test Readiness Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | CDR closed; all test procedures approved; test environment ready | -- | CDR exit confirmed |
+| **Critic Pass 1** | Test coverage challenged; verification gaps identified | S-011 (CoVe), S-013 (Inversion) | Findings documented |
+| **Critic Pass 2** | Test approach validated; boundary conditions verified | S-013 (Inversion), S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; test prerequisites complete | -- | nse-reviewer sign-off |
+
+**Note:** TRR is minimum C2 criticality. Strategies focus on verification completeness via Chain-of-Verification and Inversion.
+
+#### FRR (Flight/Deployment Readiness Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | TRR closed; all tests passed or waived; risk posture accepted | -- | TRR exit confirmed |
+| **Critic Pass 1** | Readiness assumptions challenged; residual risks probed | S-002 (Devil's Advocate), S-004 (Pre-Mortem) | Findings documented |
+| **Critic Pass 2** | Failure modes analyzed; deployment risks assessed | S-012 (FMEA), S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; residual risk accepted by stakeholders | -- | nse-reviewer sign-off |
+
+**Note:** FRR is minimum C3 criticality, requiring deep review with Pre-Mortem and FMEA strategies.
 
 ### Strategy Pairing for NSE Contexts
 

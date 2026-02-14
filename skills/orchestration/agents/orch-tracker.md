@@ -285,6 +285,7 @@ checkpoints:
 ## Quality Score Tracking
 
 > Constants reference `.context/rules/quality-enforcement.md` (SSOT).
+> Scoring dimensions and weights: see `skills/orchestration/SKILL.md` Adversarial Quality Mode section.
 
 ### Recording Quality Scores
 
@@ -336,6 +337,14 @@ The tracker enforces quality gates by checking scores against the threshold befo
 | Score >= 0.92 | Record PASS, allow transition | Phase/barrier proceeds |
 | Score < 0.92, iterations < 3 | Record REVISE, block transition | Creator revises with feedback |
 | Score < 0.92, iterations >= 3 | Record ESCALATED, block transition | Human escalation required (AE-006) |
+
+**Gate-Status-to-Agent-Status Mapping:**
+
+| Gate Outcome | Agent Status | Phase/Barrier Status | Action |
+|-------------|-------------|---------------------|--------|
+| PASS | COMPLETE | COMPLETE (if all agents pass) | Proceed to next phase/barrier |
+| REVISE | IN_PROGRESS (unchanged) | IN_PROGRESS (unchanged) | Creator revises with critic feedback |
+| ESCALATED | BLOCKED | BLOCKED | Human escalation required (AE-006) |
 
 **State Transition Guard:**
 

@@ -122,10 +122,11 @@ session_context:
 orchestration_guidance:
   pattern: "iterative_refinement"
   circuit_breaker:
-    max_iterations: 3
-    improvement_threshold: 0.10
+    min_iterations: 3
+    max_iterations: 5
+    improvement_threshold: 0.02
     stop_conditions:
-      - "quality_score >= 0.85"
+      - "quality_score >= 0.92 (C2+) or >= 0.85 (C1)"
       - "iteration >= max_iterations"
       - "no_improvement_for_2_consecutive_iterations"
   pairing_agents:
@@ -281,7 +282,7 @@ Before presenting YOUR critique output, apply S-010 (Self-Refine):
 | Criticality | Strategies ps-critic Applies | Focus |
 |-------------|------------------------------|-------|
 | **C1 (Routine)** | S-010 (Self-Refine) only | Basic self-check |
-| **C2 (Standard)** | S-014 (LLM-as-Judge) + S-003 (Steelman) + S-002 (Devil's Advocate) | Structured scoring, balanced critique, assumption challenge |
+| **C2 (Standard)** | S-014 (LLM-as-Judge) + S-007 (Constitutional AI) + S-002 (Devil's Advocate) | Structured scoring, constitutional compliance, assumption challenge |
 | **C3 (Significant)** | C2 + S-004 (Pre-Mortem) + S-013 (Inversion) | "What if this fails?" + invert key claims |
 | **C4 (Critical)** | C3 + S-001 (Red Team) + S-007 (Constitutional AI) + S-012 (FMEA) + S-011 (CoVe) | Full adversarial battery |
 
@@ -437,7 +438,7 @@ When invoking this agent, the prompt MUST include:
 {criteria_definition - either default or custom}
 
 ## IMPROVEMENT THRESHOLD
-- **Target Score:** {0.85 default}
+- **Target Score:** {0.92 default for C2+; 0.85 for C1}
 - **Max Iterations:** {3 default}
 ```
 
@@ -745,8 +746,8 @@ Use default criteria:
 - Alignment (0.15)
 
 ## IMPROVEMENT THRESHOLD
-- **Target Score:** 0.85
-- **Max Iterations:** 3
+- **Target Score:** 0.92
+- **Max Iterations:** 5
 - **Previous Score:** 0.65 (iteration 1)
 
 ## CRITIQUE TASK

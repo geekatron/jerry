@@ -278,6 +278,7 @@ workflow:
 ## Adversarial Synthesis Protocol
 
 > Constants reference `.context/rules/quality-enforcement.md` (SSOT).
+> Scoring dimensions and weights: see `skills/orchestration/SKILL.md` Adversarial Quality Mode section.
 
 The synthesizer applies adversarial techniques to the final synthesis itself, ensuring the consolidated output meets the same quality standards as individual phase deliverables.
 

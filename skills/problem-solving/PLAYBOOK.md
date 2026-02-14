@@ -22,7 +22,7 @@ agents_covered:
 > **Version:** 3.4.0
 > **Skill:** problem-solving
 > **Purpose:** Structured analysis, research, and decision-making through specialized agents
-> **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-063), Added 15 L0/L1/L2 real-world examples (WI-SAO-043)
+> **Updated:** 2026-02-14 - EN-707 adversarial quality mode integration, SSOT threshold alignment (EPIC-003); 2026-01-12 - Added YAML frontmatter (WI-SAO-063), Added 15 L0/L1/L2 real-world examples (WI-SAO-043)
 
 ---
 
@@ -694,8 +694,10 @@ Step 2: "Based on docs/research/db-selection-research.md, create ADR
         recommending a database choice"
 Agent: ps-architect → docs/decisions/adr-003-database-selection.md
 
-Step 3: "Critique the ADR until it scores 0.85 or higher"
+Step 3: "Critique the ADR until it scores 0.92 or higher (C2+ deliverable)"
 Agent: ps-critic → [iterate until acceptance threshold]
+
+> **Note:** For C2+ deliverables, the acceptance threshold is >= 0.92 per SSOT H-13. The legacy 0.85 threshold applies only to C1 (Routine) deliverables.
 ```
 
 ##### L2 (Architect) - Constraints
@@ -1075,7 +1077,9 @@ Step 2: [Designer revises based on feedback]
 Step 3: "Critique again"
 Agent: ps-critic → Score: 0.87 → ACCEPT
 
-Circuit breaker: max 3 iterations, threshold 0.85
+Circuit breaker: max 5 iterations, threshold 0.92 (C2+) or 0.85 (C1)
+
+> **Note:** This example predates the EPIC-002 quality framework. For C2+ deliverables, the threshold is >= 0.92 per SSOT H-13.
 ```
 
 ##### L2 (Architect) - Constraints
@@ -1535,8 +1539,9 @@ Step 2: "Based on docs/research/caching-options.md, create an ADR"
 |             - Quality plateau not recognized                      |
 |                                                                   |
 | FIX:        Always use circuit breaker:                           |
-|             - max_iterations: 3 (hard limit)                      |
-|             - acceptance_threshold: 0.85 (not 0.99)               |
+|             - min_iterations: 3 (H-14 HARD rule)                  |
+|             - max_iterations: 5 (safety limit)                    |
+|             - acceptance_threshold: 0.92 for C2+ (SSOT H-13)      |
 |             - consecutive_no_improvement: 2 (detect plateau)      |
 |                                                                   |
 +===================================================================+
@@ -1545,10 +1550,13 @@ Step 2: "Based on docs/research/caching-options.md, create an ADR"
 **Circuit Breaker Parameters:**
 | Parameter | Value | Purpose |
 |-----------|-------|---------|
-| max_iterations | 3 | Hard stop after 3 iterations |
-| acceptance_threshold | 0.85 | Good enough, not perfect |
-| improvement_threshold | 0.10 | Must improve by 10% to continue |
+| min_iterations | 3 | Minimum iterations before acceptance (H-14 HARD) |
+| max_iterations | 5 | Safety limit to prevent infinite loops |
+| acceptance_threshold | 0.92 (C2+) / 0.85 (C1) | Quality gate per SSOT H-13 |
+| improvement_threshold | 0.02 | Must improve by 2% to continue past minimum |
 | no_improvement_limit | 2 | Stop after 2 flat iterations |
+
+> **Note:** This parameter table was updated for EPIC-002. For C2+ deliverables, the threshold is >= 0.92 per SSOT H-13. The legacy 0.85 threshold applies only to C1 (Routine) deliverables.
 
 ---
 

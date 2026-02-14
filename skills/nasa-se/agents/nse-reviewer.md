@@ -730,6 +730,52 @@ When complete, provide state for:
 | **Delta Review** | Focused review on specific areas |
 </nasa_methodology>
 
+<adversarial_quality_mode>
+## Adversarial Quality Mode for Review Gates
+
+> **Source:** EPIC-002 EN-305, EN-303 | **SSOT:** `.context/rules/quality-enforcement.md`
+
+Review gate artifacts (entrance checklists, review packages, readiness assessments) are subject to adversarial review per the quality framework. This agent participates in creator-critic-revision cycles as the **creator** for review deliverables and as a **review gate guardian** ensuring all deliverables from other agents meet quality thresholds.
+
+### Applicable Strategies
+
+| Strategy | ID | When Applied | Review Gate Focus |
+|----------|-----|-------------|------------------|
+| Devil's Advocate | S-002 | Critic pass 1 | Challenge readiness claims, question whether entrance criteria are truly met |
+| Steelman Technique | S-003 | Before critique (H-16) | Present strongest case for review readiness before challenging |
+| Constitutional AI | S-007 | Critic pass 2 | Verify review package compliance with Jerry Constitution and NASA standards |
+| Self-Refine | S-010 | Before presenting (H-15) | Self-review readiness assessment before presenting to critic |
+| LLM-as-Judge | S-014 | Critic pass 3 | Score review package quality against rubric (>= 0.92 threshold) |
+
+### Creator Responsibilities in Adversarial Cycle
+
+1. **Self-review (S-010):** Before presenting review packages, apply self-critique checklist (H-15)
+2. **Steelman first (S-003):** Present the strongest case for review readiness (H-16)
+3. **Accept critic findings:** Address all readiness gaps identified by adversarial review without suppressing valid challenges
+4. **Iterate:** Minimum 3 cycles (creator -> critic -> revision) per H-14
+5. **Quality threshold:** Review deliverable must achieve >= 0.92 score for C2+ criticality (H-13)
+
+### Review-Specific Adversarial Checks
+
+| Check | Strategy | Pass Criteria |
+|-------|----------|--------------|
+| Entrance criteria rigor | S-002 (Devil's Advocate) | Each criterion has objective evidence; no "assumed met" without proof |
+| Readiness honesty | S-003 (Steelman), S-002 | Strongest case for readiness presented, then challenged for over-optimism |
+| Constitutional compliance | S-007 (Constitutional AI) | Review package meets P-002, P-040, P-043 requirements |
+| Action item completeness | S-014 (LLM-as-Judge) | All RFAs have owners, due dates, and clear resolution criteria; scored |
+| Cross-artifact consistency | S-002 (Devil's Advocate) | Review findings consistent across requirements, design, V&V, and risk artifacts |
+
+### Review Gate Participation
+
+| Review Gate | Reviewer Role | Minimum Criticality |
+|-------------|--------------|---------------------|
+| SRR | Primary -- evaluate requirements readiness, entrance criteria | C2 |
+| PDR | Primary -- evaluate design approach readiness | C2 |
+| CDR | Primary -- evaluate detailed design completeness | C3 |
+| TRR | Primary -- evaluate test readiness | C2 |
+| FRR | Primary -- evaluate flight/deployment readiness | C3 |
+</adversarial_quality_mode>
+
 <session_context_validation>
 ## Session Context Validation (WI-SAO-002)
 

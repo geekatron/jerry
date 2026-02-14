@@ -437,9 +437,9 @@ NPR 7123.1D review gates map to adversarial review levels:
 
 | Review Gate | NPR 7123.1D | Minimum Criticality | Primary Strategies | Focus |
 |-------------|-------------|---------------------|-------------------|-------|
-| SRR | Appendix G.1 | C2 | S-002, S-013, S-014 | Requirements completeness, ambiguity |
+| SRR | Appendix G.1 | C2 | S-002, S-003, S-013, S-014 | Requirements completeness, ambiguity |
 | PDR | Appendix G.2 | C2 | S-004, S-012, S-014 | Design approach soundness, failure modes |
-| CDR | Appendix G.3 | C3 | S-002, S-004, S-012, S-013, S-014 | Design completeness, V&V readiness |
+| CDR | Appendix G.3 | C3 | S-002, S-004, S-007, S-012, S-013, S-014 | Design completeness, V&V readiness |
 | TRR | Appendix G.4 | C2 | S-011, S-013, S-014 | Test coverage, verification gaps |
 | FRR | Appendix G.5 | C3 | S-001, S-004, S-012, S-014 | Readiness, residual risk |
 
@@ -450,7 +450,7 @@ NPR 7123.1D review gates map to adversarial review levels:
 | NSE Context | Recommended Strategies | Rationale |
 |-------------|----------------------|-----------|
 | Requirements engineering | S-002, S-003, S-013, S-014 | Challenge completeness (Devil's Advocate), strengthen arguments (Steelman), invert assumptions (Inversion), score quality (LLM-as-Judge) |
-| Verification planning | S-011, S-013, S-014 | Verify claims (CoVe), identify gaps via inversion (Inversion), score V&V completeness (LLM-as-Judge) |
+| Verification planning | S-002, S-011, S-013, S-014 | Challenge V&V coverage (Devil's Advocate), verify claims (CoVe), identify gaps via inversion (Inversion), score V&V completeness (LLM-as-Judge) |
 | Validation activities | S-003, S-007, S-014 | Strengthen stakeholder alignment (Steelman), check constitutional compliance (Constitutional AI), score fitness (LLM-as-Judge) |
 | Risk assessment | S-001, S-004, S-012, S-014 | Red-team assumptions (Red Team), pre-mortem on mitigations (Pre-Mortem), structured failure analysis (FMEA), score assessment quality (LLM-as-Judge) |
 | Design review (PDR/CDR) | S-002, S-004, S-012, S-013 | Challenge design decisions (Devil's Advocate), imagine failures (Pre-Mortem), structured failure modes (FMEA), invert constraints (Inversion) |

@@ -11,7 +11,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Files Modified](#files-modified) | List of all files changed with summary |
-| [Acceptance Criteria Status](#acceptance-criteria-status) | EN-304 acceptance criteria assessment |
+| [Acceptance Criteria Status](#acceptance-criteria-status) | EN-707 acceptance criteria assessment |
 | [Design Decisions](#design-decisions) | Decisions made during implementation |
 | [SSOT Compliance](#ssot-compliance) | Verification against quality-enforcement.md |
 | [Backward Compatibility](#backward-compatibility) | Assessment of existing workflow compatibility |
@@ -115,7 +115,7 @@
 
 ## Acceptance Criteria Status
 
-Mapped against EN-304 acceptance criteria and EN-707 requirements:
+Mapped against EN-707 acceptance criteria and EN-707 requirements:
 
 | # | Criterion | Status | Evidence |
 |---|-----------|--------|----------|
