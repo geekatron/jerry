@@ -178,23 +178,27 @@ pipelines:
           - id: "ps-critic-303"
             name: "Problem-Solving Critic"
             role: "Adversarial reviewer"
-            status: "PENDING"
+            status: "COMPLETE"
             adversarial_strategies: ["S-003 Steelman", "S-006 ACH", "S-014 LLM-as-Judge"]
             artifact: "FEAT-004.../EN-303.../TASK-005-critique-iteration-1.md"
             inputs: ["TASK-001 through TASK-004"]
-            outputs: ["Critique reports (3 iterations)"]
+            outputs: ["Iter1: 0.843 (3 blocking, 5 major, 4 minor)", "Iter2: 0.928 PASS"]
           - id: "ps-validator-303"
             name: "Problem-Solving Validator"
             role: "Validator"
-            status: "BLOCKED"
-            artifact: "FEAT-004.../EN-303.../TASK-007-validation-report.md"
-            inputs: ["Final artifacts", "Critiques"]
-            outputs: ["Validation report"]
+            status: "COMPLETE"
+            artifact: "FEAT-004.../EN-303.../TASK-008-validation-report.md"
+            inputs: ["Final artifacts (v1.1.0)", "Critiques (iter1+iter2)"]
+            outputs: ["PASS (0.928, 13/13 ACs)"]
         artifacts:
           - "TASK-001-context-taxonomy.md"
           - "TASK-002-requirements.md"
           - "TASK-003-strategy-profiles.md"
           - "TASK-004-decision-tree.md"
+          - "TASK-005-critique-iteration-1.md"
+          - "TASK-006-revision-report.md"
+          - "TASK-007-critique-iteration-2.md"
+          - "TASK-008-validation-report.md"
 
       # PHASE 3: Skill Enhancements (EN-304, EN-305, EN-307)
       - id: 3
@@ -416,23 +420,27 @@ pipelines:
           - id: "ps-critic-403-404"
             name: "Problem-Solving Critic"
             role: "Adversarial reviewer (hooks/rules)"
-            status: "PENDING"
+            status: "COMPLETE"
             adversarial_strategies: ["S-001 Red Team", "S-012 FMEA", "S-014 LLM-as-Judge"]
             artifact: "FEAT-005.../EN-403.../TASK-005-critique-iteration-1.md"
             inputs: ["All EN-403, EN-404 design artifacts (TASK-001 through TASK-004 each)"]
-            outputs: ["Critique reports (3 iterations)"]
+            outputs: ["Iter1: 0.81 (4 blocking, 7 major, 5 minor)", "Iter2: 0.93 PASS"]
           - id: "ps-validator-403-404"
             name: "Problem-Solving Validator"
             role: "Verifier (hooks/rules)"
-            status: "BLOCKED"
-            artifact: "orchestration/epic002-crosspoll-20260213-001/enf/phase-2-implementation/ps-validator-403-404/verification-report.md"
-            inputs: ["Implementations", "Critiques"]
-            outputs: ["Verification report"]
+            status: "COMPLETE"
+            artifact: "FEAT-005.../EN-403.../TASK-008-validation-report.md"
+            inputs: ["Final artifacts (v1.1.0)", "Critiques (iter1+iter2)"]
+            outputs: ["PASS (0.93, EN-403: 12/14 ACs + 2 conditional, EN-404: 11/13 ACs + 2 conditional)"]
         artifacts:
           - "EN-403/TASK-001-hook-requirements.md"
           - "EN-403/TASK-002-userpromptsubmit-design.md"
           - "EN-403/TASK-003-pretooluse-design.md"
           - "EN-403/TASK-004-sessionstart-design.md"
+          - "EN-403/TASK-005-critique-iteration-1.md"
+          - "EN-403/TASK-006-revision-report.md"
+          - "EN-403/TASK-007-critique-iteration-2.md"
+          - "EN-403/TASK-008-validation-report.md"
           - "EN-404/TASK-001-rule-requirements.md"
           - "EN-404/TASK-002-rule-audit.md"
           - "EN-404/TASK-003-tiered-enforcement.md"
@@ -581,7 +589,7 @@ barriers:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 9
+  current_group: 11
   groups:
     # Group 1: Phase 1 Creator Agents (Parallel)
     - id: 1
@@ -679,10 +687,11 @@ execution_queue:
     - id: 9
       name: "Phase 2 Agents"
       execution_mode: "PARALLEL"
-      status: "IN_PROGRESS"
+      status: "COMPLETE"
       blocked_by: "group-8"
       started_at: "2026-02-13T00:00:00Z"
-      note: "ADRs ratified by user on 2026-02-13. Phase 2 UNBLOCKED."
+      completed_at: "2026-02-14T00:00:00Z"
+      note: "ADRs ratified by user on 2026-02-13. All Phase 2 creator agents COMPLETE."
       agents:
         - "ps-analyst-303"  # adv
         - "ps-architect-303"  # adv
@@ -695,10 +704,11 @@ execution_queue:
     - id: 10
       name: "Phase 2 Adversarial Review Cycles"
       execution_mode: "SEQUENTIAL"
-      status: "IN_PROGRESS"
+      status: "COMPLETE"
       blocked_by: "group-9"
       started_at: "2026-02-14T00:00:00Z"
-      note: "Iter 1 COMPLETE (critique+revision). EN-303: 0.843→~0.94 est. EN-403/404: 0.81→~0.92 est. Dispatching iter 2 critics."
+      completed_at: "2026-02-14T00:00:00Z"
+      note: "Both pipelines achieved PASS at iteration 2. Iteration 3 SKIPPED. Next: validation (Group 10a)."
       iterations:
         - iteration: 1
           status: "COMPLETE"
@@ -716,16 +726,41 @@ execution_queue:
             EN-303: "3/3 blocking, 5/5 major, 3/4 minor"
             EN-403-404: "4/4 blocking, 7/7 major, 5/5 minor"
         - iteration: 2
-          status: "IN_PROGRESS"
+          status: "COMPLETE"
           critique_agents: ["ps-critic-303", "ps-critic-403-404"]
           started_at: "2026-02-14T00:00:00Z"
+          completed_at: "2026-02-14T00:00:00Z"
+          scores:
+            EN-303: 0.928
+            EN-403-404: 0.93
+          verdict:
+            EN-303: "PASS (0.928 >= 0.92)"
+            EN-403-404: "PASS (0.93 >= 0.92)"
+          new_findings:
+            EN-303: "1 advisory (residual), 0 blocking/major/minor"
+            EN-403-404: "2 minor (new), 1 advisory (new), 0 blocking/major"
+        - iteration: 3
+          status: "SKIPPED"
+          note: "Both pipelines achieved PASS at iteration 2, no iteration 3 needed"
+
+    # Group 10a: Phase 2 Validation (parallel validators)
+    - id: "10a"
+      name: "Phase 2 Validation"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: "group-10"
+      completed_at: "2026-02-14T00:00:00Z"
+      note: "Both validators COMPLETE. EN-303: PASS (0.928, 13/13 ACs). EN-403/404: PASS (0.93, 12/14+11/13 ACs with conditions)."
+      agents:
+        - "ps-validator-303"   # adv - COMPLETE (PASS, 13/13 ACs)
+        - "ps-validator-403-404"  # enf - COMPLETE (PASS, with implementation conditions)
 
     # Group 11: Barrier 2 Cross-Pollination
     - id: 11
       name: "Barrier 2 Cross-Pollination"
       execution_mode: "SEQUENTIAL"
       status: "BLOCKED"
-      blocked_by: "group-10"
+      blocked_by: "group-10a"
       tasks:
         - "create-barrier-2-adv-to-enf-artifact"
         - "create-barrier-2-enf-to-adv-artifact"
@@ -797,15 +832,15 @@ metrics:
     phases_complete: 2  # adv Phase 1 (EN-302) + enf Phase 1 (EN-402)
     phases_total: 8  # 4 per pipeline
     phases_percent: 25
+    agents_executed: 24  # 22 + ps-validator-303 + ps-validator-403-404
+    agents_total: 38  # Total unique agent invocations
+    agents_percent: 63
+    artifacts_created: 41  # 39 + EN-303 TASK-008 validation + EN-403 TASK-008 validation
+    artifacts_total: 52  # Estimated total artifacts
+    artifacts_percent: 79
     barriers_complete: 1  # barrier-1 COMPLETE
     barriers_total: 3  # barrier-1, barrier-2, final-synthesis
     barriers_percent: 33
-    agents_executed: 20  # 18 + ps-analyst-303 revision + ps-architect-403-404 revision
-    agents_total: 38  # Total unique agent invocations
-    agents_percent: 53
-    artifacts_created: 37  # 35 + EN-303 TASK-006 revision + EN-403 TASK-006 revision
-    artifacts_total: 50  # Estimated total artifacts
-    artifacts_percent: 70
     phase_durations:
       - phase: "enf-phase-1"
         started: "2026-02-13T00:00:00Z"
@@ -815,7 +850,7 @@ metrics:
     agent_success_rate: 100
     barrier_validation_pass_rate: 0
     checkpoint_recovery_tested: false
-    adversarial_iterations_completed: 8  # 2 EN-302 + 2 EN-402 + 2 EN-303 (critic+rev) + 2 EN-403/404 (critic+rev)
+    adversarial_iterations_completed: 10  # 2 EN-302 + 2 EN-402 + 2 EN-303 (iter1 critic+rev) + 2 EN-403/404 (iter1 critic+rev) + 1 EN-303 iter2 + 1 EN-403/404 iter2
     adversarial_iterations_total: 48
     quality_scores:
       - enabler: "EN-302"
@@ -828,12 +863,14 @@ metrics:
         validation: "PASS (7/7 ACs)"
       - enabler: "EN-303"
         iteration_1: 0.843
-        findings: "3 blocking, 5 major, 4 minor, 4 advisory"
-        estimated_post_remediation: 0.94
+        iteration_2: 0.928
+        verdict: "PASS (0.928 >= 0.92)"
+        validation: "PASS (13/13 ACs)"
       - enabler: "EN-403/EN-404"
         iteration_1: 0.81
-        findings: "4 blocking, 7 major, 5 minor, 3 advisory; 5 FMEA RPNs > 200"
-        estimated_post_remediation: 0.96
+        iteration_2: 0.93
+        verdict: "PASS (0.93 >= 0.92)"
+        validation: "PASS (with implementation conditions)"
 
   timing:
     workflow_started: "2026-02-13T00:00:00Z"
@@ -869,49 +906,42 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Phase 2 adversarial review - Iteration 1 (Group 10)"
+    - action: "Barrier 2 cross-pollination (Group 11)"
       priority: "HIGH"
-      note: "Creator agents COMPLETE. Dispatching critics: ps-critic-303 (S-003 Steelman + S-006 ACH + S-014 LLM-as-Judge), ps-critic-403-404 (S-001 Red Team + S-012 FMEA + S-014 LLM-as-Judge)"
-
-    - action: "Git commit ORCHESTRATION.yaml state update"
-      priority: "HIGH"
-      note: "Commit after critic agents complete to avoid file conflicts"
+      note: "Phase 2 COMPLETE for both pipelines (validation done). Create Barrier-2 handoff artifacts: adv→enf (situational context mappings) and enf→adv (enforcement patterns)."
 
   subsequent:
-    - action: "Phase 2 creator revision - Iteration 1"
-      depends_on: "Critic iteration 1 complete"
-      note: "Revise EN-303, EN-403, EN-404 artifacts based on critic findings"
+    - action: "Phase 3 Agents (Group 12)"
+      depends_on: "Barrier 2 complete"
+      note: "EN-304/305/307 (adv skills) + EN-405 (enf session context)"
 
-    - action: "Phase 2 adversarial review - Iterations 2-3"
-      depends_on: "Revision iteration 1 complete"
-      note: "Continue until >= 0.92 quality gate or 3 iterations exhausted"
-
-    - action: "Barrier 2 cross-pollination (Group 11)"
-      depends_on: "Phase 2 complete for both pipelines"
-      note: "adv→enf: situational context mappings, enf→adv: enforcement patterns"
+    - action: "Phase 3 Adversarial Review (Group 13)"
+      depends_on: "Phase 3 agents complete"
+      note: "3 iterations of critic->revision->scoring for Phase 3 enablers"
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-phase-2-started"
-  current_state: "Phase 2 IN PROGRESS. Creator agents COMPLETE (EN-303: 4 artifacts, EN-403: 4 artifacts, EN-404: 4 artifacts). Adversarial critics being dispatched."
-  next_step: "Run adversarial review iteration 1 (ps-critic-303, ps-critic-403-404), then creator revision, then iterate until >= 0.92 quality gate (min 3 iterations)."
+  last_checkpoint: "CP-phase-2-complete"
+  current_state: "Phase 2 COMPLETE for both pipelines. EN-303: PASS (0.928, 13/13 ACs). EN-403/404: PASS (0.93, with implementation conditions). All Phase 2 agents finished. Ready for Barrier 2."
+  next_step: "Create Barrier-2 cross-pollination artifacts (adv→enf and enf→adv handoffs), then proceed to Phase 3 (EN-304/305/307 + EN-405)."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/ORCHESTRATION.yaml"
-    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/adv-to-enf/barrier-1-adv-to-enf-handoff.md"
-    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/enf-to-adv/barrier-1-enf-to-adv-handoff.md"
+    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/EN-303-situational-applicability-mapping/TASK-007-critique-iteration-2.md"
+    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-005-enforcement-mechanisms/EN-403-hook-based-enforcement/TASK-007-critique-iteration-2.md"
 
   cross_session_portable: true
   ephemeral_references: false
 
   adversarial_feedback_status:
     total_enablers: 8
-    enablers_complete: 2  # EN-302, EN-402
-    current_enabler: "EN-303/EN-403/EN-404"
-    current_iteration: 1
-    iterations_complete: 4  # EN-302 iter1+iter2, EN-402 iter1+iter2
+    enablers_complete: 4  # EN-302, EN-402, EN-303, EN-403/EN-404
+    enablers_validated: 4  # EN-302 (CONDITIONAL PASS), EN-402 (PASS), EN-303 (PASS), EN-403/404 (PASS)
+    current_enabler: "Barrier-2 preparation"
+    current_iteration: "N/A (between phases)"
+    iterations_complete: 12  # EN-302 iter1+iter2, EN-402 iter1+iter2, EN-303 iter1+rev+iter2+val, EN-403/404 iter1+rev+iter2+val
     iterations_total: 48
 
   adrs_ratified:
