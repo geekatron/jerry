@@ -292,7 +292,61 @@ def main() -> int:
             return 0
 
         # =================================================================
-        # PHASE 3: Approve if all checks pass
+        # PHASE 3: AST Architecture Enforcement (EN-703)
+        # =================================================================
+        if tool_name in ("Write", "Edit"):
+            try:
+                # Add project root to path for src imports
+                _project_root = str(Path(__file__).resolve().parent.parent)
+                if _project_root not in sys.path:
+                    sys.path.insert(0, _project_root)
+
+                from src.infrastructure.internal.enforcement.pre_tool_enforcement_engine import (
+                    PreToolEnforcementEngine,
+                )
+
+                enforcement = PreToolEnforcementEngine()
+                if tool_name == "Write":
+                    decision = enforcement.evaluate_write(
+                        file_path=tool_input.get("file_path", ""),
+                        content=tool_input.get("content", ""),
+                    )
+                else:  # Edit
+                    decision = enforcement.evaluate_edit(
+                        file_path=tool_input.get("file_path", ""),
+                        old_string=tool_input.get("old_string", ""),
+                        new_string=tool_input.get("new_string", ""),
+                    )
+
+                if decision.action == "block":
+                    print(json.dumps({"decision": "block", "reason": decision.reason}))
+                    return 0
+
+                if decision.action == "warn":
+                    print(
+                        json.dumps(
+                            {
+                                "warning": decision.reason,
+                                "criticality_escalation": decision.criticality_escalation,
+                            }
+                        ),
+                        file=sys.stderr,
+                    )
+            except ImportError:
+                pass  # Enforcement module not yet available; fail-open
+            except Exception as e:
+                print(
+                    json.dumps(
+                        {
+                            "warning": f"AST enforcement error: {e}",
+                            "fallback": "approve",
+                        }
+                    ),
+                    file=sys.stderr,
+                )
+
+        # =================================================================
+        # PHASE 4: Approve if all checks pass
         # =================================================================
         print(json.dumps({"decision": "approve"}))
         return 0
