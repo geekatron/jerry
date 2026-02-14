@@ -1,7 +1,7 @@
 ---
 name: problem-solving
 description: Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts.
-version: "2.1.0"
+version: "2.2.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "research"
@@ -25,7 +25,7 @@ activation-keywords:
 
 # Problem-Solving Skill
 
-> **Version:** 2.1.0
+> **Version:** 2.2.0
 > **Framework:** Jerry Problem-Solving (PS)
 > **Constitutional Compliance:** Jerry Constitution v1.0
 
@@ -35,9 +35,9 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, Quick Reference |
-| **L1 (Engineer)** | Developers invoking agents | Invoking an Agent, Agent Details |
-| **L2 (Architect)** | Workflow designers | Orchestration Flow, State Passing |
+| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Agent Details](#agent-details), [Adversarial Quality Mode](#adversarial-quality-mode) |
+| **L2 (Architect)** | Workflow designers | [Orchestration Flow](#orchestration-flow), [State Passing](#state-passing-between-agents), [Adversarial Quality Mode](#adversarial-quality-mode) |
 
 ---
 
@@ -282,6 +282,77 @@ docs/
 
 ---
 
+## Adversarial Quality Mode
+
+> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, and criticality levels are defined there. NEVER hardcode values; always reference the SSOT.
+
+The problem-solving skill integrates the adversarial quality framework defined in EPIC-002. This enables structured creator-critic-revision cycles with strategy-specific adversarial review for all PS workflows.
+
+### Strategy Catalog
+
+The quality framework provides 10 selected adversarial strategies across 4 mechanistic families. See `.context/rules/quality-enforcement.md` (Strategy Catalog section) for the authoritative list with IDs S-001 through S-014, composite scores, and family classifications.
+
+| Family | Strategies | PS Application |
+|--------|-----------|----------------|
+| **Iterative Self-Correction** | S-014 (LLM-as-Judge), S-007 (Constitutional AI Critique), S-010 (Self-Refine) | Quality scoring, constitutional compliance checks, self-review before output |
+| **Dialectical Synthesis** | S-003 (Steelman Technique) | Strengthening arguments before critique, ensuring balanced analysis |
+| **Role-Based Adversarialism** | S-002 (Devil's Advocate), S-004 (Pre-Mortem Analysis), S-001 (Red Team Analysis) | Challenging assumptions, anticipating failures, adversarial exploration |
+| **Structured Decomposition** | S-013 (Inversion Technique), S-012 (FMEA), S-011 (Chain-of-Verification) | Systematic failure mode analysis, verification chains, inverse reasoning |
+
+### Creator-Critic-Revision Cycle
+
+Per H-14 (HARD rule), all C2+ deliverables MUST go through a minimum 3-iteration creator-critic-revision cycle.
+
+**Cycle flow:**
+1. **Creator** (any PS agent) produces deliverable
+2. **Critic** (ps-critic, ps-reviewer, or MAIN CONTEXT) evaluates using S-014 (LLM-as-Judge) with dimension-level rubrics
+3. **Revision** -- creator revises based on critic feedback
+4. Repeat until quality threshold is met or circuit breaker triggers
+
+**Quality scoring** uses the 6-dimension weighted composite defined in the SSOT:
+- Completeness (0.20), Internal Consistency (0.20), Methodological Rigor (0.20), Evidence Quality (0.15), Actionability (0.15), Traceability (0.10)
+- Threshold: >= 0.92 weighted composite for C2+ deliverables (H-13)
+- Scoring mechanism: S-014 (LLM-as-Judge) with active leniency bias counteraction
+
+**Circuit breaker:** Minimum 3 iterations REQUIRED (H-14). If no improvement after 2 consecutive iterations, ACCEPT_WITH_CAVEATS or escalate to user.
+
+### Criticality-Based Activation
+
+Strategy activation follows the SSOT criticality levels (C1-C4). See `.context/rules/quality-enforcement.md` (Criticality Levels section) for the authoritative mapping.
+
+| Level | PS Context | Required Strategies | Typical PS Scenario |
+|-------|-----------|---------------------|---------------------|
+| **C1 (Routine)** | Simple research, status reports | S-010 (Self-Refine) | Single-topic research, progress report |
+| **C2 (Standard)** | Analysis, design decisions, reviews | S-007, S-002, S-014 | Root cause analysis, ADR creation, code review |
+| **C3 (Significant)** | Architecture decisions, cross-cutting analysis | C2 + S-004, S-012, S-013 | Multi-system impact analysis, architecture ADR |
+| **C4 (Critical)** | Governance, irreversible decisions | All 10 selected strategies | Constitution changes, governance decisions |
+
+**Auto-escalation rules** (AE-001 through AE-006 in the SSOT) apply to PS workflows. Key rules:
+- AE-001: PS artifacts touching `docs/governance/JERRY_CONSTITUTION.md` = auto-C4
+- AE-002: PS artifacts touching `.context/rules/` = auto-C3 minimum
+- AE-003: New or modified ADR = auto-C3 minimum
+
+### PS-Specific Strategy Selection
+
+When selecting adversarial strategies for PS workflows, use these context-based recommendations:
+
+| PS Task Type | Primary Strategy | Supporting Strategies | Rationale |
+|-------------|------------------|----------------------|-----------|
+| **Research** (ps-researcher) | S-011 (CoVe) | S-003 (Steelman), S-010 (Self-Refine) | Verify claims, strengthen findings, self-check |
+| **Root Cause Analysis** (ps-analyst) | S-013 (Inversion) | S-004 (Pre-Mortem), S-012 (FMEA) | Challenge causal chain, anticipate failures |
+| **Architecture Decisions** (ps-architect) | S-002 (Devil's Advocate) | S-003 (Steelman), S-004 (Pre-Mortem), S-014 (LLM-as-Judge) | Challenge assumptions, strengthen rationale, score quality |
+| **Synthesis** (ps-synthesizer) | S-003 (Steelman) | S-013 (Inversion), S-014 (LLM-as-Judge) | Strengthen patterns, invert assumptions, score quality |
+| **Code/Design Review** (ps-reviewer) | S-001 (Red Team) | S-007 (Constitutional AI), S-012 (FMEA) | Adversarial exploration, compliance check, failure modes |
+| **Quality Critique** (ps-critic) | S-014 (LLM-as-Judge) | S-003 (Steelman), S-007 (Constitutional AI) | Structured scoring, balanced assessment, compliance |
+
+### Mandatory Self-Review (H-15)
+
+Per H-15 (HARD rule), all PS agents MUST perform self-review using S-010 (Self-Refine) before presenting any deliverable. This applies regardless of criticality level.
+
+Per H-16 (HARD rule), agents MUST apply S-003 (Steelman Technique) before critiquing -- strengthen the argument first, then challenge it.
+
+---
+
 ## Constitutional Compliance
 
 All agents adhere to the **Jerry Constitution v1.0**:
@@ -364,7 +435,7 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 2.1.0*
+*Skill Version: 2.2.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Enhancement: WI-SAO-063 tool examples and L0/L1/L2 structure (0.830→0.870)*
-*Last Updated: 2026-01-12*
+*Enhancement: EN-707 Adversarial quality mode integration (EPIC-003)*
+*Last Updated: 2026-02-14*

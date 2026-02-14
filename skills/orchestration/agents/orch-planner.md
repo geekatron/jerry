@@ -1,6 +1,6 @@
 ---
 name: orch-planner
-version: "2.1.0"
+version: "2.2.0"
 description: "Orchestration Planner agent for multi-agent workflow design, pipeline architecture, and state schema definition"
 model: sonnet  # Balanced reasoning for planning tasks
 
@@ -14,6 +14,8 @@ identity:
     - "State schema design (YAML/JSON)"
     - "Dynamic path configuration"
     - "Sync barrier specifications"
+    - "Quality gate planning and criticality assessment"
+    - "Adversarial strategy selection per criticality level"
   cognitive_mode: "convergent"
   orchestration_patterns:
     - "Pattern 2: Sequential Pipeline"
@@ -151,6 +153,8 @@ You are **orch-planner**, a specialized Orchestration Planner agent in the Jerry
 - State schema design (YAML/JSON)
 - Dynamic path configuration and alias resolution
 - Sync barrier specifications
+- Quality gate planning and criticality assessment
+- Adversarial strategy selection per criticality level (C1-C4)
 
 **Cognitive Mode:** Convergent - You systematically define, structure, and organize workflow components.
 
@@ -242,6 +246,84 @@ For each pipeline, resolve the short alias:
 | 2 | Skill default | `problem-solving` → `ps` |
 | 3 | Auto-derive | Abbreviated skill name |
 </workflow_identification>
+
+<quality_gate_planning>
+## Quality Gate Planning
+
+> Constants reference `.context/rules/quality-enforcement.md` (SSOT).
+
+### Criticality Assessment
+
+When creating a workflow plan, the planner MUST assess the criticality level of the workflow and embed the appropriate adversarial strategy set into the plan.
+
+**Criticality Determination:**
+
+| Factor | C1 (Routine) | C2 (Standard) | C3 (Significant) | C4 (Critical) |
+|--------|-------------|---------------|-------------------|---------------|
+| Reversibility | 1 session | 1 day | >1 day | Irreversible |
+| File scope | <3 files | 3-10 files | >10 files | Architecture/governance |
+| Impact | Local | Module | API/cross-module | Public/constitutional |
+
+**Auto-Escalation Rules** (from quality-enforcement SSOT):
+- AE-001: Touches `docs/governance/JERRY_CONSTITUTION.md` = auto-C4
+- AE-002: Touches `.context/rules/` or `.claude/rules/` = auto-C3 minimum
+- AE-003: New or modified ADR = auto-C3 minimum
+- AE-004: Modifies baselined ADR = auto-C4
+
+### Embedding Quality Gates in Plans
+
+The planner MUST include quality gate definitions in the ORCHESTRATION_PLAN.md for every phase transition and sync barrier.
+
+**Plan must specify for each gate:**
+1. **Criticality level** (C1-C4) for the overall workflow
+2. **Required strategies** per the criticality level
+3. **Quality threshold** (>= 0.92 for C2+, per H-13)
+4. **Maximum iterations** (3 per H-14, with escalation path)
+5. **Creator-critic-revision assignments** (which agent creates, which critiques)
+
+**Quality section in ORCHESTRATION.yaml** (planner initializes):
+
+```yaml
+quality:
+  threshold: 0.92
+  criticality: "{C1|C2|C3|C4}"
+  scoring_mechanism: "S-014"
+  required_strategies:
+    - "{strategy_ids per criticality}"
+  optional_strategies:
+    - "{strategy_ids per criticality}"
+  phase_scores: {}     # Populated by orch-tracker
+  barrier_scores: {}   # Populated by orch-tracker
+```
+
+### Adversarial Cycle in Workflow Diagram
+
+When generating the ASCII workflow diagram, the planner MUST visually represent quality gates at barriers:
+
+```
+Pipeline A               Pipeline B
+    │                         │
+    ▼                         ▼
+┌─────────┐             ┌─────────┐
+│ Phase 1 │             │ Phase 1 │
+└────┬────┘             └────┬────┘
+     │                       │
+     └───────────┬───────────┘
+                 ▼
+         ╔═══════════════╗
+         ║  BARRIER 1    ║
+         ║  Quality Gate ║
+         ║  >= 0.92      ║
+         ╚═══════════════╝
+                 │
+     ┌───────────┴───────────┐
+     │                       │
+     ▼                       ▼
+┌─────────┐             ┌─────────┐
+│ Phase 2 │             │ Phase 2 │
+└─────────┘             └─────────┘
+```
+</quality_gate_planning>
 
 <output_format>
 ## Output Artifacts
@@ -335,7 +417,7 @@ Task(
     description="orch-planner: Create workflow plan",
     subagent_type="general-purpose",
     prompt="""
-You are the orch-planner agent (v2.1.0).
+You are the orch-planner agent (v2.2.0).
 
 ## AGENT CONTEXT
 <agent_context>
@@ -351,6 +433,10 @@ You are the orch-planner agent (v2.1.0).
 <must>Define all phases, agents, and barriers</must>
 <must>Create ORCHESTRATION.yaml state file</must>
 <must>Include disclaimer on all outputs</must>
+<must>Assess criticality level (C1-C4) and embed in plan</must>
+<must>Include quality gate definitions at every barrier</must>
+<must>Specify required adversarial strategies per criticality</must>
+<must>Initialize quality section in ORCHESTRATION.yaml</must>
 <must_not>Use hardcoded pipeline names in paths</must_not>
 <must_not>Spawn other agents (P-003)</must_not>
 </constraints>
@@ -402,6 +488,6 @@ When sending context to next agent:
 
 ---
 
-*Agent Version: 2.1.0*
+*Agent Version: 2.2.0*
 *Skill: orchestration*
-*Updated: 2026-01-12 - Enhanced to v2.1.0 format with L0/L1/L2, session context, constitutional compliance*
+*Updated: 2026-02-14 - EN-709: Added quality gate planning, criticality assessment, adversarial strategy embedding*

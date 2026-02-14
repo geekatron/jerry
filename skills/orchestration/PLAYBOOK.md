@@ -1,7 +1,7 @@
 ---
 name: orchestration-playbook
 description: Step-by-step guidance for multi-agent workflow coordination, including pattern selection, cross-pollinated pipelines, sync barriers, checkpointing, and real-world examples with L0/L1/L2 output levels.
-version: "3.1.0"
+version: "3.2.0"
 skill: orchestration
 template: PLAYBOOK_TEMPLATE.md v1.0.0
 constitutional_compliance: Jerry Constitution v1.0
@@ -22,7 +22,7 @@ agents_covered:
 
 # Orchestration Playbook
 
-> **Version:** 3.1.0
+> **Version:** 3.2.0
 > **Skill:** orchestration
 > **Purpose:** Multi-agent workflow coordination with sync barriers and state checkpointing
 > **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-064), Triple-lens refactoring (SAO-INIT-007)
@@ -644,6 +644,161 @@ Check progress regularly:
 
 ---
 
+## Adversarial Quality Integration
+
+> Quality enforcement is embedded by default into every orchestrated workflow.
+> All constants reference `.context/rules/quality-enforcement.md` (SSOT).
+
+### Phase Gate Protocol
+
+Every phase transition and every sync barrier includes a standardized quality gate. The orchestrator (main context) enforces this protocol -- agents do not self-assess for gate purposes.
+
+```
+PHASE GATE PROTOCOL:
+--------------------
+
+Step 1: CREATOR produces deliverable
+        │
+        ▼
+Step 2: Self-review (S-010, H-15)
+        Creator applies Self-Refine before submission
+        │
+        ▼
+Step 3: CRITIC scores deliverable
+        Using S-014 (LLM-as-Judge) with 6-dimension rubric
+        + S-002 (Devil's Advocate) to challenge assumptions
+        + S-007 (Constitutional AI Critique) for rule compliance
+        │
+        ├── Score >= 0.92 ──► PASS ──► Proceed to next phase/barrier
+        │
+        └── Score < 0.92 ──► REVISE
+                              │
+                              ▼
+Step 4: REVISION
+        Creator receives critic feedback
+        + S-003 (Steelman) strengthens weakest arguments
+        Return to Step 3
+        │
+        ▼
+Step 5: CIRCUIT BREAKER (after 3 iterations)
+        If still < 0.92 after 3 cycles ──► ESCALATE
+        Human review required (AE-006)
+```
+
+**Scoring Dimensions** (from quality-enforcement SSOT):
+
+| Dimension | Weight | What It Measures |
+|-----------|--------|------------------|
+| Completeness | 0.20 | All required elements present |
+| Internal Consistency | 0.20 | No contradictions within deliverable |
+| Methodological Rigor | 0.20 | Sound reasoning, proper frameworks used |
+| Evidence Quality | 0.15 | Claims supported by citations |
+| Actionability | 0.15 | Results usable by next phase |
+| Traceability | 0.10 | Links to source requirements/decisions |
+
+### Entry/Exit Criteria for Barrier Quality Gates
+
+Every sync barrier has explicit entry and exit criteria that MUST be satisfied.
+
+**Entry Criteria** (all must be true before gate starts):
+
+| # | Criterion | Verification |
+|---|-----------|-------------|
+| 1 | All agents in prerequisite phases have status COMPLETE | Check ORCHESTRATION.yaml |
+| 2 | All phase artifacts exist at registered paths | Glob for artifact files |
+| 3 | No active blockers on the barrier | Check blockers.active list |
+| 4 | Creator self-review completed (S-010, H-15) | Self-review evidence in artifact |
+
+**Exit Criteria** (all must be true before next phase starts):
+
+| # | Criterion | Verification |
+|---|-----------|-------------|
+| 1 | Quality score >= 0.92 weighted composite (H-13) | Recorded in quality.barrier_scores |
+| 2 | Minimum 1 creator-critic-revision iteration completed | Iteration count >= 1 |
+| 3 | Cross-pollination artifacts created for both directions | a_to_b and b_to_a artifacts exist |
+| 4 | Constitutional compliance verified (S-007, H-18) | No constitutional violations found |
+| 5 | Barrier marked COMPLETE in ORCHESTRATION.yaml | barrier.status == COMPLETE |
+
+### Cross-Pollination Enhancement with Adversarial Strategy Selection
+
+When crossing a sync barrier, the adversarial strategy set is selected based on the workflow's criticality level. The orch-planner determines criticality at plan time; orch-tracker enforces it at execution time.
+
+**Strategy Selection by Criticality** (from quality-enforcement SSOT):
+
+| Criticality | At Barrier: Apply These | Rationale |
+|-------------|------------------------|-----------|
+| C1 (Routine) | S-010 (Self-Refine) only | Low-risk, fast cycle |
+| C2 (Standard) | S-014 (LLM-as-Judge) + S-002 (Devil's Advocate) + S-007 (Constitutional) | Standard quality gate -- target operating layer |
+| C3 (Significant) | C2 + S-004 (Pre-Mortem) + S-013 (Inversion) | Deep review of cross-pollination artifacts |
+| C4 (Critical) | All 10 selected strategies | Tournament-level review |
+
+**Cross-Pollination Adversarial Flow:**
+
+```
+Pipeline A Phase N ──────────────────────► Pipeline B Phase N
+       │                                        │
+       ▼                                        ▼
+  A completes                              B completes
+       │                                        │
+       └───────────┐          ┌─────────────────┘
+                   ▼          ▼
+            ╔═══════════════════════╗
+            ║   BARRIER QUALITY     ║
+            ║   GATE                ║
+            ║                       ║
+            ║  1. A-to-B handoff:   ║
+            ║     Critic reviews    ║
+            ║     A's findings      ║
+            ║     (score >= 0.92)   ║
+            ║                       ║
+            ║  2. B-to-A handoff:   ║
+            ║     Critic reviews    ║
+            ║     B's findings      ║
+            ║     (score >= 0.92)   ║
+            ║                       ║
+            ║  3. Both PASS?        ║
+            ║     → Cross-pollinate ║
+            ║     → Proceed         ║
+            ╚═══════════════════════╝
+                   │          │
+                   ▼          ▼
+          Pipeline A      Pipeline B
+          Phase N+1       Phase N+1
+```
+
+### Quality State in ORCHESTRATION.yaml
+
+The orch-tracker records quality scores in the `quality` section of ORCHESTRATION.yaml. See the schema extension in SKILL.md for the full structure.
+
+**Minimum quality state to track:**
+
+```yaml
+quality:
+  threshold: 0.92              # SSOT constant (H-13)
+  criticality: "C2"           # Determined by orch-planner
+  scoring_mechanism: "S-014"  # LLM-as-Judge
+
+  phase_scores:
+    {phase_id}:
+      {pipeline_alias}:
+        score: {float}
+        iterations: {int}
+        status: PASS|REVISE|ESCALATED
+
+  barrier_scores:
+    {barrier_id}:
+      a_to_b:
+        score: {float}
+        iterations: {int}
+        status: PASS|REVISE|ESCALATED
+      b_to_a:
+        score: {float}
+        iterations: {int}
+        status: PASS|REVISE|ESCALATED
+```
+
+---
+
 # L2: Architecture & Constraints
 
 > *This section documents what NOT to do, boundaries, invariants, and design rationale.*
@@ -814,6 +969,8 @@ Phase 1B ----+                        Phase 1B ------> Phase 2B
 | HC-003 | Barriers are blocking (never optional) | Cross-pollination is the point |
 | HC-004 | Checkpoints required at phase boundaries | Context rot survival |
 | HC-005 | Agent outputs must be persisted to files | P-002 File Persistence |
+| HC-006 | Quality gate >= 0.92 at phase transitions and barriers | H-13 quality-enforcement SSOT |
+| HC-007 | Creator-critic-revision cycle (min 3 iterations) at barriers | H-14 quality-enforcement SSOT |
 
 ### Soft Constraints (Should Not Violate)
 
@@ -847,6 +1004,12 @@ INVARIANT CHECKLIST:
 
 [X] INV-005: Checkpoint contains full recovery state
            Violation: Cannot resume after context compaction
+
+[X] INV-006: Quality score >= 0.92 before proceeding past any gate
+           Violation: Low-quality artifacts propagate, compounding errors
+
+[X] INV-007: Creator-critic-revision cycle completed at every barrier
+           Violation: Unreviewed cross-pollination, hidden assumption propagation
 ```
 
 ---
@@ -990,9 +1153,9 @@ CROSS-SKILL HANDOFF:
 
 ---
 
-*Playbook Version: 3.1.0*
+*Playbook Version: 3.2.0*
 *Skill: orchestration*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Enhancement: WI-SAO-064 YAML frontmatter (0.8375→0.8975)*
-*Last Updated: 2026-01-12*
+*Enhancement: EN-709 Adversarial quality integration (phase gates, barrier quality, strategy selection)*
+*Last Updated: 2026-02-14*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

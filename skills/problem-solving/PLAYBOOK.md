@@ -1,7 +1,7 @@
 ---
 name: problem-solving-playbook
 description: Step-by-step guidance for using the problem-solving skill, including agent selection, orchestration patterns, and real-world examples with L0/L1/L2 output levels.
-version: "3.3.0"
+version: "3.4.0"
 skill: problem-solving
 template: PLAYBOOK_TEMPLATE.md v1.0.0
 constitutional_compliance: Jerry Constitution v1.0
@@ -19,7 +19,7 @@ agents_covered:
 
 # Problem-Solving Playbook
 
-> **Version:** 3.3.0
+> **Version:** 3.4.0
 > **Skill:** problem-solving
 > **Purpose:** Structured analysis, research, and decision-making through specialized agents
 > **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-063), Added 15 L0/L1/L2 real-world examples (WI-SAO-043)
@@ -431,76 +431,118 @@ User: "We need to choose a caching solution"
   Memcached, etc.        with rationale        Constraints met
 ```
 
-### Pattern 6: Generator-Critic Loop (Iterative Refinement)
+### Pattern 6: Creator-Critic-Revision Cycle (Adversarial Quality)
 
-For quality-sensitive outputs that benefit from iteration.
+> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, and criticality levels are defined there. NEVER hardcode values; always reference the SSOT.
+
+For C2+ deliverables that MUST meet quality gate requirements (H-13, H-14).
 
 ```
 TOPOLOGY:
 ---------
 
-User: "Create an ADR and polish it until it's excellent"
+User: "Create an ADR for our authentication approach" (C2+ deliverable)
 
   +------------------+         +---------------+
   |  ps-architect    |-------->|  ps-critic    |
-  |  (generator)     |         |  (evaluator)  |
+  |  (creator)       |         |  (S-014       |
+  |                  |         |   LLM-as-Judge)|
   +------------------+         +---------------+
          ^                            |
-         |     score < 0.85          |
-         |     + feedback            |
+         |  score < 0.92 (SSOT)      |
+         |  + dimension feedback     |
          +---------------------------+
                     |
-                    v (score >= 0.85)
-              [ACCEPT OUTPUT]
+                    v (score >= 0.92)
+              [QUALITY GATE PASS]
 
-CIRCUIT BREAKER: max 3 iterations, threshold 0.85
+MINIMUM: 3 iterations (H-14 HARD rule)
+THRESHOLD: >= 0.92 weighted composite (H-13 HARD rule)
+SCORING: S-014 (LLM-as-Judge) with 6-dimension rubric (SSOT)
 ```
 
-**When to Use Generator-Critic:**
+#### When to Activate Adversarial Review
 
-| Scenario | Use Generator-Critic? |
-|----------|----------------------|
-| ADR needs polish | YES - Quality improves with iteration |
-| Research synthesis | YES - Completeness matters |
-| API schema check | NO - Use ps-validator (binary check) |
-| Code review | NO - Use ps-reviewer (find defects) |
-| Time-critical task | NO - Iteration adds latency |
+| Criticality | Trigger | Required Strategies | PS Example |
+|-------------|---------|---------------------|------------|
+| **C1 (Routine)** | Self-review only | S-010 (Self-Refine) | Status reports, simple research |
+| **C2 (Standard)** | Full creator-critic cycle | S-007, S-002, S-014 | ADR creation, root cause analysis |
+| **C3 (Significant)** | Deep adversarial review | C2 + S-004, S-012, S-013 | Architecture decisions, cross-system analysis |
+| **C4 (Critical)** | Tournament review (all strategies) | All 10 selected | Governance changes, irreversible decisions |
 
-**Key Distinctions:**
+#### Entry Criteria for Quality Gate
 
-| Agent | Purpose | Output Type | Iteration? |
-|-------|---------|-------------|------------|
-| ps-critic | Improve quality | Score (0.0-1.0) + recommendations | YES (loop) |
-| ps-validator | Verify constraints | Pass/Fail | NO (one-shot) |
-| ps-reviewer | Find defects | Severity ratings | NO (one-shot) |
+Before starting the creator-critic-revision cycle, verify:
 
-**Circuit Breaker Logic:**
+| Criterion | Check | Required? |
+|-----------|-------|-----------|
+| Criticality level determined | C1-C4 classification per SSOT | HARD |
+| Strategy set selected | Per criticality level mapping in SSOT | HARD |
+| Evaluation dimensions defined | Use SSOT 6-dimension weighted rubric for C2+ | HARD |
+| Creator agent identified | Which PS agent produces the deliverable | HARD |
+| Auto-escalation checked | AE-001 through AE-006 per SSOT | HARD |
+
+#### Exit Criteria for Quality Gate
+
+The cycle terminates when ANY of these conditions are met:
+
+| Condition | Outcome | Action |
+|-----------|---------|--------|
+| Score >= 0.92 AND >= 3 iterations completed | **PASS** | Deliverable accepted |
+| Score >= 0.92 after 3+ iterations | **PASS** | Deliverable accepted |
+| Max iterations AND score < 0.92 | **FAIL** | Escalate to user per H-13 |
+| No improvement for 2 consecutive iterations after 3+ | **ACCEPT_WITH_CAVEATS** | Document residual gaps |
+
+#### Strategy Pairing for PS Contexts
+
+| PS Context | Creator | Critic Strategy Set | Rationale |
+|-----------|---------|---------------------|-----------|
+| **Research** | ps-researcher | S-011 (CoVe) + S-003 (Steelman) + S-014 (LLM-as-Judge) | Verify claims, strengthen before challenge, score |
+| **Root Cause Analysis** | ps-analyst | S-013 (Inversion) + S-004 (Pre-Mortem) + S-014 (LLM-as-Judge) | Challenge causal chain, anticipate missed failures |
+| **Architecture Decision** | ps-architect | S-002 (Devil's Advocate) + S-003 (Steelman) + S-014 (LLM-as-Judge) | Challenge assumptions, strengthen rationale, score |
+| **Synthesis** | ps-synthesizer | S-003 (Steelman) + S-013 (Inversion) + S-014 (LLM-as-Judge) | Strengthen patterns, check blind spots |
+| **Code/Design Review** | ps-reviewer | S-001 (Red Team) + S-007 (Constitutional AI) + S-014 (LLM-as-Judge) | Adversarial exploration, compliance, score |
+
+#### Key Distinctions (Adversarial vs. Standard)
+
+| Agent | Purpose | Output Type | Iteration? | Adversarial? |
+|-------|---------|-------------|------------|--------------|
+| ps-critic | Quality gate scoring | Score (0.0-1.0) + dimension feedback | YES (3 min) | YES (S-014) |
+| ps-validator | Constraint verification | Pass/Fail | NO (one-shot) | NO |
+| ps-reviewer | Defect detection | Severity ratings | NO (one-shot) | Can use S-001, S-007 |
+
+#### Example: C2 ADR Creation with Adversarial Quality
 
 ```
-IF score >= 0.85:
-    → ACCEPT (threshold met)
-ELIF iteration >= 3:
-    → ACCEPT_WITH_CAVEATS (max iterations)
-ELIF no_improvement for 2 iterations:
-    → ACCEPT_WITH_CAVEATS (diminishing returns)
-ELSE:
-    → REVISE (send feedback to generator)
-```
+Step 1: Determine criticality
+  → ADR = auto-C3 minimum (AE-003 per SSOT)
+  → Strategy set: S-007, S-002, S-014 + S-004, S-012, S-013
 
-**Example Invocation:**
+Step 2: Creator produces deliverable
+  "Create an ADR for our authentication approach"
+  [ps-architect produces ADR draft]
+  [ps-architect applies S-010 Self-Refine before output (H-15)]
 
-```
-Step 1: "Create an ADR for our authentication approach"
-[ps-architect produces ADR draft]
+Step 3: Critic evaluates (iteration 1)
+  [ps-critic applies S-014 LLM-as-Judge with 6-dimension rubric]
+  [ps-critic applies S-003 Steelman before challenging (H-16)]
+  [ps-critic applies S-002 Devil's Advocate on key assumptions]
+  Score: 0.74, feedback: "missing security trade-offs, incomplete alternatives"
 
-Step 2: "Critique this ADR - score against completeness, clarity, alignment"
-[ps-critic evaluates: score=0.72, feedback: "missing security trade-offs"]
+Step 4: Creator revises (iteration 2)
+  [ps-architect revises based on dimension-level feedback]
+  [ps-architect applies S-010 Self-Refine before output (H-15)]
 
-Step 3: "Revise the ADR based on the critique"
-[ps-architect produces ADR v2]
+Step 5: Critic evaluates (iteration 2)
+  [ps-critic applies S-014 + S-004 Pre-Mortem Analysis]
+  Score: 0.87, feedback: "pre-mortem reveals deployment risk not addressed"
 
-Step 4: "Critique again"
-[ps-critic evaluates: score=0.88 → ACCEPT]
+Step 6: Creator revises (iteration 3)
+  [ps-architect addresses deployment risk]
+
+Step 7: Critic evaluates (iteration 3)
+  [ps-critic applies S-014 final scoring]
+  Score: 0.94 → QUALITY GATE PASS
 ```
 
 **P-003 Compliance Note:**
@@ -1697,9 +1739,9 @@ Problem-solving agents can hand off to NASA SE agents:
 
 ---
 
-*Playbook Version: 3.3.0*
+*Playbook Version: 3.4.0*
 *Skill: problem-solving*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Enhancement: WI-SAO-063 YAML frontmatter (0.8425→0.890)*
-*Last Updated: 2026-01-12*
+*Enhancement: EN-707 Adversarial quality mode integration (EPIC-003)*
+*Last Updated: 2026-02-14*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

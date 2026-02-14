@@ -1,7 +1,7 @@
 ---
 name: orchestration
 description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
-version: "2.1.0"
+version: "2.2.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "orchestration"
@@ -18,7 +18,7 @@ activation-keywords:
 
 # Orchestration Skill
 
-> **Version:** 2.1.0
+> **Version:** 2.2.0
 > **Framework:** Jerry Orchestration (ORCH)
 > **Constitutional Compliance:** Jerry Constitution v1.0
 > **Industry References:** [Anthropic Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [Microsoft AI Agent Patterns](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns), [LangGraph](https://langchain-ai.github.io/langgraph/), [CrewAI Flows](https://docs.crewai.com/concepts/flows)
@@ -33,7 +33,7 @@ This SKILL.md serves multiple audiences:
 |-------|----------|---------------------|
 | **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Core Artifacts |
 | **L1 (Engineer)** | Developers executing workflows | Quick Start, State Schema |
-| **L2 (Architect)** | Workflow designers | Workflow Patterns, Constitutional Compliance |
+| **L2 (Architect)** | Workflow designers | Workflow Patterns, Adversarial Quality Mode, Constitutional Compliance |
 
 ---
 
@@ -474,6 +474,144 @@ Each orchestration workflow uses tools for state management. Here are concrete e
 
 ---
 
+## Adversarial Quality Mode
+
+> Adversarial quality enforcement is embedded by default into every orchestrated workflow.
+> Constants referenced from `.context/rules/quality-enforcement.md` (SSOT).
+
+### Phase Gate Definitions
+
+Every phase transition in an orchestrated workflow passes through a quality gate. The gate enforces a minimum quality threshold before work proceeds to the next phase.
+
+| Gate Element | Value | Source |
+|-------------|-------|--------|
+| Quality threshold | >= 0.92 weighted composite | H-13 (quality-enforcement SSOT) |
+| Minimum iterations | 3 (creator -> critic -> revision) | H-14 (quality-enforcement SSOT) |
+| Scoring mechanism | S-014 (LLM-as-Judge) with dimension rubrics | quality-enforcement SSOT |
+| Self-review | REQUIRED before presenting any deliverable | H-15 (quality-enforcement SSOT) |
+
+**Scoring Dimensions** (per quality-enforcement SSOT):
+
+| Dimension | Weight |
+|-----------|--------|
+| Completeness | 0.20 |
+| Internal Consistency | 0.20 |
+| Methodological Rigor | 0.20 |
+| Evidence Quality | 0.15 |
+| Actionability | 0.15 |
+| Traceability | 0.10 |
+
+**Gate Outcomes:**
+- **PASS** (>= 0.92): Phase proceeds to next stage or barrier
+- **REVISE** (< 0.92): Creator receives critic feedback, revision cycle continues
+- **ESCALATE**: After 3 failed iterations, escalate to human review (per AE-006)
+
+### Creator-Critic-Revision Cycle at Sync Barriers
+
+At every sync barrier, the orchestrator enforces a creator-critic-revision cycle on cross-pollination artifacts before they flow to the next phase.
+
+```
+Phase N Output (Creator)
+     │
+     ▼
+┌─────────────────────────────┐
+│  BARRIER QUALITY GATE       │
+│                             │
+│  1. Creator produces        │
+│     deliverable             │
+│                             │
+│  2. Critic scores with      │
+│     S-014 (LLM-as-Judge)    │
+│     + S-002 (Devil's        │
+│     Advocate) + S-007       │
+│     (Constitutional)        │
+│                             │
+│  3. If score < 0.92:        │
+│     → Revision with S-003   │
+│       (Steelman) + feedback │
+│     → Return to step 2      │
+│                             │
+│  4. If score >= 0.92:       │
+│     → PASS gate             │
+│     → Cross-pollinate       │
+│                             │
+│  5. Circuit breaker:        │
+│     max 3 iterations        │
+│     → Escalate if all fail  │
+└─────────────────────────────┘
+     │
+     ▼
+Phase N+1 Input
+```
+
+### Cross-Pollination with Adversarial Critique
+
+Cross-pollination artifacts exchanged at barriers are subject to adversarial review before delivery to the receiving pipeline. This prevents low-quality or assumption-laden findings from propagating across pipelines.
+
+| Direction | Strategy Applied | Purpose |
+|-----------|-----------------|---------|
+| A-to-B handoff | S-003 (Steelman) + S-002 (Devil's Advocate) | Strengthen claims before sharing; challenge hidden assumptions |
+| B-to-A handoff | S-003 (Steelman) + S-002 (Devil's Advocate) | Same adversarial rigor in reverse direction |
+| Both directions | S-007 (Constitutional AI Critique) | Verify compliance with Jerry Constitution and rules |
+
+### Strategy Selection for Orchestration Contexts
+
+The orchestrator selects adversarial strategies based on criticality level (per quality-enforcement SSOT). The orch-planner MUST embed the appropriate strategy set when generating workflow plans.
+
+| Criticality | Quality Layer | Strategies (REQUIRED) | Strategies (OPTIONAL) |
+|-------------|--------------|----------------------|----------------------|
+| C1 (Routine) | L0-L1 | S-010 (Self-Refine) | S-003, S-014 |
+| C2 (Standard) | L2 | S-007, S-002, S-014 | S-003, S-010 |
+| C3 (Significant) | L3 | C2 + S-004, S-012, S-013 | S-001, S-003, S-010, S-011 |
+| C4 (Critical) | L4 | All 10 selected strategies | None -- all required |
+
+**Auto-Escalation** (per quality-enforcement SSOT AE rules):
+- Artifacts touching `.context/rules/` = auto-C3 minimum (AE-002)
+- Artifacts touching `docs/governance/JERRY_CONSTITUTION.md` = auto-C4 (AE-001)
+- Modifying baselined ADRs = auto-C4 (AE-004)
+
+### Quality Score Tracking in ORCHESTRATION.yaml
+
+Quality scores are tracked per phase and per barrier in the ORCHESTRATION.yaml state file.
+
+```yaml
+# Extension to ORCHESTRATION.yaml schema
+quality:
+  threshold: 0.92                    # From quality-enforcement SSOT (H-13)
+  scoring_mechanism: "S-014"         # LLM-as-Judge
+
+  phase_scores:
+    phase-1:
+      pipeline_a:
+        score: 0.94
+        iterations: 2
+        status: PASS
+      pipeline_b:
+        score: 0.93
+        iterations: 3
+        status: PASS
+
+  barrier_scores:
+    barrier-1:
+      a_to_b:
+        score: 0.95
+        iterations: 1
+        status: PASS
+      b_to_a:
+        score: 0.92
+        iterations: 3
+        status: PASS
+
+  workflow_quality:
+    average_score: 0.935
+    lowest_score: 0.92
+    total_iterations: 9
+    gates_passed: 4
+    gates_failed: 0
+```
+
+---
+
 ## Constitutional Compliance
 
 | Principle | Requirement | Implementation |
@@ -482,6 +620,9 @@ Each orchestration workflow uses tools for state management. Here are concrete e
 | P-003 | No Recursive Subagents | Main context invokes workers only |
 | P-010 | Task Tracking | ORCHESTRATION_WORKTRACKER.md updated |
 | P-022 | No Deception | Honest status and progress reporting |
+| H-13 | Quality threshold >= 0.92 | Phase gates enforce weighted composite scoring |
+| H-14 | Creator-critic-revision (3 min) | Adversarial cycle at every sync barrier |
+| H-15 | Self-review before presenting | S-010 applied before gate submission |
 
 ---
 
@@ -522,8 +663,8 @@ For workflow examples and step-by-step guides, see:
 
 ---
 
-*Skill Version: 2.1.0*
+*Skill Version: 2.2.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Enhancement: WI-SAO-064 tool examples and L0/L1/L2 structure (0.830→0.870)*
+*Enhancement: EN-709 Adversarial Quality Mode integration (phase gates, creator-critic-revision, quality scoring)*
 *Created: 2026-01-10*
-*Last Updated: 2026-01-12*
+*Last Updated: 2026-02-14*

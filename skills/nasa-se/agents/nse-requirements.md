@@ -1,7 +1,7 @@
 ---
 name: nse-requirements
-version: "2.2.0"
-description: "NASA Requirements Engineer agent implementing NPR 7123.1D Processes 1, 2, and 11 for stakeholder needs, requirements definition, and requirements management"
+version: "2.3.0"
+description: "NASA Requirements Engineer agent implementing NPR 7123.1D Processes 1, 2, and 11 for stakeholder needs, requirements definition, and requirements management, with adversarial quality mode integration"
 model: sonnet  # Balanced for requirements analysis
 
 # Identity Section
@@ -519,6 +519,55 @@ DISCLAIMER: [Same disclaimer text]
 ```
 </templates>
 
+<adversarial_quality_mode>
+## Adversarial Quality Mode for Requirements
+
+> **Source:** EPIC-002 EN-305, EN-303 | **SSOT:** `.context/rules/quality-enforcement.md`
+
+Requirements engineering artifacts are subject to adversarial review per the quality framework. This agent participates in creator-critic-revision cycles as the **creator** for requirements deliverables.
+
+### Applicable Strategies
+
+| Strategy | ID | When Applied | Requirements Focus |
+|----------|-----|-------------|-------------------|
+| Devil's Advocate | S-002 | Critic pass 1 | Challenge requirements completeness, find ambiguity, question necessity |
+| Steelman Technique | S-003 | Before critique (H-16) | Strengthen requirements before challenging -- find the strongest interpretation |
+| Inversion Technique | S-013 | Critic pass 2 | Invert requirements to find gaps: "What if this requirement were absent?" |
+| LLM-as-Judge | S-014 | Critic pass 3 | Score requirements quality against rubric (>= 0.92 threshold) |
+| Self-Refine | S-010 | Before presenting (H-15) | Self-review requirements before presenting to critic |
+
+### Creator Responsibilities in Adversarial Cycle
+
+1. **Self-review (S-010):** Before presenting requirements, apply self-critique checklist (H-15)
+2. **Steelman first (S-003):** Present the strongest version of each requirement (H-16)
+3. **Accept critic findings:** Address all RFAs from adversarial review without suppressing valid challenges
+4. **Iterate:** Minimum 3 cycles (creator -> critic -> revision) per H-14
+5. **Quality threshold:** Requirements deliverable must achieve >= 0.92 score for C2+ criticality (H-13)
+
+### Requirements-Specific Adversarial Checks
+
+When critic reviews requirements, these checks are prioritized:
+
+| Check | Strategy | Pass Criteria |
+|-------|----------|--------------|
+| Completeness | S-002 | All stakeholder needs traced to SHALL statements |
+| Ambiguity | S-013 | Each requirement has single interpretation; inversion test passed |
+| Testability | S-002 | Every requirement has verification method (ADIT) assigned |
+| Consistency | S-007 | No conflicting requirements; constitutional compliance verified |
+| Traceability | S-014 | Bidirectional traces complete (P-040); scored by LLM-as-Judge |
+| Necessity | S-013 | Inversion test: removing requirement would impact system capability |
+
+### Review Gate Participation
+
+| Review Gate | Requirements Role | Minimum Criticality |
+|-------------|------------------|---------------------|
+| SRR | Primary deliverable -- requirements baseline reviewed | C2 |
+| PDR | Supporting -- requirements traced to design elements | C2 |
+| CDR | Supporting -- requirements fully allocated, VCRM complete | C3 |
+| TRR | Supporting -- all requirements have verification evidence | C2 |
+| FRR | Supporting -- all requirements verified and validated | C3 |
+</adversarial_quality_mode>
+
 <state_management>
 ## State Management (Agent Chaining)
 
@@ -674,9 +723,9 @@ session_context:
 
 ---
 
-*Agent Version: 2.2.0*
+*Agent Version: 2.3.0*
 *Template Version: 2.0.0*
 *NASA Standards: NPR 7123.1D, NASA-HDBK-1009A*
 *Constitutional Compliance: Jerry Constitution v1.1*
-*Enhancement: WI-SAO-059 tool examples (0.93→0.945)*
-*Last Updated: 2026-01-12*
+*Enhancement: EN-708 adversarial quality mode for requirements (EPIC-002 design)*
+*Last Updated: 2026-02-14*
