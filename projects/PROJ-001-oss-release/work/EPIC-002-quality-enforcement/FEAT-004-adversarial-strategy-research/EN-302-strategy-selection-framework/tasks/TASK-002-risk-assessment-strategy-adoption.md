@@ -31,8 +31,8 @@ description: |
   could go wrong with each strategy, the cost of false positives and false negatives,
   and how each strategy interacts with Jerry's constraint system.
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: COMPLETED
 priority: CRITICAL
 assignee: "nse-risk"
 created_by: "Claude"
@@ -99,11 +99,15 @@ Second of three parallel inputs to TASK-004 (scoring). Can run in parallel with 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | -- |
+| Risk Assessment of Strategy Adoption | Risk Register | [TASK-002-risk-assessment.md](../TASK-002-risk-assessment.md) |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
+- [x] Risk assessment covers all 15 strategies from EN-301
+- [x] Each strategy has an identified risk profile including likelihood and impact
+- [x] False positive and false negative costs are evaluated per strategy
+- [x] Interaction risks with Jerry's constraint system (P-003, P-020, P-022) are documented
+- [x] Risk assessment output is structured for consumption by the scoring framework
 - [ ] Reviewed by: --
 
 ---
@@ -113,3 +117,4 @@ Second of three parallel inputs to TASK-004 (scoring). Can run in parallel with 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation |
+| 2026-02-13 | DONE | Risk assessment completed by nse-risk agent. 105 risks assessed (15 strategies x 7 categories). 3 RED, 18 YELLOW, 84 GREEN. Deliverable: TASK-002-risk-assessment.md |

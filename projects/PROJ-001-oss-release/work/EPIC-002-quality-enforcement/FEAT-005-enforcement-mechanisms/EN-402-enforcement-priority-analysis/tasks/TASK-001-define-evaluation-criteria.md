@@ -32,8 +32,8 @@ description: |
   maintainability. Define a clear scoring methodology with justification for
   weight assignments that will be used in the priority matrix.
 classification: ENABLER
-status: BACKLOG
-resolution: null
+status: DONE
+resolution: completed
 priority: CRITICAL
 assignee: "ps-analyst"
 created_by: "Claude"
@@ -68,11 +68,11 @@ Establish weighted evaluation criteria for scoring enforcement vectors across fo
 
 ### Acceptance Criteria
 
-- [ ] Evaluation criteria defined for effectiveness, implementation cost, platform portability, and maintainability
-- [ ] Weighting methodology established with clear justification for each weight
-- [ ] Scoring scale defined (e.g., 1-5 or 1-10) with rubric for each criterion
-- [ ] Methodology documented in a reusable format for consistent application across all vectors
-- [ ] Criteria reviewed for completeness and absence of bias
+- [x] Evaluation criteria defined for effectiveness, implementation cost, platform portability, and maintainability (expanded to 7 dimensions: +CRR, +TOK, +BYP)
+- [x] Weighting methodology established with clear justification for each weight (CRR 25%, EFF 20%, PORT 18%, TOK 13%, BYP 10%, COST 8%, MAINT 6%)
+- [x] Scoring scale defined (1-5) with rubric for each criterion including anchoring examples
+- [x] Methodology documented in a reusable format for consistent application across all vectors
+- [x] Criteria reviewed for completeness and absence of bias (5 design principles, sensitivity analysis guidance)
 
 ### Implementation Notes
 
@@ -101,7 +101,7 @@ First task in EN-402. No dependencies within this enabler. Requires EN-401 resea
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | -- |
+| Evaluation Criteria and Weighting Methodology | Analysis Artifact | [TASK-001-evaluation-criteria.md](../TASK-001-evaluation-criteria.md) |
 
 ### Verification
 
@@ -115,3 +115,4 @@ First task in EN-402. No dependencies within this enabler. Requires EN-401 resea
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation |
+| 2026-02-13 | DONE | Completed by ps-analyst. 7-dimension framework with weighted composite scoring, rubrics, worked examples, and consumer guidance for TASK-002/003/004. |

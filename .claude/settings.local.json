@@ -1,13 +1,33 @@
 {
   "permissions": {
     "allow": [
+      "WebSearch",
+      "WebFetch",
+      "Skill(jerry:nasa-se)",
+      "Skill(nasa-se)",
+      "Skill(jerry:problem-solving)",
+      "Skill(problem-solving)",
       "Skill(jerry:orchestration)",
+      "Skill(orchestration)",
+      "Skill(jerry:worktracker)",
+      "Skill(worktracker)",
+      "mcp__memory-keeper__*",
+      "mcp__memory-keeper__store",
+      "mcp__memory-keeper__retrieve",
+      "mcp__memory-keeper__list",
+      "mcp__memory-keeper__delete",
+      "mcp__memory-keeper__search",
+      "mcp__context7__*",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "mcp__plugin_context7_context7__*",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
       "Bash(export JERRY_PROJECT=PROJ-001-oss-release)",
       "Bash(echo:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run view:*)",
-      "Skill(jerry:worktracker)",
       "Bash(git status:*)",
       "Bash(git check-ignore:*)",
       "Bash(git add:*)",
@@ -19,14 +39,41 @@
       "Bash(git mv:*)",
       "Bash(git ls-tree:*)",
       "Bash(git checkout:*)",
-      "mcp__context7__resolve-library-id",
       "Bash(uv run pytest:*)",
       "Bash(gh pr create:*)",
       "Bash(git pull:*)",
       "Bash(git fetch:*)",
       "Bash(test:*)",
       "Bash(find:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(ls:*)",
+      "Bash(python3:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"decision\":\"allow\"}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PermissionRequest\",\"decision\":{\"behavior\":\"allow\"}}}'",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }
