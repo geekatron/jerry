@@ -589,7 +589,7 @@ barriers:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 11
+  current_group: 12
   groups:
     # Group 1: Phase 1 Creator Agents (Parallel)
     - id: 1
@@ -758,20 +758,29 @@ execution_queue:
     # Group 11: Barrier 2 Cross-Pollination
     - id: 11
       name: "Barrier 2 Cross-Pollination"
-      execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
       blocked_by: "group-10a"
+      started_at: "2026-02-14T00:00:00Z"
+      completed_at: "2026-02-14T05:25:00Z"
       tasks:
-        - "create-barrier-2-adv-to-enf-artifact"
-        - "create-barrier-2-enf-to-adv-artifact"
-        - "validate-barrier-2-artifacts"
+        - "create-barrier-2-adv-to-enf-artifact"  # EN-303 findings → ENF Phase 3 ✓
+        - "create-barrier-2-enf-to-adv-artifact"  # EN-403/404 findings → ADV Phase 3 ✓
+        - "validate-barrier-2-artifacts"  # Both handoffs verified and committed ✓
+      artifacts:
+        - path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/adv-to-enf/barrier-2-adv-to-enf-handoff.md"
+          description: "EN-303 situational applicability → ENF Phase 3 (EN-405)"
+        - path: "orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/enf-to-adv/barrier-2-enf-to-adv-handoff.md"
+          description: "EN-403/404 enforcement designs → ADV Phase 3 (EN-304/305/307)"
+      commit: "9c16e71"
 
     # Group 12: Phase 3 Agents (Parallel after Barrier 2)
     - id: 12
       name: "Phase 3 Agents"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "group-11"
+      status: "IN_PROGRESS"
+      blocked_by: "group-11"  # UNBLOCKED: group-11 COMPLETE
+      started_at: "2026-02-14T05:30:00Z"
       agents:
         - "ps-architect-304"  # adv
         - "ps-implementer-304"  # adv
@@ -829,18 +838,18 @@ checkpoints:
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 2  # adv Phase 1 (EN-302) + enf Phase 1 (EN-402)
+    phases_complete: 4  # adv Phase 1 (EN-302) + enf Phase 1 (EN-402) + adv Phase 2 (EN-303) + enf Phase 2 (EN-403/404)
     phases_total: 8  # 4 per pipeline
-    phases_percent: 25
-    agents_executed: 24  # 22 + ps-validator-303 + ps-validator-403-404
+    phases_percent: 50
+    agents_executed: 26  # 24 + barrier-2-adv-to-enf + barrier-2-enf-to-adv
     agents_total: 38  # Total unique agent invocations
-    agents_percent: 63
-    artifacts_created: 41  # 39 + EN-303 TASK-008 validation + EN-403 TASK-008 validation
+    agents_percent: 68
+    artifacts_created: 43  # 41 + barrier-2-adv-to-enf-handoff + barrier-2-enf-to-adv-handoff
     artifacts_total: 52  # Estimated total artifacts
-    artifacts_percent: 79
-    barriers_complete: 1  # barrier-1 COMPLETE
+    artifacts_percent: 83
+    barriers_complete: 2  # barrier-1 COMPLETE + barrier-2 COMPLETE
     barriers_total: 3  # barrier-1, barrier-2, final-synthesis
-    barriers_percent: 33
+    barriers_percent: 67
     phase_durations:
       - phase: "enf-phase-1"
         started: "2026-02-13T00:00:00Z"
@@ -906,14 +915,14 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Barrier 2 cross-pollination (Group 11)"
+    - action: "Phase 3 Agents (Group 12)"
       priority: "HIGH"
-      note: "Phase 2 COMPLETE for both pipelines (validation done). Create Barrier-2 handoff artifacts: adv→enf (situational context mappings) and enf→adv (enforcement patterns)."
+      note: "Barrier 2 COMPLETE. Dispatch parallel agents for ADV Phase 3 (EN-304 Strategy-Skill Integration, EN-305 Adversarial Skill Implementation, EN-307 Cross-Strategy Validation) and ENF Phase 3 (EN-405 Session Context Enforcement). Each enabler needs creator agents reading barrier-2 handoffs."
 
   subsequent:
-    - action: "Phase 3 Agents (Group 12)"
-      depends_on: "Barrier 2 complete"
-      note: "EN-304/305/307 (adv skills) + EN-405 (enf session context)"
+    - action: "Phase 3 Adversarial Review Cycles (Group 13)"
+      depends_on: "Group 12 complete"
+      note: "Creator-critic-revision cycles for EN-304/305/307/405 artifacts. Min 3 iterations, >= 0.92 quality gate."
 
     - action: "Phase 3 Adversarial Review (Group 13)"
       depends_on: "Phase 3 agents complete"
@@ -923,14 +932,14 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-phase-2-complete"
-  current_state: "Phase 2 COMPLETE for both pipelines. EN-303: PASS (0.928, 13/13 ACs). EN-403/404: PASS (0.93, with implementation conditions). All Phase 2 agents finished. Ready for Barrier 2."
-  next_step: "Create Barrier-2 cross-pollination artifacts (adv→enf and enf→adv handoffs), then proceed to Phase 3 (EN-304/305/307 + EN-405)."
+  last_checkpoint: "CP-barrier-2-complete"
+  current_state: "Barrier 2 COMPLETE. Both cross-pollination handoffs delivered (commit 9c16e71). ADV→ENF: EN-303 situational applicability → EN-405. ENF→ADV: EN-403/404 enforcement designs → EN-304/305/307. Pipeline at 50% phases complete, 67% barriers complete."
+  next_step: "Dispatch Phase 3 creator agents (Group 12): EN-304 (Strategy-Skill Integration), EN-305 (Adversarial Skill Implementation), EN-307 (Cross-Strategy Validation), EN-405 (Session Context Enforcement). Each reads barrier-2 handoffs as input."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/ORCHESTRATION.yaml"
-    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/EN-303-situational-applicability-mapping/TASK-007-critique-iteration-2.md"
-    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-005-enforcement-mechanisms/EN-403-hook-based-enforcement/TASK-007-critique-iteration-2.md"
+    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/adv-to-enf/barrier-2-adv-to-enf-handoff.md"
+    - "projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-2/enf-to-adv/barrier-2-enf-to-adv-handoff.md"
 
   cross_session_portable: true
   ephemeral_references: false
