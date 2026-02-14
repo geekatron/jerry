@@ -299,6 +299,28 @@ def main() -> int:
 
         # Transform to hook format with BOTH systemMessage and additionalContext
         system_message, additional_context = format_hook_output(cli_data, precommit_warning)
+
+        # Quality framework preamble injection (EN-706)
+        try:
+            # Add project root to path for src imports
+            _project_root = str(plugin_root.resolve())
+            if _project_root not in sys.path:
+                sys.path.insert(0, _project_root)
+
+            from src.infrastructure.internal.enforcement.session_quality_context_generator import (
+                SessionQualityContextGenerator,
+            )
+
+            generator = SessionQualityContextGenerator()
+            quality_context = generator.generate()
+            additional_context += (
+                f"\n<quality-context>\n{quality_context.preamble}\n</quality-context>"
+            )
+        except ImportError:
+            log_error(log_file, "DEBUG: Quality context module not available (fail-open)")
+        except Exception as e:
+            log_error(log_file, f"WARNING: Quality context generation failed: {e} (fail-open)")
+
         output_json(system_message, additional_context)
 
         # Log any stderr

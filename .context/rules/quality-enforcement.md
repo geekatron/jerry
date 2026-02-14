@@ -23,7 +23,13 @@
 
 > These are the authoritative HARD rules. Each rule CANNOT be overridden. See source files for consequences.
 
+<!-- L2-REINJECT: rank=1, tokens=50, content="Constitutional: No recursive subagents (P-003). User decides, never override (P-020). No deception (P-022). These are HARD constraints that CANNOT be overridden." -->
+
 <!-- L2-REINJECT: rank=2, tokens=90, content="Quality gate >= 0.92 weighted composite for C2+ deliverables (H-13). Creator-critic-revision cycle REQUIRED, minimum 3 iterations (H-14). Below threshold = REJECTED." -->
+
+<!-- L2-REINJECT: rank=3, tokens=25, content="UV only for Python (H-05/H-06). NEVER use python/pip directly." -->
+
+<!-- L2-REINJECT: rank=4, tokens=30, content="LLM-as-Judge scoring (S-014): Apply strict rubric. Leniency bias must be actively counteracted." -->
 
 <!-- L2-REINJECT: rank=5, tokens=30, content="Self-review REQUIRED before presenting any deliverable (H-15, S-010)." -->
 

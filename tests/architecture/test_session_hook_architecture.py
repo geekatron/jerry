@@ -84,6 +84,44 @@ def get_imports_from_file(file_path: Path) -> list[str]:
     return imports
 
 
+def get_unguarded_imports_from_file(file_path: Path) -> list[str]:
+    """Extract import statements NOT inside try/except blocks.
+
+    Fail-open imports guarded by try/except with ImportError handlers
+    are excluded. This matches the established pattern used by
+    pre_tool_use.py (EN-703) and session_start_hook.py (EN-706).
+
+    Returns a list of module names that are imported at top level.
+    """
+    if not file_path.exists():
+        return []
+
+    content = file_path.read_text()
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return []
+
+    # Collect line numbers of imports inside try blocks
+    guarded_lines: set[int] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Try):
+            for child in ast.walk(node):
+                if isinstance(child, ast.Import | ast.ImportFrom):
+                    guarded_lines.add(child.lineno)
+
+    imports = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import) and node.lineno not in guarded_lines:
+            for alias in node.names:
+                imports.append(alias.name)
+        elif isinstance(node, ast.ImportFrom) and node.lineno not in guarded_lines:
+            if node.module:
+                imports.append(node.module)
+
+    return imports
+
+
 # =============================================================================
 # T-027: cli/adapter.py has no infrastructure imports
 # =============================================================================
@@ -180,22 +218,27 @@ class TestSessionHookIsolation:
         self,
         scripts_root: Path,
     ) -> None:
-        """T-028: session_start_hook.py only imports stdlib.
+        """T-028: session_start_hook.py only imports stdlib at top level.
 
         The hook script is a thin adapter that calls the CLI via subprocess.
-        It should NOT import any src/ modules directly.
+        It should NOT import any src/ modules directly at the top level.
+
+        Fail-open imports inside try/except blocks are permitted, following
+        the established pattern from pre_tool_use.py (EN-703). These imports
+        gracefully degrade when the uv environment is not activated.
         """
         hook_path = scripts_root / "session_start_hook.py"
         assert hook_path.exists(), f"Hook script not found at {hook_path}"
 
-        imports = get_imports_from_file(hook_path)
+        imports = get_unguarded_imports_from_file(hook_path)
 
-        # src imports are NOT allowed
+        # Unguarded src imports are NOT allowed
         src_imports = [imp for imp in imports if imp.startswith("src.")]
 
         assert not src_imports, (
-            f"Hook script has src imports: {src_imports}\n"
+            f"Hook script has unguarded src imports: {src_imports}\n"
             f"Hook should call CLI via subprocess, not import src modules.\n"
+            f"Fail-open imports inside try/except are allowed (EN-706 pattern).\n"
             f"This ensures proper isolation and allows the hook to work\n"
             f"even when uv environment is not activated."
         )
@@ -204,16 +247,19 @@ class TestSessionHookIsolation:
         self,
         scripts_root: Path,
     ) -> None:
-        """Hook script should only use allowed stdlib modules.
+        """Hook script should only use allowed stdlib modules at top level.
 
-        Allowed: json, subprocess, os, sys, pathlib
-        Not allowed: Any third-party or src modules
+        Allowed: json, subprocess, os, sys, pathlib, datetime, typing
+        Not allowed at top level: Any third-party or src modules
+
+        Fail-open imports inside try/except blocks are permitted, following
+        the established pattern from pre_tool_use.py (EN-703).
         """
         hook_path = scripts_root / "session_start_hook.py"
         if not hook_path.exists():
             pytest.skip("Hook script not found")
 
-        imports = get_imports_from_file(hook_path)
+        imports = get_unguarded_imports_from_file(hook_path)
 
         allowed_modules = {
             "json",
@@ -229,8 +275,10 @@ class TestSessionHookIsolation:
         for imp in imports:
             # Get top-level module name
             top_level = imp.split(".")[0]
-            assert top_level in allowed_modules or imp.startswith("src.") is False, (
-                f"Hook script imports unexpected module: {imp}\nAllowed: {allowed_modules}"
+            assert top_level in allowed_modules, (
+                f"Hook script imports unexpected module: {imp}\n"
+                f"Allowed: {allowed_modules}\n"
+                f"Use try/except guard for optional imports (EN-706 pattern)."
             )
 
 
