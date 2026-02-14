@@ -94,7 +94,8 @@ pipelines:
           - id: "EN-701"
             name: "Quality Enforcement SSOT"
             effort: 5
-            status: "PENDING"
+            status: "COMPLETE"
+            quality_score: 0.94
             dependencies: []
             adversarial_review:
               creator_agent: "ps-researcher"
@@ -102,26 +103,39 @@ pipelines:
               patterns: ["llm_as_judge", "steelman"]
               quality_target: 0.92
               max_iterations: 3
-              current_iteration: 0
-              iterations: []
+              current_iteration: 2
+              iterations:
+                - iteration: 1
+                  score: 0.852
+                  verdict: "REVISE"
+                  findings: {critical: 1, major: 4, minor: 5}
+                - iteration: 2
+                  score: 0.94
+                  verdict: "PASS"
+                  findings: {critical: 0, major: 0, minor: 1}
             agents:
               - id: "en701-creator"
                 role: "creator"
-                status: "PENDING"
+                status: "COMPLETE"
                 artifacts:
                   - type: "ssot"
                     path: "impl/phase-1-foundation/en701-creator/quality-enforcement.md"
+                  - type: "revision-log"
+                    path: "impl/phase-1-foundation/en701-creator/revision-iter1.md"
               - id: "en701-critic"
                 role: "critic"
-                status: "PENDING"
+                status: "COMPLETE"
                 artifacts:
                   - type: "critique"
-                    path: "impl/phase-1-foundation/en701-critic/"
+                    path: "impl/phase-1-foundation/en701-critic/critique-iter1.md"
+                  - type: "gate-check"
+                    path: "impl/phase-1-foundation/en701-critic/critique-iter2-gate.md"
 
           - id: "EN-702"
             name: "Rule File Optimization"
             effort: 8
-            status: "PENDING"
+            status: "COMPLETE"
+            quality_score: 0.937
             dependencies: ["EN-701"]
             adversarial_review:
               creator_agent: "ps-researcher"
@@ -129,21 +143,35 @@ pipelines:
               patterns: ["steelman", "inversion"]
               quality_target: 0.92
               max_iterations: 3
-              current_iteration: 0
-              iterations: []
+              current_iteration: 2
+              iterations:
+                - iteration: 1
+                  score: 0.893
+                  verdict: "REVISE"
+                  findings: {critical: 2, major: 3, minor: 4}
+                - iteration: 2
+                  score: 0.937
+                  verdict: "PASS"
+                  findings: {critical: 0, major: 0, minor: 3}
             agents:
               - id: "en702-creator"
                 role: "creator"
-                status: "PENDING"
+                status: "COMPLETE"
                 artifacts:
                   - type: "optimized-rules"
                     path: "impl/phase-1-foundation/en702-creator/"
+                  - type: "optimization-report"
+                    path: "impl/phase-1-foundation/en702-creator/optimization-report.md"
+                  - type: "revision-log"
+                    path: "impl/phase-1-foundation/en702-creator/revision-iter1.md"
               - id: "en702-critic"
                 role: "critic"
-                status: "PENDING"
+                status: "COMPLETE"
                 artifacts:
                   - type: "critique"
-                    path: "impl/phase-1-foundation/en702-critic/"
+                    path: "impl/phase-1-foundation/en702-critic/critique-iter1.md"
+                  - type: "gate-check"
+                    path: "impl/phase-1-foundation/en702-critic/critique-iter2-gate.md"
 
       # -------------------------------------------------------------------
       # PHASE 2: DETERMINISTIC ENFORCEMENT (EN-703, EN-704) — Parallel
