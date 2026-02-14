@@ -235,10 +235,8 @@ class TestCrossLayerInteractions:
 class TestHookEnforcementE2E:
     """Tests validating hook enforcement pipeline end-to-end."""
 
-    def test_pretool_hook_when_pip_install_command_then_blocks(self) -> None:
-        """PreToolUse hook blocks forbidden pip install commands."""
-        # The hook does not specifically block 'pip install' by name,
-        # but the pattern library may catch it. Test the hook runs without error.
+    def test_pretool_hook_when_pip_install_command_then_responds(self) -> None:
+        """PreToolUse hook processes pip install command without crashing."""
         exit_code, stdout_json, _stderr = run_pretool_hook(
             "Bash",
             {"command": "pip install requests"},
