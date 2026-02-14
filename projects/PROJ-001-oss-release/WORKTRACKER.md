@@ -33,6 +33,7 @@
 |----|-------|--------|----------|
 | [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | in_progress | critical |
+| [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | in_progress | critical |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -146,7 +147,8 @@
 | 2026-02-12 | Claude | EN-401 TASK-001/002 complete: Claude Code hooks (729 lines, 24 refs) and guardrail frameworks (1,724 lines, 30 refs). |
 | 2026-02-13 | Claude | EN-301 TASK-004 (synthesis) launched: ps-synthesizer consolidating 36 candidates into 15-strategy catalog. EN-401 TASK-003/004/005 launched in parallel: .claude/rules/ patterns, prompt engineering enforcement, alternative approaches. |
 | 2026-02-13 | Claude | EN-301 TASK-004 (synthesis) complete. EN-401 TASK-003/004/005 all complete. All task entity files being rewritten to use official /worktracker TASK template (NFC-6 compliance). |
+| 2026-02-14 | Claude | EPIC-003 created: Quality Framework Implementation. Implements EPIC-002 designs into code. FEAT-008 with 11 enablers (EN-701–EN-711) across 5 phases: Foundation, Deterministic, Probabilistic, Skills, Integration. |
 
 ---
 
-*Last Updated: 2026-02-13*
+*Last Updated: 2026-02-14*
