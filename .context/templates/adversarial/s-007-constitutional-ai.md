@@ -337,7 +337,7 @@ Map constitutional findings to S-014 scoring dimensions:
 | REVISE | 0.85 - 0.91 | Strategy execution has gaps in principle coverage or evidence quality |
 | REJECTED | < 0.85 | Strategy execution inadequate; missing key principles or unsupported findings |
 
-> **Note:** These bands evaluate the STRATEGY EXECUTION quality (how well S-007 was performed), not the deliverable being reviewed. Deliverable scoring uses the Constitutional Compliance Score from Step 5.
+> **Note:** Score bands (PASS/REVISE/REJECTED) are sourced from quality-enforcement.md (Operational Score Bands section). See SSOT for authoritative definitions. These bands evaluate the STRATEGY EXECUTION quality (how well S-007 was performed), not the deliverable being reviewed. Deliverable scoring uses the Constitutional Compliance Score from Step 5.
 
 ### Dimension Weights
 

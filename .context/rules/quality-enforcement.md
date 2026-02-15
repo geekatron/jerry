@@ -85,6 +85,18 @@
 
 **Minimum cycle count:** 3 iterations (creator -> critic -> revision)
 
+### Operational Score Bands
+
+Below-threshold deliverables are subdivided into operational bands for workflow guidance:
+
+| Band | Score Range | Outcome | Workflow Action |
+|------|------------|---------|-----------------|
+| PASS | >= 0.92 | Accepted | Deliverable meets quality gate |
+| REVISE | 0.85 - 0.91 | Rejected (H-13) | Near threshold — targeted revision likely sufficient |
+| REJECTED | < 0.85 | Rejected (H-13) | Significant rework required |
+
+> **Note:** Both REVISE and REJECTED trigger the revision cycle per H-13. The REVISE band is an operational workflow label to distinguish near-threshold deliverables from those requiring significant rework. It is NOT a distinct acceptance state.
+
 ---
 
 ## Criticality Levels

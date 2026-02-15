@@ -238,7 +238,7 @@ Every template MUST include a rubric for meta-evaluating the strategy execution 
 | REVISE | 0.85 - 0.91 | Strategy execution requires targeted revision; close to threshold |
 | REJECTED | < 0.85 | Strategy execution inadequate; significant rework required (H-13) |
 
-> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band is a template-specific operational category (not sourced from quality-enforcement.md) to distinguish near-threshold deliverables from those requiring significant rework. Both REVISE and REJECTED trigger the revision cycle per H-13.
+> **Note:** Score bands (PASS/REVISE/REJECTED) are defined in quality-enforcement.md (Operational Score Bands). Templates MUST NOT redefine these bands locally.
 
 ### Dimension Weights (from quality-enforcement.md, MUST NOT be redefined)
 
@@ -334,6 +334,14 @@ All values sourced from `.context/rules/quality-enforcement.md`. MUST NOT be red
 | Threshold | >= 0.92 weighted composite |
 | Minimum Cycle Count | 3 iterations (creator -> critic -> revision) |
 | Below Threshold Action | REJECTED; revision required (H-13) |
+
+### Operational Score Bands
+
+| Band | Score Range | Outcome | Workflow Action |
+|------|------------|---------|-----------------|
+| PASS | >= 0.92 | Accepted | Deliverable meets quality gate |
+| REVISE | 0.85 - 0.91 | Rejected (H-13) | Near threshold — targeted revision likely sufficient |
+| REJECTED | < 0.85 | Rejected (H-13) | Significant rework required |
 
 ### Scoring Dimensions and Weights
 

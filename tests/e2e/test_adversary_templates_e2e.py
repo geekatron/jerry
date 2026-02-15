@@ -686,6 +686,65 @@ class TestCriticalityBasedStrategySelection:
 
 
 # ===========================================================================
+# Test Class: Template Validation Script
+# ===========================================================================
+
+
+class TestTemplateValidationScript:
+    """Test that the validate_templates.py script exists and produces correct results."""
+
+    def test_validation_script_when_accessed_then_exists(self):
+        """validate_templates.py must exist in scripts/."""
+        script_path = PROJECT_ROOT / "scripts" / "validate_templates.py"
+        assert script_path.exists(), "scripts/validate_templates.py not found"
+
+    def test_validation_script_when_run_then_exits_zero(self):
+        """Running validate_templates.py should exit 0 (all templates pass)."""
+        import subprocess
+
+        result = subprocess.run(
+            ["uv", "run", "python", "scripts/validate_templates.py"],
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+        )
+        assert result.returncode == 0, (
+            f"validate_templates.py failed with exit code {result.returncode}:\n{result.stderr}"
+        )
+
+    def test_validation_script_verbose_when_run_then_shows_details(self):
+        """Running with --verbose should produce detailed output."""
+        import subprocess
+
+        result = subprocess.run(
+            ["uv", "run", "python", "scripts/validate_templates.py", "--verbose"],
+            capture_output=True,
+            text=True,
+            cwd=str(PROJECT_ROOT),
+        )
+        assert result.returncode == 0
+        # Verbose output should mention each template
+        assert "s-001-red-team.md" in result.stdout or "S-001" in result.stdout
+
+    def test_precommit_config_when_read_then_contains_template_validation_hook(self):
+        """Pre-commit config should include template validation hook."""
+        config_path = PROJECT_ROOT / ".pre-commit-config.yaml"
+        content = config_path.read_text()
+        assert "validate-templates" in content, (
+            ".pre-commit-config.yaml missing validate-templates hook"
+        )
+        assert "validate_templates.py" in content, (
+            ".pre-commit-config.yaml missing validate_templates.py reference"
+        )
+
+    def test_ci_workflow_when_read_then_contains_template_validation_job(self):
+        """CI workflow should include template validation job."""
+        ci_path = PROJECT_ROOT / ".github" / "workflows" / "ci.yml"
+        content = ci_path.read_text()
+        assert "template-validation" in content, "ci.yml missing template-validation job"
+
+
+# ===========================================================================
 # Test Class: Template Content Quality
 # ===========================================================================
 
@@ -806,6 +865,65 @@ class TestFindingPrefixUniqueness:
                 f"({expected_prefix}-NNN) instead of execution-scoped format "
                 f"({expected_prefix}-NNN-execution_id). Found: {old_format_matches[:3]}"
             )
+
+
+class TestMalformedTemplateHandling:
+    """Test that malformed template handling is documented in adv-executor."""
+
+    def test_adv_executor_when_read_then_contains_malformed_template_handling(self):
+        """adv-executor.md should document malformed template behavior."""
+        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        assert "Malformed Template" in content or "malformed template" in content, (
+            "adv-executor.md must document malformed template handling"
+        )
+
+    def test_adv_executor_when_read_then_malformed_emits_critical(self):
+        """Malformed templates should emit CRITICAL findings."""
+        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        # Check that malformed templates produce CRITICAL severity
+        malformed_section = content[content.find("Malformed") :] if "Malformed" in content else ""
+        assert "CRITICAL" in malformed_section or "Critical" in malformed_section, (
+            "Malformed template handling must specify CRITICAL severity"
+        )
+
+    def test_adv_executor_when_read_then_malformed_halts_execution(self):
+        """Malformed templates should halt strategy execution."""
+        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        malformed_section = content[content.find("Malformed") :] if "Malformed" in content else ""
+        halt_terms = ["HALT", "halt", "Do NOT attempt", "Do not attempt", "stop execution"]
+        assert any(term in malformed_section for term in halt_terms), (
+            "Malformed template handling must specify execution halt"
+        )
+
+    def test_ssot_when_read_then_contains_revise_band_definition(self):
+        """quality-enforcement.md should contain authoritative REVISE band definition."""
+        ssot_path = PROJECT_ROOT / ".context" / "rules" / "quality-enforcement.md"
+        content = ssot_path.read_text()
+        assert "REVISE" in content, "quality-enforcement.md must contain REVISE band definition"
+        assert "0.85" in content, "quality-enforcement.md must specify REVISE lower bound (0.85)"
+
+    @pytest.mark.parametrize("strategy_id", SELECTED_STRATEGIES.keys())
+    def test_template_revise_note_when_read_then_references_ssot(self, strategy_id: str):
+        """Templates should reference SSOT for REVISE band, not define locally."""
+        template_path = TEMPLATE_PATHS[strategy_id]
+        content = read_file(template_path)
+
+        # Check that the template references SSOT for score bands
+        ssot_ref_terms = [
+            "sourced from quality-enforcement.md",
+            "See SSOT for authoritative",
+            "quality-enforcement.md (Operational Score Bands",
+        ]
+        has_ssot_ref = any(term in content for term in ssot_ref_terms)
+
+        # Check that the old "not sourced from" language is gone
+        old_language = "not sourced from quality-enforcement.md"
+        has_old_language = old_language in content
+
+        assert has_ssot_ref and not has_old_language, (
+            f"{strategy_id}: Template should reference SSOT for REVISE band "
+            f"(found SSOT ref: {has_ssot_ref}, found old language: {has_old_language})"
+        )
 
 
 class TestTemplateContentQuality:

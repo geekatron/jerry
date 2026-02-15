@@ -127,6 +127,19 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # Template Format Validation (EN-818)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: validate-templates
+        name: Validate adversarial strategy templates
+        entry: uv run python scripts/validate_templates.py
+        language: system
+        files: \.context/templates/adversarial/.*\.md$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Conventional Commit Message Linting (EN-108)
   # =============================================================================
   - repo: https://github.com/commitizen-tools/commitizen

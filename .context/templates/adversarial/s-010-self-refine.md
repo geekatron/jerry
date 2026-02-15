@@ -360,7 +360,7 @@ This rubric evaluates the **quality of the S-010 self-review execution itself** 
 | REVISE | 0.85 - 0.91 | Self-review execution requires targeted improvement; close to threshold |
 | REJECTED | < 0.85 | Self-review execution inadequate; significant rework required (H-13) |
 
-**Note:** The SSOT threshold is >= 0.92 (H-13). Below threshold = REJECTED; revision required. The REVISE band (0.85-0.91) is a template-specific workflow subdivision of the REJECTED outcome to distinguish near-threshold deliverables (where targeted fixes are likely sufficient) from those requiring significant rework (<0.85). Both REVISE and REJECTED trigger the revision cycle per H-13.
+> **Note:** Score bands (PASS/REVISE/REJECTED) are sourced from quality-enforcement.md (Operational Score Bands section). See SSOT for authoritative definitions.
 
 ### Dimension Weights
 

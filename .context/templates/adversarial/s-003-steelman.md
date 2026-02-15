@@ -303,7 +303,7 @@ Meta-evaluation of S-003 execution quality. **SSOT threshold:** >= 0.92 weighted
 | REVISE | 0.85 - < 0.92 | Steelman execution requires targeted improvement; close to threshold (REJECTED per H-13) |
 | REJECTED | < 0.85 | Steelman execution inadequate; significant rework required (REJECTED per H-13) |
 
-> **Note:** REVISE band (0.85 to < 0.92) is template-specific (not from SSOT) to distinguish near-threshold from significant-rework cases. Both REVISE and REJECTED trigger revision per H-13.
+> **Note:** Score bands (PASS/REVISE/REJECTED) are sourced from quality-enforcement.md (Operational Score Bands section). See SSOT for authoritative definitions.
 
 ### Dimension Weights (from quality-enforcement.md, MUST NOT be redefined)
 

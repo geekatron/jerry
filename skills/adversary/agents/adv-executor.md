@@ -196,6 +196,29 @@ Parse the loaded sections to extract:
 
 Verify Identity and Execution Protocol sections are present. If either is missing, warn the orchestrator.
 
+### Malformed Template Handling
+
+If a template loads successfully but is structurally malformed (missing required sections, corrupted formatting, unparseable structure):
+
+1. **Detect**: During Step 1 parsing, if the Identity OR Execution Protocol section cannot be extracted:
+   - Template is classified as MALFORMED
+
+2. **Emit CRITICAL Finding**:
+   ```
+   {PREFIX}-000-{execution_id}: MALFORMED TEMPLATE
+   Severity: Critical
+   Template: {template_path}
+   Issue: {specific parsing failure — e.g., "Identity section not found", "Execution Protocol section empty"}
+   Impact: Strategy cannot be executed; tournament integrity compromised
+   ```
+
+3. **HALT Execution**: Do NOT attempt to execute the strategy protocol against a malformed template. Return the CRITICAL finding to the orchestrator immediately.
+
+4. **Orchestrator Action**: The orchestrator MUST:
+   - Log the malformed template finding
+   - Decide whether to skip the strategy or fix the template and retry
+   - A malformed template finding blocks PASS regardless of overall score
+
 ### Step 2: Load Deliverable
 ```
 Read(file_path="{deliverable_path}")

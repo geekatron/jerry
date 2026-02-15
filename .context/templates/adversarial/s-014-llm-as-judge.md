@@ -551,7 +551,7 @@ This section defines how to evaluate the quality of an S-014 execution itself (m
 | REVISE | 0.85 - 0.91 | S-014 execution requires targeted revision; close to threshold (REJECTED per H-13) |
 | REJECTED | < 0.85 | S-014 execution inadequate; significant rework required (REJECTED per H-13) |
 
-> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band (0.85-0.91) is a template-specific operational category (not sourced from quality-enforcement.md) to distinguish near-threshold deliverables requiring targeted improvements from those requiring significant rework. Both REVISE and REJECTED are H-13 violations that trigger the revision cycle. REVISE is an operational workflow label, not a distinct acceptance state.
+> **Note:** Score bands (PASS/REVISE/REJECTED) are sourced from quality-enforcement.md (Operational Score Bands section). See SSOT for authoritative definitions.
 
 ---
 

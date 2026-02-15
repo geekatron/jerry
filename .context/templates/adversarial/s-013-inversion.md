@@ -349,7 +349,7 @@ This rubric evaluates the **quality of the S-013 Inversion execution itself** (m
 | REVISE | 0.85 - 0.91 | Strategy execution requires targeted revision; close to threshold |
 | REJECTED | < 0.85 | Strategy execution inadequate; significant rework required (H-13) |
 
-> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band (0.85-0.91) is a template-specific operational category (not sourced from quality-enforcement.md) to distinguish near-threshold executions requiring targeted improvements from those requiring significant rework. Both REVISE and REJECTED trigger the revision cycle per H-13.
+> **Note:** Score bands (PASS/REVISE/REJECTED) are sourced from quality-enforcement.md (Operational Score Bands section). See SSOT for authoritative definitions.
 
 ### Dimension Weights
 
