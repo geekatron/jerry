@@ -129,16 +129,7 @@ A Devil's Advocate report containing:
 
 ### Context Requirements
 
-**Background knowledge assumed:**
-- Understanding of the deliverable's domain, problem space, and intended audience
-- Familiarity with the deliverable's claims, decisions, and recommendations
-- Access to the S-003 Steelman output showing how the deliverable was strengthened
-- Knowledge of common failure modes, anti-patterns, and historical precedents in the domain
-
-**State required:**
-- Deliverable has been strengthened by S-003 Steelman (H-16 compliance verified)
-- Deliverable is in a complete, reviewable state (not partial or placeholder)
-- Advocate has sufficient domain expertise to construct credible counter-arguments
+The advocate must have domain expertise sufficient to construct credible counter-arguments, familiarity with the deliverable's claims and recommendations, and access to the S-003 Steelman output. The deliverable must be in a complete, reviewable state (not partial or placeholder) and have been strengthened by S-003 (H-16 compliance verified).
 
 ### Ordering Constraints
 
@@ -201,13 +192,13 @@ A Devil's Advocate report containing:
 For each claim or decision in the deliverable:
 
 1. **Identify the claim:** Quote or paraphrase the specific position being challenged
-2. **Apply counter-argument lenses:**
-   - **Logical flaws:** Does the argument contain fallacies, non sequiturs, or circular reasoning?
-   - **Unstated assumptions:** What must be true for this claim to hold? Are those conditions guaranteed?
-   - **Contradicting evidence:** Is there evidence (from the deliverable itself or domain knowledge) that contradicts this claim?
-   - **Alternative interpretations:** Could the same evidence support a different conclusion?
-   - **Unaddressed risks:** What could go wrong that the deliverable does not consider?
-   - **Historical precedents of failure:** Have similar approaches failed before? Under what conditions?
+2. **Apply the 6 counter-argument lenses:**
+   1. **Logical flaws:** Does the argument contain fallacies, non sequiturs, or circular reasoning?
+   2. **Unstated assumptions:** What must be true for this claim to hold? Are those conditions guaranteed?
+   3. **Contradicting evidence:** Is there evidence (from the deliverable itself or domain knowledge) that contradicts this claim?
+   4. **Alternative interpretations:** Could the same evidence support a different conclusion?
+   5. **Unaddressed risks:** What could go wrong that the deliverable does not consider?
+   6. **Historical precedents of failure:** Have similar approaches failed before? Under what conditions?
 3. **Construct the counter-argument:** State the strongest possible case against the claim
 4. **Assign severity:**
    - **Critical:** Counter-argument invalidates a core claim or reveals a HARD rule violation. Blocks acceptance.
@@ -222,16 +213,7 @@ For each claim or decision in the deliverable:
 
 **Output:** Findings table with DA-NNN identifiers, severity, evidence, and affected dimensions.
 
-**Finding Documentation Format:**
-
-| ID | Finding | Severity | Evidence | Affected Dimension |
-|----|---------|----------|----------|--------------------|
-| DA-001 | {{Counter-argument description}} | Critical/Major/Minor | {{Specific reference to deliverable}} | {{Dimension}} |
-
-**Severity Definitions:**
-- **Critical:** Invalidates the deliverable or violates a HARD rule. Blocks acceptance.
-- **Major:** Significant quality gap. Requires revision.
-- **Minor:** Improvement opportunity. Does not block acceptance.
+**Finding Documentation Format:** Use the Findings Table format from [Output Format: Findings Table](#3-findings-table) with DA-NNN identifiers and severity per definitions above.
 
 ### Step 4: Require Substantive Responses
 
@@ -263,14 +245,8 @@ For each claim or decision in the deliverable:
 **Procedure:**
 1. Aggregate findings by severity: count Critical, Major, and Minor
 2. Map findings to the 6 scoring dimensions and assess net impact (Positive/Negative/Neutral) per dimension
-3. Estimate the composite score impact:
-   - Critical findings typically reduce affected dimension scores by 0.10-0.20
-   - Major findings typically reduce affected dimension scores by 0.05-0.10
-   - Minor findings typically reduce affected dimension scores by 0.01-0.03
-4. Determine overall assessment:
-   - **Counter-arguments substantially undermine the deliverable:** Major revision required
-   - **Counter-arguments reveal addressable gaps:** Targeted revision required
-   - **Counter-arguments are minor or the deliverable withstands scrutiny:** Proceed with minor revisions
+3. Estimate composite score impact: Critical findings typically reduce affected dimensions by 0.10-0.20; Major by 0.05-0.10; Minor by 0.01-0.03
+4. Determine overall assessment: major revision required (arguments undermine deliverable), targeted revision (addressable gaps), or proceed with minor revisions (deliverable withstands scrutiny)
 5. Document the synthesis in the Scoring Impact table
 
 **Output:** Scoring Impact table, overall assessment, and revision guidance.
@@ -296,11 +272,7 @@ Every S-002 execution MUST produce a Devil's Advocate report with these sections
 
 ### 2. Summary
 
-2-3 sentence overall assessment:
-
-- Number and severity of counter-arguments (e.g., "1 Critical, 3 Major, 2 Minor")
-- Overall assessment of deliverable resilience to adversarial challenge
-- Recommendation (ACCEPT with revisions / REVISE / REJECT)
+2-3 sentence overall assessment covering: number and severity of counter-arguments, overall deliverable resilience, and recommendation (ACCEPT with revisions / REVISE / REJECT).
 
 _Example: "6 counter-arguments identified (1 Critical, 3 Major, 2 Minor). The deliverable's core decision is sound but relies on an unstated scalability assumption (DA-001, Critical) that could invalidate the approach. Recommend REVISE to address Critical and Major findings."_
 
@@ -311,10 +283,7 @@ _Example: "6 counter-arguments identified (1 Critical, 3 Major, 2 Minor). The de
 | DA-001 | {{Counter-argument}} | Critical | {{Quote or reference from deliverable}} | {{Dimension}} |
 | DA-002 | {{Counter-argument}} | Major | {{Quote or reference from deliverable}} | {{Dimension}} |
 
-**Severity Definitions:**
-- **Critical:** Invalidates the deliverable or violates a HARD rule. Blocks acceptance.
-- **Major:** Significant quality gap. Requires revision.
-- **Minor:** Improvement opportunity. Does not block acceptance.
+Severity definitions: see [Step 3: Construct Counter-Arguments](#step-3-construct-counter-arguments).
 
 ### 4. Finding Details
 
@@ -334,34 +303,11 @@ Expanded description for each Critical and Major finding:
 
 ### 5. Recommendations
 
-Prioritized action list:
-
-```markdown
-## Response Requirements
-
-**P0 (Critical -- MUST resolve):**
-- DA-001: {{Specific action and acceptance criteria}}
-
-**P1 (Major -- SHOULD resolve):**
-- DA-002: {{Specific action and acceptance criteria}}
-- DA-003: {{Specific action and acceptance criteria}}
-
-**P2 (Minor -- MAY resolve):**
-- DA-004: {{Improvement opportunity}}
-```
+Prioritized action list grouped by: **P0** (Critical -- MUST resolve before acceptance), **P1** (Major -- SHOULD resolve; require justification if not), **P2** (Minor -- MAY resolve; acknowledgment sufficient). Each entry: DA-NNN identifier, specific action, and acceptance criteria.
 
 ### 6. Scoring Impact
 
-Map Devil's Advocate findings to S-014 scoring dimensions:
-
-| Dimension | Weight | Impact | Rationale |
-|-----------|--------|--------|-----------|
-| Completeness | 0.20 | Positive/Negative/Neutral | {{Justification referencing DA-NNN findings}} |
-| Internal Consistency | 0.20 | Positive/Negative/Neutral | {{Justification referencing DA-NNN findings}} |
-| Methodological Rigor | 0.20 | Positive/Negative/Neutral | {{Justification referencing DA-NNN findings}} |
-| Evidence Quality | 0.15 | Positive/Negative/Neutral | {{Justification referencing DA-NNN findings}} |
-| Actionability | 0.15 | Positive/Negative/Neutral | {{Justification referencing DA-NNN findings}} |
-| Traceability | 0.10 | Positive/Negative/Neutral | {{Justification referencing DA-NNN findings}} |
+Map Devil's Advocate findings to S-014 scoring dimensions (Completeness 0.20, Internal Consistency 0.20, Methodological Rigor 0.20, Evidence Quality 0.15, Actionability 0.15, Traceability 0.10). For each dimension, assess Impact (Positive/Negative/Neutral) with rationale referencing specific DA-NNN findings. See [Example Scoring Impact](#example-1-c2-architecture-decision----event-sourcing-adoption) for a completed table.
 
 ### Evidence Requirements
 
@@ -419,27 +365,9 @@ From quality-enforcement.md (MUST NOT be redefined):
 
 **Context:** A developer proposed adopting event sourcing for the Jerry work item aggregate (C2 Standard: reversible in 1 day, affects 6 files). S-003 Steelman was applied first (H-16 compliance). Devil's Advocate now critiques the strengthened proposal.
 
-#### Before (Relevant Portion of ADR after S-003 Steelman)
+#### Before (Key Claims from ADR after S-003 Steelman)
 
-```markdown
-# ADR-PROJ001-007: Adopt Event Sourcing for Work Item Aggregate
-
-## Decision
-We will implement event sourcing for the WorkItem aggregate, storing domain events
-as the primary source of truth with read model projections for queries.
-
-## Rationale
-Event sourcing provides complete audit trail, temporal queries, and supports
-the CQRS pattern already adopted in Jerry's architecture. The WorkItem aggregate
-has clear state transitions (Created -> InProgress -> Done) that map naturally
-to domain events.
-
-## Consequences
-- Complete audit trail of all work item state changes
-- Ability to reconstruct any historical state
-- Natural fit with existing CQRS command/query separation
-- Additional complexity in event store implementation
-```
+ADR-PROJ001-007 proposes event sourcing for the WorkItem aggregate. Key claims: (1) "storing domain events as the primary source of truth," (2) "WorkItem has clear state transitions (Created -> InProgress -> Done) that map naturally to domain events," (3) benefits include "complete audit trail" and "natural fit with existing CQRS," (4) acknowledged trade-off: "additional complexity in event store implementation."
 
 #### Strategy Execution
 
@@ -498,7 +426,7 @@ The creator addressed findings by adding:
 | Actionability | 0.15 | Negative | DA-004: No rollback path defined for a supposedly reversible (C2) decision |
 | Traceability | 0.10 | Neutral | ADR traces to CQRS architecture decision and domain model |
 
-**Result:** 3 Major and 2 Minor findings identified. After revision addressing all Major findings, the ADR's Completeness, Methodological Rigor, Evidence Quality, and Actionability dimensions improved. Estimated composite score improvement: +0.08 (from ~0.84 to ~0.92).
+**Result:** 3 Major and 2 Minor findings identified. After revision addressing all Major findings, the ADR's quality improved across 4 of 6 dimensions (Completeness, Methodological Rigor, Evidence Quality, and Actionability), moving the deliverable closer to the 0.92 threshold.
 
 ---
 
@@ -506,30 +434,11 @@ The creator addressed findings by adding:
 
 ### Canonical Pairings
 
-1. **S-003 + S-002 (MANDATORY, H-16):** S-003 Steelman MUST execute before S-002 Devil's Advocate. Steelman strengthens the deliverable so that Devil's Advocate critiques a robust version, not a weak first draft.
-
-2. **S-002 + S-014:** Devil's Advocate findings map to S-014 scoring dimensions. Run S-002 before S-014 so the scorer evaluates a revised deliverable that has withstood adversarial challenge.
-
-3. **S-007 + S-002:** Constitutional AI Critique (S-007) checks HARD rule compliance; Devil's Advocate (S-002) attacks logical coherence and assumptions. Complementary perspectives: S-007 finds rule violations, S-002 finds reasoning flaws.
-
-4. **S-002 + S-004:** Devil's Advocate attacks current claims; Pre-Mortem (S-004) imagines future failures. Both are Role-Based Adversarialism strategies but operate on different time horizons (present vs. future).
-
-**Optimal sequence:** S-003 -> S-007 -> S-002 -> S-014
+See [Pairing Recommendations](#pairing-recommendations) for the full pairing table (S-003, S-014, S-007, S-004) with rationale and optimal sequence.
 
 ### H-16 Compliance
 
-**H-16 Rule:** Steelman before critique. S-003 MUST execute before S-002.
-
-**S-002 is an adversarial critique strategy.** H-16 directly constrains S-002 placement. S-003 Steelman MUST run before S-002 Devil's Advocate to ensure the deliverable is strengthened before adversarial challenge begins. Executing S-002 without prior S-003 is a HARD rule violation.
-
-**Compliant Orderings:**
-- S-003 -> S-002 (minimum H-16 compliance)
-- S-003 -> S-007 -> S-002 -> S-014 (recommended full sequence)
-- S-010 -> S-003 -> S-002 -> S-014 (with self-review first)
-
-**Non-Compliant Orderings:**
-- S-002 -> S-003 (H-16 violation: critique before steelman)
-- S-002 alone without S-003 (H-16 violation: no steelman applied)
+**H-16 Rule:** Steelman before critique. S-003 MUST execute before S-002. Full ordering constraints, compliant/non-compliant orderings, and recommended sequences are documented in [Prerequisites: Ordering Constraints](#ordering-constraints) and [Purpose: Pairing Recommendations](#pairing-recommendations).
 
 ### Criticality-Based Selection Table
 
@@ -542,13 +451,7 @@ From quality-enforcement.md (MUST NOT modify):
 | C3 | C2 + S-004, S-012, S-013 | S-001, S-003, S-010, S-011 | **REQUIRED** |
 | C4 | All 10 selected | None | **REQUIRED** |
 
-**Source:** quality-enforcement.md Criticality Levels table (SSOT). Values MUST match exactly.
-
-**S-002 Usage Pattern:**
-- **C1:** Optional (adversarial critique not required for routine work; S-010 self-review suffices)
-- **C2:** Required (all Standard deliverables MUST undergo Devil's Advocate critique after S-003 Steelman)
-- **C3:** Required (inherited from C2 set; combined with S-004, S-012, S-013 for comprehensive analysis)
-- **C4:** Required (all 10 strategies in tournament mode; Devil's Advocate is one of three Role-Based Adversarialism strategies alongside S-004 and S-001)
+**Source:** quality-enforcement.md Criticality Levels table (SSOT). Values MUST match exactly. See [Criticality Tier Table](#criticality-tier-table) for S-002-specific usage notes per level.
 
 ### Cross-References
 
@@ -566,18 +469,9 @@ From quality-enforcement.md (MUST NOT modify):
 - `s-004-pre-mortem.md` -- Complementary Role-Based Adversarialism (future failure vs. current flaw)
 - `s-001-red-team.md` -- Complementary Role-Based Adversarialism (systematic attack scenarios)
 
-**Academic Sources:**
-- Nemeth (2018) "In Defense of Troublemakers" -- genuine vs. assigned dissent
-- Janis (1982) "Groupthink" -- consensus failure patterns
-- Schwenk (1984) Devil's Advocate in strategic decision-making
-- CIA Tradecraft Primer (2009) -- structured analytic techniques
+**Academic Sources:** See file header comment for Nemeth (2018), Janis (1982), Schwenk (1984), CIA Tradecraft Primer (2009).
 
-**HARD Rules:**
-- H-13 (quality-enforcement.md) -- Threshold >= 0.92 for C2+ deliverables
-- H-14 (quality-enforcement.md) -- Creator-critic-revision cycle, minimum 3 iterations
-- H-15 (quality-enforcement.md) -- Self-review before presenting (applies to S-002 reports themselves)
-- H-16 (quality-enforcement.md) -- Steelman before critique (S-003 MUST run before S-002)
-- H-17 (quality-enforcement.md) -- Quality scoring REQUIRED for deliverables
+**HARD Rules Referenced:** H-13 (threshold), H-14 (creator-critic cycle), H-15 (self-review), H-16 (steelman before critique), H-17 (quality scoring). See `quality-enforcement.md` for definitions.
 
 ---
 
@@ -586,7 +480,7 @@ From quality-enforcement.md (MUST NOT modify):
 - [x] H-23: Navigation table present
 - [x] H-24: Navigation table uses anchor links
 - [x] Metadata blockquote header present
-- [x] File length within 200-400 line target
+- [x] File length under 500 lines (TEMPLATE-FORMAT.md structural limit)
 - [x] Identity: 7 required fields + criticality tier table; values match SSOT
 - [x] Purpose: 5 "When to Use", 3 "When NOT to Use", measurable outcome, pairing recommendations with H-16
 - [x] Prerequisites: Input checklist (5 items), context requirements, ordering constraints (H-16 MANDATORY)

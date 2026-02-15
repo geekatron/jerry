@@ -68,9 +68,7 @@ strategies (S-002, S-004, S-001).
 
 **Source:** quality-enforcement.md Criticality Levels table (SSOT).
 
-**Interpretation:** S-003 is OPTIONAL at C1, C2, and C3, but REQUIRED at C4 where all 10 selected strategies must execute. Despite being optional at lower criticality levels, S-003 is strongly RECOMMENDED whenever adversarial critique strategies (S-002, S-004, S-001) will follow, per H-16 (Steelman before critique).
-
-**Unique Property:** S-003 is the only constructive adversarial strategy -- it strengthens rather than attacks. Its findings identify improvement opportunities in the original, not failures.
+**Interpretation:** OPTIONAL at C1/C2/C3, REQUIRED at C4. Strongly RECOMMENDED whenever critique strategies follow (H-16). **Unique Property:** S-003 is the only constructive adversarial strategy -- it strengthens rather than attacks.
 
 ---
 
@@ -78,51 +76,25 @@ strategies (S-002, S-004, S-001).
 
 ### When to Use
 
-S-003 SHOULD be applied in the following scenarios:
-
-1. **Before any adversarial critique (H-16 compliance):** H-16 mandates Steelman before Devil's Advocate (S-002), Pre-Mortem (S-004), and Red Team (S-001). Run S-003 FIRST to ensure critique targets the strongest version of the deliverable, not a weak first draft. This is the primary trigger for S-003.
-
-2. **When evaluating competing alternatives:** If multiple design options, architectural approaches, or decision paths exist, Steelman each alternative before comparing. This prevents premature dismissal of viable options and ensures fair evaluation on merits rather than presentation quality.
-
-3. **When the original author is absent:** If reviewing work created by someone else (or by a prior agent session), the deliverable may not represent the author's full intent. Steelman reconstructs the strongest interpretation, preventing unfair critique of poorly expressed but sound ideas.
-
-4. **When an idea is being dismissed too quickly:** If initial reaction to a proposal is negative, apply S-003 before rejecting. The Steelman may reveal hidden strengths that change the evaluation, or confirm that the idea is genuinely weak even in its strongest form.
-
-5. **C4 Critical deliverables (REQUIRED):** All 10 strategies execute at C4. S-003 is the mandatory first step before tournament-mode adversarial critique.
+1. **Before adversarial critique (H-16):** Primary trigger. S-003 MUST run before S-002/S-004/S-001 to ensure critique targets the strongest version.
+2. **Evaluating competing alternatives:** Steelman each option before comparing to prevent premature dismissal.
+3. **Original author absent:** Reconstruct strongest interpretation of potentially under-expressed work.
+4. **Idea being dismissed too quickly:** S-003 may reveal hidden strengths or confirm genuine weakness.
+5. **C4 Critical (REQUIRED):** Mandatory first step in tournament-mode adversarial critique.
 
 ### When NOT to Use
 
-S-003 SHOULD NOT be applied in these scenarios:
-
-1. **Extreme time pressure where strengthening adds no value:** If the deliverable is already in its strongest form (e.g., after multiple revision cycles with high S-014 scores), additional Steelman reconstruction yields diminishing returns. Redirect to S-014 for final scoring instead.
-
-2. **Clearly unethical, dangerous, or fundamentally flawed proposals:** The Steelman technique assumes the idea has potential merit worth surfacing. If the proposal violates constitutional principles (HARD rules) in ways that cannot be remediated, skip S-003 and proceed directly to S-007 Constitutional AI Critique to identify violations. Strengthening an unconstitutional proposal wastes effort.
-
-3. **Analysis paralysis risk:** If the review process is already consuming excessive time and S-003 would further delay decision-making without proportionate quality improvement, proceed to critique strategies directly with documented justification for skipping S-003.
+1. **Deliverable already strong:** After multiple revision cycles with high S-014 scores, additional Steelmanning yields diminishing returns.
+2. **Fundamentally flawed/unconstitutional proposals:** Skip S-003, proceed to S-007 Constitutional AI Critique.
+3. **Analysis paralysis risk:** Excessive review time with no proportionate quality gain; document justification for skipping.
 
 ### Expected Outcome
 
-A successful S-003 execution produces:
-
-- **Steelman Reconstruction:** The deliverable rewritten in its strongest possible form, with gaps filled, evidence strengthened, logical connections tightened, and obvious objections preemptively addressed
-- **Improvement Findings Table:** SM-NNN findings documenting WHAT was improved and WHY, enabling the original author to incorporate improvements
-- **Improvement magnitude classification:** Each finding classified as Critical (fundamental gap filled), Major (significant strengthening), or Minor (polish applied)
-- **Quality baseline:** A strengthened version that subsequent critique strategies (S-002, S-004, S-001) can attack fairly, ensuring robustness testing targets the best version
+A successful S-003 execution produces: (1) **Steelman Reconstruction** -- deliverable rewritten in strongest form with gaps filled, evidence strengthened, objections preemptively addressed; (2) **Improvement Findings Table** -- SM-NNN findings with severity classification (Critical/Major/Minor); (3) **Quality baseline** for downstream critique strategies (S-002, S-004, S-001) to attack fairly.
 
 ### Pairing Recommendations
 
-S-003 is the canonical FIRST strategy in adversarial review sequences per H-16:
-
-| Pairing | Order | Rationale |
-|---------|-------|-----------|
-| **S-003 + S-002** | S-003 --> S-002 | H-16 REQUIRED. Steelman before Devil's Advocate ensures critique targets strongest version |
-| **S-003 + S-004** | S-003 --> S-004 | H-16 REQUIRED. Steelman before Pre-Mortem ensures risk analysis targets best-case scenario |
-| **S-003 + S-001** | S-003 --> S-001 | H-16 REQUIRED. Steelman before Red Team ensures attack simulation targets fortified version |
-| **S-003 + S-014** | S-003 --> S-014 | RECOMMENDED. Steelman strengthens deliverable before scoring, establishing quality baseline |
-| **S-003 + S-007** | S-003 --> S-007 | RECOMMENDED. Steelman before constitutional review ensures fair evaluation |
-| **Full C4 sequence** | S-003 --> [S-002, S-004, S-007, S-012, S-013] --> S-014 | S-003 always FIRST; S-014 always LAST |
-
-**H-16 Note:** S-003 IS the strategy that H-16 requires to run first. S-003 itself has NO prerequisite strategies -- it is always the starting point of an adversarial review sequence.
+S-003 is the canonical FIRST strategy in adversarial review sequences per H-16. S-003 has NO prerequisite strategies -- it is always the starting point. See [Section 8: Integration](#section-8-integration) for the full pairing table, H-16 compliance details, and multi-strategy orchestration sequences.
 
 ---
 
@@ -130,81 +102,59 @@ S-003 is the canonical FIRST strategy in adversarial review sequences per H-16:
 
 ### Required Inputs
 
-Before executing S-003, the following MUST be available:
-
 - [ ] **Deliverable artifact** -- The document, design, code, or decision record to be strengthened
-- [ ] **Deliverable intent** -- Understanding of what the deliverable is trying to achieve (from requirements, specifications, or context)
-- [ ] **Domain context** -- Sufficient background knowledge to identify the strongest possible interpretation (domain expertise required)
-- [ ] **Criticality level** -- C1/C2/C3/C4 classification to determine whether S-003 is optional or required
+- [ ] **Deliverable intent** -- Understanding of what the deliverable is trying to achieve
+- [ ] **Domain context** -- Sufficient background to identify the strongest possible interpretation
+- [ ] **Criticality level** -- C1/C2/C3/C4 classification per quality-enforcement.md SSOT
 
 ### Context Requirements
 
-The Steelman executor MUST have access to:
-
-- **Quality-enforcement.md SSOT** -- Source for scoring dimensions, weights, and threshold
-- **Deliverable requirements or specification** -- To understand what "strongest form" means for this specific deliverable
-- **Domain knowledge** -- S-003 requires sufficient expertise to identify missing evidence, strengthen logical connections, and fill gaps. Without domain knowledge, the Steelman may inadvertently weaken the argument
-- **Related prior art (if available)** -- Existing research, citations, or data that could strengthen the deliverable's claims
+The executor MUST have access to quality-enforcement.md SSOT (dimensions, weights, threshold), deliverable requirements/specification, and domain knowledge sufficient to identify missing evidence and fill gaps. Related prior art (citations, data) SHOULD be available if applicable.
 
 ### Ordering Constraints
 
-S-003 has the following ordering properties:
-
-1. **S-003 runs FIRST.** Per H-16, S-003 MUST execute before any critique strategy (S-002, S-004, S-001). No prior adversarial strategy is required before S-003.
-
-2. **S-003 output feeds into critique strategies.** The Steelman Reconstruction produced by S-003 becomes the artifact that S-002 (Devil's Advocate), S-004 (Pre-Mortem), and S-001 (Red Team) evaluate.
-
-3. **S-010 Self-Refine MAY precede S-003.** While not required, the creator may apply S-010 self-review before S-003 to address obvious surface issues. S-010 is not constrained by H-16 (it is self-review, not adversarial critique).
-
-4. **S-003 is NOT a substitute for revision.** S-003 produces a reconstructed strongest version and improvement findings. The original author SHOULD incorporate S-003 findings before proceeding to critique strategies.
+1. **S-003 runs FIRST** per H-16 before any critique strategy (S-002, S-004, S-001). No prior adversarial strategy required.
+2. **S-003 output feeds critique strategies.** The Steelman Reconstruction becomes the artifact S-002/S-004/S-001 evaluate.
+3. **S-010 MAY precede S-003** (self-review is not constrained by H-16).
+4. **S-003 is NOT a substitute for revision.** The author SHOULD incorporate findings before critique proceeds.
 
 ---
 
 ## Section 4: Execution Protocol
 
-S-003 follows a six-step procedure to produce a Steelman Reconstruction with documented improvement findings.
-
-**Orientation Note:** Unlike critique strategies that identify failures, S-003 identifies WHERE and HOW the deliverable can be STRENGTHENED. Findings are improvement opportunities, not defects. The executor adopts an empathetic, charitable stance -- seeking the best possible interpretation of the author's intent.
+Six-step procedure producing a Steelman Reconstruction with documented improvement findings. Unlike critique strategies, S-003 identifies WHERE and HOW to STRENGTHEN -- findings are improvement opportunities, not defects. The executor adopts a charitable stance seeking the best possible interpretation.
 
 ### Step 1: Deep Understanding
 
-**Action:** Read the deliverable thoroughly and seek the most charitable interpretation of its intent, claims, and arguments.
+**Action:** Read the deliverable and seek the most charitable interpretation of its intent, claims, and arguments.
 
 **Procedure:**
-1. Read the entire deliverable without judgment, focusing on understanding what the author is trying to achieve
-2. Identify the core thesis or purpose -- "What is this deliverable fundamentally arguing or proposing?"
-3. List all claims, arguments, and supporting evidence present in the deliverable
-4. For each claim, ask: "What is the most charitable interpretation of this claim?"
-5. Note areas where the author's intent is clear but expression is weak -- these are strengthening opportunities, not failures
-6. Document initial understanding in a brief summary (3-5 sentences)
+1. Read without judgment; identify the core thesis -- "What is this fundamentally arguing?"
+2. List all claims, arguments, and supporting evidence
+3. For each claim, ask: "What is the most charitable interpretation?"
+4. Note areas where intent is clear but expression is weak (strengthening opportunities, not failures)
+5. Document initial understanding in a brief summary (3-5 sentences)
 
-**Decision Point:**
-- If the deliverable is fundamentally incoherent (no discernible thesis or purpose): Flag and recommend the author clarify intent before Steelman can proceed. Document the incoherence and exit.
-- If intent is discernible: Proceed to Step 2.
+**Decision Point:** If fundamentally incoherent (no discernible thesis): flag and exit. Otherwise proceed to Step 2.
 
-**Output:** Charitable interpretation summary documenting the deliverable's core thesis, key claims, and identified strengthening opportunities.
+**Output:** Charitable interpretation summary with core thesis, key claims, and strengthening opportunities.
 
 ---
 
 ### Step 2: Identify Weaknesses in Presentation (Not Substance)
 
-**Action:** Distinguish between flaws in the IDEA and flaws in the EXPRESSION. S-003 focuses on strengthening expression while preserving the original idea.
+**Action:** Distinguish flaws in EXPRESSION from flaws in the IDEA. S-003 strengthens expression while preserving the original idea.
 
 **Procedure:**
-1. For each section of the deliverable, classify weaknesses as:
-   - **Presentation weakness:** The idea is sound but poorly expressed (vague language, missing evidence for a valid claim, weak logical connection that could be tightened)
-   - **Structural weakness:** The argument structure is incomplete (missing sections, gaps in reasoning chain, absent counterargument handling)
-   - **Evidence weakness:** Claims lack supporting data that is available or could be supplied (missing citations, unsupported assertions, anecdotal evidence where data exists)
-   - **Substantive weakness:** The idea itself may be flawed (this is noted but NOT addressed by S-003; it is left for S-002/S-004 to evaluate)
-2. For each presentation, structural, or evidence weakness, note the strongest possible version of what the author likely intended
-3. Estimate the improvement magnitude for each weakness:
-   - **Critical:** Fundamental gap that undermines the core argument -- filling it transforms the deliverable
-   - **Major:** Significant weakness in presentation or evidence -- strengthening it substantially improves quality
-   - **Minor:** Polish opportunity -- addressing it improves readability or rigor without changing substance
+1. Classify each weakness as:
+   - **Presentation:** Sound idea, poorly expressed (vague language, weak logical connections)
+   - **Structural:** Incomplete argument structure (missing sections, reasoning gaps)
+   - **Evidence:** Claims lack available supporting data (missing citations, anecdotal evidence)
+   - **Substantive:** Idea itself may be flawed (noted but NOT addressed by S-003; left for S-002/S-004)
+2. For each non-substantive weakness, note the strongest version of the author's likely intent
+3. Estimate improvement magnitude (Critical / Major / Minor per Step 5 severity definitions)
 
-**Decision Point:**
-- If only substantive weaknesses found (the idea itself is flawed, not just the expression): Document this assessment and proceed with caution. The Steelman will present the idea in its best light, but note that subsequent critique strategies may still reject it on substance.
-- If presentation/structural/evidence weaknesses found: Proceed to Step 3.
+**Decision Point:** If only substantive weaknesses found: document and proceed with caution; subsequent critique strategies may reject on substance. Otherwise proceed to Step 3.
 
 **Output:** Weakness classification table with type, magnitude, and intended strongest interpretation.
 
@@ -212,91 +162,78 @@ S-003 follows a six-step procedure to produce a Steelman Reconstruction with doc
 
 ### Step 3: Reconstruct the Argument
 
-**Action:** Rewrite the deliverable in its strongest possible form, filling gaps and strengthening weak points while preserving the original author's intent.
+**Action:** Rewrite the deliverable in its strongest possible form while preserving original intent.
 
 **Procedure:**
-1. **Supply missing evidence:** Where claims are unsupported, add citations, data, or logical arguments that support the claim (using domain knowledge and available references)
-2. **Strengthen logical connections:** Where reasoning jumps exist, add intermediate steps that make the argument chain explicit and compelling
-3. **Address obvious objections preemptively:** For each major claim, identify the most likely counterargument and add a preemptive response
-4. **Frame for the most favorable audience:** Rewrite sections using the strongest available framing (e.g., replace vague "seems good" with specific "reduces latency by 40% based on benchmark data")
-5. **Use the strongest available data:** Replace anecdotal evidence with quantitative data where possible; upgrade weak citations to authoritative sources
-6. **Preserve original intent:** Do NOT change the fundamental thesis or direction. The Steelman strengthens the existing argument, it does not replace it with a different argument
-7. **Label all changes:** Mark each improvement so the original author can see what was changed and why
+1. **Supply missing evidence:** Add citations, data, or logical arguments for unsupported claims
+2. **Strengthen logical connections:** Add intermediate reasoning steps where jumps exist
+3. **Address obvious objections:** Add preemptive responses to likely counterarguments
+4. **Use strongest framing:** Replace vague language with specific, data-backed claims
+5. **Upgrade evidence:** Replace anecdotal evidence with quantitative data; upgrade to authoritative sources
+6. **Preserve original intent:** Do NOT change the fundamental thesis -- strengthen, not replace
+7. **Label all changes:** Mark each improvement with SM-NNN for traceability
 
-**Decision Point:**
-- If reconstruction requires changing the fundamental thesis: STOP. This is no longer Steelmanning -- it is creating a different argument. Document the limitation and present the best possible version of the ORIGINAL thesis.
-- If reconstruction preserves original intent while substantially improving quality: Proceed to Step 4.
+**Decision Point:** If reconstruction requires changing the thesis: STOP, document limitation, present best version of ORIGINAL thesis. Otherwise proceed to Step 4.
 
-**Output:** Steelman Reconstruction -- the deliverable rewritten in its strongest form with all changes labeled.
+**Output:** Steelman Reconstruction with all changes labeled.
 
 ---
 
 ### Step 4: Identify the Best Case Scenario
 
-**Action:** Articulate the conditions under which the Steelman Reconstruction is most compelling, providing context for subsequent critique strategies.
+**Action:** Articulate conditions under which the Steelman Reconstruction is most compelling.
 
 **Procedure:**
-1. Define the ideal conditions: "Under what circumstances is this proposal strongest?"
-2. Identify supporting assumptions: "What must be true for this argument to hold?"
-3. Document the strongest evidence chain: "What is the most compelling path from premises to conclusions?"
-4. Note the target audience: "Who would find this argument most persuasive, and why?"
-5. Assess confidence level: "How confident should a rational evaluator be in this Steelman version?"
+1. Define ideal conditions: "Under what circumstances is this proposal strongest?"
+2. Identify supporting assumptions that must be true for the argument to hold
+3. Document the strongest evidence chain from premises to conclusions
+4. Assess confidence: "How confident should a rational evaluator be in this version?"
 
-**Output:** Best Case Scenario statement documenting ideal conditions, key assumptions, and confidence assessment.
+**Output:** Best Case Scenario statement with ideal conditions, key assumptions, and confidence assessment.
 
 ---
 
 ### Step 5: Document Improvement Findings
 
-**Action:** Formalize all improvements made during reconstruction as SM-NNN findings, documenting what was strengthened and why.
+**Action:** Formalize all improvements as SM-NNN findings with severity, before/after evidence, and dimension mapping.
 
 **Procedure:**
-1. For each improvement made in Step 3, create a finding entry:
-   - Assign unique identifier using SM-NNN prefix
-   - Classify severity (improvement magnitude): Critical, Major, or Minor
-   - Tag affected quality dimension (Completeness, Internal Consistency, Methodological Rigor, Evidence Quality, Actionability, Traceability)
-   - Document the original content (before) and the strengthened content (after)
-   - Explain why the improvement strengthens the argument
-2. Sort findings by severity (Critical improvements first)
+1. For each Step 3 improvement: assign SM-NNN identifier, classify severity, tag affected dimension, document before/after content with rationale
+2. Sort findings by severity (Critical first)
 3. Map findings to the Scoring Impact table
 
-**Finding Documentation Format:**
+**Finding Format:** `| SM-NNN | Description | Critical/Major/Minor | Original | Strengthened | Dimension |`
 
-| ID | Improvement | Severity | Original | Strengthened | Affected Dimension |
-|----|-------------|----------|----------|--------------|--------------------|
-| SM-001 | {{Description of improvement}} | Critical/Major/Minor | {{Original content}} | {{Strengthened content}} | {{Dimension}} |
+**Severity Definitions (Improvement Magnitude) -- canonical location, referenced by Step 2 and Output Format:**
+- **Critical:** Fundamental gap undermining the core argument; filling it transforms the deliverable. Original could not withstand critique without this improvement.
+- **Major:** Significant presentation/evidence/structure weakness; strengthening it materially improves quality. Original would score notably lower without it.
+- **Minor:** Polish improving readability, precision, or rigor without changing core argument substance.
 
-**Severity Definitions (Improvement Magnitude):**
-- **Critical:** Fundamental gap in the original that undermines the core argument. Filling this gap transforms the deliverable from unconvincing to compelling. The original could not withstand critique without this improvement.
-- **Major:** Significant weakness in presentation, evidence, or structure. Strengthening this materially improves quality across one or more scoring dimensions. The original would score notably lower without this improvement.
-- **Minor:** Polish opportunity that improves readability, precision, or rigor without changing the substance or strength of the core argument.
-
-**Output:** Improvement Findings Table with SM-NNN identifiers, severity, before/after content, and dimension mapping.
+**Output:** Improvement Findings Table with SM-NNN identifiers, severity, before/after, and dimension mapping.
 
 ---
 
 ### Step 6: Present the Steelman
 
-**Action:** Deliver the final Steelman Reconstruction with clear labeling and prepare the strengthened version for downstream critique strategies.
+**Action:** Assemble and verify the final Steelman Reconstruction for downstream use.
 
 **Procedure:**
-1. Assemble the complete Steelman output using the Output Format (Section 5)
-2. Verify that the reconstruction preserves the original author's intent
-3. Verify that all improvements are labeled and traceable
-4. Apply H-15 self-review: check the Steelman output for quality before presenting
-5. Confirm the Steelman is ready to serve as the baseline for critique strategies (S-002, S-004, S-001)
+1. Assemble output per Section 5 Output Format
+2. Verify reconstruction preserves original intent and all improvements are traceable
+3. Apply H-15 self-review before presenting
+4. Confirm readiness for downstream critique strategies (S-002, S-004, S-001)
 
-**Decision Point:**
-- If the Steelman Reconstruction is substantially different from the original (many Critical/Major improvements): Recommend the original author review and incorporate improvements before critique proceeds
-- If the Steelman Reconstruction is close to the original (mostly Minor improvements): The original is already strong; critique strategies can proceed directly
+**Decision Point:** If substantially different from original (many Critical/Major): recommend author review before critique. If close to original (mostly Minor): proceed directly.
 
-**Output:** Complete Steelman Report per Section 5 Output Format, ready for downstream strategies.
+**Output:** Complete Steelman Report per Section 5, ready for downstream strategies.
 
 ---
 
 ## Section 5: Output Format
 
-Every S-003 execution MUST produce a Steelman Report with the following structure.
+Every S-003 execution MUST produce a Steelman Report with the following sections.
+
+> **Strategy-Specific Adaptation (CR-002):** S-003 replaces the standard "Recommendations" output section with "Steelman Reconstruction" (Section 3 below). This is a legitimate adaptation because the reconstruction IS the recommendation -- the deliverable rewritten in its strongest form is the actionable output of the Steelman technique.
 
 ### Required Output Sections
 
@@ -304,122 +241,69 @@ Every S-003 execution MUST produce a Steelman Report with the following structur
 
 ```markdown
 # Steelman Report: {{Deliverable Title}}
-
 ## Steelman Context
-- **Deliverable:** {{Absolute file path or artifact identifier}}
+- **Deliverable:** {{file path or artifact identifier}}
 - **Deliverable Type:** {{ADR|Research|Analysis|Synthesis|Design|Code|Template|Other}}
 - **Criticality Level:** {{C1|C2|C3|C4}}
 - **Strategy:** S-003 (Steelman Technique)
 - **SSOT Reference:** .context/rules/quality-enforcement.md
-- **Steelman By:** {{Agent or User Name}}
-- **Date:** {{ISO-8601 timestamp}}
-- **Original Author:** {{Name/ID of deliverable creator, if different from Steelman executor}}
+- **Steelman By:** {{Agent or User}} | **Date:** {{ISO-8601}} | **Original Author:** {{if different}}
 ```
 
 #### 2. Summary
 
 ```markdown
 ## Summary
-
-**Steelman Assessment:** {{1-2 sentence characterization of what was strengthened}}
-
-**Improvement Count:** {{N Critical, N Major, N Minor improvements identified}}
-
-**Original Strength:** {{Brief assessment of how strong the original was before Steelmanning}}
-
-**Recommendation:** {{Incorporate improvements / Original already strong / Fundamental revision needed before Steelman can help}}
+**Steelman Assessment:** {{1-2 sentence characterization}}
+**Improvement Count:** {{N Critical, N Major, N Minor}}
+**Original Strength:** {{Assessment of pre-Steelman quality}}
+**Recommendation:** {{Incorporate improvements / Already strong / Fundamental revision needed}}
 ```
 
 #### 3. Steelman Reconstruction
 
-```markdown
-## Steelman Reconstruction
-
-{{The complete deliverable rewritten in its strongest possible form.
-All improvements are marked with inline annotations [SM-NNN] referencing
-the Improvement Findings Table.}}
-```
+The complete deliverable rewritten in strongest form with inline `[SM-NNN]` annotations referencing the Findings Table.
 
 #### 4. Improvement Findings Table
 
-```markdown
-## Improvement Findings
-
-| ID | Improvement | Severity | Original | Strengthened | Affected Dimension |
-|----|-------------|----------|----------|--------------|--------------------|
-| SM-001 | {{Description}} | Critical/Major/Minor | {{Before}} | {{After}} | {{Dimension}} |
-| SM-002 | {{Description}} | Critical/Major/Minor | {{Before}} | {{After}} | {{Dimension}} |
-```
-
-**Severity Key:**
-- **Critical:** Fundamental gap filled; transforms core argument strength
-- **Major:** Significant presentation/evidence/structure improvement
-- **Minor:** Polish improving readability or precision
+Per Step 5 format. **Severity Key:** See Step 5 Severity Definitions.
 
 #### 5. Improvement Details
 
-Expanded description for each Critical and Major improvement:
-
-```markdown
-### SM-001: {{Improvement Title}} [CRITICAL/MAJOR]
-
-**Affected Dimension:** {{Dimension name}}
-**Original Content:** {{Quote from original deliverable}}
-**Strengthened Content:** {{Quote from Steelman Reconstruction}}
-**Rationale:** {{Why this improvement strengthens the argument}}
-**Best Case Conditions:** {{Under what conditions is this improvement most valuable}}
-```
+Expanded description for each Critical and Major improvement: Affected Dimension, Original Content, Strengthened Content, Rationale, Best Case Conditions.
 
 #### 6. Scoring Impact
 
-```markdown
-## Scoring Impact
-
 | Dimension | Weight | Impact | Rationale |
 |-----------|--------|--------|-----------|
-| Completeness | 0.20 | Positive/Negative/Neutral | {{How Steelman improvements affect this dimension}} |
-| Internal Consistency | 0.20 | Positive/Negative/Neutral | {{How Steelman improvements affect this dimension}} |
-| Methodological Rigor | 0.20 | Positive/Negative/Neutral | {{How Steelman improvements affect this dimension}} |
-| Evidence Quality | 0.15 | Positive/Negative/Neutral | {{How Steelman improvements affect this dimension}} |
-| Actionability | 0.15 | Positive/Negative/Neutral | {{How Steelman improvements affect this dimension}} |
-| Traceability | 0.10 | Positive/Negative/Neutral | {{How Steelman improvements affect this dimension}} |
-```
+| Completeness | 0.20 | Positive/Neutral/Negative | {{Effect of improvements}} |
+| Internal Consistency | 0.20 | ... | ... |
+| Methodological Rigor | 0.20 | ... | ... |
+| Evidence Quality | 0.15 | ... | ... |
+| Actionability | 0.15 | ... | ... |
+| Traceability | 0.10 | ... | ... |
 
-**Impact Interpretation:**
-- **Positive:** Steelman improvements directly strengthened this dimension
-- **Neutral:** Dimension was already adequate; no significant change from Steelmanning
-- **Negative:** Rare; would indicate Steelman process introduced a new weakness (flag for review)
+Impact: **Positive** = directly strengthened; **Neutral** = already adequate; **Negative** = rare, new weakness introduced (flag for review).
 
 ### Evidence Requirements
 
-Each improvement finding MUST include:
-
-1. **Specific reference to location** in the original deliverable (section name, line number, heading, or paragraph identifier)
-2. **Quotation or paraphrase** of the original content that was strengthened
-3. **The strengthened version** showing what replaced it and why it is stronger
-4. **Explanation** of how the improvement strengthens the argument (maps to scoring dimension criteria)
+Each finding MUST include: (1) specific location reference in original, (2) before content, (3) after content, (4) rationale mapping to scoring dimension.
 
 ---
 
 ## Section 6: Scoring Rubric
 
-This section defines how to evaluate the quality of an S-003 execution itself (meta-evaluation of the Steelman process).
+Meta-evaluation of S-003 execution quality. **SSOT threshold:** >= 0.92 weighted composite (quality-enforcement.md). Below = REJECTED per H-13.
 
 ### Threshold Bands
-
-**SSOT threshold (from quality-enforcement.md, MUST NOT be redefined):** >= 0.92 weighted composite score. Below threshold = REJECTED; revision required per H-13.
-
-**Operational bands for S-003 execution quality (template-specific subdivision for workflow guidance):**
 
 | Band | Score Range | Outcome |
 |------|------------|---------|
 | PASS | >= 0.92 | Steelman execution accepted; reconstruction is genuinely strongest version |
-| REVISE | 0.85 - 0.91 | Steelman execution requires targeted improvement; close to threshold (REJECTED per H-13) |
+| REVISE | 0.85 - < 0.92 | Steelman execution requires targeted improvement; close to threshold (REJECTED per H-13) |
 | REJECTED | < 0.85 | Steelman execution inadequate; significant rework required (REJECTED per H-13) |
 
-> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band (0.85-0.91) is a template-specific operational category (not sourced from quality-enforcement.md) to distinguish near-threshold deliverables requiring targeted fixes from those requiring significant rework. Both REVISE and REJECTED trigger the revision cycle per H-13.
-
----
+> **Note:** REVISE band (0.85 to < 0.92) is template-specific (not from SSOT) to distinguish near-threshold from significant-rework cases. Both REVISE and REJECTED trigger revision per H-13.
 
 ### Dimension Weights (from quality-enforcement.md, MUST NOT be redefined)
 
@@ -436,71 +320,16 @@ This section defines how to evaluate the quality of an S-003 execution itself (m
 
 ### Strategy-Specific Rubric (4-Band Criteria)
 
-For each dimension, evaluate S-003 execution quality using these criteria:
+Evaluate S-003 execution quality per dimension. Each cell describes the minimum bar for that band.
 
-#### Completeness
-
-| Score Range | Criteria |
-|-------------|----------|
-| **0.95 - 1.00** | All deliverable sections examined for strengthening opportunities; all significant presentation, structural, and evidence weaknesses identified; reconstruction addresses every identified weakness; best case scenario articulated with supporting assumptions |
-| **0.90 - 0.94** | Most deliverable sections examined; major strengthening opportunities identified; reconstruction addresses Critical and Major weaknesses; best case scenario present but assumptions incomplete |
-| **0.85 - 0.89** | Core sections examined; some strengthening opportunities missed; reconstruction addresses Critical weaknesses but misses some Major ones; best case scenario mentioned but not developed |
-| **<= 0.84** | Sections skipped; significant strengthening opportunities missed; reconstruction is incomplete; no best case scenario articulated |
-
----
-
-#### Internal Consistency
-
-| Score Range | Criteria |
-|-------------|----------|
-| **0.95 - 1.00** | Reconstruction is fully coherent; all improvements align with and reinforce each other; no contradictions between strengthened sections; original author's intent preserved throughout; severity classifications consistent with improvement magnitude |
-| **0.90 - 0.94** | Reconstruction mostly coherent; improvements generally align; minor inconsistencies between strengthened sections (e.g., slightly different framing in two places); original intent preserved |
-| **0.85 - 0.89** | Reconstruction has some inconsistencies; a few improvements conflict with each other or subtly shift the original intent; severity classifications mostly reasonable |
-| **<= 0.84** | Reconstruction contradicts itself; improvements conflict or change the fundamental thesis; original intent not preserved; severity classifications inconsistent |
-
----
-
-#### Methodological Rigor
-
-| Score Range | Criteria |
-|-------------|----------|
-| **0.95 - 1.00** | All 6 steps executed systematically; charitable interpretation explicitly documented; presentation vs. substance distinction clearly maintained; original intent verified at each step; no substantive changes disguised as presentation improvements; domain expertise demonstrated in strengthening |
-| **0.90 - 0.94** | All steps executed; charitable interpretation applied; presentation vs. substance distinction mostly maintained; original intent preserved; minor deviations from methodology documented |
-| **0.85 - 0.89** | Most steps executed; charitable interpretation attempted but not always achieved; some blurring between presentation and substance improvements; methodology followed with shortcuts |
-| **<= 0.84** | Steps skipped or executed superficially; no charitable interpretation documented; presentation and substance changes mixed without distinction; methodology not followed; reconstruction replaces rather than strengthens |
-
----
-
-#### Evidence Quality
-
-| Score Range | Criteria |
-|-------------|----------|
-| **0.95 - 1.00** | Every improvement finding has specific before/after evidence with location references; strengthened claims supported by credible, authoritative data or reasoning; added evidence is verifiable and relevant; no fabricated or speculative evidence |
-| **0.90 - 0.94** | Most improvements have specific evidence; strengthened claims mostly supported; evidence is credible; minor gaps in before/after documentation for Minor findings |
-| **0.85 - 0.89** | Critical and Major improvements have evidence; some Minor improvements lack before/after detail; strengthened evidence is reasonable but not always authoritative |
-| **<= 0.84** | Improvements lack evidence; strengthened claims unsupported or speculative; before/after comparison missing or vague; evidence quality questionable |
-
----
-
-#### Actionability
-
-| Score Range | Criteria |
-|-------------|----------|
-| **0.95 - 1.00** | All improvements are concrete and directly incorporable by the original author; Steelman Reconstruction is a complete, usable artifact; improvement findings include clear before/after that enables direct adoption; no interpretation required |
-| **0.90 - 0.94** | Most improvements are directly incorporable; reconstruction is usable; some improvements require minor interpretation by the original author |
-| **0.85 - 0.89** | Improvements are generally actionable; reconstruction provides guidance; some improvements are vague or require significant interpretation |
-| **<= 0.84** | Improvements are abstract or vague; reconstruction is not directly usable; original author cannot act on findings without substantial additional work |
-
----
-
-#### Traceability
-
-| Score Range | Criteria |
-|-------------|----------|
-| **0.95 - 1.00** | Every improvement traced to specific original content with SM-NNN identifier; findings linked to scoring dimensions; reconstruction annotated with inline references; improvement rationale traces to deliverable requirements |
-| **0.90 - 0.94** | Most improvements traceable; SM-NNN identifiers used consistently; most findings linked to dimensions; minor gaps in inline annotation |
-| **0.85 - 0.89** | Some improvements traceable; SM-NNN identifiers present but inconsistent; some dimension linkage missing; tracing requires effort |
-| **<= 0.84** | Improvements not traceable; SM-NNN identifiers missing; no dimension linkage; cannot connect improvements to original content |
+| Dimension | 0.95-1.00 | 0.90-0.94 | 0.85-0.89 | <= 0.84 |
+|-----------|-----------|-----------|-----------|---------|
+| **Completeness** | All sections examined; all presentation/structural/evidence weaknesses identified and addressed; best case scenario with assumptions | Most sections examined; Critical+Major addressed; best case present but incomplete | Core sections only; some Major weaknesses missed; best case undeveloped | Sections skipped; significant gaps; no best case |
+| **Internal Consistency** | Fully coherent reconstruction; improvements reinforce each other; original intent preserved; severity classifications consistent | Mostly coherent; minor framing inconsistencies; original intent preserved | Some inconsistencies; improvements occasionally conflict or shift intent | Reconstruction contradicts itself; intent not preserved |
+| **Methodological Rigor** | All 6 steps systematic; charitable interpretation documented; presentation vs. substance distinction clear; domain expertise demonstrated | All steps executed; distinction mostly maintained; minor deviations documented | Most steps executed; some blurring of presentation vs. substance | Steps skipped; no charitable interpretation; reconstruction replaces rather than strengthens |
+| **Evidence Quality** | Every finding has specific before/after with location refs; claims supported by credible data; no fabricated evidence | Most findings have evidence; claims mostly supported; minor gaps for Minor findings | Critical/Major have evidence; some Minor lack detail; evidence reasonable but not authoritative | Findings lack evidence; claims unsupported or speculative |
+| **Actionability** | All improvements concrete and directly incorporable; reconstruction is complete usable artifact; no interpretation required | Most directly incorporable; reconstruction usable; minor interpretation needed | Generally actionable; some improvements vague or need significant interpretation | Abstract or vague; not directly usable |
+| **Traceability** | Every improvement traced with SM-NNN; findings linked to dimensions; inline annotations; rationale traces to requirements | Most traceable; SM-NNN consistent; most dimension linkage; minor annotation gaps | Some traceable; SM-NNN inconsistent; some dimension linkage missing | Not traceable; SM-NNN missing; no dimension linkage |
 
 ---
 
@@ -516,131 +345,59 @@ For each dimension, evaluate S-003 execution quality using these criteria:
 
 ---
 
-**Before (Original ADR):**
+**Before (Original ADR excerpt):**
 
 ```markdown
-# ADR-015: Event-Driven Communication Between Bounded Contexts
-
-## Status
-Proposed
-
 ## Context
 Our bounded contexts need to communicate. Direct method calls create coupling.
-
 ## Decision
 Use domain events for inter-context communication.
-
 ## Consequences
 - Bounded contexts will be more decoupled
 - We need an event bus
 - Eventually consistent
 ```
 
----
-
 **Strategy Execution (S-003 Steelman):**
 
 **Step 1: Deep Understanding**
 
-Charitable interpretation: The author recognizes a real architectural problem (tight coupling between bounded contexts via direct method calls) and proposes a well-established solution (domain events). The ADR is brief but directionally sound. The core thesis -- event-driven communication reduces coupling and improves modularity -- is valid and well-supported in DDD literature.
+Charitable interpretation: The author recognizes tight coupling between bounded contexts and proposes domain events -- a well-established DDD solution. The ADR is brief but directionally sound. Core thesis (event-driven communication reduces coupling) is valid and well-supported in DDD literature.
 
 **Step 2: Identify Weaknesses in Presentation**
 
 | Weakness | Type | Magnitude |
 |----------|------|-----------|
-| Context is one sentence; lacks specific examples of coupling pain | Presentation | Major |
-| No evidence or citations supporting event-driven approach | Evidence | Major |
-| "Eventually consistent" listed without explaining trade-offs or mitigation | Structural | Critical |
-| No alternatives considered section | Structural | Major |
-| Implementation details absent | Structural | Minor |
+| Context lacks specific coupling examples | Presentation | Major |
+| No evidence or citations | Evidence | Major |
+| "Eventually consistent" without trade-off analysis | Structural | Critical |
+| No alternatives considered | Structural | Major |
 
-All weaknesses are in presentation, structure, or evidence -- NOT in the core idea, which is sound.
+All weaknesses are in presentation/structure/evidence -- NOT in the core idea.
 
-**Step 3: Reconstruct the Argument (Steelman Reconstruction)**
+**Step 3: Reconstruct the Argument (key sections shown)**
 
-```markdown
-# ADR-015: Event-Driven Communication Between Bounded Contexts
+Context strengthened with [SM-001] specific coupling pain points (3 contexts named, cascade effects documented) and [SM-002] DDD literature citations (Evans 2003 Ch.14, Vernon 2013 Ch.8, H-07 linkage). Added [SM-003] Alternatives Considered table (shared DB/sync API/domain events with pros/cons/fit). Added [SM-004] Evidence section with authoritative references. Consequences expanded with [SM-005] specific consistency model, configurable staleness, synchronous fallback for critical operations, schema versioning strategy, and event ordering mitigation with correlation IDs.
 
-## Status
-Proposed
+**Step 4: Best Case Scenario**
 
-## Context
-Our system contains three bounded contexts (Projects, WorkItems, Quality) that
-currently communicate via direct method calls. [SM-001] This creates tight coupling:
-changing the WorkItem aggregate's interface requires modifications in both Projects
-and Quality contexts, violating the bounded context isolation principle (Vernon 2013).
+The event-driven approach is strongest when bounded contexts have clear autonomy, events represent naturally occurring domain state changes (not forced communication), and eventual consistency is acceptable for the majority of cross-context interactions. Key assumptions: (1) contexts are genuinely independent bounded contexts, not a single context artificially split; (2) event volume is manageable with in-process bus; (3) team understands eventual consistency trade-offs. Confidence: HIGH given established DDD patterns and Jerry's existing architecture alignment.
 
-Specific coupling pain points:
-- Projects context imports WorkItem domain objects to check status
-- Quality context calls WorkItem service methods directly for scoring
-- Any schema change in WorkItems cascades to 2+ other contexts
+**Step 5: Improvement Findings**
 
-[SM-002] This coupling pattern is documented as an anti-pattern in domain-driven
-design (Evans 2003, Chapter 14) and violates H-07 (domain layer isolation) when
-cross-context calls bypass the application layer.
+| ID | Improvement | Severity | Affected Dimension |
+|----|-------------|----------|--------------------|
+| SM-001 | Added specific coupling examples (3 contexts, cascade effects) | Major | Evidence Quality |
+| SM-002 | Added authoritative citations (Evans, Vernon, H-07) | Major | Evidence Quality |
+| SM-003 | Added alternatives considered table | Major | Methodological Rigor |
+| SM-004 | Added Evidence section with chapter references | Major | Evidence Quality |
+| SM-005 | Expanded consequences with mitigations | Critical | Completeness |
 
-## Alternatives Considered [SM-003]
+**Step 6: Present the Steelman**
 
-| Option | Pros | Cons | Fit |
-|--------|------|------|-----|
-| Shared database | Simple, immediate consistency | Tight schema coupling, no context isolation | Poor |
-| Synchronous API calls | Familiar, immediate response | Runtime coupling, cascading failures | Moderate |
-| Domain events (async) | Full decoupling, resilient, auditable | Eventual consistency, event schema management | Strong |
+Self-review applied (H-15). Reconstruction verified as preserving original thesis (event-driven communication). All 5 improvements labeled with SM-NNN identifiers. Ready for S-002 Devil's Advocate per H-16.
 
-## Decision
-Use domain events published through an in-process event bus for inter-context
-communication. Each context publishes events when state changes; interested
-contexts subscribe and react independently.
-
-## Evidence [SM-004]
-- Evans (2003) "Domain-Driven Design": Bounded contexts communicate via published
-  language (Chapter 14)
-- Vernon (2013) "Implementing Domain-Driven Design": Domain events as integration
-  mechanism (Chapter 8)
-- Jerry architecture-standards.md H-07: Domain layer MUST NOT import from other layers
-
-## Consequences
-
-### Positive
-- Full bounded context isolation: contexts share only event schemas, not domain objects
-- Resilience: failure in one context does not cascade to subscribers
-- Auditability: event log provides complete history of inter-context communication
-
-### Negative
-- [SM-005] Eventual consistency: read models may be stale for up to N seconds
-  (configurable per subscriber). Mitigation: use synchronous command responses
-  for operations requiring immediate consistency; reserve events for notification
-  and projection updates.
-- Event schema evolution: requires versioning strategy to prevent breaking changes.
-  Mitigation: use schema registry pattern with backward compatibility guarantees.
-
-### Risks
-- Event ordering: concurrent events may arrive out of order.
-  Mitigation: include correlation ID and sequence number in event metadata.
-```
-
-**Step 5: Document Improvement Findings**
-
-| ID | Improvement | Severity | Original | Strengthened | Affected Dimension |
-|----|-------------|----------|----------|--------------|--------------------|
-| SM-001 | Added specific coupling examples | Major | "Direct method calls create coupling" | Named three contexts, documented specific coupling points and cascade effects | Evidence Quality |
-| SM-002 | Added authoritative citations | Major | No references | Evans (2003) and Vernon (2013) citations with chapter references; H-07 linkage | Evidence Quality |
-| SM-003 | Added alternatives considered | Major | No alternatives section | Three-option comparison table with pros/cons/fit assessment | Methodological Rigor |
-| SM-004 | Added Evidence section | Major | No supporting evidence | Three authoritative references with specific chapter citations | Evidence Quality |
-| SM-005 | Expanded consequences with mitigations | Critical | "Eventually consistent" (no elaboration) | Specific consistency model, configurable staleness, synchronous fallback for critical operations, schema versioning strategy, event ordering mitigation | Completeness |
-
-**Scoring Impact:**
-
-| Dimension | Weight | Impact | Rationale |
-|-----------|--------|--------|-----------|
-| Completeness | 0.20 | Positive | SM-003, SM-005: Added alternatives and detailed consequences with mitigations |
-| Internal Consistency | 0.20 | Positive | Consequences now explicitly address trade-offs mentioned in context |
-| Methodological Rigor | 0.20 | Positive | SM-003: Alternatives analysis follows standard ADR methodology |
-| Evidence Quality | 0.15 | Positive | SM-001, SM-002, SM-004: Specific examples and authoritative citations added |
-| Actionability | 0.15 | Positive | SM-005: Mitigations are concrete and implementable |
-| Traceability | 0.10 | Positive | SM-002: Linked to H-07 and DDD literature; ADR now traceable to requirements |
-
-**Outcome:** Original ADR was directionally sound but inadequately expressed. Steelman Reconstruction fills 4 Major and 1 Critical gap while preserving the original thesis. The strengthened version is now ready for S-002 Devil's Advocate critique per H-16, which can test whether event-driven communication is truly the best approach by attacking the strongest version of the argument.
+**Outcome:** Original ADR was directionally sound but inadequately expressed. Steelman fills 4 Major and 1 Critical gap. All 6 scoring dimensions positively impacted. Strengthened version ready for S-002 critique per H-16.
 
 ---
 
@@ -667,98 +424,48 @@ S-003 is the canonical FIRST strategy in all adversarial review sequences:
 
 ### H-16 Compliance
 
-**H-16 Rule:** Steelman before critique (S-003 MUST execute before S-002, S-004, S-001).
+**H-16 Rule:** S-003 MUST execute before S-002, S-004, S-001. S-003 IS the strategy H-16 references. S-003 output becomes the artifact evaluated by subsequent critique strategies. Skipping S-003 when critique strategies execute is an H-16 violation.
 
-**S-003 IS the strategy that H-16 requires to run first.** This template defines the procedure for H-16 compliance. Specifically:
-
-- S-003 has NO prerequisite adversarial strategies. It is always the starting point.
-- S-003 output (the Steelman Reconstruction) becomes the artifact evaluated by subsequent critique strategies.
-- Any adversarial review sequence that includes S-002, S-004, or S-001 MUST execute S-003 first.
-- Skipping S-003 when S-002, S-004, or S-001 are applied constitutes an H-16 violation.
-
-**Compliant Orderings:**
-- S-003 --> S-002 --> S-014 (H-16 compliant)
-- S-003 --> S-004 --> S-014 (H-16 compliant)
-- S-003 --> S-001 --> S-014 (H-16 compliant)
-- S-003 --> S-002 --> S-004 --> S-014 (H-16 compliant)
-- S-010 --> S-003 --> S-002 --> S-014 (H-16 compliant; S-010 before S-003 is permitted)
-
-**Non-Compliant Orderings:**
-- S-002 --> S-003 (H-16 violation: Devil's Advocate before Steelman)
-- S-004 --> S-003 (H-16 violation: Pre-Mortem before Steelman)
-- S-001 --> S-003 (H-16 violation: Red Team before Steelman)
-- S-002 without S-003 (H-16 violation: critique without Steelman)
+| Ordering | H-16 Status | Note |
+|----------|-------------|------|
+| S-003 --> S-002 --> S-014 | Compliant | Standard C2 sequence |
+| S-003 --> S-004 --> S-014 | Compliant | Standard C3 sequence |
+| S-003 --> S-002 --> S-004 --> S-014 | Compliant | Multi-critique |
+| S-010 --> S-003 --> S-002 --> S-014 | Compliant | S-010 before S-003 permitted |
+| S-002 --> S-003 | **VIOLATION** | Critique before Steelman |
+| S-004/S-001 --> S-003 | **VIOLATION** | Critique before Steelman |
+| S-002 without S-003 | **VIOLATION** | Critique without Steelman |
 
 ---
 
 ### Criticality-Based Selection Table
 
-| Level | Name | Scope | Required Strategies | Optional Strategies | S-003 Status |
-|-------|------|-------|---------------------|---------------------|--------------|
-| C1 | Routine | Reversible in 1 session, <3 files | S-010 | S-003, S-014 | OPTIONAL |
-| C2 | Standard | Reversible in 1 day, 3-10 files | S-007, S-002, S-014 | S-003, S-010 | OPTIONAL |
-| C3 | Significant | >1 day to reverse, >10 files, API changes | C2 + S-004, S-012, S-013 | S-001, S-003, S-010, S-011 | OPTIONAL |
-| C4 | Critical | Irreversible, architecture/governance/public | All 10 selected | None | REQUIRED |
+| Level | S-003 Status | Note |
+|-------|-------------|------|
+| C1 Routine | OPTIONAL | S-010 only required; S-003 may strengthen before optional S-014 |
+| C2 Standard | OPTIONAL (effectively required) | H-16 mandates S-003 before S-002 which IS required at C2 |
+| C3 Significant | OPTIONAL (effectively required) | H-16 mandates S-003 before S-004/S-001 |
+| C4 Critical | REQUIRED | All 10 strategies; S-003 is mandatory first step |
 
 **Source:** quality-enforcement.md Criticality Levels table (SSOT). Values MUST match exactly.
 
-**S-003 Usage Pattern:**
-- **C1:** Optional. S-010 alone is the required strategy. S-003 may be used to strengthen deliverables before optional S-014 scoring.
-- **C2:** Optional but RECOMMENDED when S-002 is required. H-16 mandates S-003 before S-002; while S-003 is listed as optional at C2, executing S-002 without S-003 violates H-16.
-- **C3:** Optional but RECOMMENDED when S-004 or S-001 are applied. Same H-16 reasoning as C2.
-- **C4:** Required. All 10 strategies execute; S-003 is the mandatory first step in the adversarial sequence.
-
-**H-16 Interaction Note:** At C2 and C3, S-003 is listed as "optional" in the quality-enforcement.md criticality table. However, H-16 requires Steelman before critique. This means that when S-002 (required at C2) or S-004/S-001 (required/optional at C3) are executed, S-003 MUST precede them per H-16 regardless of its optional status in the criticality table. In practice, S-003 is effectively required whenever critique strategies execute.
+**H-16 Interaction:** At C2/C3, S-003 is "optional" per the SSOT criticality table, but H-16 requires Steelman before critique. Since critique strategies ARE required at C2+, S-003 is effectively required whenever they execute.
 
 ---
 
 ### Cross-References
 
-**SSOT and Source Documents:**
-- `.context/rules/quality-enforcement.md` -- Authoritative source for H-16, H-13 threshold, dimension weights, criticality levels, strategy catalog
-- `ADR-EPIC002-001` -- Strategy selection methodology, composite score 4.30, S-003 family classification (Dialectical Synthesis)
-- `ADR-EPIC002-002` -- 5-layer enforcement architecture, token budgets
-- `.context/templates/adversarial/TEMPLATE-FORMAT.md` -- Canonical format this template conforms to (v1.1.0)
+**SSOT:** `.context/rules/quality-enforcement.md` (H-13 threshold, H-16, dimension weights, criticality levels, strategy catalog) | `ADR-EPIC002-001` (strategy selection, score 4.30) | `ADR-EPIC002-002` (enforcement architecture) | `.context/templates/adversarial/TEMPLATE-FORMAT.md` v1.1.0
 
-**Related Strategy Templates:**
-- `s-002-devils-advocate.md` -- Primary downstream consumer of S-003 output; H-16 requires S-003 before S-002
-- `s-004-pre-mortem.md` -- Downstream consumer; H-16 requires S-003 before S-004
-- `s-001-red-team.md` -- Downstream consumer; H-16 requires S-003 before S-001
-- `s-014-llm-as-judge.md` -- Scores the Steelman Reconstruction or the revised deliverable incorporating S-003 improvements
-- `s-007-constitutional-ai.md` -- Pair with S-003 for constitutional review of strengthened version
-- `s-010-self-refine.md` -- May precede S-003; S-010 is not constrained by H-16
+**Strategy Templates:** `s-002-devils-advocate.md`, `s-004-pre-mortem.md`, `s-001-red-team.md` (downstream H-16 consumers) | `s-014-llm-as-judge.md` (scores reconstruction) | `s-007-constitutional-ai.md` (constitutional review) | `s-010-self-refine.md` (may precede S-003)
 
-**HARD Rules:**
-- H-16 (quality-enforcement.md) -- Steelman before critique; S-003 IS the strategy H-16 references
-- H-13 (quality-enforcement.md) -- Threshold >= 0.92 for C2+ deliverables
-- H-14 (quality-enforcement.md) -- Creator-critic-revision cycle, minimum 3 iterations
-- H-15 (quality-enforcement.md) -- Self-review before presenting (applies to S-003 output itself)
-- H-17 (quality-enforcement.md) -- Quality scoring REQUIRED for deliverables
+**HARD Rules:** H-13 (threshold >= 0.92), H-14 (creator-critic cycle), H-15 (self-review), H-16 (Steelman before critique), H-17 (scoring required) -- all from quality-enforcement.md
 
-**Academic Foundation:**
-- Davidson (1973) "Radical Interpretation" -- Principle of Charity
-- Wilson (1959) -- Original Principle of Charity formulation
-- Chappell (2012) -- Steelmanning in rationalist discourse
-- Galef (2021) "The Scout Mindset" -- Truth-seeking over position-defending
+**Academic:** Davidson (1973) Principle of Charity | Wilson (1959) original formulation | Chappell (2012) Steelmanning | Galef (2021) Scout Mindset
 
 ---
 
-<!-- VALIDATION CHECKLIST (per TEMPLATE-FORMAT.md v1.1.0):
-- [x] All 8 canonical sections present in order (Identity, Purpose, Prerequisites, Execution Protocol, Output Format, Scoring Rubric, Examples, Integration)
-- [x] H-23: Navigation table present with Document Sections
-- [x] H-24: Navigation table uses anchor links
-- [x] Metadata blockquote header present
-- [x] Finding prefix SM-NNN used consistently throughout
-- [x] H-16 explicitly documented as S-003 being the FIRST strategy in canonical pairing
-- [x] Criticality tier values match SSOT (Optional C1/C2/C3, Required C4)
-- [x] Weights match SSOT exactly (0.20, 0.20, 0.20, 0.15, 0.15, 0.10)
-- [x] REVISE band note included distinguishing it from SSOT threshold
-- [x] Constructive orientation clear throughout (strengthening, not attacking)
-- [x] Example at C2+ with at least one Critical improvement finding (SM-005)
-- [x] Severity definitions adapted for improvement magnitude (not failure severity)
-- [x] No absolute paths in template body
-- [x] Strategy-specific rubric: 4-band criteria for all 6 dimensions
--->
+<!-- VALIDATION: 8 sections present | H-23/H-24 nav | SM-NNN prefix | H-16 documented | SSOT weights match | REVISE band noted | Constructive orientation | C2+ example with Critical finding | No absolute paths | 4-band rubric -->
 
 ---
 
