@@ -237,7 +237,7 @@ All strategies use standardized templates from `.context/templates/adversarial/`
 | `s-004-pre-mortem.md` | S-004 Pre-Mortem Analysis | Anticipate failure modes |
 | `s-007-constitutional-ai.md` | S-007 Constitutional AI Critique | Constitutional compliance verification |
 | `s-010-self-refine.md` | S-010 Self-Refine | Iterative self-improvement |
-| `s-011-chain-of-verification.md` | S-011 Chain-of-Verification | Systematic claim verification |
+| `s-011-cove.md` | S-011 Chain-of-Verification | Systematic claim verification |
 | `s-012-fmea.md` | S-012 FMEA | Failure Mode and Effects Analysis |
 | `s-013-inversion.md` | S-013 Inversion Technique | Invert key claims to find blind spots |
 | `s-014-llm-as-judge.md` | S-014 LLM-as-Judge | Rubric-based quality scoring |
@@ -282,7 +282,7 @@ Tournament mode executes all 10 adversarial strategies against a C4 (Critical) d
 
 ### Execution Order
 
-All 10 strategies run in the recommended order from `.context/templates/adversarial/adv-selector.md`:
+All 10 strategies run in the recommended order from `skills/adversary/agents/adv-selector.md`:
 
 - **Group A — Self-Review**: S-010 (Self-Refine)
 - **Group B — Strengthen**: S-003 (Steelman Technique)
@@ -297,7 +297,7 @@ Findings from all strategy execution reports are collected across all 9 executor
 
 ### Timing Expectations
 
-A C4 tournament with all 10 strategies requires approximately 10 agent invocations:
+A C4 tournament with all 10 strategies requires approximately 11 agent invocations:
 
 1. **adv-selector** (1 invocation) — Strategy selection
 2. **adv-executor** (9 invocations) — One per strategy from Groups A-E

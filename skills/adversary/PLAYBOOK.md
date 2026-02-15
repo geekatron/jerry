@@ -567,7 +567,7 @@ Common failure scenarios and recovery procedures for adversarial review workflow
 
 | Scenario | Detection | Recovery |
 |----------|-----------|----------|
-| **Strategy template not found** | adv-executor cannot read template file path | WARN the orchestrator. Skip the strategy and note it as "SKIPPED — template not found" in the execution report. If the strategy is required for the criticality level, the review is incomplete and MUST be reported as such. |
+| **Strategy template not found** | adv-executor cannot read template file path | WARN the orchestrator with the missing template path. Request the corrected path from the orchestrator. Do NOT silently skip — the orchestrator decides whether to provide an alternative path or skip the strategy. If a required strategy is ultimately skipped, the review is incomplete and MUST be reported as such. |
 | **Deliverable file inaccessible** | Any agent cannot read the deliverable path | HALT the workflow. Report "ERROR: Deliverable not found at {path}". The orchestrator must resolve the path before retrying. |
 | **Agent fails mid-execution** | Agent produces no output or produces malformed output | Orchestrator retries the agent once with the same input. If the second attempt fails, WARN and skip the strategy (if optional) or ESCALATE to the user (if required). |
 | **Invalid score produced** | adv-scorer returns a score outside 0.0-1.0 range or composite does not match dimension sum | adv-scorer self-review (H-15) should catch this before persistence. If detected post-persistence, the orchestrator re-invokes adv-scorer with the same input. |
