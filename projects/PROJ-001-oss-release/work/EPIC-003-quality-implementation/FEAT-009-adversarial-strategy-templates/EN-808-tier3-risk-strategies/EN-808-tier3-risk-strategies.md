@@ -9,7 +9,7 @@ PURPOSE: Create execution templates for three Tier 3 risk strategies used in C3+
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure

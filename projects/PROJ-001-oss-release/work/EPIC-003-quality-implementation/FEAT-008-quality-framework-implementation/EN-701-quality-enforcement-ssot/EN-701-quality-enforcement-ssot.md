@@ -9,7 +9,7 @@ PURPOSE: Create the single source of truth for all quality framework constants
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** infrastructure

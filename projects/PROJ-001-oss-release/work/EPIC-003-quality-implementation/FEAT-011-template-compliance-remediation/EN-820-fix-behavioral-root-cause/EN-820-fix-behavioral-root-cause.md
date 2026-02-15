@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.9
 -->
 
 > **Type:** enabler
-> **Status:** DONE
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** infrastructure
@@ -209,4 +209,4 @@ TASK-001 and TASK-002 are parallel (foundation fixes). TASK-003 and TASK-004 are
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-15 | Claude | pending | Enabler created. Source: DISC-001 Gap 1-4. |
-| 2026-02-15 | Claude | DONE | All 4 tasks complete. Adversarial C3 cycle: iter 1 (0.839 REVISE), iter 2 (0.941 PASS). Commit 1b98ecc. |
+| 2026-02-15 | Claude | completed | All 4 tasks complete. Adversarial C3 cycle: iter 1 (0.839 REVISE), iter 2 (0.941 PASS). Commit 1b98ecc. |

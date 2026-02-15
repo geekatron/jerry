@@ -1,7 +1,7 @@
 # EN-823: Remediate TASK Entity Files
 
 > **Type:** enabler
-> **Status:** DONE
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -211,4 +211,4 @@ For each task file across EPIC-003:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-15 | Claude | pending | Enabler created. Source: DISC-001 task audit findings. |
-| 2026-02-15 | Claude | DONE | All 144 task files remediated: 74 FEAT-008, 41 FEAT-009, 29 FEAT-010. Status enums fixed, Time Tracking sections added, nav tables updated. |
+| 2026-02-15 | Claude | completed | All 144 task files remediated: 74 FEAT-008, 41 FEAT-009, 29 FEAT-010. Status enums fixed, Time Tracking sections added, nav tables updated. |

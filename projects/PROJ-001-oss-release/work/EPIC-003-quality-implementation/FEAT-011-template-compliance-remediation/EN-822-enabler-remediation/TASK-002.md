@@ -1,7 +1,7 @@
 # TASK-002: Remediate FEAT-009 Enablers (EN-801 through EN-812)
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** high
 > **Activity:** DEVELOPMENT
 > **Created:** 2026-02-15

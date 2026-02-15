@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.9
 -->
 
 > **Type:** enabler
-> **Status:** DONE
+> **Status:** completed
 > **Completed:** 2026-02-15
 > **Priority:** high
 > **Impact:** high
@@ -212,4 +212,4 @@ All 4 tasks are independent and can be executed in parallel. Each task targets a
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-15 | Claude | pending | Enabler created. Source: DISC-001 audit findings for EPIC-003, FEAT-008, FEAT-009, FEAT-010. |
-| 2026-02-15 | Claude | DONE | All 4 entity files remediated. Commit: 4a7cc56. |
+| 2026-02-15 | Claude | completed | All 4 entity files remediated. Commit: 4a7cc56. |

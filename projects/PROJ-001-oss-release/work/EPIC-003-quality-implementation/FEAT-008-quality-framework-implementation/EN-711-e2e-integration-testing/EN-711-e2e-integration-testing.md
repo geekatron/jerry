@@ -9,7 +9,7 @@ PURPOSE: Create comprehensive end-to-end integration tests for the quality frame
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** compliance

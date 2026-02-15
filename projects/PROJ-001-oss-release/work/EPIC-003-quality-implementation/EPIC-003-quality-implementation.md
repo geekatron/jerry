@@ -83,10 +83,10 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | ID | Title | Status | Priority | Enablers | Progress |
 |----|-------|--------|----------|----------|----------|
-| FEAT-008 | Quality Framework Implementation | in_progress | critical | 11 (EN-701-711) | 100% |
+| FEAT-008 | Quality Framework Implementation | completed | critical | 11 (EN-701-711) | 100% |
 | FEAT-009 | Adversarial Strategy Templates & /adversary Skill | completed | critical | 12 (EN-801-812) | 100% |
 | FEAT-010 | FEAT-009 Tournament Remediation | pending | critical | 7 (EN-813-819) | 0% |
-| FEAT-011 | Template Compliance Remediation | DONE | critical | 4 (EN-820-823) | 100% |
+| FEAT-011 | Template Compliance Remediation | completed | critical | 4 (EN-820-823) | 100% |
 
 ### Feature Links
 
@@ -105,10 +105,10 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [██████████..........] 50% (2/4 completed)            |
+| Features:  [███████████████.....] 75% (3/4 completed)            |
 | Enablers:  [████████████████....] 79% (27/34 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [█████████████.......] 65%                             |
+| Overall:   [███████████████.....] 77%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -117,21 +117,21 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 4 |
-| **Completed Features** | 2 (FEAT-009, FEAT-011) |
-| **In Progress Features** | 1 (FEAT-008) |
+| **Completed Features** | 3 (FEAT-008, FEAT-009, FEAT-011) |
+| **In Progress Features** | 0 |
 | **Pending Features** | 1 (FEAT-010) |
 | **Total Enablers** | 34 |
 | **Completed Enablers** | 27 (11 FEAT-008 + 12 FEAT-009 + 4 FEAT-011) |
-| **Feature Completion %** | 50% |
+| **Feature Completion %** | 75% |
 
 ### Milestone Tracking
 
 | Milestone | Target | Actual | Status |
 |-----------|--------|--------|--------|
-| FEAT-008 Quality Framework Implementation | 2026-02-14 | 2026-02-14 | DONE (all 11 enablers PASS) |
-| FEAT-009 Adversarial Strategy Templates | 2026-02-15 | 2026-02-15 | DONE (all 12 enablers PASS) |
-| FEAT-010 Tournament Remediation | TBD | --- | PENDING |
-| FEAT-011 Template Compliance Remediation | 2026-02-15 | 2026-02-15 | DONE (4/4 enablers) |
+| FEAT-008 Quality Framework Implementation | 2026-02-14 | 2026-02-14 | completed (all 11 enablers PASS) |
+| FEAT-009 Adversarial Strategy Templates | 2026-02-15 | 2026-02-15 | completed (all 12 enablers PASS) |
+| FEAT-010 Tournament Remediation | TBD | --- | pending |
+| FEAT-011 Template Compliance Remediation | 2026-02-15 | 2026-02-15 | completed (4/4 enablers) |
 
 ---
 
@@ -164,4 +164,5 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | 2026-02-15 | Claude | in_progress | FEAT-010 created: FEAT-009 Tournament Remediation. 7 enablers (EN-813-819), 29 tasks, 26 effort points. Addresses 7 Critical + 18 Major findings. |
 | 2026-02-15 | Claude | in_progress | DISC-001 created: Template Non-Compliance Discovery. Root cause: worktracker-templates.md not @-imported in SKILL.md. |
 | 2026-02-15 | Claude | in_progress | FEAT-011 created: Template Compliance Remediation. 4 enablers (EN-820-823), 14 tasks, 24 effort points. Category A: behavioral root cause. Category B: 64+ file remediation. |
-| 2026-02-15 | Claude | in_progress | FEAT-011 DONE: All 4 enablers complete. 144 task files + 30 enabler files + 4 entity files remediated. Behavioral root cause fixed. 27/34 enablers complete (79%). |
+| 2026-02-15 | Claude | in_progress | FEAT-011 completed: All 4 enablers complete. 144 task files + 30 enabler files + 4 entity files remediated. Behavioral root cause fixed. 27/34 enablers complete (79%). |
+| 2026-02-15 | Claude | in_progress | Status sync: FEAT-008 completed (11/11 enablers verified on disk). FEAT-009 completed (12/12 enablers verified on disk). Template-canonical enums applied. 3/4 features complete (75%). Only FEAT-010 remains. |

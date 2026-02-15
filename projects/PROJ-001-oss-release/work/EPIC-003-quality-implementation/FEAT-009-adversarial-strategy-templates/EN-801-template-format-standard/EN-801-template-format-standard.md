@@ -9,7 +9,7 @@ PURPOSE: Define the canonical template format for adversarial strategy templates
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** infrastructure

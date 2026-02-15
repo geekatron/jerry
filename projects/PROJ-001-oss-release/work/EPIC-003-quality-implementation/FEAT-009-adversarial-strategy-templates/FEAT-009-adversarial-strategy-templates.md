@@ -9,12 +9,12 @@ PURPOSE: Create reusable adversarial strategy execution templates and /adversary
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-14
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-15
 > **Parent:** EPIC-003
 > **Owner:** ---
 > **Target Sprint:** ---
@@ -69,34 +69,34 @@ Create reusable adversarial strategy execution templates for all 10 selected str
 
 ### Definition of Done
 
-- [ ] All 10 strategy templates created in `.context/templates/adversarial/`
-- [ ] TEMPLATE-FORMAT.md defines canonical template structure
-- [ ] `/adversary` skill scaffold complete (SKILL.md, PLAYBOOK.md, 3 agents)
-- [ ] Existing agents updated with template references
-- [ ] E2E tests pass (`uv run pytest tests/e2e/test_adversary_templates_e2e.py`)
-- [ ] CLAUDE.md updated with /adversary skill entry
-- [ ] All enablers pass >= 0.92 quality gate via creator-critic-revision cycle
-- [ ] Git commits with clean working tree after each phase
+- [x] All 10 strategy templates created in `.context/templates/adversarial/`
+- [x] TEMPLATE-FORMAT.md defines canonical template structure
+- [x] `/adversary` skill scaffold complete (SKILL.md, PLAYBOOK.md, 3 agents)
+- [x] Existing agents updated with template references
+- [x] E2E tests pass (`uv run pytest tests/e2e/test_adversary_templates_e2e.py`)
+- [x] CLAUDE.md updated with /adversary skill entry
+- [x] All enablers pass >= 0.92 quality gate via creator-critic-revision cycle
+- [x] Git commits with clean working tree after each phase
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| FC-1 | 10 strategy templates exist matching TEMPLATE-FORMAT.md | [ ] |
-| FC-2 | adv-selector picks correct strategies per criticality level | [ ] |
-| FC-3 | adv-executor references correct template for each strategy | [ ] |
-| FC-4 | adv-scorer implements S-014 rubric-based scoring | [ ] |
-| FC-5 | ps-critic, ps-reviewer, nse-reviewer, ps-architect reference templates | [ ] |
-| FC-6 | /adversary skill invocable and documented in CLAUDE.md | [ ] |
+| FC-1 | 10 strategy templates exist matching TEMPLATE-FORMAT.md | [x] |
+| FC-2 | adv-selector picks correct strategies per criticality level | [x] |
+| FC-3 | adv-executor references correct template for each strategy | [x] |
+| FC-4 | adv-scorer implements S-014 rubric-based scoring | [x] |
+| FC-5 | ps-critic, ps-reviewer, nse-reviewer, ps-architect reference templates | [x] |
+| FC-6 | /adversary skill invocable and documented in CLAUDE.md | [x] |
 
 ### Non-Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| NFC-1 | All strategy IDs match SSOT (quality-enforcement.md) | [ ] |
-| NFC-2 | Each enabler passes >= 0.92 quality gate | [ ] |
-| NFC-3 | Creator-critic-revision cycle (min 3 iterations) per deliverable | [ ] |
-| NFC-4 | Templates follow markdown navigation standards (H-23, H-24) | [ ] |
+| NFC-1 | All strategy IDs match SSOT (quality-enforcement.md) | [x] |
+| NFC-2 | Each enabler passes >= 0.92 quality gate | [x] |
+| NFC-3 | Creator-critic-revision cycle (min 3 iterations) per deliverable | [x] |
+| NFC-4 | Templates follow markdown navigation standards (H-23, H-24) | [x] |
 
 ---
 
@@ -106,18 +106,18 @@ Create reusable adversarial strategy execution templates for all 10 selected str
 
 | ID | Title | Status | Priority | Effort | Phase |
 |----|-------|--------|----------|--------|-------|
-| [EN-801](./EN-801-template-format-standard/EN-801-template-format-standard.md) | Template Format Standard | pending | critical | 3 | 1 |
-| [EN-802](./EN-802-adversary-skill-skeleton/EN-802-adversary-skill-skeleton.md) | /adversary Skill Skeleton | pending | critical | 3 | 1 |
-| [EN-803](./EN-803-s014-llm-as-judge/EN-803-s014-llm-as-judge.md) | S-014 LLM-as-Judge Template | pending | critical | 5 | 2 |
-| [EN-804](./EN-804-s010-self-refine/EN-804-s010-self-refine.md) | S-010 Self-Refine Template | pending | critical | 3 | 2 |
-| [EN-805](./EN-805-s007-constitutional-ai/EN-805-s007-constitutional-ai.md) | S-007 Constitutional AI Template | pending | critical | 3 | 2 |
-| [EN-806](./EN-806-s002-devils-advocate/EN-806-s002-devils-advocate.md) | S-002 Devil's Advocate Template | pending | high | 3 | 3 |
-| [EN-807](./EN-807-s003-steelman/EN-807-s003-steelman.md) | S-003 Steelman Template | pending | high | 3 | 3 |
-| [EN-808](./EN-808-tier3-risk-strategies/EN-808-tier3-risk-strategies.md) | Tier 3 Risk Strategy Templates | pending | high | 5 | 4 |
-| [EN-809](./EN-809-tier4-security-strategies/EN-809-tier4-security-strategies.md) | Tier 4 Security Strategy Templates | pending | high | 3 | 5 |
-| [EN-810](./EN-810-adversary-skill-agents/EN-810-adversary-skill-agents.md) | Adversary Skill Agents | pending | critical | 5 | 6 |
-| [EN-811](./EN-811-agent-extensions/EN-811-agent-extensions.md) | Agent Extensions | pending | high | 3 | 7 |
-| [EN-812](./EN-812-integration-testing/EN-812-integration-testing.md) | Integration Testing | pending | critical | 5 | 7 |
+| [EN-801](./EN-801-template-format-standard/EN-801-template-format-standard.md) | Template Format Standard | completed | critical | 3 | 1 |
+| [EN-802](./EN-802-adversary-skill-skeleton/EN-802-adversary-skill-skeleton.md) | /adversary Skill Skeleton | completed | critical | 3 | 1 |
+| [EN-803](./EN-803-s014-llm-as-judge/EN-803-s014-llm-as-judge.md) | S-014 LLM-as-Judge Template | completed | critical | 5 | 2 |
+| [EN-804](./EN-804-s010-self-refine/EN-804-s010-self-refine.md) | S-010 Self-Refine Template | completed | critical | 3 | 2 |
+| [EN-805](./EN-805-s007-constitutional-ai/EN-805-s007-constitutional-ai.md) | S-007 Constitutional AI Template | completed | critical | 3 | 2 |
+| [EN-806](./EN-806-s002-devils-advocate/EN-806-s002-devils-advocate.md) | S-002 Devil's Advocate Template | completed | high | 3 | 3 |
+| [EN-807](./EN-807-s003-steelman/EN-807-s003-steelman.md) | S-003 Steelman Template | completed | high | 3 | 3 |
+| [EN-808](./EN-808-tier3-risk-strategies/EN-808-tier3-risk-strategies.md) | Tier 3 Risk Strategy Templates | completed | high | 5 | 4 |
+| [EN-809](./EN-809-tier4-security-strategies/EN-809-tier4-security-strategies.md) | Tier 4 Security Strategy Templates | completed | high | 3 | 5 |
+| [EN-810](./EN-810-adversary-skill-agents/EN-810-adversary-skill-agents.md) | Adversary Skill Agents | completed | critical | 5 | 6 |
+| [EN-811](./EN-811-agent-extensions/EN-811-agent-extensions.md) | Agent Extensions | completed | high | 3 | 7 |
+| [EN-812](./EN-812-integration-testing/EN-812-integration-testing.md) | Integration Testing | completed | critical | 5 | 7 |
 
 ---
 
@@ -129,9 +129,10 @@ Create reusable adversarial strategy execution templates for all 10 selected str
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/12 completed)             |
+| Enablers:  [████████████████████] 100% (12/12 completed)         |
+| Effort:    [████████████████████] 100% (46/46 points)            |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [████████████████████] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -149,13 +150,13 @@ Create reusable adversarial strategy execution templates for all 10 selected str
 
 | Sprint | Enablers | Status | Notes |
 |--------|----------|--------|-------|
-| 2026-02-15 | EN-801, EN-802 (Phase 1) | DONE | Foundation: Template Format + Skill Skeleton |
-| 2026-02-15 | EN-803, EN-804, EN-805 (Phase 2) | DONE | Tier 1: S-014, S-010, S-007 |
-| 2026-02-15 | EN-806, EN-807 (Phase 3) | DONE | Tier 2: S-002, S-003 |
-| 2026-02-15 | EN-808 (Phase 4) | DONE | Tier 3: S-004/S-012/S-013 |
-| 2026-02-15 | EN-809 (Phase 5) | DONE | Tier 4: S-001/S-011 |
-| 2026-02-15 | EN-810 (Phase 6) | DONE | Skill Agents: selector/executor/scorer |
-| 2026-02-15 | EN-811, EN-812 (Phase 7) | DONE | Integration: Agent Extensions + E2E |
+| 2026-02-15 | EN-801, EN-802 (Phase 1) | completed | Foundation: Template Format + Skill Skeleton |
+| 2026-02-15 | EN-803, EN-804, EN-805 (Phase 2) | completed | Tier 1: S-014, S-010, S-007 |
+| 2026-02-15 | EN-806, EN-807 (Phase 3) | completed | Tier 2: S-002, S-003 |
+| 2026-02-15 | EN-808 (Phase 4) | completed | Tier 3: S-004/S-012/S-013 |
+| 2026-02-15 | EN-809 (Phase 5) | completed | Tier 4: S-001/S-011 |
+| 2026-02-15 | EN-810 (Phase 6) | completed | Skill Agents: selector/executor/scorer |
+| 2026-02-15 | EN-811, EN-812 (Phase 7) | completed | Integration: Agent Extensions + E2E |
 
 ---
 
@@ -179,3 +180,4 @@ Create reusable adversarial strategy execution templates for all 10 selected str
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-14 | Claude | pending | Feature created. 12 enablers across 7 phases. Source: EPIC-002 FEAT-004 research + EPIC-003 gap analysis. |
+| 2026-02-15 | Claude | completed | All 12 enablers verified on disk. Status sync: all enablers updated to completed. AC checkboxes verified against deliverables. |

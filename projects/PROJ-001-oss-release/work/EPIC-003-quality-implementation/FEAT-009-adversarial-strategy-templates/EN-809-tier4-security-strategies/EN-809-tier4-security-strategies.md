@@ -9,7 +9,7 @@ PURPOSE: Create execution templates for Tier 4 security strategies S-001 Red Tea
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure

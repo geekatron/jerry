@@ -15,7 +15,7 @@ EXTENDS: StrategicItem -> WorkItem
 -->
 
 > **Type:** feature
-> **Status:** DONE
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-15
@@ -71,13 +71,13 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 
 ### Definition of Done
 
-- [ ] All 4 behavioral gaps closed (Category A)
-- [ ] WTI-007 rule added and enforced
-- [ ] All enablers have Business Value, Progress Summary, Evidence sections
-- [ ] All features have Sprint Tracking subsection
-- [ ] All task files use correct status enum
-- [ ] Creator-critic-revision cycle completed for Category A changes
-- [ ] Git commits with clean working tree after each enabler
+- [x] All 4 behavioral gaps closed (Category A)
+- [x] WTI-007 rule added and enforced
+- [x] All enablers have Business Value, Progress Summary, Evidence sections
+- [x] All features have Sprint Tracking subsection
+- [x] All task files use correct status enum
+- [x] Creator-critic-revision cycle completed for Category A changes
+- [x] Git commits with clean working tree after each enabler
 
 ### Functional Criteria
 
@@ -96,8 +96,8 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| NFC-1 | All modified files follow markdown navigation standards (H-23, H-24) | [ ] |
-| NFC-2 | Pre-commit hooks pass on all committed files | [ ] |
+| NFC-1 | All modified files follow markdown navigation standards (H-23, H-24) | [x] |
+| NFC-2 | Pre-commit hooks pass on all committed files | [x] |
 | NFC-3 | No broken relative links in modified files | [ ] |
 
 ---
@@ -108,10 +108,10 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| EN-820 | Enabler | Fix Behavioral Root Cause | DONE | critical | 3 |
-| EN-821 | Enabler | Remediate EPIC & FEATURE Entity Files | DONE | high | 5 |
-| EN-822 | Enabler | Remediate ENABLER Entity Files | DONE | high | 8 |
-| EN-823 | Enabler | Remediate TASK Entity Files | DONE | high | 8 |
+| EN-820 | Enabler | Fix Behavioral Root Cause | completed | critical | 3 |
+| EN-821 | Enabler | Remediate EPIC & FEATURE Entity Files | completed | high | 5 |
+| EN-822 | Enabler | Remediate ENABLER Entity Files | completed | high | 8 |
+| EN-823 | Enabler | Remediate TASK Entity Files | completed | high | 8 |
 
 ### Work Item Links
 
@@ -154,10 +154,10 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 
 | Sprint | Enablers | Status | Notes |
 |--------|----------|--------|-------|
-| 2026-02-15 | EN-820 (Category A) | DONE | Behavioral root cause fix (0.941 PASS) |
-| 2026-02-15 | EN-821 (EPIC/FEATURE) | DONE | 4 entity files remediated |
-| 2026-02-15 | EN-822 (Enablers) | DONE | 30 enabler files remediated |
-| 2026-02-15 | EN-823 (Tasks) | DONE | 144 task files remediated (74+41+29) |
+| 2026-02-15 | EN-820 (Category A) | completed | Behavioral root cause fix (0.941 PASS) |
+| 2026-02-15 | EN-821 (EPIC/FEATURE) | completed | 4 entity files remediated |
+| 2026-02-15 | EN-822 (Enablers) | completed | 30 enabler files remediated |
+| 2026-02-15 | EN-823 (Tasks) | completed | 144 task files remediated (74+41+29) |
 
 ---
 
@@ -185,6 +185,6 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-15 | Claude | pending | Feature created. Source: DISC-001 template compliance audit. 4 enablers, 15 tasks, 24 effort points. |
-| 2026-02-15 | Claude | IN_PROGRESS | EN-820 DONE (0.941 PASS). Category A behavioral root cause fixed. Starting Category B. |
-| 2026-02-15 | Claude | IN_PROGRESS | EN-821 DONE (4 entity files). EN-822 DONE (30 enabler files). EN-823 starting (144 task files). |
-| 2026-02-15 | Claude | DONE | EN-823 DONE. All 144 task files remediated. Feature complete: 4/4 enablers, 15/15 tasks, 24/24 points. |
+| 2026-02-15 | Claude | in_progress | EN-820 completed (0.941 PASS). Category A behavioral root cause fixed. Starting Category B. |
+| 2026-02-15 | Claude | in_progress | EN-821 completed (4 entity files). EN-822 completed (30 enabler files). EN-823 starting (144 task files). |
+| 2026-02-15 | Claude | completed | EN-823 completed. All 144 task files remediated. Feature complete: 4/4 enablers, 15/15 tasks, 24/24 points. |

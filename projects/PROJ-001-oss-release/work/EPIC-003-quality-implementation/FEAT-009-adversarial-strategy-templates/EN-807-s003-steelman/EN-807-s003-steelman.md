@@ -9,7 +9,7 @@ PURPOSE: Create charitable reconstruction template for S-003 Steelman Technique
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure

@@ -1,14 +1,13 @@
 # EN-822: Remediate ENABLER Entity Files
 
 > **Type:** enabler
-> **Status:** DONE
-> **Completed:** 2026-02-15
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-15
 > **Due:**
-> **Completed:**
+> **Completed:** 2026-02-15
 > **Parent:** FEAT-011
 > **Owner:**
 > **Effort:** 8
@@ -212,4 +211,4 @@ For each of the 30 enabler files:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-15 | Claude | pending | Enabler created. Source: DISC-001 enabler audit findings. |
-| 2026-02-15 | Claude | DONE | All 30 enabler files remediated via 3 parallel agents. Commit: b5ba046. |
+| 2026-02-15 | Claude | completed | All 30 enabler files remediated via 3 parallel agents. Commit: b5ba046. |

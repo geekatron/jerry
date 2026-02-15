@@ -9,7 +9,7 @@ PURPOSE: Create three specialized agents for the /adversary skill operational co
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** infrastructure

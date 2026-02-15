@@ -9,7 +9,7 @@ PURPOSE: Create the /adversary skill scaffold with SKILL.md, PLAYBOOK.md, and ag
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** infrastructure
