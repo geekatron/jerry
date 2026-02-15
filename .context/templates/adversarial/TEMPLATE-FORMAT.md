@@ -71,18 +71,18 @@ This format document and all strategy templates use semantic versioning (MAJOR.M
 
 | ID | Strategy | Score | Family | Finding Prefix |
 |----|----------|-------|--------|----------------|
-| S-014 | LLM-as-Judge | 4.40 | Iterative Self-Correction | LJ-NNN |
-| S-003 | Steelman Technique | 4.30 | Dialectical Synthesis | SM-NNN |
-| S-013 | Inversion Technique | 4.25 | Structured Decomposition | IN-NNN |
-| S-007 | Constitutional AI Critique | 4.15 | Iterative Self-Correction | CC-NNN |
-| S-002 | Devil's Advocate | 4.10 | Role-Based Adversarialism | DA-NNN |
-| S-004 | Pre-Mortem Analysis | 4.10 | Role-Based Adversarialism | PM-NNN |
-| S-010 | Self-Refine | 4.00 | Iterative Self-Correction | SR-NNN |
-| S-012 | FMEA | 3.75 | Structured Decomposition | FM-NNN |
-| S-011 | Chain-of-Verification | 3.75 | Structured Decomposition | CV-NNN |
-| S-001 | Red Team Analysis | 3.35 | Role-Based Adversarialism | RT-NNN |
+| S-014 | LLM-as-Judge | 4.40 | Iterative Self-Correction | LJ-NNN-{execution_id} |
+| S-003 | Steelman Technique | 4.30 | Dialectical Synthesis | SM-NNN-{execution_id} |
+| S-013 | Inversion Technique | 4.25 | Structured Decomposition | IN-NNN-{execution_id} |
+| S-007 | Constitutional AI Critique | 4.15 | Iterative Self-Correction | CC-NNN-{execution_id} |
+| S-002 | Devil's Advocate | 4.10 | Role-Based Adversarialism | DA-NNN-{execution_id} |
+| S-004 | Pre-Mortem Analysis | 4.10 | Role-Based Adversarialism | PM-NNN-{execution_id} |
+| S-010 | Self-Refine | 4.00 | Iterative Self-Correction | SR-NNN-{execution_id} |
+| S-012 | FMEA | 3.75 | Structured Decomposition | FM-NNN-{execution_id} |
+| S-011 | Chain-of-Verification | 3.75 | Structured Decomposition | CV-NNN-{execution_id} |
+| S-001 | Red Team Analysis | 3.35 | Role-Based Adversarialism | RT-NNN-{execution_id} |
 
-Each strategy uses a unique 2-letter **Finding Prefix** for its findings (e.g., DA-001). Templates MUST define their prefix in Section 1.
+Each strategy uses a unique 2-letter **Finding Prefix** for its findings (e.g., DA-001-{execution_id}). Templates MUST define their prefix in Section 1.
 
 **Execution-Scoped Finding IDs:** To prevent ID collisions when multiple tournament executions or strategy invocations occur, finding IDs MUST include an execution-scoped suffix: `{PREFIX}-{NNN}-{execution_id}` where `execution_id` is a short timestamp or session identifier (e.g., `FM-001-20260215T1430`). This ensures uniqueness across tournament runs and parallel strategy executions.
 
@@ -100,7 +100,7 @@ Every template MUST begin with an Identity section containing these fields in a 
 | Strategy Name | Full human-readable name | LLM-as-Judge |
 | Family | Strategy family classification | Iterative Self-Correction |
 | Composite Score | From ADR-EPIC002-001 | 4.40 |
-| Finding Prefix | 2-letter code + NNN sequence | LJ-NNN |
+| Finding Prefix | 2-letter code + NNN sequence + execution_id | LJ-NNN-{execution_id} |
 | Version | Semantic version of the template | 1.0.0 |
 | Date | Last updated date (ISO 8601) | 2026-02-14 |
 

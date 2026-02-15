@@ -205,7 +205,7 @@ For each claim or decision in the deliverable:
    - **Major:** Counter-argument reveals a significant gap, unstated risk, or weak justification. Requires revision.
    - **Minor:** Counter-argument identifies an improvement opportunity or minor weakness. Does not block acceptance.
 5. **Map to affected dimension:** Identify which of the 6 scoring dimensions the finding impacts
-6. **Assign finding identifier:** Use DA-NNN prefix (DA-001, DA-002, etc.)
+6. **Assign finding identifier:** Use DA-NNN-{execution_id} prefix (DA-001-{execution_id}, DA-002-{execution_id}, etc.)
 
 **Decision Point:**
 - If fewer than 3 counter-arguments generated: apply leniency bias counteraction. Force deeper analysis. Even strong deliverables have weaknesses; the advocate role requires finding them.
@@ -492,7 +492,7 @@ From quality-enforcement.md (MUST NOT modify):
 - [x] Examples: 1 C2 example with Before/After, findings with DA-NNN identifiers (DA-001 through DA-005), 3 Major findings
 - [x] Integration: Pairings, H-16 compliance explicitly documented, criticality table matches SSOT, cross-references
 - [x] H-16 referenced in: Purpose (Pairing Recommendations), Prerequisites (Ordering Constraints), Execution Protocol (Step 1), Integration (H-16 Compliance)
-- [x] Finding prefix DA-NNN used consistently throughout
+- [x] Finding prefix DA-NNN-{execution_id} used consistently throughout
 - [x] No absolute paths; all references use relative paths
 -->
 

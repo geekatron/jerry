@@ -309,7 +309,6 @@ Per H-15 (Self-review before presenting), execute this checklist:
 - [ ] **Evidence documented for each score** — Specific quotes, section references, or gap descriptions present for all six dimensions
 - [ ] **Uncertain scores resolved downward** — When unsure between adjacent scores, the lower score was chosen
 - [ ] **First-draft calibration considered** — If scoring a first draft, note that first drafts typically score 0.65-0.80 (descriptive observation, not a target range; exceptional first drafts may score higher, poor first drafts may score lower)
-- [ ] **No dimension scored above 0.95 without exceptional evidence** — High scores (0.95+) have documented exceptional justification
 - [ ] **High-scoring dimension verification (>= 0.95)** — For any dimension scoring >= 0.95: provide specific evidence justifying the exceptional score, actively counteracting leniency bias by documenting what makes this truly exceptional rather than merely strong
 - [ ] **High-scoring dimension verification (> 0.90)** — For any dimension scoring > 0.90: list the 3 strongest evidence points that justify elevating it above "strong work" (0.90); if you cannot list 3 specific evidence points, revise the score downward
 - [ ] **Low-scoring dimension verification** — List the 3 lowest-scoring dimensions and verify that specific evidence justifies each score; if evidence is vague or missing, document the gap explicitly
@@ -1022,7 +1021,7 @@ Use this checklist to validate this S-014 template against TEMPLATE-FORMAT.md v1
 <!-- TEMPLATE INSTANTIATION NOTES:
 - Format version: TEMPLATE-FORMAT.md v1.1.0
 - All constants sourced from quality-enforcement.md (H-13 threshold, dimension weights, criticality levels)
-- Finding prefix LJ-NNN assigned per TEMPLATE-FORMAT.md Strategy Catalog Reference
+- Finding prefix LJ-NNN-{execution_id} assigned per TEMPLATE-FORMAT.md Strategy Catalog Reference
 - Academic foundation: Zheng et al. 2023, Kim et al. 2023, Anthropic Constitutional AI
 - Leniency bias counteraction is the core methodological differentiator for S-014
 - This template is subject to C3+ review per AE-002 (touches .context/templates/)

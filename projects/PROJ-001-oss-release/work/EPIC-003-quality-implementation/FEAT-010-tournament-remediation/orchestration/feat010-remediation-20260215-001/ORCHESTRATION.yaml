@@ -64,9 +64,9 @@ quality:
     traceability: { weight: 0.10, min: 0.85 }
 
   enabler_scores:
-    EN-813: { score: null, iterations: 0, status: "PENDING" }
-    EN-814: { score: null, iterations: 0, status: "PENDING" }
-    EN-815: { score: null, iterations: 0, status: "PENDING" }
+    EN-813: { score: 0.806, iterations: 1, status: "REVISE" }
+    EN-814: { score: 0.887, iterations: 1, status: "REVISE" }
+    EN-815: { score: 0.91, iterations: 1, status: "REVISE" }
     EN-816: { score: null, iterations: 0, status: "PENDING" }
     EN-817: { score: null, iterations: 0, status: "PENDING" }
     EN-818: { score: null, iterations: 0, status: "PENDING" }
@@ -75,7 +75,7 @@ quality:
   workflow_quality:
     average_score: null
     lowest_score: null
-    total_iterations: 0
+    total_iterations: 3
     gates_passed: 0
     gates_failed: 0
     feat009_rescore: null
@@ -96,7 +96,7 @@ pipeline:
   id: "remediation"
   name: "FEAT-010 Tournament Remediation Pipeline"
   short_alias: "impl"
-  status: "PHASE_1_PENDING"
+  status: "PHASE_1_IN_PROGRESS"
   current_phase: 1
   total_phases: 4
   progress_percent: 0
@@ -105,42 +105,45 @@ pipeline:
     - id: 1
       name: "P0 Critical Fixes"
       path_id: "phase-1-p0-critical"
-      status: "PENDING"
-      started_at: null
+      status: "IN_PROGRESS"
+      started_at: "2026-02-15T20:00:00Z"
       completed_at: null
       enablers:
         - id: "EN-813"
           name: "Template Context Optimization"
-          status: "PENDING"
+          status: "REVISE"
           effort: 5
           tasks: 4
           findings: ["T-001"]
-          iterations: 0
-          score: null
-          creator_agent: null
-          critic_agent: null
+          iterations: 1
+          score: 0.806
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings: ["CR-001: Section heading format mismatch (Critical)", "CR-002: Token count claims ~4x off (Critical)", "CR-003: No parsing validation (Major)"]
 
         - id: "EN-814"
           name: "Finding ID Scoping & Uniqueness"
-          status: "PENDING"
+          status: "REVISE"
           effort: 3
           tasks: 3
           findings: ["T-002"]
-          iterations: 0
-          score: null
-          creator_agent: null
-          critic_agent: null
+          iterations: 1
+          score: 0.887
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings: ["CR-001: Body text old PREFIX-NNN format in all 10 templates (Critical)", "CR-002: TEMPLATE-FORMAT catalog table inconsistent (Major)", "CR-005: S-010 Output Format placeholders (Major)"]
 
         - id: "EN-815"
           name: "Documentation & Navigation Fixes"
-          status: "PENDING"
+          status: "REVISE"
           effort: 2
           tasks: 5
           findings: ["T-007", "T-023", "T-026", "T-027", "T-028"]
-          iterations: 0
-          score: null
-          creator_agent: null
-          critic_agent: null
+          iterations: 1
+          score: 0.91
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings: ["LJ-001: S-007 nav anchor targets HTML comment (Major)", "LJ-002: S-014 Step 6 redundant 0.95 items (Major)", "LJ-003: EN-815 metadata stale (Minor)"]
 
     - id: 2
       name: "P1 Documentation & Runtime"
@@ -238,12 +241,12 @@ pipeline:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 1
+  current_group: 3
   groups:
     - id: 1
       name: "Phase 1: EN-813 + EN-814 + EN-815 (parallel creators)"
       execution_mode: "PARALLEL"
-      status: "READY"
+      status: "COMPLETE"
       agents:
         - "en813-creator"
         - "en814-creator"
@@ -252,19 +255,17 @@ execution_queue:
     - id: 2
       name: "Phase 1: Critic cycles (parallel per enabler)"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "group-1"
+      status: "COMPLETE"
       agents:
         - "en813-critic"
         - "en814-critic"
         - "en815-critic"
 
     - id: 3
-      name: "Phase 1: Revision cycles (if needed)"
+      name: "Phase 1: Revision iteration 1 (all 3 enablers)"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "group-2"
-      note: "Only for enablers scoring < 0.92. Up to 3 more iterations."
+      status: "IN_PROGRESS"
+      note: "All 3 scored < 0.92. EN-813: 0.806, EN-814: 0.887, EN-815: 0.91"
 
     - id: 4
       name: "Phase 2: EN-816 + EN-817 (parallel creators)"
@@ -331,8 +332,8 @@ metrics:
     human_escalations: 0
 
   timing:
-    workflow_started: null
-    last_activity: null
+    workflow_started: "2026-02-15T20:00:00Z"
+    last_activity: "2026-02-15T22:40:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -349,12 +350,12 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute Phase 1 creator agents for EN-813, EN-814, EN-815"
+    - action: "Revision iteration 1 running for EN-813, EN-814, EN-815"
       execution_mode: "PARALLEL"
 
   subsequent:
-    - action: "Run critic cycles for Phase 1 enablers"
-      depends_on: "Phase 1 creators complete"
+    - action: "Run critic iteration 2 for revised enablers"
+      depends_on: "Revision iteration 1 complete"
     - action: "Execute Phase 2 upon Phase 1 completion"
       depends_on: "Phase 1 all enablers >= 0.92"
 
@@ -363,8 +364,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Workflow not started"
-  next_step: "Execute Phase 1 creator agents"
+  current_state: "Phase 1 iteration 1 revision in progress — all 3 enablers scored below 0.92"
+  next_step: "Wait for revision agents, then run critic iteration 2"
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"

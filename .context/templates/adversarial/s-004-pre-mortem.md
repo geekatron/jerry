@@ -200,7 +200,7 @@ For each failure cause:
 2. Assess **likelihood** (High/Medium/Low) -- how plausible is this failure?
 3. Assess **severity** using standard definitions (see below)
 4. Map to affected scoring dimension
-5. Assign PM-NNN identifier
+5. Assign PM-NNN-{execution_id} identifier
 
 **Decision Point:**
 - If fewer than 5 failure causes generated: apply deeper analysis. Pre-Mortem should generate substantially more causes than standard review. Force each of the 5 category lenses.

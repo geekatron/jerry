@@ -194,7 +194,7 @@ For each attack vector:
 2. Assess **exploitability** (High/Medium/Low) -- how easily can the adversary execute this?
 3. Assess **severity** using standard definitions (see below)
 4. Map to affected scoring dimension
-5. Assign RT-NNN identifier
+5. Assign RT-NNN-{execution_id} identifier
 
 **Decision Point:**
 - If fewer than 4 attack vectors identified: apply deeper analysis per each of the 5 categories. Red Team should find vectors that other strategies miss.

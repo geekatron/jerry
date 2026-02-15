@@ -172,11 +172,11 @@ For each principle in the Applicable Principles Checklist (HARD tier first):
    - MEDIUM tier violation → **Major** (requires revision)
    - SOFT tier violation → **Minor** (improvement opportunity)
    - **Edge cases:** If 5+ MEDIUM violations cluster in the same file, module, or design component, CONSIDER escalating aggregate severity to Critical. If 10+ SOFT violations cluster around the same architectural concern, CONSIDER escalating to Major. If a SOFT violation has architectural impact (e.g., violating an optional best practice that prevents a critical failure mode), CONSIDER escalating to Major. Document escalation rationale in findings.
-7. **Document finding:** Record in findings table with CC-NNN identifier
+7. **Document finding:** Record in findings table with CC-NNN-{execution_id} identifier
 
 **Decision Point:** HARD violation→REJECTED (H-13). 3+ MEDIUM→recommend rejection. SOFT only→may PASS.
 
-**Output:** Findings Table (CC-NNN, principle, severity, evidence, dimension).
+**Output:** Findings Table (CC-NNN-{execution_id}, principle, severity, evidence, dimension).
 
 ### Step 4: Generate Remediation Guidance
 
@@ -482,7 +482,10 @@ Check in Step 1: AE-001 (constitution→C4), AE-002 (rules/templates→C3), AE-0
 
 ---
 
-<!-- VALIDATION CHECKLIST (per TEMPLATE-FORMAT.md):
+## Validation Checklist
+
+Use this checklist to validate this S-007 template against TEMPLATE-FORMAT.md v1.1.0.
+
 - [x] All 8 canonical sections present (Identity, Purpose, Prerequisites, Execution Protocol, Output Format, Scoring Rubric, Examples, Integration)
 - [x] H-23: Navigation table present
 - [x] H-24: Navigation table uses anchor links
@@ -491,11 +494,12 @@ Check in Step 1: AE-001 (constitution→C4), AE-002 (rules/templates→C3), AE-0
 - [x] Identity: 7 required fields + criticality tier table
 - [x] Purpose: 5+ "When to Use", 3 "When NOT to Use", measurable outcome, pairing recs
 - [x] Prerequisites: Input checklist, context requirements, ordering constraints (H-16)
-- [x] Execution Protocol: 5 steps with step format, decision points, CC-NNN finding prefix, severity defs
+- [x] Execution Protocol: 5 steps with step format, decision points, CC-NNN-{execution_id} finding prefix, severity defs
 - [x] Output Format: 6 output sections, scoring impact table with correct weights, evidence requirements
 - [x] Scoring Rubric: Threshold bands match SSOT, weights match SSOT, strategy-specific 4-band rubric
-- [x] Examples: 1 C2 example with Before/After, findings with CC-NNN identifiers, severity applied
+- [x] Examples: 1 C2 example with Before/After, findings with CC-NNN-{execution_id} identifiers, severity applied
 - [x] Integration: Pairings, H-16 compliance, criticality table matches SSOT, cross-references
--->
+
+---
 
 <!-- VERSION: 1.0.0 | CREATED: 2026-02-15 | ENABLER: EN-805 | FORMAT: TEMPLATE-FORMAT.md v1.1.0 -->

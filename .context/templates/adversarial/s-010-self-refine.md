@@ -42,7 +42,7 @@ FORMAT: Conforms to TEMPLATE-FORMAT.md v1.1.0
 | Strategy Name | Self-Refine |
 | Family | Iterative Self-Correction |
 | Composite Score | 4.00 |
-| Finding Prefix | SR-NNN-{execution_id} |
+| Finding Prefix | SR-NNN-{execution_id}-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -191,7 +191,7 @@ A self-review report containing:
 
 **Procedure:**
 1. For each identified weakness, create a finding entry:
-   - Assign unique identifier using SR-NNN prefix
+   - Assign unique identifier using SR-NNN-{execution_id} prefix
    - Classify severity: Critical (blocks acceptance), Major (requires revision), Minor (improvement opportunity)
    - Tag affected dimension(s) from the scoring rubric
    - Provide specific evidence (quote, line number, section reference)
@@ -301,12 +301,12 @@ All findings in standard format with severity, evidence, and dimension tags:
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| SR-NNN | {{Description}} | Critical/Major/Minor | {{Specific reference}} | {{Dimension}} |
+| SR-NNN-{execution_id} | {{Description}} | Critical/Major/Minor | {{Specific reference}} | {{Dimension}} |
 
 ### 4. Finding Details
 
 Expanded description for each **Critical and Major** finding:
-- **SR-NNN: {{Finding title}}**
+- **SR-NNN-{execution_id}: {{Finding title}}**
   - **Severity:** {{Critical/Major}}
   - **Affected Dimension:** {{Dimension name}}
   - **Evidence:** {{Quote or specific reference with location}}
@@ -316,9 +316,9 @@ Expanded description for each **Critical and Major** finding:
 ### 5. Recommendations
 
 Prioritized action list for revision:
-1. **{{Critical recommendation}}** (resolves SR-NNN)
-2. **{{Major recommendation}}** (resolves SR-NNN, SR-NNN)
-3. **{{Minor recommendation}}** (resolves SR-NNN)
+1. **{{Critical recommendation}}** (resolves SR-NNN-{execution_id})
+2. **{{Major recommendation}}** (resolves SR-NNN-{execution_id}, SR-NNN-{execution_id})
+3. **{{Minor recommendation}}** (resolves SR-NNN-{execution_id})
 
 ### 6. Scoring Impact
 

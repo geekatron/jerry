@@ -114,8 +114,8 @@ If the template file does not exist, warn the orchestrator and request a correct
 
 To minimize context consumption, load ONLY the sections needed for execution:
 
-1. **Section 1 (Identity)**: Load to extract Finding Prefix (required for generating finding identifiers)
-2. **Section 4 (Execution Protocol)**: Load the complete step-by-step procedure for strategy execution
+1. **Identity**: Load to extract Finding Prefix (required for generating finding identifiers)
+2. **Execution Protocol**: Load the complete step-by-step procedure for strategy execution
 3. **Other sections**: Do NOT load during execution. Load on-demand only when:
    - Explicit reference lookup required (e.g., user asks "what are the prerequisites?")
    - Template authoring or validation work
@@ -123,30 +123,30 @@ To minimize context consumption, load ONLY the sections needed for execution:
 
 **Section Boundary Parsing:**
 
-Templates follow TEMPLATE-FORMAT.md v1.1.0 structure. To extract a specific section:
+Templates follow TEMPLATE-FORMAT.md v1.1.0 structure. Section boundaries are identified by `## ` (h2 markdown heading) markers. To extract a specific section:
 
-1. Locate the section heading: `## Section N: {Section Name}` where N is 1-8
-2. Extract content from the section heading line to the NEXT `## Section` heading (exclusive)
-3. Section order: 1-Identity, 2-Purpose, 3-Prerequisites, 4-Execution Protocol, 5-Output Format, 6-Scoring Rubric, 7-Examples, 8-Integration
+1. Locate the section heading: `## {Section Name}` (e.g., `## Identity`, `## Execution Protocol`)
+2. Extract content from the section heading line to the NEXT `## ` heading (exclusive)
+3. Section order (per each template's Document Sections navigation table): Identity, Purpose, Prerequisites, Execution Protocol, Output Format, Scoring Rubric, Examples, Integration
 
 **Example parsing logic:**
 ```
-# To extract Section 4 (Execution Protocol):
-start_marker = "## Section 4: Execution Protocol"
-end_marker = "## Section 5: Output Format"
+# To extract Execution Protocol section:
+start_marker = "## Execution Protocol"
+end_marker = "## Output Format"
 execution_protocol = lines_between(start_marker, end_marker)
 ```
 
 **Context Budget:**
-- **Before optimization**: ~20,300 tokens (10 full templates for C4 tournament)
-- **After optimization**: ~10,000 tokens (10 Execution Protocol sections only)
-- **Target**: C4 tournament MUST consume <= 10,000 tokens of template content
+- **Before optimization**: Loading all 8 sections from all templates consumes significant context
+- **After optimization**: Loading only Identity + Execution Protocol sections (approximately 25% of each template's content)
+- **Target**: C4 tournament MUST consume <= 10,000 tokens of template content (loading ~2 sections per strategy × 10 strategies)
 
 Parse the loaded sections to extract:
-- Finding Prefix from Identity section (Section 1)
-- Execution Protocol steps (Section 4)
+- Finding Prefix from Identity section
+- Execution Protocol steps
 
-Verify Section 1 and Section 4 are present. If either is missing, warn the orchestrator.
+Verify Identity and Execution Protocol sections are present. If either is missing, warn the orchestrator.
 
 ### Step 2: Load Deliverable
 ```
@@ -155,7 +155,7 @@ Read(file_path="{deliverable_path}")
 Read the full deliverable content for analysis.
 
 ### Step 3: Execute Strategy Protocol
-Follow the template's Execution Protocol section (Section 4, loaded in Step 1) step-by-step:
+Follow the template's Execution Protocol section (loaded in Step 1) step-by-step:
 1. Apply each protocol step to the deliverable
 2. For each step, document findings with specific evidence
 3. Classify each finding by severity
@@ -163,14 +163,14 @@ Follow the template's Execution Protocol section (Section 4, loaded in Step 1) s
 **On-Demand Section Loading:**
 
 If during execution you need information from other template sections:
-- **Section 2 (Purpose)**: Load only if you need to understand "When to Use" or pairing context
-- **Section 3 (Prerequisites)**: Load only if input validation fails and you need to check requirements
-- **Section 5 (Output Format)**: Load only if the Execution Protocol references specific output structure not clear from context
-- **Section 6 (Scoring Rubric)**: Load only if you need meta-evaluation criteria (rarely needed during execution)
-- **Section 7 (Examples)**: Load only if you need to reference concrete demonstrations
-- **Section 8 (Integration)**: Load only if you need cross-strategy pairing or criticality information
+- **Purpose**: Load only if you need to understand "When to Use" or pairing context
+- **Prerequisites**: Load only if input validation fails and you need to check requirements
+- **Output Format**: Load only if the Execution Protocol references specific output structure not clear from context
+- **Scoring Rubric**: Load only if you need meta-evaluation criteria (rarely needed during execution)
+- **Examples**: Load only if you need to reference concrete demonstrations
+- **Integration**: Load only if you need cross-strategy pairing or criticality information
 
-**Default behavior**: Execute using ONLY Section 1 (Identity) and Section 4 (Execution Protocol). This keeps context consumption minimal.
+**Default behavior**: Execute using ONLY Identity and Execution Protocol sections. This keeps context consumption minimal.
 
 ### Step 4: Classify Findings
 
@@ -202,7 +202,7 @@ Prefixes (from templates):
 
 Severity is tracked in the finding detail block, not in the identifier.
 
-**IMPORTANT:** Always read the Finding Prefix from the loaded template's Identity section (Section 1). The list above is a reference guide — the template's own prefix is authoritative.
+**IMPORTANT:** Always read the Finding Prefix from the loaded template's Identity section. The list above is a reference guide — the template's own prefix is authoritative.
 
 ### Step 6: Self-Review Before Persistence (H-15)
 

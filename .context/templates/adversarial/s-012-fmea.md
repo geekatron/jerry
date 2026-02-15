@@ -201,9 +201,9 @@ For each element, apply the 5 failure mode lenses:
 For each failure mode:
 1. Describe the specific failure (not "missing content" but "Section 3 lacks rollback procedure for Phase 2 failure")
 2. Identify the effect on the deliverable and downstream consumers
-3. Assign FM-NNN identifier
+3. Assign FM-NNN-{execution_id} identifier
 
-**Output:** Failure mode inventory with FM-NNN identifiers, one or more per element.
+**Output:** Failure mode inventory with FM-NNN-{execution_id} identifiers, one or more per element.
 
 ### Step 3: Rate Severity, Occurrence, and Detection
 
