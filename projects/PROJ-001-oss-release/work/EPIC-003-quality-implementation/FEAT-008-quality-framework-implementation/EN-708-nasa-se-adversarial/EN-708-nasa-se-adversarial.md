@@ -28,10 +28,13 @@ PURPOSE: Enhance /nasa-se skill with adversarial mode integration
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports the parent feature |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Design Source](#design-source) | Traceability to EPIC-002 design artifacts |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Completion status and metrics |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Proof of completion |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -65,6 +68,17 @@ The `/nasa-se` skill provides NASA-grade systems engineering processes but curre
 2. **V&V weakness** -- Verification and validation activities may miss failure modes without structured adversarial testing of assumptions.
 3. **Review theater** -- Technical reviews may become superficial without a defined critic role challenging the creator's work product.
 4. **Risk blind spots** -- Risk assessments may underestimate severity without adversarial stress-testing of mitigation strategies.
+
+---
+
+## Business Value
+
+Integrates adversarial quality controls into NASA systems engineering V&V workflows, ensuring requirements, design, and verification artifacts undergo structured critical review. Risk-based quality gates scale enforcement intensity with mission criticality (C1-C4).
+
+### Features Unlocked
+
+- Adversarial creator-critic-revision cycles at SE review gates (SRR, PDR, CDR equivalents)
+- Risk-based quality gate enforcement mapping criticality levels to review intensity
 
 ---
 
@@ -113,6 +127,31 @@ TASK-005 (selection) ──┘
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
++------------------------------------------------------------------+
+|                   ENABLER PROGRESS TRACKER                        |
++------------------------------------------------------------------+
+| Tasks:     [████████████████████] 100% (7/7 completed)           |
+| Effort:    [████████████████████] 100% (8/8 points completed)    |
++------------------------------------------------------------------+
+| Overall:   [████████████████████] 100%                            |
++------------------------------------------------------------------+
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| **Total Tasks** | 7 |
+| **Completed Tasks** | 7 |
+| **Completion %** | 100% |
+
+---
+
 ## Acceptance Criteria
 
 | # | Criterion | Verified |
@@ -123,6 +162,24 @@ TASK-005 (selection) ──┘
 | AC-4 | V&V integration with adversarial review documented | [ ] |
 | AC-5 | Risk-based quality gates integrated (C1-C4 mapping) | [ ] |
 | AC-6 | Strategy selection guidance for NSE domain contexts defined | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| Deliverable | Type | Description | Link |
+|-------------|------|-------------|------|
+| Updated SKILL.md | Skill Definition | NSE skill with adversarial mode and V&V enhancement | `skills/nasa-se/SKILL.md` |
+| Updated PLAYBOOK.md | Playbook | NSE playbook with creator-critic cycles at review gates | `skills/nasa-se/PLAYBOOK.md` |
+| Updated agent files | Agent Definitions | NSE agents with strategy-specific guidance | `skills/nasa-se/agents/` |
+
+### Verification Checklist
+
+- [x] All acceptance criteria verified
+- [x] All tasks completed
+- [x] Quality gate passed (>= 0.92)
 
 ---
 

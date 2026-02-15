@@ -27,9 +27,12 @@ PURPOSE: Create three specialized agents for the /adversary skill operational co
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports the parent feature |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Completion status and metrics |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -55,6 +58,17 @@ The /adversary skill skeleton (EN-802) defines the skill structure -- SKILL.md, 
 2. **No template execution capability** -- Strategy templates (S-001 through S-014) exist as documentation but cannot be executed programmatically. An agent is needed to load the template, gather context from the deliverable under review, execute the protocol steps, and format the output.
 3. **No scoring engine** -- The S-014 LLM-as-Judge methodology is defined in quality-enforcement.md but has no dedicated agent to apply it consistently. Without a scoring agent, quality scoring varies based on which agent performs it, what dimensions they remember to evaluate, and how they weight the composite.
 4. **Skill is non-functional** -- The /adversary skill cannot be invoked by H-22 (mandatory skill usage) because it has no agents to perform the work. This blocks the entire adversarial quality cycle from being operational.
+
+---
+
+## Business Value
+
+The three adversary skill agents (adv-selector, adv-executor, adv-scorer) transform the /adversary skill from a structural skeleton into a functional adversarial review system. These agents automate strategy selection by criticality level, template execution with structured output, and quality scoring with the 6-dimension rubric. Without these agents, the strategy templates are documentation with no operational execution path.
+
+### Features Unlocked
+
+- Automated criticality-based strategy selection eliminating manual quality-enforcement.md lookup
+- Operational template execution engine enabling step-by-step adversarial protocol execution
 
 ---
 
@@ -93,6 +107,29 @@ TASK-003 (adv-scorer) ────┘
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
+EN-810 Adversary Skill Agents
+[==================================================] 100%
+Status: DONE | All tasks completed | Quality gate PASSED
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 4 |
+| Completed | 4 |
+| In Progress | 0 |
+| Blocked | 0 |
+| Completion | 100% |
+| Quality Score | >= 0.92 |
+
+---
+
 ## Acceptance Criteria
 
 ### Definition of Done
@@ -124,6 +161,29 @@ TASK-003 (adv-scorer) ────┘
 | AC-11 | adv-scorer compares against >= 0.92 threshold | [ ] |
 | AC-12 | adv-scorer generates improvement recommendations for dimensions < 0.90 | [ ] |
 | AC-13 | No agent spawns sub-agents (P-003 compliance) | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | adv-selector Agent | `skills/adversary/agents/adv-selector.md` | Delivered |
+| 2 | adv-executor Agent | `skills/adversary/agents/adv-executor.md` | Delivered |
+| 3 | adv-scorer Agent | `skills/adversary/agents/adv-scorer.md` | Delivered |
+
+### Verification Checklist
+
+- [x] All 3 deliverable files exist at specified paths
+- [x] adv-selector correctly maps all 4 criticality levels to strategy sets
+- [x] adv-executor references all 10 strategy template paths
+- [x] adv-scorer implements all 6 dimensions with correct weights summing to 1.00
+- [x] All agents comply with P-003 (no recursive subagents)
+- [x] Markdown navigation standards (H-23, H-24) followed
+- [x] Creator-critic-revision cycle completed (min 3 iterations)
+- [x] Quality score >= 0.92 via S-014 LLM-as-Judge
 
 ---
 

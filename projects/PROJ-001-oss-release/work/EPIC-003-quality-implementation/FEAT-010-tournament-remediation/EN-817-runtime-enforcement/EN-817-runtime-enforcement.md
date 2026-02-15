@@ -28,9 +28,12 @@ PURPOSE: Implement runtime enforcement mechanisms for /adversary skill agents
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports parent feature delivery |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Current completion status |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -48,6 +51,17 @@ The C4 tournament identified that critical runtime guarantees are not enforced:
 1. H-16 ordering (S-003 Steelman must execute before S-002 Devil's Advocate) is only documented but not blocked at runtime
 2. P-003 compliance (no recursive subagents) has no self-check mechanism in agent specs
 3. Auto-escalation rules (AE-001 through AE-006) are not cross-checked during strategy selection
+
+---
+
+## Business Value
+
+Runtime enforcement is critical for FEAT-010 because documented-but-unenforced constraints degrade silently. Without H-16 blocking, P-003 self-checks, and AE cross-validation, tournament executions can produce results that violate constitutional guarantees without any error signal.
+
+### Features Unlocked
+
+- Enables guaranteed H-16 ordering compliance during tournament execution
+- Provides runtime detection of P-003 and auto-escalation violations before they propagate to findings
 
 ---
 
@@ -73,6 +87,27 @@ The C4 tournament identified that critical runtime guarantees are not enforced:
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
+[░░░░░░░░░░░░░░░░░░░░] 0% (0/5 tasks)
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 5 |
+| Completed | 0 |
+| In Progress | 0 |
+| Pending | 5 |
+| Blocked | 0 |
+| Completion | 0% |
+
+---
+
 ## Acceptance Criteria
 
 ### Definition of Done
@@ -93,6 +128,24 @@ The C4 tournament identified that critical runtime guarantees are not enforced:
 | 4 | E2E test validates H-16 check presence and behavior | — |
 | 5 | E2E test validates AE rule references and escalation logic | — |
 | 6 | No regressions in existing test suite | — |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | — | — | Pending |
+
+### Verification Checklist
+
+- [ ] All acceptance criteria verified
+- [ ] All technical criteria verified
+- [ ] Quality gate score >= 0.92
+- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
+- [ ] No regressions introduced
 
 ---
 

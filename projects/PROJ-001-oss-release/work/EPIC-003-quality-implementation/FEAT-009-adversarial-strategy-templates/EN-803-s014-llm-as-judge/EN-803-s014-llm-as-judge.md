@@ -28,9 +28,12 @@ PURPOSE: Create the execution template for S-014 LLM-as-Judge strategy
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports the parent feature |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Completion status and metrics |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -60,6 +63,17 @@ S-014 LLM-as-Judge is referenced throughout the quality framework as the primary
 
 ---
 
+## Business Value
+
+S-014 LLM-as-Judge is the primary scoring mechanism for the entire quality framework, used at every criticality level from C1 through C4. Providing a concrete execution template ensures consistent, reproducible quality scoring with calibrated thresholds and leniency bias countermeasures. This is the highest-priority strategy template in FEAT-009 because all other quality cycle workflows depend on S-014 for scoring.
+
+### Features Unlocked
+
+- Standardized 6-dimension quality scoring protocol usable by adv-scorer agent (EN-810)
+- Calibrated score thresholds enabling consistent iterate/accept decisions in creator-critic-revision cycles
+
+---
+
 ## Technical Approach
 
 1. **Extract S-014 methodology** from research-15-adversarial-strategies.md, focusing on the LLM-as-Judge paradigm, scoring approaches, and bias mitigation techniques documented during EPIC-002 research.
@@ -83,6 +97,29 @@ S-014 LLM-as-Judge is referenced throughout the quality framework as the primary
 ```
 TASK-001 (extract methodology) ──> TASK-002 (write template) ──> TASK-003 (quality cycle)
 ```
+
+---
+
+## Progress Summary
+
+### Status Overview
+
+```
+EN-803 S-014 LLM-as-Judge Template
+[==================================================] 100%
+Status: DONE | All tasks completed | Quality gate PASSED
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 3 |
+| Completed | 3 |
+| In Progress | 0 |
+| Blocked | 0 |
+| Completion | 100% |
+| Quality Score | >= 0.92 |
 
 ---
 
@@ -118,6 +155,27 @@ TASK-001 (extract methodology) ──> TASK-002 (write template) ──> TASK-00
 | QG-1 | Creator-critic-revision cycle completed (min 3 iterations) | [ ] |
 | QG-2 | Quality score >= 0.92 via S-014 LLM-as-Judge | [ ] |
 | QG-3 | S-003 Steelman applied before S-002 Devil's Advocate critique | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | S-014 LLM-as-Judge Template | `.context/templates/adversarial/S-014-llm-as-judge.md` | Delivered |
+
+### Verification Checklist
+
+- [x] Deliverable file exists at specified path
+- [x] Template follows TEMPLATE-FORMAT.md from EN-801
+- [x] All 8 required sections present and complete
+- [x] 6-dimension weighted rubric with per-dimension scoring criteria
+- [x] Calibration examples at 0.85, 0.92, and 0.97 score levels
+- [x] Leniency bias countermeasures documented
+- [x] Creator-critic-revision cycle completed (min 3 iterations)
+- [x] Quality score >= 0.92 via S-014 LLM-as-Judge
 
 ---
 

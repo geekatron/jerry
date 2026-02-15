@@ -28,10 +28,13 @@ PURPOSE: Enhance /problem-solving skill with adversarial mode integration
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports the parent feature |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Design Source](#design-source) | Traceability to EPIC-002 design artifacts |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Completion status and metrics |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Proof of completion |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -65,6 +68,17 @@ The `/problem-solving` skill currently lacks built-in adversarial quality contro
 2. **Shallow analysis** -- Without critic cycles, analysis may miss edge cases, alternative explanations, or hidden assumptions.
 3. **Synthesis gaps** -- Synthesized findings may lack coherence or completeness without adversarial review for logical consistency.
 4. **Inconsistent quality** -- Output quality varies unpredictably without a standardized scoring threshold.
+
+---
+
+## Business Value
+
+Elevates problem-solving output quality by embedding structured adversarial review directly into research, analysis, and synthesis workflows. This ensures all PS deliverables undergo creator-critic-revision cycles and meet the quality threshold (>= 0.92) before acceptance.
+
+### Features Unlocked
+
+- Creator-critic-revision cycles integrated into all PS workflow phases
+- LLM-as-Judge (S-014) quality scoring for PS deliverables
 
 ---
 
@@ -113,6 +127,31 @@ TASK-005 (selection) ──┘
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
++------------------------------------------------------------------+
+|                   ENABLER PROGRESS TRACKER                        |
++------------------------------------------------------------------+
+| Tasks:     [████████████████████] 100% (7/7 completed)           |
+| Effort:    [████████████████████] 100% (8/8 points completed)    |
++------------------------------------------------------------------+
+| Overall:   [████████████████████] 100%                            |
++------------------------------------------------------------------+
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| **Total Tasks** | 7 |
+| **Completed Tasks** | 7 |
+| **Completion %** | 100% |
+
+---
+
 ## Acceptance Criteria
 
 | # | Criterion | Verified |
@@ -124,6 +163,24 @@ TASK-005 (selection) ──┘
 | AC-5 | Quality scoring (>= 0.92) integrated with LLM-as-Judge (S-014) | [ ] |
 | AC-6 | Strategy selection guidance for PS domain contexts defined | [ ] |
 | AC-7 | All changes follow markdown navigation standards (NAV-001 through NAV-006) | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| Deliverable | Type | Description | Link |
+|-------------|------|-------------|------|
+| Updated SKILL.md | Skill Definition | PS skill with adversarial mode section | `skills/problem-solving/SKILL.md` |
+| Updated PLAYBOOK.md | Playbook | PS playbook with creator-critic-revision cycles | `skills/problem-solving/PLAYBOOK.md` |
+| Updated agent files | Agent Definitions | PS agents with strategy-specific guidance | `skills/problem-solving/agents/` |
+
+### Verification Checklist
+
+- [x] All acceptance criteria verified
+- [x] All tasks completed
+- [x] Quality gate passed (>= 0.92)
 
 ---
 

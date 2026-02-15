@@ -28,9 +28,12 @@ PURPOSE: Fix documentation gaps and navigation issues identified by C4 tournamen
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports parent feature delivery |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Current completion status |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -45,6 +48,17 @@ Fix documentation gaps and navigation issues identified by the C4 tournament. Bu
 ## Problem Statement
 
 Multiple documentation gaps identified: S-007 template has a missing navigation table row for "Validation Checklist", CLAUDE.md /adversary entry is only 3 words instead of a full description, TEMPLATE-FORMAT.md template length criterion is ambiguous, S-014 is missing a high-scoring dimension verification step, and S-010 lacks objectivity scale conservative fallback guidance.
+
+---
+
+## Business Value
+
+Fixing documentation gaps and navigation issues supports FEAT-010 by ensuring that adversarial strategy templates and skill documentation are complete and navigable. Incomplete documentation degrades LLM execution quality because agents cannot find or follow instructions that are missing or ambiguous.
+
+### Features Unlocked
+
+- Enables consistent strategy execution by eliminating documentation gaps that cause agent confusion
+- Ensures H-23/H-24 navigation compliance across all adversarial skill artifacts
 
 ---
 
@@ -70,6 +84,27 @@ Multiple documentation gaps identified: S-007 template has a missing navigation 
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
+[░░░░░░░░░░░░░░░░░░░░] 0% (0/5 tasks)
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 5 |
+| Completed | 0 |
+| In Progress | 0 |
+| Pending | 5 |
+| Blocked | 0 |
+| Completion | 0% |
+
+---
+
 ## Acceptance Criteria
 
 ### Definition of Done
@@ -92,6 +127,24 @@ Multiple documentation gaps identified: S-007 template has a missing navigation 
 | 3 | TEMPLATE-FORMAT.md length criterion uses SHOULD with explicit exceptions | [ ] |
 | 4 | S-014 Step 6 addresses leniency bias with evidence requirement | [ ] |
 | 5 | S-010 conservative fallback defines boundary zone and documentation requirement | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | — | — | Pending |
+
+### Verification Checklist
+
+- [ ] All acceptance criteria verified
+- [ ] All technical criteria verified
+- [ ] Quality gate score >= 0.92
+- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
+- [ ] No regressions introduced
 
 ---
 

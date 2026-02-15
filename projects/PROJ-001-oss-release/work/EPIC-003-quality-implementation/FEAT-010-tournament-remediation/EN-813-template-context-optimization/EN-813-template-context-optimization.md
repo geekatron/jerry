@@ -28,9 +28,12 @@ PURPOSE: Reduce context consumption during strategy execution via lazy loading
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports parent feature delivery |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Current completion status |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -45,6 +48,17 @@ Implement section-boundary parsing in adv-executor to load only the Execution Pr
 ## Problem Statement
 
 Full template loading during strategy execution wastes context budget. A C4 tournament using all 10 strategies loads ~50K+ tokens of template content when only the Execution Protocol sections (~10K total) are needed for actual execution.
+
+---
+
+## Business Value
+
+Reducing context consumption during strategy execution directly enables FEAT-010 tournament remediation by ensuring C4 tournaments can execute all 10 strategies within context budget constraints. Without lazy loading, tournament execution risks context exhaustion before completing the full strategy set.
+
+### Features Unlocked
+
+- Enables reliable C4 tournament execution with all 10 strategies within a single context window
+- Frees context budget for richer finding synthesis and cross-strategy analysis
 
 ---
 
@@ -65,6 +79,27 @@ Full template loading during strategy execution wastes context budget. A C4 tour
 | TASK-002 | Update adv-executor.md to load only Execution Protocol section | pending | DEVELOPMENT | ps-architect |
 | TASK-003 | Measure and validate context consumption <= 10,000 tokens | pending | REVIEW | ps-critic |
 | TASK-004 | Update PLAYBOOK.md with lazy loading operational guidance | pending | DEVELOPMENT | ps-architect |
+
+---
+
+## Progress Summary
+
+### Status Overview
+
+```
+[░░░░░░░░░░░░░░░░░░░░] 0% (0/4 tasks)
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 4 |
+| Completed | 0 |
+| In Progress | 0 |
+| Pending | 4 |
+| Blocked | 0 |
+| Completion | 0% |
 
 ---
 
@@ -90,6 +125,24 @@ Full template loading during strategy execution wastes context budget. A C4 tour
 | 5 | Context consumption <= 10,000 tokens for C4 tournament | ☐ |
 | 6 | Before/after measurement comparison documented | ☐ |
 | 7 | PLAYBOOK.md includes lazy loading operational guidance | ☐ |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | — | — | Pending |
+
+### Verification Checklist
+
+- [ ] All acceptance criteria verified
+- [ ] All technical criteria verified
+- [ ] Quality gate score >= 0.92
+- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
+- [ ] No regressions introduced
 
 ---
 

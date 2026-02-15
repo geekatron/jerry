@@ -28,9 +28,12 @@ PURPOSE: Prevent finding ID collisions across multi-strategy tournaments
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports parent feature delivery |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Current completion status |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -45,6 +48,17 @@ Add execution-scoped finding ID prefix format to TEMPLATE-FORMAT.md and update a
 ## Problem Statement
 
 Current templates use simple finding ID formats (e.g., FM-001, DA-001) that collide when multiple strategies execute in the same tournament. The C4 tournament synthesis had to manually deduplicate findings due to ID overlap.
+
+---
+
+## Business Value
+
+Execution-scoped finding IDs are essential for FEAT-010 tournament remediation because they eliminate the manual deduplication step during tournament synthesis. Unique finding IDs across strategies enable automated aggregation and reliable cross-strategy traceability.
+
+### Features Unlocked
+
+- Enables automated tournament finding aggregation without manual deduplication
+- Provides reliable finding traceability across multi-strategy tournament executions
 
 ---
 
@@ -63,6 +77,27 @@ Current templates use simple finding ID formats (e.g., FM-001, DA-001) that coll
 | TASK-001 | Add execution-scoped finding ID prefix format to TEMPLATE-FORMAT.md | pending | DEVELOPMENT | ps-architect |
 | TASK-002 | Update all 10 strategy templates with scoped finding ID format | pending | DEVELOPMENT | ps-architect |
 | TASK-003 | Add E2E test for finding prefix uniqueness across all templates | pending | DEVELOPMENT | ps-architect |
+
+---
+
+## Progress Summary
+
+### Status Overview
+
+```
+[░░░░░░░░░░░░░░░░░░░░] 0% (0/3 tasks)
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 3 |
+| Completed | 0 |
+| In Progress | 0 |
+| Pending | 3 |
+| Blocked | 0 |
+| Completion | 0% |
 
 ---
 
@@ -87,6 +122,24 @@ Current templates use simple finding ID formats (e.g., FM-001, DA-001) that coll
 | 5 | E2E test validates unique prefixes across all templates | ☐ |
 | 6 | E2E test validates finding ID format compliance | ☐ |
 | 7 | E2E test passes with `uv run pytest` | ☐ |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | — | — | Pending |
+
+### Verification Checklist
+
+- [ ] All acceptance criteria verified
+- [ ] All technical criteria verified
+- [ ] Quality gate score >= 0.92
+- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
+- [ ] No regressions introduced
 
 ---
 

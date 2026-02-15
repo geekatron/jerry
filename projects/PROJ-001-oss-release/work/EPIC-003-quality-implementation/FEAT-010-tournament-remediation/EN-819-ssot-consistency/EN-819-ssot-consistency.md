@@ -28,9 +28,12 @@ PURPOSE: Consolidate REVISE band to SSOT and add template resilience
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports parent feature delivery |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Current completion status |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -45,6 +48,17 @@ Consolidate REVISE band definition to quality-enforcement.md SSOT, update all te
 ## Problem Statement
 
 The REVISE band (0.85-0.91) is currently defined independently in multiple strategy templates rather than sourced from quality-enforcement.md (the SSOT). This creates a consistency risk where templates could drift from the authoritative definition. Additionally, there is no defined behavior for when a malformed template is encountered during execution.
+
+---
+
+## Business Value
+
+Consolidating the REVISE band to SSOT supports FEAT-010 by eliminating a class of consistency errors identified in the C4 tournament. When templates define scoring bands locally, any update to quality-enforcement.md creates silent drift. Malformed template fallback behavior ensures graceful degradation rather than undefined behavior during execution.
+
+### Features Unlocked
+
+- Enables single-point scoring band updates that propagate consistently across all templates
+- Provides defined failure mode for malformed templates instead of undefined execution behavior
 
 ---
 
@@ -68,6 +82,27 @@ The REVISE band (0.85-0.91) is currently defined independently in multiple strat
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
+[░░░░░░░░░░░░░░░░░░░░] 0% (0/4 tasks)
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 4 |
+| Completed | 0 |
+| In Progress | 0 |
+| Pending | 4 |
+| Blocked | 0 |
+| Completion | 0% |
+
+---
+
 ## Acceptance Criteria
 
 ### Definition of Done
@@ -85,6 +120,24 @@ The REVISE band (0.85-0.91) is currently defined independently in multiple strat
 | TC-2 | Zero local REVISE band definitions in templates | [ ] |
 | TC-3 | adv-executor.md specifies CRITICAL finding + halt for malformed templates | [ ] |
 | TC-4 | E2E tests pass (`uv run pytest tests/e2e/`) | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | — | — | Pending |
+
+### Verification Checklist
+
+- [ ] All acceptance criteria verified
+- [ ] All technical criteria verified
+- [ ] Quality gate score >= 0.92
+- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
+- [ ] No regressions introduced
 
 ---
 

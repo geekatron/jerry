@@ -28,9 +28,12 @@ PURPOSE: Complete /adversary skill documentation with tournament mode, decision 
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports parent feature delivery |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Current completion status |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -45,6 +48,17 @@ Complete the /adversary skill documentation by adding tournament mode details, C
 ## Problem Statement
 
 The /adversary SKILL.md and PLAYBOOK.md are missing several operational details identified by the tournament: tournament mode execution order and aggregation, C2/C3 quick decision tree, template-missing fallback behavior alignment between adv-executor.md and SKILL.md, and activation keywords for C2/C3 review scenarios.
+
+---
+
+## Business Value
+
+Completing the /adversary skill documentation supports FEAT-010 by providing operators with the information needed to run tournaments correctly at all criticality levels. Without tournament mode details and C2/C3 decision trees, operators must guess at execution order and strategy selection, leading to inconsistent quality outcomes.
+
+### Features Unlocked
+
+- Enables self-service tournament execution by operators without requiring tribal knowledge
+- Provides clear C2/C3 activation pathways for mid-tier review scenarios
 
 ---
 
@@ -68,6 +82,27 @@ The /adversary SKILL.md and PLAYBOOK.md are missing several operational details 
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
+[░░░░░░░░░░░░░░░░░░░░] 0% (0/4 tasks)
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 4 |
+| Completed | 0 |
+| In Progress | 0 |
+| Pending | 4 |
+| Blocked | 0 |
+| Completion | 0% |
+
+---
+
 ## Acceptance Criteria
 
 ### Definition of Done
@@ -88,6 +123,24 @@ The /adversary SKILL.md and PLAYBOOK.md are missing several operational details 
 | 2 | C2/C3 decision tree uses clear flowchart or table format | [ ] |
 | 3 | adv-executor.md and SKILL.md describe identical fallback behavior | [ ] |
 | 4 | Activation keywords cover common C2/C3 review scenarios | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | — | — | Pending |
+
+### Verification Checklist
+
+- [ ] All acceptance criteria verified
+- [ ] All technical criteria verified
+- [ ] Quality gate score >= 0.92
+- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
+- [ ] No regressions introduced
 
 ---
 

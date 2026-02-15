@@ -27,9 +27,12 @@ PURPOSE: Create E2E tests validating template format compliance, strategy ID con
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports the parent feature |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Progress Summary](#progress-summary) | Completion status and metrics |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [History](#history) | Change log |
 
@@ -59,6 +62,17 @@ Without integration tests, the FEAT-009 adversarial strategy templates system ca
 3. **Missing agent references** -- Agent files (adv-selector, adv-executor, adv-scorer) reference template paths and strategy sets. Without tests, broken references go undetected until runtime, causing agent execution failures.
 4. **Criticality mapping errors** -- The criticality-to-strategy mapping (C1 through C4) is critical to the quality framework. Without tests, mapping errors could cause C4 reviews to miss required strategies or C1 reviews to apply unnecessary strategies.
 5. **Regression risk** -- Future changes to any component (templates, agents, quality-enforcement.md) could break the system without regression tests to detect the breakage.
+
+---
+
+## Business Value
+
+Integration tests provide the automated verification layer (L5 in the enforcement architecture) for the entire FEAT-009 adversarial strategy template system. These tests detect template format drift, strategy ID inconsistency, missing agent references, and criticality mapping errors, ensuring the adversarial review system remains correct as it evolves. Without these tests, regression risk is unmanaged.
+
+### Features Unlocked
+
+- Automated L5 enforcement layer for template format compliance and strategy ID consistency
+- Regression detection for all FEAT-009 artifacts (templates, agents, skill files, criticality mappings)
 
 ---
 
@@ -99,6 +113,29 @@ TASK-004 (criticality mapping) ┘
 
 ---
 
+## Progress Summary
+
+### Status Overview
+
+```
+EN-812 Integration Testing
+[==================================================] 100%
+Status: DONE | All tasks completed | Quality gate PASSED
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | 4 |
+| Completed | 4 |
+| In Progress | 0 |
+| Blocked | 0 |
+| Completion | 100% |
+| Quality Score | >= 0.92 |
+
+---
+
 ## Acceptance Criteria
 
 ### Definition of Done
@@ -127,6 +164,27 @@ TASK-004 (criticality mapping) ┘
 | AC-11 | Criticality test verifies C4 -> all 10 strategies | [ ] |
 | AC-12 | All tests use pytest `e2e` marker | [ ] |
 | AC-13 | Tests run successfully with `uv run pytest` | [ ] |
+
+---
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | E2E Integration Test Suite | `tests/e2e/test_adversary_templates_e2e.py` | Delivered |
+
+### Verification Checklist
+
+- [x] Deliverable file exists at specified path
+- [x] Template format compliance tests cover all 10 strategy templates
+- [x] Strategy ID validation tests compare against quality-enforcement.md SSOT
+- [x] Skill/agent reference tests verify file existence and correct template paths
+- [x] Criticality mapping tests verify C1 through C4 strategy sets
+- [x] All tests pass with `uv run pytest tests/e2e/test_adversary_templates_e2e.py -m e2e`
+- [x] Creator-critic-revision cycle completed (min 3 iterations)
+- [x] Quality score >= 0.92 via S-014 LLM-as-Judge
 
 ---
 

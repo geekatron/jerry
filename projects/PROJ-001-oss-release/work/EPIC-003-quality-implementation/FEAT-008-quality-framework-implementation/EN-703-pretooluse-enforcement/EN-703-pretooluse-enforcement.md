@@ -28,8 +28,10 @@ PURPOSE: Implement L3 Pre-Action Gating enforcement engine with AST-based analys
 |---------|---------|
 | [Summary](#summary) | What this enabler delivers |
 | [Problem Statement](#problem-statement) | Why this work is needed |
+| [Business Value](#business-value) | How this enabler supports the parent feature |
 | [Technical Approach](#technical-approach) | How we'll implement it |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Progress Summary](#progress-summary) | Completion status and metrics |
 | [Evidence](#evidence) | Proof of completion |
 | [Dependencies](#dependencies) | What this depends on |
 | [History](#history) | Change log |
@@ -43,6 +45,15 @@ Implement the L3 Pre-Action Gating enforcement engine. Uses AST-based analysis t
 ## Problem Statement
 
 Currently no deterministic enforcement prevents architectural violations at write-time. The `pre_tool_use.py` hook exists but lacks AST-based enforcement capabilities designed in EPIC-002. Violations of import boundaries, missing type hints, missing docstrings, and multi-class files can only be caught after the fact by CI or manual review. This creates a gap where non-compliant code enters the codebase and must be retroactively fixed, wasting cycles and degrading quality. The PreToolUse hook (V-001) at L3 in the 5-layer architecture is the only layer that can prevent violations before they occur at the tool call level, operating deterministically regardless of LLM context rot.
+
+## Business Value
+
+Delivers deterministic, context-rot-immune enforcement at the tool call level (L3), preventing architectural violations before they enter the codebase. This is the only enforcement layer that can block non-compliant writes in real-time with zero token cost.
+
+### Features Unlocked
+
+- Real-time AST-based import boundary validation (V-038) and one-class-per-file enforcement (V-041)
+- Extensible enforcement engine architecture for future vector additions (V-039, V-040)
 
 ## Technical Approach
 
@@ -61,6 +72,29 @@ Currently no deterministic enforcement prevents architectural violations at writ
 7. **Testing** -- Unit tests for each vector checker in isolation. Integration test for the hook end-to-end with mock tool calls. Verify `uv run pytest` passes.
 
 **Design Source:** EPIC-002 EN-403/TASK-003 (PreToolUse design), EN-402 (priority analysis -- V-038 scored 4.92 WCS, highest priority vector)
+
+## Progress Summary
+
+### Status Overview
+
+```
++------------------------------------------------------------------+
+|                   ENABLER PROGRESS TRACKER                        |
++------------------------------------------------------------------+
+| Tasks:     [████████████████████] 100% (7/7 completed)           |
+| Effort:    [████████████████████] 100% (13/13 points completed)  |
++------------------------------------------------------------------+
+| Overall:   [████████████████████] 100%                            |
++------------------------------------------------------------------+
+```
+
+### Progress Metrics
+
+| Metric | Value |
+|--------|-------|
+| **Total Tasks** | 7 |
+| **Completed Tasks** | 7 |
+| **Completion %** | 100% |
 
 ## Acceptance Criteria
 
@@ -83,7 +117,20 @@ ACs #3 (V-039: type hint enforcement) and #4 (V-040: docstring enforcement) are 
 
 ## Evidence
 
-_No evidence yet. Will be populated during implementation._
+### Deliverables
+
+| Deliverable | Type | Description | Link |
+|-------------|------|-------------|------|
+| PreToolEnforcementEngine | Source Code | Central AST-based enforcement engine class | `src/infrastructure/internal/enforcement/pre_tool_enforcement_engine.py` |
+| EnforcementDecision | Source Code | Enforcement decision value object | `src/infrastructure/internal/enforcement/enforcement_decision.py` |
+| Enhanced pre_tool_use.py | Hook Script | PreToolUse hook with engine integration | `scripts/pre_tool_use.py` |
+| Unit + Integration Tests | Test Suite | 49 enforcement tests (43 unit + 6 integration) | `tests/` |
+
+### Verification Checklist
+
+- [x] All acceptance criteria verified
+- [x] All tasks completed
+- [x] Quality gate passed (>= 0.92)
 
 ## Dependencies
 
