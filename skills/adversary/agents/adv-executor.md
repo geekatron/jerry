@@ -104,15 +104,20 @@ Note: S-014 (LLM-as-Judge) is handled by adv-scorer, not adv-executor.
 <execution_process>
 ## Execution Process
 
-### Step 1: Load Template
+### Step 1: Load and Validate Template
 ```
 Read(file_path="{template_path}")
 ```
+If the template file does not exist, warn the orchestrator and request a corrected path. Do NOT attempt execution without a valid template.
+
 Parse the template to extract:
 - Strategy purpose and focus areas
 - Execution Protocol (step-by-step procedure)
 - Finding classification criteria
 - Output format requirements
+- Finding Prefix from Identity section (Section 1)
+
+Verify the template contains the 8 required sections per TEMPLATE-FORMAT.md. If validation fails, warn the orchestrator.
 
 ### Step 2: Load Deliverable
 ```
@@ -136,30 +141,34 @@ Follow the template's Execution Protocol section step-by-step:
 
 ### Step 5: Generate Finding Identifiers
 
-Use strategy-specific identifier format:
-```
-{STRATEGY-PREFIX}-{SEVERITY-CODE}-{SEQUENCE}
+Use the strategy-specific finding prefix defined in each template's Section 1 (Identity Card), with sequential numbering:
 
-Examples:
-  RT-C-001  (Red Team, Critical, #1)
-  DA-M-002  (Devil's Advocate, Major, #2)
-  SM-m-001  (Steelman, Minor, #1)
-  PM-C-001  (Pre-Mortem, Critical, #1)
-  CA-M-001  (Constitutional AI, Major, #1)
-  SR-m-001  (Self-Refine, Minor, #1)
-  CV-M-001  (Chain-of-Verification, Major, #1)
-  FM-C-001  (FMEA, Critical, #1)
-  IV-M-001  (Inversion, Major, #1)
+```
+{FINDING-PREFIX}-{SEQUENCE}
+
+Prefixes (from templates):
+  RT-001  (S-001 Red Team)
+  DA-001  (S-002 Devil's Advocate)
+  SM-001  (S-003 Steelman)
+  PM-001  (S-004 Pre-Mortem)
+  CC-001  (S-007 Constitutional AI)
+  SR-001  (S-010 Self-Refine)
+  CV-001  (S-011 Chain-of-Verification)
+  FM-001  (S-012 FMEA)
+  IN-001  (S-013 Inversion)
+  LJ-001  (S-014 LLM-as-Judge — handled by adv-scorer, listed for reference)
 ```
 
-Severity codes: C=Critical, M=Major, m=Minor
+Severity is tracked in the finding detail block, not in the identifier.
+
+**IMPORTANT:** Always read the Finding Prefix from the loaded template's Identity section (Section 1). The list above is a reference guide — the template's own prefix is authoritative.
 
 ### Step 6: Self-Review Before Persistence (H-15)
 
 Per H-15, before persisting the execution report, verify:
 1. All findings have specific evidence from the deliverable (no vague findings)
 2. Severity classifications are justified (Critical/Major/Minor criteria met)
-3. Finding identifiers follow the correct format ({PREFIX}-{SEVERITY}-{SEQ})
+3. Finding identifiers follow the template's prefix format ({PREFIX}-{NNN})
 4. Report is internally consistent (summary table matches detailed findings)
 5. No findings were omitted or minimized (P-022)
 

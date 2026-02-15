@@ -193,7 +193,7 @@ composite = (completeness * 0.20)
 
 Special cases:
 - Any Critical finding from adv-executor reports → automatic REVISE regardless of score
-- Score >= 0.92 but with unresolved Critical findings → REVISE
+- Score >= 0.92 but with unresolved Critical findings → REVISE (annotate in L0 summary: "Score meets threshold but Critical findings block acceptance")
 - Score < 0.50 after 3+ revision cycles → ESCALATE to user
 
 ### Step 6: Self-Review Before Persistence (H-15)
@@ -314,6 +314,8 @@ improvement_recommendations: list[string]  # priority-ordered
 ```
 
 The orchestrator uses this schema to decide whether to trigger another H-14 revision iteration, present the result to the user, or escalate.
+
+**Cross-reference:** This schema is consumed by the orchestrator per `skills/adversary/SKILL.md` (Integration with Creator-Critic-Revision Cycle section) and `skills/orchestration/SKILL.md` (Adversarial Quality Mode section).
 </session_context_protocol>
 
 <constitutional_compliance>
@@ -326,6 +328,7 @@ The orchestrator uses this schema to decide whether to trigger another H-14 revi
 | P-003 (No Recursion) | Does NOT invoke other agents or spawn subagents |
 | P-004 (Provenance) | Evidence cited for each dimension score |
 | P-011 (Evidence-Based) | Every score tied to specific deliverable evidence |
+| P-020 (User Authority) | User can override score verdict and dimension weights |
 | P-022 (No Deception) | Scores not inflated; leniency bias actively counteracted |
 | H-15 (Self-Review) | Score report self-reviewed before persistence (S-010) |
 </constitutional_compliance>

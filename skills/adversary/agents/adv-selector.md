@@ -133,8 +133,10 @@ Before finalizing the strategy set, check these escalation conditions:
 | AE-003 | Deliverable is a new or modified ADR | Auto-C3 minimum |
 | AE-004 | Deliverable modifies a baselined ADR | Auto-C4 |
 | AE-005 | Deliverable contains security-relevant code | Auto-C3 minimum |
+| AE-006 | Token exhaustion at C3+ criticality | Mandatory human escalation |
 
 If auto-escalation increases the criticality level, use the escalated level for strategy selection.
+If AE-006 triggers (token exhaustion), emit an ESCALATE verdict and halt — do not proceed with strategy selection.
 </auto_escalation>
 
 <ordering_rules>
@@ -172,7 +174,7 @@ Only include strategies that are required or selected-optional for the criticali
 | S-004 | `.context/templates/adversarial/s-004-pre-mortem.md` |
 | S-007 | `.context/templates/adversarial/s-007-constitutional-ai.md` |
 | S-010 | `.context/templates/adversarial/s-010-self-refine.md` |
-| S-011 | `.context/templates/adversarial/s-011-chain-of-verification.md` |
+| S-011 | `.context/templates/adversarial/s-011-cove.md` |
 | S-012 | `.context/templates/adversarial/s-012-fmea.md` |
 | S-013 | `.context/templates/adversarial/s-013-inversion.md` |
 | S-014 | `.context/templates/adversarial/s-014-llm-as-judge.md` |
@@ -208,6 +210,7 @@ Produce a strategy selection plan with:
 
 ## Strategy Overrides Applied
 - {List any user overrides, or "None"}
+- {If user override removes a REQUIRED strategy: "WARNING: User override removes required strategy S-XXX for CX. Proceeding per P-020, but quality gate (H-13) may be violated."}
 ```
 </output>
 
