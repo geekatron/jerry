@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** CRITICAL
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -37,9 +37,9 @@ This is the single most important fix in EN-820 -- without this `@` import, the 
 
 ### Acceptance Criteria
 
-- [ ] SKILL.md contains two `@` imports (behavior-rules and templates)
-- [ ] `/worktracker` invocation loads template rules into agent context
-- [ ] No existing functionality is broken by the addition
+- [x] SKILL.md contains two `@` imports (behavior-rules and templates)
+- [x] `/worktracker` invocation loads template rules into agent context
+- [x] No existing functionality is broken by the addition
 
 ### Implementation Notes
 
@@ -72,13 +72,13 @@ Single line addition. File: `skills/worktracker/SKILL.md`, location: after line 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | Unpopulated (BACKLOG status) |
+| SKILL.md @import | Code change | `skills/worktracker/SKILL.md` line 67 |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] SKILL.md contains `@rules/worktracker-templates.md` import
-- [ ] Reviewed by: --
+- [x] Acceptance criteria verified
+- [x] SKILL.md contains `@rules/worktracker-templates.md` import
+- [x] Reviewed by: Claude (adversarial C3 cycle, 0.941 PASS)
 
 ---
 
@@ -87,3 +87,4 @@ Single line addition. File: `skills/worktracker/SKILL.md`, location: after line 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-15 | Created | Initial creation. Part of EN-820 behavioral root cause fix. |
+| 2026-02-15 | DONE | Implemented. Commit 1b98ecc. Adversarial gate PASS 0.941. |

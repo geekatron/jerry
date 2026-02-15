@@ -15,7 +15,7 @@ EXTENDS: StrategicItem -> WorkItem
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** IN_PROGRESS
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-15
@@ -83,9 +83,9 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | `@rules/worktracker-templates.md` imported in SKILL.md | [ ] |
-| AC-2 | WTI-007 (Mandatory Template Usage) defined in behavior-rules.md | [ ] |
-| AC-3 | Orchestration skill references worktracker templates | [ ] |
+| AC-1 | `@rules/worktracker-templates.md` imported in SKILL.md | [x] |
+| AC-2 | WTI-007 (Mandatory Template Usage) defined in behavior-rules.md | [x] |
+| AC-3 | Orchestration skill references worktracker templates | [x] |
 | AC-4 | All 30 enabler files have Business Value section | [ ] |
 | AC-5 | All 30 enabler files have Progress Summary section | [ ] |
 | AC-6 | All 30 enabler files have Evidence section (even if unpopulated for pending items) | [ ] |
@@ -108,7 +108,7 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| EN-820 | Enabler | Fix Behavioral Root Cause | pending | critical | 3 |
+| EN-820 | Enabler | Fix Behavioral Root Cause | DONE | critical | 3 |
 | EN-821 | Enabler | Remediate EPIC & FEATURE Entity Files | pending | high | 5 |
 | EN-822 | Enabler | Remediate ENABLER Entity Files | pending | high | 8 |
 | EN-823 | Enabler | Remediate TASK Entity Files | pending | high | 8 |
@@ -130,11 +130,11 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/4 completed)              |
-| Tasks:     [....................] 0% (0/15 completed)             |
-| Effort:    [....................] 0% (0/24 points)                |
+| Enablers:  [█████...............] 25% (1/4 completed)            |
+| Tasks:     [█████...............] 27% (4/15 completed)           |
+| Effort:    [██..................] 13% (3/24 points)               |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [████................] 21%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -143,12 +143,12 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 4 |
-| **Completed Enablers** | 0 |
+| **Completed Enablers** | 1 |
 | **Total Tasks** | 15 |
-| **Completed Tasks** | 0 |
+| **Completed Tasks** | 4 |
 | **Total Effort (points)** | 24 |
-| **Completed Effort** | 0 |
-| **Completion %** | 0% |
+| **Completed Effort** | 3 |
+| **Completion %** | 21% |
 
 ### Sprint Tracking
 
@@ -182,3 +182,4 @@ Remediate worktracker template non-compliance discovered in DISC-001. All 64+ en
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-15 | Claude | pending | Feature created. Source: DISC-001 template compliance audit. 4 enablers, 15 tasks, 24 effort points. |
+| 2026-02-15 | Claude | IN_PROGRESS | EN-820 DONE (0.941 PASS). Category A behavioral root cause fixed. Starting Category B. |

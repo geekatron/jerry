@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -37,10 +37,10 @@ This ensures that every orchestration plan document generated from the template 
 
 ### Acceptance Criteria
 
-- [ ] Orchestration plan template includes a "Worktracker Entity Templates" note or section
-- [ ] Note specifies the canonical template location: `.context/templates/worktracker/`
-- [ ] Note uses MUST language (HARD enforcement) for template usage
-- [ ] Note integrates naturally with the existing template structure
+- [x] Orchestration plan template includes a "Worktracker Entity Templates" note or section
+- [x] Note specifies the canonical template location: `.context/templates/worktracker/`
+- [x] Note uses MUST language (HARD enforcement) for template usage
+- [x] Note integrates naturally with the existing template structure (Section 7.1.1)
 
 ### Implementation Notes
 
@@ -71,13 +71,13 @@ File: `skills/orchestration/templates/ORCHESTRATION_PLAN.template.md`. Add a not
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | Unpopulated (BACKLOG status) |
+| Section 7.1.1 | Code change | `skills/orchestration/templates/ORCHESTRATION_PLAN.template.md` |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Note follows existing template formatting conventions
-- [ ] Reviewed by: --
+- [x] Acceptance criteria verified
+- [x] Note follows existing template formatting conventions
+- [x] Reviewed by: Claude (adversarial C3 cycle, 0.941 PASS)
 
 ---
 
@@ -86,3 +86,4 @@ File: `skills/orchestration/templates/ORCHESTRATION_PLAN.template.md`. Add a not
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-15 | Created | Initial creation. Part of EN-820 orchestration integration. |
+| 2026-02-15 | DONE | Added Section 7.1.1 + orch-planner must constraint. Commit 1b98ecc. |

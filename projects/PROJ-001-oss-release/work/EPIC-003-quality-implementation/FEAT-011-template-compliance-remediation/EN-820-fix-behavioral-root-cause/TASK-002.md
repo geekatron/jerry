@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** CRITICAL
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -41,11 +41,11 @@ The rule ensures that agents always consult the canonical template before creati
 
 ### Acceptance Criteria
 
-- [ ] WTI-007 rule exists in behavior-rules.md with HARD enforcement level
-- [ ] Rule includes entity-to-template mapping table (EPIC, FEATURE, ENABLER, TASK, etc.)
-- [ ] Rule includes Read-template-first procedural steps
-- [ ] Rule includes anti-pattern section warning against creating from memory
-- [ ] Rule integrates naturally with existing WTI-001 through WTI-006 rules
+- [x] WTI-007 rule exists in behavior-rules.md with HARD enforcement level
+- [x] Rule includes entity-to-template mapping table (10 types including Impediment/Spike)
+- [x] Rule includes Read-template-first procedural steps
+- [x] Rule includes anti-pattern section warning against creating from memory
+- [x] Rule integrates naturally with existing WTI-001 through WTI-006 rules
 
 ### Implementation Notes
 
@@ -81,13 +81,14 @@ The WTI-007 rule should follow the same formatting pattern as existing WTI rules
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | Unpopulated (BACKLOG status) |
+| WTI-007 rule | Code change | `skills/worktracker/rules/worktracker-behavior-rules.md` |
+| WTI-007 canonical | Code change | `.context/templates/worktracker/WTI_RULES.md` |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] WTI-007 rule follows existing WTI rule formatting conventions
-- [ ] Reviewed by: --
+- [x] Acceptance criteria verified
+- [x] WTI-007 rule follows existing WTI rule formatting conventions
+- [x] Reviewed by: Claude (adversarial C3 cycle, 0.941 PASS)
 
 ---
 
@@ -96,3 +97,4 @@ The WTI-007 rule should follow the same formatting pattern as existing WTI rules
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-15 | Created | Initial creation. Part of EN-820 behavioral root cause fix. |
+| 2026-02-15 | DONE | Implemented with 10 entity types, section categories. Commit 1b98ecc. |

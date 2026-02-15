@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -37,9 +37,9 @@ Orchestration workflows frequently create worktracker entity files (enablers, ta
 
 ### Acceptance Criteria
 
-- [ ] Constitutional Compliance table in orchestration SKILL.md includes a WTI-007 row
-- [ ] Row correctly references worktracker template compliance requirement
-- [ ] Row specifies when the rule applies (entity file creation during orchestration)
+- [x] Constitutional Compliance table in orchestration SKILL.md includes a WTI-007 row
+- [x] Row correctly references worktracker template compliance requirement
+- [x] Row specifies when the rule applies (entity file creation during orchestration)
 
 ### Implementation Notes
 
@@ -70,13 +70,13 @@ File: `skills/orchestration/SKILL.md`, location: Constitutional Compliance table
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| -- | -- | Unpopulated (BACKLOG status) |
+| WTI-007 compliance row | Code change | `skills/orchestration/SKILL.md` Constitutional Compliance table |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Row follows existing Constitutional Compliance table formatting
-- [ ] Reviewed by: --
+- [x] Acceptance criteria verified
+- [x] Row follows existing Constitutional Compliance table formatting
+- [x] Reviewed by: Claude (adversarial C3 cycle, 0.941 PASS)
 
 ---
 
@@ -85,3 +85,4 @@ File: `skills/orchestration/SKILL.md`, location: Constitutional Compliance table
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-15 | Created | Initial creation. Part of EN-820 orchestration integration. |
+| 2026-02-15 | DONE | Implemented. Commit 1b98ecc. |
