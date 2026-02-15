@@ -2,7 +2,7 @@
 
 <!--
 TEMPLATE: Adversarial Strategy Execution Template Format
-VERSION: 1.0.0 | DATE: 2026-02-14
+VERSION: 1.1.0 | DATE: 2026-02-15
 SOURCE: EPIC-003 Quality Framework, quality-enforcement.md SSOT
 ENABLER: EN-801 (Template Format Standard)
 STATUS: ACTIVE
@@ -14,8 +14,8 @@ All 10 selected strategy templates (S-001 through S-014) are validated against t
 
 > **Type:** template-format
 > **Status:** ACTIVE
-> **Version:** 1.0.0
-> **Date:** 2026-02-14
+> **Version:** 1.1.0
+> **Date:** 2026-02-15
 > **Source:** quality-enforcement.md SSOT, ADR-EPIC002-001, ADR-EPIC002-002
 > **Enabler:** EN-801
 
@@ -37,6 +37,7 @@ All 10 selected strategy templates (S-001 through S-014) are validated against t
 | [Section 8: Integration](#section-8-integration) | Cross-strategy pairing and criticality mapping |
 | [Validation Checklist](#validation-checklist) | Compliance verification for templates |
 | [Constants Reference](#constants-reference) | Authoritative values from quality-enforcement.md |
+| [Template Instantiation Guide](#template-instantiation-guide) | Instantiation rules, validation, maintenance, traceability |
 
 ---
 
@@ -51,6 +52,18 @@ This document defines the **canonical format** for all adversarial strategy exec
 **File naming:** `.context/templates/adversarial/{S-NNN}-{strategy-slug}.md`
 
 **Target length per template:** 200-400 lines.
+
+### Versioning Protocol
+
+This format document and all strategy templates use semantic versioning (MAJOR.MINOR.PATCH).
+
+| Change Type | Version Bump | Examples | Re-validation |
+|-------------|-------------|---------|---------------|
+| Breaking structural change | MAJOR | New required section added, section removed, required field removed | All templates MUST be re-validated and updated within one development cycle |
+| Additive or clarifying change | MINOR | New optional field, expanded guidance, new examples | Templates SHOULD be reviewed; no mandatory re-validation |
+| Typo or formatting fix | PATCH | Spelling corrections, table alignment, link fixes | No re-validation required |
+
+**Format-to-template compatibility:** Each strategy template MUST declare in its Identity section which format version it conforms to. When this format document increments its MAJOR version, all templates with a lower MAJOR version are considered non-conformant until updated.
 
 ---
 
@@ -70,6 +83,8 @@ This document defines the **canonical format** for all adversarial strategy exec
 | S-001 | Red Team Analysis | 3.35 | Role-Based Adversarialism | RT-NNN |
 
 Each strategy uses a unique 2-letter **Finding Prefix** for its findings (e.g., DA-001). Templates MUST define their prefix in Section 1.
+
+**Excluded strategies:** 5 strategies were excluded from the catalog (S-005, S-006, S-008, S-009, S-015) per ADR-EPIC002-001. No templates are required for excluded strategies. See quality-enforcement.md Strategy Catalog for exclusion rationale and reconsideration conditions.
 
 ---
 
@@ -199,13 +214,19 @@ Each finding MUST include: specific reference to location in the deliverable, qu
 
 Every template MUST include a rubric for meta-evaluating the strategy execution quality.
 
-### Threshold Bands (from quality-enforcement.md, MUST NOT be redefined)
+### Threshold Bands
+
+**SSOT threshold (from quality-enforcement.md, MUST NOT be redefined):** >= 0.92 weighted composite score. Below threshold = REJECTED; revision required per H-13.
+
+**Operational bands (template-specific subdivision for workflow guidance):**
 
 | Band | Score Range | Outcome |
 |------|------------|---------|
 | PASS | >= 0.92 | Strategy execution accepted |
-| REVISE | 0.85 - 0.91 | Strategy execution requires improvement |
-| ESCALATE | < 0.85 | Strategy execution inadequate; escalate |
+| REVISE | 0.85 - 0.91 | Strategy execution requires targeted revision; close to threshold |
+| REJECTED | < 0.85 | Strategy execution inadequate; significant rework required (H-13) |
+
+> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band is a template-specific operational category (not sourced from quality-enforcement.md) to distinguish near-threshold deliverables from those requiring significant rework. Both REVISE and REJECTED trigger the revision cycle per H-13.
 
 ### Dimension Weights (from quality-enforcement.md, MUST NOT be redefined)
 
@@ -233,6 +254,12 @@ Every template MUST include at least one concrete example with:
 3. **Strategy Execution:** Key steps applied to the example
 4. **Findings:** Example findings using the strategy-specific identifiers and the standard findings table format
 5. **After:** How the deliverable improved based on findings
+
+**Minimum quality bar for examples:**
+- Examples MUST demonstrate a C2 or higher criticality scenario (to show meaningful strategy application)
+- The example MUST produce at least one finding of Major severity or above
+- Before/After content MUST be substantive enough to show a measurable quality improvement (not trivial edits)
+- Example length SHOULD be 40-100 lines to provide sufficient detail without excessive bulk
 
 ---
 
@@ -316,6 +343,12 @@ All values sourced from `.context/rules/quality-enforcement.md`. MUST NOT be red
 | C3 | Significant | C2 + S-004, S-012, S-013 | S-001, S-003, S-010, S-011 |
 | C4 | Critical | All 10 selected | None |
 
+### Relevant Auto-Escalation Rules
+
+| ID | Condition | Relevance to Templates |
+|----|-----------|------------------------|
+| AE-002 | Touches `.context/rules/` or `.context/templates/` | Changes to this format or any strategy template require C3+ review |
+
 ### Relevant HARD Rules
 
 | ID | Rule | Relevance to Templates |
@@ -326,30 +359,46 @@ All values sourced from `.context/rules/quality-enforcement.md`. MUST NOT be red
 | H-16 | Steelman before critique (S-003) | Ordering constraint for S-002, S-004, S-001 |
 | H-17 | Quality scoring REQUIRED for deliverables | Output Format scoring impact |
 | H-18 | Constitutional compliance check (S-007) | S-007 template applicability |
+| H-19 | Governance escalation per AE rules | AE-002 applies to template changes |
 
 ---
 
-<!--
-TEMPLATE NOTES:
+## Template Instantiation Guide
 
-1. INSTANTIATION: Each strategy template replaces {{PLACEHOLDER}} values.
-   Strategy-specific content fills the Execution Protocol and Examples.
-   Constants (weights, thresholds, criticality sets) are NEVER modified.
-   Finding prefixes are assigned in the Strategy Catalog Reference above.
+### Instantiation Rules
 
-2. VALIDATION: Use the Validation Checklist to verify compliance.
-   Templates failing validation MUST be revised. Validation is part of
-   the creator-critic-revision cycle (H-14).
+Each strategy template is created by instantiating this format:
 
-3. MAINTENANCE: This format is versioned; changes require C3+ review
-   (AE-002 applies). quality-enforcement.md is the SSOT.
+1. Replace all `{{PLACEHOLDER}}` values with strategy-specific content
+2. **Strategy-specific sections:** Execution Protocol (Section 4) and Examples (Section 7) contain the bulk of strategy-unique content
+3. **Immutable constants:** Weights, thresholds, criticality sets, and scoring dimensions are sourced from quality-enforcement.md and MUST NOT be modified during instantiation
+4. **Finding prefixes:** Assigned in the Strategy Catalog Reference above; each template MUST use its designated prefix
 
-4. TRACEABILITY:
-   - EN-801: This document (Template Format Standard)
-   - EN-803 through EN-809: Individual strategy templates
-   - quality-enforcement.md: SSOT for all constants
-   - ADR-EPIC002-001: Strategy selection and composite scores
-   - ADR-EPIC002-002: Enforcement architecture
+### Validation Process
 
-VERSION: 1.0.0 | CREATED: 2026-02-14 | ENABLER: EN-801
--->
+- Use the Validation Checklist to verify compliance before presenting any template
+- Templates failing validation MUST be revised before acceptance
+- Template validation is part of the creator-critic-revision cycle (H-14): templates are subject to the same 3-iteration minimum as other C2+ deliverables
+
+### Maintenance
+
+- This format document is versioned per the Versioning Protocol above
+- Changes to this format or any strategy template require **C3+ review** (AE-002 applies: touches `.context/templates/`)
+- `quality-enforcement.md` remains the SSOT for all quality constants
+
+### Traceability Map
+
+| Enabler | Deliverable |
+|---------|-------------|
+| EN-801 | This document (Template Format Standard) |
+| EN-803 -- EN-809 | Individual strategy templates |
+
+| Source Document | Content |
+|-----------------|---------|
+| quality-enforcement.md | SSOT for all constants (thresholds, weights, criticality levels, strategy catalog) |
+| ADR-EPIC002-001 | Strategy selection, composite scores, exclusion rationale |
+| ADR-EPIC002-002 | 5-layer enforcement architecture, token budgets |
+
+---
+
+<!-- TEMPLATE NOTES: See "Template Instantiation Guide" section for operational guidance. VERSION: 1.1.0 | CREATED: 2026-02-14 | REVISED: 2026-02-15 | ENABLER: EN-801 -->

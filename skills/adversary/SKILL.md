@@ -30,8 +30,8 @@ This SKILL.md serves multiple audiences:
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
 | **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
-| **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Available Agents](#available-agents), [Adversarial Quality Mode](#adversarial-quality-mode) |
-| **L2 (Architect)** | Workflow designers | [P-003 Compliance](#p-003-compliance), [Constitutional Compliance](#constitutional-compliance), [Strategy Templates](#strategy-templates) |
+| **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Available Agents](#available-agents), [Dependencies](#dependencies--prerequisites), [Adversarial Quality Mode](#adversarial-quality-mode) |
+| **L2 (Architect)** | Workflow designers | [P-003 Compliance](#p-003-compliance), [H-14 Integration](#integration-with-creator-critic-revision-cycle-h-14), [Constitutional Compliance](#constitutional-compliance), [Strategy Templates](#strategy-templates) |
 
 ---
 
@@ -65,6 +65,19 @@ Activate when:
 - You need a creator-critic-revision loop (use `/problem-solving` with ps-critic instead)
 - You need code review or defect detection (use ps-reviewer)
 - You need constraint validation (use ps-validator)
+
+### Relationship to ps-critic
+
+The adv-scorer and ps-critic agents share the same S-014 LLM-as-Judge rubric and 6-dimension weighted composite scoring methodology. They serve different workflow positions:
+
+| Aspect | adv-scorer | ps-critic |
+|--------|-----------|-----------|
+| **Workflow** | Standalone/on-demand scoring | Embedded in creator-critic-revision loops |
+| **Output** | Focused score report with L0 summary | L0/L1/L2 multi-level critique report |
+| **Iteration** | May be invoked once or re-invoked for re-scoring | Iterates within the H-14 cycle |
+| **Invocation** | Via `/adversary` skill | Via `/problem-solving` skill |
+
+Both agents produce comparable scores from the same rubric; the choice depends on whether you need standalone assessment (adv-scorer) or iterative critique with revision guidance (ps-critic).
 
 ---
 
@@ -157,6 +170,35 @@ Select the strategy set for C3 criticality per SSOT.
 
 ---
 
+## Dependencies / Prerequisites
+
+The adversary skill depends on external artifacts created by other enablers. These MUST be in place before the skill is fully operational.
+
+### Strategy Template Files
+
+All 10 strategy templates in `.context/templates/adversarial/` are created by separate enablers:
+
+| Template | Source Enabler | Status |
+|----------|---------------|--------|
+| `s-001-red-team.md` | EN-803 | Created by EN-803 |
+| `s-002-devils-advocate.md` | EN-804 | Created by EN-804 |
+| `s-003-steelman.md` | EN-805 | Created by EN-805 |
+| `s-004-pre-mortem.md` | EN-806 | Created by EN-806 |
+| `s-007-constitutional-ai.md` | EN-807 | Created by EN-807 |
+| `s-010-self-refine.md` | EN-808 | Created by EN-808 |
+| `s-011-chain-of-verification.md` | EN-809 | Created by EN-809 |
+| `s-012-fmea.md` | EN-810 | Created by EN-810 |
+| `s-013-inversion.md` | EN-811 | Created by EN-811 |
+| `s-014-llm-as-judge.md` | EN-812 | Created by EN-812 |
+
+**Fallback behavior:** If a template file is not found, adv-executor SHOULD warn the orchestrator and request the template path or skip the strategy. The skill skeleton (EN-802) defines the structure; the template enablers populate the content.
+
+### SSOT File
+
+- `.context/rules/quality-enforcement.md` -- MUST exist. All thresholds, strategy IDs, criticality levels, and quality dimensions are sourced from here.
+
+---
+
 ## Adversarial Quality Mode
 
 > **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, criticality levels, and quality dimensions are defined there. NEVER hardcode values; always reference the SSOT.
@@ -220,6 +262,19 @@ The SSOT defines 6 quality dimensions with weights:
 **Threshold:** >= 0.92 weighted composite for C2+ deliverables (H-13)
 
 **Leniency bias counteraction:** Score strictly against rubric criteria. When uncertain between adjacent scores, choose the lower one.
+
+---
+
+## Integration with Creator-Critic-Revision Cycle (H-14)
+
+H-14 mandates a minimum 3-iteration creator-critic-revision cycle for C2+ deliverables. The adversary skill is **not** a revision loop manager -- it provides standalone adversarial assessment. The integration boundary is:
+
+1. **adv-scorer produces the quality score.** When invoked, adv-scorer evaluates the deliverable and returns a PASS/REVISE/ESCALATE verdict.
+2. **If REVISE, the orchestrator feeds findings back to the creator agent.** The adversary skill's findings (from adv-executor) and score breakdown (from adv-scorer) provide actionable input for the next revision iteration.
+3. **The adversary skill can be re-invoked for re-scoring.** After the creator revises, the orchestrator may invoke adv-scorer again (with the `Prior Score` context field) to track improvement across iterations.
+4. **Minimum 3 iterations are the orchestrator's responsibility.** The adversary skill does not enforce iteration count -- it scores when asked. The orchestrator (or `/orchestration` skill) tracks the iteration count per H-14.
+
+**Workflow position:** The adversary skill sits at the "critic" position within the H-14 cycle when used for quality scoring. It can replace or complement ps-critic depending on whether the orchestrator needs standalone scoring (adv-scorer) or iterative critique (ps-critic).
 
 ---
 

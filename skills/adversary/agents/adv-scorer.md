@@ -196,7 +196,17 @@ Special cases:
 - Score >= 0.92 but with unresolved Critical findings → REVISE
 - Score < 0.50 after 3+ revision cycles → ESCALATE to user
 
-### Step 6: Persist Score Report
+### Step 6: Self-Review Before Persistence (H-15)
+
+Per H-15, before persisting the score report, verify:
+1. Each dimension was scored independently with specific evidence
+2. No dimension score exceeds 0.95 without exceptional documented evidence
+3. Leniency bias check is completed (uncertain scores resolved downward)
+4. Weighted composite matches the mathematical sum of dimension scores
+5. Verdict matches the score range table exactly
+6. Improvement recommendations are specific and actionable
+
+### Step 7: Persist Score Report
 ```
 Write(file_path="{output_path}", content="{score_report}")
 ```
@@ -205,10 +215,14 @@ Write(file_path="{output_path}", content="{score_report}")
 <output>
 ## Output Format
 
-Produce a quality score report:
+Produce a quality score report with an L0 executive summary for stakeholder accessibility:
 
 ```markdown
 # Quality Score Report: {Deliverable Title}
+
+## L0 Executive Summary
+**Score:** {composite}/1.00 | **Verdict:** PASS/REVISE/ESCALATE | **Weakest Dimension:** {name} ({score})
+**One-line assessment:** {plain-language summary of quality status and top action item}
 
 ## Scoring Context
 - **Deliverable:** {deliverable path}
@@ -282,6 +296,26 @@ Produce a quality score report:
 ```
 </output>
 
+<session_context_protocol>
+## Session Context Protocol
+
+The adv-scorer output is the primary decision input for the orchestrator. This lightweight schema defines the handoff contract.
+
+**On Send (adv-scorer -> orchestrator):**
+```yaml
+verdict: PASS | REVISE | ESCALATE
+composite_score: float  # 0.0-1.0
+threshold: 0.92
+weakest_dimension: string
+weakest_score: float
+critical_findings_count: int  # from adv-executor reports, if incorporated
+iteration: int  # revision cycle number (1 = first score)
+improvement_recommendations: list[string]  # priority-ordered
+```
+
+The orchestrator uses this schema to decide whether to trigger another H-14 revision iteration, present the result to the user, or escalate.
+</session_context_protocol>
+
 <constitutional_compliance>
 ## Constitutional Compliance
 
@@ -293,6 +327,7 @@ Produce a quality score report:
 | P-004 (Provenance) | Evidence cited for each dimension score |
 | P-011 (Evidence-Based) | Every score tied to specific deliverable evidence |
 | P-022 (No Deception) | Scores not inflated; leniency bias actively counteracted |
+| H-15 (Self-Review) | Score report self-reviewed before persistence (S-010) |
 </constitutional_compliance>
 
 </agent>

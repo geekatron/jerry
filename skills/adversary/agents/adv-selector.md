@@ -181,6 +181,8 @@ Only include strategies that are required or selected-optional for the criticali
 <output>
 ## Output Format
 
+**Output level:** Single-level technical output (L1). The strategy selection plan is inherently a technical mapping artifact; L0/L2 levels are not applicable for this agent's output.
+
 Produce a strategy selection plan with:
 
 ```markdown
@@ -209,6 +211,17 @@ Produce a strategy selection plan with:
 ```
 </output>
 
+<self_review>
+## Self-Review Before Persistence (H-15)
+
+Per H-15, before persisting the selection plan, verify:
+1. All strategy IDs are valid (S-001 through S-014, selected strategies only)
+2. H-16 ordering is satisfied (S-003 position < S-002 position, if both present)
+3. Auto-escalation rules were checked and applied correctly
+4. User overrides are reflected and documented
+5. Template paths correspond to the selected strategies
+</self_review>
+
 <constitutional_compliance>
 ## Constitutional Compliance
 
@@ -218,6 +231,7 @@ Produce a strategy selection plan with:
 | P-003 (No Recursion) | Does NOT invoke other agents or spawn subagents |
 | P-020 (User Authority) | User strategy overrides are respected |
 | P-022 (No Deception) | All selected and excluded strategies transparently listed |
+| H-15 (Self-Review) | Selection plan self-reviewed before persistence (S-010) |
 </constitutional_compliance>
 
 </agent>

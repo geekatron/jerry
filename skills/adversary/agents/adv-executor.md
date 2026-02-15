@@ -154,7 +154,16 @@ Examples:
 
 Severity codes: C=Critical, M=Major, m=Minor
 
-### Step 6: Persist Execution Report
+### Step 6: Self-Review Before Persistence (H-15)
+
+Per H-15, before persisting the execution report, verify:
+1. All findings have specific evidence from the deliverable (no vague findings)
+2. Severity classifications are justified (Critical/Major/Minor criteria met)
+3. Finding identifiers follow the correct format ({PREFIX}-{SEVERITY}-{SEQ})
+4. Report is internally consistent (summary table matches detailed findings)
+5. No findings were omitted or minimized (P-022)
+
+### Step 7: Persist Execution Report
 ```
 Write(file_path="{output_path}", content="{report}")
 ```
@@ -162,6 +171,8 @@ Write(file_path="{output_path}", content="{report}")
 
 <output>
 ## Output Format
+
+**Output level:** Single-level technical output (L1). Strategy execution reports are inherently technical finding logs; L0/L2 levels are not applicable for this agent's output. The adv-scorer agent provides L0 executive summaries for stakeholder consumption.
 
 Produce a strategy execution report:
 
@@ -221,6 +232,7 @@ Produce a strategy execution report:
 | P-004 (Provenance) | Strategy ID, template path, and evidence cited for every finding |
 | P-011 (Evidence-Based) | Every finding includes direct evidence from the deliverable |
 | P-022 (No Deception) | Findings honestly reported; severity not minimized or inflated |
+| H-15 (Self-Review) | Execution report self-reviewed before persistence (S-010) |
 </constitutional_compliance>
 
 </agent>

@@ -29,6 +29,7 @@ agents_covered:
 | [Procedure 2: Score with S-014](#procedure-2-score-a-deliverable-with-s-014-llm-as-judge) | Focused quality scoring |
 | [Procedure 3: Devil's Advocate + Steelman](#procedure-3-run-devils-advocate--steelman-pairing) | Canonical pairing per H-16 |
 | [Procedure 4: Full C4 Tournament](#procedure-4-full-c4-tournament-review) | All 10 strategies tournament |
+| [Error Handling](#error-handling) | Failure scenarios and recovery |
 | [Agent Orchestration Patterns](#agent-orchestration-patterns) | How to sequence agents |
 | [Quick Reference Card](#quick-reference-card) | Summary table |
 
@@ -97,16 +98,35 @@ Prerequisites:
   - Criticality confirmed as C2 (reversible in 1 day, 3-10 files)
   - Auto-escalation checks passed (not auto-C3/C4)
 
-Step 1: Strategy Selection
+Step 1: Strategy Selection (with optional user overrides)
   Agent: adv-selector
-  Input: Criticality=C2, deliverable type, deliverable path
+  Input: Criticality=C2, deliverable type, deliverable path,
+         strategy overrides (if any — user-specified additions/removals)
   Output: Ordered strategy list with template paths
 
-  Expected output:
+  Expected output (default):
     1. S-003 (Steelman) — optional but RECOMMENDED per H-16
     2. S-007 (Constitutional AI Critique) — required
     3. S-002 (Devil's Advocate) — required
     4. S-014 (LLM-as-Judge) — required (always last for scoring)
+
+  User Override Example:
+    User says: "Add S-004 Pre-Mortem and skip S-003 Steelman"
+    adv-selector receives: Strategy Overrides = "+S-004, -S-003"
+    adv-selector produces:
+      1. S-007 (Constitutional AI Critique) — required
+      2. S-002 (Devil's Advocate) — required
+      3. S-004 (Pre-Mortem Analysis) — user-added
+      4. S-014 (LLM-as-Judge) — required (always last)
+    Note: S-003 removal means H-16 ordering constraint is N/A.
+    Strategy Overrides Applied: "+S-004 (user), -S-003 (user)"
+
+  Override Limits (P-020 respected, HARD rules preserved):
+    - User CANNOT remove S-014 from C2+ reviews (H-13 requires scoring)
+    - User CANNOT reorder S-003 after S-002 (H-16 is a HARD constraint)
+    - User CAN add optional strategies from any criticality level
+    - User CAN remove optional strategies
+    - User CAN override scoring threshold (adv-scorer accepts custom input)
 
 Step 2: Execute S-003 Steelman (H-16 compliance)
   Agent: adv-executor
@@ -199,10 +219,11 @@ Step 4: Compute Weighted Composite
   Formula: score = SUM(dimension_score * weight)
 
 Step 5: Determine Verdict
-  Score >= 0.92 → PASS
+  Score >= 0.92 → PASS (quality gate met, H-13)
   Score 0.85-0.91 → REVISE (close, targeted improvements)
   Score 0.70-0.84 → REVISE (significant gaps)
-  Score < 0.70 → REVISE (major revision needed)
+  Score 0.50-0.69 → REVISE (major revision needed)
+  Score < 0.50 → ESCALATE (fundamental issues, may need rethink)
 
 Step 6: Persist Score Report
   Output: Per-dimension scores, weighted composite, verdict,
@@ -413,6 +434,19 @@ Phase 4: Verdict: REVISE
 
 Phase 5: Tournament summary persisted with all 10 reports.
 ```
+
+---
+
+## Error Handling
+
+Common failure scenarios and recovery procedures for adversarial review workflows.
+
+| Scenario | Detection | Recovery |
+|----------|-----------|----------|
+| **Strategy template not found** | adv-executor cannot read template file path | WARN the orchestrator. Skip the strategy and note it as "SKIPPED — template not found" in the execution report. If the strategy is required for the criticality level, the review is incomplete and MUST be reported as such. |
+| **Deliverable file inaccessible** | Any agent cannot read the deliverable path | HALT the workflow. Report "ERROR: Deliverable not found at {path}". The orchestrator must resolve the path before retrying. |
+| **Agent fails mid-execution** | Agent produces no output or produces malformed output | Orchestrator retries the agent once with the same input. If the second attempt fails, WARN and skip the strategy (if optional) or ESCALATE to the user (if required). |
+| **Invalid score produced** | adv-scorer returns a score outside 0.0-1.0 range or composite does not match dimension sum | adv-scorer self-review (H-15) should catch this before persistence. If detected post-persistence, the orchestrator re-invokes adv-scorer with the same input. |
 
 ---
 
