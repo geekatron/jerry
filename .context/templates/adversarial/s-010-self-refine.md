@@ -96,7 +96,7 @@ A self-review report containing:
 
 1. **S-010 before S-014:** Run self-review BEFORE formal LLM-as-Judge scoring. Self-refine to address obvious gaps, then score to validate improvement.
 
-2. **S-010 before S-002/S-004:** H-16 does not apply to S-010 (it's not an adversarial critique requiring Steelman first), but S-010 SHOULD precede Devil's Advocate or Pre-Mortem to maximize their effectiveness. Present a self-refined deliverable rather than a rough draft.
+2. **S-010 before S-002/S-004:** S-010 itself is not subject to H-16 (it's self-review, not adversarial critique), but when S-010 is part of a workflow that includes both S-003 and S-002/S-004, H-16 governs the order of those strategies. Recommended sequence: (1) S-010 self-review, (2) Revise per S-010 findings, (3) S-003 Steelman on revised deliverable (H-16 compliance), (4) S-002/S-004 adversarial critique. This ensures you present a self-refined deliverable to adversarial critique.
 
 3. **S-010 + S-007 for C2 Standard:** Combine self-review (S-010) with Constitutional AI Critique (S-007) at C2. Self-review catches surface issues; S-007 catches HARD rule violations.
 
@@ -151,7 +151,12 @@ A self-review report containing:
 1. Take a 5-minute break away from the deliverable (or simulate mental reset by reading unrelated content)
 2. Review the deliverable's stated objectives and acceptance criteria
 3. Imagine you are reviewing someone else's work — ask "Would I accept this if I didn't create it?"
-4. Explicitly acknowledge any emotional attachment or time investment that might bias your review
+4. Assess your attachment level using this scale:
+
+**Objectivity Assessment Scale:**
+- **Low attachment (proceed):** Time investment <2 hours, no prior emotional debate about approach, can articulate 2+ potential flaws without defensiveness
+- **Medium attachment (proceed with caution):** Time investment 2-8 hours, some emotional investment, can articulate 1+ potential flaw; apply extra scrutiny in Step 2 leniency bias counteraction (aim for 5+ findings instead of 3)
+- **High attachment (defer to external critique):** Time investment >8 hours, strong emotional investment in solution, difficulty articulating potential flaws, deadline pressure, or fatigue
 
 **Decision Point:**
 - If you cannot achieve objectivity (high emotional attachment, time pressure, fatigue), STOP and defer to external adversarial critique (S-002 or S-004)
@@ -256,7 +261,7 @@ A self-review report containing:
 4. Check iteration count against H-14 minimum (3 iterations for C2+)
 
 **Decision Point:**
-- **Ready for external review:** Score >= 0.92, Critical/Major findings resolved, H-14 iteration count met
+- **Ready for external review:** (1) Self-review execution score >= 0.92 per Scoring Rubric (includes minimum 3 findings per Completeness dimension OR explicit justification for fewer), AND (2) Deliverable has no unresolved Critical/Major findings, AND (3) H-14 iteration count met
 - **Another S-010 iteration needed:** Score 0.85-0.91, actionable improvements identified, iteration budget remaining
 - **Escalate to external critique:** Score < 0.85, fundamental flaws suspected, or self-review reaching diminishing returns
 
@@ -351,7 +356,7 @@ This rubric evaluates the **quality of the S-010 self-review execution itself** 
 | REVISE | 0.85 - 0.91 | Self-review execution requires targeted improvement; close to threshold |
 | REJECTED | < 0.85 | Self-review execution inadequate; significant rework required (H-13) |
 
-**Note:** The SSOT threshold is >= 0.92 (H-13). REVISE band is a template-specific operational category for near-threshold deliverables.
+**Note:** The SSOT threshold is >= 0.92 (H-13). Below threshold = REJECTED; revision required. The REVISE band (0.85-0.91) is a template-specific workflow subdivision of the REJECTED outcome to distinguish near-threshold deliverables (where targeted fixes are likely sufficient) from those requiring significant rework (<0.85). Both REVISE and REJECTED trigger the revision cycle per H-13.
 
 ### Dimension Weights
 
@@ -390,10 +395,10 @@ Values sourced from quality-enforcement.md SSOT (MUST NOT be redefined):
 
 | Band | Score | Criteria |
 |------|-------|----------|
-| Exceptional | 0.95+ | All 6 steps executed in order; objectivity check documented; leniency bias counteraction explicit; verification of revisions performed |
-| Strong | 0.90-0.94 | All 6 steps executed; objectivity check present; revisions verified |
-| Acceptable | 0.85-0.89 | 5 steps executed; minor deviations documented; basic verification |
-| Inadequate | <0.85 | <5 steps executed; objectivity not established; no verification; self-validation echo chamber evident |
+| Exceptional | 0.95+ | All 6 steps executed in order; objectivity check documented; leniency bias counteraction applied per Step 2 (minimum 3 findings identified or explicit justification for fewer); verification of revisions performed |
+| Strong | 0.90-0.94 | All 6 steps executed; objectivity check present; leniency bias counteraction attempted; revisions verified |
+| Acceptable | 0.85-0.89 | 5 steps executed; minor deviations documented; basic verification; some leniency bias mitigation |
+| Inadequate | <0.85 | <5 steps executed; objectivity not established; no verification; leniency bias not counteracted; self-validation echo chamber evident |
 
 **Evidence Quality** (weight: 0.15)
 
@@ -567,9 +572,9 @@ Redis benchmarks show 0.8ms P95 latency (source: redis.io/topics/benchmarks). Wi
 
 ### H-16 Compliance
 
-**H-16 does NOT apply to S-010.** H-16 (Steelman before critique) requires S-003 Steelman Technique before adversarial critiques like S-002, S-004, S-001. S-010 is NOT an adversarial critique — it is self-review by the creator. Therefore, S-003 is NOT required before S-010.
+**H-16 does NOT apply to S-010 itself.** H-16 (Steelman before critique) requires S-003 Steelman Technique before adversarial critiques like S-002, S-004, S-001. S-010 is NOT an adversarial critique — it is self-review by the creator. Therefore, S-003 is NOT required before S-010.
 
-However, **S-010 SHOULD precede adversarial critiques** to maximize their effectiveness (present refined work rather than rough drafts).
+However, **when S-010 is part of a broader workflow** that includes both S-003 and adversarial critique strategies (S-002, S-004, S-001), H-16 governs the order of THOSE strategies. The recommended sequence is: S-010 self-review → revision → S-003 Steelman (on the revised deliverable) → adversarial critique. This ensures H-16 compliance while maximizing the effectiveness of each strategy.
 
 ### Criticality-Based Selection Table
 

@@ -194,7 +194,7 @@ For EACH dimension (Completeness, Internal Consistency, Methodological Rigor, Ev
 
 **Decision Point:**
 - If dimension score >= 0.90: Document exceptional evidence justifying the high score. Verify this is not leniency bias.
-- If dimension score < 0.50: Flag as Critical finding; this dimension has fundamental issues requiring substantial revision.
+- If dimension score <= 0.50: Flag as Critical finding; this dimension has fundamental issues requiring substantial revision.
 
 **Output:** Six independent dimension scores with evidence, documented in the findings table.
 
@@ -207,8 +207,8 @@ For EACH dimension (Completeness, Internal Consistency, Methodological Rigor, Ev
 | ... | ... | ... | ... | ... |
 
 **Severity Definitions:**
-- **Critical:** Dimension score < 0.50; fundamental issue blocking acceptance
-- **Major:** Dimension score 0.50-0.84; significant gap requiring revision
+- **Critical:** Dimension score <= 0.50; fundamental issue blocking acceptance
+- **Major:** Dimension score 0.51-0.84; significant gap requiring revision
 - **Minor:** Dimension score 0.85-0.91; near-threshold, targeted improvement opportunity
 
 ---
@@ -253,13 +253,13 @@ For EACH dimension (Completeness, Internal Consistency, Methodological Rigor, Ev
 
 1. **Apply H-13 threshold:**
    - If composite >= 0.92: Verdict = **PASS** (quality gate met)
-   - If composite 0.85-0.91: Verdict = **REVISE** (close to threshold, targeted improvements)
-   - If composite 0.70-0.84: Verdict = **REVISE** (significant gaps, focused revision)
-   - If composite 0.50-0.69: Verdict = **REVISE** (major gaps, substantial revision)
-   - If composite < 0.50: Verdict = **ESCALATE** (fundamental issues, may need rethink)
+   - If composite 0.85-0.91: Verdict = **REVISE** (close to threshold, targeted improvements; REJECTED per H-13)
+   - If composite 0.70-0.84: Verdict = **REVISE** (significant gaps, focused revision; REJECTED per H-13)
+   - If composite 0.50-0.69: Verdict = **REVISE** (major gaps, substantial revision; REJECTED per H-13)
+   - If composite < 0.50: Verdict = **ESCALATE** (fundamental issues, may need rethink; REJECTED per H-13)
 
 2. **Check special conditions:**
-   - If any dimension has a **Critical** finding (score < 0.50): Override to **REVISE** regardless of composite score
+   - If any dimension has a **Critical** finding (score <= 0.50): Override to **REVISE** regardless of composite score
    - If prior strategy reports contain unresolved **Critical** findings: Override to **REVISE** even if composite >= 0.92
    - If composite < 0.50 after 3+ revision cycles: Override to **ESCALATE** to user (H-14 cycle exhaustion)
 
@@ -306,8 +306,10 @@ Per H-15 (Self-review before presenting), execute this checklist:
 - [ ] **Each dimension scored independently** — No dimension score was influenced by other dimensions
 - [ ] **Evidence documented for each score** — Specific quotes, section references, or gap descriptions present for all six dimensions
 - [ ] **Uncertain scores resolved downward** — When unsure between adjacent scores, the lower score was chosen
-- [ ] **First-draft calibration considered** — If scoring a first draft, verified score aligns with typical 0.65-0.80 range (unless exceptional evidence exists)
+- [ ] **First-draft calibration considered** — If scoring a first draft, note that first drafts typically score 0.65-0.80 (descriptive observation, not a target range; exceptional first drafts may score higher, poor first drafts may score lower)
 - [ ] **No dimension scored above 0.95 without exceptional evidence** — High scores (0.95+) have documented exceptional justification
+- [ ] **High-scoring dimension verification** — For any dimension scoring > 0.90: list the 3 strongest evidence points that justify elevating it above "strong work" (0.90); if you cannot list 3 specific evidence points, revise the score downward
+- [ ] **Low-scoring dimension verification** — List the 3 lowest-scoring dimensions and verify that specific evidence justifies each score; if evidence is vague or missing, document the gap explicitly
 - [ ] **Weighted composite matches calculation** — Mathematical verification of composite = sum of (dimension * weight)
 - [ ] **Verdict matches score range** — PASS/REVISE/ESCALATE verdict aligns with H-13 threshold and special conditions
 - [ ] **Improvement recommendations are specific and actionable** — Not vague (e.g., "improve completeness") but concrete (e.g., "add Section 4 with risk mitigation strategies")
@@ -404,8 +406,8 @@ Every S-014 execution MUST produce a score report with the following structure.
 ```
 
 **Severity Key:**
-- **Critical:** Score < 0.50 (fundamental issue blocking acceptance)
-- **Major:** Score 0.50-0.84 (significant gap requiring revision)
+- **Critical:** Score <= 0.50 (fundamental issue blocking acceptance)
+- **Major:** Score 0.51-0.84 (significant gap requiring revision)
 - **Minor:** Score 0.85-0.91 (near-threshold, targeted improvement)
 
 ---
@@ -507,8 +509,10 @@ This table shows how each dimension contributes to the weighted composite and ho
 - [ ] Each dimension scored independently (no cross-dimension influence)
 - [ ] Evidence documented for each score (specific quotes/references)
 - [ ] Uncertain scores resolved downward (conservative scoring applied)
-- [ ] First-draft calibration considered (if applicable: score aligns with typical 0.65-0.80 range)
+- [ ] First-draft calibration considered (if applicable: note that first drafts typically score 0.65-0.80 as descriptive observation; not a target range)
 - [ ] No dimension scored above 0.95 without exceptional evidence
+- [ ] High-scoring dimensions verified (for any dimension > 0.90: list 3 specific evidence points justifying the high score)
+- [ ] Low-scoring dimensions verified (list 3 lowest-scoring dimensions with specific evidence for each)
 - [ ] Weighted composite matches mathematical calculation
 - [ ] Verdict matches score range table (H-13 compliance verified)
 - [ ] Improvement recommendations are specific and actionable
@@ -537,15 +541,15 @@ This section defines how to evaluate the quality of an S-014 execution itself (m
 
 **SSOT threshold (from quality-enforcement.md, MUST NOT be redefined):** >= 0.92 weighted composite score. Below threshold = REJECTED; revision required per H-13.
 
-**Operational bands for S-014 execution quality:**
+**Operational bands for S-014 execution quality (template-specific subdivision for workflow guidance):**
 
 | Band | Score Range | Outcome |
 |------|------------|---------|
 | PASS | >= 0.92 | S-014 execution accepted; score report is high quality |
-| REVISE | 0.85 - 0.91 | S-014 execution requires targeted revision; close to threshold |
-| REJECTED | < 0.85 | S-014 execution inadequate; significant rework required (H-13) |
+| REVISE | 0.85 - 0.91 | S-014 execution requires targeted revision; close to threshold (REJECTED per H-13) |
+| REJECTED | < 0.85 | S-014 execution inadequate; significant rework required (REJECTED per H-13) |
 
-> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band is a template-specific operational category to distinguish near-threshold executions from those requiring significant rework. Both REVISE and REJECTED trigger the revision cycle per H-13.
+> **Note:** The SSOT defines only the 0.92 threshold with REJECTED as the below-threshold outcome. The REVISE band (0.85-0.91) is a template-specific operational category (not sourced from quality-enforcement.md) to distinguish near-threshold deliverables requiring targeted improvements from those requiring significant rework. Both REVISE and REJECTED are H-13 violations that trigger the revision cycle. REVISE is an operational workflow label, not a distinct acceptance state.
 
 ---
 
@@ -573,7 +577,7 @@ For each dimension, evaluate S-014 execution quality using these criteria:
 | **0.95 - 1.00** | All six dimensions scored with detailed evidence; all seven output sections present and complete; prior strategy findings incorporated (if available); leniency bias check fully documented; no gaps in scoring coverage |
 | **0.90 - 0.94** | All six dimensions scored with evidence; all output sections present; minor gaps in evidence detail or leniency bias documentation; prior findings mostly incorporated |
 | **0.85 - 0.89** | All six dimensions scored; some output sections incomplete (e.g., improvement recommendations lack specificity); evidence present but not always detailed; leniency bias check partially documented |
-| **< 0.85** | Missing dimension scores; output sections absent or severely incomplete; no evidence provided for some scores; leniency bias check missing |
+| **<= 0.84** | Missing dimension scores; output sections absent or severely incomplete; no evidence provided for some scores; leniency bias check missing |
 
 ---
 
@@ -581,10 +585,10 @@ For each dimension, evaluate S-014 execution quality using these criteria:
 
 | Score Range | Criteria |
 |-------------|----------|
-| **0.95 - 1.00** | All dimension scores align with evidence; weighted composite mathematically correct; verdict matches H-13 threshold exactly; no contradictions between findings and recommendations; severity levels consistent with scores |
+| **0.95 - 1.00** | All dimension scores align with evidence; weighted composite mathematically correct; verdict matches H-13 threshold exactly; no contradictions between findings and recommendations; severity levels consistent with scores (Critical <= 0.50, Major 0.51-0.84, Minor 0.85-0.91) |
 | **0.90 - 0.94** | Dimension scores mostly align with evidence; composite calculation correct; verdict appropriate; minor inconsistencies (e.g., recommendation priority doesn't fully match dimension weakness) |
 | **0.85 - 0.89** | Some dimension scores do not fully align with evidence; composite calculation correct but some dimension scores questionable; verdict broadly appropriate but rationale unclear |
-| **< 0.85** | Contradictory dimension scores and evidence; composite calculation errors; verdict does not match score range; severity levels inconsistent with scores |
+| **<= 0.84** | Contradictory dimension scores and evidence; composite calculation errors; verdict does not match score range; severity levels inconsistent with scores |
 
 ---
 
@@ -592,10 +596,10 @@ For each dimension, evaluate S-014 execution quality using these criteria:
 
 | Score Range | Criteria |
 |-------------|----------|
-| **0.95 - 1.00** | Leniency bias counteraction explicitly applied (uncertain scores resolved downward documented); rubric criteria followed literally; each dimension scored independently with no cross-influence; first-draft calibration considered; H-15 self-review checklist complete |
+| **0.95 - 1.00** | Leniency bias counteraction explicitly applied with verification (downward adjustments documented; high-scoring dimensions >0.90 have 3+ specific evidence points listed; low-scoring dimensions verified); rubric criteria followed literally; each dimension scored independently with no cross-influence; first-draft calibration considered as descriptive (not prescriptive); H-15 self-review checklist complete |
 | **0.90 - 0.94** | Leniency bias counteraction applied; rubric mostly followed; dimensions scored independently; H-15 checklist mostly complete; minor procedural deviations |
 | **0.85 - 0.89** | Some leniency bias counteraction; rubric followed but with impressionistic scoring in places; H-15 checklist partially complete; some dimension scores show cross-influence |
-| **< 0.85** | No leniency bias counteraction; rubric not followed; impressionistic scoring dominates; H-15 checklist missing or mostly incomplete; dimension scores show clear cross-influence |
+| **<= 0.84** | No leniency bias counteraction; rubric not followed; impressionistic scoring dominates; H-15 checklist missing or mostly incomplete; dimension scores show clear cross-influence |
 
 ---
 
@@ -606,7 +610,7 @@ For each dimension, evaluate S-014 execution quality using these criteria:
 | **0.95 - 1.00** | Every dimension score backed by specific deliverable quotes or section references; gaps clearly identified with examples; evidence is credible and directly relevant to rubric criteria; no vague assertions |
 | **0.90 - 0.94** | Most dimension scores have specific evidence; some gaps in evidence detail; evidence is relevant and credible; minimal vague assertions |
 | **0.85 - 0.89** | Some dimension scores have specific evidence; many gaps in evidence detail; some vague assertions; evidence relevance unclear in places |
-| **< 0.85** | Few dimension scores have specific evidence; evidence is vague, missing, or not credible; assertions dominate over evidence |
+| **<= 0.84** | Few dimension scores have specific evidence; evidence is vague, missing, or not credible; assertions dominate over evidence |
 
 ---
 
@@ -617,7 +621,7 @@ For each dimension, evaluate S-014 execution quality using these criteria:
 | **0.95 - 1.00** | All improvement recommendations are concrete, specific, and implementable; recommendations prioritized by weighted gap impact; implementation guidance provided; recommendations directly address identified gaps |
 | **0.90 - 0.94** | Most recommendations are concrete and implementable; prioritization mostly aligns with impact; some recommendations lack specificity; guidance present |
 | **0.85 - 0.89** | Some recommendations are concrete; prioritization unclear; many recommendations vague (e.g., "improve completeness"); guidance minimal |
-| **< 0.85** | Recommendations are vague or generic; no prioritization; not implementable without significant interpretation; no guidance |
+| **<= 0.84** | Recommendations are vague or generic; no prioritization; not implementable without significant interpretation; no guidance |
 
 ---
 
@@ -628,7 +632,7 @@ For each dimension, evaluate S-014 execution quality using these criteria:
 | **0.95 - 1.00** | Every dimension score traces to specific deliverable content (section/line references); findings linked to rubric criteria; composite calculation shown step-by-step; verdict rationale traces to H-13 threshold; SSOT references present |
 | **0.90 - 0.94** | Most dimension scores traceable; rubric linkage mostly present; composite calculation shown; verdict rationale clear; SSOT referenced |
 | **0.85 - 0.89** | Some dimension scores traceable; rubric linkage partial; composite calculation present but not detailed; verdict rationale unclear; SSOT reference missing |
-| **< 0.85** | Few dimension scores traceable; no rubric linkage; composite calculation missing or incorrect; verdict rationale absent; no SSOT reference |
+| **<= 0.84** | Few dimension scores traceable; no rubric linkage; composite calculation missing or incorrect; verdict rationale absent; no SSOT reference |
 
 ---
 

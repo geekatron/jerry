@@ -99,7 +99,7 @@ Systematic constitutional compliance report: enumerates applicable principles, c
 
 Load: `JERRY_CONSTITUTION.md` (P-001–P-043), `.context/rules/*.md` (H-01–H-24), `quality-enforcement.md` (SSOT).
 
-**Tier Mapping:** HARD (MUST/SHALL/NEVER→Critical), MEDIUM (SHOULD/RECOMMENDED→Major), SOFT (MAY/CONSIDER→Minor).
+**Tier Mapping:** HARD (MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL→Critical), MEDIUM (SHOULD, RECOMMENDED, PREFERRED, EXPECTED→Major), SOFT (MAY, CONSIDER, OPTIONAL, SUGGESTED→Minor).
 
 ### Ordering Constraints
 
@@ -124,6 +124,7 @@ Load: `JERRY_CONSTITUTION.md` (P-001–P-043), `.context/rules/*.md` (H-01–H-2
    - Template/rule deliverables: ALL rules (AE-002 triggers auto-C3)
    - Architecture/design: `architecture-standards.md`, `file-organization.md`
 4. Read `quality-enforcement.md` for HARD rule index (H-01 through H-24), tier vocabulary, auto-escalation rules
+   - **H-Rule Quick Reference:** 24 HARD rules exist (H-01 through H-24). See quality-enforcement.md lines 38-63 for the complete H-rule index with rule text and source files. Review this index before Step 2 to ensure no HARD rules are missed during principle enumeration.
 5. Create index of all loaded principles with tier classification
 
 **Decision Point:** AE-001 (constitution→C4), AE-002 (rules/templates→C3)
@@ -169,6 +170,7 @@ For each principle in the Applicable Principles Checklist (HARD tier first):
    - HARD tier violation → **Critical** (blocks acceptance per H-13)
    - MEDIUM tier violation → **Major** (requires revision)
    - SOFT tier violation → **Minor** (improvement opportunity)
+   - **Edge cases:** If 5+ MEDIUM violations cluster in the same file, module, or design component, CONSIDER escalating aggregate severity to Critical. If 10+ SOFT violations cluster around the same architectural concern, CONSIDER escalating to Major. If a SOFT violation has architectural impact (e.g., violating an optional best practice that prevents a critical failure mode), CONSIDER escalating to Major. Document escalation rationale in findings.
 7. **Document finding:** Record in findings table with CC-NNN identifier
 
 **Decision Point:** HARD violation→REJECTED (H-13). 3+ MEDIUM→recommend rejection. SOFT only→may PASS.
@@ -208,11 +210,12 @@ For each principle in the Applicable Principles Checklist (HARD tier first):
    - Critical violations: `N_critical`
    - Major violations: `N_major`
    - Minor violations: `N_minor`
-2. Apply penalty model:
+2. Apply penalty model (template-specific operational values, NOT sourced from quality-enforcement.md SSOT):
    - Each Critical violation: -0.10 from composite score
    - Each Major violation: -0.05 from composite score
    - Each Minor violation: -0.02 from composite score
    - Base score starts at 1.00
+   - **Note:** These penalty values are operational guidelines for constitutional compliance scoring. The authoritative threshold (0.92) and dimension weights are defined in quality-enforcement.md.
 3. Calculate constitutional compliance score: `1.00 - (0.10 * N_critical + 0.05 * N_major + 0.02 * N_minor)`
 4. Apply threshold:
    - Score >= 0.92: PASS constitutional gate
@@ -220,6 +223,7 @@ For each principle in the Applicable Principles Checklist (HARD tier first):
    - Score < 0.85: REJECTED (H-13 applies)
 5. Map constitutional findings to S-014 dimensions using the Affected Dimension field from findings table
 6. Document impact on each dimension (Positive/Negative/Neutral with rationale)
+7. **Verify calculation:** Example verification: If 2 Critical + 3 Major + 5 Minor violations, penalty = 2(0.10) + 3(0.05) + 5(0.02) = 0.20 + 0.15 + 0.10 = 0.45. Base score 1.00 - 0.45 = 0.55 → REJECTED (below 0.85 threshold). See Example 1 (line 415) for additional verification.
 
 **Decision Point:** Score <0.92→revision REQUIRED (H-13). Score >=0.92 with Major violations→recommend revision.
 
