@@ -54,7 +54,7 @@ factual errors, hallucinations, and cross-reference failures that direct review 
 | Strategy Name | Chain-of-Verification |
 | Family | Structured Decomposition |
 | Composite Score | 3.75 |
-| Finding Prefix | CV-NNN |
+| Finding Prefix | CV-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -275,8 +275,10 @@ Every S-011 execution MUST produce a Chain-of-Verification report with these sec
 
 | ID | Claim | Source | Discrepancy | Severity | Affected Dimension |
 |----|-------|--------|-------------|----------|--------------------|
-| CV-001 | {{What deliverable claims}} | {{Source document}} | {{How it differs}} | Critical | {{Dimension}} |
-| CV-002 | {{What deliverable claims}} | {{Source document}} | {{How it differs}} | Major | {{Dimension}} |
+| CV-001-{execution_id} | {{What deliverable claims}} | {{Source document}} | {{How it differs}} | Critical | {{Dimension}} |
+| CV-002-{execution_id} | {{What deliverable claims}} | {{Source document}} | {{How it differs}} | Major | {{Dimension}} |
+
+**Finding ID Format:** `CV-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `CV-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 ### 4. Finding Details
 
@@ -387,26 +389,26 @@ The template claims: (1) "S-012 composite score: 3.85" in the Identity table, (2
 
 | ID | Claim | Source | Discrepancy | Severity | Affected Dimension |
 |----|-------|--------|-------------|----------|--------------------|
-| CV-001 | "Composite score: 3.85" | ADR-EPIC002-001 | Source says 3.75; template overstates by 0.10 | Major | Evidence Quality |
-| CV-002 | "Completeness weight: 0.25" | quality-enforcement.md | Source says 0.20; template overstates by 0.05; weights would sum > 1.00 | Critical | Internal Consistency |
-| CV-003 | "S-012 REQUIRED at C2" | quality-enforcement.md | Source says REQUIRED at C3; template promotes S-012 one tier too early | Major | Traceability |
-| CV-004 | "Threshold >= 0.90" | quality-enforcement.md | Source says >= 0.92; template understates threshold by 0.02 | Critical | Methodological Rigor |
-| CV-005 | "Minimum 2 iterations" | quality-enforcement.md | Source says 3 iterations; template understates minimum cycle count | Major | Completeness |
+| CV-001-20260215T1430 | "Composite score: 3.85" | ADR-EPIC002-001 | Source says 3.75; template overstates by 0.10 | Major | Evidence Quality |
+| CV-002-20260215T1430 | "Completeness weight: 0.25" | quality-enforcement.md | Source says 0.20; template overstates by 0.05; weights would sum > 1.00 | Critical | Internal Consistency |
+| CV-003-20260215T1430 | "S-012 REQUIRED at C2" | quality-enforcement.md | Source says REQUIRED at C3; template promotes S-012 one tier too early | Major | Traceability |
+| CV-004-20260215T1430 | "Threshold >= 0.90" | quality-enforcement.md | Source says >= 0.92; template understates threshold by 0.02 | Critical | Methodological Rigor |
+| CV-005-20260215T1430 | "Minimum 2 iterations" | quality-enforcement.md | Source says 3 iterations; template understates minimum cycle count | Major | Completeness |
 
 **After (FMEA Template Corrected Based on CV Findings):**
 
-The creator corrected all 5 discrepancies: composite score to 3.75 (CV-001), Completeness weight to 0.20 (CV-002), criticality tier to C3 (CV-003), threshold to >= 0.92 (CV-004), and iteration count to 3 (CV-005). Verification rate improved from 0/5 (0%) to 5/5 (100%).
+The creator corrected all 5 discrepancies: composite score to 3.75 (CV-001-20260215T1430), Completeness weight to 0.20 (CV-002-20260215T1430), criticality tier to C3 (CV-003-20260215T1430), threshold to >= 0.92 (CV-004-20260215T1430), and iteration count to 3 (CV-005-20260215T1430). Verification rate improved from 0/5 (0%) to 5/5 (100%).
 
 **Scoring Impact:**
 
 | Dimension | Weight | Impact | Rationale |
 |-----------|--------|--------|-----------|
-| Completeness | 0.20 | Negative | CV-005: Understated iteration minimum leaves process incomplete |
-| Internal Consistency | 0.20 | Negative | CV-002: Incorrect weight breaks summation invariant (weights must sum to 1.00) |
-| Methodological Rigor | 0.20 | Negative | CV-004: Understated threshold weakens quality gate enforcement |
-| Evidence Quality | 0.15 | Negative | CV-001: Incorrect composite score undermines source credibility |
+| Completeness | 0.20 | Negative | CV-005-20260215T1430: Understated iteration minimum leaves process incomplete |
+| Internal Consistency | 0.20 | Negative | CV-002-20260215T1430: Incorrect weight breaks summation invariant (weights must sum to 1.00) |
+| Methodological Rigor | 0.20 | Negative | CV-004-20260215T1430: Understated threshold weakens quality gate enforcement |
+| Evidence Quality | 0.15 | Negative | CV-001-20260215T1430: Incorrect composite score undermines source credibility |
 | Actionability | 0.15 | Neutral | Corrections are straightforward value replacements |
-| Traceability | 0.10 | Negative | CV-003: Incorrect criticality tier breaks SSOT traceability chain |
+| Traceability | 0.10 | Negative | CV-003-20260215T1430: Incorrect criticality tier breaks SSOT traceability chain |
 
 **Result:** 2 Critical and 3 Major discrepancies identified. All 5 SSOT values were incorrect in the original template. After corrections, the template achieved 100% verification alignment with source documents.
 

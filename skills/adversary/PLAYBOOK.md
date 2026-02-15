@@ -29,6 +29,7 @@ agents_covered:
 | [Procedure 2: Score with S-014](#procedure-2-score-a-deliverable-with-s-014-llm-as-judge) | Focused quality scoring |
 | [Procedure 3: Devil's Advocate + Steelman](#procedure-3-run-devils-advocate--steelman-pairing) | Canonical pairing per H-16 |
 | [Procedure 4: Full C4 Tournament](#procedure-4-full-c4-tournament-review) | All 10 strategies tournament |
+| [Context Budget Management](#context-budget-management) | Template lazy loading guidance |
 | [Error Handling](#error-handling) | Failure scenarios and recovery |
 | [Agent Orchestration Patterns](#agent-orchestration-patterns) | How to sequence agents |
 | [Quick Reference Card](#quick-reference-card) | Summary table |
@@ -434,6 +435,104 @@ Phase 4: Verdict: REVISE
 
 Phase 5: Tournament summary persisted with all 10 reports.
 ```
+
+---
+
+## Context Budget Management
+
+**Goal:** Minimize context consumption during adversarial reviews by loading only the template sections needed for execution.
+
+### Lazy Loading Strategy
+
+**Default Behavior (Strategy Execution):**
+
+When running strategies via adv-executor, load ONLY:
+1. **Section 1 (Identity)**: Required for finding prefix (e.g., RT-001, DA-002, SM-003)
+2. **Section 4 (Execution Protocol)**: Required for step-by-step procedure
+
+**Do NOT load** Sections 2, 3, 5, 6, 7, 8 during execution unless explicitly needed.
+
+**When to Load Full Template:**
+
+Load additional sections on-demand when:
+- **Explicit reference lookup**: User asks "What are the prerequisites for S-004?" → Load Section 3
+- **Template authoring/validation**: Creating or validating a new template → Load all 8 sections
+- **Debugging execution issues**: Execution fails and you need to understand purpose/examples → Load Sections 2, 7
+- **Cross-strategy pairing questions**: User asks "Can S-002 and S-004 run together?" → Load Section 8
+
+**Context Budget by Criticality:**
+
+| Criticality | Strategy Count | Template Sections Loaded | Estimated Token Budget |
+|-------------|----------------|-------------------------|----------------------|
+| C1 (Routine) | 1 strategy (S-010) | 2 sections × 1 = 2 sections | ~2,000 tokens |
+| C2 (Standard) | 3 strategies (S-007, S-002, S-014) | 2 sections × 3 = 6 sections | ~6,000 tokens |
+| C3 (Significant) | 6 strategies (C2 + S-004, S-012, S-013) | 2 sections × 6 = 12 sections | ~9,000 tokens |
+| C4 (Critical) | 10 strategies (all selected) | 2 sections × 10 = 20 sections | ~10,000 tokens (MUST NOT EXCEED) |
+
+**Context Budget Enforcement:**
+
+Per quality-enforcement.md SSOT:
+- C4 tournament MUST consume <= 10,000 tokens of template content
+- Before optimization: ~20,300 tokens (10 full templates)
+- After optimization: ~10,000 tokens (10 Execution Protocol + Identity sections only)
+- Reduction: ~50% token savings
+
+**Section Boundary Parsing:**
+
+Templates follow TEMPLATE-FORMAT.md v1.1.0 structure:
+```
+## Section 1: Identity
+{content}
+## Section 2: Purpose
+{content}
+## Section 3: Prerequisites
+{content}
+## Section 4: Execution Protocol  ← LOAD THIS
+{content}
+## Section 5: Output Format
+{content}
+## Section 6: Scoring Rubric
+{content}
+## Section 7: Examples
+{content}
+## Section 8: Integration
+{content}
+```
+
+To extract a specific section:
+1. Locate start marker: `## Section N: {Section Name}`
+2. Extract content until next `## Section` heading (exclusive)
+3. Load only the sections you need
+
+**Example (C4 Tournament):**
+
+```
+User: "Run full C4 tournament on docs/governance/JERRY_CONSTITUTION.md"
+
+Phase 1: adv-selector → identifies all 10 strategies
+Phase 2: adv-executor runs 9 strategies (S-001 through S-013)
+  - For EACH strategy execution:
+    1. Load Section 1 (Identity) → extract finding prefix
+    2. Load Section 4 (Execution Protocol) → follow steps
+    3. Execute protocol against deliverable
+    4. Persist execution report
+  - Total sections loaded: 2 sections × 9 strategies = 18 sections
+  - Estimated tokens: ~9,000 tokens (within C4 budget)
+
+Phase 3: adv-scorer runs S-014
+  - Load S-014 Section 1 (Identity) → LJ-NNN prefix
+  - Load S-014 Section 4 (Execution Protocol) → 7-step scoring procedure
+  - Total sections loaded: 2 sections × 1 strategy = 2 sections
+  - Estimated tokens: ~1,000 tokens
+
+Total template context: ~10,000 tokens (C4 budget MET)
+```
+
+**Operational Guidance:**
+
+- **When in doubt, load less**: Start with Section 1 + Section 4 only; load more if execution fails
+- **Measure context consumption**: Track actual token usage for C3/C4 reviews; flag if exceeding budget
+- **Full template exceptions**: Template authoring, validation, and debugging workflows require all 8 sections
 
 ---
 

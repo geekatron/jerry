@@ -55,7 +55,7 @@ Inversion systematically inverts goals and stress-tests assumptions without temp
 | Strategy Name | Inversion Technique |
 | Family | Structured Decomposition |
 | Composite Score | 4.25 |
-| Finding Prefix | IN-NNN |
+| Finding Prefix | IN-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -294,8 +294,10 @@ Every S-013 execution MUST produce an Inversion report with these sections:
 
 | ID | Assumption / Anti-Goal | Type | Confidence | Severity | Evidence | Affected Dimension |
 |----|------------------------|------|------------|----------|----------|--------------------|
-| IN-001 | {{Assumption that failed stress-test}} | Assumption | {{H/M/L}} | Critical | {{Reference}} | {{Dimension}} |
-| IN-002 | {{Anti-goal condition not addressed}} | Anti-Goal | N/A | Major | {{Reference}} | {{Dimension}} |
+| IN-001-{execution_id} | {{Assumption that failed stress-test}} | Assumption | {{H/M/L}} | Critical | {{Reference}} | {{Dimension}} |
+| IN-002-{execution_id} | {{Anti-goal condition not addressed}} | Anti-Goal | N/A | Major | {{Reference}} | {{Dimension}} |
+
+**Finding ID Format:** `IN-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `IN-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 Severity definitions: see [Step 4: Stress-Test Each Assumption](#step-4-stress-test-each-assumption).
 
@@ -404,32 +406,32 @@ The proposal allows: (1) per-project threshold override (min 0.80, max 0.99), (2
 
 | ID | Assumption | Inversion | Severity | Affected Dimension |
 |----|------------|-----------|----------|--------------------|
-| IN-001 | A2: Weight sum = 1.00 prevents manipulation | Setting Traceability weight to 0.60 and others to 0.08 each allows gaming by satisfying one easy dimension | Critical | Methodological Rigor |
-| IN-002 | A3: Good faith configuration | A hostile or rushed team sets threshold to 0.80 to rubber-stamp deliverables | Major | Evidence Quality |
-| IN-003 | A4: Config is tamper-resistant | No validation hook; config can be changed mid-review to lower threshold after a failing score | Major | Internal Consistency |
-| IN-004 | A1: 0.80 minimum is sufficient | At 0.80, a deliverable can have Critical findings (dimension <= 0.50) and still pass via high scores elsewhere | Major | Completeness |
-| IN-005 | Implicit: override history is tracked | No audit trail of threshold changes; cannot detect retroactive lowering | Minor | Traceability |
+| IN-001-20260215T1430 | A2: Weight sum = 1.00 prevents manipulation | Setting Traceability weight to 0.60 and others to 0.08 each allows gaming by satisfying one easy dimension | Critical | Methodological Rigor |
+| IN-002-20260215T1430 | A3: Good faith configuration | A hostile or rushed team sets threshold to 0.80 to rubber-stamp deliverables | Major | Evidence Quality |
+| IN-003-20260215T1430 | A4: Config is tamper-resistant | No validation hook; config can be changed mid-review to lower threshold after a failing score | Major | Internal Consistency |
+| IN-004-20260215T1430 | A1: 0.80 minimum is sufficient | At 0.80, a deliverable can have Critical findings (dimension <= 0.50) and still pass via high scores elsewhere | Major | Completeness |
+| IN-005-20260215T1430 | Implicit: override history is tracked | No audit trail of threshold changes; cannot detect retroactive lowering | Minor | Traceability |
 
 **Step 5: Develop Mitigations**
 
-**Critical:** IN-001 -- Add per-dimension weight bounds (min 0.05, max 0.40) preventing any single dimension from dominating. Acceptance criteria: no weight configuration can produce a PASS verdict with any dimension below 0.70.
+**Critical:** IN-001-20260215T1430 -- Add per-dimension weight bounds (min 0.05, max 0.40) preventing any single dimension from dominating. Acceptance criteria: no weight configuration can produce a PASS verdict with any dimension below 0.70.
 
-**Major:** IN-002 -- Add minimum threshold of 0.85 (not 0.80) with governance approval required for any threshold below SSOT default. IN-003 -- Add config immutability during active review cycle (snapshot config at review start). IN-004 -- Add dimension floor rule: no dimension below 0.60 regardless of composite score.
+**Major:** IN-002-20260215T1430 -- Add minimum threshold of 0.85 (not 0.80) with governance approval required for any threshold below SSOT default. IN-003-20260215T1430 -- Add config immutability during active review cycle (snapshot config at review start). IN-004-20260215T1430 -- Add dimension floor rule: no dimension below 0.60 regardless of composite score.
 
 **After (Revised with Mitigations):**
 
-The creator addressed findings: added weight bounds [0.05, 0.40] (IN-001), raised minimum threshold to 0.85 with C3 governance approval for non-default values (IN-002), added config snapshot mechanism (IN-003), added dimension floor of 0.60 (IN-004), and added config change audit log (IN-005).
+The creator addressed findings: added weight bounds [0.05, 0.40] (IN-001-20260215T1430), raised minimum threshold to 0.85 with C3 governance approval for non-default values (IN-002-20260215T1430), added config snapshot mechanism (IN-003-20260215T1430), added dimension floor of 0.60 (IN-004-20260215T1430), and added config change audit log (IN-005-20260215T1430).
 
 **Scoring Impact:**
 
 | Dimension | Weight | Impact | Rationale |
 |-----------|--------|--------|-----------|
-| Completeness | 0.20 | Negative | IN-004: No dimension floor allows Critical gaps to hide in composite |
-| Internal Consistency | 0.20 | Negative | IN-003: Mutable config during review creates inconsistent evaluation |
-| Methodological Rigor | 0.20 | Negative | IN-001: Weight manipulation circumvents 6-dimension methodology |
-| Evidence Quality | 0.15 | Negative | IN-002: Low threshold undermines evidence that quality gate is meaningful |
+| Completeness | 0.20 | Negative | IN-004-20260215T1430: No dimension floor allows Critical gaps to hide in composite |
+| Internal Consistency | 0.20 | Negative | IN-003-20260215T1430: Mutable config during review creates inconsistent evaluation |
+| Methodological Rigor | 0.20 | Negative | IN-001-20260215T1430: Weight manipulation circumvents 6-dimension methodology |
+| Evidence Quality | 0.15 | Negative | IN-002-20260215T1430: Low threshold undermines evidence that quality gate is meaningful |
 | Actionability | 0.15 | Neutral | Configuration mechanism itself is actionable |
-| Traceability | 0.10 | Negative | IN-005: No audit trail for config changes breaks traceability |
+| Traceability | 0.10 | Negative | IN-005-20260215T1430: No audit trail for config changes breaks traceability |
 
 **Result:** 1 Critical and 3 Major assumption vulnerabilities identified via systematic inversion. Mitigations addressed all findings, adding defensive constraints that preserve quality framework integrity while allowing legitimate customization.
 

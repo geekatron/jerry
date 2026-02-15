@@ -24,6 +24,7 @@ Implements H-18 via principle-by-principle constitutional review. C2+ REQUIRED. 
 | [Scoring Rubric](#scoring-rubric) | Meta-evaluation of strategy execution quality |
 | [Examples](#examples) | Concrete C2 demonstration with findings |
 | [Integration](#integration) | Pairing guidance and criticality mapping |
+| [Validation Checklist](#validation-checklist) | Template compliance verification |
 
 ---
 
@@ -35,7 +36,7 @@ Implements H-18 via principle-by-principle constitutional review. C2+ REQUIRED. 
 | Strategy Name | Constitutional AI Critique |
 | Family | Iterative Self-Correction |
 | Composite Score | 4.15 |
-| Finding Prefix | CC-NNN |
+| Finding Prefix | CC-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -264,9 +265,11 @@ _Example: "PARTIAL compliance: 1 Critical (H-07), 3 Major (naming), 2 Minor (doc
 
 | ID | Principle | Tier | Severity | Evidence | Affected Dimension |
 |----|-----------|------|----------|----------|--------------------|
-| CC-001 | H-07: Domain layer imports | HARD | Critical | `domain/work_item.py:5` imports from `application/` | Methodological Rigor |
-| CC-002 | M-03: Port naming convention | MEDIUM | Major | `IWorkItemRepo` should be `IWorkItemRepository` | Internal Consistency |
-| CC-003 | S-12: Docstring detail level | SOFT | Minor | Public function lacks Args section | Completeness |
+| CC-001-{execution_id} | H-07: Domain layer imports | HARD | Critical | `domain/work_item.py:5` imports from `application/` | Methodological Rigor |
+| CC-002-{execution_id} | M-03: Port naming convention | MEDIUM | Major | `IWorkItemRepo` should be `IWorkItemRepository` | Internal Consistency |
+| CC-003-{execution_id} | S-12: Docstring detail level | SOFT | Minor | Public function lacks Args section | Completeness |
+
+**Finding ID Format:** `CC-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `CC-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 **Severity Definitions:**
 
@@ -403,18 +406,18 @@ class CreateProjectCommandHandler(ICommandHandler):
 
 | ID | Principle | Tier | Severity | Evidence | Affected Dimension |
 |----|-----------|------|----------|----------|--------------------|
-| CC-001 | H-08: Application layer imports | HARD | Critical | Line 3: imports `infrastructure.adapters` | Methodological Rigor |
-| CC-002 | H-11: Type hints required | HARD | Critical | Line 6: `handle(self, command)` lacks type annotations | Methodological Rigor |
-| CC-003 | H-09: Composition root exclusivity | HARD | Critical | Line 8: instantiates `FilesystemProjectAdapter` outside bootstrap | Methodological Rigor |
-| CC-004 | H-12: Docstrings required | HARD | Critical | Class lacks docstring | Completeness |
-| CC-005 | M-05: Handler naming | MEDIUM | Major | COMPLIANT (`CreateProjectCommandHandler`) | N/A |
+| CC-001-20260215T1430 | H-08: Application layer imports | HARD | Critical | Line 3: imports `infrastructure.adapters` | Methodological Rigor |
+| CC-002-20260215T1430 | H-11: Type hints required | HARD | Critical | Line 6: `handle(self, command)` lacks type annotations | Methodological Rigor |
+| CC-003-20260215T1430 | H-09: Composition root exclusivity | HARD | Critical | Line 8: instantiates `FilesystemProjectAdapter` outside bootstrap | Methodological Rigor |
+| CC-004-20260215T1430 | H-12: Docstrings required | HARD | Critical | Class lacks docstring | Completeness |
+| CC-005-20260215T1430 | M-05: Handler naming | MEDIUM | Major | COMPLIANT (`CreateProjectCommandHandler`) | N/A |
 
 **Step 4:** Remediation guidance (Critical findings only):
 
-**CC-001:** Remove infrastructure import. Inject adapter via constructor (dependency inversion).
-**CC-002:** Add type hints: `def handle(self, command: CreateProjectCommand) -> None:`
-**CC-003:** Remove adapter instantiation. Accept adapter as constructor parameter; bootstrap.py instantiates.
-**CC-004:** Add class docstring with Google-style format.
+**CC-001-20260215T1430:** Remove infrastructure import. Inject adapter via constructor (dependency inversion).
+**CC-002-20260215T1430:** Add type hints: `def handle(self, command: CreateProjectCommand) -> None:`
+**CC-003-20260215T1430:** Remove adapter instantiation. Accept adapter as constructor parameter; bootstrap.py instantiates.
+**CC-004-20260215T1430:** Add class docstring with Google-style format.
 
 **Step 5:** Constitutional compliance score: `1.00 - (4 * 0.10) = 0.60` → REJECTED
 

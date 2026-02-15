@@ -54,7 +54,7 @@ Systematic bottom-up enumeration of ALL failure modes per component/element.
 | Strategy Name | FMEA (Failure Mode and Effects Analysis) |
 | Family | Structured Decomposition |
 | Composite Score | 3.75 |
-| Finding Prefix | FM-NNN |
+| Finding Prefix | FM-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -282,7 +282,9 @@ Every S-012 execution MUST produce an FMEA report with these sections:
 
 | ID | Element | Failure Mode | S | O | D | RPN | Severity | Corrective Action | Affected Dimension |
 |----|---------|-------------|---|---|---|-----|----------|-------------------|--------------------|
-| FM-001 | {{Element}} | {{Failure}} | {{1-10}} | {{1-10}} | {{1-10}} | {{RPN}} | Critical | {{Action}} | {{Dimension}} |
+| FM-001-{execution_id} | {{Element}} | {{Failure}} | {{1-10}} | {{1-10}} | {{1-10}} | {{RPN}} | Critical | {{Action}} | {{Dimension}} |
+
+**Finding ID Format:** `FM-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `FM-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 Severity classification: see [Step 3](#step-3-rate-severity-occurrence-and-detection).
 
@@ -369,11 +371,11 @@ The API contract defines: (1) Plugin registration interface, (2) Event subscript
 
 | ID | Element | Failure Mode | S | O | D | RPN | Severity | Affected Dimension |
 |----|---------|-------------|---|---|---|-----|----------|---------------------|
-| FM-001 | Event subscription | No mechanism for plugin to unsubscribe from events; memory leak on plugin unload | 8 | 7 | 8 | 448 | Critical | Completeness |
-| FM-002 | Error handling | Error codes not defined; plugins cannot distinguish recoverable from fatal errors | 7 | 8 | 5 | 280 | Critical | Actionability |
-| FM-003 | Versioning | No deprecation policy for API changes; plugins break silently on major version bumps | 8 | 5 | 7 | 280 | Critical | Methodological Rigor |
-| FM-004 | Command extension | No namespace isolation; plugin commands can collide with core commands | 6 | 6 | 6 | 216 | Critical | Internal Consistency |
-| FM-005 | Registration | No capability declaration; framework cannot validate plugin compatibility before loading | 5 | 4 | 5 | 100 | Major | Evidence Quality |
+| FM-001-20260215T1600 | Event subscription | No mechanism for plugin to unsubscribe from events; memory leak on plugin unload | 8 | 7 | 8 | 448 | Critical | Completeness |
+| FM-002-20260215T1600 | Error handling | Error codes not defined; plugins cannot distinguish recoverable from fatal errors | 7 | 8 | 5 | 280 | Critical | Actionability |
+| FM-003-20260215T1600 | Versioning | No deprecation policy for API changes; plugins break silently on major version bumps | 8 | 5 | 7 | 280 | Critical | Methodological Rigor |
+| FM-004-20260215T1600 | Command extension | No namespace isolation; plugin commands can collide with core commands | 6 | 6 | 6 | 216 | Critical | Internal Consistency |
+| FM-005-20260215T1600 | Registration | No capability declaration; framework cannot validate plugin compatibility before loading | 5 | 4 | 5 | 100 | Major | Evidence Quality |
 
 **After (API Contract Revised):**
 

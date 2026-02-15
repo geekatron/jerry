@@ -690,6 +690,124 @@ class TestCriticalityBasedStrategySelection:
 # ===========================================================================
 
 
+class TestFindingPrefixUniqueness:
+    """
+    Validates that finding ID prefixes are unique across all strategy templates
+    and properly documented with execution-scoped format.
+    """
+
+    def test_finding_prefixes_when_checked_then_all_unique(self):
+        """All 10 strategy templates must define unique STRATEGY_PREFIX values."""
+        prefixes_found = {}
+
+        for strategy_id, template_path in TEMPLATE_PATHS.items():
+            content = read_file(template_path)
+
+            # Extract Finding Prefix from Identity table
+            identity_table = extract_table_from_section(content, "Identity")
+            if identity_table is None:
+                identity_table = extract_table_from_section(content, "Section 1: Identity")
+
+            assert identity_table is not None, f"{strategy_id}: No table found in Identity section"
+
+            rows = parse_markdown_table(identity_table)
+            fields = {
+                row["Field"]: row["Value"] for row in rows if "Field" in row and "Value" in row
+            }
+
+            finding_prefix_value = fields.get("Finding Prefix", "")
+            # Extract prefix (handle both "DA-NNN" and "DA-NNN-{execution_id}" formats)
+            prefix_match = re.match(r"([A-Z]{2})-", finding_prefix_value)
+            assert prefix_match is not None, (
+                f"{strategy_id}: Finding Prefix not in expected format (found: {finding_prefix_value})"
+            )
+
+            prefix = prefix_match.group(1)
+
+            # Check for duplicates
+            if prefix in prefixes_found:
+                pytest.fail(
+                    f"Duplicate finding prefix '{prefix}' found in {strategy_id} "
+                    f"and {prefixes_found[prefix]}"
+                )
+
+            prefixes_found[prefix] = strategy_id
+
+        # Verify we found all 10 unique prefixes
+        assert len(prefixes_found) == 10, (
+            f"Expected 10 unique prefixes, found {len(prefixes_found)}: {list(prefixes_found.keys())}"
+        )
+
+    @pytest.mark.parametrize("strategy_id", SELECTED_STRATEGIES.keys())
+    def test_finding_id_format_when_read_then_documented_in_template(self, strategy_id: str):
+        """Each template must document the execution-scoped finding ID format."""
+        template_path = TEMPLATE_PATHS[strategy_id]
+        content = read_file(template_path)
+
+        # Get expected prefix
+        expected_prefix = SELECTED_STRATEGIES[strategy_id]["prefix"]
+
+        # Check for Finding ID Format documentation
+        # Look for patterns like "Finding ID Format:" or "{PREFIX}-{NNN}-{execution_id}"
+        format_pattern = f"{expected_prefix}-{{NNN}}-{{execution_id}}"
+
+        assert format_pattern in content, (
+            f"{strategy_id}: Template missing execution-scoped finding ID format documentation. "
+            f"Expected to find '{format_pattern}' in Output Format or Execution Protocol section."
+        )
+
+        # Also check for the explanation text about preventing collisions
+        collision_text_variants = [
+            "prevent ID collisions",
+            "preventing ID collisions",
+            "execution-scoped",
+            "tournament executions",
+        ]
+
+        has_collision_explanation = any(variant in content for variant in collision_text_variants)
+
+        assert has_collision_explanation, (
+            f"{strategy_id}: Template missing explanation for execution-scoped IDs "
+            "(should mention preventing collisions or tournament executions)"
+        )
+
+    @pytest.mark.parametrize("strategy_id", SELECTED_STRATEGIES.keys())
+    def test_finding_id_examples_when_present_then_use_scoped_format(self, strategy_id: str):
+        """Examples in templates should use execution-scoped finding IDs, not just PREFIX-NNN."""
+        template_path = TEMPLATE_PATHS[strategy_id]
+        content = read_file(template_path)
+
+        expected_prefix = SELECTED_STRATEGIES[strategy_id]["prefix"]
+
+        # Extract Examples section
+        examples_match = re.search(
+            r"^##\s+(?:Section 7: )?Examples.*?(?=^##\s+|\Z)", content, re.MULTILINE | re.DOTALL
+        )
+
+        if examples_match is None:
+            pytest.skip(f"{strategy_id}: No Examples section found")
+
+        examples_content = examples_match.group(0)
+
+        # Look for finding ID patterns in examples
+        # Old format: PREFIX-001, PREFIX-002, etc.
+        old_format_pattern = rf"{expected_prefix}-\d{{3}}(?!-)"
+        # New format: PREFIX-001-20260215T1430, PREFIX-001-sess-xyz, etc.
+        new_format_pattern = rf"{expected_prefix}-\d{{3}}-[\w-]+"
+
+        old_format_matches = re.findall(old_format_pattern, examples_content)
+        new_format_matches = re.findall(new_format_pattern, examples_content)
+
+        # Examples should use new format (scoped IDs), not old format
+        # Allow templates with no finding ID examples in the Examples section
+        if len(old_format_matches) > 0 or len(new_format_matches) > 0:
+            assert len(new_format_matches) > 0, (
+                f"{strategy_id}: Examples section contains finding IDs but uses old format "
+                f"({expected_prefix}-NNN) instead of execution-scoped format "
+                f"({expected_prefix}-NNN-execution_id). Found: {old_format_matches[:3]}"
+            )
+
+
 class TestTemplateContentQuality:
     """
     Validates that templates have substantive content in key sections

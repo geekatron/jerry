@@ -71,7 +71,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/nasa-se` | Requirements, V&V, reviews |
 | `/orchestration` | Multi-phase workflows |
 | `/architecture` | Design decisions |
-| `/adversary` | Adversarial quality reviews |
+| `/adversary` | Adversarial quality reviews, strategy templates, tournament execution, multi-strategy orchestration |
 | `/transcript` | Transcription parsing |
 
 **SessionStart Hook Tags:**

@@ -55,7 +55,7 @@ but "what would adversary X do?" -- tests the entire defense chain under realist
 | Strategy Name | Red Team Analysis |
 | Family | Role-Based Adversarialism |
 | Composite Score | 3.35 |
-| Finding Prefix | RT-NNN |
+| Finding Prefix | RT-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -275,8 +275,10 @@ Every S-001 execution MUST produce a Red Team report with these sections:
 
 | ID | Attack Vector | Category | Exploitability | Severity | Priority | Defense | Affected Dimension |
 |----|---------------|----------|----------------|----------|----------|---------|-------------------|
-| RT-001 | {{Attack vector}} | {{Ambiguity/Boundary/Circumvention/Dependency/Degradation}} | {{H/M/L}} | Critical | P0 | Missing | {{Dimension}} |
-| RT-002 | {{Attack vector}} | {{Category}} | {{H/M/L}} | Major | P1 | Partial | {{Dimension}} |
+| RT-001-{execution_id} | {{Attack vector}} | {{Ambiguity/Boundary/Circumvention/Dependency/Degradation}} | {{H/M/L}} | Critical | P0 | Missing | {{Dimension}} |
+| RT-002-{execution_id} | {{Attack vector}} | {{Category}} | {{H/M/L}} | Major | P1 | Partial | {{Dimension}} |
+
+**Finding ID Format:** `RT-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `RT-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 ### 4. Finding Details
 
@@ -375,11 +377,11 @@ The governance document defines: (1) 24 HARD rules that "CANNOT be overridden," 
 
 | ID | Attack Vector | Category | Exploitability | Severity | Priority | Defense | Affected Dimension |
 |----|---------------|----------|----------------|----------|----------|---------|-------------------|
-| RT-001 | Context rot degrades L1 rules: after 150K tokens, HARD rules loaded at session start are no longer attended to, effectively disabling enforcement | Degradation | High | Critical | P0 | Partial (L2 re-injection) | Methodological Rigor |
-| RT-002 | C1 classification abuse: operator classifies C3 work as C1 to avoid quality gate, since criticality self-classification has no independent verification | Circumvention | High | Major | P1 | Missing | Internal Consistency |
-| RT-003 | Steelman-before-critique ordering (H-16) has no deterministic enforcement: an agent can claim S-003 was applied without evidence, since no L3 gate checks for S-003 output artifact | Circumvention | Medium | Major | P1 | Missing | Evidence Quality |
-| RT-004 | AE-002 triggers on file path but not content: modifying rule semantics via a new file that imports/overrides `.context/rules/` content would bypass auto-escalation | Boundary | Medium | Major | P1 | Missing | Completeness |
-| RT-005 | Quality score self-assessment leniency: S-014 LLM-as-Judge is executed by the same agent that created the deliverable, enabling unconscious leniency bias | Degradation | Medium | Minor | P2 | Partial (rubric) | Evidence Quality |
+| RT-001-20260215T1730 | Context rot degrades L1 rules: after 150K tokens, HARD rules loaded at session start are no longer attended to, effectively disabling enforcement | Degradation | High | Critical | P0 | Partial (L2 re-injection) | Methodological Rigor |
+| RT-002-20260215T1730 | C1 classification abuse: operator classifies C3 work as C1 to avoid quality gate, since criticality self-classification has no independent verification | Circumvention | High | Major | P1 | Missing | Internal Consistency |
+| RT-003-20260215T1730 | Steelman-before-critique ordering (H-16) has no deterministic enforcement: an agent can claim S-003 was applied without evidence, since no L3 gate checks for S-003 output artifact | Circumvention | Medium | Major | P1 | Missing | Evidence Quality |
+| RT-004-20260215T1730 | AE-002 triggers on file path but not content: modifying rule semantics via a new file that imports/overrides `.context/rules/` content would bypass auto-escalation | Boundary | Medium | Major | P1 | Missing | Completeness |
+| RT-005-20260215T1730 | Quality score self-assessment leniency: S-014 LLM-as-Judge is executed by the same agent that created the deliverable, enabling unconscious leniency bias | Degradation | Medium | Minor | P2 | Partial (rubric) | Evidence Quality |
 
 **Step 4: Develop Countermeasures**
 

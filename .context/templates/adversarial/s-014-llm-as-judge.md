@@ -51,7 +51,7 @@ Highest-ranked strategy (composite score 4.40) in the Jerry quality framework.
 | Strategy Name | LLM-as-Judge |
 | Family | Iterative Self-Correction |
 | Composite Score | 4.40 |
-| Finding Prefix | LJ-NNN |
+| Finding Prefix | LJ-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -202,9 +202,11 @@ For EACH dimension (Completeness, Internal Consistency, Methodological Rigor, Ev
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| LJ-001 | Completeness score: {score}/1.00 | {Critical/Major/Minor} | {Specific evidence from deliverable} | Completeness |
-| LJ-002 | Internal Consistency score: {score}/1.00 | {Critical/Major/Minor} | {Specific evidence} | Internal Consistency |
+| LJ-001-{execution_id} | Completeness score: {score}/1.00 | {Critical/Major/Minor} | {Specific evidence from deliverable} | Completeness |
+| LJ-002-{execution_id} | Internal Consistency score: {score}/1.00 | {Critical/Major/Minor} | {Specific evidence} | Internal Consistency |
 | ... | ... | ... | ... | ... |
+
+**Finding ID Format:** `LJ-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `LJ-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 **Severity Definitions:**
 - **Critical:** Dimension score <= 0.50; fundamental issue blocking acceptance
@@ -308,7 +310,8 @@ Per H-15 (Self-review before presenting), execute this checklist:
 - [ ] **Uncertain scores resolved downward** — When unsure between adjacent scores, the lower score was chosen
 - [ ] **First-draft calibration considered** — If scoring a first draft, note that first drafts typically score 0.65-0.80 (descriptive observation, not a target range; exceptional first drafts may score higher, poor first drafts may score lower)
 - [ ] **No dimension scored above 0.95 without exceptional evidence** — High scores (0.95+) have documented exceptional justification
-- [ ] **High-scoring dimension verification** — For any dimension scoring > 0.90: list the 3 strongest evidence points that justify elevating it above "strong work" (0.90); if you cannot list 3 specific evidence points, revise the score downward
+- [ ] **High-scoring dimension verification (>= 0.95)** — For any dimension scoring >= 0.95: provide specific evidence justifying the exceptional score, actively counteracting leniency bias by documenting what makes this truly exceptional rather than merely strong
+- [ ] **High-scoring dimension verification (> 0.90)** — For any dimension scoring > 0.90: list the 3 strongest evidence points that justify elevating it above "strong work" (0.90); if you cannot list 3 specific evidence points, revise the score downward
 - [ ] **Low-scoring dimension verification** — List the 3 lowest-scoring dimensions and verify that specific evidence justifies each score; if evidence is vague or missing, document the gap explicitly
 - [ ] **Weighted composite matches calculation** — Mathematical verification of composite = sum of (dimension * weight)
 - [ ] **Verdict matches score range** — PASS/REVISE/ESCALATE verdict aligns with H-13 threshold and special conditions
@@ -752,16 +755,16 @@ composite = (0.65 * 0.20) + (0.85 * 0.20) + (0.55 * 0.20) + (0.50 * 0.15) + (0.7
 
 ---
 
-**Findings (Using LJ-NNN Prefix):**
+**Findings (Using LJ-NNN-{execution_id} Prefix):**
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| LJ-001 | Completeness score: 0.65/1.00 | Major | Context section is 1 sentence; no Alternatives, Implementation Plan, or detailed Consequences | Completeness |
-| LJ-002 | Internal Consistency score: 0.85/1.00 | Minor | "Testing will be easier" claim not explained or justified | Internal Consistency |
-| LJ-003 | Methodological Rigor score: 0.55/1.00 | Major | No alternatives analysis; "seems like a good fit" is not rigorous; no evaluation criteria | Methodological Rigor |
-| LJ-004 | Evidence Quality score: 0.50/1.00 | Critical | No citations, references, or data supporting the decision; all claims unsupported | Evidence Quality |
-| LJ-005 | Actionability score: 0.70/1.00 | Major | No implementation plan, migration strategy, or timeline; consequences are vague | Actionability |
-| LJ-006 | Traceability score: 0.40/1.00 | Critical | No links to requirements or stakeholders; decision cannot be traced to specific needs | Traceability |
+| LJ-001-20260215T1430 | Completeness score: 0.65/1.00 | Major | Context section is 1 sentence; no Alternatives, Implementation Plan, or detailed Consequences | Completeness |
+| LJ-002-20260215T1430 | Internal Consistency score: 0.85/1.00 | Minor | "Testing will be easier" claim not explained or justified | Internal Consistency |
+| LJ-003-20260215T1430 | Methodological Rigor score: 0.55/1.00 | Major | No alternatives analysis; "seems like a good fit" is not rigorous; no evaluation criteria | Methodological Rigor |
+| LJ-004-20260215T1430 | Evidence Quality score: 0.50/1.00 | Critical | No citations, references, or data supporting the decision; all claims unsupported | Evidence Quality |
+| LJ-005-20260215T1430 | Actionability score: 0.70/1.00 | Major | No implementation plan, migration strategy, or timeline; consequences are vague | Actionability |
+| LJ-006-20260215T1430 | Traceability score: 0.40/1.00 | Critical | No links to requirements or stakeholders; decision cannot be traced to specific needs | Traceability |
 
 ---
 

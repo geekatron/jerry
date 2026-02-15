@@ -51,7 +51,7 @@ Domain: Decision Science, Organizational Behavior, Group Decision-Making, Argume
 | Strategy Name | Devil's Advocate |
 | Family | Role-Based Adversarialism |
 | Composite Score | 4.10 |
-| Finding Prefix | DA-NNN |
+| Finding Prefix | DA-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -280,8 +280,10 @@ _Example: "6 counter-arguments identified (1 Critical, 3 Major, 2 Minor). The de
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| DA-001 | {{Counter-argument}} | Critical | {{Quote or reference from deliverable}} | {{Dimension}} |
-| DA-002 | {{Counter-argument}} | Major | {{Quote or reference from deliverable}} | {{Dimension}} |
+| DA-001-{execution_id} | {{Counter-argument}} | Critical | {{Quote or reference from deliverable}} | {{Dimension}} |
+| DA-002-{execution_id} | {{Counter-argument}} | Major | {{Quote or reference from deliverable}} | {{Dimension}} |
+
+**Finding ID Format:** `DA-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `DA-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 Severity definitions: see [Step 3: Construct Counter-Arguments](#step-3-construct-counter-arguments).
 
@@ -387,11 +389,11 @@ ADR-PROJ001-007 proposes event sourcing for the WorkItem aggregate. Key claims: 
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| DA-001 | No event schema versioning strategy | Major | ADR mentions "storing domain events" but does not address event schema evolution. When event shapes change (e.g., adding fields to WorkItemCreated), existing events become incompatible without an explicit upcasting or versioning strategy. | Completeness |
-| DA-002 | Operational complexity understated | Major | "Additional complexity in event store implementation" is acknowledged but not quantified. Event sourcing requires: event store, snapshot strategy, read model projection, eventual consistency handling, and replay tooling. This is a 5x complexity multiplier over simple CRUD, not a minor addition. | Evidence Quality |
-| DA-003 | "Clear state transitions" assumption is fragile | Major | ADR states "Created -> InProgress -> Done" but WorkItem domain model may evolve to include Blocked, InReview, Cancelled, or parallel sub-item states. Event sourcing with complex state machines requires saga/process manager patterns not addressed in the ADR. | Methodological Rigor |
-| DA-004 | No rollback or migration path defined | Minor | If event sourcing proves too complex, no strategy exists for reverting to a simpler persistence model. C2 classification assumes reversibility in 1 day, but event store migration is not a 1-day operation. | Actionability |
-| DA-005 | Audit trail benefit overstated for current scope | Minor | "Complete audit trail" is listed as a primary benefit, but Jerry's current WorkItem aggregate is used by a single developer in a CLI tool. The audit trail benefit is relevant for multi-user systems, not the current single-user scope. | Evidence Quality |
+| DA-001-20260215T1515 | No event schema versioning strategy | Major | ADR mentions "storing domain events" but does not address event schema evolution. When event shapes change (e.g., adding fields to WorkItemCreated), existing events become incompatible without an explicit upcasting or versioning strategy. | Completeness |
+| DA-002-20260215T1515 | Operational complexity understated | Major | "Additional complexity in event store implementation" is acknowledged but not quantified. Event sourcing requires: event store, snapshot strategy, read model projection, eventual consistency handling, and replay tooling. This is a 5x complexity multiplier over simple CRUD, not a minor addition. | Evidence Quality |
+| DA-003-20260215T1515 | "Clear state transitions" assumption is fragile | Major | ADR states "Created -> InProgress -> Done" but WorkItem domain model may evolve to include Blocked, InReview, Cancelled, or parallel sub-item states. Event sourcing with complex state machines requires saga/process manager patterns not addressed in the ADR. | Methodological Rigor |
+| DA-004-20260215T1515 | No rollback or migration path defined | Minor | If event sourcing proves too complex, no strategy exists for reverting to a simpler persistence model. C2 classification assumes reversibility in 1 day, but event store migration is not a 1-day operation. | Actionability |
+| DA-005-20260215T1515 | Audit trail benefit overstated for current scope | Minor | "Complete audit trail" is listed as a primary benefit, but Jerry's current WorkItem aggregate is used by a single developer in a CLI tool. The audit trail benefit is relevant for multi-user systems, not the current single-user scope. | Evidence Quality |
 
 **Step 4: Require Substantive Responses**
 

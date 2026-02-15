@@ -104,20 +104,49 @@ Note: S-014 (LLM-as-Judge) is handled by adv-scorer, not adv-executor.
 <execution_process>
 ## Execution Process
 
-### Step 1: Load and Validate Template
+### Step 1: Load and Validate Template (Lazy Loading)
 ```
 Read(file_path="{template_path}")
 ```
 If the template file does not exist, warn the orchestrator and request a corrected path. Do NOT attempt execution without a valid template.
 
-Parse the template to extract:
-- Strategy purpose and focus areas
-- Execution Protocol (step-by-step procedure)
-- Finding classification criteria
-- Output format requirements
-- Finding Prefix from Identity section (Section 1)
+**Context Optimization (Lazy Loading):**
 
-Verify the template contains the 8 required sections per TEMPLATE-FORMAT.md. If validation fails, warn the orchestrator.
+To minimize context consumption, load ONLY the sections needed for execution:
+
+1. **Section 1 (Identity)**: Load to extract Finding Prefix (required for generating finding identifiers)
+2. **Section 4 (Execution Protocol)**: Load the complete step-by-step procedure for strategy execution
+3. **Other sections**: Do NOT load during execution. Load on-demand only when:
+   - Explicit reference lookup required (e.g., user asks "what are the prerequisites?")
+   - Template authoring or validation work
+   - Debugging execution issues
+
+**Section Boundary Parsing:**
+
+Templates follow TEMPLATE-FORMAT.md v1.1.0 structure. To extract a specific section:
+
+1. Locate the section heading: `## Section N: {Section Name}` where N is 1-8
+2. Extract content from the section heading line to the NEXT `## Section` heading (exclusive)
+3. Section order: 1-Identity, 2-Purpose, 3-Prerequisites, 4-Execution Protocol, 5-Output Format, 6-Scoring Rubric, 7-Examples, 8-Integration
+
+**Example parsing logic:**
+```
+# To extract Section 4 (Execution Protocol):
+start_marker = "## Section 4: Execution Protocol"
+end_marker = "## Section 5: Output Format"
+execution_protocol = lines_between(start_marker, end_marker)
+```
+
+**Context Budget:**
+- **Before optimization**: ~20,300 tokens (10 full templates for C4 tournament)
+- **After optimization**: ~10,000 tokens (10 Execution Protocol sections only)
+- **Target**: C4 tournament MUST consume <= 10,000 tokens of template content
+
+Parse the loaded sections to extract:
+- Finding Prefix from Identity section (Section 1)
+- Execution Protocol steps (Section 4)
+
+Verify Section 1 and Section 4 are present. If either is missing, warn the orchestrator.
 
 ### Step 2: Load Deliverable
 ```
@@ -126,10 +155,22 @@ Read(file_path="{deliverable_path}")
 Read the full deliverable content for analysis.
 
 ### Step 3: Execute Strategy Protocol
-Follow the template's Execution Protocol section step-by-step:
+Follow the template's Execution Protocol section (Section 4, loaded in Step 1) step-by-step:
 1. Apply each protocol step to the deliverable
 2. For each step, document findings with specific evidence
 3. Classify each finding by severity
+
+**On-Demand Section Loading:**
+
+If during execution you need information from other template sections:
+- **Section 2 (Purpose)**: Load only if you need to understand "When to Use" or pairing context
+- **Section 3 (Prerequisites)**: Load only if input validation fails and you need to check requirements
+- **Section 5 (Output Format)**: Load only if the Execution Protocol references specific output structure not clear from context
+- **Section 6 (Scoring Rubric)**: Load only if you need meta-evaluation criteria (rarely needed during execution)
+- **Section 7 (Examples)**: Load only if you need to reference concrete demonstrations
+- **Section 8 (Integration)**: Load only if you need cross-strategy pairing or criticality information
+
+**Default behavior**: Execute using ONLY Section 1 (Identity) and Section 4 (Execution Protocol). This keeps context consumption minimal.
 
 ### Step 4: Classify Findings
 

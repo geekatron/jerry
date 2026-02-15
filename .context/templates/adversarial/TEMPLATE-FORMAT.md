@@ -51,7 +51,7 @@ This document defines the **canonical format** for all adversarial strategy exec
 
 **File naming:** `.context/templates/adversarial/{S-NNN}-{strategy-slug}.md`
 
-**Target length per template:** 200-400 lines.
+**Target length per template:** Templates SHOULD target 200-400 lines. Templates exceeding 500 lines are acceptable when the excess is justified by comprehensive examples, detailed scoring rubrics, or extensive execution protocol steps that materially improve strategy execution quality.
 
 ### Versioning Protocol
 
@@ -83,6 +83,8 @@ This format document and all strategy templates use semantic versioning (MAJOR.M
 | S-001 | Red Team Analysis | 3.35 | Role-Based Adversarialism | RT-NNN |
 
 Each strategy uses a unique 2-letter **Finding Prefix** for its findings (e.g., DA-001). Templates MUST define their prefix in Section 1.
+
+**Execution-Scoped Finding IDs:** To prevent ID collisions when multiple tournament executions or strategy invocations occur, finding IDs MUST include an execution-scoped suffix: `{PREFIX}-{NNN}-{execution_id}` where `execution_id` is a short timestamp or session identifier (e.g., `FM-001-20260215T1430`). This ensures uniqueness across tournament runs and parallel strategy executions.
 
 **Excluded strategies:** 5 strategies were excluded from the catalog (S-005, S-006, S-008, S-009, S-015) per ADR-EPIC002-001. No templates are required for excluded strategies. See quality-enforcement.md Strategy Catalog for exclusion rationale and reconsideration conditions.
 
@@ -169,7 +171,17 @@ Every finding MUST be documented as:
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| {{PREFIX}}-001 | {{Description}} | Critical/Major/Minor | {{Reference}} | {{Dimension}} |
+| {{PREFIX}}-001-{{execution_id}} | {{Description}} | Critical/Major/Minor | {{Reference}} | {{Dimension}} |
+
+**Finding ID Format:** `{PREFIX}-{NNN}-{execution_id}`
+- **PREFIX:** 2-letter strategy code (e.g., DA, FM, RT)
+- **NNN:** Sequential finding number (001, 002, etc.)
+- **execution_id:** Short timestamp or session identifier to ensure uniqueness across tournament runs (e.g., `20260215T1430`, `sess-a3f2`, `run-042`)
+
+**Examples:**
+- `FM-001-20260215T1430` (first FMEA finding in tournament run at 2026-02-15 14:30)
+- `DA-003-sess-a3f2` (third Devil's Advocate finding in session a3f2)
+- `RT-012-run-042` (12th Red Team finding in execution run 042)
 
 **Severity definitions:**
 - **Critical:** Invalidates the deliverable or violates a HARD rule. Blocks acceptance.

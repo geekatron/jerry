@@ -56,7 +56,7 @@ strategies (S-002, S-004, S-001).
 | Strategy Name | Steelman Technique |
 | Family | Dialectical Synthesis |
 | Composite Score | 4.30 |
-| Finding Prefix | SM-NNN |
+| Finding Prefix | SM-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -387,11 +387,13 @@ The event-driven approach is strongest when bounded contexts have clear autonomy
 
 | ID | Improvement | Severity | Affected Dimension |
 |----|-------------|----------|--------------------|
-| SM-001 | Added specific coupling examples (3 contexts, cascade effects) | Major | Evidence Quality |
-| SM-002 | Added authoritative citations (Evans, Vernon, H-07) | Major | Evidence Quality |
-| SM-003 | Added alternatives considered table | Major | Methodological Rigor |
-| SM-004 | Added Evidence section with chapter references | Major | Evidence Quality |
-| SM-005 | Expanded consequences with mitigations | Critical | Completeness |
+| SM-001-20260215T1400 | Added specific coupling examples (3 contexts, cascade effects) | Major | Evidence Quality |
+| SM-002-20260215T1400 | Added authoritative citations (Evans, Vernon, H-07) | Major | Evidence Quality |
+| SM-003-20260215T1400 | Added alternatives considered table | Major | Methodological Rigor |
+| SM-004-20260215T1400 | Added Evidence section with chapter references | Major | Evidence Quality |
+| SM-005-20260215T1400 | Expanded consequences with mitigations | Critical | Completeness |
+
+**Finding ID Format:** `SM-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `SM-001-20260215T1400`) to prevent ID collisions across tournament executions.
 
 **Step 6: Present the Steelman**
 

@@ -42,7 +42,7 @@ FORMAT: Conforms to TEMPLATE-FORMAT.md v1.1.0
 | Strategy Name | Self-Refine |
 | Family | Iterative Self-Correction |
 | Composite Score | 4.00 |
-| Finding Prefix | SR-NNN |
+| Finding Prefix | SR-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -158,6 +158,8 @@ A self-review report containing:
 - **Medium attachment (proceed with caution):** Time investment 2-8 hours, some emotional investment, can articulate 1+ potential flaw; apply extra scrutiny in Step 2 leniency bias counteraction (aim for 5+ findings instead of 3)
 - **High attachment (defer to external critique):** Time investment >8 hours, strong emotional investment in solution, difficulty articulating potential flaws, deadline pressure, or fatigue
 
+**Conservative Fallback for Boundary Cases:** When your self-assessment falls between two attachment levels (e.g., 2 hours of work, some defensiveness about approach), SHOULD choose the higher attachment level and apply the stricter guidance. Document the rationale for the boundary assessment (e.g., "Between Low and Medium; choosing Medium due to mild defensiveness about approach").
+
 **Decision Point:**
 - If you cannot achieve objectivity (high emotional attachment, time pressure, fatigue), STOP and defer to external adversarial critique (S-002 or S-004)
 - If objectivity achieved, proceed to Step 2
@@ -201,9 +203,11 @@ A self-review report containing:
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| SR-001 | Missing edge case handling for empty input | Major | Section 3 "Input Validation" has no null/empty checks | Completeness |
-| SR-002 | Contradictory threshold values | Critical | Page 2 states >=0.92, Page 5 states >=0.90 | Internal Consistency |
-| SR-003 | Recommendation lacks implementation steps | Minor | "Improve performance" without specifying how | Actionability |
+| SR-001-{execution_id} | Missing edge case handling for empty input | Major | Section 3 "Input Validation" has no null/empty checks | Completeness |
+| SR-002-{execution_id} | Contradictory threshold values | Critical | Page 2 states >=0.92, Page 5 states >=0.90 | Internal Consistency |
+| SR-003-{execution_id} | Recommendation lacks implementation steps | Minor | "Improve performance" without specifying how | Actionability |
+
+**Finding ID Format:** `SR-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `SR-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 **Decision Point:**
 - If Critical findings exist, revision is MANDATORY before external review

@@ -53,7 +53,7 @@ optimism bias and plan anchoring, enabling more complete failure enumeration.
 | Strategy Name | Pre-Mortem Analysis |
 | Family | Role-Based Adversarialism |
 | Composite Score | 4.10 |
-| Finding Prefix | PM-NNN |
+| Finding Prefix | PM-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -280,8 +280,10 @@ Every S-004 execution MUST produce a Pre-Mortem report with these sections:
 
 | ID | Failure Cause | Category | Likelihood | Severity | Priority | Affected Dimension |
 |----|---------------|----------|------------|----------|----------|--------------------|
-| PM-001 | {{Failure cause}} | {{Technical/Process/Assumption/External/Resource}} | {{H/M/L}} | Critical | P0 | {{Dimension}} |
-| PM-002 | {{Failure cause}} | {{Category}} | {{H/M/L}} | Major | P1 | {{Dimension}} |
+| PM-001-{execution_id} | {{Failure cause}} | {{Technical/Process/Assumption/External/Resource}} | {{H/M/L}} | Critical | P0 | {{Dimension}} |
+| PM-002-{execution_id} | {{Failure cause}} | {{Category}} | {{H/M/L}} | Major | P1 | {{Dimension}} |
+
+**Finding ID Format:** `PM-{NNN}-{execution_id}` where execution_id is a short timestamp or session identifier (e.g., `PM-001-20260215T1430`) to prevent ID collisions across tournament executions.
 
 Severity definitions: see [Step 3: Generate Failure Causes](#step-3-generate-failure-causes).
 
@@ -383,32 +385,32 @@ The migration plan proposes: (1) replacing filesystem persistence with event sto
 
 | ID | Failure Cause | Category | Likelihood | Severity | Priority | Affected Dimension |
 |----|---------------|----------|------------|----------|----------|--------------------|
-| PM-001 | Dual-write consistency failure: events written to event store but filesystem write fails, creating divergent state | Technical | High | Critical | P0 | Internal Consistency |
-| PM-002 | Event schema evolution not planned: WorkItem events change shape in Phase 2, breaking Phase 1 projections | Assumption | Medium | Major | P1 | Completeness |
-| PM-003 | Read model projection lag exceeds user tolerance: CLI commands return stale data during high-activity periods | Technical | Medium | Major | P1 | Actionability |
-| PM-004 | 2-week timeline assumes no discovery work: actual event modeling and aggregate redesign takes 4+ weeks | Resource | High | Major | P1 | Evidence Quality |
-| PM-005 | Rollback path undefined: if Phase 2 fails, no documented procedure to revert to filesystem-only | Process | Medium | Major | P1 | Methodological Rigor |
-| PM-006 | Single developer knowledge concentration: if primary implementer is unavailable, migration stalls | Resource | Low | Minor | P2 | Actionability |
+| PM-001-20260215T1430 | Dual-write consistency failure: events written to event store but filesystem write fails, creating divergent state | Technical | High | Critical | P0 | Internal Consistency |
+| PM-002-20260215T1430 | Event schema evolution not planned: WorkItem events change shape in Phase 2, breaking Phase 1 projections | Assumption | Medium | Major | P1 | Completeness |
+| PM-003-20260215T1430 | Read model projection lag exceeds user tolerance: CLI commands return stale data during high-activity periods | Technical | Medium | Major | P1 | Actionability |
+| PM-004-20260215T1430 | 2-week timeline assumes no discovery work: actual event modeling and aggregate redesign takes 4+ weeks | Resource | High | Major | P1 | Evidence Quality |
+| PM-005-20260215T1430 | Rollback path undefined: if Phase 2 fails, no documented procedure to revert to filesystem-only | Process | Medium | Major | P1 | Methodological Rigor |
+| PM-006-20260215T1430 | Single developer knowledge concentration: if primary implementer is unavailable, migration stalls | Resource | Low | Minor | P2 | Actionability |
 
 **Step 5: Develop Mitigations**
 
-**P0:** PM-001 -- Add transactional dual-write with compensating action (if either write fails, both roll back). Document the consistency guarantee in the plan. Acceptance criteria: dual-write failure scenario documented with specific recovery procedure.
+**P0:** PM-001-20260215T1430 -- Add transactional dual-write with compensating action (if either write fails, both roll back). Document the consistency guarantee in the plan. Acceptance criteria: dual-write failure scenario documented with specific recovery procedure.
 
-**P1:** PM-002 -- Add "Event Versioning Strategy" section with upcasting approach. PM-003 -- Define acceptable staleness SLA and add synchronous fallback for critical queries. PM-004 -- Add Phase 0 "Discovery Sprint" (1 week) for event modeling before implementation begins. PM-005 -- Add "Rollback Procedure" section with step-by-step reversion for each phase.
+**P1:** PM-002-20260215T1430 -- Add "Event Versioning Strategy" section with upcasting approach. PM-003-20260215T1430 -- Define acceptable staleness SLA and add synchronous fallback for critical queries. PM-004-20260215T1430 -- Add Phase 0 "Discovery Sprint" (1 week) for event modeling before implementation begins. PM-005-20260215T1430 -- Add "Rollback Procedure" section with step-by-step reversion for each phase.
 
 **After (Migration Plan Revised Based on PM Findings):**
 
-The creator addressed findings: added transactional dual-write section (PM-001), event versioning strategy (PM-002), staleness SLA with sync fallback (PM-003), Phase 0 discovery sprint extending timeline to 3 weeks (PM-004), and per-phase rollback procedures (PM-005). PM-006 acknowledged with cross-training note.
+The creator addressed findings: added transactional dual-write section (PM-001-20260215T1430), event versioning strategy (PM-002-20260215T1430), staleness SLA with sync fallback (PM-003-20260215T1430), Phase 0 discovery sprint extending timeline to 3 weeks (PM-004-20260215T1430), and per-phase rollback procedures (PM-005-20260215T1430). PM-006-20260215T1430 acknowledged with cross-training note.
 
 **Scoring Impact:**
 
 | Dimension | Weight | Impact | Rationale |
 |-----------|--------|--------|-----------|
-| Completeness | 0.20 | Negative | PM-002, PM-005: Missing versioning strategy and rollback path are significant gaps |
-| Internal Consistency | 0.20 | Negative | PM-001: Dual-write without consistency guarantee contradicts "safe migration" claim |
-| Methodological Rigor | 0.20 | Negative | PM-004: Unrealistic timeline undermines plan credibility |
-| Evidence Quality | 0.15 | Negative | PM-004: No basis for 2-week estimate; no comparable migration data cited |
-| Actionability | 0.15 | Negative | PM-003, PM-006: No staleness SLA; single-point-of-failure risk |
+| Completeness | 0.20 | Negative | PM-002-20260215T1430, PM-005-20260215T1430: Missing versioning strategy and rollback path are significant gaps |
+| Internal Consistency | 0.20 | Negative | PM-001-20260215T1430: Dual-write without consistency guarantee contradicts "safe migration" claim |
+| Methodological Rigor | 0.20 | Negative | PM-004-20260215T1430: Unrealistic timeline undermines plan credibility |
+| Evidence Quality | 0.15 | Negative | PM-004-20260215T1430: No basis for 2-week estimate; no comparable migration data cited |
+| Actionability | 0.15 | Negative | PM-003-20260215T1430, PM-006-20260215T1430: No staleness SLA; single-point-of-failure risk |
 | Traceability | 0.10 | Neutral | Plan traces to architecture ADR and CQRS design decision |
 
 **Result:** 1 Critical and 4 Major failure causes identified via prospective hindsight. After mitigation, the plan addressed all P0/P1 findings, improving 5 of 6 dimensions toward the 0.92 threshold.
