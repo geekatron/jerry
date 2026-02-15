@@ -455,10 +455,10 @@ When running strategies via adv-executor, load ONLY:
 **When to Load Full Template:**
 
 Load additional sections on-demand when:
-- **Explicit reference lookup**: User asks "What are the prerequisites for S-004?" → Load Section 3
+- **Explicit reference lookup**: User asks "What are the prerequisites for S-004?" → Load Prerequisites section
 - **Template authoring/validation**: Creating or validating a new template → Load all 8 sections
-- **Debugging execution issues**: Execution fails and you need to understand purpose/examples → Load Sections 2, 7
-- **Cross-strategy pairing questions**: User asks "Can S-002 and S-004 run together?" → Load Section 8
+- **Debugging execution issues**: Execution fails and you need to understand purpose/examples → Load Purpose and Examples sections
+- **Cross-strategy pairing questions**: User asks "Can S-002 and S-004 run together?" → Load Integration section
 
 **Context Budget by Criticality:**
 
@@ -472,10 +472,11 @@ Load additional sections on-demand when:
 **Context Budget Enforcement:**
 
 Per quality-enforcement.md SSOT:
-- C4 tournament MUST consume <= 10,000 tokens of template content
+- C4 tournament SHOULD consume <= 20,000 tokens of template content
 - Before optimization: Loading all 8 sections from all templates consumes significantly more context
 - After optimization: Loading only Identity + Execution Protocol sections (~25% of each template)
 - Reduction: Approximately 75% token savings by loading only required sections
+- Note: Exact token consumption depends on template sizes; the target is an approximate budget, not a hard limit
 
 **Section Boundary Parsing:**
 

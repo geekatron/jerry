@@ -123,24 +123,45 @@ To minimize context consumption, load ONLY the sections needed for execution:
 
 **Section Boundary Parsing:**
 
-Templates follow TEMPLATE-FORMAT.md v1.1.0 structure. Section boundaries are identified by `## ` (h2 markdown heading) markers. To extract a specific section:
+Templates follow TEMPLATE-FORMAT.md v1.1.0 structure. Section boundaries are identified by `## ` (h2 markdown heading) markers. Templates use TWO heading formats:
 
-1. Locate the section heading: `## {Section Name}` (e.g., `## Identity`, `## Execution Protocol`)
+1. **Simple format** (8 templates): `## {Section Name}` (e.g., `## Identity`, `## Execution Protocol`)
+2. **Numbered format** (2 templates: S-003, S-014): `## Section N: {Section Name}` (e.g., `## Section 1: Identity`, `## Section 4: Execution Protocol`)
+
+**Parsing Logic (handles both formats):**
+
+To extract a specific section:
+1. Locate the section heading using substring match: Find any h2 heading that CONTAINS the section name (e.g., any heading containing "Identity" or "Execution Protocol")
 2. Extract content from the section heading line to the NEXT `## ` heading (exclusive)
 3. Section order (per each template's Document Sections navigation table): Identity, Purpose, Prerequisites, Execution Protocol, Output Format, Scoring Rubric, Examples, Integration
 
 **Example parsing logic:**
 ```
 # To extract Execution Protocol section:
-start_marker = "## Execution Protocol"
-end_marker = "## Output Format"
+# Match ANY h2 heading containing "Execution Protocol"
+# This handles both:
+#   - "## Execution Protocol" (simple format)
+#   - "## Section 4: Execution Protocol" (numbered format)
+start_marker = heading_containing("Execution Protocol")
+end_marker = heading_containing("Output Format")
 execution_protocol = lines_between(start_marker, end_marker)
 ```
+
+**Note:** Some templates include additional sections beyond the canonical 8 (e.g., "Document Sections", "Validation Checklist"). The parser locates sections by name match, not positional order. Non-canonical headings are skipped during extraction.
+
+**Fallback Logic:**
+
+If a section heading is not found using the primary format:
+1. Search for any h2 heading containing the section name as a substring (e.g., `## Section 4: Execution Protocol` matches substring "Execution Protocol")
+2. If no matching heading is found, warn the orchestrator with:
+   - The specific heading searched (e.g., "Execution Protocol")
+   - List of all actual h2 headings found in the template
 
 **Context Budget:**
 - **Before optimization**: Loading all 8 sections from all templates consumes significant context
 - **After optimization**: Loading only Identity + Execution Protocol sections (approximately 25% of each template's content)
-- **Target**: C4 tournament MUST consume <= 10,000 tokens of template content (loading ~2 sections per strategy × 10 strategies)
+- **Target**: C4 tournament SHOULD consume <= 20,000 tokens of template content (loading ~2 sections per strategy × 10 strategies)
+- **Note**: Exact token consumption depends on template sizes; the target is an approximate budget, not a hard limit
 
 Parse the loaded sections to extract:
 - Finding Prefix from Identity section

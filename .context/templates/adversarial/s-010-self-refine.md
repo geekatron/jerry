@@ -42,7 +42,7 @@ FORMAT: Conforms to TEMPLATE-FORMAT.md v1.1.0
 | Strategy Name | Self-Refine |
 | Family | Iterative Self-Correction |
 | Composite Score | 4.00 |
-| Finding Prefix | SR-NNN-{execution_id}-{execution_id} |
+| Finding Prefix | SR-NNN-{execution_id} |
 | Version | 1.0.0 |
 | Date | 2026-02-15 |
 
@@ -478,24 +478,24 @@ Redis is fast and widely used. It will improve performance.
 
 | ID | Finding | Severity | Evidence | Affected Dimension |
 |----|---------|----------|----------|--------------------|
-| SR-001 | Missing alternatives analysis | Major | ADR template requires "Options Considered" section; none present | Completeness |
-| SR-002 | Unsupported performance claims | Major | "Fast" and "improve performance" lack benchmarks or data | Evidence Quality |
-| SR-003 | Cache invalidation mentioned but not addressed | Critical | Consequences list "cache invalidation strategy needed" but Implementation has no invalidation steps | Internal Consistency |
-| SR-004 | Vague implementation step | Major | "Add caching layer" does not specify where in architecture or which components affected | Actionability |
-| SR-005 | No failure mode analysis | Minor | What happens if Redis is unavailable? No fallback mentioned | Completeness |
+| SR-001-20260215T1430 | Missing alternatives analysis | Major | ADR template requires "Options Considered" section; none present | Completeness |
+| SR-002-20260215T1430 | Unsupported performance claims | Major | "Fast" and "improve performance" lack benchmarks or data | Evidence Quality |
+| SR-003-20260215T1430 | Cache invalidation mentioned but not addressed | Critical | Consequences list "cache invalidation strategy needed" but Implementation has no invalidation steps | Internal Consistency |
+| SR-004-20260215T1430 | Vague implementation step | Major | "Add caching layer" does not specify where in architecture or which components affected | Actionability |
+| SR-005-20260215T1430 | No failure mode analysis | Minor | What happens if Redis is unavailable? No fallback mentioned | Completeness |
 
 **Step 4: Generate Revision Recommendations**
 
-1. **Add "Alternatives Considered" section** (resolves SR-001) — Effort: 15 min — Compare Redis vs Memcached vs in-process cache with trade-off analysis
-2. **Provide performance benchmarks** (resolves SR-002) — Effort: 10 min — Link to existing benchmarks or create simple test showing latency improvement
-3. **Define cache invalidation strategy** (resolves SR-003) — Effort: 20 min — Add subsection under Implementation specifying TTL values, invalidation triggers, and consistency approach
-4. **Expand implementation steps** (resolves SR-004) — Effort: 10 min — Specify which API endpoints get caching, cache key structure, configuration parameters
-5. **Add failure mode handling** (resolves SR-005) — Effort: 5 min — Document graceful degradation if Redis unavailable
+1. **Add "Alternatives Considered" section** (resolves SR-001-20260215T1430) — Effort: 15 min — Compare Redis vs Memcached vs in-process cache with trade-off analysis
+2. **Provide performance benchmarks** (resolves SR-002-20260215T1430) — Effort: 10 min — Link to existing benchmarks or create simple test showing latency improvement
+3. **Define cache invalidation strategy** (resolves SR-003-20260215T1430) — Effort: 20 min — Add subsection under Implementation specifying TTL values, invalidation triggers, and consistency approach
+4. **Expand implementation steps** (resolves SR-004-20260215T1430) — Effort: 10 min — Specify which API endpoints get caching, cache key structure, configuration parameters
+5. **Add failure mode handling** (resolves SR-005-20260215T1430) — Effort: 5 min — Document graceful degradation if Redis unavailable
 
 **Step 5: Revise and Verify**
 - Applied all 5 recommendations
-- Re-checked Internal Consistency: SR-003 resolved (cache invalidation now in Implementation section)
-- Re-checked Evidence Quality: SR-002 resolved (linked to Redis benchmark study)
+- Re-checked Internal Consistency: SR-003-20260215T1430 resolved (cache invalidation now in Implementation section)
+- Re-checked Evidence Quality: SR-002-20260215T1430 resolved (linked to Redis benchmark study)
 - Unresolved findings: None
 
 **Step 6: Decide Next Action**
@@ -551,11 +551,11 @@ Redis benchmarks show 0.8ms P95 latency (source: redis.io/topics/benchmarks). Wi
 
 | Dimension | Weight | Impact | Rationale |
 |-----------|--------|--------|-----------|
-| Completeness | 0.20 | Negative → Positive | SR-001 resolved (alternatives added); SR-005 resolved (failure modes added) |
-| Internal Consistency | 0.20 | Negative → Positive | SR-003 resolved (cache invalidation now addressed in Implementation) |
+| Completeness | 0.20 | Negative → Positive | SR-001-20260215T1430 resolved (alternatives added); SR-005-20260215T1430 resolved (failure modes added) |
+| Internal Consistency | 0.20 | Negative → Positive | SR-003-20260215T1430 resolved (cache invalidation now addressed in Implementation) |
 | Methodological Rigor | 0.20 | Neutral | ADR template followed after revision |
-| Evidence Quality | 0.15 | Negative → Positive | SR-002 resolved (benchmarks and SLA calculations provided) |
-| Actionability | 0.15 | Negative → Positive | SR-004 resolved (implementation steps now concrete with cache key format, TTL values) |
+| Evidence Quality | 0.15 | Negative → Positive | SR-002-20260215T1430 resolved (benchmarks and SLA calculations provided) |
+| Actionability | 0.15 | Negative → Positive | SR-004-20260215T1430 resolved (implementation steps now concrete with cache key format, TTL values) |
 | Traceability | 0.10 | Neutral → Positive | Added source link to Redis benchmarks, linked to SLA requirement |
 
 **Outcome:** Deliverable improved from estimated 0.65 to 0.93. Ready for S-007 Constitutional AI Critique.

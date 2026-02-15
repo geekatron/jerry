@@ -64,9 +64,9 @@ quality:
     traceability: { weight: 0.10, min: 0.85 }
 
   enabler_scores:
-    EN-813: { score: 0.806, iterations: 1, status: "REVISE" }
-    EN-814: { score: 0.887, iterations: 1, status: "REVISE" }
-    EN-815: { score: 0.91, iterations: 1, status: "REVISE" }
+    EN-813: { score: 0.840, iterations: 2, status: "REVISE" }
+    EN-814: { score: 0.917, iterations: 2, status: "REVISE" }
+    EN-815: { score: 0.922, iterations: 2, status: "PASS_CONDITIONAL" }
     EN-816: { score: null, iterations: 0, status: "PENDING" }
     EN-817: { score: null, iterations: 0, status: "PENDING" }
     EN-818: { score: null, iterations: 0, status: "PENDING" }
@@ -75,8 +75,8 @@ quality:
   workflow_quality:
     average_score: null
     lowest_score: null
-    total_iterations: 3
-    gates_passed: 0
+    total_iterations: 6
+    gates_passed: 1
     gates_failed: 0
     feat009_rescore: null
 
@@ -115,11 +115,12 @@ pipeline:
           effort: 5
           tasks: 4
           findings: ["T-001"]
-          iterations: 1
-          score: 0.806
+          iterations: 2
+          score: 0.840
           creator_agent: "sonnet"
           critic_agent: "opus"
-          critic_findings: ["CR-001: Section heading format mismatch (Critical)", "CR-002: Token count claims ~4x off (Critical)", "CR-003: No parsing validation (Major)"]
+          critic_findings_iter1: ["CR-001: Section heading format mismatch (Critical)", "CR-002: Token count claims ~4x off (Critical)", "CR-003: No parsing validation (Major)"]
+          critic_findings_iter2: ["CR-004: 2/10 templates use ## Section N: format (Critical)", "CR-005: 10K token target infeasible ~20K (Major)", "CR-006: No heading mismatch fallback (Major)", "CR-007: Section order incomplete (Minor)", "CR-008: PLAYBOOK numbered section refs (Minor)"]
 
         - id: "EN-814"
           name: "Finding ID Scoping & Uniqueness"
@@ -127,23 +128,25 @@ pipeline:
           effort: 3
           tasks: 3
           findings: ["T-002"]
-          iterations: 1
-          score: 0.887
+          iterations: 2
+          score: 0.917
           creator_agent: "sonnet"
           critic_agent: "opus"
-          critic_findings: ["CR-001: Body text old PREFIX-NNN format in all 10 templates (Critical)", "CR-002: TEMPLATE-FORMAT catalog table inconsistent (Major)", "CR-005: S-010 Output Format placeholders (Major)"]
+          critic_findings_iter1: ["CR-001: Body text old PREFIX-NNN format in all 10 templates (Critical)", "CR-002: TEMPLATE-FORMAT catalog table inconsistent (Major)", "CR-005: S-010 Output Format placeholders (Major)"]
+          critic_findings_iter2: ["CR-006: S-010 Identity table double {execution_id} (Major)", "CR-007: S-010 Examples section bare SR-NNN IDs (Major)"]
 
         - id: "EN-815"
           name: "Documentation & Navigation Fixes"
-          status: "REVISE"
+          status: "PASS_CONDITIONAL"
           effort: 2
           tasks: 5
           findings: ["T-007", "T-023", "T-026", "T-027", "T-028"]
-          iterations: 1
-          score: 0.91
+          iterations: 2
+          score: 0.922
           creator_agent: "sonnet"
           critic_agent: "opus"
-          critic_findings: ["LJ-001: S-007 nav anchor targets HTML comment (Major)", "LJ-002: S-014 Step 6 redundant 0.95 items (Major)", "LJ-003: EN-815 metadata stale (Minor)"]
+          critic_findings_iter1: ["LJ-001: S-007 nav anchor targets HTML comment (Major)", "LJ-002: S-014 Step 6 redundant 0.95 items (Major)", "LJ-003: EN-815 metadata stale (Minor)"]
+          critic_findings_iter2: ["LJ-001-iter2: S-010 Finding Prefix duplication (Minor, FIXED)", "LJ-002-iter2: EN-815 metadata deferred (Minor)"]
 
     - id: 2
       name: "P1 Documentation & Runtime"
@@ -262,10 +265,16 @@ execution_queue:
         - "en815-critic"
 
     - id: 3
-      name: "Phase 1: Revision iteration 1 (all 3 enablers)"
+      name: "Phase 1: Revision + Critic iteration 2 (all 3 enablers)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      note: "Iter 2 scores: EN-813: 0.840 (REVISE), EN-814: 0.917 (REVISE), EN-815: 0.922 (PASS conditional)"
+
+    - id: "3b"
+      name: "Phase 1: Revision iteration 2 (EN-813 + EN-814 fixes)"
       execution_mode: "PARALLEL"
       status: "IN_PROGRESS"
-      note: "All 3 scored < 0.92. EN-813: 0.806, EN-814: 0.887, EN-815: 0.91"
+      note: "EN-813: heading format + token target + fallback. EN-814: S-010 fixes applied directly. EN-815: S-010 duplication fixed."
 
     - id: 4
       name: "Phase 2: EN-816 + EN-817 (parallel creators)"
@@ -350,12 +359,16 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Revision iteration 1 running for EN-813, EN-814, EN-815"
-      execution_mode: "PARALLEL"
+    - action: "EN-813 revision iteration 2 in progress (heading format, token target, fallback)"
+      execution_mode: "SEQUENTIAL"
+    - action: "EN-814 S-010 fixes applied directly — ready for critic iteration 3"
+      execution_mode: "DONE"
+    - action: "EN-815 PASS (conditional) — S-010 duplication fixed"
+      execution_mode: "DONE"
 
   subsequent:
-    - action: "Run critic iteration 2 for revised enablers"
-      depends_on: "Revision iteration 1 complete"
+    - action: "Run critic iteration 3 for EN-813 and EN-814"
+      depends_on: "EN-813 revision iteration 2 complete"
     - action: "Execute Phase 2 upon Phase 1 completion"
       depends_on: "Phase 1 all enablers >= 0.92"
 
@@ -364,8 +377,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: null
-  current_state: "Phase 1 iteration 1 revision in progress — all 3 enablers scored below 0.92"
-  next_step: "Wait for revision agents, then run critic iteration 2"
+  current_state: "Phase 1 iteration 2 complete — EN-815 PASS, EN-813/EN-814 revising"
+  next_step: "Wait for EN-813 revision, then critic iteration 3 for EN-813 + EN-814"
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"
