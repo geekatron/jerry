@@ -84,10 +84,12 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | ID | Title | Status | Priority | Enablers | Progress |
 |----|-------|--------|----------|----------|----------|
 | FEAT-008 | Quality Framework Implementation | in_progress | critical | 11 (EN-701-711) | 0% |
+| FEAT-009 | Adversarial Strategy Templates & /adversary Skill | pending | critical | 12 (EN-801-812) | 0% |
 
 ### Feature Links
 
 - [FEAT-008: Quality Framework Implementation](./FEAT-008-quality-framework-implementation/FEAT-008-quality-framework-implementation.md)
+- [FEAT-009: Adversarial Strategy Templates & /adversary Skill](./FEAT-009-adversarial-strategy-templates/FEAT-009-adversarial-strategy-templates.md)
 
 ---
 
@@ -99,8 +101,8 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/1 completed)              |
-| Enablers:  [....................] 0% (0/11 completed)             |
+| Features:  [....................] 0% (0/2 completed)              |
+| Enablers:  [....................] 0% (0/23 completed)             |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                               |
 +------------------------------------------------------------------+
@@ -110,11 +112,11 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 1 |
+| **Total Features** | 2 |
 | **Completed Features** | 0 |
 | **In Progress Features** | 1 |
-| **Pending Features** | 0 |
-| **Total Enablers** | 11 |
+| **Pending Features** | 1 |
+| **Total Enablers** | 23 |
 | **Feature Completion %** | 0% |
 
 ---
@@ -143,3 +145,4 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 |------|--------|--------|-------|
 | 2026-02-14 | Claude | pending | Epic created. EPIC-002 produced 82 design artifacts, 13 enablers, 2 ADRs, and 329+ test specifications. Zero code was written. EPIC-003 transforms those designs into enforcement reality. |
 | 2026-02-14 | Claude | in_progress | Execution started. FEAT-008 created with 11 enablers across 5 phases. |
+| 2026-02-14 | Claude | in_progress | FEAT-009 created: Adversarial Strategy Templates & /adversary Skill. 12 enablers (EN-801-812) across 7 phases. |
