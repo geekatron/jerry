@@ -67,16 +67,16 @@ quality:
     EN-813: { score: 0.922, iterations: 4, status: "PASS" }
     EN-814: { score: 0.950, iterations: 3, status: "PASS" }
     EN-815: { score: 0.922, iterations: 2, status: "PASS" }
-    EN-816: { score: null, iterations: 0, status: "PENDING" }
-    EN-817: { score: null, iterations: 0, status: "PENDING" }
+    EN-816: { score: 0.931, iterations: 2, status: "PASS" }
+    EN-817: { score: 0.935, iterations: 1, status: "PASS" }
     EN-818: { score: null, iterations: 0, status: "PENDING" }
     EN-819: { score: null, iterations: 0, status: "PENDING" }
 
   workflow_quality:
-    average_score: null
-    lowest_score: null
-    total_iterations: 9
-    gates_passed: 3
+    average_score: 0.930
+    lowest_score: 0.922
+    total_iterations: 12
+    gates_passed: 5
     gates_failed: 0
     feat009_rescore: null
 
@@ -96,10 +96,10 @@ pipeline:
   id: "remediation"
   name: "FEAT-010 Tournament Remediation Pipeline"
   short_alias: "impl"
-  status: "PHASE_2_IN_PROGRESS"
-  current_phase: 2
+  status: "PHASE_3_IN_PROGRESS"
+  current_phase: 3
   total_phases: 4
-  progress_percent: 25
+  progress_percent: 50
 
   phases:
     - id: 1
@@ -154,39 +154,42 @@ pipeline:
     - id: 2
       name: "P1 Documentation & Runtime"
       path_id: "phase-2-p1-docs-runtime"
-      status: "IN_PROGRESS"
+      status: "COMPLETE"
       blocked_by: null
       started_at: "2026-02-16T00:00:00Z"
-      completed_at: null
+      completed_at: "2026-02-16T01:00:00Z"
       enablers:
         - id: "EN-816"
           name: "Skill Documentation Completeness"
-          status: "PENDING"
+          status: "PASS"
           effort: 3
           tasks: 4
           findings: ["T-008", "T-014", "T-022"]
-          iterations: 0
-          score: null
-          creator_agent: null
-          critic_agent: null
+          iterations: 2
+          score: 0.931
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["F-001: Wrong adv-selector.md path (Major)", "F-002: Timing count 10 vs 11 (Minor)", "F-003: PLAYBOOK skip-strategy contradicts no-skip (Critical)", "F-004: S-011 filename wrong (Major)", "F-005: adv-executor fallback_behavior label (Minor)", "F-006: AE rows optional dash (Minor)"]
+          critic_findings_iter2: []
 
         - id: "EN-817"
           name: "Runtime Enforcement"
-          status: "PENDING"
+          status: "PASS"
           effort: 5
           tasks: 5
           findings: ["T-004", "T-006", "T-009"]
-          iterations: 0
-          score: null
-          creator_agent: null
-          critic_agent: null
+          iterations: 1
+          score: 0.935
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["F-001: Relative paths not constants (Minor)", "F-002: Vacuous pass in H-16 test (Minor)", "F-003: Path inconsistency across tests (Minor)", "F-004: AE loop vs parametrize (Minor)", "F-005: No SSOT cross-validation (Minor)"]
 
     - id: 3
       name: "P1 CI & SSOT"
       path_id: "phase-3-p1-ci-ssot"
-      status: "BLOCKED"
-      blocked_by: "phase-2"
-      started_at: null
+      status: "IN_PROGRESS"
+      blocked_by: null
+      started_at: "2026-02-16T01:00:00Z"
       completed_at: null
       enablers:
         - id: "EN-818"
@@ -247,7 +250,7 @@ pipeline:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 4
+  current_group: 6
   groups:
     - id: 1
       name: "Phase 1: EN-813 + EN-814 + EN-815 (parallel creators)"
@@ -288,23 +291,19 @@ execution_queue:
     - id: 4
       name: "Phase 2: EN-816 + EN-817 (parallel creators)"
       execution_mode: "PARALLEL"
-      status: "IN_PROGRESS"
-      blocked_by: null
-      agents:
-        - "en816-creator"
-        - "en817-creator"
+      status: "COMPLETE"
+      note: "EN-816 + EN-817 creators delivered."
 
     - id: 5
       name: "Phase 2: Critic + revision cycles"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "group-4"
+      status: "COMPLETE"
+      note: "EN-816: 0.853→0.931 (2 iter). EN-817: 0.935 (1 iter). Phase 2 COMPLETE."
 
     - id: 6
       name: "Phase 3: EN-818 + EN-819 (parallel creators)"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
-      blocked_by: "phase-2-complete"
+      status: "IN_PROGRESS"
       agents:
         - "en818-creator"
         - "en819-creator"
@@ -325,37 +324,41 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-001"
+  latest_id: "CP-002"
   entries:
     - id: "CP-001"
       timestamp: "2026-02-16T00:00:00Z"
       trigger: "PHASE_COMPLETE"
       recovery_point: "Phase 1 complete — EN-813 (0.922), EN-814 (0.950), EN-815 (0.922)"
+    - id: "CP-002"
+      timestamp: "2026-02-16T01:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 2 complete — EN-816 (0.931), EN-817 (0.935)"
 
 # =============================================================================
 # METRICS
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 1
+    phases_complete: 2
     phases_total: 4
-    phases_percent: 25
-    enablers_complete: 3
+    phases_percent: 50
+    enablers_complete: 5
     enablers_total: 7
-    enablers_percent: 43
-    tasks_complete: 12
+    enablers_percent: 71
+    tasks_complete: 21
     tasks_total: 29
-    tasks_percent: 41
+    tasks_percent: 72
 
   quality:
-    average_enabler_score: 0.931
+    average_enabler_score: 0.932
     lowest_enabler_score: 0.922
-    total_iterations: 9
+    total_iterations: 12
     human_escalations: 0
 
   timing:
     workflow_started: "2026-02-15T20:00:00Z"
-    last_activity: "2026-02-16T00:00:00Z"
+    last_activity: "2026-02-16T01:00:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -372,22 +375,22 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Phase 2: Launch EN-816 + EN-817 parallel creators"
+    - action: "Phase 3: Launch EN-818 + EN-819 parallel creators"
       execution_mode: "PARALLEL"
 
   subsequent:
-    - action: "Phase 2: Critic + revision cycles for EN-816 + EN-817"
-      depends_on: "EN-816 + EN-817 creators complete"
-    - action: "Execute Phase 3 upon Phase 2 completion"
-      depends_on: "Phase 2 all enablers >= 0.92"
+    - action: "Phase 3: Critic + revision cycles for EN-818 + EN-819"
+      depends_on: "EN-818 + EN-819 creators complete"
+    - action: "Execute Phase 4 (integration validation) upon Phase 3 completion"
+      depends_on: "Phase 3 all enablers >= 0.92"
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-001"
-  current_state: "Phase 1 COMPLETE — EN-813 (0.922), EN-814 (0.950), EN-815 (0.922). Phase 2 starting."
-  next_step: "Launch EN-816 + EN-817 parallel creators for Phase 2."
+  last_checkpoint: "CP-002"
+  current_state: "Phase 2 COMPLETE — EN-816 (0.931), EN-817 (0.935). Phase 3 starting."
+  next_step: "Launch EN-818 + EN-819 parallel creators for Phase 3."
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"
