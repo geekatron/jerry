@@ -642,6 +642,7 @@ quality:
 | H-13 | Quality threshold >= 0.92 | Phase gates enforce weighted composite scoring |
 | H-14 | Creator-critic-revision (3 min) | Adversarial cycle at every sync barrier |
 | H-15 | Self-review before presenting | S-010 applied before gate submission |
+| WTI-007 | Mandatory Template Usage | Entity files created during orchestration MUST use canonical templates from `.context/templates/worktracker/` |
 
 ---
 

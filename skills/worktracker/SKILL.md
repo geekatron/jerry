@@ -64,6 +64,7 @@ Invoke `/worktracker` when you need to:
 The following rules are automatically loaded when this skill is invoked:
 
 @rules/worktracker-behavior-rules.md
+@rules/worktracker-templates.md
 
 ---
 
@@ -121,6 +122,7 @@ Agents enforce Worktracker Integrity (WTI) rules defined in `.context/templates/
 | WTI-004 | Synchronize Before Reporting | wt-auditor |
 | WTI-005 | Atomic State Updates | wt-auditor |
 | WTI-006 | Evidence-Based Closure | wt-verifier |
+| WTI-007 | Mandatory Template Usage | wt-auditor |
 
 ### Output Templates
 

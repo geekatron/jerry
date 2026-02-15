@@ -226,6 +226,83 @@ Status: DONE
 
 ---
 
+## WTI-007: Mandatory Template Usage
+
+**Rule:** Agents MUST read the canonical template from `.context/templates/worktracker/` BEFORE creating any worktracker entity file. Entity files MUST NOT be created from memory or by copying other instance files.
+
+**Rationale:** Templates define the canonical structure with REQUIRED sections (Business Value, Progress Summary, Evidence, etc.) that are essential for closure verification (WTI-002), evidence-based closure (WTI-006), and truthful progress tracking (WTI-003). Creating files from memory causes structural drift and missing REQUIRED sections.
+
+**Enforcement:**
+- wt-auditor checks entity files for template-required section presence
+- `@rules/worktracker-templates.md` loaded via SKILL.md `@` import
+- WTI-007 referenced in orchestration SKILL.md Constitutional Compliance table
+
+**Procedure:**
+1. Identify the entity type being created
+2. Read the canonical template from `.context/templates/worktracker/`
+3. Populate the instance file using the template as a guide — include all REQUIRED and RECOMMENDED sections
+4. NEVER create entity files from memory or by copying other instance files
+
+**Entity-to-Template Mapping:**
+
+| Entity Type | Template File |
+|-------------|--------------|
+| Epic | `EPIC.md` |
+| Feature | `FEATURE.md` |
+| Enabler | `ENABLER.md` |
+| Story | `STORY.md` |
+| Task | `TASK.md` |
+| Bug | `BUG.md` |
+| Discovery | `DISCOVERY.md` |
+| Decision | `DECISION.md` |
+| Impediment | `IMPEDIMENT.md` |
+| Spike | `SPIKE.md` |
+
+**Section Categories:**
+- **REQUIRED** sections MUST appear in every instance file
+- **RECOMMENDED** sections SHOULD appear unless there is documented justification to omit
+- **OPTIONAL** sections MAY be included based on context
+- **REFERENCE** sections (State Machine, Containment Rules, Invariants, System Mapping) are guidance for populating the file — do NOT copy them into instance files
+
+**Violation Example:**
+```markdown
+# BAD: Entity file created from memory, missing REQUIRED sections
+# EN-001: Example Enabler
+
+> **Type:** enabler
+> **Status:** pending
+
+## Summary
+Some text here.
+<!-- Missing: Business Value, Progress Summary, Evidence, Acceptance Criteria -->
+```
+
+**Correct Example:**
+```markdown
+# GOOD: Entity file created from template, all REQUIRED sections present
+# EN-001: Example Enabler
+
+> **Type:** enabler
+> **Status:** BACKLOG
+
+## Summary
+...
+## Problem Statement
+...
+## Business Value
+...
+## Technical Approach
+...
+## Progress Summary
+...
+## Acceptance Criteria
+...
+## Evidence
+...
+```
+
+---
+
 ## Compliance Verification
 
 ### Automated Checks
@@ -235,6 +312,7 @@ Status: DONE
 - Evidence link verification (WTI-006)
 - Status consistency checks (WTI-003)
 - Parent-child synchronization (WTI-005)
+- Template compliance checks (WTI-007)
 
 ### Manual Review
 
@@ -255,6 +333,7 @@ Human reviewers SHOULD verify:
 | WTI-004 | MEDIUM | Regenerate report from fresh state |
 | WTI-005 | HIGH | Synchronize parent-child state; add consistency check |
 | WTI-006 | HIGH | Add evidence links or revert to IN_PROGRESS |
+| WTI-007 | HIGH | Read canonical template and add missing REQUIRED sections |
 
 ---
 
@@ -268,4 +347,5 @@ Human reviewers SHOULD verify:
 ---
 
 *Version History:*
+- 1.1 (2026-02-15): Added WTI-007 (Mandatory Template Usage). Source: DISC-001.
 - 1.0 (2026-02-02): Initial version from synthesis document

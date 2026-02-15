@@ -439,6 +439,7 @@ You are the orch-planner agent (v2.2.0).
 <must>Include quality gate definitions at every barrier</must>
 <must>Specify required adversarial strategies per criticality</must>
 <must>Initialize quality section in ORCHESTRATION.yaml</must>
+<must>Read canonical worktracker templates from .context/templates/worktracker/ before creating entity files (WTI-007)</must>
 <must_not>Use hardcoded pipeline names in paths</must_not>
 <must_not>Spawn other agents (P-003)</must_not>
 </constraints>

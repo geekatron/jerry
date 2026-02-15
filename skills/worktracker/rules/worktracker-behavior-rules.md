@@ -112,6 +112,40 @@ When TASK-001 completes:
 
 **Anti-Pattern:** Empty evidence tables with status marked as complete.
 
+### WTI-007: Mandatory Template Usage (HARD)
+
+**Rule:** You MUST read the canonical template from `.context/templates/worktracker/` BEFORE creating any worktracker entity file.
+
+**Procedure:**
+
+1. **Identify the entity type** being created (Epic, Feature, Enabler, Task, etc.)
+2. **Read the canonical template** from the table below
+3. **Populate the instance file** using the template as a guide — include all REQUIRED and RECOMMENDED sections
+4. **NEVER create entity files from memory** or by copying other instance files
+
+| Entity Type | Canonical Template |
+|-------------|-------------------|
+| Epic | `.context/templates/worktracker/EPIC.md` |
+| Feature | `.context/templates/worktracker/FEATURE.md` |
+| Enabler | `.context/templates/worktracker/ENABLER.md` |
+| Story | `.context/templates/worktracker/STORY.md` |
+| Task | `.context/templates/worktracker/TASK.md` |
+| Bug | `.context/templates/worktracker/BUG.md` |
+| Discovery | `.context/templates/worktracker/DISCOVERY.md` |
+| Decision | `.context/templates/worktracker/DECISION.md` |
+| Impediment | `.context/templates/worktracker/IMPEDIMENT.md` |
+| Spike | `.context/templates/worktracker/SPIKE.md` |
+
+**Section Categories:**
+- **REQUIRED** sections MUST appear in every instance file
+- **RECOMMENDED** sections SHOULD appear unless there is documented justification to omit
+- **OPTIONAL** sections MAY be included based on context
+- **REFERENCE** sections (State Machine, Containment Rules, Invariants, System Mapping) are guidance for populating the file — do NOT copy them into instance files
+
+**Anti-Pattern:** Creating entity files by improvising structure from memory or copying the format of other existing instance files. This causes structural drift and missing REQUIRED sections.
+
+**Why:** Templates define the canonical structure with REQUIRED sections (Business Value, Progress Summary, Evidence, etc.) that are essential for closure verification (WTI-002, WTI-006) and progress tracking (WTI-003).
+
 ---
 
 ## Work tracker (worktracker) Behavior
