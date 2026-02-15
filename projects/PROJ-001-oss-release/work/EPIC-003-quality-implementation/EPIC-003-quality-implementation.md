@@ -86,12 +86,14 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | FEAT-008 | Quality Framework Implementation | in_progress | critical | 11 (EN-701-711) | 0% |
 | FEAT-009 | Adversarial Strategy Templates & /adversary Skill | in_progress | critical | 12 (EN-801-812) | 100% |
 | FEAT-010 | FEAT-009 Tournament Remediation | pending | critical | 7 (EN-813-819) | 0% |
+| FEAT-011 | Template Compliance Remediation | pending | critical | 4 (EN-820-823) | 0% |
 
 ### Feature Links
 
 - [FEAT-008: Quality Framework Implementation](./FEAT-008-quality-framework-implementation/FEAT-008-quality-framework-implementation.md)
 - [FEAT-009: Adversarial Strategy Templates & /adversary Skill](./FEAT-009-adversarial-strategy-templates/FEAT-009-adversarial-strategy-templates.md)
 - [FEAT-010: FEAT-009 Tournament Remediation](./FEAT-010-tournament-remediation/FEAT-010-tournament-remediation.md)
+- [FEAT-011: Template Compliance Remediation](./FEAT-011-template-compliance-remediation/FEAT-011-template-compliance-remediation.md)
 
 ---
 
@@ -103,8 +105,8 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/3 completed)              |
-| Enablers:  [....................] 0% (0/30 completed)             |
+| Features:  [....................] 0% (0/4 completed)              |
+| Enablers:  [....................] 0% (0/34 completed)             |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                               |
 +------------------------------------------------------------------+
@@ -114,11 +116,11 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 3 |
+| **Total Features** | 4 |
 | **Completed Features** | 0 |
 | **In Progress Features** | 1 |
-| **Pending Features** | 2 |
-| **Total Enablers** | 30 |
+| **Pending Features** | 3 |
+| **Total Enablers** | 34 |
 | **Feature Completion %** | 0% |
 
 ---
@@ -150,3 +152,5 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | 2026-02-14 | Claude | in_progress | FEAT-009 created: Adversarial Strategy Templates & /adversary Skill. 12 enablers (EN-801-812) across 7 phases. |
 | 2026-02-15 | Claude | in_progress | FEAT-009 all 12 enablers PASS (>= 0.92). C4 Tournament Review scored 0.85 (REVISE). |
 | 2026-02-15 | Claude | in_progress | FEAT-010 created: FEAT-009 Tournament Remediation. 7 enablers (EN-813-819), 29 tasks, 26 effort points. Addresses 7 Critical + 18 Major findings. |
+| 2026-02-15 | Claude | in_progress | DISC-001 created: Template Non-Compliance Discovery. Root cause: worktracker-templates.md not @-imported in SKILL.md. |
+| 2026-02-15 | Claude | in_progress | FEAT-011 created: Template Compliance Remediation. 4 enablers (EN-820-823), 14 tasks, 24 effort points. Category A: behavioral root cause. Category B: 64+ file remediation. |
