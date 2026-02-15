@@ -314,6 +314,24 @@ When review output is itself a C2+ deliverable (e.g., formal architecture review
 - **As creator:** Apply S-010 + adversarial strategies during review, then submit for critic review
 - **Expect critic feedback** on: Completeness (0.20 weight), Methodological Rigor (0.20 weight), Actionability (0.15 weight)
 - **Revision focus:** Ensure all review dimensions are covered, findings are evidence-based, recommendations are actionable
+
+### Strategy Execution Templates
+
+Detailed execution protocols for each strategy are in `.context/templates/adversarial/`:
+
+| Strategy | Template Path |
+|----------|---------------|
+| S-001 (Red Team) | `.context/templates/adversarial/s-001-red-team.md` |
+| S-002 (Devil's Advocate) | `.context/templates/adversarial/s-002-devils-advocate.md` |
+| S-003 (Steelman) | `.context/templates/adversarial/s-003-steelman.md` |
+| S-004 (Pre-Mortem) | `.context/templates/adversarial/s-004-pre-mortem.md` |
+| S-007 (Constitutional AI) | `.context/templates/adversarial/s-007-constitutional-ai.md` |
+| S-010 (Self-Refine) | `.context/templates/adversarial/s-010-self-refine.md` |
+| S-011 (CoVe) | `.context/templates/adversarial/s-011-cove.md` |
+| S-012 (FMEA) | `.context/templates/adversarial/s-012-fmea.md` |
+| S-014 (LLM-as-Judge) | `.context/templates/adversarial/s-014-llm-as-judge.md` |
+
+**Template Format Standard:** `.context/templates/adversarial/TEMPLATE-FORMAT.md`
 </adversarial_quality>
 
 <invocation_protocol>

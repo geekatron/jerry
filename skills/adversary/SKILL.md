@@ -180,16 +180,16 @@ All 10 strategy templates in `.context/templates/adversarial/` are created by se
 
 | Template | Source Enabler | Status |
 |----------|---------------|--------|
-| `s-001-red-team.md` | EN-803 | Created by EN-803 |
-| `s-002-devils-advocate.md` | EN-804 | Created by EN-804 |
-| `s-003-steelman.md` | EN-805 | Created by EN-805 |
-| `s-004-pre-mortem.md` | EN-806 | Created by EN-806 |
-| `s-007-constitutional-ai.md` | EN-807 | Created by EN-807 |
-| `s-010-self-refine.md` | EN-808 | Created by EN-808 |
-| `s-011-chain-of-verification.md` | EN-809 | Created by EN-809 |
-| `s-012-fmea.md` | EN-810 | Created by EN-810 |
-| `s-013-inversion.md` | EN-811 | Created by EN-811 |
-| `s-014-llm-as-judge.md` | EN-812 | Created by EN-812 |
+| `s-001-red-team.md` | EN-809 | Created by EN-809 |
+| `s-002-devils-advocate.md` | EN-806 | Created by EN-806 |
+| `s-003-steelman.md` | EN-807 | Created by EN-807 |
+| `s-004-pre-mortem.md` | EN-808 | Created by EN-808 |
+| `s-007-constitutional-ai.md` | EN-805 | Created by EN-805 |
+| `s-010-self-refine.md` | EN-804 | Created by EN-804 |
+| `s-011-cove.md` | EN-809 | Created by EN-809 |
+| `s-012-fmea.md` | EN-808 | Created by EN-808 |
+| `s-013-inversion.md` | EN-808 | Created by EN-808 |
+| `s-014-llm-as-judge.md` | EN-803 | Created by EN-803 |
 
 **Fallback behavior:** If a template file is not found, adv-executor SHOULD warn the orchestrator and request the template path or skip the strategy. The skill skeleton (EN-802) defines the structure; the template enablers populate the content.
 

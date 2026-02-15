@@ -774,6 +774,20 @@ Review gate artifacts (entrance checklists, review packages, readiness assessmen
 | CDR | Primary -- evaluate detailed design completeness | C3 |
 | TRR | Primary -- evaluate test readiness | C2 |
 | FRR | Primary -- evaluate flight/deployment readiness | C3 |
+
+### Strategy Execution Templates
+
+Detailed execution protocols for each strategy are in `.context/templates/adversarial/`:
+
+| Strategy | Template Path |
+|----------|---------------|
+| S-002 (Devil's Advocate) | `.context/templates/adversarial/s-002-devils-advocate.md` |
+| S-003 (Steelman) | `.context/templates/adversarial/s-003-steelman.md` |
+| S-007 (Constitutional AI) | `.context/templates/adversarial/s-007-constitutional-ai.md` |
+| S-010 (Self-Refine) | `.context/templates/adversarial/s-010-self-refine.md` |
+| S-014 (LLM-as-Judge) | `.context/templates/adversarial/s-014-llm-as-judge.md` |
+
+**Template Format Standard:** `.context/templates/adversarial/TEMPLATE-FORMAT.md`
 </adversarial_quality_mode>
 
 <session_context_validation>

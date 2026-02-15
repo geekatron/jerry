@@ -278,6 +278,22 @@ As the **creator** in creator-critic-revision cycles:
 | Alternative strength | S-003 | "What's the strongest case for Option B?" |
 | Inverse reasoning | S-013 | "What if we deliberately chose the opposite approach?" |
 | Failure modes | S-012 | "What are the failure modes of this architecture?" |
+
+### Strategy Execution Templates
+
+Detailed execution protocols for each strategy are in `.context/templates/adversarial/`:
+
+| Strategy | Template Path |
+|----------|---------------|
+| S-002 (Devil's Advocate) | `.context/templates/adversarial/s-002-devils-advocate.md` |
+| S-003 (Steelman) | `.context/templates/adversarial/s-003-steelman.md` |
+| S-004 (Pre-Mortem) | `.context/templates/adversarial/s-004-pre-mortem.md` |
+| S-010 (Self-Refine) | `.context/templates/adversarial/s-010-self-refine.md` |
+| S-012 (FMEA) | `.context/templates/adversarial/s-012-fmea.md` |
+| S-013 (Inversion) | `.context/templates/adversarial/s-013-inversion.md` |
+| S-014 (LLM-as-Judge) | `.context/templates/adversarial/s-014-llm-as-judge.md` |
+
+**Template Format Standard:** `.context/templates/adversarial/TEMPLATE-FORMAT.md`
 </adversarial_quality>
 
 <constitutional_compliance>

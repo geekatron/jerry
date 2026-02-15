@@ -293,6 +293,27 @@ Per SSOT guidance, LLM-as-Judge scoring tends toward leniency. Counteract by:
 - Comparing the deliverable against the rubric criteria literally, not impressionistically
 - When uncertain between two adjacent scores, choose the lower one
 - Documenting specific evidence for each dimension score
+
+### Strategy Execution Templates
+
+Detailed step-by-step execution protocols for each strategy are available in `.context/templates/adversarial/`:
+
+| Strategy | Template Path |
+|----------|---------------|
+| S-014 (LLM-as-Judge) | `.context/templates/adversarial/s-014-llm-as-judge.md` |
+| S-003 (Steelman) | `.context/templates/adversarial/s-003-steelman.md` |
+| S-010 (Self-Refine) | `.context/templates/adversarial/s-010-self-refine.md` |
+| S-007 (Constitutional AI) | `.context/templates/adversarial/s-007-constitutional-ai.md` |
+| S-002 (Devil's Advocate) | `.context/templates/adversarial/s-002-devils-advocate.md` |
+| S-004 (Pre-Mortem) | `.context/templates/adversarial/s-004-pre-mortem.md` |
+| S-013 (Inversion) | `.context/templates/adversarial/s-013-inversion.md` |
+| S-001 (Red Team) | `.context/templates/adversarial/s-001-red-team.md` |
+| S-012 (FMEA) | `.context/templates/adversarial/s-012-fmea.md` |
+| S-011 (CoVe) | `.context/templates/adversarial/s-011-cove.md` |
+
+**Template Format Standard:** `.context/templates/adversarial/TEMPLATE-FORMAT.md`
+
+For standalone adversarial reviews outside creator-critic loops, use the `/adversary` skill.
 </adversarial_quality>
 
 <evaluation_criteria_framework>
