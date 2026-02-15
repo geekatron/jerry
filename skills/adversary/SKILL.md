@@ -1,0 +1,280 @@
+---
+name: adversary
+description: On-demand adversarial quality reviews using strategy templates. Selects strategies by criticality level, executes adversarial templates against deliverables, and scores quality using LLM-as-Judge rubric. Integrates with quality-enforcement.md SSOT.
+version: "1.0.0"
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+activation-keywords:
+  - "adversarial review"
+  - "adversary"
+  - "quality review"
+  - "strategy review"
+  - "adversarial critique"
+  - "run adversarial"
+  - "quality scoring"
+  - "LLM-as-Judge"
+  - "strategy selection"
+  - "tournament review"
+---
+
+# Adversary Skill
+
+> **Version:** 1.0.0
+> **Framework:** Jerry Adversarial Quality (ADV)
+> **Constitutional Compliance:** Jerry Constitution v1.0
+> **SSOT Reference:** `.context/rules/quality-enforcement.md`
+
+## Document Audience (Triple-Lens)
+
+This SKILL.md serves multiple audiences:
+
+| Level | Audience | Sections to Focus On |
+|-------|----------|---------------------|
+| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Available Agents](#available-agents), [Adversarial Quality Mode](#adversarial-quality-mode) |
+| **L2 (Architect)** | Workflow designers | [P-003 Compliance](#p-003-compliance), [Constitutional Compliance](#constitutional-compliance), [Strategy Templates](#strategy-templates) |
+
+---
+
+## Purpose
+
+The Adversary skill provides **on-demand adversarial quality reviews** using strategy templates from the Jerry quality framework. Unlike the problem-solving skill's integrated adversarial mode (which operates within creator-critic loops), the adversary skill is invoked explicitly when you need a standalone adversarial assessment of any deliverable.
+
+### Key Capabilities
+
+- **Strategy Selection** - Maps criticality levels (C1-C4) to the correct adversarial strategy sets per SSOT
+- **Strategy Execution** - Loads and runs strategy templates against deliverables with structured finding classification
+- **Quality Scoring** - Implements S-014 LLM-as-Judge rubric scoring with 6-dimension weighted composite
+- **Criticality-Aware** - Automatically adjusts review depth based on deliverable criticality
+- **Template-Driven** - All strategies follow standardized templates from `.context/templates/adversarial/`
+
+---
+
+## When to Use This Skill
+
+Activate when:
+
+- Applying adversarial strategies to a completed deliverable outside a creator-critic loop
+- Scoring deliverable quality using the SSOT 6-dimension rubric
+- Selecting the appropriate strategy set for a given criticality level
+- Running a full C4 tournament review with all 10 strategies
+- Pairing S-003 (Steelman) before S-002 (Devil's Advocate) per H-16
+- Needing a standalone quality assessment without revision cycles
+
+**Do NOT use when:**
+
+- You need a creator-critic-revision loop (use `/problem-solving` with ps-critic instead)
+- You need code review or defect detection (use ps-reviewer)
+- You need constraint validation (use ps-validator)
+
+---
+
+## Available Agents
+
+| Agent | Role | Model | Output Location |
+|-------|------|-------|-----------------|
+| `adv-selector` | Strategy Selector - Maps criticality to strategy sets | haiku | Strategy selection plan |
+| `adv-executor` | Strategy Executor - Runs strategy templates against deliverables | sonnet | Strategy execution reports |
+| `adv-scorer` | Quality Scorer - LLM-as-Judge rubric scoring | sonnet | Quality score reports |
+
+---
+
+## P-003 Compliance
+
+All adversary agents are **workers**, NOT orchestrators. The MAIN CONTEXT (Claude session) orchestrates the workflow.
+
+```
+P-003 AGENT HIERARCHY:
+======================
+
+  +-------------------+
+  | MAIN CONTEXT      |  <-- Orchestrator (Claude session)
+  | (orchestrator)    |
+  +-------------------+
+     |        |        |
+     v        v        v
+  +------+ +------+ +------+
+  | adv- | | adv- | | adv- |   <-- Workers (max 1 level)
+  |select| |exec  | |scorer|
+  +------+ +------+ +------+
+
+  Agents CANNOT invoke other agents.
+  Agents CANNOT spawn subagents.
+  Only MAIN CONTEXT orchestrates the sequence.
+```
+
+---
+
+## Invoking an Agent
+
+### Option 1: Natural Language Request
+
+Simply describe what you need:
+
+```
+"Run an adversarial review of this ADR at C3 criticality"
+"Score this deliverable with LLM-as-Judge"
+"What strategies should I apply for a C2 review?"
+"Run Devil's Advocate and Steelman on this design document"
+"Execute a full C4 tournament review on the architecture proposal"
+```
+
+The orchestrator will select the appropriate agent(s) based on keywords and context.
+
+### Option 2: Explicit Agent Request
+
+Request a specific agent:
+
+```
+"Use adv-selector to pick strategies for C3 criticality"
+"Have adv-executor run S-002 Devil's Advocate on the ADR"
+"I need adv-scorer to produce a quality score for this synthesis"
+```
+
+### Option 3: Task Tool Invocation
+
+For programmatic invocation within workflows:
+
+```python
+Task(
+    description="adv-selector: Strategy selection for C3",
+    subagent_type="general-purpose",
+    prompt="""
+You are the adv-selector agent (v1.0.0).
+
+## ADV CONTEXT (REQUIRED)
+- **Criticality Level:** C3
+- **Deliverable Type:** Architecture Decision Record
+- **Deliverable Path:** docs/decisions/adr-042-persistence.md
+
+## MANDATORY PERSISTENCE (P-002)
+Create file at: {output_path}
+
+## TASK
+Select the strategy set for C3 criticality per SSOT.
+"""
+)
+```
+
+---
+
+## Adversarial Quality Mode
+
+> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, criticality levels, and quality dimensions are defined there. NEVER hardcode values; always reference the SSOT.
+
+### Strategy Catalog
+
+The quality framework provides 10 selected adversarial strategies across 4 mechanistic families. See `.context/rules/quality-enforcement.md` (Strategy Catalog section) for the authoritative list.
+
+| Family | Strategies | Adversary Application |
+|--------|-----------|----------------------|
+| **Iterative Self-Correction** | S-014 (LLM-as-Judge), S-007 (Constitutional AI Critique), S-010 (Self-Refine) | Quality scoring, constitutional compliance, self-review |
+| **Dialectical Synthesis** | S-003 (Steelman Technique) | Strengthen arguments before critique (H-16 REQUIRED) |
+| **Role-Based Adversarialism** | S-002 (Devil's Advocate), S-004 (Pre-Mortem Analysis), S-001 (Red Team Analysis) | Challenge assumptions, anticipate failures, adversarial exploration |
+| **Structured Decomposition** | S-013 (Inversion Technique), S-012 (FMEA), S-011 (Chain-of-Verification) | Systematic failure mode analysis, verification chains |
+
+### Strategy Templates
+
+All strategies use standardized templates from `.context/templates/adversarial/`:
+
+| Template | Strategy | Purpose |
+|----------|----------|---------|
+| `s-001-red-team.md` | S-001 Red Team Analysis | Adversarial exploration of attack surfaces |
+| `s-002-devils-advocate.md` | S-002 Devil's Advocate | Challenge assumptions and key claims |
+| `s-003-steelman.md` | S-003 Steelman Technique | Strengthen the best version of the argument |
+| `s-004-pre-mortem.md` | S-004 Pre-Mortem Analysis | Anticipate failure modes |
+| `s-007-constitutional-ai.md` | S-007 Constitutional AI Critique | Constitutional compliance verification |
+| `s-010-self-refine.md` | S-010 Self-Refine | Iterative self-improvement |
+| `s-011-chain-of-verification.md` | S-011 Chain-of-Verification | Systematic claim verification |
+| `s-012-fmea.md` | S-012 FMEA | Failure Mode and Effects Analysis |
+| `s-013-inversion.md` | S-013 Inversion Technique | Invert key claims to find blind spots |
+| `s-014-llm-as-judge.md` | S-014 LLM-as-Judge | Rubric-based quality scoring |
+
+### Criticality-Based Strategy Selection
+
+Per SSOT, strategy activation follows criticality levels:
+
+| Level | Required Strategies | Optional Strategies |
+|-------|---------------------|---------------------|
+| **C1 (Routine)** | S-010 | S-003, S-014 |
+| **C2 (Standard)** | S-007, S-002, S-014 | S-003, S-010 |
+| **C3 (Significant)** | C2 + S-004, S-012, S-013 | S-001, S-003, S-010, S-011 |
+| **C4 (Critical)** | All 10 selected strategies | None (all required) |
+
+### H-16 Ordering Constraint
+
+**HARD rule:** S-003 (Steelman) MUST be applied before S-002 (Devil's Advocate). Always strengthen the argument before challenging it.
+
+### Quality Scoring (S-014)
+
+The SSOT defines 6 quality dimensions with weights:
+
+| Dimension | Weight |
+|-----------|--------|
+| Completeness | 0.20 |
+| Internal Consistency | 0.20 |
+| Methodological Rigor | 0.20 |
+| Evidence Quality | 0.15 |
+| Actionability | 0.15 |
+| Traceability | 0.10 |
+
+**Threshold:** >= 0.92 weighted composite for C2+ deliverables (H-13)
+
+**Leniency bias counteraction:** Score strictly against rubric criteria. When uncertain between adjacent scores, choose the lower one.
+
+---
+
+## Constitutional Compliance
+
+All agents adhere to the **Jerry Constitution v1.0**:
+
+| Principle | Requirement |
+|-----------|-------------|
+| P-001: Truth and Accuracy | Findings based on evidence, scores based on rubrics |
+| P-002: File Persistence | All outputs persisted to files |
+| P-003: No Recursive Subagents | Agents are workers, not orchestrators |
+| P-004: Explicit Provenance | Strategy IDs, template paths, and evidence cited |
+| P-011: Evidence-Based | All findings tied to specific deliverable evidence |
+| P-020: User Authority | User can override strategy selection and scoring |
+| P-022: No Deception | Quality issues honestly reported, scores not inflated |
+
+---
+
+## Quick Reference
+
+### Common Workflows
+
+| Need | Agent | Command Example |
+|------|-------|-----------------|
+| Pick strategies for criticality | adv-selector | "What strategies for C3 review?" |
+| Run a specific strategy | adv-executor | "Run S-002 Devil's Advocate on this ADR" |
+| Score deliverable quality | adv-scorer | "Score this deliverable with LLM-as-Judge" |
+| Steelman + Devil's Advocate pair | adv-executor | "Run Steelman then Devil's Advocate on this design" |
+| Full C4 tournament | All three | "Run full C4 tournament review" |
+
+### Agent Selection Hints
+
+| Keywords | Likely Agent |
+|----------|--------------|
+| select, pick, which strategies, criticality, C1/C2/C3/C4 | adv-selector |
+| run, execute, apply, template, strategy, findings | adv-executor |
+| score, judge, rubric, dimensions, threshold, 0.92 | adv-scorer |
+
+---
+
+## References
+
+| Source | Content |
+|--------|---------|
+| `.context/rules/quality-enforcement.md` | SSOT for thresholds, strategies, criticality levels |
+| `.context/templates/adversarial/` | Strategy execution templates |
+| `skills/problem-solving/SKILL.md` | Integrated adversarial quality mode (ps-critic) |
+| `docs/governance/JERRY_CONSTITUTION.md` | Constitutional principles |
+| ADR-EPIC002-001 | Strategy selection and composite scores |
+| ADR-EPIC002-002 | 5-layer enforcement architecture |
+
+---
+
+*Skill Version: 1.0.0*
+*Constitutional Compliance: Jerry Constitution v1.0*
+*SSOT: `.context/rules/quality-enforcement.md`*
+*Created: 2026-02-15*
