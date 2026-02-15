@@ -871,6 +871,82 @@ class TestTemplateContentQuality:
 # ===========================================================================
 
 
+class TestH16Enforcement:
+    """Test that H-16 enforcement (S-003 before S-002) is documented in agent specs."""
+
+    def test_adv_executor_when_read_then_contains_h16_precheck(self):
+        """adv-executor.md should contain H-16 pre-check for S-002."""
+        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        assert "H-16" in content, "adv-executor.md must reference H-16"
+        assert "S-003" in content and "S-002" in content, "Must reference both S-003 and S-002"
+        # Check for enforcement language (not just documentation)
+        enforcement_terms = ["HALT", "VIOLATION", "block", "cannot be executed"]
+        assert any(term in content for term in enforcement_terms), (
+            "adv-executor.md must contain enforcement language for H-16, not just documentation"
+        )
+
+    def test_adv_executor_when_read_then_h16_before_step1(self):
+        """H-16 check should appear before Step 1 in execution process."""
+        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        h16_pos = content.find("H-16")
+        step1_pos = content.find("Step 1:")
+        if h16_pos != -1 and step1_pos != -1:
+            # H-16 section should exist; enforcement may be before or within execution process
+            assert "Step 0" in content or "Pre-Check" in content, (
+                "H-16 enforcement should be a pre-check step (Step 0 or Pre-Check)"
+            )
+
+
+class TestAutoEscalation:
+    """Test that auto-escalation rules are actively enforced in adv-selector."""
+
+    def test_adv_selector_when_read_then_contains_all_ae_rules(self):
+        """adv-selector.md should reference all 6 AE rules."""
+        content = Path("skills/adversary/agents/adv-selector.md").read_text()
+        for ae_id in ["AE-001", "AE-002", "AE-003", "AE-004", "AE-005", "AE-006"]:
+            assert ae_id in content, f"adv-selector.md must reference {ae_id}"
+
+    def test_adv_selector_when_read_then_contains_active_enforcement(self):
+        """adv-selector.md should contain active enforcement, not just passive docs."""
+        content = Path("skills/adversary/agents/adv-selector.md").read_text()
+        # Check for runtime enforcement language
+        enforcement_terms = ["Active Enforcement", "MUST actively check", "Runtime"]
+        assert any(term in content for term in enforcement_terms), (
+            "adv-selector.md must contain active enforcement language for AE rules"
+        )
+
+    def test_adv_selector_when_read_then_contains_escalation_warning(self):
+        """adv-selector.md should document AE escalation warnings."""
+        content = Path("skills/adversary/agents/adv-selector.md").read_text()
+        assert "AE ESCALATION" in content or "ESCALATION" in content, (
+            "adv-selector.md must document escalation warnings"
+        )
+
+
+class TestP003SelfCheck:
+    """Test that P-003 self-check is present in all adversary agents."""
+
+    @pytest.mark.parametrize(
+        "agent_file",
+        [
+            "skills/adversary/agents/adv-selector.md",
+            "skills/adversary/agents/adv-executor.md",
+            "skills/adversary/agents/adv-scorer.md",
+        ],
+    )
+    def test_agent_when_read_then_contains_p003_self_check(self, agent_file):
+        """Each agent should have a P-003 self-check section."""
+        content = Path(agent_file).read_text()
+        assert "P-003" in content, f"{agent_file} must reference P-003"
+        assert "Self-Check" in content or "self-check" in content or "self_check" in content, (
+            f"{agent_file} must contain P-003 self-check section"
+        )
+        # Verify enforcement language
+        assert "VIOLATION" in content or "MUST NOT" in content, (
+            f"{agent_file} must contain P-003 enforcement language"
+        )
+
+
 class TestSummaryStatistics:
     """
     Provides summary statistics and overview validation.

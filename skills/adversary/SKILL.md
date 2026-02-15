@@ -14,6 +14,12 @@ activation-keywords:
   - "LLM-as-Judge"
   - "strategy selection"
   - "tournament review"
+  - "C2 review"
+  - "C3 review"
+  - "standard review"
+  - "significant review"
+  - "mid-tier review"
+  - "quick adversarial"
 ---
 
 # Adversary Skill
@@ -191,7 +197,12 @@ All 10 strategy templates in `.context/templates/adversarial/` are created by se
 | `s-013-inversion.md` | EN-808 | Created by EN-808 |
 | `s-014-llm-as-judge.md` | EN-803 | Created by EN-803 |
 
-**Fallback behavior:** If a template file is not found, adv-executor SHOULD warn the orchestrator and request the template path or skip the strategy. The skill skeleton (EN-802) defines the structure; the template enablers populate the content.
+**Fallback behavior:** If a template file is not found, adv-executor MUST:
+1. Emit a WARNING to the orchestrator with the missing template path
+2. Request the corrected path from the orchestrator
+3. Do NOT silently skip the strategy — the orchestrator decides whether to skip or provide an alternative
+
+The skill skeleton (EN-802) defines the structure; the template enablers populate the content.
 
 ### SSOT File
 
@@ -262,6 +273,37 @@ The SSOT defines 6 quality dimensions with weights:
 **Threshold:** >= 0.92 weighted composite for C2+ deliverables (H-13)
 
 **Leniency bias counteraction:** Score strictly against rubric criteria. When uncertain between adjacent scores, choose the lower one.
+
+---
+
+## Tournament Mode
+
+Tournament mode executes all 10 adversarial strategies against a C4 (Critical) deliverable in a deterministic sequence. This is the most comprehensive review level, required for irreversible decisions.
+
+### Execution Order
+
+All 10 strategies run in the recommended order from `.context/templates/adversarial/adv-selector.md`:
+
+- **Group A — Self-Review**: S-010 (Self-Refine)
+- **Group B — Strengthen**: S-003 (Steelman Technique)
+- **Group C — Challenge**: S-002 (Devil's Advocate), S-004 (Pre-Mortem Analysis), S-001 (Red Team Analysis)
+- **Group D — Verify**: S-007 (Constitutional AI Critique), S-011 (Chain-of-Verification)
+- **Group E — Decompose**: S-012 (FMEA), S-013 (Inversion Technique)
+- **Group F — Score**: S-014 (LLM-as-Judge) — **ALWAYS LAST**
+
+### Aggregation
+
+Findings from all strategy execution reports are collected across all 9 executor runs. The adv-scorer agent (S-014) receives these aggregated findings as input evidence when producing the final composite score. Critical findings from any strategy block PASS regardless of score.
+
+### Timing Expectations
+
+A C4 tournament with all 10 strategies requires approximately 10 agent invocations:
+
+1. **adv-selector** (1 invocation) — Strategy selection
+2. **adv-executor** (9 invocations) — One per strategy from Groups A-E
+3. **adv-scorer** (1 invocation) — Final scoring with S-014
+
+Typical duration depends on deliverable size and complexity. Expect longer processing times for large architecture documents or governance changes.
 
 ---
 

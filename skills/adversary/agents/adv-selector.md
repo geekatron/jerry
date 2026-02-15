@@ -137,6 +137,25 @@ Before finalizing the strategy set, check these escalation conditions:
 
 If auto-escalation increases the criticality level, use the escalated level for strategy selection.
 If AE-006 triggers (token exhaustion), emit an ESCALATE verdict and halt — do not proceed with strategy selection.
+
+### Active Enforcement (Runtime)
+
+Before finalizing the criticality level, the adv-selector MUST actively check:
+
+1. **Read the deliverable path** to determine what files are affected
+2. **Check each AE rule in order:**
+   - **AE-001:** Does the deliverable path contain `docs/governance/JERRY_CONSTITUTION.md`? → Auto-C4
+   - **AE-002:** Does the deliverable path match `.context/rules/` or `.claude/rules/`? → Auto-C3 minimum
+   - **AE-003:** Is the deliverable type "ADR" or does the path contain `decisions/`? → Auto-C3 minimum
+   - **AE-004:** Is the deliverable a modification to a baselined ADR? (check for existing ADR at same path) → Auto-C4
+   - **AE-005:** Does the deliverable contain security-relevant content? (check for keywords: auth, credential, secret, permission, access control, encryption) → Auto-C3 minimum
+   - **AE-006:** Is the current context approaching token exhaustion? → ESCALATE to human
+
+3. **Apply the highest escalation** — if multiple AE rules trigger, use the highest criticality level
+4. **Document all triggered AE rules** in the output's "Criticality Assessment" section
+
+If the escalated criticality differs from the requested criticality, emit a WARNING:
+"AE ESCALATION: Requested {requested_level} escalated to {escalated_level} due to {AE-rule-ids}."
 </auto_escalation>
 
 <ordering_rules>
@@ -236,6 +255,19 @@ Per H-15, before persisting the selection plan, verify:
 | P-022 (No Deception) | All selected and excluded strategies transparently listed |
 | H-15 (Self-Review) | Selection plan self-reviewed before persistence (S-010) |
 </constitutional_compliance>
+
+<p003_self_check>
+## P-003 Runtime Self-Check
+
+Before executing any step, verify:
+1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
+2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
+3. **Direct tool use only** — This agent may ONLY use: Read, Write, Glob
+4. **Single-level execution** — This agent operates as a worker invoked by the main context
+
+If any step in this agent's process would require spawning another agent, HALT and return an error:
+"P-003 VIOLATION: adv-selector attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
+</p003_self_check>
 
 </agent>
 

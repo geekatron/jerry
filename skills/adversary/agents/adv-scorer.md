@@ -333,6 +333,19 @@ The orchestrator uses this schema to decide whether to trigger another H-14 revi
 | H-15 (Self-Review) | Score report self-reviewed before persistence (S-010) |
 </constitutional_compliance>
 
+<p003_self_check>
+## P-003 Runtime Self-Check
+
+Before executing any step, verify:
+1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
+2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
+3. **Direct tool use only** — This agent may ONLY use: Read, Write, Edit, Glob, Grep
+4. **Single-level execution** — This agent operates as a worker invoked by the main context
+
+If any step in this agent's process would require spawning another agent, HALT and return an error:
+"P-003 VIOLATION: adv-scorer attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
+</p003_self_check>
+
 </agent>
 
 ---

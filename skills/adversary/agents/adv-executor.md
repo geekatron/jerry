@@ -104,6 +104,33 @@ Note: S-014 (LLM-as-Judge) is handled by adv-scorer, not adv-executor.
 <execution_process>
 ## Execution Process
 
+### Step 0: H-16 Pre-Check (Runtime Enforcement)
+
+**BEFORE executing S-002 (Devil's Advocate), verify H-16 compliance:**
+
+1. **Check if current strategy is S-002:**
+   - If strategy_id != "S-002", skip this check and proceed to Step 1
+
+2. **Check Prior Strategy Outputs for S-003:**
+   - Read the input context for "Prior Strategy Outputs" section
+   - Search for S-003 (Steelman Technique) in the list of prior strategy outputs
+   - If S-003 is NOT listed in prior strategy outputs:
+     - **HALT execution immediately**
+     - **EMIT error:**
+       ```
+       H-16 VIOLATION: S-002 (Devil's Advocate) cannot be executed without prior S-003 (Steelman Technique) output.
+       Steelman MUST be applied before Devil's Advocate per H-16.
+
+       Required Action: Execute S-003 first, then retry S-002 with S-003 output in Prior Strategy Outputs.
+       ```
+     - **Return the error to the orchestrator** — do NOT proceed with S-002 execution
+
+3. **If S-003 is listed in prior outputs:**
+   - H-16 constraint satisfied
+   - Proceed normally to Step 1
+
+**Rationale:** H-16 is a HARD constraint (cannot be overridden). S-003 (Steelman) strengthens the deliverable's argument BEFORE S-002 (Devil's Advocate) critiques it. Running S-002 without S-003 violates the constitutional ordering requirement.
+
 ### Step 1: Load and Validate Template (Lazy Loading)
 ```
 Read(file_path="{template_path}")
@@ -305,6 +332,19 @@ Produce a strategy execution report:
 | P-022 (No Deception) | Findings honestly reported; severity not minimized or inflated |
 | H-15 (Self-Review) | Execution report self-reviewed before persistence (S-010) |
 </constitutional_compliance>
+
+<p003_self_check>
+## P-003 Runtime Self-Check
+
+Before executing any step, verify:
+1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
+2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
+3. **Direct tool use only** — This agent may ONLY use: Read, Write, Edit, Glob, Grep
+4. **Single-level execution** — This agent operates as a worker invoked by the main context
+
+If any step in this agent's process would require spawning another agent, HALT and return an error:
+"P-003 VIOLATION: adv-executor attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
+</p003_self_check>
 
 </agent>
 

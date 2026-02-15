@@ -88,6 +88,29 @@ H-16 ORDERING CONSTRAINT:
 
 **Recommended additions:** S-003 (Steelman) before S-002 per H-16
 
+### How to Invoke
+
+Use natural language:
+- "Run a C2 adversarial review on {file}"
+- "Review this ADR at C2 criticality"
+- "Standard quality review of {deliverable}"
+
+### C2/C3 Quick Decision Tree
+
+Use this table to quickly determine the correct criticality level and strategy set:
+
+| Question | Answer | Criticality | Required Strategies | Recommended Optional |
+|----------|--------|-------------|---------------------|---------------------|
+| Reversible within 1 day? Files ≤10? No API changes? | YES | **C2** | S-007, S-002, S-014 | S-003 (H-16), S-010 |
+| >1 day to reverse? Files >10? API changes? | YES | **C3** | C2 + S-004, S-012, S-013 | S-001, S-003, S-010, S-011 |
+| Touches `.context/rules/`? | YES | **Auto-C3** (AE-002) | C3 strategy set | — |
+| Touches `JERRY_CONSTITUTION.md`? | YES | **Auto-C4** (AE-001) | All 10 strategies | None |
+| Modifies baselined ADR? | YES | **Auto-C4** (AE-004) | All 10 strategies | None |
+| New or modified ADR? | YES | **Auto-C3** (AE-003) | C3 strategy set | — |
+| Security-relevant code? | YES | **Auto-C3** (AE-005) | C3 strategy set | — |
+
+**Note:** S-003 (Steelman) is strongly recommended before S-002 (Devil's Advocate) per H-16. Auto-escalation rules override manual criticality selection.
+
 ### Step-by-Step
 
 ```
