@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** RESEARCH
 > **Agents:** ps-researcher
@@ -22,6 +22,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -49,6 +50,16 @@ Extract the LLM-as-Judge methodology from research-15-adversarial-strategies.md 
 
 - Parent: [EN-803: S-014 LLM-as-Judge Template](EN-803-s014-llm-as-judge.md)
 - Blocks: TASK-002 (write S-014 template)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

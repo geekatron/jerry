@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -21,6 +21,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -45,6 +46,16 @@ Create the S-004 Pre-Mortem Analysis execution template at `.context/templates/a
 
 ### Related Items
 - Parent: [EN-808: Tier 3 Risk Strategy Templates](EN-808-tier3-risk-strategies.md)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

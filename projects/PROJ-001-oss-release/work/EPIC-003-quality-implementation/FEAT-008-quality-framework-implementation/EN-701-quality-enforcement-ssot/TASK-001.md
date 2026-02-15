@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** RESEARCH
 > **Agents:** ps-researcher
@@ -22,6 +22,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -48,6 +49,16 @@ Extract all quality framework constants from EPIC-002 design documents (EN-403, 
 
 - Parent: [EN-701: Quality Enforcement SSOT](EN-701-quality-enforcement-ssot.md)
 - Blocks: TASK-002 (organize SSOT)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

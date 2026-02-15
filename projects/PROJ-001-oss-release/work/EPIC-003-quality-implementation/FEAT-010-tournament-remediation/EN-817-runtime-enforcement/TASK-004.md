@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** BACKLOG
 > **Priority:** HIGH
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -22,6 +22,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -39,6 +40,16 @@ Create an E2E test that validates H-16 enforcement by checking that the adv-exec
 
 ### Related Items
 - Parent: [EN-817: Runtime Enforcement](EN-817-runtime-enforcement.md)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | — |
+| Time Spent | — |
 
 ---
 

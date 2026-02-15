@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** RESEARCH
 > **Agents:** ps-investigator
@@ -22,6 +22,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -46,6 +47,16 @@ Measure the exact token count for each of the 10 `.context/rules/*.md` files and
 
 - Parent: [EN-702: Rule File Token Optimization](EN-702-rule-optimization.md)
 - Blocks: TASK-002 (content audit)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

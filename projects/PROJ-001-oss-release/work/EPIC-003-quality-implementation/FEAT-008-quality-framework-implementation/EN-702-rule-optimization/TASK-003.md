@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** DONE
 > **Priority:** HIGH
 > **Activity:** DESIGN
 > **Agents:** ps-architect
@@ -22,6 +22,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -47,6 +48,16 @@ Assign unique rule IDs to all rules identified in TASK-002's content audit. HARD
 - Parent: [EN-702: Rule File Token Optimization](EN-702-rule-optimization.md)
 - Depends on: TASK-002 (content audit)
 - Blocks: TASK-004 through TASK-009 (optimization tasks)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

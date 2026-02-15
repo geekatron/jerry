@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -33,7 +34,7 @@ description: |
   hook protocol (JSON stdin/stdout). Delegates enforcement logic
   to the PromptReinforcementEngine. Updates hooks configuration.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: CRITICAL
 assignee: ""
@@ -84,6 +85,16 @@ Create the `hooks/user-prompt-submit.py` Claude Code hook adapter that intercept
 - Parent: [EN-705: UserPromptSubmit Quality Hook](EN-705-userpromptsubmit-hook.md)
 - Related: TASK-002 (engine class this adapter delegates to)
 - Related: TASK-003 (fail-open error handling detailed there)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

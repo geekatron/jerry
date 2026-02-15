@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -32,7 +33,7 @@ description: |
   excessive L1 context consumption. The generator validates content
   length and trims if necessary.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: MEDIUM
 assignee: ""
@@ -82,6 +83,16 @@ Implement token budget enforcement for the session start quality preamble. The p
 - Parent: [EN-706: SessionStart Quality Context Enhancement](EN-706-sessionstart-quality-context.md)
 - Depends on: TASK-001 (generator class produces the content to budget-check)
 - Related: EN-705 TASK-002 (same budget pattern with 600-token limit)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -31,7 +32,7 @@ description: |
   Configure mypy or a lightweight type hint checker as a pre-commit step
   to catch missing type annotations on public APIs at commit time.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: MEDIUM
 assignee: ""
@@ -79,6 +80,16 @@ Configure mypy (or a lightweight alternative) as a pre-commit step to catch miss
 - Parent: [EN-704: Pre-commit Quality Gates](EN-704-precommit-gates.md)
 - Depends on: TASK-001 (base pre-commit configuration)
 - Related: EN-703 TASK-003 (V-039 type hint enforcement at L3)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

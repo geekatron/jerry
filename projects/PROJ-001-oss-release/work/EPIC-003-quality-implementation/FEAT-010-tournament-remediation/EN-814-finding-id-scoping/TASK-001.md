@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** task
-> **Status:** pending
+> **Status:** BACKLOG
 > **Priority:** HIGH
 > **Activity:** DEVELOPMENT
 > **Agents:** ps-architect
@@ -22,6 +22,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 |---------|---------|
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and dependencies |
 | [History](#history) | Change log |
@@ -41,6 +42,16 @@ Update .context/templates/adversarial/TEMPLATE-FORMAT.md to define the execution
 ### Related Items
 
 - Parent: [EN-814: Finding ID Scoping & Uniqueness](EN-814-finding-id-scoping.md)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | — |
+| Time Spent | — |
 
 ---
 

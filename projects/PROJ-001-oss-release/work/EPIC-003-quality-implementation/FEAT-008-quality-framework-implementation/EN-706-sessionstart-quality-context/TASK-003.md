@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -33,7 +34,7 @@ description: |
   <quality-context> XML block. Ensure no regression in existing
   project context resolution functionality.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -83,6 +84,16 @@ Integrate the `SessionQualityContextGenerator` into the existing `scripts/sessio
 - Parent: [EN-706: SessionStart Quality Context Enhancement](EN-706-sessionstart-quality-context.md)
 - Depends on: TASK-001 (generator class), TASK-002 (token budget)
 - Related: EN-705 TASK-001 (similar hook adapter integration pattern)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

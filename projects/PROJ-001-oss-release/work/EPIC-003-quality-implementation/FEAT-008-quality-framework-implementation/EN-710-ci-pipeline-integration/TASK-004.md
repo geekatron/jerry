@@ -15,6 +15,7 @@ VERSION: 0.1.0
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [Evidence](#evidence) | Deliverables and verification |
 | [History](#history) | Status changes and key events |
@@ -32,7 +33,7 @@ description: |
   bug detection, and code quality rules per pyproject.toml configuration. Linting at CI
   level (L5) catches style and quality violations that bypass local pre-commit hooks.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -87,6 +88,16 @@ Linting at CI level ensures code quality standards are enforced consistently, ca
 - Parent: [EN-710: CI Pipeline Quality Integration](EN-710-ci-pipeline-integration.md)
 - Depends on: TASK-001 (workflow must exist first)
 - Blocks: TASK-006 (verification requires all test steps)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

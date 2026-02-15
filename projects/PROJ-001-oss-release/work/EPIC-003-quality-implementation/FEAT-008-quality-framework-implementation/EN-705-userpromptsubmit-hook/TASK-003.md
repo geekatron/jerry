@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -32,7 +33,7 @@ description: |
   Hook errors must never block user work. On error: return empty/passthrough
   block and log the error for diagnostics.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -83,6 +84,16 @@ Implement fail-open error handling for the UserPromptSubmit hook and engine. The
 - Related: TASK-001 (hook adapter where fail-open is implemented)
 - Related: TASK-002 (engine that may produce errors to handle)
 - Related: EN-703 TASK-006 (same fail-open pattern for PreToolUse hook)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

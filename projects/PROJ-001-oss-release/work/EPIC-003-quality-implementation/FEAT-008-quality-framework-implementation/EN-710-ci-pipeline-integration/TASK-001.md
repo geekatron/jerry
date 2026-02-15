@@ -15,6 +15,7 @@ VERSION: 0.1.0
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Dependencies and hierarchy |
 | [Evidence](#evidence) | Deliverables and verification |
 | [History](#history) | Status changes and key events |
@@ -33,7 +34,7 @@ description: |
   pipeline structure, triggers, environment setup (UV-based Python), and job orchestration
   for all quality checks (architecture tests, type checking, linting, quality gates).
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -86,6 +87,16 @@ This is the foundational task -- TASK-002 through TASK-004 depend on this workfl
 
 - Parent: [EN-710: CI Pipeline Quality Integration](EN-710-ci-pipeline-integration.md)
 - Blocks: TASK-002 (architecture tests), TASK-003 (mypy), TASK-004 (ruff), TASK-005 (branch protection)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

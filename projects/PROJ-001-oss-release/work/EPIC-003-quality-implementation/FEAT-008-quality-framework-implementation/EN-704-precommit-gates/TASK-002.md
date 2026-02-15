@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -32,7 +33,7 @@ description: |
   code style, import ordering, and common Python issues. Configure
   to match Jerry's pyproject.toml ruff settings.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -79,6 +80,16 @@ Add ruff linting and formatting as pre-commit hooks. Ruff is Jerry's unified lin
 
 - Parent: [EN-704: Pre-commit Quality Gates](EN-704-precommit-gates.md)
 - Depends on: TASK-001 (base pre-commit configuration)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

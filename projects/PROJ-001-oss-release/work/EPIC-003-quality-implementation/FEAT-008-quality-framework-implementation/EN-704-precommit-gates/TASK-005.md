@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -32,7 +33,7 @@ description: |
   Fix any pre-existing violations or configure appropriate baselines.
   Verify uv run pytest passes after all changes.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -81,6 +82,16 @@ Run all configured pre-commit hooks against the entire existing codebase to veri
 
 - Parent: [EN-704: Pre-commit Quality Gates](EN-704-precommit-gates.md)
 - Depends on: TASK-001 through TASK-004 (all hooks must be configured first)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

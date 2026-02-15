@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -32,7 +33,7 @@ description: |
   V-040, V-041). Write integration test for the PreToolUse hook
   end-to-end with mock tool calls. Verify uv run pytest passes.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: HIGH
 assignee: ""
@@ -87,6 +88,16 @@ Write comprehensive unit tests for each vector checker (V-038 import boundary, V
 
 - Parent: [EN-703: PreToolUse Enforcement Engine](EN-703-pretooluse-enforcement.md)
 - Depends on: TASK-001 through TASK-006 (all implementation tasks)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 

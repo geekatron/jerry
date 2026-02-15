@@ -15,6 +15,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 | [Summary](#summary) | What this task delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
+| [Time Tracking](#time-tracking) | Effort estimates and actuals |
 | [Related Items](#related-items) | Cross-references and dependencies |
 | [Evidence](#evidence) | Proof of completion |
 | [History](#history) | Change log |
@@ -33,7 +34,7 @@ description: |
   import interface, etc.). Block file writes that introduce boundary violations.
   V-038 scored 4.92 WCS -- highest priority enforcement vector.
 classification: ENABLER
-status: BACKLOG
+status: DONE
 resolution: null
 priority: CRITICAL
 assignee: ""
@@ -85,6 +86,16 @@ Implement the V-038 AST Import Boundary Validation checker. This vector parses P
 - Parent: [EN-703: PreToolUse Enforcement Engine](EN-703-pretooluse-enforcement.md)
 - Depends on: TASK-001 (engine class provides the integration point)
 - Related: EN-704 TASK-003 (pre-commit boundary check reuses this logic)
+
+---
+
+## Time Tracking
+
+| Metric | Value |
+|--------|-------|
+| Original Estimate | — |
+| Remaining Work | 0 hours |
+| Time Spent | — |
 
 ---
 
