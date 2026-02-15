@@ -153,6 +153,12 @@ Remediate findings from the FEAT-009 C4 Tournament Review. The tournament applie
 | **Completed Effort** | 0 |
 | **Completion %** | 0% |
 
+### Sprint Tracking
+
+| Sprint | Enablers | Status | Notes |
+|--------|----------|--------|-------|
+| --- | EN-813 through EN-819 | PENDING | Not yet assigned to sprint |
+
 ---
 
 ## Related Items
