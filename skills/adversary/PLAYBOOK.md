@@ -527,12 +527,12 @@ Phase 3: adv-scorer runs S-014
   - Total sections loaded: 2 sections × 1 strategy = 2 sections
   - Context consumption: ~25% of 1 template
 
-Total template context: Within C4 budget (10,000 token target) by loading only required sections
+Total template context: Within C4 budget (~20,000 token approximate budget) by loading only required sections
 ```
 
 **Operational Guidance:**
 
-- **When in doubt, load less**: Start with Section 1 + Section 4 only; load more if execution fails
+- **When in doubt, load less**: Start with Identity + Execution Protocol sections only; load more if execution fails
 - **Measure context consumption**: Track actual token usage for C3/C4 reviews; flag if exceeding budget
 - **Full template exceptions**: Template authoring, validation, and debugging workflows require all 8 sections
 
