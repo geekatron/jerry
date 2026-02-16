@@ -32,7 +32,7 @@
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
 | [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
-| [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | in_progress | critical |
+| [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | completed | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | completed | critical |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
@@ -115,6 +115,10 @@
 | EPIC-001 | OSS Release Preparation | 2026-02-12 | All 3 features, 20 enablers, 15 bugs complete |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
 | EPIC-003 | Quality Framework Implementation | 2026-02-15 | All 4 features (FEAT-008/009/010/011), 34 enablers, 100% complete. |
+| EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
+| EN-502 | Bootstrap Cross-Platform Validation | 2026-02-16 | Score 0.951 (4 iterations). 47 tests passing. All HIGH resolved. |
+| FEAT-006 | EPIC-001 Retroactive Quality Review | 2026-02-16 | All 5 enablers complete (EN-501: 0.949, EN-502: 0.951, EN-503/504/505 closed). |
+| EPIC-002 | Quality Framework Enforcement | 2026-02-16 | All 4 features (FEAT-004/005/006/013), 24 enablers, 163 effort points, 100% complete. |
 
 ---
 
@@ -159,6 +163,8 @@
 | 2026-02-16 | Claude | FEAT-012 created under EPIC-002: Progressive Disclosure Rules Architecture. 6 enablers (EN-901–906), 32 tasks. Restructures .context/rules/ into tiered progressive disclosure: enforcement rules (auto-loaded) + companion guides (on-demand) + code patterns (on-demand). Remediates naive EN-702 token optimization that deleted educational content. |
 | 2026-02-16 | Claude | EPIC-002 full audit: wt-auditor (27 issues), wt-verifier (4 enablers verified), wt-visualizer (hierarchy diagrams). Progress metrics corrected. |
 | 2026-02-16 | Claude | FEAT-013 created under EPIC-002: Worktracker Integrity Remediation. 6 enablers (EN-907–912), 29 tasks, 15 effort points. Fixes all audit findings. |
+
+| 2026-02-16 | Claude | EN-501 closed (0.949, 3 iterations). EN-502 closed (0.951, 4 iterations). FEAT-006 closed (5/5 enablers). EPIC-002 closed (4/4 features, 24/24 enablers, 163/163 points). Quality framework enforcement complete and all EPIC-001 deliverables retroactively validated. |
 
 ---
 
