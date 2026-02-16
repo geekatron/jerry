@@ -9,13 +9,13 @@ PURPOSE: Enhance the /problem-solving skill to integrate adversarial strategies 
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** architecture
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-004
 > **Owner:** —
 > **Effort:** 10
@@ -119,8 +119,15 @@ TASK-001 ──> TASK-002 ──> TASK-003 ──> TASK-004 ──┐
 | depends_on | EN-302 | Requires the selected 10 strategies for mode definitions |
 | depends_on | EN-301 | Requires strategy descriptions for prompt template authoring |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by EPIC-003 FEAT-008 **EN-707** (PS Skill Adversarial Mode Enhancement). EN-707 added adversarial review sections to the ps-critic and ps-reviewer agent specifications, implementing the adversarial mode integration that EN-304 planned. The work was completed through the EPIC-003 quality framework implementation rather than through the FEAT-004 pipeline.
+
 ## History
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. Terminal enabler in FEAT-004 pipeline. |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. EN-707 (PS Skill Adversarial Mode Enhancement). See Evidence section. |

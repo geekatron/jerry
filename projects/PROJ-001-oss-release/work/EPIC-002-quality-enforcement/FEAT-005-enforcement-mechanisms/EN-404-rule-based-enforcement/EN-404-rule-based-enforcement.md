@@ -10,13 +10,13 @@ PURPOSE: Enhance .claude/rules/ files with HARD enforcement language and tiered 
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-005
 > **Owner:** —
 > **Effort:** 5
@@ -347,6 +347,17 @@ TASK-001 ──► TASK-002 ──► TASK-003 ──► TASK-004
 | Barrier-1 ADV-to-ENF Handoff | `orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/adv-to-enf/barrier-1-adv-to-enf-handoff.md` | Adversarial strategy rule integration requirements (6 strategies), quality gate integration, enforcement tier language, token budget awareness |
 | Barrier-1 ENF-to-ADV Handoff | `orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/enf-to-adv/barrier-1-enf-to-adv-handoff.md` | Token budget concentration risk (82.5% in L1), 4 RED systemic risks, defense-in-depth chain (L2 compensates L1 rot) |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by EPIC-003 FEAT-008 implementation work, which delivered the rule-based enforcement enhancements planned here:
+
+- **EN-701** (Rules SSOT Optimization): Restructured all `.claude/rules/` and `.context/rules/` files into enforcement-only format with HARD/MEDIUM/SOFT tier language, L2-REINJECT markers for context reinforcement tagging, and optimized total L1 token budget from ~30K down to ~11K tokens -- fulfilling FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-012, FR-013 and the rule audit, tier design, language design, and implementation tasks (TASK-002 through TASK-007).
+- **EN-702** (Context Token Budget Analysis & Optimization): Analyzed and optimized context token budgets across the enforcement architecture, ensuring the L1 layer stays within target allocation -- fulfilling NFR-001, NFR-002, NFR-003, NFR-005 and the token budget verification tasks.
+
+EN-701 also created the `quality-enforcement.md` SSOT file (FR-013) encoding all adversarial strategies (S-007, S-003, S-010, S-014, S-002, S-013), criticality levels (C1-C4), quality gate thresholds (0.92), and auto-escalation rules.
+
 ## History
 
 | Date | Author | Status | Notes |
@@ -354,3 +365,4 @@ TASK-001 ──► TASK-002 ──► TASK-003 ──► TASK-004
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
 | 2026-02-13 | Claude | in_progress | Enriched with ADR-EPIC002-002 (ACCEPTED) inputs: L1 layer specification (token budget ~12,476 target, 51.5% reduction from ~25,700), rule-family vectors (V-008/V-009/V-010/V-015-V-017/V-026), HARD/MEDIUM/SOFT enforcement tier language, token budget optimization targets per component, defense-in-depth chain (L2 compensates L1 rot). Added Barrier-1 ADV-to-ENF handoff inputs: 6 adversarial strategies to encode as rules (S-007/S-003/S-010/S-014/S-002/S-013), quality gate integration (0.92 threshold, creator-critic-revision cycle, C1-C4 escalation), enforcement tier language definitions, L2 re-injection tagging requirement. Added FR-001 through FR-014, NFR-001 through NFR-008. Expanded acceptance criteria from 8 to 13 items. Enriched all task descriptions with ADR/Barrier-1 references. Updated navigation table. |
 | 2026-02-16 | Claude | pending | Status corrected from in_progress to pending. Enabler was enriched with ADR-EPIC002-002 and Barrier-1 inputs but zero tasks have been executed. Audit remediation (FEAT-013 EN-911). |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. EN-701 (Rules SSOT Optimization) + EN-702 (Context Token Budget Analysis & Optimization). See Evidence section. |

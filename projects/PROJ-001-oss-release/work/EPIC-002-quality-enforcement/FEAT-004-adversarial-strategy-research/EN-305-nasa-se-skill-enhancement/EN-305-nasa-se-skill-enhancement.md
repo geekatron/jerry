@@ -9,13 +9,13 @@ PURPOSE: Enhance /nasa-se skill with adversarial strategy integration for SE rev
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** architecture
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-004
 > **Owner:** —
 > **Effort:** 8
@@ -127,8 +127,15 @@ TASK-001 (requirements)
 |------|------|-------------|
 | depends_on | EN-303 | Situational Applicability Mapping -- strategy-to-context mappings needed for SE review gate mapping |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by EPIC-003 FEAT-008 **EN-708** (NSE Skill Adversarial Mode Enhancement). EN-708 added adversarial review sections to the nse-reviewer and nse-qa agent specifications, implementing the adversarial mode integration for NASA SE review gates that EN-305 planned. The work was completed through the EPIC-003 quality framework implementation rather than through the FEAT-004 pipeline.
+
 ## History
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. EN-708 (NSE Skill Adversarial Mode Enhancement). See Evidence section. |

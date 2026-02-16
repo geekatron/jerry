@@ -9,13 +9,13 @@ PURPOSE: Implement session start context injection that reminds Claude of qualit
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-005
 > **Owner:** —
 > **Effort:** 5
@@ -126,8 +126,17 @@ TASK-001 ──► TASK-004 ──┘
 |------|------|-------------|
 | depends_on | EN-402 | Enforcement priority analysis must be completed to inform injection strategy |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by EPIC-003 FEAT-008 implementation work, which delivered the session context enforcement injection planned here:
+
+- **EN-706** (SessionStart Quality Injection Hook): Implemented the SessionStart hook that injects quality context at session start, including quality-enforcement.md SSOT constants (quality gate threshold 0.92, scoring dimensions and weights), criticality levels (C1-C4) with enforcement tier mapping, strategy catalog summary (10 selected strategies with composite scores), and auto-escalation rules (AE-001 through AE-006). This fulfills all acceptance criteria for EN-405: requirements definition (AC-1), quality framework preamble design (AC-2), session_start_hook.py enhancement (AC-3), integration with existing hook functionality (AC-4), automatic loading at session start (AC-5), and performance requirements (AC-9).
+
 ## History
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. EN-706 (SessionStart Quality Injection Hook). See Evidence section. |

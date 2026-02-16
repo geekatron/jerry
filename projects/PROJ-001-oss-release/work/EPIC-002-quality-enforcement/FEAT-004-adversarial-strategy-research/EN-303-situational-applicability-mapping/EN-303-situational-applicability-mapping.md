@@ -10,13 +10,13 @@ PURPOSE: Map each selected adversarial strategy to specific contexts with use/av
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** architecture
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-004
 > **Owner:** —
 > **Effort:** 5
@@ -306,6 +306,18 @@ TASK-002 ──┘
 | Barrier-1 ADV-to-ENF Handoff | `orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/adv-to-enf/barrier-1-adv-to-enf-handoff.md` | Strategy-to-enforcement mapping, integration requirements, enforcement touchpoints, quality gate integration |
 | Barrier-1 ENF-to-ADV Handoff | `orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/enf-to-adv/barrier-1-enf-to-adv-handoff.md` | Priority matrix, 5-layer architecture, platform constraints, feasibility constraints, 4 RED systemic risks |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by the `.context/rules/quality-enforcement.md` SSOT created during EPIC-003 FEAT-008 EN-701. The SSOT contains the criticality-level-to-strategy mapping (C1 -> S-010, C2 -> S-007+S-002+S-014, C3 -> 6 strategies, C4 -> all 10 selected) with auto-escalation rules (AE-001 through AE-006). This IS the situational applicability mapping -- it maps decision criticality levels to specific strategy sets, defines when each strategy is required vs. optional, and provides escalation triggers. The SSOT is the authoritative, operational artifact that fulfills EN-303's intent.
+
+**Key SSOT sections fulfilling EN-303 requirements:**
+- Criticality Levels table: C1-C4 with required and optional strategy sets
+- Auto-Escalation Rules: AE-001 through AE-006 (context-to-criticality triggers)
+- Strategy Catalog: 10 selected strategies with scores and family classification
+- Quality Gate: threshold, dimensions, weights, minimum cycle count
+
 ## History
 
 | Date | Author | Status | Notes |
@@ -313,3 +325,4 @@ TASK-002 ──┘
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. Depends on EN-302 strategy selection. |
 | 2026-02-13 | Claude | in_progress | Enriched with ADR-EPIC002-001 (ACCEPTED) inputs: 10 selected strategies, quality layer composition, decision criticality levels, synergy/tension pairs. Added Barrier-1 ENF-to-ADV handoff inputs: 5-layer enforcement architecture, platform portability constraints, token budget ceilings, 4 RED systemic risks, enforcement gaps, feasibility constraints. Added FR-001 through FR-011, NFR-001 through NFR-007. Expanded acceptance criteria from 9 to 13 items. Enriched all task descriptions with ADR/Barrier-1 references. Updated navigation table. |
 | 2026-02-16 | Claude | pending | Status corrected from in_progress to pending. Enabler was enriched with ADR-EPIC002-001 inputs but zero tasks have been executed. Audit remediation (FEAT-013 EN-911). |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. `.context/rules/quality-enforcement.md` SSOT (FEAT-008 EN-701) contains criticality-to-strategy mapping and auto-escalation rules. See Evidence section. |

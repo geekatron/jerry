@@ -10,13 +10,13 @@ PURPOSE: Implement enforcement hooks based on priority analysis
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-005
 > **Owner:** —
 > **Effort:** 10
@@ -330,6 +330,18 @@ TASK-001 ──► TASK-002 ──► TASK-005 ──┐
 | Barrier-1 ADV-to-ENF Handoff | `orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/adv-to-enf/barrier-1-adv-to-enf-handoff.md` | Strategy-to-hook enforcement touchpoints (UserPromptSubmit, PreToolUse, SessionStart), quality gate integration, token budget for V-024 |
 | Barrier-1 ENF-to-ADV Handoff | `orchestration/epic002-crosspoll-20260213-001/cross-pollination/barrier-1/enf-to-adv/barrier-1-enf-to-adv-handoff.md` | Platform portability constraints, 4 RED systemic risks, defense-in-depth compensation chain |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by EPIC-003 FEAT-008 implementation work, which delivered the hook-based enforcement mechanisms planned here:
+
+- **EN-703** (PreToolUse AST Enforcement Engine): Implemented the AST-based PreToolUse enforcement engine that performs deterministic, context-rot-immune pre-action gating (L3 layer) -- fulfilling FR-004, FR-005, FR-010 and the PreToolUse design/implementation tasks (TASK-003, TASK-006).
+- **EN-705** (UserPromptSubmit Context Reinforcement Hook): Implemented the UserPromptSubmit hook for L2 per-prompt context reinforcement delivering V-024 -- fulfilling FR-001, FR-002, FR-003, FR-008, FR-009 and the UserPromptSubmit design/implementation tasks (TASK-002, TASK-005).
+- **EN-706** (SessionStart Quality Injection Hook): Implemented the SessionStart hook for quality context injection at session initialization -- fulfilling FR-006 and the SessionStart design/implementation tasks (TASK-004, TASK-007).
+
+All three hooks were implemented with hexagonal architecture separation, fail-safe behavior, platform portability, and adversarial validation as part of EPIC-003's quality framework implementation.
+
 ## History
 
 | Date | Author | Status | Notes |
@@ -337,3 +349,4 @@ TASK-001 ──► TASK-002 ──► TASK-005 ──┐
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
 | 2026-02-13 | Claude | in_progress | Enriched with ADR-EPIC002-002 (ACCEPTED) inputs: 5-layer architecture hook layer assignments (L2/L3/L4), hook-specific vectors (V-001, V-002, V-003, V-005, V-024, V-038-V-041), defense-in-depth compensation chain, implementation phasing. Added Barrier-1 ADV-to-ENF handoff inputs: strategy-to-hook enforcement touchpoints (UserPromptSubmit: S-007/S-014/S-003/S-010; PreToolUse: S-007/S-010/S-013; SessionStart: S-014/S-007), quality gate integration (0.92 threshold, creator-critic-revision cycle, decision criticality escalation), V-024 token budget (~600 tokens/session), leniency bias calibration. Added FR-001 through FR-012, NFR-001 through NFR-008. Expanded acceptance criteria from 10 to 14 items. Enriched all task descriptions with ADR/Barrier-1 references. Updated navigation table. |
 | 2026-02-16 | Claude | pending | Status corrected from in_progress to pending. Enabler was enriched with ADR-EPIC002-002 and Barrier-1 inputs but zero tasks have been executed. Audit remediation (FEAT-013 EN-911). |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. EN-703 (PreToolUse AST Enforcement Engine) + EN-705 (UserPromptSubmit Context Reinforcement Hook) + EN-706 (SessionStart Quality Injection Hook). See Evidence section. |

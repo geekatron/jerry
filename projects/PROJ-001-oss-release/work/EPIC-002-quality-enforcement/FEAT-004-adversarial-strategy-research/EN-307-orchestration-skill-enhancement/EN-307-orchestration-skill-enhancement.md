@@ -9,13 +9,13 @@ PURPOSE: Update /orchestration skill to automatically embed adversarial feedback
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** architecture
 > **Created:** 2026-02-12
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-16
 > **Parent:** FEAT-004
 > **Owner:** —
 > **Effort:** 8
@@ -141,8 +141,15 @@ TASK-001 (requirements)
 |------|------|-------------|
 | depends_on | EN-303 | Situational Applicability Mapping -- strategy-to-context mappings needed for orchestration loop design |
 
+## Evidence
+
+### Superseded By
+
+This enabler was superseded by EPIC-003 FEAT-008 **EN-709** (ORCH Skill Adversarial Mode Enhancement). EN-709 added the adversarial quality mode section to the orchestration SKILL.md with phase gate definitions, creator-critic-revision cycle requirements, and strategy selection by criticality level. This fulfills the orchestration skill enhancement scope that EN-307 planned. The work was completed through the EPIC-003 quality framework implementation rather than through the FEAT-004 pipeline.
+
 ## History
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003. EN-709 (ORCH Skill Adversarial Mode Enhancement). See Evidence section. |

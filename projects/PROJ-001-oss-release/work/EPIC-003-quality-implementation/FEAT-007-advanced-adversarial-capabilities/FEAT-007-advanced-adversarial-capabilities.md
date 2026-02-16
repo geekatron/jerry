@@ -15,7 +15,7 @@ PURPOSE: Research and implement advanced adversarial capabilities deferred from 
 > **Created:** 2026-02-12
 > **Due:** —
 > **Completed:** —
-> **Parent:** EPIC-002
+> **Parent:** EPIC-003
 > **Owner:** —
 > **Target Sprint:** Sprint 4
 
@@ -215,19 +215,22 @@ EN-603    EN-604    EN-605
 
 ### Hierarchy
 
-- **Parent Epic:** [EPIC-002: Quality Framework Enforcement](../EPIC-002-quality-enforcement.md)
+- **Parent Epic:** [EPIC-003: Quality Framework Implementation](../EPIC-003-quality-implementation.md)
 
 ### Related Features
 
-- [FEAT-004: Adversarial Strategy Research](../FEAT-004-adversarial-strategy-research/FEAT-004-adversarial-strategy-research.md) - FEAT-007 extends the foundational strategies from FEAT-004
-- [FEAT-005: Enforcement Mechanisms](../FEAT-005-enforcement-mechanisms/FEAT-005-enforcement-mechanisms.md) - Advanced capabilities integrate with enforcement mechanisms
+- [FEAT-004: Adversarial Strategy Research](../../EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/FEAT-004-adversarial-strategy-research.md) - FEAT-007 extends the foundational strategies from FEAT-004 (EPIC-002, completed)
+- [FEAT-005: Enforcement Mechanisms](../../EPIC-002-quality-enforcement/FEAT-005-enforcement-mechanisms/FEAT-005-enforcement-mechanisms.md) - Advanced capabilities integrate with enforcement mechanisms (EPIC-002, completed)
+- [FEAT-008: Quality Framework Implementation](../FEAT-008-quality-framework-implementation/FEAT-008-quality-framework-implementation.md) - Foundation implementation that FEAT-007 extends
+- [FEAT-009: Adversarial Strategy Templates](../FEAT-009-adversarial-strategy-templates/FEAT-009-adversarial-strategy-templates.md) - Strategy templates that FEAT-007 builds automated selection for
 
 ### Dependencies
 
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
-| Depends On | FEAT-004 | Foundational adversarial strategies must be defined and integrated before advanced capabilities |
-| Depends On | FEAT-005 | Enforcement mechanisms provide the hooks for automated strategy selection |
+| Depends On | FEAT-004 (EPIC-002) | Foundational adversarial strategies research (completed) |
+| Depends On | FEAT-008 (EPIC-003) | Quality framework infrastructure provides hooks for strategy selection |
+| Depends On | FEAT-009 (EPIC-003) | Strategy templates provide the templates that automated selection chooses from |
 
 ---
 
@@ -236,6 +239,7 @@ EN-603    EN-604    EN-605
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Feature created under EPIC-002 from FEAT-004 Out of Scope items. 5 enablers defined (EN-601 through EN-605). Covers automated strategy selection, custom strategy tooling, effectiveness metrics, and A/B testing. Full agent utilization required (22 agents). |
+| 2026-02-16 | Claude | pending | Moved from EPIC-002 to EPIC-003. FEAT-007 is implementation work; EPIC-002 is research/design, EPIC-003 is implementation. Dependencies updated to reference FEAT-008/009 (EPIC-003) as foundation. |
 
 ---
 

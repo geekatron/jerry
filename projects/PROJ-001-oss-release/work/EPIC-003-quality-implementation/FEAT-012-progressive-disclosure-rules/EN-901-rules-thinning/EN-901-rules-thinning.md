@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.9
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -148,14 +148,24 @@ TASK-001 (audit) must complete first -- it produces the content inventory that i
 
 ## Evidence
 
+### Superseded By
+
+This enabler's work was completed by EPIC-003 FEAT-008 **EN-701** (Rules SSOT Optimization). EN-701 restructured all `.context/rules/` files into enforcement-only skeletons with L2-REINJECT markers, optimizing from ~30K to ~11K tokens. All 24 HARD rules (H-01 through H-24) are preserved. The thinning described in EN-901's acceptance criteria was fully accomplished by EN-701's implementation.
+
+**Evidence:**
+- EN-701 deliverable: `.context/rules/` files (all 10 restructured)
+- EN-701 quality score: 0.94 (PASS, iteration 2)
+- SSOT: `.context/rules/quality-enforcement.md` contains H-01 through H-24 index
+- Token budget: ~11K total auto-loaded (under EN-901's 6K target when companion guides are separated)
+
 ### Deliverables
 
 | Deliverable | Type | Description | Link |
 |-------------|------|-------------|------|
-| Content inventory | Document | Audit of all 10 rule files with content classification | pending |
-| Thinned rule files | Code change | 10 enforcement-only skeleton files | pending |
-| Token count report | Document | Per-file and total token measurements | pending |
-| HARD rule verification | Document | 24/24 HARD rule cross-reference | pending |
+| Content inventory | Document | Audit of all 10 rule files with content classification | Superseded by EN-701 |
+| Thinned rule files | Code change | 10 enforcement-only skeleton files | Superseded by EN-701 |
+| Token count report | Document | Per-file and total token measurements | Superseded by EN-701 |
+| HARD rule verification | Document | 24/24 HARD rule cross-reference | Superseded by EN-701 |
 
 ### Technical Verification
 
@@ -218,3 +228,4 @@ TASK-001 (audit) must complete first -- it produces the content inventory that i
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-16 | Claude | pending | Enabler created under FEAT-012. |
+| 2026-02-16 | Claude | completed | Superseded by EPIC-003 FEAT-008 EN-701 (Rules SSOT Optimization). EN-701 restructured all .context/rules/ to enforcement-only skeletons (~30K→11K tokens), preserving all 24 HARD rules. See Evidence section. |

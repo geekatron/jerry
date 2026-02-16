@@ -60,7 +60,6 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 - 10 adversarial strategies are documented, integrated, and tested
 - All EPIC-001 deliverables pass retroactive quality review (>=0.92)
 - /problem-solving, /nasa-se, and /orchestration skills are enhanced with adversarial capabilities
-- Advanced adversarial capabilities (automated selection, metrics, A/B testing) researched and implemented
 - Platform portability is verified on macOS, Windows, and Linux
 
 ---
@@ -83,20 +82,18 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 
 | ID | Title | Status | Priority | Enablers | Effort | Progress |
 |----|-------|--------|----------|----------|--------|----------|
-| FEAT-004 | Adversarial Strategy Research & Skill Enhancement | in_progress | critical | 7 (EN-301–307) | 57 | 29% |
-| FEAT-005 | Quality Framework Enforcement Mechanisms | in_progress | critical | 6 (EN-401–406) | 49 | 33% |
+| FEAT-004 | Adversarial Strategy Research & Skill Enhancement | **completed** | critical | 7 (EN-301–307) | 57 | 100% |
+| FEAT-005 | Quality Framework Enforcement Mechanisms | **completed** | critical | 6 (EN-401–406) | 49 | 100% |
 | FEAT-006 | EPIC-001 Retroactive Quality Review | pending | high | 5 (EN-501–505) | 42 | 0% |
-| FEAT-007 | Advanced Adversarial Capabilities | pending | high | 5 (EN-601–605) | 51 | 0% |
-| FEAT-012 | Progressive Disclosure Rules Architecture | pending | high | 6 (EN-901–906) | 29 | 0% |
-| FEAT-013 | Worktracker Integrity Remediation | pending | high | 6 (EN-907–912) | 15 | 0% |
+| FEAT-013 | Worktracker Integrity Remediation | **completed** | high | 6 (EN-907–912) | 15 | 100% |
+
+> **Moved to EPIC-003:** FEAT-007 (Advanced Adversarial Capabilities) and FEAT-012 (Progressive Disclosure Rules Architecture) were implementation work and have been relocated to EPIC-003.
 
 ### Feature Links
 
 - [FEAT-004: Adversarial Strategy Research & Skill Enhancement](./FEAT-004-adversarial-strategy-research/FEAT-004-adversarial-strategy-research.md)
 - [FEAT-005: Quality Framework Enforcement Mechanisms](./FEAT-005-enforcement-mechanisms/FEAT-005-enforcement-mechanisms.md)
 - [FEAT-006: EPIC-001 Retroactive Quality Review](./FEAT-006-epic001-retroactive-review/FEAT-006-epic001-retroactive-review.md)
-- [FEAT-007: Advanced Adversarial Capabilities](./FEAT-007-advanced-adversarial-capabilities/FEAT-007-advanced-adversarial-capabilities.md)
-- [FEAT-012: Progressive Disclosure Rules Architecture](./FEAT-012-progressive-disclosure-rules/FEAT-012-progressive-disclosure-rules.md)
 - [FEAT-013: Worktracker Integrity Remediation](./FEAT-013-worktracker-integrity-remediation/FEAT-013-worktracker-integrity-remediation.md)
 
 ---
@@ -109,11 +106,11 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/6 completed)              |
-| Enablers:  [##..................] 11% (4/35 completed)            |
-| Effort:    [###.................] 17% (42/243 points)             |
+| Features:  [###############.....] 75% (3/4 completed)            |
+| Enablers:  [################....] 79% (19/24 completed)          |
+| Effort:    [###############.....] 74% (121/163 points)           |
 +------------------------------------------------------------------+
-| Overall:   [##..................] ~11%                             |
+| Overall:   [###############.....] ~75%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -121,15 +118,15 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 6 |
-| **Completed Features** | 0 |
-| **In Progress Features** | 2 |
-| **Pending Features** | 4 |
-| **Total Enablers** | 35 |
-| **Completed Enablers** | 4 (EN-301, EN-302, EN-401, EN-402) |
-| **Total Effort (points)** | 243 |
-| **Completed Effort** | 42 |
-| **Feature Completion %** | 0% |
+| **Total Features** | 4 |
+| **Completed Features** | 3 (FEAT-004, FEAT-005, FEAT-013) |
+| **In Progress Features** | 0 |
+| **Pending Features** | 1 (FEAT-006) |
+| **Total Enablers** | 24 |
+| **Completed Enablers** | 19 (7 FEAT-004 + 6 FEAT-005 + 6 FEAT-013) |
+| **Total Effort (points)** | 163 |
+| **Completed Effort** | 121 |
+| **Feature Completion %** | 75% |
 
 ---
 
@@ -170,6 +167,7 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 | 2026-02-16 | Claude | in_progress | FEAT-012 created: Progressive Disclosure Rules Architecture. 6 enablers (EN-901–906), 32 tasks, 29 effort points. Remediates naive EN-702 optimization by restructuring rules into tiered architecture: enforcement (auto-loaded) + guides (on-demand) + patterns (on-demand). Strategies 1+2+3 (Progressive Disclosure + Path Scoping + Companion Files). AE-002 auto-escalation: C3 minimum. Total: 5 features, 29 enablers, 228 story points. |
 | 2026-02-16 | Claude | in_progress | Full EPIC-002 audit: wt-auditor (27 issues: 12 errors, 10 warnings), wt-verifier (4 enablers verified, stale metrics identified), wt-visualizer (hierarchy diagrams). Progress metrics corrected: FEAT-004 5%→29%, FEAT-005 5%→33%, enablers 0/29→4/29. |
 | 2026-02-16 | Claude | in_progress | FEAT-013 created: Worktracker Integrity Remediation. 6 enablers (EN-907–912), 29 tasks, 15 effort points. Addresses all audit findings: stale metrics, missing Evidence sections, phantom FEAT-006 enablers, duplicate task files, status ambiguity, orphaned reports. Total: 6 features, 35 enablers, 243 story points. |
+| 2026-02-16 | Claude | in_progress | **EPIC-002 Restructuring.** FEAT-004 closed (EN-303–307 superseded by EPIC-003 FEAT-008). FEAT-005 closed (EN-403–406 superseded by EPIC-003 FEAT-008). FEAT-013 closed (P1–P7 remediation complete, commit 3048ea1). FEAT-007 and FEAT-012 moved to EPIC-003 (implementation work belongs there). EPIC-002 now has 4 features: 3 completed + FEAT-006 (retroactive review) pending. 19/24 enablers complete (79%). |
 
 ---
 

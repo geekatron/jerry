@@ -9,12 +9,12 @@ PURPOSE: Implement quality framework designs from EPIC-002 into working code, ru
 -->
 
 > **Type:** epic
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-14
 > **Due:** ---
-> **Completed:** 2026-02-15
+> **Completed:** —
 > **Parent:** ---
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -83,17 +83,21 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | ID | Title | Status | Priority | Enablers | Progress |
 |----|-------|--------|----------|----------|----------|
-| FEAT-008 | Quality Framework Implementation | completed | critical | 11 (EN-701-711) | 100% |
-| FEAT-009 | Adversarial Strategy Templates & /adversary Skill | completed | critical | 12 (EN-801-812) | 100% |
-| FEAT-010 | FEAT-009 Tournament Remediation | completed | critical | 7 (EN-813-819) | 100% |
-| FEAT-011 | Template Compliance Remediation | completed | critical | 4 (EN-820-823) | 100% |
+| FEAT-007 | Advanced Adversarial Capabilities | pending | high | 5 (EN-601–605) | 0% |
+| FEAT-008 | Quality Framework Implementation | completed | critical | 11 (EN-701–711) | 100% |
+| FEAT-009 | Adversarial Strategy Templates & /adversary Skill | completed | critical | 12 (EN-801–812) | 100% |
+| FEAT-010 | FEAT-009 Tournament Remediation | completed | critical | 7 (EN-813–819) | 100% |
+| FEAT-011 | Template Compliance Remediation | completed | critical | 4 (EN-820–823) | 100% |
+| FEAT-012 | Progressive Disclosure Rules Architecture | pending | high | 6 (EN-901–906) | 17% |
 
 ### Feature Links
 
+- [FEAT-007: Advanced Adversarial Capabilities](./FEAT-007-advanced-adversarial-capabilities/FEAT-007-advanced-adversarial-capabilities.md)
 - [FEAT-008: Quality Framework Implementation](./FEAT-008-quality-framework-implementation/FEAT-008-quality-framework-implementation.md)
 - [FEAT-009: Adversarial Strategy Templates & /adversary Skill](./FEAT-009-adversarial-strategy-templates/FEAT-009-adversarial-strategy-templates.md)
 - [FEAT-010: FEAT-009 Tournament Remediation](./FEAT-010-tournament-remediation/FEAT-010-tournament-remediation.md)
 - [FEAT-011: Template Compliance Remediation](./FEAT-011-template-compliance-remediation/FEAT-011-template-compliance-remediation.md)
+- [FEAT-012: Progressive Disclosure Rules Architecture](./FEAT-012-progressive-disclosure-rules/FEAT-012-progressive-disclosure-rules.md)
 
 ---
 
@@ -105,10 +109,10 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [████████████████████] 100% (4/4 completed)           |
-| Enablers:  [████████████████████] 100% (34/34 completed)         |
+| Features:  [#############.......] 67% (4/6 completed)            |
+| Enablers:  [################....] 78% (35/45 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [████████████████████] 100%                            |
+| Overall:   [###############.....] ~73%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -116,13 +120,13 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 4 |
+| **Total Features** | 6 |
 | **Completed Features** | 4 (FEAT-008, FEAT-009, FEAT-010, FEAT-011) |
 | **In Progress Features** | 0 |
-| **Pending Features** | 0 |
-| **Total Enablers** | 34 |
-| **Completed Enablers** | 34 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011) |
-| **Feature Completion %** | 100% |
+| **Pending Features** | 2 (FEAT-007, FEAT-012) |
+| **Total Enablers** | 45 |
+| **Completed Enablers** | 35 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011 + 1 FEAT-012 EN-901) |
+| **Feature Completion %** | 67% |
 
 ### Milestone Tracking
 
@@ -167,3 +171,4 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | 2026-02-15 | Claude | in_progress | FEAT-011 completed: All 4 enablers complete. 144 task files + 30 enabler files + 4 entity files remediated. Behavioral root cause fixed. 27/34 enablers complete (79%). |
 | 2026-02-15 | Claude | in_progress | Status sync: FEAT-008 completed (11/11 enablers verified on disk). FEAT-009 completed (12/12 enablers verified on disk). Template-canonical enums applied. 3/4 features complete (75%). Only FEAT-010 remains. |
 | 2026-02-15 | Claude | completed | FEAT-010 COMPLETE: All 7 enablers PASS (avg 0.933, lowest 0.922). FEAT-009 re-scored 0.93 (was 0.85). 260 E2E tests pass, ruff clean. All 4 features complete. EPIC-003 100%. |
+| 2026-02-16 | Claude | in_progress | **Reopened.** FEAT-007 (Advanced Adversarial Capabilities, 5 enablers) and FEAT-012 (Progressive Disclosure Rules Architecture, 6 enablers) moved from EPIC-002 — these are implementation work. FEAT-012 EN-901 superseded by EN-701; EN-902–906 are new work. 4/6 features complete (67%), 35/45 enablers complete (78%). |
