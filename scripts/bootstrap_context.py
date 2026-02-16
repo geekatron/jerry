@@ -10,11 +10,13 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import platform
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 # Directories to sync from .context/ to .claude/
@@ -146,6 +148,12 @@ def _files_match(source: Path, target: Path) -> bool:
     Recursively walks both directories and compares relative paths
     and MD5 content hashes to detect content drift.
 
+    Limitations:
+        - Reads entire file contents into memory for hashing; not suitable
+          for directories containing very large files.
+        - Uses MD5 for fast comparison (not cryptographic security).
+        - Does not compare file permissions, ownership, or timestamps.
+
     Args:
         source: Canonical source directory.
         target: Synced target directory.
@@ -153,8 +161,6 @@ def _files_match(source: Path, target: Path) -> bool:
     Returns:
         True if all files match by name and content.
     """
-    import hashlib
-
     source_files: dict[str, str] = {}
     for f in sorted(source.rglob("*")):
         if f.is_file():
@@ -232,8 +238,6 @@ def _rmtree_with_retry(path: Path, max_retries: int = 3) -> None:
     Raises:
         PermissionError: If all retry attempts are exhausted.
     """
-    import time
-
     for attempt in range(max_retries):
         try:
             shutil.rmtree(path)
