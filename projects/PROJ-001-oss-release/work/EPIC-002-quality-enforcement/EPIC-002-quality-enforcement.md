@@ -87,6 +87,7 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 | FEAT-005 | Quality Framework Enforcement Mechanisms | in_progress | critical | 6 (EN-401–406) | 49 | 5% |
 | FEAT-006 | EPIC-001 Retroactive Quality Review | pending | high | 5 (EN-501–505) | 42 | 0% |
 | FEAT-007 | Advanced Adversarial Capabilities | pending | high | 5 (EN-601–605) | 51 | 0% |
+| FEAT-012 | Progressive Disclosure Rules Architecture | pending | high | 6 (EN-901–906) | 29 | 0% |
 
 ### Feature Links
 
@@ -94,6 +95,7 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 - [FEAT-005: Quality Framework Enforcement Mechanisms](./FEAT-005-enforcement-mechanisms/FEAT-005-enforcement-mechanisms.md)
 - [FEAT-006: EPIC-001 Retroactive Quality Review](./FEAT-006-epic001-retroactive-review/FEAT-006-epic001-retroactive-review.md)
 - [FEAT-007: Advanced Adversarial Capabilities](./FEAT-007-advanced-adversarial-capabilities/FEAT-007-advanced-adversarial-capabilities.md)
+- [FEAT-012: Progressive Disclosure Rules Architecture](./FEAT-012-progressive-disclosure-rules/FEAT-012-progressive-disclosure-rules.md)
 
 ---
 
@@ -105,8 +107,8 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/4 completed)              |
-| Enablers:  [....................] 0% (0/23 completed)             |
+| Features:  [....................] 0% (0/5 completed)              |
+| Enablers:  [....................] 0% (0/29 completed)             |
 | Tasks:     [....................] 0% (0/? completed)              |
 +------------------------------------------------------------------+
 | Overall:   [....................] 0%                               |
@@ -117,12 +119,12 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 4 |
+| **Total Features** | 5 |
 | **Completed Features** | 0 |
 | **In Progress Features** | 2 |
-| **Pending Features** | 2 |
-| **Total Enablers** | 23 |
-| **Total Effort (points)** | 199 |
+| **Pending Features** | 3 |
+| **Total Enablers** | 29 |
+| **Total Effort (points)** | 228 |
 | **Feature Completion %** | 0% |
 
 ---
@@ -153,6 +155,7 @@ Establish enforceable quality mechanisms within the Jerry Framework that ensure 
 | 2026-02-12 | Claude | pending | Epic created. EPIC-001 deliverables bypassed all quality gates (no adversarial feedback, no quality scoring, no creator→critic cycles, no multi-platform testing). This epic addresses enforcement and retroactive quality review. |
 | 2026-02-12 | Claude | in_progress | Execution started. Orchestration plans dispatched for FEAT-004 and FEAT-005. Research agents launched: EN-301 (15 adversarial strategies) and EN-401 (enforcement vectors) running in parallel. |
 | 2026-02-12 | Claude | in_progress | Course correction: Updated FEAT-004 ACs (18 functional + 8 NFC) and FEAT-005 ACs (19 functional + 8 NFC) to require full 22-agent utilization, DEC/DISC tracking, detailed enabler/task files. Added EN-307 (/orchestration skill enhancement). Created all 13 enabler entity files (EN-301–307, EN-401–406). Created FEAT-007 (Advanced Adversarial Capabilities) from FEAT-004 Out of Scope items with 5 enablers (EN-601–605). Total: 4 features, 23 enablers, 199 story points. |
+| 2026-02-16 | Claude | in_progress | FEAT-012 created: Progressive Disclosure Rules Architecture. 6 enablers (EN-901–906), 32 tasks, 29 effort points. Remediates naive EN-702 optimization by restructuring rules into tiered architecture: enforcement (auto-loaded) + guides (on-demand) + patterns (on-demand). Strategies 1+2+3 (Progressive Disclosure + Path Scoping + Companion Files). AE-002 auto-escalation: C3 minimum. Total: 5 features, 29 enablers, 228 story points. |
 
 ---
 
