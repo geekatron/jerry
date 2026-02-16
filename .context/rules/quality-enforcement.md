@@ -1,6 +1,6 @@
 # Quality Enforcement -- Single Source of Truth
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-14 | SOURCE: EPIC-002 Final Synthesis, ADR-EPIC002-001, ADR-EPIC002-002 -->
+<!-- VERSION: 1.3.0 | DATE: 2026-02-15 | SOURCE: EPIC-002 Final Synthesis, ADR-EPIC002-001, ADR-EPIC002-002 -->
 
 > Canonical constants for the quality framework. All hooks, rules, and skills MUST reference this file.
 

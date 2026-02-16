@@ -872,14 +872,14 @@ class TestMalformedTemplateHandling:
 
     def test_adv_executor_when_read_then_contains_malformed_template_handling(self):
         """adv-executor.md should document malformed template behavior."""
-        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        content = read_file(AGENT_FILES["adv-executor"])
         assert "Malformed Template" in content or "malformed template" in content, (
             "adv-executor.md must document malformed template handling"
         )
 
     def test_adv_executor_when_read_then_malformed_emits_critical(self):
         """Malformed templates should emit CRITICAL findings."""
-        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        content = read_file(AGENT_FILES["adv-executor"])
         # Check that malformed templates produce CRITICAL severity
         malformed_section = content[content.find("Malformed") :] if "Malformed" in content else ""
         assert "CRITICAL" in malformed_section or "Critical" in malformed_section, (
@@ -888,7 +888,7 @@ class TestMalformedTemplateHandling:
 
     def test_adv_executor_when_read_then_malformed_halts_execution(self):
         """Malformed templates should halt strategy execution."""
-        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        content = read_file(AGENT_FILES["adv-executor"])
         malformed_section = content[content.find("Malformed") :] if "Malformed" in content else ""
         halt_terms = ["HALT", "halt", "Do NOT attempt", "Do not attempt", "stop execution"]
         assert any(term in malformed_section for term in halt_terms), (
@@ -899,8 +899,42 @@ class TestMalformedTemplateHandling:
         """quality-enforcement.md should contain authoritative REVISE band definition."""
         ssot_path = PROJECT_ROOT / ".context" / "rules" / "quality-enforcement.md"
         content = ssot_path.read_text()
+
+        # 1. Verify the heading exists
+        assert "Operational Score Bands" in content or "### Operational Score Bands" in content, (
+            "quality-enforcement.md must contain 'Operational Score Bands' section"
+        )
+
+        # 2. Verify REVISE band row contains both bounds
         assert "REVISE" in content, "quality-enforcement.md must contain REVISE band definition"
-        assert "0.85" in content, "quality-enforcement.md must specify REVISE lower bound (0.85)"
+
+        # Extract the REVISE band row (look for line with REVISE)
+        revise_lines = [line for line in content.split("\n") if "REVISE" in line and "|" in line]
+        assert len(revise_lines) > 0, "quality-enforcement.md must have REVISE band table row"
+
+        revise_row = revise_lines[0]
+        assert "0.85" in revise_row, "REVISE band must contain lower bound 0.85"
+        assert "0.91" in revise_row, "REVISE band must contain upper bound 0.91"
+
+        # 3. Verify PASS band row contains threshold
+        pass_lines = [line for line in content.split("\n") if "PASS" in line and "|" in line]
+        assert len(pass_lines) > 0, "quality-enforcement.md must have PASS band table row"
+
+        pass_row = pass_lines[0]
+        assert ">= 0.92" in pass_row or "0.92" in pass_row, (
+            "PASS band must reference 0.92 threshold"
+        )
+
+        # 4. Verify note about REVISE not being a distinct acceptance state
+        note_indicators = [
+            "not a distinct acceptance state",
+            "NOT a distinct acceptance state",
+            "operational workflow label",
+        ]
+        has_note = any(indicator in content for indicator in note_indicators)
+        assert has_note, (
+            "quality-enforcement.md should clarify REVISE is not a distinct acceptance state"
+        )
 
     @pytest.mark.parametrize("strategy_id", SELECTED_STRATEGIES.keys())
     def test_template_revise_note_when_read_then_references_ssot(self, strategy_id: str):
@@ -994,7 +1028,7 @@ class TestH16Enforcement:
 
     def test_adv_executor_when_read_then_contains_h16_precheck(self):
         """adv-executor.md should contain H-16 pre-check for S-002."""
-        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        content = read_file(AGENT_FILES["adv-executor"])
         assert "H-16" in content, "adv-executor.md must reference H-16"
         assert "S-003" in content and "S-002" in content, "Must reference both S-003 and S-002"
         # Check for enforcement language (not just documentation)
@@ -1005,7 +1039,7 @@ class TestH16Enforcement:
 
     def test_adv_executor_when_read_then_h16_before_step1(self):
         """H-16 check should appear before Step 1 in execution process."""
-        content = Path("skills/adversary/agents/adv-executor.md").read_text()
+        content = read_file(AGENT_FILES["adv-executor"])
         h16_pos = content.find("H-16")
         step1_pos = content.find("Step 1:")
         if h16_pos != -1 and step1_pos != -1:
@@ -1020,13 +1054,13 @@ class TestAutoEscalation:
 
     def test_adv_selector_when_read_then_contains_all_ae_rules(self):
         """adv-selector.md should reference all 6 AE rules."""
-        content = Path("skills/adversary/agents/adv-selector.md").read_text()
+        content = read_file(AGENT_FILES["adv-selector"])
         for ae_id in ["AE-001", "AE-002", "AE-003", "AE-004", "AE-005", "AE-006"]:
             assert ae_id in content, f"adv-selector.md must reference {ae_id}"
 
     def test_adv_selector_when_read_then_contains_active_enforcement(self):
         """adv-selector.md should contain active enforcement, not just passive docs."""
-        content = Path("skills/adversary/agents/adv-selector.md").read_text()
+        content = read_file(AGENT_FILES["adv-selector"])
         # Check for runtime enforcement language
         enforcement_terms = ["Active Enforcement", "MUST actively check", "Runtime"]
         assert any(term in content for term in enforcement_terms), (
@@ -1035,7 +1069,7 @@ class TestAutoEscalation:
 
     def test_adv_selector_when_read_then_contains_escalation_warning(self):
         """adv-selector.md should document AE escalation warnings."""
-        content = Path("skills/adversary/agents/adv-selector.md").read_text()
+        content = read_file(AGENT_FILES["adv-selector"])
         assert "AE ESCALATION" in content or "ESCALATION" in content, (
             "adv-selector.md must document escalation warnings"
         )
@@ -1045,16 +1079,13 @@ class TestP003SelfCheck:
     """Test that P-003 self-check is present in all adversary agents."""
 
     @pytest.mark.parametrize(
-        "agent_file",
-        [
-            "skills/adversary/agents/adv-selector.md",
-            "skills/adversary/agents/adv-executor.md",
-            "skills/adversary/agents/adv-scorer.md",
-        ],
+        "agent_name",
+        ["adv-selector", "adv-executor", "adv-scorer"],
     )
-    def test_agent_when_read_then_contains_p003_self_check(self, agent_file):
+    def test_agent_when_read_then_contains_p003_self_check(self, agent_name):
         """Each agent should have a P-003 self-check section."""
-        content = Path(agent_file).read_text()
+        content = read_file(AGENT_FILES[agent_name])
+        agent_file = AGENT_FILES[agent_name].name
         assert "P-003" in content, f"{agent_file} must reference P-003"
         assert "Self-Check" in content or "self-check" in content or "self_check" in content, (
             f"{agent_file} must contain P-003 self-check section"

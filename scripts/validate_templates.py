@@ -5,15 +5,19 @@ This script validates all 10 adversarial strategy templates in .context/template
 against the canonical format defined in TEMPLATE-FORMAT.md.
 
 Validation checks:
-- All 8 canonical sections present (Identity, Purpose, Prerequisites, Execution Protocol,
-  Output Format, Scoring Rubric, Examples, Integration)
+- All 8 canonical sections present in correct order (Identity, Purpose, Prerequisites,
+  Execution Protocol, Output Format, Scoring Rubric, Examples, Integration)
 - Navigation table present (H-23) with anchor links (H-24)
-- Identity section has 7 required fields
+- Identity section has 7 required fields with valid Strategy ID from SSOT
 - Identity section has Criticality Tier table
+- Metadata blockquote present with Type or Status fields
+- Purpose section has When to Use and When NOT to Use subheadings
 - Execution Protocol has >= 4 steps
 - Finding prefix matches expected format (2-letter uppercase + -NNN-{execution_id})
 - Scoring Rubric has threshold bands table and dimension weights table
 - Examples section has >= 200 chars of content
+- Examples section has Before/After/Example structure
+- Integration section has Criticality table with C1-C4 rows
 
 Exit Codes:
     0: All templates pass validation
@@ -23,6 +27,10 @@ References:
     - EN-818: Template Validation CI Gate
     - TEMPLATE-FORMAT.md: Canonical template format
     - quality-enforcement.md: SSOT for constants
+
+Notes:
+    - This script uses stdlib-only imports (argparse, re, sys, pathlib, typing) to avoid
+      external dependencies and ensure it can run in CI without additional package installs.
 """
 
 from __future__ import annotations
@@ -57,6 +65,20 @@ IDENTITY_REQUIRED_FIELDS = [
     "Version",
     "Date",
 ]
+
+# Valid Strategy IDs from quality-enforcement.md SSOT (10 selected strategies)
+VALID_STRATEGY_IDS = {
+    "S-001",
+    "S-002",
+    "S-003",
+    "S-004",
+    "S-007",
+    "S-010",
+    "S-011",
+    "S-012",
+    "S-013",
+    "S-014",
+}
 
 
 # ===========================================================================
@@ -164,11 +186,19 @@ def check_all_sections_present(content: str) -> ValidationResult:
     headings = re.findall(r"^##\s+(.+)$", content, re.MULTILINE)
 
     missing_sections = []
+    section_positions = {}
     for section in CANONICAL_SECTIONS:
         # Check for section name with or without "Section N:" prefix
-        found = any(section in heading or heading.endswith(f": {section}") for heading in headings)
-        if not found:
+        position = None
+        for idx, heading in enumerate(headings):
+            if section in heading or heading.endswith(f": {section}"):
+                position = idx
+                break
+
+        if position is None:
             missing_sections.append(section)
+        else:
+            section_positions[section] = position
 
     if missing_sections:
         return ValidationResult(
@@ -177,10 +207,19 @@ def check_all_sections_present(content: str) -> ValidationResult:
             message=f"Missing sections: {', '.join(missing_sections)}",
         )
 
+    # Check section ordering (positions should be monotonically increasing)
+    positions = [section_positions[section] for section in CANONICAL_SECTIONS]
+    if positions != sorted(positions):
+        return ValidationResult(
+            check_name="All 8 canonical sections",
+            passed=False,
+            message="Sections are not in canonical order",
+        )
+
     return ValidationResult(
         check_name="All 8 canonical sections",
         passed=True,
-        message="All sections present",
+        message="All sections present and in order",
     )
 
 
@@ -219,7 +258,7 @@ def check_navigation_table(content: str) -> ValidationResult:
 
 
 def check_identity_fields(content: str) -> ValidationResult:
-    """Check that Identity section has 7 required fields."""
+    """Check that Identity section has 7 required fields and valid Strategy ID."""
     # Extract Identity section table (try both formats)
     identity_table = extract_table_from_section(content, "Identity")
     if identity_table is None:
@@ -246,10 +285,19 @@ def check_identity_fields(content: str) -> ValidationResult:
             message=f"Missing Identity fields: {', '.join(missing_fields)}",
         )
 
+    # Validate Strategy ID against SSOT
+    strategy_id = fields.get("Strategy ID", "")
+    if strategy_id not in VALID_STRATEGY_IDS:
+        return ValidationResult(
+            check_name="Identity section fields",
+            passed=False,
+            message=f"Strategy ID '{strategy_id}' not in SSOT (expected one of {sorted(VALID_STRATEGY_IDS)})",
+        )
+
     return ValidationResult(
         check_name="Identity section fields",
         passed=True,
-        message="All 7 required fields present",
+        message="All 7 required fields present with valid Strategy ID",
     )
 
 
@@ -384,8 +432,7 @@ def check_scoring_rubric_tables(content: str) -> ValidationResult:
     has_dimension_weights = (
         "Dimension Weights" in rubric_content
         or "dimension weights" in rubric_content
-        or "Dimension" in rubric_content
-        and "Weight" in rubric_content
+        or ("Dimension" in rubric_content and "Weight" in rubric_content)
     )
 
     missing = []
@@ -441,6 +488,137 @@ def check_examples_content(content: str) -> ValidationResult:
     )
 
 
+def check_metadata_blockquote(content: str) -> ValidationResult:
+    """Check that template contains a metadata blockquote with required fields."""
+    # Look for blockquote pattern with Type or Status metadata
+    has_type_metadata = re.search(r"^>\s+\*\*Type:\*\*", content, re.MULTILINE)
+    has_status_metadata = re.search(r"^>\s+\*\*Status:\*\*", content, re.MULTILINE)
+
+    if not (has_type_metadata or has_status_metadata):
+        return ValidationResult(
+            check_name="Metadata blockquote",
+            passed=False,
+            message="No metadata blockquote found with Type or Status fields",
+        )
+
+    return ValidationResult(
+        check_name="Metadata blockquote",
+        passed=True,
+        message="Metadata blockquote present",
+    )
+
+
+def check_purpose_section_content(content: str) -> ValidationResult:
+    """Check that Purpose section has 'When to Use' and 'When NOT to Use' subheadings."""
+    # Extract Purpose section
+    purpose_match = re.search(
+        r"^##\s+(?:Section 2:\s+)?Purpose.*?(?=^##\s+|\Z)", content, re.MULTILINE | re.DOTALL
+    )
+
+    if purpose_match is None:
+        return ValidationResult(
+            check_name="Purpose section content",
+            passed=False,
+            message="Purpose section not found",
+        )
+
+    purpose_content = purpose_match.group(0)
+
+    # Check for "When to Use" and "When NOT to Use" subheadings
+    has_when_to_use = re.search(r"^###\s+When to Use", purpose_content, re.MULTILINE)
+    has_when_not_to_use = re.search(r"^###\s+When NOT to Use", purpose_content, re.MULTILINE)
+
+    missing = []
+    if not has_when_to_use:
+        missing.append("When to Use")
+    if not has_when_not_to_use:
+        missing.append("When NOT to Use")
+
+    if missing:
+        return ValidationResult(
+            check_name="Purpose section content",
+            passed=False,
+            message=f"Missing subheadings: {', '.join(missing)}",
+        )
+
+    return ValidationResult(
+        check_name="Purpose section content",
+        passed=True,
+        message="When to Use and When NOT to Use present",
+    )
+
+
+def check_integration_section_content(content: str) -> ValidationResult:
+    """Check that Integration section has a Criticality table with C1-C4 rows."""
+    # Extract Integration section
+    integration_match = re.search(
+        r"^##\s+(?:Section 8:\s+)?Integration.*?(?=^##\s+|\Z)", content, re.MULTILINE | re.DOTALL
+    )
+
+    if integration_match is None:
+        return ValidationResult(
+            check_name="Integration section content",
+            passed=False,
+            message="Integration section not found",
+        )
+
+    integration_content = integration_match.group(0)
+
+    # Check for Criticality table with C1-C4 rows
+    has_c1 = "C1" in integration_content
+    has_c2 = "C2" in integration_content
+    has_c3 = "C3" in integration_content
+    has_c4 = "C4" in integration_content
+
+    if not (has_c1 and has_c2 and has_c3 and has_c4):
+        return ValidationResult(
+            check_name="Integration section content",
+            passed=False,
+            message="Criticality table missing C1-C4 rows",
+        )
+
+    return ValidationResult(
+        check_name="Integration section content",
+        passed=True,
+        message="Criticality table with C1-C4 present",
+    )
+
+
+def check_examples_section_structure(content: str) -> ValidationResult:
+    """Check that Examples section has Before/After/Example structure."""
+    # Extract Examples section
+    examples_match = re.search(
+        r"^##\s+(?:Section 7:\s+)?Examples.*?(?=^##\s+|\Z)", content, re.MULTILINE | re.DOTALL
+    )
+
+    if examples_match is None:
+        return ValidationResult(
+            check_name="Examples section structure",
+            passed=False,
+            message="Examples section not found",
+        )
+
+    examples_content = examples_match.group(0)
+
+    # Check for Before/After/Example indicators
+    has_before = "Before" in examples_content or "before" in examples_content
+    has_after = "After" in examples_content or "after" in examples_content
+    has_example = "Example" in examples_content or "example" in examples_content
+
+    if not (has_before or has_after or has_example):
+        return ValidationResult(
+            check_name="Examples section structure",
+            passed=False,
+            message="No Before/After/Example content found",
+        )
+
+    return ValidationResult(
+        check_name="Examples section structure",
+        passed=True,
+        message="Before/After/Example content present",
+    )
+
+
 # ===========================================================================
 # Template Validation
 # ===========================================================================
@@ -480,6 +658,10 @@ def validate_template(template_path: Path) -> TemplateValidation:
         check_finding_prefix_format(content),
         check_scoring_rubric_tables(content),
         check_examples_content(content),
+        check_metadata_blockquote(content),
+        check_purpose_section_content(content),
+        check_integration_section_content(content),
+        check_examples_section_structure(content),
     ]
 
     all_passed = all(check.passed for check in checks)
@@ -541,8 +723,10 @@ def main() -> int:
 
     # Validate each template
     all_passed = True
+    validations = []
     for template_path in template_files:
         validation = validate_template(template_path)
+        validations.append(validation)
 
         # Print template status
         status = "PASS" if validation.passed else "FAIL"
@@ -561,7 +745,7 @@ def main() -> int:
             print()
 
     # Print summary
-    passed_count = sum(1 for f in template_files if validate_template(f).passed)
+    passed_count = sum(1 for v in validations if v.passed)
     failed_count = len(template_files) - passed_count
 
     print("=" * 60)
