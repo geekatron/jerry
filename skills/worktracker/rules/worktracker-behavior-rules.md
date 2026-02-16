@@ -24,6 +24,8 @@
 
 These rules ensure the worktracker remains a **single source of truth** that is accurate, honest, and verifiable.
 
+> **Note:** WTI rules are defined authoritatively in `.context/templates/worktracker/WTI_RULES.md`. The rules below are a reference summary kept in sync with the SSOT.
+
 ### WTI-001: Real-Time State Updates (HARD)
 
 **Rule:** You MUST update worktracker file status **immediately** after completing work.
@@ -81,7 +83,7 @@ These rules ensure the worktracker remains a **single source of truth** that is 
 
 **Why:** Context compaction and session boundaries cause state drift. Always verify before report.
 
-### WTI-005: Atomic Task State (MEDIUM)
+### WTI-005: Atomic Task State (HARD)
 
 **Rule:** Task state changes should be atomic - update the task file AND the parent enabler/story in the same operation.
 

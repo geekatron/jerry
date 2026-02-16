@@ -170,7 +170,7 @@ resolve_symlink() {
         # macOS/BSD readlink doesn't have -f, use different approach
         if [[ "$(uname)" == "Darwin" ]]; then
             # Use Python for reliable resolution on macOS
-            target=$(python3 -c "import os; print(os.path.realpath('$symlink'))" 2>/dev/null) || true
+            target=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$symlink" 2>/dev/null) || true
         else
             # GNU readlink
             target=$(readlink -f "$symlink" 2>/dev/null) || true
@@ -193,7 +193,7 @@ is_within_tree() {
 
     # Get real path of source directory
     if [[ "$(uname)" == "Darwin" ]]; then
-        source_real=$(python3 -c "import os; print(os.path.realpath('$SOURCE_DIR'))" 2>/dev/null) || source_real="$SOURCE_DIR"
+        source_real=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$SOURCE_DIR" 2>/dev/null) || source_real="$SOURCE_DIR"
     else
         source_real=$(readlink -f "$SOURCE_DIR" 2>/dev/null) || source_real="$SOURCE_DIR"
     fi
@@ -452,7 +452,7 @@ parse_args() {
 
     # Get absolute path
     if [[ "$(uname)" == "Darwin" ]]; then
-        SOURCE_DIR=$(python3 -c "import os; print(os.path.realpath('$SOURCE_DIR'))" 2>/dev/null) || true
+        SOURCE_DIR=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$SOURCE_DIR" 2>/dev/null) || true
     else
         SOURCE_DIR=$(readlink -f "$SOURCE_DIR" 2>/dev/null) || true
     fi

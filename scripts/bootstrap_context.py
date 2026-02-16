@@ -50,18 +50,25 @@ def find_project_root() -> Path:
 
 
 def is_symlink_or_junction(path: Path) -> bool:
-    """Check if a path is a symlink or Windows junction point."""
+    """Check if a path is a symlink or Windows junction point.
+
+    Uses os.lstat with st_file_attributes on Windows to detect
+    junction points (reparse points) without shelling out to cmd.
+
+    Args:
+        path: Filesystem path to check.
+
+    Returns:
+        True if the path is a symlink or Windows junction point.
+    """
     if path.is_symlink():
         return True
-    if platform.system() == "Windows" and path.exists():
+    if platform.system() == "Windows":
         try:
-            result = subprocess.run(
-                ["cmd", "/c", "dir", str(path.parent), "/AL"],
-                capture_output=True,
-                text=True,
-            )
-            return str(path.name) in result.stdout
-        except (subprocess.SubprocessError, FileNotFoundError):
+            st = os.lstat(str(path))
+            FILE_ATTRIBUTE_REPARSE_POINT = 0x400
+            return bool(getattr(st, "st_file_attributes", 0) & FILE_ATTRIBUTE_REPARSE_POINT)
+        except OSError:
             pass
     return False
 
@@ -126,6 +133,36 @@ def _create_windows_link(source: Path, target: Path, quiet: bool) -> bool:
         return False
 
 
+def _files_match(source: Path, target: Path) -> bool:
+    """Compare files in source and target directories by name and content hash.
+
+    Recursively walks both directories and compares relative paths
+    and MD5 content hashes to detect content drift.
+
+    Args:
+        source: Canonical source directory.
+        target: Synced target directory.
+
+    Returns:
+        True if all files match by name and content.
+    """
+    import hashlib
+
+    source_files: dict[str, str] = {}
+    for f in sorted(source.rglob("*")):
+        if f.is_file():
+            rel = f.relative_to(source)
+            source_files[str(rel)] = hashlib.md5(f.read_bytes()).hexdigest()
+
+    target_files: dict[str, str] = {}
+    for f in sorted(target.rglob("*")):
+        if f.is_file():
+            rel = f.relative_to(target)
+            target_files[str(rel)] = hashlib.md5(f.read_bytes()).hexdigest()
+
+    return source_files == target_files
+
+
 def check_sync(root: Path, quiet: bool = False) -> bool:
     """Check if .context/ and .claude/ are properly synced.
 
@@ -158,22 +195,46 @@ def check_sync(root: Path, quiet: bool = False) -> bool:
                 print(f"  {dirname}: linked -> {resolved}")
         elif target.is_dir():
             # It's a regular directory (file copy scenario)
-            source_files = {f.name for f in source.iterdir() if f.is_file()}
-            target_files = {f.name for f in target.iterdir() if f.is_file()}
-            missing = source_files - target_files
-            if missing:
+            # Compare both filenames and content hashes to detect drift
+            if not _files_match(source, target):
                 if not quiet:
-                    print(f"  {dirname}: drift detected - missing: {missing}")
+                    print(f"  {dirname}: drift detected - content mismatch")
                 all_ok = False
             else:
+                target_file_count = sum(1 for f in target.rglob("*") if f.is_file())
                 if not quiet:
-                    print(f"  {dirname}: copied ({len(target_files)} files)")
+                    print(f"  {dirname}: copied ({target_file_count} files)")
         else:
             if not quiet:
                 print(f"  {dirname}: unexpected state")
             all_ok = False
 
     return all_ok
+
+
+def _rmtree_with_retry(path: Path, max_retries: int = 3) -> None:
+    """Remove directory tree with retry for Windows file locks.
+
+    On Windows, antivirus scanners and indexers can briefly lock files,
+    causing PermissionError during removal. This retries with backoff.
+
+    Args:
+        path: Directory to remove.
+        max_retries: Maximum number of attempts before re-raising.
+
+    Raises:
+        PermissionError: If all retry attempts are exhausted.
+    """
+    import time
+
+    for attempt in range(max_retries):
+        try:
+            shutil.rmtree(path)
+            return
+        except PermissionError:
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(0.5 * (attempt + 1))
 
 
 def bootstrap(root: Path, force: bool = False, quiet: bool = False) -> bool:
@@ -210,8 +271,9 @@ def bootstrap(root: Path, force: bool = False, quiet: bool = False) -> bool:
             success = False
             continue
 
-        # Handle existing target
-        if target.exists() or target.is_symlink():
+        # Handle existing target (including broken junctions that
+        # return False for .exists() but are still present on disk)
+        if target.exists() or target.is_symlink() or is_symlink_or_junction(target):
             if not force:
                 if is_symlink_or_junction(target):
                     if not quiet:
@@ -225,8 +287,11 @@ def bootstrap(root: Path, force: bool = False, quiet: bool = False) -> bool:
             # Force: remove existing
             if target.is_symlink():
                 target.unlink()
+            elif is_symlink_or_junction(target):
+                # Junctions are directory reparse points; remove with os.rmdir
+                os.rmdir(str(target))
             elif target.is_dir():
-                shutil.rmtree(target)
+                _rmtree_with_retry(target)
 
         # Create link
         if not create_symlink(source, target, quiet):

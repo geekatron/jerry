@@ -46,7 +46,7 @@
 | H-07 | Domain layer: no external imports | architecture-standards |
 | H-08 | Application layer: no infra/interface imports | architecture-standards |
 | H-09 | Composition root exclusivity | architecture-standards |
-| H-10 | One class per file | file-organization |
+| H-10 | One class per file | architecture-standards |
 | H-11 | Type hints REQUIRED on public functions | coding-standards |
 | H-12 | Docstrings REQUIRED on public functions | coding-standards |
 | H-13 | Quality threshold >= 0.92 for C2+ | quality-enforcement |
@@ -84,6 +84,18 @@
 | Traceability | 0.10 |
 
 **Minimum cycle count:** 3 iterations (creator -> critic -> revision)
+
+### Quality Gate Rule Definitions
+
+| ID | Rule | Consequence |
+|----|------|-------------|
+| H-13 | Quality threshold >= 0.92 for C2+ deliverables. Weighted composite score using S-014 dimensions. Below threshold = REJECTED, revision required. | Deliverable rejected. |
+| H-14 | Creator-critic-revision cycle REQUIRED. Minimum 3 iterations for C2+ deliverables. | Quality gate bypass. |
+| H-15 | Self-review (S-010) REQUIRED before presenting any deliverable to user or critic. | Unreviewed output. |
+| H-16 | Steelman (S-003) MUST be applied before Devil's Advocate (S-002). Canonical review pairing. | Review protocol violation. |
+| H-17 | Quality scoring via S-014 LLM-as-Judge REQUIRED for all C2+ deliverables. | Unscored deliverable. |
+| H-18 | Constitutional compliance check (S-007) REQUIRED for all C2+ deliverables. | Unchecked compliance. |
+| H-19 | Governance escalation per AE rules REQUIRED. Auto-escalation conditions enforce minimum criticality. | Governance bypass. |
 
 ### Operational Score Bands
 

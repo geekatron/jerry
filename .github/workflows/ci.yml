@@ -205,12 +205,22 @@ jobs:
   # Uses standard pip/venv for maximum portability
   # See: docs/INSTALLATION.md for pip installation instructions
   test-pip:
-    name: Test pip (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    name: Test pip (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.11", "3.12", "3.13", "3.14"]
+        exclude:
+          - os: windows-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.12"
+          - os: macos-latest
+            python-version: "3.11"
+          - os: macos-latest
+            python-version: "3.12"
 
     steps:
       - uses: actions/checkout@v5
@@ -259,7 +269,7 @@ jobs:
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
-        if: matrix.python-version == '3.14'
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
         with:
           name: coverage-report-pip
           path: |
@@ -271,7 +281,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-pip-${{ matrix.python-version }}
+          name: test-results-pip-${{ matrix.os }}-${{ matrix.python-version }}
           path: junit-pip-${{ matrix.python-version }}.xml
 
   # ===========================================================================
@@ -280,12 +290,22 @@ jobs:
   # Uses uv for fast dependency resolution (10-100x faster than pip)
   # See: https://docs.astral.sh/uv/guides/integration/github/
   test-uv:
-    name: Test uv (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    name: Test uv (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.11", "3.12", "3.13", "3.14"]
+        exclude:
+          - os: windows-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.12"
+          - os: macos-latest
+            python-version: "3.11"
+          - os: macos-latest
+            python-version: "3.12"
 
     steps:
       - uses: actions/checkout@v5
@@ -333,7 +353,7 @@ jobs:
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
-        if: matrix.python-version == '3.14'
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
         with:
           name: coverage-report-uv
           path: |
@@ -344,7 +364,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-uv-${{ matrix.python-version }}
+          name: test-results-uv-${{ matrix.os }}-${{ matrix.python-version }}
           path: junit-uv-${{ matrix.python-version }}.xml
 
   # ===========================================================================

@@ -2,6 +2,8 @@
 
 > Test pyramid, BDD cycle, coverage, and tool configuration for Jerry.
 
+<!-- L2-REINJECT: rank=5, tokens=40, content="BDD Red phase: NEVER write implementation before test fails (H-20). 90% line coverage REQUIRED (H-21)." -->
+
 ## Document Sections
 
 | Section | Purpose |

@@ -9,7 +9,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Identity](#identity) | Framework purpose and core problem |
-| [Critical Constraints](#critical-constraints-hard) | Constitutional HARD rules H-01 to H-04 |
+| [Critical Constraints](#critical-constraints-hard) | Constitutional HARD rules H-01 to H-06 |
 | [Navigation](#navigation) | Where to find information |
 | [Quick Reference](#quick-reference) | CLI and skill invocation |
 
@@ -45,6 +45,8 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 ## Navigation
 
 > Find information rather than reading it here. Auto-loaded content marked with (A).
+>
+> **(A)** = Auto-loaded into Claude Code context at session start via `.claude/rules/` symlink.
 
 | Need | Location |
 |------|----------|

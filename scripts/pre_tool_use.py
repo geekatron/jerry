@@ -79,6 +79,16 @@ BLOCKED_WRITE_PATHS = [
     "/sbin",
 ]
 
+# Add Windows-specific blocked paths
+if sys.platform == "win32":
+    BLOCKED_WRITE_PATHS.extend(
+        [
+            os.path.expandvars("%SystemRoot%\\System32"),
+            os.path.expandvars("%ProgramFiles%"),
+            os.path.expandvars("%ProgramFiles(x86)%"),
+        ]
+    )
+
 # File patterns that should never be committed
 SENSITIVE_FILE_PATTERNS = [
     ".env",
@@ -118,11 +128,15 @@ def check_file_write(tool_input: dict[str, Any]) -> tuple[bool, str]:
     # Expand home directory
     expanded_path = os.path.expanduser(file_path)
 
-    # Check against blocked paths
+    # Check against blocked paths (case-insensitive on Windows)
     for blocked in BLOCKED_WRITE_PATHS:
         blocked_expanded = os.path.expanduser(blocked)
-        if expanded_path.startswith(blocked_expanded):
-            return False, f"Writing to {blocked} is blocked for security"
+        if sys.platform == "win32":
+            if os.path.normcase(expanded_path).startswith(os.path.normcase(blocked_expanded)):
+                return False, f"Writing to {blocked} is blocked for security"
+        else:
+            if expanded_path.startswith(blocked_expanded):
+                return False, f"Writing to {blocked} is blocked for security"
 
     # Check for sensitive files
     basename = os.path.basename(file_path)

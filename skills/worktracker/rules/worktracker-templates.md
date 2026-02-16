@@ -19,7 +19,7 @@
 ## Work Tracker (worktracker) Templates
 
 Description:
-- Work tracker (worktracker) templates are stored in the `docs/templates/worktracker/` folder.
+- Work tracker (worktracker) templates are stored in the `.context/templates/worktracker/` folder.
 - These templates provide a standardized structure for creating various work tracker artifacts such as Bugs, Enablers, Epics, Features, Spikes, Stories, and Tasks.
 - Using these templates ensures consistency and completeness across all work tracker items.
 
@@ -52,7 +52,7 @@ Directory Structure:
 **Location:** `.context/templates/worktracker/`
 
 Description:
-- Work tracker (worktracker) templates are stored in the `docs/templates/worktracker/` folder.
+- Work tracker (worktracker) templates are stored in the `.context/templates/worktracker/` folder.
 - These templates provide a standardized structure for creating various work tracker artifacts such as Bugs, Enablers, Epics, Features, Spikes, Stories, and Tasks.
 - Using these templates ensures consistency and completeness across all work tracker items.
 

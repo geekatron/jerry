@@ -2,6 +2,8 @@
 
 > Proactive skill invocation rules. DO NOT wait for user to invoke.
 
+<!-- L2-REINJECT: rank=6, tokens=30, content="Proactive skill invocation REQUIRED (H-22). /problem-solving for research. /nasa-se for design. /orchestration for workflows." -->
+
 ## Document Sections
 
 | Section | Purpose |

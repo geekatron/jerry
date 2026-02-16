@@ -83,7 +83,7 @@ pre-commit-update: ## Update pre-commit hooks
 # Cleanup
 # =============================================================================
 
-clean: ## Remove build artifacts and caches
+clean: ## Remove build artifacts and caches (requires Unix tools; use Git Bash or WSL on Windows)
 	rm -rf build/ dist/ *.egg-info/
 	rm -rf .pytest_cache/ .mypy_cache/ .ruff_cache/
 	rm -rf htmlcov/ .coverage coverage.xml
