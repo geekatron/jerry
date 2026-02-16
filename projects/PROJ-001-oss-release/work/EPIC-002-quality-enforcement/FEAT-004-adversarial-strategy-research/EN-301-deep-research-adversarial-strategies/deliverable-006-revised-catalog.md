@@ -11,8 +11,8 @@ EPIC: EPIC-002 (Quality Framework Enforcement)
 PROJECT: PROJ-001-oss-release
 PS-ID: EN-301
 ENTRY-ID: TASK-006
-REVISION-OF: TASK-004-unified-catalog.md (v1.0.0)
-REVIEW-ADDRESSED: TASK-005-adversarial-review-iter1.md
+REVISION-OF: deliverable-004-unified-catalog.md (v1.0.0)
+REVIEW-ADDRESSED: deliverable-005-adversarial-review-iter1.md
 -->
 
 > **Version:** 1.1.0 (revised from 1.0.0)
@@ -73,7 +73,7 @@ This document revises the TASK-004 unified catalog (v1.0.0) in response to the T
 - Jerry Applicability section structure
 - Research Limitations section (intellectual honesty)
 
-**Reading guidance:** This document is a **revision delta**. For the full catalog text, refer to `TASK-004-unified-catalog.md` (v1.0.0). This document contains: (a) all changed sections in full, (b) new sections not present in v1.0.0, and (c) references to unchanged sections in the original. When the two documents conflict, this revision (v1.1.0) takes precedence.
+**Reading guidance:** This document is a **revision delta**. For the full catalog text, refer to `deliverable-004-unified-catalog.md` (v1.0.0). This document contains: (a) all changed sections in full, (b) new sections not present in v1.0.0, and (c) references to unchanged sections in the original. When the two documents conflict, this revision (v1.1.0) takes precedence.
 
 ---
 
@@ -97,7 +97,7 @@ This document revises the TASK-004 unified catalog (v1.0.0) in response to the T
 
 ## L1: Revised Strategy Sections
 
-> **Note:** Only materially changed fields are shown. For unchanged content (full descriptions, mechanisms, strengths, use contexts, Jerry Applicability), refer to TASK-004-unified-catalog.md v1.0.0.
+> **Note:** Only materially changed fields are shown. For unchanged content (full descriptions, mechanisms, strengths, use contexts, Jerry Applicability), refer to deliverable-004-unified-catalog.md v1.0.0.
 
 ### Contraindications Added to All 15 Strategies
 
@@ -543,6 +543,6 @@ The following corrections and standardizations apply to the v1.0.0 reference lis
 *Entry ID: TASK-006*
 *Agent: ps-researcher (creator revision)*
 *Created: 2026-02-13*
-*Revision of: TASK-004-unified-catalog.md v1.0.0*
-*Review Addressed: TASK-005-adversarial-review-iter1.md*
+*Revision of: deliverable-004-unified-catalog.md v1.0.0*
+*Review Addressed: deliverable-005-adversarial-review-iter1.md*
 *Status: Complete*

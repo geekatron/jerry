@@ -54,7 +54,7 @@ QUALITY-GATE-RESULT: PASS (0.935)
 
 Weights sum to 100%. Each dimension has a full rubric with 5-level descriptors and anchoring examples. The criterion specifies "at least 5" -- 6 exceeds this threshold.
 
-**Source:** TASK-001-evaluation-criteria.md, "Evaluation Dimensions" section and "Weighting Methodology" section.
+**Source:** deliverable-001-evaluation-criteria.md, "Evaluation Dimensions" section and "Weighting Methodology" section.
 
 ---
 
@@ -69,7 +69,7 @@ Verified by inspection:
 - D1 through D6: all columns populated for every strategy
 - Composite score calculation verified for spot-checked strategies (S-001: 3.35, S-003: 4.30, S-009: 2.70, S-015: 2.70 -- all match the weighted formula)
 
-**Source:** TASK-004-scoring-and-selection.md, "Scoring Matrix" section and "Per-Strategy Scoring Justification" section.
+**Source:** deliverable-004-scoring-and-selection.md, "Scoring Matrix" section and "Per-Strategy Scoring Justification" section.
 
 ---
 
@@ -144,7 +144,7 @@ The full weight configuration table, recalculated boundary scores, and strategy 
 
 Risk data is cross-referenced in TASK-004 per-strategy scoring justifications and in TASK-005 evidence base.
 
-**Source:** TASK-002-risk-assessment.md. TASK-004, "Risk factor" entries per strategy.
+**Source:** deliverable-002-risk-assessment.md. TASK-004, "Risk factor" entries per strategy.
 
 ---
 
@@ -163,9 +163,9 @@ Risk data is cross-referenced in TASK-004 per-strategy scoring justifications an
 - Compliance (P-003, P-020, P-043)
 - Limitations and Epistemic Status
 
-**Caveat:** The ADR is stored as `TASK-005-selection-ADR.md` within the EN-302 task directory, not in a separate `decisions/` directory. The AC specifies "stored in decisions/ directory." However, the ADR is correctly identified as ADR-EPIC002-001 and is accessible from the enabler's task structure. This is a file location convention issue, not a substantive quality issue. The ADR can be copied or symlinked to a `decisions/` directory during enabler closure.
+**Caveat:** The ADR is stored as `deliverable-005-selection-ADR.md` within the EN-302 task directory, not in a separate `decisions/` directory. The AC specifies "stored in decisions/ directory." However, the ADR is correctly identified as ADR-EPIC002-001 and is accessible from the enabler's task structure. This is a file location convention issue, not a substantive quality issue. The ADR can be copied or symlinked to a `decisions/` directory during enabler closure.
 
-**Source:** TASK-005-selection-ADR.md.
+**Source:** deliverable-005-selection-ADR.md.
 
 ---
 
@@ -175,13 +175,13 @@ Risk data is cross-referenced in TASK-004 per-strategy scoring justifications an
 
 **Evidence:** Two adversarial review iterations were completed:
 
-**Iteration 1** (TASK-006-critique-iteration-1.md):
+**Iteration 1** (deliverable-006-critique-iteration-1.md):
 - Strategies applied: S-002 (Devil's Advocate), S-005 (Dialectical Inquiry), S-014 (LLM-as-Judge)
 - 14 findings produced: 1 CRITICAL (F-012), 8 MAJOR (F-001, F-002, F-004, F-005, F-008, F-011, F-013, F-014), 5 MINOR (F-003, F-006, F-007, F-009, F-010)
 - Quality score: 0.79 (below 0.92 target)
 - Gate decision: FAIL -- revision required
 
-**Iteration 2** (TASK-006-critique-iteration-2.md):
+**Iteration 2** (deliverable-006-critique-iteration-2.md):
 - Strategies applied: S-002 (Devil's Advocate), S-005 (Dialectical Inquiry), S-014 (LLM-as-Judge)
 - Verified all 14 original findings: 13 RESOLVED, 1 PARTIALLY RESOLVED (F-012, structural limitation)
 - 4 new MINOR findings identified (F-015 through F-018)
@@ -190,7 +190,7 @@ Risk data is cross-referenced in TASK-004 per-strategy scoring justifications an
 
 The adversarial review includes both strengthening arguments for rejected strategies (Steelman/Dialectical Inquiry applied to S-008 in F-014 challenge) and weakening arguments for selected strategies (Devil's Advocate challenges to score inflation, evidence quality, and S-001 retention). The review is substantive, not pro-forma.
 
-**Source:** TASK-006-critique-iteration-1.md, TASK-006-critique-iteration-2.md.
+**Source:** deliverable-006-critique-iteration-1.md, deliverable-006-critique-iteration-2.md.
 
 ---
 
@@ -245,7 +245,7 @@ The improvement is distributed across all 6 dimensions, with the largest gains i
 
 ### Adversarial Review Self-Check
 
-The ps-critic agent explicitly challenged whether the 0.935 score was inflated (TASK-006-critique-iteration-2.md, "Challenge 1: Is the 0.935 Score Inflated?"). The critic evaluated each dimension's improvement against specific, verifiable changes and concluded the scores are defensible, noting that a conservative scoring might yield 0.91-0.93. This self-critical assessment strengthens confidence in the score's validity.
+The ps-critic agent explicitly challenged whether the 0.935 score was inflated (deliverable-006-critique-iteration-2.md, "Challenge 1: Is the 0.935 Score Inflated?"). The critic evaluated each dimension's improvement against specific, verifiable changes and concluded the scores are defensible, noting that a conservative scoring might yield 0.91-0.93. This self-critical assessment strengthens confidence in the score's validity.
 
 ---
 
@@ -253,14 +253,14 @@ The ps-critic agent explicitly challenged whether the 0.935 score was inflated (
 
 | Artifact | File | Exists | Version | Status |
 |----------|------|--------|---------|--------|
-| TASK-001: Evaluation Criteria | TASK-001-evaluation-criteria.md | YES | v1.1.0 | Complete |
-| TASK-002: Risk Assessment | TASK-002-risk-assessment.md | YES | Revised (nse-risk v2.1.0) | Complete |
-| TASK-003: Trade Study | TASK-003-trade-study.md | YES | v1.1.0 | Complete |
-| TASK-004: Scoring & Selection | TASK-004-scoring-and-selection.md | YES | v1.1.0 | Complete |
-| TASK-005: Selection ADR | TASK-005-selection-ADR.md | YES | v1.1.0 | Complete (Proposed) |
-| TASK-006: Critique Iteration 1 | TASK-006-critique-iteration-1.md | YES | v1.0.0 | Complete |
-| TASK-006: Critique Iteration 2 | TASK-006-critique-iteration-2.md | YES | v1.0.0 | Complete |
-| TASK-007: Revision Report | TASK-007-revision-report.md | YES | v1.0.0 | Complete |
+| TASK-001: Evaluation Criteria | deliverable-001-evaluation-criteria.md | YES | v1.1.0 | Complete |
+| TASK-002: Risk Assessment | deliverable-002-risk-assessment.md | YES | Revised (nse-risk v2.1.0) | Complete |
+| TASK-003: Trade Study | deliverable-003-trade-study.md | YES | v1.1.0 | Complete |
+| TASK-004: Scoring & Selection | deliverable-004-scoring-and-selection.md | YES | v1.1.0 | Complete |
+| TASK-005: Selection ADR | deliverable-005-selection-ADR.md | YES | v1.1.0 | Complete (Proposed) |
+| TASK-006: Critique Iteration 1 | deliverable-006-critique-iteration-1.md | YES | v1.0.0 | Complete |
+| TASK-006: Critique Iteration 2 | deliverable-006-critique-iteration-2.md | YES | v1.0.0 | Complete |
+| TASK-007: Revision Report | deliverable-007-revision-report.md | YES | v1.0.0 | Complete |
 
 **All 8 required artifact files exist.** TASK-006 has two files (one per iteration), which is appropriate.
 
@@ -366,7 +366,7 @@ No gaps exist that would block downstream work. The following items should be co
 
 | Item | Owner | Priority | Description |
 |------|-------|----------|-------------|
-| ADR file location | Project team | Low | Copy/symlink TASK-005-selection-ADR.md to a `decisions/` directory per AC #7 convention |
+| ADR file location | Project team | Low | Copy/symlink deliverable-005-selection-ADR.md to a `decisions/` directory per AC #7 convention |
 | S-015 communication | EN-307 | Medium | Include section explaining S-015 category distinction in orchestration enhancement |
 | Empirical validation | EN-304/305 (Phase 1) | High | Validate token estimates, quality impact, and strategy effectiveness against human baselines |
 | Dunning-Kruger monitoring | Quality framework | Medium | Establish periodic human spot-checks for artifacts receiving S-007 review but no Socratic probing |

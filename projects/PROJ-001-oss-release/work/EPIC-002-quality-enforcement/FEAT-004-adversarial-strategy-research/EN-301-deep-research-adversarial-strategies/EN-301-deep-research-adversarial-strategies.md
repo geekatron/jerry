@@ -9,7 +9,7 @@ PURPOSE: Research and catalog 15 adversarial review strategies from authoritativ
 -->
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Resolution:** completed
 > **Priority:** critical
 > **Impact:** critical
@@ -34,6 +34,7 @@ PURPOSE: Research and catalog 15 adversarial review strategies from authoritativ
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Agent Assignments](#agent-assignments) | Which agents are used |
 | [Related Items](#related-items) | Dependencies |
+| [Evidence](#evidence) | Deliverables, quality scores, verification |
 | [History](#history) | Change log |
 
 ---
@@ -110,6 +111,32 @@ TASK-003 ──┘
 | blocks | EN-303 | Situational mapping depends on strategy catalog |
 | blocks | EN-304 | Skill enhancement depends on finalized strategies |
 
+### Research Artifacts
+- [research-15-adversarial-strategies.md](../research-15-adversarial-strategies.md)
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | 15-strategy adversarial catalog | `research-15-adversarial-strategies.md` | Complete |
+| 2 | Task deliverable files (8 root + 8 in tasks/) | `deliverable-001 through deliverable-008` | Complete |
+
+### Quality Scores
+
+| Iteration | Score | Threshold | Result |
+|-----------|-------|-----------|--------|
+| 1 | 0.89 | >= 0.92 | REVISE |
+| 2 | 0.936 | >= 0.92 | PASS |
+
+### Verification Checklist
+
+- [x] All acceptance criteria verified (8/8 AC PASS per TASK-008)
+- [x] 15 distinct adversarial strategies cataloged with authoritative citations
+- [x] Two adversarial review iterations completed (creator-critic cycle)
+- [x] User ratification received: EN-301-DEV-001 ratified 2026-02-13
+
 ## History
 
 | Date | Author | Status | Notes |
@@ -119,3 +146,4 @@ TASK-003 ──┘
 | 2026-02-13 | Claude | in_progress | TASK-001, TASK-002, TASK-003 all complete. TASK-004 (synthesis) completed by ps-synthesizer: unified 15-strategy catalog produced. All task entity files rewritten to use official /worktracker TASK template. |
 | 2026-02-13 | Claude | in_progress | Full pipeline complete: TASK-005 (iter1 review, 0.89), TASK-006 (revision, all 12 findings addressed), TASK-007 (iter2 review, 0.936 PASS), TASK-008 (final validation, 8/8 AC PASS). |
 | 2026-02-13 | User | done | User ratified EN-301-DEV-001: Pre-Mortem/Dialectical Inquiry confirmed as active strategies. Blue Team added as Reserved Strategy R-6. Web validation of citations and S-015 experiments noted as follow-ups. EN-301 marked DONE. |
+| 2026-02-16 | Claude | completed | Evidence section added per WTI-006 remediation (FEAT-013 EN-908). |

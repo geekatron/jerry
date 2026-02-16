@@ -10,7 +10,7 @@ PURPOSE: Map each selected adversarial strategy to specific contexts with use/av
 -->
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** architecture
@@ -312,3 +312,4 @@ TASK-002 ──┘
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. Depends on EN-302 strategy selection. |
 | 2026-02-13 | Claude | in_progress | Enriched with ADR-EPIC002-001 (ACCEPTED) inputs: 10 selected strategies, quality layer composition, decision criticality levels, synergy/tension pairs. Added Barrier-1 ENF-to-ADV handoff inputs: 5-layer enforcement architecture, platform portability constraints, token budget ceilings, 4 RED systemic risks, enforcement gaps, feasibility constraints. Added FR-001 through FR-011, NFR-001 through NFR-007. Expanded acceptance criteria from 9 to 13 items. Enriched all task descriptions with ADR/Barrier-1 references. Updated navigation table. |
+| 2026-02-16 | Claude | pending | Status corrected from in_progress to pending. Enabler was enriched with ADR-EPIC002-001 inputs but zero tasks have been executed. Audit remediation (FEAT-013 EN-911). |

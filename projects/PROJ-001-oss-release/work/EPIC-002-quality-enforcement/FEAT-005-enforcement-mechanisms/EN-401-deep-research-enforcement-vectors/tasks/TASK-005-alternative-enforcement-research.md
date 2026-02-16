@@ -106,7 +106,7 @@ Research completed by nse-explorer. ~8,500 words. 18 alternative enforcement mec
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Alternative Enforcement Research | Research Artifact | [TASK-005-alternative-enforcement-research.md](../TASK-005-alternative-enforcement-research.md) |
+| Alternative Enforcement Research | Research Artifact | [deliverable-005-alternative-enforcement-research.md](../deliverable-005-alternative-enforcement-research.md) |
 
 ### Verification
 

@@ -101,7 +101,7 @@ First task in EN-402. No dependencies within this enabler. Requires EN-401 resea
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Evaluation Criteria and Weighting Methodology | Analysis Artifact | [TASK-001-evaluation-criteria.md](../TASK-001-evaluation-criteria.md) |
+| Evaluation Criteria and Weighting Methodology | Analysis Artifact | [deliverable-001-evaluation-criteria.md](../deliverable-001-evaluation-criteria.md) |
 
 ### Verification
 

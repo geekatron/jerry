@@ -145,8 +145,8 @@ Research and implement multi-vector enforcement mechanisms that prevent Claude f
 
 | ID | Type | Title | Status | Priority | Effort | Agents |
 |----|------|-------|--------|----------|--------|--------|
-| [EN-401](./EN-401-deep-research-enforcement-vectors/EN-401-deep-research-enforcement-vectors.md) | Enabler | Deep Research: Enforcement Vectors & Best Practices | **done** | critical | 13 | ps-researcher, ps-critic, nse-explorer, ps-synthesizer |
-| [EN-402](./EN-402-enforcement-priority-analysis/EN-402-enforcement-priority-analysis.md) | Enabler | Enforcement Priority Analysis & Decision | **done** | critical | 8 | ps-analyst, ps-critic, nse-architecture, nse-risk |
+| [EN-401](./EN-401-deep-research-enforcement-vectors/EN-401-deep-research-enforcement-vectors.md) | Enabler | Deep Research: Enforcement Vectors & Best Practices | **completed** | critical | 13 | ps-researcher, ps-critic, nse-explorer, ps-synthesizer |
+| [EN-402](./EN-402-enforcement-priority-analysis/EN-402-enforcement-priority-analysis.md) | Enabler | Enforcement Priority Analysis & Decision | **completed** | critical | 8 | ps-analyst, ps-critic, nse-architecture, nse-risk |
 | [EN-403](./EN-403-hook-based-enforcement/EN-403-hook-based-enforcement.md) | Enabler | Hook-Based Enforcement Implementation | pending | high | 10 | ps-architect, ps-critic, ps-reviewer, nse-verification |
 | [EN-404](./EN-404-rule-based-enforcement/EN-404-rule-based-enforcement.md) | Enabler | Rule-Based Enforcement Enhancement | pending | high | 5 | ps-architect, ps-critic, nse-requirements |
 | [EN-405](./EN-405-session-context-enforcement/EN-405-session-context-enforcement.md) | Enabler | Session Context Enforcement Injection | pending | high | 5 | ps-architect, ps-critic, nse-integration |

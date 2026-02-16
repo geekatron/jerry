@@ -104,7 +104,7 @@ Research completed. All 10 rule files analyzed with effectiveness ratings, token
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Rules Enforcement Research | Research Artifact | [TASK-003-rules-enforcement-research.md](../TASK-003-rules-enforcement-research.md) |
+| Rules Enforcement Research | Research Artifact | [deliverable-003-rules-enforcement-research.md](../deliverable-003-rules-enforcement-research.md) |
 
 ### Verification
 

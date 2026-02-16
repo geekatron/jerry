@@ -99,7 +99,7 @@ Second of three parallel inputs to TASK-004 (scoring). Can run in parallel with 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Risk Assessment of Strategy Adoption | Risk Register | [TASK-002-risk-assessment.md](../TASK-002-risk-assessment.md) |
+| Risk Assessment of Strategy Adoption | Risk Register | [deliverable-002-risk-assessment.md](../deliverable-002-risk-assessment.md) |
 
 ### Verification
 
@@ -117,4 +117,4 @@ Second of three parallel inputs to TASK-004 (scoring). Can run in parallel with 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation |
-| 2026-02-13 | DONE | Risk assessment completed by nse-risk agent. 105 risks assessed (15 strategies x 7 categories). 3 RED, 18 YELLOW, 84 GREEN. Deliverable: TASK-002-risk-assessment.md |
+| 2026-02-13 | DONE | Risk assessment completed by nse-risk agent. 105 risks assessed (15 strategies x 7 categories). 3 RED, 18 YELLOW, 84 GREEN. Deliverable: deliverable-002-risk-assessment.md |

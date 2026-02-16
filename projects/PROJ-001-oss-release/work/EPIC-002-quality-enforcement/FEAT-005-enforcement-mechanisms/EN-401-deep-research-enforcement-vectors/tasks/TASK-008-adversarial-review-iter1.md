@@ -73,7 +73,7 @@ First adversarial review of the unified enforcement vector catalog using Devil's
 - [x] At least 3 improvement areas identified with specific recommendations (10 ranked recommendations)
 - [x] Red Team perspective: 5 findings (RT-001 through RT-005)
 - [x] Devil's Advocate perspective: 5 findings (DA-001 through DA-005)
-- [x] Critique artifact persisted to filesystem (P-002) -- TASK-008-adversarial-review-iter1.md
+- [x] Critique artifact persisted to filesystem (P-002) -- deliverable-008-adversarial-review-iter1.md
 
 ### Implementation Notes
 
@@ -103,7 +103,7 @@ Blocked by TASK-007 (synthesis). Uses weighted evaluation criteria: Completeness
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Adversarial Review Iteration 1 | Critique Artifact | [TASK-008-adversarial-review-iter1.md](../TASK-008-adversarial-review-iter1.md) |
+| Adversarial Review Iteration 1 | Critique Artifact | [deliverable-008-adversarial-review-iter1.md](../deliverable-008-adversarial-review-iter1.md) |
 
 ### Verification
 

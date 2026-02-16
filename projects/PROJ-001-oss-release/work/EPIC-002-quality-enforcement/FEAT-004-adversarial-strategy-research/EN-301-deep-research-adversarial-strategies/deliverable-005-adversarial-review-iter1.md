@@ -11,7 +11,7 @@ EPIC: EPIC-002 (Quality Framework Enforcement)
 PROJECT: PROJ-001-oss-release
 PS-ID: EN-301
 ENTRY-ID: TASK-005
-REVIEWED ARTIFACT: TASK-004-unified-catalog.md (1,172 lines, 15 strategies, 46 citations)
+REVIEWED ARTIFACT: deliverable-004-unified-catalog.md (1,172 lines, 15 strategies, 46 citations)
 -->
 
 > **Version:** 1.0.0
@@ -82,7 +82,7 @@ The TASK-004 unified catalog is a comprehensive, well-structured, and intellectu
 2. Blue Team is a legitimate adversarial strategy in the security domain (defensive security testing IS an adversarial exercise against threat actors), and characterizing it as "the target of adversarial review, not a review method itself" is reductive.
 3. Strawman, while a fallacy in argumentation, is a *deliberate* adversarial technique in red teaming contexts -- intentionally presenting a weakened version to test whether the audience can distinguish it from the real argument. The catalog conflates the informal fallacy with the deliberate technique.
 
-**Evidence:** Lines 130-142 of TASK-004-unified-catalog.md. The justification paragraph begins "Note: The task specification lists 'Blue Team' and 'Strawman' as foundational strategies..."
+**Evidence:** Lines 130-142 of deliverable-004-unified-catalog.md. The justification paragraph begins "Note: The task specification lists 'Blue Team' and 'Strawman' as foundational strategies..."
 
 **Recommendation:** Either (a) include Blue Team and Strawman as specified, providing mechanisms for their legitimate adversarial applications, or (b) explicitly flag this deviation as requiring user approval and document the rationale as a formal decision (ADR). The current approach silently overrides the specification.
 

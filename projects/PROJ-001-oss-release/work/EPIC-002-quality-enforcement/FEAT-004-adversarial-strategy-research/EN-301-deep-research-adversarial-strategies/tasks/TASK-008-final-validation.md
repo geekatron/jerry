@@ -105,7 +105,7 @@ Depends on TASK-007 (adversarial review iteration 2). This is the final gate che
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Final Validation Report | Report | [TASK-008-final-validation-report.md](../TASK-008-final-validation-report.md) |
+| Final Validation Report | Report | [deliverable-008-final-validation-report.md](../deliverable-008-final-validation-report.md) |
 
 ### Verification
 

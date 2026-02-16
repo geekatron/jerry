@@ -67,7 +67,7 @@ Added to TASK-001:
 
 No current catalog strategy scores D2=1, so this is a framework-design improvement, not a result-changing fix. The floor rule ensures the framework is robust to future catalog extensions.
 
-**Artifact:** TASK-001-evaluation-criteria.md, v1.1.0
+**Artifact:** deliverable-001-evaluation-criteria.md, v1.1.0
 
 ---
 
@@ -82,7 +82,7 @@ Added to TASK-001:
 - Documented why the sequential approach is acceptable post-hoc: the TASK-004 complementarity re-check confirmed no portfolio-level D3 adjustment was needed, validating the approximation
 - Noted that a formal portfolio optimization step (re-scoring D3 for the top-10 subset) was considered but not adopted because the practical outcome would not change
 
-**Artifact:** TASK-001-evaluation-criteria.md, v1.1.0
+**Artifact:** deliverable-001-evaluation-criteria.md, v1.1.0
 
 ---
 
@@ -97,7 +97,7 @@ Added to TASK-001:
 - Instruction that TASK-004 should document any cases where scores diverge from anchoring expectations, with explanation
 - Acknowledgment that some circularity risk is inherent in any calibrated scoring framework, and the anchoring examples are provided to improve inter-rater reliability (or cross-session consistency in AI evaluator contexts)
 
-**Artifact:** TASK-001-evaluation-criteria.md, v1.1.0
+**Artifact:** deliverable-001-evaluation-criteria.md, v1.1.0
 
 ---
 
@@ -117,7 +117,7 @@ Changes to TASK-002:
 - GREEN risks receive Det = `--` (detection assessment not applicable at GREEN risk level)
 - Added "FMEA Alignment" section explaining the hybrid approach: standard Risk Matrix (L x I) as the primary framework with supplementary Detection as a qualitative annotation
 
-**Artifact:** TASK-002-risk-assessment.md, v1.1.0
+**Artifact:** deliverable-002-risk-assessment.md, v1.1.0
 
 ---
 
@@ -135,7 +135,7 @@ Changes to TASK-002:
 - GREEN residual risks remain unchanged with `X (GREEN)` format (no decomposition needed)
 - Updated all 105 risk entries across all 15 strategies (S-001 through S-015)
 
-**Artifact:** TASK-002-risk-assessment.md, v1.1.0
+**Artifact:** deliverable-002-risk-assessment.md, v1.1.0
 
 ---
 
@@ -150,7 +150,7 @@ Added to TASK-003:
 - Verification reasoning: If S-010 (Self-Refine) were used as baseline, Tier 3 strategies would still score below both S-002 and S-010, and Tier 1 strategies maintain their advantage on absolute architectural properties (Agent Fit, Token Efficiency, Composability)
 - Concluded that the tier structure is a property of the strategies' architectural characteristics, not an artifact of baseline choice
 
-**Artifact:** TASK-003-trade-study.md, v1.1.0
+**Artifact:** deliverable-003-trade-study.md, v1.1.0
 
 ---
 
@@ -168,7 +168,7 @@ Added to TASK-003:
   - Actual costs may vary +/- 50%
   - Empirical validation should be performed during Phase 1 integration
 
-**Artifact:** TASK-003-trade-study.md, v1.1.0
+**Artifact:** deliverable-003-trade-study.md, v1.1.0
 
 ---
 
@@ -185,7 +185,7 @@ Added to TASK-004:
 - Notes that effectiveness is partially inherited from the strategies S-013 feeds
 - Recommends a dedicated empirical study isolating Inversion as an adversarial review technique
 
-**Artifact:** TASK-004-scoring-and-selection.md, v1.1.0
+**Artifact:** deliverable-004-scoring-and-selection.md, v1.1.0
 
 ---
 
@@ -203,7 +203,7 @@ Added to TASK-004:
   - Detailed rationale for each strategy's range, identifying the specific dimension vulnerabilities and weight sensitivities that drive rank movement
 - All 15 strategies now have documented, verified rank ranges
 
-**Artifact:** TASK-004-scoring-and-selection.md, v1.1.0
+**Artifact:** deliverable-004-scoring-and-selection.md, v1.1.0
 
 ---
 
@@ -219,7 +219,7 @@ Added to TASK-005:
 - Permits pre-planning (identifying integration points, estimating effort) based on the proposed selection
 - Notes that the risk of proceeding before ratification is limited because 9 of 10 selections are stable
 
-**Artifact:** TASK-005-selection-ADR.md, v1.1.0
+**Artifact:** deliverable-005-selection-ADR.md, v1.1.0
 
 ---
 
@@ -234,7 +234,7 @@ Added to TASK-005, Consequences section:
 - **Layer 4 reduced intensity impact estimate:** LOW-MEDIUM. L4 reviews invoked for <2% of review cycles. Available L4 combination deploys 6 strategies. Primary loss is competitive debate mechanism undermined by single-model architecture.
 - **Cognitive bias gap impact estimates:** LOW for scope insensitivity (full mitigation through S-015 orchestration). MEDIUM for Dunning-Kruger -- identified as the most consequential gap, with estimated 5-10% false negative increase for high-complexity artifacts. Recommended monitoring through periodic human spot-checks.
 
-**Artifact:** TASK-005-selection-ADR.md, v1.1.0
+**Artifact:** deliverable-005-selection-ADR.md, v1.1.0
 
 ---
 
@@ -261,7 +261,7 @@ This is the most significant finding and has both resolvable and structural comp
 **Structural sub-issue (cannot be fully resolved):**
 The fundamental limitation -- AI agents assessing strategies that AI agents will execute to evaluate AI-generated artifacts -- is inherent to the current evaluation pipeline. This cannot be resolved without human subject matter expert validation or empirical prototype testing. The revision honestly acknowledges this boundary rather than claiming to have resolved it.
 
-**Artifacts:** TASK-004-scoring-and-selection.md v1.1.0, TASK-005-selection-ADR.md v1.1.0
+**Artifacts:** deliverable-004-scoring-and-selection.md v1.1.0, deliverable-005-selection-ADR.md v1.1.0
 
 ---
 
@@ -283,7 +283,7 @@ Created a formal category distinction:
 
 The key argument: S-015 does not itself produce adversarial value. It decides which adversarial strategies to invoke. This is an orchestration function operating at a different layer of the Jerry architecture (workflow level, not agent level). The distinction is architecturally real, not a labeling convenience.
 
-**Artifacts:** TASK-004-scoring-and-selection.md v1.1.0, TASK-005-selection-ADR.md v1.1.0
+**Artifacts:** deliverable-004-scoring-and-selection.md v1.1.0, deliverable-005-selection-ADR.md v1.1.0
 
 ---
 
@@ -307,7 +307,7 @@ Added to TASK-004:
 
 **Decision:** S-001 retained. The composite score, portfolio value, and symmetric application of the single-model limitation support the current selection. The Dunning-Kruger gap is documented as a monitoring requirement.
 
-**Artifact:** TASK-004-scoring-and-selection.md, v1.1.0
+**Artifact:** deliverable-004-scoring-and-selection.md, v1.1.0
 
 ---
 

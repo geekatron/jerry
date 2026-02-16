@@ -27,7 +27,7 @@ Iteration 2 adversarial critique of the EN-406 revised deliverables (v1.1.0) usi
 
 ## Evidence
 
-- Critique report: `../TASK-016-critique-iteration-2.md`
+- Critique report: `../deliverable-016-critique-iteration-2.md`
 - Quality score: 0.928
 - Verdict: PASS (0.928 >= 0.920)
 - Iteration 1 findings resolved: 28 FIXED, 1 PARTIALLY FIXED, 2 NOT FIXED (accepted)

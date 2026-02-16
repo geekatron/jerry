@@ -104,7 +104,7 @@ Research completed. 9 frameworks surveyed (Guardrails AI, NeMo, LangChain/LangGr
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Guardrail Frameworks Research | Research Artifact | [TASK-002-guardrail-frameworks-research.md](../TASK-002-guardrail-frameworks-research.md) |
+| Guardrail Frameworks Research | Research Artifact | [deliverable-002-guardrail-frameworks-research.md](../deliverable-002-guardrail-frameworks-research.md) |
 
 ### Verification
 

@@ -99,7 +99,7 @@ First of three parallel inputs to TASK-004 (scoring). Can run in parallel with T
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Evaluation Criteria and Weighting Methodology | Framework Document | [TASK-001-evaluation-criteria.md](../TASK-001-evaluation-criteria.md) |
+| Evaluation Criteria and Weighting Methodology | Framework Document | [deliverable-001-evaluation-criteria.md](../deliverable-001-evaluation-criteria.md) |
 
 ### Verification
 

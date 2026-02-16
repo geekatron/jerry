@@ -102,7 +102,7 @@ Research completed. Covers UserPromptSubmit, PreToolUse, PostToolUse, SessionSta
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Claude Code Hooks Research | Research Artifact | [TASK-001-claude-code-hooks-research.md](../TASK-001-claude-code-hooks-research.md) |
+| Claude Code Hooks Research | Research Artifact | [deliverable-001-claude-code-hooks-research.md](../deliverable-001-claude-code-hooks-research.md) |
 
 ### Verification
 

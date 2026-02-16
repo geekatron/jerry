@@ -104,7 +104,7 @@ Research completed. 14 patterns cataloged with 9 academic citations and DOIs. Je
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Prompt Engineering Research | Research Artifact | [TASK-004-prompt-engineering-enforcement-research.md](../TASK-004-prompt-engineering-enforcement-research.md) |
+| Prompt Engineering Research | Research Artifact | [deliverable-004-prompt-engineering-enforcement-research.md](../deliverable-004-prompt-engineering-enforcement-research.md) |
 
 ### Verification
 

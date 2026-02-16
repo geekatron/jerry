@@ -10,7 +10,7 @@ PURPOSE: Implement enforcement hooks based on priority analysis
 -->
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -61,7 +61,7 @@ Additionally, the Barrier-1 ADV-to-ENF handoff specifies that hooks must trigger
 ## Input from ADR-EPIC002-002
 
 **Status:** ACCEPTED (ratified 2026-02-13)
-**Location:** `EN-402-enforcement-priority-analysis/TASK-005-enforcement-ADR.md`
+**Location:** `EN-402-enforcement-priority-analysis/deliverable-005-enforcement-ADR.md`
 
 ### 5-Layer Architecture -- Hook Layer Assignments
 
@@ -336,3 +336,4 @@ TASK-001 ──► TASK-002 ──► TASK-005 ──┐
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
 | 2026-02-13 | Claude | in_progress | Enriched with ADR-EPIC002-002 (ACCEPTED) inputs: 5-layer architecture hook layer assignments (L2/L3/L4), hook-specific vectors (V-001, V-002, V-003, V-005, V-024, V-038-V-041), defense-in-depth compensation chain, implementation phasing. Added Barrier-1 ADV-to-ENF handoff inputs: strategy-to-hook enforcement touchpoints (UserPromptSubmit: S-007/S-014/S-003/S-010; PreToolUse: S-007/S-010/S-013; SessionStart: S-014/S-007), quality gate integration (0.92 threshold, creator-critic-revision cycle, decision criticality escalation), V-024 token budget (~600 tokens/session), leniency bias calibration. Added FR-001 through FR-012, NFR-001 through NFR-008. Expanded acceptance criteria from 10 to 14 items. Enriched all task descriptions with ADR/Barrier-1 references. Updated navigation table. |
+| 2026-02-16 | Claude | pending | Status corrected from in_progress to pending. Enabler was enriched with ADR-EPIC002-002 and Barrier-1 inputs but zero tasks have been executed. Audit remediation (FEAT-013 EN-911). |

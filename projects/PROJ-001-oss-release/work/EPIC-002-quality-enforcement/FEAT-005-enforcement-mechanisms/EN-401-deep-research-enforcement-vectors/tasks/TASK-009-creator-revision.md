@@ -85,7 +85,7 @@ Revise the unified enforcement vector catalog based on TASK-008 critic feedback.
 - [x] Revision notes document what changed and why
   - Revision Response Matrix maps each finding to specific change
 - [x] Revised artifact persisted to filesystem (P-002)
-  - Written to: `EN-401.../TASK-009-revised-enforcement-catalog.md`
+  - Written to: `EN-401.../deliverable-009-revised-enforcement-catalog.md`
 
 ### Implementation Notes
 
@@ -115,7 +115,7 @@ Blocked by TASK-008 (critique iter 1). The creator (ps-researcher) revises based
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Revised Enforcement Vector Catalog v1.1 | Synthesis (Revision) | [TASK-009-revised-enforcement-catalog.md](../TASK-009-revised-enforcement-catalog.md) |
+| Revised Enforcement Vector Catalog v1.1 | Synthesis (Revision) | [deliverable-009-revised-enforcement-catalog.md](../deliverable-009-revised-enforcement-catalog.md) |
 
 ### Verification
 

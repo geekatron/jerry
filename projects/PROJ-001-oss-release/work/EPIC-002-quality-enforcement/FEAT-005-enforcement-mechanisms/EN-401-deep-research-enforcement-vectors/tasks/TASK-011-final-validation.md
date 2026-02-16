@@ -105,7 +105,7 @@ All 9 EN-401 acceptance criteria verified as PASS. Quality score 0.928 (exceeds 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Final Validation Report | Validation Report | [TASK-011-final-validation-report.md](../TASK-011-final-validation-report.md) |
+| Final Validation Report | Validation Report | [deliverable-011-final-validation-report.md](../deliverable-011-final-validation-report.md) |
 
 ### Verification
 
@@ -119,4 +119,4 @@ All 9 EN-401 acceptance criteria verified as PASS. Quality score 0.928 (exceeds 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation. Blocked by TASK-010 (critique iter 2). |
-| 2026-02-13 | DONE | All 9 EN-401 acceptance criteria verified PASS. Quality score 0.928 >= 0.92. Gate verdict: PASS. Validation report written to TASK-011-final-validation-report.md. |
+| 2026-02-13 | DONE | All 9 EN-401 acceptance criteria verified PASS. Quality score 0.928 >= 0.92. Gate verdict: PASS. Validation report written to deliverable-011-final-validation-report.md. |

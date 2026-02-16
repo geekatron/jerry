@@ -107,7 +107,7 @@ Blocked by TASK-001 through TASK-006. This is the critical synthesis step that p
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Unified Enforcement Vector Catalog | Synthesis Artifact | [TASK-007-unified-enforcement-catalog.md](../TASK-007-unified-enforcement-catalog.md) |
+| Unified Enforcement Vector Catalog | Synthesis Artifact | [deliverable-007-unified-enforcement-catalog.md](../deliverable-007-unified-enforcement-catalog.md) |
 
 ### Verification
 
@@ -121,4 +121,4 @@ Blocked by TASK-001 through TASK-006. This is the critical synthesis step that p
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation. Blocked by TASK-001 through TASK-006. |
-| 2026-02-13 | DONE | Synthesis complete. 62 vectors cataloged across 7 families. Artifact persisted to TASK-007-unified-enforcement-catalog.md. All 8 acceptance criteria satisfied. |
+| 2026-02-13 | DONE | Synthesis complete. 62 vectors cataloged across 7 families. Artifact persisted to deliverable-007-unified-enforcement-catalog.md. All 8 acceptance criteria satisfied. |

@@ -100,7 +100,7 @@ First of three parallel research tasks (with TASK-002 and TASK-003). Feeds into 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Academic adversarial research | Research artifact | [TASK-001-academic-adversarial-research.md](../TASK-001-academic-adversarial-research.md) |
+| Academic adversarial research | Research artifact | [deliverable-001-academic-adversarial-research.md](../deliverable-001-academic-adversarial-research.md) |
 
 ### Verification
 

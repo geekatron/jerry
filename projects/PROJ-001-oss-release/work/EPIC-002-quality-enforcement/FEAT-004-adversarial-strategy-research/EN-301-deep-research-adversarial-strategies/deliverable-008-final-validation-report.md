@@ -64,7 +64,7 @@ The EN-301 catalog of 15 adversarial review strategies, as represented by TASK-0
 
 **Verdict: PASS**
 
-**Evidence source:** TASK-004-unified-catalog.md
+**Evidence source:** deliverable-004-unified-catalog.md
 
 The catalog contains exactly 15 strategies with unique identifiers S-001 through S-015:
 
@@ -94,7 +94,7 @@ Content analysis confirmed 15 `### S-0XX:` headings in TASK-004. Each strategy h
 
 **Verdict: PASS WITH CAVEAT**
 
-**Evidence sources:** TASK-004-unified-catalog.md (lines 130-142, selection rationale), TASK-006-revised-catalog.md (Appendix C, lines 455-495)
+**Evidence sources:** deliverable-004-unified-catalog.md (lines 130-142, selection rationale), deliverable-006-revised-catalog.md (Appendix C, lines 455-495)
 
 **Present as specified:**
 - Red Team: S-001
@@ -139,7 +139,7 @@ The technical reasoning for the replacements is defensible:
 
 **Verdict: PASS**
 
-**Evidence source:** TASK-004-unified-catalog.md
+**Evidence source:** deliverable-004-unified-catalog.md
 
 Required fields per the EN-301 specification: name, description, origin/author, citation, strengths, weaknesses, use contexts.
 
@@ -163,7 +163,7 @@ Additionally, all strategies include fields beyond the minimum requirement:
 
 **Verdict: PASS**
 
-**Evidence source:** TASK-004-unified-catalog.md (References section, lines 1076-1146)
+**Evidence source:** deliverable-004-unified-catalog.md (References section, lines 1076-1146)
 
 The consolidated reference list contains 46 citations:
 
@@ -206,7 +206,7 @@ Note: TASK-006 adds uncertainty markers `[unverified from training data]` to thr
 
 **Verdict: PASS**
 
-**Evidence source:** TASK-004-unified-catalog.md (Strategy Distribution table, lines 78-84)
+**Evidence source:** deliverable-004-unified-catalog.md (Strategy Distribution table, lines 78-84)
 
 Domains represented:
 
@@ -228,7 +228,7 @@ The TASK-005 review (DA-004) challenged the underrepresentation of Industry/Engi
 
 **Verdict: PASS**
 
-**Evidence sources:** TASK-004-unified-catalog.md (Redundancy Check table, lines 190-208; Overlap Analysis, lines 99-124), TASK-006-revised-catalog.md (Differentiation Clarifications section)
+**Evidence sources:** deliverable-004-unified-catalog.md (Redundancy Check table, lines 190-208; Overlap Analysis, lines 99-124), deliverable-006-revised-catalog.md (Differentiation Clarifications section)
 
 The TASK-004 catalog includes a three-dimensional redundancy check verifying that each strategy has a unique combination of:
 1. Primary mechanism (how the adversarial challenge is delivered)
@@ -250,7 +250,7 @@ The TASK-007 iteration 2 review confirmed all differentiation is now adequate, n
 
 **Verdict: PASS**
 
-**Evidence sources:** TASK-005-adversarial-review-iter1.md, TASK-006-revised-catalog.md, TASK-007-adversarial-review-iter2.md
+**Evidence sources:** deliverable-005-adversarial-review-iter1.md, deliverable-006-revised-catalog.md, deliverable-007-adversarial-review-iter2.md
 
 **Iteration 1 (TASK-005):**
 - Agent: ps-critic (Red Team + Devil's Advocate + Steelman modes)
@@ -279,7 +279,7 @@ Both iterations are thoroughly documented with structured findings, evidence cit
 
 **Verdict: PASS**
 
-**Evidence source:** TASK-007-adversarial-review-iter2.md (L2: Recalculated Quality Score, lines 234-264)
+**Evidence source:** deliverable-007-adversarial-review-iter2.md (L2: Recalculated Quality Score, lines 234-264)
 
 | Dimension | Weight | Score | Weighted |
 |-----------|--------|-------|----------|

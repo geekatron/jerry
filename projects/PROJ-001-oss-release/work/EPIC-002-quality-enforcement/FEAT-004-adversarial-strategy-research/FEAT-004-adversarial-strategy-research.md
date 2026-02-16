@@ -156,8 +156,8 @@ Deep research into adversarial critic/review strategies from authoritative indus
 
 | ID | Type | Title | Status | Priority | Effort | Agents |
 |----|------|-------|--------|----------|--------|--------|
-| [EN-301](./EN-301-deep-research-adversarial-strategies/EN-301-deep-research-adversarial-strategies.md) | Enabler | Deep Research: 15 Adversarial Strategies | **done** | critical | 13 | ps-researcher, ps-critic, ps-synthesizer, nse-explorer |
-| [EN-302](./EN-302-strategy-selection-framework/EN-302-strategy-selection-framework.md) | Enabler | Strategy Selection & Decision Framework | **done** | critical | 8 | ps-analyst, ps-critic, nse-architecture, nse-risk |
+| [EN-301](./EN-301-deep-research-adversarial-strategies/EN-301-deep-research-adversarial-strategies.md) | Enabler | Deep Research: 15 Adversarial Strategies | **completed** | critical | 13 | ps-researcher, ps-critic, ps-synthesizer, nse-explorer |
+| [EN-302](./EN-302-strategy-selection-framework/EN-302-strategy-selection-framework.md) | Enabler | Strategy Selection & Decision Framework | **completed** | critical | 8 | ps-analyst, ps-critic, nse-architecture, nse-risk |
 | [EN-303](./EN-303-situational-applicability-mapping/EN-303-situational-applicability-mapping.md) | Enabler | Situational Applicability Mapping | pending | high | 5 | ps-architect, ps-critic, nse-requirements |
 | [EN-304](./EN-304-problem-solving-skill-enhancement/EN-304-problem-solving-skill-enhancement.md) | Enabler | /problem-solving Skill Enhancement | pending | critical | 10 | ps-architect, ps-critic, ps-reviewer, nse-verification |
 | [EN-305](./EN-305-nasa-se-skill-enhancement/EN-305-nasa-se-skill-enhancement.md) | Enabler | /nasa-se Skill Enhancement | pending | high | 8 | nse-architecture, ps-critic, nse-reviewer, nse-verification |

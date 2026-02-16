@@ -99,7 +99,7 @@ Second of three parallel research tasks (with TASK-001 and TASK-003). Feeds into
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Industry adversarial research | Research artifact | [TASK-002-industry-adversarial-research.md](../TASK-002-industry-adversarial-research.md) |
+| Industry adversarial research | Research artifact | [deliverable-002-industry-adversarial-research.md](../deliverable-002-industry-adversarial-research.md) |
 
 ### Verification
 

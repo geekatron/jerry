@@ -10,7 +10,7 @@ PURPOSE: Enhance .claude/rules/ files with HARD enforcement language and tiered 
 -->
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -68,7 +68,7 @@ Additionally, the Barrier-1 ADV-to-ENF handoff requires that rules encode six ad
 ## Input from ADR-EPIC002-002
 
 **Status:** ACCEPTED (ratified 2026-02-13)
-**Location:** `EN-402-enforcement-priority-analysis/TASK-005-enforcement-ADR.md`
+**Location:** `EN-402-enforcement-priority-analysis/deliverable-005-enforcement-ADR.md`
 
 ### L1 Layer Specification
 
@@ -353,3 +353,4 @@ TASK-001 ──► TASK-002 ──► TASK-003 ──► TASK-004
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. |
 | 2026-02-13 | Claude | in_progress | Enriched with ADR-EPIC002-002 (ACCEPTED) inputs: L1 layer specification (token budget ~12,476 target, 51.5% reduction from ~25,700), rule-family vectors (V-008/V-009/V-010/V-015-V-017/V-026), HARD/MEDIUM/SOFT enforcement tier language, token budget optimization targets per component, defense-in-depth chain (L2 compensates L1 rot). Added Barrier-1 ADV-to-ENF handoff inputs: 6 adversarial strategies to encode as rules (S-007/S-003/S-010/S-014/S-002/S-013), quality gate integration (0.92 threshold, creator-critic-revision cycle, C1-C4 escalation), enforcement tier language definitions, L2 re-injection tagging requirement. Added FR-001 through FR-014, NFR-001 through NFR-008. Expanded acceptance criteria from 8 to 13 items. Enriched all task descriptions with ADR/Barrier-1 references. Updated navigation table. |
+| 2026-02-16 | Claude | pending | Status corrected from in_progress to pending. Enabler was enriched with ADR-EPIC002-002 and Barrier-1 inputs but zero tasks have been executed. Audit remediation (FEAT-013 EN-911). |

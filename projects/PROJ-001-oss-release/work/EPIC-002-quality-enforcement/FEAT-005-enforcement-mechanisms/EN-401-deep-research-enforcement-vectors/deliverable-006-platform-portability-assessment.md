@@ -504,11 +504,11 @@ This stack provides defense-in-depth where each layer compensates for the others
 
 | # | Source | File |
 |---|--------|------|
-| 1 | TASK-001: Claude Code Hooks Research | `EN-401.../TASK-001-claude-code-hooks-research.md` |
-| 2 | TASK-002: Guardrail Frameworks Research | `EN-401.../TASK-002-guardrail-frameworks-research.md` |
-| 3 | TASK-003: Rules Enforcement Research | `EN-401.../TASK-003-rules-enforcement-research.md` |
-| 4 | TASK-004: Prompt Engineering Enforcement Research | `EN-401.../TASK-004-prompt-engineering-enforcement-research.md` |
-| 5 | TASK-005: Alternative Enforcement Research | `EN-401.../TASK-005-alternative-enforcement-research.md` |
+| 1 | TASK-001: Claude Code Hooks Research | `EN-401.../deliverable-001-claude-code-hooks-research.md` |
+| 2 | TASK-002: Guardrail Frameworks Research | `EN-401.../deliverable-002-guardrail-frameworks-research.md` |
+| 3 | TASK-003: Rules Enforcement Research | `EN-401.../deliverable-003-rules-enforcement-research.md` |
+| 4 | TASK-004: Prompt Engineering Enforcement Research | `EN-401.../deliverable-004-prompt-engineering-enforcement-research.md` |
+| 5 | TASK-005: Alternative Enforcement Research | `EN-401.../deliverable-005-alternative-enforcement-research.md` |
 
 ### External References (from Source Research)
 

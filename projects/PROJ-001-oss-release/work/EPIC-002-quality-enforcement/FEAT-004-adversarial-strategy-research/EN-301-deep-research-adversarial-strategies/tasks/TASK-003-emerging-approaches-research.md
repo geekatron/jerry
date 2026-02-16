@@ -99,7 +99,7 @@ Third of three parallel research tasks (with TASK-001 and TASK-002). Feeds into 
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Emerging approaches research | Research artifact | [TASK-003-emerging-adversarial-research.md](../TASK-003-emerging-adversarial-research.md) |
+| Emerging approaches research | Research artifact | [deliverable-003-emerging-adversarial-research.md](../deliverable-003-emerging-adversarial-research.md) |
 
 ### Verification
 

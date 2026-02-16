@@ -102,7 +102,7 @@ Blocked by TASK-009 (revision). Second iteration of the adversarial review cycle
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Adversarial Review Iteration 2 | Critique Artifact | [TASK-010-adversarial-review-iter2.md](../TASK-010-adversarial-review-iter2.md) |
+| Adversarial Review Iteration 2 | Critique Artifact | [deliverable-010-adversarial-review-iter2.md](../deliverable-010-adversarial-review-iter2.md) |
 
 ### Verification
 

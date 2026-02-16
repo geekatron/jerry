@@ -27,7 +27,7 @@ Adversarial critique of all 12 EN-406 creator deliverables using three strategie
 
 ## Evidence
 
-- Critique report: `../TASK-013-critique-iteration-1.md`
+- Critique report: `../deliverable-013-critique-iteration-1.md`
 - Quality score: 0.907
 - Verdict: FAIL (0.907 < 0.920)
 - Findings: 2 BLOCKING, 15 MAJOR, 11 MINOR, 3 OBSERVATION (31 total)

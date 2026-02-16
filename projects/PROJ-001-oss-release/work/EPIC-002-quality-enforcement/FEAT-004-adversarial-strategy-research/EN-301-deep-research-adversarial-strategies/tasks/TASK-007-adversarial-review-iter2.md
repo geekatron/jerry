@@ -100,7 +100,7 @@ Depends on TASK-006 (creator revision). Second and final adversarial review iter
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Adversarial Review Iteration 2 | Review Artifact | [TASK-007-adversarial-review-iter2.md](../TASK-007-adversarial-review-iter2.md) |
+| Adversarial Review Iteration 2 | Review Artifact | [deliverable-007-adversarial-review-iter2.md](../deliverable-007-adversarial-review-iter2.md) |
 
 ### Verification
 

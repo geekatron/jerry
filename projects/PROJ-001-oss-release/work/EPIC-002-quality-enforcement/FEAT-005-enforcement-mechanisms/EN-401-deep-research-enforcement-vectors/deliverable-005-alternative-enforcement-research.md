@@ -1537,8 +1537,8 @@ Class D (ADVISORY only):
 | 32 | PreToolUse hook | `scripts/pre_tool_use.py` | Current security enforcement |
 | 33 | Pattern library | `scripts/patterns/loader.py` | Regex-based pattern validation |
 | 34 | Hooks configuration | `hooks/hooks.json` | Current hook architecture |
-| 35 | TASK-001 research | `EN-401.../TASK-001-claude-code-hooks-research.md` | Hooks API capabilities |
-| 36 | TASK-002 research | `EN-401.../TASK-002-guardrail-frameworks-research.md` | Industry guardrail frameworks |
+| 35 | TASK-001 research | `EN-401.../deliverable-001-claude-code-hooks-research.md` | Hooks API capabilities |
+| 36 | TASK-002 research | `EN-401.../deliverable-002-guardrail-frameworks-research.md` | Industry guardrail frameworks |
 
 ---
 

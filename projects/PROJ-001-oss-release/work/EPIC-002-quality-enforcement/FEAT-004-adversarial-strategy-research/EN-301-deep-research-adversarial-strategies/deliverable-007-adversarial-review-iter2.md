@@ -11,9 +11,9 @@ EPIC: EPIC-002 (Quality Framework Enforcement)
 PROJECT: PROJ-001-oss-release
 PS-ID: EN-301
 ENTRY-ID: TASK-007
-REVIEWED ARTIFACT: TASK-006-revised-catalog.md (v1.1.0)
-BASELINE: TASK-004-unified-catalog.md (v1.0.0)
-PRIOR REVIEW: TASK-005-adversarial-review-iter1.md (score: 0.89)
+REVIEWED ARTIFACT: deliverable-006-revised-catalog.md (v1.1.0)
+BASELINE: deliverable-004-unified-catalog.md (v1.0.0)
+PRIOR REVIEW: deliverable-005-adversarial-review-iter1.md (score: 0.89)
 -->
 
 > **Version:** 1.0.0

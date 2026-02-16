@@ -105,7 +105,7 @@ Depends on completion of TASK-001, TASK-002, and TASK-003. Synthesized from 12 a
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Unified 15-strategy catalog | Synthesis artifact | [TASK-004-unified-catalog.md](../TASK-004-unified-catalog.md) |
+| Unified 15-strategy catalog | Synthesis artifact | [deliverable-004-unified-catalog.md](../deliverable-004-unified-catalog.md) |
 
 ### Verification
 

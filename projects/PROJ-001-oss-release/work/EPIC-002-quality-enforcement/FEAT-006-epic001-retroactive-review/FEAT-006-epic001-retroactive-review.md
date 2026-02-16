@@ -122,11 +122,11 @@ Retroactively review ALL EPIC-001 deliverables (code, tests, documentation, boot
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| EN-501 | Enabler | FEAT-003 Deliverables Adversarial Review | pending | critical | 13 |
-| EN-502 | Enabler | Bootstrap Script Cross-Platform Validation | pending | high | 8 |
-| EN-503 | Enabler | Task Template Compliance Audit & Fix | pending | medium | 5 |
-| EN-504 | Enabler | FEAT-001 Deliverables Adversarial Review | pending | medium | 8 |
-| EN-505 | Enabler | FEAT-002 Deliverables Adversarial Review | pending | medium | 8 |
+| [EN-501](EN-501-feat003-retroactive-review/EN-501-feat003-retroactive-review.md) | Enabler | FEAT-003 Retroactive Quality Review | pending | high | 8 |
+| [EN-502](EN-502-bootstrap-cross-platform/EN-502-bootstrap-cross-platform.md) | Enabler | Bootstrap Cross-Platform Validation | pending | high | 8 |
+| [EN-503](EN-503-template-compliance/EN-503-template-compliance.md) | Enabler | Template Compliance Review | pending | medium | 5 |
+| [EN-504](EN-504-feat001-retroactive-review/EN-504-feat001-retroactive-review.md) | Enabler | FEAT-001 Retroactive Quality Review | pending | high | 13 |
+| [EN-505](EN-505-feat002-retroactive-review/EN-505-feat002-retroactive-review.md) | Enabler | FEAT-002 Retroactive Quality Review | pending | high | 8 |
 
 ### Enabler Dependencies
 

@@ -100,7 +100,7 @@ Depends on TASK-004 (synthesis). Evaluation dimensions: Completeness (0.25), Acc
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Adversarial review iteration 1 (Red Team + Devil's Advocate) | Review artifact | [TASK-005-adversarial-review-iter1.md](../TASK-005-adversarial-review-iter1.md) |
+| Adversarial review iteration 1 (Red Team + Devil's Advocate) | Review artifact | [deliverable-005-adversarial-review-iter1.md](../deliverable-005-adversarial-review-iter1.md) |
 
 ### Verification
 

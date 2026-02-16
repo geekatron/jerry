@@ -9,7 +9,7 @@ PURPOSE: Create weighted decision framework to score and select the best 10 adve
 -->
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Resolution:** completed (conditional — pending user ratification of ADR-EPIC002-001)
 > **Priority:** critical
 > **Impact:** critical
@@ -34,6 +34,7 @@ PURPOSE: Create weighted decision framework to score and select the best 10 adve
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Agent Assignments](#agent-assignments) | Which agents are used |
 | [Related Items](#related-items) | Dependencies |
+| [Evidence](#evidence) | Deliverables, quality scores, verification |
 | [History](#history) | Change log |
 
 ---
@@ -113,9 +114,34 @@ TASK-003 ──┘
 | blocks | EN-303 | Situational mapping depends on the selected 10 strategies |
 | blocks | EN-304 | Skill enhancement depends on finalized strategy selection |
 
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | ADR-EPIC002-001 (Strategy Selection) | `deliverable-005-selection-ADR.md` | Complete (pending user ratification) |
+| 2 | Task deliverable files (9 root + 8 in tasks/) | `deliverable-001 through deliverable-008` | Complete |
+
+### Quality Scores
+
+| Iteration | Score | Threshold | Result |
+|-----------|-------|-----------|--------|
+| 1 | 0.79 | >= 0.92 | REVISE |
+| 2 | 0.935 | >= 0.92 | PASS |
+
+### Verification Checklist
+
+- [x] All acceptance criteria verified (9/9 AC CONDITIONAL PASS per TASK-008)
+- [x] Weighted decision framework with 6 evaluation dimensions
+- [x] All 15 strategies scored; top 10 selected with composite justification
+- [x] Two adversarial review iterations completed (Steelman + Strawman)
+- [ ] Pending: User ratification of ADR-EPIC002-001
+
 ## History
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-12 | Claude | pending | Enabler created with task decomposition. Depends on EN-301 catalog completion. |
 | 2026-02-14 | Claude | done | All 8 tasks complete. Quality scores: iter1 0.79, iter2 0.935 (PASS). Top 10 selected: S-014(4.40), S-003(4.30), S-013(4.25), S-007(4.15), S-002(4.10), S-004(4.05), S-010(4.00), S-012(3.75), S-011(3.35), S-001(3.35). 5 excluded: S-008, S-006, S-005, S-009, S-015. ADR-EPIC002-001 created (PROPOSED, pending user ratification). 9/9 ACs pass. Conditional on user ratification per P-020. |
+| 2026-02-16 | Claude | completed | Evidence section added per WTI-006 remediation (FEAT-013 EN-908). |

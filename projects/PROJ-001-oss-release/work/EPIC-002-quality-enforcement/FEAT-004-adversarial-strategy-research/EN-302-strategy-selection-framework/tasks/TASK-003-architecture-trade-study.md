@@ -99,7 +99,7 @@ Third of three parallel inputs to TASK-004 (scoring). Can run in parallel with T
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Architecture Trade Study (TSR-PROJ-001-EN302-003) | Trade Study Report | [TASK-003-trade-study.md](../TASK-003-trade-study.md) |
+| Architecture Trade Study (TSR-PROJ-001-EN302-003) | Trade Study Report | [deliverable-003-trade-study.md](../deliverable-003-trade-study.md) |
 
 ### Verification
 

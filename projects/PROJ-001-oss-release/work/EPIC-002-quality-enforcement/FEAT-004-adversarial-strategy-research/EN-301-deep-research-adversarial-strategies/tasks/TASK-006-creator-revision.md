@@ -100,7 +100,7 @@ Depends on TASK-005 (adversarial review iteration 1). Creator responds to critic
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Revised Catalog v1.1.0 | Research Artifact | [TASK-006-revised-catalog.md](../TASK-006-revised-catalog.md) |
+| Revised Catalog v1.1.0 | Research Artifact | [deliverable-006-revised-catalog.md](../deliverable-006-revised-catalog.md) |
 
 ### Verification
 
@@ -114,4 +114,4 @@ Depends on TASK-005 (adversarial review iteration 1). Creator responds to critic
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-12 | Created | Initial creation. Blocked by TASK-005 (critique iter 1). |
-| 2026-02-13 | DONE | Creator revision completed. All 4 HIGH and 6 MEDIUM priority findings addressed. 2 LOW priority findings addressed. Revised catalog persisted as TASK-006-revised-catalog.md (v1.1.0). Projected post-revision score: >= 0.92. Feeds into TASK-007 for second adversarial review iteration. |
+| 2026-02-13 | DONE | Creator revision completed. All 4 HIGH and 6 MEDIUM priority findings addressed. 2 LOW priority findings addressed. Revised catalog persisted as deliverable-006-revised-catalog.md (v1.1.0). Projected post-revision score: >= 0.92. Feeds into TASK-007 for second adversarial review iteration. |

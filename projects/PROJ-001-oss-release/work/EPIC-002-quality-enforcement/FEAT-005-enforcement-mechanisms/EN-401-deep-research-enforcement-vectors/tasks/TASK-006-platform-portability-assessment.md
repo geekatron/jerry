@@ -105,7 +105,7 @@ Blocked by TASK-001 through TASK-005. Requires all research tasks to be complete
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Platform Portability Assessment | Research Artifact | [TASK-006-platform-portability-assessment.md](../TASK-006-platform-portability-assessment.md) |
+| Platform Portability Assessment | Research Artifact | [deliverable-006-platform-portability-assessment.md](../deliverable-006-platform-portability-assessment.md) |
 
 ### Verification
 

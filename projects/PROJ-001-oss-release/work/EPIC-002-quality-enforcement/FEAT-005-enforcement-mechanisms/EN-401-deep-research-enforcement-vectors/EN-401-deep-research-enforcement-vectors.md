@@ -9,7 +9,7 @@ PURPOSE: Comprehensive research on all enforcement vectors available for Claude 
 -->
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Resolution:** completed
 > **Priority:** critical
 > **Impact:** critical
@@ -34,6 +34,7 @@ PURPOSE: Comprehensive research on all enforcement vectors available for Claude 
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Agent Assignments](#agent-assignments) | Which agents are used |
 | [Related Items](#related-items) | Dependencies |
+| [Evidence](#evidence) | Deliverables, quality scores, verification |
 | [History](#history) | Change log |
 
 ---
@@ -116,6 +117,33 @@ TASK-006 ──┘
 |------|------|-------------|
 | — | — | No dependencies. This is the entry point for FEAT-005. |
 
+### Research Artifacts
+- [research-enforcement-vectors.md](../research-enforcement-vectors.md)
+
+## Evidence
+
+### Deliverables
+
+| # | Deliverable | Path | Status |
+|---|-------------|------|--------|
+| 1 | 62-vector enforcement catalog across 7 families | `research-enforcement-vectors.md` | Complete |
+| 2 | Task files (11 root + 11 in tasks/) | `TASK-001 through TASK-011` | Complete |
+
+### Quality Scores
+
+| Iteration | Score | Threshold | Result |
+|-----------|-------|-----------|--------|
+| 1 | 0.875 | >= 0.92 | REVISE |
+| 2 | 0.928 | >= 0.92 | PASS |
+
+### Verification Checklist
+
+- [x] All acceptance criteria verified (9/9 AC PASS per TASK-011)
+- [x] 62 enforcement vectors cataloged across 7 families with authoritative citations
+- [x] Platform portability assessment completed (62 vectors, 5 platforms)
+- [x] Two adversarial review iterations completed (Devil's Advocate + Red Team)
+- [x] User ratified downstream guidance 2026-02-13
+
 ## History
 
 | Date | Author | Status | Notes |
@@ -126,3 +154,4 @@ TASK-006 ──┘
 | 2026-02-13 | Claude | in_progress | TASK-003 (rules enforcement) and TASK-004 (prompt engineering) completed. All 5 research tasks (TASK-001 through TASK-005) now done. Task entity files rewritten to use official /worktracker TASK template. |
 | 2026-02-13 | Claude | in_progress | Full pipeline complete: TASK-006 (portability, 62 vectors/5 platforms), TASK-007 (synthesis, 62 vectors/7 families), TASK-008 (iter1 review, 0.875), TASK-009 (revision, all 10 findings addressed), TASK-010 (iter2 review, 0.928 PASS), TASK-011 (final validation, 9/9 AC PASS). |
 | 2026-02-13 | User | done | User ratified downstream guidance: (1) TASK-009 as authoritative reference, (2) prioritize 38 LLM-Portable vectors + Windows-specific adaptations, (3) token budget ~25,700 envelope, (4) reference adversary model for robustness, (5) prioritize context-rot-resilient vectors. EN-401 marked DONE. |
+| 2026-02-16 | Claude | completed | Evidence section added per WTI-006 remediation (FEAT-013 EN-908). |
