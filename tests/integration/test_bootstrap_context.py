@@ -2,18 +2,22 @@
 
 Tests the cross-platform sync mechanism that links .context/ to .claude/.
 Covers symlink creation, check mode, force mode, fallback behavior,
-and idempotency.
+idempotency, content drift detection, and retry logic.
 """
 
 from __future__ import annotations
 
 import os
 import platform
+import shutil
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 from scripts.bootstrap_context import (
+    _files_match,
+    _rmtree_with_retry,
     bootstrap,
     check_sync,
     detect_platform,
@@ -309,3 +313,189 @@ class TestBootstrapEdgeCases:
             target = os.readlink(str(rules_link))
             assert not os.path.isabs(target), f"Symlink should be relative, got: {target}"
             assert target == os.path.join("..", ".context", "rules")
+
+
+# === _files_match Tests ===
+
+
+class TestFilesMatch:
+    """Tests for _files_match content comparison."""
+
+    def test_matching_directories_return_true(self, tmp_path: Path) -> None:
+        """_files_match returns True when source and target have identical content."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        source.mkdir()
+        target.mkdir()
+
+        (source / "a.md").write_text("hello")
+        (target / "a.md").write_text("hello")
+
+        assert _files_match(source, target) is True
+
+    def test_different_content_returns_false(self, tmp_path: Path) -> None:
+        """_files_match returns False when files have same name but different content."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        source.mkdir()
+        target.mkdir()
+
+        (source / "a.md").write_text("original content")
+        (target / "a.md").write_text("modified content")
+
+        assert _files_match(source, target) is False
+
+    def test_extra_file_in_source_returns_false(self, tmp_path: Path) -> None:
+        """_files_match returns False when source has a file target lacks."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        source.mkdir()
+        target.mkdir()
+
+        (source / "a.md").write_text("hello")
+        (source / "b.md").write_text("world")
+        (target / "a.md").write_text("hello")
+
+        assert _files_match(source, target) is False
+
+    def test_extra_file_in_target_returns_false(self, tmp_path: Path) -> None:
+        """_files_match returns False when target has a file source lacks."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        source.mkdir()
+        target.mkdir()
+
+        (source / "a.md").write_text("hello")
+        (target / "a.md").write_text("hello")
+        (target / "extra.md").write_text("extra")
+
+        assert _files_match(source, target) is False
+
+    def test_empty_directories_match(self, tmp_path: Path) -> None:
+        """_files_match returns True for two empty directories."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        source.mkdir()
+        target.mkdir()
+
+        assert _files_match(source, target) is True
+
+    def test_recursive_subdirectory_comparison(self, tmp_path: Path) -> None:
+        """_files_match recursively compares files in subdirectories."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        (source / "sub").mkdir(parents=True)
+        (target / "sub").mkdir(parents=True)
+
+        (source / "sub" / "deep.md").write_text("deep content")
+        (target / "sub" / "deep.md").write_text("deep content")
+
+        assert _files_match(source, target) is True
+
+    def test_recursive_subdirectory_content_drift(self, tmp_path: Path) -> None:
+        """_files_match detects content drift in nested subdirectories."""
+        source = tmp_path / "source"
+        target = tmp_path / "target"
+        (source / "sub").mkdir(parents=True)
+        (target / "sub").mkdir(parents=True)
+
+        (source / "sub" / "deep.md").write_text("original")
+        (target / "sub" / "deep.md").write_text("drifted")
+
+        assert _files_match(source, target) is False
+
+
+# === _rmtree_with_retry Tests ===
+
+
+class TestRmtreeWithRetry:
+    """Tests for _rmtree_with_retry retry logic."""
+
+    def test_successful_removal_on_first_attempt(self, tmp_path: Path) -> None:
+        """_rmtree_with_retry removes directory on first attempt."""
+        target = tmp_path / "to_remove"
+        target.mkdir()
+        (target / "file.txt").write_text("content")
+
+        _rmtree_with_retry(target)
+        assert not target.exists()
+
+    def test_succeeds_after_retry_on_permission_error(self, tmp_path: Path) -> None:
+        """_rmtree_with_retry succeeds when PermissionError clears on retry."""
+        target = tmp_path / "to_remove"
+        target.mkdir()
+        (target / "file.txt").write_text("content")
+
+        call_count = 0
+        original_rmtree = shutil.rmtree
+
+        def flaky_rmtree(path: object, **kwargs: object) -> None:
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise PermissionError("file locked")
+            original_rmtree(path)  # type: ignore[arg-type]
+
+        with patch("shutil.rmtree", side_effect=flaky_rmtree):
+            with patch("time.sleep"):
+                _rmtree_with_retry(target)
+
+        assert call_count == 2
+
+    def test_raises_after_max_retries_exhausted(self, tmp_path: Path) -> None:
+        """_rmtree_with_retry raises PermissionError after all retries fail."""
+        target = tmp_path / "to_remove"
+        target.mkdir()
+
+        def always_fail(path: object, **kwargs: object) -> None:
+            raise PermissionError("permanently locked")
+
+        with patch("shutil.rmtree", side_effect=always_fail):
+            with patch("time.sleep"):
+                with pytest.raises(PermissionError, match="permanently locked"):
+                    _rmtree_with_retry(target, max_retries=3)
+
+
+# === Content Modification Drift in check_sync ===
+
+
+class TestCheckSyncContentDrift:
+    """Tests for content-modification drift detection in check_sync."""
+
+    def test_check_sync_detects_content_modification_drift(self, jerry_project: Path) -> None:
+        """check_sync detects when file content is modified (not just added/removed)."""
+        source_rules = jerry_project / ".context" / "rules"
+        target_rules = jerry_project / ".claude" / "rules"
+        shutil.copytree(source_rules, target_rules)
+
+        source_patterns = jerry_project / ".context" / "patterns"
+        target_patterns = jerry_project / ".claude" / "patterns"
+        shutil.copytree(source_patterns, target_patterns)
+
+        # Verify sync is OK before modification
+        assert check_sync(jerry_project, quiet=True) is True
+
+        # Modify content of an existing file in the target (simulating drift)
+        (target_rules / "coding-standards.md").write_text("# MODIFIED content\n")
+
+        result = check_sync(jerry_project, quiet=True)
+        assert result is False
+
+    def test_check_sync_detects_source_content_modification(self, jerry_project: Path) -> None:
+        """check_sync detects drift when source content changes after copy."""
+        source_rules = jerry_project / ".context" / "rules"
+        target_rules = jerry_project / ".claude" / "rules"
+        shutil.copytree(source_rules, target_rules)
+
+        source_patterns = jerry_project / ".context" / "patterns"
+        target_patterns = jerry_project / ".claude" / "patterns"
+        shutil.copytree(source_patterns, target_patterns)
+
+        # Verify sync is OK before modification
+        assert check_sync(jerry_project, quiet=True) is True
+
+        # Modify content in the source (upstream change not yet synced)
+        (source_rules / "coding-standards.md").write_text("# Updated upstream\n")
+
+        result = check_sync(jerry_project, quiet=True)
+        assert result is False

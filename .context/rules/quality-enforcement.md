@@ -87,15 +87,15 @@
 
 ### Quality Gate Rule Definitions
 
-| ID | Rule | Consequence |
-|----|------|-------------|
-| H-13 | Quality threshold >= 0.92 for C2+ deliverables. Weighted composite score using S-014 dimensions. Below threshold = REJECTED, revision required. | Deliverable rejected. |
-| H-14 | Creator-critic-revision cycle REQUIRED. Minimum 3 iterations for C2+ deliverables. | Quality gate bypass. |
-| H-15 | Self-review (S-010) REQUIRED before presenting any deliverable to user or critic. | Unreviewed output. |
-| H-16 | Steelman (S-003) MUST be applied before Devil's Advocate (S-002). Canonical review pairing. | Review protocol violation. |
-| H-17 | Quality scoring via S-014 LLM-as-Judge REQUIRED for all C2+ deliverables. | Unscored deliverable. |
-| H-18 | Constitutional compliance check (S-007) REQUIRED for all C2+ deliverables. | Unchecked compliance. |
-| H-19 | Governance escalation per AE rules REQUIRED. Auto-escalation conditions enforce minimum criticality. | Governance bypass. |
+| ID | Rule | Rationale | Consequence |
+|----|------|-----------|-------------|
+| H-13 | Quality threshold >= 0.92 for C2+ deliverables. Weighted composite score using S-014 dimensions. Below threshold = REJECTED, revision required. | Prevents substandard deliverables from bypassing review; the 0.92 threshold balances rigor with iteration cost. | Deliverable rejected. |
+| H-14 | Creator-critic-revision cycle REQUIRED. Minimum 3 iterations for C2+ deliverables. | Multi-pass review catches blind spots that single-pass self-review cannot detect. | Quality gate bypass. |
+| H-15 | Self-review (S-010) REQUIRED before presenting any deliverable to user or critic. | Early self-correction reduces reviewer burden and prevents obvious defects from consuming critic cycles. | Unreviewed output. |
+| H-16 | Steelman (S-003) MUST be applied before Devil's Advocate (S-002). Canonical review pairing. | Strengthening ideas before attacking them prevents premature rejection of sound approaches. | Review protocol violation. |
+| H-17 | Quality scoring via S-014 LLM-as-Judge REQUIRED for all C2+ deliverables. | Quantitative scoring provides objective progress tracking across revision iterations and enables threshold enforcement. | Unscored deliverable. |
+| H-18 | Constitutional compliance check (S-007) REQUIRED for all C2+ deliverables. | Ensures deliverables do not violate governance constraints that could cascade into systemic issues. | Unchecked compliance. |
+| H-19 | Governance escalation per AE rules REQUIRED. Auto-escalation conditions enforce minimum criticality. | Prevents high-impact changes from receiving insufficient review by enforcing minimum criticality classification. | Governance bypass. |
 
 ### Operational Score Bands
 

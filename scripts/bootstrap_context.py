@@ -63,7 +63,7 @@ def is_symlink_or_junction(path: Path) -> bool:
     """
     if path.is_symlink():
         return True
-    if platform.system() == "Windows":
+    if detect_platform() == "windows":
         try:
             st = os.lstat(str(path))
             FILE_ATTRIBUTE_REPARSE_POINT = 0x400
@@ -109,26 +109,33 @@ def _create_unix_symlink(source: Path, target: Path, quiet: bool) -> bool:
 
 def _create_windows_link(source: Path, target: Path, quiet: bool) -> bool:
     """Create a Windows link (try symlink first, fall back to junction)."""
-    # Try symlink first (works with Developer Mode)
+    # Try symlink first (works with Developer Mode) using relative path
+    rel_source = os.path.relpath(source, target.parent)
     try:
-        target.symlink_to(source)
+        target.symlink_to(rel_source)
         if not quiet:
-            print(f"  Symlink: {target} -> {source}")
+            print(f"  Symlink: {target} -> {rel_source}")
         return True
     except OSError:
         pass
 
     # Fall back to junction point (no admin required for directories)
+    # Junctions require absolute paths, so use the original source path
     try:
         subprocess.run(
             ["cmd", "/c", "mklink", "/J", str(target), str(source)],
             check=True,
             capture_output=True,
+            timeout=10,
         )
         if not quiet:
             print(f"  Junction: {target} -> {source}")
         return True
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+    except (
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+        FileNotFoundError,
+    ) as e:
         print(f"  Error creating junction: {e}", file=sys.stderr)
         return False
 
@@ -296,10 +303,12 @@ def bootstrap(root: Path, force: bool = False, quiet: bool = False) -> bool:
         # Create link
         if not create_symlink(source, target, quiet):
             # Final fallback: file copy
+            # Partial-state is accepted here: if some dirs succeed and others fail,
+            # the bootstrap is best-effort and reports overall success/failure.
             if not quiet:
                 print(f"  {dirname}: falling back to file copy")
             try:
-                shutil.copytree(source, target)
+                shutil.copytree(source, target, symlinks=False)
                 if not quiet:
                     file_count = len(list(target.rglob("*")))
                     print(f"  {dirname}: copied ({file_count} items)")
