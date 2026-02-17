@@ -9,13 +9,13 @@ PURPOSE: Fix all hook scripts producing invalid JSON that fails Claude Code sche
 -->
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** done
 > **Priority:** critical
 > **Impact:** critical
 > **Severity:** critical
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** EPIC-003
 > **Owner:** Claude
 > **Found In:** EPIC-003 (EN-705 L2 implementation)
@@ -137,12 +137,12 @@ Fix each hook script to conform to the authoritative Claude Code hook JSON schem
 
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
-| [TASK-001](./tasks/TASK-001-fix-user-prompt-submit-hook.md) | Fix UserPromptSubmit hook — add hookEventName | pending | 1 | Claude |
-| [TASK-002](./tasks/TASK-002-fix-pre-tool-use-hook.md) | Fix PreToolUse hook — migrate to hookSpecificOutput API | pending | 3 | Claude |
-| [TASK-003](./tasks/TASK-003-fix-subagent-stop-hook.md) | Fix SubagentStop hook — correct event and output | pending | 2 | Claude |
-| [TASK-004](./tasks/TASK-004-fix-hooks-json-config.md) | Fix hooks.json configuration | pending | 1 | Claude |
-| [TASK-005](./tasks/TASK-005-add-hook-schema-tests.md) | Add hook output schema validation tests | pending | 3 | Claude |
-| [TASK-006](./tasks/TASK-006-create-hook-output-schema.md) | Create or extract hook output JSON Schema definition | pending | 3 | Claude |
+| [TASK-001](./tasks/TASK-001-fix-user-prompt-submit-hook.md) | Fix UserPromptSubmit hook — add hookEventName | done | 1 | Claude |
+| [TASK-002](./tasks/TASK-002-fix-pre-tool-use-hook.md) | Fix PreToolUse hook — migrate to hookSpecificOutput API | done | 3 | Claude |
+| [TASK-003](./tasks/TASK-003-fix-subagent-stop-hook.md) | Fix SubagentStop hook — correct event and output | done | 2 | Claude |
+| [TASK-004](./tasks/TASK-004-fix-hooks-json-config.md) | Fix hooks.json configuration | done | 1 | Claude |
+| [TASK-005](./tasks/TASK-005-add-hook-schema-tests.md) | Add hook output schema validation tests | done | 3 | Claude |
+| [TASK-006](./tasks/TASK-006-create-hook-output-schema.md) | Create or extract hook output JSON Schema definition | done | 3 | Claude |
 
 ---
 
@@ -150,23 +150,23 @@ Fix each hook script to conform to the authoritative Claude Code hook JSON schem
 
 ### Fix Verification
 
-- [ ] `user-prompt-submit.py` outputs valid JSON with `hookEventName: "UserPromptSubmit"`
-- [ ] `pre_tool_use.py` uses `hookSpecificOutput.permissionDecision` (not deprecated top-level `decision`)
-- [ ] `pre_tool_use.py` uses `"allow"`/`"deny"` (not deprecated `"approve"`/`"block"`)
-- [ ] `pre_tool_use.py` exits 0 on errors (fail-open), not exit 2
-- [ ] `subagent_stop.py` registered under `SubagentStop` event in hooks.json
-- [ ] `subagent_stop.py` outputs schema-compliant JSON
-- [ ] `hooks.json` has no matchers on events that don't support them
-- [ ] All hooks pass schema validation tests
-- [ ] JSON Schema files exist for all hook event types used by Jerry
-- [ ] L2 quality reinforcement confirmed working via debug log
+- [x] `user-prompt-submit.py` outputs valid JSON with `hookEventName: "UserPromptSubmit"`
+- [x] `pre_tool_use.py` uses `hookSpecificOutput.permissionDecision` (not deprecated top-level `decision`)
+- [x] `pre_tool_use.py` uses `"allow"`/`"deny"` (not deprecated `"approve"`/`"block"`)
+- [x] `pre_tool_use.py` exits 0 on errors (fail-open), not exit 2
+- [x] `subagent_stop.py` registered under `SubagentStop` event in hooks.json
+- [x] `subagent_stop.py` outputs schema-compliant JSON
+- [x] `hooks.json` has no matchers on events that don't support them
+- [x] All hooks pass schema validation tests
+- [x] JSON Schema files exist for all hook event types used by Jerry
+- [ ] L2 quality reinforcement confirmed working via debug log (requires live session test)
 
 ### Quality Checklist
 
-- [ ] Regression tests added for all hook output schemas
-- [ ] Existing tests still passing
-- [ ] No new issues introduced
-- [ ] `session_start_hook.py` pattern confirmed as reference implementation
+- [x] Regression tests added for all hook output schemas
+- [x] Existing tests still passing (3195/3195 PASS)
+- [x] No new issues introduced
+- [x] `session_start_hook.py` pattern confirmed as reference implementation
 
 ---
 
@@ -191,6 +191,7 @@ Fix each hook script to conform to the authoritative Claude Code hook JSON schem
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Bug filed. 4 hook scripts with schema violations. 5 tasks created. DISC-002 documents findings. |
 | 2026-02-17 | Claude | pending | TASK-006 added: Create or extract JSON Schema definitions for hook outputs. TASK-005 depends on TASK-006. Total: 6 tasks, 13 effort points. |
+| 2026-02-17 | Claude | done | BUG-002 RESOLVED via 5-phase orchestration workflow (bug002-hookfix-20260217-001). Phase 1: Schema foundation (C3 score 0.927). Phase 2: Parallel hook fixes (3 streams). Phase 3: Schema validation tests (31 tests). Phase 4: C4 tournament (0.9125 REVISE). Phase 5: P1-P5 remediation + re-score (0.9355 PASS). 3195 tests pass, 8/8 schema validations pass. All 7 root causes fixed. |
 
 ---
 

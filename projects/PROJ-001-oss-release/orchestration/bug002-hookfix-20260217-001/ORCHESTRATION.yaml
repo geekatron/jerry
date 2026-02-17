@@ -18,8 +18,9 @@ workflow:
   project_id: "PROJ-001-oss-release"
   version: "2.0"
   created_at: "2026-02-17"
-  updated_at: "2026-02-17T22:30:00Z"
-  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+  updated_at: "2026-02-17T23:59:00Z"
+  status: "COMPLETE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+  completed_at: "2026-02-17T23:59:00Z"
 
   # Workflow ID configuration (WI-SAO-021)
   id_source: "auto"
@@ -76,10 +77,10 @@ pipelines:
     short_alias: "fix"
     skill_source: "problem-solving"
 
-    status: "PHASE_4_PENDING"
-    current_phase: 4
+    status: "COMPLETE"
+    current_phase: 5
     total_phases: 5
-    progress_percent: 70
+    progress_percent: 100
 
     phases:
       # -----------------------------------------------------------------------
@@ -314,17 +315,17 @@ pipelines:
       - id: 4
         name: "C4 Tournament"
         path_id: "phase-4-c4-tournament"
-        status: "BLOCKED"
-        blocked_by: "barrier-3"
+        status: "COMPLETE"
+        blocked_by: null  # barrier-3 COMPLETE
         execution_mode: "SEQUENTIAL"
         tasks: []
-        started_at: null
-        completed_at: null
+        started_at: "2026-02-17"
+        completed_at: "2026-02-17"
         agents:
           - id: "adv-selector"
             name: "Select C4 strategy set (all 10 strategies mandatory)"
             role: "selector"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/bug002-hookfix-20260217-001/fix/phase-4-c4-tournament/adv-selector/adv-selector-strategy-selection.md"
             inputs:
               - "quality-enforcement.md"
@@ -333,8 +334,10 @@ pipelines:
           - id: "adv-executor"
             name: "Execute tournament with all 10 adversarial strategies"
             role: "executor"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/bug002-hookfix-20260217-001/fix/phase-4-c4-tournament/adv-executor/adv-executor-tournament-results.md"
+            score: 0.9125
+            verdict: "REVISE"
             inputs:
               - "All fix artifacts from Phase 1-3"
               - "Strategy templates from .context/templates/adversarial/"
@@ -343,11 +346,15 @@ pipelines:
           - id: "adv-scorer"
             name: "Score deliverable with S-014 LLM-as-Judge 6-dimension rubric"
             role: "scorer"
-            status: "BLOCKED"
+            status: "COMPLETE"
+            score: 0.9355
+            verdict: "PASS"
+            note: "Post-remediation re-scoring complete. Score 0.9355 >= 0.92 threshold."
             artifact: "orchestration/bug002-hookfix-20260217-001/fix/phase-4-c4-tournament/adv-scorer/adv-scorer-quality-score.md"
             inputs:
               - "adv-executor-tournament-results.md"
               - "quality-enforcement.md"
+              - "Phase 5 remediation artifacts"
             depends_on: ["adv-executor"]
         artifacts: []
         exit_criteria:
@@ -361,23 +368,30 @@ pipelines:
       - id: 5
         name: "Revision & Closure"
         path_id: "phase-5-revision-closure"
-        status: "BLOCKED"
-        blocked_by: "phase-4"
+        status: "COMPLETE"
+        blocked_by: null  # Phase 4 COMPLETE
         execution_mode: "CONDITIONAL"
         tasks: []
-        started_at: null
-        completed_at: null
+        started_at: "2026-02-17"
+        completed_at: "2026-02-17"
         agents:
           - id: "fix-reviser"
             name: "Revise based on tournament feedback (conditional: score < 0.92)"
             role: "reviser"
-            status: "BLOCKED"
+            status: "COMPLETE"
             conditional: true
-            condition: "adv-scorer quality score < 0.92"
+            condition: "adv-scorer quality score < 0.92 → TRIGGERED (0.9125)"
             artifact: "orchestration/bug002-hookfix-20260217-001/fix/phase-5-revision-closure/fix-reviser/fix-reviser-revision.md"
+            remediation_items:
+              - "P1: tests/hooks/test_subagent_stop.py (32 tests) — DA-001, CC-002"
+              - "P2: Shebang fixes (H-05 compliance) — CC-001, SR-001"
+              - "P3: Path normalization (defense-in-depth) — RT-003"
+              - "P4: rm flag variation regex detection — RT-004"
+              - "P5: HANDOFF_RULES mismatch warnings — PM-001, FM-001"
+            git_commit: "52e3015"
+            test_results: "3195 passed, 0 failed, 65 skipped"
             inputs:
               - "adv-executor-tournament-results.md"
-              - "adv-scorer-quality-score.md"
         artifacts: []
         exit_criteria:
           - "Tournament score >= 0.92 (pass) OR revisions applied and re-scored"
@@ -525,7 +539,7 @@ execution_queue:
     - id: 7
       name: "Phase 4: C4 Tournament Review (Sequential)"
       execution_mode: "SEQUENTIAL"
-      status: "READY"
+      status: "COMPLETE"
       blocked_by: null  # group-6 COMPLETE
       agents:
         - "adv-selector"
@@ -535,11 +549,12 @@ execution_queue:
     - id: 8
       name: "Phase 5: Revision & Closure (Conditional)"
       execution_mode: "CONDITIONAL"
-      status: "BLOCKED"
-      blocked_by: "group-7"
-      condition: "adv-scorer quality score < 0.92 triggers fix-reviser"
+      status: "COMPLETE"
+      blocked_by: null  # group-7 COMPLETE
+      condition: "adv-scorer quality score 0.9125 < 0.92 → TRIGGERED fix-reviser"
       agents:
-        - "fix-reviser"
+        - "fix-reviser"  # COMPLETE — P1-P5 remediation applied
+        - "adv-scorer"   # COMPLETE — Post-remediation score 0.9355 PASS
 
 # =============================================================================
 # QUALITY
@@ -720,9 +735,19 @@ quality:
       weight: 0.10
       application: "Each fix traces to specific root cause (RC-1 through RC-7)"
 
-  # Current scores (populated during Phase 4)
-  current_score: null
-  iteration: 0
+  # Tournament scores
+  tournament_score_pre_remediation: 0.9125
+  tournament_verdict_pre_remediation: "REVISE"
+  current_score: 0.9355
+  current_verdict: "PASS"
+  iteration: 2  # Phase 1 C3 = iteration 1, Phase 4 C4 = iteration 2
+  post_remediation_dimension_scores:
+    completeness: 0.93
+    internal_consistency: 0.94
+    methodological_rigor: 0.92
+    evidence_quality: 0.95
+    actionability: 0.94
+    traceability: 0.94
 
 # =============================================================================
 # CHECKPOINTS
@@ -791,26 +816,28 @@ checkpoints:
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 3
+    phases_complete: 5
     phases_total: 5
-    phases_percent: 70
+    phases_percent: 100
     barriers_complete: 3
     barriers_total: 3
     barriers_percent: 100
-    agents_executed: 14  # 6 (P1) + 6 (P2) + 2 (P3)
+    agents_executed: 19  # 6 (P1) + 6 (P2) + 2 (P3) + 3 (P4) + 2 (P5)
     agents_total: 19
-    agents_percent: 74
-    artifacts_created: 14
+    agents_percent: 100
+    artifacts_created: 22
     artifacts_total: 22
-    artifacts_percent: 64
+    artifacts_percent: 100
 
   quality:
-    agent_success_rate: 100  # 14/14 agents succeeded
+    agent_success_rate: 100  # 19/19 agents succeeded
     barrier_validation_pass_rate: 100  # 3/3 barriers passed
     checkpoint_recovery_tested: false
     phase_1_score: 0.927
-    tournament_score: null
-    tournament_iteration: 0
+    tournament_score_pre_remediation: 0.9125
+    tournament_score_post_remediation: 0.9355
+    tournament_verdict: "PASS"
+    tournament_iteration: 2
 
   timing:
     workflow_started: "2026-02-17"
@@ -851,30 +878,17 @@ issues:
 # NEXT ACTIONS
 # =============================================================================
 next_actions:
-  immediate:
-    - action: "Complete Phase 3: fix-creator-task005 creating tests/hooks/test_hook_schema_compliance.py"
-      agents: ["fix-creator-task005"]
-      execution_mode: "SEQUENTIAL"
-    - action: "Validate Phase 3: Run full test suite including new schema compliance tests"
-      agents: ["fix-validator-task005"]
-      depends_on: "fix-creator-task005 complete"
-
-  subsequent:
-    - action: "Check barrier-3 gate: All tests pass, full suite green"
-      depends_on: "Phase 3 complete"
-    - action: "Execute Phase 4: C4 tournament review (all 10 strategies via /adversary skill)"
-      depends_on: "Barrier 3 complete"
-    - action: "Phase 5: Revision if needed, then BUG-002 closure"
-      depends_on: "Phase 4 complete"
+  immediate: []  # Workflow COMPLETE
+  subsequent: []  # No further actions
 
 # =============================================================================
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-003"
-  current_state: "Phases 1-3 COMPLETE. All 3 barriers PASSED. 3159 tests pass. Phase 4 (C4 Tournament) READY."
-  next_step: "Execute Phase 4: C4 tournament review with all 10 adversarial strategies via /adversary skill"
-  overall_progress: "70%"
+  last_checkpoint: "CP-005"
+  current_state: "WORKFLOW COMPLETE. All 5 phases COMPLETE. All 3 barriers PASSED. 3195 tests pass. C4 tournament PASS (0.9355)."
+  next_step: "None — BUG-002 closed"
+  overall_progress: "100%"
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"           # Strategic context
