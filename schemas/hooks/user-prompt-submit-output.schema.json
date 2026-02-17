@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/user-prompt-submit-output.schema.json",
+  "title": "UserPromptSubmit Hook Output Schema",
+  "description": "Output schema for the UserPromptSubmit hook event. Uses top-level 'decision' field to block prompt processing. hookSpecificOutput.additionalContext injects context into Claude's context window (used for L2 quality rule reinforcement). Plain non-JSON text on stdout is also added as context.",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "UserPromptSubmit Hook APIDOC"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "decision": {
+      "type": "string",
+      "enum": ["block"],
+      "description": "Set to 'block' to prevent prompt processing and erase the prompt from context. Omit to allow the prompt."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Explanation shown to the user when decision is 'block'. NOT added to Claude's context."
+    },
+    "hookSpecificOutput": {
+      "type": "object",
+      "description": "Event-specific output for UserPromptSubmit. Used to inject context into Claude's context window.",
+      "required": ["hookEventName"],
+      "properties": {
+        "hookEventName": {
+          "type": "string",
+          "const": "UserPromptSubmit",
+          "description": "Event identifier. Must be 'UserPromptSubmit'."
+        },
+        "additionalContext": {
+          "type": "string",
+          "description": "Context string added to Claude's context window. Used for L2 per-prompt quality reinforcement injection."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

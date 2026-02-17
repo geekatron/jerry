@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python
 """
 Pre-Tool Use Hook - Security Guardrails
 
@@ -22,6 +22,7 @@ Exit Codes:
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -125,12 +126,12 @@ def check_file_write(tool_input: dict[str, Any]) -> tuple[bool, str]:
     """Check if a file write operation is safe."""
     file_path = tool_input.get("file_path", "")
 
-    # Expand home directory
-    expanded_path = os.path.expanduser(file_path)
+    # Expand home directory and normalize path to prevent traversal bypass (RT-003)
+    expanded_path = os.path.normpath(os.path.expanduser(file_path))
 
     # Check against blocked paths (case-insensitive on Windows)
     for blocked in BLOCKED_WRITE_PATHS:
-        blocked_expanded = os.path.expanduser(blocked)
+        blocked_expanded = os.path.normpath(os.path.expanduser(blocked))
         if sys.platform == "win32":
             if os.path.normcase(expanded_path).startswith(os.path.normcase(blocked_expanded)):
                 return False, f"Writing to {blocked} is blocked for security"
@@ -165,6 +166,17 @@ def check_bash_command(tool_input: dict[str, Any]) -> tuple[bool, str]:
         or "$(cd " in command
     ):
         return False, "cd command blocked: Use absolute paths instead of changing directories"
+
+    # Check for dangerous rm commands with flag variations (RT-004)
+    # Catches: rm -rf /, rm -r -f /, rm --recursive --force /, rm -fr /, etc.
+    rm_match = re.search(r"\brm\s+(.*)", cmd_stripped)
+    if rm_match:
+        rm_args = rm_match.group(1)
+        has_recursive = bool(re.search(r"(?:^|\s)-[a-zA-Z]*r|--recursive", rm_args))
+        has_force = bool(re.search(r"(?:^|\s)-[a-zA-Z]*f|--force", rm_args))
+        targets_root = bool(re.search(r"(?:^|\s)[/~]", rm_args))
+        if has_recursive and has_force and targets_root:
+            return False, "Command contains dangerous rm pattern targeting root or home"
 
     # Check for dangerous commands
     for dangerous in DANGEROUS_COMMANDS:
@@ -247,6 +259,30 @@ def check_patterns(tool_name: str, tool_input: dict[str, Any]) -> tuple[str, str
         return "approve", "", []
 
 
+def make_decision(decision: str, reason: str = "", **extra) -> str:
+    """Build a PreToolUse hook output JSON string.
+
+    Args:
+        decision: One of "allow", "deny", or "ask".
+        reason: Optional human-readable reason for the decision.
+        **extra: Additional fields to merge into hookSpecificOutput.
+
+    Returns:
+        JSON string conforming to the PreToolUse hook output schema.
+    """
+    output: dict[str, Any] = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": decision,
+        }
+    }
+    if reason:
+        output["hookSpecificOutput"]["permissionDecisionReason"] = reason
+    if extra:
+        output["hookSpecificOutput"].update(extra)
+    return json.dumps(output)
+
+
 def main() -> int:
     """Main hook entry point."""
     try:
@@ -272,7 +308,7 @@ def main() -> int:
 
         # If rule-based check blocks, return immediately
         if not allowed:
-            print(json.dumps({"decision": "block", "reason": reason}))
+            print(make_decision("deny", reason))
             return 0
 
         # =================================================================
@@ -282,11 +318,9 @@ def main() -> int:
 
         # Handle pattern validation result
         if pattern_decision == "block":
-            print(
-                json.dumps(
-                    {"decision": "block", "reason": pattern_reason, "matches": pattern_matches}
-                )
-            )
+            if pattern_matches:
+                print(json.dumps({"matches": pattern_matches}), file=sys.stderr)
+            print(make_decision("deny", pattern_reason))
             return 0
 
         if pattern_decision == "warn":
@@ -298,11 +332,9 @@ def main() -> int:
 
         if pattern_decision == "ask":
             # Ask user for confirmation
-            print(
-                json.dumps(
-                    {"decision": "ask", "reason": pattern_reason, "matches": pattern_matches}
-                )
-            )
+            if pattern_matches:
+                print(json.dumps({"matches": pattern_matches}), file=sys.stderr)
+            print(make_decision("ask", pattern_reason))
             return 0
 
         # =================================================================
@@ -333,7 +365,7 @@ def main() -> int:
                     )
 
                 if decision.action == "block":
-                    print(json.dumps({"decision": "block", "reason": decision.reason}))
+                    print(make_decision("deny", decision.reason))
                     return 0
 
                 if decision.action == "warn":
@@ -362,14 +394,20 @@ def main() -> int:
         # =================================================================
         # PHASE 4: Approve if all checks pass
         # =================================================================
-        print(json.dumps({"decision": "approve"}))
+        print(make_decision("allow"))
         return 0
 
     except json.JSONDecodeError as e:
-        print(json.dumps({"decision": "block", "reason": f"Hook error: Invalid JSON input - {e}"}))
+        print(
+            json.dumps({"error": f"Hook error: Invalid JSON input - {e}"}),
+            file=sys.stderr,
+        )
         return 2
     except Exception as e:
-        print(json.dumps({"decision": "block", "reason": f"Hook error: {e}"}))
+        print(
+            json.dumps({"error": f"Hook error: {e}"}),
+            file=sys.stderr,
+        )
         return 2
 
 

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/session-start-output.schema.json",
+  "title": "SessionStart Hook Output Schema",
+  "description": "Output schema for the SessionStart hook event. SessionStart cannot block session start; it is used for injecting startup context into Claude's context window via hookSpecificOutput.additionalContext. Plain text stdout is also added as context visible to Claude.",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "SessionStart Hook Decision Control Output"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "hookSpecificOutput": {
+      "type": "object",
+      "description": "Event-specific output for SessionStart. Used to inject context into Claude's context window.",
+      "required": ["hookEventName"],
+      "properties": {
+        "hookEventName": {
+          "type": "string",
+          "const": "SessionStart",
+          "description": "Event identifier. Must be 'SessionStart'."
+        },
+        "additionalContext": {
+          "type": "string",
+          "description": "Context string added to Claude's context window. Values from multiple hooks are concatenated."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/subagent-stop-output.schema.json",
+  "title": "SubagentStop Hook Output Schema",
+  "description": "Output schema for the SubagentStop hook event. Uses ONLY top-level 'decision' and 'reason' fields. Does NOT use hookSpecificOutput or hookEventName. Set decision to 'block' with a reason to prevent the subagent from stopping. Omit decision to allow the subagent to stop. Known bug (Issue #20221): prompt-based SubagentStop hooks may not actually prevent termination.",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "SubagentStop decision control",
+    "confirmedBy": "GitHub Issue #15485 (closed 2026-01-23)",
+    "knownBug": "GitHub Issue #20221 (OPEN) -- prompt-based SubagentStop hooks do not prevent termination"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "decision": {
+      "type": "string",
+      "enum": ["block"],
+      "description": "Set to 'block' to prevent the subagent from stopping. Omit to allow the subagent to stop."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Tells Claude why the subagent should continue. REQUIRED when decision is 'block'."
+    }
+  },
+  "additionalProperties": false,
+  "if": {
+    "required": ["decision"],
+    "properties": {
+      "decision": { "const": "block" }
+    }
+  },
+  "then": {
+    "required": ["decision", "reason"]
+  }
+}

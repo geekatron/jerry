@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/stop-output.schema.json",
+  "title": "Stop Hook Output Schema",
+  "description": "Output schema for the Stop hook event. Uses ONLY top-level 'decision' and 'reason' fields. Does NOT use hookSpecificOutput or hookEventName. Set decision to 'block' with a reason to prevent Claude from stopping. Omit decision to allow Claude to stop. IMPORTANT: Check stop_hook_active in the input to avoid infinite loops.",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "Stop decision control",
+    "confirmedBy": "GitHub Issue #15485 (closed 2026-01-23)"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "decision": {
+      "type": "string",
+      "enum": ["block"],
+      "description": "Set to 'block' to prevent Claude from stopping and continue the conversation. Omit to allow Claude to stop."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Tells Claude why it should continue. REQUIRED when decision is 'block'."
+    }
+  },
+  "additionalProperties": false,
+  "if": {
+    "required": ["decision"],
+    "properties": {
+      "decision": { "const": "block" }
+    }
+  },
+  "then": {
+    "required": ["decision", "reason"]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/hook-output-base.schema.json",
+  "title": "Claude Code Hook Output Base Schema",
+  "description": "Universal fields shared by ALL Claude Code hook event outputs. These fields are recognized across all hook event types when output as JSON on stdout (exit code 0). The 'continue' field takes precedence over any event-specific decision fields.",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "Universal Fields"
+  },
+  "type": "object",
+  "properties": {
+    "continue": {
+      "type": "boolean",
+      "description": "If false, Claude stops ALL processing after the hook runs. Takes precedence over any event-specific decision fields. Default: true.",
+      "default": true
+    },
+    "stopReason": {
+      "type": "string",
+      "description": "Message shown to the user when 'continue' is false. NOT shown to Claude."
+    },
+    "suppressOutput": {
+      "type": "boolean",
+      "description": "If true, hides stdout from verbose mode output. Default: false.",
+      "default": false
+    },
+    "systemMessage": {
+      "type": "string",
+      "description": "Warning message shown to the user. For async hooks, delivered on the next conversation turn."
+    }
+  },
+  "additionalProperties": true
+}
