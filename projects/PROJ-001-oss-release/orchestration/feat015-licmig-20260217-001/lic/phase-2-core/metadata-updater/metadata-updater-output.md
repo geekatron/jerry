@@ -1,5 +1,17 @@
 # Metadata Updater Output — EN-933
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What changes were made |
+| [Changes Made](#changes-made) | pyproject.toml field changes |
+| [Other MIT References Found](#other-mit-references-found) | Remaining MIT refs for downstream |
+| [Verification](#verification) | uv sync result |
+| [Verdict](#verdict) | Overall outcome |
+
+---
+
 ## Summary
 
 Updated `pyproject.toml` to reflect Apache 2.0 licensing by changing the SPDX license identifier and the PyPI classifier. Searched all `.md` files for remaining MIT license references and catalogued them. Verified that `uv sync` completes successfully after the changes.

@@ -83,8 +83,8 @@ pipelines:
     short_alias: "lic"
     skill_source: "orchestration"
 
-    status: "QG2_IN_PROGRESS"
-    current_phase: 2
+    status: "PHASE_3_READY"
+    current_phase: 3
     total_phases: 4
     progress_percent: 50
 
@@ -195,8 +195,8 @@ pipelines:
       - id: 3
         name: "Source File SPDX Header Notices"
         path_id: "phase-3-headers"
-        status: "BLOCKED"
-        blocked_by: "qg-2"
+        status: "READY"
+        blocked_by: null  # Unblocked by QG-2 PASS
         enablers: ["EN-932"]
         execution_mode: "SEQUENTIAL"
         effort_points: 5
@@ -206,7 +206,7 @@ pipelines:
 
         header_template: |
           # SPDX-License-Identifier: Apache-2.0
-          # Copyright (c) 2026 Jerry Framework Contributors
+          # Copyright (c) 2026 Adam Nowak
 
         header_scope:
           - "src/**/*.py"
@@ -219,7 +219,7 @@ pipelines:
         agents:
           - id: "header-applicator"
             name: "SPDX Header Applicator"
-            status: "BLOCKED"
+            status: "READY"
             enabler: "EN-932"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-3-headers/header-applicator/header-applicator-output.md"
             description: >
@@ -229,7 +229,7 @@ pipelines:
 
           - id: "header-verifier"
             name: "SPDX Header Verifier"
-            status: "BLOCKED"
+            status: "READY"
             enabler: "EN-932"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-3-headers/header-verifier/header-verifier-output.md"
             depends_on: "header-applicator"
@@ -350,27 +350,48 @@ quality_gates:
     id: "qg-2"
     name: "Core License Changes Quality Gate"
     after_phase: 2
-    status: "PENDING"
+    status: "PASS"
     deliverables_scored:
       - "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/license-replacer/license-replacer-output.md"
       - "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/notice-creator/notice-creator-output.md"
       - "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/metadata-updater/metadata-updater-output.md"
     threshold: 0.92
     max_iterations: 3
-    current_iteration: 0
+    current_iteration: 2
     required_strategies: ["S-014", "S-007", "S-002"]
     optional_strategies: ["S-003", "S-010"]
     agents_invoked: ["adv-scorer", "adv-executor"]
-    score: null
+    iteration_history:
+      - iteration: 1
+        score: 0.9595
+        verdict: "REVISE"
+        strategies:
+          S-014: { score: 0.9595, verdict: "PASS" }
+          S-007: { score: 0.91, verdict: "REVISE", major_findings: 1, minor_findings: 2 }
+          S-002: { estimated_score: 0.909, verdict: "REVISE", critical_findings: 1, major_findings: 3, minor_findings: 3 }
+        primary_defect: "DA-001 copyright holder inconsistency (NOTICE vs header_template). CC-001 H-23 nav table missing. DA-002 README MIT split-license state."
+        revisions_applied:
+          - "CC-001: Added nav table to metadata-updater-output.md"
+          - "DA-001: Aligned Phase 3 header_template to 'Adam Nowak' (matches NOTICE)"
+          - "DA-001: Updated ORCHESTRATION_PLAN.md header template to match"
+      - iteration: 2
+        score: 0.9505
+        verdict: "PASS"
+        strategies:
+          S-014: { score: 0.9505, verdict: "PASS" }
+          S-007: { score: 0.96, verdict: "PASS", major_findings: 0, minor_findings: 2 }
+          S-002: { estimated_score: 0.937, verdict: "PASS", critical_findings: 0, major_findings: 0, minor_findings: 0, adequately_justified: 6 }
+        primary_defect: null
+    score: 0.9505
     score_dimensions:
-      completeness: null      # weight: 0.20 — All 3 enablers complete?
-      internal_consistency: null  # weight: 0.20 — License text canonical and unmodified?
-      methodological_rigor: null  # weight: 0.20 — NOTICE format per Section 4(d)?
-      evidence_quality: null  # weight: 0.15 — Apache 2.0 text from official source?
-      actionability: null     # weight: 0.15 — Any gaps have clear resolution?
-      traceability: null      # weight: 0.10 — Changes traceable to EN-930/931/933?
+      completeness: 0.95      # weight: 0.20 — All 3 enablers complete. DA-002 README refs acknowledged (branch isolation).
+      internal_consistency: 0.96  # weight: 0.20 — DA-001 resolved. Copyright chain consistent across NOTICE/YAML/PLAN.
+      methodological_rigor: 0.95  # weight: 0.20 — DA-003 PEP 639 justified (hatchling compat). DA-004 NOTICE minimal format per ASF convention.
+      evidence_quality: 0.96  # weight: 0.15 — DA-001 3-location cross-check. DA-005 post-push verification acknowledged.
+      actionability: 0.95     # weight: 0.15 — Phase 3 unblocked. EN-933 handoff table enables downstream.
+      traceability: 0.92      # weight: 0.10 — Copyright identity traceable. QG-2 audit trail complete.
     artifact: "orchestration/feat015-licmig-20260217-001/lic/quality-gates/qg-2/gate-result.md"
-    completed_at: null
+    completed_at: "2026-02-17T00:00:00Z"
 
   qg-3:
     id: "qg-3"
@@ -430,7 +451,7 @@ quality_gates:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 3
+  current_group: 5
   groups:
 
     - id: 1
@@ -456,14 +477,14 @@ execution_queue:
     - id: 4
       name: "Quality Gate 2"
       execution_mode: "SEQUENTIAL"
-      status: "IN_PROGRESS"
+      status: "COMPLETE"
       blocked_by: "group-3"
       tasks: ["run-adv-scorer-qg2", "run-adv-executor-s007-qg2", "run-adv-executor-s002-qg2"]
 
     - id: 5
       name: "Phase 3 — Source File Headers"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
+      status: "READY"
       blocked_by: "group-4"
       agents: ["header-applicator", "header-verifier"]
 
@@ -492,25 +513,30 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-001"
+  latest_id: "CP-002"
   entries:
     - id: "CP-001"
       timestamp: "2026-02-17T00:00:00Z"
       trigger: "GATE_PASS"
       description: "QG-1 PASS (0.941) — Phase 1 dependency audit complete, Phase 2 unblocked"
       recovery_point: "phase-2-start"
+    - id: "CP-002"
+      timestamp: "2026-02-17T00:00:00Z"
+      trigger: "GATE_PASS"
+      description: "QG-2 PASS (0.9505) — Phase 2 core license changes complete, Phase 3 unblocked"
+      recovery_point: "phase-3-start"
 
 # =============================================================================
 # METRICS
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 1
+    phases_complete: 2
     phases_total: 4
-    phases_percent: 25
-    gates_passed: 1
+    phases_percent: 50
+    gates_passed: 2
     gates_total: 4
-    gates_percent: 25
+    gates_percent: 50
     agents_executed: 4  # audit-executor + license-replacer + notice-creator + metadata-updater
     agents_total: 8
     agents_percent: 50
@@ -525,13 +551,13 @@ metrics:
 
   quality:
     qg_1_score: 0.941  # Iteration 3: PASS (0.825 -> 0.916 -> 0.941)
-    qg_2_score: null
+    qg_2_score: 0.9505  # Iteration 2: PASS (0.9595 REVISE -> 0.9505 PASS)
     qg_3_score: null
     qg_final_score: null
     gates_passed_first_attempt: 0
-    gates_requiring_revision: 1  # QG-1 required 3 iterations
+    gates_requiring_revision: 2  # QG-1 required 3 iterations, QG-2 required 2 iterations
     gates_escalated_to_user: 0
-    overall_quality_status: "QG1_PASS"
+    overall_quality_status: "QG2_PASS"
 
   timing:
     workflow_started: "2026-02-17T00:00:00Z"
@@ -559,23 +585,16 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute Phase 2 — Core License Changes (EN-930, EN-931, EN-933)"
-      agents: ["license-replacer", "notice-creator", "metadata-updater"]
-      execution_mode: "PARALLEL"
+    - action: "Execute Phase 3 — Source File SPDX Headers (EN-932)"
+      agents: ["header-applicator", "header-verifier"]
+      execution_mode: "SEQUENTIAL"
       instructions: >
-        Launch 3 agents in parallel:
-        1. license-replacer: Replace LICENSE file with canonical Apache 2.0 text
-        2. notice-creator: Create NOTICE file per Apache 2.0 Section 4(d)
-        3. metadata-updater: Update pyproject.toml license to "Apache-2.0"
+        Apply SPDX header (# SPDX-License-Identifier: Apache-2.0 / # Copyright (c) 2026 Adam Nowak)
+        to ALL .py files in src/, scripts/, hooks/, tests/. Handle shebangs correctly (header AFTER
+        shebang). Then run header-verifier for 100% coverage scan. Run uv run pytest to confirm
+        no regressions.
 
   subsequent:
-
-    - action: "Run Quality Gate 2 via /adversary skill"
-      depends_on: "Phase 2 complete"
-
-    - action: "Execute Phase 3 — Source File SPDX Headers (EN-932)"
-      depends_on: "QG-2 PASS"
-      agents: ["header-applicator", "header-verifier"]
 
     - action: "Run Quality Gate 3 via /adversary skill"
       depends_on: "Phase 3 complete"
@@ -594,9 +613,9 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-001"
-  current_state: "Phase 2 COMPLETE. All 3 agents PASS (EN-930, EN-931, EN-933). QG-2 IN_PROGRESS."
-  next_step: "Run QG-2 adversarial review (S-014, S-007, S-002) on Phase 2 deliverables. If PASS: proceed to Phase 3 (EN-932 source headers)."
+  last_checkpoint: "CP-002"
+  current_state: "QG-2 PASS (iteration 2: S-014 0.9505 PASS, S-007 0.96 PASS, S-002 ~0.937 PASS). Phase 2 complete. Phase 3 unblocked."
+  next_step: "Execute Phase 3 (EN-932): Launch header-applicator agent to add SPDX headers to all .py files, then header-verifier for 100% coverage verification. Run uv run pytest to confirm no regressions."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/ORCHESTRATION_PLAN.md"   # Strategic context

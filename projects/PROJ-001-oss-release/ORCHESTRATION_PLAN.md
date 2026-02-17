@@ -220,7 +220,7 @@ FEAT-015 LICENSE MIGRATION — Sequential Pipeline with Quality Gates
 **Header Template:**
 ```python
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 Jerry Framework Contributors
+# Copyright (c) 2026 Adam Nowak
 ```
 
 **Special Cases:**
