@@ -60,5 +60,10 @@ htmlcov/
 
 # Jerry local data (locks, sessions)
 .jerry/local/
-projects/*/.jerry/
 logs/hook-errors.log
+
+# Jerry project workspaces (local working files, except shipped projects)
+projects/*
+!projects/README.md
+!projects/PROJ-001-oss-release/
+!projects/PROJ-005-jerry-process-improvements/
