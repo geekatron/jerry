@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Quality gate tests using ps-critic for hybrid pipeline output.
 
 These tests validate that the hybrid pipeline output meets quality thresholds:

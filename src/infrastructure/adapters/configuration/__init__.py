@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Configuration adapters for the Jerry Framework.
 
 Provides adapters for loading configuration from various sources:

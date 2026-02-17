@@ -3,7 +3,7 @@
 > A Claude Code plugin for behavior and workflow guardrails with knowledge accrual.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blue.svg)](https://code.claude.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## What is Jerry?
 
@@ -143,4 +143,4 @@ uv run pytest
 
 ## License
 
-MIT
+Apache-2.0 — See [LICENSE](LICENSE) and [NOTICE](NOTICE) for details.

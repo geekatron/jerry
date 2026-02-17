@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 GetWorkItemQuery - Query to retrieve a single work item by ID.
 

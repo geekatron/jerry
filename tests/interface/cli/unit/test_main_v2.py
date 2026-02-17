@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Unit tests for Jerry CLI v0.1.0 main module routing.
 
 Test Categories:

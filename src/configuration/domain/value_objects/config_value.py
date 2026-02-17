@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 ConfigValue - Resolved configuration value with provenance and type coercion.
 
@@ -207,7 +210,7 @@ class ConfigValue:
         if self.value is None:
             return default
 
-        if isinstance(self.value, (int, float)) and not isinstance(self.value, bool):
+        if isinstance(self.value, int | float) and not isinstance(self.value, bool):
             return float(self.value)
 
         try:

@@ -1,12 +1,12 @@
 # EPIC-001: OSS Release Preparation
 
 > **Type:** epic
-> **Status:** done
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-10
-> **Due:** —
-> **Completed:** 2026-02-16
+> **Due:** ---
+> **Completed:** ---
 > **Parent:** —
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -59,12 +59,14 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-001 | Fix CI Build Failures | done | high | 100% |
 | FEAT-002 | Research and Preparation | done | high | 100% |
 | FEAT-003 | CLAUDE.md Optimization | done | critical | 100% |
+| FEAT-015 | License Migration (MIT to Apache 2.0) | pending | high | 0% |
 
 ### Feature Links
 
 - [FEAT-001: Fix CI Build Failures](./FEAT-001-fix-ci-build-failures/FEAT-001-fix-ci-build-failures.md)
 - [FEAT-002: Research and Preparation](./FEAT-002-research-and-preparation/FEAT-002-research-and-preparation.md)
 - [FEAT-003: CLAUDE.md Optimization](./FEAT-003-claude-md-optimization/FEAT-003-claude-md-optimization.md)
+- [FEAT-015: License Migration (MIT to Apache 2.0)](./FEAT-015-license-migration/FEAT-015-license-migration.md)
 
 ---
 
@@ -76,12 +78,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [####################] 100% (3/3 completed)            |
-| Enablers:  [####################] 100% (20/20 completed)          |
+| Features:  [###############.....] 75% (3/4 completed)             |
+| Enablers:  [###############.....] 76% (19/25 completed)           |
 | Bugs:      [####################] 100% (15/15 completed)          |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [####################] 100%                            |
+| Overall:   [################....] ~83%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -89,12 +91,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 3 |
+| **Total Features** | 4 |
 | **Completed Features** | 3 (FEAT-001, FEAT-002, FEAT-003) |
-| **In Progress Features** | 0 |
-| **Feature Completion %** | 100% |
-| **Total Enablers** | 20 (4 FEAT-001 + 9 FEAT-002 + 7 FEAT-003) |
-| **Completed Enablers** | 20 (4 FEAT-001 + 9 FEAT-002 + 7 FEAT-003) |
+| **Pending Features** | 1 (FEAT-015) |
+| **Feature Completion %** | 75% |
+| **Total Enablers** | 25 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015) |
+| **Completed Enablers** | 19 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
 
@@ -125,3 +127,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-12 | Claude | done | EN-206 complete (context distribution: .context/ restructure, bootstrap script, 22 integration tests). EN-204 complete (validation: 80 lines, 13/13 pointers, 2540 tests pass). EN-205 complete (docs: BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated). FEAT-003 100%. All 3 features, 20 enablers, 15 bugs complete. EPIC-001 closed. |
 | 2026-02-12 | Claude | in_progress | **REOPENED**: Premature closure. All EPIC-001 deliverables bypassed quality framework: no adversarial feedback loops, no quality scoring (>=0.92 target), no creator→critic→revision cycles, no multi-platform testing (Windows/Linux). Closure was invalid per Jerry quality standards. All deliverables require retroactive quality review under EPIC-002. |
 | 2026-02-16 | Claude | done | EPIC-001 re-closed. All 3 features validated by FEAT-006 retroactive quality review (EN-501: 0.949, EN-502: 0.951). Verification report: PROJ-001-epic001-verification-2026-02-16.md |
+| 2026-02-17 | Claude | in_progress | **Reopened.** FEAT-015 created: License Migration (MIT to Apache 2.0). 6 enablers (EN-930–935), 14 effort points. Licensing is in PLAN.md scope with unchecked criterion. EPIC-001 now 4 features (3 done, 1 pending). |

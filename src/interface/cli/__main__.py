@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """CLI Package Entry Point.
 
 This module enables running the CLI package as a Python module:

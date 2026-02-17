@@ -9,7 +9,7 @@ PURPOSE: Fix CI test failures caused by untracked empty directories in PROJ-002-
 -->
 
 > **Type:** bug
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
@@ -133,9 +133,9 @@ Add `.gitkeep` files to ensure empty category directories are tracked by git. Ma
 
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
-| [TASK-001](./tasks/TASK-001-add-gitkeep-files.md) | Add .gitkeep files to PROJ-002 category directories | done | 1 | Claude |
-| [TASK-002](./tasks/TASK-002-verify-tests-locally.md) | Verify failing tests pass locally | done | 1 | Claude |
-| [TASK-003](./tasks/TASK-003-verify-ci-passes.md) | Push and verify CI passes | in_progress | 1 | Claude |
+| [TASK-001](./tasks/TASK-001-add-gitkeep-files.md) | Add .gitkeep files to PROJ-002 category directories | completed | 1 | Claude |
+| [TASK-002](./tasks/TASK-002-verify-tests-locally.md) | Verify failing tests pass locally | completed | 1 | Claude |
+| [TASK-003](./tasks/TASK-003-verify-ci-passes.md) | Push and verify CI passes | completed | 1 | Claude |
 
 ---
 

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Tests for subagent_stop.py hook.
 
 Comprehensive test suite covering:

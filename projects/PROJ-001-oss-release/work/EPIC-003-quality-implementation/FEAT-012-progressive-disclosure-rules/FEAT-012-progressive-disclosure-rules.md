@@ -9,12 +9,12 @@ PURPOSE: Restructure .context/rules/ into tiered progressive disclosure architec
 -->
 
 > **Type:** feature
-> **Status:** completed
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-16
-> **Due:** —
-> **Completed:** 2026-02-17
+> **Due:** ---
+> **Completed:** ---
 > **Parent:** EPIC-003
 > **Owner:** —
 > **Target Sprint:** —

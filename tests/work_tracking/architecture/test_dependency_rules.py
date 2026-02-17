@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Architecture tests for dependency rules.
 
 Enforces specific dependency rules within the work_tracking domain

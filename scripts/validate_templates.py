@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Validate adversarial strategy templates against TEMPLATE-FORMAT.md conformance.
 
 This script validates all 10 adversarial strategy templates in .context/templates/adversarial/

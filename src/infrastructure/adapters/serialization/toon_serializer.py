@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 ToonSerializer - Token-Oriented Object Notation Serializer.
 
@@ -197,7 +200,7 @@ class ToonSerializer:
         for item in data:
             if set(item.keys()) != first_keys:
                 return False
-            if not all(isinstance(v, (str, int, float, bool, type(None))) for v in item.values()):
+            if not all(isinstance(v, str | int | float | bool | type(None)) for v in item.values()):
                 return False
 
         return True
@@ -244,7 +247,7 @@ class ToonSerializer:
             return "null"
         if isinstance(value, bool):
             return "true" if value else "false"
-        if isinstance(value, (int, float)):
+        if isinstance(value, int | float):
             return str(value)
         if isinstance(value, str):
             return self._quote_if_needed(value)
@@ -260,7 +263,7 @@ class ToonSerializer:
             return self._encode_tabular_array(arr, depth)
 
         # Check for primitive array
-        if all(isinstance(x, (str, int, float, bool, type(None))) for x in arr):
+        if all(isinstance(x, str | int | float | bool | type(None)) for x in arr):
             values = self._delimiter.join(self._encode_value(x) for x in arr)
             return f"[{len(arr)}]: {values}"
 
@@ -495,7 +498,7 @@ class ToonSerializer:
                 return f"{indent}(empty)"
             lines = []
             for key, value in data.items():
-                if isinstance(value, (dict, list)):
+                if isinstance(value, dict | list):
                     lines.append(f"{indent}{key}:")
                     lines.append(self._encode_human(value, depth + 1))
                 else:

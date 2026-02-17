@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Integration tests for model profile CLI usage.
 
 Tests the end-to-end model profile selection via CLI arguments,

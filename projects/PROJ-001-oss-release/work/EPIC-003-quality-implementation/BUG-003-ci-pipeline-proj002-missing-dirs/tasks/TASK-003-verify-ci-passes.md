@@ -1,7 +1,7 @@
 # TASK-003: Push and Verify CI Passes
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Parent:** BUG-003
 > **Owner:** Claude
@@ -27,10 +27,10 @@ Push the fix commit and verify both `Test pip` CI jobs pass with zero test failu
 
 ### Acceptance Criteria
 
-- [ ] Commit pushed to `feat/proj-001-oss-release-cont`
-- [ ] `Test pip (Python 3.12, ubuntu-latest)` passes
-- [ ] `Test pip (Python 3.13, macos-latest)` passes
-- [ ] All other CI jobs continue passing
+- [x] Commit pushed to `feat/proj-001-oss-release-cont`
+- [x] `Test pip (Python 3.12, ubuntu-latest)` passes
+- [x] `Test pip (Python 3.13, macos-latest)` passes
+- [x] All other CI jobs continue passing
 
 ---
 
@@ -39,3 +39,4 @@ Push the fix commit and verify both `Test pip` CI jobs pass with zero test failu
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-17 | Created | Initial creation |
+| 2026-02-17 | completed | CI passed — PR #17 merged, all jobs green |

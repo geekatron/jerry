@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """End-to-end Python pipeline integration tests.
 
 Tests validate the complete Python layer pipeline:

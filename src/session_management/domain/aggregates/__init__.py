@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Session Management Domain Aggregates.
 
 This module contains the aggregate roots for the session management domain.

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """End-to-end tests for transcript model selection.
 
 Tests the full pipeline from CLI invocation through to model configuration

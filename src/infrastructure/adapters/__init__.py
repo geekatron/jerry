@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Infrastructure adapters for repository pattern.
 
 Provides concrete implementations of domain repository ports.

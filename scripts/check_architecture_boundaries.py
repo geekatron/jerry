@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 Architecture Boundary Validation Script (EN-704, L5 Post-Hoc Verification).
 

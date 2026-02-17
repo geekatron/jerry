@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Session Domain Events - Facts about session lifecycle.
 
 Domain events for the Session aggregate. These are immutable records

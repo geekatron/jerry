@@ -471,4 +471,4 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\plugins\jerry"
 
 ## License
 
-Jerry Framework is open source under the MIT License.
+Jerry Framework is open source under the [Apache License 2.0](../LICENSE).

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Session Aggregate - Event-sourced aggregate for work session tracking.
 
 The Session aggregate represents a work context for an agent. It tracks

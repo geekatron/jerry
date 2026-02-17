@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """CLI Parser with Namespace Structure.
 
 This module provides the argument parser for the Jerry CLI with

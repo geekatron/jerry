@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """LLM integration tests (slow, expensive).
 
 This test package contains tests that invoke LLM agents:

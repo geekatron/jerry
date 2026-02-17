@@ -1,4 +1,8 @@
 #!/usr/bin/env -S uv run python
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Validate JSON Schema files for Claude Code hook outputs.
 
 Runs 8 validation tests:
