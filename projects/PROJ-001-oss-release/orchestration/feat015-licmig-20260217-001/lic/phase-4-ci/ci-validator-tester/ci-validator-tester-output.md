@@ -180,3 +180,5 @@ SPDX license header validation...........................................Passed
 **PASS**
 
 All 5 tests passed. All 5 acceptance criteria for EN-935 are satisfied. The CI/pre-commit license header enforcement implementation is validated and ready for integration. No regressions were introduced (3196 tests pass). All temporary test files were cleaned up.
+
+**File Count Note:** Phase 4 validation scans 404 files vs Phase 3's 403 files. The difference is `scripts/check_spdx_headers.py` itself, which was created in Phase 4 and contains its own SPDX header.

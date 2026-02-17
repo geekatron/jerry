@@ -17,6 +17,12 @@ Copyright 2026 Adam Nowak
 - Copyright notice present: YES — "Copyright 2026 Adam Nowak"
 - Third-party attributions: None required (EN-934 dependency audit confirmed no dependencies mandate NOTICE file attribution)
 
+## Verification
+
+- File exists: `NOTICE` at repository root
+- File size: 42 bytes, 2 lines
+- Content matches specification (verified via `cat NOTICE`)
+
 ## Verdict
 
 PASS

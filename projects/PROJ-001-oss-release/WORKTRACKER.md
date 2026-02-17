@@ -116,7 +116,7 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | — | REOPENED: FEAT-015 (License Migration) added. 3/4 features done, 20/26 enablers done. |
+| EPIC-001 | OSS Release Preparation | — | FEAT-015 (License Migration) COMPLETE. 4/4 features done, 26/26 enablers done. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
 | EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/6 features done (FEAT-008/009/010/011), FEAT-012 + FEAT-014 pending. 73% complete. |
 | EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
@@ -125,6 +125,7 @@
 | EPIC-002 | Quality Framework Enforcement | 2026-02-16 | All 4 features (FEAT-004/005/006/013), 24 enablers, 163 effort points, 100% complete. |
 | BUG-002 (EPIC-003) | Hook JSON Schema Validation Failures | 2026-02-17 | 5-phase orchestration: 7 root causes fixed, 8 JSON schemas created, 31 compliance tests + 32 subagent_stop tests + 5 rm variant tests. C4 tournament PASS (0.9355). |
 | BUG-003 (EPIC-003) | CI Pipeline Failures — PROJ-002 Missing Dirs | 2026-02-17 | Added `.gitkeep` to `synthesis/` and `analysis/` in PROJ-002. 3 root causes (empty dirs not git-tracked). 105 project validation tests pass. |
+| FEAT-015 (EPIC-001) | License Migration MIT to Apache 2.0 | 2026-02-17 | 6 enablers (EN-930-935), 14 effort pts. 4-phase orchestration, 4 quality gates PASS (0.941, 0.9505, 0.935, 0.9335). 404 .py files SPDX headers. CI enforcement. |
 
 ---
 

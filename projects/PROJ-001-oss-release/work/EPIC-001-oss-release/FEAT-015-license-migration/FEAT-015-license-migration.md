@@ -9,12 +9,12 @@ PURPOSE: Migrate Jerry Framework license from MIT to Apache 2.0 for OSS release
 -->
 
 > **Type:** feature
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** EPIC-001
 > **Owner:** Adam Nowak
 > **Target Sprint:** ---
@@ -145,6 +145,8 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | 2026-02-17 | Claude | in_progress | Phase 3 COMPLETE. EN-932 done: 403 .py files have SPDX headers (17 shebangs handled). Independent verification PASS. Tests: 3196 passed. QG-3 pending. |
 | 2026-02-17 | Claude | in_progress | QG-3 PASS (0.935, 2 iterations). Iteration 1 REVISE (0.873): shebang roster mismatch, missing version metadata, no criteria cross-ref. Remediated all P1 findings. Iteration 2 PASS: S-014=0.935, S-007=0.96, S-002=ACCEPT. Phase 4 unblocked. |
 | 2026-02-17 | Claude | in_progress | Phase 4 COMPLETE. EN-935 done: scripts/check_spdx_headers.py, pre-commit hook (spdx-license-headers), CI job (license-headers). 5/5 tests pass, 404 files validated. QG-Final pending. |
+| 2026-02-17 | Claude | in_progress | QG-Final PASS (0.9335, 2 iterations). Iter 1 REVISE: MIT refs in README/INSTALLATION, file count gap, thin Phase 2 evidence. Remediated all 5 items. Iter 2 PASS: S-014=0.9335, S-007=0.94, S-002=MARGINAL PASS. |
+| 2026-02-17 | Claude | done | FEAT-015 COMPLETE. All 6 enablers done. All 4 quality gates passed. Workflow feat015-licmig-20260217-001 closed. |
 
 ---
 

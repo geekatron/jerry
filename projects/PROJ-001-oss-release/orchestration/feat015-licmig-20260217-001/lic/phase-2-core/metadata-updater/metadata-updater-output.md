@@ -40,6 +40,16 @@ Note: The ADR references to `MIT` for `webvtt-py` are third-party dependency att
 - `uv sync` result: **PASS** (resolved 68 packages, audited 53 packages, no errors)
 - Remaining MIT references in packaging metadata (`pyproject.toml`): **none**
 
+### Before/After Evidence
+
+**pyproject.toml line 6 (license field):**
+- Before: `license = { text = "MIT" }`
+- After: `license = { text = "Apache-2.0" }`
+
+**pyproject.toml line 22 (classifier):**
+- Before: `"License :: OSI Approved :: MIT License",`
+- After: `"License :: OSI Approved :: Apache Software License",`
+
 ## Verdict
 
 PASS
