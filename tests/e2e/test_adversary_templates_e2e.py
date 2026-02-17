@@ -698,6 +698,7 @@ class TestTemplateValidationScript:
         script_path = PROJECT_ROOT / "scripts" / "validate_templates.py"
         assert script_path.exists(), "scripts/validate_templates.py not found"
 
+    @pytest.mark.subprocess
     def test_validation_script_when_run_then_exits_zero(self):
         """Running validate_templates.py should exit 0 (all templates pass)."""
         import subprocess
@@ -712,6 +713,7 @@ class TestTemplateValidationScript:
             f"validate_templates.py failed with exit code {result.returncode}:\n{result.stderr}"
         )
 
+    @pytest.mark.subprocess
     def test_validation_script_verbose_when_run_then_shows_details(self):
         """Running with --verbose should produce detailed output."""
         import subprocess

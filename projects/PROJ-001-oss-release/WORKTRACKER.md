@@ -59,6 +59,7 @@
 | [BUG-006](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-006-working-with-jerry-lost.md) | Working with Jerry section lost | done | high | EN-202 |
 | [BUG-007](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-007-problem-solving-templates-lost.md) | Problem solving templates lost | done | medium | EN-202 |
 | [BUG-008](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion flow lost | done | medium | EN-202 |
+| [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | in_progress | critical | EPIC-003 |
 
 ---
 
@@ -169,6 +170,7 @@
 | 2026-02-16 | Claude | PROJ-001 full audit (wt-auditor/wt-verifier/wt-visualizer): 14 errors, 11 warnings, 5 info. Corrective actions: EPIC-001 re-closed (done), EPIC-003 reverted to in_progress (FEAT-012 pending, FEAT-007 deferred), FEAT-004/005 ACs checked + Evidence added, FEAT-013 DoD verified + Evidence added, FEAT-002 enabler count fixed (7→8), FEAT-003 broken link fixed. All entity files now have delivery evidence per WTI-006. |
 | 2026-02-16 | Claude | EPIC-004 created (Advanced Adversarial Capabilities, pending, medium priority). FEAT-007 moved from EPIC-003 to EPIC-004 — deferred strategies requiring cross-model LLM infrastructure, not needed for OSS release. |
 | 2026-02-17 | Claude | FEAT-014 created under EPIC-003: Framework Synchronization. 5 enablers (EN-925–929), 21 tasks, 18 effort points. Codebase audit found 15 gaps: incomplete AGENTS.md, missing /adversary rule triggers, truncated skill docs, no adversarial template tests. EPIC-003 now 6 features (4 done, 2 pending). |
+| 2026-02-17 | Claude | BUG-001 created under EPIC-003: PR #13 CI Pipeline Failures. 8 tasks across 3 root causes: (A) 11 uv-dependent tests missing subprocess marker, (B) Windows PowerShell syntax errors in ci.yml, (C) cascading gate/coverage failures. Priority: critical. |
 
 ---
 

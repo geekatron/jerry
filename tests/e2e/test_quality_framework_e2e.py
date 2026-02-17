@@ -265,6 +265,7 @@ class TestHookEnforcementE2E:
         assert stdout_json is not None
         assert stdout_json.get("decision") == "approve"
 
+    @pytest.mark.subprocess
     def test_session_hook_when_executed_then_produces_valid_json(self) -> None:
         """SessionStart hook produces valid JSON output."""
         result = run_session_hook()
@@ -275,6 +276,7 @@ class TestHookEnforcementE2E:
         assert "systemMessage" in data
         assert "hookSpecificOutput" in data
 
+    @pytest.mark.subprocess
     def test_session_hook_when_executed_then_injects_quality_context_xml(
         self,
     ) -> None:
@@ -302,6 +304,7 @@ class TestHookEnforcementE2E:
         additional = stdout_json.get("hookSpecificOutput", {}).get("additionalContext", "")
         assert "quality-reinforcement" in additional
 
+    @pytest.mark.subprocess
     def test_all_hooks_when_run_independently_then_exit_zero(self) -> None:
         """All three hooks exit with code 0 (fail-open) when run independently."""
         # PreToolUse
@@ -427,6 +430,7 @@ class TestRuleComplianceValidation:
 # ===========================================================================
 
 
+@pytest.mark.subprocess
 class TestSessionContextInjection:
     """Tests validating SessionStart hook quality context injection."""
 
@@ -621,6 +625,7 @@ class TestPerformanceBenchmarks:
         assert exit_code == 0
         assert elapsed < 10.0, f"PreToolUse hook took {elapsed:.2f}s, exceeds 10s timeout"
 
+    @pytest.mark.subprocess
     def test_session_hook_when_timed_then_completes_within_60s(self) -> None:
         """SessionStart hook completes within the 60-second timeout."""
         start = time.monotonic()

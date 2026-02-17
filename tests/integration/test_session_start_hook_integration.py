@@ -20,6 +20,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 # Project root for running the hook
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 HOOK_SCRIPT = PROJECT_ROOT / "scripts" / "session_start_hook.py"
@@ -50,6 +52,7 @@ def run_hook(env_overrides: dict[str, str] | None = None) -> subprocess.Complete
     )
 
 
+@pytest.mark.subprocess
 class TestHookOutputFormat:
     """Tests for hook JSON output structure and quality context."""
 

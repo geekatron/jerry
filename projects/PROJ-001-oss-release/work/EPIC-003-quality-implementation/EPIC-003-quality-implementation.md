@@ -99,6 +99,12 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 - [FEAT-012: Progressive Disclosure Rules Architecture](./FEAT-012-progressive-disclosure-rules/FEAT-012-progressive-disclosure-rules.md)
 - [FEAT-014: Framework Synchronization](./FEAT-014-framework-synchronization/FEAT-014-framework-synchronization.md)
 
+### Bugs
+
+| ID | Title | Status | Priority |
+|----|-------|--------|----------|
+| [BUG-001](./BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | in_progress | critical |
+
 ---
 
 ## Progress Summary
