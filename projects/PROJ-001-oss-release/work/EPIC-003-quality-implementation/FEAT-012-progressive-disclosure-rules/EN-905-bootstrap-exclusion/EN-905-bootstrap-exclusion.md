@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.9
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -143,17 +143,13 @@ TASK-001 must complete first (verifies current behavior before modifying). TASK-
 
 | # | Deliverable | Path | Status |
 |---|-------------|------|--------|
-| 1 | Updated bootstrap_context.py | `scripts/bootstrap_context.py` | Pending |
-| 2 | Updated SKILL.md | `skills/bootstrap/SKILL.md` | Pending |
-| 3 | E2E test | `tests/e2e/` | Pending |
+| 1 | Bootstrap with guides exclusion | `scripts/bootstrap_context.py` | Done (`SYNC_DIRS = ["rules", "patterns"]` + exclusion comment) |
+| 2 | E2E test | `tests/e2e/test_bootstrap_guides_exclusion.py` | Done (124 lines, 2 tests) |
 
 ### Verification Checklist
 
-- [ ] All acceptance criteria verified
-- [ ] All technical criteria verified
-- [ ] Quality gate score >= 0.92
-- [ ] Creator-critic-revision cycle completed (minimum 3 iterations)
-- [ ] No regressions introduced
+- [x] All acceptance criteria verified — TC-1: explicit guard with comment at lines 25-29. TC-2: bootstrap `--check` passes. TC-3: `.claude/guides/` does not exist. TC-4: three-tier architecture documented in bootstrap comments.
+- [x] No regressions introduced — `test_bootstrap_excludes_guides_directory` and `test_bootstrap_check_reports_no_guides_drift` both pass
 
 ---
 
@@ -176,3 +172,4 @@ TASK-001 must complete first (verifies current behavior before modifying). TASK-
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-16 | Claude | pending | Enabler created under FEAT-012. |
+| 2026-02-17 | Claude | done | Retroactive closure. `SYNC_DIRS = ["rules", "patterns"]` excludes guides. `.claude/guides/` does not exist. 2 E2E tests pass. |

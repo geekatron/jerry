@@ -118,7 +118,8 @@
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
 | EPIC-001 | OSS Release Preparation | — | FEAT-015 (License Migration) COMPLETE. 4/4 features done, 26/26 enablers done. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
-| EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/6 features done (FEAT-008/009/010/011), FEAT-012 + FEAT-014 pending. 73% complete. |
+| EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 5/6 features done (FEAT-008/009/010/011/012), FEAT-014 pending. 83% complete. |
+| FEAT-012 (EPIC-003) | Progressive Disclosure Rules Architecture | 2026-02-17 | Retroactive closure: 6/6 enablers done (EN-901-906). 5 companion guides (5,002 lines), 49 pattern files, 3 path-scoped rules, bootstrap exclusion, 21 E2E fidelity tests. |
 | EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
 | EN-502 | Bootstrap Cross-Platform Validation | 2026-02-16 | Score 0.951 (4 iterations). 47 tests passing. All HIGH resolved. |
 | FEAT-006 | EPIC-001 Retroactive Quality Review | 2026-02-16 | All 5 enablers complete (EN-501: 0.949, EN-502: 0.951, EN-503/504/505 closed). |
@@ -183,6 +184,7 @@
 | 2026-02-17 | Claude | **WTI-003 integrity fix:** FEAT-012 (Progressive Disclosure) and FEAT-014 (Framework Sync) had "completed" headers but ~10% and 0% actual progress. Reverted to "pending". EPIC-003 reverted from "completed" to "in_progress" (67%, 4/6 features). |
 | 2026-02-17 | Claude | EPIC-001 REOPENED: FEAT-015 (License Migration MIT to Apache 2.0) created with 6 enablers (EN-930–935), 14 effort points. Licensing explicitly in PLAN.md scope. EPIC-001 now 4 features (3 done, 1 pending). |
 | 2026-02-17 | Claude | EN-934 CLOSED: Dependency License Compatibility Audit complete. QG-1 PASS (0.941, 3 iterations: 0.825→0.916→0.941). All 47 installed + 4 declared-but-uninstalled packages Apache 2.0 compatible. Phase 2 (EN-930, EN-931, EN-933) execution started. |
+| 2026-02-17 | Claude | FEAT-012 CLOSED (retroactive): All 6 enablers verified as delivered. Work was completed in prior sessions but worktracker not updated. EN-902 (5 guides, 5,002 lines), EN-903 (49 pattern files), EN-904 (3 path-scoped rules), EN-905 (bootstrap excludes guides), EN-906 (21 E2E fidelity tests pass). EPIC-003 now 5/6 features done. |
 
 ---
 
