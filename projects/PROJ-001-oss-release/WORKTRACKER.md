@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | in_progress | critical |
 
@@ -59,8 +59,8 @@
 | [BUG-007](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-007-problem-solving-templates-lost.md) | Problem solving templates lost | done | medium | EN-202 |
 | [BUG-008](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion flow lost | done | medium | EN-202 |
 | [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical | EPIC-003 |
-| [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | done | critical | EPIC-003 |
-| [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | done | high | EPIC-003 |
+| [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical | EPIC-003 |
+| [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | completed | high | EPIC-003 |
 
 ---
 
@@ -116,7 +116,7 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | 2026-02-16 | Re-closed after retroactive validation (FEAT-006). All 3 features, 20 enablers, 15 bugs. EN-501: 0.949, EN-502: 0.951. |
+| EPIC-001 | OSS Release Preparation | — | REOPENED: FEAT-015 (License Migration) added. 3/4 features done, 20/26 enablers done. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
 | EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/6 features done (FEAT-008/009/010/011), FEAT-012 + FEAT-014 pending. 73% complete. |
 | EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
@@ -150,7 +150,6 @@
 | 2026-02-12 | Claude | EN-204 complete: Validation passed (80 lines, 13/13 pointers, 2540 tests, no worktracker content in CLAUDE.md) |
 | 2026-02-12 | Claude | EN-205 complete: docs/CLAUDE-MD-GUIDE.md, docs/BOOTSTRAP.md, INSTALLATION.md updated |
 | 2026-02-12 | Claude | FEAT-003 closed: All 7 enablers complete (100%). EPIC-001 closed: All 3 features complete (100%). |
-
 | 2026-02-12 | Claude | EPIC-001 REOPENED: Premature closure without quality gates. All EPIC-001 deliverables bypassed adversarial feedback loops, quality scoring (>=0.92), creator→critic→revision cycles, and multi-platform testing. |
 | 2026-02-12 | Claude | Project status reverted from COMPLETE to IN_PROGRESS. |
 | 2026-02-12 | Claude | EPIC-002 created: Quality Framework Enforcement & Course Correction. Addresses enforcement mechanisms, adversarial strategy research, retroactive quality review, and skill enhancement. |
@@ -169,7 +168,6 @@
 | 2026-02-16 | Claude | FEAT-012 created under EPIC-002: Progressive Disclosure Rules Architecture. 6 enablers (EN-901–906), 32 tasks. Restructures .context/rules/ into tiered progressive disclosure: enforcement rules (auto-loaded) + companion guides (on-demand) + code patterns (on-demand). Remediates naive EN-702 token optimization that deleted educational content. |
 | 2026-02-16 | Claude | EPIC-002 full audit: wt-auditor (27 issues), wt-verifier (4 enablers verified), wt-visualizer (hierarchy diagrams). Progress metrics corrected. |
 | 2026-02-16 | Claude | FEAT-013 created under EPIC-002: Worktracker Integrity Remediation. 6 enablers (EN-907–912), 29 tasks, 15 effort points. Fixes all audit findings. |
-
 | 2026-02-16 | Claude | EN-501 closed (0.949, 3 iterations). EN-502 closed (0.951, 4 iterations). FEAT-006 closed (5/5 enablers). EPIC-002 closed (4/4 features, 24/24 enablers, 163/163 points). Quality framework enforcement complete and all EPIC-001 deliverables retroactively validated. |
 | 2026-02-16 | Claude | PROJ-001 full audit (wt-auditor/wt-verifier/wt-visualizer): 14 errors, 11 warnings, 5 info. Corrective actions: EPIC-001 re-closed (done), EPIC-003 reverted to in_progress (FEAT-012 pending, FEAT-007 deferred), FEAT-004/005 ACs checked + Evidence added, FEAT-013 DoD verified + Evidence added, FEAT-002 enabler count fixed (7→8), FEAT-003 broken link fixed. All entity files now have delivery evidence per WTI-006. |
 | 2026-02-16 | Claude | EPIC-004 created (Advanced Adversarial Capabilities, pending, medium priority). FEAT-007 moved from EPIC-003 to EPIC-004 — deferred strategies requiring cross-model LLM infrastructure, not needed for OSS release. |
@@ -181,6 +179,8 @@
 | 2026-02-17 | Claude | BUG-002 created under EPIC-003: Hook JSON Schema Validation Failures. 5 tasks (TASK-001 through TASK-005), 10 effort points. Addresses 7 root causes across 4 hook scripts. |
 | 2026-02-17 | Claude | BUG-002 RESOLVED via 5-phase orchestration (bug002-hookfix-20260217-001). All 7 root causes fixed. C4 tournament: 0.9125 (REVISE) -> 0.9355 (PASS) after P1-P5 remediation. 3195 tests pass, 8/8 schema validations, 36 new tests. |
 | 2026-02-17 | Claude | BUG-003 created and RESOLVED under EPIC-003: CI Pipeline Failures — PROJ-002 missing git-tracked directories. Added `.gitkeep` to `synthesis/` and `analysis/`. 105 project validation tests pass locally. |
+| 2026-02-17 | Claude | **WTI-003 integrity fix:** FEAT-012 (Progressive Disclosure) and FEAT-014 (Framework Sync) had "completed" headers but ~10% and 0% actual progress. Reverted to "pending". EPIC-003 reverted from "completed" to "in_progress" (67%, 4/6 features). |
+| 2026-02-17 | Claude | EPIC-001 REOPENED: FEAT-015 (License Migration MIT to Apache 2.0) created with 6 enablers (EN-930–935), 14 effort points. Licensing explicitly in PLAN.md scope. EPIC-001 now 4 features (3 done, 1 pending). |
 
 ---
 

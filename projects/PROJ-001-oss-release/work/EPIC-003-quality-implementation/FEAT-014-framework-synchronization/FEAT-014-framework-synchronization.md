@@ -9,12 +9,12 @@ PURPOSE: Synchronize framework docs, rules, skills, and tests with EPIC-002/003 
 -->
 
 > **Type:** feature
-> **Status:** completed
+> **Status:** pending
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** 2026-02-17
+> **Completed:** ---
 > **Parent:** EPIC-003
 > **Owner:** ---
 > **Target Sprint:** Sprint 4

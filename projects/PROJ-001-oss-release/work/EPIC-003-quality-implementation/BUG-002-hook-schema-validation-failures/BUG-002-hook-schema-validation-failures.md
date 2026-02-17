@@ -9,7 +9,7 @@ PURPOSE: Fix all hook scripts producing invalid JSON that fails Claude Code sche
 -->
 
 > **Type:** bug
-> **Status:** done
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Severity:** critical

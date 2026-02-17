@@ -9,12 +9,12 @@ PURPOSE: Implement quality framework designs from EPIC-002 into working code, ru
 -->
 
 > **Type:** epic
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-14
 > **Due:** ---
-> **Completed:** 2026-02-17
+> **Completed:** ---
 > **Parent:** ---
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -87,8 +87,8 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | FEAT-009 | Adversarial Strategy Templates & /adversary Skill | completed | critical | 12 (EN-801–812) | 100% |
 | FEAT-010 | FEAT-009 Tournament Remediation | completed | critical | 7 (EN-813–819) | 100% |
 | FEAT-011 | Template Compliance Remediation | completed | critical | 4 (EN-820–823) | 100% |
-| FEAT-012 | Progressive Disclosure Rules Architecture | completed | high | 6 (EN-901–906) | 100% |
-| FEAT-014 | Framework Synchronization | completed | high | 5 (EN-925–929) | 100% |
+| FEAT-012 | Progressive Disclosure Rules Architecture | pending | high | 6 (EN-901–906) | ~17% |
+| FEAT-014 | Framework Synchronization | pending | high | 5 (EN-925–929) | 0% |
 
 ### Feature Links
 
@@ -103,7 +103,9 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [BUG-001](./BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | in_progress | critical |
+| [BUG-001](./BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical |
+| [BUG-002](./BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical |
+| [BUG-003](./BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline — PROJ-002 Missing Dirs | completed | high |
 
 ---
 
@@ -115,10 +117,10 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [####################] 100% (6/6 completed)           |
-| Enablers:  [####################] 100% (45/45 completed)         |
+| Features:  [#############.......] 67% (4/6 completed)            |
+| Enablers:  [###############.....] 75% (34/45 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [####################] 100%                            |
+| Overall:   [##############......] ~71%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -127,13 +129,13 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 6 |
-| **Completed Features** | 6 (FEAT-008, FEAT-009, FEAT-010, FEAT-011, FEAT-012, FEAT-014) |
+| **Completed Features** | 4 (FEAT-008, FEAT-009, FEAT-010, FEAT-011) |
 | **In Progress Features** | 0 |
-| **Pending Features** | 0 |
+| **Pending Features** | 2 (FEAT-012, FEAT-014) |
 | **Total Enablers** | 45 |
-| **Completed Enablers** | 45 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011 + 6 FEAT-012 + 5 FEAT-014) |
-| **Remaining Enablers** | 0 |
-| **Feature Completion %** | 100% |
+| **Completed Enablers** | 34 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011) |
+| **Remaining Enablers** | 11 (6 FEAT-012 + 5 FEAT-014) |
+| **Feature Completion %** | 67% |
 
 ### Milestone Tracking
 
@@ -143,8 +145,8 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | FEAT-009 Adversarial Strategy Templates | 2026-02-15 | 2026-02-15 | completed (all 12 enablers PASS) |
 | FEAT-010 Tournament Remediation | 2026-02-15 | 2026-02-15 | completed (all 7 enablers PASS, FEAT-009 re-score 0.93) |
 | FEAT-011 Template Compliance Remediation | 2026-02-15 | 2026-02-15 | completed (4/4 enablers) |
-| FEAT-012 Progressive Disclosure Rules | 2026-02-17 | 2026-02-17 | completed (all 6 enablers PASS, avg 0.944) |
-| FEAT-014 Framework Synchronization | 2026-02-17 | 2026-02-17 | completed (all 5 enablers PASS, avg 0.934) |
+| FEAT-012 Progressive Disclosure Rules | --- | --- | pending (~17%, 1/6 enablers) |
+| FEAT-014 Framework Synchronization | --- | --- | pending (0%, 0/5 enablers) |
 
 ---
 
@@ -183,3 +185,4 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | 2026-02-16 | Claude | in_progress | **Reopened.** FEAT-007 (Advanced Adversarial Capabilities, 5 enablers) and FEAT-012 (Progressive Disclosure Rules Architecture, 6 enablers) moved from EPIC-002 — these are implementation work. FEAT-012 EN-901 superseded by EN-701; EN-902–906 are new work. 4/6 features complete (67%), 35/45 enablers complete (78%). |
 | 2026-02-16 | Claude | in_progress | FEAT-007 (Advanced Adversarial Capabilities) moved from EPIC-003 to new EPIC-004 (Advanced Adversarial Capabilities). FEAT-007 contains deferred strategies requiring cross-model LLM infrastructure — not needed for OSS release. EPIC-003 now has 5 features (4 completed, 1 pending). |
 | 2026-02-17 | Claude | in_progress | FEAT-014 created: Framework Synchronization. 5 enablers (EN-925–929), 21 tasks, 18 effort points. Addresses 15 gaps from codebase audit: incomplete AGENTS.md (8/24+ agents), missing /adversary rule triggers, truncated skill docs, no adversarial template tests. EPIC-003 now has 6 features (4 completed, 2 pending), 45 enablers (35 completed, 10 pending). |
+| 2026-02-17 | Claude | in_progress | **WTI-003 integrity fix.** FEAT-012 and FEAT-014 had "completed" headers despite ~10% and 0% actual progress respectively. Reverted both to "pending". EPIC-003 reverted from "completed" to "in_progress". Progress corrected: 4/6 features (67%), 34/45 enablers (75%). BUG-001/002/003 status corrected in children table. |

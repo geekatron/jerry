@@ -83,12 +83,12 @@ Enables the progressive disclosure architecture by creating the lean enforcement
 
 | ID | Title | Status | Activity | Owner |
 |----|-------|--------|----------|-------|
-| TASK-001 | Audit current rule files -- catalog all content by type | BACKLOG | RESEARCH | -- |
-| TASK-002 | Strip architecture-standards.md to enforcement skeleton | BACKLOG | DEVELOPMENT | -- |
-| TASK-003 | Strip coding-standards.md to enforcement skeleton | BACKLOG | DEVELOPMENT | -- |
-| TASK-004 | Strip testing-standards.md to enforcement skeleton | BACKLOG | DEVELOPMENT | -- |
-| TASK-005 | Strip remaining rule files to enforcement skeletons | BACKLOG | DEVELOPMENT | -- |
-| TASK-006 | Verify all 24 HARD rules preserved and measure token count | BACKLOG | REVIEW | -- |
+| TASK-001 | Audit current rule files -- catalog all content by type | cancelled | RESEARCH | -- |
+| TASK-002 | Strip architecture-standards.md to enforcement skeleton | cancelled | DEVELOPMENT | -- |
+| TASK-003 | Strip coding-standards.md to enforcement skeleton | cancelled | DEVELOPMENT | -- |
+| TASK-004 | Strip testing-standards.md to enforcement skeleton | cancelled | DEVELOPMENT | -- |
+| TASK-005 | Strip remaining rule files to enforcement skeletons | cancelled | DEVELOPMENT | -- |
+| TASK-006 | Verify all 24 HARD rules preserved and measure token count | cancelled | REVIEW | -- |
 
 ### Task Dependencies
 
