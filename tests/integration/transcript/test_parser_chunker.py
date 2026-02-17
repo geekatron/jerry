@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Integration tests for VTTParser → TranscriptChunker pipeline.
 
 Tests validate data integrity, speaker preservation, and timestamp continuity

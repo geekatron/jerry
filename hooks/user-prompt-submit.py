@@ -1,4 +1,8 @@
 #!/usr/bin/env -S uv run python
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 UserPromptSubmit hook for L2 Per-Prompt Quality Reinforcement.
 

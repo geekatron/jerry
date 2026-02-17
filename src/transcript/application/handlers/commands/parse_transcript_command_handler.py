@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """ParseTranscriptCommandHandler - Command handler for transcript parsing.
 
 Orchestrates VTTParser and TranscriptChunker to process transcript files.

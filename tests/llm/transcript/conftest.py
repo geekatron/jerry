@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Fixtures for transcript LLM validation tests.
 
 WARNING: These tests invoke LLM agents and are:

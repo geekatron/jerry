@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Integration tests for context distribution bootstrap script.
 
 Tests the cross-platform sync mechanism that links .context/ to .claude/.

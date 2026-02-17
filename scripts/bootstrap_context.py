@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Bootstrap Jerry's context distribution.
 
 Cross-platform sync of .context/rules/ and .context/patterns/ to .claude/.

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Reusable test fixtures for model selection testing.
 
 This module provides pytest fixtures and helper utilities for testing

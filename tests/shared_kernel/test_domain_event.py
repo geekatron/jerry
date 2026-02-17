@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Unit tests for shared_kernel.domain_event module.
 
 These tests verify the DomainEvent base class and event infrastructure

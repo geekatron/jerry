@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """ParseTranscriptResult - Result from parsing a transcript file.
 
 This result contains the outcome of a transcript parse operation,

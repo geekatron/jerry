@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Pytest configuration for Jerry Framework tests.
 
 Note: Path manipulation removed - the editable install (`pip install -e .` or

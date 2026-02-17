@@ -9,13 +9,13 @@ PURPOSE: Add Apache 2.0 boilerplate header to all Python source files
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** FEAT-015
 > **Owner:** Claude
 > **Effort:** 5
@@ -63,12 +63,12 @@ Apache 2.0 requires license notices in source files. No Python files currently h
 
 ## Acceptance Criteria
 
-- [ ] All `.py` files in `src/` have Apache 2.0 SPDX header
-- [ ] All `.py` files in `scripts/` have Apache 2.0 SPDX header
-- [ ] All `.py` files in `hooks/` have Apache 2.0 SPDX header
-- [ ] All `.py` files in `tests/` have Apache 2.0 SPDX header
-- [ ] Header uses SPDX short-form identifier (`Apache-2.0`)
-- [ ] No test regressions from header addition
+- [x] All `.py` files in `src/` have Apache 2.0 SPDX header (191 files)
+- [x] All `.py` files in `scripts/` have Apache 2.0 SPDX header (19 files)
+- [x] All `.py` files in `hooks/` have Apache 2.0 SPDX header (1 file)
+- [x] All `.py` files in `tests/` have Apache 2.0 SPDX header (192 files)
+- [x] Header uses SPDX short-form identifier (`Apache-2.0`)
+- [x] No test regressions from header addition (3196 passed, 0 failed)
 
 ---
 
@@ -86,3 +86,4 @@ Apache 2.0 requires license notices in source files. No Python files currently h
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-17 | Created | Initial creation. Highest effort enabler (5 pts) due to file count. |
+| 2026-02-17 | done | Applied SPDX headers to 403 .py files via scripts/apply_spdx_headers.py. 17 shebang files handled correctly. Independent verification (header-verifier) confirmed 403/403 pass all 5 criteria. Test suite: 3196 passed, 0 failed. |

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Unit tests for work_tracking.domain.value_objects.work_item_status module.
 
 Test Categories:

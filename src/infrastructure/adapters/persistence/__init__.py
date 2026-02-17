@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Persistence adapters for file I/O operations.
 
 Provides adapters for safe concurrent file access with locking and atomic writes.

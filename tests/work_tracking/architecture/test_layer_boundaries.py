@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Architecture tests for layer boundaries.
 
 Enforces the hexagonal architecture constraint that inner layers

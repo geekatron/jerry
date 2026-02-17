@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Tests for pre_tool_use.py hook.
 
 These tests validate the security guardrail hook returns correct decision values

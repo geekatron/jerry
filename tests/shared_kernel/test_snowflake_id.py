@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Unit tests for shared_kernel.snowflake_id module.
 
 These tests complement the BDD scenarios with additional edge cases

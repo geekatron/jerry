@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Fixtures for transcript integration tests.
 
 Integration tests may use the filesystem but do NOT invoke LLM agents.

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Unit tests for CLI model parameter handling.
 
 Tests that the jerry transcript parse command correctly accepts

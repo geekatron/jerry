@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """End-to-end tests for complete hybrid transcript pipeline.
 
 These tests validate the full pipeline from raw VTT input to formatted output packet:

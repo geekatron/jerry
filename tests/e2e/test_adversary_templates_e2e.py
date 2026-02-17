@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 End-to-end integration tests for the Adversary Skill Templates (EN-812).
 

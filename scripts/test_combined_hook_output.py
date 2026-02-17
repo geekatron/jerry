@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 TEST SCRIPT: Empirical test for combined systemMessage + hookSpecificOutput.
 

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Validate plugin manifest files against JSON Schema.
 
 This script validates the following plugin artifacts:

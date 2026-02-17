@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """ParseTranscriptCommand - Command to parse a transcript file.
 
 This command instructs the system to parse a transcript file (VTT/SRT)

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """BDD step definitions for Snowflake ID generation.
 
 Requires pytest-bdd package. Tests are skipped if not installed.

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """ModelConfig - Value object for transcript skill model selection.
 
 This value object encapsulates the Claude model choices for each

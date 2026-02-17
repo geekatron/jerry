@@ -89,7 +89,7 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 |----|-------|--------|--------|-------|
 | [EN-930](./enablers/EN-930-license-file-replacement.md) | License File Replacement | done | 1 | Claude |
 | [EN-931](./enablers/EN-931-notice-file-creation.md) | NOTICE File Creation | done | 1 | Claude |
-| [EN-932](./enablers/EN-932-source-file-headers.md) | Source File Header Notices | pending | 5 | Claude |
+| [EN-932](./enablers/EN-932-source-file-headers.md) | Source File Header Notices | done | 5 | Claude |
 | [EN-933](./enablers/EN-933-packaging-metadata-update.md) | Packaging Metadata Update | done | 1 | Claude |
 | [EN-934](./enablers/EN-934-dependency-license-audit.md) | Dependency License Compatibility Audit | done | 3 | Claude |
 | [EN-935](./enablers/EN-935-ci-license-validation.md) | CI License Header Validation | pending | 3 | Claude |
@@ -102,10 +102,10 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 +------------------------------------------------------------------+
 |                    FEATURE PROGRESS TRACKER                       |
 +------------------------------------------------------------------+
-| Enablers:  [#############.......] 67% (4/6 completed)             |
-| Effort:    [########............] 43% (6/14 points)               |
+| Enablers:  [################....] 83% (5/6 completed)             |
+| Effort:    [###############.....] 79% (11/14 points)              |
 +------------------------------------------------------------------+
-| Overall:   [#############.......] 67%                              |
+| Overall:   [################....] 83%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -114,9 +114,9 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 6 |
-| **Completed Enablers** | 4 |
+| **Completed Enablers** | 5 |
 | **Total Effort** | 14 points |
-| **Completed Effort** | 6 points |
+| **Completed Effort** | 11 points |
 
 ---
 
@@ -142,6 +142,7 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | 2026-02-17 | Claude | in_progress | Orchestration plan created (feat015-licmig-20260217-001). Phase 1 (EN-934 audit) execution started. |
 | 2026-02-17 | Claude | in_progress | Phase 1 COMPLETE. EN-934 done (QG-1 PASS 0.941). Phase 2 started: EN-930, EN-931, EN-933 in parallel. |
 | 2026-02-17 | Claude | in_progress | Phase 2 COMPLETE. EN-930, EN-931, EN-933 all done. QG-2 PASS (0.9505, 2 iterations). Phase 3 unblocked. |
+| 2026-02-17 | Claude | in_progress | Phase 3 COMPLETE. EN-932 done: 403 .py files have SPDX headers (17 shebangs handled). Independent verification PASS. Tests: 3196 passed. QG-3 pending. |
 
 ---
 

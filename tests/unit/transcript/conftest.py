@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """Fixtures for transcript unit tests.
 
 Unit tests are fast (< 1s) and require no external I/O.
