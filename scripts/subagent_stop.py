@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python
 """
 SubagentStop Hook - Handoff Orchestration
 
@@ -121,6 +121,26 @@ def determine_handoff(from_agent: str, signals: dict[str, Any]) -> tuple[str | N
     for rule_condition, to_agent, context in rules:
         if rule_condition == condition:
             return to_agent, context
+
+    # Warn about unmatched handoff signals (PM-001, FM-001)
+    if from_agent not in HANDOFF_RULES:
+        print(
+            json.dumps(
+                {
+                    "warning": f"Agent '{from_agent}' not found in HANDOFF_RULES — possible misconfiguration"
+                }
+            ),
+            file=sys.stderr,
+        )
+    else:
+        print(
+            json.dumps(
+                {
+                    "warning": f"Condition '{condition}' from agent '{from_agent}' has no matching rule"
+                }
+            ),
+            file=sys.stderr,
+        )
 
     return None, None
 

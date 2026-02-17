@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run python
 """Validate JSON Schema files for Claude Code hook outputs.
 
 Runs 8 validation tests:

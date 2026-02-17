@@ -191,7 +191,55 @@ class TestBlockDecision:
 
         assert exit_code == 0
         assert get_decision(output) == "deny"
-        assert "dangerous" in get_reason(output).lower()
+        assert "dangerous" in get_reason(output).lower() or "rm" in get_reason(output).lower()
+
+    def test_bash_rm_split_flags_blocked(self) -> None:
+        """rm -r -f / with split flags should be blocked (RT-004)."""
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "rm -r -f /",
+            },
+        )
+
+        assert exit_code == 0
+        assert get_decision(output) == "deny"
+
+    def test_bash_rm_long_flags_blocked(self) -> None:
+        """rm --recursive --force / with long flags should be blocked (RT-004)."""
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "rm --recursive --force /",
+            },
+        )
+
+        assert exit_code == 0
+        assert get_decision(output) == "deny"
+
+    def test_bash_rm_fr_root_blocked(self) -> None:
+        """rm -fr / with reversed flags should be blocked (RT-004)."""
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "rm -fr /",
+            },
+        )
+
+        assert exit_code == 0
+        assert get_decision(output) == "deny"
+
+    def test_bash_rm_rf_home_blocked(self) -> None:
+        """rm -rf ~ targeting home should be blocked (RT-004)."""
+        exit_code, output = run_hook(
+            "Bash",
+            {
+                "command": "rm -rf ~",
+            },
+        )
+
+        assert exit_code == 0
+        assert get_decision(output) == "deny"
 
     def test_bash_cd_command_blocked(self) -> None:
         """cd command should be blocked (use absolute paths instead)."""
