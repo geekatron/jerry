@@ -3,6 +3,8 @@ paths:
   - "src/**/*.py"
   - "tests/**/*.py"
   - "scripts/**/*.py"
+  - ".context/patterns/**/*.py"
+  - "hooks/**/*.py"
 ---
 
 # Architecture Standards

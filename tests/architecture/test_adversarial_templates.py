@@ -19,6 +19,7 @@ References:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -153,13 +154,15 @@ class TestAdversarialTemplateContent:
         ]
 
         # Act/Assert
-        # Check for each section - accept either "## Identity" or "## Section 1: Identity" format
+        # FIX DA-001: Use regex to match section headers at line start
+        # Matches both "## Identity" and "## Section 1: Identity" formats
         for section_name in section_names:
-            has_direct_format = f"## {section_name}" in content
-            has_numbered_format = f": {section_name}" in content
-            assert has_direct_format or has_numbered_format, (
-                f"{template_file} missing required section: {section_name}"
-            )
+            # Escape special characters in section name for regex
+            escaped_name = re.escape(section_name)
+            # Pattern: line start, ##, whitespace, optional "Section N: ", then section name
+            pattern = rf"^##\s+(?:Section\s+\d+:\s+)?{escaped_name}"
+            has_section = re.search(pattern, content, re.MULTILINE) is not None
+            assert has_section, f"{template_file} missing required section: {section_name}"
 
     @pytest.mark.parametrize("template_file", SELECTED_STRATEGIES)
     def test_template_when_read_then_references_correct_strategy_id(
@@ -174,6 +177,47 @@ class TestAdversarialTemplateContent:
         # Act/Assert
         assert expected_id in content, (
             f"{template_file} does not reference strategy ID {expected_id}"
+        )
+
+    @pytest.mark.parametrize("template_file", SELECTED_STRATEGIES)
+    def test_template_when_read_then_strategy_id_in_identity_section(
+        self, templates_dir: Path, template_file: str
+    ) -> None:
+        """Each template must have its strategy ID in the Identity section (DA-002 fix)."""
+        # Arrange
+        template_path = templates_dir / template_file
+        content = template_path.read_text()
+        expected_id = STRATEGY_ID_MAP[template_file]
+
+        # Act
+        # Find the Identity section first
+        # Match both "## Identity" and "## Section 1: Identity"
+        identity_section_pattern = r"^##\s+(?:Section\s+\d+:\s+)?Identity"
+        identity_match = re.search(identity_section_pattern, content, re.MULTILINE)
+
+        assert identity_match is not None, f"{template_file} missing Identity section"
+
+        # Extract content from Identity section to next ## section
+        identity_start = identity_match.start()
+        # Find next ## heading after Identity
+        next_section_pattern = r"\n##\s+"
+        next_section_match = re.search(next_section_pattern, content[identity_start + 1 :])
+
+        if next_section_match:
+            identity_end = identity_start + 1 + next_section_match.start()
+            identity_content = content[identity_start:identity_end]
+        else:
+            # Identity is the last section (unlikely but handle it)
+            identity_content = content[identity_start:]
+
+        # Assert
+        # Strategy ID should appear in Identity section table: "| Strategy ID | S-NNN |"
+        pattern = rf"\|\s*Strategy ID\s*\|.*{expected_id}"
+        has_id_in_identity = re.search(pattern, identity_content, re.IGNORECASE) is not None
+
+        assert has_id_in_identity, (
+            f"{template_file} does not have strategy ID {expected_id} in Identity section. "
+            f"Found in file elsewhere, but not in Identity section table."
         )
 
     @pytest.mark.parametrize("template_file", SELECTED_STRATEGIES)
@@ -231,6 +275,44 @@ class TestTemplateFormatSpecification:
         for section_name in section_names:
             assert section_name in content, (
                 f"TEMPLATE-FORMAT.md does not define required section: {section_name}"
+            )
+
+    def test_template_format_when_read_then_test_sections_match_spec(
+        self, templates_dir: Path
+    ) -> None:
+        """Test's expected sections must match TEMPLATE-FORMAT.md spec (DA-006 fix)."""
+        # Arrange
+        format_file = templates_dir / "TEMPLATE-FORMAT.md"
+        content = format_file.read_text()
+
+        # Extract section names from TEMPLATE-FORMAT.md
+        # Pattern: "## Section N: {Name}" -> extract Name
+        section_pattern = r"^##\s+Section\s+\d+:\s+(.+)$"
+        format_sections = re.findall(section_pattern, content, re.MULTILINE)
+
+        # The test's expected sections (from REQUIRED_SECTIONS constant)
+        test_expected_sections = [
+            "Identity",
+            "Purpose",
+            "Prerequisites",
+            "Execution Protocol",
+            "Output Format",
+            "Scoring Rubric",
+            "Examples",
+            "Integration",
+        ]
+
+        # Act/Assert
+        # Verify that test expectations match the format spec
+        assert len(format_sections) == len(test_expected_sections), (
+            f"Section count mismatch: TEMPLATE-FORMAT.md defines {len(format_sections)} sections, "
+            f"but test expects {len(test_expected_sections)} sections"
+        )
+
+        for expected_section in test_expected_sections:
+            assert expected_section in format_sections, (
+                f"Test expects section '{expected_section}' but TEMPLATE-FORMAT.md does not define it. "
+                f"Format sections: {format_sections}"
             )
 
     def test_template_format_when_read_then_has_navigation_table(self, templates_dir: Path) -> None:
