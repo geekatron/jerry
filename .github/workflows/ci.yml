@@ -237,6 +237,7 @@ jobs:
           pip install -e .
 
       - name: Run tests with coverage
+        shell: bash
         run: |
           # Exclude subprocess tests (require uv) - they run in cli-integration job
           # Exclude llm tests - they are slow, expensive, and run on-demand
@@ -255,6 +256,7 @@ jobs:
 
       - name: Run tests without coverage threshold (skip-coverage)
         if: ${{ contains(github.event.head_commit.message, '[skip-coverage]') }}
+        shell: bash
         run: |
           # Exclude subprocess tests (require uv) - they run in cli-integration job
           # Exclude llm tests - they are slow, expensive, and run on-demand
