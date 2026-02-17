@@ -35,7 +35,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [When to Use /adversary vs ps-critic](#when-to-use-adversary-vs-ps-critic), [Quick Reference](#quick-reference) |
 | **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Available Agents](#available-agents), [Dependencies](#dependencies--prerequisites), [Adversarial Quality Mode](#adversarial-quality-mode) |
 | **L2 (Architect)** | Workflow designers | [P-003 Compliance](#p-003-compliance), [H-14 Integration](#integration-with-creator-critic-revision-cycle-h-14), [Constitutional Compliance](#constitutional-compliance), [Strategy Templates](#strategy-templates) |
 
@@ -273,6 +273,44 @@ The SSOT defines 6 quality dimensions with weights:
 **Threshold:** >= 0.92 weighted composite for C2+ deliverables (H-13)
 
 **Leniency bias counteraction:** Score strictly against rubric criteria. When uncertain between adjacent scores, choose the lower one.
+
+---
+
+## When to Use /adversary vs ps-critic
+
+Both `/adversary` and `ps-critic` apply adversarial strategies, but serve different workflow positions:
+
+| Aspect | /adversary Skill | ps-critic Agent |
+|--------|-----------------|----------------|
+| **Use Case** | Standalone adversarial reviews, tournament scoring, strategy template execution | Embedded quality critique within creator-critic-revision loops |
+| **Invocation** | Explicit on-demand (`/adversary` or natural language request) | Invoked by orchestrator within H-14 cycle |
+| **Output Focus** | Strategy-specific findings (adv-executor) + quality score (adv-scorer) | L0/L1/L2 multi-level critique with dimension-level improvement guidance |
+| **Iteration** | May be used once or re-invoked for re-scoring after revision | Iterates within the H-14 minimum 3-iteration cycle |
+| **Strategy Coverage** | Full strategy set per criticality (C1-C4), including tournament mode (all 10) | Applies strategies appropriate to criticality, embedded in workflow |
+| **Agents** | adv-selector, adv-executor, adv-scorer | ps-critic (single agent) |
+| **Output Artifacts** | Strategy execution reports + quality score report | Critique report with improvement recommendations |
+
+**When to Use Each:**
+
+- **Use `/adversary` when:**
+  - You need a formal adversarial review outside a creator-critic loop
+  - You need tournament mode scoring with all 10 strategies (C4)
+  - You need strategy-specific finding reports (adv-executor outputs)
+  - You need standalone quality scoring with S-014 rubric
+  - You need to apply a specific strategy template (e.g., "run S-002 Devil's Advocate on this ADR")
+
+- **Use `ps-critic` when:**
+  - You are within an orchestrated creator-critic-revision workflow
+  - You need iterative improvement guidance across multiple revision cycles
+  - You need lightweight iteration-level critique without full tournament overhead
+  - You are working within `/problem-solving` or `/orchestration` skills
+
+**Complementary Use:**
+
+Both can work together:
+- `ps-critic` applies strategies within workflows for embedded quality cycles
+- `/adversary` orchestrates cross-strategy tournament reviews for C4 critical deliverables
+- `ps-critic` uses the same S-014 rubric and dimension scoring as adv-scorer for consistency
 
 ---
 

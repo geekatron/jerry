@@ -20,7 +20,7 @@
 
 | ID | Rule | Consequence |
 |----|------|-------------|
-| H-22 | MUST invoke `/problem-solving` for research/analysis. MUST invoke `/nasa-se` for requirements/design. MUST invoke `/orchestration` for multi-phase workflows. | Work quality degradation. Rework required. |
+| H-22 | MUST invoke `/problem-solving` for research/analysis. MUST invoke `/nasa-se` for requirements/design. MUST invoke `/orchestration` for multi-phase workflows. MUST invoke `/adversary` for adversarial quality reviews and tournament scoring. | Work quality degradation. Rework required. |
 
 ---
 
@@ -31,6 +31,7 @@
 | research, analyze, investigate, explore, root cause, why | `/problem-solving` |
 | requirements, specification, V&V, technical review, risk | `/nasa-se` |
 | orchestration, pipeline, workflow, multi-agent, phases, gates | `/orchestration` |
+| quality review, critique, adversarial, tournament, red team, devil's advocate, steelman, score, evaluate quality, quality gate | `/adversary` |
 
 ---
 

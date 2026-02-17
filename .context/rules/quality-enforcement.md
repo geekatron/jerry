@@ -15,6 +15,7 @@
 | [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006 |
 | [Enforcement Architecture](#enforcement-architecture) | L1-L5 layer definitions |
 | [Strategy Catalog](#strategy-catalog) | S-001 through S-015 (selected and excluded) |
+| [Implementation](#implementation) | Operational implementation via /adversary skill |
 | [References](#references) | Source document traceability |
 
 ---
@@ -187,6 +188,33 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 | S-008 | Socratic Method | Requires interactive multi-turn dialogue |
 | S-009 | Multi-Agent Debate | RED risk -- requires cross-model LLM |
 | S-015 | Prompt Adversarial Examples | RED risk -- adversarial prompt injection concern |
+
+---
+
+## Implementation
+
+**Operational Implementation:** The strategy catalog is implemented operationally via the `/adversary` skill. See `skills/adversary/SKILL.md` for:
+
+- Strategy selection by criticality level (adv-selector agent)
+- Strategy execution via templates (adv-executor agent)
+- Quality scoring with S-014 rubric (adv-scorer agent)
+
+**Strategy Templates:** All 10 selected strategies have execution templates in `.context/templates/adversarial/`:
+
+- Template format standard: `.context/templates/adversarial/TEMPLATE-FORMAT.md`
+- Individual strategy templates: `s-{NNN}-{strategy-slug}.md`
+
+**Agent Implementation:** Three specialized agents in `skills/adversary/agents/`:
+
+- `adv-selector.md` — Maps criticality to strategy sets, enforces H-16 ordering
+- `adv-executor.md` — Loads and executes strategy templates against deliverables
+- `adv-scorer.md` — Implements S-014 LLM-as-Judge with 6-dimension rubric
+
+**Integration Points:**
+
+- `/adversary` skill: Standalone adversarial reviews and tournament scoring
+- `ps-critic` agent: Embedded adversarial quality within creator-critic-revision loops (H-14)
+- Both use the same SSOT thresholds, dimensions, and strategy catalog
 
 ---
 
