@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 """
-Subagent Stop Hook - Handoff Orchestration
+SubagentStop Hook - Handoff Orchestration
 
-This hook runs when a subagent completes its task, enabling automatic
-handoff logic between agents (e.g., Code -> Review -> QA).
+This hook runs on the SubagentStop event when a subagent completes its
+task, enabling automatic handoff logic between agents (e.g., Code -> Review -> QA).
 
 Reference: https://docs.anthropic.com/en/docs/claude-code/hooks
 
+Output Format (SubagentStop schema):
+    To block the subagent from stopping:
+        {"decision": "block", "reason": "<why it should continue>"}
+    To allow the subagent to stop (no intervention):
+        {}
+
+    NOTE: SubagentStop does NOT use hookSpecificOutput or hookEventName.
+    Known bug (GitHub Issue #20221): prompt-based SubagentStop hooks may
+    not actually prevent termination.
+
 Exit Codes:
-    0 - Success (handoff processed)
-    1 - No handoff needed
-    2 - Error in hook execution
+    0 - Success (handoff block issued or no handoff needed)
+    2 - Error in hook execution (JSON written to stderr; stdout ignored)
 """
 
 import json
@@ -165,36 +174,31 @@ def main() -> int:
         # Determine if handoff is needed
         to_agent, context = determine_handoff(agent_name, signals)
 
-        if to_agent:
+        if to_agent and context:
             # Log the handoff
             log_handoff(agent_name, to_agent, signals, context)
 
-            # Output handoff instruction
+            # Block the subagent from stopping; signal handoff is needed
             print(
                 json.dumps(
                     {
-                        "action": "handoff",
-                        "to_agent": to_agent,
-                        "context": context,
-                        "work_items": signals.get("work_items", []),
-                        "summary": signals.get("summary", ""),
-                        "status_transition": STATUS_TRANSITIONS.get(
-                            signals.get("handoff_condition", ""), None
-                        ),
+                        "decision": "block",
+                        "reason": f"Handoff required: route to {to_agent}. Context: {context}",
+                        "systemMessage": f"Agent handoff: {agent_name} -> {to_agent}. {context}",
                     }
                 )
             )
             return 0
 
-        # No handoff needed
-        print(json.dumps({"action": "none", "reason": "No handoff condition matched"}))
-        return 1
+        # No handoff needed — allow the subagent to stop normally
+        print(json.dumps({}))
+        return 0
 
     except json.JSONDecodeError as e:
-        print(json.dumps({"action": "error", "reason": f"Invalid JSON input - {e}"}))
+        print(json.dumps({"error": f"Invalid JSON - {e}"}), file=sys.stderr)
         return 2
     except Exception as e:
-        print(json.dumps({"action": "error", "reason": str(e)}))
+        print(json.dumps({"error": str(e)}), file=sys.stderr)
         return 2
 
 

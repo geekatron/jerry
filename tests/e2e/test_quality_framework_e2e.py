@@ -253,7 +253,8 @@ class TestHookEnforcementE2E:
         )
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "block"
+        hso = stdout_json.get("hookSpecificOutput", {})
+        assert hso.get("permissionDecision") == "deny"
 
     def test_pretool_hook_when_safe_command_then_approves(self) -> None:
         """PreToolUse hook approves safe bash commands."""
@@ -263,7 +264,8 @@ class TestHookEnforcementE2E:
         )
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "approve"
+        hso = stdout_json.get("hookSpecificOutput", {})
+        assert hso.get("permissionDecision") == "allow"
 
     @pytest.mark.subprocess
     def test_session_hook_when_executed_then_produces_valid_json(self) -> None:

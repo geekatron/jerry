@@ -51,6 +51,18 @@ def run_hook(tool_name: str, tool_input: dict) -> tuple[int, dict | None, str]:
     return result.returncode, stdout_json, result.stderr
 
 
+def get_permission_decision(stdout_json: dict) -> str:
+    """Extract the permission decision from the new hookSpecificOutput format."""
+    hso = stdout_json.get("hookSpecificOutput", {})
+    return hso.get("permissionDecision", "")
+
+
+def get_permission_reason(stdout_json: dict) -> str:
+    """Extract the permission decision reason from hookSpecificOutput."""
+    hso = stdout_json.get("hookSpecificOutput", {})
+    return hso.get("permissionDecisionReason", "")
+
+
 class TestHookArchitectureEnforcement:
     """Integration tests for AST enforcement in the hook pipeline."""
 
@@ -77,8 +89,8 @@ class BadEntity:
 
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "block"
-        assert "infrastructure" in stdout_json.get("reason", "").lower()
+        assert get_permission_decision(stdout_json) == "deny"
+        assert "infrastructure" in get_permission_reason(stdout_json).lower()
 
     def test_hook_approves_clean_write(self) -> None:
         """Hook should approve a Write with no violations."""
@@ -103,7 +115,7 @@ class CleanEntity:
 
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "approve"
+        assert get_permission_decision(stdout_json) == "allow"
 
     def test_hook_preserves_existing_security_checks(self) -> None:
         """Hook should still block writes to sensitive paths."""
@@ -114,8 +126,8 @@ class CleanEntity:
 
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "block"
-        assert "security" in stdout_json.get("reason", "").lower()
+        assert get_permission_decision(stdout_json) == "deny"
+        assert "security" in get_permission_reason(stdout_json).lower()
 
     def test_hook_preserves_bash_security_checks(self) -> None:
         """Hook should still block dangerous bash commands."""
@@ -126,7 +138,7 @@ class CleanEntity:
 
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "block"
+        assert get_permission_decision(stdout_json) == "deny"
 
     def test_hook_approves_non_python_write(self) -> None:
         """Hook should approve writing non-Python files without AST checks."""
@@ -140,7 +152,7 @@ class CleanEntity:
 
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "approve"
+        assert get_permission_decision(stdout_json) == "allow"
 
     def test_hook_blocks_multi_class_file(self) -> None:
         """Hook should block a Write with multiple public classes."""
@@ -166,5 +178,5 @@ class SecondPublic:
 
         assert exit_code == 0
         assert stdout_json is not None
-        assert stdout_json.get("decision") == "block"
-        assert "one-class-per-file" in stdout_json.get("reason", "").lower()
+        assert get_permission_decision(stdout_json) == "deny"
+        assert "one-class-per-file" in get_permission_reason(stdout_json).lower()

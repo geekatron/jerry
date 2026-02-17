@@ -56,6 +56,7 @@ def main() -> int:
         if result.preamble:
             output = {
                 "hookSpecificOutput": {
+                    "hookEventName": "UserPromptSubmit",
                     "additionalContext": (
                         f"<quality-reinforcement>\n{result.preamble}\n</quality-reinforcement>"
                     ),

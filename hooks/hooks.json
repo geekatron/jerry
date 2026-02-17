@@ -15,7 +15,6 @@
     ],
     "UserPromptSubmit": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
@@ -27,7 +26,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|MultiEdit|Bash",
         "hooks": [
           {
             "type": "command",
@@ -37,9 +36,8 @@
         ]
       }
     ],
-    "Stop": [
+    "SubagentStop": [
       {
-        "matcher": "subagent:*",
         "hooks": [
           {
             "type": "command",

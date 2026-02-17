@@ -247,6 +247,30 @@ def check_patterns(tool_name: str, tool_input: dict[str, Any]) -> tuple[str, str
         return "approve", "", []
 
 
+def make_decision(decision: str, reason: str = "", **extra) -> str:
+    """Build a PreToolUse hook output JSON string.
+
+    Args:
+        decision: One of "allow", "deny", or "ask".
+        reason: Optional human-readable reason for the decision.
+        **extra: Additional fields to merge into hookSpecificOutput.
+
+    Returns:
+        JSON string conforming to the PreToolUse hook output schema.
+    """
+    output: dict[str, Any] = {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": decision,
+        }
+    }
+    if reason:
+        output["hookSpecificOutput"]["permissionDecisionReason"] = reason
+    if extra:
+        output["hookSpecificOutput"].update(extra)
+    return json.dumps(output)
+
+
 def main() -> int:
     """Main hook entry point."""
     try:
@@ -272,7 +296,7 @@ def main() -> int:
 
         # If rule-based check blocks, return immediately
         if not allowed:
-            print(json.dumps({"decision": "block", "reason": reason}))
+            print(make_decision("deny", reason))
             return 0
 
         # =================================================================
@@ -282,11 +306,9 @@ def main() -> int:
 
         # Handle pattern validation result
         if pattern_decision == "block":
-            print(
-                json.dumps(
-                    {"decision": "block", "reason": pattern_reason, "matches": pattern_matches}
-                )
-            )
+            if pattern_matches:
+                print(json.dumps({"matches": pattern_matches}), file=sys.stderr)
+            print(make_decision("deny", pattern_reason))
             return 0
 
         if pattern_decision == "warn":
@@ -298,11 +320,9 @@ def main() -> int:
 
         if pattern_decision == "ask":
             # Ask user for confirmation
-            print(
-                json.dumps(
-                    {"decision": "ask", "reason": pattern_reason, "matches": pattern_matches}
-                )
-            )
+            if pattern_matches:
+                print(json.dumps({"matches": pattern_matches}), file=sys.stderr)
+            print(make_decision("ask", pattern_reason))
             return 0
 
         # =================================================================
@@ -333,7 +353,7 @@ def main() -> int:
                     )
 
                 if decision.action == "block":
-                    print(json.dumps({"decision": "block", "reason": decision.reason}))
+                    print(make_decision("deny", decision.reason))
                     return 0
 
                 if decision.action == "warn":
@@ -362,14 +382,20 @@ def main() -> int:
         # =================================================================
         # PHASE 4: Approve if all checks pass
         # =================================================================
-        print(json.dumps({"decision": "approve"}))
+        print(make_decision("allow"))
         return 0
 
     except json.JSONDecodeError as e:
-        print(json.dumps({"decision": "block", "reason": f"Hook error: Invalid JSON input - {e}"}))
+        print(
+            json.dumps({"error": f"Hook error: Invalid JSON input - {e}"}),
+            file=sys.stderr,
+        )
         return 2
     except Exception as e:
-        print(json.dumps({"decision": "block", "reason": f"Hook error: {e}"}))
+        print(
+            json.dumps({"error": f"Hook error: {e}"}),
+            file=sys.stderr,
+        )
         return 2
 
 

@@ -31,7 +31,11 @@
         },
         "Stop": {
           "$ref": "#/$defs/hookTypeArray",
-          "description": "Hooks executed when agent stops. Matcher can be 'subagent:*' for subagent completion."
+          "description": "Hooks executed when the main agent stops. Does not support matchers."
+        },
+        "SubagentStop": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed when a subagent (spawned via Task tool) stops. Uses top-level decision/reason only."
         }
       },
       "additionalProperties": false
@@ -48,7 +52,7 @@
     },
     "hookMatcher": {
       "type": "object",
-      "required": ["matcher", "hooks"],
+      "required": ["hooks"],
       "properties": {
         "matcher": {
           "type": "string",
