@@ -4,6 +4,12 @@ Aggregate Pattern - Canonical implementation for Jerry Framework.
 Aggregates implement apply_event(), collect_events(), and invariant enforcement.
 Use event sourcing for state management.
 
+This file is SELF-CONTAINED for use as a reference pattern. It defines inline
+versions of DomainEvent and event classes so the pattern can be read without
+any external imports. The real implementations live in:
+    - src/shared_kernel/domain_event.py (DomainEvent base)
+    - domain event modules (concrete events)
+
 References:
     - architecture-standards.md (line 99)
     - work_tracking/domain/aggregates/base.py
@@ -15,15 +21,84 @@ Exports:
 
 from __future__ import annotations
 
+import uuid
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from datetime import datetime
-from typing import TypeVar
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from typing import Any, TypeVar
 
-from src.shared_kernel.domain_event import DomainEvent
+# ---------------------------------------------------------------------------
+# Inline helpers (mirrors shared_kernel/domain_event.py)
+# ---------------------------------------------------------------------------
 
-# Import example events from the event pattern
-from .domain_event_pattern import QualityMetricsUpdated, StatusChanged, WorkItemCreated
+
+def _generate_event_id() -> str:
+    """Generate a unique event ID."""
+    return f"EVT-{uuid.uuid4()}"
+
+
+def _current_timestamp() -> datetime:
+    """Get current UTC timestamp."""
+    return datetime.now(UTC)
+
+
+# ---------------------------------------------------------------------------
+# Inline DomainEvent base (simplified from shared_kernel/domain_event.py)
+# In real code, import DomainEvent from src.shared_kernel.domain_event.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class DomainEvent:
+    """Simplified base class for pattern reference. See shared_kernel/domain_event.py."""
+
+    aggregate_id: str
+    aggregate_type: str
+    event_id: str = field(default_factory=_generate_event_id)
+    timestamp: datetime = field(default_factory=_current_timestamp)
+    version: int = 1
+
+    def _payload(self) -> dict[str, Any]:
+        """Return event-specific payload data. Override is optional."""
+        return {}
+
+
+# ---------------------------------------------------------------------------
+# Inline event classes (from domain_event_pattern.py)
+# In real code, these would be separate event modules.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class WorkItemCreated(DomainEvent):
+    """Creation event for WorkItem aggregate."""
+
+    title: str = ""
+    work_type: str = "task"
+    priority: str = "medium"
+
+
+@dataclass(frozen=True)
+class StatusChanged(DomainEvent):
+    """State transition event recording before/after status."""
+
+    old_status: str = ""
+    new_status: str = ""
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
+class QualityMetricsUpdated(DomainEvent):
+    """Quality metrics update event with gate evaluation."""
+
+    coverage_percent: float | None = None
+    positive_tests: int | None = None
+    negative_tests: int | None = None
+    gate_level: str | None = None
+    gate_passed: bool = False
+    gate_failures: tuple[str, ...] = field(default_factory=tuple)
+
 
 # Type variable for self-returning factory methods
 TAggregateRoot = TypeVar("TAggregateRoot", bound="AggregateRoot")

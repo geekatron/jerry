@@ -6,20 +6,25 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 activation-keywords:
   - "adversarial review"
   - "adversary"
-  - "quality review"
+  - "adversarial quality review"
   - "strategy review"
   - "adversarial critique"
+  - "rigorous critique"
+  - "formal critique"
   - "run adversarial"
   - "quality scoring"
   - "LLM-as-Judge"
   - "strategy selection"
   - "tournament review"
+  - "red team"
+  - "devil's advocate"
+  - "steelman"
+  - "pre-mortem"
   - "C2 review"
   - "C3 review"
-  - "standard review"
-  - "significant review"
-  - "mid-tier review"
-  - "quick adversarial"
+  - "C4 review"
+  - "tournament mode"
+  - "quality gate"
 ---
 
 # Adversary Skill
@@ -69,8 +74,10 @@ Activate when:
 **Do NOT use when:**
 
 - You need a creator-critic-revision loop (use `/problem-solving` with ps-critic instead)
-- You need code review or defect detection (use ps-reviewer)
+- You need routine code review for quick defect checks (use ps-reviewer)
 - You need constraint validation (use ps-validator)
+
+> **Note:** Use `/adversary` for adversarial code review (e.g., red team security review, tournament quality assessment of code artifacts). Use `ps-reviewer` for routine defect detection.
 
 ### Relationship to ps-critic
 

@@ -8,12 +8,13 @@
 | Section | Purpose |
 |---------|---------|
 | [Exception Hierarchy Rationale](#exception-hierarchy-rationale) | Why we have specific exception types |
-| [Exception Selection Guide](#exception-selection-guide) | Which exception to use when |
+| [Exception Selection Guide](#exception-selection-guide) | Which exception to use when (with ambiguous cases) |
 | [Error Message Best Practices](#error-message-best-practices) | Crafting helpful error messages |
 | [Exception Patterns](#exception-patterns) | Common exception implementation patterns |
 | [Handling vs Propagating](#handling-vs-propagating) | When to catch, when to let bubble up |
 | [Exception Chaining](#exception-chaining) | Preserving exception context |
 | [Domain vs Infrastructure Exceptions](#domain-vs-infrastructure-exceptions) | Layer-appropriate error handling |
+| [Evidence](#evidence) | Verified codebase file paths and code quotes |
 
 ---
 
@@ -172,6 +173,21 @@ What went wrong?
 
 ---
 
+### Ambiguous Cases
+
+These are the hard questions that come up in practice. Use this table for escalation guidance.
+
+| Question | Guidance | Escalation |
+|----------|----------|------------|
+| **ValidationError vs InvariantViolationError?** | `ValidationError` = input can be checked in isolation (format, range, type). `InvariantViolationError` = checking requires domain state (uniqueness, cross-entity rules). | If unsure, prefer `ValidationError` for input checks, `InvariantViolationError` for domain rules. |
+| **InvalidStateError vs InvalidStateTransitionError?** | `InvalidStateTransitionError` = you have an explicit state machine with defined allowed transitions. `InvalidStateError` = the operation is simply not valid in the current state (no formal state machine). | If the entity has a `can_transition_to()` method, use `InvalidStateTransitionError`. Otherwise, use `InvalidStateError`. |
+| **NotFoundError vs returning None?** | Repositories return `None` from `get()` (caller decides). Repositories raise `NotFoundError` from `get_or_raise()` (immediate failure). | Use `get()` when absence is a valid outcome (e.g., checking existence). Use `get_or_raise()` when absence means the operation cannot proceed. |
+| **Infrastructure exception -- wrap or propagate?** | Infrastructure exceptions (e.g., `FileNotFoundError`, `json.JSONDecodeError`) MUST be converted to domain exceptions at the adapter boundary. Domain and application layers should never see infrastructure exceptions. | See [Domain vs Infrastructure Exceptions](#domain-vs-infrastructure-exceptions). |
+| **Multiple fields invalid?** | Currently, raise `ValidationError` for the first failing field. Future consideration: aggregate errors into a multi-field validation result. | Not yet implemented. Raise for first failure. |
+| **DomainError subclass not suitable?** | If none of the existing exceptions fit, escalate to architecture review (C3). Do NOT create a new exception without review. | Escalate via `/architecture` skill. Document the gap. |
+
+---
+
 ### Exception Usage Examples
 
 #### ValidationError
@@ -185,6 +201,7 @@ What went wrong?
 
 **Example 1: Value Object Validation**
 ```python
+# (Hypothetical -- illustrative pattern)
 @dataclass(frozen=True)
 class Percentage:
     """Value object representing a percentage (0-100)."""
@@ -896,13 +913,144 @@ def complete_item(item_id: str, dispatcher: ICommandDispatcher) -> None:
 
 ---
 
+## Evidence
+
+> Verified references to actual Jerry codebase files demonstrating the exception patterns in this guide.
+
+### Exception Hierarchy -- Real Implementation
+
+**`src/shared_kernel/exceptions.py`** -- Actual exception classes:
+```python
+# (From: src/shared_kernel/exceptions.py, lines 15-77)
+class DomainError(Exception):
+    """Base class for all domain errors."""
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(message)
+
+class NotFoundError(DomainError):
+    """Entity not found."""
+    def __init__(self, entity_type: str, entity_id: str) -> None:
+        self.entity_type = entity_type
+        self.entity_id = entity_id
+        super().__init__(f"{entity_type} '{entity_id}' not found")
+
+class InvalidStateError(DomainError):
+    """Operation invalid for current state."""
+    def __init__(self, current_state: str, attempted_action: str) -> None:
+        self.current_state = current_state
+        self.attempted_action = attempted_action
+        super().__init__(f"Cannot {attempted_action} in state {current_state}")
+
+class ConcurrencyError(DomainError):
+    """Optimistic concurrency conflict."""
+    def __init__(self, expected_version: int, actual_version: int) -> None:
+        self.expected_version = expected_version
+        self.actual_version = actual_version
+        super().__init__(
+            f"Concurrency conflict: expected version {expected_version}, "
+            f"actual version {actual_version}"
+        )
+
+class ValidationError(DomainError):
+    """Input validation failed."""
+    def __init__(self, field: str, message: str) -> None:
+        self.field = field
+        self.validation_message = message
+        super().__init__(f"Validation failed for '{field}': {message}")
+```
+
+**Note**: The actual `InvalidStateError` signature uses `(current_state, attempted_action)`, not `(entity_type, entity_id, current_state)` as shown in some hypothetical examples. The hypothetical examples in the decision tree show an enriched pattern that could be adopted.
+
+### Bounded-Context Exceptions -- Real Implementation
+
+**`src/session_management/domain/exceptions.py`** -- Context-specific exceptions:
+```python
+# (From: src/session_management/domain/exceptions.py, lines 24-58)
+class InvalidProjectIdError(DomainError):
+    """Raised when a project ID does not conform to the required format."""
+    def __init__(self, value: str, reason: str) -> None:
+        self.value = value
+        self.reason = reason
+        super().__init__(f"Invalid project ID '{value}': {reason}")
+
+class ProjectNotFoundError(DomainError):
+    """Raised when a project cannot be found at the expected location."""
+    def __init__(self, project_id: str, path: str | None = None) -> None:
+        self.project_id = project_id
+        self.path = path
+        message = f"Project '{project_id}' not found"
+        if path:
+            message += f" at path '{path}'"
+        super().__init__(message)
+```
+
+### Exception at Layer Boundary -- Real Implementation
+
+**`src/session_management/infrastructure/adapters/filesystem_project_adapter.py`** -- Infrastructure exception conversion:
+```python
+# (From: src/session_management/infrastructure/adapters/filesystem_project_adapter.py, lines 81-86)
+except PermissionError as e:
+    raise RepositoryError(
+        f"Permission denied accessing projects directory: {base_path}", cause=e
+    ) from e
+except OSError as e:
+    raise RepositoryError(f"Error accessing projects directory: {e}", cause=e) from e
+```
+
+### Fail-Safe Error Handling -- Real Implementation
+
+**`src/infrastructure/adapters/persistence/filesystem_local_context_adapter.py`** -- Swallowing infrastructure errors safely:
+```python
+# (From: src/infrastructure/adapters/persistence/filesystem_local_context_adapter.py, lines 57-68)
+def read(self) -> dict[str, Any]:
+    """Read the full local context configuration.
+
+    Returns:
+        Dictionary with parsed TOML content.
+        Returns empty dict if file doesn't exist or is invalid.
+    """
+    if not self._context_path.exists():
+        return {}
+    try:
+        with self._context_path.open("rb") as f:
+            content = f.read()
+            if not content:
+                return {}
+            return tomllib.loads(content.decode("utf-8"))
+    except (OSError, tomllib.TOMLDecodeError, UnicodeDecodeError):
+        return {}
+```
+
+### Real Exception File Locations
+
+| Exception Class | File Path |
+|----------------|-----------|
+| `DomainError` | `src/shared_kernel/exceptions.py` |
+| `ValidationError` | `src/shared_kernel/exceptions.py` |
+| `NotFoundError` | `src/shared_kernel/exceptions.py` |
+| `InvalidStateError` | `src/shared_kernel/exceptions.py` |
+| `InvalidStateTransitionError` | `src/shared_kernel/exceptions.py` |
+| `InvariantViolationError` | `src/shared_kernel/exceptions.py` |
+| `ConcurrencyError` | `src/shared_kernel/exceptions.py` |
+| `InvalidProjectIdError` | `src/session_management/domain/exceptions.py` |
+| `ProjectNotFoundError` | `src/session_management/domain/exceptions.py` |
+| `ProjectValidationError` | `src/session_management/domain/exceptions.py` |
+| `QueryHandlerNotFoundError` | `src/application/ports/primary/iquerydispatcher.py` |
+| `DuplicateHandlerError` | `src/application/ports/primary/icommanddispatcher.py` |
+| `RepositoryError` | `src/session_management/application/ports/exceptions.py` |
+
+**Note**: `QualityGateError` is referenced in the rules (`coding-standards.md`) but does not yet exist in the codebase. It is a planned exception for the quality framework.
+
+---
+
 ## References
 
 ### Related Documents
 
 - [Coding Standards](../rules/coding-standards.md) - Exception hierarchy, error handling rules
+- [Coding Practices Guide](coding-practices.md) - Quick reference table (cross-references this guide)
 - [Architecture Layers Guide](architecture-layers.md) - Layer responsibilities
-- [Coding Practices Guide](coding-practices.md) - Exception patterns
 
 ### External References
 

@@ -31,6 +31,24 @@ activation-keywords:
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Purpose](#purpose) | What this skill does |
+| [When to Use This Skill](#when-to-use-this-skill) | Activation triggers |
+| [Available Agents](#available-agents) | Agent registry for this skill |
+| [Commands](#commands) | CLI commands and examples |
+| [Architectural Principles](#architectural-principles) | Core design principles |
+| [Layer Dependency Rules](#layer-dependency-rules) | Import boundary enforcement |
+| [Templates](#templates) | Available templates |
+| [Constitutional Compliance](#constitutional-compliance) | Principle mapping |
+| [Integration with Other Skills](#integration-with-other-skills) | Cross-skill workflows |
+| [Quick Reference](#quick-reference) | Common tasks and decision workflows |
+| [References](#references) | Canonical sources |
+
+---
+
 ## Document Audience (Triple-Lens)
 
 This SKILL.md serves multiple audiences:
@@ -403,6 +421,30 @@ The architecture skill integrates with other Jerry skills:
 **Cross-Skill Handoff:**
 - `ps-architect` output → `architecture review` command for validation
 - `nse-architecture` trade study → `architecture decision` for ADR creation
+
+---
+
+## Quick Reference
+
+### Common Tasks
+
+| Task | Command / Approach | Output |
+|------|--------------------|--------|
+| Verify layer compliance | `@architecture analyze src/domain/` | Console report with pass/fail |
+| Generate hexagonal diagram | `@architecture diagram hexagonal --format mermaid` | Mermaid diagram |
+| Review design document | `@architecture review docs/design/AUTH_DESIGN.md --checklist hexagonal` | Checklist report |
+| Create an ADR | `@architecture decision "Use SQLite for persistence"` | `docs/design/ADR_NNN_*.md` |
+| Check import boundaries | `@architecture analyze src/ --depth deep` | Full dependency analysis |
+
+### Decision Workflow Summary
+
+| Step | Action | Artifact |
+|------|--------|----------|
+| 1. Identify need | Recognize architectural choice required | Problem statement |
+| 2. Research options | Use `/problem-solving` for analysis | Research findings |
+| 3. Evaluate trade-offs | Use `/nasa-se` for formal trade study | Trade study matrix |
+| 4. Document decision | `@architecture decision "<title>"` | ADR in `docs/design/` |
+| 5. Validate compliance | `@architecture analyze <path>` | Compliance report |
 
 ---
 

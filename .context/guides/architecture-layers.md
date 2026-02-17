@@ -14,6 +14,7 @@
 | [Common Mistakes](#common-mistakes) | Anti-patterns and how to fix them |
 | [Shared Kernel](#shared-kernel) | Cross-cutting concerns |
 | [Enforcement Mechanisms](#enforcement-mechanisms) | How rules are checked |
+| [Evidence](#evidence) | Verified codebase file paths and code quotes |
 
 ---
 
@@ -79,6 +80,7 @@ Hexagonal Architecture (also called Ports and Adapters) is a pattern that **prot
 
 **Example** (Valid):
 ```python
+# (Hypothetical -- illustrative pattern)
 # src/domain/aggregates/work_item.py
 from dataclasses import dataclass
 from datetime import datetime
@@ -96,6 +98,8 @@ class WorkItem:
             raise InvalidStateError(...)
         self.status = Status.COMPLETED
 ```
+
+**Real codebase example**: See `src/session_management/domain/aggregates/session.py` for the actual `Session` aggregate with `complete()` and `abandon()` methods.
 
 **Example** (Invalid):
 ```python
@@ -277,23 +281,24 @@ class SqlAlchemyAdapter(IRepository):
 2. **Easy to swap implementations** (e.g., in-memory for tests)
 3. **Prevents scattered `new` calls** throughout codebase
 
-**Example**:
+**Example** (simplified from the real `src/bootstrap.py`):
 ```python
-# src/bootstrap.py
+# (From: src/bootstrap.py, lines 436-500 -- simplified)
 def create_command_dispatcher() -> CommandDispatcher:
-    # Infrastructure adapters created here
-    repository = FilesystemWorkItemAdapter(base_path=Path(".jerry"))
-    event_store = InMemoryEventStore()
+    # Infrastructure singletons created here
+    session_repository = get_session_repository()
+    work_item_repository = get_work_item_repository()
+    id_generator = get_id_generator()
 
     # Handlers injected with adapters
-    handler = CreateWorkItemCommandHandler(
-        repository=repository,
-        event_store=event_store,
+    create_work_item_handler = CreateWorkItemCommandHandler(
+        repository=work_item_repository,
+        id_generator=id_generator,
     )
 
     # Dispatcher configured
     dispatcher = CommandDispatcher()
-    dispatcher.register(CreateWorkItemCommand, handler.handle)
+    dispatcher.register(CreateWorkItemCommand, create_work_item_handler.handle)
     return dispatcher
 ```
 
@@ -331,6 +336,21 @@ START: What is the code's primary concern?
       ├─ HTTP? → API Adapter
       └─ Git hook? → Hook Adapter
 ```
+
+### Ambiguous Cases: "Where does this code go?"
+
+| Question | Guidance |
+|----------|----------|
+| **Validation logic** -- domain or application? | If it checks a business invariant (e.g., "percentages must sum to 100%"), it belongs in the **domain**. If it validates input format (e.g., "title must be non-empty string"), it can live in the **command/query dataclass** (application layer). |
+| **Logging** -- which layer? | Logging is a cross-cutting concern. Infrastructure adapters MAY log I/O operations. Application handlers MAY log use case entry/exit. Domain MUST NOT log (pure logic). |
+| **Configuration reading** -- domain or infrastructure? | Reading config files/env vars is **infrastructure**. The config values themselves may be domain value objects. Use a port to abstract config access. |
+| **ID generation** -- domain or infrastructure? | ID format/validation is **domain** (e.g., `ProjectId.parse()`). ID generation mechanics (UUID, Snowflake) are **shared_kernel** or **infrastructure**. Jerry uses `shared_kernel/snowflake_id.py`. |
+| **Serialization** -- application or infrastructure? | Serialization to/from external formats (JSON, TOML, TOON) is **infrastructure**. DTOs that define the shape of data are **application**. |
+| **Cross-context communication?** | Use **domain events** via shared_kernel, not direct imports. If you need to reference another context's entity, use its ID (a value object) from shared_kernel, not the entity itself. |
+
+**Escalation**: If the decision tree and ambiguous cases table don't resolve your question, invoke `/architecture` skill for a design decision review.
+
+---
 
 ### "Can I import this?"
 
@@ -600,6 +620,102 @@ def test_domain_has_no_infrastructure_imports():
 - Reviewers check for layer violations
 - Look for imports that violate dependency rules
 - Verify H-09 (only bootstrap instantiates infrastructure)
+
+---
+
+## Evidence
+
+> Verified references to actual Jerry codebase files demonstrating the layer architecture.
+
+### Layer Structure -- Real Directory Layout
+
+```
+src/
+  bootstrap.py                                           # Composition root (H-09)
+  shared_kernel/                                         # Cross-cutting: VertexId, DomainEvent, exceptions
+  application/
+    dispatchers/query_dispatcher.py                      # QueryDispatcher (routes queries)
+    dispatchers/command_dispatcher.py                    # CommandDispatcher (routes commands)
+    handlers/queries/retrieve_project_context_query_handler.py
+    handlers/queries/scan_projects_query_handler.py
+    ports/primary/iquerydispatcher.py                    # Primary port (Protocol)
+    ports/primary/icommanddispatcher.py                  # Primary port (Protocol)
+    ports/secondary/iread_model_store.py                 # Secondary port (Protocol)
+    queries/retrieve_project_context_query.py            # Query dataclass
+  infrastructure/
+    adapters/persistence/filesystem_local_context_adapter.py  # Secondary adapter
+    adapters/persistence/atomic_file_adapter.py
+    adapters/serialization/toon_serializer.py
+    read_models/in_memory_read_model_store.py
+  interface/
+    cli/adapter.py                                       # CLI adapter
+    cli/main.py                                          # CLI entry point
+  session_management/                                    # Bounded context
+    domain/aggregates/session.py                         # Session aggregate
+    domain/value_objects/project_id.py                   # ProjectId value object
+    domain/events/session_events.py                      # Domain events
+    application/commands/create_session_command.py        # Command
+    application/handlers/commands/create_session_command_handler.py
+    infrastructure/adapters/filesystem_project_adapter.py # Adapter
+```
+
+### Composition Root (H-09) -- Real Implementation
+
+**`src/bootstrap.py`** is the sole composition root. It:
+- Imports ALL infrastructure adapters (lines 47-106)
+- Creates singleton instances via factory functions
+- Wires handlers with their dependencies
+- Exposes `create_query_dispatcher()` and `create_command_dispatcher()`
+
+```python
+# (From: src/bootstrap.py, lines 1-8)
+"""
+Composition Root - Application Bootstrap.
+
+This module is the sole owner of dependency wiring.
+It creates infrastructure adapters and wires them to handlers.
+
+The key principle: NO adapter should instantiate its own dependencies.
+All dependencies are created HERE and injected.
+"""
+```
+
+### Architecture Tests -- Real Files
+
+| Test File | What It Verifies |
+|-----------|-----------------|
+| `tests/architecture/test_composition_root.py` | Bootstrap imports infrastructure; dispatchers/ports do not (H-09) |
+| `tests/architecture/test_config_boundaries.py` | Domain has no infra/app imports; adapters implement ports |
+| `tests/session_management/architecture/test_architecture.py` | Per-context: domain layer stdlib-only, dependency direction inward |
+
+**`tests/architecture/test_composition_root.py`** -- AST-based import checking:
+```python
+# (From: tests/architecture/test_composition_root.py, lines 84-92)
+def test_bootstrap_imports_infrastructure(self) -> None:
+    """Bootstrap legitimately imports from infrastructure."""
+    bootstrap_path = Path("src/bootstrap.py")
+    assert bootstrap_path.exists(), "bootstrap.py must exist"
+
+    imports = get_imports_from_file(bootstrap_path)
+
+    # Bootstrap SHOULD import infrastructure
+    assert has_infrastructure_import(imports), "Bootstrap must import infrastructure adapters"
+```
+
+### Bounded Contexts -- Real Structure
+
+Jerry currently has these bounded contexts under `src/`:
+
+| Context | Path | Domain Entities |
+|---------|------|-----------------|
+| Session Management | `src/session_management/` | `Session`, `ProjectId`, `SessionId`, `ProjectInfo` |
+| Work Tracking | `src/work_tracking/` | Work items, event-sourced repository |
+| Transcript | `src/transcript/` | VTT parsing, chunking |
+| Configuration | `src/configuration/` | Config aggregates, value objects |
+
+### CI Pipeline Enforcement
+
+**`.github/workflows/ci.yml`** runs architecture tests as part of the `test-pip` and `test-uv` jobs (lines 239-251 and 325-336). Architecture test failures block merge to main.
 
 ---
 

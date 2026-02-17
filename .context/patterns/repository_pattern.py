@@ -277,9 +277,8 @@ class FileRepository(Generic[TAggregate, TId]):
                 # If stored version > aggregate version = conflict
                 if existing_version > aggregate_version:
                     raise ConcurrencyError(
-                        str(aggregate_id),
-                        expected=aggregate_version,
-                        actual=existing_version,
+                        expected_version=aggregate_version,
+                        actual_version=existing_version,
                     )
             except Exception:
                 pass  # File was deleted or corrupted
@@ -366,13 +365,17 @@ class ISerializer(Protocol[TAggregate]):
 
 
 class ConcurrencyError(Exception):
-    """Optimistic concurrency conflict."""
+    """
+    Optimistic concurrency conflict.
 
-    def __init__(self, aggregate_id: str, expected: int, actual: int) -> None:
-        self.aggregate_id = aggregate_id
-        self.expected_version = expected
-        self.actual_version = actual
+    Matches the real signature in src/shared_kernel/exceptions.py:
+        ConcurrencyError(expected_version: int, actual_version: int)
+    """
+
+    def __init__(self, expected_version: int, actual_version: int) -> None:
+        self.expected_version = expected_version
+        self.actual_version = actual_version
         super().__init__(
-            f"Concurrency conflict for {aggregate_id}: "
-            f"expected version {expected}, actual version {actual}"
+            f"Concurrency conflict: expected version {expected_version}, "
+            f"actual version {actual_version}"
         )

@@ -14,6 +14,7 @@
 | [Composition Root Pattern](#composition-root-pattern) | Centralized dependency injection |
 | [Bounded Contexts](#bounded-contexts) | Context boundaries and communication |
 | [Repository Pattern](#repository-pattern) | Aggregate persistence abstraction |
+| [Evidence](#evidence) | Verified codebase file paths and code quotes |
 
 ---
 
@@ -25,6 +26,7 @@ How do you keep business logic independent of technical details (databases, APIs
 
 **Bad approach**: Let domain code directly call infrastructure:
 ```python
+# (Hypothetical -- illustrative anti-pattern)
 class WorkItem:
     def save(self) -> None:
         # ❌ Domain tightly coupled to PostgreSQL
@@ -45,6 +47,7 @@ class WorkItem:
 **Adapter**: A concrete implementation that provides what the application needs.
 
 ```python
+# (Hypothetical -- illustrative pattern; real ports in src/application/ports/)
 # PORT (defined by domain/application)
 class IRepository(Protocol):
     def save(self, work_item: WorkItem) -> None: ...
@@ -840,6 +843,168 @@ class InMemoryWorkItemRepository(IRepository[WorkItem, WorkItemId]):
 - **Fast tests**: No I/O overhead
 - **Simple**: No database setup required
 - **Implements same port**: Tests use same interface as production
+
+---
+
+## Evidence
+
+> Verified references to actual Jerry codebase files demonstrating the patterns in this guide.
+
+### Ports and Adapters -- Real Files
+
+**Primary Ports** (driving side, in `src/application/ports/primary/`):
+
+| Port | File | Pattern |
+|------|------|---------|
+| `IQueryDispatcher` | `src/application/ports/primary/iquerydispatcher.py` | `@runtime_checkable Protocol` |
+| `ICommandDispatcher` | `src/application/ports/primary/icommanddispatcher.py` | `@runtime_checkable Protocol` |
+
+**Secondary Ports** (driven side, in `src/application/ports/secondary/`):
+
+| Port | File | Pattern |
+|------|------|---------|
+| `IReadModelStore` | `src/application/ports/secondary/iread_model_store.py` | `@runtime_checkable Protocol` |
+| `ILocalContextReader` | `src/application/ports/secondary/ilocal_context_reader.py` | Protocol |
+| `ILlmContextSerializer` | `src/application/ports/secondary/illm_context_serializer.py` | Protocol |
+
+**Adapters** (implementing ports):
+
+| Adapter | File | Implements |
+|---------|------|-----------|
+| `FilesystemProjectAdapter` | `src/session_management/infrastructure/adapters/filesystem_project_adapter.py` | `IProjectRepository` |
+| `FilesystemLocalContextAdapter` | `src/infrastructure/adapters/persistence/filesystem_local_context_adapter.py` | `ILocalContextReader` |
+| `InMemorySessionRepository` | `src/session_management/infrastructure/adapters/in_memory_session_repository.py` | `ISessionRepository` |
+| `InMemoryReadModelStore` | `src/infrastructure/read_models/in_memory_read_model_store.py` | `IReadModelStore` |
+| `ToonSerializer` | `src/infrastructure/adapters/serialization/toon_serializer.py` | `ILlmContextSerializer` |
+
+### CQRS -- Real Files
+
+**Commands**:
+
+| Command | File |
+|---------|------|
+| `CreateWorkItemCommand` | `src/work_tracking/application/commands/` |
+| `CreateSessionCommand` | `src/session_management/application/commands/create_session_command.py` |
+| `EndSessionCommand` | `src/session_management/application/commands/end_session_command.py` |
+| `ParseTranscriptCommand` | `src/transcript/application/commands/` |
+
+**Queries**:
+
+| Query | File |
+|-------|------|
+| `RetrieveProjectContextQuery` | `src/application/queries/retrieve_project_context_query.py` |
+| `ScanProjectsQuery` | `src/application/queries/scan_projects_query.py` |
+| `ValidateProjectQuery` | `src/application/queries/validate_project_query.py` |
+| `GetSessionStatusQuery` | `src/session_management/application/queries/get_session_status_query.py` |
+
+**Real query example**:
+```python
+# (From: src/application/queries/retrieve_project_context_query.py)
+@dataclass(frozen=True)
+class RetrieveProjectContextQuery:
+    """Query for retrieving full project context."""
+    base_path: str
+```
+
+### Event Sourcing -- Real Files
+
+**Domain Events** (past tense naming, `@dataclass(frozen=True)`):
+
+```python
+# (From: src/session_management/domain/events/session_events.py, lines 31-44)
+@dataclass(frozen=True)
+class SessionCreated(DomainEvent):
+    """Event emitted when a new session is created."""
+    description: str = ""
+    project_id: str | None = None
+
+@dataclass(frozen=True)
+class SessionCompleted(DomainEvent):
+    """Event emitted when a session is successfully completed."""
+    summary: str = ""
+    completed_at: datetime = field(default_factory=_utc_now)
+```
+
+**DomainEvent base class**:
+```python
+# (From: src/shared_kernel/domain_event.py, lines 38-79)
+@dataclass(frozen=True)
+class DomainEvent:
+    """Base class for all domain events."""
+    aggregate_id: str
+    aggregate_type: str
+    event_id: str = field(default_factory=_generate_event_id)
+    timestamp: datetime = field(default_factory=_current_timestamp)
+    version: int = 1
+```
+
+**Aggregate Root with event sourcing** (real example):
+```python
+# (From: src/session_management/domain/aggregates/session.py, lines 252-275)
+def _apply(self, event: DomainEvent) -> None:
+    """Apply an event to update aggregate state."""
+    if isinstance(event, SessionCreated):
+        self._status = SessionStatus.ACTIVE
+        self._description = event.description
+        self._project_id = event.project_id
+        self._completed_at = None
+    elif isinstance(event, SessionCompleted):
+        self._status = SessionStatus.COMPLETED
+        self._completed_at = event.completed_at
+```
+
+### Composition Root -- Real Implementation
+
+**`src/bootstrap.py`** -- Centralized dependency wiring:
+```python
+# (From: src/bootstrap.py, lines 356-412 -- simplified)
+def create_query_dispatcher() -> QueryDispatcher:
+    # Create infrastructure adapters (secondary adapters)
+    project_repository = FilesystemProjectAdapter()
+    environment = OsEnvironmentAdapter()
+    session_repository = get_session_repository()
+    local_context_reader = FilesystemLocalContextAdapter(base_path=base_path)
+
+    # Create handlers with injected dependencies
+    retrieve_handler = RetrieveProjectContextQueryHandler(
+        repository=project_repository,
+        environment=environment,
+        local_context_reader=local_context_reader,
+    )
+
+    # Register handlers
+    dispatcher = QueryDispatcher()
+    dispatcher.register(RetrieveProjectContextQuery, retrieve_handler.handle)
+    return dispatcher
+```
+
+### Bounded Contexts -- Real Structure
+
+```
+src/
+  session_management/     # BC: Projects, sessions, environment
+    domain/aggregates/session.py
+    domain/value_objects/project_id.py
+    domain/events/session_events.py
+    application/commands/
+    application/handlers/
+    infrastructure/adapters/
+  work_tracking/          # BC: Work items, tasks, workflows
+    domain/aggregates/
+    application/commands/
+    infrastructure/adapters/
+  transcript/             # BC: VTT parsing, chunking
+    application/commands/
+    infrastructure/adapters/
+  configuration/          # BC: Configuration management
+    domain/aggregates/configuration.py
+    domain/value_objects/config_key.py
+  shared_kernel/          # Cross-context shared code
+    vertex_id.py          # Identity types
+    domain_event.py       # Event base class
+    exceptions.py         # Exception hierarchy
+    entity_base.py        # Entity base class
+```
 
 ---
 

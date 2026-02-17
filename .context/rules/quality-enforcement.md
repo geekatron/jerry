@@ -15,7 +15,7 @@
 | [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006 |
 | [Enforcement Architecture](#enforcement-architecture) | L1-L5 layer definitions |
 | [Strategy Catalog](#strategy-catalog) | S-001 through S-015 (selected and excluded) |
-| [Implementation](#implementation) | Operational implementation via /adversary skill |
+| [Implementation](#implementation) | Operational implementation via /adversary skill, skill routing decision table |
 | [References](#references) | Source document traceability |
 
 ---
@@ -215,6 +215,23 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 - `/adversary` skill: Standalone adversarial reviews and tournament scoring
 - `ps-critic` agent: Embedded adversarial quality within creator-critic-revision loops (H-14)
 - Both use the same SSOT thresholds, dimensions, and strategy catalog
+
+### Skill Routing Decision Table
+
+Use this table to determine which skill or agent handles a given quality request:
+
+| User Request | Skill / Agent | Rationale |
+|---|---|---|
+| "Review this code for bugs" | ps-reviewer | Routine defect detection |
+| "Give me adversarial critique of this architecture" | /adversary (adv-executor) | Standalone adversarial review outside creator-critic loop |
+| "Improve this deliverable iteratively" | /problem-solving (ps-critic) | Creator-critic-revision loop per H-14 |
+| "Run tournament review for C4" | /adversary (all agents) | Full tournament mode with all 10 strategies |
+| "Score this deliverable against quality gate" | /adversary (adv-scorer) | Standalone S-014 LLM-as-Judge scoring |
+| "Red team this security design" | /adversary (adv-executor) | S-001 Red Team strategy application |
+| "Check if this ADR meets constitutional constraints" | /adversary (adv-executor) | S-007 Constitutional AI Critique |
+| "Help me research why this approach failed" | /problem-solving | Research and root-cause analysis |
+
+> **Disambiguation rule:** If the request involves iterative improvement with revision cycles, use `/problem-solving` (ps-critic). If the request involves a one-shot adversarial assessment, strategy execution, or tournament scoring, use `/adversary`. See `mandatory-skill-usage.md` trigger map for keyword-level routing.
 
 ---
 

@@ -13,8 +13,10 @@
 | [Overview](#overview) | What this directory contains |
 | [Contents](#contents) | File-by-file reference |
 | [Usage](#usage) | How to use these resources |
+| [Quick Reference](#quick-reference) | Common tasks for skill authors |
 | [For Skill Authors](#for-skill-authors) | Creating new skills |
 | [Constitutional Compliance](#constitutional-compliance) | Governance principles |
+| [References](#references) | Source documents and links |
 
 ---
 
@@ -207,6 +209,30 @@ When designing a multi-agent workflow:
 3. Use session context schema (v1.0.0) for state handoff
 4. Apply cognitive mode translation if crossing divergent/convergent boundary
 5. Verify constitutional compliance (P-002, P-003, P-010, P-022)
+
+---
+
+## Quick Reference
+
+Common tasks for skill authors and which shared resource to use:
+
+| Task | Shared Resource | Path |
+|------|----------------|------|
+| Create a new agent definition | AGENT_TEMPLATE_CORE.md + domain extension | `skills/shared/AGENT_TEMPLATE_CORE.md` |
+| Select multi-agent workflow pattern | ORCHESTRATION_PATTERNS.md decision tree | `skills/shared/ORCHESTRATION_PATTERNS.md` |
+| Create a skill playbook | PLAYBOOK_TEMPLATE.md | `skills/shared/PLAYBOOK_TEMPLATE.md` |
+| Define cross-skill handoff | CROSS_SKILL_HANDOFF.yaml | `skills/shared/contracts/CROSS_SKILL_HANDOFF.yaml` |
+| Generate composed agent template | Composition script | `scripts/compose_agent_template.py --domain {ps\|nse}` |
+| Translate cognitive modes at handoff | CROSS_SKILL_HANDOFF.yaml translation rules | `skills/shared/contracts/CROSS_SKILL_HANDOFF.yaml` |
+
+### Composing an Agent Template (Walkthrough)
+
+1. **Pick your domain** - Determine if the agent belongs to `ps` (problem-solving), `nse` (NASA SE), or a new domain
+2. **Check for domain extension** - Look for `{DOMAIN}_EXTENSION.md` in your skill directory (e.g., `PS_EXTENSION.md`)
+3. **Run composition** - `python3 scripts/compose_agent_template.py --domain {domain} --output agents/{agent-name}.md`
+4. **Fill placeholders** - Replace all 9 `{PLACEHOLDER}` values with agent-specific content
+5. **Validate** - Ensure P-002 (file persistence), P-003 (no recursive subagents), P-022 (no deception) compliance
+6. **Register** - Add the agent to your skill's SKILL.md agent table
 
 ---
 

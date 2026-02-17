@@ -26,6 +26,26 @@ Let's get your bindings adjusted so you don't have any Jerry moments.
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Purpose](#purpose) | What this skill does |
+| [When to Use This Skill](#when-to-use-this-skill) | Activation triggers |
+| [What This Does](#what-this-does) | How context distribution works |
+| [Quick Start](#quick-start) | Getting started commands |
+| [How It Works](#how-it-works) | Architecture of the sync mechanism |
+| [Options](#options) | CLI flags and arguments |
+| [Troubleshooting](#troubleshooting) | Common issues and solutions |
+| [For Contributors](#for-contributors) | Adding new rules and patterns |
+| [Available Agents](#available-agents) | Agent registry for this skill |
+| [Constitutional Compliance](#constitutional-compliance) | Principle mapping |
+| [Integration with Other Skills](#integration-with-other-skills) | Cross-skill dependencies |
+| [Templates](#templates) | Template usage |
+| [References](#references) | Canonical sources |
+
+---
+
 ## Document Audience (Triple-Lens)
 
 This SKILL.md serves multiple audiences:

@@ -44,6 +44,12 @@ to specific skills. This provides:
 | Transcript Agents | 5 | `/transcript` skill |
 | **Total** | **33** | |
 
+> **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
+> 37 total files found; 4 template/extension files excluded from counts:
+> `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 = 33 invokable agents.
+> Last verified: 2026-02-16.
+
 ---
 
 ## Problem-Solving Skill Agents

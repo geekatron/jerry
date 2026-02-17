@@ -4,9 +4,13 @@ Domain Event Pattern - Canonical implementation for Jerry Framework.
 Domain events are immutable value objects representing significant state changes.
 Use past-tense naming and include EVENT_TYPE class variable.
 
+This file is SELF-CONTAINED for use as a reference pattern. The real base class
+lives in src/shared_kernel/domain_event.py. The inline DomainEvent here is a
+simplified version matching the real API surface.
+
 References:
     - architecture-standards.md (line 98)
-    - shared_kernel/domain_event.py
+    - shared_kernel/domain_event.py (authoritative implementation)
     - ADR-009: Event Storage Mechanism
 
 Exports:
@@ -15,11 +19,101 @@ Exports:
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
-from src.shared_kernel.domain_event import DomainEvent, _current_timestamp, _generate_event_id
+# ---------------------------------------------------------------------------
+# Inline helpers (mirrors shared_kernel/domain_event.py)
+# In real code, import from src.shared_kernel.domain_event instead.
+# ---------------------------------------------------------------------------
+
+
+def _generate_event_id() -> str:
+    """Generate a unique event ID. Real impl uses EventId.generate()."""
+    return f"EVT-{uuid.uuid4()}"
+
+
+def _current_timestamp() -> datetime:
+    """Get current UTC timestamp."""
+    return datetime.now(UTC)
+
+
+# ---------------------------------------------------------------------------
+# Inline DomainEvent base class (simplified from shared_kernel/domain_event.py)
+# In real code, import DomainEvent from src.shared_kernel.domain_event.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class DomainEvent:
+    """
+    Base class for all domain events (simplified pattern version).
+
+    The authoritative implementation is in src/shared_kernel/domain_event.py.
+    This inline version captures the essential API for pattern reference.
+
+    Attributes:
+        aggregate_id: ID of the aggregate this event belongs to
+        aggregate_type: Type name of the aggregate (e.g., "WorkItem")
+        event_id: Unique identifier for this event instance
+        timestamp: When the event occurred (UTC)
+        version: Version number of the aggregate after this event
+    """
+
+    aggregate_id: str
+    aggregate_type: str
+    event_id: str = field(default_factory=_generate_event_id)
+    timestamp: datetime = field(default_factory=_current_timestamp)
+    version: int = 1
+
+    def __post_init__(self) -> None:
+        """Validate event after initialization."""
+        if not self.aggregate_id:
+            raise ValueError("aggregate_id cannot be empty")
+        if not self.aggregate_type:
+            raise ValueError("aggregate_type cannot be empty")
+        if self.version < 1:
+            raise ValueError("version must be >= 1")
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize event to dictionary."""
+        return {
+            "event_type": self.__class__.__name__,
+            "event_id": self.event_id,
+            "aggregate_id": self.aggregate_id,
+            "aggregate_type": self.aggregate_type,
+            "version": self.version,
+            "timestamp": self.timestamp.isoformat(),
+            **self._payload(),
+        }
+
+    def _payload(self) -> dict[str, Any]:
+        """
+        Return event-specific payload data.
+
+        The base class returns an empty dict by default. Override in subclasses
+        ONLY if you have additional fields to serialize. Overriding is OPTIONAL.
+
+        Returns:
+            Dictionary of additional event-specific data.
+        """
+        return {}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> DomainEvent:
+        """Deserialize event from dictionary."""
+        timestamp_str = data.get("timestamp")
+        timestamp = datetime.fromisoformat(timestamp_str) if timestamp_str else _current_timestamp()
+        return cls(
+            event_id=data.get("event_id", _generate_event_id()),
+            aggregate_id=data["aggregate_id"],
+            aggregate_type=data["aggregate_type"],
+            version=data.get("version", 1),
+            timestamp=timestamp,
+        )
+
 
 # =============================================================================
 # Pattern 1: Simple Creation Event
@@ -59,7 +153,13 @@ class WorkItemCreated(DomainEvent):
     priority: str = "medium"
 
     def _payload(self) -> dict[str, Any]:
-        """Return event-specific payload data."""
+        """
+        Return event-specific payload data.
+
+        Override is OPTIONAL -- the base class returns {} by default.
+        Override only when your event has additional fields beyond the
+        base DomainEvent fields (aggregate_id, aggregate_type, version, etc.).
+        """
         return {
             "title": self.title,
             "work_type": self.work_type,

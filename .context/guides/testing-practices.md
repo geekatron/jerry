@@ -15,6 +15,8 @@
 | [Coverage Strategy](#coverage-strategy) | Line, branch, function coverage |
 | [Architecture Testing](#architecture-testing) | Enforcing layer boundaries |
 | [Test Data Management](#test-data-management) | Fixtures, factories, builders |
+| [Current vs Target](#current-vs-target) | Gap analysis between actual and ideal test state |
+| [Evidence](#evidence) | Verified codebase file paths and code quotes |
 
 ---
 
@@ -109,6 +111,7 @@
 
 **Example**:
 ```python
+# (Hypothetical -- illustrative pattern)
 def test_work_item_can_be_completed_when_in_progress():
     """Test domain logic: state transition."""
     # Arrange
@@ -631,6 +634,19 @@ DO NOT mock:
 
 ---
 
+### Ambiguous Cases
+
+| Question | Guidance |
+|----------|----------|
+| **Mock the repository or use in-memory?** | For **unit tests** of handlers, mocking is fine (you are testing handler logic, not repo). For **integration tests**, use in-memory implementations (you are testing handler + repo interaction). |
+| **Should I mock the event store?** | Same principle: mock for unit tests, use `InMemoryEventStore` for integration tests. Never mock for architecture tests. |
+| **What about testing aggregate state transitions?** | NEVER mock the aggregate. Create a real instance, apply operations, and assert state. Aggregates are domain logic -- the core thing you are testing. |
+| **Mock or stub?** | Use `Mock(spec=IRepository)` for verifying interactions (was `save()` called?). Use in-memory implementations for state-based testing (was the item actually saved?). |
+| **Test fixture vs inline setup?** | Use fixtures for reusable setup shared across many tests. Use inline setup when the test is self-documenting and the setup is small (< 5 lines). |
+| **How to test error paths in infrastructure?** | Inject a mock that raises the expected exception. For filesystem adapters, use `tmp_path` (pytest fixture) and manipulate files to create error conditions. |
+
+---
+
 ### Mocking Examples
 
 #### ✅ GOOD: Mock External Service
@@ -1104,6 +1120,153 @@ def test_work_item_with_custom_data():
     item = create_work_item(title="Custom", status=Status.IN_PROGRESS)
     assert item.title == "Custom"
     assert item.status == Status.IN_PROGRESS
+```
+
+---
+
+## Current vs Target
+
+> Gap analysis comparing the current test suite state to the ideal described in this guide.
+
+### Test File Distribution (Current)
+
+Based on the actual `tests/` directory structure:
+
+| Category | Current Files (approx.) | Target % | Current % (est.) | Status |
+|----------|------------------------|----------|-------------------|--------|
+| Unit | ~35 test files across `tests/unit/`, `tests/shared_kernel/`, `tests/session_management/unit/` | 60% | ~55% | Close to target |
+| Integration | ~13 test files in `tests/integration/`, `tests/session_management/integration/` | 15% | ~20% | Slightly above target |
+| Contract | ~3 test files in `tests/contract/` | 5% | ~5% | On target |
+| Architecture | ~5 test files in `tests/architecture/`, `tests/session_management/architecture/` | 5% | ~7% | Slightly above target |
+| System | ~5 test files in `tests/hooks/`, `tests/bootstrap/` | 10% | ~8% | Close to target |
+| E2E | ~4 test files in `tests/e2e/`, `tests/interface/cli/integration/` | 5% | ~6% | On target |
+
+### Coverage Status (Current)
+
+| Metric | Target | CI Configuration | Status |
+|--------|--------|-----------------|--------|
+| Line Coverage | >= 90% (H-21) | `--cov-fail-under=80` in CI | Gap: CI threshold is 80%, rule says 90% |
+| Branch Coverage | >= 85% | Not explicitly configured in CI | Gap: Not enforced |
+| Function Coverage | >= 95% | Not explicitly configured in CI | Gap: Not enforced |
+
+### Key Gaps
+
+1. **Coverage threshold gap**: CI enforces 80% (`ci.yml` line 249), but H-21 requires 90%. The CI threshold should be raised to match the rule.
+2. **Branch coverage not enforced**: `pyproject.toml` does not include `branch = true` in coverage configuration. Consider adding `[tool.coverage.run] branch = true`.
+3. **Test markers**: `pyproject.toml` defines markers for `happy-path`, `negative`, `edge-case`, `boundary` (lines 106-111), but not all tests use these markers consistently.
+4. **Coverage exclusions**: No `[tool.coverage.report] exclude_lines` configuration found in `pyproject.toml`. Should add exclusions for `TYPE_CHECKING`, `@abstractmethod`, etc.
+
+### Recommendations
+
+- **Short-term**: Raise CI coverage threshold to 85%, add branch coverage tracking
+- **Medium-term**: Add coverage exclusion patterns, enforce marker usage on new tests
+- **Long-term**: Reach 90% line coverage target, 85% branch coverage
+
+---
+
+## Evidence
+
+> Verified references to actual Jerry codebase files demonstrating the testing patterns in this guide.
+
+### Test Directory Structure -- Real Layout
+
+```
+tests/
+  architecture/
+    test_composition_root.py                # H-07, H-08, H-09 boundary checks
+    test_config_boundaries.py               # Domain/application boundary enforcement
+    test_check_architecture_boundaries.py   # Cross-module boundary checks
+    test_session_hook_architecture.py        # Hook architecture compliance
+  session_management/
+    architecture/test_architecture.py        # Per-context architecture tests
+    unit/domain/test_session.py              # Session aggregate unit tests
+    unit/domain/test_project_id.py           # Value object unit tests
+    unit/application/test_session_handlers.py # Handler unit tests
+    integration/test_infrastructure.py        # Adapter integration tests
+  shared_kernel/
+    test_domain_event.py                     # DomainEvent unit tests
+    test_exceptions.py                       # Exception hierarchy tests
+    test_vertex_id.py                        # VertexId unit tests
+    test_snowflake_id_bdd.py                 # BDD-style tests
+  unit/
+    application/dispatchers/test_query_dispatcher.py
+    application/handlers/test_get_project_context_handler.py
+    infrastructure/adapters/serialization/test_toon_serializer.py
+  integration/
+    test_event_sourcing_wiring.py            # Event sourcing integration
+    test_filesystem_local_context_adapter.py  # Filesystem adapter integration
+    test_items_commands.py                    # Work item command integration
+    cli/test_cli_dispatcher_integration.py    # CLI dispatcher integration
+  contract/
+    test_hook_output_contract.py             # Hook output format contract
+    transcript/test_chunk_schemas.py          # Transcript chunk schema contract
+  e2e/
+    test_config_commands.py                  # Config CLI e2e
+    test_transcript_model_selection.py        # Transcript model selection e2e
+```
+
+### Architecture Testing -- Real Example
+
+**`tests/session_management/architecture/test_architecture.py`** -- Comprehensive per-context architecture tests:
+```python
+# (From: tests/session_management/architecture/test_architecture.py, lines 175-219)
+class TestDomainLayerArchitecture:
+    def test_domain_layer_has_no_external_imports(self) -> None:
+        """Domain layer MUST NOT import external (non-stdlib) packages."""
+        violations = []
+        for file_path in get_python_files(DOMAIN_PATH):
+            external = get_external_imports(file_path)
+            if external:
+                rel_path = file_path.relative_to(SESSION_MGMT_ROOT)
+                violations.append(f"{rel_path}: {external}")
+        assert not violations, (
+            "Domain layer has external imports (violates stdlib-only rule):\n"
+            + "\n".join(f"  - {v}" for v in violations)
+        )
+```
+
+### CI Pipeline -- Coverage Configuration
+
+**`.github/workflows/ci.yml`** -- Coverage enforcement:
+```yaml
+# (From: .github/workflows/ci.yml, lines 239-251)
+pytest \
+  -m "not subprocess and not llm" \
+  --cov=src \
+  --cov-report=xml \
+  --cov-report=html \
+  --cov-report=term-missing \
+  --cov-fail-under=80 \
+  --junitxml=junit-pip-${{ matrix.python-version }}.xml \
+  -v
+```
+
+### Tool Configuration -- pyproject.toml
+
+```toml
+# (From: pyproject.toml, lines 103-111)
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+    "happy-path: marks tests as happy path scenarios",
+    "negative: marks tests as negative/error scenarios",
+    "edge-case: marks tests as edge case scenarios",
+    "boundary: marks tests as boundary value scenarios",
+]
+```
+
+### Test Dependencies
+
+```toml
+# (From: pyproject.toml, lines 46-50)
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-archon>=0.0.6",
+    "pytest-bdd>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
 ```
 
 ---

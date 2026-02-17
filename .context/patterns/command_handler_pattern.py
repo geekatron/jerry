@@ -4,6 +4,9 @@ Command/Query Handler Pattern - Canonical CQRS implementation for Jerry Framewor
 Commands modify state and return None. Queries read state and return DTOs.
 Handlers are injected with dependencies, receive data via handle() method.
 
+This file is SELF-CONTAINED for use as a reference pattern. Any types
+needed from other patterns are defined inline with minimal stubs.
+
 References:
     - architecture-standards.md (lines 66-93)
     - application/queries/retrieve_project_context_query.py
@@ -17,6 +20,37 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+
+# ---------------------------------------------------------------------------
+# Inline stub for WorkItem aggregate (from aggregate_pattern.py)
+# In real code, import from the domain layer.
+# ---------------------------------------------------------------------------
+
+
+class WorkItem:
+    """
+    Stub for pattern reference. See aggregate_pattern.py for full implementation.
+
+    In real code this would be imported from the domain layer, e.g.:
+        from src.work_tracking.domain.aggregates.work_item import WorkItem
+    """
+
+    def __init__(self, id: str) -> None:
+        """Initialize stub."""
+        self._id = id
+
+    @classmethod
+    def create(cls, id: str, title: str, priority: str = "medium") -> WorkItem:
+        """Factory method to create a new work item."""
+        if not title:
+            raise ValueError("Title cannot be empty")
+        return cls(id)
+
+    @property
+    def id(self) -> str:
+        """Unique identifier."""
+        return self._id
+
 
 # =============================================================================
 # Command Pattern
@@ -109,8 +143,7 @@ class CreateWorkItemCommandHandler:
         work_item_id = self._id_generator.generate()
 
         # Create aggregate via factory method
-        from .aggregate_pattern import WorkItem
-
+        # In real code: from src.work_tracking.domain.aggregates.work_item import WorkItem
         work_item = WorkItem.create(
             id=str(work_item_id),
             title=command.title,
@@ -231,10 +264,9 @@ class RetrieveProjectContextQueryHandler:
 
         # Parse and validate if project is set
         if jerry_project:
-            from src.session_management.domain import ProjectId
-
+            # In real code: from src.session_management.domain import ProjectId
             try:
-                project_id = ProjectId.parse(jerry_project)
+                project_id = self._repository.parse_project_id(jerry_project)
                 result["project_id"] = project_id
                 result["validation"] = self._repository.validate_project(
                     query.base_path, project_id
@@ -290,6 +322,10 @@ class IProjectRepository:
 
     def validate_project(self, base_path: str, project_id: Any) -> dict[str, Any]:
         """Validate a project."""
+        ...
+
+    def parse_project_id(self, project_string: str) -> Any:
+        """Parse a project ID string into a ProjectId value object."""
         ...
 
 

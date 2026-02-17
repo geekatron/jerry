@@ -10,10 +10,11 @@
 | [Type Hints Rationale](#type-hints-rationale) | Why type hints matter and how to use them |
 | [Docstring Best Practices](#docstring-best-practices) | Google-style format guidance with examples |
 | [Import Organization](#import-organization) | Grouping, sorting, and avoiding circular imports |
-| [Error Handling Decision Trees](#error-handling-decision-trees) | Which exception to use when |
+| [Error Handling Decision Trees](#error-handling-decision-trees) | Quick reference (full guide in error-handling.md) |
 | [Value Object Patterns](#value-object-patterns) | Immutable dataclass patterns |
 | [Protocol vs ABC](#protocol-vs-abc) | When to use Protocol vs Abstract Base Class |
 | [TYPE_CHECKING Pattern](#type_checking-pattern) | Avoiding circular imports |
+| [Evidence](#evidence) | Verified codebase file paths and code quotes |
 
 ---
 
@@ -28,6 +29,7 @@
 #### 1. Catch Bugs Before Runtime
 
 ```python
+# (Hypothetical -- illustrative pattern)
 # Without type hints
 def get_work_item(id):
     return repository.get(id)
@@ -215,6 +217,7 @@ def register_handler(
 #### Generic Protocols
 
 ```python
+# (Hypothetical -- illustrative pattern)
 from typing import Protocol, TypeVar
 
 TAggregate = TypeVar("TAggregate")
@@ -453,186 +456,37 @@ See [TYPE_CHECKING Pattern](#type_checking-pattern) section below.
 
 ## Error Handling Decision Trees
 
-### "Which Exception Should I Raise?"
+> **Full error handling guide**: See [Error Handling Guide](error-handling.md) for the complete exception hierarchy, detailed decision tree, usage examples, error message best practices, and layer-appropriate exception handling patterns.
 
-```
-START: What kind of error occurred?
+This section provides a brief summary. For the authoritative decision tree and examples, refer to the dedicated guide.
 
-├─ Invalid input data (before processing)?
-│  └─ ValidationError(field, message)
-│     Examples:
-│     - Empty title
-│     - Invalid email format
-│     - Out-of-range value
-│
-├─ Entity not found in repository?
-│  └─ NotFoundError(entity_type, entity_id)
-│     Examples:
-│     - WorkItem not found
-│     - Project not found
-│
-├─ Operation not allowed in current state?
-│  ├─ State machine violation (transition not allowed)?
-│  │  └─ InvalidStateTransitionError(current, target)
-│  │     Examples:
-│  │     - PENDING → COMPLETED (skipped IN_PROGRESS)
-│  │     - COMPLETED → IN_PROGRESS (can't un-complete)
-│  │
-│  └─ Wrong state for operation (not a transition)?
-│     └─ InvalidStateError(entity_type, entity_id, current_state)
-│        Examples:
-│        - Can't complete if not IN_PROGRESS
-│        - Can't start if COMPLETED
-│
-├─ Business rule violation?
-│  └─ InvariantViolationError(invariant, message)
-│     Examples:
-│     - "Work item must have at least one subtask"
-│     - "Total percentage must equal 100%"
-│
-├─ Concurrent modification detected?
-│  └─ ConcurrencyError(entity_type, entity_id, expected, actual)
-│     Examples:
-│     - Event store version mismatch
-│     - Optimistic locking failure
-│
-└─ Quality check failed?
-   └─ QualityGateError(work_item_id, gate_level)
-      Examples:
-      - Quality score below threshold
-      - Missing required documentation
-```
+### Quick Reference: "Which Exception Should I Raise?"
 
----
+| Situation | Exception | Example |
+|-----------|-----------|---------|
+| Invalid input (before processing) | `ValidationError(field, message)` | Empty title, out-of-range value |
+| Entity not found | `NotFoundError(entity_type, entity_id)` | WorkItem not in repository |
+| Wrong state for operation | `InvalidStateError(current_state, attempted_action)` | Complete when not IN_PROGRESS |
+| State transition not allowed | `InvalidStateTransitionError(from_state, to_state)` | PENDING to COMPLETED directly |
+| Business rule violated | `InvariantViolationError(invariant, details)` | Percentages don't sum to 100% |
+| Concurrent modification | `ConcurrencyError(expected_version, actual_version)` | Event store version mismatch |
 
-### Exception Usage Examples
+### Ambiguous Cases
 
-#### ValidationError
-
-**When**: Input validation fails **before** business logic.
-
-```python
-@dataclass(frozen=True)
-class Priority:
-    value: str
-
-    def __post_init__(self) -> None:
-        valid = {"low", "medium", "high", "critical"}
-        if self.value not in valid:
-            raise ValidationError(
-                field="priority",
-                message=f"Must be one of: {valid}. Got: {self.value}",
-            )
-```
-
----
-
-#### NotFoundError
-
-**When**: Entity lookup fails in repository.
-
-```python
-def get_or_raise(self, id: WorkItemId) -> WorkItem:
-    item = self._items.get(id)
-    if item is None:
-        raise NotFoundError(
-            entity_type="WorkItem",
-            entity_id=id.value,
-        )
-    return item
-```
-
-**Error message**: `"WorkItem 'WORK-123' not found"`
-
----
-
-#### InvalidStateError
-
-**When**: Operation not allowed in current state.
-
-```python
-def complete(self) -> None:
-    if self.status != Status.IN_PROGRESS:
-        raise InvalidStateError(
-            entity_type="WorkItem",
-            entity_id=self.id.value,
-            current_state=self.status.value,
-            message="Can only complete items that are IN_PROGRESS",
-        )
-    self.status = Status.COMPLETED
-```
-
-**Error message**: `"WorkItem 'WORK-123' is in PENDING state. Can only complete items that are IN_PROGRESS"`
-
----
-
-#### InvalidStateTransitionError
-
-**When**: State machine transition not allowed.
-
-```python
-def transition_to(self, target: Status) -> None:
-    if not self.status.can_transition_to(target):
-        raise InvalidStateTransitionError(
-            current=self.status.value,
-            target=target.value,
-            allowed=self._allowed_transitions(),
-        )
-    self.status = target
-```
-
-**Error message**: `"Invalid transition from PENDING to COMPLETED. Allowed: IN_PROGRESS, CANCELLED"`
-
----
-
-#### InvariantViolationError
-
-**When**: Business rule violated.
-
-```python
-def set_subtask_percentages(self, percentages: dict[str, int]) -> None:
-    total = sum(percentages.values())
-    if total != 100:
-        raise InvariantViolationError(
-            invariant="subtask_percentages_sum_to_100",
-            message=f"Total percentage must be 100%, got {total}%",
-        )
-    self._percentages = percentages
-```
-
----
-
-### Error Message Guidelines
-
-**Good error messages**:
-1. **State what went wrong** (the error)
-2. **Include relevant context** (entity ID, current state, value)
-3. **Suggest corrective action** (what to do)
-
-```python
-# ❌ BAD: Vague, no context
-raise ValueError("Invalid")
-
-# ❌ BAD: Context, but no guidance
-raise ValueError(f"Work item {id} has status {status}")
-
-# ✅ GOOD: Clear, contextual, actionable
-raise InvalidStateError(
-    entity_type="WorkItem",
-    entity_id=id,
-    current_state=status.value,
-    message="Can only complete items that are IN_PROGRESS. Start the item first.",
-)
-```
-
----
+| Question | Guidance |
+|----------|----------|
+| Input is valid format but entity doesn't exist? | `NotFoundError`, not `ValidationError`. Validation passed; the entity is simply missing. |
+| Multiple validations fail at once? | Raise `ValidationError` for the **first** failing field. Future: consider collecting all errors. |
+| Domain rule vs input validation? | If the check requires loading domain state (e.g., checking uniqueness), use `InvariantViolationError`. If it can be checked from the input alone, use `ValidationError`. |
+| Infrastructure error (file I/O, JSON parse)? | Convert to domain exception at layer boundary. See [Error Handling Guide -- Domain vs Infrastructure](error-handling.md#domain-vs-infrastructure-exceptions). |
+| Unsure whether InvalidStateError or InvalidStateTransitionError? | If there is an explicit state machine with defined transitions, use `InvalidStateTransitionError`. Otherwise, use `InvalidStateError`. |
 
 ### Exception Propagation
 
 **Rule**: Use `from e` when re-raising to preserve exception context.
 
 ```python
-# ✅ GOOD: Preserve exception chain
+# (Hypothetical -- illustrative pattern)
 try:
     data = json.loads(file_content)
 except json.JSONDecodeError as e:
@@ -640,10 +494,6 @@ except json.JSONDecodeError as e:
         field="config",
         message=f"Invalid JSON in config file: {e}",
     ) from e
-
-# ❌ BAD: Lost original exception
-except json.JSONDecodeError:
-    raise ValidationError(field="config", message="Invalid JSON")
 ```
 
 **Why `from e`?**
@@ -914,6 +764,121 @@ class IRepository(Protocol):
 - Circular imports for type hints
 - Expensive imports only needed for type hints
 - Forward references
+
+---
+
+## Evidence
+
+> Verified references to actual Jerry codebase files demonstrating the patterns in this guide.
+
+### Type Hints (H-11) -- Real Examples
+
+**`src/bootstrap.py`** -- All public functions have type annotations:
+```python
+# (From: src/bootstrap.py, lines 126-139)
+def get_session_repository() -> InMemorySessionRepository:
+    """Get the shared session repository instance.
+
+    Returns:
+        InMemorySessionRepository singleton instance
+    """
+    global _session_repository
+    if _session_repository is None:
+        _session_repository = InMemorySessionRepository()
+    return _session_repository
+```
+
+**`src/shared_kernel/vertex_id.py`** -- `from __future__ import annotations` with forward references:
+```python
+# (From: src/shared_kernel/vertex_id.py, lines 19-26)
+from __future__ import annotations
+
+import re
+import uuid
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from re import Pattern
+from typing import ClassVar
+```
+
+### Docstrings (H-12) -- Real Examples
+
+**`src/session_management/domain/aggregates/session.py`** -- Google-style class and method docstrings:
+```python
+# (From: src/session_management/domain/aggregates/session.py, lines 56-88)
+class Session(AggregateRoot):
+    """Event-sourced aggregate for work session tracking.
+
+    A Session represents a work context for an agent. It tracks which project
+    is being worked on and the lifecycle of the session.
+
+    ...
+
+    Attributes:
+        id: Unique identifier (SessionId value)
+        status: Current lifecycle status
+        ...
+    """
+```
+
+### Import Organization -- Real Examples
+
+**`src/session_management/domain/aggregates/session.py`** -- Correct import grouping (stdlib, then local):
+```python
+# (From: src/session_management/domain/aggregates/session.py, lines 23-39)
+# stdlib
+from collections.abc import Sequence
+from datetime import datetime
+from enum import Enum
+
+# local (shared_kernel)
+from src.shared_kernel.domain_event import DomainEvent
+from src.work_tracking.domain.aggregates.base import AggregateRoot
+
+# local (relative)
+from ..events.session_events import (
+    SessionAbandoned,
+    SessionCompleted,
+    SessionCreated,
+    SessionProjectLinked,
+)
+```
+
+### Exception Hierarchy -- Real Files
+
+| Exception | File |
+|-----------|------|
+| `DomainError` | `src/shared_kernel/exceptions.py` |
+| `ValidationError` | `src/shared_kernel/exceptions.py` |
+| `NotFoundError` | `src/shared_kernel/exceptions.py` |
+| `InvalidStateError` | `src/shared_kernel/exceptions.py` |
+| `InvalidStateTransitionError` | `src/shared_kernel/exceptions.py` |
+| `InvariantViolationError` | `src/shared_kernel/exceptions.py` |
+| `ConcurrencyError` | `src/shared_kernel/exceptions.py` |
+| `InvalidProjectIdError` | `src/session_management/domain/exceptions.py` |
+| `ProjectNotFoundError` | `src/session_management/domain/exceptions.py` |
+
+### Protocol Usage -- Real Examples
+
+**`src/application/ports/primary/iquerydispatcher.py`** -- `@runtime_checkable` Protocol:
+```python
+# (From: src/application/ports/primary/iquerydispatcher.py, lines 44-71)
+@runtime_checkable
+class IQueryDispatcher(Protocol):
+    """Protocol for query dispatchers."""
+
+    def dispatch(self, query: Any) -> Any:
+        """Dispatch a query to its registered handler."""
+        ...
+```
+
+### Tool Configuration -- pyproject.toml
+
+| Tool | Setting | Source |
+|------|---------|--------|
+| mypy | `strict = true`, `disallow_untyped_defs = true` | `pyproject.toml` lines 74-79 |
+| ruff | `target-version = "py311"`, `line-length = 100` | `pyproject.toml` lines 81-83 |
+| ruff lint | Selects: E, W, F, I, B, C4, UP | `pyproject.toml` lines 86-94 |
 
 ---
 
