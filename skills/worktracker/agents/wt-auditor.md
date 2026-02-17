@@ -86,6 +86,17 @@ audit_checks:
       - "Status values valid (pending | in_progress | completed | blocked | cancelled)"
       - "Template reference in HTML comment header"
 
+  content_quality:
+    description: "Check work item content against WTI-007 sub-rules"
+    severity: "warning"
+    checks:
+      - "DoD items in AC (WTI-007a): regex for 'tests pass', 'code review', 'documentation updated', etc."
+      - "Implementation details in AC (WTI-007b): regex for file paths, class names, method signatures"
+      - "Hedge words in AC (WTI-007d): regex for 'should be able to', 'might need', 'if possible', etc."
+      - "AC bullet count exceeds limits (WTI-007e): Story>5, Bug>3, Task>3, Enabler>5, Feature>5"
+      - "Summary exceeds 3 sentences (WTI-007f)"
+    note: "DEC-006: Existing items flagged as INFO (advisory). New items flagged as WARNING."
+
   relationship_integrity:
     description: "Verify parent-child links are bidirectional"
     severity: "error"
@@ -126,6 +137,7 @@ wti_rules_enforced:
   - "WTI-003: Truthful State (no false completion claims)"
   - "WTI-004: Synchronize Before Reporting (read current state)"
   - "WTI-005: Atomic State Updates (file + parent both updated)"
+  - "WTI-007: Content Quality Standards (AC clarity, brevity, no DoD/implementation details)"
 
 # Constitutional Compliance
 constitution:
@@ -422,6 +434,16 @@ Failure to persist is a P-002 violation.
 5. Validate status values
 6. Log violations as **errors**
 
+### Phase 2.5: Content Quality Check
+1. For each work item file with AC, check against WTI-007 sub-rules
+2. **DoD detection (WTI-007a):** Search AC for patterns: `tests? pass`, `code review`, `documentation updated`, `deployed to`, `QA sign-off`, `coverage meets`, `no critical bugs`, `peer reviewed`, `integration tests`
+3. **Implementation detail detection (WTI-007b):** Search AC for patterns: file paths (`src/`, `.py`, `.ts`, `.cs`), class/method names (PascalCase with `.Method()`), technology-specific terms in AC bullets
+4. **Hedge word detection (WTI-007d):** Search AC for: `should be able to`, `might need`, `could potentially`, `if possible`, `ideally`, `as needed`, `when appropriate`, `as necessary`
+5. **AC bullet count (WTI-007e):** Count `- [ ]` patterns. Compare against type limits: Story=5, Bug=3, Task=3, Enabler=5, Feature=5
+6. **Summary length (WTI-007f):** Count sentences in Summary section. Flag if >3
+7. **Severity:** Bullet count violations and DoD detection as **WARNING**. Hedge words and actor-format as **INFO**
+8. **DEC-006:** For items created before 2026-02-17, downgrade all content quality findings to **INFO** (advisory)
+
 ### Phase 3: Relationship Integrity Check
 1. Extract `parent_id` from each file
 2. Verify parent file exists
@@ -637,6 +659,24 @@ Validates parent-child linkage:
 - No circular dependencies
 - All references resolve to existing files
 
+### 2.5. Content Quality (WARNING/INFO)
+Checks work item content against WTI-007 sub-rules:
+- DoD items in AC (WTI-007a) -- WARNING
+- Implementation details in AC (WTI-007b) -- WARNING
+- Hedge words in AC (WTI-007d) -- INFO
+- AC bullet count exceeds limits (WTI-007e) -- WARNING
+- Summary exceeds 3 sentences (WTI-007f) -- INFO
+
+**Report format for content quality issues:**
+
+| File | Sub-Rule | Matched Text | Remediation |
+|------|----------|-------------|-------------|
+| EN-001.md | WTI-007a | "All unit tests pass" | Move to DoD; remove from AC |
+| TASK-003.md | WTI-007b | "Update AssetHandler.cs" | Move to Description; rewrite AC as outcome |
+| STORY-002.md | WTI-007e | 7 AC bullets (limit: 5) | Split story using SPIDR framework |
+
+**DEC-006:** Items created before 2026-02-17 are flagged as INFO (advisory only).
+
 ### 3. Orphan Detection (WARNING)
 Finds unreachable work items:
 - All items reachable from WORKTRACKER.md
@@ -664,6 +704,7 @@ Validates naming conventions:
 | **WTI-003** | Truthful State (no false completion claims) |
 | **WTI-004** | Synchronize Before Reporting (read current state) |
 | **WTI-005** | Atomic State Updates (file + parent consistency) |
+| **WTI-007** | Content Quality Standards (AC clarity, brevity, no DoD in AC) |
 
 ## Output
 
