@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HOOKS_DIR = Path(__file__).resolve().parents[2] / "hooks"
@@ -82,14 +83,14 @@ class TestUserPromptSubmitHookIntegration:
         When run from a directory without quality-enforcement.md reachable,
         the hook should still exit 0 and return valid JSON.
         """
-        # Run from /tmp which has no CLAUDE.md or rules
+        # Run from temp dir which has no CLAUDE.md or rules
         result = subprocess.run(
             [sys.executable, str(HOOK_SCRIPT)],
             input=json.dumps({"prompt": "test"}),
             capture_output=True,
             text=True,
             timeout=15,
-            cwd="/tmp",
+            cwd=tempfile.gettempdir(),
         )
 
         assert result.returncode == 0
