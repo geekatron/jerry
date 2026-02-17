@@ -88,6 +88,7 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | FEAT-010 | FEAT-009 Tournament Remediation | completed | critical | 7 (EN-813–819) | 100% |
 | FEAT-011 | Template Compliance Remediation | completed | critical | 4 (EN-820–823) | 100% |
 | FEAT-012 | Progressive Disclosure Rules Architecture | pending | high | 6 (EN-901–906) | 17% |
+| FEAT-014 | Framework Synchronization | pending | high | 5 (EN-925–929) | 0% |
 
 ### Feature Links
 
@@ -96,6 +97,7 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 - [FEAT-010: FEAT-009 Tournament Remediation](./FEAT-010-tournament-remediation/FEAT-010-tournament-remediation.md)
 - [FEAT-011: Template Compliance Remediation](./FEAT-011-template-compliance-remediation/FEAT-011-template-compliance-remediation.md)
 - [FEAT-012: Progressive Disclosure Rules Architecture](./FEAT-012-progressive-disclosure-rules/FEAT-012-progressive-disclosure-rules.md)
+- [FEAT-014: Framework Synchronization](./FEAT-014-framework-synchronization/FEAT-014-framework-synchronization.md)
 
 ---
 
@@ -107,10 +109,10 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [################....] 80% (4/5 completed)            |
-| Enablers:  [#################...] 88% (35/40 completed)          |
+| Features:  [#############.......] 67% (4/6 completed)            |
+| Enablers:  [###############.....] 78% (35/45 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [#################...] ~84%                            |
+| Overall:   [###############.....] ~73%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -118,14 +120,14 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 5 |
+| **Total Features** | 6 |
 | **Completed Features** | 4 (FEAT-008, FEAT-009, FEAT-010, FEAT-011) |
 | **In Progress Features** | 0 |
-| **Pending Features** | 1 (FEAT-012) |
-| **Total Enablers** | 40 |
+| **Pending Features** | 2 (FEAT-012, FEAT-014) |
+| **Total Enablers** | 45 |
 | **Completed Enablers** | 35 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011 + 1 FEAT-012 EN-901) |
-| **Remaining Enablers** | 5 (FEAT-012: EN-901 done/superseded, EN-902–906 pending) |
-| **Feature Completion %** | 80% |
+| **Remaining Enablers** | 10 (FEAT-012: 5 pending + FEAT-014: 5 pending) |
+| **Feature Completion %** | 67% |
 
 ### Milestone Tracking
 
@@ -172,3 +174,4 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | 2026-02-15 | Claude | completed | FEAT-010 COMPLETE: All 7 enablers PASS (avg 0.933, lowest 0.922). FEAT-009 re-scored 0.93 (was 0.85). 260 E2E tests pass, ruff clean. All 4 features complete. EPIC-003 100%. |
 | 2026-02-16 | Claude | in_progress | **Reopened.** FEAT-007 (Advanced Adversarial Capabilities, 5 enablers) and FEAT-012 (Progressive Disclosure Rules Architecture, 6 enablers) moved from EPIC-002 — these are implementation work. FEAT-012 EN-901 superseded by EN-701; EN-902–906 are new work. 4/6 features complete (67%), 35/45 enablers complete (78%). |
 | 2026-02-16 | Claude | in_progress | FEAT-007 (Advanced Adversarial Capabilities) moved from EPIC-003 to new EPIC-004 (Advanced Adversarial Capabilities). FEAT-007 contains deferred strategies requiring cross-model LLM infrastructure — not needed for OSS release. EPIC-003 now has 5 features (4 completed, 1 pending). |
+| 2026-02-17 | Claude | in_progress | FEAT-014 created: Framework Synchronization. 5 enablers (EN-925–929), 21 tasks, 18 effort points. Addresses 15 gaps from codebase audit: incomplete AGENTS.md (8/24+ agents), missing /adversary rule triggers, truncated skill docs, no adversarial template tests. EPIC-003 now has 6 features (4 completed, 2 pending), 45 enablers (35 completed, 10 pending). |

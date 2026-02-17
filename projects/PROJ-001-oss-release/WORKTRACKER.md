@@ -115,7 +115,7 @@
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
 | EPIC-001 | OSS Release Preparation | 2026-02-16 | Re-closed after retroactive validation (FEAT-006). All 3 features, 20 enablers, 15 bugs. EN-501: 0.949, EN-502: 0.951. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
-| EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/5 features done (FEAT-008/009/010/011), FEAT-012 pending. 84% complete. |
+| EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/6 features done (FEAT-008/009/010/011), FEAT-012 + FEAT-014 pending. 73% complete. |
 | EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
 | EN-502 | Bootstrap Cross-Platform Validation | 2026-02-16 | Score 0.951 (4 iterations). 47 tests passing. All HIGH resolved. |
 | FEAT-006 | EPIC-001 Retroactive Quality Review | 2026-02-16 | All 5 enablers complete (EN-501: 0.949, EN-502: 0.951, EN-503/504/505 closed). |
@@ -168,7 +168,8 @@
 | 2026-02-16 | Claude | EN-501 closed (0.949, 3 iterations). EN-502 closed (0.951, 4 iterations). FEAT-006 closed (5/5 enablers). EPIC-002 closed (4/4 features, 24/24 enablers, 163/163 points). Quality framework enforcement complete and all EPIC-001 deliverables retroactively validated. |
 | 2026-02-16 | Claude | PROJ-001 full audit (wt-auditor/wt-verifier/wt-visualizer): 14 errors, 11 warnings, 5 info. Corrective actions: EPIC-001 re-closed (done), EPIC-003 reverted to in_progress (FEAT-012 pending, FEAT-007 deferred), FEAT-004/005 ACs checked + Evidence added, FEAT-013 DoD verified + Evidence added, FEAT-002 enabler count fixed (7→8), FEAT-003 broken link fixed. All entity files now have delivery evidence per WTI-006. |
 | 2026-02-16 | Claude | EPIC-004 created (Advanced Adversarial Capabilities, pending, medium priority). FEAT-007 moved from EPIC-003 to EPIC-004 — deferred strategies requiring cross-model LLM infrastructure, not needed for OSS release. |
+| 2026-02-17 | Claude | FEAT-014 created under EPIC-003: Framework Synchronization. 5 enablers (EN-925–929), 21 tasks, 18 effort points. Codebase audit found 15 gaps: incomplete AGENTS.md, missing /adversary rule triggers, truncated skill docs, no adversarial template tests. EPIC-003 now 6 features (4 done, 2 pending). |
 
 ---
 
-*Last Updated: 2026-02-16*
+*Last Updated: 2026-02-17*
