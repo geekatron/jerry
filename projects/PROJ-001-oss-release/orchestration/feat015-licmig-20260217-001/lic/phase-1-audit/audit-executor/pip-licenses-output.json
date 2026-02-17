@@ -1,0 +1,296 @@
+[
+  {
+    "License": "Apache-2.0",
+    "Name": "CacheControl",
+    "URL": "https://pypi.org/project/CacheControl/",
+    "Version": "0.14.4"
+  },
+  {
+    "License": "MIT License",
+    "Name": "PyYAML",
+    "URL": "https://pyyaml.org/",
+    "Version": "6.0.3"
+  },
+  {
+    "License": "BSD License",
+    "Name": "Pygments",
+    "URL": "https://pygments.org",
+    "Version": "2.19.2"
+  },
+  {
+    "License": "MIT",
+    "Name": "attrs",
+    "URL": "https://www.attrs.org/en/stable/changelog.html",
+    "Version": "25.4.0"
+  },
+  {
+    "License": "BSD-2-Clause",
+    "Name": "boolean.py",
+    "URL": "https://github.com/bastikr/boolean.py",
+    "Version": "5.0"
+  },
+  {
+    "License": "Mozilla Public License 2.0 (MPL 2.0)",
+    "Name": "certifi",
+    "URL": "https://github.com/certifi/python-certifi",
+    "Version": "2026.1.4"
+  },
+  {
+    "License": "MIT",
+    "Name": "cfgv",
+    "URL": "https://github.com/asottile/cfgv",
+    "Version": "3.5.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "charset-normalizer",
+    "URL": "https://github.com/jawah/charset_normalizer/blob/master/CHANGELOG.md",
+    "Version": "3.4.4"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "cyclonedx-python-lib",
+    "URL": "https://github.com/CycloneDX/cyclonedx-python-lib/#readme",
+    "Version": "11.6.0"
+  },
+  {
+    "License": "Python Software Foundation License",
+    "Name": "defusedxml",
+    "URL": "https://github.com/tiran/defusedxml",
+    "Version": "0.7.1"
+  },
+  {
+    "License": "Python Software Foundation License",
+    "Name": "distlib",
+    "URL": "https://github.com/pypa/distlib",
+    "Version": "0.4.0"
+  },
+  {
+    "License": "Unlicense",
+    "Name": "filelock",
+    "URL": "https://github.com/tox-dev/py-filelock",
+    "Version": "3.20.3"
+  },
+  {
+    "License": "MIT",
+    "Name": "identify",
+    "URL": "https://github.com/pre-commit/identify",
+    "Version": "2.6.16"
+  },
+  {
+    "License": "BSD-3-Clause",
+    "Name": "idna",
+    "URL": "https://github.com/kjd/idna",
+    "Version": "3.11"
+  },
+  {
+    "License": "MIT",
+    "Name": "iniconfig",
+    "URL": "https://github.com/pytest-dev/iniconfig",
+    "Version": "2.3.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "jerry",
+    "URL": "UNKNOWN",
+    "Version": "0.2.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "jsonschema",
+    "URL": "https://github.com/python-jsonschema/jsonschema",
+    "Version": "4.26.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "jsonschema-specifications",
+    "URL": "https://github.com/python-jsonschema/jsonschema-specifications",
+    "Version": "2025.9.1"
+  },
+  {
+    "License": "Apache-2.0",
+    "Name": "license-expression",
+    "URL": "https://github.com/aboutcode-org/license-expression",
+    "Version": "30.4.4"
+  },
+  {
+    "License": "MIT License",
+    "Name": "markdown-it-py",
+    "URL": "https://github.com/executablebooks/markdown-it-py",
+    "Version": "4.0.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "mdurl",
+    "URL": "https://github.com/executablebooks/mdurl",
+    "Version": "0.1.2"
+  },
+  {
+    "License": "Apache-2.0",
+    "Name": "msgpack",
+    "URL": "https://msgpack.org/",
+    "Version": "1.1.2"
+  },
+  {
+    "License": "BSD License",
+    "Name": "nodeenv",
+    "URL": "https://github.com/ekalinin/nodeenv",
+    "Version": "1.10.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "packageurl-python",
+    "URL": "https://github.com/package-url/packageurl-python",
+    "Version": "0.17.6"
+  },
+  {
+    "License": "Apache-2.0 OR BSD-2-Clause",
+    "Name": "packaging",
+    "URL": "https://github.com/pypa/packaging",
+    "Version": "26.0"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "pip-api",
+    "URL": "http://github.com/di/pip-api",
+    "Version": "0.0.34"
+  },
+  {
+    "License": "MIT",
+    "Name": "pip-requirements-parser",
+    "URL": "https://github.com/nexB/pip-requirements-parser",
+    "Version": "32.0.1"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "pip_audit",
+    "URL": "https://pypi.org/project/pip-audit/",
+    "Version": "2.10.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "platformdirs",
+    "URL": "https://github.com/tox-dev/platformdirs",
+    "Version": "4.5.1"
+  },
+  {
+    "License": "MIT License",
+    "Name": "pluggy",
+    "URL": "UNKNOWN",
+    "Version": "1.6.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "pre_commit",
+    "URL": "https://github.com/pre-commit/pre-commit",
+    "Version": "4.5.1"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "py-serializable",
+    "URL": "https://github.com/madpah/serializable#readme",
+    "Version": "2.1.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "pyparsing",
+    "URL": "https://github.com/pyparsing/pyparsing/",
+    "Version": "3.3.2"
+  },
+  {
+    "License": "MIT",
+    "Name": "pyright",
+    "URL": "https://github.com/RobertCraigie/pyright-python",
+    "Version": "1.1.408"
+  },
+  {
+    "License": "MIT",
+    "Name": "pytest",
+    "URL": "https://docs.pytest.org/en/latest/",
+    "Version": "9.0.2"
+  },
+  {
+    "License": "MIT",
+    "Name": "referencing",
+    "URL": "https://github.com/python-jsonschema/referencing",
+    "Version": "0.37.0"
+  },
+  {
+    "License": "Apache-2.0 AND CNRI-Python",
+    "Name": "regex",
+    "URL": "https://github.com/mrabarnett/mrab-regex",
+    "Version": "2026.1.15"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "requests",
+    "URL": "https://requests.readthedocs.io",
+    "Version": "2.32.5"
+  },
+  {
+    "License": "MIT License",
+    "Name": "rich",
+    "URL": "https://github.com/Textualize/rich",
+    "Version": "14.3.2"
+  },
+  {
+    "License": "MIT",
+    "Name": "rpds-py",
+    "URL": "https://github.com/crate-py/rpds",
+    "Version": "0.30.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "ruff",
+    "URL": "https://docs.astral.sh/ruff",
+    "Version": "0.14.14"
+  },
+  {
+    "License": "Apache Software License",
+    "Name": "sortedcontainers",
+    "URL": "http://www.grantjenks.com/docs/sortedcontainers/",
+    "Version": "2.4.0"
+  },
+  {
+    "License": "MIT License\n\nCopyright (c) 2022 OpenAI, Shantanu Jain\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+    "Name": "tiktoken",
+    "URL": "https://github.com/openai/tiktoken",
+    "Version": "0.12.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "tomli",
+    "URL": "https://github.com/hukkin/tomli",
+    "Version": "2.4.0"
+  },
+  {
+    "License": "MIT License",
+    "Name": "tomli_w",
+    "URL": "https://github.com/hukkin/tomli-w",
+    "Version": "1.2.0"
+  },
+  {
+    "License": "PSF-2.0",
+    "Name": "typing_extensions",
+    "URL": "https://github.com/python/typing_extensions",
+    "Version": "4.15.0"
+  },
+  {
+    "License": "MIT",
+    "Name": "urllib3",
+    "URL": "https://github.com/urllib3/urllib3/blob/main/CHANGES.rst",
+    "Version": "2.6.3"
+  },
+  {
+    "License": "MIT",
+    "Name": "virtualenv",
+    "URL": "https://github.com/pypa/virtualenv",
+    "Version": "20.36.1"
+  },
+  {
+    "License": "MIT License",
+    "Name": "webvtt-py",
+    "URL": "https://github.com/glut23/webvtt-py",
+    "Version": "0.5.1"
+  }
+]

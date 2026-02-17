@@ -83,10 +83,10 @@ pipelines:
     short_alias: "lic"
     skill_source: "orchestration"
 
-    status: "PHASE_1_PENDING"
-    current_phase: 1
+    status: "PHASE_2_IN_PROGRESS"
+    current_phase: 2
     total_phases: 4
-    progress_percent: 0
+    progress_percent: 25
 
     phases:
 
@@ -96,18 +96,18 @@ pipelines:
       - id: 1
         name: "Dependency License Compatibility Audit"
         path_id: "phase-1-audit"
-        status: "PENDING"
+        status: "COMPLETE"
         enablers: ["EN-934"]
         execution_mode: "SEQUENTIAL"
         effort_points: 3
-        started_at: null
-        completed_at: null
+        started_at: "2026-02-17T00:00:00Z"
+        completed_at: "2026-02-17T00:00:00Z"
         gate_after: "qg-1"
 
         agents:
           - id: "audit-executor"
             name: "Dependency Audit Executor"
-            status: "PENDING"
+            status: "COMPLETE"
             enabler: "EN-934"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-1-audit/audit-executor/audit-executor-dep-audit.md"
             inputs:
@@ -120,7 +120,7 @@ pipelines:
 
         artifacts:
           - path: "orchestration/feat015-licmig-20260217-001/lic/phase-1-audit/audit-executor/audit-executor-dep-audit.md"
-            status: "PENDING"
+            status: "COMPLETE"
             agent: "audit-executor"
 
       # -----------------------------------------------------------------------
@@ -129,8 +129,8 @@ pipelines:
       - id: 2
         name: "Core License Changes"
         path_id: "phase-2-core"
-        status: "BLOCKED"
-        blocked_by: "qg-1"
+        status: "IN_PROGRESS"
+        blocked_by: null  # Unblocked by QG-1 PASS
         enablers: ["EN-930", "EN-931", "EN-933"]
         execution_mode: "PARALLEL"
         effort_points: 3
@@ -141,7 +141,7 @@ pipelines:
         agents:
           - id: "license-replacer"
             name: "License File Replacer"
-            status: "BLOCKED"
+            status: "PENDING"
             enabler: "EN-930"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/license-replacer/license-replacer-output.md"
             inputs:
@@ -155,7 +155,7 @@ pipelines:
 
           - id: "notice-creator"
             name: "NOTICE File Creator"
-            status: "BLOCKED"
+            status: "PENDING"
             enabler: "EN-931"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/notice-creator/notice-creator-output.md"
             inputs: []
@@ -167,7 +167,7 @@ pipelines:
 
           - id: "metadata-updater"
             name: "Packaging Metadata Updater"
-            status: "BLOCKED"
+            status: "PENDING"
             enabler: "EN-933"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/metadata-updater/metadata-updater-output.md"
             inputs:
@@ -301,25 +301,50 @@ quality_gates:
     id: "qg-1"
     name: "Audit Quality Gate"
     after_phase: 1
-    status: "PENDING"  # PENDING | IN_PROGRESS | PASS | FAIL | ESCALATED
+    status: "PASS"  # PENDING | IN_PROGRESS | PASS | FAIL | ESCALATED
     deliverables_scored:
       - "orchestration/feat015-licmig-20260217-001/lic/phase-1-audit/audit-executor/audit-executor-dep-audit.md"
     threshold: 0.92
     max_iterations: 3
-    current_iteration: 0
+    current_iteration: 3
     required_strategies: ["S-014", "S-007", "S-002"]
     optional_strategies: ["S-003", "S-010"]
     agents_invoked: ["adv-scorer", "adv-executor"]
-    score: null
+    iteration_history:
+      - iteration: 1
+        score: 0.825
+        verdict: "REJECTED"
+        strategies:
+          S-014: { score: 0.825, verdict: "REJECTED" }
+          S-007: { score: 0.89, verdict: "NON-COMPLIANT (REVISE)" }
+          S-002: { verdict: "PASS-PROVISIONAL", major_findings: 6, minor_findings: 4 }
+        primary_defect: "Count inconsistency (Summary 8 dev vs Verdict 6 dev), MPL-2.0 legal reasoning, absent deps unverified"
+      - iteration: 2
+        score: 0.916
+        verdict: "REVISE"
+        strategies:
+          S-014: { score: 0.916, verdict: "REVISE" }
+          S-007: { score: 0.98, verdict: "COMPLIANT (PASS)" }
+          S-002: { estimated_score: 0.892, verdict: "REVISE", major_findings: 3, minor_findings: 4 }
+        primary_defect: "Evidence Quality 0.87 (MPL-2.0 text URL absent, pip-licenses JSON not attached). DA-011 pip-licenses double-counting."
+      - iteration: 3
+        score: 0.941
+        verdict: "PASS"
+        strategies:
+          S-014: { score: 0.941, verdict: "PASS" }
+          S-007: { score: 0.98, verdict: "COMPLIANT (PASS)" }
+          S-002: { estimated_score: 0.942, verdict: "PASS", major_findings: 0, minor_findings: 2 }
+        primary_defect: null
+    score: 0.941
     score_dimensions:
-      completeness: null      # weight: 0.20 — All deps covered?
-      internal_consistency: null  # weight: 0.20 — Methodology consistent?
-      methodological_rigor: null  # weight: 0.20 — Audit method sound?
-      evidence_quality: null  # weight: 0.15 — Licenses from authoritative sources?
-      actionability: null     # weight: 0.15 — Incompatible deps have resolution paths?
-      traceability: null      # weight: 0.10 — Traceable to EN-934?
+      completeness: 0.94      # weight: 0.20 — All dependency categories covered, pip-licenses self-exclusion documented
+      internal_consistency: 0.94  # weight: 0.20 — Count reconciliation complete, dual-PASS verdict coherent
+      methodological_rigor: 0.95  # weight: 0.20 — pip-licenses JSON artifact, uv.lock-resolved version verification
+      evidence_quality: 0.93  # weight: 0.15 — MPL-2.0 text URL, certifi Exhibit B citation, PyPI JSON API
+      actionability: 0.94     # weight: 0.15 — SC-001, re-audit conditions, scope limitations documented
+      traceability: 0.94      # weight: 0.10 — Git commit anchoring (1c108b4, 1fea04c), revision history
     artifact: "orchestration/feat015-licmig-20260217-001/lic/quality-gates/qg-1/gate-result.md"
-    completed_at: null
+    completed_at: "2026-02-17T00:00:00Z"
 
   qg-2:
     id: "qg-2"
@@ -405,26 +430,26 @@ quality_gates:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 1
+  current_group: 3
   groups:
 
     - id: 1
       name: "Phase 1 — Dependency Audit"
       execution_mode: "SEQUENTIAL"
-      status: "READY"
+      status: "COMPLETE"
       agents: ["audit-executor"]
 
     - id: 2
       name: "Quality Gate 1"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
+      status: "COMPLETE"
       blocked_by: "group-1"
       tasks: ["run-adv-scorer-qg1", "run-adv-executor-s007-qg1", "run-adv-executor-s002-qg1"]
 
     - id: 3
       name: "Phase 2 — Core License Changes"
       execution_mode: "PARALLEL"
-      status: "BLOCKED"
+      status: "IN_PROGRESS"
       blocked_by: "group-2"
       agents: ["license-replacer", "notice-creator", "metadata-updater"]
 
@@ -467,51 +492,50 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: null
-  entries: []
-  # Example entry:
-  # - id: "CP-001"
-  #   timestamp: "2026-02-17T09:00:00Z"
-  #   trigger: "PHASE_COMPLETE"  # PHASE_COMPLETE | GATE_PASS | MANUAL
-  #   description: "Phase 1 complete — dep audit passed"
-  #   recovery_point: "qg-1-start"
+  latest_id: "CP-001"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-02-17T00:00:00Z"
+      trigger: "GATE_PASS"
+      description: "QG-1 PASS (0.941) — Phase 1 dependency audit complete, Phase 2 unblocked"
+      recovery_point: "phase-2-start"
 
 # =============================================================================
 # METRICS
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 0
+    phases_complete: 1
     phases_total: 4
-    phases_percent: 0
-    gates_passed: 0
+    phases_percent: 25
+    gates_passed: 1
     gates_total: 4
-    gates_percent: 0
-    agents_executed: 0
+    gates_percent: 25
+    agents_executed: 1
     agents_total: 8
-    agents_percent: 0
-    artifacts_created: 0
+    agents_percent: 12
+    artifacts_created: 2  # audit report + pip-licenses JSON
     artifacts_total: 12  # 8 phase artifacts + 4 gate result artifacts
-    artifacts_percent: 0
-    enablers_complete: 0
+    artifacts_percent: 17
+    enablers_complete: 1  # EN-934
     enablers_total: 6
-    enablers_percent: 0
-    effort_complete: 0
+    enablers_percent: 17
+    effort_complete: 3
     effort_total: 14
 
   quality:
-    qg_1_score: null
+    qg_1_score: 0.941  # Iteration 3: PASS (0.825 -> 0.916 -> 0.941)
     qg_2_score: null
     qg_3_score: null
     qg_final_score: null
     gates_passed_first_attempt: 0
-    gates_requiring_revision: 0
+    gates_requiring_revision: 1  # QG-1 required 3 iterations
     gates_escalated_to_user: 0
-    overall_quality_status: "NOT_STARTED"
+    overall_quality_status: "QG1_PASS"
 
   timing:
-    workflow_started: null
-    last_activity: null
+    workflow_started: "2026-02-17T00:00:00Z"
+    last_activity: "2026-02-17T00:00:00Z"
     estimated_completion: null
 
 # =============================================================================
@@ -535,27 +559,16 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Execute Phase 1 — Dependency License Compatibility Audit (EN-934)"
-      agents: ["audit-executor"]
-      execution_mode: "SEQUENTIAL"
-      instructions: >
-        Invoke audit-executor agent. Read pyproject.toml and lock files.
-        Identify all direct and transitive dependencies with their licenses.
-        Render PASS (all compat) or BLOCK (incompatible found) verdict.
-        Persist output to:
-        orchestration/feat015-licmig-20260217-001/lic/phase-1-audit/audit-executor/audit-executor-dep-audit.md
-
-  subsequent:
-    - action: "Run Quality Gate 1 via /adversary skill"
-      depends_on: "Phase 1 complete"
-      agents: ["adv-scorer", "adv-executor"]
-      strategies: ["S-014", "S-007", "S-002"]
-      threshold: 0.92
-
     - action: "Execute Phase 2 — Core License Changes (EN-930, EN-931, EN-933)"
-      depends_on: "QG-1 PASS"
       agents: ["license-replacer", "notice-creator", "metadata-updater"]
       execution_mode: "PARALLEL"
+      instructions: >
+        Launch 3 agents in parallel:
+        1. license-replacer: Replace LICENSE file with canonical Apache 2.0 text
+        2. notice-creator: Create NOTICE file per Apache 2.0 Section 4(d)
+        3. metadata-updater: Update pyproject.toml license to "Apache-2.0"
+
+  subsequent:
 
     - action: "Run Quality Gate 2 via /adversary skill"
       depends_on: "Phase 2 complete"
@@ -581,9 +594,9 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: null
-  current_state: "Workflow initialized. Phase 1 READY to execute. All other phases BLOCKED."
-  next_step: "Execute audit-executor agent for EN-934 dependency license audit"
+  last_checkpoint: "CP-001"
+  current_state: "QG-1 PASS (0.941, iteration 3). Phase 1 COMPLETE. Phase 2 IN_PROGRESS: 3 parallel agents (license-replacer, notice-creator, metadata-updater)."
+  next_step: "Execute Phase 2 agents in parallel. On completion, run QG-2 (S-014, S-007, S-002). If PASS: proceed to Phase 3."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/ORCHESTRATION_PLAN.md"   # Strategic context
