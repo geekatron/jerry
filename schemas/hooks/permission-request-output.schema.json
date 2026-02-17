@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/permission-request-output.schema.json",
+  "title": "PermissionRequest Hook Output Schema",
+  "description": "Output schema for the PermissionRequest hook event. Uses hookSpecificOutput with a nested 'decision' object containing 'behavior' (allow/deny). Allow decisions can include updatedInput and updatedPermissions. Deny decisions can include a message and interrupt flag. IMPORTANT: PermissionRequest hooks do NOT fire in non-interactive mode (-p).",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "PermissionRequest decision control"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "hookSpecificOutput": {
+      "type": "object",
+      "description": "Event-specific output for PermissionRequest. Contains the decision object with behavior and conditional fields.",
+      "required": ["hookEventName"],
+      "properties": {
+        "hookEventName": {
+          "type": "string",
+          "const": "PermissionRequest",
+          "description": "Event identifier. Must be 'PermissionRequest'."
+        },
+        "decision": {
+          "type": "object",
+          "description": "The permission decision. Contains 'behavior' plus conditional fields based on the behavior value.",
+          "required": ["behavior"],
+          "properties": {
+            "behavior": {
+              "type": "string",
+              "enum": ["allow", "deny"],
+              "description": "'allow' grants the permission. 'deny' denies it."
+            },
+            "updatedInput": {
+              "type": "object",
+              "description": "Modifies tool input before execution. Only valid when behavior is 'allow'.",
+              "additionalProperties": true
+            },
+            "updatedPermissions": {
+              "type": "array",
+              "description": "Applies permission rule updates, equivalent to the user selecting 'always allow'. Only valid when behavior is 'allow'.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Permission rule type (e.g., 'toolAlwaysAllow')."
+                  },
+                  "tool": {
+                    "type": "string",
+                    "description": "Tool name to apply the permission rule to."
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "message": {
+              "type": "string",
+              "description": "Tells Claude why the permission was denied. Only valid when behavior is 'deny'."
+            },
+            "interrupt": {
+              "type": "boolean",
+              "description": "If true, stops Claude entirely. Only valid when behavior is 'deny'."
+            }
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": { "behavior": { "const": "allow" } }
+              },
+              "then": {
+                "properties": {
+                  "message": false,
+                  "interrupt": false
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "behavior": { "const": "deny" } }
+              },
+              "then": {
+                "properties": {
+                  "updatedInput": false,
+                  "updatedPermissions": false
+                }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

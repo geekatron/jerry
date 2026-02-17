@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/post-tool-use-output.schema.json",
+  "title": "PostToolUse Hook Output Schema",
+  "description": "Output schema for the PostToolUse hook event. Uses top-level 'decision' field to provide feedback to Claude (the tool has already executed, so blocking provides feedback but cannot undo the action). hookSpecificOutput supports additionalContext and updatedMCPToolOutput for MCP tools.",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "PostToolUse Decision Control Output"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "decision": {
+      "type": "string",
+      "enum": ["block"],
+      "description": "Set to 'block' to provide feedback to Claude via 'reason'. The tool has already executed; this cannot undo the action. Omit to allow."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Explanation shown to Claude when decision is 'block'."
+    },
+    "hookSpecificOutput": {
+      "type": "object",
+      "description": "Event-specific output for PostToolUse. Supports context injection and MCP tool output replacement.",
+      "required": ["hookEventName"],
+      "properties": {
+        "hookEventName": {
+          "type": "string",
+          "const": "PostToolUse",
+          "description": "Event identifier. Must be 'PostToolUse'."
+        },
+        "additionalContext": {
+          "type": "string",
+          "description": "Additional context string for Claude."
+        },
+        "updatedMCPToolOutput": {
+          "description": "MCP tools only. Replaces the tool's output with the provided value. Can be any JSON type."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/hooks/pre-tool-use-output.schema.json",
+  "title": "PreToolUse Hook Output Schema",
+  "description": "Output schema for the PreToolUse hook event. Unlike other hooks that use a top-level 'decision' field, PreToolUse returns its decision inside a hookSpecificOutput object via permissionDecision. Supports three outcomes: 'allow' (bypasses permission system), 'deny' (prevents tool call), 'ask' (prompts user to confirm).",
+  "_source": {
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessDate": "2026-02-17",
+    "section": "PreToolUse decision control"
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "hook-output-base.schema.json" }
+  ],
+  "properties": {
+    "continue": true,
+    "stopReason": true,
+    "suppressOutput": true,
+    "systemMessage": true,
+    "hookSpecificOutput": {
+      "type": "object",
+      "description": "Event-specific output for PreToolUse. Contains the permission decision and optional input modifications.",
+      "required": ["hookEventName"],
+      "properties": {
+        "hookEventName": {
+          "type": "string",
+          "const": "PreToolUse",
+          "description": "Event identifier. Must be 'PreToolUse'."
+        },
+        "permissionDecision": {
+          "type": "string",
+          "enum": ["allow", "deny", "ask"],
+          "description": "'allow' bypasses the permission system. 'deny' prevents the tool call. 'ask' prompts the user to confirm."
+        },
+        "permissionDecisionReason": {
+          "type": "string",
+          "description": "For 'allow' and 'ask': shown to the user but NOT to Claude. For 'deny': shown TO Claude."
+        },
+        "updatedInput": {
+          "type": "object",
+          "description": "Modifies tool input parameters before execution. Combine with 'allow' for auto-approve, or 'ask' to show modified input to user.",
+          "additionalProperties": true
+        },
+        "additionalContext": {
+          "type": "string",
+          "description": "Context string added to Claude's context before the tool executes."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
