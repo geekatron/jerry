@@ -9,13 +9,13 @@ PURPOSE: Create Apache 2.0 NOTICE file with project attribution
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** medium
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** FEAT-015
 > **Owner:** Claude
 > **Effort:** 1
@@ -57,10 +57,10 @@ Apache 2.0 Section 4(d) requires that derivative works include a readable copy o
 
 ## Acceptance Criteria
 
-- [ ] `NOTICE` file exists at repository root
-- [ ] Contains project name: "Jerry Framework"
-- [ ] Contains copyright: `Copyright 2026 Adam Nowak`
-- [ ] Follows Apache Foundation NOTICE conventions
+- [x] `NOTICE` file exists at repository root
+- [x] Contains project name: "Jerry Framework"
+- [x] Contains copyright: `Copyright 2026 Adam Nowak`
+- [x] Follows Apache Foundation NOTICE conventions
 
 ---
 
@@ -69,3 +69,4 @@ Apache 2.0 Section 4(d) requires that derivative works include a readable copy o
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-17 | Created | Initial creation |
+| 2026-02-17 | done | NOTICE file created. Artifact: `orchestration/feat015-licmig-20260217-001/lic/phase-2-core/notice-creator/notice-creator-output.md` |

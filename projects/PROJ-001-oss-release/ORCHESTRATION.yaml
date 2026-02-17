@@ -83,10 +83,10 @@ pipelines:
     short_alias: "lic"
     skill_source: "orchestration"
 
-    status: "PHASE_2_IN_PROGRESS"
+    status: "QG2_IN_PROGRESS"
     current_phase: 2
     total_phases: 4
-    progress_percent: 25
+    progress_percent: 50
 
     phases:
 
@@ -129,19 +129,19 @@ pipelines:
       - id: 2
         name: "Core License Changes"
         path_id: "phase-2-core"
-        status: "IN_PROGRESS"
+        status: "COMPLETE"
         blocked_by: null  # Unblocked by QG-1 PASS
         enablers: ["EN-930", "EN-931", "EN-933"]
         execution_mode: "PARALLEL"
         effort_points: 3
-        started_at: null
-        completed_at: null
+        started_at: "2026-02-17T00:00:00Z"
+        completed_at: "2026-02-17T00:00:00Z"
         gate_after: "qg-2"
 
         agents:
           - id: "license-replacer"
             name: "License File Replacer"
-            status: "PENDING"
+            status: "COMPLETE"
             enabler: "EN-930"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/license-replacer/license-replacer-output.md"
             inputs:
@@ -155,7 +155,7 @@ pipelines:
 
           - id: "notice-creator"
             name: "NOTICE File Creator"
-            status: "PENDING"
+            status: "COMPLETE"
             enabler: "EN-931"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/notice-creator/notice-creator-output.md"
             inputs: []
@@ -167,7 +167,7 @@ pipelines:
 
           - id: "metadata-updater"
             name: "Packaging Metadata Updater"
-            status: "PENDING"
+            status: "COMPLETE"
             enabler: "EN-933"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/metadata-updater/metadata-updater-output.md"
             inputs:
@@ -180,13 +180,13 @@ pipelines:
 
         artifacts:
           - path: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/license-replacer/license-replacer-output.md"
-            status: "PENDING"
+            status: "COMPLETE"
             agent: "license-replacer"
           - path: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/notice-creator/notice-creator-output.md"
-            status: "PENDING"
+            status: "COMPLETE"
             agent: "notice-creator"
           - path: "orchestration/feat015-licmig-20260217-001/lic/phase-2-core/metadata-updater/metadata-updater-output.md"
-            status: "PENDING"
+            status: "COMPLETE"
             agent: "metadata-updater"
 
       # -----------------------------------------------------------------------
@@ -449,14 +449,14 @@ execution_queue:
     - id: 3
       name: "Phase 2 — Core License Changes"
       execution_mode: "PARALLEL"
-      status: "IN_PROGRESS"
+      status: "COMPLETE"
       blocked_by: "group-2"
       agents: ["license-replacer", "notice-creator", "metadata-updater"]
 
     - id: 4
       name: "Quality Gate 2"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
+      status: "IN_PROGRESS"
       blocked_by: "group-3"
       tasks: ["run-adv-scorer-qg2", "run-adv-executor-s007-qg2", "run-adv-executor-s002-qg2"]
 
@@ -511,16 +511,16 @@ metrics:
     gates_passed: 1
     gates_total: 4
     gates_percent: 25
-    agents_executed: 1
+    agents_executed: 4  # audit-executor + license-replacer + notice-creator + metadata-updater
     agents_total: 8
-    agents_percent: 12
-    artifacts_created: 2  # audit report + pip-licenses JSON
+    agents_percent: 50
+    artifacts_created: 5  # audit report + pip-licenses JSON + 3 phase-2 outputs
     artifacts_total: 12  # 8 phase artifacts + 4 gate result artifacts
-    artifacts_percent: 17
-    enablers_complete: 1  # EN-934
+    artifacts_percent: 42
+    enablers_complete: 4  # EN-934, EN-930, EN-931, EN-933
     enablers_total: 6
-    enablers_percent: 17
-    effort_complete: 3
+    enablers_percent: 67
+    effort_complete: 6  # 3 (EN-934) + 1+1+1 (EN-930/931/933)
     effort_total: 14
 
   quality:
@@ -595,8 +595,8 @@ next_actions:
 # =============================================================================
 resumption:
   last_checkpoint: "CP-001"
-  current_state: "QG-1 PASS (0.941, iteration 3). Phase 1 COMPLETE. Phase 2 IN_PROGRESS: 3 parallel agents (license-replacer, notice-creator, metadata-updater)."
-  next_step: "Execute Phase 2 agents in parallel. On completion, run QG-2 (S-014, S-007, S-002). If PASS: proceed to Phase 3."
+  current_state: "Phase 2 COMPLETE. All 3 agents PASS (EN-930, EN-931, EN-933). QG-2 IN_PROGRESS."
+  next_step: "Run QG-2 adversarial review (S-014, S-007, S-002) on Phase 2 deliverables. If PASS: proceed to Phase 3 (EN-932 source headers)."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/ORCHESTRATION_PLAN.md"   # Strategic context

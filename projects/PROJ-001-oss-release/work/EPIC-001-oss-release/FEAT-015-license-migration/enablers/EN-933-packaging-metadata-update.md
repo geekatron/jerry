@@ -9,13 +9,13 @@ PURPOSE: Update pyproject.toml and packaging metadata for Apache 2.0
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** medium
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** FEAT-015
 > **Owner:** Claude
 > **Effort:** 1
@@ -57,10 +57,10 @@ The `pyproject.toml` currently declares MIT license. This must be updated to Apa
 
 ## Acceptance Criteria
 
-- [ ] `pyproject.toml` license field is `"Apache-2.0"`
-- [ ] PyPI classifier updated to Apache Software License
-- [ ] No remaining MIT license references in packaging metadata
-- [ ] `uv sync` succeeds after changes
+- [x] `pyproject.toml` license field is `"Apache-2.0"`
+- [x] PyPI classifier updated to Apache Software License
+- [x] No remaining MIT license references in packaging metadata
+- [x] `uv sync` succeeds after changes
 
 ---
 
@@ -69,3 +69,4 @@ The `pyproject.toml` currently declares MIT license. This must be updated to Apa
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-17 | Created | Initial creation |
+| 2026-02-17 | done | pyproject.toml updated (license→Apache-2.0, classifier updated). `uv sync` PASS. MIT refs in README.md/INSTALLATION.md flagged for downstream. Artifact: `orchestration/feat015-licmig-20260217-001/lic/phase-2-core/metadata-updater/metadata-updater-output.md` |

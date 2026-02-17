@@ -87,10 +87,10 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
-| [EN-930](./enablers/EN-930-license-file-replacement.md) | License File Replacement | pending | 1 | Claude |
-| [EN-931](./enablers/EN-931-notice-file-creation.md) | NOTICE File Creation | pending | 1 | Claude |
+| [EN-930](./enablers/EN-930-license-file-replacement.md) | License File Replacement | done | 1 | Claude |
+| [EN-931](./enablers/EN-931-notice-file-creation.md) | NOTICE File Creation | done | 1 | Claude |
 | [EN-932](./enablers/EN-932-source-file-headers.md) | Source File Header Notices | pending | 5 | Claude |
-| [EN-933](./enablers/EN-933-packaging-metadata-update.md) | Packaging Metadata Update | pending | 1 | Claude |
+| [EN-933](./enablers/EN-933-packaging-metadata-update.md) | Packaging Metadata Update | done | 1 | Claude |
 | [EN-934](./enablers/EN-934-dependency-license-audit.md) | Dependency License Compatibility Audit | done | 3 | Claude |
 | [EN-935](./enablers/EN-935-ci-license-validation.md) | CI License Header Validation | pending | 3 | Claude |
 
@@ -102,10 +102,10 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 +------------------------------------------------------------------+
 |                    FEATURE PROGRESS TRACKER                       |
 +------------------------------------------------------------------+
-| Enablers:  [####................] 17% (1/6 completed)             |
-| Effort:    [####................] 21% (3/14 points)               |
+| Enablers:  [#############.......] 67% (4/6 completed)             |
+| Effort:    [########............] 43% (6/14 points)               |
 +------------------------------------------------------------------+
-| Overall:   [####................] 17%                              |
+| Overall:   [#############.......] 67%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -114,9 +114,9 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 6 |
-| **Completed Enablers** | 1 |
+| **Completed Enablers** | 4 |
 | **Total Effort** | 14 points |
-| **Completed Effort** | 3 points |
+| **Completed Effort** | 6 points |
 
 ---
 
