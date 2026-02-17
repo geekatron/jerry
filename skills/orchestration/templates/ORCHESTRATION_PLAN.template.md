@@ -202,6 +202,10 @@ orchestration/{WORKFLOW_ID}/
 | No deception | P-022 | Transparent reasoning |
 | User authority | P-020 | User approves gates |
 
+### 7.1.1 Worktracker Entity Templates
+
+> **WTI-007:** Entity files (EPIC, FEATURE, ENABLER, TASK, etc.) created during orchestration MUST use canonical templates from `.context/templates/worktracker/`. Read the appropriate template first, then populate. Do not create entity files from memory or by copying other instance files.
+
 ### 7.2 Soft Constraints
 
 | Constraint | Value | Rationale |

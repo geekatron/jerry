@@ -1,7 +1,7 @@
 ---
 name: nasa-se
 description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
-version: "1.1.0"
+version: "1.2.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
 activation-keywords:
   - "systems engineering"
@@ -43,7 +43,7 @@ activation-keywords:
 
 # NASA Systems Engineering Skill
 
-> **Version:** 1.1.0
+> **Version:** 1.2.0
 > **Framework:** Jerry NASA SE (NSE)
 > **Standards:** NASA/SP-2016-6105 Rev2, NPR 7123.1D, NPR 8000.4C
 > **Constitutional Compliance:** Jerry Constitution v1.0
@@ -56,9 +56,9 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Quick Reference |
-| **L1 (Engineer)** | Engineers invoking agents | Invoking an Agent, Agent Details |
-| **L2 (Architect)** | SE workflow designers | Orchestration Flow, State Passing, NPR Processes |
+| **L0 (ELI5)** | Project stakeholders, new users | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L1 (Engineer)** | Engineers invoking agents | [Invoking an Agent](#invoking-an-agent), [Adversarial Quality Mode](#adversarial-quality-mode), [Agent Details](#agent-details) |
+| **L2 (Architect)** | SE workflow designers | [Orchestration Flow](#orchestration-flow), [State Passing](#state-passing-between-agents), [NPR Processes](#nasa-common-technical-processes-npr-71231d) |
 
 ---
 
@@ -384,6 +384,80 @@ projects/PROJ-002-nasa-systems-engineering/
 
 ---
 
+## Adversarial Quality Mode
+
+> **Source:** EPIC-002 EN-305 (NASA-SE Skill Enhancement), EN-303 (Situational Applicability Mapping)
+> **SSOT:** `.context/rules/quality-enforcement.md` (canonical constants)
+
+The NASA SE skill integrates adversarial quality controls into systems engineering processes. All SE review gates, V&V activities, and risk assessments incorporate structured adversarial challenge through creator-critic-revision cycles.
+
+### V&V Enhancement with Adversarial Review
+
+Verification and validation activities are enhanced with adversarial challenge at each stage:
+
+| V&V Activity | Adversarial Enhancement | Strategies Applied |
+|--------------|------------------------|-------------------|
+| Requirements Review | Challenge completeness, ambiguity, testability | S-002 (Devil's Advocate), S-013 (Inversion) |
+| Design Verification | Challenge design assumptions and failure modes | S-004 (Pre-Mortem), S-012 (FMEA) |
+| Test Planning | Challenge test coverage and boundary conditions | S-013 (Inversion), S-011 (CoVe) |
+| Validation | Challenge fitness for purpose against stakeholder needs | S-003 (Steelman), S-007 (Constitutional AI) |
+
+### Quality Scoring Integration
+
+All NSE deliverables at C2+ criticality require quality scoring per the SSOT:
+
+- **Threshold:** >= 0.92 weighted composite score (ref: `.context/rules/quality-enforcement.md` H-13)
+- **Scoring mechanism:** S-014 (LLM-as-Judge) with dimension-level rubrics
+- **Minimum cycle count:** 3 iterations (creator -> critic -> revision) (ref: H-14)
+- **Self-review:** Required before presenting any deliverable (ref: H-15, S-010)
+
+| Dimension | Weight | NSE Focus |
+|-----------|--------|-----------|
+| Completeness | 0.20 | All NPR 7123.1D processes addressed |
+| Internal Consistency | 0.20 | Requirements/design/V&V alignment |
+| Methodological Rigor | 0.20 | NASA standards compliance |
+| Evidence Quality | 0.15 | Traceability, evidence links |
+| Actionability | 0.15 | Clear next steps, RFAs |
+| Traceability | 0.10 | Bidirectional trace integrity |
+
+### Criticality-Based Review Intensity
+
+Review intensity scales with decision criticality (ref: `.context/rules/quality-enforcement.md` Criticality Levels):
+
+| Criticality | Review Intensity | Required Strategies | NSE Context Examples |
+|-------------|-----------------|---------------------|---------------------|
+| C1 (Routine) | Self-check only | S-010 (Self-Refine) | Minor requirement wording updates |
+| C2 (Standard) | Standard critic cycle | S-007, S-002, S-014 | New requirements, routine V&V |
+| C3 (Significant) | Deep review | C2 + S-004, S-012, S-013 | API changes, new interfaces, risk mitigations |
+| C4 (Critical) | Tournament review | All 10 selected strategies | Architecture decisions, safety-critical requirements |
+
+### Review Gate Integration
+
+NPR 7123.1D review gates map to adversarial review levels:
+
+| Review Gate | NPR 7123.1D | Minimum Criticality | Primary Strategies | Focus |
+|-------------|-------------|---------------------|-------------------|-------|
+| SRR | Appendix G.1 | C2 | S-002, S-003, S-013, S-014 | Requirements completeness, ambiguity |
+| PDR | Appendix G.2 | C2 | S-004, S-012, S-014 | Design approach soundness, failure modes |
+| CDR | Appendix G.3 | C3 | S-002, S-004, S-007, S-012, S-013, S-014 | Design completeness, V&V readiness |
+| TRR | Appendix G.4 | C2 | S-011, S-013, S-014 | Test coverage, verification gaps |
+| FRR | Appendix G.5 | C3 | S-001, S-004, S-012, S-014 | Readiness, residual risk |
+
+**Auto-Escalation:** Artifacts touching `docs/governance/JERRY_CONSTITUTION.md` auto-escalate to C4. Artifacts touching `.context/rules/` auto-escalate to C3 minimum (ref: AE-001, AE-002).
+
+### Strategy Catalog Reference for NSE Contexts
+
+| NSE Context | Recommended Strategies | Rationale |
+|-------------|----------------------|-----------|
+| Requirements engineering | S-002, S-003, S-013, S-014 | Challenge completeness (Devil's Advocate), strengthen arguments (Steelman), invert assumptions (Inversion), score quality (LLM-as-Judge) |
+| Verification planning | S-002, S-011, S-013, S-014 | Challenge V&V coverage (Devil's Advocate), verify claims (CoVe), identify gaps via inversion (Inversion), score V&V completeness (LLM-as-Judge) |
+| Validation activities | S-003, S-007, S-014 | Strengthen stakeholder alignment (Steelman), check constitutional compliance (Constitutional AI), score fitness (LLM-as-Judge) |
+| Risk assessment | S-001, S-004, S-012, S-014 | Red-team assumptions (Red Team), pre-mortem on mitigations (Pre-Mortem), structured failure analysis (FMEA), score assessment quality (LLM-as-Judge) |
+| Design review (PDR/CDR) | S-002, S-004, S-012, S-013 | Challenge design decisions (Devil's Advocate), imagine failures (Pre-Mortem), structured failure modes (FMEA), invert constraints (Inversion) |
+| Technical review (SRR/FRR) | S-001, S-002, S-003, S-014 | Red-team readiness (Red Team), challenge assumptions (Devil's Advocate), strengthen case (Steelman), score readiness (LLM-as-Judge) |
+
+---
+
 ## Constitutional Compliance
 
 All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
@@ -463,7 +537,7 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 1.1.0*
+*Skill Version: 1.2.0*
 *Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*
-*Enhancement: WI-SAO-064 tool examples and L0/L1/L2 structure (0.8475→0.880)*
-*Last Updated: 2026-01-12*
+*Enhancement: EN-708 adversarial quality mode integration (EPIC-002 design)*
+*Last Updated: 2026-02-14*

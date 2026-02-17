@@ -1,7 +1,7 @@
 ---
 name: nasa-se-playbook
 description: Step-by-step guidance for using the NASA Systems Engineering skill, including review preparation, requirements engineering, risk management, and real-world examples with L0/L1/L2 output levels.
-version: "2.1.0"
+version: "2.2.0"
 skill: nasa-se
 template: PLAYBOOK_TEMPLATE.md v1.0.0
 constitutional_compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043
@@ -21,10 +21,10 @@ agents_covered:
 
 # NASA Systems Engineering Playbook
 
-> **Version:** 2.1.0
+> **Version:** 2.2.0
 > **Skill:** nasa-se
 > **Purpose:** Systems engineering guidance based on NASA NPR 7123.1D and SE Handbook
-> **Updated:** 2026-01-12 - Added YAML frontmatter (WI-SAO-064), Triple-lens refactoring (SAO-INIT-007)
+> **Updated:** 2026-02-14 - EN-708 adversarial quality mode: TRR/FRR entry/exit criteria, strategy reconciliation
 
 ---
 
@@ -528,6 +528,144 @@ projects/{PROJECT}/
 
 ---
 
+## Adversarial Quality Cycles at Review Gates
+
+> **Source:** EPIC-002 EN-305, EN-303, ADR-EPIC002-001
+> **SSOT:** `.context/rules/quality-enforcement.md`
+
+### Creator-Critic-Revision Cycle for SE Reviews
+
+Every technical review gate (SRR, PDR, CDR, TRR, FRR) integrates adversarial quality cycles. The cycle is **REQUIRED** for C2+ deliverables (ref: H-14).
+
+```
+CREATOR-CRITIC-REVISION CYCLE (Minimum 3 Iterations):
+------------------------------------------------------
+
+  Iteration 1           Iteration 2           Iteration 3+
+  +----------+          +----------+          +----------+
+  | CREATOR  |          | CREATOR  |          | CREATOR  |
+  | (nse-*)  |          | Revise   |          | Final    |
+  +----+-----+          +----+-----+          +----+-----+
+       |                     |                     |
+       v                     v                     v
+  +----------+          +----------+          +----------+
+  | CRITIC   |          | CRITIC   |          | CRITIC   |
+  | S-002,   |          | S-007,   |          | S-014    |
+  | S-003    |          | S-013    |          | (Score)  |
+  +----+-----+          +----+-----+          +----+-----+
+       |                     |                     |
+       v                     v                     v
+  +----------+          +----------+          +----------+
+  | Findings |          | Findings |          | SCORE    |
+  | & RFAs   |          | & RFAs   |          | >= 0.92? |
+  +----------+          +----------+          +----+-----+
+                                                   |
+                                              +----+----+
+                                              |         |
+                                              v         v
+                                            PASS      FAIL
+                                              |         |
+                                              v         v
+                                           PROCEED   REVISE
+                                                    (repeat)
+```
+
+### Entry/Exit Criteria for Quality Gates
+
+#### SRR (System Requirements Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | Stakeholder needs documented; initial requirements drafted | -- | nse-requirements artifact exists |
+| **Critic Pass 1** | Requirements challenged for completeness, ambiguity | S-002 (Devil's Advocate) | Findings documented |
+| **Critic Pass 2** | Requirements strengthened, gaps addressed | S-003 (Steelman), S-013 (Inversion) | Revision addresses all RFAs |
+| **Critic Pass 3** | Quality scored; threshold met | S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; traceability complete | -- | nse-reviewer sign-off |
+
+#### PDR (Preliminary Design Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | SRR closed; preliminary design documented; requirements baselined | -- | SRR exit confirmed |
+| **Critic Pass 1** | Design assumptions challenged; failure modes identified | S-002 (Devil's Advocate), S-004 (Pre-Mortem) | Findings documented |
+| **Critic Pass 2** | Design refined; FMEA completed for critical paths | S-012 (FMEA), S-013 (Inversion) | Revision addresses all RFAs |
+| **Critic Pass 3** | Quality scored; design approach validated | S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; risk register updated | -- | nse-reviewer sign-off |
+
+#### CDR (Critical Design Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | PDR closed; detailed design complete; V&V plan exists | -- | PDR exit confirmed |
+| **Critic Pass 1** | Design completeness challenged; V&V gaps identified | S-002 (Devil's Advocate), S-004 (Pre-Mortem) | Findings documented |
+| **Critic Pass 2** | FMEA on all critical paths; inverted assumptions tested | S-012 (FMEA), S-013 (Inversion) | Revision addresses all RFAs |
+| **Critic Pass 3** | Constitutional compliance checked; quality scored | S-007 (Constitutional AI), S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; build-to package approved | -- | nse-reviewer sign-off |
+
+**Note:** CDR is minimum C3 criticality, requiring deep review strategies per the SSOT.
+
+#### TRR (Test Readiness Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | CDR closed; all test procedures approved; test environment ready | -- | CDR exit confirmed |
+| **Critic Pass 1** | Test coverage challenged; verification gaps identified | S-011 (CoVe), S-013 (Inversion) | Findings documented |
+| **Critic Pass 2** | Test approach validated; boundary conditions verified | S-013 (Inversion), S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; test prerequisites complete | -- | nse-reviewer sign-off |
+
+**Note:** TRR is minimum C2 criticality. Strategies focus on verification completeness via Chain-of-Verification and Inversion.
+
+#### FRR (Flight/Deployment Readiness Review)
+
+| Gate | Criteria | Strategy | Verification |
+|------|----------|----------|-------------|
+| **Entry** | TRR closed; all tests passed or waived; risk posture accepted | -- | TRR exit confirmed |
+| **Critic Pass 1** | Readiness assumptions challenged; residual risks probed | S-002 (Devil's Advocate), S-004 (Pre-Mortem) | Findings documented |
+| **Critic Pass 2** | Failure modes analyzed; deployment risks assessed | S-012 (FMEA), S-014 (LLM-as-Judge) | Score >= 0.92 |
+| **Exit** | All RFAs closed; score >= 0.92; residual risk accepted by stakeholders | -- | nse-reviewer sign-off |
+
+**Note:** FRR is minimum C3 criticality, requiring deep review with Pre-Mortem and FMEA strategies.
+
+### Strategy Pairing for NSE Contexts
+
+| NSE Context | Creator Agent | Critic Strategy Pair | Why This Pairing |
+|-------------|--------------|---------------------|-----------------|
+| Requirements review | nse-requirements | S-002 + S-003 (Devil's Advocate + Steelman) | Challenge then strengthen requirements |
+| Design verification | nse-architecture | S-004 + S-012 (Pre-Mortem + FMEA) | Imagine failures then analyze systematically |
+| V&V planning | nse-verification | S-013 + S-011 (Inversion + CoVe) | Invert assumptions then verify claims |
+| Risk assessment | nse-risk | S-001 + S-004 (Red Team + Pre-Mortem) | Adversarial probing then structured failure analysis |
+| Integration review | nse-integration | S-002 + S-013 (Devil's Advocate + Inversion) | Challenge interfaces then test inverted assumptions |
+| Compliance audit | nse-qa | S-007 + S-014 (Constitutional AI + LLM-as-Judge) | Check against rules then score objectively |
+
+### Criticality Assessment for SE Artifacts
+
+Before beginning any SE review, assess criticality to determine review intensity:
+
+```
+SE ARTIFACT CRITICALITY ASSESSMENT:
+------------------------------------
+
+1. Check auto-escalation rules (SSOT AE-001 through AE-006):
+   - Touches constitution?        -> C4 (auto-escalate per AE-001)
+   - Touches .context/rules/?     -> C3 minimum (auto-escalate per AE-002)
+   - New/modified ADR?            -> C3 minimum (auto-escalate per AE-003)
+   - Safety-critical code?        -> C3 minimum (auto-escalate per AE-005)
+
+2. If no auto-escalation, assess manually:
+   - Reversible in 1 session, <3 files?          -> C1 (Routine)
+   - Reversible in 1 day, 3-10 files?            -> C2 (Standard)
+   - >1 day to reverse, >10 files, API changes?  -> C3 (Significant)
+   - Irreversible, architecture/governance?       -> C4 (Critical)
+
+3. Map criticality to review intensity:
+   - C1: Self-review only (S-010)
+   - C2: Standard creator-critic cycle (3 iterations minimum)
+   - C3: Deep review with expanded strategy set
+   - C4: Tournament -- all 10 strategies applied
+```
+
+---
+
 ## Tips and Best Practices
 
 ### 1. Be Specific About Scope
@@ -966,9 +1104,9 @@ Internal References:
 
 ---
 
-*Playbook Version: 2.1.0*
+*Playbook Version: 2.2.0*
 *Skill: nasa-se*
 *Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*
-*Enhancement: WI-SAO-064 YAML frontmatter (0.835→0.895)*
-*Last Updated: 2026-01-12*
+*Enhancement: EN-708 adversarial quality cycles at review gates (EPIC-002 design)*
+*Last Updated: 2026-02-14*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

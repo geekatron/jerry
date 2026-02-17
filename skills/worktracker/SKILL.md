@@ -64,6 +64,7 @@ Invoke `/worktracker` when you need to:
 The following rules are automatically loaded when this skill is invoked:
 
 @rules/worktracker-behavior-rules.md
+@rules/worktracker-templates.md
 
 ---
 
@@ -121,6 +122,7 @@ Agents enforce Worktracker Integrity (WTI) rules defined in `.context/templates/
 | WTI-004 | Synchronize Before Reporting | wt-auditor |
 | WTI-005 | Atomic State Updates | wt-auditor |
 | WTI-006 | Evidence-Based Closure | wt-verifier |
+| WTI-007 | Mandatory Template Usage | wt-auditor |
 
 ### Output Templates
 
@@ -192,3 +194,5 @@ For detailed reference, the following rule files are available:
 - **Directory Structure**: [worktracker-directory-structure.md](./rules/worktracker-directory-structure.md) - Complete folder hierarchy with examples
 - **Templates**: [worktracker-templates.md](./rules/worktracker-templates.md) - Template locations and usage rules
 - **TODO Integration**: [todo-integration-rules.md](./rules/todo-integration-rules.md) - META TODO items, TODO↔Worktracker sync rules
+
+> **Rule Loading Tiers:** Auto-loaded rules (behavior-rules, templates) are loaded via `@` import because they contain enforcement rules needed for every worktracker operation. Reference rules (entity-hierarchy, system-mappings, directory-structure, todo-integration) are loaded on-demand to conserve context budget.

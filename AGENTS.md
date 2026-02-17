@@ -3,6 +3,21 @@
 > This file documents the sub-agent personas available for task delegation.
 > Each agent has specialized capabilities and context isolation.
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Agent Philosophy](#agent-philosophy) | Core principles of agent-based work |
+| [Agent Summary](#agent-summary) | Quick count by skill |
+| [Problem-Solving Skill Agents](#problem-solving-skill-agents) | ps-* agents (9 total) |
+| [NASA SE Skill Agents](#nasa-se-skill-agents) | nse-* agents (10 total) |
+| [Orchestration Skill Agents](#orchestration-skill-agents) | orch-* agents (3 total) |
+| [Adversary Skill Agents](#adversary-skill-agents) | adv-* agents (3 total) |
+| [Worktracker Skill Agents](#worktracker-skill-agents) | wt-* agents (3 total) |
+| [Transcript Skill Agents](#transcript-skill-agents) | ts-* agents (5 total) |
+| [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
+| [Adding New Agents](#adding-new-agents) | Extension guide |
+
 ---
 
 ## Agent Philosophy
@@ -21,8 +36,19 @@ to specific skills. This provides:
 
 | Category | Count | Scope |
 |----------|-------|-------|
-| Problem-Solving Agents | 8 | `/problem-solving` skill |
-| **Total** | **8** | |
+| Problem-Solving Agents | 9 | `/problem-solving` skill |
+| NASA SE Agents | 10 | `/nasa-se` skill |
+| Orchestration Agents | 3 | `/orchestration` skill |
+| Adversary Agents | 3 | `/adversary` skill |
+| Worktracker Agents | 3 | `/worktracker` skill |
+| Transcript Agents | 5 | `/transcript` skill |
+| **Total** | **33** | |
+
+> **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
+> 37 total files found; 4 template/extension files excluded from counts:
+> `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 = 33 invokable agents.
+> Last verified: 2026-02-16.
 
 ---
 
@@ -30,37 +56,173 @@ to specific skills. This provides:
 
 These agents are scoped to the `problem-solving` skill and invoked via `/problem-solving`.
 
-| Agent | File | Role |
-|-------|------|------|
-| ps-researcher | `skills/problem-solving/agents/ps-researcher.md` | Research Specialist |
-| ps-analyst | `skills/problem-solving/agents/ps-analyst.md` | Analysis Specialist |
-| ps-synthesizer | `skills/problem-solving/agents/ps-synthesizer.md` | Synthesis Specialist |
-| ps-validator | `skills/problem-solving/agents/ps-validator.md` | Validation Specialist |
-| ps-architect | `skills/problem-solving/agents/ps-architect.md` | Architecture Specialist |
-| ps-reviewer | `skills/problem-solving/agents/ps-reviewer.md` | Review Specialist |
-| ps-investigator | `skills/problem-solving/agents/ps-investigator.md` | Investigation Specialist |
-| ps-reporter | `skills/problem-solving/agents/ps-reporter.md` | Reporting Specialist |
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| ps-researcher | `skills/problem-solving/agents/ps-researcher.md` | Research Specialist | Divergent |
+| ps-analyst | `skills/problem-solving/agents/ps-analyst.md` | Analysis Specialist | Convergent |
+| ps-synthesizer | `skills/problem-solving/agents/ps-synthesizer.md` | Synthesis Specialist | Integrative |
+| ps-validator | `skills/problem-solving/agents/ps-validator.md` | Validation Specialist | Systematic |
+| ps-architect | `skills/problem-solving/agents/ps-architect.md` | Architecture Specialist | Strategic |
+| ps-reviewer | `skills/problem-solving/agents/ps-reviewer.md` | Review Specialist | Critical |
+| ps-critic | `skills/problem-solving/agents/ps-critic.md` | Quality Evaluator | Convergent |
+| ps-investigator | `skills/problem-solving/agents/ps-investigator.md` | Investigation Specialist | Forensic |
+| ps-reporter | `skills/problem-solving/agents/ps-reporter.md` | Reporting Specialist | Communicative |
 
----
+**Key Capabilities:**
 
-## Problem-Solving Agents Overview
-
-The problem-solving skill provides 8 specialized agents for structured problem solving:
-
-| Agent | Cognitive Mode | Primary Use Case |
-|-------|---------------|------------------|
-| ps-researcher | Divergent | Literature review, web research, source validation |
-| ps-analyst | Convergent | Root cause analysis, trade-offs, gap analysis, risk |
-| ps-synthesizer | Integrative | Pattern synthesis across multiple research outputs |
-| ps-validator | Systematic | Constraint verification, design validation |
-| ps-architect | Strategic | Architecture decisions, ADR production |
-| ps-reviewer | Critical | Code review, design review, security review |
-| ps-investigator | Forensic | Failure analysis, debugging, 5 Whys |
-| ps-reporter | Communicative | Status reports, phase progress, summaries |
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| ps-researcher | Literature review, web research, source validation | Research findings |
+| ps-analyst | Root cause analysis, trade-offs, gap analysis, risk | Analysis reports |
+| ps-synthesizer | Pattern synthesis across multiple research outputs | Synthesis documents |
+| ps-validator | Constraint verification, design validation | Validation reports |
+| ps-architect | Architecture decisions, ADR production | Design documents, ADRs |
+| ps-reviewer | Code review, design review, security review | Review reports |
+| ps-critic | Quality evaluation for creator-critic-revision cycles | Critique reports with scores |
+| ps-investigator | Failure analysis, debugging, 5 Whys | Investigation reports |
+| ps-reporter | Status reports, phase progress, summaries | Status documents |
 
 **Invocation**: Use `/problem-solving` skill which orchestrates these agents.
 
-**Artifact Location**: `{project}/research/`, `{project}/analysis/`, `{project}/synthesis/`
+**Artifact Location**: `{project}/research/`, `{project}/analysis/`, `{project}/synthesis/`, `{project}/critiques/`
+
+---
+
+## NASA SE Skill Agents
+
+These agents implement NASA Systems Engineering processes per NPR 7123.1D.
+
+| Agent | File | Role | NASA Process |
+|-------|------|------|--------------|
+| nse-requirements | `skills/nasa-se/agents/nse-requirements.md` | Requirements Engineer | Processes 1, 2, 11 |
+| nse-verification | `skills/nasa-se/agents/nse-verification.md` | V&V Specialist | Processes 7, 8 |
+| nse-risk | `skills/nasa-se/agents/nse-risk.md` | Risk Manager | Process 13 |
+| nse-architecture | `skills/nasa-se/agents/nse-architecture.md` | System Architect | Processes 3, 4 |
+| nse-integration | `skills/nasa-se/agents/nse-integration.md` | Integration Engineer | Process 9 |
+| nse-configuration | `skills/nasa-se/agents/nse-configuration.md` | CM Specialist | Process 10 |
+| nse-qa | `skills/nasa-se/agents/nse-qa.md` | Quality Assurance | Process 12 |
+| nse-reviewer | `skills/nasa-se/agents/nse-reviewer.md` | Review Coordinator | All reviews (SRR/PDR/CDR/TRR/FRR) |
+| nse-reporter | `skills/nasa-se/agents/nse-reporter.md` | Status Reporter | Reporting and metrics |
+| nse-explorer | `skills/nasa-se/agents/nse-explorer.md` | Domain Explorer | Research and discovery |
+
+**Key Capabilities:**
+
+| Agent | Primary Deliverable | Output Location |
+|-------|---------------------|-----------------|
+| nse-requirements | Requirements specs, VCRM | `{project}/requirements/` |
+| nse-verification | VCRM, test procedures, validation plans | `{project}/verification/` |
+| nse-risk | Risk registers, assessments | `{project}/risks/` |
+| nse-architecture | Architecture docs, interface specs | `{project}/architecture/` |
+| nse-integration | Integration plans, test results | `{project}/integration/` |
+| nse-configuration | Baselines, change control | `{project}/configuration/` |
+| nse-qa | Quality plans, audits | `{project}/quality/` |
+| nse-reviewer | Review packages, findings | `{project}/reviews/` |
+| nse-reporter | Status reports, metrics | `{project}/reports/` |
+| nse-explorer | Domain research, trade studies | `{project}/research/` |
+
+**Invocation**: Use `/nasa-se` skill which orchestrates these agents.
+
+**All outputs include mandatory NASA disclaimer** per P-043.
+
+---
+
+## Orchestration Skill Agents
+
+These agents manage multi-agent workflow orchestration and state tracking.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| orch-planner | `skills/orchestration/agents/orch-planner.md` | Orchestration Planner | Convergent |
+| orch-tracker | `skills/orchestration/agents/orch-tracker.md` | State Tracker | Convergent |
+| orch-synthesizer | `skills/orchestration/agents/orch-synthesizer.md` | Workflow Synthesizer | Integrative |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| orch-planner | Multi-agent workflow design, pipeline architecture, quality gate planning | ORCHESTRATION_PLAN.md, ORCHESTRATION.yaml |
+| orch-tracker | State updates, artifact registration, quality score tracking, checkpoint creation | Updated ORCHESTRATION.yaml, WORKTRACKER.md |
+| orch-synthesizer | Cross-pipeline synthesis, barrier aggregation, final reporting | Synthesis reports, workflow summaries |
+
+**Invocation**: Use `/orchestration` skill for multi-phase workflows.
+
+**Artifact Location**: `{project}/orchestration/{workflow-id}/`
+
+---
+
+## Adversary Skill Agents
+
+These agents implement adversarial quality strategies for deliverable review.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| adv-selector | `skills/adversary/agents/adv-selector.md` | Strategy Selector | Convergent |
+| adv-executor | `skills/adversary/agents/adv-executor.md` | Strategy Executor | Convergent |
+| adv-scorer | `skills/adversary/agents/adv-scorer.md` | Quality Scorer | Convergent |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| adv-selector | Map criticality levels (C1-C4) to adversarial strategy sets per SSOT | Strategy selection plan |
+| adv-executor | Execute strategy templates against deliverables, produce findings | Strategy execution reports |
+| adv-scorer | Apply S-014 LLM-as-Judge scoring with dimension-level rubrics | Quality score reports |
+
+**Invocation**: Use `/adversary` skill for standalone adversarial review or integrated into creator-critic-revision cycles.
+
+**Strategy Templates**: `.context/templates/adversarial/s-{NNN}-{name}.md`
+
+---
+
+## Worktracker Skill Agents
+
+These agents manage work item verification, visualization, and auditing.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| wt-verifier | `skills/worktracker/agents/wt-verifier.md` | Status Verification Specialist | Convergent |
+| wt-visualizer | `skills/worktracker/agents/wt-visualizer.md` | Visualization Specialist | Divergent |
+| wt-auditor | `skills/worktracker/agents/wt-auditor.md` | Integrity Auditor | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| wt-verifier | Validate acceptance criteria, evidence, and completion readiness before DONE transitions | Verification reports |
+| wt-visualizer | Generate burndown charts, dependency graphs, timeline views | Visual dashboards (ASCII/Mermaid) |
+| wt-auditor | Cross-file integrity checks, template compliance, orphan detection | Audit reports |
+
+**Invocation**: Use `/worktracker` skill for work item management.
+
+**WTI Rules Enforced**: WTI-002 (No Closure Without Verification), WTI-003 (Truthful State), WTI-006 (Evidence-Based Closure)
+
+---
+
+## Transcript Skill Agents
+
+These agents parse, extract, and format transcript files.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| ts-parser | `skills/transcript/agents/ts-parser.md` | Transcript Parsing Orchestrator | Convergent |
+| ts-extractor | `skills/transcript/agents/ts-extractor.md` | Entity Extractor | Divergent |
+| ts-formatter | `skills/transcript/agents/ts-formatter.md` | Output Formatter | Convergent |
+| ts-mindmap-ascii | `skills/transcript/agents/ts-mindmap-ascii.md` | ASCII Mind Map Generator | Convergent |
+| ts-mindmap-mermaid | `skills/transcript/agents/ts-mindmap-mermaid.md` | Mermaid Mind Map Generator | Convergent |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| ts-parser | VTT/SRT/plain text parsing with Python delegation (Strategy Pattern orchestrator) | canonical-transcript.json, chunks/ |
+| ts-extractor | Extract entities (people, topics, decisions) from parsed transcripts | extraction-report.json |
+| ts-formatter | Format transcripts as markdown, text, or structured output | Formatted transcript files |
+| ts-mindmap-ascii | Generate ASCII mind maps from transcript structure | ASCII diagrams |
+| ts-mindmap-mermaid | Generate Mermaid mind maps from transcript structure | Mermaid diagrams |
+
+**Invocation**: Use `/transcript` skill for transcript processing.
+
+**Hybrid Architecture**: ts-parser delegates VTT files to Python parser (1,250x cost reduction), uses LLM fallback for SRT/plain text.
 
 ---
 
@@ -139,13 +301,3 @@ tools:
 ## Handoff Triggers
 {When this agent should hand off to another}
 ```
-
----
-
-## Future Skills with Agents (Planned)
-
-| Skill | Agents | Status |
-|-------|--------|--------|
-| documentation | doc-writer, api-documenter | Planned |
-| performance | profiler, optimizer | Planned |
-| devops | deployer, monitor | Planned |

@@ -1,7 +1,7 @@
 ---
 name: ps-researcher
-version: "2.2.0"
-description: "Deep research agent with MANDATORY artifact persistence, PS integration, Context7 MCP, and L0/L1/L2 output levels"
+version: "2.3.0"
+description: "Deep research agent with MANDATORY artifact persistence, PS integration, Context7 MCP, adversarial quality strategies, and L0/L1/L2 output levels"
 model: opus  # Complex research requires deeper reasoning
 
 # Identity Section (Anthropic best practice)
@@ -287,6 +287,45 @@ mcp__context7__query-docs(
 ```
 </context7_integration>
 
+<adversarial_quality>
+## Adversarial Quality Strategies for Research
+
+> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds and strategy IDs defined there.
+
+### Mandatory Self-Review (H-15)
+
+Before presenting ANY research output, you MUST apply S-010 (Self-Refine):
+1. Review your findings for completeness and accuracy
+2. Check that all claims have citations (P-001)
+3. Identify gaps in coverage
+4. Revise before presenting
+
+### Mandatory Steelman (H-16)
+
+Before any critique of sources or competing approaches, MUST apply S-003 (Steelman Technique):
+- Present the strongest version of each perspective
+- Acknowledge merits before identifying weaknesses
+
+### Research-Specific Strategy Set
+
+When participating in a creator-critic-revision cycle at C2+:
+
+| Strategy | Application to Research | When Applied |
+|----------|------------------------|--------------|
+| S-011 (Chain-of-Verification) | Verify factual claims against primary sources; create verification chains for key findings | During research, before output |
+| S-003 (Steelman) | Strengthen alternative viewpoints before evaluating; present strongest form of competing approaches | Before comparative analysis |
+| S-010 (Self-Refine) | Self-review completeness, citation quality, and coverage breadth before presenting | Before every output (H-15) |
+| S-014 (LLM-as-Judge) | Score research quality using SSOT 6-dimension rubric when acting as self-evaluator | During critic phase |
+| S-013 (Inversion) | Ask "What if our primary finding is wrong?" to identify blind spots in research | C3+ research tasks |
+
+### Quality Gate Participation
+
+When research is a C2+ deliverable:
+- **As creator:** Apply S-010 + S-011 during research, then submit for critic review
+- **Expect critic feedback** on: Evidence Quality (0.15 weight), Completeness (0.20 weight), Traceability (0.10 weight)
+- **Revision focus:** Address dimension-level feedback from critic, not just general comments
+</adversarial_quality>
+
 <invocation_protocol>
 ## PS CONTEXT (REQUIRED)
 
@@ -569,8 +608,8 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 
 ---
 
-*Agent Version: 2.2.0*
+*Agent Version: 2.3.0*
 *Template Version: 2.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*Last Updated: 2026-01-12*
-*Enhancement: WI-SAO-054 - Added concrete tool invocation examples*
+*Last Updated: 2026-02-14*
+*Enhancement: EN-707 - Added adversarial quality strategies for research (S-011, S-003, S-010, S-014, S-013)*

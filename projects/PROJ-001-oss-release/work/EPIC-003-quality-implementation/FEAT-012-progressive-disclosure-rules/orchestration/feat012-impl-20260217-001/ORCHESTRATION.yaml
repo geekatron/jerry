@@ -1,0 +1,575 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for FEAT-012 Progressive Disclosure Rules
+# Document ID: PROJ-001-ORCH-STATE-FEAT012
+# Version: 2.0
+# Last Updated: 2026-02-17T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+# Schema version for evolution support (semver format)
+# Increment MAJOR for breaking changes, MINOR for additions, PATCH for fixes
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "feat012-impl-20260217-001"
+  name: "FEAT-012 Progressive Disclosure Rules Implementation"
+  project_id: "PROJ-001"
+  epic_id: "EPIC-003"
+  feature_id: "FEAT-012"
+  version: "2.0"
+  created_at: "2026-02-17T00:00:00Z"
+  updated_at: "2026-02-17T00:00:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Workflow ID configuration (WI-SAO-021)
+  # Supports user-specified or auto-generated identifiers
+  id_source: "auto"           # "user" | "auto" - how the workflow ID was determined
+  id_format: "semantic-date-seq"  # Format specification for auto-generated IDs
+  # Format: {purpose}-{YYYYMMDD}-{NNN}
+  # Example: feat012-impl-20260217-001
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL      # Phases execute in order
+    - CONCURRENT      # Enablers within phases run in parallel
+    - HIERARCHICAL    # Orchestrator delegates to worker agents
+    # Single pipeline, no cross-pollination needed
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_concurrent_agents: 2      # Soft constraint (Phase 1/2 parallelism)
+    max_barrier_retries: 0        # Not applicable (single pipeline)
+    checkpoint_frequency: "PHASE" # AGENT | PHASE | BARRIER
+
+# =============================================================================
+# PATH CONFIGURATION (WI-SAO-021)
+# =============================================================================
+# All paths are dynamically constructed using workflow and pipeline identifiers.
+# No hardcoded pipeline names - all derived from configuration.
+paths:
+  # Base path for all orchestration artifacts
+  base: "orchestration/feat012-impl-20260217-001/"
+
+  # Pipeline artifact path pattern (AC-012-004: Agent-level isolation)
+  # {pipeline_alias} is derived from pipelines.impl.short_alias
+  # {phase_id} is the phase identifier (e.g., "phase-1-content-restoration")
+  # {agent_id} provides isolation for parallel (fan-out) execution
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+
+  # Examples:
+  # - Pipeline: orchestration/feat012-impl-20260217-001/impl/phase-1-content-restoration/en902-creator-iter1/guide-files.md
+  # - Checkpoint: orchestration/feat012-impl-20260217-001/checkpoints/CP-001.yaml
+
+# =============================================================================
+# PIPELINE DEFINITION (SINGLE PIPELINE)
+# =============================================================================
+pipelines:
+  # Single implementation pipeline
+  impl:
+    id: "pipeline-impl"
+    name: "Implementation Pipeline"
+    description: "Progressive disclosure rules implementation and verification"
+
+    # Short alias for path construction (WI-SAO-021)
+    short_alias: "impl"
+    skill_source: "orchestration"
+
+    status: "PHASE_1_PENDING"  # PHASE_N_PENDING | PHASE_N_IN_PROGRESS | COMPLETE
+    current_phase: 1
+    total_phases: 4
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "Content Restoration"
+        path_id: "phase-1-content-restoration"
+        status: "PENDING"   # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+        started_at: null
+        completed_at: null
+        enablers:
+          - id: "EN-902"
+            title: "Companion Guide Files"
+            effort: 8
+            tasks_total: 5
+            tasks_done: 0
+            status: "PENDING"
+            iterations_count: 0
+            max_iterations: 3
+            quality_score: null  # Will be populated by S-014
+            agents:
+              - id: "en902-creator-iter1"
+                name: "EN-902 Creator (Iteration 1)"
+                role: "ps-architect"
+                model: "sonnet"
+                status: "PENDING"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-1-content-restoration/en902-creator-iter1/guide-files.md"
+                inputs:
+                  - "EN-902 enabler specification"
+                  - "EN-702 deleted content index"
+                  - ".context/rules/ current state"
+              - id: "en902-critic-iter1"
+                name: "EN-902 Critic (Iteration 1)"
+                role: "ps-critic"
+                model: "opus"
+                status: "PENDING"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-1-content-restoration/en902-critic-iter1/critic-report.md"
+                inputs:
+                  - "en902-creator-iter1 deliverables"
+                  - "C3 adversarial strategies (6 required + 4 optional)"
+
+          - id: "EN-903"
+            title: "Code Pattern Extraction"
+            effort: 5
+            tasks_total: 3
+            tasks_done: 0
+            status: "PENDING"
+            iterations_count: 0
+            max_iterations: 3
+            quality_score: null
+            agents:
+              - id: "en903-creator-iter1"
+                name: "EN-903 Creator (Iteration 1)"
+                role: "ps-architect"
+                model: "sonnet"
+                status: "PENDING"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-1-content-restoration/en903-creator-iter1/pattern-files.md"
+                inputs:
+                  - "EN-903 enabler specification"
+                  - "src/ codebase patterns"
+              - id: "en903-critic-iter1"
+                name: "EN-903 Critic (Iteration 1)"
+                role: "ps-critic"
+                model: "opus"
+                status: "PENDING"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-1-content-restoration/en903-critic-iter1/critic-report.md"
+                inputs:
+                  - "en903-creator-iter1 deliverables"
+                  - "C3 adversarial strategies"
+
+        artifacts: []
+
+      - id: 2
+        name: "Infrastructure"
+        path_id: "phase-2-infrastructure"
+        status: "BLOCKED"
+        blocked_by: "phase-1"
+        started_at: null
+        completed_at: null
+        enablers:
+          - id: "EN-904"
+            title: "Path Scoping Implementation"
+            effort: 3
+            tasks_total: 3
+            tasks_done: 0
+            status: "BLOCKED"
+            iterations_count: 0
+            max_iterations: 3
+            quality_score: null
+            agents:
+              - id: "en904-creator-iter1"
+                name: "EN-904 Creator (Iteration 1)"
+                role: "ps-architect"
+                model: "sonnet"
+                status: "BLOCKED"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-2-infrastructure/en904-creator-iter1/scoped-rules.md"
+                inputs:
+                  - "EN-904 enabler specification"
+                  - ".context/rules/ files"
+                  - ".context/guides/ files (from EN-902)"
+              - id: "en904-critic-iter1"
+                name: "EN-904 Critic (Iteration 1)"
+                role: "ps-critic"
+                model: "opus"
+                status: "BLOCKED"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-2-infrastructure/en904-critic-iter1/critic-report.md"
+
+          - id: "EN-905"
+            title: "Bootstrap Exclusion & Validation"
+            effort: 3
+            tasks_total: 2
+            tasks_done: 0
+            status: "BLOCKED"
+            iterations_count: 0
+            max_iterations: 3
+            quality_score: null
+            agents:
+              - id: "en905-creator-iter1"
+                name: "EN-905 Creator (Iteration 1)"
+                role: "ps-architect"
+                model: "sonnet"
+                status: "BLOCKED"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-2-infrastructure/en905-creator-iter1/bootstrap-changes.md"
+                inputs:
+                  - "EN-905 enabler specification"
+                  - "src/bootstrap.py"
+                  - ".context/guides/ files (from EN-902)"
+              - id: "en905-critic-iter1"
+                name: "EN-905 Critic (Iteration 1)"
+                role: "ps-critic"
+                model: "opus"
+                status: "BLOCKED"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-2-infrastructure/en905-critic-iter1/critic-report.md"
+
+        artifacts: []
+
+      - id: 3
+        name: "Verification"
+        path_id: "phase-3-verification"
+        status: "BLOCKED"
+        blocked_by: "phase-2"
+        started_at: null
+        completed_at: null
+        enablers:
+          - id: "EN-906"
+            title: "Fidelity Verification & Cross-Reference Testing"
+            effort: 5
+            tasks_total: 4
+            tasks_done: 0
+            status: "BLOCKED"
+            iterations_count: 0
+            max_iterations: 3
+            quality_score: null
+            agents:
+              - id: "en906-creator-iter1"
+                name: "EN-906 Creator (Iteration 1)"
+                role: "ps-architect"
+                model: "sonnet"
+                status: "BLOCKED"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-3-verification/en906-creator-iter1/verification-tests.md"
+                inputs:
+                  - "EN-906 enabler specification"
+                  - "All Phase 1-2 artifacts"
+                  - "EN-702 deleted content index"
+              - id: "en906-critic-iter1"
+                name: "EN-906 Critic (Iteration 1)"
+                role: "ps-critic"
+                model: "opus"
+                status: "BLOCKED"
+                artifact: "orchestration/feat012-impl-20260217-001/impl/phase-3-verification/en906-critic-iter1/critic-report.md"
+
+        artifacts: []
+
+      - id: 4
+        name: "Integration & Synthesis"
+        path_id: "phase-4-integration"
+        status: "BLOCKED"
+        blocked_by: "phase-3"
+        started_at: null
+        completed_at: null
+        steps:
+          - id: "4.1"
+            name: "Full E2E test suite"
+            status: "BLOCKED"
+            command: "uv run pytest tests/e2e/ -v"
+          - id: "4.2"
+            name: "Ruff + type checks"
+            status: "BLOCKED"
+            command: "uv run ruff check src/"
+          - id: "4.3"
+            name: "Create Final Synthesis"
+            status: "BLOCKED"
+            agent: "feat012-synthesizer"
+          - id: "4.4"
+            name: "Update FEAT-012 worktracker"
+            status: "BLOCKED"
+          - id: "4.5"
+            name: "Update EPIC-003 rollup"
+            status: "BLOCKED"
+        agents:
+          - id: "feat012-synthesizer"
+            name: "FEAT-012 Synthesizer"
+            role: "orch-synthesizer"
+            model: "sonnet"
+            status: "BLOCKED"
+            artifact: "orchestration/feat012-impl-20260217-001/impl/phase-4-integration/synthesis/FEAT-012-FINAL-SYNTHESIS.md"
+        artifacts: []
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 1 Content Restoration (Parallel)"
+      execution_mode: "PARALLEL"  # PARALLEL | SEQUENTIAL
+      status: "READY"  # READY | IN_PROGRESS | COMPLETE | BLOCKED
+      agents:
+        - "en902-creator-iter1"
+        - "en903-creator-iter1"
+
+    - id: 2
+      name: "Phase 1 Critic Cycle"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents:
+        - "en902-critic-iter1"
+        - "en903-critic-iter1"
+
+    - id: 3
+      name: "Phase 2 Infrastructure (Parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "en904-creator-iter1"
+        - "en905-creator-iter1"
+
+    - id: 4
+      name: "Phase 2 Critic Cycle"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      agents:
+        - "en904-critic-iter1"
+        - "en905-critic-iter1"
+
+    - id: 5
+      name: "Phase 3 Verification (Sequential)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      agents:
+        - "en906-creator-iter1"
+
+    - id: 6
+      name: "Phase 3 Critic Cycle"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      agents:
+        - "en906-critic-iter1"
+
+    - id: 7
+      name: "Phase 4 Integration & Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-6"
+      agents:
+        - "feat012-synthesizer"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  # Example entry (populated during execution):
+  # - id: "CP-001"
+  #   timestamp: "2026-02-17T10:00:00Z"
+  #   trigger: "PHASE_COMPLETE"
+  #   description: "Phase 1 Content Restoration complete"
+  #   recovery_point: "phase-2-start"
+  #   artifacts_snapshot:
+  #     - ".context/guides/"
+  #     - ".context/patterns/"
+
+# =============================================================================
+# QUALITY TRACKING (C3 ADVERSARIAL PROTOCOL)
+# =============================================================================
+quality:
+  criticality_level: "C3"  # C1 | C2 | C3 | C4
+  threshold: 0.92  # Weighted composite minimum
+  auto_escalation_triggers:
+    - "AE-002: Touches .context/rules/"
+
+  # C3 Required Strategies (6)
+  required_strategies:
+    - id: "S-014"
+      name: "LLM-as-Judge"
+      description: "6-dimension weighted rubric scoring"
+      applied_by: "ps-critic"
+    - id: "S-007"
+      name: "Constitutional AI"
+      description: "Principle-by-principle compliance check"
+      applied_by: "ps-critic"
+    - id: "S-002"
+      name: "Devil's Advocate"
+      description: "Strongest counterarguments"
+      applied_by: "ps-critic"
+    - id: "S-004"
+      name: "Pre-Mortem"
+      description: "Imagine it failed — why?"
+      applied_by: "ps-critic"
+    - id: "S-012"
+      name: "FMEA"
+      description: "Systematic failure mode enumeration"
+      applied_by: "ps-critic"
+    - id: "S-013"
+      name: "Inversion"
+      description: "How could this fail?"
+      applied_by: "ps-critic"
+
+  # C3 Optional Strategies (4)
+  optional_strategies:
+    - id: "S-001"
+      name: "Red Team"
+      description: "Adversary simulation"
+      applied_by: "ps-critic"
+    - id: "S-003"
+      name: "Steelman"
+      description: "Charitable reconstruction FIRST (H-16)"
+      applied_by: "ps-critic"
+    - id: "S-010"
+      name: "Self-Refine"
+      description: "Creator self-review before submission"
+      applied_by: "ps-architect"
+    - id: "S-011"
+      name: "Chain-of-Verification"
+      description: "Factual verification of claims"
+      applied_by: "ps-critic"
+
+  # Scoring dimensions (S-014)
+  dimensions:
+    - name: "Completeness"
+      weight: 0.20
+      minimum: 0.88
+    - name: "Internal Consistency"
+      weight: 0.20
+      minimum: 0.88
+    - name: "Methodological Rigor"
+      weight: 0.20
+      minimum: 0.88
+    - name: "Evidence Quality"
+      weight: 0.15
+      minimum: 0.85
+    - name: "Actionability"
+      weight: 0.15
+      minimum: 0.85
+    - name: "Traceability"
+      weight: 0.10
+      minimum: 0.85
+
+  # Per-enabler scoring
+  enabler_scores:
+    EN-902:
+      iterations: []
+      # Example iteration entry:
+      # - iteration: 1
+      #   composite_score: null
+      #   dimension_scores:
+      #     completeness: null
+      #     internal_consistency: null
+      #     methodological_rigor: null
+      #     evidence_quality: null
+      #     actionability: null
+      #     traceability: null
+      #   outcome: null  # PASS | REVISE | ESCALATE
+    EN-903:
+      iterations: []
+    EN-904:
+      iterations: []
+    EN-905:
+      iterations: []
+    EN-906:
+      iterations: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 4
+    phases_percent: 0
+    enablers_complete: 0
+    enablers_total: 5
+    enablers_percent: 0
+    agents_executed: 0
+    agents_total: 11  # 2 per enabler (creator+critic) + 1 synthesizer
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 11
+    artifacts_percent: 0
+
+  quality:
+    enabler_pass_rate: 0.0  # EN-XXX passing / total enablers
+    average_iterations: 0.0  # Mean iterations per enabler
+    average_composite_score: 0.0  # Mean weighted composite across enablers
+    escalations_count: 0  # Count of AE-006 human escalations
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+    phase_durations:
+      phase_1: null
+      phase_2: null
+      phase_3: null
+      phase_4: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+  # Example:
+  # - id: "BLK-001"
+  #   description: "EN-902 git recovery failed for commit abc123"
+  #   blocking: ["en902-creator-iter1"]
+  #   severity: "HIGH"  # LOW | MEDIUM | HIGH
+  #   created_at: "2026-02-17T09:00:00Z"
+
+issues:
+  resolved: []
+  # Example:
+  # - id: "ISS-001"
+  #   description: "EN-903 pattern extraction missed adapter factories"
+  #   resolution: "Added factory patterns in iteration 2"
+  #   resolved_at: "2026-02-17T10:00:00Z"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 1 enablers (EN-902, EN-903)"
+      agents: ["en902-creator-iter1", "en903-creator-iter1"]
+      execution_mode: "PARALLEL"
+      priority: "HIGH"
+
+  subsequent:
+    - action: "Run Phase 1 critic cycle"
+      depends_on: "Phase 1 creators complete"
+      agents: ["en902-critic-iter1", "en903-critic-iter1"]
+    - action: "Execute Phase 2 enablers (EN-904, EN-905)"
+      depends_on: "Phase 1 complete (CP-001)"
+    - action: "Execute Phase 3 enabler (EN-906)"
+      depends_on: "Phase 2 complete (CP-002)"
+    - action: "Create Final Synthesis"
+      depends_on: "Phase 3 complete (CP-003)"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow not started"
+  next_step: "Execute Phase 1 enablers (EN-902, EN-903) in parallel"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"           # Strategic context
+    - "ORCHESTRATION_WORKTRACKER.md"    # Tactical documentation
+    - "ORCHESTRATION.yaml"              # This file - machine-readable state
+    - "EN-902 enabler specification"
+    - "EN-903 enabler specification"
+    - "EN-702 deleted content index"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+# =============================================================================
+# DISCLAIMER
+# =============================================================================
+disclaimer: |
+  This orchestration state file is generated and maintained by AI agents
+  (orch-planner v2.2.0, orch-executor). All quality scores, design decisions,
+  and risk assessments should be reviewed and approved by human stakeholders.
+  This file follows Jerry Constitution P-020 (User Authority) — users retain
+  final decision-making authority over all workflow execution decisions.

@@ -462,6 +462,52 @@ Example:
 ```
 </output_levels>
 
+<adversarial_quality_mode>
+## Adversarial Quality Mode for Quality Assurance
+
+> **Source:** EPIC-002 EN-305, EN-303 | **SSOT:** `.context/rules/quality-enforcement.md`
+
+QA audit artifacts (compliance reports, artifact validations, quality assessments) are subject to adversarial review per the quality framework. This agent participates in creator-critic-revision cycles as the **creator** for QA deliverables and as a **compliance auditor** ensuring all artifacts meet NASA and constitutional standards.
+
+### Applicable Strategies
+
+| Strategy | ID | When Applied | QA Focus |
+|----------|-----|-------------|----------|
+| Devil's Advocate | S-002 | Critic pass 1 | Challenge compliance claims, question whether artifact truly meets standard |
+| Constitutional AI | S-007 | Critic pass 1 | Verify QA report against Jerry Constitution principles (P-040, P-041, P-042, P-043) |
+| Self-Refine | S-010 | Before presenting (H-15) | Self-review QA findings before presenting to critic |
+| Chain-of-Verification | S-011 | Critic pass 2 | Verify each compliance claim in the QA report; trace evidence chains |
+| LLM-as-Judge | S-014 | Critic pass 3 | Score QA report quality against rubric (>= 0.92 threshold) |
+
+### Creator Responsibilities in Adversarial Cycle
+
+1. **Self-review (S-010):** Before presenting QA reports, apply self-critique checklist (H-15)
+2. **Steelman first (S-003):** Present the strongest case for compliance findings before challenging (H-16)
+3. **Accept critic findings:** Address all QA gaps identified by adversarial review without inflating compliance scores
+4. **Iterate:** Minimum 3 cycles (creator -> critic -> revision) per H-14
+5. **Quality threshold:** QA deliverable must achieve >= 0.92 score for C2+ criticality (H-13)
+
+### QA-Specific Adversarial Checks
+
+| Check | Strategy | Pass Criteria |
+|-------|----------|--------------|
+| Evidence validity | S-011 (CoVe) | Each compliance claim traces to specific evidence; no unsubstantiated passes |
+| Constitutional compliance | S-007 (Constitutional AI) | QA report itself meets P-002, P-043; validates P-040/P-041/P-042 in target artifact |
+| Scoring accuracy | S-002 (Devil's Advocate) | Compliance scores not inflated; findings severity correctly classified |
+| Checklist completeness | S-014 (LLM-as-Judge) | All applicable checklist items evaluated; no skipped criteria; scored by rubric |
+| Remediation actionability | S-002 (Devil's Advocate) | Remediation recommendations are specific, achievable, and correctly prioritized |
+
+### Review Gate Participation
+
+| Review Gate | QA Role | Minimum Criticality |
+|-------------|--------|---------------------|
+| SRR | Supporting -- validate requirements artifact quality | C2 |
+| PDR | Supporting -- validate design artifact quality | C2 |
+| CDR | Primary -- comprehensive artifact quality audit | C3 |
+| TRR | Supporting -- validate verification artifact quality | C2 |
+| FRR | Primary -- final artifact quality certification | C3 |
+</adversarial_quality_mode>
+
 <state_management>
 ## State Management (Agent Chaining)
 

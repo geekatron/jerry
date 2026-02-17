@@ -1,0 +1,411 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for FEAT-010 Tournament Remediation
+# Document ID: PROJ-001-ORCH-STATE-FEAT010
+# Version: 2.0
+# Last Updated: 2026-02-15
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "feat010-remediation-20260215-001"
+  name: "FEAT-010 Tournament Remediation"
+  project_id: "PROJ-001-oss-release"
+  version: "2.0"
+  created_at: "2026-02-15T00:00:00Z"
+  updated_at: "2026-02-16T03:00:00Z"
+  status: "COMPLETE"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+    - CONCURRENT  # Enablers within phases run in parallel
+
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_concurrent_agents: 3      # Max parallel enablers per phase
+    max_iterations_per_enabler: 4 # User directive (override of default 3)
+    checkpoint_frequency: "PHASE"
+
+# =============================================================================
+# QUALITY CONFIGURATION (C4)
+# =============================================================================
+quality:
+  criticality: "C4"
+  threshold: 0.92
+  scoring_mechanism: "S-014"
+  max_iterations: 4
+  human_escalation_after: 4
+
+  strategies_required:
+    - "S-001"  # Red Team
+    - "S-002"  # Devil's Advocate
+    - "S-003"  # Steelman
+    - "S-004"  # Pre-Mortem
+    - "S-007"  # Constitutional AI
+    - "S-010"  # Self-Refine
+    - "S-011"  # CoVe
+    - "S-012"  # FMEA
+    - "S-013"  # Inversion
+    - "S-014"  # LLM-as-Judge
+
+  scoring_dimensions:
+    completeness: { weight: 0.20, min: 0.88 }
+    internal_consistency: { weight: 0.20, min: 0.88 }
+    methodological_rigor: { weight: 0.20, min: 0.88 }
+    evidence_quality: { weight: 0.15, min: 0.85 }
+    actionability: { weight: 0.15, min: 0.85 }
+    traceability: { weight: 0.10, min: 0.85 }
+
+  enabler_scores:
+    EN-813: { score: 0.922, iterations: 4, status: "PASS" }
+    EN-814: { score: 0.950, iterations: 3, status: "PASS" }
+    EN-815: { score: 0.922, iterations: 2, status: "PASS" }
+    EN-816: { score: 0.931, iterations: 2, status: "PASS" }
+    EN-817: { score: 0.935, iterations: 1, status: "PASS" }
+    EN-818: { score: 0.937, iterations: 2, status: "PASS" }
+    EN-819: { score: 0.937, iterations: 2, status: "PASS" }
+
+  workflow_quality:
+    average_score: 0.933
+    lowest_score: 0.922
+    total_iterations: 16
+    gates_passed: 7
+    gates_failed: 0
+    feat009_rescore: 0.93
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "FEAT-010-tournament-remediation/orchestration/feat010-remediation-20260215-001/"
+  impl: "{base}impl/"
+  synthesis: "{base}synthesis/"
+  checkpoints: "{base}checkpoints/"
+
+# =============================================================================
+# PIPELINE DEFINITION (Single Pipeline)
+# =============================================================================
+pipeline:
+  id: "remediation"
+  name: "FEAT-010 Tournament Remediation Pipeline"
+  short_alias: "impl"
+  status: "COMPLETE"
+  current_phase: 4
+  total_phases: 4
+  progress_percent: 100
+
+  phases:
+    - id: 1
+      name: "P0 Critical Fixes"
+      path_id: "phase-1-p0-critical"
+      status: "COMPLETE"
+      started_at: "2026-02-15T20:00:00Z"
+      completed_at: "2026-02-16T00:00:00Z"
+      enablers:
+        - id: "EN-813"
+          name: "Template Context Optimization"
+          status: "PASS"
+          effort: 5
+          tasks: 4
+          findings: ["T-001"]
+          iterations: 4
+          score: 0.922
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["CR-001: Section heading format mismatch (Critical)", "CR-002: Token count claims ~4x off (Critical)", "CR-003: No parsing validation (Major)"]
+          critic_findings_iter2: ["CR-004: 2/10 templates use ## Section N: format (Critical)", "CR-005: 10K token target infeasible ~20K (Major)", "CR-006: No heading mismatch fallback (Major)", "CR-007: Section order incomplete (Minor)", "CR-008: PLAYBOOK numbered section refs (Minor)"]
+          critic_findings_iter3: ["CR-009: PLAYBOOK line 530 stale 10K token ref (Minor)", "CR-010: PLAYBOOK line 535 numbered section refs (Minor)"]
+          critic_findings_iter4: []
+
+        - id: "EN-814"
+          name: "Finding ID Scoping & Uniqueness"
+          status: "PASS"
+          effort: 3
+          tasks: 3
+          findings: ["T-002"]
+          iterations: 3
+          score: 0.950
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["CR-001: Body text old PREFIX-NNN format in all 10 templates (Critical)", "CR-002: TEMPLATE-FORMAT catalog table inconsistent (Major)", "CR-005: S-010 Output Format placeholders (Major)"]
+          critic_findings_iter2: ["CR-006: S-010 Identity table double {execution_id} (Major)", "CR-007: S-010 Examples section bare SR-NNN IDs (Major)"]
+          critic_findings_iter3: []
+
+        - id: "EN-815"
+          name: "Documentation & Navigation Fixes"
+          status: "PASS"
+          effort: 2
+          tasks: 5
+          findings: ["T-007", "T-023", "T-026", "T-027", "T-028"]
+          iterations: 2
+          score: 0.922
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["LJ-001: S-007 nav anchor targets HTML comment (Major)", "LJ-002: S-014 Step 6 redundant 0.95 items (Major)", "LJ-003: EN-815 metadata stale (Minor)"]
+          critic_findings_iter2: ["LJ-001-iter2: S-010 Finding Prefix duplication (Minor, FIXED)", "LJ-002-iter2: EN-815 metadata deferred (Minor)"]
+
+    - id: 2
+      name: "P1 Documentation & Runtime"
+      path_id: "phase-2-p1-docs-runtime"
+      status: "COMPLETE"
+      blocked_by: null
+      started_at: "2026-02-16T00:00:00Z"
+      completed_at: "2026-02-16T01:00:00Z"
+      enablers:
+        - id: "EN-816"
+          name: "Skill Documentation Completeness"
+          status: "PASS"
+          effort: 3
+          tasks: 4
+          findings: ["T-008", "T-014", "T-022"]
+          iterations: 2
+          score: 0.931
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["F-001: Wrong adv-selector.md path (Major)", "F-002: Timing count 10 vs 11 (Minor)", "F-003: PLAYBOOK skip-strategy contradicts no-skip (Critical)", "F-004: S-011 filename wrong (Major)", "F-005: adv-executor fallback_behavior label (Minor)", "F-006: AE rows optional dash (Minor)"]
+          critic_findings_iter2: []
+
+        - id: "EN-817"
+          name: "Runtime Enforcement"
+          status: "PASS"
+          effort: 5
+          tasks: 5
+          findings: ["T-004", "T-006", "T-009"]
+          iterations: 1
+          score: 0.935
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["F-001: Relative paths not constants (Minor)", "F-002: Vacuous pass in H-16 test (Minor)", "F-003: Path inconsistency across tests (Minor)", "F-004: AE loop vs parametrize (Minor)", "F-005: No SSOT cross-validation (Minor)"]
+
+    - id: 3
+      name: "P1 CI & SSOT"
+      path_id: "phase-3-p1-ci-ssot"
+      status: "COMPLETE"
+      blocked_by: null
+      started_at: "2026-02-16T01:00:00Z"
+      completed_at: "2026-02-16T02:00:00Z"
+      enablers:
+        - id: "EN-818"
+          name: "Template Validation CI Gate"
+          status: "PASS"
+          effort: 5
+          tasks: 4
+          findings: ["T-005", "T-003"]
+          iterations: 2
+          score: 0.937
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["F-001: Operator precedence bug (Critical)", "F-002: Double validation O(2N) (Major)", "F-003: Missing section ordering check (Major)", "F-004: Missing metadata blockquote check (Major)", "F-006: Identity values not SSOT-validated (Major)", "F-007: Missing per-section content checks (Major)"]
+          critic_findings_iter2: ["F-012: Examples OR logic (Minor)", "F-013: C1-C4 not table-row-aware (Minor)", "F-014: SSOT IDs hardcoded (Minor)"]
+
+        - id: "EN-819"
+          name: "SSOT Consistency & Template Resilience"
+          status: "PASS"
+          effort: 3
+          tasks: 4
+          findings: ["T-017", "T-016"]
+          iterations: 2
+          score: 0.937
+          creator_agent: "sonnet"
+          critic_agent: "opus"
+          critic_findings_iter1: ["F-001: S-003 REVISE band 0.85-<0.92 vs SSOT 0.85-0.91 (Major)", "F-003: Relative paths in tests (Major)", "F-004: Shallow SSOT test assertions (Major)"]
+          critic_findings_iter2: ["F-009: Local path reconstruction vs SSOT_PATH constant (Minor)"]
+
+    - id: 4
+      name: "Integration Validation & Synthesis"
+      path_id: "phase-4-integration"
+      status: "COMPLETE"
+      blocked_by: null
+      started_at: "2026-02-16T02:00:00Z"
+      completed_at: "2026-02-16T03:00:00Z"
+      steps:
+        - id: "4.1"
+          name: "Full E2E test suite"
+          status: "COMPLETE"
+          command: "uv run pytest tests/e2e/ -v"
+          result: "260 passed, 1 skipped"
+
+        - id: "4.2"
+          name: "Ruff + type checks"
+          status: "COMPLETE"
+          command: "uv run ruff check src/"
+          result: "All checks passed"
+
+        - id: "4.3"
+          name: "Re-score FEAT-009 with S-014"
+          status: "COMPLETE"
+          agent: "feat009-rescorer"
+          result: "0.93 PASS (pre-remediation ~0.78)"
+
+        - id: "4.4"
+          name: "Create Final Synthesis"
+          status: "COMPLETE"
+          agent: "feat010-synthesizer"
+          result: "feat010-final-synthesis.md"
+
+        - id: "4.5"
+          name: "Update FEAT-010 worktracker"
+          status: "COMPLETE"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 6
+  groups:
+    - id: 1
+      name: "Phase 1: EN-813 + EN-814 + EN-815 (parallel creators)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      agents:
+        - "en813-creator"
+        - "en814-creator"
+        - "en815-creator"
+
+    - id: 2
+      name: "Phase 1: Critic cycles (parallel per enabler)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      agents:
+        - "en813-critic"
+        - "en814-critic"
+        - "en815-critic"
+
+    - id: 3
+      name: "Phase 1: Revision + Critic iteration 2 (all 3 enablers)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      note: "Iter 2 scores: EN-813: 0.840 (REVISE), EN-814: 0.917 (REVISE), EN-815: 0.922 (PASS conditional)"
+
+    - id: "3b"
+      name: "Phase 1: Revision iteration 2 + Critic iteration 3 (EN-813 + EN-814)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      note: "EN-814: PASS 0.950. EN-813: 0.906 REVISE (CR-009/CR-010 Minor). EN-815: PASS 0.922."
+
+    - id: "3c"
+      name: "Phase 1: EN-813 final revision + critic iteration 4"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      note: "EN-813 PASS 0.922 (iteration 4). Phase 1 COMPLETE: all 3 enablers >= 0.92."
+
+    - id: 4
+      name: "Phase 2: EN-816 + EN-817 (parallel creators)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      note: "EN-816 + EN-817 creators delivered."
+
+    - id: 5
+      name: "Phase 2: Critic + revision cycles"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      note: "EN-816: 0.853→0.931 (2 iter). EN-817: 0.935 (1 iter). Phase 2 COMPLETE."
+
+    - id: 6
+      name: "Phase 3: EN-818 + EN-819 (parallel creators)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      agents:
+        - "en818-creator"
+        - "en819-creator"
+
+    - id: 7
+      name: "Phase 3: Critic + revision cycles"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      note: "EN-818: 0.888→0.937 (2 iter). EN-819: 0.888→0.937 (2 iter). Phase 3 COMPLETE."
+
+    - id: 8
+      name: "Phase 4: Integration validation"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      note: "E2E 260 passed. Ruff clean. FEAT-009 re-score 0.93 PASS. Synthesis created."
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "CP-004"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-02-16T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 1 complete — EN-813 (0.922), EN-814 (0.950), EN-815 (0.922)"
+    - id: "CP-002"
+      timestamp: "2026-02-16T01:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 2 complete — EN-816 (0.931), EN-817 (0.935)"
+    - id: "CP-003"
+      timestamp: "2026-02-16T02:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 3 complete — EN-818 (0.937), EN-819 (0.937). All 7 enablers PASS."
+    - id: "CP-004"
+      timestamp: "2026-02-16T03:00:00Z"
+      trigger: "WORKFLOW_COMPLETE"
+      recovery_point: "FEAT-010 COMPLETE. E2E 260 passed. FEAT-009 re-score 0.93. Synthesis created."
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 4
+    phases_total: 4
+    phases_percent: 100
+    enablers_complete: 7
+    enablers_total: 7
+    enablers_percent: 100
+    tasks_complete: 29
+    tasks_total: 29
+    tasks_percent: 100
+
+  quality:
+    average_enabler_score: 0.933
+    lowest_enabler_score: 0.922
+    total_iterations: 16
+    human_escalations: 0
+
+  timing:
+    workflow_started: "2026-02-15T20:00:00Z"
+    last_activity: "2026-02-16T03:00:00Z"
+    estimated_completion: "2026-02-16T03:00:00Z"
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate: []
+  subsequent: []
+  note: "FEAT-010 COMPLETE. All phases done. No remaining actions."
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "CP-004"
+  current_state: "FEAT-010 COMPLETE. All 4 phases done. All 7 enablers PASS. FEAT-009 re-score 0.93 PASS."
+  next_step: "None — workflow complete."
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"
+    - "ORCHESTRATION_WORKTRACKER.md"
+    - "ORCHESTRATION.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false

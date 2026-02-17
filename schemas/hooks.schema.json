@@ -25,6 +25,10 @@
           "$ref": "#/$defs/hookTypeArray",
           "description": "Hooks executed when a session starts. Matcher typically uses '*' for all sessions."
         },
+        "UserPromptSubmit": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed when a user submits a prompt. Can inject additional context via hookSpecificOutput.additionalContext."
+        },
         "Stop": {
           "$ref": "#/$defs/hookTypeArray",
           "description": "Hooks executed when agent stops. Matcher can be 'subagent:*' for subagent completion."

@@ -49,6 +49,22 @@ repos:
         args: [--config=pyproject.toml]
 
   # =============================================================================
+  # Architecture Boundary Validation (EN-704, L5 Post-Hoc)
+  # Validates hexagonal architecture import rules via AST analysis.
+  # Catches violations that bypassed L3 Pre-Action Gating (EN-703).
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: architecture-boundaries
+        name: architecture boundary validation
+        entry: uv run python scripts/check_architecture_boundaries.py
+        language: system
+        types: [python]
+        pass_filenames: false
+        # Only runs when Python files change
+        stages: [pre-commit]
+
+  # =============================================================================
   # Type Checking (pyright via local hook)
   # =============================================================================
   - repo: local
@@ -107,6 +123,19 @@ repos:
         entry: uv run python scripts/sync_versions.py --check
         language: system
         files: (pyproject\.toml|plugin\.json|marketplace\.json|CLAUDE\.md)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
+  # Template Format Validation (EN-818)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: validate-templates
+        name: Validate adversarial strategy templates
+        entry: uv run python scripts/validate_templates.py
+        language: system
+        files: \.context/templates/adversarial/.*\.md$
         pass_filenames: false
         stages: [pre-commit]
 
