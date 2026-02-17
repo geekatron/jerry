@@ -1,3 +1,10 @@
+---
+paths:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+  - "scripts/**/*.py"
+---
+
 # Testing Standards
 
 > Test pyramid, BDD cycle, coverage, and tool configuration for Jerry.

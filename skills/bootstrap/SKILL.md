@@ -92,6 +92,8 @@ Jerry's behavioral rules and patterns live in `.context/` (the canonical source)
 - **Windows without Developer Mode**: Junction points (no admin required)
 - **Fallback**: File copy with drift detection
 
+**Note on Guides:** The `.context/guides/` directory is intentionally NOT synced. Jerry uses a three-tier architecture where rules and patterns are auto-loaded at session start, but guides remain on-demand content. This prevents context bloat while keeping detailed guidance available when explicitly needed.
+
 ---
 
 ## Quick Start

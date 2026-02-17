@@ -1,3 +1,10 @@
+---
+paths:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+  - "scripts/**/*.py"
+---
+
 # Coding Standards
 
 > Python coding rules, naming conventions, and error handling for Jerry.

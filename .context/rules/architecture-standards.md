@@ -1,3 +1,10 @@
+---
+paths:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+  - "scripts/**/*.py"
+---
+
 # Architecture Standards
 
 > Hexagonal Architecture, CQRS, Event Sourcing, and file organization rules.
@@ -110,3 +117,4 @@ Override requires documented justification.
 - *Snapshot optimization MAY be used for aggregates with many events (every 10 events).*
 - *Anti-corruption layer MAY be used for external system integration.*
 - *Read model projections MAY be stored in `infrastructure/read_models/`.*
+- *Orchestration patterns for multi-agent workflows are defined in `skills/orchestration/SKILL.md`. Use `/orchestration` skill for coordinating 3+ agents.*

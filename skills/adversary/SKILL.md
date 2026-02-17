@@ -76,6 +76,9 @@ Activate when:
 - You need a creator-critic-revision loop (use `/problem-solving` with ps-critic instead)
 - You need routine code review for quick defect checks (use ps-reviewer)
 - You need constraint validation (use ps-validator)
+- Working on routine code changes at C1 criticality — use self-review (S-010) only without full adversarial overhead
+- Fixing defects or bugs with obvious solutions — use `/problem-solving` for root-cause analysis instead
+- User explicitly requests a quick review without adversarial rigor — respect user preference per P-020
 
 > **Note:** Use `/adversary` for adversarial code review (e.g., red team security review, tournament quality assessment of code artifacts). Use `ps-reviewer` for routine defect detection.
 
@@ -248,6 +251,8 @@ All strategies use standardized templates from `.context/templates/adversarial/`
 | `s-012-fmea.md` | S-012 FMEA | Failure Mode and Effects Analysis |
 | `s-013-inversion.md` | S-013 Inversion Technique | Invert key claims to find blind spots |
 | `s-014-llm-as-judge.md` | S-014 LLM-as-Judge | Rubric-based quality scoring |
+
+**Note:** Strategy templates are static reference documents, not dynamically generated. They are versioned in `.context/templates/adversarial/` alongside the codebase.
 
 ### Criticality-Based Strategy Selection
 

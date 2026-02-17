@@ -20,6 +20,9 @@ import time
 from pathlib import Path
 
 # Directories to sync from .context/ to .claude/
+# NOTE: .context/guides/ is intentionally EXCLUDED from auto-loading.
+# Guides are on-demand content (three-tier architecture: rules=auto-loaded,
+# patterns=auto-loaded, guides=on-demand). DO NOT add "guides" to this list.
 SYNC_DIRS = ["rules", "patterns"]
 
 
