@@ -34,7 +34,6 @@
 | [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | in_progress | critical |
-| [EPIC-004](./work/EPIC-004-advanced-adversarial/EPIC-004-advanced-adversarial.md) | Advanced Adversarial Capabilities | pending | medium |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -60,6 +59,7 @@
 | [BUG-007](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-007-problem-solving-templates-lost.md) | Problem solving templates lost | done | medium | EN-202 |
 | [BUG-008](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion flow lost | done | medium | EN-202 |
 | [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical | EPIC-003 |
+| [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | pending | critical | EPIC-003 |
 
 ---
 
@@ -84,6 +84,7 @@
 |----|-------|--------|--------|------|
 | [DISC-001](./work/EPIC-001-oss-release/FEAT-002-research-and-preparation/FEAT-002--DISC-001-missed-research-scope.md) | Missed Research Scope - Claude Code Best Practices | validated | critical | FEAT-002 |
 | [DISC-001](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/FEAT-003--DISC-001-navigation-tables-for-llm-comprehension.md) | Navigation Tables for LLM Comprehension | validated | high | FEAT-003 |
+| [DISC-002](./work/EPIC-003-quality-implementation/DISC-002-hook-schema-non-compliance.md) | Hook Schema Non-Compliance | validated | critical | EPIC-003 |
 
 ---
 
@@ -172,6 +173,9 @@
 | 2026-02-17 | Claude | FEAT-014 created under EPIC-003: Framework Synchronization. 5 enablers (EN-925–929), 21 tasks, 18 effort points. Codebase audit found 15 gaps: incomplete AGENTS.md, missing /adversary rule triggers, truncated skill docs, no adversarial template tests. EPIC-003 now 6 features (4 done, 2 pending). |
 | 2026-02-17 | Claude | BUG-001 created under EPIC-003: PR #13 CI Pipeline Failures. 8 tasks across 3 root causes: (A) 11 uv-dependent tests missing subprocess marker, (B) Windows PowerShell syntax errors in ci.yml, (C) cascading gate/coverage failures. Priority: critical. |
 | 2026-02-17 | Claude | BUG-001 RESOLVED: All CI jobs pass on PR #13. 5 root causes fixed across 4 commits: (A) 12 tests marked subprocess, (B) shell: bash on 4 CI steps, (C) PYTHONUTF8=1 for Windows, (D) tempfile.gettempdir() replacing /tmp, (E) cascading failures auto-resolved. |
+| 2026-02-17 | Claude | EPIC-004 (Advanced Adversarial Capabilities) migrated to PROJ-002-roadmap-next. Future-facing R&D items now have a dedicated project. PROJ-001 retains only OSS release scope. |
+| 2026-02-17 | Claude | DISC-002 created: Hook Schema Non-Compliance (validated, critical). All hook scripts except session_start_hook.py produce invalid JSON. L2 quality reinforcement completely non-functional. |
+| 2026-02-17 | Claude | BUG-002 created under EPIC-003: Hook JSON Schema Validation Failures. 5 tasks (TASK-001 through TASK-005), 10 effort points. Addresses 7 root causes across 4 hook scripts. |
 
 ---
 
