@@ -1,17 +1,17 @@
 # BUG-001: PR #13 CI Pipeline Failures
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-02-16T23:00:00Z
 > **Due:** 2026-02-17
-> **Completed:** —
+> **Completed:** 2026-02-17
 > **Parent:** EPIC-003
 > **Owner:** Claude
 > **Found In:** feature/PROJ-001-oss-release-feat003 (commit f9b3e88)
-> **Fix Version:** —
+> **Fix Version:** 5e374bc
 
 ---
 
@@ -108,20 +108,26 @@ The `test-uv` job in ci.yml uses bash-style `\` line continuations in the multi-
 
 ### Solution Approach
 
-**Group A fix:** Add `@pytest.mark.subprocess` to all 11 tests that invoke `uv` via subprocess. This ensures they are excluded from pip-only CI runs.
+**Group A fix:** Added `@pytest.mark.subprocess` to all 12 tests that invoke `uv` via subprocess (originally identified as 11, found 12 during implementation). This ensures they are excluded from pip-only CI runs.
 
-**Group B fix:** Add `shell: bash` to the test-uv job steps that use multi-line commands with `\` continuations. This ensures bash is used on all platforms including Windows.
+**Group B fix:** Added `shell: bash` to ALL test job steps (test-pip AND test-uv) that use multi-line commands with `\` continuations. This ensures bash is used on all platforms including Windows.
 
-**Group C/D fix:** No direct fix needed — cascading failures resolve automatically when A+B are fixed.
+**Group C fix (newly discovered):** Added `PYTHONUTF8=1` job-level env var for both test-pip and test-uv jobs. Windows uses cp1252 encoding by default, causing 28 `UnicodeDecodeError` failures when reading files with non-ASCII characters. This was previously hidden by the PowerShell ParserError.
 
-### Changes Planned
+**Group D fix (newly discovered):** Replaced hardcoded `cwd="/tmp"` with `tempfile.gettempdir()` in `test_userpromptsubmit_hook_integration.py`. `/tmp` doesn't exist on Windows, causing `NotADirectoryError`.
+
+**Group E fix:** Cascading failures (`ci-success` gate, `coverage-report` skip) resolved automatically when A+B+C+D were fixed.
+
+### Changes Applied
 
 | File | Change Description |
 |------|-------------------|
-| `tests/e2e/test_adversary_templates_e2e.py` | Add `@pytest.mark.subprocess` to 2 tests |
-| `tests/e2e/test_quality_framework_e2e.py` | Add `@pytest.mark.subprocess` to 8 tests |
-| `tests/integration/test_session_start_hook_integration.py` | Add `@pytest.mark.subprocess` to 1 test |
-| `.github/workflows/ci.yml` | Add `shell: bash` to test-uv steps with multi-line commands |
+| `tests/e2e/test_adversary_templates_e2e.py` | Added `@pytest.mark.subprocess` to 2 tests |
+| `tests/e2e/test_quality_framework_e2e.py` | Added `@pytest.mark.subprocess` to 10 tests (class + individual) |
+| `tests/integration/test_session_start_hook_integration.py` | Added `@pytest.mark.subprocess` to class (4 tests) + `import pytest` |
+| `.github/workflows/ci.yml` | Added `shell: bash` to 4 test steps (2 pip + 2 uv) |
+| `.github/workflows/ci.yml` | Added `PYTHONUTF8=1` env var to test-pip and test-uv jobs |
+| `tests/integration/test_userpromptsubmit_hook_integration.py` | Replaced `/tmp` with `tempfile.gettempdir()` |
 
 ---
 
@@ -129,16 +135,16 @@ The `test-uv` job in ci.yml uses bash-style `\` line continuations in the multi-
 
 ### Fix Verification
 
-- [ ] All 11 uv-dependent tests marked with `@pytest.mark.subprocess`
-- [ ] pip-only CI jobs exclude subprocess-marked tests (verified by job output)
-- [ ] Windows CI jobs pass (no PowerShell syntax errors)
-- [ ] All 24 CI jobs pass on PR #13
-- [ ] Coverage report posts to PR
+- [x] All 12 uv-dependent tests marked with `@pytest.mark.subprocess`
+- [x] pip-only CI jobs exclude subprocess-marked tests (verified: 3051 pass, 77 deselected)
+- [x] Windows CI jobs pass (no PowerShell syntax errors)
+- [x] All CI jobs pass on PR #13 (CI Success: pass on both push and PR runs)
+- [x] Coverage report posts to PR (Coverage Report: pass)
 
 ### Quality Checklist
 
-- [ ] No new issues introduced
-- [ ] Existing tests still passing locally (`uv run pytest`)
+- [x] No new issues introduced
+- [x] Existing tests still passing locally (`uv run pytest` — 3051 passed, 65 skipped, 77 deselected)
 
 ---
 
@@ -146,14 +152,14 @@ The `test-uv` job in ci.yml uses bash-style `\` line continuations in the multi-
 
 | ID | Title | Status | Priority | Group |
 |----|-------|--------|----------|-------|
-| [TASK-001](./TASK-001-mark-adversary-tests-subprocess.md) | Mark adversary template E2E tests with subprocess marker | BACKLOG | critical | A |
-| [TASK-002](./TASK-002-mark-quality-framework-tests-subprocess.md) | Mark quality framework E2E tests with subprocess marker | BACKLOG | critical | A |
-| [TASK-003](./TASK-003-mark-session-hook-test-subprocess.md) | Mark session start hook integration test with subprocess marker | BACKLOG | critical | A |
-| [TASK-004](./TASK-004-verify-pip-jobs-exclude-subprocess.md) | Verify pip jobs exclude subprocess-marked tests | BACKLOG | high | A |
-| [TASK-005](./TASK-005-fix-ci-yml-windows-shell.md) | Fix ci.yml test-uv Windows shell syntax | BACKLOG | high | B |
-| [TASK-006](./TASK-006-verify-windows-ci-pass.md) | Verify Windows CI jobs pass | BACKLOG | high | B |
-| [TASK-007](./TASK-007-push-and-verify-ci-green.md) | Push fixes and verify all 24 CI jobs pass | BACKLOG | medium | C |
-| [TASK-008](./TASK-008-verify-coverage-report.md) | Verify coverage report posts to PR | BACKLOG | medium | C |
+| [TASK-001](./TASK-001-mark-adversary-tests-subprocess.md) | Mark adversary template E2E tests with subprocess marker | DONE | critical | A |
+| [TASK-002](./TASK-002-mark-quality-framework-tests-subprocess.md) | Mark quality framework E2E tests with subprocess marker | DONE | critical | A |
+| [TASK-003](./TASK-003-mark-session-hook-test-subprocess.md) | Mark session start hook integration test with subprocess marker | DONE | critical | A |
+| [TASK-004](./TASK-004-verify-pip-jobs-exclude-subprocess.md) | Verify pip jobs exclude subprocess-marked tests | DONE | high | A |
+| [TASK-005](./TASK-005-fix-ci-yml-windows-shell.md) | Fix ci.yml test-uv Windows shell syntax | DONE | high | B |
+| [TASK-006](./TASK-006-verify-windows-ci-pass.md) | Verify Windows CI jobs pass | DONE | high | B |
+| [TASK-007](./TASK-007-push-and-verify-ci-green.md) | Push fixes and verify all 24 CI jobs pass | DONE | medium | C |
+| [TASK-008](./TASK-008-verify-coverage-report.md) | Verify coverage report posts to PR | DONE | medium | C |
 
 ---
 
@@ -175,5 +181,6 @@ The `test-uv` job in ci.yml uses bash-style `\` line continuations in the multi-
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-16 | Claude | in_progress | Initial report. 3 root causes, 8 tasks created. |
+| 2026-02-17 | Claude | completed | All fixes applied across 4 commits. 5 root causes addressed (3 original + 2 discovered). All CI jobs pass. Coverage report posts to PR. |
 
 ---
