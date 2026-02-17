@@ -83,7 +83,7 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | ID | Title | Status | Priority | Enablers | Progress |
 |----|-------|--------|----------|----------|----------|
-| FEAT-007 | Advanced Adversarial Capabilities | pending | high | 5 (EN-601–605) | 0% |
+| FEAT-007 | Advanced Adversarial Capabilities | deferred | high | 5 (EN-601–605) | deferred |
 | FEAT-008 | Quality Framework Implementation | completed | critical | 11 (EN-701–711) | 100% |
 | FEAT-009 | Adversarial Strategy Templates & /adversary Skill | completed | critical | 12 (EN-801–812) | 100% |
 | FEAT-010 | FEAT-009 Tournament Remediation | completed | critical | 7 (EN-813–819) | 100% |
@@ -109,10 +109,10 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [#############.......] 67% (4/6 completed)            |
-| Enablers:  [################....] 78% (35/45 completed)          |
+| Features:  [################....] 80% (4/5 completed)            |
+| Enablers:  [#################...] 88% (35/40 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [###############.....] ~73%                            |
+| Overall:   [#################...] ~84%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -120,13 +120,15 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 6 |
+| **Total Features** | 5 (excludes FEAT-007 deferred) |
 | **Completed Features** | 4 (FEAT-008, FEAT-009, FEAT-010, FEAT-011) |
 | **In Progress Features** | 0 |
-| **Pending Features** | 2 (FEAT-007, FEAT-012) |
-| **Total Enablers** | 45 |
+| **Pending Features** | 1 (FEAT-012) |
+| **Deferred Features** | 1 (FEAT-007) |
+| **Total Enablers** | 40 (excludes 5 deferred FEAT-007 enablers) |
 | **Completed Enablers** | 35 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011 + 1 FEAT-012 EN-901) |
-| **Feature Completion %** | 67% |
+| **Remaining Enablers** | 5 (FEAT-012: EN-901 done/superseded, EN-902–906 pending) |
+| **Feature Completion %** | 80% |
 
 ### Milestone Tracking
 

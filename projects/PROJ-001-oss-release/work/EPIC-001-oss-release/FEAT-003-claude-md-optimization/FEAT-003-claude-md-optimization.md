@@ -232,7 +232,7 @@ This Feature implements a **Tiered Hybrid Loading Strategy**:
 
 ### Related Features
 
-- [FEAT-001: Research and Preparation](../FEAT-001-research-and-preparation/FEAT-001-research-and-preparation.md) - Provides research foundation
+- [FEAT-002: Research and Preparation](../FEAT-002-research-and-preparation/FEAT-002-research-and-preparation.md) - Provides research foundation
 
 ### Source Plan
 
