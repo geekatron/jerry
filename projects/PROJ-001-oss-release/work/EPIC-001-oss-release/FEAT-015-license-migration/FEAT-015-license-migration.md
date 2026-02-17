@@ -92,7 +92,7 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | [EN-932](./enablers/EN-932-source-file-headers.md) | Source File Header Notices | done | 5 | Claude |
 | [EN-933](./enablers/EN-933-packaging-metadata-update.md) | Packaging Metadata Update | done | 1 | Claude |
 | [EN-934](./enablers/EN-934-dependency-license-audit.md) | Dependency License Compatibility Audit | done | 3 | Claude |
-| [EN-935](./enablers/EN-935-ci-license-validation.md) | CI License Header Validation | pending | 3 | Claude |
+| [EN-935](./enablers/EN-935-ci-license-validation.md) | CI License Header Validation | done | 3 | Claude |
 
 ---
 
@@ -102,10 +102,10 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 +------------------------------------------------------------------+
 |                    FEATURE PROGRESS TRACKER                       |
 +------------------------------------------------------------------+
-| Enablers:  [################....] 83% (5/6 completed)             |
-| Effort:    [###############.....] 79% (11/14 points)              |
+| Enablers:  [####################] 100% (6/6 completed)            |
+| Effort:    [####################] 100% (14/14 points)             |
 +------------------------------------------------------------------+
-| Overall:   [################....] 83%                              |
+| Overall:   [####################] 100%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -114,9 +114,9 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 6 |
-| **Completed Enablers** | 5 |
+| **Completed Enablers** | 6 |
 | **Total Effort** | 14 points |
-| **Completed Effort** | 11 points |
+| **Completed Effort** | 14 points |
 
 ---
 
@@ -144,6 +144,7 @@ Migrate the Jerry Framework from MIT License to Apache License 2.0. Apache 2.0 p
 | 2026-02-17 | Claude | in_progress | Phase 2 COMPLETE. EN-930, EN-931, EN-933 all done. QG-2 PASS (0.9505, 2 iterations). Phase 3 unblocked. |
 | 2026-02-17 | Claude | in_progress | Phase 3 COMPLETE. EN-932 done: 403 .py files have SPDX headers (17 shebangs handled). Independent verification PASS. Tests: 3196 passed. QG-3 pending. |
 | 2026-02-17 | Claude | in_progress | QG-3 PASS (0.935, 2 iterations). Iteration 1 REVISE (0.873): shebang roster mismatch, missing version metadata, no criteria cross-ref. Remediated all P1 findings. Iteration 2 PASS: S-014=0.935, S-007=0.96, S-002=ACCEPT. Phase 4 unblocked. |
+| 2026-02-17 | Claude | in_progress | Phase 4 COMPLETE. EN-935 done: scripts/check_spdx_headers.py, pre-commit hook (spdx-license-headers), CI job (license-headers). 5/5 tests pass, 404 files validated. QG-Final pending. |
 
 ---
 

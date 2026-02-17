@@ -65,6 +65,19 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # SPDX License Header Validation (EN-935, FEAT-015)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: spdx-license-headers
+        name: SPDX license header validation
+        entry: uv run python scripts/check_spdx_headers.py
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Type Checking (pyright via local hook)
   # =============================================================================
   - repo: local
