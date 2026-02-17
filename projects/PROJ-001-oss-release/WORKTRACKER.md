@@ -60,6 +60,7 @@
 | [BUG-008](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/BUG-008-askuserquestion-flow-lost.md) | AskUserQuestion flow lost | done | medium | EN-202 |
 | [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical | EPIC-003 |
 | [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | done | critical | EPIC-003 |
+| [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | done | high | EPIC-003 |
 
 ---
 
@@ -123,6 +124,7 @@
 | FEAT-006 | EPIC-001 Retroactive Quality Review | 2026-02-16 | All 5 enablers complete (EN-501: 0.949, EN-502: 0.951, EN-503/504/505 closed). |
 | EPIC-002 | Quality Framework Enforcement | 2026-02-16 | All 4 features (FEAT-004/005/006/013), 24 enablers, 163 effort points, 100% complete. |
 | BUG-002 (EPIC-003) | Hook JSON Schema Validation Failures | 2026-02-17 | 5-phase orchestration: 7 root causes fixed, 8 JSON schemas created, 31 compliance tests + 32 subagent_stop tests + 5 rm variant tests. C4 tournament PASS (0.9355). |
+| BUG-003 (EPIC-003) | CI Pipeline Failures — PROJ-002 Missing Dirs | 2026-02-17 | Added `.gitkeep` to `synthesis/` and `analysis/` in PROJ-002. 3 root causes (empty dirs not git-tracked). 105 project validation tests pass. |
 
 ---
 
@@ -178,6 +180,7 @@
 | 2026-02-17 | Claude | DISC-002 created: Hook Schema Non-Compliance (validated, critical). All hook scripts except session_start_hook.py produce invalid JSON. L2 quality reinforcement completely non-functional. |
 | 2026-02-17 | Claude | BUG-002 created under EPIC-003: Hook JSON Schema Validation Failures. 5 tasks (TASK-001 through TASK-005), 10 effort points. Addresses 7 root causes across 4 hook scripts. |
 | 2026-02-17 | Claude | BUG-002 RESOLVED via 5-phase orchestration (bug002-hookfix-20260217-001). All 7 root causes fixed. C4 tournament: 0.9125 (REVISE) -> 0.9355 (PASS) after P1-P5 remediation. 3195 tests pass, 8/8 schema validations, 36 new tests. |
+| 2026-02-17 | Claude | BUG-003 created and RESOLVED under EPIC-003: CI Pipeline Failures — PROJ-002 missing git-tracked directories. Added `.gitkeep` to `synthesis/` and `analysis/`. 105 project validation tests pass locally. |
 
 ---
 
