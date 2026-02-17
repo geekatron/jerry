@@ -83,7 +83,6 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | ID | Title | Status | Priority | Enablers | Progress |
 |----|-------|--------|----------|----------|----------|
-| FEAT-007 | Advanced Adversarial Capabilities | deferred | high | 5 (EN-601–605) | deferred |
 | FEAT-008 | Quality Framework Implementation | completed | critical | 11 (EN-701–711) | 100% |
 | FEAT-009 | Adversarial Strategy Templates & /adversary Skill | completed | critical | 12 (EN-801–812) | 100% |
 | FEAT-010 | FEAT-009 Tournament Remediation | completed | critical | 7 (EN-813–819) | 100% |
@@ -92,7 +91,6 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 ### Feature Links
 
-- [FEAT-007: Advanced Adversarial Capabilities](./FEAT-007-advanced-adversarial-capabilities/FEAT-007-advanced-adversarial-capabilities.md)
 - [FEAT-008: Quality Framework Implementation](./FEAT-008-quality-framework-implementation/FEAT-008-quality-framework-implementation.md)
 - [FEAT-009: Adversarial Strategy Templates & /adversary Skill](./FEAT-009-adversarial-strategy-templates/FEAT-009-adversarial-strategy-templates.md)
 - [FEAT-010: FEAT-009 Tournament Remediation](./FEAT-010-tournament-remediation/FEAT-010-tournament-remediation.md)
@@ -120,12 +118,11 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 5 (excludes FEAT-007 deferred) |
+| **Total Features** | 5 |
 | **Completed Features** | 4 (FEAT-008, FEAT-009, FEAT-010, FEAT-011) |
 | **In Progress Features** | 0 |
 | **Pending Features** | 1 (FEAT-012) |
-| **Deferred Features** | 1 (FEAT-007) |
-| **Total Enablers** | 40 (excludes 5 deferred FEAT-007 enablers) |
+| **Total Enablers** | 40 |
 | **Completed Enablers** | 35 (11 FEAT-008 + 12 FEAT-009 + 7 FEAT-010 + 4 FEAT-011 + 1 FEAT-012 EN-901) |
 | **Remaining Enablers** | 5 (FEAT-012: EN-901 done/superseded, EN-902–906 pending) |
 | **Feature Completion %** | 80% |
@@ -174,3 +171,4 @@ Implement the quality framework designs from EPIC-002 into working Python code, 
 | 2026-02-15 | Claude | in_progress | Status sync: FEAT-008 completed (11/11 enablers verified on disk). FEAT-009 completed (12/12 enablers verified on disk). Template-canonical enums applied. 3/4 features complete (75%). Only FEAT-010 remains. |
 | 2026-02-15 | Claude | completed | FEAT-010 COMPLETE: All 7 enablers PASS (avg 0.933, lowest 0.922). FEAT-009 re-scored 0.93 (was 0.85). 260 E2E tests pass, ruff clean. All 4 features complete. EPIC-003 100%. |
 | 2026-02-16 | Claude | in_progress | **Reopened.** FEAT-007 (Advanced Adversarial Capabilities, 5 enablers) and FEAT-012 (Progressive Disclosure Rules Architecture, 6 enablers) moved from EPIC-002 — these are implementation work. FEAT-012 EN-901 superseded by EN-701; EN-902–906 are new work. 4/6 features complete (67%), 35/45 enablers complete (78%). |
+| 2026-02-16 | Claude | in_progress | FEAT-007 (Advanced Adversarial Capabilities) moved from EPIC-003 to new EPIC-004 (Advanced Adversarial Capabilities). FEAT-007 contains deferred strategies requiring cross-model LLM infrastructure — not needed for OSS release. EPIC-003 now has 5 features (4 completed, 1 pending). |

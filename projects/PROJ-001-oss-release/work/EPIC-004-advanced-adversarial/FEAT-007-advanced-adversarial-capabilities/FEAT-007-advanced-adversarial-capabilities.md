@@ -15,7 +15,7 @@ PURPOSE: Research and implement advanced adversarial capabilities deferred from 
 > **Created:** 2026-02-12
 > **Due:** —
 > **Completed:** —
-> **Parent:** EPIC-003
+> **Parent:** EPIC-004
 > **Owner:** —
 > **Target Sprint:** Sprint 4
 
@@ -215,7 +215,7 @@ EN-603    EN-604    EN-605
 
 ### Hierarchy
 
-- **Parent Epic:** [EPIC-003: Quality Framework Implementation](../EPIC-003-quality-implementation.md)
+- **Parent Epic:** [EPIC-004: Advanced Adversarial Capabilities](../EPIC-004-advanced-adversarial.md)
 
 ### Related Features
 
@@ -241,6 +241,7 @@ EN-603    EN-604    EN-605
 | 2026-02-12 | Claude | pending | Feature created under EPIC-002 from FEAT-004 Out of Scope items. 5 enablers defined (EN-601 through EN-605). Covers automated strategy selection, custom strategy tooling, effectiveness metrics, and A/B testing. Full agent utilization required (22 agents). |
 | 2026-02-16 | Claude | pending | Moved from EPIC-002 to EPIC-003. FEAT-007 is implementation work; EPIC-002 is research/design, EPIC-003 is implementation. Dependencies updated to reference FEAT-008/009 (EPIC-003) as foundation. |
 | 2026-02-16 | Claude | deferred | Deferred to future epic per user decision. The excluded strategies (S-005, S-009) require cross-model LLM capabilities not currently available. Core 10 strategies already implemented via FEAT-009. |
+| 2026-02-16 | Claude | deferred | Moved from EPIC-003 to EPIC-004 (new forward-facing epic for advanced adversarial capabilities). |
 
 ---
 
