@@ -31,9 +31,9 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
-| [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | completed | critical |
-| [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | completed | critical |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
+| [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
+| [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | in_progress | critical |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -112,9 +112,9 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | 2026-02-12 | All 3 features, 20 enablers, 15 bugs complete |
+| EPIC-001 | OSS Release Preparation | 2026-02-16 | Re-closed after retroactive validation (FEAT-006). All 3 features, 20 enablers, 15 bugs. EN-501: 0.949, EN-502: 0.951. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
-| EPIC-003 | Quality Framework Implementation | 2026-02-15 | All 4 features (FEAT-008/009/010/011), 34 enablers, 100% complete. |
+| EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/5 features done (FEAT-008/009/010/011), FEAT-012 pending, FEAT-007 deferred. 84% complete. |
 | EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
 | EN-502 | Bootstrap Cross-Platform Validation | 2026-02-16 | Score 0.951 (4 iterations). 47 tests passing. All HIGH resolved. |
 | FEAT-006 | EPIC-001 Retroactive Quality Review | 2026-02-16 | All 5 enablers complete (EN-501: 0.949, EN-502: 0.951, EN-503/504/505 closed). |
@@ -165,6 +165,7 @@
 | 2026-02-16 | Claude | FEAT-013 created under EPIC-002: Worktracker Integrity Remediation. 6 enablers (EN-907–912), 29 tasks, 15 effort points. Fixes all audit findings. |
 
 | 2026-02-16 | Claude | EN-501 closed (0.949, 3 iterations). EN-502 closed (0.951, 4 iterations). FEAT-006 closed (5/5 enablers). EPIC-002 closed (4/4 features, 24/24 enablers, 163/163 points). Quality framework enforcement complete and all EPIC-001 deliverables retroactively validated. |
+| 2026-02-16 | Claude | PROJ-001 full audit (wt-auditor/wt-verifier/wt-visualizer): 14 errors, 11 warnings, 5 info. Corrective actions: EPIC-001 re-closed (done), EPIC-003 reverted to in_progress (FEAT-012 pending, FEAT-007 deferred), FEAT-004/005 ACs checked + Evidence added, FEAT-013 DoD verified + Evidence added, FEAT-002 enabler count fixed (7→8), FEAT-003 broken link fixed. All entity files now have delivery evidence per WTI-006. |
 
 ---
 
