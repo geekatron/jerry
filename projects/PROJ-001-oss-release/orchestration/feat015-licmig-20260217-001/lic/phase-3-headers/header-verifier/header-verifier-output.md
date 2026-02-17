@@ -88,7 +88,7 @@ Line 4: # Copyright (c) 2026 Adam Nowak
 | `scripts/sync_versions.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |
 | `scripts/test_combined_hook_output.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |
 | `scripts/validate_plugin_manifests.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |
-| `scripts/validate_schemas.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |
+| `scripts/validate_schemas.py` | `#!/usr/bin/env -S uv run python` | Line 3 | Line 4 | PASS |
 | `scripts/validate_templates.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |
 | `scripts/patterns/loader.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |
 | `scripts/tests/test_hooks.py` | `#!/usr/bin/env python3` | Line 3 | Line 4 | PASS |

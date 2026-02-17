@@ -83,8 +83,8 @@ pipelines:
     short_alias: "lic"
     skill_source: "orchestration"
 
-    status: "QG3_PENDING"
-    current_phase: 3
+    status: "PHASE_4_READY"
+    current_phase: 4
     total_phases: 4
     progress_percent: 75
 
@@ -251,8 +251,8 @@ pipelines:
       - id: 4
         name: "CI License Header Validation"
         path_id: "phase-4-ci"
-        status: "BLOCKED"
-        blocked_by: "qg-3"
+        status: "READY"
+        blocked_by: null  # Unblocked by QG-3 PASS
         enablers: ["EN-935"]
         execution_mode: "SEQUENTIAL"
         effort_points: 3
@@ -263,7 +263,7 @@ pipelines:
         agents:
           - id: "ci-validator-implementer"
             name: "CI Validator Implementer"
-            status: "BLOCKED"
+            status: "READY"
             enabler: "EN-935"
             artifact: "orchestration/feat015-licmig-20260217-001/lic/phase-4-ci/ci-validator-implementer/ci-validator-implementer-output.md"
             description: >
@@ -397,26 +397,43 @@ quality_gates:
     id: "qg-3"
     name: "Source File Headers Quality Gate"
     after_phase: 3
-    status: "PENDING"
+    status: "PASS"
     deliverables_scored:
       - "orchestration/feat015-licmig-20260217-001/lic/phase-3-headers/header-applicator/header-applicator-output.md"
       - "orchestration/feat015-licmig-20260217-001/lic/phase-3-headers/header-verifier/header-verifier-output.md"
     threshold: 0.92
     max_iterations: 3
-    current_iteration: 0
+    current_iteration: 2
     required_strategies: ["S-014", "S-007", "S-002"]
     optional_strategies: ["S-003", "S-010"]
     agents_invoked: ["adv-scorer", "adv-executor"]
-    score: null
+    iteration_history:
+      - iteration: 1
+        score: 0.873
+        verdict: "REVISE"
+        strategies:
+          S-014: { score: 0.873, verdict: "REVISE" }
+          S-007: { score: 0.81, verdict: "REJECTED", major_findings: 3, minor_findings: 3 }
+          S-002: { verdict: "REVISE", major_findings: 3, minor_findings: 3 }
+        primary_defect: "Shebang roster mismatch between applicator and verifier (bootstrap_context.py vs validate_schemas.py). Missing version metadata. No criteria cross-reference."
+      - iteration: 2
+        score: 0.935
+        verdict: "PASS"
+        strategies:
+          S-014: { score: 0.935, verdict: "PASS" }
+          S-007: { score: 0.96, verdict: "PASS", major_findings: 0, minor_findings: 2 }
+          S-002: { estimated_score: 0.935, verdict: "ACCEPT", major_findings: 0, minor_findings: 2 }
+        primary_defect: null
+    score: 0.935
     score_dimensions:
-      completeness: null      # weight: 0.20 — 100% .py files have header?
-      internal_consistency: null  # weight: 0.20 — All headers use same SPDX format?
-      methodological_rigor: null  # weight: 0.20 — Shebang handling correct?
-      evidence_quality: null  # weight: 0.15 — Verifier scan confirms applicator results?
-      actionability: null     # weight: 0.15 — Any missing headers have remediation?
-      traceability: null      # weight: 0.10 — Traceable to EN-932?
+      completeness: 0.95      # weight: 0.20 — 403/403 files covered, 9 out-of-scope documented
+      internal_consistency: 0.93  # weight: 0.20 — Shebang roster aligned, criteria cross-referenced
+      methodological_rigor: 0.94  # weight: 0.20 — Independent applicator+verifier pattern, 5-criterion check
+      evidence_quality: 0.91  # weight: 0.15 — Verifier confirms applicator, test suite 3196 passed
+      actionability: 0.95     # weight: 0.15 — Scope clarification, out-of-scope rationale documented
+      traceability: 0.95      # weight: 0.10 — EN-932 AC traceable, version metadata present
     artifact: "orchestration/feat015-licmig-20260217-001/lic/quality-gates/qg-3/gate-result.md"
-    completed_at: null
+    completed_at: "2026-02-17T00:00:00Z"
 
   qg-final:
     id: "qg-final"
@@ -451,7 +468,7 @@ quality_gates:
 # EXECUTION QUEUE
 # =============================================================================
 execution_queue:
-  current_group: 6
+  current_group: 7
   groups:
 
     - id: 1
@@ -491,14 +508,14 @@ execution_queue:
     - id: 6
       name: "Quality Gate 3"
       execution_mode: "SEQUENTIAL"
-      status: "READY"
+      status: "COMPLETE"
       blocked_by: "group-5"
       tasks: ["run-adv-scorer-qg3", "run-adv-executor-s007-qg3", "run-adv-executor-s002-qg3"]
 
     - id: 7
       name: "Phase 4 — CI Validation"
       execution_mode: "SEQUENTIAL"
-      status: "BLOCKED"
+      status: "READY"
       blocked_by: "group-6"
       agents: ["ci-validator-implementer", "ci-validator-tester"]
 
@@ -513,7 +530,7 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-002"
+  latest_id: "CP-003"
   entries:
     - id: "CP-001"
       timestamp: "2026-02-17T00:00:00Z"
@@ -525,6 +542,11 @@ checkpoints:
       trigger: "GATE_PASS"
       description: "QG-2 PASS (0.9505) — Phase 2 core license changes complete, Phase 3 unblocked"
       recovery_point: "phase-3-start"
+    - id: "CP-003"
+      timestamp: "2026-02-17T00:00:00Z"
+      trigger: "GATE_PASS"
+      description: "QG-3 PASS (0.935) — Phase 3 source file headers complete, Phase 4 unblocked"
+      recovery_point: "phase-4-start"
 
 # =============================================================================
 # METRICS
@@ -534,9 +556,9 @@ metrics:
     phases_complete: 3
     phases_total: 4
     phases_percent: 75
-    gates_passed: 2
+    gates_passed: 3
     gates_total: 4
-    gates_percent: 50
+    gates_percent: 75
     agents_executed: 6  # audit-executor + license-replacer + notice-creator + metadata-updater + header-applicator + header-verifier
     agents_total: 8
     agents_percent: 75
@@ -552,12 +574,12 @@ metrics:
   quality:
     qg_1_score: 0.941  # Iteration 3: PASS (0.825 -> 0.916 -> 0.941)
     qg_2_score: 0.9505  # Iteration 2: PASS (0.9595 REVISE -> 0.9505 PASS)
-    qg_3_score: null
+    qg_3_score: 0.935  # Iteration 2: PASS (0.873 REVISE -> 0.935 PASS)
     qg_final_score: null
     gates_passed_first_attempt: 0
-    gates_requiring_revision: 2  # QG-1 required 3 iterations, QG-2 required 2 iterations
+    gates_requiring_revision: 3  # QG-1 required 3 iterations, QG-2 required 2 iterations, QG-3 required 2 iterations
     gates_escalated_to_user: 0
-    overall_quality_status: "QG2_PASS"
+    overall_quality_status: "QG3_PASS"
 
   timing:
     workflow_started: "2026-02-17T00:00:00Z"
@@ -585,19 +607,14 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
-    - action: "Run Quality Gate 3 via /adversary skill"
-      agents: ["adv-scorer", "adv-executor"]
+    - action: "Execute Phase 4 — CI License Header Validation (EN-935)"
+      agents: ["ci-validator-implementer", "ci-validator-tester"]
       execution_mode: "SEQUENTIAL"
       instructions: >
-        Score Phase 3 deliverables (header-applicator-output.md, header-verifier-output.md).
-        C2 required strategies: S-014, S-007, S-002. Threshold >= 0.92.
+        Implement pre-commit hook and CI workflow step for SPDX header enforcement.
+        ci-validator-implementer creates implementation, ci-validator-tester validates it.
 
   subsequent:
-
-    - action: "Execute Phase 4 — CI License Header Validation (EN-935)"
-      depends_on: "QG-3 PASS"
-      agents: ["ci-validator-implementer", "ci-validator-tester"]
-
     - action: "Run Quality Gate Final via /adversary skill"
       depends_on: "Phase 4 complete"
 
@@ -608,9 +625,9 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-002"
-  current_state: "Phase 3 COMPLETE. EN-932 done: 403 .py files have SPDX headers, 17 shebangs handled correctly, 3196 tests passed. QG-3 pending."
-  next_step: "Run QG-3 adversarial review (S-014, S-007, S-002) on Phase 3 deliverables (header-applicator-output.md, header-verifier-output.md). If PASS: proceed to Phase 4 (EN-935 CI validation)."
+  last_checkpoint: "CP-003"
+  current_state: "QG-3 PASS (0.935, 2 iterations). Phases 1-3 complete, all quality gates passed. Phase 4 (EN-935 CI validation) unblocked and ready."
+  next_step: "Execute Phase 4: ci-validator-implementer creates pre-commit hook + CI step for SPDX header enforcement, then ci-validator-tester validates. After Phase 4: run QG-Final, close FEAT-015."
 
   files_to_read:
     - "projects/PROJ-001-oss-release/ORCHESTRATION_PLAN.md"   # Strategic context
