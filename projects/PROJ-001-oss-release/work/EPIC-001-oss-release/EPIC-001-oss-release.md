@@ -86,7 +86,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
 | Features:  [##############......] 71% (5/7 completed)             |
-| Enablers:  [#################...] 83% (29/35 completed)           |
+| Enablers:  [##################..] 86% (31/36 completed)           |
 | Bugs:      [####################] 100% (15/15 completed)          |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
@@ -102,9 +102,9 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | **Completed Features** | 5 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016) |
 | **Pending Features** | 2 (FEAT-017, FEAT-018) |
 | **Feature Completion %** | 71% |
-| **Total Enablers** | 35 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 4 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
-| **Completed Enablers** | 29 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 4 FEAT-016) |
-| **Total Effort (new features)** | 24 (7 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
+| **Total Enablers** | 36 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 5 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
+| **Completed Enablers** | 31 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 5 FEAT-016 + 1 FEAT-017) |
+| **Total Effort (new features)** | 24 (9 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
 
@@ -138,3 +138,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-17 | Claude | in_progress | **Reopened.** FEAT-015 created: License Migration (MIT to Apache 2.0). 6 enablers (EN-930–935), 14 effort points. Licensing is in PLAN.md scope with unchecked criterion. EPIC-001 now 4 features (3 done, 1 pending). |
 | 2026-02-17 | Claude | in_progress | FEAT-015 completed (license migration). 3 new features created from post-release transcript packet: FEAT-016 (README & docs, 3 EN, 5 pts), FEAT-017 (installation instructions, 3 EN, 7 pts), FEAT-018 (runbooks/playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |
 | 2026-02-18 | Claude | in_progress | FEAT-016 completed. EN-936/937/938 done (README platform notice, Windows issue template, optimization disclaimer). EN-945 done (macOS + Linux issue templates, README links all 3 platforms). EPIC-001 now 5/7 features done, 29/35 enablers, ~75%. |
+| 2026-02-18 | Claude | in_progress | EN-946 complete (feature-request.yml worktracker-aligned, config.yml, CONTRIBUTING.md updated). FEAT-016 re-closed at 5/5 enablers, 9/9 points. EPIC-001 now 5/7 features (71%), 31/36 enablers (86%), ~75%. |

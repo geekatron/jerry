@@ -59,6 +59,7 @@ Update the project README and supporting documentation to accurately reflect the
 - [x] Windows issue solicitation guidance added
 - [x] Skill/agent optimization disclaimer added to documentation
 - [x] All acceptance criteria verified
+- [x] Feature request issue template aligned with worktracker Feature entity
 
 ### Functional Criteria
 
@@ -68,6 +69,7 @@ Update the project README and supporting documentation to accurately reflect the
 | AC-2 | README mentions Windows portability support is in progress | [x] |
 | AC-3 | Users can find guidance on filing Windows-specific issues | [x] |
 | AC-4 | Documentation includes disclaimer that skill/agent definitions will be optimized in upcoming releases | [x] |
+| AC-5 | Feature request issue template exists with fields mapped to worktracker Feature entity | [x] |
 
 ---
 
@@ -81,6 +83,7 @@ Update the project README and supporting documentation to accurately reflect the
 | EN-937 | Enabler | Add Windows issue solicitation guidance | done | medium | 2 |
 | EN-938 | Enabler | Add skill/agent optimization disclaimer | done | medium | 1 |
 | EN-945 | Enabler | Create cross-platform issue templates (macOS & Linux) | done | high | 2 |
+| EN-946 | Enabler | Feature request issue template (worktracker-aligned) | done | high | 2 |
 
 ### Work Item Links
 
@@ -88,6 +91,7 @@ Update the project README and supporting documentation to accurately reflect the
 - [EN-937: Add Windows issue solicitation guidance](./EN-937-windows-issue-solicitation/EN-937-windows-issue-solicitation.md)
 - [EN-938: Add skill/agent optimization disclaimer](./EN-938-optimization-disclaimer/EN-938-optimization-disclaimer.md)
 - [EN-945: Create cross-platform issue templates (macOS & Linux)](./EN-945-cross-platform-issue-templates/EN-945-cross-platform-issue-templates.md)
+- [EN-946: Feature request issue template (worktracker-aligned)](./EN-946-feature-request-template/EN-946-feature-request-template.md)
 
 ---
 
@@ -99,8 +103,8 @@ Update the project README and supporting documentation to accurately reflect the
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [####################] 100% (4/4 completed)            |
-| Effort:    [####################] 100% (7/7 points completed)     |
+| Enablers:  [####################] 100% (5/5 completed)            |
+| Effort:    [####################] 100% (9/9 points completed)     |
 +------------------------------------------------------------------+
 | Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
@@ -110,10 +114,10 @@ Update the project README and supporting documentation to accurately reflect the
 
 | Metric | Value |
 |--------|-------|
-| **Total Enablers** | 4 |
-| **Completed Enablers** | 4 |
-| **Total Effort (points)** | 7 |
-| **Completed Effort** | 7 |
+| **Total Enablers** | 5 |
+| **Completed Enablers** | 5 |
+| **Total Effort (points)** | 9 |
+| **Completed Effort** | 9 |
 | **Completion %** | 100% |
 
 ---
@@ -145,3 +149,5 @@ Update the project README and supporting documentation to accurately reflect the
 | 2026-02-18 | Claude | done | All 3 enablers completed. README updated with Platform Support + Known Limitations sections. Windows issue template created at .github/ISSUE_TEMPLATE/windows-compatibility.yml. CONTRIBUTING.md updated with Windows issue reporting section. |
 | 2026-02-18 | Claude | in_progress | Scope expanded: EN-945 created for macOS and Linux issue templates. Reverted to in_progress (3/4 enablers). |
 | 2026-02-18 | Claude | done | EN-945 complete: macos-compatibility.yml and linux-compatibility.yml created. README Platform Support links all 3 templates. 4/4 enablers, 7/7 points. |
+| 2026-02-18 | Claude | in_progress | Scope expanded: EN-946 created for worktracker-aligned feature request issue template. config.yml added for issue template chooser. Reverted to in_progress (4/5 enablers, 7/9 points). |
+| 2026-02-18 | Claude | done | EN-946 complete: feature-request.yml with 10 worktracker-aligned fields, config.yml with Discussions link, CONTRIBUTING.md with feature request guidance. 5/5 enablers, 9/9 points. |

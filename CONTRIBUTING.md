@@ -185,6 +185,23 @@ If you encounter a problem that only occurs on Windows, please use the dedicated
 
 Even minor issues are valuable — they help us identify portability gaps that automated testing may miss.
 
+## Submitting Feature Requests
+
+Have an idea for Jerry? Use the [Feature Request issue template](https://github.com/geekatron/jerry/issues/new?template=feature-request.yml) to submit it. The template fields map directly to our internal work tracking structure, so the more detail you provide, the faster we can evaluate and prioritize your request.
+
+**Key fields:**
+
+| Field | Purpose | Required |
+|-------|---------|----------|
+| Feature Title | A concise name for the feature | Yes |
+| Summary | What does it do and why is it useful? | Yes |
+| Problem or Use Case | What problem does this solve? | Yes |
+| Expected Benefit | Frame as: "We believe [feature] will result in [outcome]" | No |
+| Suggested Acceptance Criteria | Testable conditions for "done" | No |
+| Suggested Priority | How important is this to your workflow? | Yes |
+
+Feature requests are reviewed and, if accepted, added to the project backlog as tracked work items.
+
 ## Questions?
 
 - Check `CLAUDE.md` for AI assistant context

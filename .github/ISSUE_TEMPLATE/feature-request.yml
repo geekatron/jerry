@@ -1,0 +1,115 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for Jerry
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Your request will be reviewed for inclusion in the project backlog.
+
+        **How this works:** The fields below map to Jerry's internal work tracking structure. The more detail you provide, the faster we can evaluate and prioritize your request.
+
+  - type: input
+    id: feature-title
+    attributes:
+      label: Feature Title
+      description: A concise name for the feature (e.g., "Add dark mode support")
+      placeholder: "Short, descriptive title"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Brief description of the feature and the value it provides. What does it do and why is it useful?
+      placeholder: |
+        Example: "Add a /changelog skill that automatically generates release notes
+        from git history and worktracker entities. This reduces manual effort when
+        preparing releases."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: What problem does this feature solve? What's the use case?
+      placeholder: |
+        Example: "Currently, generating release notes requires manually reviewing
+        git logs and worktracker files. This is time-consuming and error-prone,
+        especially for releases with many changes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefit-hypothesis
+    attributes:
+      label: Expected Benefit
+      description: |
+        What outcome do you expect? Try to frame it as:
+        "We believe that [feature] will result in [outcome] and we will know we have succeeded when [metric]."
+      placeholder: |
+        We believe that automated changelog generation
+        will result in faster, more accurate release notes
+        and we will know we have succeeded when release preparation time drops by 50%.
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Suggested Acceptance Criteria
+      description: What conditions would make this feature "done"? List specific, testable criteria.
+      placeholder: |
+        - [ ] Changelog generated from git history between two tags
+        - [ ] Worktracker items included with status and summary
+        - [ ] Output in Markdown format
+        - [ ] Supports custom templates
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested Priority
+      description: How important is this feature to you?
+      options:
+        - Nice to have
+        - Important — improves my workflow
+        - Critical — blocking my use of Jerry
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: How large do you estimate this feature to be?
+      options:
+        - Small — single skill or minor change
+        - Medium — new skill or multiple file changes
+        - Large — new capability or architectural change
+        - Not sure
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any workarounds or alternative approaches?
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other details, mockups, examples, or references that help explain the feature
+    validations:
+      required: false
