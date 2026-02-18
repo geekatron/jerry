@@ -62,7 +62,8 @@
 | [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical | EPIC-003 |
 | [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | completed | high | EPIC-003 |
 | [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | completed | high | EPIC-001 |
-| [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | pending | high | EPIC-001 |
+| [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | completed | high | EPIC-001 |
+| [BUG-006](./work/EPIC-001-oss-release/BUG-006-version-bump-toml-tag-drift/BUG-006-version-bump-toml-tag-drift.md) | Version Bump Fails — TOML Quoting Bug + Version-Tag Drift | completed | high | EPIC-001 |
 
 ---
 
@@ -133,6 +134,8 @@
 | FEAT-017 (EPIC-001) | Installation Instructions Modernization | 2026-02-18 | 3 enablers (EN-939-941), 7 effort pts. Orchestration epic001-docs-20260218-001. QG-1 PASS (0.9220). docs/INSTALLATION.md fully rewritten: archive refs removed, SSH + marketplace + public repo paths documented. |
 | FEAT-018 (EPIC-001) | User Documentation — Runbooks & Playbooks | 2026-02-18 | 3 enablers (EN-942-944), 10 effort pts. Orchestration epic001-docs-20260218-001. QG-2 PASS (0.926), QG-3 PASS (0.937). Created: docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. |
 | BUG-004 (EPIC-001) | Plugin Uninstall Fails — Name/Scope Mismatch | 2026-02-18 | RC-1: plugin.json name `jerry` vs marketplace.json plugin entry `jerry-framework`. Fix: align marketplace entry to `jerry`, marketplace name stays `jerry-framework`. DEC-005: `jerry@jerry-framework` naming scheme. 3 commits, all 3195 tests pass. AC-1–4 deferred to post-merge manual verification. |
+| BUG-005 (EPIC-001) | Version Bump Pipeline Fails on Merge to Main | 2026-02-18 | RC-1: Missing `VERSION_BUMP_PAT` secret. Fix: fine-grained PAT created with Contents: Read/Write. RC-2 (independent CI) acknowledged as by-design. AC-2–6 deferred (blocked by BUG-006 or enhancements). |
+| BUG-006 (EPIC-001) | Version Bump Fails — TOML Quoting + Tag Drift | 2026-02-18 | RC-1: TOML single-quoted literal strings treat `\n` as two chars, not newline. Fix: triple-quoted multi-line basic strings. RC-2: pyproject.toml 0.2.0 vs latest tag v0.0.3. Fix: create v0.2.0 tag on main HEAD. |
 
 ---
 
@@ -200,6 +203,8 @@
 | 2026-02-18 | Claude | BUG-004 created under EPIC-001: Plugin Uninstall Fails — Name/Scope Mismatch. Two errors: (1) "Plugin jerry not found in marketplace" on detail screen, (2) `Failed to uninstall: Plugin "jerry@jerry" is not installed in user scope`. Three root causes: name resolution mismatch (plugin.json says `jerry-framework` but UI resolves to `jerry`), possible scope mismatch, possibly lost marketplace registration. Also found: plugin.json license still says MIT. EPIC-001 reopened. |
 | 2026-02-18 | Claude | BUG-004 CLOSED. RC-1 confirmed: plugin.json name (`jerry`) vs marketplace.json plugin entry name (`jerry-framework`). DEC-005: final naming `jerry@jerry-framework` (follows `context7@claude-plugins-official` pattern). 3 commits (`4931848`, `b3d9919`, `ebcaad7`). All tests pass. PR #19 updated. AC-1–4 deferred to post-merge manual plugin reinstall. |
 | 2026-02-18 | Claude | BUG-005 created under EPIC-001: Version Bump Pipeline Fails on Merge to Main. Two root causes: (1) `VERSION_BUMP_PAT` secret not configured — checkout fails with "Input required and not supplied: token", (2) CI pipeline runs independently on same push event with no dependency on Version Bump. 4 fix proposals. |
+| 2026-02-18 | Claude | BUG-005 CLOSED. RC-1 resolved: fine-grained PAT configured as `VERSION_BUMP_PAT` repo secret. RC-2 acknowledged as by-design. |
+| 2026-02-18 | Claude | BUG-006 created under EPIC-001: Version Bump Fails — TOML Quoting Bug + Version-Tag Drift. Two root causes: (1) TOML literal string quoting prevents newline matching in marketplace.json search pattern, (2) version-tag drift (pyproject.toml 0.2.0 vs latest tag v0.0.3). Fix: triple-quoted TOML strings + v0.2.0 tag creation on main HEAD. |
 
 ---
 

@@ -1,13 +1,13 @@
 # BUG-005: Version Bump Pipeline Fails on Merge to Main
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-02-18
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** EPIC-001
 > **Owner:** Adam Nowak
 > **Found In:** 0.2.0
@@ -222,19 +222,19 @@ jobs:
 
 ### Fix Verification
 
-- [ ] AC-1: `VERSION_BUMP_PAT` secret is configured in GitHub repo settings
-- [ ] AC-2: Version Bump pipeline succeeds on push to `main` (checkout, bump, tag, push)
-- [ ] AC-3: Release pipeline is triggered by the version tag created by Version Bump
-- [ ] AC-4: If `VERSION_BUMP_PAT` is missing, workflow falls back to `GITHUB_TOKEN` with warning (not a hard failure)
-- [ ] AC-5: CONTRIBUTING.md documents required GitHub secrets and CI/CD workflow diagram
-- [ ] AC-6: CI pipeline behavior on `main` is documented (independent of Version Bump by design)
+- [x] AC-1: `VERSION_BUMP_PAT` secret is configured in GitHub repo settings — VERIFIED (fine-grained PAT with Contents: Read/Write)
+- [ ] AC-2: Version Bump pipeline succeeds on push to `main` — BLOCKED by BUG-006 (TOML quoting + tag drift)
+- [ ] AC-3: Release pipeline is triggered by the version tag created by Version Bump — BLOCKED by AC-2
+- [ ] AC-4: If `VERSION_BUMP_PAT` is missing, workflow falls back to `GITHUB_TOKEN` with warning — DEFERRED (enhancement, not required for closure)
+- [ ] AC-5: CONTRIBUTING.md documents required GitHub secrets and CI/CD workflow diagram — DEFERRED (enhancement)
+- [ ] AC-6: CI pipeline behavior on `main` is documented (independent of Version Bump by design) — DEFERRED (enhancement)
 
 ### Quality Checklist
 
-- [ ] Version bump + release end-to-end flow verified
-- [ ] Existing CI tests still passing
-- [ ] No new issues introduced
-- [ ] Documentation updated
+- [ ] Version bump + release end-to-end flow verified — BLOCKED by BUG-006
+- [x] Existing CI tests still passing — CI pipeline passed independently
+- [x] No new issues introduced — BUG-006 is a pre-existing issue, not introduced by PAT fix
+- [ ] Documentation updated — DEFERRED
 
 ---
 
@@ -262,6 +262,7 @@ jobs:
 |------|--------|--------|-------|
 | 2026-02-18 | Adam Nowak | pending | Initial report. Version Bump fails on merge to main. CI runs independently and passes. Two root causes: (1) missing `VERSION_BUMP_PAT` secret, (2) no workflow dependency between CI and Version Bump. |
 | 2026-02-18 | Claude | pending | Investigation complete. RC-1 confirmed: `secrets.VERSION_BUMP_PAT` undefined causes checkout failure. RC-2 confirmed: `ci.yml` triggers on `push: branches: ["**"]` independently. PAT is required for tag-triggered Release pipeline. 4 fix proposals documented. |
+| 2026-02-18 | Adam Nowak | completed | **BUG-005 CLOSED.** RC-1 resolved: fine-grained PAT created with `Contents: Read/Write` scope and configured as `VERSION_BUMP_PAT` repository secret. Checkout step now succeeds. RC-2 acknowledged as by-design (CI and Version Bump are intentionally independent). Remaining ACs (AC-2–6) deferred — AC-2/AC-3 blocked by BUG-006 (version bump application failure, separate root cause); AC-4–6 are enhancements. |
 
 ---
 

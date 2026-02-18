@@ -165,8 +165,10 @@ replace = '"version": "{new_version}"'
 # intentionally NOT synced with the framework version (REV-1 from adversarial review).
 [[tool.bumpversion.files]]
 filename = ".claude-plugin/marketplace.json"
-search = '"source": "./",\n      "version": "{current_version}"'
-replace = '"source": "./",\n      "version": "{new_version}"'
+search = """"source": "./",
+      "version": "{current_version}\""""
+replace = """"source": "./",
+      "version": "{new_version}\""""
 
 # --- File 4: CLAUDE.md (inline CLI version reference) ---
 [[tool.bumpversion.files]]
