@@ -62,6 +62,7 @@
 | [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical | EPIC-003 |
 | [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | completed | high | EPIC-003 |
 | [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | completed | high | EPIC-001 |
+| [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | pending | high | EPIC-001 |
 
 ---
 
@@ -198,6 +199,7 @@
 
 | 2026-02-18 | Claude | BUG-004 created under EPIC-001: Plugin Uninstall Fails — Name/Scope Mismatch. Two errors: (1) "Plugin jerry not found in marketplace" on detail screen, (2) `Failed to uninstall: Plugin "jerry@jerry" is not installed in user scope`. Three root causes: name resolution mismatch (plugin.json says `jerry-framework` but UI resolves to `jerry`), possible scope mismatch, possibly lost marketplace registration. Also found: plugin.json license still says MIT. EPIC-001 reopened. |
 | 2026-02-18 | Claude | BUG-004 CLOSED. RC-1 confirmed: plugin.json name (`jerry`) vs marketplace.json plugin entry name (`jerry-framework`). DEC-005: final naming `jerry@jerry-framework` (follows `context7@claude-plugins-official` pattern). 3 commits (`4931848`, `b3d9919`, `ebcaad7`). All tests pass. PR #19 updated. AC-1–4 deferred to post-merge manual plugin reinstall. |
+| 2026-02-18 | Claude | BUG-005 created under EPIC-001: Version Bump Pipeline Fails on Merge to Main. Two root causes: (1) `VERSION_BUMP_PAT` secret not configured — checkout fails with "Input required and not supplied: token", (2) CI pipeline runs independently on same push event with no dependency on Version Bump. 4 fix proposals. |
 
 ---
 
