@@ -61,7 +61,7 @@
 | [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical | EPIC-003 |
 | [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical | EPIC-003 |
 | [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | completed | high | EPIC-003 |
-| [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | in_progress | high | EPIC-001 |
+| [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | completed | high | EPIC-001 |
 
 ---
 
@@ -131,6 +131,7 @@
 | FEAT-015 (EPIC-001) | License Migration MIT to Apache 2.0 | 2026-02-17 | 6 enablers (EN-930-935), 14 effort pts. 4-phase orchestration, 4 quality gates PASS (0.941, 0.9505, 0.935, 0.9335). 404 .py files SPDX headers. CI enforcement. |
 | FEAT-017 (EPIC-001) | Installation Instructions Modernization | 2026-02-18 | 3 enablers (EN-939-941), 7 effort pts. Orchestration epic001-docs-20260218-001. QG-1 PASS (0.9220). docs/INSTALLATION.md fully rewritten: archive refs removed, SSH + marketplace + public repo paths documented. |
 | FEAT-018 (EPIC-001) | User Documentation — Runbooks & Playbooks | 2026-02-18 | 3 enablers (EN-942-944), 10 effort pts. Orchestration epic001-docs-20260218-001. QG-2 PASS (0.926), QG-3 PASS (0.937). Created: docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. |
+| BUG-004 (EPIC-001) | Plugin Uninstall Fails — Name/Scope Mismatch | 2026-02-18 | RC-1: plugin.json name `jerry` vs marketplace.json plugin entry `jerry-framework`. Fix: align marketplace entry to `jerry`, marketplace name stays `jerry-framework`. DEC-005: `jerry@jerry-framework` naming scheme. 3 commits, all 3195 tests pass. AC-1–4 deferred to post-merge manual verification. |
 
 ---
 
@@ -196,6 +197,7 @@
 | 2026-02-17 | Claude | FEAT-015 completed (License Migration). 3 new features created from transcript packet analysis: FEAT-016 (README & Docs, 3 EN, 5 pts), FEAT-017 (Installation Instructions, 3 EN, 7 pts), FEAT-018 (Runbooks/Playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |
 
 | 2026-02-18 | Claude | BUG-004 created under EPIC-001: Plugin Uninstall Fails — Name/Scope Mismatch. Two errors: (1) "Plugin jerry not found in marketplace" on detail screen, (2) `Failed to uninstall: Plugin "jerry@jerry" is not installed in user scope`. Three root causes: name resolution mismatch (plugin.json says `jerry-framework` but UI resolves to `jerry`), possible scope mismatch, possibly lost marketplace registration. Also found: plugin.json license still says MIT. EPIC-001 reopened. |
+| 2026-02-18 | Claude | BUG-004 CLOSED. RC-1 confirmed: plugin.json name (`jerry`) vs marketplace.json plugin entry name (`jerry-framework`). DEC-005: final naming `jerry@jerry-framework` (follows `context7@claude-plugins-official` pattern). 3 commits (`4931848`, `b3d9919`, `ebcaad7`). All tests pass. PR #19 updated. AC-1–4 deferred to post-merge manual plugin reinstall. |
 
 ---
 

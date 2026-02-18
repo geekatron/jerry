@@ -1,13 +1,13 @@
 # BUG-004: Plugin Uninstall Fails — Name/Scope Mismatch
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-02-18
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** EPIC-001
 > **Owner:** Adam Nowak
 > **Found In:** 0.2.0
@@ -203,18 +203,18 @@ Per user decision (DEC-005), the final naming scheme follows the `context7@claud
 
 ### Fix Verification
 
-- [ ] AC-1: `/plugin install` installs Jerry with correct name displayed in plugin UI
-- [ ] AC-2: `/plugin` detail screen shows correct `name @ marketplace` with no "not found in marketplace" error
-- [ ] AC-3: "Uninstall" action from plugin UI removes Jerry cleanly without scope errors
-- [ ] AC-4: Full install → verify → uninstall → reinstall cycle works without errors
-- [ ] AC-5: `plugin.json` `license` field reads `"Apache-2.0"`
+- [ ] AC-1: `/plugin install` installs Jerry with correct name displayed in plugin UI — MANUAL POST-MERGE
+- [ ] AC-2: `/plugin` detail screen shows correct `name @ marketplace` with no "not found in marketplace" error — MANUAL POST-MERGE
+- [ ] AC-3: "Uninstall" action from plugin UI removes Jerry cleanly without scope errors — MANUAL POST-MERGE
+- [ ] AC-4: Full install → verify → uninstall → reinstall cycle works without errors — MANUAL POST-MERGE
+- [x] AC-5: `plugin.json` `license` field reads `"Apache-2.0"` — VERIFIED
 
 ### Quality Checklist
 
-- [ ] Regression tests added (if applicable — may be manual verification only)
-- [ ] Existing tests still passing
-- [ ] No new issues introduced
-- [ ] INSTALLATION.md updated to reflect any name/scope changes
+- [x] Regression tests added — contract test updated (`test_plugin_manifest_validation.py`)
+- [x] Existing tests still passing — 3195 tests pass, all pre-commit hooks pass
+- [x] No new issues introduced
+- [x] INSTALLATION.md updated to reflect `jerry@jerry-framework` naming
 
 ---
 
@@ -242,6 +242,7 @@ Per user decision (DEC-005), the final naming scheme follows the `context7@claud
 | 2026-02-18 | Claude | pending | RC-1 CORRECTED via Context7 + Claude Code plugin docs research. True root cause: `plugin.json` name `"jerry"` does not match `marketplace.json` plugin entry name `"jerry-framework"`. Per Claude Code docs, plugin.json is authoritative (strict: true default). Claude Code resolves plugin as `jerry` but registry has `jerry-framework@jerry`. Initial fix: change plugin.json name to `jerry-framework`. |
 | 2026-02-18 | Claude | in_progress | **FIX DIRECTION REVERSED (iteration 2).** User correctly identified that `/jerry:worktracker` is better UX than `/jerry-framework:worktracker`. Corrected fix: keep `plugin.json` name as `"jerry"`, change `marketplace.json` `plugins[0].name` from `"jerry-framework"` to `"jerry"`. Updated all docs from `jerry-framework@jerry` to `jerry@jerry`. Reverted settings.local.json back to `Skill(jerry:*)`. License fix (`Apache-2.0`) retained. |
 | 2026-02-18 | Adam Nowak | in_progress | **DEC-005: Final naming scheme.** User decided `jerry@jerry` is semantically redundant — `jerry@jerry-framework` is better (follows `context7@claude-plugins-official` pattern). Final scheme: `plugin.json` name=`jerry` (skill namespace), `marketplace.json` name=`jerry-framework` (marketplace identifier), `marketplace.json` plugins[0].name=`jerry` (matches plugin.json). Install command: `/plugin install jerry@jerry-framework`. |
+| 2026-02-18 | Claude | completed | **BUG-004 CLOSED.** All code changes committed and pushed (3 commits: `4931848`, `b3d9919`, `ebcaad7`). Fix 1: marketplace.json plugin entry aligned with plugin.json. Fix 2: plugin.json license corrected to Apache-2.0. Fix 3: settings.local.json reverted to `Skill(jerry:*)`. Fix 4: all docs updated to `jerry@jerry-framework`. Fix 5: contract test updated. AC-5 verified. AC-1–4 deferred to post-merge manual verification. PR #19 updated. |
 
 ---
 
