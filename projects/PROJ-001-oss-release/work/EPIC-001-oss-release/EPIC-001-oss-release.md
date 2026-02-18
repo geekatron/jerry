@@ -34,9 +34,10 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 - Fix all CI build failures blocking PR merge (FEAT-001 - done)
 - Conduct deep research on Claude Code best practices (FEAT-002)
 - Optimize CLAUDE.md and all skills using decomposition/imports patterns (FEAT-003)
-- Ensure tests pass across Python 3.11-3.14
-- Clean up project artifacts and configuration
-- Create multi-persona documentation
+- Migrate license from MIT to Apache 2.0 (FEAT-015 - done)
+- Update README with platform support notice and documentation disclaimers (FEAT-016)
+- Modernize installation instructions for repository-based access (FEAT-017)
+- Create user-facing runbooks and playbooks (FEAT-018)
 
 ---
 
@@ -59,7 +60,10 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-001 | Fix CI Build Failures | done | high | 100% |
 | FEAT-002 | Research and Preparation | done | high | 100% |
 | FEAT-003 | CLAUDE.md Optimization | done | critical | 100% |
-| FEAT-015 | License Migration (MIT to Apache 2.0) | pending | high | 0% |
+| FEAT-015 | License Migration (MIT to Apache 2.0) | done | high | 100% |
+| FEAT-016 | Post-Release README & Documentation Updates | pending | high | 0% |
+| FEAT-017 | Installation Instructions Modernization | pending | high | 0% |
+| FEAT-018 | User Documentation — Runbooks & Playbooks | pending | medium | 0% |
 
 ### Feature Links
 
@@ -67,6 +71,9 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 - [FEAT-002: Research and Preparation](./FEAT-002-research-and-preparation/FEAT-002-research-and-preparation.md)
 - [FEAT-003: CLAUDE.md Optimization](./FEAT-003-claude-md-optimization/FEAT-003-claude-md-optimization.md)
 - [FEAT-015: License Migration (MIT to Apache 2.0)](./FEAT-015-license-migration/FEAT-015-license-migration.md)
+- [FEAT-016: Post-Release README & Documentation Updates](./FEAT-016-post-release-documentation/FEAT-016-post-release-documentation.md)
+- [FEAT-017: Installation Instructions Modernization](./FEAT-017-installation-instructions/FEAT-017-installation-instructions.md)
+- [FEAT-018: User Documentation — Runbooks & Playbooks](./FEAT-018-user-documentation/FEAT-018-user-documentation.md)
 
 ---
 
@@ -78,12 +85,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [###############.....] 75% (3/4 completed)             |
-| Enablers:  [###############.....] 76% (19/25 completed)           |
+| Features:  [###########.........] 57% (4/7 completed)             |
+| Enablers:  [##############......] 69% (25/34 completed)           |
 | Bugs:      [####################] 100% (15/15 completed)          |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [################....] ~83%                            |
+| Overall:   [#############.......] ~65%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -91,12 +98,13 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 4 |
-| **Completed Features** | 3 (FEAT-001, FEAT-002, FEAT-003) |
-| **Pending Features** | 1 (FEAT-015) |
-| **Feature Completion %** | 75% |
-| **Total Enablers** | 25 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015) |
-| **Completed Enablers** | 19 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003) |
+| **Total Features** | 7 |
+| **Completed Features** | 4 (FEAT-001, FEAT-002, FEAT-003, FEAT-015) |
+| **Pending Features** | 3 (FEAT-016, FEAT-017, FEAT-018) |
+| **Feature Completion %** | 57% |
+| **Total Enablers** | 34 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 3 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
+| **Completed Enablers** | 25 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015) |
+| **Total Effort (new features)** | 22 (5 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
 
@@ -128,3 +136,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-12 | Claude | in_progress | **REOPENED**: Premature closure. All EPIC-001 deliverables bypassed quality framework: no adversarial feedback loops, no quality scoring (>=0.92 target), no creator→critic→revision cycles, no multi-platform testing (Windows/Linux). Closure was invalid per Jerry quality standards. All deliverables require retroactive quality review under EPIC-002. |
 | 2026-02-16 | Claude | done | EPIC-001 re-closed. All 3 features validated by FEAT-006 retroactive quality review (EN-501: 0.949, EN-502: 0.951). Verification report: PROJ-001-epic001-verification-2026-02-16.md |
 | 2026-02-17 | Claude | in_progress | **Reopened.** FEAT-015 created: License Migration (MIT to Apache 2.0). 6 enablers (EN-930–935), 14 effort points. Licensing is in PLAN.md scope with unchecked criterion. EPIC-001 now 4 features (3 done, 1 pending). |
+| 2026-02-17 | Claude | in_progress | FEAT-015 completed (license migration). 3 new features created from post-release transcript packet: FEAT-016 (README & docs, 3 EN, 5 pts), FEAT-017 (installation instructions, 3 EN, 7 pts), FEAT-018 (runbooks/playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |

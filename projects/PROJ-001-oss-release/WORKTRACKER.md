@@ -74,6 +74,7 @@
 | [DEC-001](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/FEAT-003--DEC-001-navigation-table-standard.md) | Navigation Table Standard | accepted | tactical | FEAT-003 |
 | [DEC-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/DEC-001-precommit-installation-strategy.md) | Pre-commit Installation Strategy | accepted | tactical | EN-004 |
 | [DEC-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/DEC-002-pytest-hook-file-type-coverage.md) | Pytest Hook File Type Coverage | accepted | tactical | EN-004 |
+| [DEC-004](./work/EPIC-001-oss-release/EPIC-001--DEC-004-post-release-planning-decisions.md) | Post-Release Planning Decisions (OSX-Primary, Optimization Deferred, Installation Model) | accepted | strategic | EPIC-001 |
 
 > Decision details (individual D-001, D-002, etc.) live in the respective decision files.
 
@@ -188,6 +189,7 @@
 | 2026-02-17 | Claude | FEAT-014 EN-925–928 CLOSED (retroactive): 4/5 enablers verified as delivered. EN-925: AGENTS.md (33 agents, 6 families). EN-926: H-22 triggers + quality-enforcement.md Implementation section. EN-927: architecture/SKILL.md (464), bootstrap/SKILL.md (229), shared/README.md (302). EN-928: 109/109 tests pass. EN-929 (documentation cleanup) still pending. |
 | 2026-02-17 | Claude | EN-929 CLOSED via orchestration (en929-doccleanup-20260217-001): 2/5 tasks executed (naming convention, agent dir READMEs), 3/5 N/A (orchestration ref already exists, H-16 already present, "When NOT to Use" already comprehensive). FEAT-014 CLOSED: 5/5 enablers, 18/18 points. EPIC-003 now 6/6 features done. |
 | 2026-02-17 | Claude | **EPIC-003 CLOSED.** 6/6 features, 45/45 enablers, 3/3 bugs resolved. Quality framework fully implemented: 5-layer enforcement (L1-L5), AST-based PreToolUse engine, context reinforcement hooks, adversarial strategies (/adversary skill), progressive disclosure rules, framework synchronization. All acceptance criteria met. |
+| 2026-02-17 | Claude | FEAT-015 completed (License Migration). 3 new features created from transcript packet analysis: FEAT-016 (README & Docs, 3 EN, 5 pts), FEAT-017 (Installation Instructions, 3 EN, 7 pts), FEAT-018 (Runbooks/Playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |
 
 ---
 
