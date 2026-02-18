@@ -86,16 +86,16 @@ Two errors are present:
 | **Operating System** | macOS (Darwin 25.3.0) |
 | **Runtime** | Claude Code CLI |
 | **Application Version** | Jerry 0.2.0 |
-| **Configuration** | plugin.json `name: "jerry-framework"`, installed via local marketplace |
+| **Configuration** | plugin.json `name: "jerry"`, marketplace.json `plugins[0].name: "jerry"`, installed via local marketplace |
 | **Deployment** | Local development |
 
 ### Additional Environment Details
 
 - Plugin was installed using the documented two-step process:
   1. `/plugin marketplace add ~/plugins/jerry` (registers local dir as marketplace "jerry")
-  2. `/plugin install jerry-framework@jerry` (installs plugin from local marketplace)
-- The `plugin.json` specifies `"name": "jerry-framework"` but Claude Code UI resolves the display name to `jerry @ jerry`
-- `.claude/settings.json` `enabledPlugins` section does NOT contain a jerry entry — only `context7@claude-plugins-official` is present
+  2. `/plugin install jerry@jerry` (installs plugin from local marketplace)
+- Both `plugin.json` and `marketplace.json` now consistently use `name: "jerry"`
+- `.claude/settings.json` `enabledPlugins` section contains `"jerry@jerry": true`
 
 ---
 
@@ -134,7 +134,7 @@ However, **plugin.json** declares `name: "jerry"` (not `"jerry-framework"`). Sin
 3. **Registry Lookup**: Finds `jerry-framework@jerry` (marketplace entry name) — **NO MATCH**
 4. **Result**: `Failed to uninstall: Plugin "jerry@jerry" is not installed in user scope`
 
-**The fix**: Make `plugin.json` `name` field consistent with `marketplace.json` `plugins[0].name`: both must be `"jerry-framework"`.
+**The fix**: Make `marketplace.json` `plugins[0].name` consistent with `plugin.json` `name`: both must be `"jerry"`. This preserves the terse `/jerry:*` skill namespace for better UX (vs verbose `/jerry-framework:*`).
 
 ### Root Cause Candidates (Post-Investigation)
 
@@ -147,8 +147,8 @@ However, **plugin.json** declares `name: "jerry"` (not `"jerry-framework"`). Sin
 ### Contributing Factors
 
 - **`plugin.json` `license` field says `"MIT"`** in the committed `main` branch, despite Apache 2.0 migration in FEAT-015. The license migration (EN-930) updated `LICENSE`, `NOTICE`, `pyproject.toml`, and 404 `.py` file headers but missed `plugin.json`.
-- **Skill namespace impact**: Changing plugin.json name from `jerry` to `jerry-framework` changes the skill namespace (e.g., `/jerry:worktracker` → `/jerry-framework:worktracker`). All permission entries in `.claude/settings.local.json` referencing `Skill(jerry:*)` must be updated to `Skill(jerry-framework:*)`.
-- **Documentation was correct**: INSTALLATION.md already documented the install command as `/plugin install jerry-framework@jerry` and verification as `"name": "jerry-framework"` — the source code simply never matched the docs.
+- **UX consideration**: The terse `jerry` namespace (`/jerry:worktracker`) is strongly preferred over the verbose `jerry-framework` namespace (`/jerry-framework:worktracker`). Fix direction chosen to preserve the better UX.
+- **Documentation also had the wrong name**: INSTALLATION.md, README.md, and getting-started runbook all referenced `jerry-framework@jerry` — all updated to `jerry@jerry`.
 
 ---
 
@@ -156,25 +156,29 @@ However, **plugin.json** declares `name: "jerry"` (not `"jerry-framework"`). Sin
 
 ### Solution Approach
 
-**Fix 1: Update `plugin.json` name to `jerry-framework`** — The `marketplace.json` correctly declares the plugin as `jerry-framework`. Per Claude Code docs, `plugin.json` name must match the marketplace entry name. Change `name` from `"jerry"` to `"jerry-framework"`.
+**Fix 1: Update `marketplace.json` plugin entry name to `jerry`** — Keep `plugin.json` name as `"jerry"` (terse namespace, better UX). Change `marketplace.json` `plugins[0].name` from `"jerry-framework"` to `"jerry"` to match. This preserves the `/jerry:worktracker` skill invocation pattern.
 
 **Fix 2: Fix `plugin.json` license** — Change `"license": "MIT"` to `"license": "Apache-2.0"` (missed during FEAT-015 license migration).
 
-**Fix 3: Update skill permission references** — Changing plugin.json name changes the skill namespace from `jerry:*` to `jerry-framework:*`. Update all `Skill(jerry:*)` entries in `.claude/settings.local.json` to `Skill(jerry-framework:*)`.
+**Fix 3: Revert skill permission references** — Since plugin.json stays as `jerry`, revert `.claude/settings.local.json` back to `Skill(jerry:*)` (undoes the incorrect previous fix direction).
 
-**Fix 4: Reinstall plugin** — After committing and pushing changes, user must:
+**Fix 4: Update all documentation** — Change all references from `jerry-framework@jerry` to `jerry@jerry` in INSTALLATION.md, README.md, and getting-started runbook.
+
+**Fix 5: Reinstall plugin** — After committing and pushing changes, user must:
 1. Update marketplace: `/plugin marketplace update jerry`
 2. Uninstall stale entry: manually edit `~/.claude/plugins/installed_plugins.json` to remove `jerry-framework@jerry` entry, or attempt `/plugin uninstall jerry-framework@jerry`
-3. Reinstall: `/plugin install jerry-framework@jerry`
+3. Reinstall: `/plugin install jerry@jerry`
 
 ### Changes Required
 
 | File | Change Description | Status |
 |------|-------------------|--------|
-| `.claude-plugin/plugin.json` | Change `name` to `"jerry-framework"`, change `license` to `"Apache-2.0"` | DONE |
-| `.claude/settings.local.json` | Update all `Skill(jerry:*)` to `Skill(jerry-framework:*)` | DONE |
-| `docs/INSTALLATION.md` | Already correct — documents `jerry-framework@jerry` throughout | NO CHANGE NEEDED |
-| `.claude-plugin/marketplace.json` | Already correct — `plugins[0].name: "jerry-framework"` | NO CHANGE NEEDED |
+| `.claude-plugin/plugin.json` | Keep `name: "jerry"`, change `license` to `"Apache-2.0"` | DONE |
+| `.claude-plugin/marketplace.json` | Change `plugins[0].name` from `"jerry-framework"` to `"jerry"` | DONE |
+| `.claude/settings.local.json` | Revert to `Skill(jerry:*)` (undo previous wrong-direction fix) | DONE |
+| `docs/INSTALLATION.md` | Update all `jerry-framework@jerry` → `jerry@jerry`, verification text | DONE |
+| `README.md` | Update install command and verification text | DONE |
+| `docs/runbooks/getting-started.md` | Update plugin name references | DONE |
 | `~/.claude/plugins/installed_plugins.json` | Manual: remove stale entry (or uninstall + reinstall after push) | MANUAL POST-MERGE |
 | `~/.claude/settings.json` (user) | Manual: may need to re-enable after reinstall | MANUAL POST-MERGE |
 
@@ -220,7 +224,8 @@ However, **plugin.json** declares `name: "jerry"` (not `"jerry-framework"`). Sin
 |------|--------|--------|-------|
 | 2026-02-18 | Adam Nowak | pending | Initial report. Two errors: marketplace lookup failure + uninstall scope failure. Three root cause candidates identified. |
 | 2026-02-18 | Claude | pending | Initial RC-1 diagnosis (INCORRECT): assumed `jerry-framework` in plugin.json was an uncommitted mistake. Recommended reverting to `jerry`. |
-| 2026-02-18 | Claude | pending | RC-1 CORRECTED via Context7 + Claude Code plugin docs research. True root cause: `plugin.json` name `"jerry"` does not match `marketplace.json` plugin entry name `"jerry-framework"`. Per Claude Code docs, plugin.json is authoritative (strict: true default). Claude Code resolves plugin as `jerry` but registry has `jerry-framework@jerry`. Fix: change plugin.json name to `jerry-framework`, fix license to Apache-2.0, update skill namespace permissions. INSTALLATION.md and marketplace.json already correct. |
+| 2026-02-18 | Claude | pending | RC-1 CORRECTED via Context7 + Claude Code plugin docs research. True root cause: `plugin.json` name `"jerry"` does not match `marketplace.json` plugin entry name `"jerry-framework"`. Per Claude Code docs, plugin.json is authoritative (strict: true default). Claude Code resolves plugin as `jerry` but registry has `jerry-framework@jerry`. Initial fix: change plugin.json name to `jerry-framework`. |
+| 2026-02-18 | Claude | in_progress | **FIX DIRECTION REVERSED.** User correctly identified that `/jerry:worktracker` is better UX than `/jerry-framework:worktracker`. Corrected fix: keep `plugin.json` name as `"jerry"`, change `marketplace.json` `plugins[0].name` from `"jerry-framework"` to `"jerry"`. Updated all docs (INSTALLATION.md, README.md, getting-started.md) from `jerry-framework@jerry` to `jerry@jerry`. Reverted settings.local.json back to `Skill(jerry:*)`. License fix (`Apache-2.0`) retained. |
 
 ---
 

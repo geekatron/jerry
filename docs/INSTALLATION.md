@@ -328,7 +328,7 @@ Confirm Jerry's plugin manifest exists:
 cat ~/plugins/jerry/.claude-plugin/plugin.json
 ```
 
-You should see JSON output with `"name": "jerry-framework"`. This confirms the path is correct and the `.claude-plugin/plugin.json` manifest is present in the repository.
+You should see JSON output with `"name": "jerry"`. This confirms the path is correct and the `.claude-plugin/plugin.json` manifest is present in the repository.
 
 #### Step 4: Add the Local Marketplace
 
@@ -345,7 +345,7 @@ This registers Jerry's plugin catalog. No plugins are installed yet—you're jus
 Install Jerry from the marketplace:
 
 ```
-/plugin install jerry-framework@jerry
+/plugin install jerry@jerry
 ```
 
 > **Note:** The `@jerry` suffix corresponds to the directory name you used in Step 4 (`~/plugins/jerry`). If you cloned Jerry to a different directory name (e.g., `~/plugins/jerry-framework`), replace `@jerry` with `@jerry-framework` to match.
@@ -353,7 +353,7 @@ Install Jerry from the marketplace:
 **Alternative: Interactive Installation**
 1. Run `/plugin`
 2. Go to the **Discover** tab
-3. Find `jerry-framework`
+3. Find `jerry`
 4. Press Enter and select your installation scope:
    - **User** (recommended): Install for yourself across all projects
    - **Project**: Install for all collaborators on this repository
@@ -417,7 +417,7 @@ Confirm Jerry's plugin manifest exists:
 Get-Content "$env:USERPROFILE\plugins\jerry\.claude-plugin\plugin.json"
 ```
 
-You should see JSON output with `"name": "jerry-framework"`. This confirms the path is correct and the `.claude-plugin\plugin.json` manifest is present in the repository.
+You should see JSON output with `"name": "jerry"`. This confirms the path is correct and the `.claude-plugin\plugin.json` manifest is present in the repository.
 
 #### Step 4: Add the Local Marketplace
 
@@ -440,7 +440,7 @@ Copy the output and use it directly in the `/plugin marketplace add` command.
 Install Jerry from the marketplace:
 
 ```
-/plugin install jerry-framework@jerry
+/plugin install jerry@jerry
 ```
 
 > **Note:** The `@jerry` suffix corresponds to the directory name you used in Step 4. If you cloned Jerry to a different directory name, replace `@jerry` with the actual directory name to match.
@@ -537,13 +537,13 @@ The SessionStart hook will automatically load project context when you start Cla
 
 1. In Claude Code, run `/plugin`
 2. Go to the **Installed** tab
-3. Verify `jerry-framework` appears in the list
+3. Verify `jerry` appears in the list
 
 ### Check for Errors
 
 1. Run `/plugin`
 2. Go to the **Errors** tab
-3. Verify no errors related to `jerry-framework`
+3. Verify no errors related to `jerry`
 
 ### Test a Skill
 
@@ -627,14 +627,14 @@ Plugin support requires Claude Code version 1.0.33 or later.
 
 ### Plugin Not Found After Adding Marketplace
 
-**Symptom:** `/plugin install jerry-framework@jerry` returns "plugin not found"
+**Symptom:** `/plugin install jerry@jerry` returns "plugin not found"
 
 **Solutions:**
 1. Verify the marketplace was added: `/plugin marketplace list`
 2. Check the path is correct and Jerry was cloned successfully
 3. Refresh the marketplace: `/plugin marketplace update jerry`
 4. Verify the manifest exists: `cat ~/plugins/jerry/.claude-plugin/plugin.json`
-5. If you cloned to a non-standard directory name (not `jerry`), the `@jerry` suffix in the install command must match the directory name. For example, if you cloned to `~/plugins/jerry-framework`, use `/plugin install jerry-framework@jerry-framework`
+5. If you cloned to a non-standard directory name (not `jerry`), the `@jerry` suffix in the install command must match the directory name. For example, if you cloned to `~/plugins/jerry-framework`, use `/plugin install jerry@jerry-framework`
 
 ### uv: command not found
 
@@ -666,7 +666,7 @@ If still not found, add to PATH manually:
    - macOS: `rm -rf ~/.claude/plugins/cache`
    - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
 3. Restart Claude Code
-4. Reinstall the plugin: `/plugin uninstall jerry-framework@jerry` then `/plugin install jerry-framework@jerry`
+4. Reinstall the plugin: `/plugin uninstall jerry@jerry` then `/plugin install jerry@jerry`
 
 ### Path Issues on Windows
 
@@ -794,7 +794,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines, 
 ### Remove the Plugin
 
 ```
-/plugin uninstall jerry-framework@jerry
+/plugin uninstall jerry@jerry
 ```
 
 ### Remove the Marketplace

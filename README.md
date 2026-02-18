@@ -41,7 +41,7 @@ git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
 /plugin marketplace add ~/plugins/jerry
 
 # 4. Install the Jerry plugin
-/plugin install jerry-framework@jerry
+/plugin install jerry@jerry
 ```
 
 </details>
@@ -64,14 +64,14 @@ git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry
 /plugin marketplace add C:/Users/$env:USERNAME/plugins/jerry
 
 # 5. Install the Jerry plugin
-/plugin install jerry-framework@jerry
+/plugin install jerry@jerry
 ```
 
 </details>
 
 ### Verify Installation
 
-After installation, run `/plugin` in Claude Code and check the **Installed** tab. You should see `jerry-framework` listed.
+After installation, run `/plugin` in Claude Code and check the **Installed** tab. You should see `jerry` listed.
 
 See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions and troubleshooting.
 

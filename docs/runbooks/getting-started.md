@@ -20,7 +20,7 @@
 
 - [ ] **`uv` is installed** and on your PATH — confirm with `uv --version` (minimum: uv 0.5.x or later)
 - [ ] **Jerry is cloned** to your local filesystem (recommended: `~/plugins/jerry`) — confirm with `ls ~/plugins/jerry/pyproject.toml`
-- [ ] **The Jerry plugin is registered** in Claude Code — in Claude Code, run `/plugin`, go to the **Installed** tab, and verify `jerry-framework` appears (alternatively, confirm with `claude mcp list` from the terminal)
+- [ ] **The Jerry plugin is registered** in Claude Code — in Claude Code, run `/plugin`, go to the **Installed** tab, and verify `jerry` appears (alternatively, confirm with `claude mcp list` from the terminal)
 
 If any of these are not in place, complete the installation steps in [`../INSTALLATION.md`](../INSTALLATION.md) first, then return here. That document covers `uv` installation, Jerry repository cloning, and Claude Code plugin registration.
 
