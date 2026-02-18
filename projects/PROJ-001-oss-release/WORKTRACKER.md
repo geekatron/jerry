@@ -64,6 +64,7 @@
 | [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | completed | high | EPIC-001 |
 | [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | completed | high | EPIC-001 |
 | [BUG-006](./work/EPIC-001-oss-release/BUG-006-version-bump-toml-tag-drift/BUG-006-version-bump-toml-tag-drift.md) | Version Bump Fails — TOML Quoting Bug + Version-Tag Drift | completed | high | EPIC-001 |
+| [BUG-007](./work/EPIC-001-oss-release/BUG-007-pages-build-jekyll-liquid-error/BUG-007-pages-build-jekyll-liquid-error.md) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | pending | high | EPIC-001 |
 
 ---
 
@@ -134,8 +135,8 @@
 | FEAT-017 (EPIC-001) | Installation Instructions Modernization | 2026-02-18 | 3 enablers (EN-939-941), 7 effort pts. Orchestration epic001-docs-20260218-001. QG-1 PASS (0.9220). docs/INSTALLATION.md fully rewritten: archive refs removed, SSH + marketplace + public repo paths documented. |
 | FEAT-018 (EPIC-001) | User Documentation — Runbooks & Playbooks | 2026-02-18 | 3 enablers (EN-942-944), 10 effort pts. Orchestration epic001-docs-20260218-001. QG-2 PASS (0.926), QG-3 PASS (0.937). Created: docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. |
 | BUG-004 (EPIC-001) | Plugin Uninstall Fails — Name/Scope Mismatch | 2026-02-18 | RC-1: plugin.json name `jerry` vs marketplace.json plugin entry `jerry-framework`. Fix: align marketplace entry to `jerry`, marketplace name stays `jerry-framework`. DEC-005: `jerry@jerry-framework` naming scheme. 3 commits, all 3195 tests pass. AC-1–4 deferred to post-merge manual verification. |
-| BUG-005 (EPIC-001) | Version Bump Pipeline Fails on Merge to Main | 2026-02-18 | RC-1: Missing `VERSION_BUMP_PAT` secret. Fix: fine-grained PAT created with Contents: Read/Write. RC-2 (independent CI) acknowledged as by-design. AC-2–6 deferred (blocked by BUG-006 or enhancements). |
-| BUG-006 (EPIC-001) | Version Bump Fails — TOML Quoting + Tag Drift | 2026-02-18 | RC-1: TOML single-quoted literal strings treat `\n` as two chars, not newline. Fix: triple-quoted multi-line basic strings. RC-2: pyproject.toml 0.2.0 vs latest tag v0.0.3. Fix: create v0.2.0 tag on main HEAD. |
+| BUG-005 (EPIC-001) | Version Bump Pipeline Fails on Merge to Main | 2026-02-18 | RC-1: Missing `VERSION_BUMP_PAT` secret — fixed (fine-grained PAT). Branch protection bypass added to "Don't fuck with main" ruleset. E2E verified: version-bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380), release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333). AC-4–6 deferred (enhancements). |
+| BUG-006 (EPIC-001) | Version Bump Fails — TOML Quoting + Tag Drift | 2026-02-18 | RC-1: TOML literal strings — fixed (triple-quoted). RC-2: tag drift — fixed (v0.2.0 tag on `3220a59`). E2E verified: release run [22161063558](https://github.com/geekatron/jerry/actions/runs/22161063558) (v0.2.0), version-bump [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) (0.2.0→0.2.1), release [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) (v0.2.1). All ACs verified. |
 
 ---
 
@@ -205,6 +206,8 @@
 | 2026-02-18 | Claude | BUG-005 created under EPIC-001: Version Bump Pipeline Fails on Merge to Main. Two root causes: (1) `VERSION_BUMP_PAT` secret not configured — checkout fails with "Input required and not supplied: token", (2) CI pipeline runs independently on same push event with no dependency on Version Bump. 4 fix proposals. |
 | 2026-02-18 | Claude | BUG-005 CLOSED. RC-1 resolved: fine-grained PAT configured as `VERSION_BUMP_PAT` repo secret. RC-2 acknowledged as by-design. |
 | 2026-02-18 | Claude | BUG-006 created under EPIC-001: Version Bump Fails — TOML Quoting Bug + Version-Tag Drift. Two root causes: (1) TOML literal string quoting prevents newline matching in marketplace.json search pattern, (2) version-tag drift (pyproject.toml 0.2.0 vs latest tag v0.0.3). Fix: triple-quoted TOML strings + v0.2.0 tag creation on main HEAD. |
+| 2026-02-18 | Claude | BUG-005 and BUG-006 E2E VERIFIED. Version bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) (0.2.0→0.2.1), release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) (v0.2.1). Branch protection bypass configured. All ACs checked. |
+| 2026-02-18 | Claude | BUG-007 created under EPIC-001: GitHub Pages Build Fails — Jekyll Liquid Syntax Error. Auto-generated "pages build and deployment" workflow fails at Jekyll build step. `{%}` placeholder in `docs/knowledge/exemplars/templates/analysis.md` interpreted as Liquid tag. Fix: add `.nojekyll` to repo root. |
 
 ---
 

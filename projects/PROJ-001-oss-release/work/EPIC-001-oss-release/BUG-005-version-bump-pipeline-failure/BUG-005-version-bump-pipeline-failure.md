@@ -223,15 +223,15 @@ jobs:
 ### Fix Verification
 
 - [x] AC-1: `VERSION_BUMP_PAT` secret is configured in GitHub repo settings — VERIFIED (fine-grained PAT with Contents: Read/Write)
-- [ ] AC-2: Version Bump pipeline succeeds on push to `main` — BLOCKED by BUG-006 (TOML quoting + tag drift)
-- [ ] AC-3: Release pipeline is triggered by the version tag created by Version Bump — BLOCKED by AC-2
+- [x] AC-2: Version Bump pipeline succeeds on push to `main` — VERIFIED ([run 22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380), manual dispatch, 0.2.0→0.2.1 bump)
+- [x] AC-3: Release pipeline is triggered by the version tag created by Version Bump — VERIFIED ([run 22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333), v0.2.1 GitHub Release created)
 - [ ] AC-4: If `VERSION_BUMP_PAT` is missing, workflow falls back to `GITHUB_TOKEN` with warning — DEFERRED (enhancement, not required for closure)
 - [ ] AC-5: CONTRIBUTING.md documents required GitHub secrets and CI/CD workflow diagram — DEFERRED (enhancement)
 - [ ] AC-6: CI pipeline behavior on `main` is documented (independent of Version Bump by design) — DEFERRED (enhancement)
 
 ### Quality Checklist
 
-- [ ] Version bump + release end-to-end flow verified — BLOCKED by BUG-006
+- [x] Version bump + release end-to-end flow verified — VERIFIED (version-bump run 22161466380 → release run 22161485333)
 - [x] Existing CI tests still passing — CI pipeline passed independently
 - [x] No new issues introduced — BUG-006 is a pre-existing issue, not introduced by PAT fix
 - [ ] Documentation updated — DEFERRED
@@ -263,6 +263,7 @@ jobs:
 | 2026-02-18 | Adam Nowak | pending | Initial report. Version Bump fails on merge to main. CI runs independently and passes. Two root causes: (1) missing `VERSION_BUMP_PAT` secret, (2) no workflow dependency between CI and Version Bump. |
 | 2026-02-18 | Claude | pending | Investigation complete. RC-1 confirmed: `secrets.VERSION_BUMP_PAT` undefined causes checkout failure. RC-2 confirmed: `ci.yml` triggers on `push: branches: ["**"]` independently. PAT is required for tag-triggered Release pipeline. 4 fix proposals documented. |
 | 2026-02-18 | Adam Nowak | completed | **BUG-005 CLOSED.** RC-1 resolved: fine-grained PAT created with `Contents: Read/Write` scope and configured as `VERSION_BUMP_PAT` repository secret. Checkout step now succeeds. RC-2 acknowledged as by-design (CI and Version Bump are intentionally independent). Remaining ACs (AC-2–6) deferred — AC-2/AC-3 blocked by BUG-006 (version bump application failure, separate root cause); AC-4–6 are enhancements. |
+| 2026-02-18 | Claude | completed | **E2E VERIFIED.** AC-2/AC-3 unblocked after BUG-006 resolution + branch protection bypass configured ("Don't fuck with main" ruleset — PAT owner added as bypass actor with "Always" mode). Version bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) bumped 0.2.0→0.2.1, pushed commit+tag to main. Release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) created v0.2.1 GitHub Release. Full pipeline proven working. AC-4–6 remain deferred (enhancements). |
 
 ---
 
