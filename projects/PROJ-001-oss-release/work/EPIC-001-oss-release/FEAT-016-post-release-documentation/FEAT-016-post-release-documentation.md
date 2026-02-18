@@ -80,12 +80,14 @@ Update the project README and supporting documentation to accurately reflect the
 | EN-936 | Enabler | Update README with OSX-primary platform notice | done | high | 2 |
 | EN-937 | Enabler | Add Windows issue solicitation guidance | done | medium | 2 |
 | EN-938 | Enabler | Add skill/agent optimization disclaimer | done | medium | 1 |
+| EN-945 | Enabler | Create cross-platform issue templates (macOS & Linux) | done | high | 2 |
 
 ### Work Item Links
 
 - [EN-936: Update README with OSX-primary platform notice](./EN-936-readme-platform-notice/EN-936-readme-platform-notice.md)
 - [EN-937: Add Windows issue solicitation guidance](./EN-937-windows-issue-solicitation/EN-937-windows-issue-solicitation.md)
 - [EN-938: Add skill/agent optimization disclaimer](./EN-938-optimization-disclaimer/EN-938-optimization-disclaimer.md)
+- [EN-945: Create cross-platform issue templates (macOS & Linux)](./EN-945-cross-platform-issue-templates/EN-945-cross-platform-issue-templates.md)
 
 ---
 
@@ -97,8 +99,8 @@ Update the project README and supporting documentation to accurately reflect the
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [####################] 100% (3/3 completed)            |
-| Effort:    [####################] 100% (5/5 points completed)     |
+| Enablers:  [####################] 100% (4/4 completed)            |
+| Effort:    [####################] 100% (7/7 points completed)     |
 +------------------------------------------------------------------+
 | Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
@@ -108,10 +110,10 @@ Update the project README and supporting documentation to accurately reflect the
 
 | Metric | Value |
 |--------|-------|
-| **Total Enablers** | 3 |
-| **Completed Enablers** | 3 |
-| **Total Effort (points)** | 5 |
-| **Completed Effort** | 5 |
+| **Total Enablers** | 4 |
+| **Completed Enablers** | 4 |
+| **Total Effort (points)** | 7 |
+| **Completed Effort** | 7 |
 | **Completion %** | 100% |
 
 ---
@@ -141,3 +143,5 @@ Update the project README and supporting documentation to accurately reflect the
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Feature created from transcript packet analysis (ACT-001, ACT-002, ACT-003) |
 | 2026-02-18 | Claude | done | All 3 enablers completed. README updated with Platform Support + Known Limitations sections. Windows issue template created at .github/ISSUE_TEMPLATE/windows-compatibility.yml. CONTRIBUTING.md updated with Windows issue reporting section. |
+| 2026-02-18 | Claude | in_progress | Scope expanded: EN-945 created for macOS and Linux issue templates. Reverted to in_progress (3/4 enablers). |
+| 2026-02-18 | Claude | done | EN-945 complete: macos-compatibility.yml and linux-compatibility.yml created. README Platform Support links all 3 templates. 4/4 enablers, 7/7 points. |

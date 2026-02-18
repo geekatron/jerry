@@ -85,9 +85,15 @@ Jerry is **primarily developed and tested on macOS**. We are actively working on
 | **Linux** | Expected to work — not regularly tested |
 | **Windows** | In progress — core functionality works, edge cases may exist |
 
-**Windows users:** We actively encourage you to [file issues](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml) for any platform-specific problems you encounter. Your reports directly drive portability improvements.
+**Encountering a platform-specific issue?** File a report using the template for your platform:
 
-> Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. See [CONTRIBUTING.md](CONTRIBUTING.md) for Windows-specific development notes.
+- [macOS issue](https://github.com/geekatron/jerry/issues/new?template=macos-compatibility.yml)
+- [Linux issue](https://github.com/geekatron/jerry/issues/new?template=linux-compatibility.yml)
+- [Windows issue](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml)
+
+Your reports directly drive portability improvements.
+
+> Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. See [CONTRIBUTING.md](CONTRIBUTING.md) for platform-specific development notes.
 
 ## Known Limitations
 

@@ -1,0 +1,109 @@
+name: macOS Compatibility Issue
+description: Report a problem specific to running Jerry on macOS
+labels: ["macos", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Jerry on macOS! Please fill in as much detail as you can.
+
+  - type: input
+    id: os-version
+    attributes:
+      label: macOS Version
+      description: e.g., macOS 15.3 Sequoia, macOS 14.2 Sonoma
+      placeholder: "macOS 15.3 Sequoia"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: chip
+    attributes:
+      label: Chip
+      description: Apple Silicon or Intel?
+      options:
+        - Apple Silicon (M1/M2/M3/M4)
+        - Intel
+    validations:
+      required: true
+
+  - type: input
+    id: shell
+    attributes:
+      label: Shell
+      description: Which shell were you using?
+      placeholder: "zsh, bash"
+    validations:
+      required: true
+
+  - type: input
+    id: homebrew-version
+    attributes:
+      label: Homebrew Version
+      description: Run `brew --version` to find this (leave blank if not using Homebrew)
+      placeholder: "4.4.0"
+    validations:
+      required: false
+
+  - type: input
+    id: claude-code-version
+    attributes:
+      label: Claude Code Version
+      description: Run `claude --version` to find this
+      placeholder: "1.0.0"
+    validations:
+      required: false
+
+  - type: input
+    id: uv-version
+    attributes:
+      label: uv Version
+      description: Run `uv --version` to find this
+      placeholder: "0.6.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the issue
+      placeholder: "When I run X, I see error Y..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to reproduce the issue
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened (include error messages if applicable)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other details (screenshots, logs, workarounds found)
+    validations:
+      required: false
