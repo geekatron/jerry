@@ -164,7 +164,7 @@ Create an annotated tag `v0.2.0` on the current `main` HEAD (`0ddc5391`) to reco
 | File | Change Description | Status |
 |------|-------------------|--------|
 | `pyproject.toml` (lines 167-171) | Triple-quoted TOML strings for marketplace.json search/replace | DONE |
-| Git tag `v0.2.0` | Create on main HEAD SHA `0ddc5391` | PENDING |
+| Git tag `v0.2.0` | Create on main HEAD SHA `3220a59` (updated after PR #21 merge) | DONE |
 
 ---
 
@@ -173,15 +173,15 @@ Create an annotated tag `v0.2.0` on the current `main` HEAD (`0ddc5391`) to reco
 ### Fix Verification
 
 - [x] AC-1: TOML quoting fix applied — triple-quoted multi-line basic strings in pyproject.toml
-- [ ] AC-2: v0.2.0 tag created on main HEAD and pushed — triggers release.yml
-- [ ] AC-3: release.yml validates version consistency and creates GitHub Release
-- [ ] AC-4: Next merge to main triggers version-bump.yml which succeeds (marketplace.json pattern matches)
+- [x] AC-2: v0.2.0 tag created on main HEAD and pushed — VERIFIED (tag on `3220a59`, [release run 22161063558](https://github.com/geekatron/jerry/actions/runs/22161063558))
+- [x] AC-3: release.yml validates version consistency and creates GitHub Release — VERIFIED (v0.2.0 GitHub Release created, all 4 jobs passed)
+- [x] AC-4: Next merge to main triggers version-bump.yml which succeeds (marketplace.json pattern matches) — VERIFIED ([version-bump run 22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380), 0.2.0→0.2.1 bump succeeded including marketplace.json pattern match)
 
 ### Quality Checklist
 
 - [x] Existing CI tests still passing
 - [x] No new issues introduced
-- [ ] End-to-end version bump + release flow verified — AC-4
+- [x] End-to-end version bump + release flow verified — VERIFIED (version-bump run 22161466380 → release run 22161485333, v0.2.1 released)
 
 ---
 
@@ -207,6 +207,7 @@ Create an annotated tag `v0.2.0` on the current `main` HEAD (`0ddc5391`) to reco
 |------|--------|--------|-------|
 | 2026-02-18 | Claude | pending | Initial report. Two root causes identified from job 64072648579 logs: (1) TOML literal string quoting prevents newline matching in marketplace.json search pattern, (2) version-tag drift — pyproject.toml 0.2.0 vs latest tag v0.0.3. |
 | 2026-02-18 | Claude | completed | **BUG-006 CLOSED.** RC-1 fixed: pyproject.toml lines 167-171 changed to triple-quoted multi-line basic strings (`"""..."""`). RC-2 fix: v0.2.0 tag to be created on main HEAD (`0ddc5391`). User approved Option A (tag reconciliation). AC-2/AC-3/AC-4 pending tag creation and next merge. |
+| 2026-02-18 | Claude | completed | **E2E VERIFIED.** v0.2.0 tag created on `3220a59` (updated main after PR #21). Release run [22161063558](https://github.com/geekatron/jerry/actions/runs/22161063558) — all 4 jobs PASS, v0.2.0 GitHub Release created. Version bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) — 0.2.0→0.2.1, marketplace.json pattern matched correctly. Release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) — v0.2.1 GitHub Release created. All ACs verified. |
 
 ---
 
