@@ -9,12 +9,12 @@ PURPOSE: Synchronize framework docs, rules, skills, and tests with EPIC-002/003 
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** EPIC-003
 > **Owner:** ---
 > **Target Sprint:** Sprint 4
@@ -107,7 +107,7 @@ Synchronize the Jerry framework's documentation, agent registry, rules, skill fi
 | EN-926 | Enabler | Rule Synchronization | done | high | 3 |
 | EN-927 | Enabler | Skill Documentation Completion | done | high | 5 |
 | EN-928 | Enabler | Test Coverage Expansion | done | medium | 3 |
-| EN-929 | Enabler | Minor Documentation Cleanup | pending | low | 2 |
+| EN-929 | Enabler | Minor Documentation Cleanup | done | low | 2 |
 
 ### Work Item Links
 
@@ -139,10 +139,10 @@ EN-929 (Cleanup) [can start immediately, parallel]
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [################....] 80% (4/5 completed)            |
-| Effort:    [################....] 89% (16/18 points)             |
+| Enablers:  [####################] 100% (5/5 completed)           |
+| Effort:    [####################] 100% (18/18 points)            |
 +------------------------------------------------------------------+
-| Overall:   [################....] 80%                             |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -151,10 +151,10 @@ EN-929 (Cleanup) [can start immediately, parallel]
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 5 |
-| **Completed Enablers** | 4 |
+| **Completed Enablers** | 5 |
 | **Total Effort (points)** | 18 |
-| **Completed Effort** | 16 |
-| **Completion %** | 80% |
+| **Completed Effort** | 18 |
+| **Completion %** | 100% |
 
 ---
 
@@ -182,3 +182,4 @@ EN-929 (Cleanup) [can start immediately, parallel]
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Feature created under EPIC-003. 5 enablers (EN-925--929), 18 effort points. Addresses 15 gaps identified by codebase audit: incomplete AGENTS.md, missing /adversary rule triggers, truncated skill docs, no adversarial template tests. |
 | 2026-02-17 | Claude | in_progress | Retroactive closure of EN-925 through EN-928 (4/5 enablers). All 4 delivered in prior sessions. EN-925: AGENTS.md has 33 agents across 6 skill families. EN-926: H-22 trigger map + quality-enforcement.md Implementation section include /adversary. EN-927: architecture/SKILL.md (464 lines), bootstrap/SKILL.md (229 lines), shared/README.md (302 lines). EN-928: 109/109 tests pass (test_adversarial_templates.py + test_adversary_skill.py). EN-929 pending. |
+| 2026-02-17 | Claude | done | EN-929 completed via orchestration (en929-doccleanup-20260217-001). Phase 1 verify: 2 tasks applicable, 3 N/A. Phase 2 execute: TASK-001 (naming convention), TASK-002 (agent dir READMEs). Phase 3 skipped (no C3 tasks needed). FEAT-014 complete: 5/5 enablers done. |

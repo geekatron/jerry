@@ -9,13 +9,13 @@ PURPOSE: Bundle of minor documentation improvements from codebase gap analysis
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** low
 > **Impact:** low
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-17
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-17
 > **Parent:** FEAT-014
 > **Owner:** --
 > **Effort:** 2
@@ -88,11 +88,11 @@ All five tasks are independent and can run in parallel.
 
 | ID | Title | Status | Activity | Owner |
 |----|-------|--------|----------|-------|
-| TASK-001 | Clarify adversarial template naming in SKILL.md Dependencies section | pending | DEVELOPMENT | ps-architect |
-| TASK-002 | Document agent vs template file distinction in PS and NSE agent dirs | pending | DEVELOPMENT | ps-architect |
-| TASK-003 | Add orchestration pattern reference to architecture-standards.md | pending | DEVELOPMENT | ps-architect |
-| TASK-004 | Verify H-16 in quality-enforcement.md HARD Rule Index | pending | REVIEW | ps-critic |
-| TASK-005 | Improve "When NOT to Use" guidance in adversary SKILL.md | pending | DEVELOPMENT | ps-architect |
+| TASK-001 | Clarify adversarial template naming in SKILL.md Dependencies section | done | DEVELOPMENT | ps-architect |
+| TASK-002 | Document agent vs template file distinction in PS and NSE agent dirs | done | DEVELOPMENT | ps-architect |
+| TASK-003 | Add orchestration pattern reference to architecture-standards.md | N/A | REVIEW | -- |
+| TASK-004 | Verify H-16 in quality-enforcement.md HARD Rule Index | N/A | REVIEW | -- |
+| TASK-005 | Improve "When NOT to Use" guidance in adversary SKILL.md | N/A | REVIEW | -- |
 
 ---
 
@@ -101,7 +101,7 @@ All five tasks are independent and can run in parallel.
 ### Status Overview
 
 ```
-[                    ] 0% (0/5 tasks)
+[####################] 100% (5/5 tasks — 2 done, 3 N/A)
 ```
 
 ### Progress Metrics
@@ -109,11 +109,12 @@ All five tasks are independent and can run in parallel.
 | Metric | Value |
 |--------|-------|
 | Total Tasks | 5 |
-| Completed | 0 |
+| Completed | 2 |
+| N/A | 3 |
 | In Progress | 0 |
-| Pending | 5 |
+| Pending | 0 |
 | Blocked | 0 |
-| Completion | 0% |
+| Completion | 100% |
 
 ---
 
@@ -121,21 +122,21 @@ All five tasks are independent and can run in parallel.
 
 ### Definition of Done
 
-- [ ] Adversary SKILL.md clarifies template naming and versioning
-- [ ] Agent directories have clear distinction between agent files and support files
-- [ ] architecture-standards.md references orchestration patterns
-- [ ] H-16 verified in quality-enforcement.md index (fix if missing)
-- [ ] adversary SKILL.md "When to Use" section is comprehensive
+- [x] Adversary SKILL.md clarifies template naming and versioning
+- [x] Agent directories have clear distinction between agent files and support files
+- [x] architecture-standards.md references orchestration patterns (verified: already exists at line 122)
+- [x] H-16 verified in quality-enforcement.md index (verified: present at lines 56, 96)
+- [x] adversary SKILL.md "When to Use" section is comprehensive (verified: 6 bullets already solid)
 
 ### Technical Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| TC-1 | Template naming clarification uses MEDIUM-tier language (SHOULD/RECOMMENDED) | [ ] |
-| TC-2 | Agent directory READMEs follow H-23/H-24 navigation requirements if over 30 lines | [ ] |
-| TC-3 | Architecture-orchestration reference is consistent with existing standards format | [ ] |
-| TC-4 | H-16 row in HARD Rule Index matches format of existing entries | [ ] |
-| TC-5 | Adversary SKILL.md guidance is actionable and consistent with skill table style | [ ] |
+| TC-1 | Template naming clarification uses MEDIUM-tier language (SHOULD/RECOMMENDED) | [x] |
+| TC-2 | Agent directory READMEs follow H-23/H-24 navigation requirements if over 30 lines | [x] (both under 30 lines — exempt) |
+| TC-3 | Architecture-orchestration reference is consistent with existing standards format | [x] (N/A — already exists) |
+| TC-4 | H-16 row in HARD Rule Index matches format of existing entries | [x] (N/A — already present) |
+| TC-5 | Adversary SKILL.md guidance is actionable and consistent with skill table style | [x] (N/A — already comprehensive) |
 
 ---
 
@@ -145,14 +146,17 @@ All five tasks are independent and can run in parallel.
 
 | # | Deliverable | Path | Status |
 |---|-------------|------|--------|
-| 1 | -- | -- | Pending |
+| 1 | Template naming convention in adversary SKILL.md | `skills/adversary/SKILL.md` | Done |
+| 2 | PS agents directory README | `skills/problem-solving/agents/README.md` | Done |
+| 3 | NSE agents directory README | `skills/nasa-se/agents/README.md` | Done |
+| 4 | Orchestration plan | `EN-929-documentation-cleanup/orchestration/en929-doccleanup-20260217-001/` | Done |
 
 ### Verification Checklist
 
-- [ ] All acceptance criteria verified
-- [ ] All technical criteria verified
-- [ ] No regressions introduced
-- [ ] Changes consistent with existing documentation style
+- [x] All acceptance criteria verified — TASK-001: naming convention added. TASK-002: READMEs created. TASK-003: already exists (N/A). TASK-004: H-16 confirmed present (N/A). TASK-005: guidance already comprehensive (N/A).
+- [x] All technical criteria verified — TC-1 through TC-5 all checked.
+- [x] No regressions introduced
+- [x] Changes consistent with existing documentation style
 
 ---
 
@@ -181,3 +185,4 @@ All five tasks are independent and can run in parallel.
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Enabler created from PROJ-001 codebase gap analysis findings |
+| 2026-02-17 | Claude | done | Orchestrated execution (en929-doccleanup-20260217-001). Phase 1 verify: TASK-001/002 applicable, TASK-003/004/005 N/A (already done or not needed). Phase 2: TASK-001 (naming convention added to SKILL.md Dependencies), TASK-002 (PS + NSE agent READMEs created). Phase 3: skipped (no C3 tasks applicable). |

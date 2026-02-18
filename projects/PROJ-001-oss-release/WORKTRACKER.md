@@ -186,6 +186,7 @@
 | 2026-02-17 | Claude | EN-934 CLOSED: Dependency License Compatibility Audit complete. QG-1 PASS (0.941, 3 iterations: 0.825→0.916→0.941). All 47 installed + 4 declared-but-uninstalled packages Apache 2.0 compatible. Phase 2 (EN-930, EN-931, EN-933) execution started. |
 | 2026-02-17 | Claude | FEAT-012 CLOSED (retroactive): All 6 enablers verified as delivered. Work was completed in prior sessions but worktracker not updated. EN-902 (5 guides, 5,002 lines), EN-903 (49 pattern files), EN-904 (3 path-scoped rules), EN-905 (bootstrap excludes guides), EN-906 (21 E2E fidelity tests pass). EPIC-003 now 5/6 features done. |
 | 2026-02-17 | Claude | FEAT-014 EN-925–928 CLOSED (retroactive): 4/5 enablers verified as delivered. EN-925: AGENTS.md (33 agents, 6 families). EN-926: H-22 triggers + quality-enforcement.md Implementation section. EN-927: architecture/SKILL.md (464), bootstrap/SKILL.md (229), shared/README.md (302). EN-928: 109/109 tests pass. EN-929 (documentation cleanup) still pending. |
+| 2026-02-17 | Claude | EN-929 CLOSED via orchestration (en929-doccleanup-20260217-001): 2/5 tasks executed (naming convention, agent dir READMEs), 3/5 N/A (orchestration ref already exists, H-16 already present, "When NOT to Use" already comprehensive). FEAT-014 CLOSED: 5/5 enablers, 18/18 points. EPIC-003 now 6/6 features done. |
 
 ---
 
