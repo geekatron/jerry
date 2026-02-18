@@ -345,10 +345,10 @@ This registers Jerry's plugin catalog. No plugins are installed yet—you're jus
 Install Jerry from the marketplace:
 
 ```
-/plugin install jerry@jerry
+/plugin install jerry@jerry-framework
 ```
 
-> **Note:** The `@jerry` suffix corresponds to the directory name you used in Step 4 (`~/plugins/jerry`). If you cloned Jerry to a different directory name (e.g., `~/plugins/jerry-framework`), replace `@jerry` with `@jerry-framework` to match.
+> **Note:** The `@jerry-framework` suffix is the marketplace name (from `marketplace.json`). This is fixed regardless of the directory name you cloned to.
 
 **Alternative: Interactive Installation**
 1. Run `/plugin`
@@ -440,10 +440,10 @@ Copy the output and use it directly in the `/plugin marketplace add` command.
 Install Jerry from the marketplace:
 
 ```
-/plugin install jerry@jerry
+/plugin install jerry@jerry-framework
 ```
 
-> **Note:** The `@jerry` suffix corresponds to the directory name you used in Step 4. If you cloned Jerry to a different directory name, replace `@jerry` with the actual directory name to match.
+> **Note:** The `@jerry-framework` suffix is the marketplace name (from `marketplace.json`). This is fixed regardless of the directory name you cloned to.
 
 ---
 
@@ -627,14 +627,14 @@ Plugin support requires Claude Code version 1.0.33 or later.
 
 ### Plugin Not Found After Adding Marketplace
 
-**Symptom:** `/plugin install jerry@jerry` returns "plugin not found"
+**Symptom:** `/plugin install jerry@jerry-framework` returns "plugin not found"
 
 **Solutions:**
 1. Verify the marketplace was added: `/plugin marketplace list`
 2. Check the path is correct and Jerry was cloned successfully
-3. Refresh the marketplace: `/plugin marketplace update jerry`
+3. Refresh the marketplace: `/plugin marketplace update jerry-framework`
 4. Verify the manifest exists: `cat ~/plugins/jerry/.claude-plugin/plugin.json`
-5. If you cloned to a non-standard directory name (not `jerry`), the `@jerry` suffix in the install command must match the directory name. For example, if you cloned to `~/plugins/jerry-framework`, use `/plugin install jerry@jerry-framework`
+5. If the marketplace was registered under a different name, the `@` suffix in the install command must match. Run `/plugin marketplace list` to verify the marketplace name
 
 ### uv: command not found
 
@@ -666,7 +666,7 @@ If still not found, add to PATH manually:
    - macOS: `rm -rf ~/.claude/plugins/cache`
    - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
 3. Restart Claude Code
-4. Reinstall the plugin: `/plugin uninstall jerry@jerry` then `/plugin install jerry@jerry`
+4. Reinstall the plugin: `/plugin uninstall jerry@jerry-framework` then `/plugin install jerry@jerry-framework`
 
 ### Path Issues on Windows
 
@@ -794,13 +794,13 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines, 
 ### Remove the Plugin
 
 ```
-/plugin uninstall jerry@jerry
+/plugin uninstall jerry@jerry-framework
 ```
 
 ### Remove the Marketplace
 
 ```
-/plugin marketplace remove jerry
+/plugin marketplace remove jerry-framework
 ```
 
 ### Delete Local Files (Optional)

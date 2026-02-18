@@ -41,7 +41,7 @@ git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
 /plugin marketplace add ~/plugins/jerry
 
 # 4. Install the Jerry plugin
-/plugin install jerry@jerry
+/plugin install jerry@jerry-framework
 ```
 
 </details>
@@ -64,7 +64,7 @@ git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry
 /plugin marketplace add C:/Users/$env:USERNAME/plugins/jerry
 
 # 5. Install the Jerry plugin
-/plugin install jerry@jerry
+/plugin install jerry@jerry-framework
 ```
 
 </details>
