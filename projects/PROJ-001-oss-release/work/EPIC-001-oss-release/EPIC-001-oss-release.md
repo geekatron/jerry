@@ -1,12 +1,12 @@
 # EPIC-001: OSS Release Preparation
 
 > **Type:** epic
-> **Status:** done
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-10
 > **Due:** ---
-> **Completed:** 2026-02-18
+> **Completed:** ---
 > **Parent:** —
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -87,10 +87,10 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 | Features:  [####################] 100% (7/7 completed)            |
 | Enablers:  [####################] 100% (37/37 completed)          |
-| Bugs:      [####################] 100% (15/15 completed)          |
+| Bugs:      [################### ] 94% (15/16 completed)           |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [####################] 100%                            |
+| Overall:   [################### ] 98%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -107,6 +107,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | **Total Effort (new features)** | 24 (9 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
+| **Total Bugs (EPIC-001 direct)** | 1 (BUG-004, pending) |
 
 ---
 
@@ -140,3 +141,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-18 | Claude | in_progress | FEAT-016 completed. EN-936/937/938 done (README platform notice, Windows issue template, optimization disclaimer). EN-945 done (macOS + Linux issue templates, README links all 3 platforms). EPIC-001 now 5/7 features done, 29/35 enablers, ~75%. |
 | 2026-02-18 | Claude | in_progress | EN-946 complete (feature-request.yml worktracker-aligned, config.yml, CONTRIBUTING.md updated). FEAT-016 re-closed at 5/5 enablers, 9/9 points. EPIC-001 now 5/7 features (71%), 31/36 enablers (86%), ~75%. |
 | 2026-02-18 | Claude | done | FEAT-017 and FEAT-018 completed via orchestration workflow epic001-docs-20260218-001 (5 phases, 38 agents, 3 QGs). QG-1: 0.9220, QG-2: 0.926, QG-3: 0.937 — all PASS. Deliverables: docs/INSTALLATION.md (rewritten), docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. All 7 features, 37 enablers, 15 bugs complete. **EPIC-001 CLOSED.** |
+| 2026-02-18 | Claude | in_progress | **Reopened.** BUG-004 created: Plugin Uninstall Fails — Name/Scope Mismatch. Plugin UI shows `jerry @ jerry` but plugin.json declares `jerry-framework`. Uninstall fails with scope error. Also found: plugin.json license still says MIT (should be Apache-2.0). |

@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
 
@@ -61,6 +61,7 @@
 | [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical | EPIC-003 |
 | [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical | EPIC-003 |
 | [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | completed | high | EPIC-003 |
+| [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | in_progress | high | EPIC-001 |
 
 ---
 
@@ -193,6 +194,8 @@
 | 2026-02-17 | Claude | EN-929 CLOSED via orchestration (en929-doccleanup-20260217-001): 2/5 tasks executed (naming convention, agent dir READMEs), 3/5 N/A (orchestration ref already exists, H-16 already present, "When NOT to Use" already comprehensive). FEAT-014 CLOSED: 5/5 enablers, 18/18 points. EPIC-003 now 6/6 features done. |
 | 2026-02-17 | Claude | **EPIC-003 CLOSED.** 6/6 features, 45/45 enablers, 3/3 bugs resolved. Quality framework fully implemented: 5-layer enforcement (L1-L5), AST-based PreToolUse engine, context reinforcement hooks, adversarial strategies (/adversary skill), progressive disclosure rules, framework synchronization. All acceptance criteria met. |
 | 2026-02-17 | Claude | FEAT-015 completed (License Migration). 3 new features created from transcript packet analysis: FEAT-016 (README & Docs, 3 EN, 5 pts), FEAT-017 (Installation Instructions, 3 EN, 7 pts), FEAT-018 (Runbooks/Playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |
+
+| 2026-02-18 | Claude | BUG-004 created under EPIC-001: Plugin Uninstall Fails — Name/Scope Mismatch. Two errors: (1) "Plugin jerry not found in marketplace" on detail screen, (2) `Failed to uninstall: Plugin "jerry@jerry" is not installed in user scope`. Three root causes: name resolution mismatch (plugin.json says `jerry-framework` but UI resolves to `jerry`), possible scope mismatch, possibly lost marketplace registration. Also found: plugin.json license still says MIT. EPIC-001 reopened. |
 
 ---
 

@@ -3,13 +3,13 @@
     "allow": [
       "WebSearch",
       "WebFetch",
-      "Skill(jerry:nasa-se)",
+      "Skill(jerry-framework:nasa-se)",
       "Skill(nasa-se)",
-      "Skill(jerry:problem-solving)",
+      "Skill(jerry-framework:problem-solving)",
       "Skill(problem-solving)",
-      "Skill(jerry:orchestration)",
+      "Skill(jerry-framework:orchestration)",
       "Skill(orchestration)",
-      "Skill(jerry:worktracker)",
+      "Skill(jerry-framework:worktracker)",
       "Skill(worktracker)",
       "mcp__memory-keeper__*",
       "mcp__memory-keeper__store",
@@ -47,7 +47,10 @@
       "Bash(find:*)",
       "Bash(git log:*)",
       "Bash(ls:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(uv run pyright:*)",
+      "Bash(uv run:*)",
+      "Skill(jerry-framework:transcript)"
     ]
   },
   "hooks": {
