@@ -1,0 +1,635 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for multi-agent workflows
+# Document ID: PROJ-001-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-02-18T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+# Schema version for evolution support (semver format)
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "epic001-docs-20260218-001"
+  name: "FEAT-017 Installation Modernization + FEAT-018 Runbooks/Playbooks"
+  project_id: "PROJ-001-oss-release"
+  version: "2.0"
+  created_at: "2026-02-18T00:00:00Z"
+  updated_at: "2026-02-18T00:00:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Workflow ID configuration (WI-SAO-021)
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+  # Format: {purpose}-{YYYYMMDD}-{NNN}
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL      # Primary pipeline — phases execute in order
+    - CONCURRENT      # Phase 4 fan-out: 3 playbooks created in parallel
+    - BARRIER_SYNC    # Inter-feature dependency: FEAT-017 complete before FEAT-018
+    - HIERARCHICAL    # Orchestrator (main Claude) delegates to agents via Task tool
+
+  # Criticality assessment
+  criticality:
+    level: "C2"
+    name: "Standard"
+    rationale: "Documentation changes, reversible within 1 day, 3-10 files affected, no governance/rules touched"
+    auto_escalation_triggers:
+      - id: "AE-001"
+        condition: "Touches docs/governance/JERRY_CONSTITUTION.md"
+        triggered: false
+      - id: "AE-002"
+        condition: "Touches .context/rules/ or .claude/rules/"
+        triggered: false
+      - id: "AE-003"
+        condition: "New or modified ADR"
+        triggered: false
+
+  # Required adversarial strategies per C2
+  required_strategies:
+    - id: "S-007"
+      name: "Constitutional AI Critique"
+      required: true
+    - id: "S-002"
+      name: "Devil's Advocate"
+      required: true
+    - id: "S-014"
+      name: "LLM-as-Judge"
+      required: true
+    - id: "S-003"
+      name: "Steelman Technique"
+      required: false  # Optional for C2
+    - id: "S-010"
+      name: "Self-Refine"
+      required: false  # Optional; applied within creator loops
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting — orchestrator → worker only
+    file_persistence: true        # P-002: All state to filesystem before proceeding
+    user_authority: true          # P-020: QG PASS/FAIL surfaced to user
+    max_concurrent_agents: 4      # Phase 4 fan-out limit
+    max_qg_retries: 2             # Circuit breaker per gate
+    creator_critic_min_iterations: 3  # H-14 requirement
+    checkpoint_frequency: "PHASE_AND_QG"  # Checkpoint at phase complete + QG complete
+
+# =============================================================================
+# PATH CONFIGURATION (WI-SAO-021)
+# =============================================================================
+paths:
+  # Base path for all orchestration artifacts
+  base: "orchestration/epic001-docs-20260218-001/"
+
+  # Phase artifact path pattern
+  # {phase_id} = phase-{N}, {agent_id} = agent identifier
+  phase: "{base}docs/phase-{N}/{agent_id}/"
+
+  # Quality gate path pattern
+  # {qg_id} = qg-{N}, {agent_id} = agent identifier
+  quality_gate: "{base}docs/quality-gates/{qg_id}/{agent_id}/"
+
+# =============================================================================
+# PIPELINE DEFINITION (Single Sequential Pipeline)
+# =============================================================================
+pipeline:
+  id: "pipeline-docs"
+  name: "Documentation Modernization Pipeline"
+  description: "Sequential execution of FEAT-017 (installation) followed by FEAT-018 (runbooks/playbooks)"
+  short_alias: "docs"
+  status: "PHASE_1_PENDING"
+  current_phase: 1
+  total_phases: 5
+  progress_percent: 0
+
+  phases:
+    # -------------------------------------------------------------------------
+    # PHASE 1: Requirements & Gap Analysis
+    # -------------------------------------------------------------------------
+    - id: 1
+      name: "Requirements & Gap Analysis"
+      path_id: "phase-1"
+      status: "PENDING"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "ps-researcher-001"
+          skill: "problem-solving"
+          role: "gap-analysis"
+          name: "ps-researcher"
+          status: "PENDING"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-1/ps-researcher-001/ps-researcher-001-gap-analysis.md"
+          inputs:
+            - "docs/INSTALLATION.md"
+        - id: "nse-requirements-001"
+          skill: "nasa-se"
+          role: "requirements-definition"
+          name: "nse-requirements"
+          status: "PENDING"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-1/nse-requirements-001/nse-requirements-001-feat018-requirements.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-1/ps-researcher-001/ps-researcher-001-gap-analysis.md"
+      exit_criteria:
+        - "Gap analysis covers EN-939, EN-940, EN-941 scope"
+        - "FEAT-018 requirements document maps each enabler to deliverable outputs"
+      artifacts: []
+
+    # -------------------------------------------------------------------------
+    # PHASE 2: FEAT-017 Execution (Installation Instructions)
+    # -------------------------------------------------------------------------
+    - id: 2
+      name: "FEAT-017 Execution"
+      path_id: "phase-2"
+      status: "BLOCKED"
+      blocked_by: "phase-1-complete"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "ps-architect-001"
+          skill: "problem-solving"
+          role: "content-creation"
+          name: "ps-architect"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-2/ps-architect-001/ps-architect-001-installation-draft.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-1/ps-researcher-001/ps-researcher-001-gap-analysis.md"
+            - "docs/INSTALLATION.md"
+        - id: "ps-critic-001"
+          skill: "problem-solving"
+          role: "creator-critic-review"
+          name: "ps-critic"
+          status: "BLOCKED"
+          min_iterations: 3
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-2/ps-critic-001/ps-critic-001-installation-review.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-2/ps-architect-001/ps-architect-001-installation-draft.md"
+      exit_criteria:
+        - "AC-1: No archive distribution references remain"
+        - "AC-2: Collaborator installation path documented (SSH, GitHub, marketplace)"
+        - "AC-3: Public repository installation path documented"
+        - "AC-4: Claude Code marketplace integration instructions included"
+        - "Creator-critic loop complete (min 3 iterations)"
+        - "QG-1 score >= 0.92"
+      artifacts: []
+
+    # -------------------------------------------------------------------------
+    # PHASE 3: FEAT-018 Scope & Structure (EN-942)
+    # -------------------------------------------------------------------------
+    - id: 3
+      name: "FEAT-018 Scope & Structure"
+      path_id: "phase-3"
+      status: "BLOCKED"
+      blocked_by: "qg-1-pass"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "nse-explorer-001"
+          skill: "nasa-se"
+          role: "trade-study"
+          name: "nse-explorer"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-3/nse-explorer-001/nse-explorer-001-structure-trade-study.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-1/nse-requirements-001/nse-requirements-001-feat018-requirements.md"
+        - id: "ps-architect-002"
+          skill: "problem-solving"
+          role: "scope-design"
+          name: "ps-architect"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-3/ps-architect-002/ps-architect-002-feat018-scope.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-3/nse-explorer-001/nse-explorer-001-structure-trade-study.md"
+            - "orchestration/epic001-docs-20260218-001/docs/phase-1/nse-requirements-001/nse-requirements-001-feat018-requirements.md"
+      exit_criteria:
+        - "EN-942 AC-1: Runbook vs playbook distinction clearly defined"
+        - "Coverage plan maps EN-943 and EN-944 to specific deliverable files"
+        - "Directory structure defined (docs/runbooks/, docs/playbooks/)"
+        - "Navigation standards compliance verified (H-23, H-24)"
+      artifacts: []
+
+    # -------------------------------------------------------------------------
+    # PHASE 4: FEAT-018 Content Creation (EN-943 + EN-944)
+    # -------------------------------------------------------------------------
+    - id: 4
+      name: "FEAT-018 Content Creation"
+      path_id: "phase-4"
+      status: "BLOCKED"
+      blocked_by: "phase-3-complete"
+      execution_note: "ps-synthesizer-001 runs first (sequential); then 002/003/004 fan-out in parallel; then ps-critic-002 fan-in"
+      started_at: null
+      completed_at: null
+      agents:
+        # Sequential — getting-started runbook
+        - id: "ps-synthesizer-001"
+          skill: "problem-solving"
+          role: "content-synthesis"
+          name: "ps-synthesizer"
+          execution_order: 1
+          execution_mode: "SEQUENTIAL"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-001/ps-synthesizer-001-getting-started-runbook.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-3/ps-architect-002/ps-architect-002-feat018-scope.md"
+            - "orchestration/epic001-docs-20260218-001/docs/phase-2/ps-critic-001/ps-critic-001-installation-review.md"
+        # Fan-out — parallel playbook creation
+        - id: "ps-synthesizer-002"
+          skill: "problem-solving"
+          role: "content-synthesis"
+          name: "ps-synthesizer"
+          execution_order: 2
+          execution_mode: "PARALLEL"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-002/ps-synthesizer-002-playbook-problem-solving.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-3/ps-architect-002/ps-architect-002-feat018-scope.md"
+            - "skills/problem-solving/SKILL.md"
+        - id: "ps-synthesizer-003"
+          skill: "problem-solving"
+          role: "content-synthesis"
+          name: "ps-synthesizer"
+          execution_order: 2
+          execution_mode: "PARALLEL"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-003/ps-synthesizer-003-playbook-orchestration.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-3/ps-architect-002/ps-architect-002-feat018-scope.md"
+            - "skills/orchestration/SKILL.md"
+        - id: "ps-synthesizer-004"
+          skill: "problem-solving"
+          role: "content-synthesis"
+          name: "ps-synthesizer"
+          execution_order: 2
+          execution_mode: "PARALLEL"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-004/ps-synthesizer-004-playbook-transcript.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-3/ps-architect-002/ps-architect-002-feat018-scope.md"
+            - "skills/transcript/SKILL.md"
+        # Fan-in — critic review
+        - id: "ps-critic-002"
+          skill: "problem-solving"
+          role: "creator-critic-review"
+          name: "ps-critic"
+          execution_order: 3
+          execution_mode: "SEQUENTIAL"
+          min_iterations: 3
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-critic-002/ps-critic-002-feat018-review.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-001/ps-synthesizer-001-getting-started-runbook.md"
+            - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-002/ps-synthesizer-002-playbook-problem-solving.md"
+            - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-003/ps-synthesizer-003-playbook-orchestration.md"
+            - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-004/ps-synthesizer-004-playbook-transcript.md"
+      exit_criteria:
+        - "EN-943 AC-2: Getting-started runbook covers setup through first skill invocation"
+        - "EN-944 AC-3: 3 skill playbooks exist (problem-solving, orchestration, transcript)"
+        - "AC-4: All docs comply with H-23, H-24 navigation standards"
+        - "Creator-critic loop complete (min 3 iterations)"
+        - "QG-2 score >= 0.92"
+      artifacts: []
+
+    # -------------------------------------------------------------------------
+    # PHASE 5: Final Verification & Synthesis
+    # -------------------------------------------------------------------------
+    - id: 5
+      name: "Final Verification & Synthesis"
+      path_id: "phase-5"
+      status: "BLOCKED"
+      blocked_by: "qg-2-pass"
+      started_at: null
+      completed_at: null
+      agents:
+        - id: "nse-verification-001"
+          skill: "nasa-se"
+          role: "ac-verification"
+          name: "nse-verification"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-5/nse-verification-001/nse-verification-001-ac-verification.md"
+          inputs:
+            - "All phase outputs and deliverables"
+        - id: "orch-synthesizer-001"
+          skill: "orchestration"
+          role: "final-synthesis"
+          name: "orch-synthesizer"
+          status: "BLOCKED"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/phase-5/orch-synthesizer-001/orch-synthesizer-001-synthesis.md"
+          inputs:
+            - "orchestration/epic001-docs-20260218-001/docs/phase-5/nse-verification-001/nse-verification-001-ac-verification.md"
+            - "All phase artifacts"
+      exit_criteria:
+        - "All 8 FEAT-017 + FEAT-018 ACs verified in traceability matrix"
+        - "Final synthesis report created"
+        - "QG-3 score >= 0.92"
+        - "WORKTRACKER.md reflects FEAT-017 + FEAT-018 closed"
+      artifacts: []
+
+# =============================================================================
+# QUALITY GATES
+# =============================================================================
+quality_gates:
+  threshold: 0.92
+  scoring_strategy: "S-014"  # LLM-as-Judge
+  dimensions:
+    - name: "Completeness"
+      weight: 0.20
+    - name: "Internal Consistency"
+      weight: 0.20
+    - name: "Methodological Rigor"
+      weight: 0.20
+    - name: "Evidence Quality"
+      weight: 0.15
+    - name: "Actionability"
+      weight: 0.15
+    - name: "Traceability"
+      weight: 0.10
+
+  gates:
+    # -------------------------------------------------------------------------
+    # QG-1: After Phase 2 — FEAT-017 (Installation Instructions)
+    # -------------------------------------------------------------------------
+    - id: "qg-1"
+      name: "Quality Gate 1 — FEAT-017 Installation Instructions"
+      after_phase: 2
+      status: "PENDING"  # PENDING | IN_PROGRESS | PASS | FAIL | RETRY
+      retry_count: 0
+      max_retries: 2
+      score: null
+      passed_at: null
+      strategy_sequence:
+        - strategy: "S-010"
+          agent: "ps-critic-001"
+          location: "within Phase 2 creator loop"
+          note: "Applied during creator-critic iterations, not as standalone QG agent"
+        - strategy: "S-002"
+          agent: "adv-executor-001"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-1/adv-executor-001/qg1-devils-advocate.md"
+          status: "PENDING"
+        - strategy: "S-007"
+          agent: "adv-executor-002"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-1/adv-executor-002/qg1-constitutional.md"
+          status: "PENDING"
+        - strategy: "S-014"
+          agent: "adv-scorer-001"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-1/adv-scorer-001/qg1-score.md"
+          status: "PENDING"
+      pass_action: "Proceed to Phase 3"
+      fail_action: "Return to ps-architect-001 for targeted revision; re-score (max 2 retries)"
+      deliverables_under_review:
+        - "orchestration/epic001-docs-20260218-001/docs/phase-2/ps-critic-001/ps-critic-001-installation-review.md"
+
+    # -------------------------------------------------------------------------
+    # QG-2: After Phase 4 — FEAT-018 (Runbooks + Playbooks)
+    # -------------------------------------------------------------------------
+    - id: "qg-2"
+      name: "Quality Gate 2 — FEAT-018 Runbooks & Playbooks"
+      after_phase: 4
+      status: "PENDING"
+      retry_count: 0
+      max_retries: 2
+      score: null
+      passed_at: null
+      scoring_note: "Score each document individually (must each pass >= 0.92) AND aggregate"
+      strategy_sequence:
+        - strategy: "S-010"
+          agent: "ps-critic-002"
+          location: "within Phase 4 creator loop"
+          note: "Applied during creator-critic iterations, not as standalone QG agent"
+        - strategy: "S-002"
+          agent: "adv-executor-003"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-2/adv-executor-003/qg2-devils-advocate.md"
+          status: "PENDING"
+        - strategy: "S-007"
+          agent: "adv-executor-004"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-2/adv-executor-004/qg2-constitutional.md"
+          status: "PENDING"
+        - strategy: "S-014"
+          agent: "adv-scorer-002"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-2/adv-scorer-002/qg2-score.md"
+          status: "PENDING"
+      pass_action: "Proceed to Phase 5"
+      fail_action: "Return to relevant ps-synthesizer for targeted revision; re-score (max 2 retries)"
+      deliverables_under_review:
+        - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-001/ps-synthesizer-001-getting-started-runbook.md"
+        - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-002/ps-synthesizer-002-playbook-problem-solving.md"
+        - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-003/ps-synthesizer-003-playbook-orchestration.md"
+        - "orchestration/epic001-docs-20260218-001/docs/phase-4/ps-synthesizer-004/ps-synthesizer-004-playbook-transcript.md"
+
+    # -------------------------------------------------------------------------
+    # QG-3: After Phase 5 — Final Cross-Deliverable Score
+    # -------------------------------------------------------------------------
+    - id: "qg-3"
+      name: "Quality Gate 3 — Final Cross-Deliverable Consistency"
+      after_phase: 5
+      status: "PENDING"
+      retry_count: 0
+      max_retries: 2
+      score: null
+      passed_at: null
+      strategy_sequence:
+        - strategy: "S-014"
+          agent: "adv-scorer-003"
+          artifact: "orchestration/epic001-docs-20260218-001/docs/quality-gates/qg-3/adv-scorer-003/qg3-final-score.md"
+          status: "PENDING"
+      pass_action: "Workflow COMPLETE"
+      fail_action: "Identify failing documents; targeted revision; re-score (max 2 retries)"
+      deliverables_under_review:
+        - "All FEAT-017 and FEAT-018 deliverables — cross-document consistency"
+        - "Check: installation refs match between INSTALLATION.md and getting-started runbook"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 1 — Requirements & Gap Analysis"
+      execution_mode: "SEQUENTIAL"
+      status: "READY"
+      agents:
+        - "ps-researcher-001"
+        - "nse-requirements-001"
+
+    - id: 2
+      name: "Phase 2 — FEAT-017 Creator-Critic"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents:
+        - "ps-architect-001"
+        - "ps-critic-001"
+
+    - id: 3
+      name: "Quality Gate 1"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      agents:
+        - "adv-executor-001"
+        - "adv-executor-002"
+        - "adv-scorer-001"
+
+    - id: 4
+      name: "Phase 3 — FEAT-018 Scope & Structure"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      agents:
+        - "nse-explorer-001"
+        - "ps-architect-002"
+
+    - id: 5
+      name: "Phase 4 — EN-943 Getting-Started Runbook (Sequential)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      agents:
+        - "ps-synthesizer-001"
+
+    - id: 6
+      name: "Phase 4 — EN-944 Skill Playbooks (Fan-out Parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      agents:
+        - "ps-synthesizer-002"
+        - "ps-synthesizer-003"
+        - "ps-synthesizer-004"
+
+    - id: 7
+      name: "Phase 4 — Fan-in Critic Review"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-6"
+      agents:
+        - "ps-critic-002"
+
+    - id: 8
+      name: "Quality Gate 2"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-7"
+      agents:
+        - "adv-executor-003"
+        - "adv-executor-004"
+        - "adv-scorer-002"
+
+    - id: 9
+      name: "Phase 5 — Final Verification & Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-8"
+      agents:
+        - "nse-verification-001"
+        - "orch-synthesizer-001"
+
+    - id: 10
+      name: "Quality Gate 3"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-9"
+      agents:
+        - "adv-scorer-003"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  strategy: "PHASE_AND_QG"
+  # Checkpoint at: phase complete, QG complete (pass or fail), manual
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 5
+    phases_percent: 0
+    quality_gates_passed: 0
+    quality_gates_total: 3
+    quality_gates_percent: 0
+    agents_executed: 0
+    agents_total: 20
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 20  # 11 phase artifacts + 6 QG artifacts + 3 QG score artifacts
+    artifacts_percent: 0
+
+  quality:
+    qg1_score: null
+    qg2_score: null
+    qg3_score: null
+    qg1_status: "PENDING"
+    qg2_status: "PENDING"
+    qg3_status: "PENDING"
+    quality_gate_pass_rate: 0
+    creator_critic_iterations_phase2: 0
+    creator_critic_iterations_phase4: 0
+    leniency_bias_warning: "adv-scorer agents MUST actively counteract leniency per S-014 rubric"
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Invoke orch-tracker to initialize phase tracking"
+      execution_mode: "SEQUENTIAL"
+
+    - action: "Execute Phase 1: ps-researcher-001 — gap analysis of docs/INSTALLATION.md for FEAT-017"
+      agents: ["ps-researcher-001"]
+      execution_mode: "SEQUENTIAL"
+
+    - action: "Execute Phase 1: nse-requirements-001 — FEAT-018 requirements definition"
+      agents: ["nse-requirements-001"]
+      execution_mode: "SEQUENTIAL"
+      depends_on: "ps-researcher-001 complete"
+
+  subsequent:
+    - action: "Complete Phase 2: ps-architect-001 (draft) + ps-critic-001 (3+ iteration review)"
+      depends_on: "Phase 1 complete"
+    - action: "Run Quality Gate 1: adv-executor-001/002 → adv-scorer-001"
+      depends_on: "Phase 2 complete"
+    - action: "Execute Phase 3 if QG-1 PASS"
+      depends_on: "QG-1 PASS"
+    - action: "Execute Phase 4 fan-out + fan-in"
+      depends_on: "Phase 3 complete"
+    - action: "Run Quality Gate 2"
+      depends_on: "Phase 4 complete"
+    - action: "Execute Phase 5: verification + synthesis"
+      depends_on: "QG-2 PASS"
+    - action: "Run Quality Gate 3 — final scoring"
+      depends_on: "Phase 5 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow initialized — Phase 1 ready to execute"
+  next_step: "Execute Phase 1 agents (ps-researcher-001, then nse-requirements-001)"
+
+  files_to_read:
+    - "orchestration/epic001-docs-20260218-001/ORCHESTRATION_PLAN.md"  # Strategic context
+    - "orchestration/epic001-docs-20260218-001/ORCHESTRATION.yaml"      # This file — machine-readable state
+
+  cross_session_portable: true
+  ephemeral_references: false
