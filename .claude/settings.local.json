@@ -47,7 +47,10 @@
       "Bash(find:*)",
       "Bash(git log:*)",
       "Bash(ls:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(uv run pyright:*)",
+      "Bash(uv run:*)",
+      "Skill(jerry:transcript)"
     ]
   },
   "hooks": {

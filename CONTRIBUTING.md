@@ -173,6 +173,35 @@ jerry/
 └── docs/                 # Documentation
 ```
 
+## Reporting Windows Issues
+
+If you encounter a problem that only occurs on Windows, please use the dedicated [Windows Compatibility issue template](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml). This helps the team triage platform-specific issues separately from general bugs.
+
+**What to include:**
+- Windows version and shell (PowerShell, Git Bash, CMD)
+- `uv --version` and `claude --version` output
+- Steps to reproduce the issue
+- Error messages or unexpected behavior
+
+Even minor issues are valuable — they help us identify portability gaps that automated testing may miss.
+
+## Submitting Feature Requests
+
+Have an idea for Jerry? Use the [Feature Request issue template](https://github.com/geekatron/jerry/issues/new?template=feature-request.yml) to submit it. The template fields map directly to our internal work tracking structure, so the more detail you provide, the faster we can evaluate and prioritize your request.
+
+**Key fields:**
+
+| Field | Purpose | Required |
+|-------|---------|----------|
+| Feature Title | A concise name for the feature | Yes |
+| Summary | What does it do and why is it useful? | Yes |
+| Problem or Use Case | What problem does this solve? | Yes |
+| Expected Benefit | Frame as: "We believe [feature] will result in [outcome]" | No |
+| Suggested Acceptance Criteria | Testable conditions for "done" | No |
+| Suggested Priority | How important is this to your workflow? | Yes |
+
+Feature requests are reviewed and, if accepted, added to the project backlog as tracked work items.
+
 ## Questions?
 
 - Check `CLAUDE.md` for AI assistant context

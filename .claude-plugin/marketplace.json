@@ -1,5 +1,5 @@
 {
-  "name": "jerry",
+  "name": "jerry-framework",
   "version": "1.0.0",
   "description": "Jerry Framework - Claude Code plugin for behavior and workflow guardrails with knowledge accrual",
   "owner": {
@@ -8,7 +8,7 @@
   },
   "plugins": [
     {
-      "name": "jerry-framework",
+      "name": "jerry",
       "description": "Adds structured problem-solving, work tracking, and knowledge management capabilities. Includes 8 specialized agents (researcher, analyst, architect, etc.), NASA Systems Engineering processes, and multi-agent orchestration.",
       "source": "./",
       "version": "0.2.0",

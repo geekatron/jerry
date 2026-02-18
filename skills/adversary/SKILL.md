@@ -207,6 +207,8 @@ All 10 strategy templates in `.context/templates/adversarial/` are created by se
 | `s-013-inversion.md` | EN-808 | Created by EN-808 |
 | `s-014-llm-as-judge.md` | EN-803 | Created by EN-803 |
 
+**Naming Convention:** Templates follow the pattern `s-{NNN}-{slug}.md` where `{NNN}` is the strategy ID from the quality-enforcement SSOT and `{slug}` is a hyphenated descriptor (e.g., `s-002-devils-advocate.md`). These are static reference documents versioned alongside the codebase — they are not dynamically generated.
+
 **Fallback behavior:** If a template file is not found, adv-executor MUST:
 1. Emit a WARNING to the orchestrator with the missing template path
 2. Request the corrected path from the orchestrator
@@ -251,8 +253,6 @@ All strategies use standardized templates from `.context/templates/adversarial/`
 | `s-012-fmea.md` | S-012 FMEA | Failure Mode and Effects Analysis |
 | `s-013-inversion.md` | S-013 Inversion Technique | Invert key claims to find blind spots |
 | `s-014-llm-as-judge.md` | S-014 LLM-as-Judge | Rubric-based quality scoring |
-
-**Note:** Strategy templates are static reference documents, not dynamically generated. They are versioned in `.context/templates/adversarial/` alongside the codebase.
 
 ### Criticality-Based Strategy Selection
 

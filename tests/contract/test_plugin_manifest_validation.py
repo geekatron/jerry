@@ -452,7 +452,7 @@ class TestActualMarketplaceManifest:
         """Test that the actual marketplace.json uses the keywords field.
 
         Contract: Per TASK-001, the marketplace.json should include
-        keywords for the jerry-framework plugin.
+        keywords for the jerry plugin.
         """
         # Arrange
         marketplace_path = project_root / ".claude-plugin" / "marketplace.json"
@@ -462,10 +462,10 @@ class TestActualMarketplaceManifest:
         plugins = marketplace_data.get("plugins", [])
         assert len(plugins) > 0, "marketplace.json has no plugins"
 
-        jerry_plugin = next((p for p in plugins if p.get("name") == "jerry-framework"), None)
+        jerry_plugin = next((p for p in plugins if p.get("name") == "jerry"), None)
 
         # Assert
-        assert jerry_plugin is not None, "jerry-framework plugin not found"
-        assert "keywords" in jerry_plugin, "jerry-framework plugin missing keywords"
+        assert jerry_plugin is not None, "jerry plugin not found"
+        assert "keywords" in jerry_plugin, "jerry plugin missing keywords"
         assert isinstance(jerry_plugin["keywords"], list), "keywords must be an array"
         assert len(jerry_plugin["keywords"]) > 0, "keywords array is empty"

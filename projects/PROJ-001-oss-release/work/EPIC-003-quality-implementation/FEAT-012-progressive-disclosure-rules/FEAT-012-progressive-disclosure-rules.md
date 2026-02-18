@@ -9,12 +9,12 @@ PURPOSE: Restructure .context/rules/ into tiered progressive disclosure architec
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-16
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-17
 > **Parent:** EPIC-003
 > **Owner:** —
 > **Target Sprint:** —
@@ -126,12 +126,12 @@ Restructure `.context/rules/` files from a naive token-optimized format (enforce
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| EN-901 | Enabler | Rules File Thinning | **completed** (superseded by EN-701) | high | 5 |
-| EN-902 | Enabler | Companion Guide Files | pending | high | 8 |
-| EN-903 | Enabler | Code Pattern Extraction | pending | medium | 5 |
-| EN-904 | Enabler | Path Scoping Implementation | pending | medium | 3 |
-| EN-905 | Enabler | Bootstrap Exclusion & Validation | pending | high | 3 |
-| EN-906 | Enabler | Fidelity Verification & Cross-Reference Testing | pending | critical | 5 |
+| EN-901 | Enabler | Rules File Thinning | done (superseded by EN-701) | high | 5 |
+| EN-902 | Enabler | Companion Guide Files | done | high | 8 |
+| EN-903 | Enabler | Code Pattern Extraction | done | medium | 5 |
+| EN-904 | Enabler | Path Scoping Implementation | done | medium | 3 |
+| EN-905 | Enabler | Bootstrap Exclusion & Validation | done | high | 3 |
+| EN-906 | Enabler | Fidelity Verification & Cross-Reference Testing | done | critical | 5 |
 
 ### Work Item Links
 
@@ -152,10 +152,10 @@ Restructure `.context/rules/` files from a naive token-optimized format (enforce
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [###.................] 17% (1/6 completed)             |
-| Tasks:     [....................] 0% (0/32 completed)             |
+| Enablers:  [####################] 100% (6/6 completed)            |
+| Effort:    [####################] 100% (29/29 points)             |
 +------------------------------------------------------------------+
-| Overall:   [##..................] ~10%                              |
+| Overall:   [####################] 100%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -164,10 +164,10 @@ Restructure `.context/rules/` files from a naive token-optimized format (enforce
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 6 |
-| **Completed Enablers** | 1 (EN-901 superseded by EN-701) |
+| **Completed Enablers** | 6 |
 | **Total Effort (points)** | 29 |
-| **Completed Effort** | 5 |
-| **Completion %** | 17% |
+| **Completed Effort** | 29 |
+| **Completion %** | 100% |
 
 ---
 
@@ -197,6 +197,7 @@ Restructure `.context/rules/` files from a naive token-optimized format (enforce
 |------|--------|--------|-------|
 | 2026-02-16 | Claude | pending | Feature created. Addresses naive token optimization from EN-702 that deleted educational content. Implements Strategies 1+2+3 (Progressive Disclosure + Path Scoping + Companion Files). AE-002 auto-escalation: C3 minimum (touches .context/rules/). |
 | 2026-02-16 | Claude | pending | Moved from EPIC-002 to EPIC-003. FEAT-012 is implementation work; EPIC-002 is research/design, EPIC-003 is implementation. EN-901 (Rules File Thinning) partially superseded by EN-701 — remaining enablers EN-902–906 are new work. |
+| 2026-02-17 | Claude | done | Retroactive closure: all 6 enablers verified as delivered. EN-902: 5 guides (5,002 lines). EN-903: 49 pattern files (6 .py + 41 .md + README + CATALOG). EN-904: 3 rule files path-scoped. EN-905: bootstrap excludes guides. EN-906: 21/21 E2E tests pass (`test_progressive_disclosure_crossrefs.py` + `test_bootstrap_guides_exclusion.py`). |
 
 ---
 

@@ -33,7 +33,7 @@
 |----|-------|--------|----------|
 | [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
-| [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | in_progress | critical |
+| [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -61,6 +61,7 @@
 | [BUG-001](./work/EPIC-003-quality-implementation/BUG-001-pr13-ci-pipeline-failures/BUG-001-pr13-ci-pipeline-failures.md) | PR #13 CI Pipeline Failures | completed | critical | EPIC-003 |
 | [BUG-002](./work/EPIC-003-quality-implementation/BUG-002-hook-schema-validation-failures/BUG-002-hook-schema-validation-failures.md) | Hook JSON Schema Validation Failures | completed | critical | EPIC-003 |
 | [BUG-003](./work/EPIC-003-quality-implementation/BUG-003-ci-pipeline-proj002-missing-dirs/BUG-003-ci-pipeline-proj002-missing-dirs.md) | CI Pipeline Failures — PROJ-002 Missing Git-Tracked Directories | completed | high | EPIC-003 |
+| [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | completed | high | EPIC-001 |
 
 ---
 
@@ -74,6 +75,7 @@
 | [DEC-001](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/FEAT-003--DEC-001-navigation-table-standard.md) | Navigation Table Standard | accepted | tactical | FEAT-003 |
 | [DEC-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/DEC-001-precommit-installation-strategy.md) | Pre-commit Installation Strategy | accepted | tactical | EN-004 |
 | [DEC-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/DEC-002-pytest-hook-file-type-coverage.md) | Pytest Hook File Type Coverage | accepted | tactical | EN-004 |
+| [DEC-004](./work/EPIC-001-oss-release/EPIC-001--DEC-004-post-release-planning-decisions.md) | Post-Release Planning Decisions (OSX-Primary, Optimization Deferred, Installation Model) | accepted | strategic | EPIC-001 |
 
 > Decision details (individual D-001, D-002, etc.) live in the respective decision files.
 
@@ -116,9 +118,10 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | — | FEAT-015 (License Migration) COMPLETE. 4/4 features done, 26/26 enablers done. |
+| EPIC-001 | OSS Release Preparation | 2026-02-18 | **CLOSED.** 7/7 features, 37/37 enablers, 15/15 bugs. All quality gates PASS. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
-| EPIC-003 | Quality Framework Implementation | — | IN PROGRESS: 4/6 features done (FEAT-008/009/010/011), FEAT-012 + FEAT-014 pending. 73% complete. |
+| EPIC-003 | Quality Framework Implementation | 2026-02-17 | COMPLETE: 6/6 features (FEAT-008/009/010/011/012/014), 45/45 enablers, 3/3 bugs. Quality framework fully implemented with 5-layer enforcement, adversarial strategies, progressive disclosure, and framework synchronization. |
+| FEAT-012 (EPIC-003) | Progressive Disclosure Rules Architecture | 2026-02-17 | Retroactive closure: 6/6 enablers done (EN-901-906). 5 companion guides (5,002 lines), 49 pattern files, 3 path-scoped rules, bootstrap exclusion, 21 E2E fidelity tests. |
 | EN-501 | FEAT-003 Retroactive Quality Review | 2026-02-16 | Score 0.949 (3 iterations). 16 fixed, 4 accepted, 3 N/A, 2 info. |
 | EN-502 | Bootstrap Cross-Platform Validation | 2026-02-16 | Score 0.951 (4 iterations). 47 tests passing. All HIGH resolved. |
 | FEAT-006 | EPIC-001 Retroactive Quality Review | 2026-02-16 | All 5 enablers complete (EN-501: 0.949, EN-502: 0.951, EN-503/504/505 closed). |
@@ -126,6 +129,9 @@
 | BUG-002 (EPIC-003) | Hook JSON Schema Validation Failures | 2026-02-17 | 5-phase orchestration: 7 root causes fixed, 8 JSON schemas created, 31 compliance tests + 32 subagent_stop tests + 5 rm variant tests. C4 tournament PASS (0.9355). |
 | BUG-003 (EPIC-003) | CI Pipeline Failures — PROJ-002 Missing Dirs | 2026-02-17 | Added `.gitkeep` to `synthesis/` and `analysis/` in PROJ-002. 3 root causes (empty dirs not git-tracked). 105 project validation tests pass. |
 | FEAT-015 (EPIC-001) | License Migration MIT to Apache 2.0 | 2026-02-17 | 6 enablers (EN-930-935), 14 effort pts. 4-phase orchestration, 4 quality gates PASS (0.941, 0.9505, 0.935, 0.9335). 404 .py files SPDX headers. CI enforcement. |
+| FEAT-017 (EPIC-001) | Installation Instructions Modernization | 2026-02-18 | 3 enablers (EN-939-941), 7 effort pts. Orchestration epic001-docs-20260218-001. QG-1 PASS (0.9220). docs/INSTALLATION.md fully rewritten: archive refs removed, SSH + marketplace + public repo paths documented. |
+| FEAT-018 (EPIC-001) | User Documentation — Runbooks & Playbooks | 2026-02-18 | 3 enablers (EN-942-944), 10 effort pts. Orchestration epic001-docs-20260218-001. QG-2 PASS (0.926), QG-3 PASS (0.937). Created: docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. |
+| BUG-004 (EPIC-001) | Plugin Uninstall Fails — Name/Scope Mismatch | 2026-02-18 | RC-1: plugin.json name `jerry` vs marketplace.json plugin entry `jerry-framework`. Fix: align marketplace entry to `jerry`, marketplace name stays `jerry-framework`. DEC-005: `jerry@jerry-framework` naming scheme. 3 commits, all 3195 tests pass. AC-1–4 deferred to post-merge manual verification. |
 
 ---
 
@@ -182,8 +188,17 @@
 | 2026-02-17 | Claude | BUG-003 created and RESOLVED under EPIC-003: CI Pipeline Failures — PROJ-002 missing git-tracked directories. Added `.gitkeep` to `synthesis/` and `analysis/`. 105 project validation tests pass locally. |
 | 2026-02-17 | Claude | **WTI-003 integrity fix:** FEAT-012 (Progressive Disclosure) and FEAT-014 (Framework Sync) had "completed" headers but ~10% and 0% actual progress. Reverted to "pending". EPIC-003 reverted from "completed" to "in_progress" (67%, 4/6 features). |
 | 2026-02-17 | Claude | EPIC-001 REOPENED: FEAT-015 (License Migration MIT to Apache 2.0) created with 6 enablers (EN-930–935), 14 effort points. Licensing explicitly in PLAN.md scope. EPIC-001 now 4 features (3 done, 1 pending). |
+| 2026-02-18 | Claude | FEAT-017 and FEAT-018 completed via orchestration workflow epic001-docs-20260218-001 (5 phases, 38 agents, 3 QGs: 0.9220, 0.926, 0.937). EPIC-001 CLOSED: 7/7 features, 37/37 enablers, 15/15 bugs. All deliverables quality-gated. |
 | 2026-02-17 | Claude | EN-934 CLOSED: Dependency License Compatibility Audit complete. QG-1 PASS (0.941, 3 iterations: 0.825→0.916→0.941). All 47 installed + 4 declared-but-uninstalled packages Apache 2.0 compatible. Phase 2 (EN-930, EN-931, EN-933) execution started. |
+| 2026-02-17 | Claude | FEAT-012 CLOSED (retroactive): All 6 enablers verified as delivered. Work was completed in prior sessions but worktracker not updated. EN-902 (5 guides, 5,002 lines), EN-903 (49 pattern files), EN-904 (3 path-scoped rules), EN-905 (bootstrap excludes guides), EN-906 (21 E2E fidelity tests pass). EPIC-003 now 5/6 features done. |
+| 2026-02-17 | Claude | FEAT-014 EN-925–928 CLOSED (retroactive): 4/5 enablers verified as delivered. EN-925: AGENTS.md (33 agents, 6 families). EN-926: H-22 triggers + quality-enforcement.md Implementation section. EN-927: architecture/SKILL.md (464), bootstrap/SKILL.md (229), shared/README.md (302). EN-928: 109/109 tests pass. EN-929 (documentation cleanup) still pending. |
+| 2026-02-17 | Claude | EN-929 CLOSED via orchestration (en929-doccleanup-20260217-001): 2/5 tasks executed (naming convention, agent dir READMEs), 3/5 N/A (orchestration ref already exists, H-16 already present, "When NOT to Use" already comprehensive). FEAT-014 CLOSED: 5/5 enablers, 18/18 points. EPIC-003 now 6/6 features done. |
+| 2026-02-17 | Claude | **EPIC-003 CLOSED.** 6/6 features, 45/45 enablers, 3/3 bugs resolved. Quality framework fully implemented: 5-layer enforcement (L1-L5), AST-based PreToolUse engine, context reinforcement hooks, adversarial strategies (/adversary skill), progressive disclosure rules, framework synchronization. All acceptance criteria met. |
+| 2026-02-17 | Claude | FEAT-015 completed (License Migration). 3 new features created from transcript packet analysis: FEAT-016 (README & Docs, 3 EN, 5 pts), FEAT-017 (Installation Instructions, 3 EN, 7 pts), FEAT-018 (Runbooks/Playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |
+
+| 2026-02-18 | Claude | BUG-004 created under EPIC-001: Plugin Uninstall Fails — Name/Scope Mismatch. Two errors: (1) "Plugin jerry not found in marketplace" on detail screen, (2) `Failed to uninstall: Plugin "jerry@jerry" is not installed in user scope`. Three root causes: name resolution mismatch (plugin.json says `jerry-framework` but UI resolves to `jerry`), possible scope mismatch, possibly lost marketplace registration. Also found: plugin.json license still says MIT. EPIC-001 reopened. |
+| 2026-02-18 | Claude | BUG-004 CLOSED. RC-1 confirmed: plugin.json name (`jerry`) vs marketplace.json plugin entry name (`jerry-framework`). DEC-005: final naming `jerry@jerry-framework` (follows `context7@claude-plugins-official` pattern). 3 commits (`4931848`, `b3d9919`, `ebcaad7`). All tests pass. PR #19 updated. AC-1–4 deferred to post-merge manual plugin reinstall. |
 
 ---
 
-*Last Updated: 2026-02-17*
+*Last Updated: 2026-02-18*
