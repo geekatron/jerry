@@ -93,7 +93,10 @@ jobs:
         run: pyright src/
 
       - name: Run tests
-        run: pytest -v --tb=short
+        run: |
+          # Exclude subprocess tests (require uv) and llm tests (require API keys)
+          # Matches ci.yml test-pip job marker exclusions
+          pytest -m "not subprocess and not llm" -v --tb=short
 
   # ===========================================================================
   # Build Plugin Archive
