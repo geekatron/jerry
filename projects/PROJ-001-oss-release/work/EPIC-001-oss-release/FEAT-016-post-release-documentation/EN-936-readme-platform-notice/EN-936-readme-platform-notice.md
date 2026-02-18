@@ -1,13 +1,13 @@
 # EN-936: Update README with OSX-Primary Platform Notice
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-016
 > **Owner:** ---
 > **Effort:** 2
@@ -68,10 +68,10 @@ Sets accurate user expectations and channels Windows users toward productive iss
 
 ### Definition of Done
 
-- [ ] README.md contains "Platform Support" section
-- [ ] Section clearly states OSX-primary status
-- [ ] Section mentions Windows portability as in-progress
-- [ ] Section encourages Windows issue filing
+- [x] README.md contains "Platform Support" section
+- [x] Section clearly states OSX-primary status
+- [x] Section mentions Windows portability as in-progress
+- [x] Section encourages Windows issue filing
 
 **Transcript Citation:**
 > "one of the tasks that we need to deal with is the fact that we need to update the README to indicate that this project was primarily built for OSX and we are working on platform portability support, namely Windows."
@@ -84,3 +84,4 @@ Sets accurate user expectations and channels Windows users toward productive iss
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Created from transcript ACT-001 (confidence 0.95) |
+| 2026-02-18 | Claude | done | Platform Support section added to README.md with OSX-primary designation, Windows in-progress status, and link to issue template |

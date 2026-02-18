@@ -1,13 +1,13 @@
 # EN-938: Add Skill/Agent Optimization Disclaimer
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-016
 > **Owner:** ---
 > **Effort:** 1
@@ -67,10 +67,10 @@ Transparency about known limitations builds trust and sets expectations. Users u
 
 ### Definition of Done
 
-- [ ] Disclaimer added to documentation (README or dedicated section)
-- [ ] Disclaimer mentions skill/agent definitions are not yet optimized
-- [ ] Disclaimer states optimization is on the roadmap for upcoming releases
-- [ ] No specific dates or release numbers promised
+- [x] Disclaimer added to documentation (README or dedicated section)
+- [x] Disclaimer mentions skill/agent definitions are not yet optimized
+- [x] Disclaimer states optimization is on the roadmap for upcoming releases
+- [x] No specific dates or release numbers promised
 
 **Transcript Citation:**
 > "So we would like to put a disclaimer that is in the roadmap to ensure that the skills and agent definitions are optimized."
@@ -83,3 +83,4 @@ Transparency about known limitations builds trust and sets expectations. Users u
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Created from transcript ACT-003 (confidence 0.92) |
+| 2026-02-18 | Claude | done | "Known Limitations" section added to README.md with skill/agent optimization disclaimer. No dates promised. |

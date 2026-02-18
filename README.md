@@ -75,6 +75,25 @@ After installation, run `/plugin` in Claude Code and check the **Installed** tab
 
 See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions and troubleshooting.
 
+## Platform Support
+
+Jerry is **primarily developed and tested on macOS**. We are actively working on cross-platform portability, with Windows support as the immediate priority.
+
+| Platform | Status |
+|----------|--------|
+| **macOS** | Primary — fully supported |
+| **Linux** | Expected to work — not regularly tested |
+| **Windows** | In progress — core functionality works, edge cases may exist |
+
+**Windows users:** We actively encourage you to [file issues](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml) for any platform-specific problems you encounter. Your reports directly drive portability improvements.
+
+> Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. See [CONTRIBUTING.md](CONTRIBUTING.md) for Windows-specific development notes.
+
+## Known Limitations
+
+- **Skill and agent definitions are not yet optimized.** Current definitions are comprehensive but verbose. Optimization for token efficiency and best-practice alignment is on the roadmap for upcoming releases.
+- **Windows portability is in progress.** Some hooks and scripts may behave differently on Windows. See [Platform Support](#platform-support) above.
+
 ## Using Jerry
 
 Jerry provides **skills**—natural language interfaces you invoke with slash commands:

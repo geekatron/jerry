@@ -61,7 +61,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-002 | Research and Preparation | done | high | 100% |
 | FEAT-003 | CLAUDE.md Optimization | done | critical | 100% |
 | FEAT-015 | License Migration (MIT to Apache 2.0) | done | high | 100% |
-| FEAT-016 | Post-Release README & Documentation Updates | pending | high | 0% |
+| FEAT-016 | Post-Release README & Documentation Updates | done | high | 100% |
 | FEAT-017 | Installation Instructions Modernization | pending | high | 0% |
 | FEAT-018 | User Documentation — Runbooks & Playbooks | pending | medium | 0% |
 
@@ -85,12 +85,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [###########.........] 57% (4/7 completed)             |
-| Enablers:  [##############......] 69% (25/34 completed)           |
+| Features:  [##############......] 71% (5/7 completed)             |
+| Enablers:  [################....] 82% (28/34 completed)           |
 | Bugs:      [####################] 100% (15/15 completed)          |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [#############.......] ~65%                            |
+| Overall:   [###############.....] ~75%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -99,11 +99,11 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 7 |
-| **Completed Features** | 4 (FEAT-001, FEAT-002, FEAT-003, FEAT-015) |
-| **Pending Features** | 3 (FEAT-016, FEAT-017, FEAT-018) |
-| **Feature Completion %** | 57% |
+| **Completed Features** | 5 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016) |
+| **Pending Features** | 2 (FEAT-017, FEAT-018) |
+| **Feature Completion %** | 71% |
 | **Total Enablers** | 34 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 3 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
-| **Completed Enablers** | 25 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015) |
+| **Completed Enablers** | 28 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 3 FEAT-016) |
 | **Total Effort (new features)** | 22 (5 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |

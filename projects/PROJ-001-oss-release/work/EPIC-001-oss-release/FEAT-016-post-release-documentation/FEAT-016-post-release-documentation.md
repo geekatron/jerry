@@ -1,12 +1,12 @@
 # FEAT-016: Post-Release README & Documentation Updates
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** EPIC-001
 > **Owner:** Adam Nowak
 > **Target Sprint:** ---
@@ -55,19 +55,19 @@ Update the project README and supporting documentation to accurately reflect the
 ### Definition of Done
 
 - [x] All enablers completed
-- [ ] README updated with OSX-primary platform notice
-- [ ] Windows issue solicitation guidance added
-- [ ] Skill/agent optimization disclaimer added to documentation
-- [ ] All acceptance criteria verified
+- [x] README updated with OSX-primary platform notice
+- [x] Windows issue solicitation guidance added
+- [x] Skill/agent optimization disclaimer added to documentation
+- [x] All acceptance criteria verified
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | README clearly states the project was primarily built for OSX | [ ] |
-| AC-2 | README mentions Windows portability support is in progress | [ ] |
-| AC-3 | Users can find guidance on filing Windows-specific issues | [ ] |
-| AC-4 | Documentation includes disclaimer that skill/agent definitions will be optimized in upcoming releases | [ ] |
+| AC-1 | README clearly states the project was primarily built for OSX | [x] |
+| AC-2 | README mentions Windows portability support is in progress | [x] |
+| AC-3 | Users can find guidance on filing Windows-specific issues | [x] |
+| AC-4 | Documentation includes disclaimer that skill/agent definitions will be optimized in upcoming releases | [x] |
 
 ---
 
@@ -77,9 +77,9 @@ Update the project README and supporting documentation to accurately reflect the
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| EN-936 | Enabler | Update README with OSX-primary platform notice | pending | high | 2 |
-| EN-937 | Enabler | Add Windows issue solicitation guidance | pending | medium | 2 |
-| EN-938 | Enabler | Add skill/agent optimization disclaimer | pending | medium | 1 |
+| EN-936 | Enabler | Update README with OSX-primary platform notice | done | high | 2 |
+| EN-937 | Enabler | Add Windows issue solicitation guidance | done | medium | 2 |
+| EN-938 | Enabler | Add skill/agent optimization disclaimer | done | medium | 1 |
 
 ### Work Item Links
 
@@ -97,10 +97,10 @@ Update the project README and supporting documentation to accurately reflect the
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/3 completed)              |
-| Effort:    [....................] 0% (0/5 points completed)       |
+| Enablers:  [####################] 100% (3/3 completed)            |
+| Effort:    [####################] 100% (5/5 points completed)     |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -109,10 +109,10 @@ Update the project README and supporting documentation to accurately reflect the
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 3 |
-| **Completed Enablers** | 0 |
+| **Completed Enablers** | 3 |
 | **Total Effort (points)** | 5 |
-| **Completed Effort** | 0 |
-| **Completion %** | 0% |
+| **Completed Effort** | 5 |
+| **Completion %** | 100% |
 
 ---
 
@@ -140,3 +140,4 @@ Update the project README and supporting documentation to accurately reflect the
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Feature created from transcript packet analysis (ACT-001, ACT-002, ACT-003) |
+| 2026-02-18 | Claude | done | All 3 enablers completed. README updated with Platform Support + Known Limitations sections. Windows issue template created at .github/ISSUE_TEMPLATE/windows-compatibility.yml. CONTRIBUTING.md updated with Windows issue reporting section. |

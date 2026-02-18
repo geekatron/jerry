@@ -1,0 +1,89 @@
+name: Windows Compatibility Issue
+description: Report a problem specific to running Jerry on Windows
+labels: ["windows", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Jerry's Windows support! Please fill in as much detail as you can.
+
+  - type: input
+    id: os-version
+    attributes:
+      label: Windows Version
+      description: e.g., Windows 11 23H2, Windows 10 22H2
+      placeholder: "Windows 11 23H2"
+    validations:
+      required: true
+
+  - type: input
+    id: shell
+    attributes:
+      label: Shell
+      description: Which shell were you using?
+      placeholder: "PowerShell 7.4, Git Bash, CMD"
+    validations:
+      required: true
+
+  - type: input
+    id: claude-code-version
+    attributes:
+      label: Claude Code Version
+      description: Run `claude --version` to find this
+      placeholder: "1.0.0"
+    validations:
+      required: false
+
+  - type: input
+    id: uv-version
+    attributes:
+      label: uv Version
+      description: Run `uv --version` to find this
+      placeholder: "0.6.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the issue
+      placeholder: "When I run X, I see error Y..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to reproduce the issue
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened (include error messages if applicable)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other details (screenshots, logs, workarounds found)
+    validations:
+      required: false

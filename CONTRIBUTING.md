@@ -173,6 +173,18 @@ jerry/
 └── docs/                 # Documentation
 ```
 
+## Reporting Windows Issues
+
+If you encounter a problem that only occurs on Windows, please use the dedicated [Windows Compatibility issue template](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml). This helps the team triage platform-specific issues separately from general bugs.
+
+**What to include:**
+- Windows version and shell (PowerShell, Git Bash, CMD)
+- `uv --version` and `claude --version` output
+- Steps to reproduce the issue
+- Error messages or unexpected behavior
+
+Even minor issues are valuable — they help us identify portability gaps that automated testing may miss.
+
 ## Questions?
 
 - Check `CLAUDE.md` for AI assistant context

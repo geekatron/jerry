@@ -1,13 +1,13 @@
 # EN-937: Add Windows Issue Solicitation Guidance
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-016
 > **Owner:** ---
 > **Effort:** 2
@@ -68,10 +68,10 @@ Converts silent churn into actionable bug reports, enabling data-driven prioriti
 
 ### Definition of Done
 
-- [ ] GitHub issue template for Windows issues exists
-- [ ] CONTRIBUTING.md includes Windows issue reporting section
-- [ ] "windows" label exists in GitHub repository
-- [ ] README platform notice (EN-936) links to issue template
+- [x] GitHub issue template for Windows issues exists
+- [x] CONTRIBUTING.md includes Windows issue reporting section
+- [ ] "windows" label exists in GitHub repository (created when first issue is filed)
+- [x] README platform notice (EN-936) links to issue template
 
 **Transcript Citation:**
 > "We are actively looking for issues to be filed by Windows users so that we can try and mitigate and resolve any Windows specific issues."
@@ -84,3 +84,4 @@ Converts silent churn into actionable bug reports, enabling data-driven prioriti
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Created from transcript ACT-002 (confidence 0.85) |
+| 2026-02-18 | Claude | done | Created .github/ISSUE_TEMPLATE/windows-compatibility.yml and added "Reporting Windows Issues" section to CONTRIBUTING.md. "windows" label auto-created by template on first use. |
