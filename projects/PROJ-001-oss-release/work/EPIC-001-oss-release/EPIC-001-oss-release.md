@@ -1,12 +1,12 @@
 # EPIC-001: OSS Release Preparation
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-10
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** —
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -62,8 +62,8 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-003 | CLAUDE.md Optimization | done | critical | 100% |
 | FEAT-015 | License Migration (MIT to Apache 2.0) | done | high | 100% |
 | FEAT-016 | Post-Release README & Documentation Updates | done | high | 100% |
-| FEAT-017 | Installation Instructions Modernization | pending | high | 0% |
-| FEAT-018 | User Documentation — Runbooks & Playbooks | pending | medium | 0% |
+| FEAT-017 | Installation Instructions Modernization | done | high | 100% |
+| FEAT-018 | User Documentation — Runbooks & Playbooks | done | medium | 100% |
 
 ### Feature Links
 
@@ -85,12 +85,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [##############......] 71% (5/7 completed)             |
-| Enablers:  [##################..] 86% (31/36 completed)           |
+| Features:  [####################] 100% (7/7 completed)            |
+| Enablers:  [####################] 100% (37/37 completed)          |
 | Bugs:      [####################] 100% (15/15 completed)          |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [###############.....] ~75%                            |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -99,11 +99,11 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 7 |
-| **Completed Features** | 5 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016) |
-| **Pending Features** | 2 (FEAT-017, FEAT-018) |
-| **Feature Completion %** | 71% |
-| **Total Enablers** | 36 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 5 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
-| **Completed Enablers** | 31 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 5 FEAT-016 + 1 FEAT-017) |
+| **Completed Features** | 7 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018) |
+| **Pending Features** | 0 |
+| **Feature Completion %** | 100% |
+| **Total Enablers** | 37 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 6 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
+| **Completed Enablers** | 37 |
 | **Total Effort (new features)** | 24 (9 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
@@ -139,3 +139,4 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-17 | Claude | in_progress | FEAT-015 completed (license migration). 3 new features created from post-release transcript packet: FEAT-016 (README & docs, 3 EN, 5 pts), FEAT-017 (installation instructions, 3 EN, 7 pts), FEAT-018 (runbooks/playbooks, 3 EN, 10 pts). DEC-004 recorded (3 decisions: OSX-primary, optimization deferred, installation model shift). EPIC-001 now 7 features (4 done, 3 pending), 34 enablers (25 done, 9 pending). |
 | 2026-02-18 | Claude | in_progress | FEAT-016 completed. EN-936/937/938 done (README platform notice, Windows issue template, optimization disclaimer). EN-945 done (macOS + Linux issue templates, README links all 3 platforms). EPIC-001 now 5/7 features done, 29/35 enablers, ~75%. |
 | 2026-02-18 | Claude | in_progress | EN-946 complete (feature-request.yml worktracker-aligned, config.yml, CONTRIBUTING.md updated). FEAT-016 re-closed at 5/5 enablers, 9/9 points. EPIC-001 now 5/7 features (71%), 31/36 enablers (86%), ~75%. |
+| 2026-02-18 | Claude | done | FEAT-017 and FEAT-018 completed via orchestration workflow epic001-docs-20260218-001 (5 phases, 38 agents, 3 QGs). QG-1: 0.9220, QG-2: 0.926, QG-3: 0.937 — all PASS. Deliverables: docs/INSTALLATION.md (rewritten), docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. All 7 features, 37 enablers, 15 bugs complete. **EPIC-001 CLOSED.** |

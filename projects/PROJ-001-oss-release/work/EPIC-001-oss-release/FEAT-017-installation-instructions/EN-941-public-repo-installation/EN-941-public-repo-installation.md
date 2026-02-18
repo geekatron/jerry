@@ -1,13 +1,13 @@
 # EN-941: Document Public Repository Installation Path
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-017
 > **Owner:** ---
 > **Effort:** 2

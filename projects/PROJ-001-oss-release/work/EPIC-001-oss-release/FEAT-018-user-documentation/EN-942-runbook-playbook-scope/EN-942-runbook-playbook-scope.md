@@ -1,13 +1,13 @@
 # EN-942: Define Runbook/Playbook Scope and Structure
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** exploration
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-018
 > **Owner:** ---
 > **Effort:** 2

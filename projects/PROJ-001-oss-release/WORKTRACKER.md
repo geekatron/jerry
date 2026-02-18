@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
 
@@ -117,7 +117,7 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | — | FEAT-015 (License Migration) COMPLETE. 4/4 features done, 26/26 enablers done. |
+| EPIC-001 | OSS Release Preparation | 2026-02-18 | **CLOSED.** 7/7 features, 37/37 enablers, 15/15 bugs. All quality gates PASS. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
 | EPIC-003 | Quality Framework Implementation | 2026-02-17 | COMPLETE: 6/6 features (FEAT-008/009/010/011/012/014), 45/45 enablers, 3/3 bugs. Quality framework fully implemented with 5-layer enforcement, adversarial strategies, progressive disclosure, and framework synchronization. |
 | FEAT-012 (EPIC-003) | Progressive Disclosure Rules Architecture | 2026-02-17 | Retroactive closure: 6/6 enablers done (EN-901-906). 5 companion guides (5,002 lines), 49 pattern files, 3 path-scoped rules, bootstrap exclusion, 21 E2E fidelity tests. |
@@ -128,6 +128,8 @@
 | BUG-002 (EPIC-003) | Hook JSON Schema Validation Failures | 2026-02-17 | 5-phase orchestration: 7 root causes fixed, 8 JSON schemas created, 31 compliance tests + 32 subagent_stop tests + 5 rm variant tests. C4 tournament PASS (0.9355). |
 | BUG-003 (EPIC-003) | CI Pipeline Failures — PROJ-002 Missing Dirs | 2026-02-17 | Added `.gitkeep` to `synthesis/` and `analysis/` in PROJ-002. 3 root causes (empty dirs not git-tracked). 105 project validation tests pass. |
 | FEAT-015 (EPIC-001) | License Migration MIT to Apache 2.0 | 2026-02-17 | 6 enablers (EN-930-935), 14 effort pts. 4-phase orchestration, 4 quality gates PASS (0.941, 0.9505, 0.935, 0.9335). 404 .py files SPDX headers. CI enforcement. |
+| FEAT-017 (EPIC-001) | Installation Instructions Modernization | 2026-02-18 | 3 enablers (EN-939-941), 7 effort pts. Orchestration epic001-docs-20260218-001. QG-1 PASS (0.9220). docs/INSTALLATION.md fully rewritten: archive refs removed, SSH + marketplace + public repo paths documented. |
+| FEAT-018 (EPIC-001) | User Documentation — Runbooks & Playbooks | 2026-02-18 | 3 enablers (EN-942-944), 10 effort pts. Orchestration epic001-docs-20260218-001. QG-2 PASS (0.926), QG-3 PASS (0.937). Created: docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. |
 
 ---
 
@@ -184,6 +186,7 @@
 | 2026-02-17 | Claude | BUG-003 created and RESOLVED under EPIC-003: CI Pipeline Failures — PROJ-002 missing git-tracked directories. Added `.gitkeep` to `synthesis/` and `analysis/`. 105 project validation tests pass locally. |
 | 2026-02-17 | Claude | **WTI-003 integrity fix:** FEAT-012 (Progressive Disclosure) and FEAT-014 (Framework Sync) had "completed" headers but ~10% and 0% actual progress. Reverted to "pending". EPIC-003 reverted from "completed" to "in_progress" (67%, 4/6 features). |
 | 2026-02-17 | Claude | EPIC-001 REOPENED: FEAT-015 (License Migration MIT to Apache 2.0) created with 6 enablers (EN-930–935), 14 effort points. Licensing explicitly in PLAN.md scope. EPIC-001 now 4 features (3 done, 1 pending). |
+| 2026-02-18 | Claude | FEAT-017 and FEAT-018 completed via orchestration workflow epic001-docs-20260218-001 (5 phases, 38 agents, 3 QGs: 0.9220, 0.926, 0.937). EPIC-001 CLOSED: 7/7 features, 37/37 enablers, 15/15 bugs. All deliverables quality-gated. |
 | 2026-02-17 | Claude | EN-934 CLOSED: Dependency License Compatibility Audit complete. QG-1 PASS (0.941, 3 iterations: 0.825→0.916→0.941). All 47 installed + 4 declared-but-uninstalled packages Apache 2.0 compatible. Phase 2 (EN-930, EN-931, EN-933) execution started. |
 | 2026-02-17 | Claude | FEAT-012 CLOSED (retroactive): All 6 enablers verified as delivered. Work was completed in prior sessions but worktracker not updated. EN-902 (5 guides, 5,002 lines), EN-903 (49 pattern files), EN-904 (3 path-scoped rules), EN-905 (bootstrap excludes guides), EN-906 (21 E2E fidelity tests pass). EPIC-003 now 5/6 features done. |
 | 2026-02-17 | Claude | FEAT-014 EN-925–928 CLOSED (retroactive): 4/5 enablers verified as delivered. EN-925: AGENTS.md (33 agents, 6 families). EN-926: H-22 triggers + quality-enforcement.md Implementation section. EN-927: architecture/SKILL.md (464), bootstrap/SKILL.md (229), shared/README.md (302). EN-928: 109/109 tests pass. EN-929 (documentation cleanup) still pending. |
@@ -193,4 +196,4 @@
 
 ---
 
-*Last Updated: 2026-02-17*
+*Last Updated: 2026-02-18*

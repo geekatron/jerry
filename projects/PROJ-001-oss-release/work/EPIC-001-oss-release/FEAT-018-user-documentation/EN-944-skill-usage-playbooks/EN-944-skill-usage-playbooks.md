@@ -1,13 +1,13 @@
 # EN-944: Create Skill Usage Playbooks
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** high
 > **Enabler Type:** compliance
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-018
 > **Owner:** ---
 > **Effort:** 5

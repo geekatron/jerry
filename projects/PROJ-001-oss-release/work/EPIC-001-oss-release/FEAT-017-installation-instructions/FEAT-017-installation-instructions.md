@@ -1,12 +1,12 @@
 # FEAT-017: Installation Instructions Modernization
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-17
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** EPIC-001
 > **Owner:** Adam Nowak
 > **Target Sprint:** ---
@@ -55,19 +55,19 @@ Rewrite the installation instructions to move away from the legacy private archi
 ### Definition of Done
 
 - [x] All enablers completed
-- [ ] Legacy archive-based instructions removed or deprecated
-- [ ] Collaborator-based installation documented (SSH key + marketplace)
-- [ ] Public repository installation path documented (future state)
-- [ ] All acceptance criteria verified
+- [x] Legacy archive-based instructions removed or deprecated
+- [x] Collaborator-based installation documented (SSH key + marketplace)
+- [x] Public repository installation path documented (future state)
+- [x] All acceptance criteria verified
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | No references to private archive distribution model remain in active instructions | [ ] |
-| AC-2 | Step-by-step guide for collaborator installation (SSH key + GitHub + marketplace) | [ ] |
-| AC-3 | Documentation for future public repo installation scenario | [ ] |
-| AC-4 | Claude Code marketplace integration instructions included | [ ] |
+| AC-1 | No references to private archive distribution model remain in active instructions | [x] |
+| AC-2 | Step-by-step guide for collaborator installation (SSH key + GitHub + marketplace) | [x] |
+| AC-3 | Documentation for future public repo installation scenario | [x] |
+| AC-4 | Claude Code marketplace integration instructions included | [x] |
 
 ---
 
@@ -77,9 +77,9 @@ Rewrite the installation instructions to move away from the legacy private archi
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| EN-939 | Enabler | Remove/deprecate archive-based installation instructions | pending | high | 2 |
-| EN-940 | Enabler | Document collaborator-based installation (SSH + marketplace) | pending | high | 3 |
-| EN-941 | Enabler | Document public repository installation path | pending | medium | 2 |
+| EN-939 | Enabler | Remove/deprecate archive-based installation instructions | done | high | 2 |
+| EN-940 | Enabler | Document collaborator-based installation (SSH + marketplace) | done | high | 3 |
+| EN-941 | Enabler | Document public repository installation path | done | medium | 2 |
 
 ### Work Item Links
 
@@ -97,10 +97,10 @@ Rewrite the installation instructions to move away from the legacy private archi
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/3 completed)              |
-| Effort:    [....................] 0% (0/7 points completed)       |
+| Enablers:  [####################] 100% (3/3 completed)            |
+| Effort:    [####################] 100% (7/7 points completed)     |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -109,10 +109,10 @@ Rewrite the installation instructions to move away from the legacy private archi
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 3 |
-| **Completed Enablers** | 0 |
+| **Completed Enablers** | 3 |
 | **Total Effort (points)** | 7 |
-| **Completed Effort** | 0 |
-| **Completion %** | 0% |
+| **Completed Effort** | 7 |
+| **Completion %** | 100% |
 
 ---
 
@@ -140,3 +140,4 @@ Rewrite the installation instructions to move away from the legacy private archi
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Feature created from transcript packet analysis (ACT-004, DEC-003, TOP-003) |
+| 2026-02-18 | Claude | done | All 3 enablers complete. Orchestration epic001-docs-20260218-001: QG-1 PASS (0.9220, 5 iterations), QG-3 PASS (0.937). docs/INSTALLATION.md fully rewritten. |
