@@ -34,6 +34,7 @@
 | [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
+| [EPIC-005](./work/EPIC-005-je-ne-sais-quoi/EPIC-005-je-ne-sais-quoi.md) | Je Ne Sais Quoi — The Saucer Boy Spirit | pending | medium |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -64,7 +65,7 @@
 | [BUG-004](./work/EPIC-001-oss-release/BUG-004-plugin-uninstall-name-mismatch/BUG-004-plugin-uninstall-name-mismatch.md) | Plugin Uninstall Fails — Name/Scope Mismatch | completed | high | EPIC-001 |
 | [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | completed | high | EPIC-001 |
 | [BUG-006](./work/EPIC-001-oss-release/BUG-006-version-bump-toml-tag-drift/BUG-006-version-bump-toml-tag-drift.md) | Version Bump Fails — TOML Quoting Bug + Version-Tag Drift | completed | high | EPIC-001 |
-| [BUG-007](./work/EPIC-001-oss-release/BUG-007-pages-build-jekyll-liquid-error/BUG-007-pages-build-jekyll-liquid-error.md) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | pending | high | EPIC-001 |
+| [BUG-007](./work/EPIC-001-oss-release/BUG-007-pages-build-jekyll-liquid-error/BUG-007-pages-build-jekyll-liquid-error.md) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | completed | high | EPIC-001 |
 
 ---
 
@@ -137,6 +138,7 @@
 | BUG-004 (EPIC-001) | Plugin Uninstall Fails — Name/Scope Mismatch | 2026-02-18 | RC-1: plugin.json name `jerry` vs marketplace.json plugin entry `jerry-framework`. Fix: align marketplace entry to `jerry`, marketplace name stays `jerry-framework`. DEC-005: `jerry@jerry-framework` naming scheme. 3 commits, all 3195 tests pass. AC-1–4 deferred to post-merge manual verification. |
 | BUG-005 (EPIC-001) | Version Bump Pipeline Fails on Merge to Main | 2026-02-18 | RC-1: Missing `VERSION_BUMP_PAT` secret — fixed (fine-grained PAT). Branch protection bypass added to "Don't fuck with main" ruleset. E2E verified: version-bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380), release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333). AC-4–6 deferred (enhancements). |
 | BUG-006 (EPIC-001) | Version Bump Fails — TOML Quoting + Tag Drift | 2026-02-18 | RC-1: TOML literal strings — fixed (triple-quoted). RC-2: tag drift — fixed (v0.2.0 tag on `3220a59`). E2E verified: release run [22161063558](https://github.com/geekatron/jerry/actions/runs/22161063558) (v0.2.0), version-bump [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) (0.2.0→0.2.1), release [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) (v0.2.1). All ACs verified. |
+| BUG-007 (EPIC-001) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | 2026-02-18 | `.nojekyll` added via PR #22. Pages build [22162228815](https://github.com/geekatron/jerry/actions/runs/22162228815) SUCCESS. Version bump 0.2.1→0.2.2. Release v0.2.2 created ([run 22162229032](https://github.com/geekatron/jerry/actions/runs/22162229032)). Full pipeline chain verified. |
 
 ---
 
@@ -208,6 +210,8 @@
 | 2026-02-18 | Claude | BUG-006 created under EPIC-001: Version Bump Fails — TOML Quoting Bug + Version-Tag Drift. Two root causes: (1) TOML literal string quoting prevents newline matching in marketplace.json search pattern, (2) version-tag drift (pyproject.toml 0.2.0 vs latest tag v0.0.3). Fix: triple-quoted TOML strings + v0.2.0 tag creation on main HEAD. |
 | 2026-02-18 | Claude | BUG-005 and BUG-006 E2E VERIFIED. Version bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) (0.2.0→0.2.1), release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) (v0.2.1). Branch protection bypass configured. All ACs checked. |
 | 2026-02-18 | Claude | BUG-007 created under EPIC-001: GitHub Pages Build Fails — Jekyll Liquid Syntax Error. Auto-generated "pages build and deployment" workflow fails at Jekyll build step. `{%}` placeholder in `docs/knowledge/exemplars/templates/analysis.md` interpreted as Liquid tag. Fix: add `.nojekyll` to repo root. |
+| 2026-02-18 | Claude | BUG-007 CLOSED. `.nojekyll` merged via PR #22. Pages build [22162228815](https://github.com/geekatron/jerry/actions/runs/22162228815) SUCCESS. Version bump 0.2.1→0.2.2 succeeded. Release v0.2.2 created. Full pipeline chain verified. |
+| 2026-02-17 | Claude | EPIC-005 created: Je Ne Sais Quoi — The Saucer Boy Spirit. 4 features (FEAT-019 through FEAT-022): Framework Voice & Personality, The Jerry Soundtrack, Easter Eggs & Cultural References, DX Delight. Injects Shane McConkey's ethos into Jerry — technically excellent AND wildly fun. Soundtrack curated (23 songs, 4 categories). |
 
 ---
 
