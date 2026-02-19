@@ -53,7 +53,9 @@
       "Bash(python3:*)",
       "Bash(python3:*)",
       "Bash(uv run pyright:*)",
-      "Bash(uv run:*)"
+      "Bash(uv run:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)"
     ]
   },
   "hooks": {
