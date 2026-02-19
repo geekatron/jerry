@@ -77,7 +77,7 @@ pipeline:
   status: "PHASE_3_IN_PROGRESS"
   current_phase: 3
   total_phases: 5
-  progress_percent: 40
+  progress_percent: 50
 
   phases:
     # -------------------------------------------------------------------------
@@ -137,9 +137,9 @@ pipeline:
       started_at: "2026-02-18T11:00:00Z"
       completed_at: null
       quality_gate: "QG-3"
-      tournament_iterations: 1
+      tournament_iterations: 3
       max_iterations: 5
-      current_score: null
+      current_score: 0.89
       passing_score: 0.95
 
       # Sub-agents within the tournament (executed sequentially per H-16 ordering)
@@ -342,8 +342,11 @@ quality_gates:
     status: "IN_PROGRESS"
     iteration_scores:
       1: 0.67    # REJECTED — 5 Critical, 12 Major findings
+      2: 0.82    # REVISE (+0.15) — 0 Critical (all resolved), convergent findings persist
+      3: 0.89    # REVISE (+0.07) — all CF resolved, MF-003 dominant gap (7-strategy convergence)
+      4: 0.92    # PASS H-13 (+0.03) — 0 content Critical, 1 process Critical (timed read), 7 Major (new set, production-execution layer). Below C4 target 0.95.
     score: null   # Final score set when gate passes
-    iterations: 2 # Currently on iteration 2
+    iterations: 5 # Currently on iteration 5 (v5 script in progress — final iteration before circuit breaker)
     max_iterations: 5
     completed_at: null
 
@@ -432,7 +435,7 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-003"
+  latest_id: "CP-006"
   entries:
     - id: "CP-001"
       timestamp: "2026-02-18T10:30:00Z"
@@ -452,6 +455,24 @@ checkpoints:
       description: "Tournament iter 1 REJECTED (0.67). All 10 strategies complete. 5 Critical, 12 Major. Revision cycle initiated — ps-architect producing v2 script."
       recovery_point: "tournament-iteration-2-start"
       score: 0.67
+    - id: "CP-004"
+      timestamp: "2026-02-18T17:04:00Z"
+      trigger: "TOURNAMENT_ITERATION"
+      description: "Tournament iter 2 REVISE (0.82, +0.15). All 10 strategies + composite complete. All 5 Critical from iter-1 resolved. 7 convergent findings persist. v3 script produced."
+      recovery_point: "tournament-iteration-3-start"
+      score: 0.82
+    - id: "CP-005"
+      timestamp: "2026-02-18T17:27:00Z"
+      trigger: "TOURNAMENT_ITERATION"
+      description: "Tournament iter 3 REVISE (0.89, +0.07). All CF resolved. MF-003 dominant gap (7 strategies). Scorer-produced v4 discarded (role violation). ps-architect re-created v4 with all 9 revision items. Iter-4 tournament launching."
+      recovery_point: "tournament-iteration-4-start"
+      score: 0.89
+    - id: "CP-006"
+      timestamp: "2026-02-18T18:30:00Z"
+      trigger: "TOURNAMENT_ITERATION"
+      description: "Tournament iter 4 PASS H-13 (0.92, +0.03). 0 content Criticals. 1 process Critical (timed table read, 4-strategy). 7 Major (production-execution layer). S-014 standalone: 0.94. Below C4 target 0.95. v5 is final iteration before circuit breaker (max 5). ps-architect producing v5 with all 13 revision items."
+      recovery_point: "tournament-iteration-5-start"
+      score: 0.92
 
 # =============================================================================
 # QUALITY TRACKING
@@ -514,8 +535,60 @@ quality:
         - "C-04: No user-outcome statement — cold audience comprehension gap"
         - "C-05: InVideo AI visual directions exceed platform capabilities (5/10 strategies)"
       scorer_artifact: "{base}showcase/phase-3-tournament/iteration-1/adv-scorer-001-composite.md"
-    iterations_used: 1
-    current_iteration: 2
+    iteration_2:
+      composite_score: 0.82
+      verdict: "REVISE"
+      delta: "+0.15"
+      critical_findings: 0
+      major_findings: 7
+      convergent_findings: 7
+      top_issues:
+        - "CF-001 RESOLVED: OVERSIGHT SYSTEM overlay replaced with GUARDRAILS"
+        - "CF-002 RESOLVED: Runtime overrun addressed — 257 words with 10s buffer"
+        - "CF-003 RESOLVED: Before/after user-outcome statement added to Scene 3"
+        - "CF-004 RESOLVED: Constitutional governance scope corrected"
+        - "CF-005 RESOLVED: All 5 unlicensed tracks replaced with mood descriptions"
+        - "PERSISTENT: 'Nobody had a fix for enforcement' unscoped (MF-003)"
+        - "PERSISTENT: Timed table read not conducted"
+      scorer_artifact: "{base}showcase/phase-3-tournament/iteration-2/adv-scorer-002-composite.md"
+    iteration_3:
+      composite_score: 0.89
+      verdict: "REVISE"
+      delta: "+0.07"
+      critical_findings: 1
+      major_findings: 9
+      convergent_findings_resolved: 6
+      convergent_findings_persistent: 1
+      top_issues:
+        - "CF-001-iter3: MF-003 enforcement scope — 'Nobody had a fix' still unscoped (7 strategies)"
+        - "MF: Timed table read not conducted (5 strategies)"
+        - "MF: Music approval has no named deadline (5 strategies)"
+        - "MF: QR code lacks scan-quality criteria (4 strategies)"
+        - "MF: 'Every line written by Claude Code' absolute claim (S-012)"
+      scorer_artifact: "{base}showcase/phase-3-tournament/iteration-3/adv-scorer-003-composite.md"
+      note: "Scorer-produced v4 discarded (role violation). ps-architect re-creating v4 from iter-3 guidance."
+    iteration_4:
+      composite_score: 0.92
+      verdict: "PASS (H-13) — below C4 target 0.95"
+      delta: "+0.03"
+      critical_findings: 0   # Content: 0. Process: 1 (timed table read deferred, 4-strategy convergence)
+      major_findings: 7      # Production-execution layer: [named reviewer], Plan B, Scene 6 WPM, self-assertion, test/version deps, Sources table, meta loop ordering
+      convergent_findings_resolved: 9   # All 9 from iter-3 fully addressed
+      convergent_findings_new: 4        # New iter-4 convergent set (production-execution)
+      top_issues:
+        - "CF-001-iter4 (PROCESS): Timed table read deferred across 2 iterations — 4-strategy convergence (S-002, S-004, S-012, S-013)"
+        - "MF-001-iter4: [named reviewer] placeholder unfilled — 5-strategy convergence"
+        - "MF-002-iter4: Scene 6 per-scene WPM overrun (30 words / 10 sec = 180 WPM)"
+        - "MF-003-iter4: Plan B materials undeveloped — 3-strategy convergence"
+        - "MF-004-iter4: 'Production-grade code' self-assertion — 2-strategy convergence"
+        - "MF-005-iter4: Test count + version verification dependencies absent — 3-strategy"
+        - "MF-006-iter4: Sources/stat citation table absent — 3-strategy"
+        - "MF-007-iter4: Scene 6 meta loop closure penultimate — 2-strategy"
+      scorer_artifact: "{base}showcase/phase-3-tournament/iteration-4/adv-scorer-004-composite.md"
+      s014_standalone: 0.94
+      note: "PASS H-13. Below C4 target 0.95 by 0.03. All content Criticals resolved. v5 is final iteration before circuit breaker (max_iterations=5)."
+    iterations_used: 4
+    current_iteration: 5
     final_status: null      # PASS | REVISE | REJECTED | ESCALATED
 
   workflow_quality:
@@ -532,17 +605,17 @@ metrics:
   execution:
     phases_complete: 2
     phases_total: 5
-    phases_percent: 40
+    phases_percent: 50
     quality_gates_passed: 2
     quality_gates_total: 4
-    agents_executed: 2        # ps-researcher-001, ps-architect-001
+    agents_executed: 34       # ps-researcher, ps-architect, adv-selector + (10 strategies + scorer) x 3 iterations
     agents_total: 14
-    artifacts_created: 2      # research brief, script
-    artifacts_total: 15
+    artifacts_created: 36     # research brief, scripts v1-v4, 30 strategy executions, 3 composites
+    artifacts_total: 45
 
   timing:
     workflow_started: "2026-02-18T10:00:00Z"
-    last_activity: "2026-02-18T11:00:00Z"
+    last_activity: "2026-02-18T18:00:00Z"
     deadline: "2026-02-18T23:59:59Z"
     estimated_completion: "2026-02-18T14:00:00Z"
 
@@ -553,7 +626,13 @@ blockers:
   active: []
 
 issues:
-  resolved: []
+  resolved:
+    - id: "ISS-001"
+      timestamp: "2026-02-18T17:32:00Z"
+      severity: "process"
+      description: "adv-scorer agent produced v4 script (creative output) — role violation. Scorer should only produce composite scores + revision guidance. Discarded scorer-produced v4. Re-created via ps-architect (correct creator agent)."
+      resolution: "Discarded output. Added explicit role-overreach guard to agent prompts in memory. ps-architect re-invoked with proper prompt."
+      preventive_action: "Agent prompts must include 'You MUST NOT produce revised deliverables. Your output is the score report ONLY.' for scorer agents."
 
 # =============================================================================
 # NEXT ACTIONS
@@ -595,9 +674,9 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: "CP-003"
-  current_state: "Phase 3 tournament iteration 1 COMPLETE (REJECTED, 0.67). Revision cycle: ps-architect producing v2 script addressing 5 Critical + 12 Major findings. Iteration 2 tournament pending."
-  next_step: "Wait for v2 script completion, then launch iteration 2 tournament (reduced strategy set or full C4). Score with adv-scorer. Target >= 0.95."
+  last_checkpoint: "CP-005"
+  current_state: "Phase 3 tournament iteration 5 (FINAL) — v5 script in production. Iter-4 scored 0.92 (PASS H-13, below C4 target 0.95). Trajectory: 0.67 -> 0.82 -> 0.89 -> 0.92 -> ?. 13-item revision guidance applied. Circuit breaker triggers after this iteration."
+  next_step: "Complete v5 script. Run all 10 adversarial strategies on v5. Run adv-scorer-005 composite. If >= 0.95: PASS Phase 3, proceed to Phase 4 (Application Materials). If < 0.95: circuit breaker — user decision (accept 0.92 and proceed, or escalate per AE-006)."
 
   files_to_read:
     - "ORCHESTRATION_PLAN.md"    # Strategic context and phase definitions
