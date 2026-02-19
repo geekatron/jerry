@@ -1,12 +1,12 @@
 # EPIC-001: OSS Release Preparation
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-10
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-18
 > **Parent:** —
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -66,7 +66,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-018 | User Documentation — Runbooks & Playbooks | done | medium | 100% |
 | FEAT-023 | Claude Code Birthday Showcase — Promotional Video | done | critical | 100% |
 | FEAT-024 | Public Documentation Site — jerry.geekatron.org | done | high | 100% |
-| FEAT-025 | Go Public (Repository Visibility & Community Health) | in_progress | high | 0% |
+| FEAT-025 | Go Public (Repository Visibility & Community Health) | done | high | 100% |
 
 ### Feature Links
 
@@ -91,12 +91,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [##################  ] 90% (9/10 completed)            |
-| Enablers:  [##################  ] 90% (37/41 completed)           |
-| Bugs:      [################### ] 94% (15/16 completed)           |
+| Features:  [####################] 100% (10/10 completed)          |
+| Enablers:  [####################] 100% (41/41 completed)          |
+| Bugs:      [####################] 100% (19/19 completed)          |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [##################  ] 92%                             |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -105,15 +105,15 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 10 |
-| **Completed Features** | 9 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018, FEAT-023, FEAT-024) |
-| **In Progress Features** | 1 (FEAT-025) |
-| **Feature Completion %** | 90% |
-| **Total Enablers** | 41 (37 completed + 4 FEAT-025) |
-| **Completed Enablers** | 37 |
-| **Total Effort** | 32 (24 prior + 8 FEAT-025) |
+| **Completed Features** | 10 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018, FEAT-023, FEAT-024, FEAT-025) |
+| **Pending Features** | 0 |
+| **Feature Completion %** | 100% |
+| **Total Enablers** | 41 |
+| **Completed Enablers** | 41 |
+| **Total Effort** | 32 |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
-| **Total Bugs (EPIC-001 direct)** | 1 (BUG-004, resolved) |
+| **Total Bugs (EPIC-001 direct)** | 4 (BUG-004, BUG-005, BUG-006, BUG-007, all resolved) |
 
 ---
 

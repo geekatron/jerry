@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
 | ~~EPIC-005~~ | ~~Je Ne Sais Quoi — The Saucer Boy Spirit~~ | migrated | — | *Migrated to PROJ-003* |
@@ -125,7 +125,7 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | 2026-02-18 | **CLOSED.** 7/7 features, 37/37 enablers, 15/15 bugs. All quality gates PASS. |
+| EPIC-001 | OSS Release Preparation | 2026-02-18 | **CLOSED.** 10/10 features, 41/41 enablers, 19/19 bugs. All quality gates PASS. Repository PUBLIC. Community health 100%. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
 | EPIC-003 | Quality Framework Implementation | 2026-02-17 | COMPLETE: 6/6 features (FEAT-008/009/010/011/012/014), 45/45 enablers, 3/3 bugs. Quality framework fully implemented with 5-layer enforcement, adversarial strategies, progressive disclosure, and framework synchronization. |
 | FEAT-012 (EPIC-003) | Progressive Disclosure Rules Architecture | 2026-02-17 | Retroactive closure: 6/6 enablers done (EN-901-906). 5 companion guides (5,002 lines), 49 pattern files, 3 path-scoped rules, bootstrap exclusion, 21 E2E fidelity tests. |
@@ -142,7 +142,9 @@
 | BUG-005 (EPIC-001) | Version Bump Pipeline Fails on Merge to Main | 2026-02-18 | RC-1: Missing `VERSION_BUMP_PAT` secret — fixed (fine-grained PAT). Branch protection bypass added to "Don't fuck with main" ruleset. E2E verified: version-bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380), release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333). AC-4–6 deferred (enhancements). |
 | BUG-006 (EPIC-001) | Version Bump Fails — TOML Quoting + Tag Drift | 2026-02-18 | RC-1: TOML literal strings — fixed (triple-quoted). RC-2: tag drift — fixed (v0.2.0 tag on `3220a59`). E2E verified: release run [22161063558](https://github.com/geekatron/jerry/actions/runs/22161063558) (v0.2.0), version-bump [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) (0.2.0→0.2.1), release [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) (v0.2.1). All ACs verified. |
 | BUG-007 (EPIC-001) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | 2026-02-18 | `.nojekyll` added via PR #22. Pages build [22162228815](https://github.com/geekatron/jerry/actions/runs/22162228815) SUCCESS. Version bump 0.2.1→0.2.2. Release v0.2.2 created ([run 22162229032](https://github.com/geekatron/jerry/actions/runs/22162229032)). Full pipeline chain verified. |
+| FEAT-023 (EPIC-001) | Claude Code Birthday Showcase — Promotional Video | 2026-02-18 | Orchestration feat023-showcase-20260218-001 (5 phases, C4 tournament). EN-945 complete. Script v5 final (257 words). Tournament: 4 iterations (0.83, 0.86, 0.89, 0.92). Composite 0.92 PASS at H-13 threshold. Application submitted. |
 | FEAT-024 (EPIC-001) | Public Documentation Site — jerry.geekatron.org | 2026-02-19 | Orchestration feat024-docssite-20260217-001 (4 phases, 3 QGs). MkDocs Material 9.6.7 + GitHub Pages + custom domain. 5 enablers (EN-946–950), 15 effort pts. QG-1: 0.9340 (4 iterations), QG-2: 0.9440, QG-3: 0.9320. DEC-006 (MkDocs over Jekyll). DISC-003/004 resolved. Site live at https://jerry.geekatron.org — 12 nav pages, search functional, HTTPS enforced. |
+| FEAT-025 (EPIC-001) | Go Public (Repository Visibility & Community Health) | 2026-02-18 | 4 enablers (EN-951–954), 8 effort pts. EN-953 audit PASS (879 commits, 10 secret categories, 1 PII redacted). EN-951: SECURITY.md, CODE_OF_CONDUCT.md, PR template. EN-952: description, homepage, 8 topics, wiki disabled. EN-954: repo flipped to public, community health 100%, anonymous clone verified, docs site HTTP/2 200. PR #25 merged. All 8 ACs PASS. |
 
 ---
 
@@ -234,7 +236,9 @@
 
 | 2026-02-18 | Claude | FEAT-025 created under EPIC-001: Go Public (Repository Visibility & Community Health). 4 enablers (EN-951–954), 8 effort pts. Execution order: EN-953 (security audit) -> EN-951 (community files) + EN-952 (repo metadata) in parallel -> EN-954 (visibility flip). Criticality: C3 (irreversible). |
 | 2026-02-18 | Claude | EPIC-005 (Je Ne Sais Quoi) migrated from PROJ-001 to PROJ-003-je-ne-sais-quoi. Enables parallel session development. PROJ-003 created with PLAN.md, WORKTRACKER.md, and EPIC-005 entity file. |
+| 2026-02-18 | User/Claude | **FEAT-025 COMPLETE.** Repository flipped from private to PUBLIC. 4/4 enablers done, 8/8 ACs PASS. Community health 100%. PR #25 merged. Anonymous clone verified. Docs site live. EPIC-001 now 10/10 features, 41/41 enablers, 100%. |
+| 2026-02-19 | Claude | **Worktracker audit.** wt-verifier: FEAT-025 PASS (all 4 enablers clean). wt-auditor: 9 findings (3 errors, 4 warnings, 2 info). All findings remediated: EPIC-001 header updated to `done`, FEAT-023/EN-945 closed out with delivery evidence, FEAT-024 inline enabler table fixed, bug counts reconciled (19/19). **EPIC-001 CLOSED — clean.** |
 
 ---
 
-*Last Updated: 2026-02-18*
+*Last Updated: 2026-02-19*

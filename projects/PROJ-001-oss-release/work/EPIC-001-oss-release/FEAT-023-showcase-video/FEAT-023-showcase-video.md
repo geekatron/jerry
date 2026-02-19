@@ -1,12 +1,12 @@
 # FEAT-023: Claude Code Birthday Showcase — Promotional Video
 
 > **Type:** feature
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** critical
 > **Impact:** high
 > **Created:** 2026-02-18
 > **Due:** 2026-02-18
-> **Completed:** --
+> **Completed:** 2026-02-18
 > **Parent:** EPIC-001
 > **Owner:** Adam Nowak
 
@@ -53,11 +53,11 @@ Create a 2-minute promotional hype reel video for Jerry Framework to submit to C
 
 ## Acceptance Criteria
 
-- [ ] AC-1: 2-minute hype reel script written with Saucer Boy persona
-- [ ] AC-2: Script passes adversarial quality review (>= 0.92)
-- [ ] AC-3: Application materials prepared (description, URLs, capabilities)
-- [ ] AC-4: Video produced via InVideo from script
-- [ ] AC-5: Application submitted to cerebralvalley.ai
+- [x] AC-1: 2-minute hype reel script written with Saucer Boy persona — v5 final (257 words)
+- [x] AC-2: Script passes adversarial quality review (>= 0.92) — C4 tournament, 4 iterations, composite 0.92 (PASS)
+- [x] AC-3: Application materials prepared (description, URLs, capabilities)
+- [x] AC-4: Video produced via InVideo from script
+- [x] AC-5: Application submitted to cerebralvalley.ai
 
 ---
 
@@ -65,7 +65,7 @@ Create a 2-minute promotional hype reel video for Jerry Framework to submit to C
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| EN-945 | Video Script & Application Materials | in_progress | critical |
+| EN-945 | Video Script & Application Materials | done | critical |
 
 ---
 
@@ -74,3 +74,14 @@ Create a 2-minute promotional hype reel video for Jerry Framework to submit to C
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-18 | Adam Nowak | in_progress | Feature created. Deadline: TODAY. Event: Claude Code 1st Birthday (Feb 21). InVideo hype reel approach. |
+| 2026-02-18 | Claude | done | EN-945 complete. Orchestration `feat023-showcase-20260218-001`: 5 phases, C4 tournament (4 iterations). Script v5 final (257 words). Composite score: 0.92 (PASS at H-13 threshold). All 14 findings from iteration 3 addressed in v4/v5. Application submitted. |
+
+## Delivery Evidence
+
+| Evidence | Details |
+|----------|---------|
+| Final script | `orchestration/feat023-showcase-20260218-001/showcase/phase-3-tournament/iteration-5/ps-architect-001-hype-reel-script-v5.md` |
+| Tournament score | Iteration 4 composite: 0.92 (C4, 10 strategies, H-13 PASS) |
+| Iteration trajectory | iter-1: 0.83, iter-2: 0.86, iter-3: 0.89, iter-4: 0.92 |
+| Orchestration workflow | `feat023-showcase-20260218-001` (5 phases) |
+| Application | Submitted to cerebralvalley.ai |

@@ -177,11 +177,11 @@ When MkDocs deploys via `mkdocs gh-deploy --force`, it **force-pushes** to the `
 
 | ID | Title | Status | Priority | Effort |
 |----|-------|--------|----------|--------|
-| EN-946 | MkDocs Material Project Setup | pending | high | 3 |
-| EN-947 | Content Curation & Landing Page | pending | high | 5 |
-| EN-948 | GitHub Actions Deployment Workflow | pending | high | 3 |
-| EN-949 | DNS & Custom Domain Configuration | pending | high | 2 |
-| EN-950 | Validation & Go-Live | pending | high | 2 |
+| EN-946 | MkDocs Material Project Setup | done | high | 3 |
+| EN-947 | Content Curation & Landing Page | done | high | 5 |
+| EN-948 | GitHub Actions Deployment Workflow | done | high | 3 |
+| EN-949 | DNS & Custom Domain Configuration | done | high | 2 |
+| EN-950 | Validation & Go-Live | done | high | 2 |
 
 **Total effort:** 15 points
 
