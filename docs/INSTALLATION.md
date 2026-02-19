@@ -54,10 +54,12 @@ This registers Jerry's plugin catalog with Claude Code.
 **Step 2: Install the plugin**
 
 ```
-/plugin install jerry@jerry-framework
+/plugin install jerry@geekatron-jerry
 ```
 
 This downloads and activates Jerry's skills.
+
+> **How the name works:** When you add a GitHub marketplace via `owner/repo`, Claude Code derives the marketplace name by joining them with a hyphen: `geekatron/jerry` becomes `geekatron-jerry`. You can always verify your marketplace name with `/plugin marketplace list`.
 
 **Verify it worked:**
 
@@ -420,13 +422,13 @@ See [CONTRIBUTING.md](https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.
 
 **Plugin not found after adding marketplace**
 
-**Symptom:** `/plugin install jerry@jerry-framework` returns "plugin not found"
+**Symptom:** `/plugin install jerry@...` returns "plugin not found"
 
 **Solutions:**
-1. Verify the marketplace was added: `/plugin marketplace list`
-2. Refresh the marketplace: `/plugin marketplace update jerry-framework`
-3. If using a local clone, verify the manifest exists: check that `.claude-plugin/plugin.json` is present in the clone directory
-4. The `@jerry-framework` suffix must match the marketplace name. Run `/plugin marketplace list` to verify
+1. Run `/plugin marketplace list` to see the actual marketplace name — the `@suffix` in the install command must match exactly
+2. Remote installs (`geekatron/jerry`): marketplace name is `geekatron-jerry` — use `/plugin install jerry@geekatron-jerry`
+3. Local clone installs (`~/plugins/jerry`): marketplace name is `jerry-framework` — use `/plugin install jerry@jerry-framework`
+4. Refresh the marketplace: `/plugin marketplace update <marketplace-name>`
 
 ### Hook Issues
 
@@ -472,7 +474,7 @@ If still not found, add to PATH manually:
    - macOS: `rm -rf ~/.claude/plugins/cache`
    - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
 3. Restart Claude Code
-4. Reinstall: `/plugin uninstall jerry@jerry-framework` then `/plugin install jerry@jerry-framework`
+4. Reinstall: `/plugin uninstall jerry` then re-run the install command for your method (see [Quick Install](#quick-install-most-users) or [Local Clone](#alternative-local-clone-install))
 
 ### Project Issues
 
@@ -503,14 +505,16 @@ If still not found, add to PATH manually:
 ### Remove the Plugin
 
 ```
-/plugin uninstall jerry@jerry-framework
+/plugin uninstall jerry
 ```
 
 ### Remove the Marketplace
 
 ```
-/plugin marketplace remove jerry-framework
+/plugin marketplace remove geekatron-jerry
 ```
+
+> **Local clone users:** Your marketplace name is `jerry-framework` instead — run `/plugin marketplace list` to confirm.
 
 ### Delete Local Files (Optional)
 

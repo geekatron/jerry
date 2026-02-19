@@ -78,7 +78,7 @@ In Claude Code, run two commands:
 
 ```
 /plugin marketplace add geekatron/jerry
-/plugin install jerry@jerry-framework
+/plugin install jerry@geekatron-jerry
 ```
 
 Verify: `/plugin` > **Installed** tab > `jerry` appears. See the full [Installation Guide](INSTALLATION.md) for scope options, local clone fallback, and troubleshooting.
