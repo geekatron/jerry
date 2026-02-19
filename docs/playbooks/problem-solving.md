@@ -1,7 +1,7 @@
 # Problem-Solving Playbook
 
 > **Skill:** problem-solving
-> **SKILL.md:** [problem-solving/SKILL.md](../../skills/problem-solving/SKILL.md)
+> **SKILL.md:** [problem-solving/SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/problem-solving/SKILL.md)
 > **Trigger keywords:** research, analyze, investigate, explore, root cause, why
 
 ## Document Sections
@@ -48,7 +48,7 @@
 
 ## Prerequisites
 
-- `JERRY_PROJECT` environment variable is set to an active project ([H-04](../../.context/rules/quality-enforcement.md#hard-rule-index) — session will not proceed without this)
+- `JERRY_PROJECT` environment variable is set to an active project ([H-04](https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md#hard-rule-index) — session will not proceed without this)
 - A Jerry session is active (`jerry session start` has been run)
 - You have a clear problem statement, question, or topic to investigate
 - For research or analysis tasks: relevant prior documents are accessible in the repository (optional but recommended — agents will scan for existing context)
@@ -226,7 +226,7 @@ For C2+ deliverables (reversible in up to 1 day, touching 3–10 files), the pro
 
 ## Related Resources
 
-- [SKILL.md](../../skills/problem-solving/SKILL.md) — Authoritative technical reference for this skill, including agent details, orchestration flow examples, adversarial quality mode, and template locations
+- [SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/problem-solving/SKILL.md) — Authoritative technical reference for this skill, including agent details, orchestration flow examples, adversarial quality mode, and template locations
 - [Orchestration Playbook](./orchestration.md) — When to use the orchestration skill for multi-phase workflows that chain problem-solving agents across gates
 - [Transcript Playbook](./transcript.md) — When to use the transcript skill for structured CLI-based transcript parsing before applying problem-solving agents to extracted content
-- [Quality Enforcement Standards](../../.context/rules/quality-enforcement.md) — Authoritative SSOT for quality gate thresholds, criticality levels (C1–C4), strategy catalog (S-001–S-014), and auto-escalation rules (AE-001–AE-006)
+- [Quality Enforcement Standards](https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md) — Authoritative SSOT for quality gate thresholds, criticality levels (C1–C4), strategy catalog (S-001–S-014), and auto-escalation rules (AE-001–AE-006)

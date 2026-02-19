@@ -275,7 +275,7 @@ Schemas should reference this document:
 - [Semantic Versioning 2.0.0](https://semver.org/)
 - [JSON Schema Versioning](https://json-schema.org/understanding-json-schema/reference/schema.html)
 - [OpenAPI Versioning](https://spec.openapis.org/oas/v3.0.3#versions)
-- [Jerry Constitution P-002](docs/governance/JERRY_CONSTITUTION.md) - File Persistence
+- [Jerry Constitution P-002](../governance/JERRY_CONSTITUTION.md) - File Persistence
 
 ---
 

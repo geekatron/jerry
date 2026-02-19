@@ -750,7 +750,7 @@ uv run pre-commit install      # Install pre-commit hooks
 uv run pytest --tb=short -q    # Run test suite
 ```
 
-> **Note:** Windows does not have `make` by default. Use the `uv run` commands directly. See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full Make target equivalents table.
+> **Note:** Windows does not have `make` by default. Use the `uv run` commands directly. See [CONTRIBUTING.md](https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md) for the full Make target equivalents table.
 
 ### Common Developer Commands
 
@@ -785,7 +785,7 @@ src/
 └── interface/        # Primary adapters (CLI)
 ```
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed contribution guidelines, Windows-specific notes, and coding standards.
+See [CONTRIBUTING.md](https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md) for detailed contribution guidelines, Windows-specific notes, and coding standards.
 
 ---
 
@@ -827,4 +827,4 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\plugins\jerry"
 
 ## License
 
-Jerry Framework is open source under the [Apache License 2.0](../LICENSE).
+Jerry Framework is open source under the [Apache License 2.0](https://github.com/geekatron/jerry/blob/main/LICENSE).

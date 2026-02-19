@@ -1,7 +1,7 @@
 # Orchestration Playbook
 
 > **Skill:** orchestration
-> **SKILL.md:** [orchestration/SKILL.md](../../skills/orchestration/SKILL.md)
+> **SKILL.md:** [orchestration/SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/orchestration/SKILL.md)
 > **Trigger keywords:** orchestration, pipeline, workflow, multi-agent, phases, gates
 
 ## Document Sections
@@ -163,7 +163,7 @@ The orchestration skill provides three specialized agents. Each is invoked by th
 | `orch-tracker` | Reads `ORCHESTRATION.yaml`, updates agent statuses after completion, records checkpoint entries, updates quality scores, reconciles artifact paths | Updated `ORCHESTRATION.yaml`, updated `ORCHESTRATION_WORKTRACKER.md` |
 | `orch-synthesizer` | Reads all pipeline outputs and barrier artifacts, extracts patterns and decisions, produces the final workflow synthesis document | `orchestration/{workflow_id}/synthesis/workflow-synthesis.md` |
 
-Agent specifications: [`orch-planner.md`](../../skills/orchestration/agents/orch-planner.md), [`orch-tracker.md`](../../skills/orchestration/agents/orch-tracker.md), [`orch-synthesizer.md`](../../skills/orchestration/agents/orch-synthesizer.md).
+Agent specifications: [`orch-planner.md`](https://github.com/geekatron/jerry/blob/main/skills/orchestration/agents/orch-planner.md), [`orch-tracker.md`](https://github.com/geekatron/jerry/blob/main/skills/orchestration/agents/orch-tracker.md), [`orch-synthesizer.md`](https://github.com/geekatron/jerry/blob/main/skills/orchestration/agents/orch-synthesizer.md).
 
 ---
 
@@ -205,7 +205,7 @@ Each is a WORKER. None spawn other agents.
 
 5. **Update state after each agent.** After each agent completes, invoke orch-tracker to update `ORCHESTRATION.yaml` and `ORCHESTRATION_WORKTRACKER.md`. Provide the agent ID, completion status, and artifact path. orch-tracker also records quality scores if the phase gate has been evaluated.
 
-6. **Evaluate quality gate before advancing.** At each phase boundary (or barrier for cross-pollinated pipelines), the phase output must score >= 0.92 on the [S-014 quality rubric](../../.context/rules/quality-enforcement.md) before the next phase begins. If below threshold, a revision cycle is required before proceeding.
+6. **Evaluate quality gate before advancing.** At each phase boundary (or barrier for cross-pollinated pipelines), the phase output must score >= 0.92 on the [S-014 quality rubric](https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md) before the next phase begins. If below threshold, a revision cycle is required before proceeding.
 
 7. **Cross-pollinate at barriers (cross-pollinated pattern only).** When both Pipeline A and Pipeline B complete a phase, exchange barrier artifacts. Each pipeline's findings are delivered to the other pipeline as input for the next phase. orch-tracker records barrier completion in `ORCHESTRATION.yaml`.
 
@@ -256,7 +256,7 @@ Each is a WORKER. None spawn other agents.
 
 ## Related Resources
 
-- [SKILL.md](../../skills/orchestration/SKILL.md) — Authoritative technical reference for the orchestration skill, including complete state schema, workflow configuration options, pipeline alias resolution, and adversarial quality mode details
-- [Quality Enforcement Standards](../../.context/rules/quality-enforcement.md) — SSOT for quality gate thresholds, criticality levels (C1–C4), strategy catalog (S-001–S-014), and auto-escalation rules (AE-001–AE-006)
+- [SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/orchestration/SKILL.md) — Authoritative technical reference for the orchestration skill, including complete state schema, workflow configuration options, pipeline alias resolution, and adversarial quality mode details
+- [Quality Enforcement Standards](https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md) — SSOT for quality gate thresholds, criticality levels (C1–C4), strategy catalog (S-001–S-014), and auto-escalation rules (AE-001–AE-006)
 - [problem-solving.md](./problem-solving.md) — Problem-solving skill playbook; the problem-solving skill is frequently used as a pipeline within orchestrated workflows (ps-pipeline is the conventional Pipeline A in cross-pollinated patterns)
 - [transcript.md](./transcript.md) — Transcript skill playbook; transcript parsing produces structured data that can serve as input to orchestrated analysis workflows

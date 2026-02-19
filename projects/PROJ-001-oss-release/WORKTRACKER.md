@@ -80,6 +80,7 @@
 | [DEC-001](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/DEC-001-precommit-installation-strategy.md) | Pre-commit Installation Strategy | accepted | tactical | EN-004 |
 | [DEC-002](./work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures/EN-004-fix-precommit-hook-coverage/DEC-002-pytest-hook-file-type-coverage.md) | Pytest Hook File Type Coverage | accepted | tactical | EN-004 |
 | [DEC-004](./work/EPIC-001-oss-release/EPIC-001--DEC-004-post-release-planning-decisions.md) | Post-Release Planning Decisions (OSX-Primary, Optimization Deferred, Installation Model) | accepted | strategic | EPIC-001 |
+| DEC-006 | MkDocs Material over Jekyll — Python-native, uv-compatible, industry standard. Jekyll disabled (BUG-007 Liquid conflicts). | accepted | tactical | FEAT-024 |
 
 > Decision details (individual D-001, D-002, etc.) live in the respective decision files.
 
@@ -92,6 +93,8 @@
 | [DISC-001](./work/EPIC-001-oss-release/FEAT-002-research-and-preparation/FEAT-002--DISC-001-missed-research-scope.md) | Missed Research Scope - Claude Code Best Practices | validated | critical | FEAT-002 |
 | [DISC-001](./work/EPIC-001-oss-release/FEAT-003-claude-md-optimization/FEAT-003--DISC-001-navigation-tables-for-llm-comprehension.md) | Navigation Tables for LLM Comprehension | validated | high | FEAT-003 |
 | [DISC-002](./work/EPIC-003-quality-implementation/DISC-002-hook-schema-non-compliance.md) | Hook Schema Non-Compliance | validated | critical | EPIC-003 |
+| DISC-003 | GitHub Pages Legacy Build State — legacy build, no index.html, effectively unusable | validated | high | FEAT-024 |
+| DISC-004 | CNAME File Wipe on Deploy — mkdocs gh-deploy force-pushes, wiping custom domain | validated | high | FEAT-024 |
 
 ---
 
@@ -211,8 +214,21 @@
 | 2026-02-18 | Claude | BUG-005 and BUG-006 E2E VERIFIED. Version bump run [22161466380](https://github.com/geekatron/jerry/actions/runs/22161466380) (0.2.0→0.2.1), release run [22161485333](https://github.com/geekatron/jerry/actions/runs/22161485333) (v0.2.1). Branch protection bypass configured. All ACs checked. |
 | 2026-02-18 | Claude | BUG-007 created under EPIC-001: GitHub Pages Build Fails — Jekyll Liquid Syntax Error. Auto-generated "pages build and deployment" workflow fails at Jekyll build step. `{%}` placeholder in `docs/knowledge/exemplars/templates/analysis.md` interpreted as Liquid tag. Fix: add `.nojekyll` to repo root. |
 | 2026-02-18 | Claude | BUG-007 CLOSED. `.nojekyll` merged via PR #22. Pages build [22162228815](https://github.com/geekatron/jerry/actions/runs/22162228815) SUCCESS. Version bump 0.2.1→0.2.2 succeeded. Release v0.2.2 created. Full pipeline chain verified. |
+| 2026-02-18 | Claude | FEAT-023 created under EPIC-001: Claude Code Birthday Showcase — Promotional Video. 1 enabler (EN-945), 3 effort pts. Orchestration workflow `feat023-showcase-20260218-001` (5 phases, C4 tournament, target >= 0.95). Event: Claude Code 1st Birthday (Feb 21 @ Shack15 SF). InVideo hype reel with Saucer Boy persona. |
 | 2026-02-17 | Claude | EPIC-005 created: Je Ne Sais Quoi — The Saucer Boy Spirit. 4 features (FEAT-019 through FEAT-022): Framework Voice & Personality, The Jerry Soundtrack, Easter Eggs & Cultural References, DX Delight. Injects Shane McConkey's ethos into Jerry — technically excellent AND wildly fun. Soundtrack curated (23 songs, 4 categories). |
+| 2026-02-17 | Claude | FEAT-024 created under EPIC-001: Public Documentation Site — jerry.geekatron.org. 5 enablers (EN-946–950), 18 tasks, 15 effort pts. MkDocs Material + GitHub Pages + custom domain (Namesecure). DEC-006 (MkDocs over Jekyll). DISC-003 (legacy build state), DISC-004 (CNAME wipe gotcha). Research via Context7 + web search. Orchestration plan: feat024-docssite-20260217-001 (orch-planner agent, C2 quality gate). |
+
+| 2026-02-19 | Claude | FEAT-024 Phase 1 COMPLETE (EN-946 MkDocs Material Project Setup). All 4 ACs PASS: mkdocs-material 9.7.2 in pyproject.toml, mkdocs.yml with Material theme, docs/CNAME with jerry.geekatron.org (DISC-004 mitigation), local serve verified. Phase 2A (EN-947 content curation) + Phase 2B (EN-948 GH Actions workflow) launched in parallel. |
+| 2026-02-19 | Claude | FEAT-024 Phase 2A COMPLETE (EN-947 Content Curation & Landing Page). 56 files audited: 13 PUBLIC (in nav), 6 DEFERRED (ADRs need scrubbing), ~37 INTERNAL (excluded). docs/index.md rewritten (115 lines), mkdocs.yml nav expanded (4 sections, 12 pages). 11 broken link issues documented (cross-refs to files outside docs/). |
+| 2026-02-19 | Claude | FEAT-024 Phase 2B COMPLETE (EN-948 GitHub Actions Workflow). .github/workflows/docs.yml created with MkDocs Material CI workflow. Full conflict analysis against 4 existing workflows — no conflicts. All YAML + structural validation checks PASS. AC-3 (gh-pages deployment) deferred to post-merge. |
+| 2026-02-19 | Claude | FEAT-024 QG-1 IN_PROGRESS. S-003 Steelman (adv-executor-001) launched. Sequence: S-003 -> S-002 (Devil's Advocate) -> S-007 (Constitutional) -> S-014 (LLM-as-Judge scoring). C2 quality gate, threshold >= 0.92. |
+| 2026-02-19 | Claude | FEAT-024 QG-1: S-003 COMPLETE (12 findings: 1 Critical, 5 Major, 6 Minor — all presentation/evidence/structure, no substantive flaws). S-002 COMPLETE (7 findings: 1 Critical DA-001-qg1 pymdownx.snippets file inclusion vector, 4 Major, 2 Minor — recommends REVISE). S-007 COMPLETE (4 Minor, 0 Critical/Major — Constitutional Compliance 0.92 PASS). S-014 COMPLETE: composite 0.8070 (REJECTED band). Verdict: REVISE. |
+| 2026-02-19 | Claude | FEAT-024 QG-1 REVISE — targeted fixes applied: P0: pymdownx.snippets removed from mkdocs.yml (DA-001-qg1 Critical). P1: checkout@v5 (DA-003), concurrency group (DA-004), pinned mkdocs-material==9.6.7 (DA-006), file count corrected to 57 (DA-005), go-live risk prioritization added (SM-009), AC-3 resolution path formalized (SM-011), AC-5 created for GitHub Pages config (SM-012), nav provenance comment added (SM-001), site_author/copyright added (SM-002). S-014 retry 1 scoring launched. |
+| 2026-02-19 | Claude | FEAT-024 QG-1 retry 1: S-014 composite 0.9075 (REVISE band, +0.1005). All Critical findings resolved. Gap: DA-002-qg1 (broken links, no technical gate). Fix: `strict: true` added to mkdocs.yml. S-014 retry 2 (final) launched. |
+| 2026-02-19 | Claude | FEAT-024 QG-1 retry 2 (FINAL): S-014 composite 0.9155 (REVISE band, gap 0.0045). Max retries exhausted — ESCALATE to user per AE-006. Dimensions: Completeness 0.91, Consistency 0.93, Rigor 0.93, Evidence 0.88, Actionability 0.93, Traceability 0.90. Dominant residual: DA-002-qg1 (23+ broken links gated by strict mode but not fixed). |
+| 2026-02-19 | Claude | FEAT-024 QG-1: User directed extend retry budget to 5. DA-002-qg1 fix applied: 20+ broken relative links in 5 nav files (problem-solving.md, orchestration.md, transcript.md, getting-started.md, INSTALLATION.md) converted to GitHub repo URLs. SCHEMA_VERSIONING.md link fixed to docs-relative. exclude_docs added to mkdocs.yml for 12 internal dirs/files. `mkdocs build --strict` now PASSES with 0 warnings. S-014 retry 3 launched. |
+| 2026-02-19 | Claude | **FEAT-024 QG-1 PASS** (0.9340, iteration 4/retry 3). Score trajectory: 0.8070 → 0.9075 → 0.9155 → **0.9340**. Margin: +0.0140 above 0.92 threshold. DA-002-qg1 fully resolved. 7 Minor residuals (all ACCEPTABLE-DEBT/POST-LAUNCH). Phase 3 UNBLOCKED — awaiting user: (1) merge PR to main, (2) configure GitHub Pages (source: gh-pages, domain: jerry.geekatron.org, HTTPS). Phase 0 DNS still pending user action. |
 
 ---
 
-*Last Updated: 2026-02-18*
+*Last Updated: 2026-02-19*

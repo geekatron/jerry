@@ -178,6 +178,7 @@ replace = "(v{new_version})"
 
 [dependency-groups]
 dev = [
+    "mkdocs-material>=9.7.2",
     "pip-audit>=2.10.0",
     "pip-licenses>=5.5.1",
     "pre-commit>=4.5.1",
