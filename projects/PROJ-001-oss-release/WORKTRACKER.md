@@ -247,6 +247,9 @@
 | 2026-02-19 | Claude | BUG-008 created under EPIC-001: Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable. Playbook and mandatory-skill-usage.md incorrectly exclude transcript from keyword triggers, citing Python script dependency. Python is VTT-only; LLM fallback handles non-VTT automatically. EPIC-001 reopened. |
 | 2026-02-19 | Claude | FEAT-027 created under EPIC-001: Research Section for Public Documentation Site. 5 enablers (EN-958–962), 18 effort pts. 47 research artifacts cataloged across 9 domains. Tiered approach: inline summaries + admonitions + GitHub cross-links. Dual audience (developers + AI/LLM community). Research catalog: `projects/PROJ-001-oss-release/research/bug008-research-catalog.md`. |
 | 2026-02-19 | Claude | EN-958 COMPLETE. Research Section Architecture & Navigation. Delivered: research page template (tiered layout with admonitions + GitHub cross-links), 11-page nav structure (1 landing + 5 Tier 1 + 5 Tier 2/3), `docs/research/index.md` landing page with grid cards. Internal artifact relocated to `docs/research/internal/`. |
+| 2026-02-19 | Claude | EN-959 COMPLETE. Tier 1 Flagship Research Pages. 5 pages for 7 artifacts: single-vs-multi-agent.md, adversarial-strategy-catalog.md, strategy-selection-enforcement.md, skill-compliance-framework.md, governance-constitutional-ai.md. |
+| 2026-02-19 | Claude | EN-960 COMPLETE. Tier 2/3 Supporting Research Pages. 5 domain pages for 16 artifacts: adversarial-deep-dives.md, oss-methodology.md, context-management.md, architecture-patterns.md, claude-code-ecosystem.md. |
+| 2026-02-19 | Claude | EN-961 COMPLETE. MkDocs Integration. `research/` removed from exclude_docs, `research/internal/` added. 11-page Research nav section added. `mkdocs build --strict` passes. Anchor fix in index.md. |
 
 ---
 

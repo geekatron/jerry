@@ -10,7 +10,7 @@ This section curates the key research produced during Jerry's development. Each 
 
 | Domain | Pages | Description |
 |--------|-------|-------------|
-| [Adversarial Strategies & Quality](#adversarial-strategies--quality) | 3 | How we selected and implemented 10 adversarial review strategies from 36 candidates |
+| [Adversarial Strategies & Quality](#adversarial-strategies-quality) | 3 | How we selected and implemented 10 adversarial review strategies from 36 candidates |
 | [Agent Architecture](#agent-architecture) | 1 | Evidence-based analysis of single vs. multi-agent orchestration |
 | [Context Management](#context-management) | 1 | Solving context rot in LLM sessions |
 | [Skill Architecture](#skill-architecture) | 1 | Compliance framework for Claude Code skill patterns |

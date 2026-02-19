@@ -1,13 +1,13 @@
 # EN-960: Tier 2 & 3 Supporting Research Pages
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-027
 > **Owner:** --
 > **Effort:** 5
@@ -66,20 +66,20 @@ Create MkDocs pages for Tier 2 (9 artifacts) and Tier 3 (7 artifacts) research. 
 
 | ID | Title | Status | Effort |
 |----|-------|--------|--------|
-| TASK-001 | Create domain page: Adversarial Quality (Tier 2 deep-dives) | pending | 1 |
-| TASK-002 | Create domain page: OSS Preparation & Methodology | pending | 1 |
-| TASK-003 | Create domain page: Context Management & LLM Performance | pending | 1 |
-| TASK-004 | Create domain page: Software Architecture & Patterns (Tier 3) | pending | 1 |
-| TASK-005 | Create domain page: Claude Code Ecosystem & Knowledge Base (Tier 3) | pending | 1 |
+| TASK-001 | Create domain page: Adversarial Quality (Tier 2 deep-dives) | done | 1 |
+| TASK-002 | Create domain page: OSS Preparation & Methodology | done | 1 |
+| TASK-003 | Create domain page: Context Management & LLM Performance | done | 1 |
+| TASK-004 | Create domain page: Software Architecture & Patterns (Tier 3) | done | 1 |
+| TASK-005 | Create domain page: Claude Code Ecosystem & Knowledge Base (Tier 3) | done | 1 |
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] AC-1: 5 domain pages created covering all 16 Tier 2/3 artifacts
-- [ ] AC-2: Each domain page has artifact summaries with GitHub cross-links
-- [ ] AC-3: Consistent structure with EN-958 template
-- [ ] AC-4: All GitHub links resolve correctly
+- [x] AC-1: 5 domain pages created covering all 16 Tier 2/3 artifacts
+- [x] AC-2: Each domain page has artifact summaries with GitHub cross-links
+- [x] AC-3: Consistent structure with EN-958 template
+- [x] AC-4: All GitHub links resolve correctly
 
 ---
 
@@ -88,5 +88,6 @@ Create MkDocs pages for Tier 2 (9 artifacts) and Tier 3 (7 artifacts) research. 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Created. 16 artifacts grouped into 5 domain pages. |
+| 2026-02-19 | Claude | done | Delivered 5 domain pages: adversarial-deep-dives.md, oss-methodology.md, context-management.md, architecture-patterns.md, claude-code-ecosystem.md. Each covers 3-5 artifacts with summaries, expandable data, and GitHub cross-links. |
 
 ---
