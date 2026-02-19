@@ -2,6 +2,8 @@
 
 > Jerry is a Claude Code plugin for behavior and workflow guardrails.
 
+> **Platform Note:** Jerry is primarily developed and tested on macOS. Linux is expected to work — CI runs on Ubuntu for every job, and uv/git tooling is cross-platform (the macOS install commands are identical). Windows support is actively in progress — core functionality works, but some hooks may behave differently. See [Platform Support](index.md#platform-support) for details and issue report links.
+
 ---
 
 ## Table of Contents
@@ -9,9 +11,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Prerequisites](#prerequisites) | What you need before installing |
-| [Collaborator Installation](#collaborator-installation-private-repository) | SSH setup for private repository access |
 | [Installation](#installation) | Platform-specific setup instructions |
-| [Future: Public Repository](#future-public-repository-installation) | When Jerry becomes publicly available |
 | [Configuration](#configuration) | Post-installation setup |
 | [Verification](#verification) | How to confirm installation succeeded |
 | [Using Jerry](#using-jerry) | Getting started with skills |
@@ -41,237 +41,6 @@
 |-------------|---------|
 | Disk Space | ~100 MB |
 | Internet | Required for initial clone |
-
----
-
-## Collaborator Installation (Private Repository)
-
-> **Note:** Jerry is currently distributed to collaborators only. This section is for users who have been granted collaborator access by a repository administrator. If you are installing from a public repository, skip ahead to [Installation](#installation).
-
-Jerry is hosted in a private GitHub repository. Before you can clone it, you must:
-
-1. **Receive a collaborator invitation** from the Jerry repository administrator
-2. **Accept the invitation** (check your email or visit github.com/notifications)
-3. **Set up SSH authentication** — follow the steps below for your platform
-
-### Why SSH?
-
-Private GitHub repositories require authentication. SSH keys provide secure, password-free access when set up without a passphrase, or when combined with an SSH agent that caches your passphrase (see Tip below). SSH keys are the recommended method. A personal access token (PAT) is an alternative HTTPS-based method; see the [PAT Alternative](#pat-alternative) note at the end of this section.
-
----
-
-### Step 1: Generate an SSH Key
-
-Choose your platform:
-
-#### macOS (Terminal)
-
-> **Warning:** If you already have an SSH key, DO NOT overwrite it. Check first, then display your existing public key and skip to Step 2.
-
-First check whether you already have an SSH key:
-
-```bash
-ls ~/.ssh/id_ed25519.pub 2>/dev/null && echo "Key exists — skip to Step 2" || echo "No key found — proceed below"
-```
-
-If no key was found, open Terminal and run:
-
-```bash
-ssh-keygen -t ed25519 -C "your.email@example.com"
-```
-
-When prompted:
-- **File location:** Press Enter to accept the default (`~/.ssh/id_ed25519`)
-- **Passphrase:** Enter a passphrase (recommended) or press Enter for none
-
-Display your public key:
-
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
-
-Copy the full output — it begins with `ssh-ed25519` and ends with your email address.
-
-> **Tip:** If you set a passphrase, add your key to the macOS Keychain to avoid re-entering it each time:
-> ```bash
-> eval "$(ssh-agent -s)"
-> ssh-add --apple-use-keychain ~/.ssh/id_ed25519
-> ```
-> Without this, your terminal will prompt for your SSH key passphrase every time you interact with GitHub.
-
-#### Windows (PowerShell)
-
-> **Warning:** If you already have an SSH key, DO NOT overwrite it. Check first, then display your existing public key and skip to Step 2.
-
-First check whether you already have an SSH key:
-
-```powershell
-if (Test-Path "$env:USERPROFILE\.ssh\id_ed25519.pub") { Write-Host "Key exists — skip to Step 2" } else { Write-Host "No key found — proceed below" }
-```
-
-If no key was found, open **PowerShell** and run:
-
-> **Important — Windows Home / LTSC Users:** If `ssh-keygen` is not recognized, OpenSSH Client is not installed.
-> Install it via **Settings → Apps → Optional Features → Add a feature → OpenSSH Client**, or run:
-> ```powershell
-> Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
-> ```
-> Then close and reopen PowerShell before continuing.
-
-```powershell
-ssh-keygen -t ed25519 -C "your.email@example.com"
-```
-
-When prompted:
-- **File location:** Press Enter to accept the default (`C:\Users\YOUR_USERNAME\.ssh\id_ed25519`)
-- **Passphrase:** Enter a passphrase (recommended) or press Enter for none
-
-Display your public key:
-
-```powershell
-Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub"
-```
-
-Copy the full output — it begins with `ssh-ed25519`.
-
-> **Windows Git Bash alternative:** If you have Git Bash installed, the macOS Terminal commands above work identically in Git Bash.
-
-> **Tip:** To avoid re-entering your passphrase each session, start the SSH agent. First check if the OpenSSH Client is installed:
-> ```powershell
-> # Check if OpenSSH Client is installed
-> if (Get-Service ssh-agent -ErrorAction SilentlyContinue) {
->     Start-Service ssh-agent
->     ssh-add "$env:USERPROFILE\.ssh\id_ed25519"
->     # To make this permanent:
->     Set-Service -Name ssh-agent -StartupType Automatic
-> } else {
->     Write-Host "OpenSSH Client not installed. Install it via:"
->     Write-Host "  Settings > Apps > Optional Features > Add a feature > OpenSSH Client"
->     Write-Host "Or via PowerShell (requires admin):"
->     Write-Host "  Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0"
-> }
-> ```
-> **Note:** OpenSSH Client is enabled by default on Windows 10 build 1809+ and Windows 11, but may be absent on Home and LTSC editions.
-
----
-
-### Step 2: Add Your SSH Key to GitHub
-
-1. Go to [github.com/settings/keys](https://github.com/settings/keys)
-2. Click **New SSH key**
-3. Give it a descriptive title (e.g., "My MacBook Pro" or "Work Laptop")
-4. Set **Key type** to `Authentication Key`
-5. Paste your public key into the **Key** field
-6. Click **Add SSH key**
-
----
-
-### Step 3: Verify SSH Access
-
-Confirm GitHub accepts your key:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see:
-
-```
-Hi YOUR_USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
-```
-
-> **Note:** If you set a passphrase during key generation, you will be prompted to enter it before seeing the success message. Type your passphrase and press Enter. If you see `Permission denied (publickey)` after entering your passphrase, verify your public key is correctly added to GitHub (Step 2).
-
-If you see a permission denied error, verify your public key was saved correctly at github.com/settings/keys and that you copied the entire key including the `ssh-ed25519` prefix.
-
----
-
-### Step 4: Clone Jerry via SSH
-
-Use the SSH clone URL instead of the HTTPS URL:
-
-> **Important:** The clone path must not contain spaces. The Claude Code `/plugin marketplace add` command does not support paths with spaces. The recommended `~/plugins/` path is safe.
-
-**macOS (Terminal) or Git Bash:**
-```bash
-mkdir -p ~/plugins
-git clone git@github.com:geekatron/jerry.git ~/plugins/jerry
-```
-
-**Windows (PowerShell):**
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\plugins"
-git clone git@github.com:geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
-```
-
-> **Alternative authentication:** If you prefer not to use SSH, see [PAT Alternative](#pat-alternative) below for HTTPS token-based access.
-
----
-
-### Next Steps: Complete Platform Installation
-
-After cloning via SSH, proceed directly to **Step 3: Verify the Plugin Manifest** in your platform's installation section below:
-
-- [macOS — Step 3 onwards](#macos-step-3)
-- [Windows — Step 3 onwards](#windows-step-3)
-
-The remaining steps (plugin manifest, marketplace add, plugin install) are identical regardless of whether you used SSH or HTTPS to clone.
-
----
-
-### PAT Alternative
-
-If you prefer HTTPS authentication, you can use a **GitHub Personal Access Token (PAT)** instead of SSH keys:
-
-1. Create a **classic** PAT at [github.com/settings/tokens](https://github.com/settings/tokens) (select 'Generate new token (classic)') and check the `repo` scope checkbox. This grants full access to private repositories you collaborate on (read and write). For least-privilege access, use a fine-grained PAT instead with `Contents: Read-only` permission scoped to the jerry repository only.
-2. When `git clone` prompts for a password, enter your PAT instead
-3. Use the standard HTTPS clone URL:
-
-   > **Important:** If your username contains spaces, use a path without spaces (e.g., `~/plugins/jerry` or `C:\plugins\jerry`).
-
-   **macOS (Terminal) or Git Bash:**
-   ```bash
-   git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
-   ```
-
-   **Windows (PowerShell):**
-   ```powershell
-   git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
-   ```
-
-To avoid re-entering your PAT on every git operation, configure a credential helper:
-
-**macOS:**
-
-First verify that the osxkeychain helper is available on your system:
-
-```bash
-# Verify osxkeychain helper is available
-git credential-osxkeychain 2>&1 | head -1
-# If you see "usage: git credential-osxkeychain", proceed.
-# If you see "command not found", use the store helper instead:
-# git config --global credential.helper store
-```
-
-If osxkeychain is available:
-```bash
-git config --global credential.helper osxkeychain
-```
-
-If osxkeychain is not available (common on conda, nix, or MacPorts installs), use the store helper:
-```bash
-git config --global credential.helper store
-```
-> **Note:** The `store` helper saves credentials in plaintext at `~/.git-credentials`. Use it only on single-user machines.
-
-**Windows:**
-```powershell
-git config --global credential.helper manager
-```
-
-> **Note:** Without a credential helper, git will prompt for your PAT on every pull, fetch, and push.
-
-PATs are more common in CI environments. For interactive use, SSH keys are preferred.
 
 ---
 
@@ -315,10 +84,6 @@ Clone the repository to a location on your system. We recommend `~/plugins/`:
 mkdir -p ~/plugins
 git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
 ```
-
-> **Collaborators:** If you arrived from the [Collaborator Installation](#collaborator-installation-private-repository) section above, you have already cloned via SSH — skip this step and proceed to Step 3 below.
-
-<a id="macos-step-3"></a>
 
 #### Step 3: Verify the Plugin Manifest
 
@@ -405,10 +170,6 @@ mkdir -p ~/plugins
 git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
 ```
 
-> **Collaborators:** If you arrived from the [Collaborator Installation](#collaborator-installation-private-repository) section above, you have already cloned via SSH — skip this step and proceed to Step 3 below.
-
-<a id="windows-step-3"></a>
-
 #### Step 3: Verify the Plugin Manifest
 
 Confirm Jerry's plugin manifest exists:
@@ -447,45 +208,21 @@ Install Jerry from the marketplace:
 
 ---
 
-## Future: Public Repository Installation
+### Linux
 
-> **Note:** This section documents a future installation scenario. Jerry is currently distributed to collaborators only. When Jerry is released as a public repository, these simplified instructions will apply and no SSH setup or collaborator invitation is required.
+Jerry is expected to work on Linux — the CI pipeline runs on Ubuntu for every job, and the macOS install commands are identical (uv and git are cross-platform). Follow the macOS instructions above. If `curl` is not available on your system, see the [uv installation documentation](https://docs.astral.sh/uv/getting-started/installation/) for alternative install methods. If you encounter a platform-specific issue, file a report using the [Linux compatibility template](https://github.com/geekatron/jerry/issues/new?template=linux-compatibility.yml).
 
-When Jerry becomes publicly available, installation simplifies significantly:
+---
 
-**No prerequisites beyond Git, uv, and Claude Code.** No GitHub account is required to clone a public repository, and no SSH key setup or collaborator invitation is needed. Note that unauthenticated HTTPS clones may be subject to GitHub API rate limits during periods of high traffic. If you encounter rate-limiting errors, authenticating with a GitHub account resolves this.
+### Advanced: SSH Clone (Optional — HTTPS is the primary install method)
 
-### Simplified Installation Steps
-
-**Step 1: Install uv** — identical to the platform-specific steps above. See [macOS Installation](#macos) or [Windows Installation](#windows) for platform-specific uv installation.
-
-**Step 2: Clone Jerry (HTTPS)**
-
-> **Important:** If your username contains spaces, use a path without spaces (e.g., `~/plugins/jerry` or `C:\plugins\jerry`).
+If you prefer SSH over HTTPS for cloning (e.g., you have an existing SSH key configured with GitHub and prefer SSH for all your development workflows), you can substitute the clone URL:
 
 ```bash
-# macOS/Linux
-git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
+git clone git@github.com:geekatron/jerry.git ~/plugins/jerry
 ```
 
-```powershell
-# Windows PowerShell
-git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
-```
-
-**Steps 3–5:** Identical to the existing marketplace steps — verify the plugin manifest, add the local marketplace, and install the plugin. See [macOS Installation](#macos) or [Windows Installation](#windows) for platform-specific steps.
-
-### What Changes vs. Collaborator Installation
-
-| Aspect | Current (Collaborator) | Future (Public) |
-|--------|------------------------|-----------------|
-| GitHub account needed | Yes (for collaborator access) | No |
-| SSH key setup | Required | Not required |
-| Collaborator invite | Required from repo admin | Not required |
-| Clone URL | SSH: `git@github.com:...` | HTTPS: `https://github.com/...` |
-| Marketplace steps | Identical | Identical |
-
-To check whether Jerry is now publicly available, visit [github.com/geekatron/jerry](https://github.com/geekatron/jerry) while logged out of GitHub — if the page loads without a login prompt, these simplified instructions apply. If you encounter authentication prompts when following these future steps, the repository has not yet been made public.
+This requires an SSH key configured with GitHub. See [GitHub's SSH documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) for setup instructions. All subsequent steps (marketplace add, plugin install) remain the same.
 
 ---
 
@@ -517,6 +254,8 @@ Jerry uses project-based workflows for organizing work. To set up a project:
    $env:JERRY_PROJECT = "PROJ-001-my-project"
    ```
 
+   > **Note:** The project name follows the format `PROJ-{NNN}-{slug}`. Choose any slug that describes your work (e.g., `PROJ-001-my-api`). The number prefix helps Jerry track multiple projects. Your first project is typically `PROJ-001`.
+
 2. **Create project structure:**
 
    ```bash
@@ -547,6 +286,8 @@ The SessionStart hook will automatically load project context when you start Cla
 
 ### Test a Skill
 
+> **Note:** Most skills require an active project (`JERRY_PROJECT` environment variable set). If you skipped the Configuration section, use `/help` instead to verify skill availability without a project.
+
 Run a simple skill to verify everything works:
 
 ```
@@ -554,8 +295,6 @@ Run a simple skill to verify everything works:
 ```
 
 You should see the problem-solving skill activate with information about available agents.
-
-> **Note:** `/problem-solving` requires an active project (`JERRY_PROJECT` environment variable set). If you skipped the Configuration section, use `/help` instead to verify skill availability without a project.
 
 ---
 
@@ -677,41 +416,11 @@ If still not found, add to PATH manually:
 - Or use short path: `~/plugins/jerry` (if using Git Bash paths)
 - Avoid using backslashes or environment variables in the Claude Code command
 
-### SSH Authentication Failed (Collaborators)
+### SSH Clone Fails
 
 **Symptom:** `git clone git@github.com:geekatron/jerry.git` returns "Permission denied (publickey)"
 
-**Causes:** SSH key not added to GitHub, passphrase not entered when prompted during `ssh -T`, key not loaded in ssh-agent, or collaborator invitation not accepted.
-
-**Solutions:**
-1. Verify your SSH key was added to GitHub: visit [github.com/settings/keys](https://github.com/settings/keys)
-2. Test SSH connectivity: `ssh -T git@github.com` — if prompted for a passphrase, enter it; a successful response rules out key/auth issues
-3. Confirm your key file exists: `ls ~/.ssh/id_ed25519.pub` (macOS) or `Test-Path "$env:USERPROFILE\.ssh\id_ed25519.pub"` (Windows)
-4. If you have multiple SSH keys, ensure the correct one is loaded: `ssh-add -l`
-5. Verify you accepted the collaborator invitation at github.com/notifications
-
-### Repository Not Found (Collaborators)
-
-**Symptom:** `git clone` returns "repository not found" or 404
-
-**Solutions:**
-1. Confirm you were added as a collaborator and accepted the invitation
-2. Verify your GitHub username has access by visiting the repository URL in a browser while logged in
-3. Try SSH connectivity test first: `ssh -T git@github.com` — must show your GitHub username
-
-### Credential Helper Not Found (macOS PAT Users)
-
-**Symptom:** `git credential-osxkeychain` returns "command not found" after running `git config --global credential.helper osxkeychain`
-
-**Cause:** The osxkeychain helper ships with Apple's Git (Xcode Command Line Tools) but is not included with Git installed via conda, Homebrew's `git` formula on some configurations, nix, or MacPorts.
-
-**Solution:** Use the `store` helper instead:
-```bash
-git config --global credential.helper store
-```
-The first time you run a git operation, enter your PAT when prompted — it will be saved to `~/.git-credentials` for future use.
-
-> **Security note:** The `store` helper saves credentials in plaintext. For better security, install the Xcode Command Line Tools (`xcode-select --install`) to get the osxkeychain helper.
+**Solution:** SSH requires an SSH key configured with GitHub. For most users, the HTTPS clone (shown in the installation steps above) is simpler and requires no SSH setup. If you need SSH, see [GitHub's SSH documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
 
 ### Project Not Configured (`<project-required>` or `<project-error>`)
 
@@ -771,7 +480,7 @@ uv run python scripts/bootstrap_context.py        # Set up symlinks
 uv run python scripts/bootstrap_context.py --check # Verify sync
 ```
 
-See [Bootstrap Guide](BOOTSTRAP.md) (located in the `docs/` directory) for platform-specific details.
+See [Bootstrap Guide](BOOTSTRAP.md) for platform-specific details.
 
 ### Architecture Overview
 
@@ -820,7 +529,7 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\plugins\jerry"
 ## Getting Help
 
 - **GitHub Issues:** [github.com/geekatron/jerry/issues](https://github.com/geekatron/jerry/issues)
-- **Documentation:** `docs/` directory in the repository
+- **Documentation:** [jerry.geekatron.org](https://jerry.geekatron.org)
 - **Claude Code Help:** Run `/help` in Claude Code
 
 ---

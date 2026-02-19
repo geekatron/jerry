@@ -8,9 +8,13 @@
 |---------|---------|
 | [What is Jerry?](#what-is-jerry) | Framework overview and core capabilities |
 | [Why Jerry?](#why-jerry) | Key reasons to adopt Jerry |
+| [Platform Support](#platform-support) | Supported platforms and status |
 | [Quick Start](#quick-start) | Get up and running in minutes |
+| [Known Limitations](#known-limitations) | Current constraints and caveats |
 | [Guides](#guides) | Playbooks for each skill |
 | [Reference](#reference) | Developer and contributor docs |
+| [Available Skills](#available-skills) | Skill commands with purpose descriptions |
+| [License](#license) | Open source license information |
 
 ---
 
@@ -44,6 +48,28 @@ Jerry is a Claude Code plugin that provides **behavioral guardrails**, **workflo
 
 ---
 
+## Platform Support
+
+Jerry is **primarily developed and tested on macOS**. Cross-platform portability is actively being improved.
+
+| Platform | Status |
+|----------|--------|
+| **macOS** | Primary — fully supported |
+| **Linux** | Expected to work — CI runs on Ubuntu, not primary dev platform |
+| **Windows** | In progress — core functionality works, edge cases may exist |
+
+Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. Encountering a platform-specific issue? File a report using the template for your platform:
+
+- [macOS issue](https://github.com/geekatron/jerry/issues/new?template=macos-compatibility.yml)
+- [Linux issue](https://github.com/geekatron/jerry/issues/new?template=linux-compatibility.yml)
+- [Windows issue](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml)
+
+---
+
+> **Early Access Notice:** Jerry is under active development. The framework is functional and used in production workflows, but APIs, skill interfaces, and configuration formats may change between releases. Pin to a specific [release tag](https://github.com/geekatron/jerry/releases) if you need stability (e.g., `git clone --branch v1.0.0 https://github.com/geekatron/jerry.git`).
+
+---
+
 ## Quick Start
 
 ### 1. Install Jerry
@@ -52,9 +78,10 @@ Follow the [Installation Guide](INSTALLATION.md) for platform-specific setup (ma
 
 ### 2. Bootstrap Context
 
-After cloning, run the bootstrap to set up the context distribution:
+From the cloned Jerry repository root, run the bootstrap to set up the context distribution (requires uv — installed in Step 1):
 
 ```bash
+cd ~/plugins/jerry
 uv run python scripts/bootstrap_context.py
 ```
 
@@ -62,14 +89,23 @@ See the [Bootstrap Guide](BOOTSTRAP.md) for details.
 
 ### 3. Create a Project and Start Working
 
-Set up your first project and invoke a skill:
+Set up your first project inside the Jerry clone and invoke a skill:
 
 ```bash
 export JERRY_PROJECT=PROJ-001-my-first-project
 mkdir -p projects/PROJ-001-my-first-project/.jerry/data/items
 ```
 
+> **Note:** This creates the project directory inside your Jerry clone (`~/plugins/jerry/projects/`). To use Jerry on a separate repository, run these commands from that repository's root instead.
+
 Then follow the [Getting Started Runbook](runbooks/getting-started.md) for a guided walkthrough from project setup to your first persisted skill output.
+
+---
+
+## Known Limitations
+
+- **Skill and agent definitions are not yet optimized.** Current definitions are comprehensive but verbose. Optimization for token efficiency and best-practice alignment is planned for upcoming releases.
+- **Windows portability is in progress.** Some hooks and scripts may behave differently on Windows. See [Platform Support](#platform-support) above.
 
 ---
 
@@ -106,7 +142,7 @@ Then follow the [Getting Started Runbook](runbooks/getting-started.md) for a gui
 | Transcript | `/transcript` | Meeting transcript parsing |
 | NASA SE | `/nasa-se` | Systems engineering processes |
 | Architecture | `/architecture` | Design decisions and ADRs |
-| Adversary | `/adversary` | Adversarial quality reviews |
+| Adversary | `/adversary` | Adversarial quality reviews and tournament scoring |
 
 ---
 
