@@ -45,7 +45,7 @@ The crown jewel of the adversarial research pipeline: 36 candidates from three p
     | S-012 | FMEA | Decomposition | Systematic failure mode enumeration with severity/occurrence/detection scoring |
     | S-013 | Inversion Technique | Decomposition | Ask "how would we guarantee failure?" to generate anti-pattern checklists |
     | S-014 | LLM-as-Judge | Self-Correction | Rubric-based structured evaluation with numerical scores |
-    | S-015 | Progressive Adversarial Escalation | Self-Correction | Graduated-intensity review with escalation gates |
+    | S-015 | Prompt Adversarial Examples | Self-Correction | Adversarial prompt testing with graduated intensity |
 
 ??? abstract "Key Data: Mechanistic Families"
     | Family | Mechanism | Strategies | Best For |
@@ -84,6 +84,48 @@ The foundational research artifact documenting 12 strategies from peer-reviewed 
     Key finding: strategies cluster into three fundamental mechanistic families — **role-based adversarialism** (breaking groupthink), **structured decomposition** (ensuring completeness), and **dialectical synthesis** (producing novel insights).
 
 [:octicons-link-external-16: Academic Research (861 lines, 36 citations)](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/EN-301-deep-research-adversarial-strategies/deliverable-001-academic-adversarial-research.md)
+
+---
+
+## Industry Practices & LLM-Specific Patterns
+
+Research into 14 adversarial review strategies from software engineering practice (Fagan inspections, Google code review, ATAM), design review methodology, and LLM-specific self-correction patterns (Constitutional AI, Self-Refine, multi-agent debate).
+
+??? note "Methodology"
+    Surveyed industry software engineering practices (Fagan, 1976 through modern Google code review culture), design critique methodologies, LLM/AI adversarial systems (Constitutional AI, Self-Refine, multi-agent debate), and QA adversarial patterns. Identified the creator-critic-revision cycle as a universal convergent pattern across all four domains.
+
+??? abstract "Key Data"
+    | Domain | Strategies | Key Insight |
+    |--------|-----------|-------------|
+    | Software Engineering | Fagan Inspection, Google Code Review, ATAM, Pair Programming | Deep adversarial traditions with measured defect-detection effectiveness |
+    | LLM-Specific | Constitutional AI, Self-Refine, Multi-Agent Debate | Directly implementable patterns for creator-critic-revision cycles |
+    | Design/Product | Design critique, stakeholder challenge | Present-critique-iterate mirrors the universal pattern |
+    | QA | Adversarial testing, boundary analysis | Testing-oriented adversarial methods |
+
+    **35 citations** across software engineering, AI/ML, and design methodology literature.
+
+[:octicons-link-external-16: Industry Research (1,097 lines, 35 citations)](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/EN-301-deep-research-adversarial-strategies/deliverable-002-industry-adversarial-research.md)
+
+---
+
+## Emerging & Cross-Domain Adversarial Approaches
+
+10 emerging adversarial review strategies discovered through cross-domain transfer analysis (legal, medical, military), cognitive science debiasing techniques, and frontier AI adversarial collaboration patterns.
+
+??? note "Methodology"
+    Applied cross-domain transfer analysis across legal (moot court), medical (M&M conferences), and military (wargaming) traditions. Identified cognitive debiasing techniques (Reference Class Forecasting, Inversion Technique) and AI-native patterns (Constitutional AI critique chains, progressive adversarial escalation) as underexplored adversarial review strategies. Explicit differentiation against TASK-001 and TASK-002 findings.
+
+??? abstract "Key Data"
+    | Category | Example Strategies | Novelty |
+    |----------|--------------------|---------|
+    | Cross-Domain Transfer | Moot Court, M&M Conference, Wargaming | Centuries of refined adversarial practice, never formally applied to software review |
+    | Cognitive Debiasing | Reference Class Forecasting, Inversion Technique | Powerful adversarial tools rarely framed as review strategies |
+    | AI-Native | Constitutional AI Critique Chains, Progressive Adversarial Escalation | No direct pre-AI precedent; most applicable to Jerry's architecture |
+    | Meta-Strategy | Cynefin-Gated Selection | Matches adversarial intensity to problem complexity |
+
+    **46 references** spanning legal theory, medical practice, military doctrine, and AI safety research.
+
+[:octicons-link-external-16: Emerging Research (706 lines, 46 references)](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/work/EPIC-002-quality-enforcement/FEAT-004-adversarial-strategy-research/EN-301-deep-research-adversarial-strategies/deliverable-003-emerging-adversarial-research.md)
 
 ---
 

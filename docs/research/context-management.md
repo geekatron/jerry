@@ -35,6 +35,9 @@ Research into optimizing the primary context file for Claude Code, with quantifi
 
 Research on decomposing monolithic context files into modular, selectively-loaded components — the pattern Jerry uses to combat context rot.
 
+??? note "Methodology"
+    Analyzed monolithic vs. modular context loading patterns. Drew on Anthropic AWS re:Invent 2025 insights on context-as-bottleneck. Tested index/manifest loading strategies against Jerry's rule files.
+
 ??? abstract "Key Data"
     - Anthropic AWS re:Invent 2025 quote on context-as-bottleneck
     - Index/manifest patterns for selective loading
@@ -48,6 +51,9 @@ Research on decomposing monolithic context files into modular, selectively-loade
 ## Cross-Platform Sync Strategies
 
 Research on syncing `.context/` rules to `.claude/rules/` across different operating systems and enterprise environments.
+
+??? note "Methodology"
+    Tested symlink, copy, and junction strategies across macOS, Linux, and Windows. Documented enterprise IT constraints (Group Policy, antivirus interference) through real-world Windows enterprise environment testing. L0/L1/L2 structured output.
 
 ??? abstract "Key Data"
     - L0/L1/L2 structure with platform compatibility matrix

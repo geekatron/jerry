@@ -250,6 +250,8 @@
 | 2026-02-19 | Claude | EN-959 COMPLETE. Tier 1 Flagship Research Pages. 5 pages for 7 artifacts: single-vs-multi-agent.md, adversarial-strategy-catalog.md, strategy-selection-enforcement.md, skill-compliance-framework.md, governance-constitutional-ai.md. |
 | 2026-02-19 | Claude | EN-960 COMPLETE. Tier 2/3 Supporting Research Pages. 5 domain pages for 16 artifacts: adversarial-deep-dives.md, oss-methodology.md, context-management.md, architecture-patterns.md, claude-code-ecosystem.md. |
 | 2026-02-19 | Claude | EN-961 COMPLETE. MkDocs Integration. `research/` removed from exclude_docs, `research/internal/` added. 11-page Research nav section added. `mkdocs build --strict` passes. Anchor fix in index.md. |
+| 2026-02-19 | Claude | EN-962 COMPLETE. Quality Gate & Adversarial Review. C2 gate: S-010 + S-003 + S-002 review, S-014 Iter1 scored 0.886 (REVISE). Addressed 6 findings (methodology blocks on 13 artifact sections, S-015 identity fix, TASK-002/003 entries, claim attribution, label consistency). S-014 Iter2 scored 0.93 (PASS). |
+| 2026-02-19 | Claude | **FEAT-027 COMPLETE.** Research Section for Public Documentation Site. 5/5 enablers done, 7/7 ACs PASS. 10 research pages + landing page, 23 artifacts exposed with inline key findings + expandable methodology/data + GitHub links. Quality gate: 0.93 (S-014). `mkdocs build --strict` clean. |
 
 ---
 

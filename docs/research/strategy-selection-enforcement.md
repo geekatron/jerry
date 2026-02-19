@@ -47,7 +47,7 @@ The formal architecture decision record for selecting Jerry's adversarial strate
 
     **Sensitivity analysis**: 9/10 stable across all 12 weight configurations (threshold: 8/10). Only S-001 at rank 10 is sensitive in 2 configurations where S-006 (ACH) would replace it.
 
-    **5 Excluded** (all with RED risks or insufficient composite score): S-005 Dialectical Inquiry, S-006 ACH, S-008 Socratic Method, S-009 Multi-Agent Debate, S-015 Progressive Adversarial Escalation.
+    **5 Excluded** (all with RED risks or insufficient composite score): S-005 Dialectical Inquiry, S-006 ACH, S-008 Socratic Method, S-009 Multi-Agent Debate, S-015 Prompt Adversarial Examples.
 
 [:octicons-link-external-16: Full ADR (480 lines)](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/decisions/ADR-EPIC002-001-strategy-selection.md)
 

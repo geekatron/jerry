@@ -19,7 +19,7 @@ This section curates the key research produced during Jerry's development. Each 
 | [Software Architecture](#software-architecture) | 1 | Hexagonal, DDD, and CQRS patterns in Python |
 | [Claude Code Ecosystem](#claude-code-ecosystem) | 1 | Plugin, skill, and CLI patterns |
 
-**Total:** 47 research artifacts across 9 domains, ~28,000 lines of documented research.
+**Total:** 47 research artifacts across 8 domains, ~28,000 lines of documented research. ([:octicons-link-external-16: Full catalog](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/research/bug008-research-catalog.md))
 
 ---
 

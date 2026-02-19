@@ -17,6 +17,9 @@
 
 Research into the Claude Code CLI's architecture, including its agentic loop, hooks system, and configuration layering.
 
+??? note "Methodology"
+    Analyzed Claude Code CLI documentation, source patterns, and runtime behavior. Structured as L0 (executive summary) and L1 (technical details) for multi-audience access.
+
 ??? abstract "Key Data"
     - 881 lines with L0/L1 structure
     - Agentic architecture analysis: tool loop, context management, permission model
@@ -33,6 +36,9 @@ Research into the Claude Code CLI's architecture, including its agentic loop, ho
 
 Research into the plugin architecture, directory structure, manifest format, and distribution patterns.
 
+??? note "Methodology"
+    Analyzed Claude Code plugin system documentation and existing plugin implementations. Cataloged directory structure conventions, manifest format requirements, and distribution patterns (local, git, marketplace).
+
 ??? abstract "Key Data"
     - 675 lines with L0/L1 structure
     - Plugin directory structure and manifest format
@@ -47,6 +53,9 @@ Research into the plugin architecture, directory structure, manifest format, and
 ## Claude Code Skills Best Practices
 
 Research into skill structure, the SKILL.md schema, multi-agent patterns, and the P-003 nesting constraint.
+
+??? note "Methodology"
+    Analyzed SKILL.md schema patterns across multiple Claude Code skill implementations. Documented multi-agent patterns, activation keyword conventions, and the P-003 nesting constraint through empirical testing.
 
 ??? abstract "Key Data"
     - 718 lines with L0/L1 structure

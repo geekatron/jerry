@@ -18,7 +18,7 @@
 
 The foundational governance document establishing behavioral principles for all agents operating within the Jerry Framework. Rather than encoding rules procedurally, the Constitution follows the Constitutional AI pattern where agents self-critique against explicit written principles.
 
-??? note "Design Philosophy"
+??? note "Methodology"
     The Constitution follows four design principles:
 
     1. **Principles over procedures** (declarative > imperative) — agents understand *why*, not just *what*

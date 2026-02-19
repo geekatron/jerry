@@ -17,6 +17,9 @@
 
 Comprehensive research into open-source release practices from major foundations and companies, covering licensing, documentation, community building, and security.
 
+??? note "Methodology"
+    Synthesized best practices from Google Open Source, Microsoft OSS, and Apache Software Foundation. Mapped OpenSSF Scorecard criteria to Jerry's current state. L0/L1/L2 structured analysis with actionable recommendations.
+
 ??? abstract "Key Data"
     - 945 lines with L0/L1/L2 structure
     - Sources: Google Open Source, Microsoft OSS, Apache Software Foundation
@@ -54,6 +57,9 @@ Failure Mode and Effects Analysis applied to the open-source release, scoring 21
 
 Root cause analysis applying 5 Whys, Ishikawa, and 8D frameworks to identify systemic patterns behind Jerry's preparation gaps.
 
+??? note "Methodology"
+    Applied three complementary root cause analysis frameworks: 5 Whys for causal chain depth, Ishikawa (fishbone) diagrams for cause categorization, and 8D methodology for corrective/preventive action planning. Each symptom cluster was traced to systemic patterns.
+
 ??? abstract "Key Data"
     - 5 root cause patterns discovered across multiple symptom clusters
     - Ishikawa (fishbone) diagrams for cause categorization
@@ -67,6 +73,9 @@ Root cause analysis applying 5 Whys, Ishikawa, and 8D frameworks to identify sys
 ## Gap Analysis: 5W2H Framework
 
 Systematic gap analysis identifying what Jerry needed before release readiness.
+
+??? note "Methodology"
+    Applied 5W2H (Who, What, When, Where, Why, How, How Much) framework combined with Ishikawa categorization and Pareto prioritization. Each gap was classified by impact and urgency to produce a ranked mitigation plan.
 
 ??? abstract "Key Data"
     - 27 gaps identified using 5W2H + Ishikawa + Pareto frameworks

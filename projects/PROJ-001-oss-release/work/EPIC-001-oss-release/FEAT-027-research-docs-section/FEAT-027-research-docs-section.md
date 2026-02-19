@@ -1,12 +1,12 @@
 # FEAT-027: Research Section for Public Documentation Site
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** EPIC-001
 > **Owner:** --
 > **Target Sprint:** --
@@ -61,13 +61,13 @@ Serves dual audience: developers/practitioners building similar frameworks AND A
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Research section visible in MkDocs navigation with logical grouping by domain
-- [ ] AC-2: Tier 1 flagship research (7 artifacts) has dedicated summary pages with key findings, methodology, and GitHub cross-links
-- [ ] AC-3: Tier 2/3 research (16 artifacts) has curated entries with summaries and GitHub links
-- [ ] AC-4: All GitHub cross-links resolve correctly (no 404s)
-- [ ] AC-5: `mkdocs build --strict` passes with research section included
-- [ ] AC-6: Research catalog (`projects/PROJ-001-oss-release/research/bug008-research-catalog.md`) referenced as source of truth for artifact selection
-- [ ] AC-7: Quality gate PASS (>= 0.92) via /adversary review
+- [x] AC-1: Research section visible in MkDocs navigation with logical grouping by domain
+- [x] AC-2: Tier 1 flagship research (7 artifacts) has dedicated summary pages with key findings, methodology, and GitHub cross-links
+- [x] AC-3: Tier 2/3 research (16 artifacts) has curated entries with summaries and GitHub links
+- [x] AC-4: All GitHub cross-links resolve correctly (no 404s)
+- [x] AC-5: `mkdocs build --strict` passes with research section included
+- [x] AC-6: Research catalog (`projects/PROJ-001-oss-release/research/bug008-research-catalog.md`) referenced as source of truth for artifact selection
+- [x] AC-7: Quality gate PASS (>= 0.92) via /adversary review — scored 0.93
 
 ---
 
@@ -75,11 +75,11 @@ Serves dual audience: developers/practitioners building similar frameworks AND A
 
 | ID | Title | Status | Effort | Priority |
 |----|-------|--------|--------|----------|
-| [EN-958](./EN-958-research-section-architecture/EN-958-research-section-architecture.md) | Research Section Architecture & Navigation | pending | 3 | high |
-| [EN-959](./EN-959-tier1-flagship-research/EN-959-tier1-flagship-research.md) | Tier 1 Flagship Research Pages | pending | 5 | high |
-| [EN-960](./EN-960-tier2-tier3-supporting-research/EN-960-tier2-tier3-supporting-research.md) | Tier 2 & 3 Supporting Research Pages | pending | 5 | medium |
-| [EN-961](./EN-961-mkdocs-integration/EN-961-mkdocs-integration.md) | MkDocs Integration & Build Validation | pending | 3 | high |
-| [EN-962](./EN-962-quality-gate/EN-962-quality-gate.md) | Quality Gate & Adversarial Review | pending | 2 | high |
+| [EN-958](./EN-958-research-section-architecture/EN-958-research-section-architecture.md) | Research Section Architecture & Navigation | done | 3 | high |
+| [EN-959](./EN-959-tier1-flagship-research/EN-959-tier1-flagship-research.md) | Tier 1 Flagship Research Pages | done | 5 | high |
+| [EN-960](./EN-960-tier2-tier3-supporting-research/EN-960-tier2-tier3-supporting-research.md) | Tier 2 & 3 Supporting Research Pages | done | 5 | medium |
+| [EN-961](./EN-961-mkdocs-integration/EN-961-mkdocs-integration.md) | MkDocs Integration & Build Validation | done | 3 | high |
+| [EN-962](./EN-962-quality-gate/EN-962-quality-gate.md) | Quality Gate & Adversarial Review | done | 2 | high |
 
 **Total Effort:** 18 points
 
@@ -90,10 +90,10 @@ Serves dual audience: developers/practitioners building similar frameworks AND A
 | Metric | Value |
 |--------|-------|
 | Total Enablers | 5 |
-| Completed | 0 |
+| Completed | 5 |
 | In Progress | 0 |
-| Pending | 5 |
-| Completion | 0% |
+| Pending | 0 |
+| Completion | 100% |
 
 ---
 
@@ -120,5 +120,6 @@ Serves dual audience: developers/practitioners building similar frameworks AND A
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Feature created. 47 research artifacts cataloged across 9 domains. Tiered presentation approach (inline + admonitions + GitHub links) selected per user preference. |
+| 2026-02-19 | Claude | done | All 5 enablers complete. 10 research pages + landing page created. MkDocs integrated with 11-page Research nav section. Quality gate PASS: S-014 scored 0.93 after creator-critic-revision cycle (0.886 → 0.93). |
 
 ---
