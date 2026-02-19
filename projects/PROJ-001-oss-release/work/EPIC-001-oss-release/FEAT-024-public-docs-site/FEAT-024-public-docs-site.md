@@ -9,12 +9,12 @@ PURPOSE: MkDocs Material docs site with custom domain for Jerry OSS
 -->
 
 > **Type:** feature
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-17
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** EPIC-001-oss-release
 > **Owner:** --
 
@@ -304,12 +304,12 @@ When MkDocs deploys via `mkdocs gh-deploy --force`, it **force-pushes** to the `
 
 ## Acceptance Criteria (Feature-Level)
 
-- [ ] AC-1: `jerry.geekatron.org` serves a MkDocs Material documentation site
-- [ ] AC-2: Site is automatically rebuilt and deployed on push to `main`
-- [ ] AC-3: HTTPS enforced with valid certificate
-- [ ] AC-4: Landing page introduces Jerry Framework with clear navigation
-- [ ] AC-5: Only curated public-facing content is accessible — no internal docs exposed
-- [ ] AC-6: All 5 enablers (EN-946 through EN-950) pass their acceptance criteria
+- [x] AC-1: `jerry.geekatron.org` serves a MkDocs Material documentation site — MkDocs Material 9.6.7, HTTP/2 200 confirmed
+- [x] AC-2: Site is automatically rebuilt and deployed on push to `main` — docs.yml workflow active (ID 235984839), latest run success
+- [x] AC-3: HTTPS enforced with valid certificate — https_enforced=true, Let's Encrypt cert approved (expires 2026-05-19)
+- [x] AC-4: Landing page introduces Jerry Framework with clear navigation — docs/index.md with 4-section nav (12 pages)
+- [x] AC-5: Only curated public-facing content is accessible — nav curated (13 PUBLIC from 57 total), exclude_docs blocks INTERNAL dirs, strict:true
+- [x] AC-6: All 5 enablers (EN-946 through EN-950) pass their acceptance criteria — 5/5 complete, all ACs verified
 
 ---
 
@@ -319,19 +319,19 @@ When MkDocs deploys via `mkdocs gh-deploy --force`, it **force-pushes** to the `
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/5 completed)              |
-| Tasks:     [....................] 0% (0/18 completed)             |
+| Enablers:  [████████████████████] 100% (5/5 completed)           |
+| Tasks:     [████████████████████] 100% (18/18 completed)         |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [████████████████████] 100%                            |
 +------------------------------------------------------------------+
 ```
 
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 5 |
-| **Completed** | 0 |
+| **Completed** | 5 |
 | **In Progress** | 0 |
-| **Pending** | 5 |
+| **Pending** | 0 |
 | **Total Tasks** | 18 |
 | **Total Effort** | 15 points |
 
@@ -342,6 +342,7 @@ When MkDocs deploys via `mkdocs gh-deploy --force`, it **force-pushes** to the `
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Feature created. Research via Context7 (MkDocs Material, GitHub Pages docs) + web search. DEC-006 (MkDocs over Jekyll). DISC-003 (legacy build state), DISC-004 (CNAME wipe gotcha). 5 enablers (EN-946–950), 18 tasks, 15 effort points. |
+| 2026-02-19 | Claude | done | **FEAT-024 COMPLETE.** Orchestration feat024-docssite-20260217-001: 4 phases, 15 agents, 3 quality gates (QG-1: 0.9340, QG-2: 0.9440, QG-3: 0.9320). All 6 ACs satisfied. 5/5 enablers complete. Site live at https://jerry.geekatron.org. |
 
 ---
 

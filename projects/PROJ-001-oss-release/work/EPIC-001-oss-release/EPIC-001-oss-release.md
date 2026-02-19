@@ -64,8 +64,9 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-016 | Post-Release README & Documentation Updates | done | high | 100% |
 | FEAT-017 | Installation Instructions Modernization | done | high | 100% |
 | FEAT-018 | User Documentation — Runbooks & Playbooks | done | medium | 100% |
-| FEAT-023 | Claude Code Birthday Showcase — Promotional Video | in_progress | critical | 0% |
-| FEAT-024 | Public Documentation Site — jerry.geekatron.org | pending | high | 0% |
+| FEAT-023 | Claude Code Birthday Showcase — Promotional Video | done | critical | 100% |
+| FEAT-024 | Public Documentation Site — jerry.geekatron.org | done | high | 100% |
+| FEAT-025 | Go Public (Repository Visibility & Community Health) | in_progress | high | 0% |
 
 ### Feature Links
 
@@ -78,6 +79,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 - [FEAT-018: User Documentation — Runbooks & Playbooks](./FEAT-018-user-documentation/FEAT-018-user-documentation.md)
 - [FEAT-023: Claude Code Birthday Showcase — Promotional Video](./FEAT-023-showcase-video/FEAT-023-showcase-video.md)
 - [FEAT-024: Public Documentation Site — jerry.geekatron.org](./FEAT-024-public-docs-site/FEAT-024-public-docs-site.md)
+- [FEAT-025: Go Public (Repository Visibility & Community Health)](./FEAT-025-go-public/FEAT-025-go-public.md)
 
 ---
 
@@ -89,12 +91,12 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [####################] 100% (7/7 completed)            |
-| Enablers:  [####################] 100% (37/37 completed)          |
+| Features:  [##################  ] 90% (9/10 completed)            |
+| Enablers:  [##################  ] 90% (37/41 completed)           |
 | Bugs:      [################### ] 94% (15/16 completed)           |
 | Tasks:     [####################] 100% (all completed)            |
 +------------------------------------------------------------------+
-| Overall:   [################### ] 98%                             |
+| Overall:   [##################  ] 92%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -102,16 +104,16 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 7 |
-| **Completed Features** | 7 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018) |
-| **Pending Features** | 0 |
-| **Feature Completion %** | 100% |
-| **Total Enablers** | 37 (4 FEAT-001 + 8 FEAT-002 + 7 FEAT-003 + 6 FEAT-015 + 6 FEAT-016 + 3 FEAT-017 + 3 FEAT-018) |
+| **Total Features** | 10 |
+| **Completed Features** | 9 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018, FEAT-023, FEAT-024) |
+| **In Progress Features** | 1 (FEAT-025) |
+| **Feature Completion %** | 90% |
+| **Total Enablers** | 41 (37 completed + 4 FEAT-025) |
 | **Completed Enablers** | 37 |
-| **Total Effort (new features)** | 24 (9 FEAT-016 + 7 FEAT-017 + 10 FEAT-018) |
+| **Total Effort** | 32 (24 prior + 8 FEAT-025) |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
-| **Total Bugs (EPIC-001 direct)** | 1 (BUG-004, pending) |
+| **Total Bugs (EPIC-001 direct)** | 1 (BUG-004, resolved) |
 
 ---
 

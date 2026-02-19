@@ -1,4 +1,4 @@
-# EPIC-005: Je Ne Sais Quoi — The Saucer Boy Spirit
+# EPIC-001: Je Ne Sais Quoi — The Saucer Boy Spirit
 
 <!--
 TEMPLATE: Epic
@@ -15,7 +15,7 @@ PURPOSE: Inject personality, joy, and the Shane McConkey ethos into Jerry
 > **Created:** 2026-02-17
 > **Due:** --
 > **Completed:** --
-> **Parent:** PROJ-001-oss-release
+> **Parent:** PROJ-003-je-ne-sais-quoi
 > **Owner:** --
 > **Target Quarter:** FY26-Q1
 
@@ -179,8 +179,8 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 
 ### Related Epics
 
-- [EPIC-001](../EPIC-001-oss-release/EPIC-001-oss-release.md) — OSS Release Preparation (provides the technical foundation this epic adds soul to)
-- [EPIC-003](../EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) — Quality Framework Implementation (provides the enforcement mechanisms this epic humanizes)
+- EPIC-001 (PROJ-001) — OSS Release Preparation (provides the technical foundation this epic adds soul to)
+- EPIC-003 (PROJ-001) — Quality Framework Implementation (provides the enforcement mechanisms this epic humanizes)
 
 ---
 
@@ -188,7 +188,8 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
-| 2026-02-17 | Claude | pending | Epic created. Born from a conversation about what music represents Jerry. Saucer Boy spirit adopted as design philosophy. Initial soundtrack curated (23 songs across 4 categories). |
+| 2026-02-17 | Claude | pending | Epic created as EPIC-005 in PROJ-001. Born from a conversation about what music represents Jerry. Saucer Boy spirit adopted as design philosophy. Initial soundtrack curated (23 songs across 4 categories). |
+| 2026-02-18 | Claude | pending | Migrated from PROJ-001 (EPIC-005) to PROJ-003 as EPIC-001. Renumbered for project-local ID consistency. |
 
 ---
 

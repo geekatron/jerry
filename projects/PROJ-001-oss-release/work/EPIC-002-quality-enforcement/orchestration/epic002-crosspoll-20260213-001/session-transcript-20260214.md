@@ -37,7 +37,7 @@
 | **Total JSONL Lines** | 17,395 |
 | **Total Context Compactions** | 53 (22 before EPIC-002, 31 during EPIC-002) |
 | **EPIC-002 Compactions** | #32 (line 11645) through #53 (line 17189) |
-| **Git Config** | `Saucer Boy <adamcnowak@gmail.com>` |
+| **Git Config** | `Saucer Boy <redacted@example.com>` |
 | **Key Actors** | User (Adam Nowak), Orchestrator (main Claude context), 30+ background agents |
 | **Workflow ID** | `epic002-crosspoll-20260213-001` |
 | **Quality Target** | >= 0.92 weighted score across 6 dimensions |
@@ -285,7 +285,7 @@ The ENF-to-ADV agent (aa04497) experienced a context compaction within its own e
 - Risk Summary with FMEA updates (RPN > 200 reduced from 5 to 2)
 - Full Source Traceability to all 8 EN-403/404 artifacts
 
-Git config verified: `Saucer Boy <adamcnowak@gmail.com>`
+Git config verified: `Saucer Boy <redacted@example.com>`
 
 **Commit `9c16e71`** (2026-02-13T21:25:16-0800) — "feat(epic-002): complete Barrier 2 cross-pollination handoffs"
 
