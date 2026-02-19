@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
 | ~~EPIC-005~~ | ~~Je Ne Sais Quoi — The Saucer Boy Spirit~~ | migrated | — | *Migrated to PROJ-003* |
@@ -245,6 +245,7 @@
 | 2026-02-19 | Claude | **FEAT-026 COMPLETE.** Post-Public Documentation Refresh. 3 enablers (EN-955–957), 10 effort pts. C2 quality gate: S-003 + S-007 + S-002 + S-014 (0.8925 REVISE → 0.9195 PASS). INSTALLATION.md rewritten, docs/index.md enriched. **EPIC-001 CLOSED: 11/11 features, 44/44 enablers, 19/19 bugs. 100%.** |
 
 | 2026-02-19 | Claude | BUG-008 created under EPIC-001: Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable. Playbook and mandatory-skill-usage.md incorrectly exclude transcript from keyword triggers, citing Python script dependency. Python is VTT-only; LLM fallback handles non-VTT automatically. EPIC-001 reopened. |
+| 2026-02-19 | Claude | FEAT-027 created under EPIC-001: Research Section for Public Documentation Site. 5 enablers (EN-958–962), 18 effort pts. 47 research artifacts cataloged across 9 domains. Tiered approach: inline summaries + admonitions + GitHub cross-links. Dual audience (developers + AI/LLM community). Research catalog: `projects/PROJ-001-oss-release/research/bug008-research-catalog.md`. |
 
 ---
 
