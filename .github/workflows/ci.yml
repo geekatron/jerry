@@ -217,6 +217,15 @@ jobs:
             -v \
             --tb=short
 
+      - name: Run MkDocs e2e validation tests
+        run: |
+          # Validate MkDocs build output: icon rendering, link quality, anchor integrity
+          # Requires mkdocs-material (available via --extra dev)
+          PYTHONPATH="." uv run pytest \
+            tests/e2e/test_mkdocs_research_validation.py \
+            -v \
+            --tb=short
+
       - name: Verify jerry --help works
         run: PYTHONPATH="." uv run jerry --help
 

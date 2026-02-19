@@ -134,7 +134,7 @@ Built the MkDocs site and inspected the rendered HTML for `research/index.html`.
 - [x] AC-3: Landing page overview links navigate correctly to their target sections
 - [x] AC-4: Automated validation script catches broken icons, broken anchors, and broken links
 - [x] AC-5: `mkdocs build --strict` continues to pass with 0 warnings on research pages
-- [ ] AC-6: Validation script integrated into pre-commit or CI so regressions fail the build
+- [x] AC-6: Validation script integrated into pre-commit or CI so regressions fail the build
 
 ### Quality Checklist
 
@@ -168,5 +168,6 @@ Built the MkDocs site and inspected the rendered HTML for `research/index.html`.
 | 2026-02-19 | Claude | done | Fixed all 4 tasks: (1) Added pymdownx.emoji + attr_list + md_in_html extensions to mkdocs.yml, (2) renamed bug008-research-catalog.md to research-catalog.md, (3) updated all catalog references, (4) added e2e test suite (3 tests: icon rendering, link quality, anchor integrity). AC-6 deferred — CI integration requires pre-commit hook setup. |
 | 2026-02-19 | Claude | done | /adversary C3 review (S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014). Iter1: 0.56 REJECTED — 1 CRITICAL (missing pytest markers + mkdocs not in pip CI deps), 6 MAJOR findings. Fixed: (a) added `pytestmark = [pytest.mark.e2e, pytest.mark.subprocess]`, (b) registered markers in pyproject.toml, (c) `build_site` fixture now cleans `site/` before build, (d) icon regex excludes `<code>`/`<pre>` blocks to prevent false positives. Note: `docs.yml` version skew (9.6.7 vs 9.7.2) is pre-existing, not introduced by BUG-009. |
 | 2026-02-19 | Claude | done | /adversary C3 Iter2: 0.70 REJECTED — `test-uv` CI job uses `-m "not llm"` which does not exclude `subprocess`-marked tests, and `uv sync --extra test` lacks mkdocs-material (only in `dev` group). Fixed: added `and not subprocess` to test-uv marker filter in ci.yml (both coverage and skip-coverage paths). |
+| 2026-02-19 | Claude | done | /adversary C3 Iter3: 0.80 REJECTED — no CI execution path for e2e tests (BLOCKING-001), AC-6 deferred without tracked follow-on (BLOCKING-002). Fixed: added MkDocs e2e validation step to `cli-integration` CI job (already has mkdocs-material via `--extra dev`). AC-6 now complete — all 6 ACs met. |
 
 ---
