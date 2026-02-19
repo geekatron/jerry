@@ -1,12 +1,12 @@
 # EN-945: Video Script & Application Materials
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** critical
 > **Impact:** high
 > **Created:** 2026-02-18
 > **Due:** 2026-02-18
-> **Completed:** --
+> **Completed:** 2026-02-18
 > **Parent:** FEAT-023
 > **Owner:** Claude
 > **Effort:** 3
@@ -36,11 +36,11 @@ Write a 2-minute hype reel script for the Jerry Framework promotional video targ
 
 ## Acceptance Criteria
 
-- [ ] AC-1: 2-minute hype reel script (~280 words narration at 140 WPM)
-- [ ] AC-2: Script includes scene-by-scene visual direction for InVideo
-- [ ] AC-3: Saucer Boy persona throughout — high energy, technically precise, never dry
-- [ ] AC-4: Adversarial quality review PASS (>= 0.92, C2 strategies: S-003, S-002, S-007, S-014)
-- [ ] AC-5: Application description (2-3 sentences), GitHub URL, Opus capabilities prepared
+- [x] AC-1: 2-minute hype reel script (~280 words narration at 140 WPM) — v5 final, 257 words
+- [x] AC-2: Script includes scene-by-scene visual direction for InVideo — 6 scenes with music cues
+- [x] AC-3: Saucer Boy persona throughout — high energy, technically precise, never dry
+- [x] AC-4: Adversarial quality review PASS (>= 0.92, C4 tournament: 10 strategies, composite 0.92)
+- [x] AC-5: Application description (2-3 sentences), GitHub URL, Opus capabilities prepared
 
 ---
 
@@ -48,9 +48,9 @@ Write a 2-minute hype reel script for the Jerry Framework promotional video targ
 
 | ID | Title | Status | Effort |
 |----|-------|--------|--------|
-| TASK-001 | Write 2-minute hype reel script | in_progress | 1 |
-| TASK-002 | Adversarial quality review of script | pending | 1 |
-| TASK-003 | Prepare application materials | pending | 1 |
+| TASK-001 | Write 2-minute hype reel script | done | 1 |
+| TASK-002 | Adversarial quality review of script | done | 1 |
+| TASK-003 | Prepare application materials | done | 1 |
 
 ---
 
@@ -59,3 +59,4 @@ Write a 2-minute hype reel script for the Jerry Framework promotional video targ
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-18 | Claude | in_progress | Enabler created. Deadline: TODAY. Script using Saucer Boy persona for InVideo hype reel. |
+| 2026-02-18 | Claude | done | All 3 tasks complete. Script v5 final (257 words, 6 scenes). C4 tournament: 4 iterations (0.83 -> 0.86 -> 0.89 -> 0.92). All 5 ACs PASS. |
