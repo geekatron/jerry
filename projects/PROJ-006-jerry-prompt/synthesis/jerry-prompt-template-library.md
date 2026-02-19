@@ -646,7 +646,7 @@ Templates are pre-scored against the 7-criterion quality rubric. A correctly fil
 
 | Template | Expected Tier | Expected Score | Weakest Criterion | How to Reach Tier 4 |
 |----------|--------------|----------------|-------------------|---------------------|
-| T1: Research Spike | Tier 3 (Proficient) | ~82/100 | C4: no quality threshold | Add `ps-critic review after research; quality threshold >= 0.85` |
+| T1: Research Spike | Tier 3–4 (Proficient-Exemplary) | ~88/100 | C5: single-phase (no decomposition needed) | Already near Tier 4 with quality threshold included |
 | T2: Implementation Task | Tier 3–4 (Proficient-Exemplary) | ~87/100 | C5: single-phase (no decomposition needed) | Already at Tier 4 if output path is fully specified |
 | T3: Multi-Skill Orchestration | Tier 4 (Exemplary) | ~94/100 | None — all 5 elements present | Already at Tier 4 |
 | T4: Architecture Decision | Tier 4 (Exemplary) | ~91/100 | C5: single-phase | Already at Tier 4; add context file reference for C3 |
