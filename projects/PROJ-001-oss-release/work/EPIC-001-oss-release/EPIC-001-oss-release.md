@@ -64,6 +64,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-016 | Post-Release README & Documentation Updates | done | high | 100% |
 | FEAT-017 | Installation Instructions Modernization | done | high | 100% |
 | FEAT-018 | User Documentation — Runbooks & Playbooks | done | medium | 100% |
+| FEAT-023 | Claude Code Birthday Showcase — Promotional Video | in_progress | critical | 0% |
 
 ### Feature Links
 
@@ -74,6 +75,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 - [FEAT-016: Post-Release README & Documentation Updates](./FEAT-016-post-release-documentation/FEAT-016-post-release-documentation.md)
 - [FEAT-017: Installation Instructions Modernization](./FEAT-017-installation-instructions/FEAT-017-installation-instructions.md)
 - [FEAT-018: User Documentation — Runbooks & Playbooks](./FEAT-018-user-documentation/FEAT-018-user-documentation.md)
+- [FEAT-023: Claude Code Birthday Showcase — Promotional Video](./FEAT-023-showcase-video/FEAT-023-showcase-video.md)
 
 ---
 
