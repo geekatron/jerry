@@ -42,9 +42,7 @@ def build_site() -> None:
         text=True,
         timeout=120,
     )
-    assert result.returncode == 0, (
-        f"mkdocs build --strict failed:\n{result.stderr}"
-    )
+    assert result.returncode == 0, f"mkdocs build --strict failed:\n{result.stderr}"
 
 
 def _get_research_html_files() -> list[Path]:
@@ -93,9 +91,8 @@ class TestLinkQuality:
             if matches:
                 rel = html_file.relative_to(SITE_DIR)
                 failures.append(f"{rel}: {', '.join(matches)}")
-        assert not failures, (
-            "Links with 'bug' prefix found in public pages:\n"
-            + "\n".join(failures)
+        assert not failures, "Links with 'bug' prefix found in public pages:\n" + "\n".join(
+            failures
         )
 
 
@@ -117,6 +114,4 @@ class TestAnchorIntegrity:
             if broken:
                 rel = html_file.relative_to(SITE_DIR)
                 failures.append(f"{rel}: {', '.join(sorted(broken))}")
-        assert not failures, (
-            "Broken same-page anchor links:\n" + "\n".join(failures)
-        )
+        assert not failures, "Broken same-page anchor links:\n" + "\n".join(failures)
