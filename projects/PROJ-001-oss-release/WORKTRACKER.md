@@ -67,6 +67,7 @@
 | [BUG-006](./work/EPIC-001-oss-release/BUG-006-version-bump-toml-tag-drift/BUG-006-version-bump-toml-tag-drift.md) | Version Bump Fails — TOML Quoting Bug + Version-Tag Drift | completed | high | EPIC-001 |
 | [BUG-007](./work/EPIC-001-oss-release/BUG-007-pages-build-jekyll-liquid-error/BUG-007-pages-build-jekyll-liquid-error.md) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | completed | high | EPIC-001 |
 | [BUG-008](./work/EPIC-001-oss-release/BUG-008-transcript-keyword-trigger-docs/BUG-008-transcript-keyword-trigger-docs.md) | Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable | pending | medium | EPIC-001 |
+| [BUG-009](./work/EPIC-001-oss-release/BUG-009-research-section-broken-navigation/BUG-009-research-section-broken-navigation.md) | Research Section — Broken Icon Navigation, Poor Catalog Naming, No Link Validation | done | high | EPIC-001 |
 
 ---
 
@@ -252,6 +253,8 @@
 | 2026-02-19 | Claude | EN-961 COMPLETE. MkDocs Integration. `research/` removed from exclude_docs, `research/internal/` added. 11-page Research nav section added. `mkdocs build --strict` passes. Anchor fix in index.md. |
 | 2026-02-19 | Claude | EN-962 COMPLETE. Quality Gate & Adversarial Review. C2 gate: S-010 + S-003 + S-002 review, S-014 Iter1 scored 0.886 (REVISE). Addressed 6 findings (methodology blocks on 13 artifact sections, S-015 identity fix, TASK-002/003 entries, claim attribution, label consistency). S-014 Iter2 scored 0.93 (PASS). |
 | 2026-02-19 | Claude | **FEAT-027 COMPLETE.** Research Section for Public Documentation Site. 5/5 enablers done, 7/7 ACs PASS. 10 research pages + landing page, 23 artifacts exposed with inline key findings + expandable methodology/data + GitHub links. Quality gate: 0.93 (S-014). `mkdocs build --strict` clean. |
+| 2026-02-19 | Claude | BUG-009 created under EPIC-001: Research Section — Broken Icon Navigation, Poor Catalog Naming, No Link Validation. 3 defects: (1) pymdownx.emoji not configured → octicon icons render as text on all 11 research pages, (2) landing page links to `bug008-research-catalog.md` (poor naming for public site), (3) no automated link/icon validation tests. 4 tasks, 7 effort pts. |
+| 2026-02-19 | Claude | BUG-009 DONE. Fixed: (1) added pymdownx.emoji + attr_list + md_in_html extensions to mkdocs.yml — icons now render as SVGs, (2) renamed bug008-research-catalog.md → research-catalog.md, updated all refs, (3) added 3 e2e tests (icon rendering, link quality, anchor integrity) — all passing. AC-6 (CI integration) deferred. |
 
 ---
 
