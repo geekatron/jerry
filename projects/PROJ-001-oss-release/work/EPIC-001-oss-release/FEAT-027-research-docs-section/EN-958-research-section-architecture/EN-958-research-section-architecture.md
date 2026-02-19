@@ -1,13 +1,13 @@
 # EN-958: Research Section Architecture & Navigation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** architecture
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-027
 > **Owner:** --
 > **Effort:** 3
@@ -52,17 +52,17 @@ Design the research section's information architecture for the MkDocs site. Defi
 
 | ID | Title | Status | Effort |
 |----|-------|--------|--------|
-| TASK-001 | Design research page template with tiered layout | pending | 1 |
-| TASK-002 | Design navigation structure (domain grouping) | pending | 1 |
-| TASK-003 | Create research section landing page (docs/research/index.md) | pending | 1 |
+| TASK-001 | Design research page template with tiered layout | done | 1 |
+| TASK-002 | Design navigation structure (domain grouping) | done | 1 |
+| TASK-003 | Create research section landing page (docs/research/index.md) | done | 1 |
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Research page template defined with sections for key findings (inline), methodology (admonition), and GitHub cross-link
-- [ ] AC-2: Navigation structure designed with logical domain grouping
-- [ ] AC-3: `docs/research/index.md` created as landing page with domain overview and artifact counts
+- [x] AC-1: Research page template defined with sections for key findings (inline), methodology (admonition), and GitHub cross-link
+- [x] AC-2: Navigation structure designed with logical domain grouping
+- [x] AC-3: `docs/research/index.md` created as landing page with domain overview and artifact counts
 
 ---
 
@@ -71,5 +71,6 @@ Design the research section's information architecture for the MkDocs site. Defi
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Created. Architecture enabler for research section structure. |
+| 2026-02-19 | Claude | done | Delivered: research-page-template.md (template + design rules + nav structure), docs/research/index.md (landing page with grid cards). Moved internal artifact to docs/research/internal/. |
 
 ---
