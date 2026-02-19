@@ -1,0 +1,91 @@
+site_name: Jerry Framework
+site_url: https://jerry.geekatron.org
+site_description: Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.
+site_author: Geekatron
+copyright: Copyright &copy; 2026 Geekatron — Apache License 2.0
+repo_url: https://github.com/geekatron/jerry
+repo_name: geekatron/jerry
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+strict: true
+
+# Exclude internal directories from build. These files exist in docs/ but are
+# classified as INTERNAL or DEFERRED by FEAT-024 content audit. Without exclusion,
+# strict mode fails on broken cross-references in internal docs.
+exclude_docs: |
+  adrs/
+  analysis/
+  design/
+  knowledge/
+  research/
+  specifications/
+  synthesis/
+  templates/
+  governance/AGENT_CONFORMANCE_RULES.md
+  governance/BEHAVIOR_TESTS.md
+  schemas/session_context.json
+  schemas/types/
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+# Nav curated by FEAT-024 content audit (ps-architect-001-content-audit.md).
+# 13 PUBLIC files from 57 total in docs/. Internal dirs excluded: knowledge/,
+# analysis/, design/, research/, specifications/, synthesis/, templates/.
+# ADRs (docs/adrs/) deferred pending internal work-item reference scrubbing.
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: INSTALLATION.md
+    - Bootstrap: BOOTSTRAP.md
+    - Getting Started Runbook: runbooks/getting-started.md
+  - Guides:
+    - Problem Solving: playbooks/problem-solving.md
+    - Orchestration: playbooks/orchestration.md
+    - Transcript Processing: playbooks/transcript.md
+    - Plugin Development: playbooks/PLUGIN-DEVELOPMENT.md
+  - Reference:
+    - CLAUDE.md Guide: CLAUDE-MD-GUIDE.md
+    - Schema Versioning: schemas/SCHEMA_VERSIONING.md
+    - Session Context Schema: schemas/SESSION_CONTEXT_GUIDE.md
+  - Governance:
+    - Jerry Constitution: governance/JERRY_CONSTITUTION.md

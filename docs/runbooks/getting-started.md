@@ -32,7 +32,7 @@ If any of these are not in place, complete the installation steps in [`../INSTAL
 
 ### Step 1: Create a Project Directory
 
-Jerry requires an active project to operate. Every session, skill invocation, and output artifact is scoped to a project. This is enforced by rule **[H-04](../../.context/rules/quality-enforcement.md#hard-rule-index)**: the `JERRY_PROJECT` environment variable MUST be set before any Jerry workflow can proceed.
+Jerry requires an active project to operate. Every session, skill invocation, and output artifact is scoped to a project. This is enforced by rule **[H-04](https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md#hard-rule-index)**: the `JERRY_PROJECT` environment variable MUST be set before any Jerry workflow can proceed.
 
 Create the project directory structure:
 

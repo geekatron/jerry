@@ -1,7 +1,7 @@
 # Transcript Playbook
 
 > **Skill:** transcript
-> **SKILL.md:** [transcript/SKILL.md](../../skills/transcript/SKILL.md)
+> **SKILL.md:** [transcript/SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/transcript/SKILL.md)
 > **Trigger keywords:** CLI invocation — no automatic keyword triggers
 
 ## Document Sections
@@ -77,7 +77,7 @@ The transcript skill uses a mandatory two-phase architecture:
   *(Cost basis: A 1-hour VTT transcript produces ~280K tokens of structured data.
   The Python parser processes this at zero API token cost in <1 second. LLM parsing
   of the same data requires ~280K input tokens + ~50K output tokens at API rates,
-  yielding a ~1,250:1 cost ratio. See [SKILL.md Design Rationale](../../skills/transcript/SKILL.md#design-rationale-hybrid-pythonllm-architecture) for full methodology.)*
+  yielding a ~1,250:1 cost ratio. See [SKILL.md Design Rationale](https://github.com/geekatron/jerry/blob/main/skills/transcript/SKILL.md#design-rationale-hybrid-pythonllm-architecture) for full methodology.)*
 - **Phase 2+ (LLM agents — semantic):** Agents read the JSON chunks and produce the
   structured Markdown output packet.
 
@@ -125,7 +125,7 @@ The transcript skill uses a mandatory two-phase architecture:
 
 6. **Phase 4 — ts-mindmap agents run** (unless `--no-mindmap` was specified) — generate
    visual summaries in `08-mindmap/mindmap.mmd` (Mermaid) and/or
-   `08-mindmap/mindmap.ascii.txt` (ASCII). Mindmaps are ON by default per [ADR-006](../../skills/transcript/SKILL.md#design-rationale-mindmap-default-on-decision).
+   `08-mindmap/mindmap.ascii.txt` (ASCII). Mindmaps are ON by default per [ADR-006](https://github.com/geekatron/jerry/blob/main/skills/transcript/SKILL.md#design-rationale-mindmap-default-on-decision).
 
 7. **Phase 5 — ps-critic runs** — validates quality against the >= 0.90 threshold (the transcript skill uses a skill-specific threshold lower than the general 0.92 SSOT; see the SKILL.md Design Rationale section for the selection rationale). If quality is below threshold, revision is triggered automatically.
 
@@ -210,7 +210,7 @@ participants. The output is suitable for a UX research repository.
 | Phase 1 CLI exits with non-zero code / `ParseError` | The transcript file is malformed, has an unsupported encoding, or is corrupted | Check the error message for the specific line number. VTT files must have a valid `WEBVTT` header. Try opening the file in a text editor to confirm it is valid UTF-8 and has correct VTT syntax. |
 | Quality review score below 0.90 — ps-critic rejects output | Extraction quality was insufficient: missing citations, incomplete entity coverage, or formatting errors in the packet files | The ps-critic agent will identify specific defects. Address the flagged issues in the relevant packet file (e.g., `04-action-items.md`). Common causes: very short chunks (too few entities), low-quality source transcript (heavy background noise, overlapping speech), or unsupported speaker labeling format. |
 | Domain-specific entities are missing from the output | The `--domain` flag was not specified, or the wrong domain was selected | Re-run the Phase 2+ agents (ts-extractor onwards) with the correct `--domain` flag. The Phase 1 JSON output (chunks) can be reused — only re-run from ts-extractor. See the domain table in the Domain Contexts section below. |
-| Mindmap generation fails but core packet is intact | ts-mindmap agent encountered an error (e.g., content too sparse for a meaningful mindmap) | This is expected graceful degradation per [ADR-006](../../skills/transcript/SKILL.md#design-rationale-mindmap-default-on-decision). The 8-file packet remains valid. Use `--no-mindmap` on future invocations if mindmaps are not needed, or investigate the ts-mindmap error output for specific causes. |
+| Mindmap generation fails but core packet is intact | ts-mindmap agent encountered an error (e.g., content too sparse for a meaningful mindmap) | This is expected graceful degradation per [ADR-006](https://github.com/geekatron/jerry/blob/main/skills/transcript/SKILL.md#design-rationale-mindmap-default-on-decision). The 8-file packet remains valid. Use `--no-mindmap` on future invocations if mindmaps are not needed, or investigate the ts-mindmap error output for specific causes. |
 | Agent fails mid-execution (e.g., ts-extractor or ts-formatter crashes partway through) | Token budget exhaustion, session interruption, or agent error during Phase 2+ processing | **1. Identify:** Check which phase failed — Phase 1 (CLI) artifacts (`index.json`, `chunks/`) are always recoverable since they are written by the Python parser. **2. Salvage:** Phase 1 output is reusable — the JSON chunks do not need to be regenerated. **3. Recover:** Re-run from the failed phase only: if ts-extractor failed, re-invoke it with the existing `index.json` and `chunks/` directory; if ts-formatter failed, re-invoke it with the existing `extraction-report.json`. The CLI parser does NOT need to re-run. |
 
 ---
@@ -269,7 +269,7 @@ uv run jerry transcript parse "notes.txt" --output-dir "./output/"
 
 ## Related Resources
 
-- [SKILL.md](../../skills/transcript/SKILL.md) — Authoritative technical reference for
+- [SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/transcript/SKILL.md) — Authoritative technical reference for
   the transcript skill, including full agent pipeline specifications, domain context YAML
   schemas, ADR design rationale, and quality threshold documentation
 - [Problem-Solving Playbook](./problem-solving.md) — Use when you need to research,
