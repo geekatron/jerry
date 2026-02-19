@@ -66,6 +66,7 @@
 | [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | completed | high | EPIC-001 |
 | [BUG-006](./work/EPIC-001-oss-release/BUG-006-version-bump-toml-tag-drift/BUG-006-version-bump-toml-tag-drift.md) | Version Bump Fails — TOML Quoting Bug + Version-Tag Drift | completed | high | EPIC-001 |
 | [BUG-007](./work/EPIC-001-oss-release/BUG-007-pages-build-jekyll-liquid-error/BUG-007-pages-build-jekyll-liquid-error.md) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | completed | high | EPIC-001 |
+| [BUG-008](./work/EPIC-001-oss-release/BUG-008-transcript-keyword-trigger-docs/BUG-008-transcript-keyword-trigger-docs.md) | Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable | pending | medium | EPIC-001 |
 
 ---
 
@@ -242,6 +243,8 @@
 | 2026-02-19 | Claude | **Worktracker audit.** wt-verifier: FEAT-025 PASS (all 4 enablers clean). wt-auditor: 9 findings (3 errors, 4 warnings, 2 info). All findings remediated: EPIC-001 header updated to `done`, FEAT-023/EN-945 closed out with delivery evidence, FEAT-024 inline enabler table fixed, bug counts reconciled (19/19). **EPIC-001 CLOSED — clean.** |
 | 2026-02-18 | Claude | **Project directory cleanup.** Deleted orphan directories: `PROJ-001-plugin-cleanup` (empty scaffold, duplicate ID conflict), `PROJ-009-oss-release` (empty scaffold, false start). Neither was git-tracked or listed in `projects/README.md`. Staged `research/single-vs-multi-agent-analysis.md`. |
 | 2026-02-19 | Claude | **FEAT-026 COMPLETE.** Post-Public Documentation Refresh. 3 enablers (EN-955–957), 10 effort pts. C2 quality gate: S-003 + S-007 + S-002 + S-014 (0.8925 REVISE → 0.9195 PASS). INSTALLATION.md rewritten, docs/index.md enriched. **EPIC-001 CLOSED: 11/11 features, 44/44 enablers, 19/19 bugs. 100%.** |
+
+| 2026-02-19 | Claude | BUG-008 created under EPIC-001: Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable. Playbook and mandatory-skill-usage.md incorrectly exclude transcript from keyword triggers, citing Python script dependency. Python is VTT-only; LLM fallback handles non-VTT automatically. EPIC-001 reopened. |
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **Skill:** transcript
 > **SKILL.md:** [transcript/SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/transcript/SKILL.md)
-> **Trigger keywords:** CLI invocation — no automatic keyword triggers
+> **Trigger keywords:** transcript, meeting notes, parse recording, meeting recording, VTT, SRT, captions
 
 ## Document Sections
 
@@ -21,11 +21,13 @@
 
 ## When to Use
 
-> **Important:** The transcript skill is NOT triggered by keyword detection. It does NOT
-> activate automatically when you mention words like "transcript" or "meeting notes" in
-> conversation. You MUST explicitly invoke it using the `/transcript` command or by asking
-> Claude to run `uv run jerry transcript parse`. This design is intentional — the skill
-> requires a specific input file path that cannot be inferred from keyword context alone.
+> **Invocation:** The transcript skill can be triggered by keyword detection (e.g.,
+> "transcript", "meeting notes", "parse recording") or explicitly via the `/transcript`
+> command. When triggered by keywords, Claude will ask for the file path if not provided.
+> The skill uses a hybrid Python+LLM architecture: the Python CLI parser runs automatically
+> for VTT files (~1,250x cheaper than LLM parsing), while SRT and plain text files use
+> LLM-based parsing directly. The LLM instructions (ts-parser agent) handle format detection
+> and Python invocation automatically — no manual CLI knowledge is required from the user.
 
 ### Use this skill when:
 
