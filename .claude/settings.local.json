@@ -3,12 +3,16 @@
     "allow": [
       "WebSearch",
       "WebFetch",
+      "Skill(jerry:adversary)",
+      "Skill(adversary)",
       "Skill(jerry:nasa-se)",
       "Skill(nasa-se)",
       "Skill(jerry:problem-solving)",
       "Skill(problem-solving)",
       "Skill(jerry:orchestration)",
       "Skill(orchestration)",
+      "Skill(jerry:transcript)",
+      "Skill(transcript)",
       "Skill(jerry:worktracker)",
       "Skill(worktracker)",
       "mcp__memory-keeper__*",
@@ -23,7 +27,6 @@
       "mcp__plugin_context7_context7__*",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-      "Bash(export JERRY_PROJECT=PROJ-001-oss-release)",
       "Bash(echo:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
@@ -48,9 +51,9 @@
       "Bash(git log:*)",
       "Bash(ls:*)",
       "Bash(python3:*)",
+      "Bash(python3:*)",
       "Bash(uv run pyright:*)",
-      "Bash(uv run:*)",
-      "Skill(jerry:transcript)"
+      "Bash(uv run:*)"
     ]
   },
   "hooks": {

@@ -238,6 +238,7 @@
 | 2026-02-18 | Claude | EPIC-005 (Je Ne Sais Quoi) migrated from PROJ-001 to PROJ-003-je-ne-sais-quoi. Enables parallel session development. PROJ-003 created with PLAN.md, WORKTRACKER.md, and EPIC-005 entity file. |
 | 2026-02-18 | User/Claude | **FEAT-025 COMPLETE.** Repository flipped from private to PUBLIC. 4/4 enablers done, 8/8 ACs PASS. Community health 100%. PR #25 merged. Anonymous clone verified. Docs site live. EPIC-001 now 10/10 features, 41/41 enablers, 100%. |
 | 2026-02-19 | Claude | **Worktracker audit.** wt-verifier: FEAT-025 PASS (all 4 enablers clean). wt-auditor: 9 findings (3 errors, 4 warnings, 2 info). All findings remediated: EPIC-001 header updated to `done`, FEAT-023/EN-945 closed out with delivery evidence, FEAT-024 inline enabler table fixed, bug counts reconciled (19/19). **EPIC-001 CLOSED — clean.** |
+| 2026-02-18 | Claude | **Project directory cleanup.** Deleted orphan directories: `PROJ-001-plugin-cleanup` (empty scaffold, duplicate ID conflict), `PROJ-009-oss-release` (empty scaffold, false start). Neither was git-tracked or listed in `projects/README.md`. Staged `research/single-vs-multi-agent-analysis.md`. |
 
 ---
 
