@@ -76,7 +76,7 @@ pipelines:
       - "adversary"
       - "nasa-se"
 
-    status: "PHASE_1_PENDING"
+    status: "PHASE_1_IN_PROGRESS"
     current_phase: 1
     total_phases: 3
     progress_percent: 0
@@ -91,15 +91,15 @@ pipelines:
         feature_id: "FEAT-001"
         criticality: "C2"
         execution_mode: "SEQUENTIAL"
-        status: "PENDING"   # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
-        started_at: null
+        status: "IN_PROGRESS"   # PENDING | IN_PROGRESS | COMPLETE | BLOCKED
+        started_at: "2026-02-19T00:00:00Z"
         completed_at: null
 
         agents:
           - id: "ps-researcher-001"
             name: "Researcher"
             role: "Research soul of Saucer Boy; load brand signals, Jerry docs, prior persona work"
-            status: "PENDING"
+            status: "COMPLETE"
             artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-research.md"
             inputs:
               - "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md"
@@ -110,7 +110,7 @@ pipelines:
           - id: "ps-creator-001"
             name: "Creator"
             role: "Draft FEAT-001 Saucer Boy persona document (first pass)"
-            status: "PENDING"
+            status: "COMPLETE"
             artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md"
             inputs:
               - "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-research.md"
@@ -120,7 +120,7 @@ pipelines:
           - id: "ps-critic-001"
             name: "Critic"
             role: "Creator-critic-revision loop (min 3 iterations). Apply C2 strategy sequence: S-010 → S-003 → S-002 → S-007"
-            status: "PENDING"
+            status: "COMPLETE"
             strategy_sequence: ["S-010", "S-003", "S-002", "S-007"]  # H-16: S-003 before S-002
             min_iterations: 3
             iterations_complete: 0
@@ -136,7 +136,7 @@ pipelines:
           - id: "adv-scorer-001"
             name: "Quality Scorer"
             role: "Apply S-014 LLM-as-Judge. Score 6 dimensions. Produce composite score for Barrier 1 gate."
-            status: "PENDING"
+            status: "COMPLETE"
             strategy: "S-014"
             artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/adv-scorer-001/adv-scorer-001-quality-score.md"
             inputs:
@@ -144,7 +144,7 @@ pipelines:
             started_at: null
             completed_at: null
 
-        quality_score: null  # Populated by adv-scorer-001 at gate
+        quality_score: 0.925  # S-014 independent score (adv-scorer-001)
 
       # -------------------------------------------------------------------
       # PHASE 2: TIER 1 FAN-OUT (FEAT-002 + FEAT-003 + FEAT-005)
@@ -484,7 +484,7 @@ barriers:
     on_fail: "Return to ps-critic-001; targeted revision; re-score with adv-scorer-001"
     max_retries: 2  # Beyond the mandatory 3 iterations (H-14)
     retry_count: 0
-    score_recorded: null
+    score_recorded: 0.925
 
   - id: "barrier-2"
     name: "Phase 2 Quality Gate"
