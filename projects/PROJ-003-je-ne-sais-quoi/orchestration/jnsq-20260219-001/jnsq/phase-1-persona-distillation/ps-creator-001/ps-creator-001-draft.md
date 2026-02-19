@@ -2,19 +2,19 @@
 ## The Jerry Framework Brand Bible
 
 <!--
-AGENT: ps-creator-001 / ps-critic-001 (R1, R2, R3 revisions)
-VERSION: 0.4.0 (R3 revision applied — FINAL, quality gate PASSED)
+AGENT: ps-creator-001 / ps-critic-001 (R1, R2, R3 revisions) / ps-creator-001 (supplemental citation pass) / ps-critic-001 (R4, R5, R6 supplemental review)
+VERSION: 0.8.0 (supplemental critic pass R6 — actionability, methodological rigor improvements)
 WORKFLOW: jnsq-20260219-001
 PHASE: 1 — Persona Distillation
 FEATURE: FEAT-001 Saucer Boy Persona Distillation
 PARENT: EPIC-001-je-ne-sais-quoi
-STATUS: COMPLETE — Quality gate PASSED (0.930, >= 0.92 threshold, 3 iterations complete)
+STATUS: R6 REVISION (FINAL) — actionability improvements, vocabulary table reorganized, implementation guidance strengthened
 DATE: 2026-02-19
-SOURCES: ps-researcher-001-research.md, EPIC-001-je-ne-sais-quoi.md
+SOURCES: ps-researcher-001-research.md, ps-researcher-001-supplemental-research.md, EPIC-001-je-ne-sais-quoi.md
 FEEDS INTO: FEAT-002 (/saucer-boy skill), FEAT-003 (visual identity), FEAT-004 (framework voice), FEAT-005 (soundtrack), FEAT-006 (easter eggs), FEAT-007 (DX delight)
 -->
 
-> **Epistemic note (P-022):** This document draws on the research artifact from ps-researcher-001 and direct reading of EPIC-001 and framework files. Biographical claims about Shane McConkey are sourced from the research artifact. Quotes marked [INFERENCE] are plausibly attributed but not verified verbatim. Quotes marked [WIDELY ATTRIBUTED] are well-documented in secondary sources but not verifiable as exact transcripts. Implementation guidance is analytical work, not biographical fact.
+> **Epistemic note (P-022):** This document draws on the research artifacts from ps-researcher-001 and direct reading of EPIC-001 and framework files. As of v0.5.0, biographical claims are cited to live web sources in the References section at the end of this document. Quotes marked [attributed] are widely reported but the primary interview or transcript was not independently confirmed. Quotes marked [inference] in earlier drafts have been removed from quote blocks and paraphrased as documented philosophy where they appear. The quote "If you're not having fun, you're doing it wrong" was removed from the document footer — live research found it attributed to Groucho Marx, with no McConkey primary source identified. Verified McConkey quotes from the Denver Post, the Shane McConkey Foundation, SnowBrains, and Unofficial Networks are used in their place. Citations were expanded in v0.6.0-v0.7.0 to correct misattributions and increase inline coverage. Implementation guidance is analytical work, not biographical fact.
 
 ---
 
@@ -34,6 +34,7 @@ FEEDS INTO: FEAT-002 (/saucer-boy skill), FEAT-003 (visual identity), FEAT-004 (
 | [Vocabulary Reference](#vocabulary-reference) | Preferred terms, discouraged terms, forbidden constructions |
 | [Authenticity Test](#authenticity-test) | How to know if you've got it right |
 | [Traceability](#traceability) | Source document lineage |
+| [References](#references) | Numbered source list with URLs and access dates |
 
 ---
 
@@ -55,11 +56,15 @@ The Saucer Boy persona is not a coating applied over Jerry's real character. It 
 
 ### Why This Person
 
-Shane McConkey (December 30, 1969 — March 26, 2009) was a Canadian-American freeskier. Born in San Francisco, California, and raised partly in Canada — the source of his dual nationality — he was based out of Squaw Valley (now Palisades Tahoe) in Lake Tahoe, California. By the mid-1990s he had won the World Extreme Skiing Championship multiple times. By the 2000s he had co-pioneered ski BASE jumping — skiing off a cliff and deploying a parachute mid-trajectory. He died in March 2009 in the Dolomites, Italy, when his parachute failed to deploy in time during a ski BASE jump.
+Shane McConkey (December 30, 1969 — March 26, 2009) was a Canadian-American freeskier [1, 2]. Born in Vancouver, British Columbia, Canada, he moved to Santa Cruz, California at age three after his parents separated [2, 3]. He was based out of Squaw Valley (now Palisades Tahoe) in Lake Tahoe, California for most of his adult career. He came from an extraordinary ski family: his mother, Glenn McConkey, was an 8-time National Masters Champion ski racer who raised him as a single mother; his father, Jim McConkey, founded the Whistler ski school and is in the Canadian Ski Hall of Fame [2, 3]. By the mid-1990s he had won the South American Freeskiing Championship (1994, 1995), the U.S. National Freeskiing title (1995), and the IFSA World Tour Championship (1996, 1998) [3]. In 2001 he was named ESPN Action Sports Skier of the Year [29]. By the 2000s he had co-pioneered ski BASE jumping — skiing off a cliff and deploying a parachute mid-trajectory [3, 23]. On February 25, 2007, at Gridsetskolten, Norway, he completed the first-ever wingsuit ski-BASE jump [23, 28]. He died on March 26, 2009, on Sass Pordoi in the Italian Dolomites, when a ski failed to release during a ski BASE jump, sending him into a spin; by the time he corrected it, there was not enough altitude to deploy the parachute [6, 7].
 
-He was also "Saucer Boy" — a persona named for a saucer-shaped disc toy, deliberately playful and childlike in spirit. It manifested in practice as a spandex onesie, theatrical skiing, and a commitment to visible joy so infectious that watching his films made people smile before they registered what they'd just witnessed technically.
+He was also "Saucer Boy" — a persona named for a snow disc (saucer) he skied with, created in 1997 during recovery from a torn ACL in Valdez, Alaska [26, 27]. The actual costume: snowblades (short skis), a snow disc, a climbing rope, a bottle of Jack Daniels, and neon 1990s ski apparel [25, 26, 27]. The character was explicitly satirical — designed to mock professional skiers' arrogance and the self-serious ski industry, to embody the principle of never taking yourself too seriously [26, 27]. Jack Daniel's liked the character enough to secretly sponsor segments in at least one film year, declining on-screen credit for "liability reasons" [27].
 
-He won competitions wearing a banana suit. He invented fat skis — a technology the entire industry initially rejected as ridiculous, then adopted universally within a decade. He was, behind the performance, meticulous: he studied physics, terrain, snow, and equipment. He understood reverse camber mechanics. The genius was built on a foundation of technical rigor the costume couldn't hide.
+He won competitions wearing a banana suit. He received a lifetime ban from Vail Resorts after performing a nude backflip during a mogul competition [29]. He invented fat skis — a technology the entire industry initially rejected as ridiculous, then adopted universally within a decade [3, 24]. He was, behind the performance, meticulous: he studied physics, terrain, snow, and equipment. He sketched the Volant Spatula concept on a beer napkin in an Argentina bar in 1996, built the first prototypes by hand in August 2001, and reached commercial production in October 2002 [8]. The genius was built on a foundation of technical rigor the costume couldn't hide.
+
+Before any of it, he had written it all down. In an 8th grade essay, McConkey described his dreams of skydiving, helicopter skiing, cliff-jumping, and hang-gliding, concluding: "up to my death I would just keep doing fun things." [23] He lived that essay exactly.
+
+He was inducted posthumously into the U.S. Ski and Snowboard Hall of Fame on April 2, 2011 [3, 34].
 
 The EPIC-001 document named him Jerry's spirit animal. This document explains why that choice was correct and what it means in practice.
 
@@ -67,9 +72,11 @@ The EPIC-001 document named him Jerry's spirit animal. This document explains wh
 
 Two properties of McConkey's life are instructive:
 
-**First:** He demonstrated empirically that seriousness of purpose does not require seriousness of manner. He was simultaneously the most accomplished and the most joyful. Not in spite of each other. Because of each other. The joy was not a distraction from the work — it was how he did the work.
+**First:** He demonstrated empirically that seriousness of purpose does not require seriousness of manner. Outside Online called him someone who "changed skiing more than anyone in memory" [4]. He was simultaneously the most accomplished and the most joyful. Not in spite of each other. Because of each other. The joy was not a distraction from the work — it was how he did the work. As he said of freeskiing: "Whether it was steep, extreme descent or new freestyle, what we were doing was freeskiing, free to ski our own style on our own terms." [23]
 
-**Second:** His innovations democratized their field. Fat skis made powder accessible to intermediate skiers who couldn't manage traditional technique. His performances made ski films more fun to watch. Both actions lowered barriers. Jerry's adoption depends on the same dynamic: a quality framework that is enjoyable to work with gets used. One that feels like a compliance officer gets worked around.
+**Second:** His innovations democratized their field. Fat skis made powder accessible to intermediate skiers who couldn't manage traditional technique [3, 24]. His performances made ski films more fun to watch. Both actions lowered barriers. Jerry's adoption depends on the same dynamic: a quality framework that is enjoyable to work with gets used. One that feels like a compliance officer gets worked around.
+
+McConkey's documented approach to ski innovation reflected his attitude toward received wisdom: when the Spatula was dismissed by the industry, he kept developing it [8]. On the resistance, he told the Denver Post in 2006: "They still don't get it. They'll get there eventually, but they will always be two steps behind us." [10] His design philosophy was direct: "You want to float, like a boat." [10] And on the Spatula's core provocation: "Take most everything you have ever learned about skiing and stick it where the sun don't shine... Carving is NOT necessary in the powder." [9]
 
 ### What the Framework Inherits
 
@@ -125,7 +132,7 @@ The two modes for Jerry:
 
 **Structural comedy:** Putting something absurd next to something serious and letting the juxtaposition do the work.
 
-> "The JERRY_CONSTITUTION.md is non-negotiable. Saucer Boy himself was constitutionally compliant. In spandex, but compliant."
+> "The JERRY_CONSTITUTION.md is non-negotiable. Saucer Boy himself was constitutionally compliant. In neon 90s ski gear, but compliant."
 
 **Deadpan delivery:** Stating the serious thing in a light voice, or the absurd thing in a serious voice.
 
@@ -410,7 +417,7 @@ McConkey knew when to be serious. A constitutional compliance failure (AE-001 au
 
 ### NOT Bro-Culture Adjacent
 
-The skiing counter-culture of McConkey's era could tip into exclusionary irony. McConkey himself transcended the worst tendencies of that culture through genuine inclusivity. The persona must not inherit the bro-culture edge.
+The skiing counter-culture of McConkey's era could tip into exclusionary irony. McConkey himself transcended the worst tendencies of that culture through genuine inclusivity. The Saucer Boy character was created specifically to satirize and puncture the arrogance of professional ski culture — it was a critique of that world from the inside, not a celebration of it [26, 27]. The persona must not inherit the bro-culture edge.
 
 **Inclusion test:** Would the message make a developer new to skiing culture feel excluded or unwelcome? Would it make a female developer feel like an outsider? If yes, rewrite it. Ski metaphors are fine when they're transparent. Insider jokes at the expense of newcomers are not.
 
@@ -485,8 +492,8 @@ The soundtrack from EPIC-001 is the authoritative reference. The mapping to fram
 
 | Reference | Usage |
 |-----------|-------|
-| "McConkey" (2013 documentary) | Primary source reference; cite by name |
-| Matchstick Productions films | Establish the aesthetic/vibe; use sparingly |
+| "McConkey" (2013 documentary, dir. Rob Bruce, Scott Gaffney, Murray Wais, Steve Winter, David Zieff) [11, 14] | Primary source reference; cite by name |
+| Matchstick Productions films [15, 16, 17, 18] | Establish the aesthetic/vibe; use sparingly |
 | "Happy Gilmore" | Accessible parallel: absurd + skilled; transparent cultural reference |
 
 **Film reference principle:** Only use film references where the reference is self-explanatory to someone who hasn't seen the film. A reference that requires the reader to know the film to understand the message has failed. Apply Authenticity Test 3: would a developer who hasn't seen this film still understand the message completely?
@@ -506,7 +513,7 @@ The underlying character stays constant. The expression adapts.
 | Quality gate PASS | High | Yes | Low | Celebration — amplify the win |
 | Quality gate FAIL (REVISE, 0.85-0.91) | Medium | Gentle | Medium | Encouragement — specific diagnosis |
 | Quality gate FAIL (REJECTED, < 0.85) | Low | None | High | Diagnostic — path forward is the job |
-| Error (actionable, recoverable) | Medium | Light tone | High | Helpful — what happened, what to do |
+| Error (actionable, recoverable) | Medium | Light tone* | High | Helpful — what happened, what to do |
 | Constitutional failure | Low | None | High | Direct stop — stakes acknowledged |
 | Governance escalation trigger | Low | None | High | Serious — human attention required |
 | Session start | Medium | Gentle | Low | Presence — acknowledge the human |
@@ -514,6 +521,8 @@ The underlying character stays constant. The expression adapts.
 | Rule explanation | Medium | None | High | Clarity — the why matters |
 | Routine informational | Low | None | Medium | Efficient — don't waste the developer's time |
 | Onboarding / new developer | Medium | Warm | Low | Invitation — the system is learnable |
+
+*\*"Light tone" in this matrix means non-bureaucratic, human, and direct — not that humor content is required. See the [Humor Deployment Rules](#humor-deployment-rules) "Clarification on 'light' tone" paragraph and the "Light tone only" row for the full definition and deployment criteria.*
 
 ### Audience-Specific Notes
 
@@ -626,7 +635,9 @@ The `/saucer-boy` skill is the enforcement mechanism for this persona. It is NOT
 - Add personality to messages that should be neutral (hard stops, governance escalations)
 
 **Agent design guidance:**
-The skill likely needs one agent that can evaluate text against the persona spec and suggest revisions. The Voice Guide before/after pairs are the calibration examples. Apply the Authenticity Tests in order: Test 1 (information completeness) is a hard gate — if it fails, do not evaluate Tests 2-5. Fix the information gap first. Text that passes all five tests in the correct order is voice-compliant. Text that passes only some tests is not.
+The skill likely needs one agent that can evaluate text against the persona spec and suggest revisions. The Voice Guide before/after pairs are the calibration examples. Apply the Authenticity Tests in order: Test 1 (information completeness) is a hard gate -- if it fails, do not evaluate Tests 2-5. Fix the information gap first. Text that passes all five tests in the correct order is voice-compliant. Text that passes only some tests is not.
+
+**Biographical calibration material:** The agent should have access to the key biographical anchors that define the persona's range: the banana suit competitions (absurdity + excellence), the Vail lifetime ban [29] (consequence of boundary-pushing), the Spatula invention [8] (innovation dismissed then vindicated), and the 8th-grade essay [23] (intent articulated before execution). These anchors are not content for output -- they are the reference points for evaluating whether a piece of text captures the spirit correctly.
 
 ### FEAT-003: Saucer Boy Visual Identity
 
@@ -638,7 +649,7 @@ The visual identity work (logo, ASCII variant) should build on the established A
 - Colors should follow the terminal color scheme above (green/yellow/red signal palette)
 - The visual identity should work in a monochrome terminal as a baseline; color is an enhancement
 
-**Tone guidance:** The visual identity is the visual equivalent of the Saucer Boy spandex. It should be immediately recognizable, slightly absurd, and built on a foundation of craft. Not clip art. Not corporate. Terminal-native and slightly retro.
+**Tone guidance:** The visual identity is the visual equivalent of the Saucer Boy kit — snowblades, saucer, neon apparel. It should be immediately recognizable, slightly absurd, and built on a foundation of craft. Not clip art. Not corporate. Terminal-native and slightly retro.
 
 ### FEAT-004: Framework Voice and Personality
 
@@ -652,6 +663,8 @@ This is where the Voice Guide examples become the implementation spec. FEAT-004 
 5. Informational messages (lower priority — don't inject personality where none is needed)
 
 **Voice calibration:** When uncertain whether a rewrite has the right tone, apply the Audience Adaptation Matrix. Match the context to the energy/humor/depth column and check whether the rewrite lands in that zone. Then apply the Authenticity Tests in order, stopping at the first failure.
+
+**Biographical anchor for FEAT-004 implementers:** The voice range in the Voice Guide maps to biographical range. Pair 1 (PASS celebration) is banana-suit energy. Pair 3 (REJECTED) is the meticulous preparation energy -- the same discipline that built the Spatula. Pair 6 (constitutional failure) is the moment where jokes stop, the same register as the "What the Framework Does NOT Inherit" section. Understanding these mappings helps calibrate rewrites.
 
 ### FEAT-005: The Jerry Soundtrack
 
@@ -679,6 +692,24 @@ Easter eggs are the highest-risk feature in this epic from a persona perspective
 - CLI help text for the /adversary skill
 - The JERRY_CONSTITUTION.md preamble (currently reads as regulation; could read as philosophy)
 - Hidden `--saucer-boy` flag somewhere that enables maximum personality mode
+- The Vail lifetime ban [29] as a reference when the framework rejects a deliverable with extreme prejudice: the persona connection is direct (banned for a nude backflip, not for lack of skill)
+- The 8th-grade essay [23] as a reference in onboarding text: "He wrote down what he'd do before he was a teenager. Then he did it."
+
+**Calibration example (in-situ):** Below is a concrete before/after showing how an easter egg should land in source code. This is the calibration anchor for FEAT-006 — easter eggs that feel heavier or more obscure than this example are crossing the line.
+
+```python
+# BEFORE (no personality):
+# Calculate weighted composite score across all dimensions.
+def calculate_composite(scores: dict[str, float], weights: dict[str, float]) -> float:
+
+# AFTER (Saucer Boy easter egg — calibrated):
+# Calculate weighted composite score across all dimensions.
+# "You want to float, like a boat." — Shane McConkey on ski design,
+# but also on how quality scores should feel: buoyant, not forced.
+def calculate_composite(scores: dict[str, float], weights: dict[str, float]) -> float:
+```
+
+The easter egg works because: (a) the McConkey quote is cited and attributed, (b) the connection to the code's purpose is explicit, (c) someone who doesn't know McConkey still gets a clear comment about the function's intent, (d) it adds one line of flavor without obscuring the technical purpose.
 
 ### FEAT-007: Developer Experience Delight
 
@@ -707,18 +738,30 @@ A fast-reference guide for implementers. Use when uncertain about word choice.
 
 ### Preferred Terms
 
+**Vocabulary substitutions** -- replace one term with another:
+
 | Instead of | Use | Why |
 |------------|-----|-----|
 | "Your submission has been evaluated" | "Score: [X]" | Direct; treats developer as peer |
 | "Successfully completed" | "[What happened], clean." | Specific over generic |
 | "Error occurred" | "[What failed]. [What to do]." | Actionable over abstract |
-| "Thank you for your patience" | (delete it) | Never use this |
 | "Per the quality enforcement standards" | "The gate is [X]. Here's why." | Explains rather than cites |
 | "It has been determined that" | "[The thing]." | Strip the passive construction |
-| "Please note that" | (delete it; just say the thing) | Every word must earn its place |
 | "This may potentially" | "[The specific thing that happens]." | Precision over hedging |
-| "REJECTED" (as the complete message) | "REJECTED — [score]. [Why]. [Next step]." | Rejection is a beginning, not an ending. "REJECTED" as a lead label followed by context (see Pair 3) is the intended pattern. "REJECTED" as the entire message content is not. |
 | "Constitutional AI Critique" (in user messages) | "Constitutional compliance check" | Plain English; citizen, not lawyer |
+
+**Structural patterns** -- replace a format with a better format:
+
+| Instead of | Use | Why |
+|------------|-----|-----|
+| "REJECTED" (as the complete message) | "REJECTED -- [score]. [Why]. [Next step]." | Rejection is a beginning, not an ending. "REJECTED" as a lead label followed by context (see Pair 3) is the intended pattern. "REJECTED" as the entire message content is not. |
+
+**Delete entirely** -- these constructions add no value; remove them:
+
+| Construction | Why |
+|-------------|-----|
+| "Thank you for your patience" | Never use this; it is corporate filler |
+| "Please note that" | Just say the thing; every word must earn its place |
 
 ### Forbidden Constructions
 
@@ -766,9 +809,54 @@ If a piece of text fails any of these tests, either fix it or strip the personal
 | Source | Role |
 |--------|------|
 | `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md` | Parent epic; principle table and soundtrack are canonical inputs |
-| `projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-research.md` | Research artifact; primary source for biographical analysis, trait taxonomy, voice design dimensions |
+| `projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-research.md` | Initial research artifact; primary source for biographical analysis, trait taxonomy, voice design dimensions |
+| `projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-supplemental-research.md` | Supplemental research artifact; 35 web sources, 18 searches; source of corrections and inline citations in v0.5.0 |
 | `.context/rules/quality-enforcement.md` | Quality enforcement SSOT; thresholds, strategies, and rule IDs referenced throughout |
 | `docs/governance/JERRY_CONSTITUTION.md` | Constitutional constraints; boundary conditions section references H-01 through H-24 |
+
+---
+
+## References
+
+All sources accessed 2026-02-19. Sources cited inline are marked with [N] in the document body. Sources not cited inline are included as corroborating references that support verified claims or provide additional context; their "Used For" column describes their role.
+
+| # | Title | URL | Used For |
+|---|-------|-----|----------|
+| 1 | Shane McConkey — Wikipedia | https://en.wikipedia.org/wiki/Shane_McConkey | General biography, nationality |
+| 2 | Shane McConkey — Shane McConkey Foundation (About Shane) | https://shanemcconkey.org/about-the-shane-mcconkey-foundation/shane-mcconkey/ | Birthplace, family, career timeline, 8th-grade essay |
+| 3 | Shane McConkey — U.S. Ski & Snowboard Hall of Fame | https://www.skihall.com/hall-of-famers/shane-mcconkey/ | Competitive record, Vancouver birthplace, mother/father credentials, innovation legacy |
+| 4 | The Life and Death of Shane McConkey — Outside Online | https://www.outsideonline.com/outdoor-adventure/snow-sports/life-and-death-shane-mcconkey/ | Cultural impact characterization |
+| 5 | Shane McConkey 1969–2009 — FREESKIER | https://www.freeskier.com/shane-mcconkey-1969-2009 | Obituary reference |
+| 6 | Shane McConkey Dies in Dolomite Ski BASE Accident — TetonAT | https://www.tetonat.com/2009/03/26/shane-mcconkey-dies-in-italy-ski-base-accident/ | Death details, Dolomites, ski failure cause, filming context |
+| 7 | Shane McConkey Plunges to Death in Italy — Ski Area Management | https://www.saminfo.com/news/sam-headline-news/5423-583-shane-mcconkey-plunges-to-death-in-italy | Death details corroboration |
+| 8 | Volant Spatula — Wikipedia | https://en.wikipedia.org/wiki/Volant_Spatula | Spatula timeline: 1996 concept, 2001 prototype, October 2002 commercial production |
+| 9 | Brain Floss — By Shane McConkey (Reverse Camber Powder Skis) — Unofficial Networks | https://unofficialnetworks.com/2009/04/03/mental-floss-by-shane-mcconkey-reverse-camber-powder-skis/ | Spatula design philosophy quote; Chubb wide ski 1996 use |
+| 10 | McConkey Proud of New Powder Tool — Denver Post | https://www.denverpost.com/2006/02/06/mcconkey-proud-of-new-powder-tool/ | Three verified McConkey quotes: K2 Pontoon, "float like a boat," industry resistance |
+| 11 | McConkey (2013) — IMDB | https://www.imdb.com/title/tt2845780/ | Documentary director credits, cast, rating |
+| 12 | McCONKEY (2013) — Matchstick Productions | https://matchstickpro.com/mcconkey/ | Production credits, runtime, tagline |
+| 13 | McConkey (2013) — Tribeca Festival | https://www.tribecafilm.com/films/513238271c7d76a6bb000135-mcconkey | Tribeca premiere verification |
+| 14 | McConkey (film) — Wikipedia | https://en.wikipedia.org/wiki/McConkey_(film) | Director credits corroboration |
+| 15 | There's Something About McConkey (2000) — Matchstick Productions | https://matchstickpro.com/something-about-mcconkey/ | 2000 short film verification |
+| 16 | Shane McConkey PUSH — Matchstick Productions | https://matchstickpro.com/shane-mcconkey-push/ | Filmography |
+| 17 | Shane McConkey CLAIM — Matchstick Productions | https://matchstickpro.com/shane-mcconkey-claim-the-greatest-ski-movie-ever/ | Filmography |
+| 18 | Matchstick Productions — Wikipedia | https://en.wikipedia.org/wiki/Matchstick_Productions | Full MSP filmography cross-reference |
+| 19 | Shane McConkey Foundation — Home | https://shanemcconkey.org/ | Foundation reference |
+| 20 | The Foundation — Shane McConkey Foundation | https://shanemcconkey.org/the-foundation/ | Foundation founding, mission, donations, motto |
+| 21 | TOP 5 QUOTES BY SHANE MCCONKEY — AZ Quotes | https://www.azquotes.com/author/76194-Shane_McConkey | Quote aggregation; secondary source only |
+| 22 | Shane McConkey Quotes — Newschoolers | https://www.newschoolers.com/forum/thread/496381/Shane-mcconkey-quotes | Quote reference |
+| 23 | Shane McConkey: Free to Ski — SnowBrains | https://snowbrains.com/shane-mcconkey-free-to-ski/ | 8th-grade essay; freeskiing philosophy quote; wingsuit jump date |
+| 24 | Shane McConkey Was More Than Just a Skier — Adventure Journal | https://www.adventure-journal.com/2022/12/shane-mcconkey-was-more-more-than-just-a-skier/ | Sherry McConkey quotes on his character; fat ski democratization |
+| 25 | Long Live Saucer Boy — Moonshine Ink | https://www.moonshineink.com/sports/long-live-saucer-boy/ | Costume details: Bogner apparel, saucer, snowblades; snowlerblading sport context |
+| 26 | Here's Why Shane McConkey's Saucer Boy Is Still the Best Halloween Costume Ever — The Inertia | https://www.theinertia.com/mountain/heres-why-shane-mcconkeys-saucer-boy-is-still-the-best-halloween-costume-ever/ | 1997 origin, ACL recovery in Valdez, costume details, satirical purpose |
+| 27 | Exploring the Origins of Saucerboy — FREESKIER | https://www.freeskier.com/origins-saucerboy-mcconkeys-drunk-awesome-twin | Costume details, Jack Daniel's secret sponsorship, satirical purpose |
+| 28 | Ski-BASE Jumping — Wikipedia | https://en.wikipedia.org/wiki/Ski-BASE_jumping | First wingsuit ski-BASE jump: Feb 25, 2007, Gridsetskolten, Norway |
+| 29 | Shane McConkey's Lasting Legacy — Tahoe Quarterly | https://tahoequarterly.com/ski-ride-2018/shane-mcconkeys-lasting-legacy | ESPN Skier of the Year 2001; Vail lifetime ban; legacy overview |
+| 30 | Shane McConkey — Laureus World Sports Awards 2005 | https://www.laureus.com/world-sports-awards/2005/laureus-world-action-sportsperson-of-the-year/shane-mcconkey | 2005 Laureus nomination |
+| 31 | Pain McShlonkey Classic — Shane McConkey Foundation | https://shanemcconkey.org/shane-mcconkey-foundation-events/the-annual-pain-mcshlonkey/ | PMS event origin (1998), annual continuation |
+| 32 | G.N.A.R. the Movie — Unofficial Networks | https://unofficialnetworks.com/gnar-the-movie/ | G.N.A.R. game, film, Squaw Valley shutdown |
+| 33 | Shane McConkey — The Ski Journal | https://www.theskijournal.com/2009/03/shane-mcconkey/ | Obituary reference |
+| 34 | Plake, Rahlves, McConkey Inducted into Ski Hall of Fame — FREESKIER | https://freeskier.com/stories/plake-rahlves-mcconkey-inducted-ski-hall-fame-1 | Hall of Fame induction date (April 2, 2011) |
+| 35 | Shane McConkey: 16 Years Gone But Still Inspiring — SnowBrains | https://snowbrains.com/16-years-gone-still-inspiring-shane-mcconkey/ | Legacy reference |
 
 ---
 
@@ -776,15 +864,16 @@ If a piece of text fails any of these tests, either fix it or strip the personal
 
 | Attribute | Value |
 |-----------|-------|
-| Version | 0.4.0 — FINAL (R3 revision complete) |
-| Status | COMPLETE — Quality gate PASSED (0.930, 3 iterations) |
-| Agent | ps-creator-001 (original) / ps-critic-001 (R1, R2, R3 revisions) |
+| Version | 0.9.0 — post-scorer targeted fixes |
+| Status | Post adv-scorer-001 supplemental — targeted fixes for Methodological Rigor and Actionability |
+| Agent | ps-creator-001 (original) / ps-critic-001 (R1-R3) / ps-creator-001 (v0.5.0 supplemental) / ps-critic-001 (R4-R6 supplemental) |
 | Workflow | jnsq-20260219-001 |
 | Phase | 1 — Persona Distillation |
 | Date | 2026-02-19 |
-| Next step | ps-synthesizer-001 synthesis and final output |
-
----
-
-*"If you're not having fun, you're doing it wrong."*
-*— [WIDELY ATTRIBUTED] Shane McConkey*
+| Prior version quality gate | PASSED (0.930, 3 iterations complete) at v0.4.0; v0.5.0 supplemental citation pass |
+| v0.5.0 changes | Birthplace corrected (SF to Vancouver); Saucer Boy costume corrected; documentary directors corrected; Spatula timeline corrected; quotes cleaned; 35-source References section added |
+| v0.6.0 changes | Wingsuit citation corrected ([8] to [23, 28]); References header fixed; Vail ban integrated [29]; epistemic note expanded |
+| v0.7.0 changes | ESPN Skier of the Year 2001 added [29]; Hall of Fame induction added [3, 34]; Outside Online characterization added [4]; ski-BASE citation expanded [3, 23]; Matchstick Productions citations added [15-18]; inline citations now cover 23 of 35 sources |
+| v0.8.0 changes | Vocabulary Reference reorganized (substitutions/patterns/deletions separated); FEAT-002 biographical calibration material added; FEAT-004 biographical anchor for voice calibration added; FEAT-006 easter egg candidates expanded (Vail ban, 8th-grade essay) |
+| v0.9.0 changes | Audience Adaptation Matrix "Light tone" cross-reference to Humor Deployment Rules added (Methodological Rigor fix); FEAT-006 concrete in-situ easter egg calibration example added with before/after code snippet (Actionability fix) |
+| Next step | Barrier 1 human review |

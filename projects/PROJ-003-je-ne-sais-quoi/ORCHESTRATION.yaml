@@ -40,7 +40,7 @@ workflow:
     max_concurrent_agents: 3      # Fan-out phases: max 3 parallel streams
     max_barrier_retries: 2        # Circuit breaker: 2 extra cycles beyond min 3 (H-14)
     checkpoint_frequency: "PHASE_AND_BARRIER"
-    quality_threshold_c2plus: 0.92  # H-13
+    quality_threshold_c2plus: 0.95  # H-13 baseline 0.92; raised per user directive for FEAT-001
     min_critic_iterations_c2plus: 3  # H-14
 
 # =============================================================================
@@ -76,7 +76,7 @@ pipelines:
       - "adversary"
       - "nasa-se"
 
-    status: "PHASE_1_IN_PROGRESS"
+    status: "PHASE_1_SUPPLEMENTAL"
     current_phase: 1
     total_phases: 3
     progress_percent: 0
@@ -100,6 +100,11 @@ pipelines:
             name: "Researcher"
             role: "Research soul of Saucer Boy; load brand signals, Jerry docs, prior persona work"
             status: "COMPLETE"
+            supplemental_pass:
+              status: "COMPLETE"
+              reason: "Training-data-only research lacks citations. Supplemental WebSearch pass to add verified sources, URLs, and references."
+              started_at: "2026-02-19T00:00:00Z"
+              completed_at: "2026-02-19T00:00:00Z"
             artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-research.md"
             inputs:
               - "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md"
@@ -110,7 +115,7 @@ pipelines:
           - id: "ps-creator-001"
             name: "Creator"
             role: "Draft FEAT-001 Saucer Boy persona document (first pass)"
-            status: "COMPLETE"
+            status: "COMPLETE_SUPPLEMENTAL"
             artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md"
             inputs:
               - "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-researcher-001/ps-researcher-001-research.md"
@@ -120,10 +125,10 @@ pipelines:
           - id: "ps-critic-001"
             name: "Critic"
             role: "Creator-critic-revision loop (min 3 iterations). Apply C2 strategy sequence: S-010 → S-003 → S-002 → S-007"
-            status: "COMPLETE"
+            status: "COMPLETE_SUPPLEMENTAL"
             strategy_sequence: ["S-010", "S-003", "S-002", "S-007"]  # H-16: S-003 before S-002
             min_iterations: 3
-            iterations_complete: 0
+            iterations_complete: 6  # 3 initial (R1-R3) + 3 supplemental (R4-R6)
             artifacts:
               - "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-critic-001/ps-critic-001-review-r1.md"
               - "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-critic-001/ps-critic-001-review-r2.md"
@@ -136,15 +141,15 @@ pipelines:
           - id: "adv-scorer-001"
             name: "Quality Scorer"
             role: "Apply S-014 LLM-as-Judge. Score 6 dimensions. Produce composite score for Barrier 1 gate."
-            status: "COMPLETE"
+            status: "COMPLETE_SUPPLEMENTAL"
             strategy: "S-014"
-            artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/adv-scorer-001/adv-scorer-001-quality-score.md"
+            artifact: "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/adv-scorer-001/adv-scorer-001-supplemental-quality-score.md"
             inputs:
               - "orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-critic-001/ps-critic-001-review-r3.md"
             started_at: null
             completed_at: null
 
-        quality_score: 0.925  # S-014 independent score (adv-scorer-001)
+        quality_score: 0.953  # S-014 supplemental re-score (adv-scorer-001); v0.9.0 PASS
 
       # -------------------------------------------------------------------
       # PHASE 2: TIER 1 FAN-OUT (FEAT-002 + FEAT-003 + FEAT-005)
@@ -471,9 +476,9 @@ pipelines:
 barriers:
   - id: "barrier-1"
     name: "Phase 1 Quality Gate"
-    description: "FEAT-001 must achieve >= 0.92 composite S-014 score before Phase 2 unlocks"
+    description: "FEAT-001 must achieve >= 0.95 composite S-014 score before Phase 2 unlocks (raised from 0.92 per user directive)"
     status: "PENDING"  # PENDING | IN_PROGRESS | COMPLETE | FAILED
-    threshold: 0.92
+    threshold: 0.95
     criticality: "C2"
     completed_at: null
     depends_on:
