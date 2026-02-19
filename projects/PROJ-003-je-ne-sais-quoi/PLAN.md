@@ -26,17 +26,21 @@ PROJ-003 houses EPIC-001 (Je Ne Sais Quoi — The Saucer Boy Spirit), which adds
 
 ### EPIC-001 Features (pending decomposition)
 
-| ID | Title | Status |
-|----|-------|--------|
-| FEAT-019 | Voice & Persona | pending |
-| FEAT-020 | Soundtrack | pending |
-| FEAT-021 | Easter Eggs | pending |
-| FEAT-022 | DX Delight | pending |
+| ID | Title | Status | Dependencies |
+|----|-------|--------|--------------|
+| FEAT-001 | Saucer Boy Persona Distillation | pending | — |
+| FEAT-002 | /saucer-boy Skill | pending | FEAT-001 |
+| FEAT-003 | Saucer Boy Visual Identity | pending | FEAT-001 |
+| FEAT-004 | Framework Voice & Personality | pending | FEAT-001, FEAT-002 |
+| FEAT-005 | The Jerry Soundtrack | pending | FEAT-001 |
+| FEAT-006 | Easter Eggs & Cultural References | pending | FEAT-001, FEAT-002 |
+| FEAT-007 | Developer Experience Delight | pending | FEAT-001, FEAT-002 |
 
 ## Milestones
 
 | Milestone | Target | Status |
 |-----------|--------|--------|
+| Feature inventory restructured (4→7, precursors + renumber) | 2026-02-19 | completed |
 | Feature decomposition into enablers/tasks | TBD | pending |
 | `/saucer-boy` skill implementation | TBD | pending |
 | Integration with quality gate feedback | TBD | pending |

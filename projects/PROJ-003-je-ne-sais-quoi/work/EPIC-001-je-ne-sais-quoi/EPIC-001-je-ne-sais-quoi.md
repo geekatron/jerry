@@ -81,19 +81,25 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 
 ### Feature Inventory
 
-| ID | Title | Status | Priority | Progress |
-|----|-------|--------|----------|----------|
-| FEAT-019 | Framework Voice & Personality | pending | medium | 0% |
-| FEAT-020 | The Jerry Soundtrack | pending | low | 0% |
-| FEAT-021 | Easter Eggs & Cultural References | pending | low | 0% |
-| FEAT-022 | Developer Experience Delight | pending | medium | 0% |
+| ID | Title | Status | Priority | Dependencies | Progress |
+|----|-------|--------|----------|--------------|----------|
+| FEAT-001 | Saucer Boy Persona Distillation | pending | high | — | 0% |
+| FEAT-002 | /saucer-boy Skill | pending | high | FEAT-001 | 0% |
+| FEAT-003 | Saucer Boy Visual Identity | pending | medium | FEAT-001 | 0% |
+| FEAT-004 | Framework Voice & Personality | pending | medium | FEAT-001, FEAT-002 | 0% |
+| FEAT-005 | The Jerry Soundtrack | pending | low | FEAT-001 | 0% |
+| FEAT-006 | Easter Eggs & Cultural References | pending | low | FEAT-001, FEAT-002 | 0% |
+| FEAT-007 | Developer Experience Delight | pending | medium | FEAT-001, FEAT-002 | 0% |
 
 ### Feature Links
 
-- [FEAT-019: Framework Voice & Personality](./FEAT-019-framework-voice/FEAT-019-framework-voice.md) — Quality gate messages, hook outputs, error messages with character. The McConkey energy: technically precise, never dry.
-- [FEAT-020: The Jerry Soundtrack](./FEAT-020-jerry-soundtrack/FEAT-020-jerry-soundtrack.md) — Curated music references mapping framework concepts to songs. Hip hop (old school + modern), rock, Saucer Boy action anthems. SOUNDTRACK.md as a cultural artifact.
-- [FEAT-021: Easter Eggs & Cultural References](./FEAT-021-easter-eggs/FEAT-021-easter-eggs.md) — Hidden delights for developers who dig deep. Hip hop bars in docstrings. Saucer Boy wisdom in comments. The kind of thing that makes someone tweet "I just found this in the Jerry source code..."
-- [FEAT-022: Developer Experience Delight](./FEAT-022-dx-delight/FEAT-022-dx-delight.md) — Small touches that make the difference between a tool you use and a tool you love. Session start personality. Progress celebrations. The feeling of working WITH a companion, not UNDER a supervisor.
+- [FEAT-001: Saucer Boy Persona Distillation](./FEAT-001-saucer-boy-persona/FEAT-001-saucer-boy-persona.md) — Research and codify the Shane McConkey persona into a canonical reference doc. The "brand bible" that all other features depend on.
+- [FEAT-002: /saucer-boy Skill](./FEAT-002-saucer-boy-skill/FEAT-002-saucer-boy-skill.md) — Build `skills/saucer-boy/` skill to enforce persona consistency in all outputs. The second gate after persona distillation.
+- [FEAT-003: Saucer Boy Visual Identity](./FEAT-003-saucer-boy-visual/FEAT-003-saucer-boy-visual.md) — AI-generated graphic logo + ASCII variant for CLI. Visual identity for the Saucer Boy spirit.
+- [FEAT-004: Framework Voice & Personality](./FEAT-004-framework-voice/FEAT-004-framework-voice.md) — Quality gate messages, hook outputs, error messages with character. The McConkey energy: technically precise, never dry.
+- [FEAT-005: The Jerry Soundtrack](./FEAT-005-jerry-soundtrack/FEAT-005-jerry-soundtrack.md) — Curated music references mapping framework concepts to songs. Hip hop (old school + modern), rock, Saucer Boy action anthems. SOUNDTRACK.md as a cultural artifact.
+- [FEAT-006: Easter Eggs & Cultural References](./FEAT-006-easter-eggs/FEAT-006-easter-eggs.md) — Hidden delights for developers who dig deep. Hip hop bars in docstrings. Saucer Boy wisdom in comments. The kind of thing that makes someone tweet "I just found this in the Jerry source code..."
+- [FEAT-007: Developer Experience Delight](./FEAT-007-dx-delight/FEAT-007-dx-delight.md) — Small touches that make the difference between a tool you use and a tool you love. Session start personality. Progress celebrations. The feeling of working WITH a companion, not UNDER a supervisor.
 
 ---
 
@@ -155,7 +161,7 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/4 completed)              |
+| Features:  [....................] 0% (0/7 completed)              |
 | Enablers:  [....................] 0% (0/TBD completed)            |
 | Tasks:     [....................] 0% (0/TBD completed)            |
 +------------------------------------------------------------------+
@@ -167,10 +173,10 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 4 |
+| **Total Features** | 7 |
 | **Completed Features** | 0 |
 | **In Progress Features** | 0 |
-| **Pending Features** | 4 |
+| **Pending Features** | 7 |
 | **Feature Completion %** | 0% |
 
 ---
@@ -190,6 +196,8 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 |------|--------|--------|-------|
 | 2026-02-17 | Claude | pending | Epic created as EPIC-005 in PROJ-001. Born from a conversation about what music represents Jerry. Saucer Boy spirit adopted as design philosophy. Initial soundtrack curated (23 songs across 4 categories). |
 | 2026-02-18 | Claude | pending | Migrated from PROJ-001 (EPIC-005) to PROJ-003 as EPIC-001. Renumbered for project-local ID consistency. |
+| 2026-02-19 | Claude | pending | Features renumbered to project-scoped IDs: FEAT-019→FEAT-001, FEAT-020→FEAT-002, FEAT-021→FEAT-003, FEAT-022→FEAT-004. Feature IDs are project-scoped per worktracker conventions. |
+| 2026-02-19 | Claude | pending | Feature inventory restructured: 3 precursor features added (FEAT-001 Saucer Boy Persona Distillation, FEAT-002 /saucer-boy Skill, FEAT-003 Saucer Boy Visual Identity). Original features renumbered: FEAT-001→FEAT-004, FEAT-002→FEAT-005, FEAT-003→FEAT-006, FEAT-004→FEAT-007. Dependencies column added. Total features: 4→7. |
 
 ---
 

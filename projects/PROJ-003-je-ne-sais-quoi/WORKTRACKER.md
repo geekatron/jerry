@@ -47,3 +47,5 @@
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-18 | Claude | PROJ-003 created. EPIC-005 migrated from PROJ-001-oss-release, renumbered to EPIC-001 within this project. |
+| 2026-02-19 | Claude | Features renumbered to project-scoped IDs: FEAT-019→FEAT-001, FEAT-020→FEAT-002, FEAT-021→FEAT-003, FEAT-022→FEAT-004. |
+| 2026-02-19 | Claude | EPIC-001 feature inventory restructured: 3 precursor features added, originals renumbered (FEAT-001→004, FEAT-002→005, FEAT-003→006, FEAT-004→007). Dependencies column added. Total features: 4→7. |
