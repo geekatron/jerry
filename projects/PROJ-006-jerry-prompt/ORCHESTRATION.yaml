@@ -1,0 +1,667 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for EN-001: Research Effective Jerry Prompt Patterns
+# Document ID: PROJ-006-ORCH-STATE
+# Version: 1.0
+# Created: 2026-02-18T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+# Schema version for evolution support (semver format)
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "prompt-research-20260218-001"
+  name: "EN-001 Research Effective Jerry Prompt Patterns"
+  project_id: "PROJ-006-jerry-prompt"
+  spike_ref: "EN-001"
+  version: "1.0"
+  created_at: "2026-02-18T00:00:00Z"
+  updated_at: "2026-02-18T18:00:00Z"
+  status: "COMPLETE"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  # Workflow ID configuration
+  id_source: "auto-generated"
+  id_format: "semantic-date-seq"  # {purpose}-{YYYYMMDD}-{NNN}
+
+  # Research question
+  research_question: "What prompts are most effective when working with Jerry?"
+
+  # Orchestration pattern classification
+  patterns:
+    - SEQUENTIAL           # Phases execute in order: 1 -> 2 -> 3
+    - CRITIC_CHECKPOINTS   # Adversarial gate at every phase boundary
+    - CONCURRENT_SUBTASKS  # Phase 1 and Phase 2 each have concurrent agent pairs
+
+  # Context references
+  enabler: "EN-001"
+  parent_project: "PROJ-006-jerry-prompt"
+
+  # Constraints from Jerry Constitution
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves escalations
+    max_concurrent_agents: 2      # Researcher + Investigator; Analyst + Architect
+    max_gate_iterations: 2        # 3rd failure escalates to user
+    quality_threshold: 0.92       # Adversarial critic gate threshold (elevated)
+    checkpoint_frequency: "PHASE" # PHASE-level checkpoints
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/"
+  pipeline: "{base}ps/{phase_id}/{agent_id}/"
+  gates: "{base}gates/{gate_id}/"
+  research_output: "projects/PROJ-006-jerry-prompt/research/"
+  analysis_output: "projects/PROJ-006-jerry-prompt/analysis/"
+  synthesis_output: "projects/PROJ-006-jerry-prompt/synthesis/"
+
+# =============================================================================
+# PIPELINE DEFINITION
+# =============================================================================
+pipelines:
+  ps:
+    id: "pipeline-ps"
+    name: "Problem-Solving Pipeline"
+    description: "Sequential research pipeline with adversarial critic gates for EN-001"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    status: "COMPLETE"
+    current_phase: 3
+    total_phases: 3
+    progress_percent: 100
+
+    phases:
+      # =========================================================================
+      # PHASE 1: Discovery
+      # =========================================================================
+      - id: 1
+        name: "Discovery"
+        path_id: "phase-1-discovery"
+        purpose: "Gather prompt examples, analyze Jerry internals, survey external prompt engineering research"
+        status: "PENDING"
+        execution_mode: "CONCURRENT"  # researcher + investigator run concurrently
+        started_at: null
+        completed_at: null
+
+        agents:
+          # Agent 1a: External Survey
+          - id: "ps-researcher"
+            name: "External Research Surveyor"
+            role: "researcher"
+            agent_spec: "skills/problem-solving/agents/ps-researcher.md"
+            status: "PENDING"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/ps/phase-1-discovery/ps-researcher/ps-researcher-survey.md"
+            project_output: "projects/PROJ-006-jerry-prompt/research/external-prompt-engineering-survey.md"
+            inputs:
+              - description: "Anthropic prompt engineering documentation"
+                source: "https://docs.anthropic.com (external)"
+              - description: "Academic and industry prompt engineering guides"
+                source: "external research"
+              - description: "LLM behavior and prompting best practices"
+                source: "external research"
+            task_description: >
+              Survey Anthropic prompt engineering documentation, academic sources,
+              and industry best practices for prompting LLMs. Focus on: prompt
+              structure patterns, specificity levels, role definition, context
+              framing, chain-of-thought, directive vs. conversational styles,
+              and evidence-based effectiveness data. Produce a structured survey
+              with citations to >= 4 distinct sources.
+            min_sources: 4
+
+          # Agent 1b: Internal Investigation
+          - id: "ps-investigator"
+            name: "Jerry Internals Investigator"
+            role: "investigator"
+            agent_spec: "skills/problem-solving/agents/ps-investigator.md"
+            status: "PENDING"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/ps/phase-1-discovery/ps-investigator/ps-investigator-investigation.md"
+            project_output: "projects/PROJ-006-jerry-prompt/research/jerry-internals-investigation.md"
+            inputs:
+              - "CLAUDE.md"
+              - ".claude/rules/"
+              - "skills/worktracker/SKILL.md"
+              - "skills/problem-solving/SKILL.md"
+              - "skills/orchestration/SKILL.md"
+              - "skills/nasa-se/SKILL.md"
+              - "skills/architecture/SKILL.md"
+              - "skills/problem-solving/agents/"
+              - "projects/PROJ-001-oss-release/orchestration/en001-bugfix-20260210-001/"
+              - description: "User example prompt (Salesforce/PCS research prompt)"
+                source: "user-provided"
+            task_description: >
+              Deeply investigate Jerry's internal architecture for prompt patterns.
+              Analyze CLAUDE.md root context, all 5 skill SKILL.md files, agent
+              specs in problem-solving, orchestration examples, and the user's
+              example prompt. Produce an anatomy of how effective Jerry prompts
+              are structured: skill invocation syntax, agent composition patterns,
+              quality threshold specifications, context-setting conventions,
+              and observable patterns that correlate with high-quality outputs.
+
+        artifacts:
+          - "projects/PROJ-006-jerry-prompt/research/external-prompt-engineering-survey.md"
+          - "projects/PROJ-006-jerry-prompt/research/jerry-internals-investigation.md"
+
+      # =========================================================================
+      # CRITIC GATE 1: Discovery Review
+      # =========================================================================
+      - id: "gate-1"
+        name: "Discovery Critic Gate"
+        path_id: "gates/gate-1"
+        purpose: "Adversarial review of Phase 1 completeness and evidence quality"
+        gate_type: "CRITIC_CHECKPOINT"
+        quality_threshold: 0.92
+        status: "PENDING"
+        iteration: 0
+        max_iterations: 2
+        result: null         # PASS | FAIL
+        quality_score: null
+        started_at: null
+        completed_at: null
+
+        agents:
+          # Gate Agent 1: Adversarial Critic
+          - id: "ps-critic"
+            name: "Discovery Adversarial Critic"
+            role: "critic"
+            agent_spec: "skills/problem-solving/agents/ps-critic.md"
+            status: "PENDING"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-1/gate-1-ps-critic-challenge.md"
+            depends_on:
+              - "ps-researcher"
+              - "ps-investigator"
+            critique_modes:
+              - "devils_advocate"
+              - "steelman"
+              - "red_team"
+              - "blue_team"
+            critique_focus:
+              - "Coverage gaps: Are major prompt engineering domains missing from the survey?"
+              - "Evidence weakness: Are claims unsupported or sources non-credible?"
+              - "Selection bias: Does the corpus favor certain prompt styles?"
+              - "Jerry specificity: Is the internal investigation deep enough for Jerry's unique architecture?"
+              - "Corpus sufficiency: Is there enough raw material for meaningful pattern analysis?"
+
+          # Gate Agent 2: Quality Reviewer
+          - id: "ps-reviewer"
+            name: "Discovery Quality Reviewer"
+            role: "reviewer"
+            agent_spec: "skills/problem-solving/agents/ps-reviewer.md"
+            status: "PENDING"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-1/gate-1-ps-reviewer-review.md"
+            depends_on:
+              - "ps-critic"
+            evaluation_criteria:
+              - name: "Completeness"
+                weight: 0.30
+                description: "All required topics covered; no major gaps in evidence"
+              - name: "Accuracy"
+                weight: 0.25
+                description: "Claims are evidence-based; sources credible"
+              - name: "Rigor"
+                weight: 0.20
+                description: "Methodology is systematic; findings distinguishable from noise"
+              - name: "Actionability"
+                weight: 0.15
+                description: "Evidence is usable as input to Phase 2 analysis"
+              - name: "Consistency"
+                weight: 0.10
+                description: "Internal consistency between external survey and internal investigation"
+
+        gate_result_artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-1/gate-1-result.md"
+        on_pass: "Advance to Phase 2 (Analysis)"
+        on_fail: "Return feedback to ps-researcher and ps-investigator; increment iteration"
+
+      # =========================================================================
+      # PHASE 2: Analysis
+      # =========================================================================
+      - id: 2
+        name: "Analysis"
+        path_id: "phase-2-analysis"
+        purpose: "Deconstruct prompt anatomy, identify patterns, correlate traits with quality outcomes, design rubric"
+        status: "BLOCKED"
+        blocked_by: "gate-1"
+        execution_mode: "CONCURRENT"  # analyst + architect run concurrently
+        started_at: null
+        completed_at: null
+
+        agents:
+          # Agent 2a: Pattern Analyst
+          - id: "ps-analyst"
+            name: "Prompt Pattern Analyst"
+            role: "analyst"
+            agent_spec: "skills/problem-solving/agents/ps-analyst.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/ps/phase-2-analysis/ps-analyst/ps-analyst-analysis.md"
+            project_output: "projects/PROJ-006-jerry-prompt/analysis/prompt-pattern-analysis.md"
+            inputs:
+              - "projects/PROJ-006-jerry-prompt/research/external-prompt-engineering-survey.md"
+              - "projects/PROJ-006-jerry-prompt/research/jerry-internals-investigation.md"
+            task_description: >
+              Analyze the Phase 1 corpus to identify prompt effectiveness patterns.
+              Categorize prompt structures (directive, collaborative, compositional,
+              orchestration-focused). Map which structural traits correlate with
+              observable quality indicators. Identify anti-patterns that degrade
+              Jerry performance. Produce a pattern analysis with correlation
+              mappings and anti-pattern taxonomy with frequency data.
+
+          # Agent 2b: Rubric + Taxonomy Designer
+          - id: "ps-architect"
+            name: "Prompt Rubric and Taxonomy Designer"
+            role: "architect"
+            agent_spec: "skills/problem-solving/agents/ps-architect.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/ps/phase-2-analysis/ps-architect/ps-architect-rubric-taxonomy.md"
+            project_output: "projects/PROJ-006-jerry-prompt/analysis/prompt-quality-rubric-taxonomy.md"
+            inputs:
+              - "projects/PROJ-006-jerry-prompt/research/external-prompt-engineering-survey.md"
+              - "projects/PROJ-006-jerry-prompt/research/jerry-internals-investigation.md"
+            task_description: >
+              Design a prompt quality rubric with measurable criteria (not subjective
+              descriptors) that Jerry users can apply to evaluate their own prompts.
+              Create a classification taxonomy for Jerry prompt types covering:
+              skill invocation prompts, agent orchestration prompts, research prompts,
+              implementation prompts, and hybrid prompts. Define effectiveness tiers
+              (exemplary, proficient, developing, inadequate) with observable
+              characteristics for each tier.
+
+        artifacts:
+          - "projects/PROJ-006-jerry-prompt/analysis/prompt-pattern-analysis.md"
+          - "projects/PROJ-006-jerry-prompt/analysis/prompt-quality-rubric-taxonomy.md"
+
+      # =========================================================================
+      # CRITIC GATE 2: Analysis Review
+      # =========================================================================
+      - id: "gate-2"
+        name: "Analysis Critic Gate"
+        path_id: "gates/gate-2"
+        purpose: "Adversarial challenge of analysis rigor and rubric validity"
+        gate_type: "CRITIC_CHECKPOINT"
+        quality_threshold: 0.92
+        status: "BLOCKED"
+        blocked_by: "gate-1"
+        iteration: 0
+        max_iterations: 2
+        result: null
+        quality_score: null
+        started_at: null
+        completed_at: null
+
+        agents:
+          # Gate Agent 1: Adversarial Critic
+          - id: "ps-critic"
+            name: "Analysis Adversarial Critic"
+            role: "critic"
+            agent_spec: "skills/problem-solving/agents/ps-critic.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-2/gate-2-ps-critic-challenge.md"
+            depends_on:
+              - "ps-analyst"
+              - "ps-architect"
+            critique_modes:
+              - "devils_advocate"
+              - "steelman"
+              - "red_team"
+              - "blue_team"
+            critique_focus:
+              - "Analysis rigor: Are correlation claims supported by evidence, or speculative?"
+              - "Confounds: Are apparent patterns caused by something other than prompt quality?"
+              - "Rubric subjectivity: Can criteria actually be measured, or are they vague?"
+              - "Taxonomy gaps: Are important Jerry prompt types missing from the taxonomy?"
+              - "Edge cases: What prompt scenarios does the analysis not account for?"
+
+          # Gate Agent 2: Completeness Validator
+          - id: "ps-validator"
+            name: "Analysis Completeness Validator"
+            role: "validator"
+            agent_spec: "skills/problem-solving/agents/ps-validator.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-2/gate-2-ps-validator-validation.md"
+            depends_on:
+              - "ps-critic"
+            validation_scope:
+              - "Pattern analysis covers all major prompt structure categories"
+              - "Anti-patterns section present with >= 3 documented patterns"
+              - "Effectiveness correlations explicitly linked to evidence from Phase 1"
+              - "Rubric has >= 4 measurable criteria with clear scoring guidance"
+              - "Taxonomy covers skill invocation, agent orchestration, and research prompt types"
+              - "All findings traceable to Phase 1 source artifacts"
+
+        gate_result_artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-2/gate-2-result.md"
+        on_pass: "Advance to Phase 3 (Synthesis)"
+        on_fail: "Return feedback to ps-analyst and ps-architect; increment iteration"
+
+      # =========================================================================
+      # PHASE 3: Synthesis
+      # =========================================================================
+      - id: 3
+        name: "Synthesis"
+        path_id: "phase-3-synthesis"
+        purpose: "Produce best-practices guide, prompt templates, quality rubric card, executive summary"
+        status: "BLOCKED"
+        blocked_by: "gate-2"
+        execution_mode: "SEQUENTIAL"  # synthesizer must complete before reporter
+        started_at: null
+        completed_at: null
+
+        agents:
+          # Agent 3a: Synthesis Author
+          - id: "ps-synthesizer"
+            name: "Prompt Best-Practices Synthesizer"
+            role: "synthesizer"
+            agent_spec: "skills/problem-solving/agents/ps-synthesizer.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/ps/phase-3-synthesis/ps-synthesizer/ps-synthesizer-guide.md"
+            project_output: "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-best-practices-guide.md"
+            inputs:
+              - "projects/PROJ-006-jerry-prompt/research/external-prompt-engineering-survey.md"
+              - "projects/PROJ-006-jerry-prompt/research/jerry-internals-investigation.md"
+              - "projects/PROJ-006-jerry-prompt/analysis/prompt-pattern-analysis.md"
+              - "projects/PROJ-006-jerry-prompt/analysis/prompt-quality-rubric-taxonomy.md"
+            task_description: >
+              Compile all Phase 1 and Phase 2 findings into a comprehensive
+              Jerry Prompt Best-Practices Guide. The guide must cover: (1) an
+              introduction to Jerry's prompt ecosystem, (2) prompt anatomy for
+              effective Jerry prompts, (3) skill invocation patterns (single,
+              multi, orchestrated), (4) agent composition guidelines, (5) quality
+              indicators and measurable outcomes, (6) anti-patterns section with
+              clear explanations of why each fails, (7) worked examples of
+              prompts that demonstrate best practices. Audience: Jerry users
+              of all experience levels. Format: navigable markdown.
+
+          # Agent 3b: Report Author
+          - id: "ps-reporter"
+            name: "Prompt Template Library Reporter"
+            role: "reporter"
+            agent_spec: "skills/problem-solving/agents/ps-reporter.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/ps/phase-3-synthesis/ps-reporter/ps-reporter-deliverables.md"
+            project_outputs:
+              - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-template-library.md"
+              - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-executive-summary.md"
+              - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-quality-rubric-card.md"
+            depends_on:
+              - "ps-synthesizer"
+            inputs:
+              - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-best-practices-guide.md"
+              - "projects/PROJ-006-jerry-prompt/analysis/prompt-quality-rubric-taxonomy.md"
+              - "projects/PROJ-006-jerry-prompt/analysis/prompt-pattern-analysis.md"
+            task_description: >
+              Produce three deliverables: (1) A Jerry Prompt Template Library with
+              >= 3 ready-to-use templates for common Jerry tasks (research spike,
+              implementation task, multi-skill orchestration), each including the
+              prompt text, annotated anatomy, and expected output type. (2) An
+              executive summary (1 page) for stakeholders explaining key findings
+              and ROI. (3) A quality rubric card (printable/shareable format) with
+              the rubric criteria from Phase 2 formatted for quick reference.
+            min_templates: 3
+
+        artifacts:
+          - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-best-practices-guide.md"
+          - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-template-library.md"
+          - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-executive-summary.md"
+          - "projects/PROJ-006-jerry-prompt/synthesis/jerry-prompt-quality-rubric-card.md"
+
+      # =========================================================================
+      # CRITIC GATE 3: Final Synthesis Review
+      # =========================================================================
+      - id: "gate-3"
+        name: "Final Synthesis Critic Gate"
+        path_id: "gates/gate-3"
+        purpose: "Final adversarial review of all deliverables; EN-001 acceptance criteria validation"
+        gate_type: "CRITIC_CHECKPOINT"
+        quality_threshold: 0.92
+        status: "BLOCKED"
+        blocked_by: "gate-2"
+        iteration: 0
+        max_iterations: 2
+        result: null
+        quality_score: null
+        started_at: null
+        completed_at: null
+
+        agents:
+          # Gate Agent 1: Adversarial Critic (Final)
+          - id: "ps-critic"
+            name: "Final Adversarial Critic"
+            role: "critic"
+            agent_spec: "skills/problem-solving/agents/ps-critic.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-3/gate-3-ps-critic-challenge.md"
+            depends_on:
+              - "ps-synthesizer"
+              - "ps-reporter"
+            critique_modes:
+              - "devils_advocate"
+              - "steelman"
+              - "red_team"
+              - "blue_team"
+            critique_focus:
+              - "Guide actionability: Would a new Jerry user actually improve after reading this?"
+              - "Template quality: Are templates specific enough to be immediately usable?"
+              - "Internal consistency: Do templates reflect the rubric and patterns from Phase 2?"
+              - "Anti-pattern completeness: Are the most common Jerry pitfalls documented?"
+              - "Bias check: Does guidance over-favor certain skill types or user profiles?"
+              - "Evidence traceability: Are all recommendations traceable to Phase 1/2 findings?"
+
+          # Gate Agent 2: Final Validator
+          - id: "ps-validator"
+            name: "EN-001 Acceptance Validator"
+            role: "validator"
+            agent_spec: "skills/problem-solving/agents/ps-validator.md"
+            status: "BLOCKED"
+            completed_at: null
+            quality_score: null
+            artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-3/gate-3-ps-validator-validation.md"
+            depends_on:
+              - "ps-critic"
+            validation_scope:
+              - "EN-001 AC: Prompt anatomy documented (what structural elements matter)"
+              - "EN-001 AC: Skill invocation patterns cataloged (single, multi, orchestrated)"
+              - "EN-001 AC: Agent composition patterns analyzed"
+              - "EN-001 AC: Quality correlation data collected"
+              - "EN-001 AC: Anti-patterns identified and documented"
+              - "EN-001 AC: Best-practices guide produced in synthesis/"
+              - "EN-001 AC: >= 3 prompt templates created for common Jerry tasks"
+
+        gate_result_artifact: "projects/PROJ-006-jerry-prompt/orchestration/prompt-research-20260218-001/gates/gate-3/gate-3-result.md"
+        on_pass: "Mark workflow COMPLETE; EN-001 spike resolved"
+        on_fail: "Return feedback to ps-synthesizer and/or ps-reporter; increment iteration"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    # Group 1: Phase 1 — Discovery (concurrent agents)
+    - id: 1
+      name: "Phase 1: Discovery (Concurrent)"
+      execution_mode: "CONCURRENT"
+      status: "PENDING"
+      agents:
+        - "ps-researcher"
+        - "ps-investigator"
+
+    # Group 2: Gate 1 — Discovery Critic Gate (sequential within gate)
+    - id: 2
+      name: "Gate 1: Discovery Critic Gate"
+      execution_mode: "SEQUENTIAL"
+      status: "PENDING"
+      agents:
+        - "ps-critic"    # Adversarial challenge first
+        - "ps-reviewer"  # Quality review second
+
+    # Group 3: Phase 2 — Analysis (concurrent agents)
+    - id: 3
+      name: "Phase 2: Analysis (Concurrent)"
+      execution_mode: "CONCURRENT"
+      status: "BLOCKED"
+      blocked_by: "gate-1"
+      agents:
+        - "ps-analyst"
+        - "ps-architect"
+
+    # Group 4: Gate 2 — Analysis Critic Gate (sequential within gate)
+    - id: 4
+      name: "Gate 2: Analysis Critic Gate"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "gate-1"
+      agents:
+        - "ps-critic"     # Adversarial challenge first
+        - "ps-validator"  # Completeness validation second
+
+    # Group 5: Phase 3 — Synthesis (sequential: synthesizer before reporter)
+    - id: 5
+      name: "Phase 3: Synthesis (Sequential)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "gate-2"
+      agents:
+        - "ps-synthesizer"
+        - "ps-reporter"
+
+    # Group 6: Gate 3 — Final Critic Gate (sequential within gate)
+    - id: 6
+      name: "Gate 3: Final Critic Gate"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "gate-2"
+      agents:
+        - "ps-critic"     # Final adversarial review first
+        - "ps-validator"  # EN-001 acceptance validation second
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  # Expected checkpoints:
+  # - CP-001: Phase 1 complete (after Gate 1 passes)
+  # - CP-002: Phase 2 complete (after Gate 2 passes)
+  # - CP-003: Workflow complete (after Gate 3 passes; EN-001 resolved)
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 3
+    phases_percent: 0
+    gates_passed: 0
+    gates_total: 3
+    gates_percent: 0
+    agents_executed: 0
+    agents_total: 9   # researcher, investigator, analyst, architect, synthesizer, reporter, critic(x3), reviewer, validator(x2)
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 16  # 2 phase-1 + 3 gate-1 + 2 phase-2 + 3 gate-2 + 4 phase-3 + 3 gate-3 + 1 gate-result each
+    artifacts_percent: 0
+
+  quality:
+    gate_1_score: null
+    gate_2_score: null
+    gate_3_score: null
+    gate_1_passed: null
+    gate_2_passed: null
+    gate_3_passed: null
+    gate_1_iterations: 0
+    gate_2_iterations: 0
+    gate_3_iterations: 0
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    workflow_completed: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  active: []
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - id: 1
+      action: "Execute ps-researcher: Survey external prompt engineering documentation"
+      agent: "ps-researcher"
+      priority: "HIGH"
+    - id: 2
+      action: "Execute ps-investigator (concurrent with researcher): Analyze Jerry internals"
+      agent: "ps-investigator"
+      priority: "HIGH"
+  subsequent:
+    - id: 3
+      action: "Execute Gate 1: ps-critic adversarial review of Phase 1 findings"
+      agent: "ps-critic"
+      depends_on: ["ps-researcher", "ps-investigator"]
+    - id: 4
+      action: "Execute Gate 1: ps-reviewer quality review"
+      agent: "ps-reviewer"
+      depends_on: ["ps-critic"]
+    - id: 5
+      action: "Evaluate Gate 1 result: If >= 0.92, unblock Phase 2"
+      trigger: "gate-1 result artifact created"
+  workflow_complete: false
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: >
+    WORKFLOW PLANNED. 0/9 agents executed. 0/3 phases complete.
+    0/3 critic gates passed. Ready to begin Phase 1 Discovery with
+    ps-researcher and ps-investigator running concurrently.
+  next_step: "Execute ps-researcher and ps-investigator (Phase 1 Discovery)"
+
+  files_to_read:
+    - "projects/PROJ-006-jerry-prompt/ORCHESTRATION_PLAN.md"
+    - "projects/PROJ-006-jerry-prompt/ORCHESTRATION.yaml"
+    - "projects/PROJ-006-jerry-prompt/work/EN-001-prompt-effectiveness-research.md"
+
+  cross_session_portable: true
+  ephemeral_references: false
+
+# =============================================================================
+# DISCLAIMER
+# =============================================================================
+# This orchestration state file was generated by orch-planner agent (v2.1.0).
+# Human review recommended before execution. All paths are repository-relative.
+# Workflow ID: prompt-research-20260218-001
+# Quality threshold for all critic gates: 0.92
