@@ -66,7 +66,7 @@ Serves dual audience: developers/practitioners building similar frameworks AND A
 - [x] AC-3: Tier 2/3 research (16 artifacts) has curated entries with summaries and GitHub links
 - [x] AC-4: All GitHub cross-links resolve correctly (no 404s)
 - [x] AC-5: `mkdocs build --strict` passes with research section included
-- [x] AC-6: Research catalog (`projects/PROJ-001-oss-release/research/bug008-research-catalog.md`) referenced as source of truth for artifact selection
+- [x] AC-6: Research catalog (`projects/PROJ-001-oss-release/research/research-catalog.md`) referenced as source of truth for artifact selection
 - [x] AC-7: Quality gate PASS (>= 0.92) via /adversary review — scored 0.93
 
 ---
@@ -106,7 +106,7 @@ Serves dual audience: developers/practitioners building similar frameworks AND A
 ### Dependencies
 
 - **FEAT-024** (Public Documentation Site) -- MkDocs infrastructure must be in place (COMPLETE)
-- **Research Catalog:** `projects/PROJ-001-oss-release/research/bug008-research-catalog.md` -- artifact selection source
+- **Research Catalog:** `projects/PROJ-001-oss-release/research/research-catalog.md` -- artifact selection source
 
 ### Related Features
 
