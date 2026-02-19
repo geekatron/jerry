@@ -73,6 +73,9 @@ Use /problem-solving with ps-researcher to survey {{DOMAIN}} from {{START_DATE}}
 Data source: {{DATA_SOURCE}}.
 Focus areas: {{FOCUS_AREAS}}.
 Output: projects/{{PROJECT_ID}}/research/{{OUTPUT_PATH}} with L0/L1/L2 sections.
+
+Include ps-critic adversarial critique after the research phase.
+Quality threshold: >= {{QUALITY_THRESHOLD}}.
 ```
 
 ### Filled Example
@@ -85,6 +88,9 @@ for .NET microservices from 2023-01-01 to 2026-02-18.
 Data source: web search (WebSearch and WebFetch tools).
 Focus areas: JWT expiry strategies, refresh token rotation, revocation patterns, .NET 9 implementation.
 Output: projects/PROJ-007/research/auth-patterns-survey.md with L0/L1/L2 sections.
+
+Include ps-critic adversarial critique after the research phase.
+Quality threshold: >= 0.85.
 ```
 
 ### Annotated Anatomy
@@ -143,6 +149,18 @@ Output: projects/{{PROJECT_ID}}/research/{{OUTPUT_PATH}} with L0/L1/L2 sections.
    Exact file path for Mandatory Persistence Protocol compliance.
    Without this, the artifact lands at a default location that may be
    hard to find in future sessions.
+
+Include ps-critic adversarial critique after the research phase.
+Quality threshold: >= {{QUALITY_THRESHOLD}}.
+│                      │
+│                      └─ QUALITY THRESHOLD
+│                         Overrides ps-critic's default acceptance_threshold of 0.85.
+│                         Use 0.80-0.85 for exploratory research, 0.90+ for consequential work.
+│
+└─ ADVERSARIAL CRITIQUE REQUEST
+   Activates the highest-impact quality pattern (P-07). Without this line,
+   no critique loop fires at all. ps-critic applies four modes: Devil's Advocate,
+   Steelman, Red Team, Blue Team.
 ```
 
 ### Expected Output
