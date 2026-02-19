@@ -8,6 +8,7 @@
 |---------|---------|
 | [Summary](#summary) | Project overview and status |
 | [Epics](#epics) | Strategic work items |
+| [Discoveries](#discoveries) | Research findings and validated patterns |
 | [Decisions](#decisions) | Key decisions |
 | [History](#history) | Change log |
 
@@ -34,11 +35,21 @@
 
 ---
 
+## Discoveries
+
+| ID | Title | Status | Impact |
+|----|-------|--------|--------|
+| [DISC-001](./work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-001-progressive-disclosure-skill-decomposition.md) | Progressive Disclosure Architecture for Skill Decomposition | VALIDATED | HIGH |
+| [DISC-002](./work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-002-training-data-research-errors.md) | Training Data Research Produces Factual Errors | VALIDATED | HIGH |
+| [DISC-003](./work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-003-supplemental-citation-pipeline.md) | Supplemental Citation Pipeline Pattern | VALIDATED | MEDIUM |
+
+---
+
 ## Decisions
 
 | ID | Title | Status | Impact |
 |----|-------|--------|--------|
-| — | — | — | — |
+| [DEC-001](./work/EPIC-001-je-ne-sais-quoi/EPIC-001:DEC-001-feat002-progressive-disclosure.md) | FEAT-002 Skill Architecture — Progressive Disclosure Decomposition | DOCUMENTED | HIGH |
 
 ---
 
@@ -49,3 +60,5 @@
 | 2026-02-18 | Claude | PROJ-003 created. EPIC-005 migrated from PROJ-001-oss-release, renumbered to EPIC-001 within this project. |
 | 2026-02-19 | Claude | Features renumbered to project-scoped IDs: FEAT-019→FEAT-001, FEAT-020→FEAT-002, FEAT-021→FEAT-003, FEAT-022→FEAT-004. |
 | 2026-02-19 | Claude | EPIC-001 feature inventory restructured: 3 precursor features added, originals renumbered (FEAT-001→004, FEAT-002→005, FEAT-003→006, FEAT-004→007). Dependencies column added. Total features: 4→7. |
+| 2026-02-19 | Claude | Phase 1 FEAT-001 complete: persona doc v0.9.0, 0.953 quality score (6 critic iterations + supplemental web research pass). Barrier 1 PASS. |
+| 2026-02-19 | Claude | 3 discoveries created (DISC-001 progressive disclosure, DISC-002 training data errors, DISC-003 supplemental pipeline pattern) and 1 decision (DEC-001 FEAT-002 progressive disclosure architecture). ORCHESTRATION_PLAN.md updated with Phase 2 design constraints. |

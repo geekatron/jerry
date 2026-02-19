@@ -36,7 +36,7 @@ EPIC-001 Je Ne Sais Quoi introduces the **Saucer Boy persona** and its downstrea
 
 This orchestration plan coordinates that dependency graph using a **3-Phase Sequential + Fan-Out** pattern. Each phase contains a quality gate barrier that must pass (`>= 0.92` weighted composite) before the next phase begins. Adversarial strategies are applied per-feature according to criticality level (C1/C2/C3), with `/adversary` skill invocations at each gate.
 
-**Current State:** Not started. Phase 1 is the immediate next action.
+**Current State:** Phase 1 COMPLETE. Barrier 1 PASS (0.953 at raised 0.95 threshold). Phase 2 READY.
 
 **Orchestration Pattern:** Sequential + Fan-Out with Quality Gate Barriers (single pipeline `jnsq`)
 
@@ -248,18 +248,27 @@ Phase 2 runs three feature streams in parallel after Barrier 1 clears. FEAT-002 
 | Aspect | Value |
 |--------|-------|
 | Purpose | Implement the `/saucer-boy` skill — new skill with architecture changes affecting >10 files |
-| Deliverable | Skill implementation: `skills/saucer-boy/` directory, `SKILL.md`, agents, templates |
+| Deliverable | Skill implementation: `skills/saucer-boy/` directory, `SKILL.md`, agents, templates, references/ |
 | Primary Skills | `/architecture`, coding |
 | Supporting Skills | `/adversary` (C3 set), `/nasa-se` (requirements review) |
 | Min Iterations | 3+ (H-14) |
 | Quality Gate | >= 0.92 composite (H-13) — gates Barrier 2 |
 
+**Design Constraints (from Phase 1 discoveries):**
+
+| Constraint | Source | Requirement |
+|------------|--------|-------------|
+| Progressive Disclosure | DISC-001, DEC-001 | MUST use 3-tier structure: SKILL.md (<5k words) + references/ (on-demand) + agents/. Persona doc (879 lines, ~15k tokens) cannot be loaded wholesale. |
+| Agent-Specific Loading | DEC-001 D-003 | SKILL.md carries decision rules (Authenticity Tests, Core Thesis, Voice Traits). References carry examples (voice pairs, humor rules, cultural palette). Agents load only the reference files they need. |
+| Canonical Source Preserved | DEC-001 D-002 | Persona doc (ps-creator-001-draft.md v0.9.0) is the "brand bible." Skill files are operationalized derivatives — extraction, not modification. |
+| WebSearch Mandatory | DISC-002 | ps-researcher-002 MUST use WebSearch/WebFetch for all factual/biographical claims. Training data alone is insufficient for P-022 compliance. |
+
 **Agents:**
 
 | Agent ID | Role | Responsibility |
 |----------|------|----------------|
-| ps-researcher-002 | Researcher | Analyze existing skill architecture; identify integration points |
-| ps-creator-002 | Creator | Draft skill structure, SKILL.md, agent definitions |
+| ps-researcher-002 | Researcher | Analyze existing skill architectures (adversary, problem-solving, worktracker) for structural patterns; identify optimal persona doc split points; audit integration points. MUST use WebSearch for any external references per DISC-002. |
+| ps-creator-002 | Creator | Draft skill structure using progressive disclosure pattern: SKILL.md + references/ + agents/ per DEC-001 |
 | ps-critic-002 | Critic | Creator-critic-revision loop (min 3 iterations, C3 depth) |
 | adv-scorer-002 | Quality Scorer | S-014 composite score; gates Barrier 2 |
 
@@ -755,6 +764,9 @@ projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/
 | Phase 3 fan-out produces inconsistent voice across FEAT-004/006/007 | M | M | All three take both FEAT-001 and FEAT-002 as inputs; synth-001 cross-feature coherence audit is mandatory |
 | Context rot degrades quality gate enforcement in late phases | L | M | L2 reinject rules immune to context rot; ORCHESTRATION.yaml is machine-readable SSOT loaded fresh each session |
 | FEAT-002 blocks Barrier 2 while FEAT-003/005 complete early | L | L | Documented in plan: FEAT-002 is the sole critical-path gate; FEAT-003/005 wait at Barrier 2 checkpoint until FEAT-002 passes |
+| Research agents use training data instead of web sources, producing factual errors | H | H | DISC-002 validated: 4 errors found in Phase 1. ALL research agents MUST include explicit WebSearch/WebFetch instructions for factual claims about real people or external systems. P-022 compliance requires verifiable citations. |
+| Persona doc loaded wholesale into /saucer-boy skill causes context rot | H | H | DISC-001/DEC-001: Progressive Disclosure architecture mandated. SKILL.md <5k words + references/ on-demand. Per-invocation budget 2-4k tokens vs 15k wholesale. |
+| Supplemental enrichment passes introduce regression defects | M | M | DISC-003 validated: v0.5.0 regressed from 0.930 to 0.913 despite adding value. Any enrichment pass MUST include full critic cycle to catch execution-level defects. |
 
 ---
 
@@ -763,23 +775,30 @@ projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/
 ### 11.1 Current Execution State
 
 ```
-WORKFLOW STATUS AS OF 2026-02-19
-==================================
+WORKFLOW STATUS AS OF 2026-02-19 (post-Phase 1 supplemental)
+===============================================================
 
 Workflow ID: jnsq-20260219-001
 Pipeline:    jnsq
+Quality Threshold: 0.95 (raised from 0.92 per user directive)
 
-Phase 1 (Persona Distillation):    PENDING
-  - ps-researcher-001:             PENDING
-  - ps-creator-001:                PENDING
-  - ps-critic-001:                 PENDING
-  - adv-scorer-001:                PENDING
-Barrier 1 (Quality Gate):          PENDING
+Phase 1 (Persona Distillation):    COMPLETE (supplemental pass)
+  - ps-researcher-001:             COMPLETE + SUPPLEMENTAL COMPLETE (35 web sources)
+  - ps-creator-001:                COMPLETE + SUPPLEMENTAL COMPLETE (v0.9.0)
+  - ps-critic-001:                 COMPLETE + SUPPLEMENTAL COMPLETE (R1-R6, 0.953)
+  - adv-scorer-001:                COMPLETE + SUPPLEMENTAL COMPLETE (0.953 PASS)
+Barrier 1 (Quality Gate):          PASS (0.953 >= 0.95) — HUMAN REVIEW APPROVED
 
-Phase 2 (Tier 1 Fan-Out):          BLOCKED
-  - FEAT-002 stream:               BLOCKED
-  - FEAT-003 stream:               BLOCKED
-  - FEAT-005 stream:               BLOCKED
+Discoveries & Decisions:           4 entities created (DISC-001, DISC-002, DISC-003, DEC-001)
+  - DISC-001: Progressive Disclosure Architecture (VALIDATED)
+  - DISC-002: Training Data Research Errors (VALIDATED)
+  - DISC-003: Supplemental Citation Pipeline Pattern (VALIDATED)
+  - DEC-001: FEAT-002 Progressive Disclosure Decomposition (DOCUMENTED)
+
+Phase 2 (Tier 1 Fan-Out):          READY (Barrier 1 cleared)
+  - FEAT-002 stream:               READY — design constraints from DISC-001/DEC-001
+  - FEAT-003 stream:               READY
+  - FEAT-005 stream:               READY
 Barrier 2 (Quality Gate):          BLOCKED
 
 Phase 3 (Tier 2 Fan-Out):          BLOCKED
@@ -791,11 +810,11 @@ Phase 3 (Tier 2 Fan-Out):          BLOCKED
 
 ### 11.2 Next Actions
 
-1. Invoke `/problem-solving` for FEAT-001. Start ps-researcher-001: load Jerry docs, existing brand signals, any prior persona work from `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/`.
-2. Run creator-critic loop (ps-creator-001 → ps-critic-001 × 3 min iterations) with C2 strategies in sequence: S-010 → S-003 → S-002 → S-007.
-3. Invoke `/adversary` (adv-scorer-001) for S-014 quality scoring. Record score in ORCHESTRATION.yaml.
-4. If score >= 0.92: clear Barrier 1, unblock Phase 2. If not: iterate with targeted revision.
-5. On Phase 2 unlock: invoke FEAT-002 stream (ps-researcher-002 first) and fan-out FEAT-003 + FEAT-005 streams in parallel.
+1. **Phase 2 unlock**: Fan-out FEAT-002, FEAT-003, FEAT-005 streams in parallel.
+2. **FEAT-002 (critical path)**: Start ps-researcher-002. Key inputs: persona doc (v0.9.0), existing skill architectures (`skills/`), DISC-001/DEC-001 design constraints. MUST use WebSearch per DISC-002. Must design progressive disclosure architecture per DEC-001.
+3. **FEAT-003/FEAT-005**: Start ps-creator-003 and ps-creator-005 in parallel. Both take persona doc as primary input.
+4. Run creator-critic loops for all three streams. FEAT-002 gets C3 treatment (7+ strategies). FEAT-003/005 get C1 (S-010).
+5. Quality gate all three. FEAT-002 score gates Barrier 2; FEAT-003/005 must pass independently.
 
 ### 11.3 Files to Load at Session Resumption
 
@@ -805,6 +824,9 @@ Phase 3 (Tier 2 Fan-Out):          BLOCKED
 | `ORCHESTRATION_PLAN.md` | This file — strategic context |
 | `projects/PROJ-003-je-ne-sais-quoi/WORKTRACKER.md` | Task tracking |
 | `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md` | EPIC context |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DEC-001-*.md` | Phase 2 design constraints |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-001-*.md` | Progressive disclosure finding |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-002-*.md` | Research methodology lesson |
 
 ---
 
