@@ -125,7 +125,7 @@
 | EN-204 | Validation & Testing | 2026-02-12 | 80 lines, 13/13 pointers, 2540 tests pass |
 | EN-205 | Documentation Update | 2026-02-12 | BOOTSTRAP.md, CLAUDE-MD-GUIDE.md, INSTALLATION.md updated |
 | FEAT-003 | CLAUDE.md Optimization | 2026-02-12 | All 7 enablers complete. 80 lines, tiered loading, context distribution |
-| EPIC-001 | OSS Release Preparation | 2026-02-18 | **CLOSED.** 10/10 features, 41/41 enablers, 19/19 bugs. All quality gates PASS. Repository PUBLIC. Community health 100%. |
+| EPIC-001 | OSS Release Preparation | 2026-02-19 | **CLOSED.** All 11 features, 44 enablers, 19 bugs complete. FEAT-026 (Post-Public Docs Refresh) completed with C2 quality gate PASS (0.9195). 100%. |
 | FEAT-010 | FEAT-009 Tournament Remediation | 2026-02-15 | All 7 enablers PASS (avg 0.933). FEAT-009 re-scored 0.93. 260 E2E tests pass. |
 | EPIC-003 | Quality Framework Implementation | 2026-02-17 | COMPLETE: 6/6 features (FEAT-008/009/010/011/012/014), 45/45 enablers, 3/3 bugs. Quality framework fully implemented with 5-layer enforcement, adversarial strategies, progressive disclosure, and framework synchronization. |
 | FEAT-012 (EPIC-003) | Progressive Disclosure Rules Architecture | 2026-02-17 | Retroactive closure: 6/6 enablers done (EN-901-906). 5 companion guides (5,002 lines), 49 pattern files, 3 path-scoped rules, bootstrap exclusion, 21 E2E fidelity tests. |
@@ -145,6 +145,7 @@
 | FEAT-023 (EPIC-001) | Claude Code Birthday Showcase — Promotional Video | 2026-02-18 | Orchestration feat023-showcase-20260218-001 (5 phases, C4 tournament). EN-945 complete. Script v5 final (257 words). Tournament: 4 iterations (0.83, 0.86, 0.89, 0.92). Composite 0.92 PASS at H-13 threshold. Application submitted. |
 | FEAT-024 (EPIC-001) | Public Documentation Site — jerry.geekatron.org | 2026-02-19 | Orchestration feat024-docssite-20260217-001 (4 phases, 3 QGs). MkDocs Material 9.6.7 + GitHub Pages + custom domain. 5 enablers (EN-946–950), 15 effort pts. QG-1: 0.9340 (4 iterations), QG-2: 0.9440, QG-3: 0.9320. DEC-006 (MkDocs over Jekyll). DISC-003/004 resolved. Site live at https://jerry.geekatron.org — 12 nav pages, search functional, HTTPS enforced. |
 | FEAT-025 (EPIC-001) | Go Public (Repository Visibility & Community Health) | 2026-02-18 | 4 enablers (EN-951–954), 8 effort pts. EN-953 audit PASS (879 commits, 10 secret categories, 1 PII redacted). EN-951: SECURITY.md, CODE_OF_CONDUCT.md, PR template. EN-952: description, homepage, 8 topics, wiki disabled. EN-954: repo flipped to public, community health 100%, anonymous clone verified, docs site HTTP/2 200. PR #25 merged. All 8 ACs PASS. |
+| FEAT-026 (EPIC-001) | Post-Public Documentation Refresh | 2026-02-19 | 3 enablers (EN-955–957), 10 effort pts. C2 quality gate PASS (0.9195): S-003 Steelman (4 Major), S-007 Constitutional (1 Major), S-002 Devil's Advocate (5 Major), S-014 scored 0.8925→0.9195. INSTALLATION.md rewritten for public repo (~360 lines removed). docs/index.md enriched with platform/limitations/maturity notices. MkDocs build clean, grep scan 0 matches. All 7 ACs PASS. |
 
 ---
 
@@ -237,8 +238,10 @@
 | 2026-02-18 | Claude | FEAT-025 created under EPIC-001: Go Public (Repository Visibility & Community Health). 4 enablers (EN-951–954), 8 effort pts. Execution order: EN-953 (security audit) -> EN-951 (community files) + EN-952 (repo metadata) in parallel -> EN-954 (visibility flip). Criticality: C3 (irreversible). |
 | 2026-02-18 | Claude | EPIC-005 (Je Ne Sais Quoi) migrated from PROJ-001 to PROJ-003-je-ne-sais-quoi. Enables parallel session development. PROJ-003 created with PLAN.md, WORKTRACKER.md, and EPIC-005 entity file. |
 | 2026-02-18 | User/Claude | **FEAT-025 COMPLETE.** Repository flipped from private to PUBLIC. 4/4 enablers done, 8/8 ACs PASS. Community health 100%. PR #25 merged. Anonymous clone verified. Docs site live. EPIC-001 now 10/10 features, 41/41 enablers, 100%. |
+| 2026-02-19 | Claude | FEAT-026 created under EPIC-001: Post-Public Documentation Refresh. 3 enablers (EN-955 Installation Rewrite 5pts, EN-956 Docs Site Disclaimers 3pts, EN-957 Validation 2pts). Total 10 effort. EPIC-001 reopened: 11 features (10 done, 1 pending). |
 | 2026-02-19 | Claude | **Worktracker audit.** wt-verifier: FEAT-025 PASS (all 4 enablers clean). wt-auditor: 9 findings (3 errors, 4 warnings, 2 info). All findings remediated: EPIC-001 header updated to `done`, FEAT-023/EN-945 closed out with delivery evidence, FEAT-024 inline enabler table fixed, bug counts reconciled (19/19). **EPIC-001 CLOSED — clean.** |
 | 2026-02-18 | Claude | **Project directory cleanup.** Deleted orphan directories: `PROJ-001-plugin-cleanup` (empty scaffold, duplicate ID conflict), `PROJ-009-oss-release` (empty scaffold, false start). Neither was git-tracked or listed in `projects/README.md`. Staged `research/single-vs-multi-agent-analysis.md`. |
+| 2026-02-19 | Claude | **FEAT-026 COMPLETE.** Post-Public Documentation Refresh. 3 enablers (EN-955–957), 10 effort pts. C2 quality gate: S-003 + S-007 + S-002 + S-014 (0.8925 REVISE → 0.9195 PASS). INSTALLATION.md rewritten, docs/index.md enriched. **EPIC-001 CLOSED: 11/11 features, 44/44 enablers, 19/19 bugs. 100%.** |
 
 ---
 

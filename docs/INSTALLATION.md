@@ -2,21 +2,24 @@
 
 > Jerry is a Claude Code plugin for behavior and workflow guardrails.
 
+> **Platform Note:** Jerry is primarily developed and tested on macOS. Linux is expected to work — CI runs on Ubuntu for every job, and uv/git tooling is cross-platform. Windows support is in progress — skills and core functionality work, but hooks that use symlinks or path-sensitive operations may behave differently. Known Windows limitations: bootstrap uses junction points instead of symlinks, and paths in Claude Code commands must use forward slashes. See [Platform Support](index.md#platform-support) for details. Report Windows issues via the [Windows compatibility template](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml).
+
 ---
 
-## Table of Contents
+## Document Sections
 
 | Section | Purpose |
 |---------|---------|
 | [Prerequisites](#prerequisites) | What you need before installing |
-| [Collaborator Installation](#collaborator-installation-private-repository) | SSH setup for private repository access |
-| [Installation](#installation) | Platform-specific setup instructions |
-| [Future: Public Repository](#future-public-repository-installation) | When Jerry becomes publicly available |
+| [Quick Install (Most Users)](#quick-install-most-users) | Two commands — no clone, no build tools |
+| [Enable Hooks (Recommended)](#enable-hooks-recommended) | Optional uv install for session context and quality enforcement |
+| [Capability Matrix](#capability-matrix) | What works with and without uv |
+| [Alternative: Local Clone Install](#alternative-local-clone-install) | For offline use, version pinning, or network-restricted environments |
 | [Configuration](#configuration) | Post-installation setup |
 | [Verification](#verification) | How to confirm installation succeeded |
 | [Using Jerry](#using-jerry) | Getting started with skills |
+| [Developer Setup](#developer-setup) | Contributing and development environment |
 | [Troubleshooting](#troubleshooting) | Common issues and solutions |
-| [For Developers](#for-developers) | Contributing and development setup |
 | [Uninstallation](#uninstallation) | How to remove Jerry |
 | [Getting Help](#getting-help) | Support resources and documentation |
 | [License](#license) | Open source license information |
@@ -25,483 +28,204 @@
 
 ## Prerequisites
 
-### Required Software
+| Software | Required? | Purpose |
+|----------|-----------|---------|
+| [Claude Code](https://code.claude.com) 1.0.33+ | **Yes** | The AI coding assistant Jerry extends |
+| [uv](https://docs.astral.sh/uv/) | Recommended | Enables hooks (session context, quality enforcement) |
 
-| Software | Version | Purpose | Install Guide |
-|----------|---------|---------|---------------|
-| [Claude Code](https://code.claude.com) | 1.0.33+ | The AI coding assistant Jerry extends | [Setup Guide](https://code.claude.com/docs/en/setup) |
-| [Git](https://git-scm.com/) | 2.0+ | Clone the Jerry repository | [Download](https://git-scm.com/downloads) |
-| [uv](https://docs.astral.sh/uv/) | Latest | Python dependency management for hooks | See platform instructions below |
+That's it. You do **not** need Git, Python, or a local clone to install and use Jerry's skills.
 
-> **Note:** You do NOT need Python installed to use Jerry as an end user. Python and uv are used internally by Jerry's hooks. The uv installer handles Python automatically.
+> **Don't have Claude Code?** Follow the [Setup Guide](https://code.claude.com/docs/en/setup) to install it first, then return here.
 
-### System Requirements
-
-| Requirement | Minimum |
-|-------------|---------|
-| Disk Space | ~100 MB |
-| Internet | Required for initial clone |
+> **Version note:** The `/plugin` command and its Installed/Discover/Errors tabs are available in Claude Code 1.0.33+. If `/plugin` is not recognized, update Claude Code first.
 
 ---
 
-## Collaborator Installation (Private Repository)
+## Quick Install (Most Users)
 
-> **Note:** Jerry is currently distributed to collaborators only. This section is for users who have been granted collaborator access by a repository administrator. If you are installing from a public repository, skip ahead to [Installation](#installation).
+Jerry is a public Claude Code plugin hosted on [GitHub](https://github.com/geekatron/jerry). The repository contains the required `.claude-plugin/marketplace.json` and `.claude-plugin/plugin.json` manifests that Claude Code reads to register and install the plugin. This method requires internet access to GitHub and that the repository is accessible (it is public). Install it with two commands in Claude Code:
 
-Jerry is hosted in a private GitHub repository. Before you can clone it, you must:
+**Step 1: Add the marketplace**
 
-1. **Receive a collaborator invitation** from the Jerry repository administrator
-2. **Accept the invitation** (check your email or visit github.com/notifications)
-3. **Set up SSH authentication** — follow the steps below for your platform
+```
+/plugin marketplace add https://github.com/geekatron/jerry
+```
 
-### Why SSH?
+This registers Jerry's plugin catalog with Claude Code by pointing it to the GitHub repository. A marketplace is like an app store — it tells Claude Code what plugins are available. No plugins are installed yet.
 
-Private GitHub repositories require authentication. SSH keys provide secure, password-free access when set up without a passphrase, or when combined with an SSH agent that caches your passphrase (see Tip below). SSH keys are the recommended method. A personal access token (PAT) is an alternative HTTPS-based method; see the [PAT Alternative](#pat-alternative) note at the end of this section.
+> **Shorthand:** You can also use `geekatron/jerry` — Claude Code resolves `owner/repo` to GitHub automatically.
+
+**Step 2: Install the plugin**
+
+```
+/plugin install jerry@geekatron-jerry
+```
+
+This downloads and activates Jerry's skills. The install command uses the format `<plugin>@<marketplace>` — `jerry` is the plugin name (from `plugin.json`) and `geekatron-jerry` is the marketplace name (derived from the GitHub `owner/repo` path).
+
+> **Verify the marketplace name:** After Step 1, run `/plugin marketplace list` to confirm the marketplace was registered and to see its name. Use that name as the `@suffix` in the install command. If the name differs from `geekatron-jerry`, adjust accordingly: `/plugin install jerry@<your-marketplace-name>`.
+
+**Verify it worked:**
+
+1. Run `/plugin` in Claude Code
+2. Go to the **Installed** tab
+3. Confirm `jerry` appears in the list
+
+**Test a skill:**
+
+```
+/problem-solving
+```
+
+You should see the problem-solving skill activate.
+
+### Installation Scope
+
+During install, Claude Code asks which scope to use:
+
+| Scope | Effect | Use Case |
+|-------|--------|----------|
+| **User** (default) | Installs for you across all projects | Personal use |
+| **Project** | Added to `.claude/settings.json` (version-controlled) | Team-wide — all collaborators get Jerry |
+| **Local** | Only you, only this repository | Testing |
+
+**Recommendation:** Use **User** for personal use. Use **Project** when you want your whole team to have Jerry available automatically — the `.claude/settings.json` file is committed to version control, so new team members get Jerry active as soon as they clone the repository.
+
+**Alternative: Interactive Installation**
+
+1. Run `/plugin`
+2. Go to the **Discover** tab
+3. Find `jerry`
+4. Press Enter and select your installation scope
+
+> **Remote install not working?** If the marketplace add or plugin install commands fail, use the [Local Clone Install](#alternative-local-clone-install) below instead. The local clone method is verified and always works. If you encounter issues with the remote path, please [file a GitHub issue](https://github.com/geekatron/jerry/issues) so we can improve these instructions.
 
 ---
 
-### Step 1: Generate an SSH Key
+## Enable Hooks (Recommended)
 
-Choose your platform:
+Jerry's skills work immediately after the Quick Install. However, Jerry also ships four hooks that provide session context auto-loading, per-prompt quality reinforcement, pre-tool-use validation, and subagent enforcement. These hooks require [uv](https://docs.astral.sh/uv/) (a fast Python package manager) to execute.
 
-#### macOS (Terminal)
+### What hooks provide
 
-> **Warning:** If you already have an SSH key, DO NOT overwrite it. Check first, then display your existing public key and skip to Step 2.
+| Hook | What It Does |
+|------|-------------|
+| SessionStart | Auto-loads project context, rules, and quality framework at session start |
+| UserPromptSubmit | Re-injects critical rules every prompt to combat context rot (L2 enforcement) |
+| PreToolUse | AST-based validation before tool calls execute (L3 enforcement) |
+| SubagentStop | Enforces single-level subagent hierarchy (P-003) |
 
-First check whether you already have an SSH key:
+### Install uv
 
-```bash
-ls ~/.ssh/id_ed25519.pub 2>/dev/null && echo "Key exists — skip to Step 2" || echo "No key found — proceed below"
-```
-
-If no key was found, open Terminal and run:
-
-```bash
-ssh-keygen -t ed25519 -C "your.email@example.com"
-```
-
-When prompted:
-- **File location:** Press Enter to accept the default (`~/.ssh/id_ed25519`)
-- **Passphrase:** Enter a passphrase (recommended) or press Enter for none
-
-Display your public key:
-
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
-
-Copy the full output — it begins with `ssh-ed25519` and ends with your email address.
-
-> **Tip:** If you set a passphrase, add your key to the macOS Keychain to avoid re-entering it each time:
-> ```bash
-> eval "$(ssh-agent -s)"
-> ssh-add --apple-use-keychain ~/.ssh/id_ed25519
-> ```
-> Without this, your terminal will prompt for your SSH key passphrase every time you interact with GitHub.
-
-#### Windows (PowerShell)
-
-> **Warning:** If you already have an SSH key, DO NOT overwrite it. Check first, then display your existing public key and skip to Step 2.
-
-First check whether you already have an SSH key:
-
-```powershell
-if (Test-Path "$env:USERPROFILE\.ssh\id_ed25519.pub") { Write-Host "Key exists — skip to Step 2" } else { Write-Host "No key found — proceed below" }
-```
-
-If no key was found, open **PowerShell** and run:
-
-> **Important — Windows Home / LTSC Users:** If `ssh-keygen` is not recognized, OpenSSH Client is not installed.
-> Install it via **Settings → Apps → Optional Features → Add a feature → OpenSSH Client**, or run:
-> ```powershell
-> Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
-> ```
-> Then close and reopen PowerShell before continuing.
-
-```powershell
-ssh-keygen -t ed25519 -C "your.email@example.com"
-```
-
-When prompted:
-- **File location:** Press Enter to accept the default (`C:\Users\YOUR_USERNAME\.ssh\id_ed25519`)
-- **Passphrase:** Enter a passphrase (recommended) or press Enter for none
-
-Display your public key:
-
-```powershell
-Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub"
-```
-
-Copy the full output — it begins with `ssh-ed25519`.
-
-> **Windows Git Bash alternative:** If you have Git Bash installed, the macOS Terminal commands above work identically in Git Bash.
-
-> **Tip:** To avoid re-entering your passphrase each session, start the SSH agent. First check if the OpenSSH Client is installed:
-> ```powershell
-> # Check if OpenSSH Client is installed
-> if (Get-Service ssh-agent -ErrorAction SilentlyContinue) {
->     Start-Service ssh-agent
->     ssh-add "$env:USERPROFILE\.ssh\id_ed25519"
->     # To make this permanent:
->     Set-Service -Name ssh-agent -StartupType Automatic
-> } else {
->     Write-Host "OpenSSH Client not installed. Install it via:"
->     Write-Host "  Settings > Apps > Optional Features > Add a feature > OpenSSH Client"
->     Write-Host "Or via PowerShell (requires admin):"
->     Write-Host "  Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0"
-> }
-> ```
-> **Note:** OpenSSH Client is enabled by default on Windows 10 build 1809+ and Windows 11, but may be absent on Home and LTSC editions.
-
----
-
-### Step 2: Add Your SSH Key to GitHub
-
-1. Go to [github.com/settings/keys](https://github.com/settings/keys)
-2. Click **New SSH key**
-3. Give it a descriptive title (e.g., "My MacBook Pro" or "Work Laptop")
-4. Set **Key type** to `Authentication Key`
-5. Paste your public key into the **Key** field
-6. Click **Add SSH key**
-
----
-
-### Step 3: Verify SSH Access
-
-Confirm GitHub accepts your key:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see:
-
-```
-Hi YOUR_USERNAME! You've successfully authenticated, but GitHub does not provide shell access.
-```
-
-> **Note:** If you set a passphrase during key generation, you will be prompted to enter it before seeing the success message. Type your passphrase and press Enter. If you see `Permission denied (publickey)` after entering your passphrase, verify your public key is correctly added to GitHub (Step 2).
-
-If you see a permission denied error, verify your public key was saved correctly at github.com/settings/keys and that you copied the entire key including the `ssh-ed25519` prefix.
-
----
-
-### Step 4: Clone Jerry via SSH
-
-Use the SSH clone URL instead of the HTTPS URL:
-
-> **Important:** The clone path must not contain spaces. The Claude Code `/plugin marketplace add` command does not support paths with spaces. The recommended `~/plugins/` path is safe.
-
-**macOS (Terminal) or Git Bash:**
-```bash
-mkdir -p ~/plugins
-git clone git@github.com:geekatron/jerry.git ~/plugins/jerry
-```
-
-**Windows (PowerShell):**
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\plugins"
-git clone git@github.com:geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
-```
-
-> **Alternative authentication:** If you prefer not to use SSH, see [PAT Alternative](#pat-alternative) below for HTTPS token-based access.
-
----
-
-### Next Steps: Complete Platform Installation
-
-After cloning via SSH, proceed directly to **Step 3: Verify the Plugin Manifest** in your platform's installation section below:
-
-- [macOS — Step 3 onwards](#macos-step-3)
-- [Windows — Step 3 onwards](#windows-step-3)
-
-The remaining steps (plugin manifest, marketplace add, plugin install) are identical regardless of whether you used SSH or HTTPS to clone.
-
----
-
-### PAT Alternative
-
-If you prefer HTTPS authentication, you can use a **GitHub Personal Access Token (PAT)** instead of SSH keys:
-
-1. Create a **classic** PAT at [github.com/settings/tokens](https://github.com/settings/tokens) (select 'Generate new token (classic)') and check the `repo` scope checkbox. This grants full access to private repositories you collaborate on (read and write). For least-privilege access, use a fine-grained PAT instead with `Contents: Read-only` permission scoped to the jerry repository only.
-2. When `git clone` prompts for a password, enter your PAT instead
-3. Use the standard HTTPS clone URL:
-
-   > **Important:** If your username contains spaces, use a path without spaces (e.g., `~/plugins/jerry` or `C:\plugins\jerry`).
-
-   **macOS (Terminal) or Git Bash:**
-   ```bash
-   git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
-   ```
-
-   **Windows (PowerShell):**
-   ```powershell
-   git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
-   ```
-
-To avoid re-entering your PAT on every git operation, configure a credential helper:
-
-**macOS:**
-
-First verify that the osxkeychain helper is available on your system:
-
-```bash
-# Verify osxkeychain helper is available
-git credential-osxkeychain 2>&1 | head -1
-# If you see "usage: git credential-osxkeychain", proceed.
-# If you see "command not found", use the store helper instead:
-# git config --global credential.helper store
-```
-
-If osxkeychain is available:
-```bash
-git config --global credential.helper osxkeychain
-```
-
-If osxkeychain is not available (common on conda, nix, or MacPorts installs), use the store helper:
-```bash
-git config --global credential.helper store
-```
-> **Note:** The `store` helper saves credentials in plaintext at `~/.git-credentials`. Use it only on single-user machines.
-
-**Windows:**
-```powershell
-git config --global credential.helper manager
-```
-
-> **Note:** Without a credential helper, git will prompt for your PAT on every pull, fetch, and push.
-
-PATs are more common in CI environments. For interactive use, SSH keys are preferred.
-
----
-
-## Installation
-
-Jerry is installed as a **Claude Code plugin** via a local marketplace. This is a two-step process:
-
-1. **Add the marketplace** - Registers Jerry's plugin catalog with Claude Code
-2. **Install the plugin** - Downloads and activates Jerry's skills
-
-> **Why the marketplace?** Jerry uses Claude Code's plugin system for distribution, scope control, and easy updates. Adding the marketplace first registers Jerry's catalog (the "app store"), so you can then install, update, or uninstall the plugin cleanly with `/plugin` commands. This separation also lets you control whether Jerry is installed per-user, per-project, or locally — the scope you choose during `/plugin install` determines who gets it.
-
-Choose your platform below:
-
----
-
-### macOS
-
-#### Step 1: Install uv
-
-uv is required for Jerry's hooks to execute Python scripts with automatic dependency resolution.
+**macOS / Linux:**
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Restart your terminal (close and reopen), then verify:
-
-```bash
-uv --version
-# Should output: uv 0.x.x
-```
-
-#### Step 2: Clone Jerry
-
-Clone the repository to a location on your system. We recommend `~/plugins/`:
-
-> **Important:** The clone path must not contain spaces. The Claude Code `/plugin marketplace add` command does not support paths with spaces. The recommended `~/plugins/` path is safe.
-
-```bash
-mkdir -p ~/plugins
-git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
-```
-
-> **Collaborators:** If you arrived from the [Collaborator Installation](#collaborator-installation-private-repository) section above, you have already cloned via SSH — skip this step and proceed to Step 3 below.
-
-<a id="macos-step-3"></a>
-
-#### Step 3: Verify the Plugin Manifest
-
-Confirm Jerry's plugin manifest exists:
-
-```bash
-cat ~/plugins/jerry/.claude-plugin/plugin.json
-```
-
-You should see JSON output with `"name": "jerry"`. This confirms the path is correct and the `.claude-plugin/plugin.json` manifest is present in the repository.
-
-#### Step 4: Add the Local Marketplace
-
-Open Claude Code and run:
-
-```
-/plugin marketplace add ~/plugins/jerry
-```
-
-This registers Jerry's plugin catalog. No plugins are installed yet—you're just adding the "app store."
-
-#### Step 5: Install the Plugin
-
-Install Jerry from the marketplace:
-
-```
-/plugin install jerry@jerry-framework
-```
-
-> **Note:** The `@jerry-framework` suffix is the marketplace name (from `marketplace.json`). This is fixed regardless of the directory name you cloned to.
-
-**Alternative: Interactive Installation**
-1. Run `/plugin`
-2. Go to the **Discover** tab
-3. Find `jerry`
-4. Press Enter and select your installation scope:
-   - **User** (recommended): Install for yourself across all projects
-   - **Project**: Install for all collaborators on this repository
-   - **Local**: Install for yourself in this repository only
-
----
-
-### Windows
-
-#### Step 1: Install uv
-
-Open **PowerShell** (not Command Prompt) and run:
+**Windows (PowerShell):**
 
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-**Important:** Close and reopen PowerShell to update your PATH.
+After installing, **restart your terminal** (close and reopen), then verify:
 
-Verify the installation:
-
-```powershell
+```bash
 uv --version
 # Should output: uv 0.x.x
 ```
 
-If you see "command not found," ensure this path is in your system PATH:
-```
-%USERPROFILE%\.local\bin
-```
+That's it. Once uv is installed, hooks activate automatically the next time you start Claude Code.
 
-#### Step 2: Clone Jerry
+> **Note:** You do NOT need Python installed separately. The uv installer handles Python automatically.
 
-Clone the repository using PowerShell:
+> **Early access caveat:** Hook enforcement is under active development. Some hooks may have schema validation issues that cause them to fail silently (fail-open behavior — skills always work, but enforcement may not fire). If hooks don't appear to be working after installing uv, check [GitHub Issues](https://github.com/geekatron/jerry/issues) for the latest status.
 
-> **Important:** The clone path must not contain spaces. The Claude Code `/plugin marketplace add` command does not support paths with spaces. The recommended `$env:USERPROFILE\plugins\` path is safe (your Windows username does not typically contain spaces, but if it does, choose an alternate path such as `C:\plugins\`).
+---
 
-```powershell
-# Create plugins directory
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\plugins"
+## Capability Matrix
 
-# Clone Jerry
-git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
-```
+| Feature | Without uv | With uv |
+|---------|-----------|---------|
+| Skills (`/problem-solving`, `/worktracker`, etc.) | Yes | Yes |
+| Session context auto-loading | No | Yes |
+| Per-prompt quality reinforcement (L2) | No | Yes |
+| Pre-tool-use AST validation (L3) | No | Yes |
+| Subagent hierarchy enforcement | No | Yes |
 
-**Alternative using Git Bash:**
+Without uv, hooks fail silently (fail-open) — skills still work, but you lose the automated guardrail enforcement that makes Jerry most effective.
+
+---
+
+## Alternative: Local Clone Install
+
+Use this method if you:
+
+- Are in a **network-restricted environment** that blocks GitHub marketplace access
+- Need **offline** access to Jerry's source
+- Want to **pin a specific version** (e.g., `git clone --branch v1.0.0`)
+
+### Step 1: Clone the repository
+
+**macOS / Linux:**
+
 ```bash
 mkdir -p ~/plugins
 git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
 ```
 
-> **Collaborators:** If you arrived from the [Collaborator Installation](#collaborator-installation-private-repository) section above, you have already cloned via SSH — skip this step and proceed to Step 3 below.
-
-<a id="windows-step-3"></a>
-
-#### Step 3: Verify the Plugin Manifest
-
-Confirm Jerry's plugin manifest exists:
+**Windows (PowerShell):**
 
 ```powershell
-Get-Content "$env:USERPROFILE\plugins\jerry\.claude-plugin\plugin.json"
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\plugins"
+git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
 ```
 
-You should see JSON output with `"name": "jerry"`. This confirms the path is correct and the `.claude-plugin\plugin.json` manifest is present in the repository.
+> **Important:** The clone path must not contain spaces. Claude Code's `/plugin marketplace add` command does not support paths with spaces.
 
-#### Step 4: Add the Local Marketplace
-
-Open Claude Code and run (note: use **forward slashes** in Claude Code):
+### Step 2: Add the local marketplace
 
 ```
-/plugin marketplace add C:/Users/YOUR_USERNAME/plugins/jerry
+/plugin marketplace add ~/plugins/jerry
 ```
 
-Replace `YOUR_USERNAME` with your actual Windows username.
+**Windows (Claude Code):** Use forward slashes: `/plugin marketplace add C:/Users/YOUR_USERNAME/plugins/jerry`
 
-**Tip:** To get the exact forward-slash path that Claude Code expects, run this in PowerShell:
-```powershell
-(Get-Item "$env:USERPROFILE\plugins\jerry").FullName -replace '\\','/'
-```
-Copy the output and use it directly in the `/plugin marketplace add` command.
+> **Tip (Windows):** To get the exact forward-slash path, run this in PowerShell:
+> ```powershell
+> (Get-Item "$env:USERPROFILE\plugins\jerry").FullName -replace '\\','/'
+> ```
 
-#### Step 5: Install the Plugin
-
-Install Jerry from the marketplace:
+### Step 3: Install the plugin
 
 ```
 /plugin install jerry@jerry-framework
 ```
 
-> **Note:** The `@jerry-framework` suffix is the marketplace name (from `marketplace.json`). This is fixed regardless of the directory name you cloned to.
+### Advanced: SSH clone
 
----
-
-## Future: Public Repository Installation
-
-> **Note:** This section documents a future installation scenario. Jerry is currently distributed to collaborators only. When Jerry is released as a public repository, these simplified instructions will apply and no SSH setup or collaborator invitation is required.
-
-When Jerry becomes publicly available, installation simplifies significantly:
-
-**No prerequisites beyond Git, uv, and Claude Code.** No GitHub account is required to clone a public repository, and no SSH key setup or collaborator invitation is needed. Note that unauthenticated HTTPS clones may be subject to GitHub API rate limits during periods of high traffic. If you encounter rate-limiting errors, authenticating with a GitHub account resolves this.
-
-### Simplified Installation Steps
-
-**Step 1: Install uv** — identical to the platform-specific steps above. See [macOS Installation](#macos) or [Windows Installation](#windows) for platform-specific uv installation.
-
-**Step 2: Clone Jerry (HTTPS)**
-
-> **Important:** If your username contains spaces, use a path without spaces (e.g., `~/plugins/jerry` or `C:\plugins\jerry`).
+If you prefer SSH over HTTPS (e.g., you already have an SSH key configured with GitHub):
 
 ```bash
-# macOS/Linux
-git clone https://github.com/geekatron/jerry.git ~/plugins/jerry
+git clone git@github.com:geekatron/jerry.git ~/plugins/jerry
 ```
 
-```powershell
-# Windows PowerShell
-git clone https://github.com/geekatron/jerry.git "$env:USERPROFILE\plugins\jerry"
+All subsequent steps remain the same. See [GitHub's SSH documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) for SSH key setup.
+
+### Version pinning
+
+To pin Jerry to a specific release:
+
+```bash
+git clone --branch v1.0.0 https://github.com/geekatron/jerry.git ~/plugins/jerry
 ```
 
-**Steps 3–5:** Identical to the existing marketplace steps — verify the plugin manifest, add the local marketplace, and install the plugin. See [macOS Installation](#macos) or [Windows Installation](#windows) for platform-specific steps.
-
-### What Changes vs. Collaborator Installation
-
-| Aspect | Current (Collaborator) | Future (Public) |
-|--------|------------------------|-----------------|
-| GitHub account needed | Yes (for collaborator access) | No |
-| SSH key setup | Required | Not required |
-| Collaborator invite | Required from repo admin | Not required |
-| Clone URL | SSH: `git@github.com:...` | HTTPS: `https://github.com/...` |
-| Marketplace steps | Identical | Identical |
-
-To check whether Jerry is now publicly available, visit [github.com/geekatron/jerry](https://github.com/geekatron/jerry) while logged out of GitHub — if the page loads without a login prompt, these simplified instructions apply. If you encounter authentication prompts when following these future steps, the repository has not yet been made public.
+See [releases](https://github.com/geekatron/jerry/releases) for available tags.
 
 ---
 
 ## Configuration
-
-### Installation Scopes Explained
-
-When installing plugins, you choose a scope that determines where the plugin is available:
-
-| Scope | Where Installed | Use Case |
-|-------|-----------------|----------|
-| **User** (default) | Your user settings | Personal use across all your projects |
-| **Project** | `.claude/settings.json` | Shared with team—all collaborators get the plugin |
-| **Local** | Your local repo config | Testing—only you, only this repo |
-
-**Recommendation:** Use **User** scope for personal use. Use **Project** scope when you want your whole team to have Jerry available. When **Project** scope is selected, Jerry is added to `.claude/settings.json`, which is committed to version control — new team members have Jerry active automatically after cloning the repository.
 
 ### Project Setup (Optional)
 
@@ -516,6 +240,8 @@ Jerry uses project-based workflows for organizing work. To set up a project:
    # Windows PowerShell
    $env:JERRY_PROJECT = "PROJ-001-my-project"
    ```
+
+   > **Note:** The project name follows the format `PROJ-{NNN}-{slug}`. Choose any slug that describes your work (e.g., `PROJ-001-my-api`). The number prefix helps Jerry track multiple projects. Your first project is typically `PROJ-001`.
 
 2. **Create project structure:**
 
@@ -533,19 +259,17 @@ The SessionStart hook will automatically load project context when you start Cla
 
 ## Verification
 
-### Check Plugin Installation
+### Quick Install verification
 
 1. In Claude Code, run `/plugin`
 2. Go to the **Installed** tab
 3. Verify `jerry` appears in the list
 
-### Check for Errors
+### Hooks verification
 
-1. Run `/plugin`
-2. Go to the **Errors** tab
-3. Verify no errors related to `jerry`
+If you installed uv, start a new Claude Code session. The SessionStart hook fires automatically. You should see project context loading in the session output.
 
-### Test a Skill
+### Skill test
 
 Run a simple skill to verify everything works:
 
@@ -555,7 +279,13 @@ Run a simple skill to verify everything works:
 
 You should see the problem-solving skill activate with information about available agents.
 
-> **Note:** `/problem-solving` requires an active project (`JERRY_PROJECT` environment variable set). If you skipped the Configuration section, use `/help` instead to verify skill availability without a project.
+> **Note:** Most skills require an active project (`JERRY_PROJECT` environment variable set). If you skipped Configuration, use `/help` instead to verify skill availability without a project.
+
+### Check for errors
+
+1. Run `/plugin`
+2. Go to the **Errors** tab
+3. Verify no errors related to `jerry`
 
 ---
 
@@ -613,125 +343,16 @@ These files survive context compaction and session boundaries, building your pro
 
 ---
 
-## Troubleshooting
+## Developer Setup
 
-### Plugin Command Not Recognized
+> **This section is for contributors to the Jerry codebase.** If you installed Jerry as a plugin, you do not need anything below.
 
-**Symptom:** `/plugin` command not found or doesn't work
+### Prerequisites
 
-**Solution:** Update Claude Code to the latest version:
-- **macOS (Homebrew):** `brew upgrade claude-code`
-- **npm:** `npm update -g @anthropic-ai/claude-code`
+- [uv](https://docs.astral.sh/uv/) (manages Python automatically — no separate Python install needed)
+- Git
 
-Plugin support requires Claude Code version 1.0.33 or later.
-
-### Plugin Not Found After Adding Marketplace
-
-**Symptom:** `/plugin install jerry@jerry-framework` returns "plugin not found"
-
-**Solutions:**
-1. Verify the marketplace was added: `/plugin marketplace list`
-2. Check the path is correct and Jerry was cloned successfully
-3. Refresh the marketplace: `/plugin marketplace update jerry-framework`
-4. Verify the manifest exists: `cat ~/plugins/jerry/.claude-plugin/plugin.json`
-5. If the marketplace was registered under a different name, the `@` suffix in the install command must match. Run `/plugin marketplace list` to verify the marketplace name
-
-### uv: command not found
-
-**Symptom:** Hooks fail with "uv: command not found"
-
-**Solution (macOS):**
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# Restart your terminal
-```
-
-**Solution (Windows):**
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-# Close and reopen PowerShell
-```
-
-If still not found, add to PATH manually:
-- macOS: `export PATH="$HOME/.local/bin:$PATH"` (add to `~/.zshrc`)
-- Windows: Add `%USERPROFILE%\.local\bin` to System PATH
-
-### Skills Not Appearing
-
-**Symptom:** Installed plugin but `/problem-solving` doesn't work
-
-**Solutions:**
-1. Check the **Errors** tab in `/plugin`
-2. Clear the plugin cache:
-   - macOS: `rm -rf ~/.claude/plugins/cache`
-   - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
-3. Restart Claude Code
-4. Reinstall the plugin: `/plugin uninstall jerry@jerry-framework` then `/plugin install jerry@jerry-framework`
-
-### Path Issues on Windows
-
-**Symptom:** "path not found" when adding marketplace
-
-**Solutions:**
-- Use forward slashes in Claude Code: `C:/Users/name/plugins/jerry`
-- Or use short path: `~/plugins/jerry` (if using Git Bash paths)
-- Avoid using backslashes or environment variables in the Claude Code command
-
-### SSH Authentication Failed (Collaborators)
-
-**Symptom:** `git clone git@github.com:geekatron/jerry.git` returns "Permission denied (publickey)"
-
-**Causes:** SSH key not added to GitHub, passphrase not entered when prompted during `ssh -T`, key not loaded in ssh-agent, or collaborator invitation not accepted.
-
-**Solutions:**
-1. Verify your SSH key was added to GitHub: visit [github.com/settings/keys](https://github.com/settings/keys)
-2. Test SSH connectivity: `ssh -T git@github.com` — if prompted for a passphrase, enter it; a successful response rules out key/auth issues
-3. Confirm your key file exists: `ls ~/.ssh/id_ed25519.pub` (macOS) or `Test-Path "$env:USERPROFILE\.ssh\id_ed25519.pub"` (Windows)
-4. If you have multiple SSH keys, ensure the correct one is loaded: `ssh-add -l`
-5. Verify you accepted the collaborator invitation at github.com/notifications
-
-### Repository Not Found (Collaborators)
-
-**Symptom:** `git clone` returns "repository not found" or 404
-
-**Solutions:**
-1. Confirm you were added as a collaborator and accepted the invitation
-2. Verify your GitHub username has access by visiting the repository URL in a browser while logged in
-3. Try SSH connectivity test first: `ssh -T git@github.com` — must show your GitHub username
-
-### Credential Helper Not Found (macOS PAT Users)
-
-**Symptom:** `git credential-osxkeychain` returns "command not found" after running `git config --global credential.helper osxkeychain`
-
-**Cause:** The osxkeychain helper ships with Apple's Git (Xcode Command Line Tools) but is not included with Git installed via conda, Homebrew's `git` formula on some configurations, nix, or MacPorts.
-
-**Solution:** Use the `store` helper instead:
-```bash
-git config --global credential.helper store
-```
-The first time you run a git operation, enter your PAT when prompted — it will be saved to `~/.git-credentials` for future use.
-
-> **Security note:** The `store` helper saves credentials in plaintext. For better security, install the Xcode Command Line Tools (`xcode-select --install`) to get the osxkeychain helper.
-
-### Project Not Configured (`<project-required>` or `<project-error>`)
-
-**Symptom:** Running `/problem-solving` or other skills shows XML-tagged output like `<project-required>` or `<project-error>` instead of the expected skill response.
-
-**Cause:** The `JERRY_PROJECT` environment variable is not set, is set to a non-existent project, or the project directory structure is incomplete.
-
-**Solutions:**
-1. Set the environment variable: `export JERRY_PROJECT=PROJ-001-my-project` (macOS) or `$env:JERRY_PROJECT = "PROJ-001-my-project"` (Windows PowerShell)
-2. Verify the project directory exists: `ls projects/$JERRY_PROJECT/` — it should contain `PLAN.md` and `WORKTRACKER.md`
-3. If you haven't created a project yet, follow the Configuration section above
-4. Use `/help` to verify Jerry is installed — this command works without a project configured
-
----
-
-## For Developers
-
-If you want to contribute to Jerry development, you'll need Python 3.11+ and [uv](https://docs.astral.sh/uv/).
-
-### Development Setup
+### Development Environment
 
 **macOS / Linux:**
 ```bash
@@ -771,7 +392,9 @@ uv run python scripts/bootstrap_context.py        # Set up symlinks
 uv run python scripts/bootstrap_context.py --check # Verify sync
 ```
 
-See [Bootstrap Guide](BOOTSTRAP.md) (located in the `docs/` directory) for platform-specific details.
+> **Who needs this?** Bootstrap is for developers editing `.context/rules/` who want changes to auto-propagate to `.claude/rules/`. If you installed Jerry as a plugin, you do not need to run bootstrap — skills and hooks work without it.
+
+See [Bootstrap Guide](BOOTSTRAP.md) for platform-specific details.
 
 ### Architecture Overview
 
@@ -789,21 +412,118 @@ See [CONTRIBUTING.md](https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.
 
 ---
 
+## Troubleshooting
+
+### Quick Install Issues
+
+**Marketplace not found**
+
+**Symptom:** `/plugin marketplace add https://github.com/geekatron/jerry` returns an error
+
+**Solutions:**
+1. Verify Claude Code is version 1.0.33+: update with `brew upgrade claude-code` (macOS) or `npm update -g @anthropic-ai/claude-code`
+2. Check your internet connection — the command needs GitHub access
+3. If behind a corporate proxy, use the [Local Clone Install](#alternative-local-clone-install) instead
+
+**Plugin not found after adding marketplace**
+
+**Symptom:** `/plugin install jerry@...` returns "plugin not found"
+
+**Solutions:**
+1. Run `/plugin marketplace list` to see the actual marketplace name — the `@suffix` in the install command must match exactly
+2. Remote installs (`geekatron/jerry`): marketplace name is `geekatron-jerry` — use `/plugin install jerry@geekatron-jerry`
+3. Local clone installs (`~/plugins/jerry`): marketplace name is `jerry-framework` — use `/plugin install jerry@jerry-framework`
+4. Refresh the marketplace: `/plugin marketplace update <marketplace-name>`
+
+### Hook Issues
+
+**uv: command not found**
+
+**Symptom:** Hooks fail with "uv: command not found"
+
+**Solution (macOS/Linux):**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Restart your terminal
+```
+
+**Solution (Windows):**
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Close and reopen PowerShell
+```
+
+If still not found, add to PATH manually:
+- macOS/Linux: `export PATH="$HOME/.local/bin:$PATH"` (add to `~/.zshrc` or `~/.bashrc`)
+- Windows: Add `%USERPROFILE%\.local\bin` to System PATH
+
+**Hooks not firing**
+
+**Symptom:** SessionStart hook doesn't run, no project context loaded
+
+**Solutions:**
+1. Verify uv is installed: `uv --version`
+2. Restart Claude Code completely (close and reopen)
+3. Check `/plugin` > **Errors** tab for hook-related errors
+4. For local clone installs, verify hooks exist in the `.claude-plugin/hooks/` directory
+
+### Skill Issues
+
+**Skills not appearing**
+
+**Symptom:** `/problem-solving` doesn't work
+
+**Solutions:**
+1. Check the **Errors** tab in `/plugin`
+2. Clear the plugin cache:
+   - macOS: `rm -rf ~/.claude/plugins/cache`
+   - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
+3. Restart Claude Code
+4. Reinstall: `/plugin uninstall jerry` then re-run the install command for your method (see [Quick Install](#quick-install-most-users) or [Local Clone](#alternative-local-clone-install))
+
+### Project Issues
+
+**`<project-required>` or `<project-error>`**
+
+**Symptom:** Skills show XML-tagged output instead of the expected response
+
+**Cause:** `JERRY_PROJECT` is not set, points to a non-existent project, or the directory structure is incomplete.
+
+**Solutions:**
+1. Set the variable: `export JERRY_PROJECT=PROJ-001-my-project` (macOS/Linux) or `$env:JERRY_PROJECT = "PROJ-001-my-project"` (Windows)
+2. Verify the directory exists: `ls projects/$JERRY_PROJECT/` — it should contain `PLAN.md` and `WORKTRACKER.md`
+3. If you haven't created a project, follow the [Configuration](#configuration) section
+4. Use `/help` to verify Jerry is installed — this works without a project
+
+### Path Issues on Windows
+
+**Symptom:** "path not found" when adding local marketplace
+
+**Solutions:**
+- Use forward slashes in Claude Code: `C:/Users/name/plugins/jerry`
+- Avoid backslashes or environment variables in the Claude Code command
+
+---
+
 ## Uninstallation
 
 ### Remove the Plugin
 
 ```
-/plugin uninstall jerry@jerry-framework
+/plugin uninstall jerry
 ```
 
 ### Remove the Marketplace
 
 ```
-/plugin marketplace remove jerry-framework
+/plugin marketplace remove geekatron-jerry
 ```
 
+> **Not sure of the name?** Run `/plugin marketplace list` to see your marketplace name. Local clone users will see `jerry-framework` instead.
+
 ### Delete Local Files (Optional)
+
+Only applicable if you used the local clone method:
 
 **macOS/Linux:**
 ```bash
@@ -820,7 +540,7 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\plugins\jerry"
 ## Getting Help
 
 - **GitHub Issues:** [github.com/geekatron/jerry/issues](https://github.com/geekatron/jerry/issues)
-- **Documentation:** `docs/` directory in the repository
+- **Documentation:** [jerry.geekatron.org](https://jerry.geekatron.org)
 - **Claude Code Help:** Run `/help` in Claude Code
 
 ---

@@ -2,6 +2,8 @@
 
 > How to set up Jerry's context distribution after cloning.
 
+> **Who needs this?** Bootstrap is for developers contributing to Jerry's behavioral rules. If you installed Jerry as a plugin via `/plugin marketplace add`, you do not need to run bootstrap — skills and hooks work without it. Bootstrap is only needed when you're editing `.context/rules/` and want changes to auto-propagate to `.claude/rules/`.
+
 ## Document Sections
 
 | Section | Purpose |
@@ -12,6 +14,7 @@
 | [Platform Notes](#platform-notes) | macOS, Linux, Windows differences |
 | [Troubleshooting](#troubleshooting) | Common issues and fixes |
 | [Rollback](#rollback) | How to undo the bootstrap |
+| [Command Reference](#command-reference) | Bootstrap command options |
 
 ---
 
@@ -21,9 +24,9 @@ Jerry stores its behavioral rules and pattern catalog in `.context/` (the canoni
 
 **Why two directories?**
 
-- `.context/` is the **canonical source** - version-controlled and distributable
-- `.claude/` is where **Claude Code looks** for auto-loaded rules and settings
-- Symlinks connect them so edits in either location propagate instantly
+- `.context/` is the **canonical source** — version-controlled, auditable, and distributable across worktrees and forks. Keeping the source of truth outside `.claude/` ensures rules can be reviewed, diffed, and governed independently of Claude Code's internal structure.
+- `.claude/` is where **Claude Code looks** for auto-loaded rules and settings. Claude Code reads from this directory at session start — it cannot be redirected to `.context/` directly.
+- Symlinks connect them so edits in either location propagate instantly. This gives developers a single editing surface while maintaining the separation needed for auditability and stable distribution.
 
 ---
 

@@ -6,7 +6,7 @@
 > **Impact:** high
 > **Created:** 2026-02-10
 > **Due:** ---
-> **Completed:** 2026-02-18
+> **Completed:** ---
 > **Parent:** —
 > **Owner:** Adam Nowak
 > **Target Quarter:** FY26-Q1
@@ -67,6 +67,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | FEAT-023 | Claude Code Birthday Showcase — Promotional Video | done | critical | 100% |
 | FEAT-024 | Public Documentation Site — jerry.geekatron.org | done | high | 100% |
 | FEAT-025 | Go Public (Repository Visibility & Community Health) | done | high | 100% |
+| FEAT-026 | Post-Public Documentation Refresh | done | high | 100% |
 
 ### Feature Links
 
@@ -80,6 +81,7 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 - [FEAT-023: Claude Code Birthday Showcase — Promotional Video](./FEAT-023-showcase-video/FEAT-023-showcase-video.md)
 - [FEAT-024: Public Documentation Site — jerry.geekatron.org](./FEAT-024-public-docs-site/FEAT-024-public-docs-site.md)
 - [FEAT-025: Go Public (Repository Visibility & Community Health)](./FEAT-025-go-public/FEAT-025-go-public.md)
+- [FEAT-026: Post-Public Documentation Refresh](./FEAT-026-post-public-docs-refresh/FEAT-026-post-public-docs-refresh.md)
 
 ---
 
@@ -91,10 +93,10 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [####################] 100% (10/10 completed)          |
-| Enablers:  [####################] 100% (41/41 completed)          |
+| Features:  [####################] 100% (11/11 completed)          |
+| Enablers:  [####################] 100% (44/44 completed)          |
 | Bugs:      [####################] 100% (19/19 completed)          |
-| Tasks:     [####################] 100% (all completed)            |
+| Tasks:     [####################] 100%                            |
 +------------------------------------------------------------------+
 | Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
@@ -104,13 +106,13 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 10 |
-| **Completed Features** | 10 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018, FEAT-023, FEAT-024, FEAT-025) |
+| **Total Features** | 11 |
+| **Completed Features** | 11 (FEAT-001, FEAT-002, FEAT-003, FEAT-015, FEAT-016, FEAT-017, FEAT-018, FEAT-023, FEAT-024, FEAT-025, FEAT-026) |
 | **Pending Features** | 0 |
 | **Feature Completion %** | 100% |
-| **Total Enablers** | 41 |
-| **Completed Enablers** | 41 |
-| **Total Effort** | 32 |
+| **Total Enablers** | 44 |
+| **Completed Enablers** | 44 |
+| **Total Effort** | 42 |
 | **Total Bugs (FEAT-001)** | 7 (all resolved) |
 | **Total Bugs (FEAT-003)** | 8 (all resolved) |
 | **Total Bugs (EPIC-001 direct)** | 4 (BUG-004, BUG-005, BUG-006, BUG-007, all resolved) |
@@ -148,3 +150,5 @@ Prepare the Jerry framework for public open-source release on GitHub. This epic 
 | 2026-02-18 | Claude | in_progress | EN-946 complete (feature-request.yml worktracker-aligned, config.yml, CONTRIBUTING.md updated). FEAT-016 re-closed at 5/5 enablers, 9/9 points. EPIC-001 now 5/7 features (71%), 31/36 enablers (86%), ~75%. |
 | 2026-02-18 | Claude | done | FEAT-017 and FEAT-018 completed via orchestration workflow epic001-docs-20260218-001 (5 phases, 38 agents, 3 QGs). QG-1: 0.9220, QG-2: 0.926, QG-3: 0.937 — all PASS. Deliverables: docs/INSTALLATION.md (rewritten), docs/runbooks/getting-started.md, docs/playbooks/problem-solving.md, docs/playbooks/orchestration.md, docs/playbooks/transcript.md. All 7 features, 37 enablers, 15 bugs complete. **EPIC-001 CLOSED.** |
 | 2026-02-18 | Claude | in_progress | **Reopened.** BUG-004 created: Plugin Uninstall Fails — Name/Scope Mismatch. Plugin UI shows `jerry @ jerry` but plugin.json declares `jerry-framework`. Uninstall fails with scope error. Also found: plugin.json license still says MIT (should be Apache-2.0). |
+| 2026-02-19 | Claude | in_progress | **Reopened.** FEAT-026 created: Post-Public Documentation Refresh. 3 enablers (EN-955, EN-956, EN-957), 10 effort pts. INSTALLATION.md still references private-repo collaborator sections; docs site missing platform disclaimers. EPIC-001 now 11 features (10 done, 1 pending), 44 enablers (41 done, 3 pending). |
+| 2026-02-19 | Claude | done | **FEAT-026 COMPLETE.** C2 quality gate PASS (0.9195): S-003 Steelman, S-007 Constitutional, S-002 Devil's Advocate (5 Major findings applied), S-014 LLM-as-Judge (0.8925 → 0.9195). INSTALLATION.md rewritten for public repo. docs/index.md enriched with platform/limitations/maturity notices. MkDocs build clean. All 7 ACs PASS. **EPIC-001 CLOSED: 11/11 features, 44/44 enablers, 19/19 bugs. 100% complete.** |
