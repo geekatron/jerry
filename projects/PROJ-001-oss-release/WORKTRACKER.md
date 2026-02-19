@@ -34,7 +34,7 @@
 | [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
-| [EPIC-005](./work/EPIC-005-je-ne-sais-quoi/EPIC-005-je-ne-sais-quoi.md) | Je Ne Sais Quoi — The Saucer Boy Spirit | pending | medium |
+| ~~EPIC-005~~ | ~~Je Ne Sais Quoi — The Saucer Boy Spirit~~ | migrated | — | *Migrated to PROJ-003* |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -232,6 +232,9 @@
 | 2026-02-19 | Claude | **FEAT-024 Phase 0 + Phase 3 COMPLETE.** DNS: Namesecure CNAME jerry → geekatron.github.io (propagated immediately). PR #24 merged to main, docs.yml workflow green (run 22166724979, 20s), gh-pages branch created. GitHub Pages: source=gh-pages, custom domain=jerry.geekatron.org, HTTPS enforced, TLS cert approved (expires 2026-05-19). ps-verifier-001: **5/5 ACs PASS**, 12/13 checks (1 informational: CDN HTTP redirect behavior). DISC-004 RESOLVED (CNAME persists through deploy). QG-2 next. |
 | 2026-02-19 | Claude | **FEAT-024 WORKFLOW COMPLETE.** QG-2 PASS (0.9440, first attempt). Phase 4: ps-verifier-002 E2E validation — 5/5 EN-950 ACs PASS (docs.yml active, MkDocs Material 9.6.7, HTTPS HTTP/2 200, search 296 entries, 12/12 nav pages 200). orch-synthesizer-001: 401-line synthesis (deliverables, DEC-006, DISC-003/004 resolutions, lessons learned). **QG-3 PASS (0.9320).** Cross-gate trajectory: QG-1 (0.9340) → QG-2 (0.9440) → QG-3 (0.9320). All 3 gates PASS. 5/5 enablers complete (EN-946–950). 6/6 feature-level ACs satisfied. 15/15 agents executed. 17 orchestration artifacts. Site live at https://jerry.geekatron.org. |
 
+| 2026-02-18 | Claude | FEAT-025 created under EPIC-001: Go Public (Repository Visibility & Community Health). 4 enablers (EN-951–954), 8 effort pts. Execution order: EN-953 (security audit) -> EN-951 (community files) + EN-952 (repo metadata) in parallel -> EN-954 (visibility flip). Criticality: C3 (irreversible). |
+| 2026-02-18 | Claude | EPIC-005 (Je Ne Sais Quoi) migrated from PROJ-001 to PROJ-003-je-ne-sais-quoi. Enables parallel session development. PROJ-003 created with PLAN.md, WORKTRACKER.md, and EPIC-005 entity file. |
+
 ---
 
-*Last Updated: 2026-02-19*
+*Last Updated: 2026-02-18*

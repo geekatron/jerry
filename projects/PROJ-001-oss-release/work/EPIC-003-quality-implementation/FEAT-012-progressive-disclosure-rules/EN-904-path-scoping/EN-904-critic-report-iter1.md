@@ -216,7 +216,7 @@ YAML valid
 
 ```
 commit b8c25aebf2a4a3ca46afbece4f8e781d3a4d0752
-Author: Saucer Boy <adamcnowak@gmail.com>
+Author: Saucer Boy <redacted@example.com>
 Date:   Mon Feb 16 18:19:13 2026 -0800
 
     feat(epic-003): Phase 2 creators — EN-904/905/928/929 deliverables
