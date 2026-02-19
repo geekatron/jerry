@@ -22,25 +22,26 @@ PROJ-003 houses EPIC-001 (Je Ne Sais Quoi — The Saucer Boy Spirit), which adds
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| EPIC-001 | Je Ne Sais Quoi — The Saucer Boy Spirit | pending | medium |
+| EPIC-001 | Je Ne Sais Quoi — The Saucer Boy Spirit | complete | medium |
 
-### EPIC-001 Features (pending decomposition)
+### EPIC-001 Features
 
-| ID | Title | Status | Dependencies |
-|----|-------|--------|--------------|
-| FEAT-001 | Saucer Boy Persona Distillation | pending | — |
-| FEAT-002 | /saucer-boy Skill | pending | FEAT-001 |
-| FEAT-003 | Saucer Boy Visual Identity | pending | FEAT-001 |
-| FEAT-004 | Framework Voice & Personality | pending | FEAT-001, FEAT-002 |
-| FEAT-005 | The Jerry Soundtrack | pending | FEAT-001 |
-| FEAT-006 | Easter Eggs & Cultural References | pending | FEAT-001, FEAT-002 |
-| FEAT-007 | Developer Experience Delight | pending | FEAT-001, FEAT-002 |
+| ID | Title | Status | Score | Dependencies |
+|----|-------|--------|-------|--------------|
+| FEAT-001 | Saucer Boy Persona Distillation | complete | 0.953 | — |
+| FEAT-002 | /saucer-boy Skill | complete | 0.923 | FEAT-001 |
+| FEAT-003 | Saucer Boy Visual Identity | complete | PASS | FEAT-001 |
+| FEAT-004 | Framework Voice & Personality | complete | 0.925 | FEAT-001, FEAT-002 |
+| FEAT-005 | The Jerry Soundtrack | complete | PASS | FEAT-001 |
+| FEAT-006 | Easter Eggs & Cultural References | complete | 0.925 | FEAT-001, FEAT-002 |
+| FEAT-007 | Developer Experience Delight | complete | 0.922 | FEAT-001, FEAT-002 |
 
 ## Milestones
 
 | Milestone | Target | Status |
 |-----------|--------|--------|
 | Feature inventory restructured (4→7, precursors + renumber) | 2026-02-19 | completed |
-| Feature decomposition into enablers/tasks | TBD | pending |
-| `/saucer-boy` skill implementation | TBD | pending |
-| Integration with quality gate feedback | TBD | pending |
+| Feature decomposition into enablers/tasks | 2026-02-19 | completed |
+| `/saucer-boy` skill implementation | 2026-02-19 | completed |
+| Integration with quality gate feedback | 2026-02-19 | completed |
+| Fan-in synthesis (synth-001) | 2026-02-19 | completed |
