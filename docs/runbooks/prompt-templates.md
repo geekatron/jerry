@@ -13,6 +13,7 @@
 | [Template 3: Multi-Skill Orchestration](#template-3-multi-skill-orchestration) | Full pipeline with quality gates |
 | [Template 4: Architecture Decision](#template-4-architecture-decision) | ADR production via ps-architect |
 | [Template 5: Bug Investigation](#template-5-bug-investigation) | Root-cause analysis via ps-investigator |
+| [Template 6: Batch Isolated Research](#template-6-batch-isolated-research) | N independent items across N isolated sessions |
 
 ---
 
@@ -30,6 +31,9 @@
 | `{{QUALITY_THRESHOLD}}` | Decimal 0.0–1.0, e.g., `0.90` |
 | `{{AGENT}}` | Named ps-agent, e.g., `ps-researcher`, `ps-investigator` |
 | `{{FILE_PATH}}` | Absolute or project-relative path to file under review |
+| `{{BATCH_FILE_PATH}}` | Absolute path to the batch prompt designs file containing tracker table and prompts |
+| `{{ITEM_PREFIX}}` | Short identifier prefix for batch items, e.g., `OI`, `RQ`, `ART` |
+| `{{SYNTHESIS_OUTPUT_PATH}}` | Relative file path for the cross-pollination synthesis output |
 
 **Minimum required:** `{{PROJECT_ID}}`, `{{DOMAIN}}`, `{{OUTPUT_PATH}}`.
 
@@ -52,6 +56,9 @@ Do you have 2+ options to compare with named evaluation dimensions?
 
 Do you have a specific failure to trace back to a root cause?
   YES → Template 5: Bug Investigation
+
+Do you have N independent items that each need their own isolated session?
+  YES → Template 6: Batch Isolated Research
 
 None of the above?
   → Start with Template 2 and add phases as needed.
@@ -276,6 +283,159 @@ Output: projects/PROJ-007/investigations/auth-token-failure-root-cause.md with:
 
 ---
 
+## Template 6: Batch Isolated Research
+
+**Use when:** You have N independent research items that must each run in their own fresh session to prevent cross-contamination, with shared progress tracking across sessions. Sits between Template 1 (single session) and Template 3 (heavyweight orchestration).
+
+**When to use this vs. `/orchestration`:**
+- **Batch (this template):** Items are independent. No agent coordination between them. Each needs fresh context isolation.
+- **Orchestration:** Items are coordinated. Agents hand off to each other. Sync barriers and quality gates between phases.
+
+### Template — Batch Prompt Designs File
+
+Create a file at `projects/{{PROJECT_ID}}/research/{{BATCH_SLUG}}-prompt-designs.md` with this structure:
+
+```markdown
+# {{BATCH_TITLE}}
+
+> {{BATCH_COUNT}} independent items, each processed in an isolated session.
+
+## Triage Status Tracker
+
+| Item | Title | Processed | Output File |
+|------|-------|-----------|-------------|
+| {{ITEM_PREFIX}}-01 | {{ITEM_01_TITLE}} | `false` | `research/{{ITEM_PREFIX}}-01-{{OUTPUT_SUFFIX}}.md` |
+| {{ITEM_PREFIX}}-02 | {{ITEM_02_TITLE}} | `false` | `research/{{ITEM_PREFIX}}-02-{{OUTPUT_SUFFIX}}.md` |
+| ...repeat for each item... |
+| **Synthesis** | Cross-Pollination | `false` | `{{SYNTHESIS_OUTPUT_PATH}}` |
+
+> All output paths are relative to `projects/{{PROJECT_ID}}/`.
+> Synthesis should only run after all individual items are `true`.
+
+## Session Entry Prompt
+
+**Copy this into each fresh Jerry session:**
+
+    Process the next unprocessed item from:
+    {{BATCH_FILE_PATH}}
+
+    Instructions:
+    1. Read the file above and find the Triage Status Tracker table.
+    2. Identify the first item where Processed = `false`.
+       - If all individual items are `true` and Synthesis is `false`, run the synthesis prompt instead.
+       - If everything is `true`, report that all items are complete.
+    3. Claim it: edit the tracker table NOW — change Processed from `false` to `true` BEFORE executing.
+       This prevents parallel sessions from picking the same item.
+    4. Execute that item's prompt from the Prompts section of the file.
+    5. Do NOT process more than one item per session.
+
+## Prompts
+
+### {{ITEM_PREFIX}}-01: {{ITEM_01_TITLE}}
+
+    Use /worktracker to create a Spike titled "{{WORK_ITEM_TITLE}}" under {{PROJECT_ID}}.
+
+    Use /problem-solving with {{AGENT}} to {{TASK_DESCRIPTION}}.
+
+    Input artifact: {{FILE_PATH}}
+    ...item-specific prompt content...
+
+    Include ps-critic adversarial critique after the analysis.
+    Quality threshold: >= {{QUALITY_THRESHOLD}}.
+
+    Output: projects/{{PROJECT_ID}}/research/{{ITEM_PREFIX}}-01-{{OUTPUT_SUFFIX}}.md
+
+### {{ITEM_PREFIX}}-02: {{ITEM_02_TITLE}}
+
+    ...repeat for each item...
+
+## Synthesis Prompt
+
+    Use /worktracker to create a Spike titled "{{BATCH_TITLE}} Synthesis" under {{PROJECT_ID}}.
+
+    Use /problem-solving with ps-synthesizer to cross-pollinate all {{BATCH_COUNT}} results.
+
+    Input artifacts: (list all output files)
+
+    Synthesis tasks:
+    1. Classification rollup
+    2. Dependency mapping
+    3. Overlap detection
+    4. Priority sequencing
+    5. Emergent themes not visible in individual items
+
+    Include ps-critic adversarial critique after the synthesis.
+    Quality threshold: >= {{QUALITY_THRESHOLD}}.
+
+    Output: projects/{{PROJECT_ID}}/{{SYNTHESIS_OUTPUT_PATH}}
+```
+
+### Key Conventions
+
+1. **Claim-before-execute** — The session entry prompt flips `false` to `true` BEFORE running the item's prompt. This prevents parallel sessions from picking the same item.
+2. **One item per session** — Fresh context isolation is the whole point. Never process two items in one session.
+3. **Synthesis runs last** — The session entry prompt auto-routes to synthesis when all individual items are done.
+4. **Item prompts are self-contained** — Each prompt includes its own worktracker, agent, quality gate, and output path. No cross-references between items (dependencies are noted as context only, resolved during synthesis).
+
+### Example — PDD Outstanding Item Triage
+
+```
+# OI Triage Prompt Designs — PDD-0033
+
+> 11 custom prompts to classify each Outstanding Item by follow-up type.
+
+## Triage Status Tracker
+
+| Item | Title | Processed | Output File |
+|------|-------|-----------|-------------|
+| OI-01 | Cedarverse Integration | `false` | `research/OI-01-triage.md` |
+| OI-02 | ITDR Schema Reuse | `false` | `research/OI-02-triage.md` |
+| OI-03 | Cross-Database Query Architecture | `false` | `research/OI-03-triage.md` |
+| ...9 more items... |
+| **Synthesis** | Cross-Pollination | `false` | `synthesis/oi-triage-summary.md` |
+
+## Session Entry Prompt
+
+Copy this into each fresh Jerry session:
+
+    Process the next unprocessed OI triage prompt from:
+    c:\AI\jerry\projects\PROJ-007-identity-graph-research\research\oi-triage-prompt-designs.md
+
+    Instructions:
+    1. Read the file and find the Triage Status Tracker table.
+    2. Identify the first OI where Processed = `false`.
+    3. Claim it: change Processed to `true` BEFORE executing.
+    4. Execute that OI's prompt from the Prompts section.
+    5. Do NOT process more than one OI per session.
+
+## Prompts
+
+### OI-01: Cedarverse Integration
+
+    Use /worktracker to create a Spike titled "Triage OI-01: Cedarverse Integration" under PROJ-007.
+
+    Use /problem-solving with ps-analyst to triage OI-01 for PDD-0033.
+    Input artifact: outstanding-items.md (section OI-01)
+    ...OI-specific analysis instructions...
+
+    Include ps-critic adversarial critique after the analysis.
+    Quality threshold: >= 0.90.
+
+    Output: projects/PROJ-007-identity-graph-research/research/OI-01-triage.md
+
+...10 more OI prompts...
+
+## Synthesis Prompt
+
+    Use /problem-solving with ps-synthesizer to cross-pollinate all 11 triage results.
+    Input artifacts: all 11 OI-{NN}-triage.md files
+    Output: projects/PROJ-007-identity-graph-research/synthesis/oi-triage-summary.md
+```
+
+*Real-world usage: PROJ-007 Identity Graph research (2026-02-19). See [GitHub #35](https://github.com/geekatron/jerry/issues/35) for the feature request that motivated this template.*
+
+---
+
 ## Related Resources
 
 - [Getting Started](getting-started.md) — First-time Jerry setup and invocation
@@ -283,4 +443,4 @@ Output: projects/PROJ-007/investigations/auth-token-failure-root-cause.md with:
 - [Problem-Solving Playbook](../playbooks/problem-solving.md) — Agent reference and keyword routing
 - [PROJ-006 Research](../../projects/PROJ-006-jerry-prompt/) — Full research backing these templates
 
-*Derived from PROJ-006-jerry-prompt research (2026-02-18). Templates validated against 7-criterion quality rubric.*
+*Templates 1-5 derived from PROJ-006-jerry-prompt research (2026-02-18). Template 6 derived from PROJ-007-identity-graph-research (2026-02-19). All templates validated against 7-criterion quality rubric.*
