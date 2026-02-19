@@ -66,7 +66,7 @@ Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. Encountering a platform
 
 ---
 
-> **Early Access Notice:** Jerry is under active development. The framework is functional and used in production workflows, but APIs, skill interfaces, and configuration formats may change between releases. Pin to a specific [release tag](https://github.com/geekatron/jerry/releases) if you need stability (e.g., `git clone --branch v1.0.0 https://github.com/geekatron/jerry.git`).
+> **Early Access Notice:** Jerry is under active development. The framework is functional and used in production workflows, but APIs, skill interfaces, and configuration formats may change between releases. See [releases](https://github.com/geekatron/jerry/releases) for version history. For version pinning, see the [Local Clone Install](INSTALLATION.md#alternative-local-clone-install) section.
 
 ---
 
@@ -74,29 +74,33 @@ Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. Encountering a platform
 
 ### 1. Install Jerry
 
-Follow the [Installation Guide](INSTALLATION.md) for platform-specific setup (macOS and Windows). You will need Git, uv, and Claude Code.
+In Claude Code, run two commands:
 
-### 2. Bootstrap Context
-
-From the cloned Jerry repository root, run the bootstrap to set up the context distribution (requires uv — installed in Step 1):
-
-```bash
-cd ~/plugins/jerry
-uv run python scripts/bootstrap_context.py
+```
+/plugin marketplace add geekatron/jerry
+/plugin install jerry@jerry-framework
 ```
 
-See the [Bootstrap Guide](BOOTSTRAP.md) for details.
+Verify: `/plugin` > **Installed** tab > `jerry` appears. See the full [Installation Guide](INSTALLATION.md) for scope options, local clone fallback, and troubleshooting.
+
+### 2. Enable Hooks (Optional)
+
+Install [uv](https://docs.astral.sh/uv/) to enable Jerry's hooks for session context auto-loading and per-prompt quality enforcement:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh   # macOS/Linux
+```
+
+Restart your terminal. See the [Installation Guide](INSTALLATION.md#enable-hooks-recommended) for Windows instructions and the full [Capability Matrix](INSTALLATION.md#capability-matrix).
 
 ### 3. Create a Project and Start Working
 
-Set up your first project inside the Jerry clone and invoke a skill:
+Set up your first project and invoke a skill:
 
 ```bash
 export JERRY_PROJECT=PROJ-001-my-first-project
 mkdir -p projects/PROJ-001-my-first-project/.jerry/data/items
 ```
-
-> **Note:** This creates the project directory inside your Jerry clone (`~/plugins/jerry/projects/`). To use Jerry on a separate repository, run these commands from that repository's root instead.
 
 Then follow the [Getting Started Runbook](runbooks/getting-started.md) for a guided walkthrough from project setup to your first persisted skill output.
 
@@ -128,7 +132,7 @@ Then follow the [Getting Started Runbook](runbooks/getting-started.md) for a gui
 | [CLAUDE.md Guide](CLAUDE-MD-GUIDE.md) | How Jerry's tiered context loading works and how to modify it |
 | [Jerry Constitution](governance/JERRY_CONSTITUTION.md) | Behavioral principles governing all Jerry agents |
 | [Installation Guide](INSTALLATION.md) | Full installation and setup instructions |
-| [Bootstrap Guide](BOOTSTRAP.md) | Context distribution setup after cloning |
+| [Bootstrap Guide](BOOTSTRAP.md) | Context distribution setup (developers only) |
 
 ---
 

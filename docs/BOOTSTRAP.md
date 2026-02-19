@@ -2,6 +2,8 @@
 
 > How to set up Jerry's context distribution after cloning.
 
+> **Who needs this?** Bootstrap is for developers contributing to Jerry's behavioral rules. If you installed Jerry as a plugin via `/plugin marketplace add`, you do not need to run bootstrap — skills and hooks work without it. Bootstrap is only needed when you're editing `.context/rules/` and want changes to auto-propagate to `.claude/rules/`.
+
 ## Document Sections
 
 | Section | Purpose |

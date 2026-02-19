@@ -16,13 +16,13 @@
 
 ## Prerequisites
 
-> **Start state:** You have completed the Jerry installation documented in [`../INSTALLATION.md`](../INSTALLATION.md). Do not proceed until all three criteria below are met.
+> **Start state:** You have completed the Jerry installation documented in [`../INSTALLATION.md`](../INSTALLATION.md). Do not proceed until the criteria below are met.
 
-- [ ] **`uv` is installed** and on your PATH — confirm with `uv --version` (minimum: uv 0.5.x or later)
-- [ ] **Jerry is cloned** to your local filesystem (recommended: `~/plugins/jerry`) — confirm with `ls ~/plugins/jerry/pyproject.toml`
-- [ ] **The Jerry plugin is registered** in Claude Code — in Claude Code, run `/plugin`, go to the **Installed** tab, and verify `jerry` appears (alternatively, confirm with `claude mcp list` from the terminal)
+- [ ] **Claude Code 1.0.33+** is installed — confirm with `claude --version`
+- [ ] **The Jerry plugin is installed** in Claude Code — run `/plugin`, go to the **Installed** tab, and verify `jerry` appears
+- [ ] **(Recommended) `uv` is installed** and on your PATH — confirm with `uv --version`. Hooks (session context, quality enforcement) require uv. Skills work without it.
 
-If any of these are not in place, complete the installation steps in [`../INSTALLATION.md`](../INSTALLATION.md) first, then return here. That document covers `uv` installation, Jerry repository cloning, and Claude Code plugin registration.
+If these are not in place, complete the installation steps in [`../INSTALLATION.md`](../INSTALLATION.md) first, then return here.
 
 > **Tested with:** uv 0.5.x, Jerry CLI v0.2.0, Claude Code v2.x. If you are using different versions, the commands in this runbook should still work but minor output differences are possible.
 
