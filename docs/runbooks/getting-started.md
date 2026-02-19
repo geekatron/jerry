@@ -24,7 +24,7 @@
 
 If these are not in place, complete the installation steps in [`../INSTALLATION.md`](../INSTALLATION.md) first, then return here.
 
-> **Tested with:** uv 0.5.x, Jerry CLI v0.2.0, Claude Code v2.x. If you are using different versions, the commands in this runbook should still work but minor output differences are possible.
+> **Tested with:** uv 0.5.x, Jerry v0.2.2, Claude Code 1.0.33+. If you are using different versions, the commands in this runbook should still work but minor output differences are possible.
 
 ---
 
@@ -96,11 +96,9 @@ Expected output: `PROJ-001-my-first-project`
 
 ### Step 3: Start a Jerry Session
 
-Open Claude Code in the same terminal session where `JERRY_PROJECT` is set. Jerry's SessionStart hook runs automatically when Claude Code starts. You can also trigger it explicitly:
+Open Claude Code in the same terminal session where `JERRY_PROJECT` is set. Jerry's SessionStart hook runs automatically when Claude Code starts.
 
-```
-jerry session start
-```
+> **Note:** The `jerry` CLI command is available when you have a local clone with uv configured (run from the clone directory with `uv run jerry`). If you installed Jerry as a plugin without cloning, the SessionStart hook still fires automatically — you do not need the CLI. Skip the explicit command below and proceed to reading the hook output.
 
 The SessionStart hook will respond with one of three XML-tagged outputs. Read the output carefully — each tag requires a different action:
 
@@ -142,12 +140,25 @@ Analyze why my tests are running slowly.
 Investigate the root cause of context rot in large LLM sessions.
 ```
 
+> **Explicit invocation:** If trigger keywords don't activate the skill, invoke it directly with `/problem-solving`. This always works regardless of message phrasing.
+
 Jerry will invoke the problem-solving skill, run through its research and analysis agents, and save the output artifact to your project directory.
 
 Expected behavior:
 - Claude responds by activating the problem-solving skill — you will see a message indicating which agent was selected (e.g., "Invoking ps-researcher...") and where its output will be saved
 - The skill runs one or more agents (researcher, analyst, synthesizer, etc.) and streams progress
 - A persisted output artifact is written to a subdirectory under `projects/PROJ-001-my-first-project/` (e.g., `docs/research/` or `docs/analysis/`)
+
+Example output (what you should see after a successful research invocation):
+
+```
+projects/PROJ-001-my-first-project/
+├── PLAN.md
+├── WORKTRACKER.md
+└── docs/
+    └── research/
+        └── ps-research-readable-python-20260218.md   ← new artifact
+```
 
 ---
 

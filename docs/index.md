@@ -20,25 +20,25 @@
 
 ## What is Jerry?
 
-Jerry is a Claude Code plugin that provides **behavioral guardrails**, **workflow orchestration**, and **persistent knowledge management** for AI-assisted development sessions. It solves the core problem of **Context Rot** -- the degradation of LLM performance as context windows fill -- by using the filesystem as infinite memory.
+Jerry is a Claude Code plugin that provides **behavioral guardrails**, **workflow orchestration**, and **persistent knowledge management** for AI-assisted development sessions. It solves the core problem of **Context Rot** -- the degradation of LLM performance as context windows fill with 50K-100K+ tokens, causing skipped rules, forgotten instructions, and inconsistent output -- by using the filesystem as infinite memory.
 
 ### Core Capabilities
 
-- **Behavioral Guardrails** -- A layered rule system (HARD / MEDIUM / SOFT) that enforces coding standards, architecture constraints, and quality thresholds across every session. Rules auto-load at session start and persist through context compaction.
+- **Behavioral Guardrails** -- A 5-layer enforcement system with 24 HARD rules that cannot be overridden, plus MEDIUM and SOFT tiers. Rules auto-load at session start via hooks, get re-injected every prompt (~600 tokens/prompt), and persist through context compaction. Total enforcement budget: ~15,100 tokens (7.6% of 200K context).
 
 - **Workflow Orchestration** -- Coordinate multi-phase, multi-agent workflows with persistent state tracking. Fan-out parallel work, synchronize at barriers, and resume across sessions with checkpoint recovery.
 
-- **Knowledge Persistence** -- Every skill invocation produces a persisted artifact on disk. Research, analysis, decisions, and reviews survive session boundaries and build a cumulative project knowledge base.
+- **Knowledge Persistence** -- Every skill invocation produces a persisted artifact on disk (research, analysis, decisions, reviews). These survive session boundaries and context compaction, building a cumulative project knowledge base.
 
-- **Quality Enforcement** -- A quantitative quality gate (>= 0.92 weighted composite score) with a creator-critic-revision cycle. Six scoring dimensions ensure deliverables meet a consistent standard before acceptance.
+- **Quality Enforcement** -- A quantitative quality gate (>= 0.92 weighted composite score) with a creator-critic-revision cycle (minimum 3 iterations). Six scoring dimensions (Completeness, Internal Consistency, Methodological Rigor, Evidence Quality, Actionability, Traceability) with calibrated weights ensure deliverables meet a consistent standard before acceptance.
 
-- **Adversarial Review** -- Ten adversarial strategies (Red Team, Devil's Advocate, Steelman, Pre-Mortem, FMEA, and more) applied at appropriate criticality levels to catch blind spots, strengthen ideas, and prevent premature conclusions.
+- **Adversarial Review** -- Ten adversarial strategies across 4 families (Iterative Self-Correction, Dialectical Synthesis, Role-Based Adversarialism, Structured Decomposition) applied at 4 criticality levels (C1 Routine through C4 Critical tournament review with all 10 strategies).
 
 ---
 
 ## Why Jerry?
 
-**Your context window is not infinite.** As sessions grow, LLMs lose track of earlier instructions, skip rules, and produce inconsistent output. Jerry externalizes rules and state to the filesystem so they are reloaded reliably every session, every time.
+**Your context window is not infinite.** Once sessions exceed 50K-100K tokens, LLMs begin losing track of earlier instructions — rules get skipped, conventions drift, and output quality degrades silently. Jerry externalizes rules and state to the filesystem and re-injects critical constraints every prompt, so they are enforced reliably regardless of context depth.
 
 **Quality should be measurable, not subjective.** Jerry scores every deliverable against a six-dimension rubric and enforces a minimum threshold. Below the threshold, work is revised -- not shipped.
 
@@ -77,13 +77,13 @@ Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. Encountering a platform
 In Claude Code, run two commands:
 
 ```
-/plugin marketplace add geekatron/jerry
+/plugin marketplace add https://github.com/geekatron/jerry
 /plugin install jerry@geekatron-jerry
 ```
 
 Verify: `/plugin` > **Installed** tab > `jerry` appears. See the full [Installation Guide](INSTALLATION.md) for scope options, local clone fallback, and troubleshooting.
 
-### 2. Enable Hooks (Optional)
+### 2. Enable Hooks (Recommended)
 
 Install [uv](https://docs.astral.sh/uv/) to enable Jerry's hooks for session context auto-loading and per-prompt quality enforcement:
 

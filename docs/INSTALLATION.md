@@ -2,7 +2,7 @@
 
 > Jerry is a Claude Code plugin for behavior and workflow guardrails.
 
-> **Platform Note:** Jerry is primarily developed and tested on macOS. Linux is expected to work — CI runs on Ubuntu for every job, and uv/git tooling is cross-platform. Windows support is actively in progress — core functionality works, but some hooks may behave differently. See [Platform Support](index.md#platform-support) for details and issue report links.
+> **Platform Note:** Jerry is primarily developed and tested on macOS. Linux is expected to work — CI runs on Ubuntu for every job, and uv/git tooling is cross-platform. Windows support is in progress — skills and core functionality work, but hooks that use symlinks or path-sensitive operations may behave differently. Known Windows limitations: bootstrap uses junction points instead of symlinks, and paths in Claude Code commands must use forward slashes. See [Platform Support](index.md#platform-support) for details. Report Windows issues via the [Windows compatibility template](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml).
 
 ---
 
@@ -37,19 +37,23 @@ That's it. You do **not** need Git, Python, or a local clone to install and use 
 
 > **Don't have Claude Code?** Follow the [Setup Guide](https://code.claude.com/docs/en/setup) to install it first, then return here.
 
+> **Version note:** The `/plugin` command and its Installed/Discover/Errors tabs are available in Claude Code 1.0.33+. If `/plugin` is not recognized, update Claude Code first.
+
 ---
 
 ## Quick Install (Most Users)
 
-Jerry is a public Claude Code plugin. Install it with two commands in Claude Code:
+Jerry is a public Claude Code plugin hosted on [GitHub](https://github.com/geekatron/jerry). The repository contains the required `.claude-plugin/marketplace.json` and `.claude-plugin/plugin.json` manifests that Claude Code reads to register and install the plugin. This method requires internet access to GitHub and that the repository is accessible (it is public). Install it with two commands in Claude Code:
 
 **Step 1: Add the marketplace**
 
 ```
-/plugin marketplace add geekatron/jerry
+/plugin marketplace add https://github.com/geekatron/jerry
 ```
 
-This registers Jerry's plugin catalog with Claude Code.
+This registers Jerry's plugin catalog with Claude Code by pointing it to the GitHub repository. A marketplace is like an app store — it tells Claude Code what plugins are available. No plugins are installed yet.
+
+> **Shorthand:** You can also use `geekatron/jerry` — Claude Code resolves `owner/repo` to GitHub automatically.
 
 **Step 2: Install the plugin**
 
@@ -57,9 +61,9 @@ This registers Jerry's plugin catalog with Claude Code.
 /plugin install jerry@geekatron-jerry
 ```
 
-This downloads and activates Jerry's skills.
+This downloads and activates Jerry's skills. The install command uses the format `<plugin>@<marketplace>` — `jerry` is the plugin name (from `plugin.json`) and `geekatron-jerry` is the marketplace name (derived from the GitHub `owner/repo` path).
 
-> **How the name works:** When you add a GitHub marketplace via `owner/repo`, Claude Code derives the marketplace name by joining them with a hyphen: `geekatron/jerry` becomes `geekatron-jerry`. You can always verify your marketplace name with `/plugin marketplace list`.
+> **Verify the marketplace name:** After Step 1, run `/plugin marketplace list` to confirm the marketplace was registered and to see its name. Use that name as the `@suffix` in the install command. If the name differs from `geekatron-jerry`, adjust accordingly: `/plugin install jerry@<your-marketplace-name>`.
 
 **Verify it worked:**
 
@@ -85,7 +89,7 @@ During install, Claude Code asks which scope to use:
 | **Project** | Added to `.claude/settings.json` (version-controlled) | Team-wide — all collaborators get Jerry |
 | **Local** | Only you, only this repository | Testing |
 
-**Recommendation:** Use **User** for personal use. Use **Project** when you want your whole team to have Jerry available automatically.
+**Recommendation:** Use **User** for personal use. Use **Project** when you want your whole team to have Jerry available automatically — the `.claude/settings.json` file is committed to version control, so new team members get Jerry active as soon as they clone the repository.
 
 **Alternative: Interactive Installation**
 
@@ -94,7 +98,7 @@ During install, Claude Code asks which scope to use:
 3. Find `jerry`
 4. Press Enter and select your installation scope
 
-> **Remote install not working?** If `/plugin marketplace add geekatron/jerry` fails (e.g., network restrictions, corporate proxy), use the [Local Clone Install](#alternative-local-clone-install) below instead.
+> **Remote install not working?** If the marketplace add or plugin install commands fail, use the [Local Clone Install](#alternative-local-clone-install) below instead. The local clone method is verified and always works. If you encounter issues with the remote path, please [file a GitHub issue](https://github.com/geekatron/jerry/issues) so we can improve these instructions.
 
 ---
 
@@ -132,9 +136,11 @@ uv --version
 # Should output: uv 0.x.x
 ```
 
-That's it. Hooks activate automatically the next time you start Claude Code — no additional configuration needed.
+That's it. Once uv is installed, hooks activate automatically the next time you start Claude Code.
 
 > **Note:** You do NOT need Python installed separately. The uv installer handles Python automatically.
+
+> **Early access caveat:** Hook enforcement is under active development. Some hooks may have schema validation issues that cause them to fail silently (fail-open behavior — skills always work, but enforcement may not fire). If hooks don't appear to be working after installing uv, check [GitHub Issues](https://github.com/geekatron/jerry/issues) for the latest status.
 
 ---
 
@@ -343,8 +349,7 @@ These files survive context compaction and session boundaries, building your pro
 
 ### Prerequisites
 
-- Python 3.11+
-- [uv](https://docs.astral.sh/uv/)
+- [uv](https://docs.astral.sh/uv/) (manages Python automatically — no separate Python install needed)
 - Git
 
 ### Development Environment
@@ -413,7 +418,7 @@ See [CONTRIBUTING.md](https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.
 
 **Marketplace not found**
 
-**Symptom:** `/plugin marketplace add geekatron/jerry` returns an error
+**Symptom:** `/plugin marketplace add https://github.com/geekatron/jerry` returns an error
 
 **Solutions:**
 1. Verify Claude Code is version 1.0.33+: update with `brew upgrade claude-code` (macOS) or `npm update -g @anthropic-ai/claude-code`
@@ -514,7 +519,7 @@ If still not found, add to PATH manually:
 /plugin marketplace remove geekatron-jerry
 ```
 
-> **Local clone users:** Your marketplace name is `jerry-framework` instead — run `/plugin marketplace list` to confirm.
+> **Not sure of the name?** Run `/plugin marketplace list` to see your marketplace name. Local clone users will see `jerry-framework` instead.
 
 ### Delete Local Files (Optional)
 
