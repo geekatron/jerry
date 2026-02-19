@@ -13,11 +13,14 @@ Validates that the built MkDocs site has:
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+
+pytestmark = [pytest.mark.e2e, pytest.mark.subprocess]
 
 ROOT = Path(__file__).resolve().parents[2]
 SITE_DIR = ROOT / "site"
@@ -26,7 +29,12 @@ RESEARCH_DIR = SITE_DIR / "research"
 
 @pytest.fixture(scope="module", autouse=True)
 def build_site() -> None:
-    """Build MkDocs site before running tests."""
+    """Build MkDocs site before running tests.
+
+    Cleans site/ directory first to prevent stale artifact interference.
+    """
+    if SITE_DIR.exists():
+        shutil.rmtree(SITE_DIR)
     result = subprocess.run(
         [sys.executable, "-m", "mkdocs", "build", "--strict"],
         cwd=ROOT,
@@ -51,13 +59,18 @@ class TestIconRendering:
 
     # Pattern matches :octicons-*: or :material-*: literal text in HTML
     UNRESOLVED_ICON = re.compile(r":(?:octicons|material|fontawesome)-[a-z0-9-]+:")
+    # Strip <code> and <pre> blocks before scanning — icon syntax inside
+    # code examples is intentionally literal and should not trigger failures.
+    CODE_BLOCK = re.compile(r"<(?:code|pre)[^>]*>.*?</(?:code|pre)>", re.DOTALL)
 
     def test_no_unresolved_icons_in_research_pages(self) -> None:
         """All :octicons-*: and :material-*: syntax must resolve to HTML elements."""
         failures: list[str] = []
         for html_file in _get_research_html_files():
             content = html_file.read_text(encoding="utf-8")
-            matches = self.UNRESOLVED_ICON.findall(content)
+            # Remove code blocks to avoid false positives from documented examples
+            content_no_code = self.CODE_BLOCK.sub("", content)
+            matches = self.UNRESOLVED_ICON.findall(content_no_code)
             if matches:
                 rel = html_file.relative_to(SITE_DIR)
                 failures.append(f"{rel}: {', '.join(set(matches))}")

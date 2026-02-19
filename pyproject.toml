@@ -108,6 +108,8 @@ markers = [
     "negative: marks tests as negative/error scenarios",
     "edge-case: marks tests as edge case scenarios",
     "boundary: marks tests as boundary value scenarios",
+    "e2e: marks end-to-end tests (slow, full stack)",
+    "subprocess: marks tests that invoke external processes",
 ]
 
 # =============================================================================
