@@ -57,6 +57,7 @@ Rewrite `.context/rules/project-workflow.md` to eliminate competing definitions 
 - [ ] AC-4: H-04 active project HARD rule unchanged
 - [ ] AC-5: No inline competing structural definitions remain (no code-block directory trees that redefine the worktracker structure)
 - [ ] AC-6: File path references resolve to existing files
+- [ ] AC-7: `/adversary` C3 review passes on the rewritten `project-workflow.md` (AE-002: touches `.context/rules/` — required strategies: S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014)
 
 ---
 

@@ -152,6 +152,7 @@ _(To be completed when status changes to done)_
 - [ ] AC-3: Project creation logic references the worktracker directory structure for folder layout
 - [ ] AC-4: Minimal structural orientation retained at session start (per DA-002: Claude must have basic project navigation context without requiring `/worktracker` invocation)
 - [ ] AC-5: Session-start behavior unchanged (H-04 active project requirement still enforced)
+- [ ] AC-6: `/adversary` C3 review PASS on the rewritten `project-workflow.md` (AE-002: auto-C3 — required strategies: S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014)
 
 ### Quality Checklist
 
