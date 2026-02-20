@@ -94,7 +94,9 @@ The Jerry CLI has substantial reusable infrastructure for context resilience. SP
 
 4. **Estimated effort reduced by ~22-23% from SPIKE-001.** SPIKE-001: 14 items at 25-37 hours. SPIKE-002 Final: 10 items at 19.5-28.5 hours. Reduction sources: CLI infrastructure reuse, work item consolidation, and proven patterns reducing implementation risk.
 
-5. **Two-phase architecture validated at QG-1 (score 0.94).** ADR-SPIKE002-001 proposes Phase 1 (infrastructure placement alongside existing enforcement engines) and Phase 2 (bounded context extraction when domain stabilizes). The ADR passed quality gate review with scores ranging from 0.91 (Internal Consistency) to 0.96 (Evidence Quality) across 6 dimensions.
+5. **Two-phase architecture rejected; bounded context adopted (Phase 5 revision).** ADR-SPIKE002-001 originally proposed infrastructure placement (Alternative 2). User review identified fundamental flaws: (1) ADR chose wrong alternative using invalid reasoning, (2) enforcement folder is tech debt not a pattern, (3) hooks must call CLI not import modules. DISC-001 documented 3 architecture violations. DEC-001 captured 4 corrective decisions. ADR-SPIKE002-002 replaces ADR-SPIKE002-001 with Alternative 3: proper bounded context `src/context_monitoring/` with CLI-first hooks calling `jerry --json hooks <event>`. QG-2 passed at 0.92 after 2 iterations (C3 criticality, 7 strategies).
+
+6. **12 revised work items replace original 10.** Phase 5c revised CWI-00 through CWI-09 for the bounded context architecture and added CWI-10 (`jerry hooks` CLI namespace) and CWI-11 (hook wrapper scripts). Estimated effort: 26-35.5 hours.
 
 ### Detailed Findings
 
@@ -132,14 +134,16 @@ The `InMemorySessionRepository` loses state on process termination (line 35: "Lo
 
 Creating `FileSystemSessionRepository` follows the exact pattern. Estimated effort: 3-4 hours.
 
-**Finding 4: Architecture Follows Two-Phase Approach (Phase 3 ADR)**
+**Finding 4: Architecture Revised to Bounded Context + CLI-First Hooks (Phase 5)**
 
-- **Phase 1 (FEAT-001):** Place new engines in `src/infrastructure/internal/enforcement/` alongside existing engines. Stateless, fail-open, token-budgeted pattern.
-- **Phase 2 (post-FEAT-001):** Extract to `src/context_monitoring/` bounded context when: (1) domain concepts stable, (2) persistent session repository available (CWI-00 satisfies this), (3) bounded context boundaries validated.
+- **Original (ADR-SPIKE002-001):** Infrastructure placement alongside enforcement engines. Rejected after user review — enforcement folder is tech debt, hooks importing Python modules violates process boundary.
+- **Revised (ADR-SPIKE002-002):** Proper bounded context `src/context_monitoring/` with hexagonal architecture (domain value objects, application services + ports, infrastructure adapters). Hooks are thin wrappers (~10 lines) calling `jerry --json hooks <event>` via subprocess. All logic wired through `bootstrap.py` composition root.
+- **Key domain concepts:** ThresholdTier, FillEstimate, CheckpointData, ContextState (value objects); ContextThresholdReached, CompactionDetected, CheckpointCreated (events); ContextFillEstimator, CheckpointService, ResumptionContextGenerator (application services).
 
-**Finding 5: Quality Gate Passed (QG-1)**
+**Finding 5: Both Quality Gates Passed**
 
-ADR-SPIKE002-001 scored 0.94 weighted composite (threshold: 0.92). Five defects found (1 P2, 4 P3), none blocking. P2 defect: missing rollback strategy (recommended to address before ADR status transitions to ACCEPTED).
+- QG-1: ADR-SPIKE002-001 scored 0.94 (threshold: 0.92). 1 P2 defect (missing rollback strategy).
+- QG-2: ADR-SPIKE002-002 scored 0.92 after 2 iterations (C3 criticality, 7 strategies). Iteration 1 scored 0.89 REVISE (3 required fixes: H-10 violation, undefined ResumptionContextGenerator, session-start wrapper inconsistency). All addressed in iteration 2.
 
 ### Evidence/References
 
@@ -149,7 +153,13 @@ ADR-SPIKE002-001 scored 0.94 weighted composite (threshold: 0.92). Five defects 
 | Phase 2: Gap Analysis | `orchestration/spike002-cli-integration-20260219-001/res/phase-2-gap-analysis/gap-analyst/gap-analysis.md` |
 | Phase 3: ADR-SPIKE002-001 | `orchestration/spike002-cli-integration-20260219-001/res/phase-3-architecture/architecture-designer/adr-cli-integration.md` |
 | QG-1: Gate Result | `orchestration/spike002-cli-integration-20260219-001/res/quality-gates/qg-1/gate-result.md` |
-| Phase 4: Revised Work Items | `orchestration/spike002-cli-integration-20260219-001/res/phase-4-synthesis/work-item-synthesizer/revised-work-items.md` |
+| Phase 4: Revised Work Items (v1, superseded) | `orchestration/spike002-cli-integration-20260219-001/res/phase-4-synthesis/work-item-synthesizer/revised-work-items.md` |
+| DISC-001: Architecture Violations | `work/EPIC-001-context-resilience/FEAT-001-context-detection/DISC-001-architecture-violations.md` |
+| DEC-001: CLI-First Architecture Decisions | `work/EPIC-001-context-resilience/FEAT-001-context-detection/DEC-001-cli-first-architecture.md` |
+| Phase 5a: ADR-SPIKE002-002 (revised ADR) | `orchestration/spike002-cli-integration-20260219-001/res/phase-5-revision/adr-reviser/adr-cli-integration-v2.md` |
+| QG-2: Gate Result (iteration 1) | `orchestration/spike002-cli-integration-20260219-001/res/quality-gates/qg-2/gate-result.md` |
+| QG-2: Gate Result (iteration 2, PASS) | `orchestration/spike002-cli-integration-20260219-001/res/quality-gates/qg-2/gate-result-iter2.md` |
+| Phase 5c: Revised Work Items (v2, authoritative) | `orchestration/spike002-cli-integration-20260219-001/res/phase-5-revision/work-item-reviser/revised-work-items-v2.md` |
 | FileSystemEventStore source | `src/work_tracking/infrastructure/persistence/filesystem_event_store.py` |
 | EventSourcedWorkItemRepository source | `src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py` |
 | ISessionRepository port | `src/session_management/application/ports/session_repository.py` |
@@ -163,17 +173,17 @@ ADR-SPIKE002-001 scored 0.94 weighted composite (threshold: 0.92). Five defects 
 
 ### Decision
 
-**Integrate context resilience with existing CLI infrastructure** using the two-phase approach defined in ADR-SPIKE002-001. Implement the revised 10-item work plan (CWI-00 through CWI-09) which supersedes SPIKE-001's 14 items. Prioritize CWI-00 (FileSystemSessionRepository) as the P0 foundation enabler.
+**Implement context resilience as a proper bounded context** (`src/context_monitoring/`) with CLI-first hooks, as defined in ADR-SPIKE002-002. Implement the revised 12-item work plan (CWI-00 through CWI-11) which supersedes the original 10 items. Prioritize CWI-00 (FileSystemSessionRepository) as the P0 foundation enabler.
 
 ### Recommended Actions
 
-1. **Immediately: Accept ADR-SPIKE002-001** (transition from PROPOSED to ACCEPTED status). Address P2 defect D-001 (rollback strategy) before acceptance.
+1. **Immediately: Accept DEC-001 decisions** (D-001 through D-004). Accept ADR-SPIKE002-002 (transition from PROPOSED to ACCEPTED).
 
-2. **Phase A (Foundation):** Implement CWI-00 (FileSystemSessionRepository), CWI-01 (threshold config), and CWI-04 (resumption schema) in parallel. These have no dependencies and unblock all subsequent work.
+2. **Phase A (Foundation):** Implement CWI-00 (FileSystemSessionRepository), CWI-01 (threshold config via ConfigThresholdAdapter), CWI-10 (`jerry hooks` CLI namespace), and CWI-11 (hook wrapper scripts) in parallel. These have no dependencies and unblock all subsequent work.
 
-3. **Phase B (Core Detection):** Implement CWI-02 (PreCompact hook with session abandon) then CWI-03 (context-aware UserPromptSubmit). This is the critical path.
+3. **Phase B (Bounded Context Core):** Implement CWI-02 (bounded context foundation: directory structure, value objects, events, CheckpointService, repository) then CWI-03 (ContextFillEstimator + ResumptionContextGenerator application services). This is the critical path.
 
-4. **Phase C (Integration):** Implement CWI-05 (AE-006 sub-rules), CWI-06 (resumption automation), CWI-07 (staleness validation) -- partially parallelizable.
+4. **Phase C (Integration):** Implement CWI-04 (resumption schema), CWI-05 (AE-006 sub-rules), CWI-07 (PreToolUse staleness validation) -- partially parallelizable.
 
 5. **Phase D (Validation):** Execute CWI-08 (OQ-9 + Method C investigation) and CWI-09 (threshold calibration) timeboxed activities.
 
@@ -182,19 +192,21 @@ ADR-SPIKE002-001 scored 0.94 weighted composite (threshold: 0.92). Five defects 
 | ID | Title | Type | Priority | Effort |
 |----|-------|------|----------|--------|
 | CWI-00 | FileSystemSessionRepository | Enabler | P0 | 3-4 hrs |
-| CWI-01 | Threshold Configuration via LayeredConfigAdapter | Enabler | P1 | 0.5 hrs |
-| CWI-02 | PreCompact Hook + Checkpoint Infrastructure | Enabler | P1 | 3-5 hrs |
-| CWI-03 | Context-Aware UserPromptSubmit Hook | Enabler | P1 | 3-4 hrs |
+| CWI-01 | ConfigThresholdAdapter + IThresholdConfiguration Port | Enabler | P1 | 1 hr |
+| CWI-02 | Context Monitoring Bounded Context Foundation | Enabler | P1 | 4-6 hrs |
+| CWI-03 | ContextFillEstimator + ResumptionContextGenerator Services | Enabler | P1 | 4-5 hrs |
 | CWI-04 | Enhanced Resumption Schema + Update Protocol | Story | P1 | 2-3 hrs |
 | CWI-05 | AE-006 Graduated Sub-Rules | Story | P2 | 1 hr |
-| CWI-06 | Resumption Prompt Automation (SessionStart) | Story | P2 | 2-3 hrs |
-| CWI-07 | PostToolUse Staleness Validation | Enabler | P3 | 2-3 hrs |
+| CWI-06 | (Superseded — merged into CWI-03) | -- | -- | -- |
+| CWI-07 | PreToolUse Staleness Validation | Enabler | P3 | 2-3 hrs |
 | CWI-08 | Validation Spikes (OQ-9 + Method C) | Spike | P2 | 3 hrs |
 | CWI-09 | Threshold Validation + Calibration Documentation | Story | P3 | 4 hrs |
+| CWI-10 | `jerry hooks` CLI Namespace Registration | Enabler | P1 | 1-1.5 hrs |
+| CWI-11 | Hook Wrapper Scripts + hooks.json Registration | Enabler | P1 | 1-2 hrs |
 
-**Total: 10 items, 19.5-28.5 hours estimated effort.**
+**Total: 12 items (11 active + 1 superseded), 26-35.5 hours estimated effort.**
 
-Full work item definitions with acceptance criteria, CLI integration points, and dependency graphs are in the Phase 4 synthesis: `orchestration/spike002-cli-integration-20260219-001/res/phase-4-synthesis/work-item-synthesizer/revised-work-items.md`
+Full work item definitions with acceptance criteria and dependency graphs are in the Phase 5c synthesis: `orchestration/spike002-cli-integration-20260219-001/res/phase-5-revision/work-item-reviser/revised-work-items-v2.md`
 
 ### Risks/Considerations
 
@@ -221,4 +233,6 @@ Full work item definitions with acceptance criteria, CLI integration points, and
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-19 | in_progress | Spike created to address SPIKE-001 gap: Jerry CLI infrastructure was not factored into context resilience design. SPIKE-001 focused entirely on hook scripts, missing existing CLI capabilities (TokenCounter, session lifecycle, config system, enforcement engines). |
-| 2026-02-19 | done | Spike completed. 5-phase orchestration executed: (1) CLI Capability Audit identified 7 reusable capability categories, (2) Gap Analysis reclassified 10/14 items from NEW to REUSE/EXTEND and consolidated to 9 items, (3) ADR-SPIKE002-001 designed two-phase CLI-integrated architecture, (4) QG-1 passed at 0.94/0.92 threshold, (5) Final synthesis produced 10 revised work items (CWI-00 through CWI-09) incorporating user feedback to add FileSystemSessionRepository as P0 enabler. All 6 hypotheses validated (4 CONFIRMED, 2 PARTIALLY CONFIRMED). Estimated effort: 19.5-28.5 hours (22-23% reduction from SPIKE-001). |
+| 2026-02-19 | done | Phases 1-4 + QG-1 completed. CLI Capability Audit, Gap Analysis, ADR-SPIKE002-001 (QG-1 PASS at 0.94), initial work item synthesis (10 items CWI-00 through CWI-09). |
+| 2026-02-19 | done | User review identified ADR-SPIKE002-001 chose wrong alternative. DISC-001 documented 3 hook-CLI architecture violations. DEC-001 captured 4 corrective decisions (CLI-first hooks, proper bounded context, jerry hooks commands, enforcement debt tracking). |
+| 2026-02-19 | done | Phase 5 completed: (5a) ADR-SPIKE002-002 produced — chooses Alternative 3 (bounded context + CLI-first hooks), supersedes ADR-SPIKE002-001. (5b) QG-2 passed at 0.92 after 2 iterations (C3 criticality, 7 strategies). (5c) 12 revised work items (CWI-00 through CWI-11) aligned with bounded context architecture. Estimated effort: 26-35.5 hours. |
