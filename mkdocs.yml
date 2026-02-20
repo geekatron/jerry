@@ -43,7 +43,7 @@ exclude_docs: |
   analysis/
   design/
   knowledge/
-  research/
+  research/internal/
   specifications/
   synthesis/
   templates/
@@ -64,7 +64,12 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.tabbed:
       alternate_style: true
+  - attr_list
+  - md_in_html
   - tables
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - toc:
       permalink: true
 
@@ -87,5 +92,17 @@ nav:
     - CLAUDE.md Guide: CLAUDE-MD-GUIDE.md
     - Schema Versioning: schemas/SCHEMA_VERSIONING.md
     - Session Context Schema: schemas/SESSION_CONTEXT_GUIDE.md
+  - Research:
+    - Overview: research/index.md
+    - Single vs. Multi-Agent Analysis: research/single-vs-multi-agent.md
+    - Adversarial Strategy Catalog: research/adversarial-strategy-catalog.md
+    - Strategy Selection & Enforcement (ADRs): research/strategy-selection-enforcement.md
+    - Adversarial Quality Deep Dives: research/adversarial-deep-dives.md
+    - Skill Compliance Framework: research/skill-compliance-framework.md
+    - Governance & Constitutional AI: research/governance-constitutional-ai.md
+    - Context Management: research/context-management.md
+    - OSS Methodology: research/oss-methodology.md
+    - Architecture Patterns: research/architecture-patterns.md
+    - Claude Code Ecosystem: research/claude-code-ecosystem.md
   - Governance:
     - Jerry Constitution: governance/JERRY_CONSTITUTION.md

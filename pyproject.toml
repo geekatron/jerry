@@ -1,6 +1,6 @@
 [project]
 name = "jerry"
-version = "0.2.3"
+version = "0.3.0"
 description = "A framework for behavior and workflow guardrails with knowledge accrual"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -108,6 +108,8 @@ markers = [
     "negative: marks tests as negative/error scenarios",
     "edge-case: marks tests as edge case scenarios",
     "boundary: marks tests as boundary value scenarios",
+    "e2e: marks end-to-end tests (slow, full stack)",
+    "subprocess: marks tests that invoke external processes",
 ]
 
 # =============================================================================
@@ -133,7 +135,7 @@ tag_format = "v$version"
 #   - design-version-bumping-process.md
 
 [tool.bumpversion]
-current_version = "0.2.3"
+current_version = "0.3.0"
 commit = true
 tag = true
 tag_name = "v{new_version}"
