@@ -21,7 +21,7 @@
 | [Benefit Hypothesis](#benefit-hypothesis) | Expected benefits |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [MVP Definition](#mvp-definition) | Minimum viable scope |
-| [Children (Spikes)](#children-spikes) | Spike inventory |
+| [Children](#children) | Full work item inventory |
 | [Progress Summary](#progress-summary) | Overall feature progress |
 | [Related Items](#related-items) | Dependencies |
 | [History](#history) | Status changes |
@@ -97,7 +97,7 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 ---
 
-## Children (Spikes)
+## Children
 
 ### Spike Inventory
 
@@ -106,10 +106,86 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 | SPIKE-001 | Spike | Python Markdown AST Library Landscape | completed | high | 12h |
 | SPIKE-002 | Spike | AST-First Architecture Feasibility Assessment | completed | high | 8h |
 
+### Enabler Inventory
+
+| ID | Type | Title | Status | Priority | Effort | Phase |
+|----|------|-------|--------|----------|--------|-------|
+| EN-001 | Enabler | R-01 PoC: mdformat blockquote frontmatter write-back | pending | critical | 3 | Gate |
+
+### Story Inventory
+
+| ID | Title | Status | Priority | Effort | Phase | Blocked By |
+|----|-------|--------|----------|--------|-------|------------|
+| ST-001 | Implement JerryDocument facade | pending | high | 5 | 1 | EN-001 |
+| ST-002 | Implement blockquote frontmatter extension | pending | high | 5 | 1 | EN-001, ST-001 |
+| ST-003 | Implement L2-REINJECT parser | pending | high | 3 | 1 | EN-001, ST-001 |
+| ST-004 | Add `jerry ast` CLI commands | pending | medium | 3 | 1 | ST-001 |
+| ST-005 | Create `/ast` Claude skill | pending | medium | 3 | 2 | ST-001, ST-002 |
+| ST-006 | Implement schema validation engine | pending | medium | 5 | 2-3 | ST-001, ST-002 |
+| ST-007 | Migrate /worktracker agents to AST | pending | medium | 3 | 2 | ST-005, ST-006 |
+| ST-008 | Implement navigation table helpers | pending | low | 3 | 3 | ST-001 |
+| ST-009 | Add pre-commit validation hook | pending | low | 2 | 3 | ST-004, ST-006, ST-008 |
+| ST-010 | Migrate remaining skills | pending | low | 5 | 4 | ST-007, ST-005 |
+
+### Effort Summary
+
+| Category | Count | Story Points |
+|----------|-------|-------------|
+| Spikes (completed) | 2 | -- |
+| Enablers | 1 | 3 |
+| Stories | 10 | 37 |
+| **Total** | **13** | **40** |
+
 ### Work Item Links
 
+**Spikes:**
 - [SPIKE-001: Python Markdown AST Library Landscape](./SPIKE-001-library-landscape/SPIKE-001-library-landscape.md)
 - [SPIKE-002: AST-First Architecture Feasibility Assessment](./SPIKE-002-feasibility/SPIKE-002-feasibility.md)
+
+**Enabler:**
+- [EN-001: R-01 PoC -- mdformat blockquote frontmatter write-back](./EN-001-r01-poc/EN-001-r01-poc.md)
+
+**Stories:**
+- [ST-001: Implement JerryDocument facade](./ST-001-jerry-document/ST-001-jerry-document.md)
+- [ST-002: Implement blockquote frontmatter extension](./ST-002-frontmatter-ext/ST-002-frontmatter-ext.md)
+- [ST-003: Implement L2-REINJECT parser](./ST-003-reinject-parser/ST-003-reinject-parser.md)
+- [ST-004: Add `jerry ast` CLI commands](./ST-004-cli-commands/ST-004-cli-commands.md)
+- [ST-005: Create `/ast` Claude skill](./ST-005-ast-skill/ST-005-ast-skill.md)
+- [ST-006: Implement schema validation engine](./ST-006-schema-validation/ST-006-schema-validation.md)
+- [ST-007: Migrate /worktracker agents to AST](./ST-007-worktracker-migration/ST-007-worktracker-migration.md)
+- [ST-008: Implement navigation table helpers](./ST-008-nav-table-helpers/ST-008-nav-table-helpers.md)
+- [ST-009: Add pre-commit validation hook](./ST-009-precommit-hook/ST-009-precommit-hook.md)
+- [ST-010: Migrate remaining skills](./ST-010-remaining-migrations/ST-010-remaining-migrations.md)
+
+### Dependency Graph
+
+```
+EN-001 (R-01 PoC) ─── GATE ──────────────────────────────────────
+    │
+    ▼
+ST-001 (JerryDocument) ────────────────────────────────────────
+    │         │         │           │
+    ▼         ▼         ▼           ▼
+ST-002    ST-003    ST-004      ST-008
+(frontmatter) (reinject) (CLI)    (nav tables)
+    │         │         │           │
+    ├─────────┤         │           │
+    ▼         │         │           │
+ST-005      │         │           │
+(/ast skill)  │         │           │
+    │         │         │           │
+    ▼         │         │           │
+ST-006 ◄──────┘         │           │
+(schema)                │           │
+    │                   │           │
+    ▼                   ▼           ▼
+ST-007              ST-009 ◄────────┘
+(/worktracker)      (pre-commit)
+    │
+    ▼
+ST-010
+(remaining)
+```
 
 ---
 
@@ -122,8 +198,10 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
 | Spikes:    [####################] 100% (2/2 completed)           |
+| Enablers:  [....................] 0%   (0/1 completed)           |
+| Stories:   [....................] 0%   (0/10 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [##########..........] 50% (spikes done, ADR pending) |
+| Overall:   [###.................] 15%  (2/13 items done)         |
 +------------------------------------------------------------------+
 ```
 
@@ -131,9 +209,12 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 | Metric | Value |
 |--------|-------|
-| **Total Spikes** | 2 |
-| **Completed Spikes** | 2 |
-| **Completion %** | 50% (spikes complete, ADR and implementation stories pending) |
+| **Total Items** | 13 (2 spikes + 1 enabler + 10 stories) |
+| **Completed** | 2 (spikes) |
+| **Total Story Points** | 40 (3 enabler + 37 stories) |
+| **Completed Story Points** | 0 |
+| **Completion %** | 15% (spikes done; enabler and stories pending) |
+| **Next:** | EN-001 (R-01 PoC) -- critical gate |
 
 ---
 
@@ -158,3 +239,4 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Feature created. Two spikes: library landscape (SPIKE-001) and feasibility (SPIKE-002). |
 | 2026-02-19 | Claude | in-progress | Both spikes completed via orchestration `spike-eval-20260219-001`. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. QG scores: 0.96, 0.97, 0.96. ADR and implementation stories pending. |
+| 2026-02-20 | Claude | in-progress | Work decomposed: EN-001 (R-01 PoC gate, 3 SP) + 10 stories (37 SP). Total: 40 SP across 4 implementation phases. |

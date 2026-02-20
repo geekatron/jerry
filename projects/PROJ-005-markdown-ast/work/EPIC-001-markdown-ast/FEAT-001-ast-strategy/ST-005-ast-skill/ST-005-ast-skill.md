@@ -1,0 +1,110 @@
+# ST-005: Create `/ast` Claude Skill
+
+<!--
+TEMPLATE: Story
+VERSION: 1.0.0
+SOURCE: ONTOLOGY-v1.md Section 3.4.5
+-->
+
+> **Type:** story
+> **Status:** pending
+> **Priority:** medium
+> **Impact:** high
+> **Created:** 2026-02-20
+> **Due:** --
+> **Completed:** --
+> **Parent:** FEAT-001
+> **Owner:** --
+> **Effort:** 3
+
+---
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | Scope and context |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Dependencies](#dependencies) | Blocked by / Blocks |
+| [Related Items](#related-items) | Hierarchy |
+| [History](#history) | Status changes |
+
+---
+
+## User Story
+
+**As a** Claude agent operating within Jerry
+
+**I want** an `/ast` skill that provides AST operations as skill scripts
+
+**So that** I can perform structured markdown manipulation (parse, query, modify, validate) during interactive sessions without shelling out to CLI commands
+
+---
+
+## Summary
+
+Create the `/ast` skill -- the Claude-facing interface of Pattern D (Hybrid). Thin wrapper scripts that import the shared domain layer, providing Claude with direct access to AST operations.
+
+**Scope:**
+- `skills/ast/SKILL.md` -- skill definition with usage instructions
+- `skills/ast/scripts/ast_ops.py` -- thin wrapper importing domain layer
+- Operations: parse, query frontmatter, modify frontmatter, validate, render
+- ~150 LOC in skill scripts
+
+**Out of Scope:**
+- Domain logic (in `src/domain/markdown_ast/`)
+- CLI interface (ST-004)
+- Agent definitions (future work if needed)
+
+---
+
+## Acceptance Criteria
+
+### Acceptance Checklist
+
+- [ ] `/ast` skill is invocable by Claude Code
+- [ ] Skill scripts import from `src/domain/markdown_ast/` (shared domain layer)
+- [ ] Claude can parse a file and get structured frontmatter data
+- [ ] Claude can modify a frontmatter field and write back
+- [ ] Claude can validate a file against a schema
+- [ ] SKILL.md follows Jerry skill template format
+- [ ] Unit tests for skill scripts achieve 90% line coverage (H-21)
+
+### Definition of Done
+
+- [ ] Code complete and peer reviewed
+- [ ] Unit tests written and passing
+- [ ] 90% line coverage (H-21)
+- [ ] SKILL.md reviewed for correctness
+
+---
+
+## Dependencies
+
+| Dependency Type | Item | Description |
+|----------------|------|-------------|
+| Blocked By | [ST-001](../ST-001-jerry-document/ST-001-jerry-document.md) | Scripts import domain facade |
+| Blocked By | [ST-002](../ST-002-frontmatter-ext/ST-002-frontmatter-ext.md) | Frontmatter ops needed for skill |
+| Blocks | [ST-007](../ST-007-worktracker-migration/ST-007-worktracker-migration.md) | Worktracker agents use /ast skill |
+
+---
+
+## Related Items
+
+### Hierarchy
+
+- **Parent Feature:** [FEAT-001: AST Strategy Evaluation & Library Selection](../FEAT-001-ast-strategy.md)
+
+### Traceability
+
+- **Architecture:** Go/No-Go Recommendation L1, Component: Skill Scripts (~150 LOC)
+- **Pattern D:** Dual-audience interface (CLI for humans, skill for Claude)
+
+---
+
+## History
+
+| Date | Author | Status | Notes |
+|------|--------|--------|-------|
+| 2026-02-20 | Claude | pending | Story created. Claude-facing /ast skill. 3 SP. Blocked by ST-001 + ST-002. |

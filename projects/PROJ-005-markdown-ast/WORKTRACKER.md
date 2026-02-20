@@ -49,3 +49,4 @@
 |------|--------|--------|
 | 2026-02-19 | Claude | PROJ-005 created. AST-based markdown manipulation initiative to replace raw text operations across Jerry's full documentation surface. |
 | 2026-02-19 | Claude | Orchestration `spike-eval-20260219-001` complete. SPIKE-001 + SPIKE-002 evaluated. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. QG scores: 0.96, 0.97, 0.96. |
+| 2026-02-20 | Claude | FEAT-001 decomposed into 1 enabler (EN-001: R-01 PoC, 3 SP) + 10 stories (37 SP) = 40 SP across 4 implementation phases. EN-001 is the critical gate. |

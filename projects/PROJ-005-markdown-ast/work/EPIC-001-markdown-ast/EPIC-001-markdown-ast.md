@@ -68,7 +68,7 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | AST Strategy Evaluation & Library Selection | in-progress | high | 50% |
+| FEAT-001 | AST Strategy Evaluation & Library Selection | in-progress | high | 15% (2/13 items) |
 
 ### Spike Inventory
 
@@ -134,3 +134,4 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Epic created. Full-surface AST infrastructure initiative. Python-only, 5+ library evaluation required. |
 | 2026-02-19 | Claude | in-progress | Both spikes completed. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. Orchestration `spike-eval-20260219-001` complete (QG scores: 0.96, 0.97, 0.96). |
+| 2026-02-20 | Claude | in-progress | FEAT-001 decomposed: EN-001 (R-01 PoC gate) + 10 stories = 40 SP across 4 phases. Next: EN-001 (critical gate). |
