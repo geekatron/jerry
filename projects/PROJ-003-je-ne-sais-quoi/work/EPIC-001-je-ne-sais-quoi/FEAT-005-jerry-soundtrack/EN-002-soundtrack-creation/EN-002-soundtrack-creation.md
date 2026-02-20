@@ -1,13 +1,13 @@
 # EN-002: Soundtrack Creation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** low
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-005
 > **Owner:** —
 > **Effort:** —
@@ -49,8 +49,8 @@ Create the SOUNDTRACK.md file as a repository-root cultural artifact.
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 1 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 1 |
+| **Completion %** | 100% |
 
 ---
 

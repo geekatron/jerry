@@ -28,11 +28,11 @@ PROJ-003 houses EPIC-001 (Je Ne Sais Quoi — The Saucer Boy Spirit), which adds
 
 | ID | Title | Status | Score | Dependencies |
 |----|-------|--------|-------|--------------|
-| FEAT-001 | Saucer Boy Persona Distillation | in_progress | 0.953 | — |
-| FEAT-002 | /saucer-boy Skill | in_progress | 0.923 | FEAT-001 |
-| FEAT-003 | Saucer Boy Visual Identity | in_progress | PASS | FEAT-001 |
+| FEAT-001 | Saucer Boy Persona Distillation | done | 0.953 | — |
+| FEAT-002 | /saucer-boy Skill | done | 0.936 | FEAT-001 |
+| FEAT-003 | Saucer Boy Visual Identity | done | PASS | FEAT-001 |
 | FEAT-004 | Framework Voice & Personality | in_progress | 0.925 | FEAT-001, FEAT-002 |
-| FEAT-005 | The Jerry Soundtrack | in_progress | PASS | FEAT-001 |
+| FEAT-005 | The Jerry Soundtrack | done | PASS | FEAT-001 |
 | FEAT-006 | Easter Eggs & Cultural References | in_progress | 0.925 | FEAT-001, FEAT-002 |
 | FEAT-007 | Developer Experience Delight | in_progress | 0.922 | FEAT-001, FEAT-002 |
 

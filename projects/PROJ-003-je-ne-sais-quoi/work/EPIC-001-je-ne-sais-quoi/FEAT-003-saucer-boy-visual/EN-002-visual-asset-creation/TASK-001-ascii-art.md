@@ -1,7 +1,7 @@
 # TASK-001: Create ASCII Art
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** MEDIUM
 > **Created:** 2026-02-19
 > **Parent:** EN-002
@@ -27,9 +27,9 @@ Create ASCII art for CLI branding per the visual identity specification from EN-
 
 ### Acceptance Criteria
 
-- [ ] ASCII art created per spec
-- [ ] Renders correctly in standard terminal widths (80+ cols)
-- [ ] Integrated into CLI output
+- [x] ASCII art created per spec
+- [x] Renders correctly in standard terminal widths (80+ cols)
+- [x] Integrated into CLI output
 
 ---
 

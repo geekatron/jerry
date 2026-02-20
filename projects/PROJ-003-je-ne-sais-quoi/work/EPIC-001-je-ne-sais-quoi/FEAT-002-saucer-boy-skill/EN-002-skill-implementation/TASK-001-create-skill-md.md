@@ -1,7 +1,7 @@
 # TASK-001: Create SKILL.md
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** HIGH
 > **Created:** 2026-02-19
 > **Parent:** EN-002
@@ -27,10 +27,10 @@ Create `skills/saucer-boy/SKILL.md` following the architecture specification fro
 
 ### Acceptance Criteria
 
-- [ ] `skills/saucer-boy/SKILL.md` created
-- [ ] Progressive disclosure navigation implemented
-- [ ] Skill registered in AGENTS.md
-- [ ] Skill invocable via `/saucer-boy`
+- [x] `skills/saucer-boy/SKILL.md` created
+- [x] Progressive disclosure navigation implemented
+- [x] Skill registered in AGENTS.md
+- [x] Skill invocable via `/saucer-boy`
 
 ---
 

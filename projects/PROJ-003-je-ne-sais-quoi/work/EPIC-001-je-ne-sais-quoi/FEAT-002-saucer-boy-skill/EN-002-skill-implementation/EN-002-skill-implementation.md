@@ -1,13 +1,13 @@
 # EN-002: Skill Implementation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-002
 > **Owner:** —
 > **Effort:** —
@@ -41,9 +41,9 @@ Implement the /saucer-boy skill per the architecture specification from EN-001. 
 
 | ID | Title | Status | Priority | Activity |
 |----|-------|--------|----------|----------|
-| [TASK-001](./TASK-001-create-skill-md.md) | Create SKILL.md | BACKLOG | HIGH | DEVELOPMENT |
-| [TASK-002](./TASK-002-create-agents.md) | Create Agent Definitions | BACKLOG | HIGH | DEVELOPMENT |
-| [TASK-003](./TASK-003-create-references.md) | Create Reference Documents | BACKLOG | MEDIUM | DOCUMENTATION |
+| [TASK-001](./TASK-001-create-skill-md.md) | Create SKILL.md | DONE | HIGH | DEVELOPMENT |
+| [TASK-002](./TASK-002-create-agents.md) | Create Agent Definitions | DONE | HIGH | DEVELOPMENT |
+| [TASK-003](./TASK-003-create-references.md) | Create Reference Documents | DONE | MEDIUM | DOCUMENTATION |
 
 ---
 
@@ -52,8 +52,8 @@ Implement the /saucer-boy skill per the architecture specification from EN-001. 
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 3 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 3 |
+| **Completion %** | 100% |
 
 ---
 

@@ -1,13 +1,13 @@
 # EN-002: Persona Canonicalization
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-001
 > **Owner:** —
 > **Effort:** —
@@ -41,7 +41,7 @@ Copy the quality-gated persona document from the orchestration output to its can
 
 | ID | Title | Status | Priority | Activity |
 |----|-------|--------|----------|----------|
-| [TASK-001](./TASK-001-copy-to-canonical-location.md) | Copy to Canonical Location | BACKLOG | HIGH | DOCUMENTATION |
+| [TASK-001](./TASK-001-copy-to-canonical-location.md) | Copy to Canonical Location | DONE | HIGH | DOCUMENTATION |
 
 ---
 
@@ -50,8 +50,8 @@ Copy the quality-gated persona document from the orchestration output to its can
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 1 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 1 |
+| **Completion %** | 100% |
 
 ---
 

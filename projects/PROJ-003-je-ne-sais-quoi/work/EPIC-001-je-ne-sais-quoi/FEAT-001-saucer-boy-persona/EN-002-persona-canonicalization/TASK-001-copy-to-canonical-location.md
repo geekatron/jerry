@@ -1,7 +1,7 @@
 # TASK-001: Copy to Canonical Location
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** HIGH
 > **Created:** 2026-02-19
 > **Parent:** EN-002
@@ -27,9 +27,9 @@ Copy the quality-gated persona document from orchestration output to its canonic
 
 ### Acceptance Criteria
 
-- [ ] Persona doc copied to canonical location
-- [ ] Document integrity verified (line count, content hash)
-- [ ] Cross-references updated in dependent features
+- [x] Persona doc copied to canonical location
+- [x] Document integrity verified (line count, content hash)
+- [x] Cross-references updated in dependent features
 
 ### Implementation Notes
 

@@ -1,13 +1,13 @@
 # EN-002: Visual Asset Creation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-003
 > **Owner:** —
 > **Effort:** —
@@ -40,8 +40,8 @@ Create the actual visual assets: ASCII art for CLI display and color palette def
 
 | ID | Title | Status | Priority | Activity |
 |----|-------|--------|----------|----------|
-| [TASK-001](./TASK-001-ascii-art.md) | Create ASCII Art | BACKLOG | MEDIUM | DEVELOPMENT |
-| [TASK-002](./TASK-002-color-palette.md) | Define Color Palette | BACKLOG | LOW | DESIGN |
+| [TASK-001](./TASK-001-ascii-art.md) | Create ASCII Art | DONE | MEDIUM | DEVELOPMENT |
+| [TASK-002](./TASK-002-color-palette.md) | Define Color Palette | DONE | LOW | DESIGN |
 
 ---
 
@@ -50,8 +50,8 @@ Create the actual visual assets: ASCII art for CLI display and color palette def
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 2 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 2 |
+| **Completion %** | 100% |
 
 ---
 

@@ -1,12 +1,12 @@
 # FEAT-005: The Jerry Soundtrack
 
 > **Type:** feature
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** low
 > **Impact:** medium
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** EPIC-001
 > **Owner:** Claude
 > **Target Sprint:** —

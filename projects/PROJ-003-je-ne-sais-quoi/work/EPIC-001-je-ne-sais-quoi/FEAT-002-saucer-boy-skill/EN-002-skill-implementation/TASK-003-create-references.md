@@ -1,7 +1,7 @@
 # TASK-003: Create Reference Documents
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** MEDIUM
 > **Created:** 2026-02-19
 > **Parent:** EN-002
@@ -27,10 +27,10 @@ Create reference documents in `skills/saucer-boy/references/` including persona 
 
 ### Acceptance Criteria
 
-- [ ] Reference documents created in `skills/saucer-boy/references/`
-- [ ] Persona reference linked to FEAT-001 canonical doc
-- [ ] Voice guide linked to FEAT-004 output
-- [ ] Cultural references linked to FEAT-006 output
+- [x] Reference documents created in `skills/saucer-boy/references/`
+- [x] Persona reference linked to FEAT-001 canonical doc
+- [x] Voice guide linked to FEAT-004 output
+- [x] Cultural references linked to FEAT-006 output
 
 ---
 

@@ -1,7 +1,7 @@
 # TASK-002: Create Agent Definitions
 
 > **Type:** task
-> **Status:** BACKLOG
+> **Status:** DONE
 > **Priority:** HIGH
 > **Created:** 2026-02-19
 > **Parent:** EN-002
@@ -27,9 +27,9 @@ Create agent definitions in `skills/saucer-boy/agents/` per the architecture spe
 
 ### Acceptance Criteria
 
-- [ ] Agent .md files created in `skills/saucer-boy/agents/`
-- [ ] Agent roles and responsibilities defined
-- [ ] Agent integration points documented
+- [x] Agent .md files created in `skills/saucer-boy/agents/`
+- [x] Agent roles and responsibilities defined
+- [x] Agent integration points documented
 
 ---
 
