@@ -224,7 +224,7 @@ tools:
       risk_level: "low"
       constraints:
         - "Must call before query-docs"
-        - "Maximum 3 calls per question"
+        - "Respect tool-enforced per-question call limit"
         - "Returns library ID for query-docs"
       use_cases:
         - "Finding correct library ID for documentation queries"
@@ -236,7 +236,7 @@ tools:
       risk_level: "low"
       constraints:
         - "Requires resolved library ID from resolve-library-id"
-        - "Maximum 3 calls per question"
+        - "Respect tool-enforced per-question call limit"
         - "Do not include sensitive data in queries"
       use_cases:
         - "Retrieving current library documentation"

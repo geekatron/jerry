@@ -1,10 +1,10 @@
 # MCP Tool Standards
 
-<!-- VERSION: 1.3.0 | DATE: 2026-02-20 | SOURCE: FEAT-028-mcp-tool-integration -->
+<!-- VERSION: 1.3.1 | DATE: 2026-02-20 | SOURCE: FEAT-028-mcp-tool-integration -->
 
 > Governance rules for proactive MCP tool usage across Jerry Framework agents.
 
-<!-- L2-REINJECT: rank=9, tokens=70, content="Context7 REQUIRED for external library/framework docs: resolve-library-id then query-docs, max 3 calls per library. Memory-Keeper REQUIRED at phase boundaries: phase-complete→store, phase-start→retrieve. Fallback: persist to work/.mcp-fallback/ on MCP failure. Key: jerry/{project}/{entity-type}/{entity-id}." -->
+<!-- L2-REINJECT: rank=9, tokens=70, content="Context7 REQUIRED for external library/framework docs: resolve-library-id then query-docs; respect tool-enforced call limit. Memory-Keeper REQUIRED at phase boundaries: phase-complete→store, phase-start→retrieve. Fallback: persist to work/.mcp-fallback/ on MCP failure. Key: jerry/{project}/{entity-type}/{entity-id}." -->
 
 ## Document Sections
 
@@ -27,7 +27,7 @@
 
 | ID | Rule | Source | Consequence |
 |----|------|--------|-------------|
-| MCP-001 | Context7 MUST be used when any agent task references an external library, framework, SDK, or API by name. Maximum 3 calls per library per research question. WebSearch is permitted only for general concepts or when Context7 returns no results. | FEAT-028 AC-1 | Research quality degradation. Stale training-data knowledge used instead of current docs. |
+| MCP-001 | Context7 MUST be used when any agent task references an external library, framework, SDK, or API by name. Respect the per-question call limit enforced by the tool. WebSearch is permitted only for general concepts or when Context7 returns no results. | FEAT-028 AC-1 | Research quality degradation. Stale training-data knowledge used instead of current docs. |
 | MCP-002 | Memory-Keeper `store` MUST be called at orchestration phase boundaries. Memory-Keeper `retrieve`/`search` MUST be called at phase start to load prior context. | FEAT-028 AC-2 | Cross-session context loss. Phase handoff operates on stale or absent data. |
 
 > **Namespace:** MCP-001/MCP-002 use a file-scoped `MCP-` prefix (not the global `H-` series in `quality-enforcement.md`). These rules are scoped to MCP tool governance only. The global HARD Rule Index references this file via H-22 (proactive skill invocation) which mandates the behavioral patterns these rules operationalize.
@@ -50,7 +50,7 @@
 **Protocol:**
 1. Call `mcp__context7__resolve-library-id` with library name and research question
 2. Call `mcp__context7__query-docs` with resolved library ID and specific query
-3. Maximum 3 calls per library per research question; each distinct library resets the limit
+3. Respect the per-question call limit enforced by the tool; each distinct library resets the limit
 4. If `resolve-library-id` returns no matches, fall back to WebSearch for that library
 
 **Triggers:** Task mentions any external package, library, SDK, or framework by name.
@@ -158,7 +158,7 @@ Memory-Keeper is REQUIRED at orchestration phase boundaries (MCP-002). Memory-Ke
 | Context7 `query-docs` returns empty or irrelevant | Use WebSearch; note "Context7 no coverage" in output |
 | Memory-Keeper `store` fails (timeout, server down) | Persist context to `work/.mcp-fallback/{key}.md`; note failure in worktracker entry |
 | Memory-Keeper `retrieve` returns empty | Search by partial key before proceeding; if still empty, proceed without prior context and note gap |
-| Context7 3-call limit reached mid-research | Fall back to WebSearch for remaining queries for that library |
+| Context7 tool-enforced call limit reached | Fall back to WebSearch for remaining queries for that library |
 | MCP server unavailable | Continue work without MCP tools; log gap in session worktracker entry |
 
 ---
