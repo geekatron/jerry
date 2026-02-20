@@ -2,12 +2,18 @@
 # Copyright (c) 2026 Adam Nowak
 
 """
-Jerry Framework
+Jerry Framework — Quality enforcement with je ne sais quoi.
 
-A framework for behavior and workflow guardrails with knowledge accrual.
-Implements Hexagonal Architecture (Ports & Adapters) with Domain-Driven Design.
+Named for a framework. Inspired by a person who demonstrated
+that taking your work seriously and taking yourself seriously
+are two different things.
 
-Architecture Layers:
+"Up to my death I would just keep doing fun things."
+— Shane McConkey, 8th grade essay
+
+Architecture: Hexagonal (Ports & Adapters) with Domain-Driven Design.
+
+Layers:
     - domain/: Pure business logic, no external dependencies
     - application/: Use cases, CQRS command/query handlers
     - infrastructure/: Adapters for persistence, messaging, schemas

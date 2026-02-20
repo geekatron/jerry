@@ -67,6 +67,13 @@ Examples:
         help="Output in JSON format for scripting/AI consumption",
     )
 
+    parser.add_argument(
+        "--saucer-boy",
+        action="store_true",
+        default=False,
+        help=argparse.SUPPRESS,
+    )
+
     # Top-level subparsers for namespaces
     subparsers = parser.add_subparsers(
         title="namespaces",
@@ -88,6 +95,12 @@ Examples:
 
     # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
     _add_transcript_namespace(subparsers)
+
+    # EE-008: Undocumented philosophy command
+    subparsers.add_parser(
+        "why",
+        help=argparse.SUPPRESS,
+    )
 
     return parser
 

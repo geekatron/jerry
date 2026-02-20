@@ -316,7 +316,7 @@ class TestCmdTranscriptParse:
         captured = capsys.readouterr()
 
         assert result == 1
-        assert "Error" in captured.out or "not found" in captured.out.lower()
+        assert "not found" in captured.out.lower()
 
     def test_cmd_transcript_parse_exception_handling(
         self, capsys: pytest.CaptureFixture[str]
@@ -343,7 +343,7 @@ class TestCmdTranscriptParse:
         captured = capsys.readouterr()
 
         assert result == 1
-        assert "Error" in captured.out or "error" in captured.out.lower()
+        assert "Unexpected error" in captured.out
 
     def test_cmd_transcript_parse_no_command_dispatcher(
         self, capsys: pytest.CaptureFixture[str]
@@ -366,7 +366,7 @@ class TestCmdTranscriptParse:
         captured = capsys.readouterr()
 
         assert result == 1
-        assert "Error" in captured.out
+        assert "not configured" in captured.out
 
     # =========================================================================
     # NEGATIVE CASE: Empty Path (AC-8 Test Coverage Remediation)

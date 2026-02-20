@@ -131,7 +131,8 @@ class IQualityGateValidator(Protocol):
 # Gate Level Thresholds
 # =============================================================================
 
-# Coverage thresholds per gate level
+# "Ain't no half-steppin'" — Big Daddy Kane, "Ain't No Half Steppin'"
+# Coverage thresholds per gate level. No exceptions.
 _COVERAGE_THRESHOLDS: dict[GateLevel, float] = {
     GateLevel.L0: 0.0,  # No coverage requirement
     GateLevel.L1: 80.0,  # 80% for merge gate
@@ -150,6 +151,8 @@ _REQUIRED_TEST_TYPES: dict[GateLevel, set[str]] = {
 # Risk Tier Patterns
 # =============================================================================
 
+# "Don't sweat the technique" — Eric B. & Rakim, "Don't Sweat the Technique"
+# L1 through L5 are running. Trust the layers. Focus on the craft.
 # File patterns that indicate specific risk tiers
 _T4_PATTERNS = [
     "**/security/**",
@@ -210,6 +213,8 @@ class QualityGateValidator(IQualityGateValidator):
         True
     """
 
+    # "You want to float, like a boat." — Shane McConkey on ski design,
+    # but also on how quality scores should feel: buoyant, not forced.
     def validate(
         self,
         gate_level: GateLevel,

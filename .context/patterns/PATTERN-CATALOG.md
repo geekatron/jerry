@@ -4,7 +4,7 @@
 > Each pattern links to a detailed pattern file for in-depth documentation.
 
 **Last Updated**: 2026-01-12
-**Total Patterns**: 43 patterns across 12 categories
+**Total Patterns**: 49 patterns across 13 categories
 
 ---
 
@@ -23,6 +23,7 @@
 | [Architecture](#architecture-patterns) | 5 | Hexagonal, Ports, BCs, One-Class, Composition |
 | [Adapter](#adapter-patterns) | 2 | CLI Adapter, Persistence Adapter |
 | [Testing](#testing-patterns) | 3 | Test Pyramid, BDD Cycle, Architecture Tests |
+| [Skill Development](#skill-development-patterns) | 6 | Jerry Skill Structure, Workflow Patterns |
 | [Graph](#graph-patterns) | 3 | IGraphStore, Edge Labels |
 
 ---
@@ -146,6 +147,21 @@ IRepository<TAggregate, TId>          # Domain port (abstract)
 
 ---
 
+## Skill Development Patterns
+
+| ID | Pattern | Status | Detail File |
+|----|---------|--------|-------------|
+| PAT-SKILL-001 | **Jerry Skill Structure** | MANDATORY | [skill-development/skill-structure.md](skill-development/skill-structure.md) |
+| PAT-SKILL-WF-001 | Sequential Orchestration | RECOMMENDED | [skill-development/skill-structure.md](skill-development/skill-structure.md#workflow-patterns) |
+| PAT-SKILL-WF-002 | Multi-Source Coordination | RECOMMENDED | [skill-development/skill-structure.md](skill-development/skill-structure.md#workflow-patterns) |
+| PAT-SKILL-WF-003 | Iterative Refinement | RECOMMENDED | [skill-development/skill-structure.md](skill-development/skill-structure.md#workflow-patterns) |
+| PAT-SKILL-WF-004 | Context-Aware Selection | RECOMMENDED | [skill-development/skill-structure.md](skill-development/skill-structure.md#workflow-patterns) |
+| PAT-SKILL-WF-005 | Domain-Specific Intelligence | RECOMMENDED | [skill-development/skill-structure.md](skill-development/skill-structure.md#workflow-patterns) |
+
+**Source:** Anthropic's "Complete Guide to Building Skills for Claude" (January 2026) + Jerry Framework conventions.
+
+---
+
 ## Lessons Learned
 
 | ID | Lesson | Priority |
@@ -240,6 +256,9 @@ IRepository<TAggregate, TId>          # Domain port (abstract)
 │   ├── generic-repository.md      # PAT-REPO-001
 │   ├── event-sourced-repository.md # PAT-REPO-002
 │   └── snapshot-store.md          # PAT-REPO-003
+│
+├── skill-development/             # Skill development patterns
+│   └── skill-structure.md        # PAT-SKILL-001
 │
 ├── testing/                        # Testing patterns
 │   ├── test-pyramid.md            # PAT-TEST-001

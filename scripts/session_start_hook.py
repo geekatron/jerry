@@ -144,6 +144,27 @@ def check_precommit_hooks(plugin_root: Path) -> str | None:
     return None
 
 
+def _get_session_temporal_note() -> str | None:
+    """Generate temporal easter egg note for session start (EE-011, EE-012).
+
+    Returns:
+        Parenthetical note string, or None if no temporal trigger applies.
+    """
+    from datetime import datetime
+
+    now = datetime.now()
+
+    # EE-012: McConkey birthday (December 30)
+    if now.month == 12 and now.day == 30:
+        return "(December 30. The framework remembers.)"
+
+    # EE-011: Late night acknowledgment (01:00-04:00)
+    if 1 <= now.hour < 4:
+        return "(The quality gates don't sleep either.)"
+
+    return None
+
+
 def format_hook_output(cli_data: dict, precommit_warning: str | None = None) -> tuple[str, str]:
     """Transform CLI JSON output to (systemMessage, additionalContext) tuple.
 
@@ -168,7 +189,11 @@ def format_hook_output(cli_data: dict, precommit_warning: str | None = None) -> 
 
     # Case 1: Active project with valid configuration
     if project_id and validation and validation.get("is_valid"):
-        system_msg = f"Jerry Framework: Project {project_id} active"
+        system_msg = f"Jerry Framework: {project_id} active. Quality gates set."
+        # EE-011/EE-012: Temporal triggers (late night, McConkey birthday)
+        temporal_note = _get_session_temporal_note()
+        if temporal_note:
+            system_msg += f"\n{temporal_note}"
         additional = (
             f"Jerry Framework initialized. See CLAUDE.md for context.\n"
             f"<project-context>\n"
@@ -184,7 +209,7 @@ def format_hook_output(cli_data: dict, precommit_warning: str | None = None) -> 
     if project_id and validation and not validation.get("is_valid"):
         messages = validation.get("messages", ["Unknown validation error"])
         error_msg = messages[0] if messages else "Invalid project"
-        system_msg = f"Jerry Framework: ERROR - {project_id} invalid ({error_msg[:40]})"
+        system_msg = f"Jerry Framework: {project_id} invalid. {error_msg[:50]}"
         additional = (
             f"Jerry Framework initialized with ERROR.\n"
             f"<project-error>\n"
