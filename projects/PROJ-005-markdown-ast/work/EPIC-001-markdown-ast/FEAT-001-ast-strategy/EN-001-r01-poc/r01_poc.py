@@ -3,9 +3,24 @@
 Tests whether markdown-it-py + mdformat can:
 1. Parse a real Jerry entity file
 2. Identify blockquote frontmatter tokens
-3. Modify a frontmatter field (Status)
+3. Modify a frontmatter field
 4. Render back with mdformat
 5. Preserve unmodified regions
+
+Test coverage:
+- 3 entity types (Spike, Epic, Enabler) with Status field modification
+- Date field modification (Created date)
+- Numeric field modification (Effort value)
+- Placeholder field modification (Due: -- → date)
+
+Scope exclusions (documented, not tested by this PoC):
+- Malformed frontmatter lines (e.g., missing colon in bold markers)
+- Multiple blockquote sections in one file
+- Duplicate field keys within a single blockquote
+- Empty files or files with no blockquote frontmatter
+- Multi-field modification in a single pass
+- Values containing markdown special characters (links, bold, etc.)
+These edge cases are deferred to ST-002 (blockquote frontmatter extension).
 
 Run: uv run python projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/r01_poc.py
 """
@@ -55,8 +70,36 @@ TEST_FILES: list[dict[str, Any]] = [
         / "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast"
         / "FEAT-001-ast-strategy/EN-001-r01-poc/EN-001-r01-poc.md",
         "field": "Status",
-        "old_value": "in-progress",
-        "new_value": "completed",
+        "old_value": "completed",
+        "new_value": "in-progress",
+    },
+    # --- Additional field type tests (SR-003, S-014 recommendations) ---
+    {
+        "name": "SPIKE-002 date field (Created)",
+        "path": REPO_ROOT
+        / "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast"
+        / "FEAT-001-ast-strategy/SPIKE-002-feasibility/SPIKE-002-feasibility.md",
+        "field": "Created",
+        "old_value": "2026-02-19",
+        "new_value": "2026-01-15",
+    },
+    {
+        "name": "EN-001 numeric field (Effort)",
+        "path": REPO_ROOT
+        / "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast"
+        / "FEAT-001-ast-strategy/EN-001-r01-poc/EN-001-r01-poc.md",
+        "field": "Effort",
+        "old_value": "3",
+        "new_value": "5",
+    },
+    {
+        "name": "EN-001 placeholder field (Due)",
+        "path": REPO_ROOT
+        / "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast"
+        / "FEAT-001-ast-strategy/EN-001-r01-poc/EN-001-r01-poc.md",
+        "field": "Due",
+        "old_value": "--",
+        "new_value": "2026-03-15",
     },
 ]
 

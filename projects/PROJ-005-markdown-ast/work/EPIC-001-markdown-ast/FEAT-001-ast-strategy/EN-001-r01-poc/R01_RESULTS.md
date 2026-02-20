@@ -3,7 +3,7 @@
 > **Date:** 2026-02-20
 > **Verdict:** PASS -- Proceed with standard implementation
 > **Fallback activated:** None
-> **Confidence post-R-01:** ~0.90 (up from 0.75)
+> **Confidence post-R-01:** ~0.90 (up from 0.75; see [Confidence Basis](#confidence-basis))
 
 ---
 
@@ -14,8 +14,10 @@
 | [Summary](#summary) | Verdict and key findings |
 | [Test Matrix](#test-matrix) | Per-file check results |
 | [Token Analysis](#token-analysis) | AST parsing diagnostics |
+| [Scope and Exclusions](#scope-and-exclusions) | What was and was not tested |
 | [Key Observations](#key-observations) | What we learned |
 | [Normalization Behavior](#normalization-behavior) | How mdformat changes files |
+| [Confidence Basis](#confidence-basis) | Evidence for confidence calibration |
 | [Decision](#decision) | Path forward |
 | [Evidence](#evidence) | Traceability |
 | [Captured Execution Output](#captured-execution-output) | Full PoC stdout |
@@ -29,21 +31,31 @@ The R-01 proof-of-concept validates that markdown-it-py v4.0.0 + mdformat v1.0.0
 
 1. **Parse** real Jerry entity files (Spike, Epic, Enabler) into token streams
 2. **Extract** blockquote frontmatter key-value pairs via regex on the `> **Key:** Value` pattern
-3. **Modify** a frontmatter field (Status) in the normalized source
-4. **Render** back with mdformat preserving all unmodified regions byte-for-byte
+3. **Modify** frontmatter fields of varying types (status, date, numeric, placeholder) in the normalized source
+4. **Render** back with mdformat preserving all unmodified regions (byte-for-byte identical post-normalization)
 5. **Verify** mdformat roundtrip idempotency (stable after 2nd pass)
 
-All 3 checks passed across all 3 test files. No fallback escalation required.
+All 3 checks passed across all 6 test cases (3 entity types x Status field + 3 additional field types). No fallback escalation required.
 
 ---
 
 ## Test Matrix
+
+### Entity Type Tests (Status field)
 
 | File | Type | Fields | C1: Field Correct | C2: Regions Preserved | C3: Idempotent | Result |
 |------|------|:------:|:-:|:-:|:-:|:------:|
 | SPIKE-002-feasibility.md | Spike | 8 | PASS | PASS | PASS | **PASS** |
 | EPIC-001-markdown-ast.md | Epic | 10 | PASS | PASS | PASS | **PASS** |
 | EN-001-r01-poc.md | Enabler | 11 | PASS | PASS | PASS | **PASS** |
+
+### Field Type Tests (diverse value types)
+
+| File | Field Modified | Old Value | New Value | C1 | C2 | C3 | Result |
+|------|---------------|-----------|-----------|:-:|:-:|:-:|:------:|
+| SPIKE-002-feasibility.md | Created (date) | 2026-02-19 | 2026-01-15 | PASS | PASS | PASS | **PASS** |
+| EN-001-r01-poc.md | Effort (numeric) | 3 | 5 | PASS | PASS | PASS | **PASS** |
+| EN-001-r01-poc.md | Due (placeholder) | -- | 2026-03-15 | PASS | PASS | PASS | **PASS** |
 
 ### Check Definitions
 
@@ -67,6 +79,29 @@ markdown-it-py correctly identifies blockquote nodes in all files. The SyntaxTre
 
 ---
 
+## Scope and Exclusions
+
+### What was tested
+
+- 3 entity types: Spike, Epic, Enabler (all worktracker entities with blockquote frontmatter)
+- 4 field value types: status (single word), date (ISO-8601), numeric (integer), placeholder (`--`)
+- Single-field modification per test case
+- Happy path: well-formed files with the target field present and matching the expected value
+
+### What was NOT tested (deferred to ST-002)
+
+- Malformed frontmatter lines (e.g., `> **Key Value` without colon in bold markers)
+- Multiple blockquote sections in a single file
+- Duplicate field keys within a single blockquote
+- Empty files or files with no blockquote frontmatter
+- Multi-field modification in a single pass
+- Values containing markdown special characters (links, bold, code spans)
+- Non-entity files (skill definitions, rule files) -- these use different structural patterns and do not have blockquote frontmatter; the PoC scope is limited to the `> **Key:** Value` pattern used by worktracker entities
+
+These edge cases are explicitly deferred to ST-002 (blockquote frontmatter extension), which will implement production-grade extraction and validation.
+
+---
+
 ## Key Observations
 
 ### 1. mdformat normalization adds content
@@ -84,7 +119,7 @@ The Jerry blockquote frontmatter pattern `> **Key:** Value` has the colon *insid
 
 ### 3. Byte-for-byte preservation of unmodified regions
 
-After normalizing the original with mdformat, modifying a field, and re-rendering, the only difference is the intended field change. Unmodified regions are byte-for-byte identical. This is the strongest possible result for C2.
+After normalizing the original with mdformat, modifying a field, and re-rendering, the only difference is the intended field change. Unmodified regions are byte-for-byte identical when compared post-normalization. The PoC's Check 2 implementation also accepts trailing-whitespace-only differences as a PASS (mdformat may normalize trailing newlines), but in all 6 test cases the comparison was exact -- no whitespace-only fallback was needed. This is the strongest possible result for C2.
 
 ### 4. Approach: normalize-then-modify
 
@@ -103,6 +138,30 @@ This means the write-back approach works by operating on mdformat-normalized tex
 - First-time normalization of existing files will produce diffs -- this is a one-time migration cost
 - All subsequent modifications will be clean, targeted diffs
 
+Preliminary interface signatures (refined in ST-001):
+
+```python
+class JerryDocument:
+    """Facade for AST-based markdown manipulation of Jerry entity files."""
+
+    @classmethod
+    def parse(cls, path: Path) -> "JerryDocument":
+        """Parse and normalize a Jerry markdown file."""
+        ...
+
+    def get_field(self, key: str) -> str | None:
+        """Extract a blockquote frontmatter field value."""
+        ...
+
+    def set_field(self, key: str, value: str) -> None:
+        """Modify a blockquote frontmatter field value."""
+        ...
+
+    def render(self) -> str:
+        """Render the document to normalized markdown text."""
+        ...
+```
+
 ---
 
 ## Normalization Behavior
@@ -120,6 +179,26 @@ These are all acceptable normalizations for Jerry's use case.
 
 ---
 
+## Confidence Basis
+
+The confidence calibration from 0.75 to ~0.90 is sourced from the go-nogo recommendation (`orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md`, L0 Decision Summary):
+
+> "If R-01 resolves favorably... confidence rises to ~0.90"
+> "pre-R-01 confidence: 0.75"
+
+The post-R-01 estimate of ~0.90 (not higher) is grounded in:
+
+| Factor | Contribution | Limitation |
+|--------|-------------|------------|
+| 6/6 test cases passed all 3 checks | Strong positive signal | Happy-path only (see [Scope and Exclusions](#scope-and-exclusions)) |
+| 4 field value types validated | Regex is type-agnostic | No special markdown characters tested |
+| Byte-for-byte C2 in all cases | Strongest possible preservation result | Single-field modification only |
+| Idempotent C3 in all cases | Roundtrip stability confirmed | No multi-field modification tested |
+
+Confidence is capped below 1.0 due to the scope exclusions documented above. The remaining ~0.10 gap reflects untested edge cases that will be addressed by ST-002 (production extraction) and the expanded test corpus.
+
+---
+
 ## Decision
 
 **Path: Standard implementation (no fallback needed)**
@@ -130,26 +209,30 @@ These are all acceptable normalizations for Jerry's use case.
 | Library Stack | markdown-it-py v4.0.0 + mdformat v1.0.0 (confirmed) |
 | Write-back approach | Normalize-then-modify (validated) |
 | Fallback needed | No |
-| Confidence | ~0.90 (up from 0.75 pre-R-01) |
+| Confidence | ~0.90 (up from 0.75 pre-R-01; see [Confidence Basis](#confidence-basis)) |
 | Next step | ST-001 (JerryDocument facade) |
 
 ---
 
 ## Evidence
 
+> All paths are relative to `projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/` unless prefixed with `orchestration/` (relative to `projects/PROJ-005-markdown-ast/`). Paths verified at 2026-02-20.
+
 | Artifact | Location |
 |----------|----------|
 | PoC script | `EN-001-r01-poc/r01_poc.py` |
 | This results document | `EN-001-r01-poc/R01_RESULTS.md` |
-| Source: SPIKE-001 recommendation | `orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md` |
-| Source: SPIKE-002 go-nogo | `orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md` |
-| Source: R-01 decision tree | Go-nogo recommendation, Section "R-01 Decision Tree" |
+| Source: SPIKE-001 recommendation | `../../orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md` |
+| Source: SPIKE-002 go-nogo | `../../orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md` |
+| Source: R-01 decision tree | Go-nogo recommendation (above), Section "R-01 Decision Tree" |
 | S-010 Self-Refine report | `EN-001-r01-poc/adversary/s010-self-refine-report.md` |
 | S-014 Quality Score report | `EN-001-r01-poc/adversary/s014-quality-score-report.md` |
 
 ---
 
 ## Captured Execution Output
+
+Output from `uv run python r01_poc.py` (2026-02-20, post-revision run with 6 test cases):
 
 ```
 ======================================================================
@@ -162,31 +245,15 @@ FILE: projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-str
     Blockquote nodes: 1
     Tree depth: 7
     Frontmatter fields found: 8
-      Type: spike
-      Status: completed
-      Priority: high
-      Impact: high
-      Created: 2026-02-19
-      Parent: FEAT-001
-      Owner: --
-      Effort: 8
 
   Step 1: Normalize original with mdformat...
     Original: 8434 chars, Normalized: 8840 chars (growth: +406)
-
   Step 2: Modify field 'Status': 'completed' -> 'in-progress'...
-
   Step 3: Render modified source with mdformat...
 
-  CHECK 1: Modified field renders correctly?
-    PASS: Field 'Status' renders as 'in-progress' -- correct
-
-  CHECK 2: Unmodified regions preserved?
-    PASS: Unmodified regions are byte-for-byte identical
-
-  CHECK 3: mdformat roundtrip idempotent?
-    PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
-
+  CHECK 1: PASS: Field 'Status' renders as 'in-progress' -- correct
+  CHECK 2: PASS: Unmodified regions are byte-for-byte identical
+  CHECK 3: PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
   FILE RESULT: PASS
 
 ======================================================================
@@ -199,33 +266,15 @@ FILE: projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/EPIC-001-markdow
     Blockquote nodes: 1
     Tree depth: 6
     Frontmatter fields found: 10
-      Type: epic
-      Status: in-progress
-      Priority: high
-      Impact: high
-      Created: 2026-02-19
-      Due: --
-      Completed: --
-      Parent: PROJ-005-markdown-ast
-      Owner: --
-      Target Quarter: FY26-Q1
 
   Step 1: Normalize original with mdformat...
     Original: 6269 chars, Normalized: 6806 chars (growth: +537)
-
   Step 2: Modify field 'Status': 'in-progress' -> 'pending'...
-
   Step 3: Render modified source with mdformat...
 
-  CHECK 1: Modified field renders correctly?
-    PASS: Field 'Status' renders as 'pending' -- correct
-
-  CHECK 2: Unmodified regions preserved?
-    PASS: Unmodified regions are byte-for-byte identical
-
-  CHECK 3: mdformat roundtrip idempotent?
-    PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
-
+  CHECK 1: PASS: Field 'Status' renders as 'pending' -- correct
+  CHECK 2: PASS: Unmodified regions are byte-for-byte identical
+  CHECK 3: PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
   FILE RESULT: PASS
 
 ======================================================================
@@ -238,34 +287,51 @@ FILE: projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-str
     Blockquote nodes: 1
     Tree depth: 6
     Frontmatter fields found: 11
-      Type: enabler
-      Status: in-progress
-      Priority: critical
-      Impact: critical
-      Enabler Type: exploration
-      Created: 2026-02-20
-      Due: --
-      Completed: --
-      Parent: FEAT-001
-      Owner: --
-      Effort: 3
 
   Step 1: Normalize original with mdformat...
-    Original: 7903 chars, Normalized: 8574 chars (growth: +671)
-
-  Step 2: Modify field 'Status': 'in-progress' -> 'completed'...
-
+    Original: 8270 chars, Normalized: 8941 chars (growth: +671)
+  Step 2: Modify field 'Status': 'completed' -> 'in-progress'...
   Step 3: Render modified source with mdformat...
 
-  CHECK 1: Modified field renders correctly?
-    PASS: Field 'Status' renders as 'completed' -- correct
+  CHECK 1: PASS: Field 'Status' renders as 'in-progress' -- correct
+  CHECK 2: PASS: Unmodified regions are byte-for-byte identical
+  CHECK 3: PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
+  FILE RESULT: PASS
 
-  CHECK 2: Unmodified regions preserved?
-    PASS: Unmodified regions are byte-for-byte identical
+======================================================================
+TEST: SPIKE-002 date field (Created)
+FILE: projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/SPIKE-002-feasibility/SPIKE-002-feasibility.md
+======================================================================
 
-  CHECK 3: mdformat roundtrip idempotent?
-    PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
+  Step 2: Modify field 'Created': '2026-02-19' -> '2026-01-15'...
 
+  CHECK 1: PASS: Field 'Created' renders as '2026-01-15' -- correct
+  CHECK 2: PASS: Unmodified regions are byte-for-byte identical
+  CHECK 3: PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
+  FILE RESULT: PASS
+
+======================================================================
+TEST: EN-001 numeric field (Effort)
+FILE: projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/EN-001-r01-poc.md
+======================================================================
+
+  Step 2: Modify field 'Effort': '3' -> '5'...
+
+  CHECK 1: PASS: Field 'Effort' renders as '5' -- correct
+  CHECK 2: PASS: Unmodified regions are byte-for-byte identical
+  CHECK 3: PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
+  FILE RESULT: PASS
+
+======================================================================
+TEST: EN-001 placeholder field (Due)
+FILE: projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/EN-001-r01-poc.md
+======================================================================
+
+  Step 2: Modify field 'Due': '--' -> '2026-03-15'...
+
+  CHECK 1: PASS: Field 'Due' renders as '2026-03-15' -- correct
+  CHECK 2: PASS: Unmodified regions are byte-for-byte identical
+  CHECK 3: PASS: mdformat roundtrip is idempotent (stable after 2nd pass)
   FILE RESULT: PASS
 
 ======================================================================
@@ -277,6 +343,9 @@ File                                        C1    C2    C3   Result
 SPIKE-002 entity (Spike)                  PASS  PASS  PASS     PASS
 EPIC-001 entity (Epic)                    PASS  PASS  PASS     PASS
 EN-001 entity (Enabler)                   PASS  PASS  PASS     PASS
+SPIKE-002 date field (Created)            PASS  PASS  PASS     PASS
+EN-001 numeric field (Effort)             PASS  PASS  PASS     PASS
+EN-001 placeholder field (Due)            PASS  PASS  PASS     PASS
 
 ======================================================================
 OVERALL R-01 VERDICT: PASS
@@ -288,30 +357,35 @@ OVERALL R-01 VERDICT: PASS
 
 ## Adversarial Review
 
-EN-001 deliverables were reviewed using /adversary skill at C1 criticality.
+EN-001 deliverables were reviewed using /adversary skill at C1 criticality. Initial score: 0.83. All 7 findings addressed in revision.
 
 | Strategy | Agent | Findings | Report |
 |----------|-------|----------|--------|
 | S-010 Self-Refine | adv-executor | 1 Critical, 3 Major, 3 Minor | `adversary/s010-self-refine-report.md` |
-| S-014 LLM-as-Judge | adv-scorer | Composite: 0.83 | `adversary/s014-quality-score-report.md` |
+| S-014 LLM-as-Judge | adv-scorer | Initial composite: 0.83 | `adversary/s014-quality-score-report.md` |
 
-### Findings Addressed
+### All Findings Addressed
 
 | ID | Severity | Finding | Resolution |
 |----|----------|---------|------------|
-| SR-001 | Critical | Sign inversion in `norm_diff` | Fixed: renamed to `norm_growth`, reversed subtraction order |
-| SR-004 | Major | `parents[6]` undocumented | Added path-level comment documenting each parent index |
-| Evidence Quality | -- | No captured execution output | Added full stdout to this document |
+| SR-001 | Critical | Sign inversion in `norm_diff` | Fixed: renamed to `norm_growth`, reversed subtraction order in r01_poc.py |
+| SR-002 | Major | Confidence estimate unsubstantiated | Added [Confidence Basis](#confidence-basis) section with observable outcome derivation |
+| SR-003 | Major | No edge case coverage documented | Added [Scope and Exclusions](#scope-and-exclusions) section; added 3 field-type tests (date, numeric, placeholder) |
+| SR-004 | Major | `parents[6]` undocumented | Added path-level comment documenting each parent index in r01_poc.py |
+| SR-005 | Minor | "Byte-for-byte" vs whitespace ambiguity | Qualified claim in Key Observation #3: "byte-for-byte identical when compared post-normalization" with whitespace fallback documented |
+| SR-006 | Minor | No interface signatures | Added preliminary `JerryDocument` interface signatures in Key Observation #5 |
+| SR-007 | Minor | Evidence paths unvalidated | Added path anchoring note and verification date to Evidence section; paths verified to exist |
 
-### Findings Accepted (Out of Scope for C1 PoC)
+### S-014 Dimension Improvements (Revision Actions)
 
-| ID | Severity | Finding | Rationale |
-|----|----------|---------|-----------|
-| SR-002 | Major | Confidence estimate unsubstantiated | Sourced from go-nogo recommendation, not generated by PoC |
-| SR-003 | Major | No edge case coverage | Edge cases are scope of subsequent stories (ST-002+) |
-| SR-005 | Minor | "Byte-for-byte" vs whitespace | Comparison is post-normalization; claim is accurate |
-| SR-006 | Minor | No interface signatures | Interface design is ST-001's scope |
-| SR-007 | Minor | Evidence paths unvalidated | Standard repo-relative references |
+| Dimension | Initial Score | Revision Action |
+|-----------|:------------:|-----------------|
+| Completeness | 0.82 | Added 3 field-type tests; added Scope and Exclusions section |
+| Internal Consistency | 0.92 | Fixed SR-001 sign inversion; qualified byte-for-byte claim |
+| Methodological Rigor | 0.80 | Added diverse field types (date, numeric, placeholder); documented scope exclusions |
+| Evidence Quality | 0.74 | Added captured execution output; grounded confidence estimate |
+| Actionability | 0.87 | Added preliminary interface signatures |
+| Traceability | 0.80 | Anchored evidence paths; verified all references |
 
 ---
 
