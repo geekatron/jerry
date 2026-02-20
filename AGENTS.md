@@ -17,6 +17,7 @@
 | [Transcript Skill Agents](#transcript-skill-agents) | ts-* agents (5 total) |
 | [Framework Voice Skill Agents](#framework-voice-skill-agents) | sb-* agents (3 total) |
 | [Session Voice Skill Agents](#session-voice-skill-agents) | sb-voice agent (1 total) |
+| [MCP Tool Access](#mcp-tool-access) | Context7 and Memory-Keeper agent matrix |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
 
@@ -227,6 +228,38 @@ These agents parse, extract, and format transcript files.
 **Invocation**: Use `/transcript` skill for transcript processing.
 
 **Hybrid Architecture**: ts-parser delegates VTT files to Python parser (1,250x cost reduction), uses LLM fallback for SRT/plain text.
+
+---
+
+## MCP Tool Access
+
+Agents with MCP (Model Context Protocol) tool access for external documentation lookup and cross-session memory.
+
+### Context7 (Documentation Lookup)
+
+| Agent | Skill | Tools |
+|-------|-------|-------|
+| ps-researcher | problem-solving | resolve-library-id, query-docs |
+| ps-analyst | problem-solving | resolve-library-id, query-docs |
+| ps-architect | problem-solving | resolve-library-id, query-docs |
+| ps-investigator | problem-solving | resolve-library-id, query-docs |
+| ps-synthesizer | problem-solving | resolve-library-id, query-docs |
+| nse-explorer | nasa-se | resolve-library-id, query-docs |
+| nse-architecture | nasa-se | resolve-library-id, query-docs |
+
+### Memory-Keeper (Cross-Session Persistence)
+
+| Agent | Skill | Tools |
+|-------|-------|-------|
+| orch-planner | orchestration | store, retrieve, search |
+| orch-tracker | orchestration | store, retrieve, search |
+| orch-synthesizer | orchestration | retrieve, search |
+| ps-architect | problem-solving | store, retrieve, search |
+| nse-requirements | nasa-se | store, retrieve, search |
+| ts-parser | transcript | store, retrieve |
+| ts-extractor | transcript | store, retrieve |
+
+> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation).
 
 ---
 

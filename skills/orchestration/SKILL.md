@@ -2,7 +2,7 @@
 name: orchestration
 description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
 version: "2.2.0"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 activation-keywords:
   - "orchestration"
   - "multi-agent workflow"

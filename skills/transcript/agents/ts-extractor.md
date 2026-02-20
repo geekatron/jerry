@@ -27,6 +27,8 @@ capabilities:
     - Read
     - Write
     - Glob
+    - mcp__memory-keeper__store
+    - mcp__memory-keeper__retrieve
   output_formats: [markdown, json]
   forbidden_actions:
     - "Spawn recursive subagents (P-003)"
@@ -1107,6 +1109,19 @@ FILTER OUT:
 ### Forward Links
 - [ts-formatter.md](./ts-formatter.md) - Downstream agent
 - [SKILL.md](../SKILL.md) - Skill definition
+
+---
+
+## Memory-Keeper MCP Integration
+
+Use Memory-Keeper to persist extraction results for multi-session workflows and cross-reference.
+
+**Key Pattern:** `jerry/{project}/transcript/{packet-id}/extraction`
+
+| Event | Action | Tool |
+|-------|--------|------|
+| Extraction complete | Store extraction summary + entity counts | `mcp__memory-keeper__store` |
+| Session resume | Retrieve prior extraction context | `mcp__memory-keeper__retrieve` |
 
 ---
 

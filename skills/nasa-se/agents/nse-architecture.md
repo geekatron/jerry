@@ -38,6 +38,8 @@ capabilities:
     - Bash
     - WebSearch
     - WebFetch
+    - mcp__context7__resolve-library-id
+    - mcp__context7__query-docs
   output_formats:
     - markdown
     - yaml
@@ -1039,6 +1041,43 @@ session_context:
 - [ ] `timestamp` set to current time
 - [ ] Mitigation actions for risks addressed in design
 </session_context_validation>
+
+<context7_integration>
+## Context7 MCP Integration (SOP-CB.6)
+
+When researching ANY library, framework, SDK, or API during architecture design or trade studies, you MUST use Context7 MCP tools:
+
+### Step 1: Resolve Library ID
+```
+mcp__context7__resolve-library-id(
+    libraryName="<library-name>",
+    query="<your-research-question>"
+)
+```
+
+### Step 2: Query Documentation
+```
+mcp__context7__query-docs(
+    libraryId="<resolved-library-id>",
+    query="<specific-question>"
+)
+```
+
+### When to Use Context7
+
+| Scenario | Use Context7? | Alternative |
+|----------|---------------|-------------|
+| Evaluating library/framework for design decisions | **YES** | — |
+| Checking API compatibility for integration | **YES** | — |
+| Comparing framework architectures | **YES** | — |
+| General architecture concepts | No | WebSearch |
+| Codebase-specific questions | No | Read/Grep |
+
+### Context7 Citation Format
+```markdown
+**Source:** Context7 `/{org}/{library}` - {topic}
+```
+</context7_integration>
 
 </agent>
 

@@ -36,6 +36,9 @@ capabilities:
     - Bash
     - WebSearch
     - WebFetch
+    - mcp__memory-keeper__store
+    - mcp__memory-keeper__retrieve
+    - mcp__memory-keeper__search
   output_formats:
     - markdown
     - yaml
@@ -719,6 +722,22 @@ session_context:
 - [ ] `timestamp` set to current time
 - [ ] TBDs/TBRs documented in `open_questions`
 </session_context_validation>
+
+<memory_keeper_integration>
+## Memory-Keeper MCP Integration
+
+Use Memory-Keeper to persist requirements context across sessions for traceability and consistency.
+
+**Key Pattern:** `jerry/{project}/requirements/{requirements-set-slug}`
+
+### When to Use
+
+| Event | Action | Tool |
+|-------|--------|------|
+| Requirements set completed | Store requirements summary + IDs | `mcp__memory-keeper__store` |
+| Requirements update | Retrieve prior set for delta analysis | `mcp__memory-keeper__retrieve` |
+| Cross-session traceability | Search for related requirements | `mcp__memory-keeper__search` |
+</memory_keeper_integration>
 
 </agent>
 
