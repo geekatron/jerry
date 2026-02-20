@@ -86,12 +86,12 @@ Build `skills/saucer-boy/` skill to enforce persona consistency in all outputs. 
 
 ### Decisions
 
-- [DEC-001](../../EPIC-001:DEC-001-feat002-progressive-disclosure.md) — Progressive Disclosure Decomposition
+- [DEC-001](../EPIC-001--DEC-001-feat002-progressive-disclosure.md) — Progressive Disclosure Decomposition
 - [FEAT-002:DEC-001](./DEC-001-scope-expansion-skill-best-practices.md) — Scope Expansion: Skill Best Practices Framework
 
 ### Discoveries
 
-- [DISC-001](../../EPIC-001:DISC-001-progressive-disclosure-skill-decomposition.md) — Progressive Disclosure Architecture
+- [DISC-001](../EPIC-001--DISC-001-progressive-disclosure-skill-decomposition.md) — Progressive Disclosure Architecture
 
 ---
 

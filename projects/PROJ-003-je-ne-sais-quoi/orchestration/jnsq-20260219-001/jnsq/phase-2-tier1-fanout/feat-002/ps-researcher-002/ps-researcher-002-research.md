@@ -575,8 +575,8 @@ All web sources accessed 2026-02-19.
 
 | Path | Used For |
 |------|----------|
-| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-001-progressive-disclosure-skill-decomposition.md` | Progressive disclosure discovery; 3-tier architecture; proposed decomposition; agent-specific loading patterns |
-| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DEC-001-feat002-progressive-disclosure.md` | Architecture decisions D-001 (progressive disclosure), D-002 (persona doc canonical), D-003 (decision rules vs examples) |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DISC-001-progressive-disclosure-skill-decomposition.md` | Progressive disclosure discovery; 3-tier architecture; proposed decomposition; agent-specific loading patterns |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DEC-001-feat002-progressive-disclosure.md` | Architecture decisions D-001 (progressive disclosure), D-002 (persona doc canonical), D-003 (decision rules vs examples) |
 | `projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md` | Persona doc v0.9.0 (879 lines); canonical source for all decomposition |
 | `skills/adversary/SKILL.md` | Audit: 427 lines, triple-lens, P-003 diagram, strategy template references, agent registry |
 | `skills/adversary/agents/adv-scorer.md` | Audit: agent file structure pattern (YAML frontmatter + XML body) |

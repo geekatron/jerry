@@ -824,9 +824,9 @@ Phase 3 (Tier 2 Fan-Out):          BLOCKED
 | `ORCHESTRATION_PLAN.md` | This file — strategic context |
 | `projects/PROJ-003-je-ne-sais-quoi/WORKTRACKER.md` | Task tracking |
 | `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md` | EPIC context |
-| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DEC-001-*.md` | Phase 2 design constraints |
-| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-001-*.md` | Progressive disclosure finding |
-| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-002-*.md` | Research methodology lesson |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DEC-001-*.md` | Phase 2 design constraints |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DISC-001-*.md` | Progressive disclosure finding |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DISC-002-*.md` | Research methodology lesson |
 
 ---
 

@@ -91,6 +91,12 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 | FEAT-006 | Easter Eggs & Cultural References | done | PASS | low | FEAT-001, FEAT-002 | 100% (2/2 EN) |
 | FEAT-007 | Developer Experience Delight | done | PASS | medium | FEAT-001, FEAT-002 | 100% (2/2 EN) |
 
+### Bugs
+
+| ID | Title | Status | Severity | Priority |
+|----|-------|--------|----------|----------|
+| [BUG-001](./BUG-001-cicd-pipeline-failures/BUG-001-cicd-pipeline-failures.md) | CI/CD Pipeline Failures on PR #37 | completed | major | high |
+
 ### Feature Links
 
 - [FEAT-001: Saucer Boy Persona Distillation](./FEAT-001-saucer-boy-persona/FEAT-001-saucer-boy-persona.md) — Research and codify the Shane McConkey persona into a canonical reference doc. The "brand bible" that all other features depend on.
@@ -209,6 +215,7 @@ Shane McConkey wasn't just a skier. He was a **philosophy in motion**:
 | 2026-02-19 | Claude | in_progress | **Status correction:** Reverted from complete to in_progress. Orchestration jnsq-20260219-001 produced quality-gated design specifications only (EN-001 per feature). No deliverables materialized: no `skills/saucer-boy/`, no `SOUNDTRACK.md`, no source code easter eggs, no voice integration. Worktracker decomposed: 7 features × 2 enablers each (EN-001 design=completed, EN-002 implementation=pending). True progress: 50%. |
 | 2026-02-19 | Claude | in_progress | **FEAT-002 scope expansion (DEC-001):** FEAT-002 reverted from done to in_progress after user flagged skill quality issues. Previous 0.936 score invalidated (leniency bias — scored registration, not content quality). Anthropic skill development guide acquired, best practices synthesized into `docs/knowledge/skill-development-best-practices.md`. Skill rework required before EN-002 completion. EPIC progress: 71% → 57% (3/7 features complete, 10/14 enablers). |
 | 2026-02-19 | Claude | done | **EPIC-001 COMPLETE.** All 7 features delivered, all 14 enablers complete. Implementation phase: FEAT-004 (CLI voice — session/items/projects/error messages, hook output), FEAT-006 (9/18 easter eggs — source code annotations, CLI hidden features, temporal triggers), FEAT-007 (session personality, temporal triggers). Code changes: `src/__init__.py` (EE-018), `quality_validator.py` (EE-001/002/005), `exceptions.py` (EE-003), `adapter.py` (voice), `main.py` (voice + EE-008 jerry why), `parser.py` (EE-007 --saucer-boy), `session_start_hook.py` (voice + EE-011/012). Tests: 3299 passed, 63 skipped. |
+| 2026-02-20 | Claude | done | **BUG-001 filed:** CI/CD pipeline failures on PR #37. Two root causes: (1) ruff format violation in `main.py`, (2) 4 files with Windows-incompatible colons in filenames. 3 tasks created: TASK-001 fix formatting, TASK-002 rename files, TASK-003 update references. |
 
 ---
 

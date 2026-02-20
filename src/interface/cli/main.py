@@ -349,17 +349,17 @@ def _handle_why() -> int:
         Exit code (always 0)
     """
     print(
-        'Why does Jerry exist?\n'
-        '\n'
-        'Joy and excellence are not trade-offs. They\'re multipliers.\n'
-        '\n'
-        'The quality gates are non-negotiable. The voice is non-negotiable too.\n'
-        'Both serve the same purpose: making the work worth doing.\n'
-        '\n'
+        "Why does Jerry exist?\n"
+        "\n"
+        "Joy and excellence are not trade-offs. They're multipliers.\n"
+        "\n"
+        "The quality gates are non-negotiable. The voice is non-negotiable too.\n"
+        "Both serve the same purpose: making the work worth doing.\n"
+        "\n"
         '"Whether it was steep, extreme descent or new freestyle,\n'
-        'what we were doing was freeskiing, free to ski our own style\n'
+        "what we were doing was freeskiing, free to ski our own style\n"
         'on our own terms." \u2014 Shane McConkey\n'
-        '\n'
+        "\n"
         "That's why."
     )
     return 0

@@ -434,10 +434,10 @@ artifact_paths:
   feat_006: "projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-3-tier2-fanout/feat-006/ps-creator-006/ps-creator-006-draft.md"
   feat_007: "projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-3-tier2-fanout/feat-007/ps-creator-007/ps-creator-007-draft.md"
   epic: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md"
-  dec_001: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DEC-001-feat002-progressive-disclosure.md"
-  disc_001: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-001-progressive-disclosure-skill-decomposition.md"
-  disc_002: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-002-training-data-research-errors.md"
-  disc_003: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001:DISC-003-supplemental-citation-pipeline.md"
+  dec_001: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DEC-001-feat002-progressive-disclosure.md"
+  disc_001: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DISC-001-progressive-disclosure-skill-decomposition.md"
+  disc_002: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DISC-002-training-data-research-errors.md"
+  disc_003: "projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/EPIC-001--DISC-003-supplemental-citation-pipeline.md"
 ```
 
 ---
