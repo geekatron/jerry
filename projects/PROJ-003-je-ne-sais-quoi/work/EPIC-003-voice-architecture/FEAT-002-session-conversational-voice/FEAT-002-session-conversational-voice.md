@@ -9,12 +9,12 @@ PURPOSE: New user-invocable /saucer-boy skill for session conversational persona
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** EPIC-003
 > **Owner:** --
 > **Target Sprint:** --
@@ -91,27 +91,27 @@ User invokes `/saucer-boy` directly:
 
 ### Definition of Done
 
-- [ ] New `skills/saucer-boy/` directory created (after FEAT-001 frees the namespace)
-- [ ] SKILL.md defines both voice modes (ambient + explicit)
-- [ ] Conversational personality rules documented (tone, boundaries, anti-patterns)
-- [ ] Explicit invocation patterns defined (`/saucer-boy` triggers)
-- [ ] Boundary conditions enforced (personality OFF for hard stops, security, governance)
-- [ ] P-020 override: user can disable personality at any time
-- [ ] Agent(s) created for voice calibration in conversational context
-- [ ] Persona doc (`docs/knowledge/saucer-boy-persona.md`) referenced, not duplicated
-- [ ] `/saucer-boy` registered as user-invocable in CLAUDE.md
-- [ ] AGENTS.md updated with new conversational voice agents
-- [ ] Existing boundary conditions reference (`skills/.../references/boundary-conditions.md`) shared or adapted
-- [ ] Anti-patterns documented: sycophancy, forced humor, performative quirkiness, bro-culture
+- [x] New `skills/saucer-boy/` directory created (after FEAT-001 frees the namespace)
+- [x] SKILL.md defines both voice modes (ambient + explicit)
+- [x] Conversational personality rules documented (tone, boundaries, anti-patterns)
+- [x] Explicit invocation patterns defined (`/saucer-boy` triggers)
+- [x] Boundary conditions enforced (personality OFF for hard stops, security, governance)
+- [x] P-020 override: user can disable personality at any time
+- [x] Agent(s) created for voice calibration in conversational context
+- [x] Persona doc (`docs/knowledge/saucer-boy-persona.md`) referenced, not duplicated
+- [x] `/saucer-boy` registered as user-invocable in CLAUDE.md
+- [x] AGENTS.md updated with new conversational voice agents
+- [x] Existing boundary conditions reference (`skills/.../references/boundary-conditions.md`) shared or adapted
+- [x] Anti-patterns documented: sycophancy, forced humor, performative quirkiness, bro-culture
 
 ### Non-Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| NFC-1 | Personality never compromises technical accuracy | [ ] |
-| NFC-2 | Voice disengages automatically in high-stakes contexts | [ ] |
-| NFC-3 | No increase to session start token budget > 500 tokens | [ ] |
-| NFC-4 | User can override voice at any time (P-020) | [ ] |
+| NFC-1 | Personality never compromises technical accuracy | [x] |
+| NFC-2 | Voice disengages automatically in high-stakes contexts | [x] |
+| NFC-3 | No increase to session start token budget > 500 tokens | [x] |
+| NFC-4 | User can override voice at any time (P-020) | [x] |
 
 ---
 
@@ -151,9 +151,9 @@ User invokes `/saucer-boy` directly:
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/0)                        |
+| Enablers:  [####################] 100% (done — no decomposition) |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -188,6 +188,7 @@ User invokes `/saucer-boy` directly:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Feature created. New user-invocable `/saucer-boy` skill for session conversational voice with two modes: ambient personality and explicit McConkey invocation. |
+| 2026-02-20 | Claude | done | Feature complete. SKILL.md, sb-voice agent, CLAUDE.md, AGENTS.md, mandatory-skill-usage.md all updated. C2 adversary review passed: S-010, S-007, S-003, S-002, S-014 (0.9225 composite). |
 
 ---
 

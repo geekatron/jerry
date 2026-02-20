@@ -16,6 +16,7 @@
 | [Worktracker Skill Agents](#worktracker-skill-agents) | wt-* agents (3 total) |
 | [Transcript Skill Agents](#transcript-skill-agents) | ts-* agents (5 total) |
 | [Framework Voice Skill Agents](#framework-voice-skill-agents) | sb-* agents (3 total) |
+| [Session Voice Skill Agents](#session-voice-skill-agents) | sb-voice agent (1 total) |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
 
@@ -44,13 +45,14 @@ to specific skills. This provides:
 | Worktracker Agents | 3 | `/worktracker` skill |
 | Transcript Agents | 5 | `/transcript` skill |
 | Framework Voice Agents | 3 | `/saucer-boy-framework-voice` skill |
-| **Total** | **36** | |
+| Session Voice Agents | 1 | `/saucer-boy` skill |
+| **Total** | **37** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 40 total files found; 4 template/extension files excluded from counts:
+> 41 total files found; 4 template/extension files excluded from counts:
 > `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 = 36 invokable agents.
-> Last verified: 2026-02-19.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 = 37 invokable agents.
+> Last verified: 2026-02-20.
 
 ---
 
@@ -239,6 +241,18 @@ These agents are scoped to the `saucer-boy-framework-voice` skill (internal, not
 | `sb-calibrator` | `skills/saucer-boy-framework-voice/agents/sb-calibrator.md` | Voice fidelity scoring — scores text on 0-1 scale across 5 voice traits | convergent |
 
 **Progressive Disclosure**: Agents load reference files on-demand to minimize context window usage. Always-load files vary by agent (sb-rewriter: voice-guide.md + vocabulary-reference.md; sb-calibrator: voice-guide.md; sb-reviewer: SKILL.md body only).
+
+---
+
+## Session Voice Skill Agents
+
+This agent is scoped to the `saucer-boy` skill and invoked via `/saucer-boy`.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| `sb-voice` | `skills/saucer-boy/agents/sb-voice.md` | Session conversational voice — McConkey personality for work sessions | divergent |
+
+**Two Modes**: Ambient session personality (always-on during session) and explicit McConkey invocation (on-demand persona responses). Personality disengages for hard stops, security, governance, and user override (P-020).
 
 ---
 

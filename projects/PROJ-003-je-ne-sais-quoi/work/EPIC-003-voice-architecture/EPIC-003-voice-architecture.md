@@ -9,12 +9,12 @@ PURPOSE: Split voice into internal framework voice + user-invocable session conv
 -->
 
 > **Type:** epic
-> **Status:** in-progress
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** PROJ-003-je-ne-sais-quoi
 > **Owner:** --
 > **Target Quarter:** --
@@ -67,7 +67,7 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 | ID | Title | Status | Priority | Dependencies | Progress |
 |----|-------|--------|----------|--------------|----------|
 | [FEAT-001](./FEAT-001-framework-voice-internal-skill/FEAT-001-framework-voice-internal-skill.md) | Framework Voice Internal Skill Refactor | done | high | -- | 100% |
-| [FEAT-002](./FEAT-002-session-conversational-voice/FEAT-002-session-conversational-voice.md) | Session Conversational Voice | in-progress | high | FEAT-001 | 0% |
+| [FEAT-002](./FEAT-002-session-conversational-voice/FEAT-002-session-conversational-voice.md) | Session Conversational Voice | done | high | FEAT-001 | 100% |
 
 ### Feature Links
 
@@ -84,9 +84,9 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [##########..........] 50% (1/2 complete)              |
+| Features:  [####################] 100% (2/2 complete)             |
 +------------------------------------------------------------------+
-| Overall:   [##########..........] 50%                             |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -95,10 +95,10 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 2 |
-| **Completed Features** | 1 |
-| **In Progress Features** | 1 |
+| **Completed Features** | 2 |
+| **In Progress Features** | 0 |
 | **Pending Features** | 0 |
-| **Feature Completion %** | 50% |
+| **Feature Completion %** | 100% |
 
 ---
 
@@ -139,6 +139,7 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Epic created. Splits voice into internal framework voice (refactor of existing `/saucer-boy`) and user-invocable session conversational voice (new `/saucer-boy` skill). 2 features. |
 | 2026-02-20 | Claude | in-progress | FEAT-001 complete: renamed `skills/saucer-boy/` to `skills/saucer-boy-framework-voice/`, updated all references in CLAUDE.md, AGENTS.md, mandatory-skill-usage.md, skill-standards.md, and agent files. |
+| 2026-02-20 | Claude | done | FEAT-002 complete: new `/saucer-boy` session conversational voice skill created with sb-voice agent. C2 adversary review passed (S-014 composite: 0.9225). All features delivered. |
 
 ---
 

@@ -33,6 +33,7 @@
 | orchestration, pipeline, workflow, multi-agent, phases, gates | `/orchestration` |
 | transcript, meeting notes, parse recording, meeting recording, VTT, SRT, captions | `/transcript` |
 | adversarial quality review, adversarial critique, rigorous critique, formal critique, adversarial, tournament, red team, devil's advocate, steelman, pre-mortem, quality gate, quality scoring | `/adversary` |
+| saucer boy, mcconkey, talk like mcconkey, pep talk, roast this code, saucer boy mode | `/saucer-boy` |
 | voice check, voice review, persona compliance, voice rewrite, voice fidelity, voice score, framework voice, persona review | `/saucer-boy-framework-voice` |
 
 ---
