@@ -86,10 +86,10 @@ pipelines:
     short_alias: "res"
     skill_source: "problem-solving"
 
-    status: "PENDING"
-    current_phase: 1
+    status: "PHASE_4_IN_PROGRESS"
+    current_phase: 4
     total_phases: 7
-    progress_percent: 0
+    progress_percent: 50
 
     phases:
 
@@ -99,17 +99,17 @@ pipelines:
       - id: 1
         name: "Inventory Existing Mechanisms"
         path_id: "phase-1-inventory"
-        status: "PENDING"
+        status: "COMPLETE"
         execution_mode: "SEQUENTIAL"
         effort_points: 1
-        started_at: null
-        completed_at: null
+        started_at: "2026-02-19T00:00:00Z"
+        completed_at: "2026-02-19T00:00:00Z"
         gate_after: null  # Lightweight checkpoint only
 
         agents:
           - id: "research-inventory"
             name: "Mechanism Inventory Researcher"
-            status: "PENDING"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-1-inventory/research-inventory/mechanism-inventory.md"
             inputs:
               - "Claude Code session APIs documentation"
@@ -133,18 +133,19 @@ pipelines:
       - id: 2
         name: "Analyze Real Orchestration Runs"
         path_id: "phase-2-analysis"
-        status: "BLOCKED"
-        blocked_by: "phase-1"
+        status: "COMPLETE"
+        blocked_by: null
         execution_mode: "SEQUENTIAL"
         effort_points: 2
-        started_at: null
+        started_at: "2026-02-19T00:00:00Z"
+        completed_at: "2026-02-19T00:00:00Z"
         completed_at: null
         gate_after: null  # Lightweight checkpoint only
 
         agents:
           - id: "run-analyzer"
             name: "Orchestration Run Analyzer"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-2-analysis/run-analyzer/run-analysis.md"
             inputs:
               - "projects/PROJ-001-oss-release/ORCHESTRATION.yaml"
@@ -166,7 +167,7 @@ pipelines:
       - id: 3
         name: "Evaluate Detection Methods"
         path_id: "phase-3-detection"
-        status: "BLOCKED"
+        status: "COMPLETE"
         blocked_by: "phase-2"
         execution_mode: "SEQUENTIAL"
         effort_points: 2
@@ -177,7 +178,7 @@ pipelines:
         agents:
           - id: "detection-evaluator"
             name: "Detection Method Evaluator"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-3-detection/detection-evaluator/detection-evaluation.md"
             inputs:
               - "Phase 1 mechanism inventory"
@@ -212,7 +213,7 @@ pipelines:
         agents:
           - id: "resumption-assessor"
             name: "Resumption Completeness Assessor"
-            status: "BLOCKED"
+            status: "IN_PROGRESS"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-4-resumption/resumption-assessor/resumption-assessment.md"
             inputs:
               - "Phase 2 run analysis"
@@ -346,23 +347,39 @@ quality_gates:
     id: "qg-1"
     name: "Detection Method Selection Gate"
     after_phase: 3
-    status: "PENDING"  # PENDING | IN_PROGRESS | PASS | FAIL | ESCALATED
+    status: "PASS"  # PENDING | IN_PROGRESS | PASS | FAIL | ESCALATED
     rationale: "Detection method selection is the key architectural decision. Getting this wrong invalidates Phases 4-7."
     deliverables_scored:
       - "orchestration/spike001-ctxres-20260219-001/res/phase-3-detection/detection-evaluator/detection-evaluation.md"
     threshold: 0.92
     max_iterations: 3
-    current_iteration: 0
+    current_iteration: 2
     required_strategies: ["S-014", "S-007", "S-002"]
     optional_strategies: ["S-003", "S-010"]
-    agents_invoked: []
-    iteration_history: []
-    score: null
+    agents_invoked: ["adv-scorer"]
+    iteration_history:
+      - iteration: 1
+        score: 0.91
+        verdict: "REVISE"
+        strategies:
+          S-014: { score: 0.91, verdict: "REVISE" }
+          S-007: { score: 0.98, verdict: "PASS" }
+          S-002: { verdict: "NO-BLOCK", major_findings: 4, minor_findings: 3 }
+        primary_defect: "Methodological Rigor 0.87 (no sensitivity analysis, thresholds definitive). Evidence Quality 0.88 (unvalidated input_tokens proxy, OQ-3 assumption)."
+      - iteration: 2
+        score: 0.93
+        verdict: "PASS"
+        strategies:
+          S-014: { score: 0.93, verdict: "PASS" }
+          S-007: { score: 0.98, verdict: "PASS" }
+          S-002: { verdict: "NO-BLOCK", major_findings: 0, minor_findings: 1 }
+        primary_defect: null
+    score: 0.93
     score_dimensions:
-      completeness: null      # weight: 0.20
-      internal_consistency: null  # weight: 0.20
-      methodological_rigor: null  # weight: 0.20
-      evidence_quality: null  # weight: 0.15
+      completeness: 0.93      # weight: 0.20
+      internal_consistency: 0.93  # weight: 0.20
+      methodological_rigor: 0.92  # weight: 0.20
+      evidence_quality: 0.92  # weight: 0.15
       actionability: null     # weight: 0.15
       traceability: null      # weight: 0.10
     artifact: "orchestration/spike001-ctxres-20260219-001/res/quality-gates/qg-1/gate-result.md"
