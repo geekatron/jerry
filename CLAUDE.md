@@ -74,7 +74,8 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/orchestration` | Multi-phase workflows |
 | `/architecture` | Design decisions |
 | `/adversary` | Adversarial quality reviews, strategy templates, tournament execution, multi-strategy orchestration |
-| `/saucer-boy` | Voice quality gate, persona compliance, framework output voice |
+| `/saucer-boy` | Session conversational voice, McConkey personality |
+| `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 | `/transcript` | Transcription parsing |
 
 **SessionStart Hook Tags:**

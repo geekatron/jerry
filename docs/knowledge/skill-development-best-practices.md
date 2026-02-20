@@ -303,7 +303,7 @@ Activate when:
 | Integration Points | RECOMMENDED | Cross-skill connections |
 | Constitutional Compliance | RECOMMENDED | P-NNN principle mapping |
 | Quick Reference | RECOMMENDED | Common workflows + agent selection hints |
-| References | YES | **Full repo-relative paths** (e.g., `skills/saucer-boy/references/voice-guide.md`) |
+| References | YES | **Full repo-relative paths** (e.g., `skills/saucer-boy-framework-voice/references/voice-guide.md`) |
 | Footer | YES | Version, compliance, SSOT, date |
 
 ### File Reference Rules
@@ -312,8 +312,8 @@ Activate when:
 
 | Bad | Good |
 |-----|------|
-| `references/voice-guide.md` | `skills/saucer-boy/references/voice-guide.md` |
-| `agents/sb-reviewer.md` | `skills/saucer-boy/agents/sb-reviewer.md` |
+| `references/voice-guide.md` | `skills/saucer-boy-framework-voice/references/voice-guide.md` |
+| `agents/sb-reviewer.md` | `skills/saucer-boy-framework-voice/agents/sb-reviewer.md` |
 | `../quality-enforcement.md` | `.context/rules/quality-enforcement.md` |
 
 **Rationale:** When Claude loads a SKILL.md, it needs unambiguous paths to navigate to referenced files. Relative paths are ambiguous depending on Claude's current working directory.

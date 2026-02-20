@@ -15,7 +15,8 @@
 | [Adversary Skill Agents](#adversary-skill-agents) | adv-* agents (3 total) |
 | [Worktracker Skill Agents](#worktracker-skill-agents) | wt-* agents (3 total) |
 | [Transcript Skill Agents](#transcript-skill-agents) | ts-* agents (5 total) |
-| [Saucer Boy Skill Agents](#saucer-boy-skill-agents) | sb-* agents (3 total) |
+| [Framework Voice Skill Agents](#framework-voice-skill-agents) | sb-* agents (3 total) |
+| [Session Voice Skill Agents](#session-voice-skill-agents) | sb-voice agent (1 total) |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
 
@@ -43,14 +44,15 @@ to specific skills. This provides:
 | Adversary Agents | 3 | `/adversary` skill |
 | Worktracker Agents | 3 | `/worktracker` skill |
 | Transcript Agents | 5 | `/transcript` skill |
-| Saucer Boy Agents | 3 | `/saucer-boy` skill |
-| **Total** | **36** | |
+| Framework Voice Agents | 3 | `/saucer-boy-framework-voice` skill |
+| Session Voice Agents | 1 | `/saucer-boy` skill |
+| **Total** | **37** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 40 total files found; 4 template/extension files excluded from counts:
+> 41 total files found; 4 template/extension files excluded from counts:
 > `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 = 36 invokable agents.
-> Last verified: 2026-02-19.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 = 37 invokable agents.
+> Last verified: 2026-02-20.
 
 ---
 
@@ -228,17 +230,29 @@ These agents parse, extract, and format transcript files.
 
 ---
 
-## Saucer Boy Skill Agents
+## Framework Voice Skill Agents
 
-These agents are scoped to the `saucer-boy` skill and invoked via `/saucer-boy`.
+These agents are scoped to the `saucer-boy-framework-voice` skill (internal, not user-invocable).
 
 | Agent | File | Role | Cognitive Mode |
 |-------|------|------|----------------|
-| `sb-reviewer` | `skills/saucer-boy/agents/sb-reviewer.md` | Voice compliance review — evaluates text against 5 Authenticity Tests | convergent |
-| `sb-rewriter` | `skills/saucer-boy/agents/sb-rewriter.md` | Voice transformation — rewrites framework output to Saucer Boy voice | divergent |
-| `sb-calibrator` | `skills/saucer-boy/agents/sb-calibrator.md` | Voice fidelity scoring — scores text on 0-1 scale across 5 voice traits | convergent |
+| `sb-reviewer` | `skills/saucer-boy-framework-voice/agents/sb-reviewer.md` | Voice compliance review — evaluates text against 5 Authenticity Tests | convergent |
+| `sb-rewriter` | `skills/saucer-boy-framework-voice/agents/sb-rewriter.md` | Voice transformation — rewrites framework output to Saucer Boy voice | divergent |
+| `sb-calibrator` | `skills/saucer-boy-framework-voice/agents/sb-calibrator.md` | Voice fidelity scoring — scores text on 0-1 scale across 5 voice traits | convergent |
 
 **Progressive Disclosure**: Agents load reference files on-demand to minimize context window usage. Always-load files vary by agent (sb-rewriter: voice-guide.md + vocabulary-reference.md; sb-calibrator: voice-guide.md; sb-reviewer: SKILL.md body only).
+
+---
+
+## Session Voice Skill Agents
+
+This agent is scoped to the `saucer-boy` skill and invoked via `/saucer-boy`.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| `sb-voice` | `skills/saucer-boy/agents/sb-voice.md` | Session conversational voice — McConkey personality for work sessions | divergent |
+
+**Two Modes**: Ambient session personality (always-on during session) and explicit McConkey invocation (on-demand persona responses). Personality disengages for hard stops, security, governance, and user override (P-020).
 
 ---
 

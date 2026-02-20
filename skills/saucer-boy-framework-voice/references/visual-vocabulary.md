@@ -93,7 +93,7 @@ Use where they add signal, not where they add noise.
 ## Directory Structure
 
 ```
-skills/saucer-boy/
+skills/saucer-boy-framework-voice/
 ├── SKILL.md                              # ~360 lines — decision rules, agent registry, reference index, versioning
 │
 ├── agents/
