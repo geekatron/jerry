@@ -15,6 +15,7 @@
 | [Token Budget Analysis](#token-budget-analysis) | What fits at each fill level |
 | [Proposed Thresholds](#proposed-thresholds) | Default and criticality-adjusted |
 | [Sensitivity Analysis](#sensitivity-analysis) | Robustness to context window changes |
+| [Calibration Protocol](#calibration-protocol) | Single-workflow limitation, validation plan, recalibration triggers |
 | [AE-006 Integration](#ae-006-integration) | Updated rule proposal |
 | [Validation Against PROJ-001](#validation-against-proj-001) | Would these thresholds have helped? |
 | [Self-Review Checklist](#self-review-checklist) | S-010 compliance |
@@ -92,6 +93,8 @@ All token estimates are derived from Phase 2 empirical analysis of PROJ-001 FEAT
 
 **Key observation:** S-002 (Devil's Advocate) is consistently the most expensive single strategy, producing artifacts up to 38,716 bytes (~9,700 tokens). At CRITICAL fill levels, the orchestrator could consider deferring S-002 if only S-014 scoring is needed for a pass/fail decision. However, this would violate the C2 required strategy set -- it is noted here as a potential degraded-mode option, not a standard practice.
 
+**Cumulative estimation uncertainty:** The 10-20% error margin noted above applies to individual operation estimates. When multiple operations are composed (e.g., a full QG iteration summing S-014 + S-007 + S-002 + deliverable reads + state updates), estimation errors may compound rather than cancel. As a result, the threshold boundaries derived from these estimates (55%, 70%, 80%, 88%) should be understood as approximate (+/- 5%) rather than precise cut points. At high fill levels where multiple operations have been executed, cumulative estimation uncertainty may be larger than the individual operation error margins would suggest. This is one reason the EMERGENCY threshold is set at 88% rather than a higher value -- the 12% safety margin to the theoretical 100% compaction point accounts not only for single-operation estimation error but also for the cumulative drift of token accounting over many operations.
+
 ---
 
 ## Token Budget Analysis
@@ -107,6 +110,10 @@ For each threshold level, this section calculates what operations can fit within
 | Yes | Multiple phases + gates | Variable | Depends on workflow complexity |
 
 **Rationale for no action:** At <55% fill, even worst-case QG scenarios fit comfortably. The session overhead from injecting context-monitor data on every prompt (50 tokens/prompt x ~30 prompts = 1,500 tokens) is wasted budget when not needed.
+
+**NOMINAL-to-CRITICAL jump risk:** A concern exists that a single large operation starting within NOMINAL could jump past LOW and WARNING directly to CRITICAL without intermediate detection. The worst-case single operation at C2 is a QG iteration at 57,000 tokens (28.5% of the 200K window). Starting at 55% fill (the NOMINAL boundary), this operation would reach 55% + 28.5% = 83.5% -- which is CRITICAL territory. However, this scenario is mitigated by the multi-prompt nature of QG iterations. A QG iteration is not a single atomic prompt; it involves dispatching the scorer, receiving results, dispatching the next strategy, and so on -- multiple prompts over which the `<context-monitor>` injection fires at each UserPromptSubmit. Starting at 55%, the 70% WARNING threshold would be crossed at an intermediate prompt within the QG iteration (e.g., after deliverable reads consume ~30,000 tokens, reaching ~70%), providing detection before the full 57,000 tokens are consumed.
+
+**Known limitation:** Single-prompt operations consuming >15% of the context window while in NOMINAL could theoretically jump past LOW without any intermediate detection signal. In practice, single-prompt operations are limited to tool calls (file reads, file writes, state updates) that typically consume <5% of the window (~10,000 tokens for a large file read). No single-prompt operation in the Phase 2 cost catalog approaches the 15% threshold needed for a NOMINAL-to-CRITICAL jump. This remains a theoretical edge case rather than a practical concern, but should be monitored during FEAT-001 validation.
 
 ### At LOW (55-70%): 60,000-90,000 tokens remaining
 
@@ -217,7 +224,7 @@ Rationale for adjustment: Different criticality levels have fundamentally differ
 - C1 workflows are not burdened by premature warnings
 - C3/C4 workflows get earlier warnings proportional to their higher consumption rates
 
-| Level | C1 (Routine) | C2 (Standard) | C3 (Significant) | C4 (Critical) |
+| Level | C1 (Routine) PROVISIONAL | C2 (Standard) | C3 (Significant) PROVISIONAL | C4 (Critical) PROVISIONAL |
 |-------|:---:|:---:|:---:|:---:|
 | NOMINAL | 0-70% | 0-55% | 0-45% | 0-35% |
 | LOW | 70-80% | 55-70% | 45-60% | 35-50% |
@@ -225,6 +232,8 @@ Rationale for adjustment: Different criticality levels have fundamentally differ
 | CRITICAL | 90-95% | 80-88% | 72-82% | 65-78% |
 | EMERGENCY | 95%+ | 88-95% | 82-90% | 78-88% |
 | COMPACTION | PreCompact | PreCompact | PreCompact | PreCompact |
+
+> **Caveat:** The C1, C3, and C4 columns are marked **PROVISIONAL** because they are preliminary estimates derived by extrapolation from C2 empirical data (PROJ-001 FEAT-015). The C2 column is empirically calibrated and validated against measured data. The C1 thresholds assume lower total consumption based on C1 workflow characteristics (fewer QG iterations, HARD-only enforcement). The C3 and C4 thresholds assume proportionally higher consumption based on additional strategy sets (C3) and full tournament mode (C4). These provisional values MUST be validated against measured C1, C3, and C4 workflows before being treated as calibrated defaults. Until validated, they should be used as reasonable starting points subject to recalibration per the [Calibration Protocol](#calibration-protocol).
 
 **C1 justification:** C1 workflows require only HARD rules, no mandatory QG iterations beyond self-review (S-010). Typical total consumption: 60-80K tokens. A C1 workflow completing within 40% fill is normal. WARNING at 80% still provides ~40,000 tokens of headroom, sufficient for any C1 operation. CRITICAL at 90% provides ~20,000 tokens -- enough for simple agent dispatches and checkpoint.
 
@@ -320,6 +329,58 @@ This dynamic approach requires the orchestrator to estimate the next operation's
 
 ---
 
+## Calibration Protocol
+
+### Single-Workflow Calibration Limitation
+
+All thresholds in this proposal are derived from a single empirical workflow: PROJ-001 FEAT-015 (license header replacement). This workflow has a specific profile -- a two-phase orchestration with two C2 quality gates, 35 files totaling 674,366 bytes, and a linear execution pattern (Phase 1 audit, Phase 2 apply, QG per phase). While the Phase 2 data is detailed and internally consistent, it represents only one point in the space of possible Jerry workflows. Thresholds calibrated to this single data point may not generalize to workflows with different token consumption patterns, operation granularity, or quality gate complexity.
+
+### Proposed Validation Workflows
+
+To stress-test thresholds against different consumption patterns, validation should be performed against at least two additional workflow types:
+
+**Validation Workflow 1: Deep Research Spike (e.g., PROJ-004 SPIKE-001)**
+
+This spike -- the current workflow producing this very document -- exercises a fundamentally different pattern than FEAT-015:
+- **Many agent dispatches with small deliverables** rather than few agents with large file operations
+- **6+ orchestrated phases** with inter-phase dependencies (inventory -> analysis -> detection -> resumption -> prompt design -> thresholds)
+- **Multiple quality gates** with potentially different deliverable sizes per phase
+- **High orchestrator prompt count** (many dispatch/receive cycles), which stresses the L2 reinject budget and per-prompt injection overhead
+- **Expected stress point:** The WARNING threshold (70%) may trigger earlier or later than predicted depending on whether many small operations accumulate differently than few large ones. The per-prompt L2 overhead (600 tokens/prompt) becomes significant with high prompt counts.
+
+**Validation Workflow 2: Multi-File Refactoring with Large Code Contexts**
+
+A workflow involving reading and modifying many source files (e.g., a cross-cutting architectural refactor touching 20+ files) would exercise:
+- **Large file reads consuming tokens rapidly** -- reading 20 files of 5-10KB each could consume 25,000-50,000 tokens in file content alone
+- **Context dominated by code rather than orchestration artifacts** -- different token density characteristics
+- **Fewer quality gate iterations but more tool-call overhead** -- file reads, edits, and test runs
+- **Expected stress point:** The NOMINAL-to-LOW transition at 55% may be crossed by file reads alone before any quality gate begins. The operation cost catalog's "Phase agent execution" estimates may undercount file-heavy operations.
+
+### Recalibration Protocol
+
+If measured costs from validation workflows diverge from PROJ-001 data, thresholds should be recalibrated using the following protocol:
+
+**Data to Collect (per validation workflow):**
+- Per-operation token costs: actual tokens consumed by each operation type (agent dispatch, QG iteration, file reads, state updates), measured via Method A fill percentage deltas between prompts
+- Cumulative fill at each prompt: full fill trajectory comparable to the Phase 2 17-step projection
+- Threshold trigger accuracy: did each threshold trigger at the intended fill level? Was the detection signal timely (fired before the operation that would have benefited from it)?
+- False positive/negative analysis: did any threshold trigger unnecessarily (causing overhead with no benefit) or fail to trigger when needed (operation proceeded past the threshold without detection)?
+
+**Recalibration Trigger Conditions:**
+- Measured QG iteration cost differs by >25% from the 29,000 token estimate (e.g., actual cost is <21,750 or >36,250 tokens)
+- A threshold level is crossed by a single operation starting more than one level below (e.g., jumping from NOMINAL directly to CRITICAL), indicating insufficient granularity
+- Post-compaction re-orientation costs differ by >50% from the Phase 5 estimates (1,700-5,260 tokens), which would affect EMERGENCY threshold margins
+- The total injection overhead for `<context-monitor>` across a session exceeds 5% of the context window (currently estimated at ~2%)
+
+**Recalibration Process:**
+1. Update the Operation Cost Catalog with measured values from the divergent workflow, noting the workflow type and conditions
+2. Re-derive threshold boundaries using the updated cost catalog: each threshold should be set at the fill level where the next-higher-cost operation can no longer complete with margin
+3. Validate the re-derived thresholds against ALL available workflow data (PROJ-001 + new workflows) to ensure no regression
+4. If C2 default thresholds change, re-derive C1/C3/C4 variants proportionally
+5. Document the recalibration in an ADR with before/after threshold comparison
+
+---
+
 ## AE-006 Integration
 
 ### Current AE-006 Text
@@ -366,15 +427,17 @@ Replace AE-006 with a graduated escalation rule that integrates with the detecti
 
 ### Integration with Detection System
 
-The AE-006 rules are enforced through two mechanisms:
+The AE-006 rules are enforced primarily through **L2 mechanisms** (prompt injection), with L1 behavioral rules as a foundation. The enforcement layer classification follows the 5-layer architecture from ADR-EPIC002-002:
 
-1. **L2 Reinject (context-rot immune):** A reinject tag reminds the orchestrator of the AE-006 escalation protocol at every prompt. This ensures the rule persists even as L1 rules degrade. Proposed tag:
+1. **L1 Behavioral Rules (session start):** AE-006 sub-rules are loaded as part of quality-enforcement.md at session start. These provide the foundational understanding of escalation requirements. L1 rules are **vulnerable to context rot** -- at high fill levels where AE-006 triggers are most relevant, L1 rule compliance may be degraded (per ADR-EPIC002-002 research on 40-60% effectiveness at 50K+ tokens).
+
+2. **L2 Reinject (context-rot immune):** A reinject tag reminds the orchestrator of the AE-006 escalation protocol at every prompt. This ensures the rule persists even as L1 rules degrade. L2 is the **primary enforcement mechanism** for AE-006 because it fires at every UserPromptSubmit and is immune to context rot. Proposed tag:
 
 ```html
 <!-- L2-REINJECT: rank=9, tokens=35, content="AE-006: CRITICAL(80%)=auto-checkpoint. EMERGENCY(88%)=no new ops. C3+ EMERGENCY=human escalation. PreCompact at C3+=human escalation." -->
 ```
 
-2. **L3/L4 Hook Enforcement (deterministic):** The `<context-monitor>` injection explicitly states the AE-006 action at CRITICAL and EMERGENCY levels. The LLM receives the instruction as part of the detection signal, not as a remembered rule. Example at EMERGENCY for C3+:
+3. **L2 Prompt Injection (context-monitor):** The `<context-monitor>` injection is an **L2 mechanism** -- text injected into the prompt at UserPromptSubmit by the Phase 3 Hybrid A+B detection architecture. It is NOT L3 deterministic gating (which would be AST-level checks blocking tool calls) or L4 output inspection. The `<context-monitor>` injection explicitly states the AE-006 action at CRITICAL and EMERGENCY levels. The LLM receives the instruction as part of the injected prompt text, relying on the LLM to read and comply. Example at EMERGENCY for C3+:
 
 ```xml
 <context-monitor>
@@ -392,6 +455,18 @@ MANDATORY HUMAN ESCALATION REQUIRED.
 4. WAIT for operator response before proceeding
 </context-monitor>
 ```
+
+**Enforcement layer summary per AE-006 sub-rule:**
+
+| Sub-Rule | Primary Enforcement | Backup Enforcement | Detection Mechanism |
+|----------|--------------------|--------------------|---------------------|
+| AE-006a (CRITICAL, any level) | L2 (context-monitor injection) | L1 (behavioral rules) | Phase 3 Hybrid A+B detection at UserPromptSubmit |
+| AE-006b (EMERGENCY, C1-C2) | L2 (context-monitor injection) | L1 (behavioral rules) | Phase 3 Hybrid A+B detection at UserPromptSubmit |
+| AE-006c (EMERGENCY, C3+) | L2 (context-monitor injection + L2 reinject) | L1 (behavioral rules) | Phase 3 Hybrid A+B detection at UserPromptSubmit |
+| AE-006d (PreCompact, C3+) | L2 (compaction-alert injection) | Method B (PreCompact hook file write -- deterministic) | Method B PreCompact hook |
+| AE-006e (2nd compaction, C3+) | L2 (compaction-alert with counter) | L1 (behavioral rules) | Method B compaction event counter |
+
+> **Note on L3/L5 enforcement:** The current threshold detection system does not implement L3 deterministic gating (AST-level tool call blocking) or L5 post-hoc verification for AE-006. All enforcement relies on L2 prompt injection that the LLM must voluntarily comply with. Adding L3 enforcement (e.g., blocking agent dispatch tool calls at EMERGENCY) and L5 enforcement (e.g., CI checks that verify checkpoint files exist when fill exceeded thresholds) are future enhancements for FEAT-001 implementation that would provide context-rot-immune enforcement at the highest severity levels.
 
 ---
 
@@ -469,21 +544,39 @@ If the proposed detection system with these thresholds had been active during PR
 
 The thresholds would NOT have prevented compaction (the workflow's total token consumption exceeds the 200K window regardless), but they would have converted an unmanaged compaction into a managed session boundary with preserved state.
 
+### Validation Limitations
+
+The PROJ-001 validation above demonstrates **when** the proposed thresholds would have triggered during a real workflow. It does NOT demonstrate **whether the orchestrator would have correctly acted on those signals.** This is an important distinction:
+
+**Triggering vs. Effectiveness:** The timeline analysis shows that CRITICAL would trigger after S-014 completes at ~81.6% fill and EMERGENCY at 88.6% after the full QG iteration. This proves the detection mechanism would fire at the right moments. However, the effectiveness question -- "would the orchestrator actually execute the checkpoint sequence upon receiving the CRITICAL signal?" -- remains unvalidated. The orchestrator at 81.6% fill has a heavily loaded context. Research from ADR-EPIC002-002 indicates that LLM effectiveness degrades at high context fill levels (40-60% effectiveness at 50K+ tokens consumed). At 81.6% fill (~163,000 tokens consumed), the orchestrator is operating in a degraded regime where compliance with complex multi-step instructions (checkpoint, update resumption section, prepare handoff) may be unreliable.
+
+**Context Rot Risk at High Fill:** The `<context-monitor>` injection is an L2 mechanism -- text injected into the prompt that the LLM must read, interpret, and act upon. At 80%+ fill, the LLM has 160,000+ tokens of prior context competing for attention. The injected instruction to "complete current operation, then checkpoint immediately" may be deprioritized relative to the ongoing QG iteration that the orchestrator is actively managing. This is precisely the context rot phenomenon that the detection system aims to mitigate, creating a potential circularity: the mitigation mechanism is itself vulnerable to the problem it mitigates.
+
+**Empirical Validation Required:** This effectiveness question must be validated during FEAT-001 implementation through actual monitored sessions:
+- Does an orchestrator at 81.6% fill (CRITICAL triggered after S-014) reliably execute a complex checkpoint sequence?
+- Does the orchestrator at EMERGENCY (88.6%) reliably stop starting new operations, or does task momentum override the stop signal?
+- Is the `<context-monitor>` injection format sufficiently prominent to cut through context noise at high fill levels?
+- Would stronger enforcement mechanisms (e.g., L3 deterministic gating that blocks tool calls at EMERGENCY) be needed as a backup?
+
+These questions cannot be answered by retrospective timeline analysis. They require live testing with the detection system active and orchestrator behavior observed and measured.
+
 ---
 
 ## Self-Review Checklist
 
 - [x] All token estimates cite Phase 2 empirical data -- every entry in the Operation Cost Catalog references a specific Phase 2 finding (L1 or L2 section) or downstream phase artifact. No estimates are fabricated.
 - [x] Token budget at each threshold level is mathematically verified -- each "Can Fit?" table shows explicit arithmetic (e.g., "2 x 29,000 = 58,000 < 60,000"). The cross-threshold jump analysis at Step 8 includes sub-operation breakdown with cumulative percentages verified to sum correctly.
-- [x] Criticality-adjusted variants have clear rationale -- each level (C1-C4) has a justification paragraph citing specific cost differences (C4 tournament at 87,000 tokens/iteration vs C2 at 29,000). C4 CRITICAL was self-corrected when initial verification showed 70,000 remaining < 87,000 needed.
+- [x] Criticality-adjusted variants have clear rationale -- each level (C1-C4) has a justification paragraph citing specific cost differences (C4 tournament at 87,000 tokens/iteration vs C2 at 29,000). C4 CRITICAL was self-corrected when initial verification showed 70,000 remaining < 87,000 needed. C1/C3/C4 columns now marked PROVISIONAL with caveat paragraph (DA-003 revision).
 - [x] Sensitivity analysis covers percentage vs. absolute debate -- three approaches compared (percentage, absolute, hybrid), with recommendation for hybrid approach. Three window sizes tested (200K, 500K, 1M) with remaining-capacity calculations. Dynamic thresholds identified as future enhancement.
-- [x] AE-006 integration proposal is concrete -- five sub-rules (AE-006a through AE-006e) with specific trigger conditions, escalation actions, and detection mechanisms. Includes proposed rule text for quality-enforcement.md and L2 reinject tag text.
-- [x] PROJ-001 validation demonstrates thresholds would have triggered appropriately -- 17-step timeline annotated with threshold levels. Sub-operation analysis of the critical Step 8 shows CRITICAL triggers after S-014 at ~81.6%. Counterfactual comparison shows 5 specific improvements.
+- [x] AE-006 integration proposal is concrete -- five sub-rules (AE-006a through AE-006e) with specific trigger conditions, escalation actions, and detection mechanisms. Includes proposed rule text for quality-enforcement.md and L2 reinject tag text. Enforcement layer labeling corrected: `<context-monitor>` is L2 prompt injection, not L3/L4 (DA-005 revision). Per-sub-rule enforcement layer summary table added.
+- [x] PROJ-001 validation demonstrates thresholds would have triggered appropriately -- 17-step timeline annotated with threshold levels. Sub-operation analysis of the critical Step 8 shows CRITICAL triggers after S-014 at ~81.6%. Counterfactual comparison shows 5 specific improvements. Validation Limitations subsection now distinguishes triggering analysis from effectiveness analysis and identifies context rot risk at high fill levels (DA-004 revision).
 - [x] L0/L1/L2 present -- L0 Summary with threshold table and key changes; L1 detailed analysis across cost catalog, budget analysis, threshold derivation; L2 technical specification with criticality-adjusted tables, AE-006 text, sensitivity results.
-- [x] H-23/H-24 navigation table with anchor links present.
+- [x] H-23/H-24 navigation table with anchor links present. Updated to include Calibration Protocol section.
 - [x] Changes from Phase 3 provisional thresholds (60/80/90%) are explicitly identified and justified -- 4 changes listed in L0 Summary with rationale for each.
 - [x] Phase 5 mental test re-orientation costs incorporated -- post-compaction token budgets reference Phase 5 measured values (1,700-5,260 tokens for re-orientation, 280 tokens for compaction alert, 760 tokens for resumption prompt).
-- [x] Honest about limitations (P-022) -- estimation error margin (10-20%) acknowledged in Operation Cost Catalog. Post-compaction context reset size (~50K) noted as unverified assumption. Single-workflow calibration limitation acknowledged in criticality-adjusted variants (MEDIUM confidence). Dynamic threshold trade-offs disclosed.
+- [x] Honest about limitations (P-022) -- estimation error margin (10-20%) acknowledged in Operation Cost Catalog. Post-compaction context reset size (~50K) noted as unverified assumption. Single-workflow calibration limitation now fully addressed with dedicated Calibration Protocol section including validation workflows and recalibration triggers (DA-001 revision). Cumulative estimation uncertainty note added to Operation Cost Catalog (DA-006 revision). Dynamic threshold trade-offs disclosed.
+- [x] NOMINAL blind spot addressed -- worst-case single-operation jump from NOMINAL to CRITICAL analyzed (55% + 28.5% = 83.5%), mitigated by multi-prompt QG iteration structure. Single-prompt limitation (<5% typical) documented (DA-002 revision).
+- [x] QG-2 iteration 2 revisions applied -- all 5 P1 revisions (DA-001 through DA-005) and 1 P2 revision (DA-006) incorporated as targeted additions without modifying existing content or threshold values.
 
 ---
 

@@ -21,7 +21,7 @@ workflow:
   version: "2.0"
   created_at: "2026-02-19T00:00:00Z"
   updated_at: "2026-02-19T00:00:00Z"
-  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+  status: "COMPLETE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
 
   # Workflow ID configuration (WI-SAO-021)
   id_source: "auto"               # "user" | "auto" - how the workflow ID was determined
@@ -86,10 +86,10 @@ pipelines:
     short_alias: "res"
     skill_source: "problem-solving"
 
-    status: "QG_2_IN_PROGRESS"
-    current_phase: 6
+    status: "COMPLETE"
+    current_phase: 7
     total_phases: 7
-    progress_percent: 85
+    progress_percent: 100
 
     phases:
 
@@ -304,18 +304,18 @@ pipelines:
       - id: 7
         name: "Synthesize Findings"
         path_id: "phase-7-synthesis"
-        status: "BLOCKED"
+        status: "COMPLETE"
         blocked_by: "qg-2"  # Blocked by quality gate, not just phase
         execution_mode: "SEQUENTIAL"
         effort_points: 1
-        started_at: null
-        completed_at: null
+        started_at: "2026-02-19T00:00:00Z"
+        completed_at: "2026-02-19T00:00:00Z"
         gate_after: null  # No gate — final synthesis
 
         agents:
           - id: "spike-synthesizer"
             name: "Spike Research Synthesizer"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-7-synthesis/spike-synthesizer/spike-synthesis.md"
             inputs:
               - "All phase artifacts (Phases 1-6)"
@@ -389,27 +389,45 @@ quality_gates:
     id: "qg-2"
     name: "Threshold Proposal Validation Gate"
     after_phase: 6
-    status: "PENDING"
+    status: "PASS"
     rationale: "Threshold values directly determine detection efficacy. Incorrect thresholds cause premature or late triggering."
     deliverables_scored:
       - "orchestration/spike001-ctxres-20260219-001/res/phase-6-thresholds/threshold-analyst/threshold-proposal.md"
     threshold: 0.92
     max_iterations: 3
-    current_iteration: 0
+    current_iteration: 2
     required_strategies: ["S-014", "S-007", "S-002"]
     optional_strategies: ["S-003", "S-010"]
-    agents_invoked: []
-    iteration_history: []
-    score: null
+    agents_invoked: ["adv-scorer"]
+    iteration_history:
+      - iteration: 1
+        score: 0.90
+        verdict: "REVISE"
+        strategies:
+          S-003: { verdict: "STEELMAN", strengths: 7 }
+          S-007: { score: 1.00, verdict: "COMPLIANT" }
+          S-002: { verdict: "NO-BLOCK", major_findings: 5, minor_findings: 1 }
+          S-014: { score: 0.90, verdict: "REVISE" }
+        primary_defect: "Evidence Quality 0.84 (single-workflow calibration), Methodological Rigor 0.85 (triggering vs effectiveness), Actionability 0.87 (enforcement layer conflation)."
+      - iteration: 2
+        score: 0.92
+        verdict: "PASS"
+        strategies:
+          S-003: { verdict: "STEELMAN", strengths: 8 }
+          S-007: { score: 1.00, verdict: "COMPLIANT" }
+          S-002: { verdict: "NO-BLOCK", major_findings: 0, minor_findings: 3 }
+          S-014: { score: 0.92, verdict: "PASS" }
+        primary_defect: null
+    score: 0.92
     score_dimensions:
-      completeness: null      # weight: 0.20
-      internal_consistency: null  # weight: 0.20
-      methodological_rigor: null  # weight: 0.20
-      evidence_quality: null  # weight: 0.15
-      actionability: null     # weight: 0.15
-      traceability: null      # weight: 0.10
+      completeness: 0.94      # weight: 0.20
+      internal_consistency: 0.94  # weight: 0.20
+      methodological_rigor: 0.91  # weight: 0.20
+      evidence_quality: 0.89  # weight: 0.15
+      actionability: 0.92     # weight: 0.15
+      traceability: 0.95      # weight: 0.10
     artifact: "orchestration/spike001-ctxres-20260219-001/res/quality-gates/qg-2/gate-result.md"
-    completed_at: null
+    completed_at: "2026-02-19T00:00:00Z"
 
 # =============================================================================
 # EXECUTION QUEUE
