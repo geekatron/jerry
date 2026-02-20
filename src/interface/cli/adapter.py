@@ -158,8 +158,8 @@ class CLIAdapter:
         validation = context["validation"]
 
         if jerry_project is None:
-            print("JERRY_PROJECT: (not set)")
-            print("\nSet JERRY_PROJECT environment variable to activate a project.")
+            print("JERRY_PROJECT not set.")
+            print("Set JERRY_PROJECT to activate a project: jerry projects list")
             print("\nAvailable projects:")
             print(self._format_project_table(context["available_projects"]))
         elif project_id and validation and validation.is_valid:
@@ -172,7 +172,7 @@ class CLIAdapter:
             print(f"JERRY_PROJECT: {jerry_project}")
             print("Status: Invalid")
             if validation:
-                print(f"Error: {validation.first_message}")
+                print(validation.first_message)
 
     def cmd_projects_list(self, json_output: bool = False) -> int:
         """Execute the projects list command.
@@ -235,7 +235,7 @@ class CLIAdapter:
         else:
             if project_id is None:
                 print(f"Invalid project ID format: {project_id_str}")
-                print(f"Error: {validation.first_message}")
+                print(validation.first_message)
             elif validation.is_valid:
                 print(f"Project: {project_id}")
                 print("Status: Valid")
@@ -244,7 +244,7 @@ class CLIAdapter:
             else:
                 print(f"Project: {project_id}")
                 print("Status: Invalid")
-                print(f"Error: {validation.first_message}")
+                print(validation.first_message)
 
         return 0 if validation.is_valid else 1
 
@@ -294,7 +294,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Session handlers not configured"}))
             else:
-                print("Error: Session handlers not configured")
+                print("Session handlers not configured.")
             return 1
 
         handler = self._session_handlers.get("create")
@@ -302,7 +302,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "CreateSession handler not available"}))
             else:
-                print("Error: CreateSession handler not available")
+                print("CreateSession handler not available.")
             return 1
 
         try:
@@ -323,7 +323,7 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Session started: {session_id}")
+                print(f"Session live. {session_id}")
                 if description:
                     print(f"Description: {description}")
 
@@ -334,7 +334,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     def cmd_session_end(
@@ -355,7 +355,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Session handlers not configured"}))
             else:
-                print("Error: Session handlers not configured")
+                print("Session handlers not configured.")
             return 1
 
         handler = self._session_handlers.get("end")
@@ -363,7 +363,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "EndSession handler not available"}))
             else:
-                print("Error: EndSession handler not available")
+                print("EndSession handler not available.")
             return 1
 
         try:
@@ -381,9 +381,9 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Session ended: {session_id}")
+                print(f"Session ended. {session_id}")
                 if summary:
-                    print(f"Summary: {summary}")
+                    print(f"  {summary}")
 
             return 0
 
@@ -392,7 +392,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     def cmd_session_status(self, json_output: bool = False) -> int:
@@ -420,7 +420,7 @@ class CLIAdapter:
         else:
             if not status.has_active_session:
                 print("No active session.")
-                print("\nUse 'jerry session start' to begin a new session.")
+                print("Use 'jerry session start' to begin.")
             else:
                 print(f"Session ID: {status.session_id}")
                 print(f"Status: {status.status}")
@@ -451,7 +451,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Session handlers not configured"}))
             else:
-                print("Error: Session handlers not configured")
+                print("Session handlers not configured.")
             return 1
 
         handler = self._session_handlers.get("abandon")
@@ -459,7 +459,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "AbandonSession handler not available"}))
             else:
-                print("Error: AbandonSession handler not available")
+                print("AbandonSession handler not available.")
             return 1
 
         try:
@@ -477,7 +477,7 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Session abandoned: {session_id}")
+                print(f"Session abandoned. {session_id}")
                 if reason:
                     print(f"Reason: {reason}")
 
@@ -488,7 +488,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     # =========================================================================
@@ -625,7 +625,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
     def cmd_items_create(
@@ -654,7 +654,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Command dispatcher not configured"}))
             else:
-                print("Error: Command dispatcher not configured")
+                print("Command dispatcher not configured.")
             return 1
 
         try:
@@ -681,10 +681,8 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Created work item: {work_item_id}")
-                print(f"Title: {title}")
-                print(f"Type: {work_type}")
-                print(f"Priority: {priority}")
+                print(f"Created: {work_item_id}")
+                print(f"  {title} ({work_type}, {priority})")
 
             return 0
 
@@ -692,7 +690,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
         except Exception as e:
@@ -700,7 +698,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     def cmd_items_start(
@@ -723,7 +721,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Command dispatcher not configured"}))
             else:
-                print("Error: Command dispatcher not configured")
+                print("Command dispatcher not configured.")
             return 1
 
         try:
@@ -745,10 +743,7 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Started work item: {work_item_id}")
-                print("Status: in_progress")
-                if reason:
-                    print(f"Reason: {reason}")
+                print(f"{work_item_id}: in_progress.")
 
             return 0
 
@@ -756,14 +751,14 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: Work item '{item_id}' not found")
+                print(f"Work item '{item_id}' not found.")
             return 1
 
         except InvalidStateTransitionError as e:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
         except Exception as e:
@@ -771,7 +766,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     def cmd_items_complete(
@@ -794,7 +789,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Command dispatcher not configured"}))
             else:
-                print("Error: Command dispatcher not configured")
+                print("Command dispatcher not configured.")
             return 1
 
         try:
@@ -816,10 +811,7 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Completed work item: {work_item_id}")
-                print("Status: done")
-                if reason:
-                    print(f"Reason: {reason}")
+                print(f"{work_item_id}: complete.")
 
             return 0
 
@@ -827,14 +819,14 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: Work item '{item_id}' not found")
+                print(f"Work item '{item_id}' not found.")
             return 1
 
         except InvalidStateTransitionError as e:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
         except Exception as e:
@@ -842,7 +834,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     def cmd_items_block(
@@ -865,7 +857,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Command dispatcher not configured"}))
             else:
-                print("Error: Command dispatcher not configured")
+                print("Command dispatcher not configured.")
             return 1
 
         try:
@@ -888,9 +880,8 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Blocked work item: {work_item_id}")
-                print("Status: blocked")
-                print(f"Reason: {reason}")
+                print(f"{work_item_id}: blocked.")
+                print(f"  {reason}")
 
             return 0
 
@@ -898,14 +889,14 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: Work item '{item_id}' not found")
+                print(f"Work item '{item_id}' not found.")
             return 1
 
         except InvalidStateTransitionError as e:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
         except Exception as e:
@@ -913,7 +904,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     def cmd_items_cancel(
@@ -936,7 +927,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Command dispatcher not configured"}))
             else:
-                print("Error: Command dispatcher not configured")
+                print("Command dispatcher not configured.")
             return 1
 
         try:
@@ -958,10 +949,7 @@ class CLIAdapter:
                 }
                 print(json.dumps(output, indent=2))
             else:
-                print(f"Cancelled work item: {work_item_id}")
-                print("Status: cancelled")
-                if reason:
-                    print(f"Reason: {reason}")
+                print(f"{work_item_id}: cancelled.")
 
             return 0
 
@@ -969,14 +957,14 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: Work item '{item_id}' not found")
+                print(f"Work item '{item_id}' not found.")
             return 1
 
         except InvalidStateTransitionError as e:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
         except Exception as e:
@@ -984,7 +972,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": error_msg}))
             else:
-                print(f"Error: {error_msg}")
+                print(error_msg)
             return 1
 
     # =========================================================================
@@ -1068,7 +1056,7 @@ class CLIAdapter:
                 print(json.dumps(output, indent=2))
             else:
                 if not all_keys:
-                    print("No configuration values found.")
+                    print("No configuration values.")
                 else:
                     if show_source:
                         print(f"{'KEY':<40} {'VALUE':<20} {'SOURCE':<10}")
@@ -1092,7 +1080,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
     def cmd_config_get(
@@ -1120,7 +1108,7 @@ class CLIAdapter:
                 if json_output:
                     print(json.dumps({"error": f"Key '{key}' not found"}))
                 else:
-                    print(f"Error: Key '{key}' not found")
+                    print(f"Key '{key}' not found.")
                 return 1
 
             if json_output:
@@ -1135,7 +1123,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
     def cmd_config_set(
@@ -1175,7 +1163,7 @@ class CLIAdapter:
                     if json_output:
                         print(json.dumps({"error": "No active project. Set JERRY_PROJECT first."}))
                     else:
-                        print("Error: No active project. Set JERRY_PROJECT first.")
+                        print("No active project. Set JERRY_PROJECT first.")
                     return 1
                 config_path = root / "projects" / jerry_project / ".jerry" / "config.toml"
             elif scope == "root":
@@ -1186,7 +1174,7 @@ class CLIAdapter:
                 if json_output:
                     print(json.dumps({"error": f"Invalid scope: {scope}"}))
                 else:
-                    print(f"Error: Invalid scope: {scope}")
+                    print(f"Invalid scope: {scope}")
                 return 1
 
             # Ensure parent directory exists
@@ -1278,7 +1266,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": str(e)}))
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1
 
     def cmd_config_path(self, json_output: bool = False) -> int:
@@ -1391,7 +1379,7 @@ class CLIAdapter:
             if json_output:
                 print(json.dumps({"error": "Command dispatcher not configured"}))
             else:
-                print("Error: Command dispatcher not configured")
+                print("Command dispatcher not configured.")
             return 1
 
         try:
@@ -1449,7 +1437,7 @@ class CLIAdapter:
                         for w in result.warnings:
                             print(f"  - {w}")
                 else:
-                    print(f"Error: Failed to parse {path}")
+                    print(f"Failed to parse {path}.")
                     if result.error:
                         print(
                             f"  {result.error.get('code', 'UNKNOWN')}: "
@@ -1472,7 +1460,7 @@ class CLIAdapter:
                     )
                 )
             else:
-                print(f"Error: File not found: {path}")
+                print(f"File not found: {path}")
             return 1
 
         except Exception as e:
@@ -1483,5 +1471,5 @@ class CLIAdapter:
                     )
                 )
             else:
-                print(f"Error: {e}")
+                print(str(e))
             return 1

@@ -62,7 +62,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 
 ## Quick Reference
 
-**CLI** (v0.3.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
+**CLI** (v0.5.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
 
 **Skills** (invoke proactively per H-22):
 
@@ -74,6 +74,8 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/orchestration` | Multi-phase workflows |
 | `/architecture` | Design decisions |
 | `/adversary` | Adversarial quality reviews, strategy templates, tournament execution, multi-strategy orchestration |
+| `/saucer-boy` | Session conversational voice, McConkey personality |
+| `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 | `/transcript` | Transcription parsing |
 
 **SessionStart Hook Tags:**
