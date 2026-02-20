@@ -18,7 +18,7 @@
 | Field | Value |
 |-------|-------|
 | Project | PROJ-005-markdown-ast |
-| Status | PENDING |
+| Status | IN-PROGRESS |
 | Created | 2026-02-19 |
 | Language Constraint | Python only (UV ecosystem) |
 | Target Scope | Full Jerry surface (worktracker, skills, rules, templates, orchestration, ADRs) |
@@ -29,7 +29,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-markdown-ast/EPIC-001-markdown-ast.md) | Markdown AST Infrastructure | pending | high |
+| [EPIC-001](./work/EPIC-001-markdown-ast/EPIC-001-markdown-ast.md) | Markdown AST Infrastructure | in-progress | high |
 
 > Features, Spikes, and Tasks are tracked within the Epic and its children.
 
@@ -39,7 +39,7 @@
 
 | ID | Title | Status | Impact |
 |----|-------|--------|--------|
-| — | — | — | — |
+| GO-001 | AST-first architecture adoption (markdown-it-py + mdformat, Pattern D) | decided | high |
 
 ---
 
@@ -48,3 +48,4 @@
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-19 | Claude | PROJ-005 created. AST-based markdown manipulation initiative to replace raw text operations across Jerry's full documentation surface. |
+| 2026-02-19 | Claude | Orchestration `spike-eval-20260219-001` complete. SPIKE-001 + SPIKE-002 evaluated. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. QG scores: 0.96, 0.97, 0.96. |

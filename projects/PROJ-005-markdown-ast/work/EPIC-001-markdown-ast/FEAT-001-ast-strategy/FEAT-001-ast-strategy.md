@@ -1,7 +1,7 @@
 # FEAT-001: AST Strategy Evaluation & Library Selection
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** in-progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
@@ -103,8 +103,8 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 | ID | Type | Title | Status | Priority | Timebox |
 |----|------|-------|--------|----------|---------|
-| SPIKE-001 | Spike | Python Markdown AST Library Landscape | pending | high | 12h |
-| SPIKE-002 | Spike | AST-First Architecture Feasibility Assessment | pending | high | 8h |
+| SPIKE-001 | Spike | Python Markdown AST Library Landscape | completed | high | 12h |
+| SPIKE-002 | Spike | AST-First Architecture Feasibility Assessment | completed | high | 8h |
 
 ### Work Item Links
 
@@ -121,9 +121,9 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Spikes:    [....................] 0% (0/2 completed)              |
+| Spikes:    [####################] 100% (2/2 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [##########..........] 50% (spikes done, ADR pending) |
 +------------------------------------------------------------------+
 ```
 
@@ -132,8 +132,8 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 | Metric | Value |
 |--------|-------|
 | **Total Spikes** | 2 |
-| **Completed Spikes** | 0 |
-| **Completion %** | 0% |
+| **Completed Spikes** | 2 |
+| **Completion %** | 50% (spikes complete, ADR and implementation stories pending) |
 
 ---
 
@@ -157,3 +157,4 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Feature created. Two spikes: library landscape (SPIKE-001) and feasibility (SPIKE-002). |
+| 2026-02-19 | Claude | in-progress | Both spikes completed via orchestration `spike-eval-20260219-001`. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. QG scores: 0.96, 0.97, 0.96. ADR and implementation stories pending. |

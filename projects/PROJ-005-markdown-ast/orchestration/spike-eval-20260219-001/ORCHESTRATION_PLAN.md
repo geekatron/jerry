@@ -3,7 +3,7 @@
 > **Document ID:** PROJ-005-ORCH-PLAN
 > **Project:** PROJ-005-markdown-ast
 > **Workflow ID:** `spike-eval-20260219-001`
-> **Status:** PLANNED
+> **Status:** COMPLETE
 > **Version:** 2.0
 > **Created:** 2026-02-19
 > **Last Updated:** 2026-02-19
@@ -35,7 +35,7 @@ This orchestration plan coordinates a two-spike evaluation of Python markdown AS
 
 The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-analyst, ps-synthesizer, ps-reviewer, ps-critic) integrated with `/adversary` agents (adv-selector, adv-executor, adv-scorer) to enforce the quality gate (>= 0.92 weighted composite, H-13) with minimum 3 creator-critic-revision iterations (H-14) at each quality checkpoint.
 
-**Current State:** PLANNED -- awaiting execution start.
+**Current State:** COMPLETE -- all 7 phases executed, 3 quality gates passed (0.96, 0.97, 0.96), GO decision reached.
 
 **Orchestration Pattern:** Sequential Pipeline with Sync Barrier (Pattern 2 + Pattern 6)
 
@@ -70,7 +70,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-researcher-001              │
  │   Web research on 5+ libraries   │
- │ STATUS: PENDING                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -79,7 +79,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-analyst-001                 │
  │   Feature matrix, Jerry compat   │
- │ STATUS: PENDING                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -88,7 +88,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-synthesizer-001             │
  │   Ranked recommendation          │
- │ STATUS: PENDING                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -124,7 +124,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-researcher-002              │
  │   Integration patterns research  │
- │ STATUS: BLOCKED                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -133,7 +133,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-analyst-002                 │
  │   Go/no-go analysis, risk, S-013 │
- │ STATUS: BLOCKED                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -142,7 +142,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-synthesizer-002             │
  │   Go/no-go recommendation       │
- │ STATUS: BLOCKED                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -167,7 +167,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
  │ ──────────────────────────────── │
  │   ps-reviewer-001                │
  │   Cross-spike consistency        │
- │ STATUS: BLOCKED                  │
+ │ STATUS: COMPLETE                 │
  └──────────────┬───────────────────┘
                 │
                 ▼
@@ -200,32 +200,32 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
 
 | Phase | Name | Purpose | Agents | Status |
 |-------|------|---------|--------|--------|
-| 1 | Research | Web research on 5+ Python markdown AST libraries. Gather: GitHub stars, maintenance status, CommonMark compliance, AST access, extensibility, typing support. Use Context7 for docs. | ps-researcher-001 | PENDING |
-| 2 | Analysis | Evaluate libraries against Jerry-specific requirements: blockquote frontmatter parsing, navigation table manipulation, Mermaid code block handling, template placeholder support, round-trip fidelity. Build feature matrix. | ps-analyst-001 | PENDING |
-| 3 | Synthesis | Produce ranked library comparison with evidence-backed recommendation. Include build-from-scratch assessment. Apply evaluation framework weights. | ps-synthesizer-001 | PENDING |
-| QG1 | Quality Gate 1 | Creator-critic-revision cycle. 3 iterations targeting >= 0.92. Strategies: S-003 (Steelman), S-007 (Constitutional), S-002 (Devil's Advocate), S-014 (LLM-as-Judge). | ps-critic-001, adv-selector-001, adv-executor-001, adv-scorer-001 | PENDING |
+| 1 | Research | Web research on 5+ Python markdown AST libraries. Gather: GitHub stars, maintenance status, CommonMark compliance, AST access, extensibility, typing support. Use Context7 for docs. | ps-researcher-001 | COMPLETE |
+| 2 | Analysis | Evaluate libraries against Jerry-specific requirements: blockquote frontmatter parsing, navigation table manipulation, Mermaid code block handling, template placeholder support, round-trip fidelity. Build feature matrix. | ps-analyst-001 | COMPLETE |
+| 3 | Synthesis | Produce ranked library comparison with evidence-backed recommendation. Include build-from-scratch assessment. Apply evaluation framework weights. | ps-synthesizer-001 | COMPLETE |
+| QG1 | Quality Gate 1 | Creator-critic-revision cycle. 3 iterations targeting >= 0.92. Strategies: S-003 (Steelman), S-007 (Constitutional), S-002 (Devil's Advocate), S-014 (LLM-as-Judge). | ps-critic-001, adv-selector-001, adv-executor-001, adv-scorer-001 | COMPLETE (0.96) |
 
 ### 3.2 Sync Barrier
 
 | Barrier | After Phase | Artifact | Status |
 |---------|-------------|----------|--------|
-| barrier-1 | QG1 (SPIKE-001 complete) | SPIKE-001 findings + ranked recommendation handoff | PENDING |
+| barrier-1 | QG1 (SPIKE-001 complete) | SPIKE-001 findings + ranked recommendation handoff | COMPLETE |
 
 ### 3.3 SPIKE-002 Phases (Feasibility Assessment)
 
 | Phase | Name | Purpose | Agents | Status |
 |-------|------|---------|--------|--------|
-| 4 | Architecture Research | Using SPIKE-001 findings, research integration patterns: Jerry CLI extension, hidden Claude skills, MCP tool, hybrid. Assess migration path. | ps-researcher-002 | BLOCKED |
-| 5 | Feasibility Analysis | Go/no-go analysis. Assess: token reduction potential, schema validation capability, migration effort, risk profile. Apply S-013 (Inversion), S-004 (Pre-Mortem). | ps-analyst-002 | BLOCKED |
-| 6 | Decision Synthesis | Produce go/no-go recommendation with evidence. If go: define integration architecture. If no-go: document alternative strategy. | ps-synthesizer-002 | BLOCKED |
-| QG2 | Quality Gate 2 | Creator-critic-revision cycle. 3 iterations targeting >= 0.92. Full C2 strategy set. | ps-critic-002, adv-selector-002, adv-executor-002, adv-scorer-002 | BLOCKED |
+| 4 | Architecture Research | Using SPIKE-001 findings, research integration patterns: Jerry CLI extension, hidden Claude skills, MCP tool, hybrid. Assess migration path. | ps-researcher-002 | COMPLETE |
+| 5 | Feasibility Analysis | Go/no-go analysis. Assess: token reduction potential, schema validation capability, migration effort, risk profile. Apply S-013 (Inversion), S-004 (Pre-Mortem). | ps-analyst-002 | COMPLETE |
+| 6 | Decision Synthesis | Produce go/no-go recommendation with evidence. If go: define integration architecture. If no-go: document alternative strategy. | ps-synthesizer-002 | COMPLETE |
+| QG2 | Quality Gate 2 | Creator-critic-revision cycle. 3 iterations targeting >= 0.92. Full C2 strategy set. | ps-critic-002, adv-selector-002, adv-executor-002, adv-scorer-002 | COMPLETE (0.97) |
 
 ### 3.4 Final Review
 
 | Phase | Name | Purpose | Agents | Status |
 |-------|------|---------|--------|--------|
-| 7 | Final Review | Cross-spike consistency review. Verify all claims are evidence-backed. Check traceability. | ps-reviewer-001 | BLOCKED |
-| QG3 | Quality Gate 3 (Final) | Final adversarial scoring. Must pass >= 0.92 before user presentation. | adv-scorer-003 | BLOCKED |
+| 7 | Final Review | Cross-spike consistency review. Verify all claims are evidence-backed. Check traceability. | ps-reviewer-001 | COMPLETE |
+| QG3 | Quality Gate 3 (Final) | Final adversarial scoring. Must pass >= 0.92 before user presentation. | adv-scorer-003 | COMPLETE (0.96) |
 
 ---
 
@@ -262,7 +262,7 @@ The workflow deploys the full `/problem-solving` agent suite (ps-researcher, ps-
 
 | Barrier | After | Artifact | Direction | Status |
 |---------|-------|----------|-----------|--------|
-| barrier-1 | QG1 | spike-001-handoff.md | SPIKE-001 -> SPIKE-002 | PENDING |
+| barrier-1 | QG1 | spike-001-handoff.md | SPIKE-001 -> SPIKE-002 | COMPLETE |
 
 ---
 
@@ -348,38 +348,38 @@ All quality gates reference `.context/rules/quality-enforcement.md` as the SSOT.
 
 | Agent ID | Phase | Role | Input Artifacts | Output Artifacts | Status |
 |----------|-------|------|-----------------|------------------|--------|
-| ps-researcher-001 | 1 | Research Specialist | SPIKE-001 entity, Jerry markdown samples | `ps/phase-1-research/ps-researcher-001/library-landscape-research.md` | PENDING |
-| ps-analyst-001 | 2 | Analysis Specialist | Research findings from Phase 1 | `ps/phase-2-analysis/ps-analyst-001/library-feature-matrix.md` | PENDING |
-| ps-synthesizer-001 | 3 | Synthesis Specialist | Research + Analysis findings | `ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md` | PENDING |
-| ps-critic-001 | QG1 | Quality Evaluator | Synthesis output | `quality/qg1/ps-critic-001/critique-iteration-{N}.md` | PENDING |
-| adv-selector-001 | QG1 | Strategy Selector | Criticality C2 | `quality/qg1/adv-selector-001/strategy-selection.md` | PENDING |
-| adv-executor-001 | QG1 | Strategy Executor | Synthesis + strategy templates | `quality/qg1/adv-executor-001/strategy-{SID}-findings.md` | PENDING |
-| adv-scorer-001 | QG1 | Quality Scorer | Synthesis + executor findings | `quality/qg1/adv-scorer-001/quality-score-iteration-{N}.md` | PENDING |
+| ps-researcher-001 | 1 | Research Specialist | SPIKE-001 entity, Jerry markdown samples | `ps/phase-1-research/ps-researcher-001/library-landscape-research.md` | COMPLETE |
+| ps-analyst-001 | 2 | Analysis Specialist | Research findings from Phase 1 | `ps/phase-2-analysis/ps-analyst-001/library-feature-matrix.md` | COMPLETE |
+| ps-synthesizer-001 | 3 | Synthesis Specialist | Research + Analysis findings | `ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md` | COMPLETE |
+| ps-critic-001 | QG1 | Quality Evaluator | Synthesis output | `quality/qg1/ps-critic-001/critique-iteration-{N}.md` | COMPLETE |
+| adv-selector-001 | QG1 | Strategy Selector | Criticality C2 | `quality/qg1/adv-selector-001/strategy-selection.md` | COMPLETE |
+| adv-executor-001 | QG1 | Strategy Executor | Synthesis + strategy templates | `quality/qg1/adv-executor-001/strategy-{SID}-findings.md` | COMPLETE |
+| adv-scorer-001 | QG1 | Quality Scorer | Synthesis + executor findings | `quality/qg1/adv-scorer-001/quality-score-iteration-{N}.md` | COMPLETE |
 
 ### 6.2 Barrier Agents
 
 | Agent ID | Barrier | Role | Input Artifacts | Output Artifacts | Status |
 |----------|---------|------|-----------------|------------------|--------|
-| adv-executor-001 | barrier-1 | Handoff Validator | Handoff artifact | `cross-pollination/barrier-1/validation-report.md` | PENDING |
+| adv-executor-001 | barrier-1 | Handoff Validator | Handoff artifact | `cross-pollination/barrier-1/validation-report.md` | COMPLETE |
 
 ### 6.3 SPIKE-002 Agents
 
 | Agent ID | Phase | Role | Input Artifacts | Output Artifacts | Status |
 |----------|-------|------|-----------------|------------------|--------|
-| ps-researcher-002 | 4 | Research Specialist | SPIKE-001 handoff, SPIKE-002 entity | `ps/phase-4-arch-research/ps-researcher-002/integration-patterns-research.md` | BLOCKED |
-| ps-analyst-002 | 5 | Analysis Specialist | Phase 4 research | `ps/phase-5-feasibility/ps-analyst-002/feasibility-analysis.md` | BLOCKED |
-| ps-synthesizer-002 | 6 | Synthesis Specialist | Research + Analysis findings | `ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md` | BLOCKED |
-| ps-critic-002 | QG2 | Quality Evaluator | Synthesis output | `quality/qg2/ps-critic-002/critique-iteration-{N}.md` | BLOCKED |
-| adv-selector-002 | QG2 | Strategy Selector | Criticality C2 | `quality/qg2/adv-selector-002/strategy-selection.md` | BLOCKED |
-| adv-executor-002 | QG2 | Strategy Executor | Synthesis + strategy templates | `quality/qg2/adv-executor-002/strategy-{SID}-findings.md` | BLOCKED |
-| adv-scorer-002 | QG2 | Quality Scorer | Synthesis + executor findings | `quality/qg2/adv-scorer-002/quality-score-iteration-{N}.md` | BLOCKED |
+| ps-researcher-002 | 4 | Research Specialist | SPIKE-001 handoff, SPIKE-002 entity | `ps/phase-4-arch-research/ps-researcher-002/integration-patterns-research.md` | COMPLETE |
+| ps-analyst-002 | 5 | Analysis Specialist | Phase 4 research | `ps/phase-5-feasibility/ps-analyst-002/feasibility-analysis.md` | COMPLETE |
+| ps-synthesizer-002 | 6 | Synthesis Specialist | Research + Analysis findings | `ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md` | COMPLETE |
+| ps-critic-002 | QG2 | Quality Evaluator | Synthesis output | `quality/qg2/ps-critic-002/critique-iteration-{N}.md` | COMPLETE |
+| adv-selector-002 | QG2 | Strategy Selector | Criticality C2 | `quality/qg2/adv-selector-002/strategy-selection.md` | COMPLETE |
+| adv-executor-002 | QG2 | Strategy Executor | Synthesis + strategy templates | `quality/qg2/adv-executor-002/strategy-{SID}-findings.md` | COMPLETE |
+| adv-scorer-002 | QG2 | Quality Scorer | Synthesis + executor findings | `quality/qg2/adv-scorer-002/quality-score-iteration-{N}.md` | COMPLETE |
 
 ### 6.4 Final Review Agents
 
 | Agent ID | Phase | Role | Input Artifacts | Output Artifacts | Status |
 |----------|-------|------|-----------------|------------------|--------|
-| ps-reviewer-001 | 7 | Review Specialist | All spike outputs | `ps/phase-7-review/ps-reviewer-001/cross-spike-review.md` | BLOCKED |
-| adv-scorer-003 | QG3 | Quality Scorer | Review + all deliverables | `quality/qg3/adv-scorer-003/final-quality-score.md` | BLOCKED |
+| ps-reviewer-001 | 7 | Review Specialist | All spike outputs | `ps/phase-7-review/ps-reviewer-001/cross-spike-review.md` | COMPLETE |
+| adv-scorer-003 | QG3 | Quality Scorer | Review + all deliverables | `quality/qg3/adv-scorer-003/final-quality-score.md` | COMPLETE |
 
 ---
 
@@ -551,32 +551,27 @@ WORKFLOW STATUS AS OF 2026-02-19
 ================================
 
 SPIKE-001 (Library Landscape):
-  Phase 1 (Research):        PENDING
-  Phase 2 (Analysis):        PENDING
-  Phase 3 (Synthesis):       PENDING
-  Quality Gate 1:            PENDING
+  Phase 1 (Research):        COMPLETE
+  Phase 2 (Analysis):        COMPLETE
+  Phase 3 (Synthesis):       COMPLETE
+  Quality Gate 1:            COMPLETE (0.96, 3 iterations)
 
-Barrier 1:                   PENDING
+Barrier 1:                   COMPLETE
 
 SPIKE-002 (Feasibility):
-  Phase 4 (Arch Research):   BLOCKED
-  Phase 5 (Feasibility):     BLOCKED
-  Phase 6 (Decision):        BLOCKED
-  Quality Gate 2:            BLOCKED
+  Phase 4 (Arch Research):   COMPLETE
+  Phase 5 (Feasibility):     COMPLETE
+  Phase 6 (Decision):        COMPLETE
+  Quality Gate 2:            COMPLETE (0.97, 3 iterations)
 
 Final Review:
-  Phase 7 (Review):          BLOCKED
-  Quality Gate 3:            BLOCKED
+  Phase 7 (Review):          COMPLETE
+  Quality Gate 3:            COMPLETE (0.96 aggregate)
 ```
 
-### 11.2 Next Actions
+### 11.2 Outcome
 
-1. Execute Phase 1: Invoke ps-researcher-001 for library landscape research
-2. After Phase 1: Execute Phase 2 with ps-analyst-001
-3. After Phase 2: Execute Phase 3 with ps-synthesizer-001
-4. After Phase 3: Run Quality Gate 1 (3 creator-critic-revision iterations)
-5. After QG1 passes: Execute barrier-1 handoff
-6. After barrier: Begin SPIKE-002 Phase 4
+**WORKFLOW COMPLETE.** GO decision reached: adopt AST-first architecture with markdown-it-py v4.0.0 + mdformat v1.0.0, Pattern D (Hybrid: CLI + Skill with shared domain layer), bounded scope to schema-heavy files. Conditional on R-01 proof-of-concept validation.
 
 ---
 

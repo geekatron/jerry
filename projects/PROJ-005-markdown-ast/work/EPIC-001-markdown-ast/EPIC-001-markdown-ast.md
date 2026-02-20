@@ -1,7 +1,7 @@
 # EPIC-001: Markdown AST Infrastructure
 
 > **Type:** epic
-> **Status:** pending
+> **Status:** in-progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
@@ -68,14 +68,14 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | AST Strategy Evaluation & Library Selection | pending | high | 0% |
+| FEAT-001 | AST Strategy Evaluation & Library Selection | in-progress | high | 50% |
 
 ### Spike Inventory
 
 | ID | Title | Status | Priority | Timebox | Parent |
 |----|-------|--------|----------|---------|--------|
-| SPIKE-001 | Python Markdown AST Library Landscape | pending | high | 12 hours | FEAT-001 |
-| SPIKE-002 | AST-First Architecture Feasibility Assessment | pending | high | 8 hours | FEAT-001 |
+| SPIKE-001 | Python Markdown AST Library Landscape | completed | high | 12 hours | FEAT-001 |
+| SPIKE-002 | AST-First Architecture Feasibility Assessment | completed | high | 8 hours | FEAT-001 |
 
 ### Feature Links
 
@@ -97,9 +97,9 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
 | Features:  [....................] 0% (0/1 completed)              |
-| Spikes:    [....................] 0% (0/2 completed)              |
+| Spikes:    [####################] 100% (2/2 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [#####...............] 25%                              |
 +------------------------------------------------------------------+
 ```
 
@@ -110,8 +110,8 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 | **Total Features** | 1 |
 | **Completed Features** | 0 |
 | **Total Spikes** | 2 |
-| **Completed Spikes** | 0 |
-| **Feature Completion %** | 0% |
+| **Completed Spikes** | 2 |
+| **Feature Completion %** | 25% (spikes done, feature in-progress) |
 
 ---
 
@@ -133,3 +133,4 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Epic created. Full-surface AST infrastructure initiative. Python-only, 5+ library evaluation required. |
+| 2026-02-19 | Claude | in-progress | Both spikes completed. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. Orchestration `spike-eval-20260219-001` complete (QG scores: 0.96, 0.97, 0.96). |
