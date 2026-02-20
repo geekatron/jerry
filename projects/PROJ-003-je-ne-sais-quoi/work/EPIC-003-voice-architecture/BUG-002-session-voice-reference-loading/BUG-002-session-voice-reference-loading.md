@@ -32,6 +32,7 @@ PURPOSE: Document reference loading architecture failure in session voice skill
 | [Environment](#environment) | Where it occurs |
 | [Root Cause Analysis](#root-cause-analysis) | Why it happens |
 | [Acceptance Criteria](#acceptance-criteria) | When it's fixed |
+| [Children](#children-tasks--decisions) | Tasks and decisions |
 | [Related Items](#related-items) | Hierarchy and links |
 | [History](#history) | Change log |
 
@@ -129,6 +130,15 @@ The root cause is an architectural mismatch between the skill design (optimized 
 
 ---
 
+## Children (Tasks / Decisions)
+
+| ID | Title | Status | Effort |
+|----|-------|--------|--------|
+| [TASK-001](./TASK-001-ab-test-voice-configuration/TASK-001-ab-test-voice-configuration.md) | A/B Test Voice Configuration Matrix | done | 2 |
+| [DEC-001](./DEC-001-voice-configuration/DEC-001-voice-configuration.md) | Voice Configuration — opus + all 10 refs | accepted | -- |
+
+---
+
 ## Related Items
 
 ### Hierarchy
@@ -138,6 +148,7 @@ The root cause is an architectural mismatch between the skill design (optimized 
 ### Related Items
 
 - **Related Feature:** [FEAT-002: Session Conversational Voice](../FEAT-002-session-conversational-voice/FEAT-002-session-conversational-voice.md)
+- **Related Enabler:** [EN-001: Session Voice Reference Architecture Fix](../EN-001-session-voice-reference-architecture/EN-001-session-voice-reference-architecture.md) (architecture fix — complete)
 - **Related Skill:** `skills/saucer-boy/SKILL.md` (primary affected file)
 - **Related References:** `skills/saucer-boy-framework-voice/references/` (10 files, never loaded)
 

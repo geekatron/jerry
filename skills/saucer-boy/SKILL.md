@@ -98,7 +98,7 @@ Activate when:
 
 | Agent | Role | Model | Output Location |
 |-------|------|-------|-----------------|
-| `sb-voice` | Session voice — McConkey personality for work sessions | sonnet | Conversational response (inline) |
+| `sb-voice` | Session voice — McConkey personality for work sessions | opus | Conversational response (inline) |
 
 **Agent definition:** `skills/saucer-boy/agents/sb-voice.md`
 
@@ -157,7 +157,7 @@ Activates the session voice for the current conversation turn.
 Task(
     description="sb-voice: McConkey conversational response",
     subagent_type="general-purpose",
-    model="sonnet",
+    model="opus",
     prompt="""
 You are the sb-voice agent (v1.0.0).
 
@@ -211,7 +211,7 @@ When ambient personality is active, Claude Code adopts Saucer Boy conversational
 
 ### Mode 2: Explicit McConkey Invocation
 
-**How it works:** The main context spawns sb-voice via Task tool. The subagent always-loads `voice-guide.md` (9 before/after pairs) and `biographical-anchors.md` (McConkey facts), producing calibrated McConkey responses with full reference material.
+**How it works:** The main context spawns sb-voice via Task tool with `model="opus"`. The subagent always-loads all 10 reference files (~43KB of calibration material: voice-guide, biographical anchors, humor examples, cultural palette, tone spectrum, boundary conditions, audience adaptation, vocabulary, visual vocabulary, implementation notes), producing calibrated McConkey responses with full reference material.
 
 User invokes `/saucer-boy` directly for on-demand persona responses:
 
