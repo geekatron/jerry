@@ -150,6 +150,7 @@
 | FEAT-024 (EPIC-001) | Public Documentation Site — jerry.geekatron.org | 2026-02-19 | Orchestration feat024-docssite-20260217-001 (4 phases, 3 QGs). MkDocs Material 9.6.7 + GitHub Pages + custom domain. 5 enablers (EN-946–950), 15 effort pts. QG-1: 0.9340 (4 iterations), QG-2: 0.9440, QG-3: 0.9320. DEC-006 (MkDocs over Jekyll). DISC-003/004 resolved. Site live at https://jerry.geekatron.org — 12 nav pages, search functional, HTTPS enforced. |
 | FEAT-025 (EPIC-001) | Go Public (Repository Visibility & Community Health) | 2026-02-18 | 4 enablers (EN-951–954), 8 effort pts. EN-953 audit PASS (879 commits, 10 secret categories, 1 PII redacted). EN-951: SECURITY.md, CODE_OF_CONDUCT.md, PR template. EN-952: description, homepage, 8 topics, wiki disabled. EN-954: repo flipped to public, community health 100%, anonymous clone verified, docs site HTTP/2 200. PR #25 merged. All 8 ACs PASS. |
 | FEAT-026 (EPIC-001) | Post-Public Documentation Refresh | 2026-02-19 | 3 enablers (EN-955–957), 10 effort pts. C2 quality gate PASS (0.9195): S-003 Steelman (4 Major), S-007 Constitutional (1 Major), S-002 Devil's Advocate (5 Major), S-014 scored 0.8925→0.9195. INSTALLATION.md rewritten for public repo (~360 lines removed). docs/index.md enriched with platform/limitations/maturity notices. MkDocs build clean, grep scan 0 matches. All 7 ACs PASS. |
+| FEAT-028 (EPIC-001) | MCP Tool Integration (Context7 + Memory-Keeper) | 2026-02-20 | 5 enablers (EN-001–005), 11 effort pts. C3 (AE-002: touches `.context/rules/`). Created `mcp-tool-standards.md` governance rule. Context7 added to 2 NSE agents (7 total). Memory-Keeper added to 7 agents (orch ×3, ps-architect, nse-requirements, transcript ×2). 4 SKILL.md + AGENTS.md + TOOL_REGISTRY.yaml updated. 3299 tests pass, 0 regressions. All 7 ACs PASS. |
 
 ---
 
@@ -261,6 +262,8 @@
 | 2026-02-19 | Claude | BUG-011 created under EPIC-001: `project-workflow.md` duplicates and conflicts with `/worktracker` skill rules. Two competing SSOTs for project structure, workflow phases, and project creation logic. Root cause: EN-201/EN-202 concurrent execution without reconciliation. GitHub Issue created for external tracking. |
 | 2026-02-19 | Claude | BUG-011 DONE. `project-workflow.md` rewritten: inline directory tree removed, SSOT references to `/worktracker` skill rules added, minimal orientation retained (DA-002), WTI cross-reference added, dual-pattern noted. /adversary C3 review: 8 strategies, 2 S-014 iterations (0.860 → 0.970 PASS). TASK-002 verification: hardlink intact (inode 51639207), H-04 present, 3299 tests pass. GitHub Issue #38. |
 
+| 2026-02-20 | Claude | FEAT-028 created under EPIC-001: MCP Tool Integration (Context7 + Memory-Keeper). 5 enablers (EN-001–005), 11 effort pts, C3 criticality (AE-002). Created `.context/rules/mcp-tool-standards.md` governance rule. Context7 tools added to nse-explorer + nse-architecture (7 total). Memory-Keeper tools added to 7 agents (orch-planner, orch-tracker, orch-synthesizer, ps-architect, nse-requirements, ts-parser, ts-extractor). Updated 4 SKILL.md files, AGENTS.md (MCP Tool Access section), TOOL_REGISTRY.yaml (individual Memory-Keeper tool defs + agent permissions). All 5 enablers DONE. 3299 tests pass. |
+
 ---
 
-*Last Updated: 2026-02-19*
+*Last Updated: 2026-02-20*

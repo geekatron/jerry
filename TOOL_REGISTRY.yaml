@@ -243,18 +243,54 @@ tools:
         - "Finding code examples"
         - "Researching API usage"
 
-    mcp__memory-keeper__context_*:
-      description: "Memory Keeper context management tools"
+    mcp__memory-keeper__store:
+      description: "Store context with a key for cross-session persistence"
       category: "mcp"
       risk_level: "low"
       constraints:
-        - "Session-based context management"
-        - "Supports channels for organization"
-        - "Various operations: save, get, search, etc."
+        - "Key pattern: jerry/{project}/{entity-type}/{entity-id}"
+        - "Value should be concise summary, not full artifact content"
       use_cases:
-        - "Persisting session context"
-        - "Cross-session knowledge sharing"
-        - "Checkpoint creation and recovery"
+        - "Persisting phase boundary context"
+        - "Storing architecture decisions for cross-reference"
+        - "Checkpoint creation for session recovery"
+
+    mcp__memory-keeper__retrieve:
+      description: "Retrieve stored context by key"
+      category: "mcp"
+      risk_level: "low"
+      constraints:
+        - "Requires exact key match"
+        - "Returns null if key not found"
+      use_cases:
+        - "Resuming prior session context"
+        - "Loading phase boundary summaries"
+
+    mcp__memory-keeper__search:
+      description: "Search stored contexts by query"
+      category: "mcp"
+      risk_level: "low"
+      constraints:
+        - "Semantic search across stored contexts"
+        - "Returns ranked results"
+      use_cases:
+        - "Finding related prior work"
+        - "Cross-pipeline context discovery"
+
+    mcp__memory-keeper__list:
+      description: "List all stored context keys"
+      category: "mcp"
+      risk_level: "low"
+      use_cases:
+        - "Auditing stored contexts"
+        - "Session inventory"
+
+    mcp__memory-keeper__delete:
+      description: "Delete stored context by key"
+      category: "mcp"
+      risk_level: "low"
+      use_cases:
+        - "Cleaning up stale contexts"
 
 # ============================================================================
 # AGENT PERMISSIONS
@@ -359,6 +395,9 @@ agent_permissions:
         - WebFetch
         - mcp__context7__resolve-library-id
         - mcp__context7__query-docs
+        - mcp__memory-keeper__store
+        - mcp__memory-keeper__retrieve
+        - mcp__memory-keeper__search
       focus: "ADR creation, architecture decisions"
 
     ps-critic:
@@ -456,6 +495,8 @@ agent_permissions:
         - Bash
         - WebSearch
         - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
       focus: "NPR 7123.1D Processes 3,4,17 - Architecture development"
 
     nse-configuration:
@@ -484,6 +525,8 @@ agent_permissions:
         - Bash
         - WebSearch
         - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
       focus: "Divergent thinking, trade studies, options analysis"
 
     nse-integration:
@@ -537,6 +580,9 @@ agent_permissions:
         - Bash
         - WebSearch
         - WebFetch
+        - mcp__memory-keeper__store
+        - mcp__memory-keeper__retrieve
+        - mcp__memory-keeper__search
       focus: "Requirements engineering per NPR 7123.1D"
 
     nse-reviewer:
@@ -595,6 +641,9 @@ agent_permissions:
         - Glob
         - Grep
         - Bash
+        - mcp__memory-keeper__store
+        - mcp__memory-keeper__retrieve
+        - mcp__memory-keeper__search
       focus: "Workflow design, pipeline architecture, state schema definition"
 
     orch-tracker:
@@ -607,6 +656,9 @@ agent_permissions:
         - Glob
         - Grep
         - Bash
+        - mcp__memory-keeper__store
+        - mcp__memory-keeper__retrieve
+        - mcp__memory-keeper__search
       focus: "State tracking, checkpoint creation, metrics calculation"
 
     orch-synthesizer:
@@ -619,6 +671,8 @@ agent_permissions:
         - Glob
         - Grep
         - Bash
+        - mcp__memory-keeper__retrieve
+        - mcp__memory-keeper__search
       focus: "Cross-document synthesis, pattern extraction, recommendations"
 
 # ============================================================================
@@ -731,7 +785,7 @@ categories:
     description: "Workflow and task management"
 
   mcp:
-    tools: ["mcp__context7__*", "mcp__memory-keeper__*"]
+    tools: ["mcp__context7__resolve-library-id", "mcp__context7__query-docs", "mcp__memory-keeper__store", "mcp__memory-keeper__retrieve", "mcp__memory-keeper__search", "mcp__memory-keeper__list", "mcp__memory-keeper__delete"]
     risk: "low"
     description: "Model Context Protocol extensions"
 
@@ -740,7 +794,7 @@ categories:
 # ============================================================================
 
 metrics:
-  total_tools: 14
+  total_tools: 18  # 14 core + 2 Context7 + 5 Memory-Keeper (individual tools counted)
   total_agents: 25
   agents_by_family:
     core: 3
@@ -749,7 +803,8 @@ metrics:
     orchestration: 3
   agents_with_task_tool: 3
   agents_with_web_tools: 14
-  agents_with_mcp_tools: 5
+  agents_with_context7: 7  # 5 PS + 2 NSE
+  agents_with_memory_keeper: 7  # 3 orch + ps-architect + nse-requirements + 2 transcript
 
 ---
 
