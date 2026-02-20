@@ -9,12 +9,12 @@ PURPOSE: Split voice into internal framework voice + user-invocable session conv
 -->
 
 > **Type:** epic
-> **Status:** done
+> **Status:** in-progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** 2026-02-20
+> **Completed:** --
 > **Parent:** PROJ-003-je-ne-sais-quoi
 > **Owner:** --
 > **Target Quarter:** --
@@ -28,6 +28,8 @@ PURPOSE: Split voice into internal framework voice + user-invocable session conv
 | [Summary](#summary) | What this epic is about |
 | [Business Outcome Hypothesis](#business-outcome-hypothesis) | Why voice architecture matters |
 | [Children (Features)](#children-features) | Feature inventory |
+| [Bugs](#bugs) | Defects and fixes |
+| [Enablers](#enablers) | Architecture and infrastructure |
 | [Progress Summary](#progress-summary) | Overall epic progress |
 | [Related Items](#related-items) | Hierarchy and dependencies |
 | [History](#history) | Change log |
@@ -76,6 +78,22 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 
 ---
 
+## Bugs
+
+| ID | Title | Status | Severity | Parent |
+|----|-------|--------|----------|--------|
+| [BUG-002](./BUG-002-session-voice-reference-loading/BUG-002-session-voice-reference-loading.md) | Session Voice Skill Loads Rules Without Examples | pending | major | EPIC-003 |
+
+---
+
+## Enablers
+
+| ID | Title | Status | Priority | Progress |
+|----|-------|--------|----------|----------|
+| [EN-001](./EN-001-session-voice-reference-architecture/EN-001-session-voice-reference-architecture.md) | Session Voice Reference Architecture Fix | pending | high | 0% |
+
+---
+
 ## Progress Summary
 
 ### Status Overview
@@ -85,8 +103,10 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
 | Features:  [####################] 100% (2/2 complete)             |
+| Bugs:      [....................] 0% (0/1 resolved)               |
+| Enablers:  [....................] 0% (0/1 complete)               |
 +------------------------------------------------------------------+
-| Overall:   [####################] 100%                            |
+| Overall:   [############........] 67%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -96,9 +116,12 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 |--------|-------|
 | **Total Features** | 2 |
 | **Completed Features** | 2 |
-| **In Progress Features** | 0 |
-| **Pending Features** | 0 |
 | **Feature Completion %** | 100% |
+| **Total Bugs** | 1 |
+| **Resolved Bugs** | 0 |
+| **Total Enablers** | 1 |
+| **Completed Enablers** | 0 |
+| **Overall Progress** | 67% (features done, bug + enabler pending) |
 
 ---
 
@@ -140,6 +163,7 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 | 2026-02-20 | Claude | pending | Epic created. Splits voice into internal framework voice (refactor of existing `/saucer-boy`) and user-invocable session conversational voice (new `/saucer-boy` skill). 2 features. |
 | 2026-02-20 | Claude | in-progress | FEAT-001 complete: renamed `skills/saucer-boy/` to `skills/saucer-boy-framework-voice/`, updated all references in CLAUDE.md, AGENTS.md, mandatory-skill-usage.md, skill-standards.md, and agent files. |
 | 2026-02-20 | Claude | done | FEAT-002 complete: new `/saucer-boy` session conversational voice skill created with sb-voice agent. C2 adversary review passed (S-014 composite: 0.9225). All features delivered. |
+| 2026-02-20 | Claude | in-progress | Reopened: BUG-002 filed — session voice skill loads 300 lines of rules but 0 lines of voice examples, degrading voice quality vs unstructured persona invocation. EN-001 created with 6 tasks to fix reference architecture (embedded examples, ambient prompt, dual-mode routing, always-load references, `@` import investigation, comparative validation). |
 
 ---
 
