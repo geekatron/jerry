@@ -4,6 +4,12 @@
 """
 Domain exceptions for Jerry Framework.
 
+"Context rules everything around me"
+— Wu-Tang Clan, "C.R.E.A.M." (the Jerry remix)
+
+The original: cash rules everything. The framework version:
+without context, every LLM degrades. With it, the work holds.
+
 All domain-specific exceptions should be defined here.
 Application and infrastructure layers may wrap these in their own exceptions.
 

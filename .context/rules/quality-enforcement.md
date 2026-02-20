@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-24 |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-30 |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
@@ -62,6 +62,12 @@
 | H-22 | Proactive skill invocation | mandatory-skill-usage |
 | H-23 | Navigation table REQUIRED (NAV-001) | markdown-navigation |
 | H-24 | Anchor links REQUIRED (NAV-006) | markdown-navigation |
+| H-25 | Skill file MUST be exactly `SKILL.md` (case-sensitive) | skill-standards |
+| H-26 | Skill folder MUST use kebab-case, match `name` field | skill-standards |
+| H-27 | No `README.md` inside skill folder | skill-standards |
+| H-28 | Description: WHAT + WHEN + triggers, <1024 chars, no XML | skill-standards |
+| H-29 | Full repo-relative paths in SKILL.md | skill-standards |
+| H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
 
 ---
 

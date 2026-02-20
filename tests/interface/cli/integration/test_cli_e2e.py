@@ -95,7 +95,7 @@ class TestCLIEntryPoint:
             env=env,
         )
         assert result.returncode == 0
-        assert "JERRY_PROJECT: (not set)" in result.stdout
+        assert "JERRY_PROJECT not set." in result.stdout
 
     def test_jerry_projects_context_with_valid_project_exits_zero(self, venv_jerry: str):
         """jerry projects context with valid JERRY_PROJECT should exit with code 0."""
