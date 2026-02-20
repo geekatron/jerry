@@ -113,14 +113,18 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
 | SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | done | high | 8h |
-| SPIKE-002 | Spike | Jerry CLI Integration Architecture for Context Resilience | in_progress | high | 4h |
+| SPIKE-002 | Spike | Jerry CLI Integration Architecture for Context Resilience | done | high | 4h |
+| DISC-001 | Discovery | Hook-CLI Architecture Violations and Enforcement Tech Debt | documented | critical | -- |
+| DEC-001 | Decision | CLI-First Hook Architecture & Context Monitoring Bounded Context | pending | critical | -- |
 
-> Additional Stories/Enablers/Tasks to be defined after SPIKE-002 findings. SPIKE-002 supersedes SPIKE-001's follow-up work items with CLI-integrated alternatives.
+> DISC-001 identified that hooks bypass the CLI and that the enforcement folder is tech debt. DEC-001 captures 4 architectural decisions: CLI-first hooks, proper bounded context, `jerry hooks` commands, and separate enforcement tech debt tracking. Work items to be revised once DEC-001 is accepted.
 
 ### Work Item Links
 
 - [SPIKE-001: Research Context Measurement, Detection Thresholds & Resumption Protocols](./SPIKE-001-context-research.md)
 - [SPIKE-002: Jerry CLI Integration Architecture for Context Resilience](./SPIKE-002-cli-integration.md)
+- [DISC-001: Hook-CLI Architecture Violations and Enforcement Tech Debt](./DISC-001-architecture-violations.md)
+- [DEC-001: CLI-First Hook Architecture & Context Monitoring Bounded Context](./DEC-001-cli-first-architecture.md)
 
 ---
 
@@ -173,3 +177,5 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Feature created. Captures detection, checkpoint, and resumption requirements. Blocked on SPIKE-001 research. |
+| 2026-02-19 | Claude | pending | DISC-001 created: Hook-CLI architecture violations found during SPIKE-002 ADR review. 3 of 4 hooks bypass CLI. Enforcement folder is tech debt. |
+| 2026-02-19 | Claude | pending | DEC-001 created: 4 architectural decisions -- CLI-first hooks, proper bounded context, jerry hooks commands, enforcement debt tracked separately. Supersedes ADR-SPIKE002-001 approach. Pending user acceptance. |
