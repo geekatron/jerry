@@ -85,7 +85,8 @@ class TestProjectIsolation:
         """
         ARCHITECTURE: Project directory must have required structure.
 
-        Required: PLAN.md, WORKTRACKER.md, and standard category directories.
+        Required per worktracker-directory-structure.md: PLAN.md, WORKTRACKER.md, work/.
+        Category directories (research, synthesis, etc.) are optional.
         """
         # Required files
         required_files = ["PLAN.md", "WORKTRACKER.md"]
@@ -93,13 +94,9 @@ class TestProjectIsolation:
             file_path = proj_root / filename
             assert file_path.exists(), f"Missing required file: {filename}"
 
-        # Required directories (at least some should exist)
-        expected_dirs = ["research", "synthesis", "analysis", "decisions", "reports"]
-        existing_dirs = [d for d in expected_dirs if (proj_root / d).exists()]
-
-        assert len(existing_dirs) >= 3, (
-            f"Project should have at least 3 category directories, found: {existing_dirs}"
-        )
+        # Required directory
+        work_dir = proj_root / "work"
+        assert work_dir.exists(), "Missing required directory: work/"
 
 
 # =============================================================================

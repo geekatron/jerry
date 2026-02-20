@@ -44,6 +44,7 @@
 |----|-------|--------|----------|--------|
 | [BUG-001](./work/EPIC-001-je-ne-sais-quoi/BUG-001-cicd-pipeline-failures/BUG-001-cicd-pipeline-failures.md) | CI/CD Pipeline Failures on PR #37 | completed | major | EPIC-001 |
 | [BUG-002](./work/EPIC-003-voice-architecture/BUG-002-session-voice-reference-loading/BUG-002-session-voice-reference-loading.md) | Session Voice Skill Loads Rules Without Examples | pending | major | EPIC-003 |
+| [BUG-003](./work/EPIC-003-voice-architecture/BUG-003-proj006-incomplete-bootstrap/BUG-003-proj006-incomplete-bootstrap.md) | Project Validation Tests Enforce Undocumented Category Dir Requirement | completed | major | EPIC-003 |
 
 ---
 
@@ -81,3 +82,4 @@
 | 2026-02-20 | Claude | **EPIC-002 created:** Visual Identity Implementation. Future-looking epic to build the design spec from EPIC-001 FEAT-003 (`docs/design/saucer-boy-visual-identity.md`) into actual CLI infrastructure. 4 features: FEAT-001 rendering engine, FEAT-002 logo system, FEAT-003 status indicators, FEAT-004 visual integration. Project status reopened from COMPLETE to IN_PROGRESS. |
 | 2026-02-20 | Claude | **EPIC-003 created:** Voice Architecture. Splits voice into two concerns: (1) FEAT-001 refactors existing `/saucer-boy` to internal `/saucer-boy-framework-voice` (auto-loaded, not user-invocable), (2) FEAT-002 creates new user-invocable `/saucer-boy` for session conversational voice with McConkey personality + explicit invocation mode. |
 | 2026-02-20 | Claude | **BUG-002 filed:** Session voice skill loads 300 lines of rules but 0 lines of voice examples, degrading voice quality. **EN-001 created:** Reference architecture fix with 6 tasks (embed examples, ambient prompt, dual-mode routing, always-load references, `@` import investigation, comparative validation). EPIC-003 reopened from done to in-progress. |
+| 2026-02-20 | Claude | **BUG-003 filed:** PROJ-006 incomplete bootstrap breaks CI/CD. Commit `5adece9` bootstrapped PROJ-006 with only `decisions/` dir; project validation tests require >= 3 category dirs. Blocks all test matrix jobs across all branches. 2 tasks: TASK-001 add missing dirs, TASK-002 verify CI. |
