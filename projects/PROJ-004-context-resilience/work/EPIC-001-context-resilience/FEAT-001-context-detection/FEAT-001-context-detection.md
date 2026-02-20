@@ -112,13 +112,15 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | pending | high | 8h |
+| SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | done | high | 8h |
+| SPIKE-002 | Spike | Jerry CLI Integration Architecture for Context Resilience | in_progress | high | 4h |
 
-> Additional Stories/Enablers/Tasks to be defined after SPIKE-001 findings.
+> Additional Stories/Enablers/Tasks to be defined after SPIKE-002 findings. SPIKE-002 supersedes SPIKE-001's follow-up work items with CLI-integrated alternatives.
 
 ### Work Item Links
 
 - [SPIKE-001: Research Context Measurement, Detection Thresholds & Resumption Protocols](./SPIKE-001-context-research.md)
+- [SPIKE-002: Jerry CLI Integration Architecture for Context Resilience](./SPIKE-002-cli-integration.md)
 
 ---
 
