@@ -31,7 +31,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | done | high |
+| [EPIC-001](./work/EPIC-001-oss-release/EPIC-001-oss-release.md) | OSS Release Preparation | in_progress | high |
 | [EPIC-002](./work/EPIC-002-quality-enforcement/EPIC-002-quality-enforcement.md) | Quality Framework Enforcement & Course Correction | done | critical |
 | [EPIC-003](./work/EPIC-003-quality-implementation/EPIC-003-quality-implementation.md) | Quality Framework Implementation | done | critical |
 | ~~EPIC-005~~ | ~~Je Ne Sais Quoi — The Saucer Boy Spirit~~ | migrated | — | *Migrated to PROJ-003* |
@@ -66,6 +66,10 @@
 | [BUG-005](./work/EPIC-001-oss-release/BUG-005-version-bump-pipeline-failure/BUG-005-version-bump-pipeline-failure.md) | Version Bump Pipeline Fails on Merge to Main | completed | high | EPIC-001 |
 | [BUG-006](./work/EPIC-001-oss-release/BUG-006-version-bump-toml-tag-drift/BUG-006-version-bump-toml-tag-drift.md) | Version Bump Fails — TOML Quoting Bug + Version-Tag Drift | completed | high | EPIC-001 |
 | [BUG-007](./work/EPIC-001-oss-release/BUG-007-pages-build-jekyll-liquid-error/BUG-007-pages-build-jekyll-liquid-error.md) | GitHub Pages Build Fails — Jekyll Liquid Syntax Error | completed | high | EPIC-001 |
+| [BUG-008](./work/EPIC-001-oss-release/BUG-008-transcript-keyword-trigger-docs/BUG-008-transcript-keyword-trigger-docs.md) | Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable | pending | medium | EPIC-001 |
+| [BUG-009](./work/EPIC-001-oss-release/BUG-009-research-section-broken-navigation/BUG-009-research-section-broken-navigation.md) | Research Section — Broken Icon Navigation, Poor Catalog Naming, No Link Validation | done | high | EPIC-001 |
+| [BUG-010](./work/EPIC-001-oss-release/BUG-010-ci-lint-format-failure/BUG-010-ci-lint-format-failure.md) | CI Lint & Format Failure — Unformatted E2E Test File | done | high | EPIC-001 |
+| [BUG-011](./work/EPIC-001-oss-release/BUG-011-project-workflow-rule-conflict/BUG-011-project-workflow-rule-conflict.md) | project-workflow.md Duplicates and Conflicts with /worktracker Skill Rules | done | high | EPIC-001 |
 
 ---
 
@@ -242,6 +246,20 @@
 | 2026-02-19 | Claude | **Worktracker audit.** wt-verifier: FEAT-025 PASS (all 4 enablers clean). wt-auditor: 9 findings (3 errors, 4 warnings, 2 info). All findings remediated: EPIC-001 header updated to `done`, FEAT-023/EN-945 closed out with delivery evidence, FEAT-024 inline enabler table fixed, bug counts reconciled (19/19). **EPIC-001 CLOSED — clean.** |
 | 2026-02-18 | Claude | **Project directory cleanup.** Deleted orphan directories: `PROJ-001-plugin-cleanup` (empty scaffold, duplicate ID conflict), `PROJ-009-oss-release` (empty scaffold, false start). Neither was git-tracked or listed in `projects/README.md`. Staged `research/single-vs-multi-agent-analysis.md`. |
 | 2026-02-19 | Claude | **FEAT-026 COMPLETE.** Post-Public Documentation Refresh. 3 enablers (EN-955–957), 10 effort pts. C2 quality gate: S-003 + S-007 + S-002 + S-014 (0.8925 REVISE → 0.9195 PASS). INSTALLATION.md rewritten, docs/index.md enriched. **EPIC-001 CLOSED: 11/11 features, 44/44 enablers, 19/19 bugs. 100%.** |
+
+| 2026-02-19 | Claude | BUG-008 created under EPIC-001: Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable. Playbook and mandatory-skill-usage.md incorrectly exclude transcript from keyword triggers, citing Python script dependency. Python is VTT-only; LLM fallback handles non-VTT automatically. EPIC-001 reopened. |
+| 2026-02-19 | Claude | FEAT-027 created under EPIC-001: Research Section for Public Documentation Site. 5 enablers (EN-958–962), 18 effort pts. 47 research artifacts cataloged across 9 domains. Tiered approach: inline summaries + admonitions + GitHub cross-links. Dual audience (developers + AI/LLM community). Research catalog: `projects/PROJ-001-oss-release/research/bug008-research-catalog.md`. |
+| 2026-02-19 | Claude | EN-958 COMPLETE. Research Section Architecture & Navigation. Delivered: research page template (tiered layout with admonitions + GitHub cross-links), 11-page nav structure (1 landing + 5 Tier 1 + 5 Tier 2/3), `docs/research/index.md` landing page with grid cards. Internal artifact relocated to `docs/research/internal/`. |
+| 2026-02-19 | Claude | EN-959 COMPLETE. Tier 1 Flagship Research Pages. 5 pages for 7 artifacts: single-vs-multi-agent.md, adversarial-strategy-catalog.md, strategy-selection-enforcement.md, skill-compliance-framework.md, governance-constitutional-ai.md. |
+| 2026-02-19 | Claude | EN-960 COMPLETE. Tier 2/3 Supporting Research Pages. 5 domain pages for 16 artifacts: adversarial-deep-dives.md, oss-methodology.md, context-management.md, architecture-patterns.md, claude-code-ecosystem.md. |
+| 2026-02-19 | Claude | EN-961 COMPLETE. MkDocs Integration. `research/` removed from exclude_docs, `research/internal/` added. 11-page Research nav section added. `mkdocs build --strict` passes. Anchor fix in index.md. |
+| 2026-02-19 | Claude | EN-962 COMPLETE. Quality Gate & Adversarial Review. C2 gate: S-010 + S-003 + S-002 review, S-014 Iter1 scored 0.886 (REVISE). Addressed 6 findings (methodology blocks on 13 artifact sections, S-015 identity fix, TASK-002/003 entries, claim attribution, label consistency). S-014 Iter2 scored 0.93 (PASS). |
+| 2026-02-19 | Claude | **FEAT-027 COMPLETE.** Research Section for Public Documentation Site. 5/5 enablers done, 7/7 ACs PASS. 10 research pages + landing page, 23 artifacts exposed with inline key findings + expandable methodology/data + GitHub links. Quality gate: 0.93 (S-014). `mkdocs build --strict` clean. |
+| 2026-02-19 | Claude | BUG-009 created under EPIC-001: Research Section — Broken Icon Navigation, Poor Catalog Naming, No Link Validation. 3 defects: (1) pymdownx.emoji not configured → octicon icons render as text on all 11 research pages, (2) landing page links to `bug008-research-catalog.md` (poor naming for public site), (3) no automated link/icon validation tests. 4 tasks, 7 effort pts. |
+| 2026-02-19 | Claude | BUG-009 DONE. Fixed: (1) added pymdownx.emoji + attr_list + md_in_html extensions to mkdocs.yml — icons now render as SVGs, (2) renamed bug008-research-catalog.md → research-catalog.md, updated all refs, (3) added 3 e2e tests (icon rendering, link quality, anchor integrity) — all passing. AC-6 (CI integration) deferred. |
+| 2026-02-19 | Claude | BUG-010 created under EPIC-001: CI Lint & Format Failure — ruff format check fails on `tests/e2e/test_mkdocs_research_validation.py` (3 parenthesized assert messages). Blocks PR #36. EN-963 created (1 effort pt). |
+| 2026-02-19 | Claude | BUG-011 created under EPIC-001: `project-workflow.md` duplicates and conflicts with `/worktracker` skill rules. Two competing SSOTs for project structure, workflow phases, and project creation logic. Root cause: EN-201/EN-202 concurrent execution without reconciliation. GitHub Issue created for external tracking. |
+| 2026-02-19 | Claude | BUG-011 DONE. `project-workflow.md` rewritten: inline directory tree removed, SSOT references to `/worktracker` skill rules added, minimal orientation retained (DA-002), WTI cross-reference added, dual-pattern noted. /adversary C3 review: 8 strategies, 2 S-014 iterations (0.860 → 0.970 PASS). TASK-002 verification: hardlink intact (inode 51639207), H-04 present, 3299 tests pass. GitHub Issue #38. |
 
 ---
 
