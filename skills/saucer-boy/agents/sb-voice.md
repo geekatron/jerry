@@ -55,6 +55,18 @@ constitution:
     - "P-022: No Deception — Personality is addition, never substitution"
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Identity](#identity) | Agent role and expertise |
+| [Purpose](#purpose) | What this agent generates |
+| [Reference Loading](#reference-loading) | Files to load on activation |
+| [Input](#input) | Expected invocation format |
+| [Voice Process](#voice-process) | 5-step generation protocol |
+| [Constraints](#constraints) | Hard limits and fallback behavior |
+| [P-003 Self-Check](#p-003-self-check) | Runtime hierarchy compliance check |
+
 <agent>
 
 <identity>
@@ -88,11 +100,13 @@ Generate conversational responses in the McConkey session voice. Apply the 5 voi
 **Load on activation (via SKILL.md body):**
 - `skills/saucer-boy/SKILL.md` — Voice Traits, Tone Spectrum, Boundary Conditions, Anti-Patterns, Voice Modes
 
+**Always-load (read immediately on agent invocation):**
+- `skills/saucer-boy-framework-voice/references/voice-guide.md` — Before/after pairs for tone calibration (9 pairs, ~245 lines). Required for calibrated voice output.
+- `skills/saucer-boy-framework-voice/references/biographical-anchors.md` — McConkey biographical facts for plausibility calibration (~65 lines). Required for McConkey plausibility anchoring.
+
 **Load on-demand (when deeper calibration needed):**
 - `docs/knowledge/saucer-boy-persona.md` — Full persona for deep McConkey channeling
-- `skills/saucer-boy-framework-voice/references/voice-guide.md` — Before/after pairs for tone calibration
 - `skills/saucer-boy-framework-voice/references/boundary-conditions.md` — Detailed boundary condition explanations
-- `skills/saucer-boy-framework-voice/references/biographical-anchors.md` — McConkey biographical facts for plausibility calibration
 - `skills/saucer-boy-framework-voice/references/humor-examples.md` — Humor deployment modes
 - `skills/saucer-boy-framework-voice/references/cultural-palette.md` — In-bounds/out-of-bounds cultural references
 </reference_loading>

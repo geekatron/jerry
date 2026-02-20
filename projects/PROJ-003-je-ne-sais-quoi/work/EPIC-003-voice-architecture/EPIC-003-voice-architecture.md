@@ -90,7 +90,7 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| [EN-001](./EN-001-session-voice-reference-architecture/EN-001-session-voice-reference-architecture.md) | Session Voice Reference Architecture Fix | pending | high | 0% |
+| [EN-001](./EN-001-session-voice-reference-architecture/EN-001-session-voice-reference-architecture.md) | Session Voice Reference Architecture Fix | done | high | 100% |
 
 ---
 
@@ -104,9 +104,9 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 +------------------------------------------------------------------+
 | Features:  [####################] 100% (2/2 complete)             |
 | Bugs:      [....................] 0% (0/1 resolved)               |
-| Enablers:  [....................] 0% (0/1 complete)               |
+| Enablers:  [####################] 100% (1/1 complete)             |
 +------------------------------------------------------------------+
-| Overall:   [############........] 67%                             |
+| Overall:   [################....] 83%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -120,8 +120,8 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 | **Total Bugs** | 1 |
 | **Resolved Bugs** | 0 |
 | **Total Enablers** | 1 |
-| **Completed Enablers** | 0 |
-| **Overall Progress** | 67% (features done, bug + enabler pending) |
+| **Completed Enablers** | 1 |
+| **Overall Progress** | 83% (features + enabler done, bug pending) |
 
 ---
 
