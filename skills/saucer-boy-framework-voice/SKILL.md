@@ -1,16 +1,15 @@
 ---
-name: saucer-boy
+name: saucer-boy-framework-voice
 description: >-
-  Voice quality gate for the Saucer Boy persona. Reviews, rewrites, and scores
-  framework output text for persona compliance using the Shane McConkey ethos:
-  joy and excellence as multipliers. Use when checking voice compliance of
-  quality gate messages, error messages, CLI output, hook text, documentation
-  comments, or any framework-generated text that developers read.
-version: "1.0.0"
+  INTERNAL SKILL — auto-loaded for framework output voice quality. Reviews,
+  rewrites, and scores framework output text for persona compliance using the
+  Shane McConkey ethos: joy and excellence as multipliers. Governs quality gate
+  messages, error messages, CLI output, hook text, and framework-generated text.
+  Not user-invocable; loaded automatically when framework output needs voice
+  enforcement.
+version: "1.1.0"
 allowed-tools: Read, Write, Edit, Glob, Grep
 activation-keywords:
-  - "saucer boy"
-  - "saucer-boy"
   - "voice check"
   - "voice review"
   - "persona compliance"
@@ -18,15 +17,14 @@ activation-keywords:
   - "voice rewrite"
   - "voice fidelity"
   - "voice score"
-  - "mcconkey"
   - "framework voice"
-  - "saucer boy review"
   - "persona review"
 ---
 
-# Saucer Boy Skill
+# Framework Voice Skill (Internal)
 
-> **Version:** 1.0.0
+> **INTERNAL SKILL** — Auto-loaded for framework output. Not user-invocable.
+> **Version:** 1.1.0
 > **Framework:** Jerry Voice Quality (SB)
 > **Constitutional Compliance:** Jerry Constitution v1.0
 > **Canonical Source:** The persona document (`projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md`) is the authoritative reference (DEC-001 D-002). This skill operationalizes it.
@@ -77,7 +75,7 @@ The Saucer Boy skill is a **voice quality gate** for Jerry framework outputs. It
 
 ### What This Skill Is NOT
 
-This skill is NOT a Claude personality modifier. It governs what Jerry says in its outputs (CLI messages, hook text, error messages, documentation). It does NOT govern how Claude reasons, plans, or discusses work with the developer. Those behaviors are governed by constitutional constraints (H-01 through H-24).
+This skill is NOT a Claude personality modifier or session conversational voice. It governs what Jerry says in its framework outputs (CLI messages, hook text, error messages, documentation). It does NOT govern how Claude Code talks to the developer during work sessions — that is the `/saucer-boy` session conversational voice skill. Constitutional constraints (H-01 through H-30) govern reasoning and planning behavior.
 
 ---
 
@@ -189,14 +187,14 @@ These define what the persona is NEVER. Each is a hard gate for sb-reviewer.
 
 | # | Boundary | One-Line Summary | Full Explanation |
 |---|----------|-----------------|-----------------|
-| 1 | NOT Sarcastic | Humor is inclusive -- laughing with, never at. | `skills/saucer-boy/references/boundary-conditions.md` (section per boundary) |
-| 2 | NOT Dismissive of Rigor | The voice must never signal the quality system is optional. | `skills/saucer-boy/references/boundary-conditions.md` |
-| 3 | NOT Unprofessional in High Stakes | Constitutional failures, governance escalations, security failures: humor is OFF. | `skills/saucer-boy/references/boundary-conditions.md` |
-| 4 | NOT Bro-Culture Adjacent | No exclusionary irony. The persona satirizes arrogance, not celebrates it. | `skills/saucer-boy/references/boundary-conditions.md` |
-| 5 | NOT Performative Quirkiness | No strained references, try-hard whimsy, or emoji overload. | `skills/saucer-boy/references/boundary-conditions.md` |
-| 6 | NOT a Character Override of Claude | Voice layer for framework outputs, NOT a Claude personality modifier. | `skills/saucer-boy/references/boundary-conditions.md` |
-| 7 | NOT a Replacement for Information | Persona is always in addition to information, never instead of it. | `skills/saucer-boy/references/boundary-conditions.md` |
-| 8 | NOT Mechanical Assembly | Passing every checklist and still reading as hollow is the meta-failure mode. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 1 | NOT Sarcastic | Humor is inclusive -- laughing with, never at. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` (section per boundary) |
+| 2 | NOT Dismissive of Rigor | The voice must never signal the quality system is optional. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 3 | NOT Unprofessional in High Stakes | Constitutional failures, governance escalations, security failures: humor is OFF. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 4 | NOT Bro-Culture Adjacent | No exclusionary irony. The persona satirizes arrogance, not celebrates it. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 5 | NOT Performative Quirkiness | No strained references, try-hard whimsy, or emoji overload. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 6 | NOT a Character Override of Claude | Voice layer for framework outputs, NOT a Claude personality modifier. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 7 | NOT a Replacement for Information | Persona is always in addition to information, never instead of it. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 8 | NOT Mechanical Assembly | Passing every checklist and still reading as hollow is the meta-failure mode. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
 
 ---
 
@@ -220,7 +218,7 @@ The underlying character stays constant. The expression adapts.
 | Routine informational | Low | None | Medium | Efficient -- don't waste time |
 | Onboarding / new developer | Medium | Warm | Low | Invitation -- the system is learnable |
 
-See `skills/saucer-boy/references/audience-adaptation.md` for audience-specific elaboration notes.
+See `skills/saucer-boy-framework-voice/references/audience-adaptation.md` for audience-specific elaboration notes.
 
 ---
 
@@ -256,9 +254,9 @@ Before shipping any text in the Saucer Boy voice, apply these tests in order. **
 | `sb-rewriter` | Voice Transformation | sonnet | Text needs voice transformation | Rewritten text with trait annotations | `docs/rewrites/voice/` |
 | `sb-calibrator` | Voice Fidelity Scorer | sonnet | Quantitative voice scoring needed | Per-trait scores (0-1) + composite | `docs/scores/voice/` |
 
-**Agent definitions:** `skills/saucer-boy/agents/{sb-reviewer,sb-rewriter,sb-calibrator}.md`
+**Agent definitions:** `skills/saucer-boy-framework-voice/agents/{sb-reviewer,sb-rewriter,sb-calibrator}.md`
 
-**Scoring rubric:** sb-calibrator's per-trait scoring bands (0-1 scale) and composite aggregation formula (equal-weighted average, 4-trait in no-humor contexts) are defined in `skills/saucer-boy/agents/sb-calibrator.md`. Equal weighting reflects that all 5 traits are co-equal load-bearing attributes — a deficiency in any single trait produces a noticeably off-voice result. The Voice Traits table above provides the trait definitions; the agent file provides the operationalized rubric.
+**Scoring rubric:** sb-calibrator's per-trait scoring bands (0-1 scale) and composite aggregation formula (equal-weighted average, 4-trait in no-humor contexts) are defined in `skills/saucer-boy-framework-voice/agents/sb-calibrator.md`. Equal weighting reflects that all 5 traits are co-equal load-bearing attributes — a deficiency in any single trait produces a noticeably off-voice result. The Voice Traits table above provides the trait definitions; the agent file provides the operationalized rubric.
 
 ---
 
@@ -319,7 +317,7 @@ Task(
     prompt="""
 You are the sb-reviewer agent (v1.0.0).
 
-Read your agent definition: skills/saucer-boy/agents/sb-reviewer.md
+Read your agent definition: skills/saucer-boy-framework-voice/agents/sb-reviewer.md
 
 ## SB CONTEXT (REQUIRED)
 - **Text Path:** {path to text file}
@@ -380,16 +378,16 @@ Reference files are on-demand. They are NOT loaded by default. Each agent's defi
 
 | File | Content | When to Load | Primary Consumer |
 |------|---------|--------------|-----------------|
-| `skills/saucer-boy/references/voice-guide.md` | 9 before/after voice pairs | Calibrating rewrites; scoring voice fidelity | sb-rewriter, sb-calibrator |
-| `skills/saucer-boy/references/humor-examples.md` | Humor modes with deployment examples | Generating or validating humor content | sb-rewriter, sb-reviewer |
-| `skills/saucer-boy/references/cultural-palette.md` | In-bounds/out-of-bounds cultural references | Generating or validating cultural references | sb-rewriter, sb-reviewer |
-| `skills/saucer-boy/references/boundary-conditions.md` | Full 7+1 boundary condition explanations | Boundary violation detected or suspected | sb-reviewer, sb-calibrator |
-| `skills/saucer-boy/references/audience-adaptation.md` | Audience-specific elaboration notes | Audience context needs detail beyond the matrix | sb-rewriter, sb-reviewer, sb-calibrator |
-| `skills/saucer-boy/references/biographical-anchors.md` | McConkey biographical facts for calibration | McConkey plausibility test (Authenticity Test 2) | sb-calibrator, sb-rewriter, sb-reviewer |
-| `skills/saucer-boy/references/implementation-notes.md` | FEAT-004/006/007 specific guidance | Working on a downstream feature | All agents |
-| `skills/saucer-boy/references/tone-spectrum-examples.md` | Before/after examples per tone level | Calibrating tone for specific contexts | sb-rewriter, sb-calibrator |
-| `skills/saucer-boy/references/vocabulary-reference.md` | Term substitutions, forbidden constructions | Vocabulary selection or validation | sb-rewriter, sb-reviewer |
-| `skills/saucer-boy/references/visual-vocabulary.md` | ASCII, emoji, formatting, terminal colors | Formatting decisions in output | sb-rewriter |
+| `skills/saucer-boy-framework-voice/references/voice-guide.md` | 9 before/after voice pairs | Calibrating rewrites; scoring voice fidelity | sb-rewriter, sb-calibrator |
+| `skills/saucer-boy-framework-voice/references/humor-examples.md` | Humor modes with deployment examples | Generating or validating humor content | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy-framework-voice/references/cultural-palette.md` | In-bounds/out-of-bounds cultural references | Generating or validating cultural references | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy-framework-voice/references/boundary-conditions.md` | Full 7+1 boundary condition explanations | Boundary violation detected or suspected | sb-reviewer, sb-calibrator |
+| `skills/saucer-boy-framework-voice/references/audience-adaptation.md` | Audience-specific elaboration notes | Audience context needs detail beyond the matrix | sb-rewriter, sb-reviewer, sb-calibrator |
+| `skills/saucer-boy-framework-voice/references/biographical-anchors.md` | McConkey biographical facts for calibration | McConkey plausibility test (Authenticity Test 2) | sb-calibrator, sb-rewriter, sb-reviewer |
+| `skills/saucer-boy-framework-voice/references/implementation-notes.md` | FEAT-004/006/007 specific guidance | Working on a downstream feature | All agents |
+| `skills/saucer-boy-framework-voice/references/tone-spectrum-examples.md` | Before/after examples per tone level | Calibrating tone for specific contexts | sb-rewriter, sb-calibrator |
+| `skills/saucer-boy-framework-voice/references/vocabulary-reference.md` | Term substitutions, forbidden constructions | Vocabulary selection or validation | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy-framework-voice/references/visual-vocabulary.md` | ASCII, emoji, formatting, terminal colors | Formatting decisions in output | sb-rewriter |
 
 ---
 
@@ -454,7 +452,7 @@ The persona document (ps-creator-001-draft.md) is the canonical source (DEC-001 
 
 ---
 
-*Skill Version: 1.0.0*
+*Skill Version: 1.1.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Canonical Source: ps-creator-001-draft.md*
 *Created: 2026-02-19*

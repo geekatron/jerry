@@ -9,7 +9,7 @@ PURPOSE: Rename and refactor existing /saucer-boy skill to internal framework vo
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
@@ -84,23 +84,23 @@ Refactor the existing `/saucer-boy` skill into `/saucer-boy-framework-voice` —
 
 ### Definition of Done
 
-- [ ] `skills/saucer-boy/` renamed to `skills/saucer-boy-framework-voice/` via `git mv`
-- [ ] SKILL.md updated: name, purpose narrowed to framework output, marked as internal
-- [ ] `/saucer-boy` removed from user-invocable skills in CLAUDE.md
-- [ ] AGENTS.md updated with new paths and section name
-- [ ] `mandatory-skill-usage.md` updated with auto-load trigger for framework output
-- [ ] All agent files (sb-reviewer, sb-rewriter, sb-calibrator) updated with new paths
-- [ ] All cross-references in worktracker docs updated
-- [ ] No broken links remain referencing old `skills/saucer-boy/` path
-- [ ] Existing tests still pass (voice enforcement unchanged, just renamed)
+- [x] `skills/saucer-boy/` renamed to `skills/saucer-boy-framework-voice/` via `git mv`
+- [x] SKILL.md updated: name, purpose narrowed to framework output, marked as internal
+- [x] `/saucer-boy` removed from user-invocable skills in CLAUDE.md
+- [x] AGENTS.md updated with new paths and section name
+- [x] `mandatory-skill-usage.md` updated with auto-load trigger for framework output
+- [x] All agent files (sb-reviewer, sb-rewriter, sb-calibrator) updated with new paths
+- [x] All cross-references in worktracker docs updated
+- [x] No broken links remain referencing old `skills/saucer-boy/` path
+- [x] Existing tests still pass (voice enforcement unchanged, just renamed)
 
 ### Non-Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| NFC-1 | Git history preserved via `git mv` (not delete + create) | [ ] |
-| NFC-2 | No functional changes to agents — rename only | [ ] |
-| NFC-3 | Framework voice behavior unchanged after rename | [ ] |
+| NFC-1 | Git history preserved via `git mv` (not delete + create) | [x] |
+| NFC-2 | No functional changes to agents — rename only | [x] |
+| NFC-3 | Framework voice behavior unchanged after rename | [x] |
 
 ---
 
@@ -122,9 +122,9 @@ Refactor the existing `/saucer-boy` skill into `/saucer-boy-framework-voice` —
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [....................] 0% (0/0)                        |
+| Enablers:  [####################] 100% (all complete)             |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [####################] 100%                            |
 +------------------------------------------------------------------+
 ```
 
@@ -159,6 +159,7 @@ Refactor the existing `/saucer-boy` skill into `/saucer-boy-framework-voice` —
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Feature created. Refactors existing `/saucer-boy` to internal `/saucer-boy-framework-voice`. Rename + reference updates only — no functional changes to voice enforcement. |
+| 2026-02-20 | Claude | done | Implemented: git mv, SKILL.md updated (name, version 1.1.0, internal marker), all 3 agent identities updated, CLAUDE.md/AGENTS.md/mandatory-skill-usage.md/skill-standards.md references updated, EPIC-003 and FEAT-001 worktracker docs updated. All tests pass. |
 
 ---
 

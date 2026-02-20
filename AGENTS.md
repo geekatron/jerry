@@ -15,7 +15,7 @@
 | [Adversary Skill Agents](#adversary-skill-agents) | adv-* agents (3 total) |
 | [Worktracker Skill Agents](#worktracker-skill-agents) | wt-* agents (3 total) |
 | [Transcript Skill Agents](#transcript-skill-agents) | ts-* agents (5 total) |
-| [Saucer Boy Skill Agents](#saucer-boy-skill-agents) | sb-* agents (3 total) |
+| [Framework Voice Skill Agents](#framework-voice-skill-agents) | sb-* agents (3 total) |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
 
@@ -43,7 +43,7 @@ to specific skills. This provides:
 | Adversary Agents | 3 | `/adversary` skill |
 | Worktracker Agents | 3 | `/worktracker` skill |
 | Transcript Agents | 5 | `/transcript` skill |
-| Saucer Boy Agents | 3 | `/saucer-boy` skill |
+| Framework Voice Agents | 3 | `/saucer-boy-framework-voice` skill |
 | **Total** | **36** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
@@ -228,15 +228,15 @@ These agents parse, extract, and format transcript files.
 
 ---
 
-## Saucer Boy Skill Agents
+## Framework Voice Skill Agents
 
-These agents are scoped to the `saucer-boy` skill and invoked via `/saucer-boy`.
+These agents are scoped to the `saucer-boy-framework-voice` skill (internal, not user-invocable).
 
 | Agent | File | Role | Cognitive Mode |
 |-------|------|------|----------------|
-| `sb-reviewer` | `skills/saucer-boy/agents/sb-reviewer.md` | Voice compliance review — evaluates text against 5 Authenticity Tests | convergent |
-| `sb-rewriter` | `skills/saucer-boy/agents/sb-rewriter.md` | Voice transformation — rewrites framework output to Saucer Boy voice | divergent |
-| `sb-calibrator` | `skills/saucer-boy/agents/sb-calibrator.md` | Voice fidelity scoring — scores text on 0-1 scale across 5 voice traits | convergent |
+| `sb-reviewer` | `skills/saucer-boy-framework-voice/agents/sb-reviewer.md` | Voice compliance review — evaluates text against 5 Authenticity Tests | convergent |
+| `sb-rewriter` | `skills/saucer-boy-framework-voice/agents/sb-rewriter.md` | Voice transformation — rewrites framework output to Saucer Boy voice | divergent |
+| `sb-calibrator` | `skills/saucer-boy-framework-voice/agents/sb-calibrator.md` | Voice fidelity scoring — scores text on 0-1 scale across 5 voice traits | convergent |
 
 **Progressive Disclosure**: Agents load reference files on-demand to minimize context window usage. Always-load files vary by agent (sb-rewriter: voice-guide.md + vocabulary-reference.md; sb-calibrator: voice-guide.md; sb-reviewer: SKILL.md body only).
 
