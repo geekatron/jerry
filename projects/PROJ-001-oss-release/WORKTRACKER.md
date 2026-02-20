@@ -69,6 +69,7 @@
 | [BUG-008](./work/EPIC-001-oss-release/BUG-008-transcript-keyword-trigger-docs/BUG-008-transcript-keyword-trigger-docs.md) | Transcript Skill Incorrectly Documented as Non-Keyword-Triggerable | pending | medium | EPIC-001 |
 | [BUG-009](./work/EPIC-001-oss-release/BUG-009-research-section-broken-navigation/BUG-009-research-section-broken-navigation.md) | Research Section — Broken Icon Navigation, Poor Catalog Naming, No Link Validation | done | high | EPIC-001 |
 | [BUG-010](./work/EPIC-001-oss-release/BUG-010-ci-lint-format-failure/BUG-010-ci-lint-format-failure.md) | CI Lint & Format Failure — Unformatted E2E Test File | done | high | EPIC-001 |
+| [BUG-011](./work/EPIC-001-oss-release/BUG-011-project-workflow-rule-conflict/BUG-011-project-workflow-rule-conflict.md) | project-workflow.md Duplicates and Conflicts with /worktracker Skill Rules | done | high | EPIC-001 |
 
 ---
 
@@ -257,6 +258,8 @@
 | 2026-02-19 | Claude | BUG-009 created under EPIC-001: Research Section — Broken Icon Navigation, Poor Catalog Naming, No Link Validation. 3 defects: (1) pymdownx.emoji not configured → octicon icons render as text on all 11 research pages, (2) landing page links to `bug008-research-catalog.md` (poor naming for public site), (3) no automated link/icon validation tests. 4 tasks, 7 effort pts. |
 | 2026-02-19 | Claude | BUG-009 DONE. Fixed: (1) added pymdownx.emoji + attr_list + md_in_html extensions to mkdocs.yml — icons now render as SVGs, (2) renamed bug008-research-catalog.md → research-catalog.md, updated all refs, (3) added 3 e2e tests (icon rendering, link quality, anchor integrity) — all passing. AC-6 (CI integration) deferred. |
 | 2026-02-19 | Claude | BUG-010 created under EPIC-001: CI Lint & Format Failure — ruff format check fails on `tests/e2e/test_mkdocs_research_validation.py` (3 parenthesized assert messages). Blocks PR #36. EN-963 created (1 effort pt). |
+| 2026-02-19 | Claude | BUG-011 created under EPIC-001: `project-workflow.md` duplicates and conflicts with `/worktracker` skill rules. Two competing SSOTs for project structure, workflow phases, and project creation logic. Root cause: EN-201/EN-202 concurrent execution without reconciliation. GitHub Issue created for external tracking. |
+| 2026-02-19 | Claude | BUG-011 DONE. `project-workflow.md` rewritten: inline directory tree removed, SSOT references to `/worktracker` skill rules added, minimal orientation retained (DA-002), WTI cross-reference added, dual-pattern noted. /adversary C3 review: 8 strategies, 2 S-014 iterations (0.860 → 0.970 PASS). TASK-002 verification: hardlink intact (inode 51639207), H-04 present, 3299 tests pass. GitHub Issue #38. |
 
 ---
 
