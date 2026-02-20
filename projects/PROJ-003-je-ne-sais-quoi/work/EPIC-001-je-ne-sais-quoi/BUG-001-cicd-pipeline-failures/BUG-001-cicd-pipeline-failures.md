@@ -139,16 +139,16 @@ All CI checks pass (green). PR is mergeable.
 
 ### Fix Verification
 
-- [ ] `ruff format --check . --config=pyproject.toml` passes with 0 files to reformat
-- [ ] No files in repository contain `:` in filenames
-- [ ] All references to renamed files updated (WORKTRACKER.md, FEAT-002, orchestration docs)
-- [ ] All CI checks pass on PR #37 (push and re-run)
+- [x] `ruff format --check . --config=pyproject.toml` passes with 0 files to reformat
+- [x] No files in repository contain `:` in filenames
+- [x] All references to renamed files updated (WORKTRACKER.md, FEAT-002, orchestration docs)
+- [x] All CI checks pass on PR #37 (push and re-run)
 
 ### Quality Checklist
 
-- [ ] Existing tests still passing (3299 pass)
-- [ ] No new issues introduced
-- [ ] Commit pushed and CI re-triggered
+- [x] Existing tests still passing (3299 pass)
+- [x] No new issues introduced
+- [x] Commit pushed and CI re-triggered
 
 ---
 
@@ -165,9 +165,9 @@ All CI checks pass (green). PR is mergeable.
 
 | Verification | Method | Result | Verified By | Date |
 |--------------|--------|--------|-------------|------|
-| Lint passes | `ruff format --check` | -- | -- | -- |
-| Windows checkout succeeds | CI re-run | -- | -- | -- |
-| All CI green | `gh pr checks 37` | -- | -- | -- |
+| Lint passes | `ruff format --check` | PASS | Claude (local) + CI | 2026-02-20 |
+| Windows checkout succeeds | CI re-run (commit 9925169) | PASS | CI runs 22213080150, 22213080610 | 2026-02-20 |
+| All CI green | `gh pr checks 37` | PASS (40+ checks, 0 failures) | CI | 2026-02-20 |
 
 ---
 
@@ -177,6 +177,7 @@ All CI checks pass (green). PR is mergeable.
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Bug filed. 2 root causes identified: ruff format (1 file), Windows-incompatible filenames (4 files with colons). 3 tasks created. |
 | 2026-02-20 | Claude | completed | All 3 tasks done. S-010 self-review identified 4 findings: FINDING-1 (MAJOR, convention doc fixed), FINDING-2 (MINOR, AC corrected), FINDING-3 (MINOR, statuses updated), FINDING-4 (NOTE, pre-existing FEAT-002 relative link depth fixed). |
+| 2026-02-20 | Claude | completed | **CI VERIFIED.** All checks passing on commit `9925169` (CI runs 22213080150, 22213080610). Lint & Format: PASS. Windows tests (pip+uv, 3.13+3.14): PASS. All acceptance criteria checked off. Bug fully resolved. |
 
 ---
 
