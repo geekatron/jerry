@@ -205,6 +205,51 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
    )
    ```
 
+**AST-Based Operations (PREFERRED for template compliance and metadata extraction):**
+
+Use the `/ast` skill operations for structured validation instead of manual
+template comparison. These provide schema-validated, machine-readable results.
+
+5. **Extracting metadata via AST (replaces Grep for frontmatter patterns):**
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("projects/PROJ-009/.../EN-001-example.md")
+   # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
+   entity_type = fm.get("Type", "")
+   parent_id = fm.get("Parent", "")
+   status = fm.get("Status", "")
+   ```
+
+6. **Schema-based template compliance (replaces manual section checking):**
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file
+   # Entity type detected from filename prefix: EN-* -> "enabler", TASK-* -> "task", etc.
+   result = validate_file("projects/PROJ-009/.../EN-001-example.md", schema="enabler")
+   # Returns: {
+   #   "schema_valid": True/False,
+   #   "schema_violations": [
+   #     {"field_path": "frontmatter.Status", "message": "...", "severity": "error"},
+   #     {"field_path": "sections.Summary", "message": "...", "severity": "error"},
+   #   ],
+   #   "nav_table_valid": True/False,
+   #   "missing_nav_entries": [...],
+   # }
+   ```
+
+7. **Validating nav table compliance (H-23/H-24):**
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   result = validate_nav_table_file("projects/PROJ-009/.../EN-001-example.md")
+   # Returns: {"is_valid": True/False, "missing_entries": [...], "orphaned_entries": [...]}
+   ```
+
+**Migration Note (ST-007):** For the `template_compliance` audit check type,
+PREFER `validate_file(path, schema=entity_type)` over manual Read+Grep template
+comparison. The AST schema validation checks required frontmatter fields, valid
+status values, required sections, and nav table compliance in a single call.
+Schema violations include field_path, expected/actual values, and severity --
+directly usable for audit report issue tables.
+
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents
 - **P-020 VIOLATION:** DO NOT auto-fix issues without user approval
@@ -415,15 +460,15 @@ Failure to persist is a P-002 violation.
 3. Build file inventory for coverage tracking
 
 ### Phase 2: Template Compliance Check
-1. For each file, identify its type (EN-*, TASK-*, BUG-*, etc.)
-2. Read corresponding template from `.context/templates/worktracker/{TYPE}.md`
-3. Verify required sections present
-4. Check frontmatter metadata
-5. Validate status values
+1. For each file, detect entity type from filename prefix (EN-* -> enabler, TASK-* -> task, etc.)
+2. Run `validate_file(path, schema=entity_type)` via /ast skill for AST-based validation
+3. Schema validation checks required frontmatter fields, valid status values, required sections
+4. Collect `schema_violations` from result for error reporting
+5. Optionally cross-reference with template from `.context/templates/worktracker/{TYPE}.md`
 6. Log violations as **errors**
 
 ### Phase 3: Relationship Integrity Check
-1. Extract `parent_id` from each file
+1. Extract `Parent` field from each file via `query_frontmatter()` [/ast]
 2. Verify parent file exists
 3. Verify parent lists this child in Children section
 4. Build dependency graph
@@ -437,8 +482,8 @@ Failure to persist is a P-002 violation.
 4. Log orphans as **warnings**
 
 ### Phase 5: Status Consistency Check
-1. For each parent, aggregate child statuses
-2. Flag parent=DONE if any child not DONE
+1. For each parent, aggregate child statuses via `query_frontmatter()` [/ast]
+2. Flag parent fm["Status"]=="completed" if any child fm["Status"] != "completed"
 3. Flag status=BLOCKED without IMP-* reference
 4. Flag status=IN_PROGRESS with all children PENDING
 5. Log violations as **warnings**

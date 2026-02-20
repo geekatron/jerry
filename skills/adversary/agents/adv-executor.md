@@ -225,6 +225,36 @@ Read(file_path="{deliverable_path}")
 ```
 Read the full deliverable content for analysis.
 
+**AST-Based Pre-Check (PREFERRED before raw Read for structured deliverables):**
+
+Before executing the strategy protocol, use the `/ast` skill to inspect deliverable
+structure. This surfaces entity type, frontmatter, and nav table compliance without
+consuming the full content in the strategy execution context.
+
+```python
+# 1. Identify entity type from frontmatter (replaces guessing from filename)
+from skills.ast.scripts.ast_ops import query_frontmatter
+fm = query_frontmatter("{deliverable_path}")
+# Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
+entity_type = fm.get("Type", "unknown")
+
+# 2. Check structural completeness (nav table, heading count)
+from skills.ast.scripts.ast_ops import parse_file
+info = parse_file("{deliverable_path}")
+# Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
+# Use heading_count to assess completeness before executing strategy steps
+
+# 3. Validate entity schema for schema-backed deliverables (stories, enablers, etc.)
+from skills.ast.scripts.ast_ops import validate_file
+result = validate_file("{deliverable_path}", schema=entity_type)
+# Returns: {"schema_valid": True/False, "schema_violations": [...]}
+# Schema violations are themselves potential findings (Major severity)
+```
+
+**Migration Note (ST-010):** When the deliverable is a Jerry entity file (story, enabler,
+task, bug, feature, epic), PREFER `query_frontmatter()` + `validate_file()` over raw text
+parsing to identify the entity type and surface schema violations as structured findings.
+
 ### Step 3: Execute Strategy Protocol
 Follow the template's Execution Protocol section (loaded in Step 1) step-by-step:
 1. Apply each protocol step to the deliverable

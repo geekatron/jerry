@@ -1,0 +1,976 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for PROJ-005 FEAT-001 Implementation
+# Document ID: PROJ-005-FEAT001-IMPL-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-02-20T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "feat001-impl-20260220-001"
+  name: "PROJ-005 FEAT-001 Implementation: ST-001 through ST-010"
+  project_id: "PROJ-005"
+  version: "1.0"
+  created_at: "2026-02-20T00:00:00Z"
+  updated_at: "2026-02-20T00:00:00Z"
+  status: "ACTIVE"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "user"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL_BOTTLENECK
+    - FAN_OUT
+    - FAN_IN
+    - HIERARCHICAL
+
+  prerequisites:
+    - id: "EN-001"
+      name: "R-01 PoC"
+      status: "COMPLETE"
+      artifact: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/R01_RESULTS.md"
+    - id: "SPIKE-001"
+      name: "Library Landscape"
+      status: "COMPLETE"
+      artifact: "projects/PROJ-005-markdown-ast/orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md"
+    - id: "SPIKE-002"
+      name: "Feasibility Assessment"
+      status: "COMPLETE"
+      artifact: "projects/PROJ-005-markdown-ast/orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+
+  stack_decision:
+    primary_library: "markdown-it-py"
+    primary_version: "4.0.0"
+    formatter: "mdformat"
+    formatter_version: "1.0.0"
+    plugins: "mdit-py-plugins"
+    plugins_version: "0.5.0"
+    dependencies_installed: true
+
+  constraints:
+    max_agent_nesting: 1           # P-003: Single nesting level
+    file_persistence: true         # P-002: All state to filesystem
+    user_authority: true           # P-020: User approves aggregate gates
+    max_concurrent_agents: 4       # Phase 2 fan-out maximum
+    max_story_retries: 2           # Circuit breaker per story
+    max_qg_iterations: 5           # Circuit breaker for aggregate quality gates (min 3, max 5)
+    checkpoint_frequency: "STORY"  # Recovery at story completion boundaries
+
+# =============================================================================
+# QUALITY CONFIGURATION
+# =============================================================================
+quality:
+  # Individual story quality (C1 - Routine)
+  c1_story:
+    criticality: "C1"
+    type: "self_review"
+    strategies:
+      - "S-010"  # Self-Refine only
+    threshold: "pass_fail"  # All AC checkboxes met
+
+  # Aggregate phase quality (C2 - Standard)
+  c2_aggregate:
+    criticality: "C2"
+    threshold: 0.92
+    scoring_mechanism: "S-014"
+    required_strategies:
+      - "S-007"  # Constitutional AI Critique
+      - "S-002"  # Devil's Advocate
+      - "S-014"  # LLM-as-Judge
+    strategy_order:
+      - "S-010"  # Self-Refine (self-review per H-15)
+      - "S-003"  # Steelman (before Devil's Advocate per H-16)
+      - "S-007"  # Constitutional AI Critique (required for C2)
+      - "S-002"  # Devil's Advocate (required for C2)
+      - "S-014"  # LLM-as-Judge (scoring - always last)
+    min_iterations: 3
+    circuit_breaker_iterations: 5
+
+  scoring_dimensions:
+    - dimension: "Completeness"
+      weight: 0.20
+    - dimension: "Internal Consistency"
+      weight: 0.20
+    - dimension: "Methodological Rigor"
+      weight: 0.20
+    - dimension: "Evidence Quality"
+      weight: 0.15
+    - dimension: "Actionability"
+      weight: 0.15
+    - dimension: "Traceability"
+      weight: 0.10
+
+  score_bands:
+    PASS: ">= 0.92"
+    REVISE: "0.85 - 0.91"
+    REJECTED: "< 0.85"
+
+  gate_scores:
+    pg1: null  # C1 pass/fail
+    pg2: null  # C2 aggregate score
+    pg3: null  # C1 pass/fail x2
+    pg4: null  # C1 pass/fail x2
+    pg5: null  # C2 final aggregate score
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "orchestration/feat001-impl-20260220-001/"
+  pipeline: "{base}impl/{phase_id}/{agent_id}/"
+  quality: "{base}quality/{gate_id}/"
+  transitions: "{base}phase-transitions/"
+
+# =============================================================================
+# STORY REGISTRY
+# =============================================================================
+stories:
+  - id: "ST-001"
+    name: "Implement JerryDocument Facade"
+    phase: 1
+    effort_sp: 5
+    estimated_loc: 130
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-001-jerry-document/ST-001-jerry-document.md"
+    files_to_create:
+      - "src/domain/markdown_ast/__init__.py"
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "tests/unit/domain/markdown_ast/__init__.py"
+      - "tests/unit/domain/markdown_ast/test_jerry_document.py"
+    depends_on: []
+    blocks:
+      - "ST-002"
+      - "ST-003"
+      - "ST-004"
+      - "ST-006"
+      - "ST-008"
+
+  - id: "ST-002"
+    name: "Implement Blockquote Frontmatter Extension"
+    phase: 2
+    effort_sp: 5
+    estimated_loc: 220
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-002-frontmatter-ext/ST-002-frontmatter-ext.md"
+    files_to_create:
+      - "src/domain/markdown_ast/frontmatter.py"
+      - "tests/unit/domain/markdown_ast/test_frontmatter.py"
+    depends_on:
+      - "ST-001"
+    blocks:
+      - "ST-005"
+      - "ST-006"
+
+  - id: "ST-003"
+    name: "Implement L2-REINJECT Parser"
+    phase: 2
+    effort_sp: 3
+    estimated_loc: 120
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-003-reinject-parser/ST-003-reinject-parser.md"
+    files_to_create:
+      - "src/domain/markdown_ast/reinject.py"
+      - "tests/unit/domain/markdown_ast/test_reinject.py"
+    depends_on:
+      - "ST-001"
+    blocks: []
+
+  - id: "ST-004"
+    name: "Add jerry ast CLI Commands"
+    phase: 2
+    effort_sp: 3
+    estimated_loc: 250
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-004-cli-commands/ST-004-cli-commands.md"
+    files_to_create:
+      - "src/interface/cli/ast_commands.py"
+      - "tests/unit/interface/cli/test_ast_commands.py"
+    depends_on:
+      - "ST-001"
+    blocks:
+      - "ST-009"
+
+  - id: "ST-005"
+    name: "Create /ast Claude Skill"
+    phase: 3
+    effort_sp: 3
+    estimated_loc: null  # Skill definition, not code
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-005-ast-skill/ST-005-ast-skill.md"
+    files_to_create:
+      - "skills/ast/SKILL.md"
+    depends_on:
+      - "ST-001"
+      - "ST-002"
+    blocks:
+      - "ST-007"
+      - "ST-010"
+
+  - id: "ST-006"
+    name: "Implement Schema Validation Engine"
+    phase: 3
+    effort_sp: 5
+    estimated_loc: null  # Medium complexity
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-006-schema-validation/ST-006-schema-validation.md"
+    files_to_create:
+      - "src/domain/markdown_ast/schema_validator.py"
+      - "tests/unit/domain/markdown_ast/test_schema_validator.py"
+    depends_on:
+      - "ST-001"
+      - "ST-002"
+    blocks:
+      - "ST-007"
+      - "ST-009"
+
+  - id: "ST-007"
+    name: "/worktracker Migration"
+    phase: 4
+    effort_sp: 3
+    estimated_loc: null  # Migration, modifies existing files
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-007-worktracker-migration/ST-007-worktracker-migration.md"
+    files_to_create: []  # Modifies existing skill files
+    depends_on:
+      - "ST-005"
+      - "ST-006"
+    blocks:
+      - "ST-010"
+
+  - id: "ST-008"
+    name: "Implement Navigation Table Helpers"
+    phase: 2
+    effort_sp: 3
+    estimated_loc: 120
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-008-nav-table-helpers/ST-008-nav-table-helpers.md"
+    files_to_create:
+      - "src/domain/markdown_ast/nav_table.py"
+      - "tests/unit/domain/markdown_ast/test_nav_table.py"
+    depends_on:
+      - "ST-001"
+    blocks:
+      - "ST-009"
+
+  - id: "ST-009"
+    name: "Add Pre-commit Hook"
+    phase: 4
+    effort_sp: 2
+    estimated_loc: null  # Config + small script
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-009-precommit-hook/ST-009-precommit-hook.md"
+    files_to_create: []  # Creates/modifies hook config
+    depends_on:
+      - "ST-004"
+      - "ST-006"
+      - "ST-008"
+    blocks: []
+
+  - id: "ST-010"
+    name: "Remaining Skill Migrations"
+    phase: 5
+    effort_sp: 5
+    estimated_loc: null  # Migration, modifies existing files
+    status: "complete"
+    entity_file: "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-010-remaining-migrations/ST-010-remaining-migrations.md"
+    files_to_create: []  # Modifies existing skill files
+    depends_on:
+      - "ST-007"
+      - "ST-005"
+    blocks: []
+
+# =============================================================================
+# AGENT REGISTRY
+# =============================================================================
+agents:
+  - id: "impl-st001"
+    story: "ST-001"
+    phase: 1
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-1-bottleneck/impl-st001/st001-completion-report.md"
+    key_inputs:
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/R01_RESULTS.md"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/r01_poc.py"
+      - "projects/PROJ-005-markdown-ast/orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-001-jerry-document/ST-001-jerry-document.md"
+      - ".context/rules/architecture-standards.md"
+      - ".context/rules/coding-standards.md"
+      - ".context/rules/testing-standards.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st002"
+    story: "ST-002"
+    phase: 2
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-2-wave1/impl-st002/st002-completion-report.md"
+    key_inputs:
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-002-frontmatter-ext/ST-002-frontmatter-ext.md"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/r01_poc.py"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st003"
+    story: "ST-003"
+    phase: 2
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-2-wave1/impl-st003/st003-completion-report.md"
+    key_inputs:
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-003-reinject-parser/ST-003-reinject-parser.md"
+      - "CLAUDE.md"  # Contains actual L2-REINJECT comment examples
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st004"
+    story: "ST-004"
+    phase: 2
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-2-wave1/impl-st004/st004-completion-report.md"
+    key_inputs:
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "src/interface/cli/main.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-004-cli-commands/ST-004-cli-commands.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st005"
+    story: "ST-005"
+    phase: 3
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-3-wave2/impl-st005/st005-completion-report.md"
+    key_inputs:
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "src/domain/markdown_ast/frontmatter.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-005-ast-skill/ST-005-ast-skill.md"
+      - "skills/worktracker/SKILL.md"  # Reference example for skill structure
+      - ".context/rules/mandatory-skill-usage.md"
+      - ".context/rules/markdown-navigation-standards.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st006"
+    story: "ST-006"
+    phase: 3
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-3-wave2/impl-st006/st006-completion-report.md"
+    key_inputs:
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "src/domain/markdown_ast/frontmatter.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-006-schema-validation/ST-006-schema-validation.md"
+      - "skills/worktracker/rules/worktracker-entity-hierarchy.md"  # Entity type definitions
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st007"
+    story: "ST-007"
+    phase: 4
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-4-wave3/impl-st007/st007-completion-report.md"
+    key_inputs:
+      - "skills/ast/SKILL.md"
+      - "src/domain/markdown_ast/schema_validator.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-007-worktracker-migration/ST-007-worktracker-migration.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st008"
+    story: "ST-008"
+    phase: 2
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-2-wave1/impl-st008/st008-completion-report.md"
+    key_inputs:
+      - "src/domain/markdown_ast/jerry_document.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-008-nav-table-helpers/ST-008-nav-table-helpers.md"
+      - ".context/rules/markdown-navigation-standards.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st009"
+    story: "ST-009"
+    phase: 4
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-4-wave3/impl-st009/st009-completion-report.md"
+    key_inputs:
+      - "src/interface/cli/ast_commands.py"
+      - "src/domain/markdown_ast/schema_validator.py"
+      - "src/domain/markdown_ast/nav_table.py"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-009-precommit-hook/ST-009-precommit-hook.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+  - id: "impl-st010"
+    story: "ST-010"
+    phase: 5
+    role: "implementation"
+    model: "sonnet"
+    status: "COMPLETE"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+    artifact: "orchestration/feat001-impl-20260220-001/impl/phase-5-completion/impl-st010/st010-completion-report.md"
+    key_inputs:
+      - "skills/ast/SKILL.md"
+      - "src/domain/markdown_ast/"
+      - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-010-remaining-migrations/ST-010-remaining-migrations.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+
+# =============================================================================
+# PHASE DEFINITIONS
+# =============================================================================
+phases:
+  - id: "phase-1"
+    name: "Sequential Bottleneck"
+    path_id: "phase-1-bottleneck"
+    execution_mode: "SEQUENTIAL"
+    max_concurrent: 1
+    status: "COMPLETE"
+    depends_on: []
+    stories:
+      - "ST-001"
+    agents:
+      - "impl-st001"
+    quality_gate: "pg1"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+
+  - id: "phase-2"
+    name: "Fan-Out Wave 1"
+    path_id: "phase-2-wave1"
+    execution_mode: "PARALLEL"
+    max_concurrent: 4
+    status: "COMPLETE"
+    depends_on:
+      - "phase-1"
+    stories:
+      - "ST-002"
+      - "ST-003"
+      - "ST-004"
+      - "ST-008"
+    agents:
+      - "impl-st002"
+      - "impl-st003"
+      - "impl-st004"
+      - "impl-st008"
+    quality_gate: "pg2"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+
+  - id: "phase-3"
+    name: "Fan-Out Wave 2"
+    path_id: "phase-3-wave2"
+    execution_mode: "PARALLEL"
+    max_concurrent: 2
+    status: "COMPLETE"
+    depends_on:
+      - "phase-2"
+    stories:
+      - "ST-005"
+      - "ST-006"
+    agents:
+      - "impl-st005"
+      - "impl-st006"
+    quality_gate: "pg3"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+
+  - id: "phase-4"
+    name: "Fan-Out Wave 3"
+    path_id: "phase-4-wave3"
+    execution_mode: "PARALLEL"
+    max_concurrent: 2
+    status: "COMPLETE"
+    depends_on:
+      - "phase-3"
+    stories:
+      - "ST-007"
+      - "ST-009"
+    agents:
+      - "impl-st007"
+      - "impl-st009"
+    quality_gate: "pg4"
+    story_level_deps:
+      ST-007:
+        depends_on: ["ST-005", "ST-006"]
+      ST-009:
+        depends_on: ["ST-004", "ST-006", "ST-008"]
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+
+  - id: "phase-5"
+    name: "Sequential Completion"
+    path_id: "phase-5-completion"
+    execution_mode: "SEQUENTIAL"
+    max_concurrent: 1
+    status: "COMPLETE"
+    depends_on:
+      - "phase-4"
+    stories:
+      - "ST-010"
+    agents:
+      - "impl-st010"
+    quality_gate: "pg5"
+    started_at: "2026-02-20T00:00:00Z"
+    completed_at: "2026-02-20T00:00:00Z"
+
+# =============================================================================
+# QUALITY GATES
+# =============================================================================
+quality_gates:
+  - id: "pg1"
+    name: "Phase Gate 1: ST-001 Individual QA"
+    type: "C1_STORY"
+    status: "PASS"
+    depends_on:
+      - "phase-1"
+    stories_in_scope:
+      - "ST-001"
+    strategies:
+      - "S-010"
+    threshold: "pass_fail"
+    checks:
+      - "All AC checkboxes confirmed"
+      - "Tests written before implementation (H-20)"
+      - "90%+ line coverage (H-21) via uv run pytest --cov"
+      - "Type hints on all public methods (H-11)"
+      - "Docstrings on all public methods (H-12)"
+      - "One class per file (H-10)"
+      - "Domain purity: no external imports (H-07)"
+    artifact: "orchestration/feat001-impl-20260220-001/quality/pg1/st001-qa-report.md"
+    result: "PASS"
+    notes: "43/43 tests pass, all AC met, type hints + docstrings verified, domain purity maintained"
+    completed_at: "2026-02-20T00:00:00Z"
+
+  - id: "pg2"
+    name: "Phase Gate 2: Phase 2 Aggregate QA"
+    type: "C2_AGGREGATE"
+    status: "PLANNED"
+    depends_on:
+      - "pg1"
+      - "phase-2"
+    stories_in_scope:
+      - "ST-002"
+      - "ST-003"
+      - "ST-004"
+      - "ST-008"
+    threshold: 0.92
+    min_iterations: 3
+    max_iterations: 5
+    strategy_order:
+      - "S-010"  # Self-Refine (self-review per H-15)
+      - "S-003"  # Steelman (before Devil's Advocate per H-16)
+      - "S-007"  # Constitutional AI Critique
+      - "S-002"  # Devil's Advocate
+      - "S-014"  # LLM-as-Judge (scoring - always last)
+    artifacts:
+      iteration_critique_pattern: "orchestration/feat001-impl-20260220-001/quality/pg2/iteration-{N}-critique.md"
+      final_score: "orchestration/feat001-impl-20260220-001/quality/pg2/final-score.md"
+    iteration_scores: []
+    final_score: null
+    completed_at: null
+
+  - id: "pg3"
+    name: "Phase Gate 3: Phase 3 Individual QA"
+    type: "C1_STORY"
+    status: "PLANNED"
+    depends_on:
+      - "pg2"
+      - "phase-3"
+    stories_in_scope:
+      - "ST-005"
+      - "ST-006"
+    strategies:
+      - "S-010"
+    threshold: "pass_fail"
+    artifacts:
+      st005: "orchestration/feat001-impl-20260220-001/quality/pg3/st005-qa-report.md"
+      st006: "orchestration/feat001-impl-20260220-001/quality/pg3/st006-qa-report.md"
+    results:
+      st005: null
+      st006: null
+    completed_at: null
+
+  - id: "pg4"
+    name: "Phase Gate 4: Phase 4 Individual QA"
+    type: "C1_STORY"
+    status: "PLANNED"
+    depends_on:
+      - "pg3"
+      - "phase-4"
+    stories_in_scope:
+      - "ST-007"
+      - "ST-009"
+    strategies:
+      - "S-010"
+    threshold: "pass_fail"
+    additional_check: "Existing test suite must remain fully green (no regression)"
+    artifacts:
+      st007: "orchestration/feat001-impl-20260220-001/quality/pg4/st007-qa-report.md"
+      st009: "orchestration/feat001-impl-20260220-001/quality/pg4/st009-qa-report.md"
+    results:
+      st007: null
+      st009: null
+    completed_at: null
+
+  - id: "pg5"
+    name: "Phase Gate 5: Final Aggregate QA (FEAT-001 Complete)"
+    type: "C2_FINAL"
+    status: "PLANNED"
+    depends_on:
+      - "pg4"
+      - "phase-5"
+    stories_in_scope:
+      - "ST-001"
+      - "ST-002"
+      - "ST-003"
+      - "ST-004"
+      - "ST-005"
+      - "ST-006"
+      - "ST-007"
+      - "ST-008"
+      - "ST-009"
+      - "ST-010"
+    threshold: 0.92
+    min_iterations: 3
+    max_iterations: 5
+    strategy_order:
+      - "S-010"  # Self-Refine
+      - "S-003"  # Steelman (before S-002 per H-16)
+      - "S-007"  # Constitutional AI Critique
+      - "S-002"  # Devil's Advocate
+      - "S-014"  # LLM-as-Judge (final scoring)
+    review_dimensions:
+      - "Cross-story API consistency (JerryDocument used uniformly)"
+      - "H-rules compliance across all new files"
+      - "Hexagonal architecture layer adherence (H-07, H-08, H-09)"
+      - "Test coverage aggregate >= 90%"
+      - "Migration regressions: existing tests fully green"
+      - "FEAT-001 entity and child story entities all updated to complete"
+    artifacts:
+      iteration_critique_pattern: "orchestration/feat001-impl-20260220-001/quality/pg5/iteration-{N}-critique.md"
+      final_score: "orchestration/feat001-impl-20260220-001/quality/pg5/final-quality-score.md"
+    iteration_scores: []
+    final_score: null
+    completed_at: null
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 7
+  groups:
+    # Phase 1: Sequential Bottleneck
+    - id: 1
+      name: "Phase 1: ST-001 JerryDocument Facade"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: []
+      agents:
+        - "impl-st001"
+      description: "Implement JerryDocument facade -- foundational component for all downstream stories"
+
+    - id: 2
+      name: "Phase Gate 1: ST-001 Individual QA"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: ["group-1"]
+      gate: "pg1"
+      description: "S-010 self-review: AC checklist, 90% coverage, type hints, docstrings, domain purity"
+
+    # Phase 2: Fan-Out Wave 1 (4 parallel agents)
+    - id: 3
+      name: "Phase 2: Fan-Out Wave 1 (ST-002, ST-003, ST-004, ST-008)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: ["group-2"]
+      max_concurrent: 4
+      agents:
+        - "impl-st002"
+        - "impl-st003"
+        - "impl-st004"
+        - "impl-st008"
+      description: "Parallel implementation of frontmatter extension, reinject parser, CLI commands, nav table helpers"
+
+    - id: 4
+      name: "Phase Gate 2: Phase 2 Aggregate QA"
+      execution_mode: "SEQUENTIAL"
+      status: "PLANNED"
+      blocked_by: ["group-3"]
+      gate: "pg2"
+      tasks:
+        - "iteration-1: Aggregate review (S-010 self-refine) -> S-003 steelman -> S-007 constitutional -> S-002 devil's advocate -> S-014 score"
+        - "iteration-2: Apply critiques to revisions -> S-014 score"
+        - "iteration-3: Final revision cycle -> S-014 final score (must >= 0.92)"
+      description: "C2 aggregate quality gate: min 3 iterations, S-007+S-002+S-014, threshold 0.92"
+
+    # Phase 3: Fan-Out Wave 2 (2 parallel agents)
+    - id: 5
+      name: "Phase 3: Fan-Out Wave 2 (ST-005, ST-006)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: ["group-4"]
+      max_concurrent: 2
+      agents:
+        - "impl-st005"
+        - "impl-st006"
+      description: "Parallel implementation of /ast skill and schema validation engine"
+
+    - id: 6
+      name: "Phase Gate 3: Phase 3 Individual QA"
+      execution_mode: "SEQUENTIAL"
+      status: "PLANNED"
+      blocked_by: ["group-5"]
+      gate: "pg3"
+      description: "S-010 self-review for ST-005 and ST-006 individually"
+
+    # Phase 4: Fan-Out Wave 3 (2 parallel agents)
+    - id: 7
+      name: "Phase 4: Fan-Out Wave 3 (ST-007, ST-009)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: ["group-6"]
+      max_concurrent: 2
+      agents:
+        - "impl-st007"
+        - "impl-st009"
+      description: "Parallel migration and pre-commit hook implementation"
+
+    - id: 8
+      name: "Phase Gate 4: Phase 4 Individual QA"
+      execution_mode: "SEQUENTIAL"
+      status: "PLANNED"
+      blocked_by: ["group-7"]
+      gate: "pg4"
+      description: "S-010 self-review for ST-007 and ST-009 + regression check on full test suite"
+
+    # Phase 5: Sequential Completion
+    - id: 9
+      name: "Phase 5: Sequential Completion (ST-010)"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: ["group-8"]
+      agents:
+        - "impl-st010"
+      description: "Final skill migrations depending on ST-007 and ST-005"
+
+    - id: 10
+      name: "Phase Gate 5: Final Aggregate QA (FEAT-001 Complete)"
+      execution_mode: "SEQUENTIAL"
+      status: "PLANNED"
+      blocked_by: ["group-9"]
+      gate: "pg5"
+      tasks:
+        - "iteration-1: Cross-story aggregate review -> S-003 steelman -> S-007 constitutional -> S-002 devil's advocate -> S-014 score"
+        - "iteration-2: Apply critiques -> S-014 score"
+        - "iteration-3: Final revision -> S-014 final score (must >= 0.92)"
+        - "Update FEAT-001 entity status to complete"
+      description: "C2 final aggregate: cross-story consistency, H-rules compliance, migration regression check"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    stories_complete: 10
+    stories_total: 10
+    stories_percent: 100
+    phases_complete: 5
+    phases_total: 5
+    phases_percent: 100
+    quality_gates_complete: 1
+    quality_gates_total: 5
+    quality_gates_percent: 20
+    agents_executed: 10
+    agents_total: 10
+    agents_percent: 100
+    total_effort_sp: 39
+    effort_complete_sp: 39
+
+  quality:
+    pg1_result: "PASS"
+    pg2_score: null
+    pg3_result: null
+    pg4_result: null
+    pg5_score: null
+    pg2_iterations: 0
+    pg5_iterations: 0
+
+  coverage:
+    overall_coverage_before: null
+    overall_coverage_after: null
+    new_module_coverage: {}
+
+  timing:
+    workflow_started: null
+    phase_1_started: null
+    phase_1_completed: null
+    phase_2_started: null
+    phase_2_completed: null
+    phase_3_started: null
+    phase_3_completed: null
+    phase_4_started: null
+    phase_4_completed: null
+    phase_5_started: null
+    phase_5_completed: null
+    last_activity: "2026-02-20T00:00:00Z"
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Dispatch impl-st001: Implement JerryDocument facade"
+      agent: "impl-st001"
+      execution_mode: "SEQUENTIAL"
+      story: "ST-001"
+      description: "BDD test-first: write tests, implement JerryDocument class with parse/render/query/transform, verify 90% coverage"
+      unblocked_by: "Prerequisites all COMPLETE"
+
+  subsequent:
+    - action: "Phase Gate 1: ST-001 individual QA"
+      depends_on: "ST-001 complete"
+    - action: "Dispatch Phase 2 (ST-002, ST-003, ST-004, ST-008) in parallel"
+      depends_on: "PG-1 passed"
+    - action: "Phase Gate 2: Aggregate C2 quality gate (3+ iterations)"
+      depends_on: "ST-002+003+004+008 all complete"
+    - action: "Dispatch Phase 3 (ST-005, ST-006) in parallel"
+      depends_on: "PG-2 passed"
+    - action: "Phase Gate 3: ST-005 and ST-006 individual QA"
+      depends_on: "ST-005+006 complete"
+    - action: "Dispatch Phase 4 (ST-007, ST-009) in parallel"
+      depends_on: "PG-3 passed"
+    - action: "Phase Gate 4: ST-007 and ST-009 individual QA + regression check"
+      depends_on: "ST-007+009 complete"
+    - action: "Dispatch Phase 5 (ST-010)"
+      depends_on: "PG-4 passed"
+    - action: "Phase Gate 5: Final C2 aggregate quality gate (3+ iterations)"
+      depends_on: "ST-010 complete"
+    - action: "Mark FEAT-001 complete in worktracker"
+      depends_on: "PG-5 passed"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "ALL 10/10 stories COMPLETE. All 5 phases COMPLETE. 461 FEAT-001 tests pass. 3788 full suite pass (2 pre-existing PROJ-006 failures). Pending: PG5 final aggregate quality gate."
+  next_step: "Execute Phase Gate 5 (PG5): C2 final aggregate quality gate, then mark FEAT-001 complete"
+
+  files_to_read:
+    - "orchestration/feat001-impl-20260220-001/ORCHESTRATION_PLAN.md"
+    - "orchestration/feat001-impl-20260220-001/ORCHESTRATION.yaml"
+
+  key_reference_files:
+    - "projects/PROJ-005-markdown-ast/orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+    - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/R01_RESULTS.md"
+    - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/EN-001-r01-poc/r01_poc.py"
+
+  cross_session_portable: true
+  ephemeral_references: false

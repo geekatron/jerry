@@ -155,6 +155,36 @@ Read(file_path="{deliverable_path}")
 ```
 Read the full deliverable content.
 
+**AST-Based Structural Pre-Check (PREFERRED for entity deliverables):**
+
+Before reading the full deliverable, use the `/ast` skill to extract frontmatter context
+and check structural completeness. This informs dimension scoring without loading full
+document content into the scoring context prematurely.
+
+```python
+# 1. Extract entity context for scoring setup
+from skills.ast.scripts.ast_ops import query_frontmatter
+fm = query_frontmatter("{deliverable_path}")
+# Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
+# Use entity type to apply the correct rubric interpretation
+
+# 2. Check nav table compliance for H-23/H-24 (affects Completeness dimension)
+from skills.ast.scripts.ast_ops import validate_nav_table_file
+nav_result = validate_nav_table_file("{deliverable_path}")
+# Returns: {"is_valid": True/False, "missing_entries": [...], "orphaned_entries": [...]}
+# Nav table violations reduce the Completeness dimension score
+
+# 3. Parse document structure for structural completeness assessment
+from skills.ast.scripts.ast_ops import parse_file
+info = parse_file("{deliverable_path}")
+# Returns: {"heading_count": N, "has_frontmatter": bool, "node_types": [...]}
+# Use heading_count as a proxy for section coverage (Completeness dimension)
+```
+
+**Migration Note (ST-010):** For entity deliverables (Jerry work items, rule files),
+`validate_nav_table_file()` violations SHOULD lower the Completeness dimension score.
+Missing nav table entries indicate incomplete document structure per H-23/H-24.
+
 ### Step 2: Read Strategy Findings (if available)
 ```
 Read(file_path="{strategy_execution_report_path}")
