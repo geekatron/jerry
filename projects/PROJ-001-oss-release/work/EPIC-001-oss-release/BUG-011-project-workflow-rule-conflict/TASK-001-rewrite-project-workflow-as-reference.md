@@ -1,7 +1,7 @@
 # TASK-001: Rewrite project-workflow.md to Reference /worktracker Skill Rules as SSOT
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Created:** 2026-02-19
 > **Parent:** BUG-011
@@ -51,13 +51,13 @@ Rewrite `.context/rules/project-workflow.md` to eliminate competing definitions 
 
 ## Acceptance Criteria
 
-- [ ] AC-1: No inline project directory tree — replaced with brief orientation note + reference to `worktracker-directory-structure.md`
-- [ ] AC-2: Workflow phases retain high-level before/during/after guide with cross-reference to WTI integrity rules
-- [ ] AC-3: Project creation logic references worktracker directory structure and entity hierarchy
-- [ ] AC-4: H-04 active project HARD rule unchanged
-- [ ] AC-5: No inline competing structural definitions remain (no code-block directory trees that redefine the worktracker structure)
-- [ ] AC-6: File path references resolve to existing files
-- [ ] AC-7: `/adversary` C3 review passes on the rewritten `project-workflow.md` (AE-002: touches `.context/rules/` — required strategies: S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014)
+- [x] AC-1: No inline project directory tree — replaced with brief orientation note + reference to `worktracker-directory-structure.md`
+- [x] AC-2: Workflow phases retain high-level before/during/after guide with cross-reference to WTI integrity rules
+- [x] AC-3: Project creation logic references worktracker directory structure and entity hierarchy
+- [x] AC-4: H-04 active project HARD rule unchanged
+- [x] AC-5: No inline competing structural definitions remain (no code-block directory trees that redefine the worktracker structure)
+- [x] AC-6: File path references resolve to existing files
+- [x] AC-7: `/adversary` C3 review PASS — score 0.970 (threshold 0.92). Strategies: S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014. Two iterations: 0.860 (REVISE) → 0.970 (PASS).
 
 ---
 
@@ -118,11 +118,11 @@ project-workflow.md
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] No inline directory tree remains
-- [ ] References resolve to correct files
-- [ ] H-04 still enforced at session start
-- [ ] Minimal orientation context retained for sessions without /worktracker invocation
+- [x] Acceptance criteria verified
+- [x] No inline directory tree remains
+- [x] References resolve to correct files
+- [x] H-04 still enforced at session start
+- [x] Minimal orientation context retained for sessions without /worktracker invocation
 
 ---
 
@@ -132,5 +132,6 @@ project-workflow.md
 |------|--------|-------|
 | 2026-02-19 | Created | Rewrite project-workflow.md to reference worktracker skill rules. AE-002: auto-C3. |
 | 2026-02-19 | Updated | /adversary C2 findings applied: DA-002 (retain minimal orientation, not pointers-only), SR-004 (workflow phases = add cross-ref, not rewrite), SR-005/DA-004 (AC-5 replaced with substantive criterion), SR-009 (C3 strategies noted in constraints). |
+| 2026-02-19 | done | Rewrite complete. C3 adversary review: 8 strategies (S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014). Iteration 1: 0.860 (REVISE — 4 minor gaps). Iteration 2: 0.970 (PASS). All ACs verified. |
 
 ---

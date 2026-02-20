@@ -1,7 +1,7 @@
 # TASK-002: Verify No Behavioral Drift After Rewrite
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Created:** 2026-02-19
 > **Parent:** BUG-011
@@ -41,12 +41,12 @@ Verify that the rewritten `project-workflow.md` (TASK-001) does not change sessi
 
 ## Acceptance Criteria
 
-- [ ] AC-1: `.claude/rules/project-workflow.md` and `.context/rules/project-workflow.md` share the same inode (hardlink verification)
-- [ ] AC-2: H-04 active project requirement text is present and unchanged in the rewritten file
-- [ ] AC-3: Project resolution instructions (`<project-required>`, `<project-error>`) are present
-- [ ] AC-4: All file path references in the rewritten file resolve to existing files
-- [ ] AC-5: Full test suite passes (`uv run pytest tests/ -x`)
-- [ ] AC-6: Rewritten file contains minimal structural orientation (project path pattern, key files) — not just pointers
+- [x] AC-1: `.claude/rules/project-workflow.md` and `.context/rules/project-workflow.md` share the same inode (hardlink verification) — inode 51639207
+- [x] AC-2: H-04 active project requirement text is present and unchanged in the rewritten file — 3 matches
+- [x] AC-3: Project resolution instructions (`<project-required>`, `<project-error>`) are present — 1 line match
+- [x] AC-4: All file path references in the rewritten file resolve to existing files — 3/3 exist
+- [x] AC-5: Full test suite passes (`uv run pytest tests/ -x`) — 3299 passed, 63 skipped
+- [x] AC-6: Rewritten file contains minimal structural orientation (project path pattern, key files) — 4 keyword matches
 
 ---
 
@@ -99,14 +99,14 @@ uv run pytest tests/ -x --timeout=60
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Verification results | Test output | (populated on completion) |
+| Verification results | Test output | All 6 ACs verified — see AC checklist above |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
-- [ ] Hardlink intact (same inode)
-- [ ] All referenced files exist
-- [ ] Test suite green
+- [x] Acceptance criteria verified
+- [x] Hardlink intact (same inode 51639207)
+- [x] All referenced files exist (3/3)
+- [x] Test suite green (3299 passed, 63 skipped)
 
 ---
 
@@ -116,5 +116,6 @@ uv run pytest tests/ -x --timeout=60
 |------|--------|-------|
 | 2026-02-19 | Created | Verify no behavioral drift after TASK-001 rewrite. Blocked by TASK-001. |
 | 2026-02-19 | Updated | /adversary C2 findings applied: SR-001 (fixed hardlink vs symlink — AC-1 now checks inode), SR-006/DA-005 (removed vacuous ruff checks AC-6/AC-7), DA-002 (added minimal orientation verification AC-6). |
+| 2026-02-19 | done | All 6 ACs verified. Hardlink intact (inode 51639207). H-04 present. Project resolution present. 3 referenced files exist. 3299 tests pass. Minimal orientation retained. |
 
 ---

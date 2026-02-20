@@ -1,17 +1,17 @@
 # BUG-011: project-workflow.md Duplicates and Conflicts with /worktracker Skill Rules
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** EPIC-001
 > **Owner:** --
 > **Found In:** 0.2.3
-> **Fix Version:** --
+> **Fix Version:** 0.2.4
 
 ---
 
@@ -117,8 +117,8 @@ Compared `.context/rules/project-workflow.md` against the authoritative worktrac
 
 | ID | Title | Status | Effort |
 |----|-------|--------|--------|
-| TASK-001 | Rewrite `project-workflow.md` to reference worktracker skill rules as SSOT | pending | 2 |
-| TASK-002 | Verify no behavioral drift after rewrite (test session start behavior) | pending | 1 |
+| TASK-001 | Rewrite `project-workflow.md` to reference worktracker skill rules as SSOT | done | 2 |
+| TASK-002 | Verify no behavioral drift after rewrite (test session start behavior) | done | 1 |
 
 ---
 
@@ -134,12 +134,16 @@ Compared `.context/rules/project-workflow.md` against the authoritative worktrac
 
 ### Fix Verification
 
-_(To be completed when status changes to done)_
+| Evidence | Type | Description | Date |
+|----------|------|-------------|------|
+| Rewritten `project-workflow.md` | File | Inline tree removed, SSOT references added, minimal orientation retained | 2026-02-19 |
+| TASK-002 verification | Test output | Hardlink (inode 51639207), H-04 present, references resolve, 3299 tests pass | 2026-02-19 |
+| `/adversary` C3 review | Score report | S-014 score 0.970 (PASS). 8 strategies: S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014 | 2026-02-19 |
 
 ### Verification Checklist
 
-- [ ] Bug no longer reproducible with original steps
-- [ ] No new issues introduced
+- [x] Bug no longer reproducible with original steps
+- [x] No new issues introduced
 
 ---
 
@@ -147,17 +151,17 @@ _(To be completed when status changes to done)_
 
 ### Fix Verification
 
-- [ ] AC-1: `project-workflow.md` references `skills/worktracker/rules/worktracker-directory-structure.md` as authoritative source for project structure — no inline competing definition
-- [ ] AC-2: Workflow phases include cross-reference to WTI integrity rules in `skills/worktracker/rules/worktracker-behavior-rules.md`
-- [ ] AC-3: Project creation logic references the worktracker directory structure for folder layout
-- [ ] AC-4: Minimal structural orientation retained at session start (per DA-002: Claude must have basic project navigation context without requiring `/worktracker` invocation)
-- [ ] AC-5: Session-start behavior unchanged (H-04 active project requirement still enforced)
-- [ ] AC-6: `/adversary` C3 review PASS on the rewritten `project-workflow.md` (AE-002: auto-C3 — required strategies: S-010, S-003, S-002, S-004, S-007, S-012, S-013, S-014)
+- [x] AC-1: `project-workflow.md` references `skills/worktracker/rules/worktracker-directory-structure.md` as authoritative source for project structure — no inline competing definition
+- [x] AC-2: Workflow phases include cross-reference to WTI integrity rules in `skills/worktracker/rules/worktracker-behavior-rules.md`
+- [x] AC-3: Project creation logic references the worktracker directory structure for folder layout
+- [x] AC-4: Minimal structural orientation retained at session start (per DA-002: Claude must have basic project navigation context without requiring `/worktracker` invocation)
+- [x] AC-5: Session-start behavior unchanged (H-04 active project requirement still enforced)
+- [x] AC-6: `/adversary` C3 review PASS — score 0.970 (threshold 0.92). 8 strategies executed across 2 iterations.
 
 ### Quality Checklist
 
-- [ ] Existing tests still passing
-- [ ] No new issues introduced
+- [x] Existing tests still passing (3299 passed, 63 skipped)
+- [x] No new issues introduced
 
 ---
 
@@ -184,5 +188,6 @@ _(To be completed when status changes to done)_
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Created. `project-workflow.md` independently redefines project structure, workflow phases, and project creation logic that is authoritatively defined in `/worktracker` skill rules. Two competing SSOTs for the same concepts. Root cause: EN-201/EN-202 concurrent execution without reconciliation. |
 | 2026-02-19 | Claude | pending | /adversary C2 review (S-010, S-003, S-002, S-007). 1 CRITICAL (SR-001: hardlink misidentified as symlink), 6 MAJOR (DA-001 intentional-summary hypothesis, DA-002 session-start blind spot, SR-002 root cause hierarchy, SR-003 unresolvable EN refs, SR-004 workflow phases scope, CA-002 missing Evidence section), 7 MINOR. All addressed: elevated architectural root cause, added Evidence section, narrowed workflow scope to cross-reference gap, retained minimal structural orientation (DA-002), fixed hardlink references, added EN-201 to Related Items. |
+| 2026-02-19 | Claude | done | Fix complete. TASK-001 (rewrite) and TASK-002 (verify) both done. /adversary C3 review: 8 strategies, 2 iterations, final score 0.970 (PASS). C3 findings applied: WTI IDs-only (no drift-prone names), HARD enforcement signal, dual-pattern note, /worktracker invocation in Project Resolution. All ACs verified. 3299 tests pass. |
 
 ---
