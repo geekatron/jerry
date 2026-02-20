@@ -1,13 +1,13 @@
 # EN-002: Voice Integration
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-004
 > **Owner:** —
 > **Effort:** —
@@ -53,7 +53,7 @@ Integrate the voice guide into actual framework outputs: quality gate messages, 
 |--------|-------|
 | **Total Tasks** | 3 |
 | **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completion %** | 100% |
 
 ---
 
@@ -74,3 +74,4 @@ Integrate the voice guide into actual framework outputs: quality gate messages, 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created. Voice guide exists (EN-001), integration not started. |
+| 2026-02-19 | Claude | done | Voice applied to CLI adapter (session/items/projects), CLI main (error messages), and SessionStart hook. Error messages: dropped "Error:" prefix, lead with what's missing. Session messages: "started" → "live", tighter state change output. Hook output: added "Quality gates set." Items: collapsed multi-line output to single-line state changes. 3299 tests passing. |

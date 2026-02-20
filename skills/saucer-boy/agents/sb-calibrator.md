@@ -179,7 +179,7 @@ Read the text. Identify the text type and audience context. Look up the Audience
 
 ### Step 2: Load Calibration Anchors
 
-Read `references/voice-guide.md`. Find the closest matching before/after pair. The "Saucer Boy Voice" column of the matching pair is the 0.90+ calibration anchor for this context.
+Read `skills/saucer-boy/references/voice-guide.md`. Find the closest matching before/after pair. The "Saucer Boy Voice" column of the matching pair is the 0.90+ calibration anchor for this context.
 
 ### Step 3: Score Each Trait Independently
 

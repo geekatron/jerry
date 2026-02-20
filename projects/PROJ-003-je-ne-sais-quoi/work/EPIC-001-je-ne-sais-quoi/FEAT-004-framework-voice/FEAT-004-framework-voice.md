@@ -1,12 +1,12 @@
 # FEAT-004: Framework Voice & Personality
 
 > **Type:** feature
-> **Status:** in_progress
+> **Status:** done
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** EPIC-001
 > **Owner:** Claude
 > **Target Sprint:** —
@@ -43,7 +43,7 @@ Quality gate messages, hook outputs, error messages with character. The McConkey
 | ID | Title | Type | Status | Priority | Children | Progress |
 |----|-------|------|--------|----------|----------|----------|
 | [EN-001](./EN-001-voice-guide-design/EN-001-voice-guide-design.md) | Voice Guide Design | exploration | done | high | TASK-001, TASK-002, TASK-003 | 100% |
-| [EN-002](./EN-002-voice-integration/EN-002-voice-integration.md) | Voice Integration | infrastructure | pending | medium | TASK-001, TASK-002, TASK-003 | 0% |
+| [EN-002](./EN-002-voice-integration/EN-002-voice-integration.md) | Voice Integration | infrastructure | done | medium | TASK-001, TASK-002, TASK-003 | 100% |
 
 ---
 
@@ -55,9 +55,9 @@ Quality gate messages, hook outputs, error messages with character. The McConkey
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Enablers:  [██████████..........] 50% (1/2 completed)            |
+| Enablers:  [████████████████████] 100% (2/2 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [██████████..........] 50%                              |
+| Overall:   [████████████████████] 100%                             |
 +------------------------------------------------------------------+
 ```
 
@@ -66,10 +66,10 @@ Quality gate messages, hook outputs, error messages with character. The McConkey
 | Metric | Value |
 |--------|-------|
 | **Total Enablers** | 2 |
-| **Completed Enablers** | 1 (EN-001) |
-| **Pending Enablers** | 1 (EN-002) |
-| **Quality Score** | 0.925 (C2) |
-| **Completion %** | 50% |
+| **Completed Enablers** | 2 (EN-001, EN-002) |
+| **Pending Enablers** | 0 |
+| **Quality Score** | PASS (C2) |
+| **Completion %** | 100% |
 
 ---
 
@@ -90,3 +90,4 @@ Quality gate messages, hook outputs, error messages with character. The McConkey
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | in_progress | Feature created with worktracker decomposition. EN-001 (design) completed via orchestration phase-3 with 0.925 quality score (4 critic iterations). EN-002 (implementation) pending. |
+| 2026-02-19 | Claude | done | EN-002 Voice Integration complete. CLI adapter voice changes (session, items, projects), error message voice (dropped "Error:" prefix), hook output voice. All 3299 tests passing. |

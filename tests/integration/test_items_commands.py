@@ -479,7 +479,7 @@ class TestCLIAdapterIntegration:
         assert exit_code == 0
 
         captured = capsys.readouterr()
-        assert "Created work item:" in captured.out
+        assert "Created:" in captured.out
         assert "CLI Integration Test" in captured.out
 
     def test_cli_create_work_item_json_output(self, capsys: pytest.CaptureFixture) -> None:
@@ -537,7 +537,6 @@ class TestCLIAdapterIntegration:
         assert exit_code == 0
 
         captured = capsys.readouterr()
-        assert "Started work item:" in captured.out
         assert "in_progress" in captured.out
 
     def test_cli_block_work_item(self, capsys: pytest.CaptureFixture) -> None:

@@ -92,10 +92,14 @@ def main() -> int:
         parser.print_help()
         return 0
 
+    json_output = getattr(args, "json", False)
+
+    # EE-008: jerry why (works without project configuration)
+    if args.namespace == "why":
+        return _handle_why()
+
     # Create adapter with all dependencies wired
     adapter = create_cli_adapter()
-
-    json_output = getattr(args, "json", False)
 
     # Route to namespace handler
     if args.namespace == "session":
@@ -126,7 +130,7 @@ def _handle_session(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
         Exit code
     """
     if args.command is None:
-        print("Error: No session command specified. Use 'jerry session --help'")
+        print("No session command specified. Use 'jerry session --help'.")
         return 1
 
     if args.command == "start":
@@ -148,7 +152,7 @@ def _handle_session(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
             json_output=json_output,
         )
 
-    print(f"Error: Unknown session command '{args.command}'")
+    print(f"Unknown session command: {args.command}")
     return 1
 
 
@@ -164,7 +168,7 @@ def _handle_items(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
         Exit code
     """
     if args.command is None:
-        print("Error: No items command specified. Use 'jerry items --help'")
+        print("No items command specified. Use 'jerry items --help'.")
         return 1
 
     if args.command == "list":
@@ -208,7 +212,7 @@ def _handle_items(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
             json_output=json_output,
         )
 
-    print(f"Error: Unknown items command '{args.command}'")
+    print(f"Unknown items command: {args.command}")
     return 1
 
 
@@ -224,7 +228,7 @@ def _handle_projects(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
         Exit code
     """
     if args.command is None:
-        print("Error: No projects command specified. Use 'jerry projects --help'")
+        print("No projects command specified. Use 'jerry projects --help'.")
         return 1
 
     if args.command == "context":
@@ -237,7 +241,7 @@ def _handle_projects(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
             json_output=json_output,
         )
 
-    print(f"Error: Unknown projects command '{args.command}'")
+    print(f"Unknown projects command: {args.command}")
     return 1
 
 
@@ -256,7 +260,7 @@ def _handle_config(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
         - WI-016: CLI Config Commands
     """
     if args.command is None:
-        print("Error: No config command specified. Use 'jerry config --help'")
+        print("No config command specified. Use 'jerry config --help'.")
         return 1
 
     if args.command == "show":
@@ -279,7 +283,7 @@ def _handle_config(adapter: CLIAdapter, args: Any, json_output: bool) -> int:
     elif args.command == "path":
         return adapter.cmd_config_path(json_output=json_output)
 
-    print(f"Error: Unknown config command '{args.command}'")
+    print(f"Unknown config command: {args.command}")
     return 1
 
 
@@ -299,7 +303,7 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
         - TASK-251: Implement CLI Transcript Namespace
     """
     if args.command is None:
-        print("Error: No transcript command specified. Use 'jerry transcript --help'")
+        print("No transcript command specified. Use 'jerry transcript --help'.")
         return 1
 
     if args.command == "parse":
@@ -334,8 +338,31 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
             json_output=json_output,
         )
 
-    print(f"Error: Unknown transcript command '{args.command}'")
+    print(f"Unknown transcript command: {args.command}")
     return 1
+
+
+def _handle_why() -> int:
+    """Handle the 'why' command (EE-008).
+
+    Returns:
+        Exit code (always 0)
+    """
+    print(
+        'Why does Jerry exist?\n'
+        '\n'
+        'Joy and excellence are not trade-offs. They\'re multipliers.\n'
+        '\n'
+        'The quality gates are non-negotiable. The voice is non-negotiable too.\n'
+        'Both serve the same purpose: making the work worth doing.\n'
+        '\n'
+        '"Whether it was steep, extreme descent or new freestyle,\n'
+        'what we were doing was freeskiing, free to ski our own style\n'
+        'on our own terms." \u2014 Shane McConkey\n'
+        '\n'
+        "That's why."
+    )
+    return 0
 
 
 if __name__ == "__main__":

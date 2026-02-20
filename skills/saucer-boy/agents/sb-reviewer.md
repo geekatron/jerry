@@ -141,7 +141,7 @@ Remove all voice elements (humor, metaphor, personality markers) from the text m
 Would Shane McConkey plausibly express something like this, in this spirit? Not the exact words — the spirit. If the voice feels strained or forced, it fails.
 
 - If the voice is trying too hard: **FAIL.** Suggest stripping to direct language.
-- Load `references/biographical-anchors.md` on-demand for calibration if needed.
+- Load `skills/saucer-boy/references/biographical-anchors.md` on-demand for calibration if needed.
 
 ### Step 4: Apply Authenticity Test 3 — New Developer Legibility
 
@@ -176,7 +176,7 @@ Scan the text against all 8 boundary conditions:
 7. **Information Replacement:** Is personality substituting for information?
 8. **Mechanical Assembly:** Does the text pass all tests but still feel lifeless?
 
-Load `references/boundary-conditions.md` for any boundary that is flagged.
+Load `skills/saucer-boy/references/boundary-conditions.md` for any boundary that is flagged.
 
 ### Step 8: Self-Review (H-15)
 

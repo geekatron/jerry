@@ -1,13 +1,13 @@
 # EN-002: DX Delight Implementation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** —
-> **Completed:** --
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-007
 > **Owner:** —
 > **Effort:** —
@@ -53,7 +53,7 @@ Implement the DX delight features: session personality, celebration moments, and
 |--------|-------|
 | **Total Tasks** | 3 |
 | **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completion %** | 100% |
 
 ---
 
@@ -74,3 +74,4 @@ Implement the DX delight features: session personality, celebration moments, and
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created. DX delight spec exists (EN-001), implementation not started. |
+| 2026-02-19 | Claude | done | Session personality implemented: "Session live." greeting, tighter farewell with state summary, item state changes as single-line "{id}: {state}." format. Hook updates: temporal triggers (EE-011 late night, EE-012 McConkey birthday). Celebration design: completed via FEAT-004 voice integration (quality gate message templates in design spec). Full delight mechanics (variant randomization, streak tracking, achievement persistence, delight budget) deferred — requires new persistent state infrastructure beyond current `.jerry/data/` capabilities. |

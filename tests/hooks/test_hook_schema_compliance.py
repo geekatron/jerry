@@ -181,7 +181,7 @@ class TestKnownGoodOutputs:
     ) -> None:
         """SessionStart with systemMessage + hookSpecificOutput validates."""
         instance: dict[str, Any] = {
-            "systemMessage": "Jerry Framework: Project PROJ-001 active",
+            "systemMessage": "Jerry Framework: PROJ-001 active. Quality gates set.",
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
                 "additionalContext": "<project-context>\nProjectActive: PROJ-001\n</project-context>",

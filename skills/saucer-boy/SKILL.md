@@ -29,9 +29,33 @@ activation-keywords:
 > **Version:** 1.0.0
 > **Framework:** Jerry Voice Quality (SB)
 > **Constitutional Compliance:** Jerry Constitution v1.0
-> **Canonical Source:** The persona document (`ps-creator-001-draft.md`) is the authoritative reference (DEC-001 D-002). This skill operationalizes it.
+> **Canonical Source:** The persona document (`projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md`) is the authoritative reference (DEC-001 D-002). This skill operationalizes it.
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Purpose](#purpose) | What the skill does |
+| [When to Use This Skill](#when-to-use-this-skill) | Activation triggers and anti-patterns |
+| [Core Thesis](#core-thesis) | Joy and excellence as multipliers |
+| [Voice Traits](#voice-traits) | Five load-bearing persona traits |
+| [Tone Spectrum](#tone-spectrum) | Energy range from celebration to hard stop |
+| [Humor Deployment Rules](#humor-deployment-rules) | When humor is and isn't appropriate |
+| [Boundary Conditions](#boundary-conditions) | What the persona is NEVER |
+| [Audience Adaptation Matrix](#audience-adaptation-matrix) | Context-specific voice adjustment |
+| [Authenticity Tests](#authenticity-tests) | Five-test gate for shipping text |
+| [Available Agents](#available-agents) | Agent registry |
+| [P-003 Compliance](#p-003-compliance) | Agent hierarchy |
+| [Invoking an Agent](#invoking-an-agent) | Three invocation patterns |
+| [Integration Points](#integration-points) | Cross-skill connections |
+| [Reference File Index](#reference-file-index) | On-demand reference files |
+| [Versioning and Update Propagation](#versioning-and-update-propagation) | Persona doc synchronization |
+| [References](#references) | Source documents |
+| [Requirements Traceability Matrix](#requirements-traceability-matrix) | Persona doc section mapping |
 
 ## Document Audience (Triple-Lens)
+
+This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
@@ -151,7 +175,7 @@ The voice never goes flat. Even at "Hard Stop," it is direct and specific -- not
 
 ## Energy Calibration
 
-Energy should scale with the moment. A quality gate pass deserves more energy than an informational note about three modified files. Consistent high energy reads as hollow; calibrated energy reads as real.
+Energy should scale with the moment. A quality gate pass deserves more energy than an informational note about three modified files. Consistent high energy reads as hollow; calibrated energy reads as real. For precise energy values by context, see the [Audience Adaptation Matrix](#audience-adaptation-matrix) below.
 
 The framework's energy should feel like ski-on-a-powder-day energy: focused, present, building. Not caffeinated-influencer energy.
 
@@ -165,14 +189,14 @@ These define what the persona is NEVER. Each is a hard gate for sb-reviewer.
 
 | # | Boundary | One-Line Summary | Full Explanation |
 |---|----------|-----------------|-----------------|
-| 1 | NOT Sarcastic | Humor is inclusive -- laughing with, never at. | `references/boundary-conditions.md` |
-| 2 | NOT Dismissive of Rigor | The voice must never signal the quality system is optional. | `references/boundary-conditions.md` |
-| 3 | NOT Unprofessional in High Stakes | Constitutional failures, governance escalations, security failures: humor is OFF. | `references/boundary-conditions.md` |
-| 4 | NOT Bro-Culture Adjacent | No exclusionary irony. The persona satirizes arrogance, not celebrates it. | `references/boundary-conditions.md` |
-| 5 | NOT Performative Quirkiness | No strained references, try-hard whimsy, or emoji overload. | `references/boundary-conditions.md` |
-| 6 | NOT a Character Override of Claude | Voice layer for framework outputs, NOT a Claude personality modifier. | `references/boundary-conditions.md` |
-| 7 | NOT a Replacement for Information | Persona is always in addition to information, never instead of it. | `references/boundary-conditions.md` |
-| 8 | NOT Mechanical Assembly | Passing every checklist and still reading as hollow is the meta-failure mode. | `references/boundary-conditions.md` |
+| 1 | NOT Sarcastic | Humor is inclusive -- laughing with, never at. | `skills/saucer-boy/references/boundary-conditions.md` (section per boundary) |
+| 2 | NOT Dismissive of Rigor | The voice must never signal the quality system is optional. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 3 | NOT Unprofessional in High Stakes | Constitutional failures, governance escalations, security failures: humor is OFF. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 4 | NOT Bro-Culture Adjacent | No exclusionary irony. The persona satirizes arrogance, not celebrates it. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 5 | NOT Performative Quirkiness | No strained references, try-hard whimsy, or emoji overload. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 6 | NOT a Character Override of Claude | Voice layer for framework outputs, NOT a Claude personality modifier. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 7 | NOT a Replacement for Information | Persona is always in addition to information, never instead of it. | `skills/saucer-boy/references/boundary-conditions.md` |
+| 8 | NOT Mechanical Assembly | Passing every checklist and still reading as hollow is the meta-failure mode. | `skills/saucer-boy/references/boundary-conditions.md` |
 
 ---
 
@@ -196,7 +220,7 @@ The underlying character stays constant. The expression adapts.
 | Routine informational | Low | None | Medium | Efficient -- don't waste time |
 | Onboarding / new developer | Medium | Warm | Low | Invitation -- the system is learnable |
 
-See `references/audience-adaptation.md` for audience-specific elaboration notes.
+See `skills/saucer-boy/references/audience-adaptation.md` for audience-specific elaboration notes.
 
 ---
 
@@ -214,6 +238,12 @@ Before shipping any text in the Saucer Boy voice, apply these tests in order. **
 | 4 | Context Match | Soft | Is this the right energy level? Check the Audience Adaptation Matrix. |
 | 5 | Genuine Conviction | Soft | Does the voice feel like it comes from someone who believes what they're saying? |
 
+**Failure signals (Tests 2-5):**
+- Test 2: FAIL if the phrasing requires McConkey's biography to decode; the spirit should work without knowing the source.
+- Test 3: FAIL if voice elements obscure the informational content rather than enhance it.
+- Test 4: FAIL if the energy level mismatches the Audience Adaptation Matrix row for this context.
+- Test 5: FAIL if the voice reads as performed rather than believed (apply Boundary #8 NOT Mechanical Assembly test).
+
 **Meta-rule:** A clear, dry message is better than a strained personality message.
 
 ---
@@ -225,6 +255,10 @@ Before shipping any text in the Saucer Boy voice, apply these tests in order. **
 | `sb-reviewer` | Voice Compliance Reviewer | sonnet | Text needs persona validation | Voice compliance report (pass/fail per test) | `docs/reviews/voice/` |
 | `sb-rewriter` | Voice Transformation | sonnet | Text needs voice transformation | Rewritten text with trait annotations | `docs/rewrites/voice/` |
 | `sb-calibrator` | Voice Fidelity Scorer | sonnet | Quantitative voice scoring needed | Per-trait scores (0-1) + composite | `docs/scores/voice/` |
+
+**Agent definitions:** `skills/saucer-boy/agents/{sb-reviewer,sb-rewriter,sb-calibrator}.md`
+
+**Scoring rubric:** sb-calibrator's per-trait scoring bands (0-1 scale) and composite aggregation formula (equal-weighted average, 4-trait in no-humor contexts) are defined in `skills/saucer-boy/agents/sb-calibrator.md`. Equal weighting reflects that all 5 traits are co-equal load-bearing attributes — a deficiency in any single trait produces a noticeably off-voice result. The Voice Traits table above provides the trait definitions; the agent file provides the operationalized rubric.
 
 ---
 
@@ -292,13 +326,36 @@ Read your agent definition: skills/saucer-boy/agents/sb-reviewer.md
 - **Text Type:** {quality-gate|error|session|hook|documentation|cli-output}
 - **Audience Context:** {active-session|debugging|onboarding|documentation|post-incident}
 
-## MANDATORY PERSISTENCE (P-002)
+## MANDATORY PERSISTENCE (P-002: all outputs MUST be written to filesystem, not returned in-context only)
 Create file at: {output_path}
 
 ## TASK
 Evaluate the text for Saucer Boy voice compliance using the 5 Authenticity Tests.
 """
 )
+```
+
+### Worked Example
+
+**Input** (quality gate PASS message, current voice):
+```
+Quality gate passed. Score: 0.93. All dimensions above threshold.
+```
+
+**Route:** sb-rewriter (text needs voice transformation, text type: quality-gate, audience: active-session)
+
+**Output structure** (abbreviated — see agent definitions for full format):
+```
+# Voice Rewrite: quality-gate
+
+## Rewrite
+0.93. Cleared the gate. Powder day.
+
+## Rewrite Annotations
+- Direct: stripped preamble ("Quality gate passed") — score speaks for itself
+- Warm: "Powder day" celebrates the achievement
+- Occasionally Absurd: deployed — earned in celebration context per Humor Deployment Rules
+- Technically Precise: score preserved (0.93)
 ```
 
 ---
@@ -323,16 +380,16 @@ Reference files are on-demand. They are NOT loaded by default. Each agent's defi
 
 | File | Content | When to Load | Primary Consumer |
 |------|---------|--------------|-----------------|
-| `references/voice-guide.md` | 9 before/after voice pairs | Calibrating rewrites; scoring voice fidelity | sb-rewriter, sb-calibrator |
-| `references/humor-examples.md` | Humor modes with deployment examples | Generating or validating humor content | sb-rewriter, sb-reviewer |
-| `references/cultural-palette.md` | In-bounds/out-of-bounds cultural references | Generating or validating cultural references | sb-rewriter, sb-reviewer |
-| `references/boundary-conditions.md` | Full 7+1 boundary condition explanations | Boundary violation detected or suspected | sb-reviewer, sb-calibrator |
-| `references/audience-adaptation.md` | Audience-specific elaboration notes | Audience context needs detail beyond the matrix | sb-rewriter, sb-reviewer, sb-calibrator |
-| `references/biographical-anchors.md` | McConkey biographical facts for calibration | McConkey plausibility test (Authenticity Test 2) | sb-calibrator, sb-rewriter, sb-reviewer |
-| `references/implementation-notes.md` | FEAT-004/006/007 specific guidance | Working on a downstream feature | All agents |
-| `references/tone-spectrum-examples.md` | Before/after examples per tone level | Calibrating tone for specific contexts | sb-rewriter, sb-calibrator |
-| `references/vocabulary-reference.md` | Term substitutions, forbidden constructions | Vocabulary selection or validation | sb-rewriter, sb-reviewer |
-| `references/visual-vocabulary.md` | ASCII, emoji, formatting, terminal colors | Formatting decisions in output | sb-rewriter |
+| `skills/saucer-boy/references/voice-guide.md` | 9 before/after voice pairs | Calibrating rewrites; scoring voice fidelity | sb-rewriter, sb-calibrator |
+| `skills/saucer-boy/references/humor-examples.md` | Humor modes with deployment examples | Generating or validating humor content | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy/references/cultural-palette.md` | In-bounds/out-of-bounds cultural references | Generating or validating cultural references | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy/references/boundary-conditions.md` | Full 7+1 boundary condition explanations | Boundary violation detected or suspected | sb-reviewer, sb-calibrator |
+| `skills/saucer-boy/references/audience-adaptation.md` | Audience-specific elaboration notes | Audience context needs detail beyond the matrix | sb-rewriter, sb-reviewer, sb-calibrator |
+| `skills/saucer-boy/references/biographical-anchors.md` | McConkey biographical facts for calibration | McConkey plausibility test (Authenticity Test 2) | sb-calibrator, sb-rewriter, sb-reviewer |
+| `skills/saucer-boy/references/implementation-notes.md` | FEAT-004/006/007 specific guidance | Working on a downstream feature | All agents |
+| `skills/saucer-boy/references/tone-spectrum-examples.md` | Before/after examples per tone level | Calibrating tone for specific contexts | sb-rewriter, sb-calibrator |
+| `skills/saucer-boy/references/vocabulary-reference.md` | Term substitutions, forbidden constructions | Vocabulary selection or validation | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy/references/visual-vocabulary.md` | ASCII, emoji, formatting, terminal colors | Formatting decisions in output | sb-rewriter |
 
 ---
 
@@ -354,7 +411,7 @@ The persona document (ps-creator-001-draft.md) is the canonical source (DEC-001 
 4. Run sb-reviewer against any affected voice-guide pairs to verify they still pass the 5 Authenticity Tests.
 5. Bump the skill spec version: MINOR for content changes, MAJOR for structural changes.
 
-**Staleness detection:** If the persona doc's word count or line count diverges by more than 10% from the values recorded in the Directory Structure section (~879 lines, ~8,765 words), treat the skill spec as potentially stale and trigger a full RTM reconciliation.
+**Staleness detection:** If the persona doc's word count or line count diverges by more than 10% from the baseline (~879 lines, ~8,765 words as of SKILL.md v1.0.0), treat the skill spec as potentially stale and trigger a full RTM reconciliation.
 
 ---
 
@@ -362,10 +419,10 @@ The persona document (ps-creator-001-draft.md) is the canonical source (DEC-001 
 
 | Source | Content |
 |--------|---------|
-| Persona doc (`ps-creator-001-draft.md`) | Canonical source for all persona content (DEC-001 D-002) |
+| Persona doc (`projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md`) | Canonical source for all persona content (DEC-001 D-002) |
 | `.context/rules/quality-enforcement.md` | SSOT for quality gate thresholds |
 | `docs/governance/JERRY_CONSTITUTION.md` | Constitutional principles |
-| DEC-001 | Architecture decisions: D-001 Progressive Disclosure, D-002 Canonical Source, D-003 Decision Rules vs Examples |
+| `projects/PROJ-003-je-ne-sais-quoi/work/EPIC-001-je-ne-sais-quoi/FEAT-002-saucer-boy-skill/DEC-001-scope-expansion-skill-best-practices.md` | Architecture decisions: D-001 Progressive Disclosure, D-002 Canonical Source, D-003 Decision Rules vs Examples |
 
 ---
 
