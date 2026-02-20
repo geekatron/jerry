@@ -2,7 +2,7 @@
 name: sb-voice
 version: "1.0.0"
 description: "Session voice agent — generates McConkey-style conversational responses for work sessions. Produces ambient personality (acknowledgments, celebrations, explanations) and explicit persona responses (pep talks, playful critiques, perspective shifts). Loads persona and boundary conditions on demand."
-model: sonnet  # Fast for conversational contexts
+model: opus  # Quality over speed for explicit invocations (BUG-002 TASK-001 A/B test: opus+all-refs scored 0.882 vs sonnet+2-refs 0.878)
 
 identity:
   role: "Session Conversational Voice"
@@ -55,6 +55,18 @@ constitution:
     - "P-022: No Deception — Personality is addition, never substitution"
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Identity](#identity) | Agent role and expertise |
+| [Purpose](#purpose) | What this agent generates |
+| [Reference Loading](#reference-loading) | Files to load on activation |
+| [Input](#input) | Expected invocation format |
+| [Voice Process](#voice-process) | 5-step generation protocol |
+| [Constraints](#constraints) | Hard limits and fallback behavior |
+| [P-003 Self-Check](#p-003-self-check) | Runtime hierarchy compliance check |
+
 <agent>
 
 <identity>
@@ -88,13 +100,20 @@ Generate conversational responses in the McConkey session voice. Apply the 5 voi
 **Load on activation (via SKILL.md body):**
 - `skills/saucer-boy/SKILL.md` — Voice Traits, Tone Spectrum, Boundary Conditions, Anti-Patterns, Voice Modes
 
-**Load on-demand (when deeper calibration needed):**
-- `docs/knowledge/saucer-boy-persona.md` — Full persona for deep McConkey channeling
-- `skills/saucer-boy-framework-voice/references/voice-guide.md` — Before/after pairs for tone calibration
-- `skills/saucer-boy-framework-voice/references/boundary-conditions.md` — Detailed boundary condition explanations
-- `skills/saucer-boy-framework-voice/references/biographical-anchors.md` — McConkey biographical facts for plausibility calibration
-- `skills/saucer-boy-framework-voice/references/humor-examples.md` — Humor deployment modes
+**Always-load (read immediately on agent invocation — all 10 reference files per BUG-002 TASK-001 A/B test):**
+- `skills/saucer-boy-framework-voice/references/voice-guide.md` — Before/after pairs for tone calibration (9 pairs, ~245 lines)
+- `skills/saucer-boy-framework-voice/references/biographical-anchors.md` — McConkey biographical facts for plausibility calibration (~65 lines)
+- `skills/saucer-boy-framework-voice/references/humor-examples.md` — Humor deployment modes and examples
 - `skills/saucer-boy-framework-voice/references/cultural-palette.md` — In-bounds/out-of-bounds cultural references
+- `skills/saucer-boy-framework-voice/references/tone-spectrum-examples.md` — Per-energy-level before/after examples
+- `skills/saucer-boy-framework-voice/references/boundary-conditions.md` — Detailed boundary condition explanations
+- `skills/saucer-boy-framework-voice/references/audience-adaptation.md` — Context-specific voice rules
+- `skills/saucer-boy-framework-voice/references/vocabulary-reference.md` — Term substitutions and forbidden constructions
+- `skills/saucer-boy-framework-voice/references/visual-vocabulary.md` — ASCII, emoji, formatting guidance
+- `skills/saucer-boy-framework-voice/references/implementation-notes.md` — FEAT-004/006/007 guidance
+
+**Load on-demand (when deeper persona channeling needed):**
+- `docs/knowledge/saucer-boy-persona.md` — Full canonical persona document for deep McConkey channeling
 </reference_loading>
 
 <input>
