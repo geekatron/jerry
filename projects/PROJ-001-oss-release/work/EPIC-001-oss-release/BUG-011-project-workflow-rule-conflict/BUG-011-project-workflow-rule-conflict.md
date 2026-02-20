@@ -24,6 +24,7 @@
 | [Environment](#environment) | Environment where bug occurs |
 | [Root Cause Analysis](#root-cause-analysis) | Investigation and root cause details |
 | [Children (Tasks)](#children-tasks) | Task breakdown for fix |
+| [Evidence](#evidence) | Bug documentation and fix verification |
 | [Acceptance Criteria](#acceptance-criteria) | Conditions for bug to be fixed |
 | [Related Items](#related-items) | Hierarchy and related work items |
 | [History](#history) | Status changes and key events |
@@ -32,10 +33,12 @@
 
 ## Summary
 
-`.context/rules/project-workflow.md` (auto-loaded at every session start via `.claude/rules/` symlink) independently redefines project directory structure, workflow phases, and project creation logic that is already authoritatively defined in the `/worktracker` skill rules (`skills/worktracker/rules/`). This creates two competing sources of truth for the same concepts, where changes to the worktracker skill rules will not propagate to `project-workflow.md`, causing silent drift.
+`.context/rules/project-workflow.md` (auto-loaded at every session start via `.claude/rules/` hardlink) independently redefines project directory structure and project creation logic that is already authoritatively defined in the `/worktracker` skill rules (`skills/worktracker/rules/`). The session-start file carries a lossy subset of the worktracker directory structure with no cross-reference to the authoritative source, creating a maintenance risk where changes to the worktracker skill rules silently drift from the session-start definitions.
+
+**Severity rationale:** Classified MAJOR due to maintenance risk of silent drift in a HARD-rule file (auto-loaded every session), not a confirmed functional failure. No behavioral error has been observed to date, but the drift risk is unbounded as worktracker rules evolve.
 
 **Key Details:**
-- **Symptom:** Two independent definitions of the same concepts — project directory structure, workflow lifecycle, project creation — with no cross-reference between them
+- **Symptom:** Independent definition of project directory structure (7-line simplified tree) and project creation logic with no cross-reference to the authoritative 90-line worktracker directory structure; workflow phases lack reference to WTI integrity rules
 - **Frequency:** Every session — `project-workflow.md` is auto-loaded at session start; `/worktracker` rules are loaded on skill invocation
 - **Workaround:** Manually ensuring consistency between both files after any change
 
@@ -91,20 +94,22 @@ Compared `.context/rules/project-workflow.md` against the authoritative worktrac
 
 1. **Directory structure duplication**: `project-workflow.md` lines 34-43 define a simplified project directory tree. `worktracker-directory-structure.md` defines the full 90-line authoritative tree. The simplified version is a lossy subset — it omits Epic/Feature/Enabler/Story entity folders, naming conventions (`{EntityId}-{slug}`), containment rules, and the distinction between project-based and repository-based patterns.
 
-2. **Workflow phase overlap**: `project-workflow.md` lines 24-28 define before/during/after workflow phases. The worktracker behavior rules define WTI-001 (Real-Time State Updates), WTI-002 (No Closure Without Verification), WTI-003 (Truthful State), WTI-004 (Synchronize Before Reporting), WTI-005 (Atomic Task State), WTI-006 (Evidence-Based Closure), WTI-007 (Mandatory Template Usage). The workflow phases are a high-level abstraction that doesn't reference these enforcement rules.
+2. **Workflow phase cross-reference gap**: `project-workflow.md` lines 24-28 define before/during/after workflow phases. The worktracker behavior rules define WTI-001 through WTI-007 integrity rules. The workflow phases are a complementary high-level abstraction (not a conflicting redefinition) but lack any cross-reference to the WTI rules they should enforce. This is a missing-reference issue, not a competing-definition issue.
 
 3. **Project creation logic**: `project-workflow.md` lines 49-62 define project resolution and creation logic. This should reference the worktracker directory structure rules for folder layout and the entity hierarchy for ID generation.
 
 ### Root Cause
 
-`project-workflow.md` was created during the EN-202 CLAUDE.md rewrite (BUG-006: "Working with Jerry section lost") as a rescue of content being extracted from the monolithic CLAUDE.md. It was written as a standalone rule file rather than as a reference/pointer to the worktracker skill rules. The worktracker skill rules were being developed concurrently in EN-201, and the two were never reconciled.
+**Primary:** The Jerry enforcement architecture separates session-start rules (`.context/rules/`, auto-loaded every session, L1 layer) from skill-scoped rules (`skills/*/rules/`, loaded on-demand). This architectural split means `project-workflow.md` operates at session start without access to `/worktracker` rules, creating pressure to inline structural content rather than reference it. The file was written as a standalone definition because the on-demand skill rules were not available at session start.
+
+**Contributing:** `project-workflow.md` was created during EN-202 (CLAUDE.md rewrite, BUG-006: "Working with Jerry section lost") as a rescue of content being extracted from the monolithic CLAUDE.md. EN-201 (worktracker skill extraction) was developing the authoritative rules concurrently. The two were never reconciled — both define project structure independently.
 
 ### Contributing Factors
 
 - EN-201 (worktracker skill extraction) and EN-202 (CLAUDE.md rewrite) were executed in the same session without cross-referencing
-- `.context/rules/` files are auto-loaded, so `project-workflow.md` takes effect at session start — before `/worktracker` is invoked
+- `.context/rules/` files are auto-loaded (L1 layer), `skills/*/rules/` files are loaded on-demand — architectural separation makes duplication tempting
 - No validation exists to detect duplication between `.context/rules/` and skill rule files
-- The simplified structure in `project-workflow.md` may have been intentional at the time (keeping session-start rules lightweight) but was never documented as a deliberate subset
+- The simplified structure in `project-workflow.md` may have been intentional (keeping session-start rules lightweight for context budget per L1 enforcement architecture) but was never documented as a deliberate subset — this makes it impossible to distinguish intentional summary from accidental duplication
 
 ---
 
@@ -117,14 +122,35 @@ Compared `.context/rules/project-workflow.md` against the authoritative worktrac
 
 ---
 
+## Evidence
+
+### Bug Documentation
+
+| Evidence | Type | Description | Date |
+|----------|------|-------------|------|
+| `.context/rules/project-workflow.md` lines 34-43 | File content | Inline 7-line project directory tree (competing definition) | 2026-02-19 |
+| `skills/worktracker/rules/worktracker-directory-structure.md` | File content | Authoritative 90-line directory tree (SSOT) | 2026-02-19 |
+| `/adversary` C2 review | Review output | SR-001 (CRITICAL), DA-001/DA-002 (MAJOR) — hardlink misidentification, session-start blind spot risk | 2026-02-19 |
+
+### Fix Verification
+
+_(To be completed when status changes to done)_
+
+### Verification Checklist
+
+- [ ] Bug no longer reproducible with original steps
+- [ ] No new issues introduced
+
+---
+
 ## Acceptance Criteria
 
 ### Fix Verification
 
-- [ ] AC-1: `project-workflow.md` references `skills/worktracker/rules/worktracker-directory-structure.md` as authoritative source for project structure — no inline duplication
-- [ ] AC-2: `project-workflow.md` references `skills/worktracker/rules/worktracker-behavior-rules.md` for WTI integrity rules — workflow phases point to WTI rules
+- [ ] AC-1: `project-workflow.md` references `skills/worktracker/rules/worktracker-directory-structure.md` as authoritative source for project structure — no inline competing definition
+- [ ] AC-2: Workflow phases include cross-reference to WTI integrity rules in `skills/worktracker/rules/worktracker-behavior-rules.md`
 - [ ] AC-3: Project creation logic references the worktracker directory structure for folder layout
-- [ ] AC-4: No independent/conflicting definitions remain in `project-workflow.md`
+- [ ] AC-4: Minimal structural orientation retained at session start (per DA-002: Claude must have basic project navigation context without requiring `/worktracker` invocation)
 - [ ] AC-5: Session-start behavior unchanged (H-04 active project requirement still enforced)
 
 ### Quality Checklist
@@ -142,10 +168,11 @@ Compared `.context/rules/project-workflow.md` against the authoritative worktrac
 
 ### Related Items
 
-- **Causing Change:** EN-202 (CLAUDE.md Rewrite) — created `project-workflow.md` as standalone rule file during content rescue
+- **Causing Change:** [EN-202](../FEAT-003-claude-md-optimization/EN-202-claude-md-rewrite/) (CLAUDE.md Rewrite) — created `project-workflow.md` as standalone rule file during content rescue
+- **Causing Change:** EN-201 (Worktracker Skill Extraction) — developed the authoritative worktracker rules concurrently without reconciliation
 - **Conflicting Source:** `skills/worktracker/rules/worktracker-directory-structure.md` — authoritative directory structure
 - **Conflicting Source:** `skills/worktracker/rules/worktracker-behavior-rules.md` — authoritative WTI rules
-- **AE-002 Note:** Fix will touch `.context/rules/` — auto-C3 minimum criticality
+- **AE-002 Note:** Fix will touch `.context/rules/` (hardlink to `.claude/rules/`) — auto-C3 minimum criticality
 - **GitHub Issue:** [#38](https://github.com/geekatron/jerry/issues/38)
 
 ---
@@ -155,5 +182,6 @@ Compared `.context/rules/project-workflow.md` against the authoritative worktrac
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Created. `project-workflow.md` independently redefines project structure, workflow phases, and project creation logic that is authoritatively defined in `/worktracker` skill rules. Two competing SSOTs for the same concepts. Root cause: EN-201/EN-202 concurrent execution without reconciliation. |
+| 2026-02-19 | Claude | pending | /adversary C2 review (S-010, S-003, S-002, S-007). 1 CRITICAL (SR-001: hardlink misidentified as symlink), 6 MAJOR (DA-001 intentional-summary hypothesis, DA-002 session-start blind spot, SR-002 root cause hierarchy, SR-003 unresolvable EN refs, SR-004 workflow phases scope, CA-002 missing Evidence section), 7 MINOR. All addressed: elevated architectural root cause, added Evidence section, narrowed workflow scope to cross-reference gap, retained minimal structural orientation (DA-002), fixed hardlink references, added EN-201 to Related Items. |
 
 ---
