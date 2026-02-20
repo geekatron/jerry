@@ -32,6 +32,7 @@
 |----|-------|--------|----------|
 | [EPIC-001](./work/EPIC-001-je-ne-sais-quoi/EPIC-001-je-ne-sais-quoi.md) | Je Ne Sais Quoi — The Saucer Boy Spirit | done | medium |
 | [EPIC-002](./work/EPIC-002-visual-identity-impl/EPIC-002-visual-identity-impl.md) | Visual Identity Implementation | pending | medium |
+| [EPIC-003](./work/EPIC-003-voice-architecture/EPIC-003-voice-architecture.md) | Voice Architecture | pending | high |
 
 > Features, Enablers, and Tasks are tracked within the Epic and its children.
 
@@ -77,3 +78,4 @@
 | 2026-02-19 | Claude | **EPIC-001 COMPLETE.** All 7 features, 14 enablers done. Implementation: C1 batch (FEAT-001/003/005 canonicalization), C2 batch (FEAT-002 /saucer-boy skill rework with H-25-H-30 compliance + C2 adversarial review), C2 batch (FEAT-004/006/007 voice integration + easter eggs + DX delight). Code changes across 10 source files. 3299 tests passing. |
 | 2026-02-20 | Claude | **BUG-001 filed:** CI/CD pipeline failures on PR #37. Root causes: (1) ruff format violation in `main.py`, (2) 4 files with Windows-incompatible colons in filenames. 3 tasks: TASK-001 fix formatting, TASK-002 rename files (`:` -> `--`), TASK-003 update references. |
 | 2026-02-20 | Claude | **EPIC-002 created:** Visual Identity Implementation. Future-looking epic to build the design spec from EPIC-001 FEAT-003 (`docs/design/saucer-boy-visual-identity.md`) into actual CLI infrastructure. 4 features: FEAT-001 rendering engine, FEAT-002 logo system, FEAT-003 status indicators, FEAT-004 visual integration. Project status reopened from COMPLETE to IN_PROGRESS. |
+| 2026-02-20 | Claude | **EPIC-003 created:** Voice Architecture. Splits voice into two concerns: (1) FEAT-001 refactors existing `/saucer-boy` to internal `/saucer-boy-framework-voice` (auto-loaded, not user-invocable), (2) FEAT-002 creates new user-invocable `/saucer-boy` for session conversational voice with McConkey personality + explicit invocation mode. |
