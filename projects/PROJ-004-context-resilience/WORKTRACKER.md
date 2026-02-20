@@ -37,7 +37,7 @@
 
 | ID | Title | Status | Impact |
 |----|-------|--------|--------|
-| — | — | — | — |
+| [DEC-001](./work/EPIC-001-context-resilience/FEAT-001-context-detection/DEC-001-cli-first-architecture.md) | CLI-First Hook Architecture & Context Monitoring Bounded Context | accepted | critical |
 
 ---
 
@@ -50,3 +50,6 @@
 | 2026-02-19 | Claude | SPIKE-001 complete. 7 phases executed, 2 quality gates passed (QG-1: 0.93, QG-2: 0.92). Synthesis produced with 14 follow-up work items. SPIKE-001 status: done. Recommend proceeding with FEAT-001 implementation. |
 | 2026-02-19 | Claude | SPIKE-002 created and started. Supplementary spike to address SPIKE-001 gap: Jerry CLI infrastructure (TokenCounter, session lifecycle, config system, enforcement engines) was not factored into context resilience design. SPIKE-002 will revise follow-up work items with CLI-integrated approach. Workflow ID: spike002-cli-integration-20260219-001. |
 | 2026-02-19 | Claude | SPIKE-002 complete. 4 phases + 1 quality gate executed (QG-1: 0.94 PASS). 14 SPIKE-001 items consolidated to 10 revised CWIs (CWI-00 through CWI-09). Key addition: CWI-00 FileSystemSessionRepository (P0 enabler) per user feedback. ADR-SPIKE002-001 proposes two-phase CLI-integrated architecture. Estimated effort: 19.5-28.5 hours (22-23% reduction). SPIKE-002 status: done. |
+| 2026-02-19 | Claude | SPIKE-002 Phase 5 (architecture revision): User identified ADR-SPIKE002-001 chose wrong alternative. DISC-001 documented hook-CLI violations. DEC-001 captured 4 corrective decisions. ADR-SPIKE002-002 produced (QG-2 PASS 0.92). 12 revised CWIs (CWI-00 through CWI-11). |
+| 2026-02-19 | User | DEC-001 accepted: 4 architectural decisions approved (D-001 CLI-first hooks, D-002 proper bounded context, D-003 jerry hooks namespace, D-004 enforcement debt tracked separately). |
+| 2026-02-19 | Claude | 11 worktracker entity files created under FEAT-001: EN-001 through EN-007 (enablers), ST-001 through ST-003 (stories), SPIKE-003 (spike). All with BDD Gherkin acceptance criteria. Implementation ready. |

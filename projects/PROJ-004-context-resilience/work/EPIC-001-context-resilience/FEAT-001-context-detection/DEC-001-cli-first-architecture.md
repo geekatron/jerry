@@ -1,7 +1,7 @@
 # FEAT-001:DEC-001: CLI-First Hook Architecture & Context Monitoring Bounded Context
 
 > **Type:** decision
-> **Status:** pending
+> **Status:** accepted
 > **Priority:** critical
 > **Created:** 2026-02-19
 > **Parent:** FEAT-001
@@ -198,10 +198,10 @@ FEAT-001's scope is context resilience, not enforcement refactoring. Adding enfo
 
 | ID | Decision | Date | Status |
 |----|----------|------|--------|
-| D-001 | Hooks call CLI via subprocess, not import modules directly | 2026-02-19 | Pending user acceptance |
-| D-002 | Context monitoring is a proper bounded context (`src/context_monitoring/`) from the start | 2026-02-19 | Pending user acceptance |
-| D-003 | CLI gets `jerry hooks` namespace with one command per hook event | 2026-02-19 | Pending user acceptance |
-| D-004 | Enforcement tech debt tracked separately, not fixed in FEAT-001 | 2026-02-19 | Pending user acceptance |
+| D-001 | Hooks call CLI via subprocess, not import modules directly | 2026-02-19 | Accepted |
+| D-002 | Context monitoring is a proper bounded context (`src/context_monitoring/`) from the start | 2026-02-19 | Accepted |
+| D-003 | CLI gets `jerry hooks` namespace with one command per hook event | 2026-02-19 | Accepted |
+| D-004 | Enforcement tech debt tracked separately, not fixed in FEAT-001 | 2026-02-19 | Accepted |
 
 ---
 
@@ -221,6 +221,7 @@ FEAT-001's scope is context resilience, not enforcement refactoring. Adding enfo
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-19 | Claude | Created decision document with 4 decisions arising from DISC-001 findings and user review |
+| 2026-02-19 | User | All 4 decisions accepted. ADR-SPIKE002-002 confirmed as authoritative architecture. |
 
 ---
 
@@ -231,12 +232,12 @@ id: "FEAT-001:DEC-001"
 parent_id: "FEAT-001"
 work_type: DECISION
 title: "CLI-First Hook Architecture & Context Monitoring Bounded Context"
-status: PENDING
+status: ACCEPTED
 priority: CRITICAL
 created_by: "Claude"
 created_at: "2026-02-19"
 updated_at: "2026-02-19"
-decided_at: null
+decided_at: "2026-02-19"
 participants: ["User", "Claude"]
 tags: ["architecture", "clean-architecture", "cli", "hooks", "bounded-context"]
 decision_count: 4
