@@ -33,8 +33,7 @@ from typing import Any
 from markdown_it.token import Token
 from markdown_it.tree import SyntaxTreeNode
 
-from src.domain.markdown_ast.jerry_document import JerryDocument
-from src.domain.markdown_ast.schema import get_entity_schema, validate_document
+from src.domain.markdown_ast import JerryDocument, get_entity_schema, validate_document
 
 
 def token_to_dict(token: Token) -> dict[str, Any]:
