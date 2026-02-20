@@ -86,10 +86,10 @@ pipelines:
     short_alias: "res"
     skill_source: "problem-solving"
 
-    status: "PHASE_4_IN_PROGRESS"
-    current_phase: 4
+    status: "QG_2_IN_PROGRESS"
+    current_phase: 6
     total_phases: 7
-    progress_percent: 50
+    progress_percent: 85
 
     phases:
 
@@ -213,7 +213,7 @@ pipelines:
         agents:
           - id: "resumption-assessor"
             name: "Resumption Completeness Assessor"
-            status: "IN_PROGRESS"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-4-resumption/resumption-assessor/resumption-assessment.md"
             inputs:
               - "Phase 2 run analysis"
@@ -247,7 +247,7 @@ pipelines:
         agents:
           - id: "prompt-designer"
             name: "Resumption Prompt Designer"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-5-prompt/prompt-designer/resumption-prompt-template.md"
             inputs:
               - "Phase 4 resumption assessment"
@@ -281,7 +281,7 @@ pipelines:
         agents:
           - id: "threshold-analyst"
             name: "Threshold Analyst"
-            status: "BLOCKED"
+            status: "COMPLETE"
             artifact: "orchestration/spike001-ctxres-20260219-001/res/phase-6-thresholds/threshold-analyst/threshold-proposal.md"
             inputs:
               - "Phase 2 run analysis (empirical data)"
