@@ -33,6 +33,9 @@ dependencies = [
     "webvtt-py>=0.5.1",
     "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
     "filelock>=3.20.3",
+    "markdown-it-py>=4.0.0,<5.0.0",
+    "mdformat>=1.0.0,<2.0.0",
+    "mdit-py-plugins>=0.4.0",
 ]
 
 [project.optional-dependencies]

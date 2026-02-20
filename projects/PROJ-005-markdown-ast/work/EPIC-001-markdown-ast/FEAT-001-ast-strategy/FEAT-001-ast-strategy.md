@@ -110,7 +110,7 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 | ID | Type | Title | Status | Priority | Effort | Phase |
 |----|------|-------|--------|----------|--------|-------|
-| EN-001 | Enabler | R-01 PoC: mdformat blockquote frontmatter write-back | pending | critical | 3 | Gate |
+| EN-001 | Enabler | R-01 PoC: mdformat blockquote frontmatter write-back | completed | critical | 3 | Gate |
 
 ### Story Inventory
 
@@ -198,10 +198,10 @@ ST-010
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
 | Spikes:    [####################] 100% (2/2 completed)           |
-| Enablers:  [....................] 0%   (0/1 completed)           |
+| Enablers:  [####################] 100% (1/1 completed)           |
 | Stories:   [....................] 0%   (0/10 completed)          |
 +------------------------------------------------------------------+
-| Overall:   [###.................] 15%  (2/13 items done)         |
+| Overall:   [#####...............] 23%  (3/13 items done)         |
 +------------------------------------------------------------------+
 ```
 
@@ -210,11 +210,11 @@ ST-010
 | Metric | Value |
 |--------|-------|
 | **Total Items** | 13 (2 spikes + 1 enabler + 10 stories) |
-| **Completed** | 2 (spikes) |
+| **Completed** | 3 (2 spikes + 1 enabler) |
 | **Total Story Points** | 40 (3 enabler + 37 stories) |
-| **Completed Story Points** | 0 |
-| **Completion %** | 15% (spikes done; enabler and stories pending) |
-| **Next:** | EN-001 (R-01 PoC) -- critical gate |
+| **Completed Story Points** | 3 (EN-001) |
+| **Completion %** | 23% (spikes + enabler done; stories pending) |
+| **Next:** | ST-001 (JerryDocument facade) -- Phase 1 start |
 
 ---
 
@@ -240,3 +240,4 @@ ST-010
 | 2026-02-19 | Claude | pending | Feature created. Two spikes: library landscape (SPIKE-001) and feasibility (SPIKE-002). |
 | 2026-02-19 | Claude | in-progress | Both spikes completed via orchestration `spike-eval-20260219-001`. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. QG scores: 0.96, 0.97, 0.96. ADR and implementation stories pending. |
 | 2026-02-20 | Claude | in-progress | Work decomposed: EN-001 (R-01 PoC gate, 3 SP) + 10 stories (37 SP). Total: 40 SP across 4 implementation phases. |
+| 2026-02-20 | Claude | in-progress | EN-001 completed: R-01 PASS. All 3 checks pass across 3 entity types. Adversarial review (S-010 + S-014, score 0.83). Critical finding SR-001 fixed. Phase 1 stories unblocked. |

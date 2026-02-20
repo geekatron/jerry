@@ -68,7 +68,7 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | AST Strategy Evaluation & Library Selection | in-progress | high | 15% (2/13 items) |
+| FEAT-001 | AST Strategy Evaluation & Library Selection | in-progress | high | 23% (3/13 items) |
 
 ### Spike Inventory
 
