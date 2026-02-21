@@ -71,6 +71,7 @@
 | [BUG-010](./work/EPIC-001-oss-release/BUG-010-ci-lint-format-failure/BUG-010-ci-lint-format-failure.md) | CI Lint & Format Failure — Unformatted E2E Test File | done | high | EPIC-001 |
 | [BUG-011](./work/EPIC-001-oss-release/BUG-011-project-workflow-rule-conflict/BUG-011-project-workflow-rule-conflict.md) | project-workflow.md Duplicates and Conflicts with /worktracker Skill Rules | done | high | EPIC-001 |
 | [BUG-012](./work/EPIC-001-oss-release/BUG-012-ci-proj006-missing-dirs/BUG-012-ci-proj006-missing-dirs.md) | CI Failures — PROJ-006 Incomplete Project Directory Structure | done | high | EPIC-001 |
+| [BUG-013](./work/EPIC-001-oss-release/BUG-013-hook-uv-sync-wrong-directory/BUG-013-hook-uv-sync-wrong-directory.md) | SessionStart Hook `uv sync` Runs in Wrong Directory | in_progress | high | EPIC-001 |
 
 ---
 
@@ -266,6 +267,7 @@
 
 | 2026-02-20 | Claude | FEAT-028 created under EPIC-001: MCP Tool Integration (Context7 + Memory-Keeper). 5 enablers (EN-001–005), 11 effort pts, C3 criticality (AE-002). Created `.context/rules/mcp-tool-standards.md` governance rule. Context7 tools added to nse-explorer + nse-architecture (7 total). Memory-Keeper tools added to 7 agents (orch-planner, orch-tracker, orch-synthesizer, ps-architect, nse-requirements, ts-parser, ts-extractor). Updated 4 SKILL.md files, AGENTS.md (MCP Tool Access section), TOOL_REGISTRY.yaml (individual Memory-Keeper tool defs + agent permissions). All 5 enablers DONE. 3299 tests pass. |
 | 2026-02-20 | Claude | BUG-012 created under EPIC-001: CI Failures — PROJ-006 Incomplete Project Directory Structure. Same root cause as BUG-003 (EPIC-003). PROJ-006 bootstrapped with only `decisions/` but tests require >= 3 category dirs. Fix: add `research/`, `synthesis/`, `analysis/` with `.gitkeep`. 2 tasks (TASK-001, TASK-002). |
+| 2026-02-20 | Claude | BUG-013 created under EPIC-001: SessionStart Hook `uv sync` Runs in Wrong Directory. `uv sync` on line 10 of `hooks/hooks.json` missing `--directory ${CLAUDE_PLUGIN_ROOT}` — runs in CWD instead of plugin root. Shell `&&` short-circuits, preventing `session_start_hook.py` from executing. Fix: add `--directory ${CLAUDE_PLUGIN_ROOT}` to `uv sync`. GitHub Issue [#46](https://github.com/geekatron/jerry/issues/46). |
 
 ---
 
