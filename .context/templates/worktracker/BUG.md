@@ -41,10 +41,44 @@ TIMESTAMPS: Use ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 
 ---
 
+## Quick Creation Guide
+
+<!-- READ THIS FIRST when creating a new Bug. Rules: WTI-007, WTI-008. -->
+
+### Steps
+
+1. **Summary:** 1-2 sentences describing the **symptom** from the user's perspective. Do not describe root cause here.
+2. **Repro Steps:** 4-6 numbered steps to reproduce the issue. Include expected vs actual behavior.
+3. **AC:** Max **3 bullets**. Start each with actor/system. Focus on what "fixed" looks like.
+4. **Sections to skip at creation:** Root Cause Analysis, Fix Description, Evidence (populate these during/after fix).
+
+### BAD vs GOOD AC (Bugs)
+
+```markdown
+# BAD (violates WTI-007a, WTI-007b):
+- [ ] Fix the null reference in AssetHandler.cs line 42
+- [ ] All unit tests pass
+- [ ] Code reviewed
+
+# GOOD (compliant):
+- [ ] Asset list page loads without error when asset type filter is empty
+- [ ] System returns 200 OK with empty array (not 500) when no assets match
+- [ ] Error is logged at WARN level with correlation ID for debugging
+```
+
+### Quality Check
+
+Before creating: Can an engineer verify the fix without asking questions? If not, add more detail.
+
+**Reference:** `skills/worktracker/rules/worktracker-content-standards.md`
+
+---
+
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
+| [Quick Creation Guide](#quick-creation-guide) | How to create a bug quickly with quality AC |
 | [Template Structure](#template-structure) | Visual structure reference for bug template |
 | [Frontmatter](#frontmatter) | YAML metadata schema for bug work items |
 | [Summary](#summary) | Brief description and key details |
