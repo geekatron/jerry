@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv sync --directory ${CLAUDE_PLUGIN_ROOT} && uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/scripts/session_start_hook.py",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py",
             "timeout": 10000
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} python ${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.py",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.py",
             "timeout": 5000
           }
         ]
@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} python ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.py",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.py",
             "timeout": 10000
           }
         ]
@@ -47,7 +47,7 @@
           },
           {
             "type": "command",
-            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} python ${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.py",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.py",
             "timeout": 5000
           }
         ]
