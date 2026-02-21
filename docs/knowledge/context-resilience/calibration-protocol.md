@@ -21,6 +21,69 @@
 
 ---
 
+## Context Window Configuration
+
+### Known Limitation (TASK-006 Pending)
+
+The `ContextFillEstimator` currently hardcodes `_DEFAULT_CONTEXT_WINDOW = 200_000`. A config key `context_monitoring.context_window_tokens` exists in `bootstrap.py:585` but is **not yet wired** to the estimator. TASK-006 addresses this disconnect. Until TASK-006 is implemented, all users are treated as having a 200K context window regardless of their actual plan.
+
+**Impact:** Enterprise (500K) and extended-context `[1m]` (1M) users will see incorrect fill percentages and premature threshold triggers. See the [Impact Table](#impact-by-plan) below.
+
+### Impact by Plan
+
+| Your Plan | Actual Window | Reported Window | At 160K tokens | Reported Fill | Actual Fill | Error |
+|---|---|---|---|---|---|---|
+| Pro / Team Standard | 200K | 200K | 160K | 80% CRITICAL | 80% CRITICAL | 0% |
+| Enterprise | 500K | 200K | 160K | 80% CRITICAL | 32% NOMINAL | **+48%** |
+| Extended `[1m]` | 1M | 200K | 160K | 80% CRITICAL | 16% NOMINAL | **+64%** |
+
+### How to Configure (After TASK-006)
+
+Once TASK-006 is implemented, configure your context window size using one of these methods:
+
+**Method 1: Environment variable** (highest priority)
+```bash
+export JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=500000
+```
+
+**Method 2: Project config** (`.jerry/config.toml`)
+```toml
+[context_monitor]
+context_window_tokens = 500000
+```
+
+### Recommended Settings by Plan
+
+| Your Plan | Context Window | Action Required |
+|---|---|---|
+| Pro / Team Standard | 200K | None -- default is correct |
+| Max / Team Premium | 200K | None -- default is correct |
+| Enterprise | 500K | Set `JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=500000` |
+| Using `sonnet[1m]` / `opus[1m]` | 1M | None after TASK-006 -- auto-detected via `[1m]` suffix |
+| Custom / unsure | Varies | Check `/status` in Claude Code for your plan, set explicitly |
+
+### Auto-Detection (After TASK-006)
+
+TASK-006 adds automatic detection for `[1m]` extended-context users:
+- If `ANTHROPIC_MODEL` env var ends with `[1m]`, context window is set to 1,000,000 automatically
+- Enterprise users (500K) cannot be auto-detected -- the same model aliases are used for both Pro and Enterprise plans
+- Enterprise users must configure explicitly using the methods above
+
+### Verifying Your Configuration (After TASK-006)
+
+Check the `<context-monitor>` XML output for:
+```xml
+<context-window>500000</context-window>
+<context-window-source>config</context-window-source>
+```
+
+Valid `<context-window-source>` values:
+- `config` -- explicitly configured via env var or config.toml
+- `env-1m-detection` -- auto-detected from `ANTHROPIC_MODEL` `[1m]` suffix
+- `default` -- no configuration; 200K default applied
+
+---
+
 ## Current Threshold Defaults
 
 ### Default Thresholds (C2 Standard Criticality)

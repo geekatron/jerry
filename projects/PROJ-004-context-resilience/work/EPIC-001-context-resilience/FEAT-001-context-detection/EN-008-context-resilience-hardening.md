@@ -10,7 +10,7 @@
 > **Completed:** --
 > **Parent:** FEAT-001
 > **Owner:** --
-> **Effort:** 12-16h
+> **Effort:** 14-20h
 
 ---
 
@@ -73,7 +73,7 @@ Completing these tasks promotes all 5 PARTIAL verdicts to PASS, achieving full F
 | [TASK-003](./TASK-003-checkpoint-yaml-writeback.md) | Checkpoint write-back to ORCHESTRATION.yaml | pending | 2h | -- |
 | [TASK-004](./TASK-004-e2e-integration-test.md) | Automated E2E integration test | pending | 3h | -- |
 | [TASK-005](./TASK-005-multi-pattern-validation.md) | Multi-pattern orchestration validation | pending | 2h | -- |
-| [TASK-006](./TASK-006-context-window-configuration.md) | Context window size detection and configuration | pending | 4h | -- |
+| [TASK-006](./TASK-006-context-window-configuration.md) | Context window size detection and configuration | pending | 6-8h | -- |
 
 ---
 
