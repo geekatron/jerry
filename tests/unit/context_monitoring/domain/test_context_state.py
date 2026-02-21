@@ -21,7 +21,6 @@ import pytest
 from src.context_monitoring.domain.value_objects.context_state import ContextState
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 
-
 # =============================================================================
 # BDD Scenario: ContextState construction
 # =============================================================================

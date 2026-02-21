@@ -29,7 +29,6 @@ from src.context_monitoring.domain.value_objects.threshold_tier import Threshold
 from src.infrastructure.internal.enforcement.quality_context import QualityContext
 from src.interface.cli.hooks.hooks_session_start_handler import HooksSessionStartHandler
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -117,10 +116,12 @@ class TestHooksSessionStartHandlerReturnsContext:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Given a SessionStart hook input, handler returns valid JSON."""
-        hook_input = json.dumps({
-            "hook_event_name": "SessionStart",
-            "session_id": "test-session-456",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "SessionStart",
+                "session_id": "test-session-456",
+            }
+        )
 
         exit_code = handler.handle(hook_input)
 

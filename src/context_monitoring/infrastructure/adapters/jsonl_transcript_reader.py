@@ -83,9 +83,7 @@ class JsonlTranscriptReader:
             158119
         """
         if not os.path.exists(transcript_path):
-            raise FileNotFoundError(
-                f"Transcript file not found: {transcript_path}"
-            )
+            raise FileNotFoundError(f"Transcript file not found: {transcript_path}")
 
         usage = self._find_latest_usage(transcript_path)
 

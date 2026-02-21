@@ -25,8 +25,8 @@ References:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from pathlib import Path, PurePosixPath
+from datetime import UTC, datetime
+from pathlib import Path, PurePath
 
 import yaml
 
@@ -117,10 +117,9 @@ class StalenessDetector:
         Returns:
             True if the path ends with ORCHESTRATION.yaml, False otherwise.
         """
-        # Use PurePosixPath to handle both forward and back slashes
-        # and extract the filename reliably.
-        posix_path = PurePosixPath(tool_target_path)
-        return posix_path.name == _ORCHESTRATION_FILENAME
+        # Use PurePath to handle both forward and back slashes
+        # cross-platform (PurePosixPath fails on Windows absolute paths).
+        return PurePath(tool_target_path).name == _ORCHESTRATION_FILENAME
 
     def _evaluate_staleness(
         self,
@@ -249,7 +248,7 @@ class StalenessDetector:
             dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
             # Ensure timezone-aware
             if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
+                dt = dt.replace(tzinfo=UTC)
             return dt
         except (ValueError, AttributeError):
             return None

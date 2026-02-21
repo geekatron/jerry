@@ -27,7 +27,6 @@ from src.context_monitoring.domain.value_objects.checkpoint_data import Checkpoi
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 
-
 # =============================================================================
 # Helpers
 # =============================================================================
@@ -80,9 +79,7 @@ class TestGenerateWithNoResumptionState:
         result = generator.generate(checkpoint)
         assert result == ""
 
-    def test_returns_string_type_when_none(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_returns_string_type_when_none(self, generator: ResumptionContextGenerator) -> None:
         """Return type is str (not None) when resumption_state is None."""
         checkpoint = _make_checkpoint(resumption_state=None)
         result = generator.generate(checkpoint)
@@ -101,19 +98,13 @@ class TestGenerateWithValidCheckpoint:
     generate() must return well-formed XML with all required sections.
     """
 
-    def test_returns_non_empty_string(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_returns_non_empty_string(self, generator: ResumptionContextGenerator) -> None:
         """generate() returns non-empty string when resumption_state is present."""
-        checkpoint = _make_checkpoint(
-            resumption_state={"current_phase": "implementation"}
-        )
+        checkpoint = _make_checkpoint(resumption_state={"current_phase": "implementation"})
         result = generator.generate(checkpoint)
         assert len(result) > 0
 
-    def test_xml_contains_checkpoint_id(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_xml_contains_checkpoint_id(self, generator: ResumptionContextGenerator) -> None:
         """Generated XML contains the checkpoint-id element."""
         checkpoint = _make_checkpoint(
             checkpoint_id="cx-001",
@@ -123,9 +114,7 @@ class TestGenerateWithValidCheckpoint:
         assert "<checkpoint-id>" in result
         assert "cx-001" in result
 
-    def test_xml_contains_fill_percentage(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_xml_contains_fill_percentage(self, generator: ResumptionContextGenerator) -> None:
         """Generated XML contains fill-percentage in context-state section."""
         checkpoint = _make_checkpoint(
             fill_pct=0.82,
@@ -135,9 +124,7 @@ class TestGenerateWithValidCheckpoint:
         assert "<fill-percentage>" in result
         assert "0.82" in result
 
-    def test_xml_contains_tier(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_xml_contains_tier(self, generator: ResumptionContextGenerator) -> None:
         """Generated XML contains tier in context-state section."""
         checkpoint = _make_checkpoint(
             tier=ThresholdTier.CRITICAL,
@@ -147,9 +134,7 @@ class TestGenerateWithValidCheckpoint:
         assert "<tier>" in result
         assert "CRITICAL" in result
 
-    def test_xml_contains_created_at(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_xml_contains_created_at(self, generator: ResumptionContextGenerator) -> None:
         """Generated XML contains created-at element."""
         checkpoint = _make_checkpoint(
             created_at="2026-02-20T10:00:00+00:00",
@@ -163,9 +148,7 @@ class TestGenerateWithValidCheckpoint:
         self, generator: ResumptionContextGenerator
     ) -> None:
         """Generated XML contains recovery-state section."""
-        checkpoint = _make_checkpoint(
-            resumption_state={"current_phase": "implementation"}
-        )
+        checkpoint = _make_checkpoint(resumption_state={"current_phase": "implementation"})
         result = generator.generate(checkpoint)
         assert "<recovery-state>" in result
 
@@ -180,9 +163,7 @@ class TestGenerateWithValidCheckpoint:
         assert result.strip().startswith("<resumption-context>")
         assert result.strip().endswith("</resumption-context>")
 
-    def test_xml_within_token_budget(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_xml_within_token_budget(self, generator: ResumptionContextGenerator) -> None:
         """Generated XML is within ~760 token budget (approx via len/4)."""
         resumption_state = {
             "current_phase": "implementation",
@@ -208,20 +189,14 @@ class TestRecoveryStateSerialization:
     each key should appear in the recovery-state section.
     """
 
-    def test_single_key_value_serialized(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_single_key_value_serialized(self, generator: ResumptionContextGenerator) -> None:
         """Single key-value pair appears in recovery-state section."""
-        checkpoint = _make_checkpoint(
-            resumption_state={"current_phase": "testing"}
-        )
+        checkpoint = _make_checkpoint(resumption_state={"current_phase": "testing"})
         result = generator.generate(checkpoint)
         assert "current_phase" in result
         assert "testing" in result
 
-    def test_multiple_keys_serialized(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_multiple_keys_serialized(self, generator: ResumptionContextGenerator) -> None:
         """Multiple keys all appear in recovery-state section."""
         checkpoint = _make_checkpoint(
             resumption_state={
@@ -235,9 +210,7 @@ class TestRecoveryStateSerialization:
         assert "entity" in result
         assert "status" in result
 
-    def test_empty_resumption_state_dict(
-        self, generator: ResumptionContextGenerator
-    ) -> None:
+    def test_empty_resumption_state_dict(self, generator: ResumptionContextGenerator) -> None:
         """Empty dict resumption_state still produces XML (not empty string)."""
         checkpoint = _make_checkpoint(resumption_state={})
         result = generator.generate(checkpoint)

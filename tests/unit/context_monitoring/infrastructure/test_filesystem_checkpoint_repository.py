@@ -30,7 +30,6 @@ from src.context_monitoring.infrastructure.adapters.filesystem_checkpoint_reposi
 )
 from src.infrastructure.adapters.persistence.atomic_file_adapter import AtomicFileAdapter
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -116,9 +115,7 @@ class TestSaveAndRetrieveCheckpoint:
     it should be retrievable via get_latest_unacknowledged.
     """
 
-    def test_save_and_retrieve(
-        self, repository: FilesystemCheckpointRepository
-    ) -> None:
+    def test_save_and_retrieve(self, repository: FilesystemCheckpointRepository) -> None:
         """Saved checkpoint can be retrieved."""
         cp = _make_checkpoint_data(checkpoint_id="cx-001", fill_pct=0.72)
         repository.save(cp)
@@ -127,9 +124,7 @@ class TestSaveAndRetrieveCheckpoint:
         assert latest.checkpoint_id == "cx-001"
         assert latest.context_state.fill_percentage == 0.72
 
-    def test_list_all_returns_saved(
-        self, repository: FilesystemCheckpointRepository
-    ) -> None:
+    def test_list_all_returns_saved(self, repository: FilesystemCheckpointRepository) -> None:
         """list_all returns all saved checkpoints."""
         cp1 = _make_checkpoint_data(checkpoint_id="cx-001")
         cp2 = _make_checkpoint_data(checkpoint_id="cx-002")
@@ -165,25 +160,19 @@ class TestSequentialCheckpointIdGeneration:
     the repository should generate cx-001, cx-002, etc.
     """
 
-    def test_next_id_starts_at_001(
-        self, repository: FilesystemCheckpointRepository
-    ) -> None:
+    def test_next_id_starts_at_001(self, repository: FilesystemCheckpointRepository) -> None:
         """First generated ID is cx-001."""
         next_id = repository.next_checkpoint_id()
         assert next_id == "cx-001"
 
-    def test_next_id_increments(
-        self, repository: FilesystemCheckpointRepository
-    ) -> None:
+    def test_next_id_increments(self, repository: FilesystemCheckpointRepository) -> None:
         """IDs increment sequentially after saves."""
         cp1 = _make_checkpoint_data(checkpoint_id="cx-001")
         repository.save(cp1)
         next_id = repository.next_checkpoint_id()
         assert next_id == "cx-002"
 
-    def test_next_id_after_multiple_saves(
-        self, repository: FilesystemCheckpointRepository
-    ) -> None:
+    def test_next_id_after_multiple_saves(self, repository: FilesystemCheckpointRepository) -> None:
         """IDs continue incrementing with multiple saves."""
         for i in range(1, 4):
             cp = _make_checkpoint_data(checkpoint_id=f"cx-{i:03d}")
@@ -280,14 +269,10 @@ class TestAcknowledgmentMarkerFile:
 class TestCheckpointWithResumptionState:
     """Scenario: Checkpoint with resumption state round-trips correctly."""
 
-    def test_resumption_state_preserved(
-        self, repository: FilesystemCheckpointRepository
-    ) -> None:
+    def test_resumption_state_preserved(self, repository: FilesystemCheckpointRepository) -> None:
         """Resumption state dict is preserved through save and retrieve."""
         resumption = {"current_phase": "implementation", "entity_id": "EN-003"}
-        cp = _make_checkpoint_data(
-            checkpoint_id="cx-001", resumption_state=resumption
-        )
+        cp = _make_checkpoint_data(checkpoint_id="cx-001", resumption_state=resumption)
         repository.save(cp)
         latest = repository.get_latest_unacknowledged()
         assert latest is not None

@@ -35,7 +35,6 @@ from src.infrastructure.adapters.configuration.layered_config_adapter import (
     LayeredConfigAdapter,
 )
 
-
 # =============================================================================
 # Helpers
 # =============================================================================

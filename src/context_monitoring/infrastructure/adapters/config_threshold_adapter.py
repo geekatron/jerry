@@ -137,10 +137,7 @@ class ConfigThresholdAdapter:
 
         if tier_lower not in _TIER_KEY_MAP:
             valid_tiers = ", ".join(sorted(_TIER_KEY_MAP.keys()))
-            msg = (
-                f"Unrecognized threshold tier: '{tier}'. "
-                f"Valid tiers: {valid_tiers}"
-            )
+            msg = f"Unrecognized threshold tier: '{tier}'. Valid tiers: {valid_tiers}"
             raise ValueError(msg)
 
         key = f"{_CONFIG_NAMESPACE}.{_TIER_KEY_MAP[tier_lower]}"

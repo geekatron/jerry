@@ -68,9 +68,9 @@ class TestUserPromptSubmitHookIntegration:
         # New format: additionalContext at top level
         additional_context = stdout_json.get("additionalContext", "")
         # Should contain quality reinforcement content
-        assert "P-003" in additional_context or "P-020" in additional_context or additional_context, (
-            f"Expected quality reinforcement content. Got: {additional_context[:200]}..."
-        )
+        assert (
+            "P-003" in additional_context or "P-020" in additional_context or additional_context
+        ), f"Expected quality reinforcement content. Got: {additional_context[:200]}..."
 
     def test_hook_output_contains_quality_reinforcement_xml_tag(self) -> None:
         """Hook output should contain quality reinforcement content."""

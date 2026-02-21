@@ -29,7 +29,6 @@ from src.context_monitoring.infrastructure.adapters.jsonl_transcript_reader impo
     JsonlTranscriptReader,
 )
 
-
 # =============================================================================
 # Helper: Build realistic Claude Code JSONL entries
 # =============================================================================
@@ -122,9 +121,7 @@ class TestReadFromRealClaudeCodeFormat:
         result = reader.read_latest_tokens(str(transcript))
         assert result == 1 + 989 + 106_468  # 107_458
 
-    def test_handles_zero_cache_fields(
-        self, reader: JsonlTranscriptReader, tmp_path: Path
-    ) -> None:
+    def test_handles_zero_cache_fields(self, reader: JsonlTranscriptReader, tmp_path: Path) -> None:
         """When cache fields are zero, returns just input_tokens."""
         transcript = tmp_path / "transcript.jsonl"
         line = _assistant_entry(
@@ -137,9 +134,7 @@ class TestReadFromRealClaudeCodeFormat:
         result = reader.read_latest_tokens(str(transcript))
         assert result == 50_000
 
-    def test_returns_integer(
-        self, reader: JsonlTranscriptReader, tmp_path: Path
-    ) -> None:
+    def test_returns_integer(self, reader: JsonlTranscriptReader, tmp_path: Path) -> None:
         """read_latest_tokens() returns an int."""
         transcript = tmp_path / "transcript.jsonl"
         line = _assistant_entry(input_tokens=100, cache_read_input_tokens=900)
@@ -162,9 +157,7 @@ class TestSkipsNonAssistantEntries:
     the token sum from the last assistant entry.
     """
 
-    def test_skips_trailing_user_entry(
-        self, reader: JsonlTranscriptReader, tmp_path: Path
-    ) -> None:
+    def test_skips_trailing_user_entry(self, reader: JsonlTranscriptReader, tmp_path: Path) -> None:
         """Skips user entries after the last assistant entry."""
         transcript = tmp_path / "transcript.jsonl"
         lines = [
@@ -355,9 +348,7 @@ class TestLargeJsonlEntries:
         result = reader.read_latest_tokens(str(transcript))
         assert result == 5 + 1_000 + 180_000  # 181_005
 
-    def test_single_large_entry(
-        self, reader: JsonlTranscriptReader, tmp_path: Path
-    ) -> None:
+    def test_single_large_entry(self, reader: JsonlTranscriptReader, tmp_path: Path) -> None:
         """Single entry > 4096 bytes."""
         transcript = tmp_path / "single_large.jsonl"
         entry = {

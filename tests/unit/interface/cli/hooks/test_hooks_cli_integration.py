@@ -19,14 +19,11 @@ References:
 
 from __future__ import annotations
 
-import json
-import sys
 from unittest.mock import MagicMock
 
 import pytest
 
 from src.interface.cli.parser import create_parser
-
 
 # =============================================================================
 # Tests: CLI Parser

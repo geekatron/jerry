@@ -139,9 +139,7 @@ class TestAE006bContent:
         lines = auto_escalation_section.splitlines()
         ae006b_lines = [line for line in lines if "AE-006b" in line]
         assert len(ae006b_lines) >= 1, "AE-006b row not found"
-        assert "WARNING" in " ".join(ae006b_lines), (
-            "AE-006b row must reference WARNING tier."
-        )
+        assert "WARNING" in " ".join(ae006b_lines), "AE-006b row must reference WARNING tier."
 
 
 # ---------------------------------------------------------------------------
@@ -160,9 +158,7 @@ class TestAE006cContent:
         lines = auto_escalation_section.splitlines()
         ae006c_lines = [line for line in lines if "AE-006c" in line]
         assert len(ae006c_lines) >= 1, "AE-006c row not found"
-        assert "CRITICAL" in " ".join(ae006c_lines), (
-            "AE-006c row must reference CRITICAL tier."
-        )
+        assert "CRITICAL" in " ".join(ae006c_lines), "AE-006c row must reference CRITICAL tier."
 
 
 # ---------------------------------------------------------------------------
@@ -181,9 +177,7 @@ class TestAE006dContent:
         lines = auto_escalation_section.splitlines()
         ae006d_lines = [line for line in lines if "AE-006d" in line]
         assert len(ae006d_lines) >= 1, "AE-006d row not found"
-        assert "EMERGENCY" in " ".join(ae006d_lines), (
-            "AE-006d row must reference EMERGENCY tier."
-        )
+        assert "EMERGENCY" in " ".join(ae006d_lines), "AE-006d row must reference EMERGENCY tier."
 
 
 # ---------------------------------------------------------------------------
@@ -216,9 +210,7 @@ class TestAE006eContent:
         ae006e_lines = [line for line in lines if "AE-006e" in line]
         assert len(ae006e_lines) >= 1, "AE-006e row not found"
         row_text = " ".join(ae006e_lines)
-        assert "C3" in row_text, (
-            "AE-006e row must reference C3+ escalation."
-        )
+        assert "C3" in row_text, "AE-006e row must reference C3+ escalation."
 
 
 # ---------------------------------------------------------------------------
@@ -247,7 +239,8 @@ class TestAE006L2ReInjectMarker:
         # Find the L2-REINJECT line that contains AE-006 graduated escalation
         lines = quality_enforcement_content.splitlines()
         marker_lines = [
-            line for line in lines
+            line
+            for line in lines
             if "L2-REINJECT" in line and "AE-006 graduated escalation" in line
         ]
         assert len(marker_lines) >= 1, (
@@ -256,8 +249,7 @@ class TestAE006L2ReInjectMarker:
         marker_text = marker_lines[0]
         for tier in ("NOMINAL", "WARNING", "CRITICAL", "EMERGENCY", "COMPACTION"):
             assert tier in marker_text, (
-                f"AE-006 L2-REINJECT marker must reference tier '{tier}'. "
-                f"Marker: {marker_text}"
+                f"AE-006 L2-REINJECT marker must reference tier '{tier}'. Marker: {marker_text}"
             )
 
     def test_l2_reinject_ae006_uses_rank9_when_parsing_then_correct(
@@ -267,7 +259,8 @@ class TestAE006L2ReInjectMarker:
         """The AE-006 L2-REINJECT marker must use rank=9 to avoid collision with rank=8."""
         lines = quality_enforcement_content.splitlines()
         marker_lines = [
-            line for line in lines
+            line
+            for line in lines
             if "L2-REINJECT" in line and "AE-006 graduated escalation" in line
         ]
         assert len(marker_lines) >= 1, (
@@ -294,9 +287,7 @@ class TestL2ReInjectTokenBudget:
         # Extract all tokens=<N> values from L2-REINJECT markers
         token_pattern = re.compile(r"<!--\s*L2-REINJECT:.*?tokens=(\d+).*?-->")
         matches = token_pattern.findall(quality_enforcement_content)
-        assert len(matches) > 0, (
-            "No L2-REINJECT markers found in quality-enforcement.md."
-        )
+        assert len(matches) > 0, "No L2-REINJECT markers found in quality-enforcement.md."
         total_tokens = sum(int(t) for t in matches)
         assert total_tokens <= 600, (
             f"Total L2-REINJECT token budget {total_tokens} exceeds 600-token limit. "

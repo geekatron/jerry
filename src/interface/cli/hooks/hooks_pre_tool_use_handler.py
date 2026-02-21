@@ -30,7 +30,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from src.context_monitoring.infrastructure.adapters.staleness_detector import (
@@ -146,7 +146,7 @@ class HooksPreToolUseHandler:
         # Step 3: Staleness detection (fail-open) - only if we have a file path
         if file_path and "decision" not in response:
             try:
-                reference_time = datetime.now(timezone.utc)
+                reference_time = datetime.now(UTC)
                 staleness = self._staleness_detector.check_staleness(
                     tool_target_path=file_path,
                     reference_time=reference_time,

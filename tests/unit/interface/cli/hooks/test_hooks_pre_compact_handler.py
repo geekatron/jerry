@@ -27,7 +27,6 @@ from src.context_monitoring.domain.value_objects.fill_estimate import FillEstima
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 from src.interface.cli.hooks.hooks_pre_compact_handler import HooksPreCompactHandler
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -103,11 +102,13 @@ class TestHooksPreCompactHandlerCreatesCheckpoint:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Given a PreCompact hook input, handler returns valid JSON."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreCompact",
-            "session_id": "test-session-789",
-            "transcript_path": "/tmp/test-transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "session_id": "test-session-789",
+                "transcript_path": "/tmp/test-transcript.jsonl",
+            }
+        )
 
         exit_code = handler.handle(hook_input)
 
@@ -123,10 +124,12 @@ class TestHooksPreCompactHandlerCreatesCheckpoint:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Handler calls checkpoint_service.create_checkpoint with trigger='pre_compact'."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreCompact",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -143,10 +146,12 @@ class TestHooksPreCompactHandlerCreatesCheckpoint:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Handler calls abandon handler with reason 'compaction'."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreCompact",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -161,10 +166,12 @@ class TestHooksPreCompactHandlerCreatesCheckpoint:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Response JSON includes checkpoint_id."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreCompact",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -192,10 +199,12 @@ class TestHooksPreCompactHandlerFailOpen:
             abandon_handler=mock_abandon_handler,
         )
 
-        hook_input = json.dumps({
-            "hook_event_name": "PreCompact",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
         exit_code = handler.handle(hook_input)
 
         assert exit_code == 0
@@ -219,10 +228,12 @@ class TestHooksPreCompactHandlerFailOpen:
             abandon_handler=failing_abandon,
         )
 
-        hook_input = json.dumps({
-            "hook_event_name": "PreCompact",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
         exit_code = handler.handle(hook_input)
 
         assert exit_code == 0

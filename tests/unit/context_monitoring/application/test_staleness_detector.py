@@ -20,18 +20,17 @@ References:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
-from src.context_monitoring.infrastructure.adapters.staleness_detector import (
-    StalenessDetector,
-)
 from src.context_monitoring.domain.value_objects.staleness_result import (
     StalenessResult,
 )
-
+from src.context_monitoring.infrastructure.adapters.staleness_detector import (
+    StalenessDetector,
+)
 
 # =============================================================================
 # Helpers
@@ -87,7 +86,7 @@ class TestNonOrchestrationPassthrough:
     def test_python_file_passes_through(self, tmp_path: Path) -> None:
         """A Python source file path should not trigger staleness detection."""
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="src/context_monitoring/domain/value_objects/threshold_tier.py",
@@ -100,7 +99,7 @@ class TestNonOrchestrationPassthrough:
     def test_markdown_file_passes_through(self, tmp_path: Path) -> None:
         """A markdown file path should not trigger staleness detection."""
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="docs/PLAN.md",
@@ -113,7 +112,7 @@ class TestNonOrchestrationPassthrough:
     def test_orchestration_plan_md_passes_through(self, tmp_path: Path) -> None:
         """ORCHESTRATION_PLAN.md should not trigger staleness detection."""
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION_PLAN.md",
@@ -126,7 +125,7 @@ class TestNonOrchestrationPassthrough:
     def test_partial_name_match_passes_through(self, tmp_path: Path) -> None:
         """A file whose name contains ORCHESTRATION but is not .yaml passes through."""
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yml",
@@ -153,15 +152,11 @@ class TestStaleOrchestrationWarning:
         """Stale ORCHESTRATION.yaml should trigger a staleness warning."""
         _make_orchestration_yaml(
             tmp_path,
-            (
-                "resumption:\n"
-                "  recovery_state:\n"
-                "    updated_at: '2026-02-18T10:00:00Z'\n"
-            ),
+            ("resumption:\n  recovery_state:\n    updated_at: '2026-02-18T10:00:00Z'\n"),
             subpath="projects/PROJ-004/ORCHESTRATION.yaml",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="projects/PROJ-004/ORCHESTRATION.yaml",
@@ -177,14 +172,10 @@ class TestStaleOrchestrationWarning:
         """Stale detection works with absolute tool target paths."""
         _make_orchestration_yaml(
             tmp_path,
-            (
-                "resumption:\n"
-                "  recovery_state:\n"
-                "    updated_at: '2026-02-18T10:00:00Z'\n"
-            ),
+            ("resumption:\n  recovery_state:\n    updated_at: '2026-02-18T10:00:00Z'\n"),
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
         absolute_path = str(tmp_path / "ORCHESTRATION.yaml")
 
         result = detector.check_staleness(
@@ -199,15 +190,11 @@ class TestStaleOrchestrationWarning:
         """Stale detection works with deeply nested ORCHESTRATION.yaml paths."""
         _make_orchestration_yaml(
             tmp_path,
-            (
-                "resumption:\n"
-                "  recovery_state:\n"
-                "    updated_at: '2026-02-15T12:00:00Z'\n"
-            ),
+            ("resumption:\n  recovery_state:\n    updated_at: '2026-02-15T12:00:00Z'\n"),
             subpath="projects/PROJ-004/orchestration/feat001/ORCHESTRATION.yaml",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="projects/PROJ-004/orchestration/feat001/ORCHESTRATION.yaml",
@@ -220,14 +207,10 @@ class TestStaleOrchestrationWarning:
         """Stale result should include the reference time for diagnostics."""
         _make_orchestration_yaml(
             tmp_path,
-            (
-                "resumption:\n"
-                "  recovery_state:\n"
-                "    updated_at: '2026-02-18T10:00:00Z'\n"
-            ),
+            ("resumption:\n  recovery_state:\n    updated_at: '2026-02-18T10:00:00Z'\n"),
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -253,14 +236,10 @@ class TestFreshOrchestrationPassthrough:
         """Fresh ORCHESTRATION.yaml should not trigger a staleness warning."""
         _make_orchestration_yaml(
             tmp_path,
-            (
-                "resumption:\n"
-                "  recovery_state:\n"
-                "    updated_at: '2026-02-19T09:30:00Z'\n"
-            ),
+            ("resumption:\n  recovery_state:\n    updated_at: '2026-02-19T09:30:00Z'\n"),
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -274,14 +253,10 @@ class TestFreshOrchestrationPassthrough:
         """ORCHESTRATION.yaml with updated_at equal to reference time passes through."""
         _make_orchestration_yaml(
             tmp_path,
-            (
-                "resumption:\n"
-                "  recovery_state:\n"
-                "    updated_at: '2026-02-19T08:00:00Z'\n"
-            ),
+            ("resumption:\n  recovery_state:\n    updated_at: '2026-02-19T08:00:00Z'\n"),
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -311,7 +286,7 @@ class TestUnparseableOrchestrationFailOpen:
             "{{{{ not valid yaml: ][",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -326,7 +301,7 @@ class TestUnparseableOrchestrationFailOpen:
         target = tmp_path / "ORCHESTRATION.yaml"
         target.write_bytes(b"\x00\x01\x02\x03\xff\xfe")
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -352,7 +327,7 @@ class TestMissingOrchestrationFailOpen:
     def test_missing_file_fails_open(self, tmp_path: Path) -> None:
         """Missing ORCHESTRATION.yaml should pass through without error."""
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -365,7 +340,7 @@ class TestMissingOrchestrationFailOpen:
     def test_missing_nested_file_fails_open(self, tmp_path: Path) -> None:
         """Missing nested ORCHESTRATION.yaml should pass through without error."""
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="projects/PROJ-004/ORCHESTRATION.yaml",
@@ -395,7 +370,7 @@ class TestMissingUpdatedAtFailOpen:
             "phase: implementation\nstatus: active\n",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -412,7 +387,7 @@ class TestMissingUpdatedAtFailOpen:
             "resumption:\n  checkpoint_id: abc123\n",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -429,7 +404,7 @@ class TestMissingUpdatedAtFailOpen:
             "resumption:\n  recovery_state:\n    updated_at: null\n",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -446,7 +421,7 @@ class TestMissingUpdatedAtFailOpen:
             "resumption:\n  recovery_state:\n    updated_at: ''\n",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",
@@ -463,7 +438,7 @@ class TestMissingUpdatedAtFailOpen:
             "resumption:\n  recovery_state:\n    updated_at: 'not-a-timestamp'\n",
         )
         detector = _make_detector(tmp_path)
-        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=timezone.utc)
+        reference = datetime(2026, 2, 19, 8, 0, 0, tzinfo=UTC)
 
         result = detector.check_staleness(
             tool_target_path="ORCHESTRATION.yaml",

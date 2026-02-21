@@ -24,11 +24,6 @@ from pathlib import Path
 import pytest
 
 from src.session_management.domain.aggregates.session import Session, SessionStatus
-from src.session_management.domain.events.session_events import (
-    SessionAbandoned,
-    SessionCreated,
-    SessionProjectLinked,
-)
 from src.session_management.domain.value_objects.project_id import ProjectId
 from src.session_management.domain.value_objects.session_id import SessionId
 from src.session_management.infrastructure.adapters.event_sourced_session_repository import (
@@ -314,9 +309,7 @@ class TestEventReplayReconstitution:
         assert loaded.project_id == project_id.value
         assert loaded.status == SessionStatus.ABANDONED
 
-    def test_replay_preserves_version(
-        self, repository: EventSourcedSessionRepository
-    ) -> None:
+    def test_replay_preserves_version(self, repository: EventSourcedSessionRepository) -> None:
         """Replayed session has correct version number."""
         session_id = SessionId.generate()
         project_id = ProjectId.create(2, "version-test")

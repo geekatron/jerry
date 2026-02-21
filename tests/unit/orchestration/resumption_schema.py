@@ -397,9 +397,9 @@ RESUMPTION_SCHEMA: dict = {
 # These fields must exist within the v2.0 schema (mapped into recovery_state
 # and files_to_read).
 ORIGINAL_V1_FIELDS = [
-    "last_checkpoint",      # -> recovery_state.last_checkpoint
-    "current_state",        # -> recovery_state.{current_phase, workflow_status, current_activity}
-    "next_step",            # -> recovery_state.next_step
-    "files_to_read",        # -> files_to_read (top-level, now structured)
+    "last_checkpoint",  # -> recovery_state.last_checkpoint
+    "current_state",  # -> recovery_state.{current_phase, workflow_status, current_activity}
+    "next_step",  # -> recovery_state.next_step
+    "files_to_read",  # -> files_to_read (top-level, now structured)
     "cross_session_portable",  # -> recovery_state.cross_session_portable
 ]

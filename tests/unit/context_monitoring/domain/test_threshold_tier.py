@@ -18,7 +18,6 @@ from __future__ import annotations
 
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 
-
 # =============================================================================
 # BDD Scenario: ThresholdTier enum has all 5 levels
 # =============================================================================

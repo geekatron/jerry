@@ -26,10 +26,8 @@ from src.context_monitoring.application.ports.checkpoint_repository import (
 from src.context_monitoring.application.services.checkpoint_service import (
     CheckpointService,
 )
-from src.context_monitoring.domain.value_objects.checkpoint_data import CheckpointData
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
-
 
 # =============================================================================
 # Fixtures
@@ -45,9 +43,7 @@ def mock_repository() -> MagicMock:
 
 
 @pytest.fixture()
-def service_with_orchestration(
-    mock_repository: MagicMock, tmp_path: Path
-) -> CheckpointService:
+def service_with_orchestration(mock_repository: MagicMock, tmp_path: Path) -> CheckpointService:
     """Create a CheckpointService with an ORCHESTRATION.yaml present."""
     orchestration_path = tmp_path / "ORCHESTRATION.yaml"
     orchestration_path.write_text(

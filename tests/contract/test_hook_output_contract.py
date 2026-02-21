@@ -33,7 +33,6 @@ from typing import Any
 
 import pytest
 
-
 # Mark as contract tests
 pytestmark = [
     pytest.mark.contract,
@@ -187,8 +186,7 @@ class TestAdditionalContext:
         data = parse_hook_output(result.stdout)
 
         assert "additionalContext" in data, (
-            "Hook output must contain 'additionalContext' field.\n"
-            f"Actual keys: {list(data.keys())}"
+            f"Hook output must contain 'additionalContext' field.\nActual keys: {list(data.keys())}"
         )
 
         assert isinstance(data["additionalContext"], str), (
@@ -350,10 +348,7 @@ class TestHookErrorHandling:
         )
 
         # Assert - even with potential errors, output should be valid JSON
-        assert result.returncode == 0, (
-            f"Hook should exit 0 even on errors\n"
-            f"stderr: {result.stderr}"
-        )
+        assert result.returncode == 0, f"Hook should exit 0 even on errors\nstderr: {result.stderr}"
 
         try:
             data = parse_hook_output(result.stdout)

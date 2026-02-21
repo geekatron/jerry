@@ -22,7 +22,6 @@ from src.context_monitoring.domain.value_objects.checkpoint_data import Checkpoi
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 
-
 # =============================================================================
 # BDD Scenario: CheckpointData captures resumption state
 # =============================================================================

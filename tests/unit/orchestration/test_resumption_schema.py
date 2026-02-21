@@ -32,10 +32,10 @@ from tests.unit.orchestration.resumption_schema import (
     RESUMPTION_SCHEMA,
 )
 
-
 # =============================================================================
 # Test Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def valid_resumption_v2() -> dict:
@@ -125,8 +125,7 @@ def valid_resumption_v1() -> dict:
     return {
         "last_checkpoint": "CP-003",
         "current_state": (
-            "WORKFLOW COMPLETE. All 4 phases done. "
-            "QG-1: 0.941, QG-2: 0.9505, QG-3: 0.935."
+            "WORKFLOW COMPLETE. All 4 phases done. QG-1: 0.941, QG-2: 0.9505, QG-3: 0.935."
         ),
         "next_step": "Close FEAT-015 feature entity.",
         "files_to_read": [
@@ -189,6 +188,7 @@ def minimal_resumption_v2() -> dict:
 # BDD Scenario 1: Template contains all 7 resumption sub-sections
 # =============================================================================
 
+
 class TestTemplateContainsAll7SubSections:
     """Feature: ORCHESTRATION.yaml v2.0 resumption schema
 
@@ -236,9 +236,7 @@ class TestTemplateContainsAll7SubSections:
         when I parse the resumption section,
         then it should contain all 7 sub-sections.
         """
-        template_path = Path(
-            "skills/orchestration/templates/ORCHESTRATION.template.yaml"
-        )
+        template_path = Path("skills/orchestration/templates/ORCHESTRATION.template.yaml")
         # Use project root for path resolution
         project_root = Path(__file__).resolve().parents[3]
         full_path = project_root / template_path
@@ -262,9 +260,7 @@ class TestTemplateContainsAll7SubSections:
         then all required field names should match the schema definition
         and no unexpected fields should be present.
         """
-        template_path = Path(
-            "skills/orchestration/templates/ORCHESTRATION.template.yaml"
-        )
+        template_path = Path("skills/orchestration/templates/ORCHESTRATION.template.yaml")
         project_root = Path(__file__).resolve().parents[3]
         full_path = project_root / template_path
 
@@ -291,8 +287,7 @@ class TestTemplateContainsAll7SubSections:
             required = set(section_schema.get("required", []))
             missing_required = required - actual_keys
             assert not missing_required, (
-                f"Template resumption.{section_name} missing required keys: "
-                f"{missing_required}"
+                f"Template resumption.{section_name} missing required keys: {missing_required}"
             )
 
             # No unexpected keys (additionalProperties: false)
@@ -307,6 +302,7 @@ class TestTemplateContainsAll7SubSections:
 # =============================================================================
 # BDD Scenario 2: Backward compatible with existing 5 fields
 # =============================================================================
+
 
 class TestBackwardCompatibility:
     """Feature: ORCHESTRATION.yaml v2.0 resumption schema
@@ -442,6 +438,7 @@ class TestBackwardCompatibility:
 # BDD Scenario 3: updated_at timestamp present in ISO 8601 format
 # =============================================================================
 
+
 class TestUpdatedAtTimestamp:
     """Feature: ORCHESTRATION.yaml v2.0 resumption schema
 
@@ -497,30 +494,25 @@ class TestUpdatedAtTimestamp:
 # Additional Schema Validation Tests
 # =============================================================================
 
+
 class TestRecoveryStateValidation:
     """Tests for the recovery_state sub-section constraints."""
 
-    def test_workflow_status_enum_enforced(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_workflow_status_enum_enforced(self, minimal_resumption_v2: dict) -> None:
         """Given an invalid workflow_status value, validation should fail."""
         data = deepcopy(minimal_resumption_v2)
         data["recovery_state"]["workflow_status"] = "INVALID_STATUS"
         with pytest.raises(jsonschema.ValidationError):
             jsonschema.validate(instance=data, schema=RESUMPTION_SCHEMA)
 
-    def test_context_fill_range_enforced(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_context_fill_range_enforced(self, minimal_resumption_v2: dict) -> None:
         """Given context_fill_at_update > 1.0, validation should fail."""
         data = deepcopy(minimal_resumption_v2)
         data["recovery_state"]["context_fill_at_update"] = 1.5
         with pytest.raises(jsonschema.ValidationError):
             jsonschema.validate(instance=data, schema=RESUMPTION_SCHEMA)
 
-    def test_current_phase_negative_rejected(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_current_phase_negative_rejected(self, minimal_resumption_v2: dict) -> None:
         """Given a negative current_phase, validation should fail."""
         data = deepcopy(minimal_resumption_v2)
         data["recovery_state"]["current_phase"] = -1
@@ -531,9 +523,7 @@ class TestRecoveryStateValidation:
 class TestQualityTrajectoryValidation:
     """Tests for the quality_trajectory sub-section constraints."""
 
-    def test_score_values_bounded(
-        self, valid_resumption_v2: dict
-    ) -> None:
+    def test_score_values_bounded(self, valid_resumption_v2: dict) -> None:
         """Given score values outside 0.0-1.0 range, validation should fail."""
         data = deepcopy(valid_resumption_v2)
         data["quality_trajectory"]["score_history"]["qg-1"] = [1.5]
@@ -544,9 +534,7 @@ class TestQualityTrajectoryValidation:
 class TestCompactionEventsValidation:
     """Tests for the compaction_events sub-section constraints."""
 
-    def test_valid_compaction_event_accepted(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_valid_compaction_event_accepted(self, minimal_resumption_v2: dict) -> None:
         """Given a valid compaction event entry, validation should pass."""
         data = deepcopy(minimal_resumption_v2)
         data["compaction_events"] = {
@@ -567,9 +555,7 @@ class TestCompactionEventsValidation:
         }
         jsonschema.validate(instance=data, schema=RESUMPTION_SCHEMA)
 
-    def test_compaction_trigger_enum_enforced(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_compaction_trigger_enum_enforced(self, minimal_resumption_v2: dict) -> None:
         """Given an invalid trigger value, validation should fail."""
         data = deepcopy(minimal_resumption_v2)
         data["compaction_events"] = {
@@ -590,9 +576,7 @@ class TestCompactionEventsValidation:
 class TestDecisionLogValidation:
     """Tests for the decision_log sub-section constraints."""
 
-    def test_valid_decision_entry_accepted(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_valid_decision_entry_accepted(self, minimal_resumption_v2: dict) -> None:
         """Given a valid decision log entry, validation should pass."""
         data = deepcopy(minimal_resumption_v2)
         data["decision_log"] = [
@@ -608,9 +592,7 @@ class TestDecisionLogValidation:
         ]
         jsonschema.validate(instance=data, schema=RESUMPTION_SCHEMA)
 
-    def test_decision_missing_required_fields_rejected(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_decision_missing_required_fields_rejected(self, minimal_resumption_v2: dict) -> None:
         """Given a decision entry missing required fields, validation should fail."""
         data = deepcopy(minimal_resumption_v2)
         data["decision_log"] = [
@@ -626,9 +608,7 @@ class TestDecisionLogValidation:
 class TestFilesToReadValidation:
     """Tests for the files_to_read sub-section constraints."""
 
-    def test_empty_files_to_read_rejected(
-        self, minimal_resumption_v2: dict
-    ) -> None:
+    def test_empty_files_to_read_rejected(self, minimal_resumption_v2: dict) -> None:
         """Given an empty files_to_read array, validation should fail (minItems: 1)."""
         data = deepcopy(minimal_resumption_v2)
         data["files_to_read"] = []

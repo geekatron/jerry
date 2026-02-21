@@ -20,12 +20,8 @@ References:
 
 from __future__ import annotations
 
-import io
 import json
-import os
-import sys
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -36,7 +32,6 @@ from src.infrastructure.internal.enforcement.reinforcement_content import (
     ReinforcementContent,
 )
 from src.interface.cli.hooks.hooks_prompt_submit_handler import HooksPromptSubmitHandler
-
 
 # =============================================================================
 # Fixtures
@@ -70,7 +65,9 @@ def mock_checkpoint_service() -> MagicMock:
     service = MagicMock()
     service.create_checkpoint.return_value = CheckpointData(
         checkpoint_id="cx-auto-001",
-        context_state=FillEstimate(fill_percentage=0.82, tier=ThresholdTier.CRITICAL, token_count=164000),
+        context_state=FillEstimate(
+            fill_percentage=0.82, tier=ThresholdTier.CRITICAL, token_count=164000
+        ),
         created_at="2026-02-20T21:00:00+00:00",
         resumption_state=None,
     )
@@ -118,11 +115,13 @@ class TestHooksPromptSubmitHandlerReturnsJson:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Given a UserPromptSubmit hook input, handler returns valid JSON."""
-        hook_input = json.dumps({
-            "hook_event_name": "UserPromptSubmit",
-            "session_id": "test-session-123",
-            "transcript_path": "/tmp/test-transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "UserPromptSubmit",
+                "session_id": "test-session-123",
+                "transcript_path": "/tmp/test-transcript.jsonl",
+            }
+        )
 
         exit_code = handler.handle(hook_input)
 
@@ -137,10 +136,12 @@ class TestHooksPromptSubmitHandlerReturnsJson:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Output additionalContext includes context-monitor XML tag."""
-        hook_input = json.dumps({
-            "hook_event_name": "UserPromptSubmit",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "UserPromptSubmit",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -154,10 +155,12 @@ class TestHooksPromptSubmitHandlerReturnsJson:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Output additionalContext includes quality reinforcement preamble."""
-        hook_input = json.dumps({
-            "hook_event_name": "UserPromptSubmit",
-            "transcript_path": "/tmp/transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "UserPromptSubmit",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -172,9 +175,11 @@ class TestHooksPromptSubmitHandlerReturnsJson:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Estimator is called with transcript_path from hook input."""
-        hook_input = json.dumps({
-            "transcript_path": "/tmp/specific-transcript.jsonl",
-        })
+        hook_input = json.dumps(
+            {
+                "transcript_path": "/tmp/specific-transcript.jsonl",
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -285,7 +290,9 @@ class TestAE006cAutoCheckpoint:
         )
         estimator = MagicMock()
         estimator.estimate.return_value = critical_estimate
-        estimator.generate_context_monitor_tag.return_value = "<context-monitor>CRITICAL</context-monitor>"
+        estimator.generate_context_monitor_tag.return_value = (
+            "<context-monitor>CRITICAL</context-monitor>"
+        )
 
         handler = HooksPromptSubmitHandler(
             context_fill_estimator=estimator,
@@ -327,7 +334,9 @@ class TestAE006cAutoCheckpoint:
         )
         estimator = MagicMock()
         estimator.estimate.return_value = critical_estimate
-        estimator.generate_context_monitor_tag.return_value = "<context-monitor>CRITICAL</context-monitor>"
+        estimator.generate_context_monitor_tag.return_value = (
+            "<context-monitor>CRITICAL</context-monitor>"
+        )
 
         failing_service = MagicMock()
         failing_service.create_checkpoint.side_effect = RuntimeError("Checkpoint failed")
@@ -364,7 +373,9 @@ class TestAE006dEmergencyWarning:
         )
         estimator = MagicMock()
         estimator.estimate.return_value = emergency_estimate
-        estimator.generate_context_monitor_tag.return_value = "<context-monitor>EMERGENCY</context-monitor>"
+        estimator.generate_context_monitor_tag.return_value = (
+            "<context-monitor>EMERGENCY</context-monitor>"
+        )
 
         handler = HooksPromptSubmitHandler(
             context_fill_estimator=estimator,
@@ -401,7 +412,9 @@ class TestAE006dEmergencyWarning:
         )
         estimator = MagicMock()
         estimator.estimate.return_value = critical_estimate
-        estimator.generate_context_monitor_tag.return_value = "<context-monitor>CRITICAL</context-monitor>"
+        estimator.generate_context_monitor_tag.return_value = (
+            "<context-monitor>CRITICAL</context-monitor>"
+        )
 
         handler = HooksPromptSubmitHandler(
             context_fill_estimator=estimator,

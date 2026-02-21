@@ -20,7 +20,6 @@ References:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 import pytest
@@ -30,7 +29,6 @@ from src.infrastructure.internal.enforcement.enforcement_decision import (
     EnforcementDecision,
 )
 from src.interface.cli.hooks.hooks_pre_tool_use_handler import HooksPreToolUseHandler
-
 
 # =============================================================================
 # Fixtures
@@ -86,12 +84,14 @@ class TestHooksPreToolUseHandlerReturnsDecision:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Given a PreToolUse hook input, handler returns valid JSON."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "session_id": "test-session-abc",
-            "tool_name": "Read",
-            "tool_input": {"file_path": "/tmp/test.py"},
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "session_id": "test-session-abc",
+                "tool_name": "Read",
+                "tool_input": {"file_path": "/tmp/test.py"},
+            }
+        )
 
         exit_code = handler.handle(hook_input)
 
@@ -107,14 +107,16 @@ class TestHooksPreToolUseHandlerReturnsDecision:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """For Write tool, enforcement engine.evaluate_write is called."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Write",
-            "tool_input": {
-                "file_path": "/src/domain/entity.py",
-                "content": "class Entity:\n    pass\n",
-            },
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "/src/domain/entity.py",
+                    "content": "class Entity:\n    pass\n",
+                },
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -127,15 +129,17 @@ class TestHooksPreToolUseHandlerReturnsDecision:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """For Edit tool, enforcement engine.evaluate_edit is called."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Edit",
-            "tool_input": {
-                "file_path": "/src/domain/entity.py",
-                "old_string": "old",
-                "new_string": "new",
-            },
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Edit",
+                "tool_input": {
+                    "file_path": "/src/domain/entity.py",
+                    "old_string": "old",
+                    "new_string": "new",
+                },
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -159,14 +163,16 @@ class TestHooksPreToolUseHandlerReturnsDecision:
             staleness_detector=mock_staleness_detector,
         )
 
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Write",
-            "tool_input": {
-                "file_path": "/src/domain/bad.py",
-                "content": "from src.infrastructure import Repo",
-            },
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "/src/domain/bad.py",
+                    "content": "from src.infrastructure import Repo",
+                },
+            }
+        )
 
         exit_code = handler.handle(hook_input)
 
@@ -183,11 +189,13 @@ class TestHooksPreToolUseHandlerReturnsDecision:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """For Read tool (non-write), enforcement write is not called."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Read",
-            "tool_input": {"file_path": "/src/domain/entity.py"},
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Read",
+                "tool_input": {"file_path": "/src/domain/entity.py"},
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -201,14 +209,16 @@ class TestHooksPreToolUseHandlerReturnsDecision:
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """StalenessDetector is called for any tool that targets a file."""
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Write",
-            "tool_input": {
-                "file_path": "ORCHESTRATION.yaml",
-                "content": "resumption:\n  recovery_state:\n    updated_at: 2026-01-01T00:00:00Z",
-            },
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "ORCHESTRATION.yaml",
+                    "content": "resumption:\n  recovery_state:\n    updated_at: 2026-01-01T00:00:00Z",
+                },
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -233,14 +243,16 @@ class TestHooksPreToolUseHandlerReturnsDecision:
             staleness_detector=stale_detector,
         )
 
-        hook_input = json.dumps({
-            "hook_event_name": "PreToolUse",
-            "tool_name": "Write",
-            "tool_input": {
-                "file_path": "ORCHESTRATION.yaml",
-                "content": "content",
-            },
-        })
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreToolUse",
+                "tool_name": "Write",
+                "tool_input": {
+                    "file_path": "ORCHESTRATION.yaml",
+                    "content": "content",
+                },
+            }
+        )
 
         handler.handle(hook_input)
 
@@ -267,10 +279,12 @@ class TestHooksPreToolUseHandlerFailOpen:
             staleness_detector=mock_staleness_detector,
         )
 
-        hook_input = json.dumps({
-            "tool_name": "Write",
-            "tool_input": {"file_path": "/src/test.py", "content": "pass"},
-        })
+        hook_input = json.dumps(
+            {
+                "tool_name": "Write",
+                "tool_input": {"file_path": "/src/test.py", "content": "pass"},
+            }
+        )
         exit_code = handler.handle(hook_input)
 
         assert exit_code == 0
@@ -292,10 +306,12 @@ class TestHooksPreToolUseHandlerFailOpen:
             staleness_detector=failing_detector,
         )
 
-        hook_input = json.dumps({
-            "tool_name": "Write",
-            "tool_input": {"file_path": "ORCHESTRATION.yaml", "content": "content"},
-        })
+        hook_input = json.dumps(
+            {
+                "tool_name": "Write",
+                "tool_input": {"file_path": "ORCHESTRATION.yaml", "content": "content"},
+            }
+        )
         exit_code = handler.handle(hook_input)
 
         assert exit_code == 0
