@@ -31,7 +31,6 @@ from src.context_monitoring.application.services.context_fill_estimator import (
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 
-
 # =============================================================================
 # Helpers / Fakes
 # =============================================================================
@@ -140,20 +139,20 @@ class TestTierClassification:
         ("token_count", "expected_tier"),
         [
             # NOMINAL: fill < 0.55  (200K default window)
-            (100_000, ThresholdTier.NOMINAL),   # 0.50 < 0.55
-            (10_000, ThresholdTier.NOMINAL),    # 0.05 < 0.55
+            (100_000, ThresholdTier.NOMINAL),  # 0.50 < 0.55
+            (10_000, ThresholdTier.NOMINAL),  # 0.05 < 0.55
             # LOW: 0.55 <= fill < 0.70
-            (110_000, ThresholdTier.LOW),       # 0.55 exactly
-            (130_000, ThresholdTier.LOW),       # 0.65
+            (110_000, ThresholdTier.LOW),  # 0.55 exactly
+            (130_000, ThresholdTier.LOW),  # 0.65
             # WARNING: 0.70 <= fill < 0.80
-            (140_000, ThresholdTier.WARNING),   # 0.70 exactly
-            (150_000, ThresholdTier.WARNING),   # 0.75
+            (140_000, ThresholdTier.WARNING),  # 0.70 exactly
+            (150_000, ThresholdTier.WARNING),  # 0.75
             # CRITICAL: 0.80 <= fill < 0.88
             (160_000, ThresholdTier.CRITICAL),  # 0.80 exactly
             (170_000, ThresholdTier.CRITICAL),  # 0.85
             # EMERGENCY: fill >= 0.88
-            (176_000, ThresholdTier.EMERGENCY), # 0.88 exactly
-            (190_000, ThresholdTier.EMERGENCY), # 0.95
+            (176_000, ThresholdTier.EMERGENCY),  # 0.88 exactly
+            (190_000, ThresholdTier.EMERGENCY),  # 0.95
         ],
     )
     def test_tier_from_token_count(
@@ -168,27 +167,21 @@ class TestTierClassification:
         result = estimator.estimate(transcript_path="/fake/transcript.jsonl")
         assert result.tier == expected_tier
 
-    def test_estimate_returns_fill_estimate(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_estimate_returns_fill_estimate(self, config: FakeThresholdConfiguration) -> None:
         """estimate() returns a FillEstimate instance."""
         reader = FakeTranscriptReader(token_count=100_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
         result = estimator.estimate("/fake/path.jsonl")
         assert isinstance(result, FillEstimate)
 
-    def test_estimate_sets_token_count(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_estimate_sets_token_count(self, config: FakeThresholdConfiguration) -> None:
         """estimate() includes token_count in the result."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
         result = estimator.estimate("/fake/path.jsonl")
         assert result.token_count == 144_000
 
-    def test_estimate_sets_fill_percentage(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_estimate_sets_fill_percentage(self, config: FakeThresholdConfiguration) -> None:
         """estimate() correctly computes fill_percentage."""
         reader = FakeTranscriptReader(token_count=100_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -208,9 +201,7 @@ class TestFailOpen:
     the estimator should return NOMINAL FillEstimate without propagating.
     """
 
-    def test_fail_open_on_file_not_found(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_fail_open_on_file_not_found(self, config: FakeThresholdConfiguration) -> None:
         """Returns NOMINAL FillEstimate when reader raises FileNotFoundError."""
         reader = FailingTranscriptReader(FileNotFoundError("no file"))
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -219,9 +210,7 @@ class TestFailOpen:
         assert result.fill_percentage == 0.0
         assert result.token_count is None
 
-    def test_fail_open_on_value_error(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_fail_open_on_value_error(self, config: FakeThresholdConfiguration) -> None:
         """Returns NOMINAL FillEstimate when reader raises ValueError."""
         reader = FailingTranscriptReader(ValueError("empty file"))
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -230,9 +219,7 @@ class TestFailOpen:
         assert result.fill_percentage == 0.0
         assert result.token_count is None
 
-    def test_fail_open_on_generic_exception(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_fail_open_on_generic_exception(self, config: FakeThresholdConfiguration) -> None:
         """Returns NOMINAL FillEstimate when reader raises a generic Exception."""
         reader = FailingTranscriptReader(RuntimeError("unexpected error"))
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -260,9 +247,7 @@ class TestFailOpen:
 class TestMonitoringDisabled:
     """Scenario: When monitoring is disabled, estimate always returns NOMINAL."""
 
-    def test_disabled_returns_nominal(
-        self, disabled_config: FakeThresholdConfiguration
-    ) -> None:
+    def test_disabled_returns_nominal(self, disabled_config: FakeThresholdConfiguration) -> None:
         """When is_enabled() returns False, result is NOMINAL fill=0.0."""
         reader = FakeTranscriptReader(token_count=190_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=disabled_config)
@@ -276,9 +261,7 @@ class TestMonitoringDisabled:
     ) -> None:
         """When disabled, the reader is not invoked."""
         mock_reader = MagicMock(spec=ITranscriptReader)
-        estimator = ContextFillEstimator(
-            reader=mock_reader, threshold_config=disabled_config
-        )
+        estimator = ContextFillEstimator(reader=mock_reader, threshold_config=disabled_config)
         estimator.estimate("/fake/path.jsonl")
         mock_reader.read_latest_tokens.assert_not_called()
 
@@ -314,15 +297,11 @@ class TestGenerateContextMonitorTag:
         """Action text contains tier-appropriate phrasing."""
         reader = FakeTranscriptReader(token_count=100_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
-        estimate = FillEstimate(
-            fill_percentage=0.5, tier=tier, token_count=100_000
-        )
+        estimate = FillEstimate(fill_percentage=0.5, tier=tier, token_count=100_000)
         tag = estimator.generate_context_monitor_tag(estimate)
         assert expected_action_fragment in tag
 
-    def test_tag_contains_fill_percentage(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_contains_fill_percentage(self, config: FakeThresholdConfiguration) -> None:
         """Generated tag includes fill-percentage element."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -333,9 +312,7 @@ class TestGenerateContextMonitorTag:
         assert "<fill-percentage>" in tag
         assert "0.72" in tag
 
-    def test_tag_contains_tier(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_contains_tier(self, config: FakeThresholdConfiguration) -> None:
         """Generated tag includes tier element."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -346,9 +323,7 @@ class TestGenerateContextMonitorTag:
         assert "<tier>" in tag
         assert "WARNING" in tag
 
-    def test_tag_contains_token_count(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_contains_token_count(self, config: FakeThresholdConfiguration) -> None:
         """Generated tag includes token-count element when token_count is set."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -359,9 +334,7 @@ class TestGenerateContextMonitorTag:
         assert "<token-count>" in tag
         assert "144000" in tag
 
-    def test_tag_within_token_budget(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_within_token_budget(self, config: FakeThresholdConfiguration) -> None:
         """Generated tag is between 40 and 200 tokens (approx via len/4)."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -372,9 +345,7 @@ class TestGenerateContextMonitorTag:
         approx_tokens = len(tag) / 4
         assert 40 <= approx_tokens <= 200
 
-    def test_tag_is_valid_xml_structure(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_is_valid_xml_structure(self, config: FakeThresholdConfiguration) -> None:
         """Generated tag starts with <context-monitor> and ends with closing tag."""
         reader = FakeTranscriptReader(token_count=100_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -385,15 +356,11 @@ class TestGenerateContextMonitorTag:
         assert tag.strip().startswith("<context-monitor>")
         assert tag.strip().endswith("</context-monitor>")
 
-    def test_tag_with_none_token_count(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_with_none_token_count(self, config: FakeThresholdConfiguration) -> None:
         """Tag handles None token_count gracefully."""
         reader = FakeTranscriptReader(token_count=100_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
-        estimate = FillEstimate(
-            fill_percentage=0.5, tier=ThresholdTier.NOMINAL, token_count=None
-        )
+        estimate = FillEstimate(fill_percentage=0.5, tier=ThresholdTier.NOMINAL, token_count=None)
         tag = estimator.generate_context_monitor_tag(estimate)
         assert "<context-monitor>" in tag
         # Should not raise
@@ -534,9 +501,7 @@ class TestXmlContextWindowFields:
     generate_context_monitor_tag should include these fields.
     """
 
-    def test_tag_contains_context_window(
-        self, config: FakeThresholdConfiguration
-    ) -> None:
+    def test_tag_contains_context_window(self, config: FakeThresholdConfiguration) -> None:
         """Generated tag includes <context-window> element."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
@@ -599,3 +564,69 @@ class TestXmlContextWindowFields:
         tag = estimator.generate_context_monitor_tag(estimate)
         assert "<context-window>1000000</context-window>" in tag
         assert "<context-window-source>env-1m-detection</context-window-source>" in tag
+
+
+# =============================================================================
+# BDD Scenario: monitoring_ok field distinguishes genuine from fail-open (TASK-007)
+# =============================================================================
+
+
+class TestMonitoringOk:
+    """Scenario: monitoring_ok field on FillEstimate distinguishes genuine from fail-open.
+
+    Genuine estimates have monitoring_ok=True. Fail-open and disabled estimates
+    have monitoring_ok=False. XML output includes <monitoring-ok> element.
+    """
+
+    def test_genuine_estimate_has_monitoring_ok_true(
+        self, config: FakeThresholdConfiguration
+    ) -> None:
+        """Successful estimate() returns monitoring_ok=True."""
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.monitoring_ok is True
+
+    def test_fail_open_has_monitoring_ok_false(self, config: FakeThresholdConfiguration) -> None:
+        """Fail-open estimate (reader exception) returns monitoring_ok=False."""
+        reader = FailingTranscriptReader(RuntimeError("fail"))
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.monitoring_ok is False
+        assert result.tier == ThresholdTier.NOMINAL
+
+    def test_disabled_has_monitoring_ok_false(
+        self, disabled_config: FakeThresholdConfiguration
+    ) -> None:
+        """Disabled monitoring returns monitoring_ok=False."""
+        reader = FakeTranscriptReader(token_count=190_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=disabled_config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.monitoring_ok is False
+        assert result.tier == ThresholdTier.NOMINAL
+
+    def test_xml_tag_includes_monitoring_ok_true(self, config: FakeThresholdConfiguration) -> None:
+        """XML tag includes <monitoring-ok>true</monitoring-ok> for genuine estimates."""
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        estimate = FillEstimate(
+            fill_percentage=0.5,
+            tier=ThresholdTier.NOMINAL,
+            token_count=100_000,
+            monitoring_ok=True,
+        )
+        tag = estimator.generate_context_monitor_tag(estimate)
+        assert "<monitoring-ok>true</monitoring-ok>" in tag
+
+    def test_xml_tag_includes_monitoring_ok_false(self, config: FakeThresholdConfiguration) -> None:
+        """XML tag includes <monitoring-ok>false</monitoring-ok> for fail-open."""
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        estimate = FillEstimate(
+            fill_percentage=0.0,
+            tier=ThresholdTier.NOMINAL,
+            token_count=None,
+            monitoring_ok=False,
+        )
+        tag = estimator.generate_context_monitor_tag(estimate)
+        assert "<monitoring-ok>false</monitoring-ok>" in tag

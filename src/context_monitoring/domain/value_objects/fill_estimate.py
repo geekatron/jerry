@@ -11,9 +11,12 @@ Attributes:
     fill_percentage: Estimated fill as a fraction (0.0 to 1.0)
     tier: The ThresholdTier classification for this fill level
     token_count: Optional absolute token count estimate
+    monitoring_ok: Whether the reading came from active monitoring (True)
+        or from a fail-open/disabled fallback (False)
 
 References:
     - EN-003: Context Monitoring Bounded Context Foundation
+    - TASK-007: Add monitoring_ok Field to FillEstimate
     - FEAT-001: Context Detection
     - PROJ-004: Context Resilience
 """
@@ -38,6 +41,10 @@ class FillEstimate:
         token_count: Optional absolute token count, or None if unknown
         context_window: Context window size used for this estimate
         context_window_source: How the context window was determined
+        monitoring_ok: True if this reading came from active, functioning
+            monitoring. False if from fail-open fallback or disabled state.
+            Consumers can use this to distinguish genuine NOMINAL from
+            fail-open NOMINAL. Default True for backward compatibility.
 
     Example:
         >>> estimate = FillEstimate(
@@ -49,6 +56,8 @@ class FillEstimate:
         ... )
         >>> estimate.fill_percentage
         0.72
+        >>> estimate.monitoring_ok
+        True
     """
 
     fill_percentage: float
@@ -56,3 +65,4 @@ class FillEstimate:
     token_count: int | None = None
     context_window: int = 200_000
     context_window_source: str = "default"
+    monitoring_ok: bool = True

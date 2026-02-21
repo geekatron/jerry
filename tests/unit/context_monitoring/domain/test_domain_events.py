@@ -5,10 +5,16 @@
 Unit tests for context monitoring domain events.
 
 Tests cover BDD scenarios from EN-003:
-    - ContextThresholdReached event construction and payload
-    - CompactionDetected event construction and payload
-    - CheckpointCreated event construction and payload
+    - ContextThresholdReached event construction, payload, and serialization roundtrip
+    - CompactionDetected event construction, payload, and serialization roundtrip
+    - CheckpointCreated event construction, payload, and serialization roundtrip
     - All events are immutable (frozen dataclass)
+    - to_dict → from_dict roundtrip preserves all fields
+
+Acceptance Criteria Coverage:
+    - AC-EN003-001: Domain events are immutable (frozen dataclass)
+    - AC-EN003-002: Events support serialization roundtrip (to_dict/from_dict)
+    - AC-EN003-003: Schema evolution (from_dict with missing fields uses defaults)
 
 References:
     - EN-003: Context Monitoring Bounded Context Foundation
@@ -24,7 +30,6 @@ from src.context_monitoring.domain.events.compaction_detected import CompactionD
 from src.context_monitoring.domain.events.context_threshold_reached import (
     ContextThresholdReached,
 )
-
 
 # =============================================================================
 # BDD Scenario: ContextThresholdReached event
@@ -84,6 +89,44 @@ class TestContextThresholdReached:
         )
         with pytest.raises(AttributeError):
             event.tier = "critical"  # type: ignore[misc]
+
+    def test_to_dict_from_dict_roundtrip(self) -> None:
+        """to_dict → from_dict roundtrip preserves all fields."""
+        original = ContextThresholdReached(
+            aggregate_id="session-001",
+            aggregate_type="ContextMonitor",
+            tier="critical",
+            fill_percentage=0.82,
+        )
+        data = original.to_dict()
+        restored = ContextThresholdReached.from_dict(data)
+
+        assert restored.aggregate_id == original.aggregate_id
+        assert restored.aggregate_type == original.aggregate_type
+        assert restored.event_id == original.event_id
+        assert restored.version == original.version
+        assert restored.tier == original.tier
+        assert restored.fill_percentage == original.fill_percentage
+        assert restored.timestamp == original.timestamp
+
+    def test_from_dict_schema_evolution(self) -> None:
+        """from_dict handles older schema without event-specific fields.
+
+        Simulates deserialization of an event persisted before the tier and
+        fill_percentage fields were added (schema evolution scenario).
+        """
+        older_schema = {
+            "event_id": "EVT-old-001",
+            "aggregate_id": "session-001",
+            "aggregate_type": "ContextMonitor",
+            "version": 1,
+            "timestamp": "2026-02-20T12:00:00+00:00",
+        }
+        event = ContextThresholdReached.from_dict(older_schema)
+        assert event.event_id == "EVT-old-001"
+        assert event.aggregate_id == "session-001"
+        assert event.tier == ""
+        assert event.fill_percentage == 0.0
 
 
 # =============================================================================
@@ -149,6 +192,44 @@ class TestCompactionDetected:
         with pytest.raises(AttributeError):
             event.compaction_number = 3  # type: ignore[misc]
 
+    def test_to_dict_from_dict_roundtrip(self) -> None:
+        """to_dict → from_dict roundtrip preserves all fields."""
+        original = CompactionDetected(
+            aggregate_id="session-001",
+            aggregate_type="ContextMonitor",
+            previous_token_count=180000,
+            current_token_count=80000,
+            compaction_number=2,
+        )
+        data = original.to_dict()
+        restored = CompactionDetected.from_dict(data)
+
+        assert restored.aggregate_id == original.aggregate_id
+        assert restored.event_id == original.event_id
+        assert restored.previous_token_count == original.previous_token_count
+        assert restored.current_token_count == original.current_token_count
+        assert restored.compaction_number == original.compaction_number
+        assert restored.timestamp == original.timestamp
+
+    def test_from_dict_schema_evolution(self) -> None:
+        """from_dict handles older schema without compaction-specific fields.
+
+        Simulates deserialization of an event persisted before the compaction
+        count fields were added (schema evolution scenario).
+        """
+        older_schema = {
+            "event_id": "EVT-old-002",
+            "aggregate_id": "session-001",
+            "aggregate_type": "ContextMonitor",
+            "version": 1,
+            "timestamp": "2026-02-20T12:00:00+00:00",
+        }
+        event = CompactionDetected.from_dict(older_schema)
+        assert event.event_id == "EVT-old-002"
+        assert event.previous_token_count == 0
+        assert event.current_token_count == 0
+        assert event.compaction_number == 0
+
 
 # =============================================================================
 # BDD Scenario: CheckpointCreated event
@@ -206,3 +287,38 @@ class TestCheckpointCreated:
         )
         with pytest.raises(AttributeError):
             event.checkpoint_id = "cx-999"  # type: ignore[misc]
+
+    def test_to_dict_from_dict_roundtrip(self) -> None:
+        """to_dict → from_dict roundtrip preserves all fields."""
+        original = CheckpointCreated(
+            aggregate_id="session-001",
+            aggregate_type="ContextMonitor",
+            checkpoint_id="cx-003",
+            trigger="manual",
+        )
+        data = original.to_dict()
+        restored = CheckpointCreated.from_dict(data)
+
+        assert restored.aggregate_id == original.aggregate_id
+        assert restored.event_id == original.event_id
+        assert restored.checkpoint_id == original.checkpoint_id
+        assert restored.trigger == original.trigger
+        assert restored.timestamp == original.timestamp
+
+    def test_from_dict_schema_evolution(self) -> None:
+        """from_dict handles older schema without checkpoint-specific fields.
+
+        Simulates deserialization of an event persisted before the
+        checkpoint_id and trigger fields were added (schema evolution).
+        """
+        older_schema = {
+            "event_id": "EVT-old-003",
+            "aggregate_id": "session-001",
+            "aggregate_type": "ContextMonitor",
+            "version": 1,
+            "timestamp": "2026-02-20T12:00:00+00:00",
+        }
+        event = CheckpointCreated.from_dict(older_schema)
+        assert event.event_id == "EVT-old-003"
+        assert event.checkpoint_id == ""
+        assert event.trigger == ""

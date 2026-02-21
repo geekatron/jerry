@@ -1,7 +1,7 @@
 # TASK-007: Add monitoring_ok Field to FillEstimate
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Parent:** FEAT-001-context-detection
 
@@ -41,11 +41,11 @@ Consumers (hooks, CLI) cannot tell if monitoring is working or broken.
 
 ## Acceptance Criteria
 
-- [ ] `FillEstimate.monitoring_ok` field exists with default `True`
-- [ ] `_FAIL_OPEN_ESTIMATE` has `monitoring_ok=False`
-- [ ] XML output includes `<monitoring-ok>` element
-- [ ] Unit tests distinguish genuine NOMINAL from fail-open NOMINAL
-- [ ] All existing tests continue to pass (backward-compatible default)
+- [x] `FillEstimate.monitoring_ok` field exists with default `True`
+- [x] `_FAIL_OPEN_ESTIMATE` has `monitoring_ok=False`
+- [x] XML output includes `<monitoring-ok>` element
+- [x] Unit tests distinguish genuine NOMINAL from fail-open NOMINAL
+- [x] All existing tests continue to pass (backward-compatible default)
 
 ---
 
@@ -67,3 +67,4 @@ TOCTOU trade-off between `get_context_window_tokens()` and
 | Date       | Status  | Notes                                    |
 |------------|---------|------------------------------------------|
 | 2026-02-20 | Created | Deferred from TASK-006 C4 adversarial review |
+| 2026-02-20 | Done    | Implemented: field on FillEstimate, sentinel, XML tag, 9 tests |

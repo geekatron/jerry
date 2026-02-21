@@ -40,26 +40,21 @@ _TIER_ACTION_TEXT: dict[ThresholdTier, str] = {
     ThresholdTier.NOMINAL: "Context healthy. No action needed.",
     ThresholdTier.LOW: "Context growing. Monitor usage.",
     ThresholdTier.WARNING: (
-        "Consider checkpointing critical state. "
-        "Context fill approaching critical levels."
+        "Consider checkpointing critical state. Context fill approaching critical levels."
     ),
-    ThresholdTier.CRITICAL: (
-        "Checkpoint recommended. Prepare for possible context compaction."
-    ),
+    ThresholdTier.CRITICAL: ("Checkpoint recommended. Prepare for possible context compaction."),
     ThresholdTier.EMERGENCY: (
-        "Immediate checkpoint required. "
-        "Context exhaustion imminent. Save all critical state NOW."
+        "Immediate checkpoint required. Context exhaustion imminent. Save all critical state NOW."
     ),
 }
 
 # Fail-open sentinel returned on any reader error or when monitoring is disabled.
-# TODO(TASK-007): Add monitoring_ok: bool field to FillEstimate to distinguish
-# genuine NOMINAL from fail-open/disabled states. Currently these are
-# indistinguishable, which could suppress checkpoint behavior in production.
+# monitoring_ok=False distinguishes this from genuine NOMINAL readings (TASK-007).
 _FAIL_OPEN_ESTIMATE = FillEstimate(
     fill_percentage=0.0,
     tier=ThresholdTier.NOMINAL,
     token_count=None,
+    monitoring_ok=False,
 )
 
 
@@ -194,6 +189,8 @@ class ContextFillEstimator:
         action = _TIER_ACTION_TEXT.get(estimate.tier, "Monitor context usage.")
         token_count_str = str(estimate.token_count) if estimate.token_count is not None else "N/A"
 
+        monitoring_ok_str = "true" if estimate.monitoring_ok else "false"
+
         return (
             "<context-monitor>\n"
             f"  <fill-percentage>{estimate.fill_percentage:.4f}</fill-percentage>\n"
@@ -201,6 +198,7 @@ class ContextFillEstimator:
             f"  <token-count>{token_count_str}</token-count>\n"
             f"  <context-window>{estimate.context_window}</context-window>\n"
             f"  <context-window-source>{estimate.context_window_source}</context-window-source>\n"
+            f"  <monitoring-ok>{monitoring_ok_str}</monitoring-ok>\n"
             f"  <action>{action}</action>\n"
             "</context-monitor>"
         )

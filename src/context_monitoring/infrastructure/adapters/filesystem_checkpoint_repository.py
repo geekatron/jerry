@@ -206,6 +206,9 @@ class FilesystemCheckpointRepository:
                 "fill_percentage": checkpoint.context_state.fill_percentage,
                 "tier": checkpoint.context_state.tier.value,
                 "token_count": checkpoint.context_state.token_count,
+                "monitoring_ok": checkpoint.context_state.monitoring_ok,
+                "context_window": checkpoint.context_state.context_window,
+                "context_window_source": checkpoint.context_state.context_window_source,
             },
             "resumption_state": checkpoint.resumption_state,
             "created_at": checkpoint.created_at,
@@ -225,6 +228,9 @@ class FilesystemCheckpointRepository:
             fill_percentage=context_data["fill_percentage"],
             tier=ThresholdTier(context_data["tier"]),
             token_count=context_data.get("token_count"),
+            monitoring_ok=context_data.get("monitoring_ok", True),
+            context_window=context_data.get("context_window", 200_000),
+            context_window_source=context_data.get("context_window_source", "default"),
         )
         return CheckpointData(
             checkpoint_id=data["checkpoint_id"],

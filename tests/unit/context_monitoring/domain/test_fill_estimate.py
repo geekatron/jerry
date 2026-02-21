@@ -21,7 +21,6 @@ import pytest
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
 
-
 # =============================================================================
 # BDD Scenario: FillEstimate is immutable
 # =============================================================================
@@ -48,9 +47,7 @@ class TestFillEstimateImmutability:
 
     def test_cannot_mutate_token_count(self) -> None:
         """FillEstimate.token_count cannot be changed after creation."""
-        estimate = FillEstimate(
-            fill_percentage=0.5, tier=ThresholdTier.NOMINAL, token_count=50000
-        )
+        estimate = FillEstimate(fill_percentage=0.5, tier=ThresholdTier.NOMINAL, token_count=50000)
         with pytest.raises(AttributeError):
             estimate.token_count = 100000  # type: ignore[misc]
 
@@ -96,3 +93,55 @@ class TestFillEstimateConstruction:
         a = FillEstimate(fill_percentage=0.5, tier=ThresholdTier.NOMINAL)
         b = FillEstimate(fill_percentage=0.8, tier=ThresholdTier.CRITICAL)
         assert a != b
+
+
+# =============================================================================
+# BDD Scenario: monitoring_ok field (TASK-007)
+# =============================================================================
+
+
+class TestMonitoringOkField:
+    """Scenario: FillEstimate includes monitoring_ok to distinguish genuine vs fail-open.
+
+    Given a FillEstimate, the monitoring_ok field indicates whether the
+    reading came from an active, functioning monitoring system (True) or
+    from a fail-open/disabled fallback (False).
+    """
+
+    def test_monitoring_ok_defaults_to_true(self) -> None:
+        """monitoring_ok defaults to True for backward compatibility."""
+        estimate = FillEstimate(fill_percentage=0.5, tier=ThresholdTier.NOMINAL)
+        assert estimate.monitoring_ok is True
+
+    def test_monitoring_ok_can_be_set_false(self) -> None:
+        """monitoring_ok can be explicitly set to False."""
+        estimate = FillEstimate(
+            fill_percentage=0.0,
+            tier=ThresholdTier.NOMINAL,
+            monitoring_ok=False,
+        )
+        assert estimate.monitoring_ok is False
+
+    def test_monitoring_ok_immutable(self) -> None:
+        """monitoring_ok cannot be changed after creation (frozen dataclass)."""
+        estimate = FillEstimate(fill_percentage=0.5, tier=ThresholdTier.NOMINAL, monitoring_ok=True)
+        with pytest.raises(AttributeError):
+            estimate.monitoring_ok = False  # type: ignore[misc]
+
+    def test_genuine_nominal_differs_from_fail_open(self) -> None:
+        """Genuine NOMINAL (monitoring_ok=True) is distinguishable from fail-open (False)."""
+        genuine = FillEstimate(
+            fill_percentage=0.0,
+            tier=ThresholdTier.NOMINAL,
+            token_count=None,
+            monitoring_ok=True,
+        )
+        fail_open = FillEstimate(
+            fill_percentage=0.0,
+            tier=ThresholdTier.NOMINAL,
+            token_count=None,
+            monitoring_ok=False,
+        )
+        assert genuine != fail_open
+        assert genuine.monitoring_ok is True
+        assert fail_open.monitoring_ok is False
