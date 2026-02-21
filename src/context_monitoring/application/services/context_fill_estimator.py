@@ -35,9 +35,6 @@ from src.context_monitoring.domain.value_objects.threshold_tier import Threshold
 
 logger = logging.getLogger(__name__)
 
-# Default context window size for Claude models (200K tokens)
-_DEFAULT_CONTEXT_WINDOW: int = 200_000
-
 # Action text mapped to ThresholdTier
 _TIER_ACTION_TEXT: dict[ThresholdTier, str] = {
     ThresholdTier.NOMINAL: "Context healthy. No action needed.",
@@ -55,7 +52,10 @@ _TIER_ACTION_TEXT: dict[ThresholdTier, str] = {
     ),
 }
 
-# Fail-open sentinel returned on any reader error
+# Fail-open sentinel returned on any reader error or when monitoring is disabled.
+# TODO(TASK-007): Add monitoring_ok: bool field to FillEstimate to distinguish
+# genuine NOMINAL from fail-open/disabled states. Currently these are
+# indistinguishable, which could suppress checkpoint behavior in production.
 _FAIL_OPEN_ESTIMATE = FillEstimate(
     fill_percentage=0.0,
     tier=ThresholdTier.NOMINAL,
@@ -75,8 +75,8 @@ class ContextFillEstimator:
 
     Example:
         >>> estimator = ContextFillEstimator(
-        ...     reader=JsonlTranscriptReader(),
-        ...     threshold_config=ConfigThresholdAdapter(config),
+        ...     reader=transcript_reader,
+        ...     threshold_config=threshold_config,
         ... )
         >>> estimate = estimator.estimate("/path/to/transcript.jsonl")
         >>> print(estimate.tier)
@@ -100,13 +100,16 @@ class ContextFillEstimator:
     def estimate(
         self,
         transcript_path: str,
-        context_window: int = _DEFAULT_CONTEXT_WINDOW,
     ) -> FillEstimate:
         """Estimate the current context window fill level.
 
         Reads the latest token count from the transcript file, computes the
-        fill percentage, and classifies it into a ThresholdTier based on
-        the configured thresholds.
+        fill percentage relative to the configured context window size, and
+        classifies it into a ThresholdTier based on the configured thresholds.
+
+        The context window size is read from IThresholdConfiguration, which
+        follows the canonical detection priority: explicit user config >
+        ANTHROPIC_MODEL [1m] suffix > default 200K.
 
         Fail-open: Any exception from the reader results in a NOMINAL
         FillEstimate (fill=0.0, token_count=None).
@@ -116,11 +119,10 @@ class ContextFillEstimator:
 
         Args:
             transcript_path: Path to the JSONL transcript file.
-            context_window: Total context window size in tokens.
-                Defaults to 200,000 (Claude's standard context window).
 
         Returns:
-            FillEstimate with fill_percentage, tier, and token_count.
+            FillEstimate with fill_percentage, tier, token_count,
+            context_window, and context_window_source.
             On error or disabled, returns NOMINAL FillEstimate.
 
         Example:
@@ -134,22 +136,36 @@ class ContextFillEstimator:
 
         try:
             token_count = self._reader.read_latest_tokens(transcript_path)
+
+            context_window = self._threshold_config.get_context_window_tokens()
+            context_window_source = self._threshold_config.get_context_window_source()
+
+            # Guard against invalid context window values (FM-003/FM-004/AV-002)
+            if context_window <= 0 or context_window > 2_000_000:
+                logger.warning(
+                    "Invalid context window %d; falling back to 200K default.",
+                    context_window,
+                )
+                context_window = 200_000
+                context_window_source = "default"
+
+            fill_percentage = token_count / context_window
+            tier = self._classify_tier(fill_percentage)
+
+            return FillEstimate(
+                fill_percentage=fill_percentage,
+                tier=tier,
+                token_count=token_count,
+                context_window=context_window,
+                context_window_source=context_window_source,
+            )
         except Exception as exc:  # noqa: BLE001
             logger.warning(
-                "Failed to read transcript at %s: %s (fail-open -> NOMINAL)",
+                "Context estimation failed for %s: %s (fail-open -> NOMINAL)",
                 transcript_path,
                 exc,
             )
             return _FAIL_OPEN_ESTIMATE
-
-        fill_percentage = token_count / context_window
-        tier = self._classify_tier(fill_percentage)
-
-        return FillEstimate(
-            fill_percentage=fill_percentage,
-            tier=tier,
-            token_count=token_count,
-        )
 
     def generate_context_monitor_tag(self, estimate: FillEstimate) -> str:
         """Generate an XML <context-monitor> tag from a FillEstimate.
@@ -183,6 +199,8 @@ class ContextFillEstimator:
             f"  <fill-percentage>{estimate.fill_percentage:.4f}</fill-percentage>\n"
             f"  <tier>{estimate.tier.name}</tier>\n"
             f"  <token-count>{token_count_str}</token-count>\n"
+            f"  <context-window>{estimate.context_window}</context-window>\n"
+            f"  <context-window-source>{estimate.context_window_source}</context-window-source>\n"
             f"  <action>{action}</action>\n"
             "</context-monitor>"
         )

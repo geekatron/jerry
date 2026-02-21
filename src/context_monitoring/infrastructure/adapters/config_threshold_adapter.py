@@ -21,6 +21,7 @@ Configuration Keys:
     - context_monitor.critical_threshold: 0.80
     - context_monitor.emergency_threshold: 0.88
     - context_monitor.compaction_detection_threshold: 10000
+    - context_monitor.context_window_tokens: (auto-detected, default 200000)
     - context_monitor.enabled: True
 
 References:
@@ -31,9 +32,14 @@ References:
 
 from __future__ import annotations
 
+import logging
+import os
+
 from src.infrastructure.adapters.configuration.layered_config_adapter import (
     LayeredConfigAdapter,
 )
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Default threshold values
@@ -47,6 +53,21 @@ _DEFAULT_THRESHOLDS: dict[str, float] = {
 }
 
 _DEFAULT_COMPACTION_DETECTION_THRESHOLD: int = 10000
+_DEFAULT_CONTEXT_WINDOW_TOKENS: int = 200_000
+_EXTENDED_CONTEXT_WINDOW: int = 1_000_000
+
+# Upper bound guard: no known Claude deployment exceeds 1M tokens.
+# 2M allows headroom for future expansions while preventing absurd values
+# (e.g., 999999999999) from silently suppressing context alerts (AV-002).
+_MAX_CONTEXT_WINDOW_TOKENS: int = 2_000_000
+
+# [1m] suffix convention: used in Claude Code model alias configuration
+# to select extended context (1M tokens).
+# Source: https://code.claude.com/docs/en/model-config
+# Examples: sonnet[1m], opus[1m], Sonnet[1M]
+# Detection uses case-insensitive endswith("[1m]") to avoid false negatives.
+_EXTENDED_CONTEXT_SUFFIX: str = "[1m]"
+
 _DEFAULT_ENABLED: bool = True
 
 # Mapping from tier name to config key suffix
@@ -169,3 +190,99 @@ class ConfigThresholdAdapter:
             {'nominal': 0.55, 'warning': 0.70, 'critical': 0.80, 'emergency': 0.88}
         """
         return {tier: self.get_threshold(tier) for tier in _TIER_KEY_MAP}
+
+    def get_context_window_tokens(self) -> int:
+        """Get context window size using canonical detection priority.
+
+        Priority (highest to lowest):
+        1. Explicit user config (env var or config.toml via LayeredConfigAdapter)
+        2. ANTHROPIC_MODEL env var with [1m] suffix -> 1,000,000
+        3. Default: 200,000
+
+        All detection failures return the default (fail-open).
+
+        Returns:
+            The context window size in tokens.
+
+        Example:
+            >>> adapter.get_context_window_tokens()
+            200000
+        """
+        tokens, _ = self._detect_context_window()
+        return tokens
+
+    def get_context_window_source(self) -> str:
+        """Get the source that determined the context window size.
+
+        Returns:
+            One of: "config", "env-1m-detection", "default"
+
+        Example:
+            >>> adapter.get_context_window_source()
+            'default'
+        """
+        _, source = self._detect_context_window()
+        return source
+
+    def _detect_context_window(self) -> tuple[int, str]:
+        """Detect context window size and source (internal).
+
+        Single detection method to prevent DRY violations between
+        get_context_window_tokens() and get_context_window_source().
+
+        Fail-open: any exception at any detection step returns the 200K default.
+
+        Note: get_context_window_tokens() and get_context_window_source()
+        each call this method independently. In theory, an env var change
+        between the two calls could produce an inconsistent (tokens, source)
+        pair. This TOCTOU window is accepted as a design trade-off:
+        the port interface requires separate methods, the detection is
+        pure/deterministic for stable env state, and caching would add
+        complexity without practical benefit. See TASK-007 for potential
+        future consolidation via a tuple-returning port method.
+
+        Returns:
+            Tuple of (context_window_tokens, source_label).
+        """
+        try:
+            # 1. Explicit user config (highest priority, handles Enterprise 500K)
+            key = f"{_CONFIG_NAMESPACE}.context_window_tokens"
+            explicit = self._config.get(key)
+            if explicit is not None:
+                try:
+                    value = int(explicit)
+                    if value <= 0:
+                        logger.warning(
+                            "Invalid context_window_tokens=%d (must be > 0); "
+                            "falling through to auto-detection.",
+                            value,
+                        )
+                    elif value > _MAX_CONTEXT_WINDOW_TOKENS:
+                        logger.warning(
+                            "context_window_tokens=%d exceeds maximum %d; "
+                            "falling through to auto-detection.",
+                            value,
+                            _MAX_CONTEXT_WINDOW_TOKENS,
+                        )
+                    else:
+                        return value, "config"
+                except (ValueError, TypeError):
+                    logger.warning(
+                        "Cannot parse context_window_tokens=%r as integer; "
+                        "falling through to auto-detection.",
+                        explicit,
+                    )
+
+            # 2. Check ANTHROPIC_MODEL env var for [1m] suffix (case-insensitive)
+            model_env = os.environ.get("ANTHROPIC_MODEL", "")
+            if model_env.lower().endswith(_EXTENDED_CONTEXT_SUFFIX):
+                return _EXTENDED_CONTEXT_WINDOW, "env-1m-detection"
+
+        except Exception:  # noqa: BLE001
+            logger.warning(
+                "Context window detection failed; returning default %d.",
+                _DEFAULT_CONTEXT_WINDOW_TOKENS,
+            )
+
+        # 3. Default (correct for Pro/Team Standard 200K)
+        return _DEFAULT_CONTEXT_WINDOW_TOKENS, "default"

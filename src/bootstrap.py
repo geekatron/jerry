@@ -582,10 +582,15 @@ def create_hooks_handlers() -> dict[str, Any]:
         env_prefix="JERRY_",
         root_config_path=project_root / ".jerry" / "config.toml",
         defaults={
-            "context_monitoring.context_window_tokens": 200000,
-            "context_monitoring.warning_threshold": 0.70,
-            "context_monitoring.critical_threshold": 0.80,
-            "context_monitoring.emergency_threshold": 0.88,
+            # NOTE: context_window_tokens is intentionally NOT in defaults.
+            # The adapter must distinguish "user explicitly configured" from
+            # "default" to support auto-detection priority chain (TASK-006).
+            "context_monitor.nominal_threshold": 0.55,
+            "context_monitor.warning_threshold": 0.70,
+            "context_monitor.critical_threshold": 0.80,
+            "context_monitor.emergency_threshold": 0.88,
+            "context_monitor.compaction_detection_threshold": 10000,
+            "context_monitor.enabled": True,
         },
     )
     threshold_config = ConfigThresholdAdapter(config=config_adapter)

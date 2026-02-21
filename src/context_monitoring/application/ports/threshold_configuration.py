@@ -17,6 +17,7 @@ Configuration Keys (context_monitor.* namespace):
     - critical_threshold: Float (0.80) - context fill triggers critical alert
     - emergency_threshold: Float (0.88) - context fill triggers emergency
     - compaction_detection_threshold: Int (10000) - token delta for compaction detection
+    - context_window_tokens: Int (200000) - context window size in tokens
     - enabled: Bool (True) - whether context monitoring is active
 
 References:
@@ -106,5 +107,38 @@ class IThresholdConfiguration(Protocol):
         Example:
             >>> config.get_all_thresholds()
             {'nominal': 0.55, 'warning': 0.70, 'critical': 0.80, 'emergency': 0.88}
+        """
+        ...
+
+    def get_context_window_tokens(self) -> int:
+        """Get the configured or detected context window size in tokens.
+
+        Returns the context window size following the canonical detection priority:
+        explicit user config > ANTHROPIC_MODEL [1m] suffix > default 200K.
+        Always fail-open: detection failures return 200_000.
+
+        Returns:
+            The context window size in tokens.
+
+        Example:
+            >>> config.get_context_window_tokens()
+            200000
+        """
+        ...
+
+    def get_context_window_source(self) -> str:
+        """Get the source that determined the context window size.
+
+        Valid return values:
+            - "config": User explicitly configured via env var or config.toml
+            - "env-1m-detection": ANTHROPIC_MODEL env var ends with [1m]
+            - "default": No configuration or detection; 200K default applied
+
+        Returns:
+            A string identifying how the context window was determined.
+
+        Example:
+            >>> config.get_context_window_source()
+            'default'
         """
         ...

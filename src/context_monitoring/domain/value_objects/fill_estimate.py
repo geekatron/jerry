@@ -36,12 +36,16 @@ class FillEstimate:
         fill_percentage: Fill as a fraction between 0.0 and 1.0
         tier: Classified ThresholdTier for this fill level
         token_count: Optional absolute token count, or None if unknown
+        context_window: Context window size used for this estimate
+        context_window_source: How the context window was determined
 
     Example:
         >>> estimate = FillEstimate(
         ...     fill_percentage=0.72,
         ...     tier=ThresholdTier.WARNING,
         ...     token_count=144000,
+        ...     context_window=200000,
+        ...     context_window_source="default",
         ... )
         >>> estimate.fill_percentage
         0.72
@@ -50,3 +54,5 @@ class FillEstimate:
     fill_percentage: float
     tier: ThresholdTier
     token_count: int | None = None
+    context_window: int = 200_000
+    context_window_source: str = "default"

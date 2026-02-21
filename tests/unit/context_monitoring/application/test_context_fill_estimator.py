@@ -40,9 +40,17 @@ from src.context_monitoring.domain.value_objects.threshold_tier import Threshold
 class FakeThresholdConfiguration:
     """Fake IThresholdConfiguration with default thresholds."""
 
-    def __init__(self, *, enabled: bool = True) -> None:
-        """Initialize with optional enabled flag."""
+    def __init__(
+        self,
+        *,
+        enabled: bool = True,
+        context_window_tokens: int = 200_000,
+        context_window_source: str = "default",
+    ) -> None:
+        """Initialize with optional enabled flag and context window."""
         self._enabled = enabled
+        self._context_window_tokens = context_window_tokens
+        self._context_window_source = context_window_source
         self._thresholds = {
             "nominal": 0.55,
             "warning": 0.70,
@@ -65,6 +73,14 @@ class FakeThresholdConfiguration:
     def get_all_thresholds(self) -> dict[str, float]:
         """Return all thresholds."""
         return dict(self._thresholds)
+
+    def get_context_window_tokens(self) -> int:
+        """Return context window size in tokens."""
+        return self._context_window_tokens
+
+    def get_context_window_source(self) -> str:
+        """Return context window source."""
+        return self._context_window_source
 
 
 class FakeTranscriptReader:
@@ -121,39 +137,35 @@ class TestTierClassification:
     """
 
     @pytest.mark.parametrize(
-        ("token_count", "context_window", "expected_tier"),
+        ("token_count", "expected_tier"),
         [
-            # NOMINAL: fill < 0.55
-            (100_000, 200_000, ThresholdTier.NOMINAL),   # 0.50 < 0.55
-            (10_000, 200_000, ThresholdTier.NOMINAL),    # 0.05 < 0.55
+            # NOMINAL: fill < 0.55  (200K default window)
+            (100_000, ThresholdTier.NOMINAL),   # 0.50 < 0.55
+            (10_000, ThresholdTier.NOMINAL),    # 0.05 < 0.55
             # LOW: 0.55 <= fill < 0.70
-            (110_000, 200_000, ThresholdTier.LOW),       # 0.55 exactly
-            (130_000, 200_000, ThresholdTier.LOW),       # 0.65
+            (110_000, ThresholdTier.LOW),       # 0.55 exactly
+            (130_000, ThresholdTier.LOW),       # 0.65
             # WARNING: 0.70 <= fill < 0.80
-            (140_000, 200_000, ThresholdTier.WARNING),   # 0.70 exactly
-            (150_000, 200_000, ThresholdTier.WARNING),   # 0.75
+            (140_000, ThresholdTier.WARNING),   # 0.70 exactly
+            (150_000, ThresholdTier.WARNING),   # 0.75
             # CRITICAL: 0.80 <= fill < 0.88
-            (160_000, 200_000, ThresholdTier.CRITICAL),  # 0.80 exactly
-            (170_000, 200_000, ThresholdTier.CRITICAL),  # 0.85
+            (160_000, ThresholdTier.CRITICAL),  # 0.80 exactly
+            (170_000, ThresholdTier.CRITICAL),  # 0.85
             # EMERGENCY: fill >= 0.88
-            (176_000, 200_000, ThresholdTier.EMERGENCY), # 0.88 exactly
-            (190_000, 200_000, ThresholdTier.EMERGENCY), # 0.95
+            (176_000, ThresholdTier.EMERGENCY), # 0.88 exactly
+            (190_000, ThresholdTier.EMERGENCY), # 0.95
         ],
     )
     def test_tier_from_token_count(
         self,
         token_count: int,
-        context_window: int,
         expected_tier: ThresholdTier,
         config: FakeThresholdConfiguration,
     ) -> None:
         """Estimator classifies token count into expected tier."""
         reader = FakeTranscriptReader(token_count=token_count)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
-        result = estimator.estimate(
-            transcript_path="/fake/transcript.jsonl",
-            context_window=context_window,
-        )
+        result = estimator.estimate(transcript_path="/fake/transcript.jsonl")
         assert result.tier == expected_tier
 
     def test_estimate_returns_fill_estimate(
@@ -171,7 +183,7 @@ class TestTierClassification:
         """estimate() includes token_count in the result."""
         reader = FakeTranscriptReader(token_count=144_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
-        result = estimator.estimate("/fake/path.jsonl", context_window=200_000)
+        result = estimator.estimate("/fake/path.jsonl")
         assert result.token_count == 144_000
 
     def test_estimate_sets_fill_percentage(
@@ -180,7 +192,7 @@ class TestTierClassification:
         """estimate() correctly computes fill_percentage."""
         reader = FakeTranscriptReader(token_count=100_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=config)
-        result = estimator.estimate("/fake/path.jsonl", context_window=200_000)
+        result = estimator.estimate("/fake/path.jsonl")
         assert abs(result.fill_percentage - 0.5) < 1e-9
 
 
@@ -254,7 +266,7 @@ class TestMonitoringDisabled:
         """When is_enabled() returns False, result is NOMINAL fill=0.0."""
         reader = FakeTranscriptReader(token_count=190_000)
         estimator = ContextFillEstimator(reader=reader, threshold_config=disabled_config)
-        result = estimator.estimate("/fake/path.jsonl", context_window=200_000)
+        result = estimator.estimate("/fake/path.jsonl")
         assert result.tier == ThresholdTier.NOMINAL
         assert result.fill_percentage == 0.0
         assert result.token_count is None
@@ -385,3 +397,205 @@ class TestGenerateContextMonitorTag:
         tag = estimator.generate_context_monitor_tag(estimate)
         assert "<context-monitor>" in tag
         # Should not raise
+
+
+# =============================================================================
+# BDD Scenario: Estimator uses config context window (TASK-006)
+# =============================================================================
+
+
+class TestEstimatorUsesConfigContextWindow:
+    """Scenario: ContextFillEstimator reads context window from IThresholdConfiguration.
+
+    Given a threshold config returning 500_000 for get_context_window_tokens(),
+    the estimator should compute fill_percentage = token_count / 500_000.
+    This verifies the TASK-006 fix: estimator no longer hardcodes 200K.
+    """
+
+    def test_uses_500k_config_window(self) -> None:
+        """Estimator uses 500K context window from config, not hardcoded 200K."""
+        config = FakeThresholdConfiguration(context_window_tokens=500_000)
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        # 160K / 500K = 0.32 -> NOMINAL (< 0.55)
+        assert abs(result.fill_percentage - 0.32) < 1e-9
+        assert result.tier == ThresholdTier.NOMINAL
+
+    def test_uses_1m_config_window(self) -> None:
+        """Estimator uses 1M context window from config."""
+        config = FakeThresholdConfiguration(context_window_tokens=1_000_000)
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        # 160K / 1M = 0.16 -> NOMINAL (< 0.55)
+        assert abs(result.fill_percentage - 0.16) < 1e-9
+        assert result.tier == ThresholdTier.NOMINAL
+
+    def test_200k_hardcoded_would_give_wrong_tier(self) -> None:
+        """Proves the bug: 160K/200K = 0.80 CRITICAL, but 160K/500K = 0.32 NOMINAL."""
+        config = FakeThresholdConfiguration(context_window_tokens=500_000)
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        # With config window (500K): NOMINAL (correct for Enterprise)
+        assert result.tier == ThresholdTier.NOMINAL
+        # If hardcoded 200K was used: 160K/200K = 0.80 would be CRITICAL (wrong)
+        assert result.fill_percentage != pytest.approx(0.80)
+
+    def test_fill_estimate_includes_context_window(self) -> None:
+        """FillEstimate includes context_window field."""
+        config = FakeThresholdConfiguration(
+            context_window_tokens=500_000,
+            context_window_source="config",
+        )
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.context_window == 500_000
+
+    def test_fill_estimate_includes_context_window_source(self) -> None:
+        """FillEstimate includes context_window_source field."""
+        config = FakeThresholdConfiguration(
+            context_window_tokens=1_000_000,
+            context_window_source="env-1m-detection",
+        )
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.context_window_source == "env-1m-detection"
+
+
+# =============================================================================
+# BDD Scenario: Zero/negative context window guard (TASK-006, FM-003/FM-004)
+# =============================================================================
+
+
+class TestEstimatorContextWindowGuard:
+    """Scenario: Estimator guards against zero/negative context window.
+
+    Given a threshold config returning zero or negative context_window_tokens,
+    the estimator should fall back to 200K default to prevent ZeroDivisionError.
+    """
+
+    def test_zero_context_window_falls_back(self) -> None:
+        """Zero context window falls back to 200K (FM-003)."""
+        config = FakeThresholdConfiguration(context_window_tokens=0)
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        # Should NOT raise ZeroDivisionError
+        assert result.context_window == 200_000
+        assert result.context_window_source == "default"
+        assert result.fill_percentage == pytest.approx(0.5)
+
+    def test_negative_context_window_falls_back(self) -> None:
+        """Negative context window falls back to 200K (FM-004)."""
+        config = FakeThresholdConfiguration(context_window_tokens=-100_000)
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.context_window == 200_000
+        assert result.context_window_source == "default"
+
+    def test_exceeds_max_context_window_falls_back(self) -> None:
+        """Context window exceeding 2M falls back to 200K (AV-002)."""
+        config = FakeThresholdConfiguration(context_window_tokens=5_000_000)
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.context_window == 200_000
+        assert result.context_window_source == "default"
+
+    def test_threshold_config_exception_fails_open(self) -> None:
+        """Exception from get_context_window_tokens() returns NOMINAL (FM-009)."""
+        config = FakeThresholdConfiguration()
+        # Monkey-patch to simulate an exception from the threshold config
+        config.get_context_window_tokens = lambda: (_ for _ in ()).throw(  # type: ignore[assignment]
+            RuntimeError("config error")
+        )
+        reader = FakeTranscriptReader(token_count=100_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        result = estimator.estimate("/fake/path.jsonl")
+        assert result.tier == ThresholdTier.NOMINAL
+        assert result.fill_percentage == 0.0
+        assert result.token_count is None
+
+
+# =============================================================================
+# BDD Scenario: XML tag includes context-window fields (TASK-006)
+# =============================================================================
+
+
+class TestXmlContextWindowFields:
+    """Scenario: XML <context-monitor> tag includes context-window information.
+
+    Given a FillEstimate with context_window and context_window_source,
+    generate_context_monitor_tag should include these fields.
+    """
+
+    def test_tag_contains_context_window(
+        self, config: FakeThresholdConfiguration
+    ) -> None:
+        """Generated tag includes <context-window> element."""
+        reader = FakeTranscriptReader(token_count=144_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        estimate = FillEstimate(
+            fill_percentage=0.72,
+            tier=ThresholdTier.WARNING,
+            token_count=144_000,
+            context_window=200_000,
+            context_window_source="default",
+        )
+        tag = estimator.generate_context_monitor_tag(estimate)
+        assert "<context-window>200000</context-window>" in tag
+
+    def test_tag_contains_context_window_source_default(
+        self, config: FakeThresholdConfiguration
+    ) -> None:
+        """Generated tag includes <context-window-source>default</context-window-source>."""
+        reader = FakeTranscriptReader(token_count=144_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        estimate = FillEstimate(
+            fill_percentage=0.72,
+            tier=ThresholdTier.WARNING,
+            token_count=144_000,
+            context_window=200_000,
+            context_window_source="default",
+        )
+        tag = estimator.generate_context_monitor_tag(estimate)
+        assert "<context-window-source>default</context-window-source>" in tag
+
+    def test_tag_contains_context_window_source_config(
+        self, config: FakeThresholdConfiguration
+    ) -> None:
+        """Generated tag includes <context-window-source>config</context-window-source>."""
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        estimate = FillEstimate(
+            fill_percentage=0.32,
+            tier=ThresholdTier.NOMINAL,
+            token_count=160_000,
+            context_window=500_000,
+            context_window_source="config",
+        )
+        tag = estimator.generate_context_monitor_tag(estimate)
+        assert "<context-window>500000</context-window>" in tag
+        assert "<context-window-source>config</context-window-source>" in tag
+
+    def test_tag_contains_context_window_source_1m_detection(
+        self, config: FakeThresholdConfiguration
+    ) -> None:
+        """Generated tag includes <context-window-source>env-1m-detection</context-window-source>."""
+        reader = FakeTranscriptReader(token_count=160_000)
+        estimator = ContextFillEstimator(reader=reader, threshold_config=config)
+        estimate = FillEstimate(
+            fill_percentage=0.16,
+            tier=ThresholdTier.NOMINAL,
+            token_count=160_000,
+            context_window=1_000_000,
+            context_window_source="env-1m-detection",
+        )
+        tag = estimator.generate_context_monitor_tag(estimate)
+        assert "<context-window>1000000</context-window>" in tag
+        assert "<context-window-source>env-1m-detection</context-window-source>" in tag

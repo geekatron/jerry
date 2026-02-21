@@ -418,3 +418,417 @@ class TestInvalidTier:
             adapter = _make_adapter()
             assert adapter.get_threshold("WARNING") == pytest.approx(0.70)
             assert adapter.get_threshold("Warning") == pytest.approx(0.70)
+
+
+# =============================================================================
+# BDD Scenario: Context window size default (TASK-006)
+# =============================================================================
+
+
+class TestContextWindowDefault:
+    """Scenario: Default context window size is 200K.
+
+    Given no explicit user configuration and no [1m] model alias,
+    get_context_window_tokens() should return 200_000.
+    """
+
+    def test_default_context_window(self) -> None:
+        """Default context window is 200_000 tokens."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+
+    def test_default_source(self) -> None:
+        """Default source is 'default'."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_source() == "default"
+
+
+# =============================================================================
+# BDD Scenario: Explicit user config overrides context window (TASK-006)
+# =============================================================================
+
+
+class TestContextWindowExplicitConfig:
+    """Scenario: User explicitly configures context window size.
+
+    Given JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=500000,
+    get_context_window_tokens() should return 500_000 and source 'config'.
+    """
+
+    def test_env_var_override(self) -> None:
+        """Environment variable sets context window to 500K (Enterprise)."""
+        with patch.dict(
+            os.environ,
+            {"JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 500_000
+
+    def test_env_var_source(self) -> None:
+        """Environment variable source is 'config'."""
+        with patch.dict(
+            os.environ,
+            {"JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_source() == "config"
+
+    def test_toml_override(self, tmp_path: Path) -> None:
+        """Config.toml sets context window to 500K."""
+        project_config = tmp_path / "project.toml"
+        project_config.write_text(
+            "[context_monitor]\ncontext_window_tokens = 500000\n",
+            encoding="utf-8",
+        )
+
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter(project_config_path=project_config)
+            assert adapter.get_context_window_tokens() == 500_000
+
+    def test_toml_source(self, tmp_path: Path) -> None:
+        """Config.toml source is 'config'."""
+        project_config = tmp_path / "project.toml"
+        project_config.write_text(
+            "[context_monitor]\ncontext_window_tokens = 500000\n",
+            encoding="utf-8",
+        )
+
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter(project_config_path=project_config)
+            assert adapter.get_context_window_source() == "config"
+
+    def test_env_var_overrides_1m_detection(self) -> None:
+        """Explicit config takes priority over [1m] auto-detection."""
+        with patch.dict(
+            os.environ,
+            {
+                "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000",
+                "ANTHROPIC_MODEL": "sonnet[1m]",
+            },
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 500_000
+            assert adapter.get_context_window_source() == "config"
+
+
+# =============================================================================
+# BDD Scenario: ANTHROPIC_MODEL [1m] suffix auto-detection (TASK-006)
+# =============================================================================
+
+
+class TestContextWindow1mDetection:
+    """Scenario: Auto-detect [1m] extended-context model alias.
+
+    Given ANTHROPIC_MODEL=sonnet[1m] and no explicit config,
+    get_context_window_tokens() should return 1_000_000.
+    """
+
+    def test_sonnet_1m_detection(self) -> None:
+        """sonnet[1m] auto-detected as 1M context window."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "sonnet[1m]"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+
+    def test_opus_1m_detection(self) -> None:
+        """opus[1m] auto-detected as 1M context window."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "opus[1m]"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+
+    def test_1m_source(self) -> None:
+        """[1m] detection source is 'env-1m-detection'."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "sonnet[1m]"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_source() == "env-1m-detection"
+
+    def test_no_1m_suffix_returns_default(self) -> None:
+        """ANTHROPIC_MODEL without [1m] suffix returns default."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "sonnet"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+
+    def test_no_anthropic_model_returns_default(self) -> None:
+        """Missing ANTHROPIC_MODEL returns default."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+
+    def test_endswith_not_substring(self) -> None:
+        """[1m] must be suffix, not just substring (no false positives)."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "my-custom-[1m]-wrapper"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            # Should NOT detect [1m] since it's not a suffix
+            assert adapter.get_context_window_tokens() == 200_000
+            assert adapter.get_context_window_source() == "default"
+
+    def test_claude_sonnet_4_6_1m(self) -> None:
+        """Full model ID with [1m] suffix is detected."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "claude-sonnet-4-6[1m]"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+
+    def test_case_insensitive_1M_uppercase(self) -> None:
+        """[1M] uppercase suffix is detected (case-insensitive)."""
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "sonnet[1M]"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+            assert adapter.get_context_window_source() == "env-1m-detection"
+
+
+# =============================================================================
+# BDD Scenario: Fail-open on detection errors (TASK-006)
+# =============================================================================
+
+
+class TestContextWindowFailOpen:
+    """Scenario: Detection failures fall back to default.
+
+    Given any exception during detection,
+    get_context_window_tokens() should return 200_000 (fail-open).
+    """
+
+    def test_fail_open_returns_default(self) -> None:
+        """Detection error falls back to 200K default."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            # Even with no env vars or config, should return default gracefully
+            assert adapter.get_context_window_tokens() == 200_000
+
+    def test_fail_open_on_environ_get_exception(self) -> None:
+        """os.environ.get raising falls back to 200K (genuine failure injection)."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            # Patch os.environ.get to raise, exercising outer try/except
+            with patch("os.environ.get", side_effect=RuntimeError("env error")):
+                assert adapter.get_context_window_tokens() == 200_000
+                assert adapter.get_context_window_source() == "default"
+
+
+# =============================================================================
+# BDD Scenario: Invalid config values handled gracefully (TASK-006, FM-001/FM-003/FM-004)
+# =============================================================================
+
+
+class TestContextWindowInvalidConfig:
+    """Scenario: Invalid context_window_tokens config falls through to auto-detection.
+
+    Given a non-numeric, zero, or negative context_window_tokens config value,
+    the adapter should log a warning and fall through to the next detection step.
+    """
+
+    def test_non_numeric_config_falls_through(self) -> None:
+        """Non-numeric context_window_tokens falls through to default (FM-001/W-003)."""
+        with patch.dict(
+            os.environ,
+            {"JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "not_a_number"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+            assert adapter.get_context_window_source() == "default"
+
+    def test_zero_config_falls_through(self) -> None:
+        """Zero context_window_tokens falls through to default (FM-003)."""
+        with patch.dict(
+            os.environ,
+            {"JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "0"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+            assert adapter.get_context_window_source() == "default"
+
+    def test_negative_config_falls_through(self) -> None:
+        """Negative context_window_tokens falls through to default (FM-004)."""
+        with patch.dict(
+            os.environ,
+            {"JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "-100"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+            assert adapter.get_context_window_source() == "default"
+
+    def test_non_numeric_with_1m_model_falls_to_1m(self) -> None:
+        """Non-numeric config falls through to [1m] detection when available."""
+        with patch.dict(
+            os.environ,
+            {
+                "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "abc",
+                "ANTHROPIC_MODEL": "sonnet[1m]",
+            },
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+            assert adapter.get_context_window_source() == "env-1m-detection"
+
+    def test_zero_with_1m_model_falls_to_1m(self) -> None:
+        """Zero config falls through to [1m] detection when available."""
+        with patch.dict(
+            os.environ,
+            {
+                "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "0",
+                "ANTHROPIC_MODEL": "opus[1m]",
+            },
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+            assert adapter.get_context_window_source() == "env-1m-detection"
+
+    def test_exceeds_max_falls_through(self) -> None:
+        """Value exceeding 2M max falls through to default (AV-002)."""
+        with patch.dict(
+            os.environ,
+            {"JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "999999999999"},
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 200_000
+            assert adapter.get_context_window_source() == "default"
+
+    def test_exceeds_max_with_1m_falls_to_1m(self) -> None:
+        """Value exceeding max falls through to [1m] detection when available."""
+        with patch.dict(
+            os.environ,
+            {
+                "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "5000000",
+                "ANTHROPIC_MODEL": "sonnet[1m]",
+            },
+            clear=True,
+        ):
+            adapter = _make_adapter()
+            assert adapter.get_context_window_tokens() == 1_000_000
+            assert adapter.get_context_window_source() == "env-1m-detection"
+
+
+# =============================================================================
+# BDD Scenario: Port compliance with new methods (TASK-006)
+# =============================================================================
+
+
+class TestContextWindowConfigGetFailure:
+    """Scenario: LayeredConfigAdapter.get() raises during detection.
+
+    Given an infrastructure exception from config.get(),
+    _detect_context_window() should return the 200K default (DEFECT-001).
+    """
+
+    def test_config_get_exception_fails_open(self) -> None:
+        """config.get() exception falls back to default (DEFECT-001)."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            # Monkey-patch config.get to raise
+            adapter._config.get = lambda key: (_ for _ in ()).throw(  # type: ignore[method-assign]
+                RuntimeError("TOML parse error")
+            )
+            assert adapter.get_context_window_tokens() == 200_000
+            assert adapter.get_context_window_source() == "default"
+
+
+# =============================================================================
+# BDD Scenario: Bootstrap absent-key invariant (TASK-006)
+# =============================================================================
+
+
+class TestBootstrapAbsentKeyInvariant:
+    """Scenario: context_window_tokens is intentionally absent from bootstrap defaults.
+
+    The detection chain depends on config.get() returning None when
+    context_window_tokens is not configured. If someone adds it to the
+    bootstrap defaults, auto-detection breaks silently.
+    """
+
+    def test_context_window_tokens_not_in_bootstrap_defaults(self) -> None:
+        """context_window_tokens must NOT appear in bootstrap defaults.
+
+        If someone adds context_monitor.context_window_tokens to defaults,
+        this test will fail because source would become 'config' instead
+        of 'default', breaking the auto-detection chain.
+        """
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter(
+                defaults={
+                    # Replicate bootstrap defaults WITHOUT context_window_tokens
+                    "context_monitor.nominal_threshold": 0.55,
+                    "context_monitor.warning_threshold": 0.70,
+                    "context_monitor.critical_threshold": 0.80,
+                    "context_monitor.emergency_threshold": 0.88,
+                    "context_monitor.compaction_detection_threshold": 10000,
+                    "context_monitor.enabled": True,
+                },
+            )
+            # Source must be 'default', NOT 'config'
+            assert adapter.get_context_window_source() == "default"
+
+    def test_adding_context_window_tokens_to_defaults_breaks_detection(self) -> None:
+        """Proves that adding context_window_tokens to defaults would break detection.
+
+        If someone adds the key to defaults, config.get() returns it,
+        bypassing ANTHROPIC_MODEL [1m] auto-detection.
+        """
+        with patch.dict(
+            os.environ,
+            {"ANTHROPIC_MODEL": "sonnet[1m]"},
+            clear=True,
+        ):
+            # With the key in defaults: detection chain is broken
+            adapter_broken = _make_adapter(
+                defaults={"context_monitor.context_window_tokens": 200000},
+            )
+            # Source becomes 'config' instead of 'env-1m-detection'
+            assert adapter_broken.get_context_window_source() == "config"
+            assert adapter_broken.get_context_window_tokens() == 200_000  # Wrong!
+
+            # Without the key in defaults: detection chain works correctly
+            adapter_correct = _make_adapter(defaults={})
+            assert adapter_correct.get_context_window_source() == "env-1m-detection"
+            assert adapter_correct.get_context_window_tokens() == 1_000_000  # Correct!
+
+
+class TestContextWindowPortCompliance:
+    """Scenario: ConfigThresholdAdapter still satisfies IThresholdConfiguration.
+
+    Given the new get_context_window_tokens() and get_context_window_source()
+    methods on the port, the adapter should still satisfy the protocol.
+    """
+
+    def test_adapter_satisfies_protocol_with_context_window(self) -> None:
+        """ConfigThresholdAdapter satisfies IThresholdConfiguration with new methods."""
+        with patch.dict(os.environ, {}, clear=True):
+            adapter = _make_adapter()
+            assert isinstance(adapter, IThresholdConfiguration)
