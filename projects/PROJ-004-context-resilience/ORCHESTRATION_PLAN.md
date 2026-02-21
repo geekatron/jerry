@@ -217,7 +217,7 @@ Criticality: C2 (Standard)
 **Objective:** Extract empirical data from real orchestration workflows to understand context exhaustion patterns.
 
 **Inputs:**
-- `projects/PROJ-001-oss-release/ORCHESTRATION.yaml` (completed, 4 phases, 4 quality gates)
+- PROJ-001-oss-release ORCHESTRATION.yaml (completed, 4 phases, 4 quality gates)
 - PROJ-001 orchestration artifacts and gate results
 - Session transcripts (if available)
 

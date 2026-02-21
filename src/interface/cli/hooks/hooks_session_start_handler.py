@@ -27,7 +27,6 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from pathlib import Path
 from typing import Any
 
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
@@ -64,7 +63,7 @@ class HooksSessionStartHandler:
     Example:
         >>> handler = HooksSessionStartHandler(
         ...     query_dispatcher=dispatcher,
-        ...     projects_dir=Path("projects"),
+        ...     projects_dir="projects",
         ...     checkpoint_repository=repo,
         ...     resumption_generator=generator,
         ...     quality_context_generator=generator,
@@ -75,7 +74,7 @@ class HooksSessionStartHandler:
     def __init__(
         self,
         query_dispatcher: IQueryDispatcher,
-        projects_dir: Path,
+        projects_dir: str,
         checkpoint_repository: ICheckpointRepository,
         resumption_generator: ResumptionContextGenerator,
         quality_context_generator: SessionQualityContextGenerator,
@@ -154,7 +153,7 @@ class HooksSessionStartHandler:
 
         # Step 4: Resumption context from latest checkpoint (fail-open)
         try:
-            checkpoint = self._checkpoint_repository.load_latest()
+            checkpoint = self._checkpoint_repository.get_latest_unacknowledged()
             if checkpoint is not None:
                 resumption_xml = self._resumption_generator.generate(checkpoint)
                 if resumption_xml:

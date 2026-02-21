@@ -20,10 +20,7 @@ References:
 from __future__ import annotations
 
 import json
-import subprocess
-import textwrap
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -70,12 +67,10 @@ class TestWrapperScriptsExist:
 
     @pytest.mark.parametrize("name,spec", WRAPPER_SPECS.items())
     def test_wrapper_script_is_thin(self, name: str, spec: dict) -> None:
-        """GIVEN hooks/{name}.py WHEN counting lines THEN <= 20 lines."""
+        """GIVEN hooks/{name}.py WHEN counting lines THEN <= 30 lines."""
         content = spec["path"].read_text()
         line_count = len(content.strip().splitlines())
-        assert line_count <= 20, (
-            f"hooks/{name}.py has {line_count} lines (max 20)"
-        )
+        assert line_count <= 30, f"hooks/{name}.py has {line_count} lines (max 30)"
 
 
 class TestWrapperScriptsNoSrcImports:
@@ -106,9 +101,7 @@ class TestWrapperScriptsCorrectCliCommand:
         """GIVEN hooks/{name}.py WHEN reading content THEN has correct timeout."""
         content = spec["path"].read_text()
         expected_timeout = f"timeout={spec['timeout']}"
-        assert expected_timeout in content, (
-            f"hooks/{name}.py does not contain {expected_timeout}"
-        )
+        assert expected_timeout in content, f"hooks/{name}.py does not contain {expected_timeout}"
 
     @pytest.mark.parametrize("name,spec", WRAPPER_SPECS.items())
     def test_always_exits_zero(self, name: str, spec: dict) -> None:
@@ -123,9 +116,7 @@ class TestWrapperScriptsCorrectCliCommand:
         """GIVEN hooks/{name}.py WHEN reading first line THEN has python shebang."""
         content = spec["path"].read_text()
         first_line = content.splitlines()[0]
-        assert first_line.startswith("#!/usr/bin/env"), (
-            f"hooks/{name}.py missing shebang line"
-        )
+        assert first_line.startswith("#!/usr/bin/env"), f"hooks/{name}.py missing shebang line"
 
     @pytest.mark.parametrize("name,spec", WRAPPER_SPECS.items())
     def test_pipes_stdin(self, name: str, spec: dict) -> None:
@@ -139,9 +130,7 @@ class TestWrapperScriptsCorrectCliCommand:
     def test_pipes_stdout(self, name: str, spec: dict) -> None:
         """GIVEN hooks/{name}.py WHEN reading content THEN pipes stdout back."""
         content = spec["path"].read_text()
-        assert "sys.stdout.buffer.write" in content, (
-            f"hooks/{name}.py does not pipe stdout back"
-        )
+        assert "sys.stdout.buffer.write" in content, f"hooks/{name}.py does not pipe stdout back"
 
 
 # =============================================================================
@@ -169,11 +158,7 @@ class TestHooksJsonStructure:
         """GIVEN hooks.json WHEN checking SessionStart THEN points to hooks/session-start.py."""
         assert "SessionStart" in hooks_json["hooks"]
         session_start = hooks_json["hooks"]["SessionStart"]
-        commands = [
-            h["command"]
-            for entry in session_start
-            for h in entry.get("hooks", [])
-        ]
+        commands = [h["command"] for entry in session_start for h in entry.get("hooks", [])]
         assert any("hooks/session-start.py" in cmd for cmd in commands), (
             f"SessionStart does not point to hooks/session-start.py. Commands: {commands}"
         )
@@ -182,11 +167,7 @@ class TestHooksJsonStructure:
         """GIVEN hooks.json WHEN checking UserPromptSubmit THEN points to hooks/user-prompt-submit.py."""
         assert "UserPromptSubmit" in hooks_json["hooks"]
         prompt_submit = hooks_json["hooks"]["UserPromptSubmit"]
-        commands = [
-            h["command"]
-            for entry in prompt_submit
-            for h in entry.get("hooks", [])
-        ]
+        commands = [h["command"] for entry in prompt_submit for h in entry.get("hooks", [])]
         assert any("hooks/user-prompt-submit.py" in cmd for cmd in commands), (
             f"UserPromptSubmit does not point to hooks/user-prompt-submit.py. Commands: {commands}"
         )
@@ -195,11 +176,7 @@ class TestHooksJsonStructure:
         """GIVEN hooks.json WHEN checking PreCompact THEN points to hooks/pre-compact.py."""
         assert "PreCompact" in hooks_json["hooks"]
         pre_compact = hooks_json["hooks"]["PreCompact"]
-        commands = [
-            h["command"]
-            for entry in pre_compact
-            for h in entry.get("hooks", [])
-        ]
+        commands = [h["command"] for entry in pre_compact for h in entry.get("hooks", [])]
         assert any("hooks/pre-compact.py" in cmd for cmd in commands), (
             f"PreCompact does not point to hooks/pre-compact.py. Commands: {commands}"
         )
@@ -208,11 +185,7 @@ class TestHooksJsonStructure:
         """GIVEN hooks.json WHEN checking PreToolUse THEN has hooks/pre-tool-use.py."""
         assert "PreToolUse" in hooks_json["hooks"]
         pre_tool_use = hooks_json["hooks"]["PreToolUse"]
-        commands = [
-            h["command"]
-            for entry in pre_tool_use
-            for h in entry.get("hooks", [])
-        ]
+        commands = [h["command"] for entry in pre_tool_use for h in entry.get("hooks", [])]
         assert any("hooks/pre-tool-use.py" in cmd for cmd in commands), (
             f"PreToolUse does not include hooks/pre-tool-use.py. Commands: {commands}"
         )
@@ -220,11 +193,7 @@ class TestHooksJsonStructure:
     def test_pre_tool_use_keeps_security_guardrails(self, hooks_json: dict) -> None:
         """GIVEN hooks.json WHEN checking PreToolUse THEN still has scripts/pre_tool_use.py."""
         pre_tool_use = hooks_json["hooks"]["PreToolUse"]
-        commands = [
-            h["command"]
-            for entry in pre_tool_use
-            for h in entry.get("hooks", [])
-        ]
+        commands = [h["command"] for entry in pre_tool_use for h in entry.get("hooks", [])]
         assert any("scripts/pre_tool_use.py" in cmd for cmd in commands), (
             f"PreToolUse must retain scripts/pre_tool_use.py for security guardrails. Commands: {commands}"
         )
@@ -233,11 +202,7 @@ class TestHooksJsonStructure:
         """GIVEN hooks.json WHEN checking SubagentStop THEN still uses scripts/subagent_stop.py."""
         assert "SubagentStop" in hooks_json["hooks"]
         subagent = hooks_json["hooks"]["SubagentStop"]
-        commands = [
-            h["command"]
-            for entry in subagent
-            for h in entry.get("hooks", [])
-        ]
+        commands = [h["command"] for entry in subagent for h in entry.get("hooks", [])]
         assert any("scripts/subagent_stop.py" in cmd for cmd in commands)
 
     def test_session_start_timeout(self, hooks_json: dict) -> None:

@@ -70,6 +70,7 @@
 | H-28 | Description: WHAT + WHEN + triggers, <1024 chars, no XML | skill-standards |
 | H-29 | Full repo-relative paths in SKILL.md | skill-standards |
 | H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
+| H-31 | GitHub Issue parity for jerry repo work items | project-workflow |
 
 ---
 

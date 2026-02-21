@@ -8,6 +8,7 @@
 |---------|---------|
 | [Summary](#summary) | Project overview and status |
 | [Epics](#epics) | Strategic work items |
+| [Bugs](#bugs) | Defects and issues |
 | [Decisions](#decisions) | Key decisions |
 | [History](#history) | Change log |
 
@@ -30,6 +31,14 @@
 | [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | in_progress | high |
 
 > Features, Enablers, Spikes, and Tasks are tracked within the Epic and its children.
+
+---
+
+## Bugs
+
+| ID | Title | Status | Priority | Severity |
+|----|-------|--------|----------|----------|
+| [BUG-001](./work/EPIC-001-context-resilience/BUG-001-precommit-hook-failures.md) | Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors | pending | high | major |
 
 ---
 
@@ -56,3 +65,4 @@
 | 2026-02-20 | Claude | FEAT-001 implementation workflow complete (feat001-impl-20260220-001). 6 phases, 11 agents, 3 quality gates all PASSED (0.927, 0.922, 0.922). ST-003 validation: 20 PASS, 5 PARTIAL, 1 DEFERRED. |
 | 2026-02-20 | Claude | EN-008 (Context Resilience Hardening) created with 5 child tasks (TASK-001 through TASK-005) to address the 5 PARTIAL acceptance criteria items from ST-003 validation report. |
 | 2026-02-20 | Claude | TASK-006 added to EN-008: context window size hardcoded to 200K, config key disconnected. Different subscriptions + models have different windows. Configuration-first approach required since subscription tier cannot be auto-detected. |
+| 2026-02-21 | Claude | BUG-001 filed: Pre-commit hooks failing (10 test failures, 4 SPDX violations, 3+ pyright errors). SKIP flags required to commit. Quality gate regression. |

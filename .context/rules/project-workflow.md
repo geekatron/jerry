@@ -8,6 +8,7 @@
 | Section | Purpose |
 |---------|---------|
 | [HARD Rule Reference](#hard-rule-reference) | H-04 active project requirement |
+| [GitHub Issue Parity](#github-issue-parity) | H-31 dual-tracking requirement |
 | [Workflow Phases](#workflow-phases) | Before, during, after work |
 | [Project Orientation](#project-orientation) | Minimal structural context for session start |
 | [Project Resolution](#project-resolution) | How to handle missing project context |
@@ -17,6 +18,21 @@
 ## HARD Rule Reference
 
 > H-04: Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set. See CLAUDE.md.
+
+---
+
+## GitHub Issue Parity
+
+> **H-31:** When working in the Jerry repository (`geekatron/jerry`), all worktracker bugs, stories, enablers, and tasks MUST have a corresponding GitHub Issue. Worktracker is the internal SSOT; GitHub Issues are the external collaboration surface. Both MUST be kept in sync.
+
+| Action | Worktracker | GitHub Issue |
+|--------|------------|--------------|
+| Create work item | Create entity file + update WORKTRACKER.md | `gh issue create` with matching title, link worktracker ID in body |
+| Update status | Update entity file status field | Update issue labels or close issue |
+| Close/Complete | Mark completed in entity file | `gh issue close` |
+| Link | Add `GitHub Issue: [#N](url)` to Related Items | Add worktracker ID in issue body |
+
+**Scope:** This rule applies only when the active repository is `geekatron/jerry` (the Jerry framework itself). Projects hosted in other repositories are not subject to this rule.
 
 ---
 

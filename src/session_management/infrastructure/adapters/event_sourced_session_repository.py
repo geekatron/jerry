@@ -102,7 +102,7 @@ def _extract_session_id(stream_id: str) -> str:
         The session identifier extracted from the stream ID.
     """
     if stream_id.startswith("session-"):
-        return stream_id[len("session-"):]
+        return stream_id[len("session-") :]
     return stream_id
 
 
@@ -260,7 +260,7 @@ class EventSourcedSessionRepository:
 
             return None
 
-    def save(self, session: Session) -> list[DomainEvent]:
+    def save(self, session: Session) -> None:
         """Persist a session by saving its pending events.
 
         Collects uncommitted events from the session and appends
@@ -268,9 +268,6 @@ class EventSourcedSessionRepository:
 
         Args:
             session: The session aggregate to save.
-
-        Returns:
-            List of domain events that were saved.
 
         Raises:
             ConcurrencyError: If version mismatch detected.
@@ -282,7 +279,7 @@ class EventSourcedSessionRepository:
             pending_events = list(session.collect_events())
 
             if not pending_events:
-                return []  # Nothing to save
+                return  # Nothing to save
 
             # Convert to stored events
             stored_events = [
@@ -302,8 +299,7 @@ class EventSourcedSessionRepository:
             # Append to event store
             self._event_store.append(stream_id, stored_events, expected_version)
 
-            # Return the events that were saved
-            return pending_events
+            # Events saved successfully
 
     def exists(self, session_id: SessionId) -> bool:
         """Check if a session exists.
