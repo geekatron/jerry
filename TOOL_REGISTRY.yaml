@@ -206,9 +206,9 @@ tools:
       category: "orchestration"
       risk_level: "low"
       constraints:
-        - "Use sparingly - prefer autonomous action"
-        - "Only for critical decisions or blockers"
-        - "Provide context and options"
+        - "REQUIRED when requirements are ambiguous per H-31 (multiple interpretations, unclear scope, destructive action)"
+        - "Use sparingly for non-ambiguity questions -- prefer autonomous action"
+        - "Provide context and options when asking"
       use_cases:
         - "Clarifying ambiguous requirements"
         - "Requesting user decision on trade-offs"

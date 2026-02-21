@@ -36,6 +36,7 @@
 | H-04 | Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set. | Session will not proceed. |
 | H-05 | **UV Only.** MUST use `uv run` for all Python execution. NEVER use `python`/`pip`/`pip3`. | Command fails; env corruption. |
 | H-06 | **UV for deps.** MUST use `uv add`. NEVER use `pip install`. | Build breaks. |
+| H-31 | **Clarify when ambiguous.** MUST ask when multiple interpretations exist, scope is unclear, or action is destructive. MUST NOT ask when clear. | Wrong-direction work. |
 
 See `quality-enforcement.md` for quality gate, criticality levels, and adversarial strategies.
 See `docs/governance/JERRY_CONSTITUTION.md` for full governance.

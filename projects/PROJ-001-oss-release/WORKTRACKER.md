@@ -71,7 +71,7 @@
 | [BUG-010](./work/EPIC-001-oss-release/BUG-010-ci-lint-format-failure/BUG-010-ci-lint-format-failure.md) | CI Lint & Format Failure — Unformatted E2E Test File | done | high | EPIC-001 |
 | [BUG-011](./work/EPIC-001-oss-release/BUG-011-project-workflow-rule-conflict/BUG-011-project-workflow-rule-conflict.md) | project-workflow.md Duplicates and Conflicts with /worktracker Skill Rules | done | high | EPIC-001 |
 | [BUG-012](./work/EPIC-001-oss-release/BUG-012-ci-proj006-missing-dirs/BUG-012-ci-proj006-missing-dirs.md) | CI Failures — PROJ-006 Incomplete Project Directory Structure | done | high | EPIC-001 |
-| [BUG-013](./work/EPIC-001-oss-release/BUG-013-hook-uv-sync-wrong-directory/BUG-013-hook-uv-sync-wrong-directory.md) | SessionStart Hook `uv sync` Runs in Wrong Directory | in_progress | high | EPIC-001 |
+| [BUG-013](./work/EPIC-001-oss-release/BUG-013-hook-uv-sync-wrong-directory/BUG-013-hook-uv-sync-wrong-directory.md) | SessionStart Hook `uv sync` Runs in Wrong Directory | completed | high | EPIC-001 |
 
 ---
 
@@ -154,6 +154,8 @@
 | FEAT-026 (EPIC-001) | Post-Public Documentation Refresh | 2026-02-19 | 3 enablers (EN-955–957), 10 effort pts. C2 quality gate PASS (0.9195): S-003 Steelman (4 Major), S-007 Constitutional (1 Major), S-002 Devil's Advocate (5 Major), S-014 scored 0.8925→0.9195. INSTALLATION.md rewritten for public repo (~360 lines removed). docs/index.md enriched with platform/limitations/maturity notices. MkDocs build clean, grep scan 0 matches. All 7 ACs PASS. |
 | FEAT-028 (EPIC-001) | MCP Tool Integration (Context7 + Memory-Keeper) | 2026-02-20 | 5 enablers (EN-001–005), 11 effort pts. C3 (AE-002: touches `.context/rules/`). Created `mcp-tool-standards.md` governance rule. Context7 added to 2 NSE agents (7 total). Memory-Keeper added to 7 agents (orch ×3, ps-architect, nse-requirements, transcript ×2). 4 SKILL.md + AGENTS.md + TOOL_REGISTRY.yaml updated. 3299 tests pass, 0 regressions. All 7 ACs PASS. |
 | BUG-012 (EPIC-001) | CI Failures — PROJ-006 Incomplete Project Directory Structure | 2026-02-20 | Same root cause as BUG-003 (EPIC-003). PROJ-006 bootstrapped with only `decisions/`. Added `research/`, `synthesis/`, `analysis/` with `.gitkeep` + `research/README.md`. 3332 tests pass. |
+| BUG-013 (EPIC-001) | SessionStart Hook `uv sync` Runs in Wrong Directory | 2026-02-20 | RC-1: `uv sync` missing `--directory ${CLAUDE_PLUGIN_ROOT}` — ran in CWD, failed in consumer repos, `&&` short-circuited hook script. Fix: one flag addition. Commit `842dec6`. PR [#47](https://github.com/geekatron/jerry/pull/47). Closes [#46](https://github.com/geekatron/jerry/issues/46). |
+| EN-006 (EPIC-001) | Ambiguity Clarification Rule (H-31) | 2026-02-21 | H-31 HARD rule added to quality-enforcement.md (L2 marker, HARD Rule Index, Quality Gate Rule Definitions). TOOL_REGISTRY.yaml AskUserQuestion constraints reconciled. CLAUDE.md updated. |
 
 ---
 
@@ -268,6 +270,8 @@
 | 2026-02-20 | Claude | FEAT-028 created under EPIC-001: MCP Tool Integration (Context7 + Memory-Keeper). 5 enablers (EN-001–005), 11 effort pts, C3 criticality (AE-002). Created `.context/rules/mcp-tool-standards.md` governance rule. Context7 tools added to nse-explorer + nse-architecture (7 total). Memory-Keeper tools added to 7 agents (orch-planner, orch-tracker, orch-synthesizer, ps-architect, nse-requirements, ts-parser, ts-extractor). Updated 4 SKILL.md files, AGENTS.md (MCP Tool Access section), TOOL_REGISTRY.yaml (individual Memory-Keeper tool defs + agent permissions). All 5 enablers DONE. 3299 tests pass. |
 | 2026-02-20 | Claude | BUG-012 created under EPIC-001: CI Failures — PROJ-006 Incomplete Project Directory Structure. Same root cause as BUG-003 (EPIC-003). PROJ-006 bootstrapped with only `decisions/` but tests require >= 3 category dirs. Fix: add `research/`, `synthesis/`, `analysis/` with `.gitkeep`. 2 tasks (TASK-001, TASK-002). |
 | 2026-02-20 | Claude | BUG-013 created under EPIC-001: SessionStart Hook `uv sync` Runs in Wrong Directory. `uv sync` on line 10 of `hooks/hooks.json` missing `--directory ${CLAUDE_PLUGIN_ROOT}` — runs in CWD instead of plugin root. Shell `&&` short-circuits, preventing `session_start_hook.py` from executing. Fix: add `--directory ${CLAUDE_PLUGIN_ROOT}` to `uv sync`. GitHub Issue [#46](https://github.com/geekatron/jerry/issues/46). |
+| 2026-02-20 | Claude | BUG-013 DONE. One-flag fix: `uv sync` → `uv sync --directory ${CLAUDE_PLUGIN_ROOT}`. Committed (`842dec6`), pushed, PR [#47](https://github.com/geekatron/jerry/pull/47) created. Closes Issue [#46](https://github.com/geekatron/jerry/issues/46). |
+| 2026-02-21 | Claude | EN-006 created and DONE under EPIC-001: Ambiguity Clarification Rule (H-31). HARD rule added to quality-enforcement.md (L2-REINJECT marker rank=2, HARD Rule Index, Quality Gate Rule Definitions, nav table H-01–H-31, tier vocabulary max count 35). TOOL_REGISTRY.yaml AskUserQuestion constraints reconciled with H-31. CLAUDE.md Critical Constraints updated. Criticality: C3 (AE-002). |
 
 ---
 

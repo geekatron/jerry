@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-30 |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-31 |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
@@ -27,6 +27,8 @@
 <!-- L2-REINJECT: rank=1, tokens=50, content="Constitutional: No recursive subagents (P-003). User decides, never override (P-020). No deception (P-022). These are HARD constraints that CANNOT be overridden." -->
 
 <!-- L2-REINJECT: rank=2, tokens=90, content="Quality gate >= 0.92 weighted composite for C2+ deliverables (H-13). Creator-critic-revision cycle REQUIRED, minimum 3 iterations (H-14). Below threshold = REJECTED." -->
+
+<!-- L2-REINJECT: rank=2, tokens=50, content="Ambiguity resolution (H-31): When requirements have multiple valid interpretations, unclear scope, or imply destructive action -- MUST ask clarifying questions before proceeding. Do NOT assume. Do NOT ask when requirements are clear or answers are in the codebase." -->
 
 <!-- L2-REINJECT: rank=3, tokens=25, content="UV only for Python (H-05/H-06). NEVER use python/pip directly." -->
 
@@ -68,6 +70,7 @@
 | H-28 | Description: WHAT + WHEN + triggers, <1024 chars, no XML | skill-standards |
 | H-29 | Full repo-relative paths in SKILL.md | skill-standards |
 | H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
+| H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
 
 ---
 
@@ -103,6 +106,7 @@
 | H-17 | Quality scoring via S-014 LLM-as-Judge REQUIRED for all C2+ deliverables. | Quantitative scoring provides objective progress tracking across revision iterations and enables threshold enforcement. | Unscored deliverable. |
 | H-18 | Constitutional compliance check (S-007) REQUIRED for all C2+ deliverables. | Ensures deliverables do not violate governance constraints that could cascade into systemic issues. | Unchecked compliance. |
 | H-19 | Governance escalation per AE rules REQUIRED. Auto-escalation conditions enforce minimum criticality. | Prevents high-impact changes from receiving insufficient review by enforcing minimum criticality classification. | Governance bypass. |
+| H-31 | Clarify before acting when requirements are ambiguous. MUST ask when: (1) multiple valid interpretations exist, (2) scope is unclear, (3) destructive or irreversible action implied. MUST NOT ask when requirements are clear or answer is discoverable from codebase. | Prevents wrong-direction work — incorrect assumptions are the most expensive failure mode. One clarifying question costs seconds; wrong-direction work costs hours. | Wrong-direction work. |
 
 ### Operational Score Bands
 
@@ -133,7 +137,7 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 
 | Tier | Keywords | Override | Max Count |
 |------|----------|----------|-----------|
-| **HARD** | MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL | Cannot override | <= 25 |
+| **HARD** | MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL | Cannot override | <= 35 |
 | **MEDIUM** | SHOULD, RECOMMENDED, PREFERRED, EXPECTED | Documented justification | Unlimited |
 | **SOFT** | MAY, CONSIDER, OPTIONAL, SUGGESTED | No justification needed | Unlimited |
 
