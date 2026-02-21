@@ -1,12 +1,12 @@
 # ST-003: Threshold Validation + Calibration Documentation
 
 > **Type:** story
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 4h (timebox)
@@ -73,3 +73,4 @@ Feature: Threshold calibration across workflow types
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Story created from CWI-09. |
+| 2026-02-20 | Claude | done | Validation complete. 20 PASS, 5 PARTIAL, 1 DEFERRED. Calibration protocol created. |

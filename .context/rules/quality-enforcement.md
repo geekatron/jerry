@@ -12,7 +12,7 @@
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
-| [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006 |
+| [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006e (graduated context fill sub-rules) |
 | [Enforcement Architecture](#enforcement-architecture) | L1-L5 layer definitions |
 | [Strategy Catalog](#strategy-catalog) | S-001 through S-015 (selected and excluded) |
 | [Implementation](#implementation) | Operational implementation via /adversary skill, skill routing decision table |
@@ -35,6 +35,8 @@
 <!-- L2-REINJECT: rank=5, tokens=30, content="Self-review REQUIRED before presenting any deliverable (H-15, S-010)." -->
 
 <!-- L2-REINJECT: rank=8, tokens=40, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
+
+<!-- L2-REINJECT: rank=9, tokens=40, content="AE-006 graduated escalation: NOMINAL=no-op, WARNING=log+consider-checkpoint, CRITICAL=auto-checkpoint+reduce-verbosity, EMERGENCY=mandatory-checkpoint+warn-user, COMPACTION=human-escalation-C3+." -->
 
 | ID | Rule | Source |
 |----|------|--------|
@@ -148,7 +150,11 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 | AE-003 | New or modified ADR | Auto-C3 minimum |
 | AE-004 | Modifies baselined ADR | Auto-C4 |
 | AE-005 | Security-relevant code | Auto-C3 minimum |
-| AE-006 | Token exhaustion at C3+ (context compaction triggered) | Mandatory human escalation |
+| AE-006a | Context fill NOMINAL/LOW tier (< 0.70) | No action required |
+| AE-006b | Context fill WARNING tier (>= 0.70) | Log warning + consider checkpoint |
+| AE-006c | Context fill CRITICAL tier (>= 0.80) | Auto-checkpoint + reduce verbosity |
+| AE-006d | Context fill EMERGENCY tier (>= 0.88) | Mandatory checkpoint + warn user + prepare handoff |
+| AE-006e | Compaction event detected | Mandatory human escalation for C3+, auto-checkpoint, session restart recommended |
 
 ---
 
