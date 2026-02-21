@@ -25,7 +25,7 @@ Exports:
 from __future__ import annotations
 
 import copy
-from typing import Callable
+from collections.abc import Callable
 
 import mdformat
 from markdown_it import MarkdownIt
@@ -223,7 +223,11 @@ class JerryDocument:
 
         for line_idx, new_content in new_inline_map.items():
             orig_content = orig_inline_map.get(line_idx)
-            if orig_content is not None and orig_content != new_content and line_idx < len(result_lines):
+            if (
+                orig_content is not None
+                and orig_content != new_content
+                and line_idx < len(result_lines)
+            ):
                 original_line = source_lines[line_idx]
                 if orig_content in original_line:
                     result_lines[line_idx] = original_line.replace(orig_content, new_content, 1)
@@ -256,9 +260,13 @@ class JerryDocument:
         """
         The flat token list produced by markdown-it-py.
 
+        Returns a shallow copy to prevent external mutation of the internal
+        token list. Individual Token objects are shared (not deep-copied)
+        for performance.
+
         Returns:
             List of Token objects in document order. Inline tokens are in the
             flat list; their children are inline-level tokens accessible via
             Token.children.
         """
-        return self._tokens
+        return list(self._tokens)

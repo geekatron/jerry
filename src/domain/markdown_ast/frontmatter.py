@@ -34,19 +34,16 @@ Exports:
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Iterator
 
 from src.domain.markdown_ast.jerry_document import JerryDocument
-
 
 # ---------------------------------------------------------------------------
 # Regex pattern (validated in EN-001 R-01 PoC)
 # ---------------------------------------------------------------------------
 
-_FRONTMATTER_PATTERN = re.compile(
-    r"^>\s*\*\*(?P<key>[^*:]+):\*\*\s*(?P<value>.+)$", re.MULTILINE
-)
+_FRONTMATTER_PATTERN = re.compile(r"^>\s*\*\*(?P<key>[^*:]+):\*\*\s*(?P<value>.+)$", re.MULTILINE)
 
 
 # ---------------------------------------------------------------------------
@@ -214,6 +211,30 @@ class BlockquoteFrontmatter:
         if idx is None:
             return default
         return self._fields[idx].value
+
+    def get_field(self, key: str) -> FrontmatterField | None:
+        """
+        Return the FrontmatterField object for a key, or None if not present.
+
+        Unlike ``get()`` which returns only the value string, this returns the
+        full FrontmatterField including ``line_number``, ``start``, and ``end``
+        metadata.
+
+        Args:
+            key: The frontmatter field name (case-sensitive).
+
+        Returns:
+            The FrontmatterField instance, or None if the key is not found.
+
+        Examples:
+            >>> field = fm.get_field("Status")
+            >>> field.line_number
+            3
+        """
+        idx = self._index.get(key)
+        if idx is None:
+            return None
+        return self._fields[idx]
 
     def __contains__(self, key: object) -> bool:
         """
@@ -384,9 +405,7 @@ class BlockquoteFrontmatter:
             'alice'
         """
         if key in self._index:
-            raise ValueError(
-                f"Key '{key}' already exists in frontmatter. Use set() to modify it."
-            )
+            raise ValueError(f"Key '{key}' already exists in frontmatter. Use set() to modify it.")
 
         new_line = f"> **{key}:** {value}"
         source = self._doc.source

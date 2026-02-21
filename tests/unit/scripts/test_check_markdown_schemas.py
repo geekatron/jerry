@@ -29,6 +29,8 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 # Add project root to sys.path so we can import the script
 _project_root = Path(__file__).parent.parent.parent.parent
 if str(_project_root) not in sys.path:
@@ -503,3 +505,121 @@ class TestEntityPatternSync:
 
         extra = pattern_schema_types - registry_schema_types
         assert extra == set(), f"Entity patterns without corresponding schemas: {extra}"
+
+
+# ===========================================================================
+# Test: format_violation with line numbers (M-1)
+# ===========================================================================
+
+
+class TestFormatViolationLineNumbers:
+    """Tests for violation format with line number support."""
+
+    def test_violation_with_line_number_includes_line(self) -> None:
+        """Violation with line_number formats as file:line:message (1-based)."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        v = ValidationViolation(
+            field_path="frontmatter.Status",
+            expected="one of: pending, in_progress, completed",
+            actual="invalid",
+            severity="error",
+            message="Field 'Status' value 'invalid' is not in allowed values.",
+            line_number=5,
+        )
+        result = format_violation("path/to/ST-001.md", v)
+        assert (
+            result == "path/to/ST-001.md:6:Field 'Status' value 'invalid' is not in allowed values."
+        )
+
+    def test_violation_without_line_number_omits_line(self) -> None:
+        """Violation without line_number formats as file:message."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        v = ValidationViolation(
+            field_path="sections.Summary",
+            expected="## Summary section present",
+            actual="section missing",
+            severity="error",
+            message="Required section '## Summary' is missing.",
+        )
+        result = format_violation("file.md", v)
+        assert result == "file.md:Required section '## Summary' is missing."
+
+
+# ===========================================================================
+# Test: end-to-end integration (M-2)
+# ===========================================================================
+
+
+class TestPrecommitEndToEnd:
+    """End-to-end integration tests using real file I/O with mocked git."""
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_valid_story_passes(self, mock_git: MagicMock, tmp_path: Path) -> None:
+        """Valid story file passes schema validation end-to-end."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(VALID_STORY_SOURCE, encoding="utf-8")
+        mock_git.return_value = [str(file_path)]
+
+        # Patch detect_schema_from_path to accept our tmp_path
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            return_value="story",
+        ):
+            assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_invalid_story_fails(self, mock_git: MagicMock, tmp_path: Path) -> None:
+        """Invalid story file (missing Type, Impact, Created, Parent) fails end-to-end."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(INVALID_STORY_SOURCE, encoding="utf-8")
+        mock_git.return_value = [str(file_path)]
+
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            return_value="story",
+        ):
+            assert main() == 1
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_mixed_valid_and_non_entity_passes(self, mock_git: MagicMock, tmp_path: Path) -> None:
+        """Mix of valid entity file and non-entity file passes (non-entity skipped)."""
+        story_path = tmp_path / "ST-001.md"
+        story_path.write_text(VALID_STORY_SOURCE, encoding="utf-8")
+        readme_path = tmp_path / "README.md"
+        readme_path.write_text(PLAIN_MARKDOWN, encoding="utf-8")
+        mock_git.return_value = [str(story_path), str(readme_path)]
+
+        # detect_schema_from_path returns "story" for the ST file, None for README
+        def detect_side_effect(path: str) -> str | None:
+            if "ST-001" in path:
+                return "story"
+            return None
+
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            side_effect=detect_side_effect,
+        ):
+            assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_violation_output_contains_file_and_summary(
+        self, mock_git: MagicMock, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """Violation output includes file path, violation messages, and summary."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(INVALID_STORY_SOURCE, encoding="utf-8")
+        mock_git.return_value = [str(file_path)]
+
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            return_value="story",
+        ):
+            exit_code = main()
+
+        assert exit_code == 1
+        captured = capsys.readouterr()
+        # Should contain violation messages and a summary line
+        assert "frontmatter" in captured.out
+        assert "files checked" in captured.out

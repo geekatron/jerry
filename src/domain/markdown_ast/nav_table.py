@@ -49,9 +49,7 @@ _NAV_ENTRY_RE = re.compile(
 
 # Heading names that serve as the nav table container itself and should be
 # excluded from missing-entry checks.
-_NAV_CONTAINER_HEADINGS = frozenset(
-    {"Document Sections", "document-sections"}
-)
+_NAV_CONTAINER_HEADINGS = frozenset({"Document Sections", "document-sections"})
 
 
 @dataclass(frozen=True)
@@ -63,7 +61,7 @@ class NavEntry:
         section_name: The display text of the section link (e.g. "Summary").
         anchor: The anchor slug from the link (e.g. "summary").
         description: The purpose/description column text.
-        line_number: 1-based line number of this row in the source document.
+        line_number: Zero-based line index of this row in the source document.
     """
 
     section_name: str
@@ -175,7 +173,7 @@ def extract_nav_table(doc: JerryDocument) -> list[NavEntry] | None:
                     section_name=section_name,
                     anchor=anchor,
                     description=description,
-                    line_number=line_idx + 1,  # 1-based
+                    line_number=line_idx,  # 0-based
                 )
             )
 
@@ -257,9 +255,7 @@ def validate_nav_table(doc: JerryDocument) -> NavValidationResult:
     # Build a set of all ## heading anchors present in the document
     h2_headings = _extract_h2_headings(doc)
     # Exclude the nav table container heading from coverage checks
-    content_headings = [
-        h for h in h2_headings if h not in _NAV_CONTAINER_HEADINGS
-    ]
+    content_headings = [h for h in h2_headings if h not in _NAV_CONTAINER_HEADINGS]
     heading_anchors: set[str] = {heading_to_anchor(h) for h in content_headings}
 
     # Detect orphaned entries: nav entries whose anchor has no matching heading

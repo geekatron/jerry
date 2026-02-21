@@ -50,7 +50,6 @@ from src.domain.markdown_ast.schema import (
     validate_document,
 )
 
-
 # ---------------------------------------------------------------------------
 # Source fixtures
 # ---------------------------------------------------------------------------
@@ -395,11 +394,11 @@ class TestFieldRuleConstruction:
         rule = FieldRule(
             key="Status",
             required=True,
-            allowed_values=["pending", "in_progress", "completed"],
+            allowed_values=("pending", "in_progress", "completed"),
         )
         assert rule.key == "Status"
         assert rule.required is True
-        assert rule.allowed_values == ["pending", "in_progress", "completed"]
+        assert rule.allowed_values == ("pending", "in_progress", "completed")
         assert rule.value_pattern is None
 
     def test_field_rule_optional_no_constraints(self) -> None:
@@ -454,8 +453,8 @@ class TestEntitySchemaConstruction:
         """EntitySchema stores entity_type, rules, and nav_table flag."""
         schema = EntitySchema(
             entity_type="story",
-            field_rules=[FieldRule(key="Type")],
-            section_rules=[SectionRule(heading="Summary")],
+            field_rules=(FieldRule(key="Type"),),
+            section_rules=(SectionRule(heading="Summary"),),
             require_nav_table=True,
         )
         assert schema.entity_type == "story"
@@ -467,8 +466,8 @@ class TestEntitySchemaConstruction:
         """EntitySchema defaults require_nav_table to True."""
         schema = EntitySchema(
             entity_type="epic",
-            field_rules=[],
-            section_rules=[],
+            field_rules=(),
+            section_rules=(),
         )
         assert schema.require_nav_table is True
 
@@ -476,11 +475,49 @@ class TestEntitySchemaConstruction:
         """EntitySchema can have require_nav_table=False (e.g., Task)."""
         schema = EntitySchema(
             entity_type="task",
-            field_rules=[],
-            section_rules=[],
+            field_rules=(),
+            section_rules=(),
             require_nav_table=False,
         )
         assert schema.require_nav_table is False
+
+    def test_field_rule_is_frozen(self) -> None:
+        """FieldRule is immutable (frozen dataclass)."""
+        rule = FieldRule(key="Status")
+        with pytest.raises((AttributeError, TypeError)):
+            rule.key = "Changed"  # type: ignore[misc]
+
+    def test_section_rule_is_frozen(self) -> None:
+        """SectionRule is immutable (frozen dataclass)."""
+        rule = SectionRule(heading="Summary")
+        with pytest.raises((AttributeError, TypeError)):
+            rule.heading = "Changed"  # type: ignore[misc]
+
+    def test_entity_schema_is_frozen(self) -> None:
+        """EntitySchema is immutable (frozen dataclass)."""
+        schema = EntitySchema(entity_type="story", field_rules=(), section_rules=())
+        with pytest.raises((AttributeError, TypeError)):
+            schema.entity_type = "changed"  # type: ignore[misc]
+
+    def test_validation_violation_is_frozen(self) -> None:
+        """ValidationViolation is immutable (frozen dataclass)."""
+        v = ValidationViolation(
+            field_path="f", expected="e", actual="a", severity="error", message="m"
+        )
+        with pytest.raises((AttributeError, TypeError)):
+            v.message = "changed"  # type: ignore[misc]
+
+    def test_validation_report_is_frozen(self) -> None:
+        """ValidationReport is immutable (frozen dataclass)."""
+        report = ValidationReport(
+            is_valid=True,
+            violations=(),
+            entity_type="story",
+            field_count=0,
+            section_count=0,
+        )
+        with pytest.raises((AttributeError, TypeError)):
+            report.is_valid = False  # type: ignore[misc]
 
 
 # ---------------------------------------------------------------------------
@@ -525,13 +562,13 @@ class TestValidationReportStructure:
         """ValidationReport stores is_valid, violations, entity_type, counts."""
         report = ValidationReport(
             is_valid=True,
-            violations=[],
+            violations=(),
             entity_type="epic",
             field_count=5,
             section_count=3,
         )
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
         assert report.entity_type == "epic"
         assert report.field_count == 5
         assert report.section_count == 3
@@ -547,7 +584,7 @@ class TestValidationReportStructure:
         )
         report = ValidationReport(
             is_valid=False,
-            violations=[violation],
+            violations=(violation,),
             entity_type="epic",
             field_count=4,
             section_count=3,
@@ -570,7 +607,7 @@ class TestValidateDocumentHappyPath:
         doc = JerryDocument.parse(VALID_EPIC_SOURCE)
         report = validate_document(doc, EPIC_SCHEMA)
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
         assert report.entity_type == "epic"
 
     def test_valid_epic_field_count(self) -> None:
@@ -592,35 +629,35 @@ class TestValidateDocumentHappyPath:
         doc = JerryDocument.parse(VALID_STORY_SOURCE)
         report = validate_document(doc, STORY_SCHEMA)
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
 
     def test_valid_feature_document(self) -> None:
         """Valid Feature document passes validation without violations."""
         doc = JerryDocument.parse(VALID_FEATURE_SOURCE)
         report = validate_document(doc, FEATURE_SCHEMA)
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
 
     def test_valid_enabler_document(self) -> None:
         """Valid Enabler document passes validation without violations."""
         doc = JerryDocument.parse(VALID_ENABLER_SOURCE)
         report = validate_document(doc, ENABLER_SCHEMA)
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
 
     def test_valid_task_document(self) -> None:
         """Valid Task document passes validation (no nav table required)."""
         doc = JerryDocument.parse(VALID_TASK_SOURCE)
         report = validate_document(doc, TASK_SCHEMA)
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
 
     def test_valid_bug_document(self) -> None:
         """Valid Bug document passes validation without violations."""
         doc = JerryDocument.parse(VALID_BUG_SOURCE)
         report = validate_document(doc, BUG_SCHEMA)
         assert report.is_valid is True
-        assert report.violations == []
+        assert report.violations == ()
 
 
 # ---------------------------------------------------------------------------
@@ -652,14 +689,21 @@ class TestValidateDocumentMissingField:
         doc = JerryDocument.parse(MISSING_TYPE_FIELD_EPIC_SOURCE)
         report = validate_document(doc, EPIC_SCHEMA)
         type_violations = [v for v in report.violations if v.field_path == "frontmatter.Type"]
-        assert "present" in type_violations[0].expected.lower() or "required" in type_violations[0].expected.lower()
+        assert (
+            "present" in type_violations[0].expected.lower()
+            or "required" in type_violations[0].expected.lower()
+        )
 
     def test_missing_field_violation_actual_indicates_missing(self) -> None:
         """Missing field violation has an 'actual' that indicates absence."""
         doc = JerryDocument.parse(MISSING_TYPE_FIELD_EPIC_SOURCE)
         report = validate_document(doc, EPIC_SCHEMA)
         type_violations = [v for v in report.violations if v.field_path == "frontmatter.Type"]
-        assert "missing" in type_violations[0].actual.lower() or "not found" in type_violations[0].actual.lower() or "absent" in type_violations[0].actual.lower()
+        assert (
+            "missing" in type_violations[0].actual.lower()
+            or "not found" in type_violations[0].actual.lower()
+            or "absent" in type_violations[0].actual.lower()
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -704,12 +748,31 @@ class TestValidateDocumentInvalidValue:
 
     def test_invalid_priority_value_epic_produces_violation(self) -> None:
         """Invalid Priority value for Epic produces a violation."""
-        source = VALID_EPIC_SOURCE.replace("> **Priority:** medium", "> **Priority:** ultra_critical")
+        source = VALID_EPIC_SOURCE.replace(
+            "> **Priority:** medium", "> **Priority:** ultra_critical"
+        )
         doc = JerryDocument.parse(source)
         report = validate_document(doc, EPIC_SCHEMA)
         assert report.is_valid is False
         paths = [v.field_path for v in report.violations]
         assert "frontmatter.Priority" in paths
+
+    def test_invalid_value_violation_has_line_number(self) -> None:
+        """Invalid value violation includes a 0-based line_number from frontmatter."""
+        doc = JerryDocument.parse(INVALID_STATUS_STORY_SOURCE)
+        report = validate_document(doc, STORY_SCHEMA)
+        status_violations = [v for v in report.violations if v.field_path == "frontmatter.Status"]
+        assert len(status_violations) == 1
+        assert status_violations[0].line_number is not None
+        assert status_violations[0].line_number >= 0
+
+    def test_missing_field_violation_has_no_line_number(self) -> None:
+        """Missing field violation has line_number=None (field not in source)."""
+        doc = JerryDocument.parse(MISSING_TYPE_FIELD_EPIC_SOURCE)
+        report = validate_document(doc, EPIC_SCHEMA)
+        type_violations = [v for v in report.violations if v.field_path == "frontmatter.Type"]
+        assert len(type_violations) == 1
+        assert type_violations[0].line_number is None
 
 
 # ---------------------------------------------------------------------------
@@ -733,8 +796,7 @@ class TestValidateDocumentMissingSection:
         doc = JerryDocument.parse(MISSING_SECTION_STORY_SOURCE)
         report = validate_document(doc, STORY_SCHEMA)
         section_violations = [
-            v for v in report.violations
-            if v.field_path == "sections.Acceptance Criteria"
+            v for v in report.violations if v.field_path == "sections.Acceptance Criteria"
         ]
         assert len(section_violations) == 1
         assert section_violations[0].severity == "error"
@@ -744,10 +806,13 @@ class TestValidateDocumentMissingSection:
         doc = JerryDocument.parse(MISSING_SECTION_STORY_SOURCE)
         report = validate_document(doc, STORY_SCHEMA)
         section_violations = [
-            v for v in report.violations
-            if v.field_path == "sections.Acceptance Criteria"
+            v for v in report.violations if v.field_path == "sections.Acceptance Criteria"
         ]
-        assert "missing" in section_violations[0].actual.lower() or "not found" in section_violations[0].actual.lower() or "absent" in section_violations[0].actual.lower()
+        assert (
+            "missing" in section_violations[0].actual.lower()
+            or "not found" in section_violations[0].actual.lower()
+            or "absent" in section_violations[0].actual.lower()
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -885,8 +950,8 @@ class TestNavTableValidationIntegration:
         # The source has a nav table (albeit incomplete), so nav_table violation
         # depends on whether the nav_table validation finds it invalid
         # The key property we test: violations list has proper structure
-        for v in report.violations:
-            assert v.field_path is not None
+        for v in nav_violations:
+            assert v.field_path == "nav_table"
             assert v.severity in ("error", "warning")
 
 
@@ -992,10 +1057,8 @@ class TestCustomSchema:
         """Custom schema with a required field catches missing field."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[
-                FieldRule(key="CustomField", required=True),
-            ],
-            section_rules=[],
+            field_rules=(FieldRule(key="CustomField", required=True),),
+            section_rules=(),
             require_nav_table=False,
         )
         source = "# My Doc\n\n> **OtherField:** value\n"
@@ -1009,8 +1072,8 @@ class TestCustomSchema:
         """Custom schema with no rules always returns is_valid=True."""
         custom_schema = EntitySchema(
             entity_type="anything",
-            field_rules=[],
-            section_rules=[],
+            field_rules=(),
+            section_rules=(),
             require_nav_table=False,
         )
         doc = JerryDocument.parse("# Hello\n\nContent.\n")
@@ -1021,14 +1084,14 @@ class TestCustomSchema:
         """Custom schema FieldRule value_pattern: valid value passes."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[
+            field_rules=(
                 FieldRule(
                     key="Created",
                     required=True,
                     value_pattern=r"\d{4}-\d{2}-\d{2}",
                 ),
-            ],
-            section_rules=[],
+            ),
+            section_rules=(),
             require_nav_table=False,
         )
         source = "# Doc\n\n> **Created:** 2026-01-15\n"
@@ -1040,14 +1103,14 @@ class TestCustomSchema:
         """Custom schema FieldRule value_pattern: invalid value produces violation."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[
+            field_rules=(
                 FieldRule(
                     key="Created",
                     required=True,
                     value_pattern=r"\d{4}-\d{2}-\d{2}",
                 ),
-            ],
-            section_rules=[],
+            ),
+            section_rules=(),
             require_nav_table=False,
         )
         source = "# Doc\n\n> **Created:** not-a-date\n"
@@ -1061,8 +1124,8 @@ class TestCustomSchema:
         """Custom schema SectionRule: required section present -> valid."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[],
-            section_rules=[SectionRule(heading="MySection", required=True)],
+            field_rules=(),
+            section_rules=(SectionRule(heading="MySection", required=True),),
             require_nav_table=False,
         )
         source = "# Doc\n\n## MySection\n\nContent.\n"
@@ -1074,8 +1137,8 @@ class TestCustomSchema:
         """Custom schema SectionRule: required section absent -> violation."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[],
-            section_rules=[SectionRule(heading="MySection", required=True)],
+            field_rules=(),
+            section_rules=(SectionRule(heading="MySection", required=True),),
             require_nav_table=False,
         )
         source = "# Doc\n\n## OtherSection\n\nContent.\n"
@@ -1089,10 +1152,8 @@ class TestCustomSchema:
         """Optional FieldRule: missing optional field does NOT produce a violation."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[
-                FieldRule(key="OptionalField", required=False),
-            ],
-            section_rules=[],
+            field_rules=(FieldRule(key="OptionalField", required=False),),
+            section_rules=(),
             require_nav_table=False,
         )
         source = "# Doc\n\n> **OtherField:** value\n"
@@ -1106,14 +1167,14 @@ class TestCustomSchema:
         """Optional FieldRule present with invalid allowed value -> still a violation."""
         custom_schema = EntitySchema(
             entity_type="custom",
-            field_rules=[
+            field_rules=(
                 FieldRule(
                     key="Mode",
                     required=False,
-                    allowed_values=["fast", "slow"],
+                    allowed_values=("fast", "slow"),
                 ),
-            ],
-            section_rules=[],
+            ),
+            section_rules=(),
             require_nav_table=False,
         )
         source = "# Doc\n\n> **Mode:** ultra\n"
@@ -1178,7 +1239,8 @@ None.
         assert len(nav_violations) >= 1
         # At least one violation should mention missing entries
         missing_violations = [
-            v for v in nav_violations
+            v
+            for v in nav_violations
             if "missing" in v.expected.lower() or "missing" in v.actual.lower()
         ]
         assert len(missing_violations) >= 1

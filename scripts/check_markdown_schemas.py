@@ -141,7 +141,7 @@ def validate_file(file_path: str, schema_type: str) -> list[ValidationViolation]
     schema = get_entity_schema(schema_type)
     report = validate_document(doc, schema)
 
-    return report.violations
+    return list(report.violations)
 
 
 # ---------------------------------------------------------------------------
@@ -152,20 +152,26 @@ def validate_file(file_path: str, schema_type: str) -> list[ValidationViolation]
 def format_violation(file_path: str, violation: ValidationViolation) -> str:
     """Format a validation violation for IDE-friendly output.
 
-    Produces output in ``file:message`` format, which is recognized by
-    most editors and CI systems for error navigation.
+    Produces output in ``file:line:message`` format when a line number is
+    available, or ``file:message`` format otherwise.  Both formats are
+    recognized by most editors and CI systems for error navigation.
 
     Args:
         file_path: Path to the file containing the violation.
         violation: The validation violation to format.
 
     Returns:
-        Formatted string in ``file:message`` format.
+        Formatted string in ``file:line:message`` or ``file:message`` format.
 
     Examples:
-        >>> format_violation("ST-001.md", violation)
+        >>> format_violation("ST-001.md", violation_with_line)
+        "ST-001.md:3:Field 'Status' value 'bad' is not in allowed values: ..."
+        >>> format_violation("ST-001.md", violation_without_line)
         "ST-001.md:Required field 'Type' is missing from frontmatter."
     """
+    if violation.line_number is not None:
+        # Display as 1-based line number for human/IDE consumption
+        return f"{file_path}:{violation.line_number + 1}:{violation.message}"
     return f"{file_path}:{violation.message}"
 
 

@@ -21,10 +21,6 @@ Test Categories:
 
 from __future__ import annotations
 
-from typing import Callable
-
-import pytest
-
 from src.domain.markdown_ast.jerry_document import JerryDocument
 
 
@@ -83,11 +79,7 @@ class TestJerryDocumentParse:
 
     def test_parse_document_with_frontmatter_blockquote(self) -> None:
         """parse() correctly handles Jerry-style frontmatter blockquotes."""
-        source = (
-            "> **Type:** story\n"
-            "> **Status:** pending\n"
-            "> **Priority:** high\n"
-        )
+        source = "> **Type:** story\n> **Status:** pending\n> **Priority:** high\n"
         doc = JerryDocument.parse(source)
         blockquotes = doc.query("blockquote")
         assert len(blockquotes) == 1
@@ -337,6 +329,22 @@ class TestJerryDocumentProperties:
         assert "heading_open" in token_types
         assert "heading_close" in token_types
         assert "inline" in token_types
+
+    def test_tokens_returns_defensive_copy(self) -> None:
+        """tokens property returns a copy; mutating it does not affect the document."""
+        doc = JerryDocument.parse("# Hello\n\nText\n")
+        tokens_a = doc.tokens
+        tokens_b = doc.tokens
+        assert tokens_a is not tokens_b
+        assert len(tokens_a) == len(tokens_b)
+
+    def test_tokens_mutation_does_not_affect_document(self) -> None:
+        """Appending to tokens list does not change the document's internal state."""
+        doc = JerryDocument.parse("# Hello\n")
+        tokens = doc.tokens
+        original_len = len(tokens)
+        tokens.append(tokens[0])  # Mutate the returned copy
+        assert len(doc.tokens) == original_len
 
 
 class TestJerryDocumentRoundtrip:

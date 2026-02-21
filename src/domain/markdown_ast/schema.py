@@ -53,19 +53,18 @@ Exports:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from src.domain.markdown_ast.frontmatter import extract_frontmatter
 from src.domain.markdown_ast.jerry_document import JerryDocument
 from src.domain.markdown_ast.nav_table import validate_nav_table
-
 
 # ---------------------------------------------------------------------------
 # Schema definition dataclasses
 # ---------------------------------------------------------------------------
 
 
-@dataclass
+@dataclass(frozen=True)
 class FieldRule:
     """
     Rule for a single frontmatter field in a Jerry entity document.
@@ -82,17 +81,17 @@ class FieldRule:
         value_pattern: If set, the field value must match this regex pattern.
 
     Examples:
-        >>> FieldRule(key="Status", required=True, allowed_values=["pending", "in_progress"])
-        FieldRule(key='Status', required=True, allowed_values=['pending', 'in_progress'], value_pattern=None)
+        >>> FieldRule(key="Status", required=True, allowed_values=("pending", "in_progress"))
+        FieldRule(key='Status', required=True, allowed_values=('pending', 'in_progress'), value_pattern=None)
     """
 
     key: str
     required: bool = True
-    allowed_values: list[str] | None = None
+    allowed_values: tuple[str, ...] | None = None
     value_pattern: str | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class SectionRule:
     """
     Rule for a required ## heading section in a Jerry entity document.
@@ -111,7 +110,7 @@ class SectionRule:
     required: bool = True
 
 
-@dataclass
+@dataclass(frozen=True)
 class EntitySchema:
     """
     Schema definition for a Jerry worktracker entity type.
@@ -123,26 +122,26 @@ class EntitySchema:
 
     Attributes:
         entity_type: The entity type identifier (e.g., "epic", "story").
-        field_rules: List of FieldRule instances to check against frontmatter.
-        section_rules: List of SectionRule instances for required ## sections.
+        field_rules: Tuple of FieldRule instances to check against frontmatter.
+        section_rules: Tuple of SectionRule instances for required ## sections.
         require_nav_table: When True, the document must have a valid H-23
             navigation table.  Defaults to True.
 
     Examples:
         >>> EntitySchema(
         ...     entity_type="story",
-        ...     field_rules=[FieldRule(key="Type")],
-        ...     section_rules=[SectionRule(heading="Summary")],
+        ...     field_rules=(FieldRule(key="Type"),),
+        ...     section_rules=(SectionRule(heading="Summary"),),
         ... )
     """
 
     entity_type: str
-    field_rules: list[FieldRule]
-    section_rules: list[SectionRule]
+    field_rules: tuple[FieldRule, ...]
+    section_rules: tuple[SectionRule, ...]
     require_nav_table: bool = True
 
 
-@dataclass
+@dataclass(frozen=True)
 class ValidationViolation:
     """
     A single schema violation found during document validation.
@@ -171,16 +170,17 @@ class ValidationViolation:
     actual: str
     severity: str
     message: str
+    line_number: int | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ValidationReport:
     """
     Complete validation report produced by validating a document against a schema.
 
     Attributes:
         is_valid: True when all schema rules are satisfied (no error violations).
-        violations: List of ValidationViolation objects, one per detected issue.
+        violations: Tuple of ValidationViolation objects, one per detected issue.
         entity_type: The entity_type from the schema used for validation.
         field_count: Number of frontmatter fields found in the document.
         section_count: Number of ## headings found in the document.
@@ -193,7 +193,7 @@ class ValidationReport:
     """
 
     is_valid: bool
-    violations: list[ValidationViolation]
+    violations: tuple[ValidationViolation, ...]
     entity_type: str
     field_count: int
     section_count: int
@@ -254,7 +254,9 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
             # Optional field absent -> no violation; skip value checks
             continue
 
-        value = frontmatter.get(rule.key) or ""
+        fm_field = frontmatter.get_field(rule.key)
+        value = fm_field.value if fm_field else ""
+        field_line = fm_field.line_number if fm_field else None
 
         # Check allowed values
         if rule.allowed_values is not None and value not in rule.allowed_values:
@@ -269,6 +271,7 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
                         f"Field '{rule.key}' value '{value}' is not in allowed values: "
                         f"{allowed_str}."
                     ),
+                    line_number=field_line,
                 )
             )
 
@@ -284,6 +287,7 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
                         f"Field '{rule.key}' value '{value}' does not match "
                         f"required pattern '{rule.value_pattern}'."
                     ),
+                    line_number=field_line,
                 )
             )
 
@@ -327,9 +331,7 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
                         expected="navigation table present (H-23 required)",
                         actual="no nav table found",
                         severity="error",
-                        message=(
-                            "Document requires a navigation table (H-23) but none was found."
-                        ),
+                        message=("Document requires a navigation table (H-23) but none was found."),
                     )
                 )
             else:
@@ -343,15 +345,12 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
                             actual=f"missing entries: {missing_str}",
                             severity="error",
                             message=(
-                                f"Navigation table is missing entries for headings: "
-                                f"{missing_str}."
+                                f"Navigation table is missing entries for headings: {missing_str}."
                             ),
                         )
                     )
                 if nav_result.orphaned_entries:
-                    orphaned_str = ", ".join(
-                        e.section_name for e in nav_result.orphaned_entries
-                    )
+                    orphaned_str = ", ".join(e.section_name for e in nav_result.orphaned_entries)
                     violations.append(
                         ValidationViolation(
                             field_path="nav_table",
@@ -372,7 +371,7 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
 
     return ValidationReport(
         is_valid=is_valid,
-        violations=violations,
+        violations=tuple(violations),
         entity_type=schema.entity_type,
         field_count=field_count,
         section_count=section_count,
@@ -383,14 +382,14 @@ def validate_document(doc: JerryDocument, schema: EntitySchema) -> ValidationRep
 # Built-in schema registry
 # ---------------------------------------------------------------------------
 
-_STATUS_VALUES = ["pending", "in_progress", "completed"]
-_PRIORITY_VALUES = ["critical", "high", "medium", "low"]
-_IMPACT_VALUES = ["critical", "high", "medium", "low"]
+_STATUS_VALUES = ("pending", "in_progress", "completed")
+_PRIORITY_VALUES = ("critical", "high", "medium", "low")
+_IMPACT_VALUES = ("critical", "high", "medium", "low")
 
 EPIC_SCHEMA: EntitySchema = EntitySchema(
     entity_type="epic",
-    field_rules=[
-        FieldRule(key="Type", required=True, allowed_values=["epic"]),
+    field_rules=(
+        FieldRule(key="Type", required=True, allowed_values=("epic",)),
         FieldRule(key="Status", required=True, allowed_values=_STATUS_VALUES),
         FieldRule(key="Priority", required=True, allowed_values=_PRIORITY_VALUES),
         FieldRule(key="Impact", required=True, allowed_values=_IMPACT_VALUES),
@@ -400,19 +399,19 @@ EPIC_SCHEMA: EntitySchema = EntitySchema(
         FieldRule(key="Parent", required=False),
         FieldRule(key="Owner", required=False),
         FieldRule(key="Target Quarter", required=False),
-    ],
-    section_rules=[
+    ),
+    section_rules=(
         SectionRule(heading="Summary", required=True),
         SectionRule(heading="Children Features/Capabilities", required=True),
         SectionRule(heading="Progress Summary", required=True),
-    ],
+    ),
     require_nav_table=True,
 )
 
 FEATURE_SCHEMA: EntitySchema = EntitySchema(
     entity_type="feature",
-    field_rules=[
-        FieldRule(key="Type", required=True, allowed_values=["feature"]),
+    field_rules=(
+        FieldRule(key="Type", required=True, allowed_values=("feature",)),
         FieldRule(key="Status", required=True, allowed_values=_STATUS_VALUES),
         FieldRule(key="Priority", required=True, allowed_values=_PRIORITY_VALUES),
         FieldRule(key="Impact", required=True, allowed_values=_IMPACT_VALUES),
@@ -422,20 +421,20 @@ FEATURE_SCHEMA: EntitySchema = EntitySchema(
         FieldRule(key="Completed", required=False),
         FieldRule(key="Owner", required=False),
         FieldRule(key="Target Sprint", required=False),
-    ],
-    section_rules=[
+    ),
+    section_rules=(
         SectionRule(heading="Summary", required=True),
         SectionRule(heading="Acceptance Criteria", required=True),
         SectionRule(heading="Children Stories/Enablers", required=True),
         SectionRule(heading="Progress Summary", required=True),
-    ],
+    ),
     require_nav_table=True,
 )
 
 STORY_SCHEMA: EntitySchema = EntitySchema(
     entity_type="story",
-    field_rules=[
-        FieldRule(key="Type", required=True, allowed_values=["story"]),
+    field_rules=(
+        FieldRule(key="Type", required=True, allowed_values=("story",)),
         FieldRule(key="Status", required=True, allowed_values=_STATUS_VALUES),
         FieldRule(key="Priority", required=True, allowed_values=_PRIORITY_VALUES),
         FieldRule(key="Impact", required=True, allowed_values=_IMPACT_VALUES),
@@ -445,25 +444,25 @@ STORY_SCHEMA: EntitySchema = EntitySchema(
         FieldRule(key="Completed", required=False),
         FieldRule(key="Owner", required=False),
         FieldRule(key="Effort", required=False),
-    ],
-    section_rules=[
+    ),
+    section_rules=(
         SectionRule(heading="Summary", required=True),
         SectionRule(heading="Acceptance Criteria", required=True),
-    ],
+    ),
     require_nav_table=True,
 )
 
 ENABLER_SCHEMA: EntitySchema = EntitySchema(
     entity_type="enabler",
-    field_rules=[
-        FieldRule(key="Type", required=True, allowed_values=["enabler"]),
+    field_rules=(
+        FieldRule(key="Type", required=True, allowed_values=("enabler",)),
         FieldRule(key="Status", required=True, allowed_values=_STATUS_VALUES),
         FieldRule(key="Priority", required=True, allowed_values=_PRIORITY_VALUES),
         FieldRule(key="Impact", required=True, allowed_values=_IMPACT_VALUES),
         FieldRule(
             key="Enabler Type",
             required=True,
-            allowed_values=["infrastructure", "exploration", "architecture", "compliance"],
+            allowed_values=("infrastructure", "exploration", "architecture", "compliance"),
         ),
         FieldRule(key="Created", required=True),
         FieldRule(key="Parent", required=True),
@@ -471,43 +470,41 @@ ENABLER_SCHEMA: EntitySchema = EntitySchema(
         FieldRule(key="Completed", required=False),
         FieldRule(key="Owner", required=False),
         FieldRule(key="Effort", required=False),
-    ],
-    section_rules=[
+    ),
+    section_rules=(
         SectionRule(heading="Summary", required=True),
         SectionRule(heading="Acceptance Criteria", required=True),
         SectionRule(heading="Technical Approach", required=True),
-    ],
+    ),
     require_nav_table=True,
 )
 
 TASK_SCHEMA: EntitySchema = EntitySchema(
     entity_type="task",
-    field_rules=[
-        FieldRule(key="Type", required=True, allowed_values=["task"]),
+    field_rules=(
+        FieldRule(key="Type", required=True, allowed_values=("task",)),
         FieldRule(key="Status", required=True, allowed_values=_STATUS_VALUES),
         FieldRule(key="Priority", required=True, allowed_values=_PRIORITY_VALUES),
         FieldRule(key="Created", required=True),
         FieldRule(key="Parent", required=True),
         FieldRule(key="Owner", required=False),
         FieldRule(key="Remaining", required=False),
-    ],
-    section_rules=[
-        SectionRule(heading="Summary", required=True),
-    ],
+    ),
+    section_rules=(SectionRule(heading="Summary", required=True),),
     require_nav_table=False,
 )
 
 BUG_SCHEMA: EntitySchema = EntitySchema(
     entity_type="bug",
-    field_rules=[
-        FieldRule(key="Type", required=True, allowed_values=["bug"]),
+    field_rules=(
+        FieldRule(key="Type", required=True, allowed_values=("bug",)),
         FieldRule(key="Status", required=True, allowed_values=_STATUS_VALUES),
         FieldRule(key="Priority", required=True, allowed_values=_PRIORITY_VALUES),
         FieldRule(key="Impact", required=True, allowed_values=_IMPACT_VALUES),
         FieldRule(
             key="Severity",
             required=True,
-            allowed_values=["critical", "major", "minor", "trivial"],
+            allowed_values=("critical", "major", "minor", "trivial"),
         ),
         FieldRule(key="Created", required=True),
         FieldRule(key="Due", required=False),
@@ -516,12 +513,12 @@ BUG_SCHEMA: EntitySchema = EntitySchema(
         FieldRule(key="Owner", required=False),
         FieldRule(key="Found In", required=False),
         FieldRule(key="Fix Version", required=False),
-    ],
-    section_rules=[
+    ),
+    section_rules=(
         SectionRule(heading="Summary", required=True),
         SectionRule(heading="Steps to Reproduce", required=True),
         SectionRule(heading="Acceptance Criteria", required=True),
-    ],
+    ),
     require_nav_table=True,
 )
 
@@ -567,7 +564,5 @@ def get_entity_schema(entity_type: str) -> EntitySchema:
     schema = _SCHEMA_REGISTRY.get(entity_type)
     if schema is None:
         valid = ", ".join(sorted(_SCHEMA_REGISTRY.keys()))
-        raise ValueError(
-            f"Unknown entity type '{entity_type}'. Valid types: {valid}."
-        )
+        raise ValueError(f"Unknown entity type '{entity_type}'. Valid types: {valid}.")
     return schema

@@ -32,7 +32,6 @@ from src.domain.markdown_ast.nav_table import (
     validate_nav_table,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -159,6 +158,7 @@ Just a few lines.
 # Tests for heading_to_anchor()
 # ---------------------------------------------------------------------------
 
+
 class TestHeadingToAnchor:
     """Tests for the heading_to_anchor() conversion function."""
 
@@ -218,6 +218,7 @@ class TestHeadingToAnchor:
 # ---------------------------------------------------------------------------
 # Tests for extract_nav_table()
 # ---------------------------------------------------------------------------
+
 
 class TestExtractNavTable:
     """Tests for extract_nav_table() function."""
@@ -286,13 +287,13 @@ class TestExtractNavTable:
         assert any("Why this matters" in d for d in descs)
         assert any("How to implement" in d for d in descs)
 
-    def test_entry_line_numbers_are_positive(self) -> None:
-        """extract_nav_table() assigns positive line numbers to entries."""
+    def test_entry_line_numbers_are_non_negative(self) -> None:
+        """extract_nav_table() assigns non-negative (0-based) line numbers."""
         doc = JerryDocument.parse(VALID_JERRY_DOC)
         result = extract_nav_table(doc)
         assert result is not None
         for entry in result:
-            assert entry.line_number > 0
+            assert entry.line_number >= 0
 
     def test_entry_line_numbers_are_ordered(self) -> None:
         """extract_nav_table() assigns increasing line numbers in order."""
@@ -336,6 +337,7 @@ class TestExtractNavTable:
 # Tests for NavEntry dataclass
 # ---------------------------------------------------------------------------
 
+
 class TestNavEntry:
     """Tests for the NavEntry dataclass."""
 
@@ -367,6 +369,7 @@ class TestNavEntry:
 # ---------------------------------------------------------------------------
 # Tests for validate_nav_table()
 # ---------------------------------------------------------------------------
+
 
 class TestValidateNavTable:
     """Tests for validate_nav_table() function."""

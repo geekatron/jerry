@@ -415,6 +415,32 @@ class TestBlockquoteFrontmatterAccess:
         assert keys[1] == "Status"
         assert keys[-1] == "Effort"
 
+    def test_get_field_existing_returns_frontmatter_field(self) -> None:
+        """get_field() returns a FrontmatterField for an existing key."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        field = fm.get_field("Status")
+        assert field is not None
+        assert isinstance(field, FrontmatterField)
+        assert field.key == "Status"
+        assert field.value == "pending"
+        assert field.line_number >= 0
+
+    def test_get_field_missing_returns_none(self) -> None:
+        """get_field() returns None for a missing key."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        assert fm.get_field("NonExistentKey") is None
+
+    def test_get_field_has_position_info(self) -> None:
+        """get_field() returns a field with start/end position info."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        field = fm.get_field("Type")
+        assert field is not None
+        assert field.start >= 0
+        assert field.end > field.start
+
 
 # ---------------------------------------------------------------------------
 # BlockquoteFrontmatter.set() write-back tests
