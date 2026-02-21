@@ -67,14 +67,9 @@ class TestCoreFilesExist:
         assert path.exists(), f"Missing PLAN.md: {path}"
 
     def test_directory_structure_complete(self, proj_root: Path) -> None:
-        """Required directories should exist."""
-        # At least 3 of these should exist
-        expected_dirs = ["research", "synthesis", "analysis", "decisions", "reports", "design"]
-        existing_dirs = [d for d in expected_dirs if (proj_root / d).exists()]
-
-        assert len(existing_dirs) >= 3, (
-            f"Missing category directories. Found: {existing_dirs}, expected at least 3 of: {expected_dirs}"
-        )
+        """Required directories should exist per worktracker-directory-structure.md."""
+        work_dir = proj_root / "work"
+        assert work_dir.exists(), f"Missing required directory: work/ in {proj_root.name}"
 
 
 # =============================================================================

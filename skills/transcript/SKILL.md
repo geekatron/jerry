@@ -2,7 +2,7 @@
 name: transcript
 description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
 version: "2.5.0"
-allowed-tools: Read, Write, Glob, Task, Bash(*)
+allowed-tools: Read, Write, Glob, Task, Bash(*), mcp__memory-keeper__store, mcp__memory-keeper__retrieve
 argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]
 
 # CONTEXT INJECTION (implements REQ-CI-F-002)

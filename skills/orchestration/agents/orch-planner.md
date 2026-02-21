@@ -40,6 +40,9 @@ capabilities:
     - Glob
     - Grep
     - Bash
+    - mcp__memory-keeper__store
+    - mcp__memory-keeper__retrieve
+    - mcp__memory-keeper__search
   output_formats:
     - markdown
     - yaml
@@ -486,6 +489,30 @@ When sending context to next agent:
 3. **list_artifacts:** Register ORCHESTRATION_PLAN.md, ORCHESTRATION.yaml paths
 4. **set_timestamp:** Record completion timestamp
 </session_context_protocol>
+
+<memory_keeper_integration>
+## Memory-Keeper MCP Integration
+
+Use Memory-Keeper to persist orchestration planning context across sessions and phase boundaries.
+
+**Key Pattern:** `jerry/{project}/orchestration/{workflow-id}`
+
+### When to Use
+
+| Event | Action | Tool |
+|-------|--------|------|
+| Workflow plan created | Store plan summary + phase definitions | `mcp__memory-keeper__store` |
+| Resuming workflow | Retrieve prior plan context | `mcp__memory-keeper__retrieve` |
+| Cross-workflow reference | Search for related orchestrations | `mcp__memory-keeper__search` |
+
+### Store Example
+```
+mcp__memory-keeper__store(
+    key="jerry/PROJ-001/orchestration/feat028-mcp-20260220",
+    value="Workflow: FEAT-028 MCP Integration. 5 phases, 3 QGs. Phase 1: Rule file creation..."
+)
+```
+</memory_keeper_integration>
 
 </agent>
 
