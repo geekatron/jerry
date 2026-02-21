@@ -33,6 +33,7 @@ dependencies = [
     "webvtt-py>=0.5.1",
     "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
     "filelock>=3.20.3",
+    "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
 ]
 
 [project.optional-dependencies]

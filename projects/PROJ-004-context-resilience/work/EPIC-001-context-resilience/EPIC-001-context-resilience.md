@@ -73,7 +73,8 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 
 | ID | Title | Status | Priority | Timebox |
 |----|-------|--------|----------|---------|
-| SPIKE-001 | Research Context Measurement, Detection Thresholds & Resumption Protocols | pending | high | 8 hours |
+| SPIKE-001 | Research Context Measurement, Detection Thresholds & Resumption Protocols | done | high | 8 hours |
+| SPIKE-002 | Jerry CLI Integration Architecture for Context Resilience | in_progress | high | 4 hours |
 
 ### Feature Links
 
@@ -82,6 +83,7 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 ### Spike Links
 
 - [SPIKE-001: Research Context Measurement, Detection Thresholds & Resumption Protocols](./FEAT-001-context-detection/SPIKE-001-context-research.md)
+- [SPIKE-002: Jerry CLI Integration Architecture for Context Resilience](./FEAT-001-context-detection/SPIKE-002-cli-integration.md)
 
 ---
 

@@ -76,6 +76,7 @@ class CLIAdapter:
         projects_dir: str | None = None,
         session_handlers: dict[str, Any] | None = None,
         command_dispatcher: ICommandDispatcher | None = None,
+        hooks_handlers: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the CLI adapter.
 
@@ -85,6 +86,8 @@ class CLIAdapter:
             session_handlers: Optional dict of session command handlers
                 Keys: "create", "end", "abandon"
             command_dispatcher: Optional command dispatcher for work item commands
+            hooks_handlers: Optional dict of hook event handlers
+                Keys: "prompt-submit", "session-start", "pre-compact", "pre-tool-use"
 
         Raises:
             ValueError: If dispatcher is None
@@ -95,6 +98,7 @@ class CLIAdapter:
         self._dispatcher = dispatcher
         self._command_dispatcher = command_dispatcher
         self._session_handlers = session_handlers
+        self._hooks_handlers = hooks_handlers
 
         # Use bootstrap helper if not provided
         if projects_dir is None:
@@ -1473,3 +1477,31 @@ class CLIAdapter:
             else:
                 print(str(e))
             return 1
+
+    # =========================================================================
+    # Hooks Namespace Commands (EN-006: Context monitoring hook events)
+    # =========================================================================
+
+    def cmd_hooks(self, command: str, stdin_json: str) -> int:
+        """Route hooks namespace commands to the appropriate handler.
+
+        Args:
+            command: The hooks subcommand (prompt-submit, session-start, etc.)
+            stdin_json: The JSON payload from the Claude Code hook.
+
+        Returns:
+            Exit code (0 for success, 1 for error)
+
+        References:
+            - EN-006: jerry hooks CLI Command Namespace
+        """
+        if self._hooks_handlers is None:
+            print(json.dumps({"error": "Hooks handlers not configured"}))
+            return 1
+
+        handler = self._hooks_handlers.get(command)
+        if handler is None:
+            print(json.dumps({"error": f"Unknown hooks command: {command}"}))
+            return 1
+
+        return handler.handle(stdin_json)

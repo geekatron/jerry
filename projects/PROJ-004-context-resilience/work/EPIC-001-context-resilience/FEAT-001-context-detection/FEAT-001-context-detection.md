@@ -112,13 +112,48 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | pending | high | 8h |
+| SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | done | high | 8h |
+| SPIKE-002 | Spike | Jerry CLI Integration Architecture for Context Resilience | done | high | 6h |
+| DISC-001 | Discovery | Hook-CLI Architecture Violations and Enforcement Tech Debt | documented | critical | -- |
+| DEC-001 | Decision | CLI-First Hook Architecture & Context Monitoring Bounded Context | accepted | critical | -- |
 
-> Additional Stories/Enablers/Tasks to be defined after SPIKE-001 findings.
+> **Architecture decided. DEC-001 accepted.** Both spikes complete. ADR-SPIKE002-002 defines bounded context `src/context_monitoring/` with CLI-first hooks. Implementation work items created as proper worktracker entities below.
+
+#### Implementation Work Items
+
+| ID | CWI | Type | Title | Status | Priority | Effort |
+|----|-----|------|-------|--------|----------|--------|
+| EN-001 | CWI-00 | Enabler | FileSystemSessionRepository | pending | critical | 3-4h |
+| EN-002 | CWI-01 | Enabler | ConfigThresholdAdapter + IThresholdConfiguration Port | pending | high | 1h |
+| EN-003 | CWI-02 | Enabler | Context Monitoring Bounded Context Foundation | pending | critical | 4-6h |
+| EN-004 | CWI-03 | Enabler | ContextFillEstimator + ResumptionContextGenerator Services | pending | critical | 3-5h |
+| ST-001 | CWI-04 | Story | Enhanced Resumption Schema + Update Protocol | pending | high | 2-3h |
+| ST-002 | CWI-05 | Story | AE-006 Graduated Sub-Rules | pending | high | 1h |
+| EN-005 | CWI-07 | Enabler | PreToolUse Staleness Validation | pending | medium | 2-3h |
+| SPIKE-003 | CWI-08 | Spike | Validation Spikes (OQ-9 + Method C) | pending | high | 3h |
+| ST-003 | CWI-09 | Story | Threshold Validation + Calibration Documentation | pending | medium | 4h |
+| EN-006 | CWI-10 | Enabler | `jerry hooks` CLI Namespace Registration | pending | high | 1-1.5h |
+| EN-007 | CWI-11 | Enabler | Hook Wrapper Scripts + hooks.json Registration | pending | high | 1-2h |
+
+> CWI-06 superseded (merged into EN-004). Total: 26-35.5 hours estimated effort.
 
 ### Work Item Links
 
 - [SPIKE-001: Research Context Measurement, Detection Thresholds & Resumption Protocols](./SPIKE-001-context-research.md)
+- [SPIKE-002: Jerry CLI Integration Architecture for Context Resilience](./SPIKE-002-cli-integration.md)
+- [DISC-001: Hook-CLI Architecture Violations and Enforcement Tech Debt](./DISC-001-architecture-violations.md)
+- [DEC-001: CLI-First Hook Architecture & Context Monitoring Bounded Context](./DEC-001-cli-first-architecture.md)
+- [EN-001: FileSystemSessionRepository](./EN-001-filesystem-session-repository.md)
+- [EN-002: ConfigThresholdAdapter](./EN-002-config-threshold-adapter.md)
+- [EN-003: Bounded Context Foundation](./EN-003-bounded-context-foundation.md)
+- [EN-004: ContextFillEstimator + ResumptionContextGenerator](./EN-004-context-fill-estimator.md)
+- [ST-001: Enhanced Resumption Schema](./ST-001-resumption-schema.md)
+- [ST-002: AE-006 Graduated Sub-Rules](./ST-002-ae006-graduated-subrules.md)
+- [EN-005: PreToolUse Staleness Validation](./EN-005-pre-tool-use-staleness.md)
+- [SPIKE-003: Validation Spikes (OQ-9 + Method C)](./SPIKE-003-validation-spikes.md)
+- [ST-003: Threshold Validation + Calibration](./ST-003-threshold-validation.md)
+- [EN-006: jerry hooks CLI Namespace](./EN-006-jerry-hooks-cli.md)
+- [EN-007: Hook Wrapper Scripts](./EN-007-hook-wrapper-scripts.md)
 
 ---
 
@@ -130,11 +165,13 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 +------------------------------------------------------------------+
 |                   FEATURE PROGRESS TRACKER                        |
 +------------------------------------------------------------------+
-| Spikes:    [....................] 0% (0/1 completed)              |
-| Stories:   Pending SPIKE-001 findings                             |
-| Enablers:  Pending SPIKE-001 findings                             |
+| Spikes:    [####################] 100% (2/2 completed)           |
+| Discoveries: [####################] 100% (1/1 documented)       |
+| Decisions: [####################] 100% (1/1 accepted)            |
+| Enablers:  [....................] 0% (0/7 completed)             |
+| Stories:   [....................] 0% (0/3 completed)             |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Overall:   [#####...............] 25% (design complete)          |
 +------------------------------------------------------------------+
 ```
 
@@ -142,11 +179,11 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 | Metric | Value |
 |--------|-------|
-| **Total Spikes** | 1 |
-| **Completed Spikes** | 0 |
-| **Total Stories** | TBD (after SPIKE-001) |
-| **Total Enablers** | TBD (after SPIKE-001) |
-| **Completion %** | 0% |
+| **Completed Spikes** | 2/2 (SPIKE-001, SPIKE-002) |
+| **Discoveries** | 1 documented (DISC-001) |
+| **Decisions** | 1/1 accepted (DEC-001 accepted) |
+| **Implementation Items** | 0/11 worktracker entities created, none started |
+| **Completion %** | 25% (design complete, implementation not started) |
 
 ---
 
@@ -160,7 +197,7 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
-| Depends On | SPIKE-001 | Design depends on research findings |
+| Depends On | SPIKE-001, SPIKE-002 | Design depends on research findings (complete) |
 | Informs | /orchestration skill | Resumption protocol extends orchestration skill |
 | Informs | quality-enforcement.md (AE-006) | Aligns with existing token exhaustion escalation rule |
 
@@ -171,3 +208,8 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Feature created. Captures detection, checkpoint, and resumption requirements. Blocked on SPIKE-001 research. |
+| 2026-02-19 | Claude | pending | DISC-001 created: Hook-CLI architecture violations found during SPIKE-002 ADR review. 3 of 4 hooks bypass CLI. Enforcement folder is tech debt. |
+| 2026-02-19 | Claude | pending | DEC-001 created: 4 architectural decisions -- CLI-first hooks, proper bounded context, jerry hooks commands, enforcement debt tracked separately. Supersedes ADR-SPIKE002-001 approach. Pending user acceptance. |
+| 2026-02-19 | Claude | pending | SPIKE-002 Phase 5 complete. ADR-SPIKE002-002 produced (QG-2 PASS at 0.92). 12 revised work items (CWI-00 through CWI-11) ready for implementation. Research phase complete; implementation blocked on DEC-001 acceptance. |
+| 2026-02-19 | User | pending | DEC-001 accepted: 4 architectural decisions (D-001 through D-004) approved. CLI-first hooks, proper bounded context, jerry hooks namespace, enforcement debt tracked separately. |
+| 2026-02-19 | Claude | pending | 11 worktracker entity files created: EN-001 through EN-007 (enablers), ST-001 through ST-003 (stories), SPIKE-003 (spike). All with BDD Gherkin acceptance criteria for red/green/refactor implementation. CWI-to-entity mapping complete. |

@@ -1,0 +1,337 @@
+schema_version: "2.0.0"
+
+workflow:
+  id: "feat001-impl-20260220-001"
+  name: "FEAT-001 Context Exhaustion Detection Implementation"
+  project_id: "PROJ-004"
+  version: "1.0"
+  created_at: "2026-02-20T00:00:00Z"
+  updated_at: "2026-02-20T00:00:00Z"
+  status: "COMPLETE"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  feature_entity: "projects/PROJ-004-context-resilience/work/EPIC-001-context-resilience/FEAT-001-context-detection/FEAT-001-context-detection.md"
+  predecessor: "spike002-cli-integration-20260219-001"
+
+  criticality: "C3"
+  criticality_rationale: "Implements ADR-SPIKE002-002. Creates new bounded context (src/context_monitoring/). >10 files across domain/application/infrastructure layers. AE-003 applies."
+
+  patterns:
+    - SEQUENTIAL
+    - FAN_OUT
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+
+pipelines:
+  implementation:
+    short_alias: "impl"
+    skill_source: "problem-solving"
+    current_phase: 6
+
+    phases:
+      - id: 1
+        name: "Foundation (EN-001, EN-002, ST-001)"
+        status: "COMPLETE"
+        execution_mode: "FAN_OUT"
+        agents:
+          - id: "en-001-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-001"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-1-foundation/en-001-impl/"
+            summary: "EventSourcedSessionRepository created. 3358 tests pass. bootstrap.py wired."
+          - id: "en-002-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-002"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-1-foundation/en-002-impl/"
+            summary: "IThresholdConfiguration port + ConfigThresholdAdapter. 31 tests. bootstrap.py wired (DEF-003 fixed)."
+          - id: "st-001-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "ST-001"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-1-foundation/st-001-impl/"
+            summary: "Resumption schema v2.0 with 7 sub-sections. JSON schema + 37 tests. Template aligned (DEF-001/002/004 fixed)."
+
+      - id: 2
+        name: "Bounded Context + Staleness (EN-003, EN-005)"
+        status: "COMPLETE"
+        execution_mode: "FAN_OUT"
+        agents:
+          - id: "en-003-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-003"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-2-bounded-ctx/en-003-impl/"
+            summary: "Full bounded context: 4 value objects, 3 events, ICheckpointRepository, FilesystemCheckpointRepository, CheckpointService. 60 tests. bootstrap.py wired."
+          - id: "en-005-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-005"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-2-bounded-ctx/en-005-impl/"
+            summary: "StalenessDetector + StalenessResult. Fail-open behavior. 24 tests pass."
+
+      - id: 3
+        name: "Application Services (EN-004)"
+        status: "COMPLETE"
+        execution_mode: "SEQUENTIAL"
+        agents:
+          - id: "en-004-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-004"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-3-services/en-004-impl/"
+            summary: "ContextFillEstimator + ResumptionContextGenerator + ITranscriptReader + JsonlTranscriptReader. 53 new tests. bootstrap.py wired. Agent clobbered EN-001/EN-003 wiring (manually restored)."
+
+      - id: 4
+        name: "CLI + Rules + Validation (EN-006, ST-002, SPIKE-003)"
+        status: "COMPLETE"
+        execution_mode: "FAN_OUT"
+        agents:
+          - id: "en-006-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-006"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-4-cli-rules/en-006-impl/"
+            summary: "jerry hooks CLI: 4 handlers (prompt-submit, session-start, pre-compact, pre-tool-use). Parser + adapter + main.py routing. 41 tests. bootstrap.py wired (integrity verified)."
+          - id: "st-002-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "ST-002"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-4-cli-rules/st-002-impl/"
+            summary: "AE-006 replaced with 5 graduated sub-rules (AE-006a-e). L2-REINJECT rank=9. 17 tests. Agent changes lost during FAN_OUT, manually re-applied."
+          - id: "spike-003-exec"
+            role: "ps-researcher"
+            status: "COMPLETE"
+            entity: "SPIKE-003"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-4-cli-rules/spike-003-exec/"
+            summary: "CRITICAL BLOCKER: JsonlTranscriptReader reads wrong field path (top-level vs message.usage) and wrong semantics (input_tokens alone vs three-field sum). Fixed: redesigned reader to scan backward for message.usage entries and sum input_tokens + cache_creation + cache_read. 14 tests with real Claude Code format."
+
+      - id: 5
+        name: "Hook Integration (EN-007)"
+        status: "COMPLETE"
+        execution_mode: "SEQUENTIAL"
+        agents:
+          - id: "en-007-impl"
+            role: "implementer"
+            status: "COMPLETE"
+            entity: "EN-007"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-5-integration/en-007-impl/"
+            summary: "Hook wrapper scripts: session-start uses SessionQualityContextGenerator (L1 XML), prompt-submit uses PromptReinforcementEngine (L2 text). Resolved merge conflicts in main.py/parser.py. Updated 6 test files (e2e, architecture, contract, schema compliance). 224 hook tests pass. 3647 total pass."
+
+      - id: 6
+        name: "System Validation (ST-003)"
+        status: "COMPLETE"
+        execution_mode: "SEQUENTIAL"
+        agents:
+          - id: "st-003-exec"
+            role: "ps-validator"
+            status: "COMPLETE"
+            entity: "ST-003"
+            artifact: "orchestration/feat001-impl-20260220-001/impl/phase-6-validation/st-003-exec/"
+            summary: "FEAT-001 validation: 20 PASS, 5 PARTIAL, 1 DEFERRED. Calibration protocol created at docs/knowledge/context-resilience/calibration-protocol.md. 3652 tests pass."
+
+quality_gates:
+  qg-1:
+    name: "Foundation Review"
+    after_phase: 1
+    before_phase: 2
+    status: "PASSED"
+    threshold: 0.92
+    strategies: ["S-003", "S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+    criticality: "C3"
+    note: "Escalated to C3 per AE-002 (touches .context/rules/quality-enforcement.md)"
+    final_score: 0.927
+    iterations:
+      - iteration: 1
+        score: 0.883
+        result: "REJECTED"
+        defects_found: 6
+        defects_required: ["DEF-001", "DEF-002", "DEF-003", "DEF-004", "DEF-005", "DEF-006"]
+      - iteration: 2
+        score: 0.927
+        result: "PASSED"
+        per_deliverable:
+          en-001: 0.906
+          en-002: 0.925
+          st-001: 0.928
+
+  qg-2:
+    name: "Bounded Context + Services Review"
+    after_phase: 3
+    before_phase: 4
+    status: "PASSED"
+    threshold: 0.92
+    strategies: ["S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+    criticality: "C3"
+    note: "C3 per AE-003 (implements ADR). 6 strategies required."
+    final_score: 0.922
+    iterations:
+      - iteration: 1
+        score: 0.891
+        result: "REVISE"
+        defects_found: 8
+        defects_required: ["DEF-001", "DEF-002"]
+        per_deliverable:
+          en-003: 0.905
+          en-004: 0.874
+          en-005: 0.895
+      - iteration: 2
+        score: 0.922
+        result: "PASSED"
+        per_deliverable:
+          en-003: 0.915
+          en-004: 0.924
+          en-005: 0.928
+
+  qg-3:
+    name: "Integration Review"
+    after_phase: 5
+    before_phase: 6
+    status: "PASSED"
+    threshold: 0.92
+    strategies: ["S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+    criticality: "C3"
+    note: "C3 per AE-003. Covers Phase 4 (EN-006, ST-002, SPIKE-003) + Phase 5 (EN-007). 5 REQUIRED defects fixed in iteration 1→2."
+    final_score: 0.922
+    iterations:
+      - iteration: 1
+        score: 0.855
+        result: "REVISE"
+        defects_found: 12
+        defects_required: ["D-001", "D-002", "D-003", "D-004", "D-005"]
+        defects_recommended: ["D-006", "D-007", "D-008", "D-009", "D-010", "D-011", "D-012"]
+      - iteration: 2
+        score: 0.922
+        result: "PASSED"
+        defects_resolved: ["D-001", "D-002", "D-003", "D-004", "D-005", "D-006", "D-009", "D-010"]
+        defects_carried: ["D-007", "D-008", "D-010-ADR", "D-012"]
+
+execution_queue:
+  current_group: 9
+  groups:
+    - id: 1
+      execution_mode: "FAN_OUT"
+      agents: ["en-001-impl", "en-002-impl", "st-001-impl"]
+    - id: 2
+      execution_mode: "SEQUENTIAL"
+      agents: ["qg-1-scorer"]
+    - id: 3
+      execution_mode: "FAN_OUT"
+      agents: ["en-003-impl", "en-005-impl"]
+    - id: 4
+      execution_mode: "SEQUENTIAL"
+      agents: ["en-004-impl"]
+    - id: 5
+      execution_mode: "SEQUENTIAL"
+      agents: ["qg-2-scorer"]
+    - id: 6
+      execution_mode: "FAN_OUT"
+      agents: ["en-006-impl", "st-002-impl", "spike-003-exec"]
+    - id: 7
+      execution_mode: "SEQUENTIAL"
+      agents: ["en-007-impl"]
+    - id: 8
+      execution_mode: "SEQUENTIAL"
+      agents: ["qg-3-scorer"]
+    - id: 9
+      execution_mode: "SEQUENTIAL"
+      agents: ["st-003-exec"]
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+metrics:
+  phases_complete: 6
+  phases_total: 6
+  agents_executed: 11
+  agents_total: 11
+  quality_gates_passed: 3
+  quality_gates_total: 3
+  progress_percent: 100
+
+resumption:
+  # v2.0 Enhanced Resumption Schema (ST-001)
+  recovery_state:
+    last_checkpoint: null
+    current_phase: 5
+    current_phase_name: "System Validation (COMPLETE)"
+    workflow_status: "COMPLETE"
+    current_activity: "workflow-complete"
+    next_step: "Workflow COMPLETE. All 6 phases done, all 3 QGs passed (0.927, 0.922, 0.922). 20 PASS, 5 PARTIAL, 1 DEFERRED ACs. Calibration protocol at docs/knowledge/context-resilience/calibration-protocol.md. 3652 tests pass. Ready for commit."
+    context_fill_at_update: null
+    updated_at: "2026-02-20T21:00:00Z"
+    cross_session_portable: true
+    ephemeral_references: false
+
+  files_to_read:
+    - path: "projects/PROJ-004-context-resilience/orchestration/feat001-impl-20260220-001/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state (this file)"
+    - path: "projects/PROJ-004-context-resilience/orchestration/feat001-impl-20260220-001/ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Strategic context and phase definitions"
+    - path: "projects/PROJ-004-context-resilience/work/EPIC-001-context-resilience/FEAT-001-context-detection/FEAT-001-context-detection.md"
+      priority: 3
+      purpose: "Feature entity with acceptance criteria"
+
+  quality_trajectory:
+    gates_completed: ["qg-1", "qg-2", "qg-3"]
+    gates_remaining: []
+    current_gate: null
+    current_gate_iteration: null
+    score_history:
+      qg-1: [0.883, 0.927]
+      qg-2: [0.891, 0.922]
+      qg-3: [0.855, 0.922]
+    lowest_dimension: "traceability"
+    total_iterations_used: 6
+
+  defect_summary:
+    total_defects_found: 22
+    total_defects_resolved: 18
+    unresolved_defects: ["D-007-qg3", "D-008-qg3", "D-010-ADR-qg3", "D-012-qg3"]
+    recurring_patterns:
+      - pattern: "Agent-reported file changes not actually applied (DEF-003, DEF-005)"
+        gates_affected: ["qg-1"]
+        resolution: "Manually verified and applied missing changes"
+      - pattern: "Agent clobbers prior agents' bootstrap.py wiring (EN-004 overwrote EN-001/EN-003)"
+        gates_affected: ["pre-qg-2"]
+        resolution: "Manually restored EventSourcedSessionRepository, CheckpointService, FilesystemCheckpointRepository wiring"
+      - pattern: "FAN_OUT agent file changes lost (ST-002 quality-enforcement.md edits vanished)"
+        gates_affected: ["phase-4"]
+        resolution: "Manually re-applied AE-006a-e graduated sub-rules and L2-REINJECT marker"
+    last_gate_primary_defect: "QG-3 D-005: AE-006c/d checkpoint actions not implemented in PromptSubmitHandler (RESOLVED)"
+
+  decision_log:
+    - decision: "Fix SPIKE-003 blocker before Phase 5"
+      rationale: "JsonlTranscriptReader produces wrong results in production — all downstream services depend on accurate token counts"
+      timestamp: "2026-02-20T18:00:00Z"
+    - decision: "QG-3 iteration 1 REVISE: fix 5 REQUIRED + 3 RECOMMENDED defects"
+      rationale: "D-001 (type safety), D-002 (H-09 composition root), D-003 (return type), D-004 (MultiEdit), D-005 (AE-006c/d checkpoint), D-006 (L2-REINJECT text), D-009 (stderr propagation), D-010 (dual hook docs)"
+      timestamp: "2026-02-20T22:00:00Z"
+
+  agent_summaries:
+    en-001-impl: "DONE. EventSourcedSessionRepository created. 3358 tests pass. bootstrap.py wired."
+    en-002-impl: "DONE. IThresholdConfiguration port + ConfigThresholdAdapter. 31 tests pass."
+    st-001-impl: "DONE. Resumption schema v2.0 with 7 sub-sections. JSON schema + 36 tests pass."
+    en-003-impl: "DONE. Full bounded context: 4 value objects (ThresholdTier, FillEstimate, CheckpointData, ContextState), 3 domain events, ICheckpointRepository port, FilesystemCheckpointRepository, CheckpointService. 60 tests. bootstrap.py wired."
+    en-005-impl: "DONE. StalenessDetector service + StalenessResult VO. Fail-open behavior. 24 tests pass."
+    en-004-impl: "DONE. ContextFillEstimator + ResumptionContextGenerator + ITranscriptReader + JsonlTranscriptReader. 53 tests. bootstrap.py wired (EN-001/EN-003 wiring clobbered, manually restored)."
+    en-006-impl: "DONE. jerry hooks CLI: 4 handlers (prompt-submit, session-start, pre-compact, pre-tool-use). Parser/adapter/main.py routing. 41 tests. bootstrap.py wired with 6 new factory functions."
+    st-002-impl: "DONE. AE-006 -> AE-006a-e graduated sub-rules. L2-REINJECT rank=9. 17 tests. Changes lost during FAN_OUT, manually re-applied."
+    spike-003-exec: "DONE. BLOCKER found: JsonlTranscriptReader wrong field path (top-level vs message.usage.input_tokens) and wrong semantics (marginal input_tokens vs three-field cumulative sum). Fixed in-session. Method C (status line) deferred."
+    en-007-impl: "DONE. Hook wrapper scripts integrated. Fixed session-start to use SessionQualityContextGenerator (L1 XML) instead of PromptReinforcementEngine (L2 text). Resolved 2 merge conflicts (main.py, parser.py). Updated 6 test files for new hook CLI architecture. 224 hook tests pass. 3647 total pass, 10 pre-existing failures."
+    st-003-exec: "DONE. FEAT-001 validation: 20 PASS, 5 PARTIAL, 1 DEFERRED. Calibration protocol created. Threshold defaults validated against SPIKE-001 empirical data. PROJ-004 C3 workflow (6 compactions, 7 sessions) provided non-PROJ-001 calibration evidence. 3652 tests pass."
+
+  compaction_events:
+    count: 6
+    events:
+      - session: "feat001-impl-20260220"
+        compactions: 6
+        note: "Multiple compactions during Phases 1-5 + QG-3. Merge conflicts in main.py/parser.py discovered after compaction. Agent clobbering of bootstrap.py occurred during Phase 3-4 FAN_OUT."

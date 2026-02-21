@@ -298,14 +298,56 @@ next_actions:
 # RESUMPTION CONTEXT
 # =============================================================================
 resumption:
-  last_checkpoint: null
-  current_state: "Workflow not started"
-  next_step: "Execute Phase 1 agents"
+  # Sub-section 1: Recovery State (structured replacement for prose current_state)
+  recovery_state:
+    last_checkpoint: null
+    current_phase: 0
+    current_phase_name: "Not started"
+    workflow_status: "ACTIVE"
+    current_activity: "idle"
+    next_step: "Execute Phase 1 agents"
+    context_fill_at_update: null
+    updated_at: "{UPDATED_TIMESTAMP}"
+    cross_session_portable: true
+    ephemeral_references: false
 
+  # Sub-section 2: Files to Read (structured with priority and purpose)
   files_to_read:
-    - "ORCHESTRATION_PLAN.md"           # Strategic context
-    - "ORCHESTRATION_WORKTRACKER.md"    # Tactical documentation
-    - "ORCHESTRATION.yaml"              # This file - machine-readable state
+    - path: "ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state. Read resumption section first."
+    - path: "ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Strategic context. Agent definitions, phase descriptions."
+    - path: "ORCHESTRATION_WORKTRACKER.md"
+      priority: 3
+      purpose: "Tactical documentation. Feature status, blockers."
 
-  cross_session_portable: true
-  ephemeral_references: false
+  # Sub-section 3: Quality Trajectory
+  quality_trajectory:
+    gates_completed: []
+    gates_remaining: []
+    current_gate: null
+    current_gate_iteration: null
+    score_history: {}
+    lowest_dimension: null
+    total_iterations_used: 0
+
+  # Sub-section 4: Defect Summary
+  defect_summary:
+    total_defects_found: 0
+    total_defects_resolved: 0
+    unresolved_defects: []
+    recurring_patterns: []
+    last_gate_primary_defect: null
+
+  # Sub-section 5: Decision Log
+  decision_log: []
+
+  # Sub-section 6: Agent Summaries
+  agent_summaries: {}
+
+  # Sub-section 7: Compaction Events
+  compaction_events:
+    count: 0
+    events: []

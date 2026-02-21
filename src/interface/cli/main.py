@@ -41,6 +41,7 @@ from typing import TYPE_CHECKING, Any
 
 from src.bootstrap import (
     create_command_dispatcher,
+    create_hooks_handlers,
     create_query_dispatcher,
     create_session_command_handlers,
     get_projects_directory,
@@ -70,11 +71,13 @@ def create_cli_adapter() -> CLIAdapter:
     command_dispatcher = create_command_dispatcher()
     projects_dir = get_projects_directory()
     session_handlers = create_session_command_handlers()
+    hooks_handlers = create_hooks_handlers()
     return CLIAdapter(
         dispatcher=query_dispatcher,
         projects_dir=projects_dir,
         session_handlers=session_handlers,
         command_dispatcher=command_dispatcher,
+        hooks_handlers=hooks_handlers,
     )
 
 
@@ -112,6 +115,8 @@ def main() -> int:
         return _handle_config(adapter, args, json_output)
     elif args.namespace == "transcript":
         return _handle_transcript(adapter, args, json_output)
+    elif args.namespace == "hooks":
+        return _handle_hooks(adapter, args)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -363,6 +368,34 @@ def _handle_why() -> int:
         "That's why."
     )
     return 0
+
+
+def _handle_hooks(adapter: CLIAdapter, args: Any) -> int:
+    """Route hooks namespace commands.
+
+    Reads stdin JSON and delegates to the adapter's hooks handler.
+
+    Args:
+        adapter: CLI adapter instance
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+
+    References:
+        - EN-006: jerry hooks CLI Command Namespace
+    """
+    hooks_command = getattr(args, "hooks_command", None)
+    if hooks_command is None:
+        print("Error: No hooks command specified. Use 'jerry hooks --help'")
+        return 1
+
+    # Read hook input from stdin
+    stdin_json = ""
+    if not sys.stdin.isatty():
+        stdin_json = sys.stdin.read()
+
+    return adapter.cmd_hooks(hooks_command, stdin_json)
 
 
 if __name__ == "__main__":
