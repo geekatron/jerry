@@ -1,14 +1,14 @@
 # FEAT-001: AST Strategy Evaluation & Library Selection
 
 > **Type:** feature
-> **Status:** in-progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EPIC-001
-> **Owner:** --
+> **Owner:** Claude
 > **Target Sprint:** --
 
 ---
@@ -21,7 +21,7 @@
 | [Benefit Hypothesis](#benefit-hypothesis) | Expected benefits |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [MVP Definition](#mvp-definition) | Minimum viable scope |
-| [Children](#children) | Full work item inventory |
+| [Children Stories/Enablers](#children-storiesenablers) | Full work item inventory |
 | [Progress Summary](#progress-summary) | Overall feature progress |
 | [Related Items](#related-items) | Dependencies |
 | [History](#history) | Status changes |
@@ -97,7 +97,7 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 ---
 
-## Children
+## Children Stories/Enablers
 
 ### Spike Inventory
 
@@ -116,16 +116,16 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 | ID | Title | Status | Priority | Effort | Phase | Blocked By |
 |----|-------|--------|----------|--------|-------|------------|
-| ST-001 | Implement JerryDocument facade | pending | high | 5 | 1 | EN-001 |
-| ST-002 | Implement blockquote frontmatter extension | pending | high | 5 | 1 | EN-001, ST-001 |
-| ST-003 | Implement L2-REINJECT parser | pending | high | 3 | 1 | EN-001, ST-001 |
-| ST-004 | Add `jerry ast` CLI commands | pending | medium | 3 | 1 | ST-001 |
-| ST-005 | Create `/ast` Claude skill | pending | medium | 3 | 2 | ST-001, ST-002 |
-| ST-006 | Implement schema validation engine | pending | medium | 5 | 2-3 | ST-001, ST-002 |
-| ST-007 | Migrate /worktracker agents to AST | pending | medium | 3 | 2 | ST-005, ST-006 |
-| ST-008 | Implement navigation table helpers | pending | low | 3 | 3 | ST-001 |
-| ST-009 | Add pre-commit validation hook | pending | low | 2 | 3 | ST-004, ST-006, ST-008 |
-| ST-010 | Migrate remaining skills | pending | low | 5 | 4 | ST-007, ST-005 |
+| ST-001 | Implement JerryDocument facade | completed | high | 5 | 1 | EN-001 |
+| ST-002 | Implement blockquote frontmatter extension | completed | high | 5 | 1 | EN-001, ST-001 |
+| ST-003 | Implement L2-REINJECT parser | completed | high | 3 | 1 | EN-001, ST-001 |
+| ST-004 | Add `jerry ast` CLI commands | completed | medium | 3 | 1 | ST-001 |
+| ST-005 | Create `/ast` Claude skill | completed | medium | 3 | 2 | ST-001, ST-002 |
+| ST-006 | Implement schema validation engine | completed | medium | 5 | 2-3 | ST-001, ST-002 |
+| ST-007 | Migrate /worktracker agents to AST | completed | medium | 3 | 2 | ST-005, ST-006 |
+| ST-008 | Implement navigation table helpers | completed | low | 3 | 3 | ST-001 |
+| ST-009 | Add pre-commit validation hook | completed | low | 2 | 3 | ST-004, ST-006, ST-008 |
+| ST-010 | Migrate remaining skills | completed | low | 5 | 4 | ST-007, ST-005 |
 
 ### Effort Summary
 
@@ -199,9 +199,9 @@ ST-010
 +------------------------------------------------------------------+
 | Spikes:    [####################] 100% (2/2 completed)           |
 | Enablers:  [####################] 100% (1/1 completed)           |
-| Stories:   [....................] 0%   (0/10 completed)          |
+| Stories:   [####################] 100% (10/10 completed)         |
 +------------------------------------------------------------------+
-| Overall:   [#####...............] 23%  (3/13 items done)         |
+| Overall:   [####################] 100% (13/13 items done)        |
 +------------------------------------------------------------------+
 ```
 
@@ -210,11 +210,10 @@ ST-010
 | Metric | Value |
 |--------|-------|
 | **Total Items** | 13 (2 spikes + 1 enabler + 10 stories) |
-| **Completed** | 3 (2 spikes + 1 enabler) |
+| **Completed** | 13 (2 spikes + 1 enabler + 10 stories) |
 | **Total Story Points** | 40 (3 enabler + 37 stories) |
-| **Completed Story Points** | 3 (EN-001) |
-| **Completion %** | 23% (spikes + enabler done; stories pending) |
-| **Next:** | ST-001 (JerryDocument facade) -- Phase 1 start |
+| **Completed Story Points** | 40 (EN-001 + 10 stories) |
+| **Completion %** | 100% |
 
 ---
 
@@ -241,3 +240,5 @@ ST-010
 | 2026-02-19 | Claude | in-progress | Both spikes completed via orchestration `spike-eval-20260219-001`. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. QG scores: 0.96, 0.97, 0.96. ADR and implementation stories pending. |
 | 2026-02-20 | Claude | in-progress | Work decomposed: EN-001 (R-01 PoC gate, 3 SP) + 10 stories (37 SP). Total: 40 SP across 4 implementation phases. |
 | 2026-02-20 | Claude | in-progress | EN-001 completed: R-01 PASS. All 3 checks pass across 3 entity types. Adversarial review (S-010 + S-014, score 0.83). Critical finding SR-001 fixed. Phase 1 stories unblocked. |
+| 2026-02-21 | Claude | in-progress | 9/10 stories completed (ST-001 through ST-008, ST-010). 1,925 LOC, 404 tests, 100% domain coverage. ST-009 (pre-commit hook) remaining. Worktracker synced with implementation state. |
+| 2026-02-21 | Claude | completed | ST-009 completed. All 13/13 items done (40/40 SP). check_markdown_schemas.py (274 LOC), 35 tests, 98% coverage. Performance: 10 files in 0.21s. FEAT-001 100% complete. |

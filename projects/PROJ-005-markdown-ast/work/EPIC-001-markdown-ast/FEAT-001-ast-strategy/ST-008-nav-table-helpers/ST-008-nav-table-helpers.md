@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** low
 > **Impact:** medium
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 3
 
 ---
@@ -108,3 +108,4 @@ Implement navigation table helpers that enable programmatic validation of H-23/H
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Navigation table validation helpers. 3 SP. Blocked by ST-001. |
+| 2026-02-21 | Claude | completed | AC verified. nav_table.py with NavEntry, NavValidationResult, extract_nav_table, validate_nav_table, heading_to_anchor. 100% coverage. H-23/H-24 enforcement. |

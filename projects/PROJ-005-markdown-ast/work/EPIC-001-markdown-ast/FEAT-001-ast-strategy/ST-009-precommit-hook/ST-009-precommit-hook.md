@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** low
 > **Impact:** medium
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 2
 
 ---
@@ -107,3 +107,4 @@ Integrate AST validation into the pre-commit hook pipeline. Only validate files 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Pre-commit validation hook. 2 SP. Blocked by ST-004 + ST-006 + ST-008. |
+| 2026-02-21 | Claude | completed | AC verified. `scripts/check_markdown_schemas.py` (274 LOC): schema detection from file paths, AST-based validation via JerryDocument + entity schemas, IDE-friendly output formatting, git staged file detection. Pre-commit config in `.pre-commit-config.yaml`. 35 tests, 98% coverage. Performance: 10 entity files in 0.21s (<2s AC). |

@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 5
 
 ---
@@ -111,3 +111,4 @@ Implement the blockquote frontmatter extraction and write-back extension for mar
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Core frontmatter extension. 5 SP. Blocked by EN-001 + ST-001. |
+| 2026-02-21 | Claude | completed | AC verified. 491 LOC in frontmatter.py. BlockquoteFrontmatter with extract/get/set/add. 100% line coverage. R-01 validated write-back. |

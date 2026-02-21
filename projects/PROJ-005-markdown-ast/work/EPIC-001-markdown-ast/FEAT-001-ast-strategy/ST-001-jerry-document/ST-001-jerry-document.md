@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 5
 
 ---
@@ -113,3 +113,4 @@ Implement the core domain facade (`JerryDocument`) that provides the unified API
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Core facade for AST operations. 5 SP. Blocked by EN-001. |
+| 2026-02-21 | Claude | completed | AC verified. 265 LOC in jerry_document.py. 39 unit tests, 100% line coverage. All 4 methods (parse, query, transform, render) implemented with type hints (H-11) and docstrings (H-12). |

@@ -22,6 +22,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -130,3 +131,116 @@ class TestHookOutputFormat:
                 additional.find("<project-error>"),
             )
             assert quality_pos > project_pos, "Quality context should appear after project context"
+
+
+# ---------------------------------------------------------------------------
+# Import check_precommit_hooks for unit-level tests (no subprocess needed)
+# ---------------------------------------------------------------------------
+# Add project root so we can import directly from scripts/
+_project_root = str(PROJECT_ROOT)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
+from scripts.session_start_hook import check_precommit_hooks  # noqa: E402
+
+
+class TestPrecommitAutoInstall:
+    """Unit tests for pre-commit hook auto-install behaviour (D-003).
+
+    These tests mock subprocess and Path operations — they do NOT
+    execute real subprocesses.
+    """
+
+    def _make_plugin_root(self, tmp_path: Path) -> Path:
+        """Create a minimal plugin_root with .git/hooks directory."""
+        git_dir = tmp_path / ".git" / "hooks"
+        git_dir.mkdir(parents=True)
+        return tmp_path
+
+    # -- auto-install success --------------------------------------------------
+
+    @patch("scripts.session_start_hook.subprocess.run")
+    def test_auto_install_when_hooks_missing_and_uv_available_then_runs_precommit_install(
+        self, mock_run: MagicMock, tmp_path: Path
+    ) -> None:
+        """When hooks are missing and uv_path is provided, runs pre-commit install."""
+        plugin_root = self._make_plugin_root(tmp_path)
+        mock_run.return_value = MagicMock(returncode=0, stderr=b"")
+
+        check_precommit_hooks(plugin_root, uv_path="/usr/bin/uv")
+
+        mock_run.assert_called_once_with(
+            ["/usr/bin/uv", "run", "pre-commit", "install"],
+            capture_output=True,
+            cwd=str(plugin_root),
+            timeout=8,
+        )
+
+    @patch("scripts.session_start_hook.subprocess.run")
+    def test_auto_install_when_install_succeeds_then_returns_success_message(
+        self, mock_run: MagicMock, tmp_path: Path
+    ) -> None:
+        """Successful install returns a success info message."""
+        plugin_root = self._make_plugin_root(tmp_path)
+        mock_run.return_value = MagicMock(returncode=0, stderr=b"")
+
+        result = check_precommit_hooks(plugin_root, uv_path="/usr/bin/uv")
+
+        assert result is not None
+        assert "auto-installed" in result.lower()
+
+    # -- auto-install failure --------------------------------------------------
+
+    @patch("scripts.session_start_hook.subprocess.run")
+    def test_auto_install_when_install_fails_then_returns_warning_with_fallback(
+        self, mock_run: MagicMock, tmp_path: Path
+    ) -> None:
+        """Failed install returns warning with manual fallback instructions."""
+        plugin_root = self._make_plugin_root(tmp_path)
+        mock_run.return_value = MagicMock(returncode=1, stderr=b"some error")
+
+        result = check_precommit_hooks(plugin_root, uv_path="/usr/bin/uv")
+
+        assert result is not None
+        assert "make setup" in result.lower()
+
+    @patch("scripts.session_start_hook.subprocess.run")
+    def test_auto_install_when_install_times_out_then_returns_warning(
+        self, mock_run: MagicMock, tmp_path: Path
+    ) -> None:
+        """Timeout during install returns warning with fallback."""
+        plugin_root = self._make_plugin_root(tmp_path)
+        mock_run.side_effect = subprocess.TimeoutExpired(cmd="pre-commit", timeout=8)
+
+        result = check_precommit_hooks(plugin_root, uv_path="/usr/bin/uv")
+
+        assert result is not None
+        assert "timed out" in result.lower()
+        assert "make setup" in result.lower()
+
+    # -- no auto-install conditions --------------------------------------------
+
+    def test_no_auto_install_when_hooks_already_exist_then_returns_none(
+        self, tmp_path: Path
+    ) -> None:
+        """When hooks are already installed, returns None with no subprocess call."""
+        plugin_root = self._make_plugin_root(tmp_path)
+        # Create the pre-commit hook file
+        hook_file = tmp_path / ".git" / "hooks" / "pre-commit"
+        hook_file.write_text("#!/bin/sh\n# pre-commit hook")
+
+        result = check_precommit_hooks(plugin_root, uv_path="/usr/bin/uv")
+
+        assert result is None
+
+    def test_no_auto_install_when_uv_path_is_none_then_returns_warning(
+        self, tmp_path: Path
+    ) -> None:
+        """Without uv_path, returns old-style warning (no auto-install attempt)."""
+        plugin_root = self._make_plugin_root(tmp_path)
+
+        result = check_precommit_hooks(plugin_root, uv_path=None)
+
+        assert result is not None
+        assert "NOT installed" in result
+        assert "make setup" in result.lower()

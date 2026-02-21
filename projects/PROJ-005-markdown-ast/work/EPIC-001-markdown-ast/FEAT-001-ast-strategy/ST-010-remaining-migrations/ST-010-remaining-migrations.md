@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** low
 > **Impact:** medium
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 5
 
 ---
@@ -107,3 +107,4 @@ Opportunistic migration of remaining skills to AST operations. Not all skills ne
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Remaining skill migrations. 5 SP. Blocked by ST-007 + ST-005. |
+| 2026-02-21 | Claude | completed | AC verified. 9 agents across /adversary (2), /problem-solving (3), /nasa-se (2) reference ast_ops. 61 architecture tests enforce H-31 compliance. |

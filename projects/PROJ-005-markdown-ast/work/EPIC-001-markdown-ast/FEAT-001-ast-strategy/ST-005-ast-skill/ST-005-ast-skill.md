@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 3
 
 ---
@@ -108,3 +108,4 @@ Create the `/ast` skill -- the Claude-facing interface of Pattern D (Hybrid). Th
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Claude-facing /ast skill. 3 SP. Blocked by ST-001 + ST-002. |
+| 2026-02-21 | Claude | completed | AC verified. SKILL.md (324 LOC) + ast_ops.py (428 LOC). 43 unit tests, 100% coverage. 7 operations: parse, query_frontmatter, modify_frontmatter, validate, render, extract_reinject, validate_nav_table. Registered in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md (H-30). |

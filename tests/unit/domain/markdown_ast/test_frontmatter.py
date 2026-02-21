@@ -31,7 +31,6 @@ from src.domain.markdown_ast.frontmatter import (
 )
 from src.domain.markdown_ast.jerry_document import JerryDocument
 
-
 # ---------------------------------------------------------------------------
 # Test fixtures: canonical Jerry entity source strings
 # ---------------------------------------------------------------------------
@@ -139,6 +138,7 @@ MULTILINE_BLOCKQUOTE = """\
 # FrontmatterField dataclass tests
 # ---------------------------------------------------------------------------
 
+
 class TestFrontmatterField:
     """Tests for the FrontmatterField dataclass."""
 
@@ -173,6 +173,7 @@ class TestFrontmatterField:
 # extract_frontmatter convenience function tests
 # ---------------------------------------------------------------------------
 
+
 class TestExtractFrontmatterFunction:
     """Tests for the extract_frontmatter() convenience function."""
 
@@ -206,6 +207,7 @@ class TestExtractFrontmatterFunction:
 # ---------------------------------------------------------------------------
 # BlockquoteFrontmatter.extract() class method tests
 # ---------------------------------------------------------------------------
+
 
 class TestBlockquoteFrontmatterExtract:
     """Tests for BlockquoteFrontmatter.extract() class method."""
@@ -319,6 +321,7 @@ class TestBlockquoteFrontmatterExtract:
 # BlockquoteFrontmatter dict-like access tests
 # ---------------------------------------------------------------------------
 
+
 class TestBlockquoteFrontmatterAccess:
     """Tests for dict-like access methods on BlockquoteFrontmatter."""
 
@@ -416,6 +419,7 @@ class TestBlockquoteFrontmatterAccess:
 # ---------------------------------------------------------------------------
 # BlockquoteFrontmatter.set() write-back tests
 # ---------------------------------------------------------------------------
+
 
 class TestBlockquoteFrontmatterSet:
     """Tests for BlockquoteFrontmatter.set() write-back method."""
@@ -534,6 +538,7 @@ class TestBlockquoteFrontmatterSet:
 # BlockquoteFrontmatter.add() write-back tests
 # ---------------------------------------------------------------------------
 
+
 class TestBlockquoteFrontmatterAdd:
     """Tests for BlockquoteFrontmatter.add() write-back method."""
 
@@ -617,6 +622,7 @@ class TestBlockquoteFrontmatterAdd:
 # Edge case tests
 # ---------------------------------------------------------------------------
 
+
 class TestBlockquoteFrontmatterEdgeCases:
     """Tests for edge cases in BlockquoteFrontmatter."""
 
@@ -693,3 +699,45 @@ class TestBlockquoteFrontmatterEdgeCases:
         doc = JerryDocument.parse(STORY_FRONTMATTER)
         fm = BlockquoteFrontmatter.extract(doc)
         assert fm.get("Owner") == "--"
+
+
+# ===========================================================================
+# Adversarial input tests for write-back (SI-4 from C4 review)
+# ===========================================================================
+
+
+class TestFrontmatterAdversarialInputs:
+    """Tests verifying write-back correctness with values containing regex
+    metacharacters. Added per SI-4 recommendation from C4 adversarial review."""
+
+    def test_set_value_with_dollar_sign(self) -> None:
+        """set() correctly writes back a value containing '$'."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        new_doc = fm.set("Owner", "Cost $50 per unit")
+        new_fm = BlockquoteFrontmatter.extract(new_doc)
+        assert new_fm.get("Owner") == "Cost $50 per unit"
+
+    def test_set_value_with_backslash_digit(self) -> None:
+        """set() correctly writes back a value containing backslash + digit."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        new_doc = fm.set("Owner", "path\\1\\2")
+        new_fm = BlockquoteFrontmatter.extract(new_doc)
+        assert new_fm.get("Owner") == "path\\1\\2"
+
+    def test_set_value_with_backslash_g_group_ref(self) -> None:
+        """set() correctly writes back a value containing '\\g<1>' pattern."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        new_doc = fm.set("Owner", "ref \\g<1> text")
+        new_fm = BlockquoteFrontmatter.extract(new_doc)
+        assert new_fm.get("Owner") == "ref \\g<1> text"
+
+    def test_set_value_with_caret_and_pipe(self) -> None:
+        """set() correctly writes back a value containing '^' and '|'."""
+        doc = JerryDocument.parse(STORY_FRONTMATTER)
+        fm = BlockquoteFrontmatter.extract(doc)
+        new_doc = fm.set("Owner", "^start|middle$end")
+        new_fm = BlockquoteFrontmatter.extract(new_doc)
+        assert new_fm.get("Owner") == "^start|middle$end"

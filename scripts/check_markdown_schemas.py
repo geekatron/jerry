@@ -47,15 +47,17 @@ from src.domain.markdown_ast.schema import (
 # Schema detection from file paths
 # ---------------------------------------------------------------------------
 
-# Patterns match entity prefixes in path components (directories or filenames).
-# Each pattern maps to an entity schema type.
+# Patterns match entity prefixes in filenames (the .md file's own name).
+# Each pattern maps to an entity schema type. Matching against the filename
+# (not the full path) prevents ancestor directories from causing misclassification
+# (e.g., a SPIKE-001.md under FEAT-001/ should NOT be detected as "feature").
 _ENTITY_PATTERNS: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"(?:^|/)EN-\d+"), "enabler"),
-    (re.compile(r"(?:^|/)ST-\d+"), "story"),
-    (re.compile(r"(?:^|/)TASK-\d+"), "task"),
-    (re.compile(r"(?:^|/)BUG-\d+"), "bug"),
-    (re.compile(r"(?:^|/)FEAT-\d+"), "feature"),
-    (re.compile(r"(?:^|/)EPIC-\d+"), "epic"),
+    (re.compile(r"^EN-\d+"), "enabler"),
+    (re.compile(r"^ST-\d+"), "story"),
+    (re.compile(r"^TASK-\d+"), "task"),
+    (re.compile(r"^BUG-\d+"), "bug"),
+    (re.compile(r"^FEAT-\d+"), "feature"),
+    (re.compile(r"^EPIC-\d+"), "epic"),
 ]
 
 # Only files under projects/*/work/ are entity candidates.
@@ -65,10 +67,14 @@ _WORK_DIR_PATTERN = re.compile(r"^projects/[^/]+/work/")
 def detect_schema_from_path(file_path: str) -> str | None:
     """Detect the entity schema type from a file path.
 
-    Examines the file path for entity prefix patterns (EN-, ST-, TASK-, BUG-,
+    Examines the filename for entity prefix patterns (EN-, ST-, TASK-, BUG-,
     FEAT-, EPIC-) within the ``projects/*/work/`` directory hierarchy. Returns
     the corresponding schema type string, or None if the file is not a
     recognized entity document.
+
+    Matches against the filename only (not ancestor directories) to prevent
+    misclassification of files nested under parent entity directories
+    (e.g., a SPIKE-001.md under FEAT-001/ is correctly skipped).
 
     Args:
         file_path: Relative file path (as returned by git diff --name-only).
@@ -87,9 +93,11 @@ def detect_schema_from_path(file_path: str) -> str | None:
     if not _WORK_DIR_PATTERN.search(file_path):
         return None
 
-    # Check entity patterns against the path (after projects/*/work/)
+    # Extract filename and match against entity patterns
+    filename = file_path.rsplit("/", 1)[-1] if "/" in file_path else file_path
+
     for pattern, schema_type in _ENTITY_PATTERNS:
-        if pattern.search(file_path):
+        if pattern.search(filename):
             return schema_type
 
     return None
@@ -100,9 +108,7 @@ def detect_schema_from_path(file_path: str) -> str | None:
 # ---------------------------------------------------------------------------
 
 
-def validate_file(
-    file_path: str, schema_type: str
-) -> list[ValidationViolation]:
+def validate_file(file_path: str, schema_type: str) -> list[ValidationViolation]:
     """Validate a single file against the specified entity schema.
 
     Reads the file, parses it as a JerryDocument, and validates it against
@@ -128,7 +134,7 @@ def validate_file(
 
     try:
         source = path.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return []
 
     doc = JerryDocument.parse(source)

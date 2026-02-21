@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 3
 
 ---
@@ -107,3 +107,4 @@ Implement the L2-REINJECT comment parser extension. These HTML comments carry st
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. L2-REINJECT comment parser. 3 SP. Blocked by EN-001 + ST-001. |
+| 2026-02-21 | Claude | completed | AC verified. reinject.py with ReinjectDirective, extract/modify functions. 100% line coverage. Parses rank, tokens, content fields. |

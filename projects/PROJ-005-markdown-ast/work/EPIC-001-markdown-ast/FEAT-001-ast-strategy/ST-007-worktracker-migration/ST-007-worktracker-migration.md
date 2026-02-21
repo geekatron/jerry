@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 3
 
 ---
@@ -104,3 +104,4 @@ Pilot migration: update /worktracker agent definitions to use `/ast` skill opera
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. Pilot migration of /worktracker agents to AST. 3 SP. Blocked by ST-005 + ST-006. |
+| 2026-02-21 | Claude | completed | AC verified. 3 agents (wt-verifier, wt-auditor, wt-visualizer) updated with ast_ops references. H-31 enforcement via 61 architecture tests. |

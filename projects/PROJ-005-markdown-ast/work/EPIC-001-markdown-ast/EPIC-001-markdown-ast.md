@@ -1,12 +1,12 @@
 # EPIC-001: Markdown AST Infrastructure
 
 > **Type:** epic
-> **Status:** in-progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** PROJ-005-markdown-ast
 > **Owner:** --
 > **Target Quarter:** FY26-Q1
@@ -20,7 +20,7 @@
 | [Summary](#summary) | Brief description and key objectives |
 | [Business Outcome Hypothesis](#business-outcome-hypothesis) | Expected outcomes |
 | [Lean Business Case](#lean-business-case) | Problem/solution/cost/benefit |
-| [Children (Features)](#children-features) | Feature and spike inventory |
+| [Children Features/Capabilities](#children-featurescapabilities) | Feature and spike inventory |
 | [Progress Summary](#progress-summary) | Overall epic progress |
 | [Related Items](#related-items) | Dependencies and related work |
 | [History](#history) | Status changes and key events |
@@ -62,13 +62,13 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 
 ---
 
-## Children (Features)
+## Children Features/Capabilities
 
 ### Feature Inventory
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | AST Strategy Evaluation & Library Selection | in-progress | high | 23% (3/13 items) |
+| FEAT-001 | AST Strategy Evaluation & Library Selection | completed | high | 100% (13/13 items) |
 
 ### Spike Inventory
 
@@ -96,10 +96,10 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/1 completed)              |
+| Features:  [####################] 100% (1/1 completed)            |
 | Spikes:    [####################] 100% (2/2 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [#####...............] 25%                              |
+| Overall:   [####################] 100% (FEAT-001 complete)        |
 +------------------------------------------------------------------+
 ```
 
@@ -108,10 +108,10 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 1 |
-| **Completed Features** | 0 |
+| **Completed Features** | 1 |
 | **Total Spikes** | 2 |
 | **Completed Spikes** | 2 |
-| **Feature Completion %** | 25% (spikes done, feature in-progress) |
+| **Feature Completion %** | 100% (13/13 FEAT-001 items done) |
 
 ---
 
@@ -135,3 +135,5 @@ Replace raw text manipulation of markdown files with an AST (Abstract Syntax Tre
 | 2026-02-19 | Claude | pending | Epic created. Full-surface AST infrastructure initiative. Python-only, 5+ library evaluation required. |
 | 2026-02-19 | Claude | in-progress | Both spikes completed. GO decision: adopt markdown-it-py + mdformat with Pattern D hybrid integration. Orchestration `spike-eval-20260219-001` complete (QG scores: 0.96, 0.97, 0.96). |
 | 2026-02-20 | Claude | in-progress | FEAT-001 decomposed: EN-001 (R-01 PoC gate) + 10 stories = 40 SP across 4 phases. Next: EN-001 (critical gate). |
+| 2026-02-21 | Claude | in-progress | Worktracker sync: 12/13 FEAT-001 items completed (38/40 SP). 1,925 LOC, 404 tests, 100% domain coverage. ST-009 (pre-commit hook, 2 SP) remaining. |
+| 2026-02-21 | Claude | completed | ST-009 completed. All 13/13 FEAT-001 items done (40/40 SP). Total: ~2,200 LOC, 439 tests (35 for ST-009), 98%+ coverage across all modules. EPIC-001 complete. |

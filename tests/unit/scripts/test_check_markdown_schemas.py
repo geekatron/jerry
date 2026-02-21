@@ -29,8 +29,6 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 # Add project root to sys.path so we can import the script
 _project_root = Path(__file__).parent.parent.parent.parent
 if str(_project_root) not in sys.path:
@@ -44,10 +42,10 @@ from scripts.check_markdown_schemas import (  # noqa: E402
     detect_schema_from_path,
     format_summary,
     format_violation,
+    get_staged_markdown_files,
     main,
     validate_file,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures: valid entity markdown sources
@@ -336,13 +334,9 @@ class TestMain:
 
     @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
     @patch("scripts.check_markdown_schemas.validate_file")
-    def test_all_valid_exits_zero(
-        self, mock_validate: MagicMock, mock_git: MagicMock
-    ) -> None:
+    def test_all_valid_exits_zero(self, mock_validate: MagicMock, mock_git: MagicMock) -> None:
         """All valid entity files -> exit 0."""
-        mock_git.return_value = [
-            "projects/PROJ-005/work/EPIC-001/FEAT-001/ST-001-x/ST-001-x.md"
-        ]
+        mock_git.return_value = ["projects/PROJ-005/work/EPIC-001/FEAT-001/ST-001-x/ST-001-x.md"]
         mock_validate.return_value = []
         assert main() == 0
 
@@ -354,9 +348,7 @@ class TestMain:
         """Entity files with violations -> exit 1."""
         from src.domain.markdown_ast.schema import ValidationViolation
 
-        mock_git.return_value = [
-            "projects/PROJ-005/work/EPIC-001/FEAT-001/ST-001-x/ST-001-x.md"
-        ]
+        mock_git.return_value = ["projects/PROJ-005/work/EPIC-001/FEAT-001/ST-001-x/ST-001-x.md"]
         mock_validate.return_value = [
             ValidationViolation(
                 field_path="frontmatter.Type",
@@ -367,3 +359,147 @@ class TestMain:
             )
         ]
         assert main() == 1
+
+
+# ===========================================================================
+# Test: detect_schema_from_path — edge cases for coverage
+# ===========================================================================
+
+
+class TestDetectSchemaEdgeCases:
+    """Edge case tests for schema detection to cover line 95 (no entity match
+    in work dir)."""
+
+    def test_work_dir_file_without_entity_prefix_returns_none(self) -> None:
+        """File under projects/*/work/ but without any entity prefix returns None."""
+        path = "projects/PROJ-001/work/some-random-notes.md"
+        assert detect_schema_from_path(path) is None
+
+    def test_spike_file_under_feat_dir_returns_none(self) -> None:
+        """SPIKE- prefixed file under a FEAT- directory returns None (not misclassified)."""
+        path = "projects/PROJ-005/work/EPIC-001/FEAT-001/SPIKE-001-landscape/SPIKE-001-landscape.md"
+        # SPIKE is not in the entity pattern list; filename matching prevents
+        # ancestor directory (FEAT-001) from causing misclassification.
+        assert detect_schema_from_path(path) is None
+
+    def test_work_dir_nested_no_entity(self) -> None:
+        """Deeply nested file in work dir without entity prefix returns None."""
+        path = "projects/PROJ-001/work/decisions/ADR-001.md"
+        assert detect_schema_from_path(path) is None
+
+
+# ===========================================================================
+# Test: validate_file — OSError coverage
+# ===========================================================================
+
+
+class TestValidateFileEdgeCases:
+    """Edge case tests for validate_file error handling paths."""
+
+    def test_unreadable_file_returns_empty(self, tmp_path: Path) -> None:
+        """File that raises OSError on read returns empty violations list."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text("dummy content", encoding="utf-8")
+
+        with patch("pathlib.Path.read_text", side_effect=OSError("permission denied")):
+            violations = validate_file(str(file_path), "story")
+            assert violations == []
+
+    def test_non_utf8_file_returns_empty(self, tmp_path: Path) -> None:
+        """File with non-UTF-8 encoding returns empty violations (graceful skip)."""
+        file_path = tmp_path / "ST-002.md"
+        # Write raw bytes that are invalid UTF-8
+        file_path.write_bytes(b"# ST-002: Test\n\n> **Type:** story\n\xe9\xfe\xff\n")
+
+        violations = validate_file(str(file_path), "story")
+        assert violations == []
+
+
+# ===========================================================================
+# Test: get_staged_markdown_files
+# ===========================================================================
+
+
+class TestGetStagedMarkdownFiles:
+    """Tests for git staged file detection (lines 203-223)."""
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_staged_files_on_success(self, mock_run: MagicMock) -> None:
+        """Successful git command returns list of staged markdown files."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="README.md\nprojects/PROJ-001/work/ST-001/ST-001.md\n",
+        )
+        result = get_staged_markdown_files()
+        assert result == ["README.md", "projects/PROJ-001/work/ST-001/ST-001.md"]
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_empty_on_git_failure(self, mock_run: MagicMock) -> None:
+        """Non-zero git exit code returns empty list."""
+        mock_run.return_value = MagicMock(returncode=128, stdout="")
+        result = get_staged_markdown_files()
+        assert result == []
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_empty_on_timeout(self, mock_run: MagicMock) -> None:
+        """Git timeout returns empty list."""
+        import subprocess as sp
+
+        mock_run.side_effect = sp.TimeoutExpired(cmd="git", timeout=10)
+        result = get_staged_markdown_files()
+        assert result == []
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_empty_on_git_not_found(self, mock_run: MagicMock) -> None:
+        """Git not found (FileNotFoundError) returns empty list."""
+        mock_run.side_effect = FileNotFoundError("git not found")
+        result = get_staged_markdown_files()
+        assert result == []
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_filters_blank_lines(self, mock_run: MagicMock) -> None:
+        """Blank lines in git output are filtered out."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="README.md\n\n\nST-001.md\n",
+        )
+        result = get_staged_markdown_files()
+        assert result == ["README.md", "ST-001.md"]
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_empty_stdout_returns_empty(self, mock_run: MagicMock) -> None:
+        """Empty stdout from successful git command returns empty list."""
+        mock_run.return_value = MagicMock(returncode=0, stdout="")
+        result = get_staged_markdown_files()
+        assert result == []
+
+
+# ===========================================================================
+# Test: entity pattern / schema registry synchronization (H-3 from C4 review)
+# ===========================================================================
+
+
+class TestEntityPatternSync:
+    """Verify that _ENTITY_PATTERNS covers all schema types in the registry."""
+
+    def test_all_schema_types_have_entity_patterns(self) -> None:
+        """Every schema type in the registry has a corresponding entity pattern."""
+        from scripts.check_markdown_schemas import _ENTITY_PATTERNS
+        from src.domain.markdown_ast.schema import _SCHEMA_REGISTRY
+
+        pattern_schema_types = {schema_type for _, schema_type in _ENTITY_PATTERNS}
+        registry_schema_types = set(_SCHEMA_REGISTRY.keys())
+
+        missing = registry_schema_types - pattern_schema_types
+        assert missing == set(), f"Schema types in registry without entity patterns: {missing}"
+
+    def test_all_entity_patterns_have_schemas(self) -> None:
+        """Every entity pattern maps to a valid schema type in the registry."""
+        from scripts.check_markdown_schemas import _ENTITY_PATTERNS
+        from src.domain.markdown_ast.schema import _SCHEMA_REGISTRY
+
+        pattern_schema_types = {schema_type for _, schema_type in _ENTITY_PATTERNS}
+        registry_schema_types = set(_SCHEMA_REGISTRY.keys())
+
+        extra = pattern_schema_types - registry_schema_types
+        assert extra == set(), f"Entity patterns without corresponding schemas: {extra}"

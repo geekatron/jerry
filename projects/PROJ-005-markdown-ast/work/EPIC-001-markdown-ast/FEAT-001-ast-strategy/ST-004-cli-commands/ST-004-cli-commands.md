@@ -7,14 +7,14 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.5
 -->
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-20
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
 > **Effort:** 3
 
 ---
@@ -109,3 +109,4 @@ Add the CLI adapter that exposes the domain layer as `jerry ast` subcommands. Th
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Story created. CLI adapter for AST operations. 3 SP. Blocked by ST-001. |
+| 2026-02-21 | Claude | completed | AC verified. 302 LOC in ast_commands.py. 27 subprocess integration tests. Commands: parse, render, validate, query. |
