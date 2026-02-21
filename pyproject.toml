@@ -112,6 +112,7 @@ markers = [
     "edge-case: marks tests as edge case scenarios",
     "boundary: marks tests as boundary value scenarios",
     "e2e: marks end-to-end tests (slow, full stack)",
+    "integration: marks integration tests (external dependencies)",
     "subprocess: marks tests that invoke external processes",
 ]
 
