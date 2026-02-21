@@ -19,7 +19,7 @@
 | Field | Value |
 |-------|-------|
 | Project | PROJ-004-context-resilience |
-| Status | IN_PROGRESS |
+| Status | COMPLETE |
 | Created | 2026-02-19 |
 
 ---
@@ -28,7 +28,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | in_progress | high |
+| [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | done | high |
 
 > Features, Enablers, Spikes, and Tasks are tracked within the Epic and its children.
 
@@ -38,7 +38,7 @@
 
 | ID | Title | Status | Priority | Severity |
 |----|-------|--------|----------|----------|
-| [BUG-001](./work/EPIC-001-context-resilience/BUG-001-precommit-hook-failures.md) | Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors | pending | high | major |
+| [BUG-001](./work/EPIC-001-context-resilience/BUG-001-precommit-hook-failures.md) | Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors | done | high | major |
 
 ---
 
@@ -66,3 +66,8 @@
 | 2026-02-20 | Claude | EN-008 (Context Resilience Hardening) created with 5 child tasks (TASK-001 through TASK-005) to address the 5 PARTIAL acceptance criteria items from ST-003 validation report. |
 | 2026-02-20 | Claude | TASK-006 added to EN-008: context window size hardcoded to 200K, config key disconnected. Different subscriptions + models have different windows. Configuration-first approach required since subscription tier cannot be auto-detected. |
 | 2026-02-21 | Claude | BUG-001 filed: Pre-commit hooks failing (10 test failures, 4 SPDX violations, 3+ pyright errors). SKIP flags required to commit. Quality gate regression. |
+| 2026-02-21 | Claude | Phase 1 verification complete (10 wt-verifier agents). 6 items closed: EN-004, EN-005, EN-006, EN-007, ST-002, BUG-001. 4 items NOT_READY: EN-001 (bootstrap wiring), EN-002 (CLI config defaults), EN-003 (DEF-005 acknowledge), ST-001 (L2-REINJECT marker). NOT_READY gaps folded into EN-008 hardening scope. |
+| 2026-02-21 | Claude | 4 NOT_READY gaps fixed and verified: EN-001 (EventSourcedSessionRepository wired in bootstrap + save() returns events + test isolation), EN-002 (6 context_monitor.* defaults in CLI config), EN-003 (DEF-005 checkpoint acknowledge call), ST-001 (L2-REINJECT resumption marker). All 3819 tests pass. EN-001, EN-002, EN-003, ST-001 closed. All Phase 1 items (10/10) now done. |
+| 2026-02-21 | Claude | EN-008 (Context Resilience Hardening) implementation complete. All 6 tasks done: TASK-001 (structured YAML checkpoint extraction), TASK-002 (WORKTRACKER.md auto-injection), TASK-003 (checkpoint write-back to ORCHESTRATION.yaml), TASK-004 (E2E integration test), TASK-005 (multi-pattern orchestration validation), TASK-006 (context window configuration). 52 new tests added (3871 total, 0 failures). EN-008 closed. |
+| 2026-02-21 | Claude | SPIKE-003 (Validation Spikes — OQ-9 + Method C) closed. Research completed: OQ-9 found BLOCKER (wrong field path + missing cache fields), corrected JsonlTranscriptReader to three-field sum with nested message.usage path. Method C (status line state file) DEFERRED — Method A (transcript parsing) superior with fewer dependencies. All corrections applied and verified (3875 tests passing). |
+| 2026-02-21 | Claude | FEAT-001 (Context Exhaustion Detection) marked done. All children complete: 8 enablers, 3 stories, 3 spikes, 1 discovery, 1 decision, 1 bug. EPIC-001 marked done. PROJ-004 COMPLETE. |

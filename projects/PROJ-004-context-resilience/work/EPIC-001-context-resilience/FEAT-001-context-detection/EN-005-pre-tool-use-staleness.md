@@ -1,13 +1,13 @@
 # EN-005: PreToolUse Staleness Detection
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 1.5-2.5h

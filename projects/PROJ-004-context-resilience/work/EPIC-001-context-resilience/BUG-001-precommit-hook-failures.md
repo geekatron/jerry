@@ -1,13 +1,13 @@
 # BUG-001: Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-02-21
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EPIC-001
 > **Owner:** --
 > **Found In:** 0.5.0

@@ -1,13 +1,13 @@
 # EN-004: ContextFillEstimator + ResumptionContextGenerator
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** critical
 > **Impact:** high
 > **Enabler Type:** architecture
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 3-5h

@@ -1,13 +1,13 @@
 # EN-002: ConfigThresholdAdapter + IThresholdConfiguration Port
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 1h

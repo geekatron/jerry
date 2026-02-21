@@ -279,7 +279,7 @@ class TestCheckpointWithOrchestration:
 
         # Verify resumption state captured
         assert checkpoint.resumption_state is not None
-        assert "orchestration" in checkpoint.resumption_state
+        assert "orchestration_raw" in checkpoint.resumption_state
 
         # Verify resumption XML generated
         xml = generator.generate(checkpoint)

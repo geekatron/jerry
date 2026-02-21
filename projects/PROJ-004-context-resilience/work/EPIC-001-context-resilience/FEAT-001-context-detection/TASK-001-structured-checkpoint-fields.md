@@ -1,11 +1,11 @@
 # TASK-001: Structured Checkpoint Field Extraction
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EN-008
 > **Owner:** --
 > **Effort:** 2h

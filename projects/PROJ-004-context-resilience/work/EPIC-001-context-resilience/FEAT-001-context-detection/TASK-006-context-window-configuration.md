@@ -1,11 +1,11 @@
 # TASK-006: Context Window Size Detection and Configuration
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EN-008
 > **Owner:** --
 > **Effort:** 6-8h

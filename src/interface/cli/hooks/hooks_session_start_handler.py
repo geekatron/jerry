@@ -5,9 +5,9 @@
 HooksSessionStartHandler - CLI handler for the SessionStart hook.
 
 Reads Claude Code ``SessionStart`` JSON from stdin, invokes the project
-context query, quality reinforcement engine, and resumption context
-generator, and returns a JSON response with ``additionalContext``
-combining all three.
+context query, quality reinforcement engine, resumption context
+generator, and WORKTRACKER.md injection, then returns a JSON response
+with ``additionalContext`` combining all four.
 
 Design Principles:
     - **Fail-open everywhere**: Each step is wrapped in try/except.
@@ -19,6 +19,7 @@ References:
     - EN-006: jerry hooks CLI Command Namespace
     - EN-001: Local context support for session hook
     - EN-004: ResumptionContextGenerator
+    - EN-008 TASK-002: WORKTRACKER.md auto-injection in resumption
     - PROJ-004: Context Resilience
 """
 
@@ -26,8 +27,11 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import sys
+from pathlib import Path
 from typing import Any
+from xml.sax.saxutils import escape as xml_escape
 
 from src.application.ports.primary.iquerydispatcher import IQueryDispatcher
 from src.application.queries import RetrieveProjectContextQuery
@@ -40,6 +44,9 @@ from src.context_monitoring.application.services.resumption_context_generator im
 from src.infrastructure.internal.enforcement.session_quality_context_generator import (
     SessionQualityContextGenerator,
 )
+
+# TASK-002: Max chars for WORKTRACKER.md injection (prevents context bloat)
+_WORKTRACKER_MAX_CHARS = 4000
 
 logger = logging.getLogger(__name__)
 
@@ -152,15 +159,36 @@ class HooksSessionStartHandler:
             )
 
         # Step 4: Resumption context from latest checkpoint (fail-open)
+        # DEF-005: acknowledge() MUST be called AFTER checkpoint data is
+        # formatted for the response, ensuring delivery before marking consumed.
         try:
             checkpoint = self._checkpoint_repository.get_latest_unacknowledged()
             if checkpoint is not None:
                 resumption_xml = self._resumption_generator.generate(checkpoint)
                 if resumption_xml:
                     context_parts.append(resumption_xml)
+                # DEF-005: Acknowledge after successful formatting
+                try:
+                    self._checkpoint_repository.acknowledge(checkpoint.checkpoint_id)
+                except Exception as ack_exc:  # noqa: BLE001
+                    print(
+                        f"[hooks/session-start] Checkpoint acknowledge failed: {ack_exc}",
+                        file=sys.stderr,
+                    )
         except Exception as exc:  # noqa: BLE001
             print(
                 f"[hooks/session-start] Resumption context generation failed: {exc}",
+                file=sys.stderr,
+            )
+
+        # Step 5: WORKTRACKER.md injection (TASK-002, fail-open)
+        try:
+            worktracker_xml = self._read_worktracker()
+            if worktracker_xml:
+                context_parts.append(worktracker_xml)
+        except Exception as exc:  # noqa: BLE001
+            print(
+                f"[hooks/session-start] WORKTRACKER.md injection failed: {exc}",
                 file=sys.stderr,
             )
 
@@ -170,3 +198,40 @@ class HooksSessionStartHandler:
         print(json.dumps(response))
 
         return 0
+
+    def _read_worktracker(self) -> str | None:
+        """Read WORKTRACKER.md for the active project and format as XML.
+
+        TASK-002: Injects WORKTRACKER.md content into session start context
+        so the LLM has work item state for resumption. Truncates to
+        _WORKTRACKER_MAX_CHARS to prevent context bloat.
+
+        Returns:
+            XML string with worktracker content, or None if unavailable.
+        """
+        project_id = os.environ.get("JERRY_PROJECT")
+        if not project_id:
+            return None
+
+        project_root = os.environ.get("CLAUDE_PROJECT_DIR")
+        if project_root:
+            base = Path(project_root)
+        else:
+            base = Path.cwd()
+
+        worktracker_path = base / "projects" / project_id / "WORKTRACKER.md"
+        if not worktracker_path.exists():
+            return None
+
+        content = worktracker_path.read_text(encoding="utf-8")
+        if not content.strip():
+            return None
+
+        # Truncate to prevent context bloat
+        if len(content) > _WORKTRACKER_MAX_CHARS:
+            content = content[:_WORKTRACKER_MAX_CHARS] + "\n... (truncated)"
+
+        # Escape XML-special characters to prevent malformed XML
+        escaped_content = xml_escape(content)
+
+        return f"<worktracker>\n{escaped_content}\n</worktracker>"

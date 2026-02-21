@@ -1,11 +1,11 @@
 # TASK-003: Checkpoint Write-Back to ORCHESTRATION.yaml
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** medium
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EN-008
 > **Owner:** --
 > **Effort:** 2h

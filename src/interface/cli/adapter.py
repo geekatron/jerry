@@ -1023,6 +1023,12 @@ class CLIAdapter:
                 "work_tracking.quality_gate_enabled": True,
                 "session.auto_start": True,
                 "session.max_duration_hours": 8,
+                "context_monitor.nominal_threshold": 0.55,
+                "context_monitor.warning_threshold": 0.70,
+                "context_monitor.critical_threshold": 0.80,
+                "context_monitor.emergency_threshold": 0.88,
+                "context_monitor.compaction_detection_threshold": 10000,
+                "context_monitor.enabled": True,
             },
         )
 

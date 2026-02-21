@@ -293,9 +293,10 @@ class TestSessionCommands:
         tmp_path: Path,
     ) -> None:
         """jerry session end without active session returns error."""
-        # Use tmp_path to ensure no active session
+        # Unset JERRY_PROJECT so bootstrap falls back to InMemoryEventStore
+        # (which starts empty in a new subprocess → no active session)
         env = env_with_pythonpath.copy()
-        env["JERRY_DATA_DIR"] = str(tmp_path / ".jerry" / "data")
+        env.pop("JERRY_PROJECT", None)
 
         result = run_jerry(
             ["--json", "session", "end"],
@@ -313,8 +314,9 @@ class TestSessionCommands:
         tmp_path: Path,
     ) -> None:
         """jerry session abandon without active session returns error."""
+        # Unset JERRY_PROJECT so bootstrap falls back to InMemoryEventStore
         env = env_with_pythonpath.copy()
-        env["JERRY_DATA_DIR"] = str(tmp_path / ".jerry" / "data")
+        env.pop("JERRY_PROJECT", None)
 
         result = run_jerry(
             ["--json", "session", "abandon"],

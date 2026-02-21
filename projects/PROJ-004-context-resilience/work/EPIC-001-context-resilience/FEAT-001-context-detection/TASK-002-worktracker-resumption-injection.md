@@ -1,11 +1,11 @@
 # TASK-002: WORKTRACKER.md Auto-Injection in Resumption
 
 > **Type:** task
-> **Status:** pending
+> **Status:** done
 > **Priority:** low
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EN-008
 > **Owner:** --
 > **Effort:** 1.5h

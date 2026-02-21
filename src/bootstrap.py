@@ -68,6 +68,9 @@ from src.session_management.infrastructure import (
     InMemorySessionRepository,
     OsEnvironmentAdapter,
 )
+from src.session_management.infrastructure.adapters.event_sourced_session_repository import (
+    EventSourcedSessionRepository,
+)
 
 # EN-025: Transcript parsing components (TDD-FEAT-004 Section 11.4)
 from src.transcript.application.commands import ParseTranscriptCommand
@@ -109,8 +112,8 @@ from src.work_tracking.infrastructure.persistence.in_memory_event_store import (
 )
 
 # Module-level session repository singleton for session state persistence
-# In production, this would be replaced with a file-based or database repository
-_session_repository: InMemorySessionRepository | None = None
+# EN-001: Uses EventSourcedSessionRepository for cross-process persistence
+_session_repository: EventSourcedSessionRepository | InMemorySessionRepository | None = None
 
 # Module-level event store and work item repository singletons
 # TD-018: Event-sourced implementation with FileSystemEventStore
@@ -126,19 +129,24 @@ _id_generator: WorkItemIdGenerator | None = None
 _serializer: ToonSerializer | None = None
 
 
-def get_session_repository() -> InMemorySessionRepository:
+def get_session_repository() -> EventSourcedSessionRepository | InMemorySessionRepository:
     """Get the shared session repository instance.
 
     Returns:
-        InMemorySessionRepository singleton instance
+        EventSourcedSessionRepository if a project is active (cross-process persistence),
+        InMemorySessionRepository otherwise (in-process only).
 
     Note:
-        This is a module-level singleton to preserve session state
-        across CLI invocations within the same process.
+        EN-001: Uses event-sourced repository with FileSystemEventStore
+        for cross-process session persistence.
     """
     global _session_repository
     if _session_repository is None:
-        _session_repository = InMemorySessionRepository()
+        event_store = get_event_store()
+        if isinstance(event_store, FileSystemEventStore):
+            _session_repository = EventSourcedSessionRepository(event_store=event_store)
+        else:
+            _session_repository = InMemorySessionRepository()
     return _session_repository
 
 

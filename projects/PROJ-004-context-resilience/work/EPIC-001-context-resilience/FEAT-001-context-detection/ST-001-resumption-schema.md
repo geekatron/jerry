@@ -1,12 +1,12 @@
 # ST-001: Enhanced Resumption Schema + Update Protocol
 
 > **Type:** story
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 2-3h

@@ -229,11 +229,13 @@ class TestEventSourcingPersistence:
 class TestCommandDispatcherIntegration:
     """Integration tests for CommandDispatcher with session commands."""
 
-    def test_create_session_via_dispatcher(self) -> None:
+    def test_create_session_via_dispatcher(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """CreateSessionCommand works through dispatcher."""
         from src.bootstrap import create_command_dispatcher, reset_singletons
         from src.session_management.application.commands import CreateSessionCommand
 
+        # Unset JERRY_PROJECT to use InMemoryEventStore (isolate from filesystem)
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
         reset_singletons()
         dispatcher = create_command_dispatcher()
 
@@ -244,7 +246,7 @@ class TestCommandDispatcherIntegration:
         # Check first event is SessionCreated
         assert "SessionCreated" in type(events[0]).__name__
 
-    def test_full_session_lifecycle_via_dispatcher(self) -> None:
+    def test_full_session_lifecycle_via_dispatcher(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Full session lifecycle (create -> end) via dispatcher."""
         from src.bootstrap import create_command_dispatcher, reset_singletons
         from src.session_management.application.commands import (
@@ -252,6 +254,8 @@ class TestCommandDispatcherIntegration:
             EndSessionCommand,
         )
 
+        # Unset JERRY_PROJECT to use InMemoryEventStore (isolate from filesystem)
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
         reset_singletons()
         dispatcher = create_command_dispatcher()
 

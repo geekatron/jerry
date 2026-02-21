@@ -40,6 +40,8 @@
 
 <!-- L2-REINJECT: rank=9, tokens=40, content="AE-006 graduated escalation: NOMINAL=no-op, WARNING=log+consider-checkpoint, CRITICAL=auto-checkpoint+reduce-verbosity, EMERGENCY=mandatory-checkpoint+warn-user, COMPACTION=human-escalation-C3+." -->
 
+<!-- L2-REINJECT: rank=9, tokens=25, content="Resumption update: MUST update ORCHESTRATION.yaml resumption section at every state transition (phase/QG/agent/compaction)." -->
+
 | ID | Rule | Source |
 |----|------|--------|
 | H-01 | No recursive subagents (max 1 level) | P-003 |

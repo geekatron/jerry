@@ -1,12 +1,12 @@
 # ST-002: AE-006 Graduated Sub-Rules
 
 > **Type:** story
-> **Status:** pending
+> **Status:** done
 > **Priority:** high
 > **Impact:** medium
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 1h
