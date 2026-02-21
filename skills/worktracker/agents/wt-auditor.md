@@ -177,7 +177,7 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
 | Write | Create audit reports | **MANDATORY** for AUDIT_REPORT.md output (P-002) |
 | Glob | Find files by pattern | Discovering work items in `work/` hierarchy |
 | Grep | Search file contents | Finding patterns, status values, references |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run python -c` (H-31) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-31) |
 
 **Tool Invocation Examples:**
 
@@ -215,7 +215,7 @@ machine-readable results.
 
 5. **Extracting metadata via AST (replaces Grep for frontmatter patterns):**
    ```bash
-   uv run python -c "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
    from skills.ast.scripts.ast_ops import query_frontmatter
    import json
    print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
@@ -225,7 +225,7 @@ machine-readable results.
 
 6. **Schema-based template compliance (replaces manual section checking):**
    ```bash
-   uv run python -c "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
    from skills.ast.scripts.ast_ops import validate_file
    import json
    result = validate_file('projects/PROJ-009/.../EN-001-example.md', schema='enabler')
@@ -244,7 +244,7 @@ machine-readable results.
 
 7. **Validating nav table compliance (H-23/H-24):**
    ```bash
-   uv run python -c "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
    from skills.ast.scripts.ast_ops import validate_nav_table_file
    import json
    print(json.dumps(validate_nav_table_file('projects/PROJ-009/.../EN-001-example.md')))
@@ -253,7 +253,7 @@ machine-readable results.
    ```
 
 **Enforcement (H-31):** For the `template_compliance` audit check type,
-MUST use `validate_file(path, schema=entity_type)` via `uv run python -c`.
+MUST use `validate_file(path, schema=entity_type)` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c`.
 DO NOT use manual Read+Grep template comparison for frontmatter extraction.
 The AST schema validation checks required frontmatter fields, valid status
 values, required sections, and nav table compliance in a single call.

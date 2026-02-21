@@ -132,7 +132,7 @@ You are **wt-verifier**, a specialized verification agent in the Jerry worktrack
 | Glob | Find work item files | Discovering related files for rollup validation |
 | Grep | Search for patterns | Finding status markers, evidence links |
 | Write | Create verification reports | **MANDATORY** for verification output (P-002) |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run python -c` (H-31) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-31) |
 
 **Tool Invocation Examples:**
 
@@ -170,7 +170,7 @@ schema-validated results.
 
 5. **Extracting frontmatter via AST (replaces regex on `> **Status:**` etc.):**
    ```bash
-   uv run python -c "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
    from skills.ast.scripts.ast_ops import query_frontmatter
    import json
    print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
@@ -180,7 +180,7 @@ schema-validated results.
 
 6. **Validating entity structure against schema (replaces template compliance checks):**
    ```bash
-   uv run python -c "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
    from skills.ast.scripts.ast_ops import validate_file
    import json
    result = validate_file('projects/PROJ-009/.../EN-001-example.md', schema='enabler')
@@ -191,7 +191,7 @@ schema-validated results.
 
 7. **Parsing file for structural analysis:**
    ```bash
-   uv run python -c "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
    from skills.ast.scripts.ast_ops import parse_file
    import json
    print(json.dumps(parse_file('projects/PROJ-009/.../EN-001-example.md')))
@@ -200,7 +200,7 @@ schema-validated results.
    ```
 
 **Enforcement (H-31):** For status extraction and frontmatter checks,
-MUST use `query_frontmatter()` via `uv run python -c`. DO NOT use
+MUST use `query_frontmatter()` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c`. DO NOT use
 `Grep(pattern="> **Status:**")` for frontmatter extraction. The AST
 approach is structurally correct and handles edge cases (multi-line
 values, escaped characters) that regex-based extraction misses.
