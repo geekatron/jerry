@@ -1,0 +1,2661 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/INSTALLATION/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../BOOTSTRAP/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Installation - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#jerry-framework-installation-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Installation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Sections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-install-most-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Install (Most Users)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Install (Most Users)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation Scope
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-hooks-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enable Hooks (Recommended)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Enable Hooks (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-hooks-provide" class="md-nav__link">
+    <span class="md-ellipsis">
+      What hooks provide
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install uv
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capability Matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-local-clone-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative: Local Clone Install
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alternative: Local Clone Install">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-clone-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Clone the repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-add-the-local-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Add the local marketplace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-install-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Install the plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-ssh-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced: SSH clone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-pinning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version pinning
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-setup-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Setup (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-install-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Install verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hooks-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hooks verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skill test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-for-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check for errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-jerry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Jerry
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using Jerry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Skills
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistent-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Persistent Artifacts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developer Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Developer Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-developer-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Developer Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-distribution-bootstrap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context Distribution (Bootstrap)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-install-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Install Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hook-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hook Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skill Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-issues-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Issues on Windows
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uninstallation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstallation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Uninstallation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#remove-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remove the Plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remove-the-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remove the Marketplace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-local-files-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Delete Local Files (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bootstrap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started Runbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Problem Solving
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orchestration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playbooks/transcript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transcript Processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin Development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLAUDE.md Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema Versioning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Session Context Schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Research
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Single vs. Multi-Agent Analysis
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adversarial Strategy Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Strategy Selection & Enforcement (ADRs)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adversarial Quality Deep Dives
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Skill Compliance Framework
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Governance & Constitutional AI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/context-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Context Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/oss-methodology/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OSS Methodology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Claude Code Ecosystem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Governance
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Governance
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jerry Constitution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Sections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-install-most-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Install (Most Users)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Install (Most Users)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation Scope
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-hooks-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enable Hooks (Recommended)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Enable Hooks (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-hooks-provide" class="md-nav__link">
+    <span class="md-ellipsis">
+      What hooks provide
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install uv
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capability Matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-local-clone-install" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alternative: Local Clone Install
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Alternative: Local Clone Install">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-clone-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Clone the repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-add-the-local-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Add the local marketplace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-install-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Install the plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-ssh-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced: SSH clone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-pinning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version pinning
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-setup-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Setup (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-install-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Install verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hooks-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hooks verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skill test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-for-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check for errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-jerry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Jerry
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using Jerry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Skills
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistent-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Persistent Artifacts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developer Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Developer Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-developer-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Developer Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-distribution-bootstrap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Context Distribution (Bootstrap)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-install-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Install Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hook-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hook Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skill Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-issues-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Path Issues on Windows
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uninstallation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstallation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Uninstallation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#remove-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remove the Plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remove-the-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Remove the Marketplace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-local-files-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Delete Local Files (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="jerry-framework-installation-guide">Jerry Framework Installation Guide<a class="headerlink" href="#jerry-framework-installation-guide" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Jerry is a Claude Code plugin for behavior and workflow guardrails.</p>
+<p><strong>Platform Note:</strong> Jerry is primarily developed and tested on macOS. Linux is expected to work — CI runs on Ubuntu for every job, and uv/git tooling is cross-platform. Windows support is in progress — skills and core functionality work, but hooks that use symlinks or path-sensitive operations may behave differently. Known Windows limitations: bootstrap uses junction points instead of symlinks, and paths in Claude Code commands must use forward slashes. See <a href="../#platform-support">Platform Support</a> for details. Report Windows issues via the <a href="https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml">Windows compatibility template</a>.</p>
+</blockquote>
+<hr />
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#prerequisites">Prerequisites</a></td>
+<td>What you need before installing</td>
+</tr>
+<tr>
+<td><a href="#quick-install-most-users">Quick Install (Most Users)</a></td>
+<td>Two commands — no clone, no build tools</td>
+</tr>
+<tr>
+<td><a href="#enable-hooks-recommended">Enable Hooks (Recommended)</a></td>
+<td>Optional uv install for session context and quality enforcement</td>
+</tr>
+<tr>
+<td><a href="#capability-matrix">Capability Matrix</a></td>
+<td>What works with and without uv</td>
+</tr>
+<tr>
+<td><a href="#alternative-local-clone-install">Alternative: Local Clone Install</a></td>
+<td>For offline use, version pinning, or network-restricted environments</td>
+</tr>
+<tr>
+<td><a href="#configuration">Configuration</a></td>
+<td>Post-installation setup</td>
+</tr>
+<tr>
+<td><a href="#verification">Verification</a></td>
+<td>How to confirm installation succeeded</td>
+</tr>
+<tr>
+<td><a href="#using-jerry">Using Jerry</a></td>
+<td>Getting started with skills</td>
+</tr>
+<tr>
+<td><a href="#developer-setup">Developer Setup</a></td>
+<td>Contributing and development environment</td>
+</tr>
+<tr>
+<td><a href="#troubleshooting">Troubleshooting</a></td>
+<td>Common issues and solutions</td>
+</tr>
+<tr>
+<td><a href="#uninstallation">Uninstallation</a></td>
+<td>How to remove Jerry</td>
+</tr>
+<tr>
+<td><a href="#getting-help">Getting Help</a></td>
+<td>Support resources and documentation</td>
+</tr>
+<tr>
+<td><a href="#license">License</a></td>
+<td>Open source license information</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Software</th>
+<th>Required?</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://code.claude.com">Claude Code</a> 1.0.33+</td>
+<td><strong>Yes</strong></td>
+<td>The AI coding assistant Jerry extends</td>
+</tr>
+<tr>
+<td><a href="https://docs.astral.sh/uv/">uv</a></td>
+<td>Recommended</td>
+<td>Enables hooks (session context, quality enforcement)</td>
+</tr>
+</tbody>
+</table>
+<p>That's it. You do <strong>not</strong> need Git, Python, or a local clone to install and use Jerry's skills.</p>
+<blockquote>
+<p><strong>Don't have Claude Code?</strong> Follow the <a href="https://code.claude.com/docs/en/setup">Setup Guide</a> to install it first, then return here.</p>
+<p><strong>Version note:</strong> The <code>/plugin</code> command and its Installed/Discover/Errors tabs are available in Claude Code 1.0.33+. If <code>/plugin</code> is not recognized, update Claude Code first.</p>
+</blockquote>
+<hr />
+<h2 id="quick-install-most-users">Quick Install (Most Users)<a class="headerlink" href="#quick-install-most-users" title="Permanent link">&para;</a></h2>
+<p>Jerry is a public Claude Code plugin hosted on <a href="https://github.com/geekatron/jerry">GitHub</a>. The repository contains the required <code>.claude-plugin/marketplace.json</code> and <code>.claude-plugin/plugin.json</code> manifests that Claude Code reads to register and install the plugin. This method requires internet access to GitHub and that the repository is accessible (it is public). Install it with two commands in Claude Code:</p>
+<p><strong>Step 1: Add the marketplace</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/plugin marketplace add https://github.com/geekatron/jerry
+</code></pre></div>
+<p>This registers Jerry's plugin catalog with Claude Code by pointing it to the GitHub repository. A marketplace is like an app store — it tells Claude Code what plugins are available. No plugins are installed yet.</p>
+<blockquote>
+<p><strong>Shorthand:</strong> You can also use <code>geekatron/jerry</code> — Claude Code resolves <code>owner/repo</code> to GitHub automatically.</p>
+</blockquote>
+<p><strong>Step 2: Install the plugin</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/plugin install jerry@geekatron-jerry
+</code></pre></div>
+<p>This downloads and activates Jerry's skills. The install command uses the format <code>&lt;plugin&gt;@&lt;marketplace&gt;</code> — <code>jerry</code> is the plugin name (from <code>plugin.json</code>) and <code>geekatron-jerry</code> is the marketplace name (derived from the GitHub <code>owner/repo</code> path).</p>
+<blockquote>
+<p><strong>Verify the marketplace name:</strong> After Step 1, run <code>/plugin marketplace list</code> to confirm the marketplace was registered and to see its name. Use that name as the <code>@suffix</code> in the install command. If the name differs from <code>geekatron-jerry</code>, adjust accordingly: <code>/plugin install jerry@&lt;your-marketplace-name&gt;</code>.</p>
+</blockquote>
+<p><strong>Verify it worked:</strong></p>
+<ol>
+<li>Run <code>/plugin</code> in Claude Code</li>
+<li>Go to the <strong>Installed</strong> tab</li>
+<li>Confirm <code>jerry</code> appears in the list</li>
+</ol>
+<p><strong>Test a skill:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>/problem-solving
+</code></pre></div>
+<p>You should see the problem-solving skill activate.</p>
+<h3 id="installation-scope">Installation Scope<a class="headerlink" href="#installation-scope" title="Permanent link">&para;</a></h3>
+<p>During install, Claude Code asks which scope to use:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Effect</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>User</strong> (default)</td>
+<td>Installs for you across all projects</td>
+<td>Personal use</td>
+</tr>
+<tr>
+<td><strong>Project</strong></td>
+<td>Added to <code>.claude/settings.json</code> (version-controlled)</td>
+<td>Team-wide — all collaborators get Jerry</td>
+</tr>
+<tr>
+<td><strong>Local</strong></td>
+<td>Only you, only this repository</td>
+<td>Testing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendation:</strong> Use <strong>User</strong> for personal use. Use <strong>Project</strong> when you want your whole team to have Jerry available automatically — the <code>.claude/settings.json</code> file is committed to version control, so new team members get Jerry active as soon as they clone the repository.</p>
+<p><strong>Alternative: Interactive Installation</strong></p>
+<ol>
+<li>Run <code>/plugin</code></li>
+<li>Go to the <strong>Discover</strong> tab</li>
+<li>Find <code>jerry</code></li>
+<li>Press Enter and select your installation scope</li>
+</ol>
+<blockquote>
+<p><strong>Remote install not working?</strong> If the marketplace add or plugin install commands fail, use the <a href="#alternative-local-clone-install">Local Clone Install</a> below instead. The local clone method is verified and always works. If you encounter issues with the remote path, please <a href="https://github.com/geekatron/jerry/issues">file a GitHub issue</a> so we can improve these instructions.</p>
+</blockquote>
+<hr />
+<h2 id="enable-hooks-recommended">Enable Hooks (Recommended)<a class="headerlink" href="#enable-hooks-recommended" title="Permanent link">&para;</a></h2>
+<p>Jerry's skills work immediately after the Quick Install. However, Jerry also ships four hooks that provide session context auto-loading, per-prompt quality reinforcement, pre-tool-use validation, and subagent enforcement. These hooks require <a href="https://docs.astral.sh/uv/">uv</a> (a fast Python package manager) to execute.</p>
+<h3 id="what-hooks-provide">What hooks provide<a class="headerlink" href="#what-hooks-provide" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Hook</th>
+<th>What It Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SessionStart</td>
+<td>Auto-loads project context, rules, and quality framework at session start</td>
+</tr>
+<tr>
+<td>UserPromptSubmit</td>
+<td>Re-injects critical rules every prompt to combat context rot (L2 enforcement)</td>
+</tr>
+<tr>
+<td>PreToolUse</td>
+<td>AST-based validation before tool calls execute (L3 enforcement)</td>
+</tr>
+<tr>
+<td>SubagentStop</td>
+<td>Enforces single-level subagent hierarchy (P-003)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="install-uv">Install uv<a class="headerlink" href="#install-uv" title="Permanent link">&para;</a></h3>
+<p><strong>macOS / Linux:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</code></pre></div>
+<p><strong>Windows (PowerShell):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">powershell</span> <span class="n">-ExecutionPolicy</span> <span class="n">ByPass</span> <span class="n">-c</span> <span class="s2">&quot;irm https://astral.sh/uv/install.ps1 | iex&quot;</span>
+</code></pre></div>
+<p>After installing, <strong>restart your terminal</strong> (close and reopen), then verify:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>--version
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># Should output: uv 0.x.x</span>
+</code></pre></div>
+<p>That's it. Once uv is installed, hooks activate automatically the next time you start Claude Code.</p>
+<blockquote>
+<p><strong>Note:</strong> You do NOT need Python installed separately. The uv installer handles Python automatically.</p>
+<p><strong>Early access caveat:</strong> Hook enforcement is under active development. Some hooks may have schema validation issues that cause them to fail silently (fail-open behavior — skills always work, but enforcement may not fire). If hooks don't appear to be working after installing uv, check <a href="https://github.com/geekatron/jerry/issues">GitHub Issues</a> for the latest status.</p>
+</blockquote>
+<hr />
+<h2 id="capability-matrix">Capability Matrix<a class="headerlink" href="#capability-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Without uv</th>
+<th>With uv</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skills (<code>/problem-solving</code>, <code>/worktracker</code>, etc.)</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Session context auto-loading</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Per-prompt quality reinforcement (L2)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Pre-tool-use AST validation (L3)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Subagent hierarchy enforcement</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>Without uv, hooks fail silently (fail-open) — skills still work, but you lose the automated guardrail enforcement that makes Jerry most effective.</p>
+<hr />
+<h2 id="alternative-local-clone-install">Alternative: Local Clone Install<a class="headerlink" href="#alternative-local-clone-install" title="Permanent link">&para;</a></h2>
+<p>Use this method if you:</p>
+<ul>
+<li>Are in a <strong>network-restricted environment</strong> that blocks GitHub marketplace access</li>
+<li>Need <strong>offline</strong> access to Jerry's source</li>
+<li>Want to <strong>pin a specific version</strong> (e.g., <code>git clone --branch v1.0.0</code>)</li>
+</ul>
+<h3 id="step-1-clone-the-repository">Step 1: Clone the repository<a class="headerlink" href="#step-1-clone-the-repository" title="Permanent link">&para;</a></h3>
+<p><strong>macOS / Linux:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/plugins
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/geekatron/jerry.git<span class="w"> </span>~/plugins/jerry
+</code></pre></div>
+<p><strong>Windows (PowerShell):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">New-Item</span> <span class="n">-ItemType</span> <span class="n">Directory</span> <span class="n">-Force</span> <span class="n">-Path</span> <span class="s2">&quot;$env:USERPROFILE\plugins&quot;</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">://</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">geekatron</span><span class="p">/</span><span class="n">jerry</span><span class="p">.</span><span class="n">git</span> <span class="s2">&quot;$env:USERPROFILE\plugins\jerry&quot;</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Important:</strong> The clone path must not contain spaces. Claude Code's <code>/plugin marketplace add</code> command does not support paths with spaces.</p>
+</blockquote>
+<h3 id="step-2-add-the-local-marketplace">Step 2: Add the local marketplace<a class="headerlink" href="#step-2-add-the-local-marketplace" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>/plugin marketplace add ~/plugins/jerry
+</code></pre></div>
+<p><strong>Windows (Claude Code):</strong> Use forward slashes: <code>/plugin marketplace add C:/Users/YOUR_USERNAME/plugins/jerry</code></p>
+<blockquote>
+<p><strong>Tip (Windows):</strong> To get the exact forward-slash path, run this in PowerShell:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">(</span><span class="nb">Get-Item</span> <span class="s2">&quot;$env:USERPROFILE\plugins\jerry&quot;</span><span class="p">).</span><span class="n">FullName</span> <span class="o">-replace</span> <span class="s1">&#39;\\&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span>
+</code></pre></div></p>
+</blockquote>
+<h3 id="step-3-install-the-plugin">Step 3: Install the plugin<a class="headerlink" href="#step-3-install-the-plugin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>/plugin install jerry@jerry-framework
+</code></pre></div>
+<h3 id="advanced-ssh-clone">Advanced: SSH clone<a class="headerlink" href="#advanced-ssh-clone" title="Permanent link">&para;</a></h3>
+<p>If you prefer SSH over HTTPS (e.g., you already have an SSH key configured with GitHub):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:geekatron/jerry.git<span class="w"> </span>~/plugins/jerry
+</code></pre></div>
+<p>All subsequent steps remain the same. See <a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh">GitHub's SSH documentation</a> for SSH key setup.</p>
+<h3 id="version-pinning">Version pinning<a class="headerlink" href="#version-pinning" title="Permanent link">&para;</a></h3>
+<p>To pin Jerry to a specific release:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v1.0.0<span class="w"> </span>https://github.com/geekatron/jerry.git<span class="w"> </span>~/plugins/jerry
+</code></pre></div>
+<p>See <a href="https://github.com/geekatron/jerry/releases">releases</a> for available tags.</p>
+<hr />
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<h3 id="project-setup-optional">Project Setup (Optional)<a class="headerlink" href="#project-setup-optional" title="Permanent link">&para;</a></h3>
+<p>Jerry uses project-based workflows for organizing work. To set up a project:</p>
+<ol>
+<li><strong>Set the project environment variable:</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># macOS/Linux</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">JERRY_PROJECT</span><span class="o">=</span>PROJ-001-my-project
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Windows PowerShell</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="nv">$env</span>:JERRY_PROJECT<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;PROJ-001-my-project&quot;</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> The project name follows the format <code>PROJ-{NNN}-{slug}</code>. Choose any slug that describes your work (e.g., <code>PROJ-001-my-api</code>). The number prefix helps Jerry track multiple projects. Your first project is typically <code>PROJ-001</code>.</p>
+</blockquote>
+<ol>
+<li><strong>Create project structure:</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># macOS/Linux</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>projects/PROJ-001-my-project/.jerry/data/items
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Windows PowerShell</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>New-Item<span class="w"> </span>-ItemType<span class="w"> </span>Directory<span class="w"> </span>-Force<span class="w"> </span>-Path<span class="w"> </span><span class="s2">&quot;projects\PROJ-001-my-project\.jerry\data\items&quot;</span>
+</code></pre></div>
+<p>The SessionStart hook will automatically load project context when you start Claude Code.</p>
+<hr />
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<h3 id="quick-install-verification">Quick Install verification<a class="headerlink" href="#quick-install-verification" title="Permanent link">&para;</a></h3>
+<ol>
+<li>In Claude Code, run <code>/plugin</code></li>
+<li>Go to the <strong>Installed</strong> tab</li>
+<li>Verify <code>jerry</code> appears in the list</li>
+</ol>
+<h3 id="hooks-verification">Hooks verification<a class="headerlink" href="#hooks-verification" title="Permanent link">&para;</a></h3>
+<p>If you installed uv, start a new Claude Code session. The SessionStart hook fires automatically. You should see project context loading in the session output.</p>
+<h3 id="skill-test">Skill test<a class="headerlink" href="#skill-test" title="Permanent link">&para;</a></h3>
+<p>Run a simple skill to verify everything works:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>/problem-solving
+</code></pre></div>
+<p>You should see the problem-solving skill activate with information about available agents.</p>
+<blockquote>
+<p><strong>Note:</strong> Most skills require an active project (<code>JERRY_PROJECT</code> environment variable set). If you skipped Configuration, use <code>/help</code> instead to verify skill availability without a project.</p>
+</blockquote>
+<h3 id="check-for-errors">Check for errors<a class="headerlink" href="#check-for-errors" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Run <code>/plugin</code></li>
+<li>Go to the <strong>Errors</strong> tab</li>
+<li>Verify no errors related to <code>jerry</code></li>
+</ol>
+<hr />
+<h2 id="using-jerry">Using Jerry<a class="headerlink" href="#using-jerry" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>New to Jerry?</strong> Follow the <a href="../runbooks/getting-started/">Getting Started runbook</a> for a guided walkthrough from installation to your first persisted skill output.</p>
+</blockquote>
+<h3 id="available-skills">Available Skills<a class="headerlink" href="#available-skills" title="Permanent link">&para;</a></h3>
+<p>After installation, these skills are available via slash commands:</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Problem-Solving</td>
+<td><code>/problem-solving</code></td>
+<td>Research, analysis, architecture decisions</td>
+</tr>
+<tr>
+<td>Work Tracker</td>
+<td><code>/worktracker</code></td>
+<td>Task and work item management</td>
+</tr>
+<tr>
+<td>NASA SE</td>
+<td><code>/nasa-se</code></td>
+<td>Systems engineering processes (NPR 7123.1D)</td>
+</tr>
+<tr>
+<td>Orchestration</td>
+<td><code>/orchestration</code></td>
+<td>Multi-phase workflow coordination</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td><code>/architecture</code></td>
+<td>Design decisions and ADRs</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td><code>/transcript</code></td>
+<td>Meeting transcript parsing</td>
+</tr>
+<tr>
+<td>Adversary</td>
+<td><code>/adversary</code></td>
+<td>Adversarial quality reviews and tournament scoring</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h3>
+<p><strong>Research a topic:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>/problem-solving research OAuth2 implementation patterns for Python
+</code></pre></div></p>
+<p><strong>Create a work item:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>/worktracker add &quot;Implement user authentication&quot;
+</code></pre></div></p>
+<p><strong>Make an architecture decision:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>/architecture create ADR for choosing PostgreSQL over SQLite
+</code></pre></div></p>
+<h3 id="persistent-artifacts">Persistent Artifacts<a class="headerlink" href="#persistent-artifacts" title="Permanent link">&para;</a></h3>
+<p>All skill outputs are saved to files in your project:</p>
+<table>
+<thead>
+<tr>
+<th>Output Type</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Research</td>
+<td><code>docs/research/</code></td>
+</tr>
+<tr>
+<td>Analysis</td>
+<td><code>docs/analysis/</code></td>
+</tr>
+<tr>
+<td>Critiques</td>
+<td><code>docs/critiques/</code></td>
+</tr>
+<tr>
+<td>Decisions (ADRs)</td>
+<td><code>docs/decisions/</code></td>
+</tr>
+<tr>
+<td>Investigations</td>
+<td><code>docs/investigations/</code></td>
+</tr>
+<tr>
+<td>Reviews</td>
+<td><code>docs/reviews/</code></td>
+</tr>
+<tr>
+<td>Reports</td>
+<td><code>docs/reports/</code></td>
+</tr>
+<tr>
+<td>Synthesis</td>
+<td><code>docs/synthesis/</code></td>
+</tr>
+</tbody>
+</table>
+<p>These files survive context compaction and session boundaries, building your project's knowledge base over time.</p>
+<hr />
+<h2 id="developer-setup">Developer Setup<a class="headerlink" href="#developer-setup" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>This section is for contributors to the Jerry codebase.</strong> If you installed Jerry as a plugin, you do not need anything below.</p>
+</blockquote>
+<h3 id="prerequisites_1">Prerequisites<a class="headerlink" href="#prerequisites_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://docs.astral.sh/uv/">uv</a> (manages Python automatically — no separate Python install needed)</li>
+<li>Git</li>
+</ul>
+<h3 id="development-environment">Development Environment<a class="headerlink" href="#development-environment" title="Permanent link">&para;</a></h3>
+<p><strong>macOS / Linux:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/geekatron/jerry.git
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nb">cd</span><span class="w"> </span>jerry
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>make<span class="w"> </span>setup<span class="w">    </span><span class="c1"># Installs deps + pre-commit hooks</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>make<span class="w"> </span><span class="nb">test</span><span class="w">     </span><span class="c1"># Run test suite</span>
+</code></pre></div></p>
+<p><strong>Windows (Git Bash or PowerShell):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/geekatron/jerry.git
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nb">cd</span><span class="w"> </span>jerry
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>uv<span class="w"> </span>sync<span class="w">                        </span><span class="c1"># Install dependencies</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>uv<span class="w"> </span>run<span class="w"> </span>pre-commit<span class="w"> </span>install<span class="w">      </span><span class="c1"># Install pre-commit hooks</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>--tb<span class="o">=</span>short<span class="w"> </span>-q<span class="w">    </span><span class="c1"># Run test suite</span>
+</code></pre></div></p>
+<blockquote>
+<p><strong>Note:</strong> Windows does not have <code>make</code> by default. Use the <code>uv run</code> commands directly. See <a href="https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for the full Make target equivalents table.</p>
+</blockquote>
+<h3 id="common-developer-commands">Common Developer Commands<a class="headerlink" href="#common-developer-commands" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>macOS/Linux</th>
+<th>Windows / All Platforms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First-time setup</td>
+<td><code>make setup</code></td>
+<td><code>uv sync &amp;&amp; uv run pre-commit install</code></td>
+</tr>
+<tr>
+<td>Run tests</td>
+<td><code>make test</code></td>
+<td><code>uv run pytest --tb=short -q</code></td>
+</tr>
+<tr>
+<td>Run linters</td>
+<td><code>make lint</code></td>
+<td><code>uv run ruff check src/ tests/ &amp;&amp; uv run pyright src/</code></td>
+</tr>
+<tr>
+<td>Format code</td>
+<td><code>make format</code></td>
+<td><code>uv run ruff check --fix src/ tests/ &amp;&amp; uv run ruff format src/ tests/</code></td>
+</tr>
+<tr>
+<td>All pre-commit hooks</td>
+<td><code>make pre-commit</code></td>
+<td><code>uv run pre-commit run --all-files</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="context-distribution-bootstrap">Context Distribution (Bootstrap)<a class="headerlink" href="#context-distribution-bootstrap" title="Permanent link">&para;</a></h3>
+<p>Jerry's behavioral rules live in <code>.context/</code> (canonical source) and are synced to <code>.claude/</code> via symlinks. After cloning, run the bootstrap:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/bootstrap_context.py<span class="w">        </span><span class="c1"># Set up symlinks</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/bootstrap_context.py<span class="w"> </span>--check<span class="w"> </span><span class="c1"># Verify sync</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Who needs this?</strong> Bootstrap is for developers editing <code>.context/rules/</code> who want changes to auto-propagate to <code>.claude/rules/</code>. If you installed Jerry as a plugin, you do not need to run bootstrap — skills and hooks work without it.</p>
+</blockquote>
+<p>See <a href="../BOOTSTRAP/">Bootstrap Guide</a> for platform-specific details.</p>
+<h3 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h3>
+<p>Jerry follows hexagonal architecture:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>src/
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>├── domain/           # Pure business logic (no external deps)
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>├── application/      # Use cases (CQRS commands/queries)
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>├── infrastructure/   # Adapters (persistence, messaging)
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>└── interface/        # Primary adapters (CLI)
+</code></pre></div>
+<p>See <a href="https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for detailed contribution guidelines, Windows-specific notes, and coding standards.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="quick-install-issues">Quick Install Issues<a class="headerlink" href="#quick-install-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Marketplace not found</strong></p>
+<p><strong>Symptom:</strong> <code>/plugin marketplace add https://github.com/geekatron/jerry</code> returns an error</p>
+<p><strong>Solutions:</strong>
+1. Verify Claude Code is version 1.0.33+: update with <code>brew upgrade claude-code</code> (macOS) or <code>npm update -g @anthropic-ai/claude-code</code>
+2. Check your internet connection — the command needs GitHub access
+3. If behind a corporate proxy, use the <a href="#alternative-local-clone-install">Local Clone Install</a> instead</p>
+<p><strong>Plugin not found after adding marketplace</strong></p>
+<p><strong>Symptom:</strong> <code>/plugin install jerry@...</code> returns "plugin not found"</p>
+<p><strong>Solutions:</strong>
+1. Run <code>/plugin marketplace list</code> to see the actual marketplace name — the <code>@suffix</code> in the install command must match exactly
+2. Remote installs (<code>geekatron/jerry</code>): marketplace name is <code>geekatron-jerry</code> — use <code>/plugin install jerry@geekatron-jerry</code>
+3. Local clone installs (<code>~/plugins/jerry</code>): marketplace name is <code>jerry-framework</code> — use <code>/plugin install jerry@jerry-framework</code>
+4. Refresh the marketplace: <code>/plugin marketplace update &lt;marketplace-name&gt;</code></p>
+<h3 id="hook-issues">Hook Issues<a class="headerlink" href="#hook-issues" title="Permanent link">&para;</a></h3>
+<p><strong>uv: command not found</strong></p>
+<p><strong>Symptom:</strong> Hooks fail with "uv: command not found"</p>
+<p><strong>Solution (macOS/Linux):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="c1"># Restart your terminal</span>
+</code></pre></div></p>
+<p><strong>Solution (Windows):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="n">powershell</span> <span class="n">-ExecutionPolicy</span> <span class="n">ByPass</span> <span class="n">-c</span> <span class="s2">&quot;irm https://astral.sh/uv/install.ps1 | iex&quot;</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="c"># Close and reopen PowerShell</span>
+</code></pre></div></p>
+<p>If still not found, add to PATH manually:
+- macOS/Linux: <code>export PATH="$HOME/.local/bin:$PATH"</code> (add to <code>~/.zshrc</code> or <code>~/.bashrc</code>)
+- Windows: Add <code>%USERPROFILE%\.local\bin</code> to System PATH</p>
+<p><strong>Hooks not firing</strong></p>
+<p><strong>Symptom:</strong> SessionStart hook doesn't run, no project context loaded</p>
+<p><strong>Solutions:</strong>
+1. Verify uv is installed: <code>uv --version</code>
+2. Restart Claude Code completely (close and reopen)
+3. Check <code>/plugin</code> &gt; <strong>Errors</strong> tab for hook-related errors
+4. For local clone installs, verify hooks exist in the <code>.claude-plugin/hooks/</code> directory</p>
+<h3 id="skill-issues">Skill Issues<a class="headerlink" href="#skill-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Skills not appearing</strong></p>
+<p><strong>Symptom:</strong> <code>/problem-solving</code> doesn't work</p>
+<p><strong>Solutions:</strong>
+1. Check the <strong>Errors</strong> tab in <code>/plugin</code>
+2. Clear the plugin cache:
+   - macOS: <code>rm -rf ~/.claude/plugins/cache</code>
+   - Windows: <code>Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"</code>
+3. Restart Claude Code
+4. Reinstall: <code>/plugin uninstall jerry</code> then re-run the install command for your method (see <a href="#quick-install-most-users">Quick Install</a> or <a href="#alternative-local-clone-install">Local Clone</a>)</p>
+<h3 id="project-issues">Project Issues<a class="headerlink" href="#project-issues" title="Permanent link">&para;</a></h3>
+<p><strong><code>&lt;project-required&gt;</code> or <code>&lt;project-error&gt;</code></strong></p>
+<p><strong>Symptom:</strong> Skills show XML-tagged output instead of the expected response</p>
+<p><strong>Cause:</strong> <code>JERRY_PROJECT</code> is not set, points to a non-existent project, or the directory structure is incomplete.</p>
+<p><strong>Solutions:</strong>
+1. Set the variable: <code>export JERRY_PROJECT=PROJ-001-my-project</code> (macOS/Linux) or <code>$env:JERRY_PROJECT = "PROJ-001-my-project"</code> (Windows)
+2. Verify the directory exists: <code>ls projects/$JERRY_PROJECT/</code> — it should contain <code>PLAN.md</code> and <code>WORKTRACKER.md</code>
+3. If you haven't created a project, follow the <a href="#configuration">Configuration</a> section
+4. Use <code>/help</code> to verify Jerry is installed — this works without a project</p>
+<h3 id="path-issues-on-windows">Path Issues on Windows<a class="headerlink" href="#path-issues-on-windows" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> "path not found" when adding local marketplace</p>
+<p><strong>Solutions:</strong>
+- Use forward slashes in Claude Code: <code>C:/Users/name/plugins/jerry</code>
+- Avoid backslashes or environment variables in the Claude Code command</p>
+<hr />
+<h2 id="uninstallation">Uninstallation<a class="headerlink" href="#uninstallation" title="Permanent link">&para;</a></h2>
+<h3 id="remove-the-plugin">Remove the Plugin<a class="headerlink" href="#remove-the-plugin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>/plugin uninstall jerry
+</code></pre></div>
+<h3 id="remove-the-marketplace">Remove the Marketplace<a class="headerlink" href="#remove-the-marketplace" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>/plugin marketplace remove geekatron-jerry
+</code></pre></div>
+<blockquote>
+<p><strong>Not sure of the name?</strong> Run <code>/plugin marketplace list</code> to see your marketplace name. Local clone users will see <code>jerry-framework</code> instead.</p>
+</blockquote>
+<h3 id="delete-local-files-optional">Delete Local Files (Optional)<a class="headerlink" href="#delete-local-files-optional" title="Permanent link">&para;</a></h3>
+<p>Only applicable if you used the local clone method:</p>
+<p><strong>macOS/Linux:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/plugins/jerry
+</code></pre></div></p>
+<p><strong>Windows PowerShell:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nb">Remove-Item</span> <span class="n">-Recurse</span> <span class="n">-Force</span> <span class="s2">&quot;$env:USERPROFILE\plugins\jerry&quot;</span>
+</code></pre></div></p>
+<hr />
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>GitHub Issues:</strong> <a href="https://github.com/geekatron/jerry/issues">github.com/geekatron/jerry/issues</a></li>
+<li><strong>Documentation:</strong> <a href="https://jerry.geekatron.org">jerry.geekatron.org</a></li>
+<li><strong>Claude Code Help:</strong> Run <code>/help</code> in Claude Code</li>
+</ul>
+<hr />
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
+<p>Jerry Framework is open source under the <a href="https://github.com/geekatron/jerry/blob/main/LICENSE">Apache License 2.0</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

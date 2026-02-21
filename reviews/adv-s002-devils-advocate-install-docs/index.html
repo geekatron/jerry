@@ -1,0 +1,2044 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/reviews/adv-s002-devils-advocate-install-docs/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Devil's Advocate Report: Installation Documentation Set - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#devils-advocate-report-installation-documentation-set" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Devil's Advocate Report: Installation Documentation Set
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bootstrap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started Runbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Problem Solving
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orchestration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transcript Processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin Development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLAUDE.md Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema Versioning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Session Context Schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Research
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Single vs. Multi-Agent Analysis
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adversarial Strategy Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Strategy Selection & Enforcement (ADRs)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adversarial Quality Deep Dives
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Skill Compliance Framework
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Governance & Constitutional AI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Context Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OSS Methodology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Claude Code Ecosystem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Governance
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Governance
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jerry Constitution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Sections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findings-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      Findings Table
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Findings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#da-001-20260218-two-commands-install-claim-is-unverified-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-001-20260218: "Two Commands" Install Claim is Unverified [CRITICAL]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-002-20260218-bug-002-hook-schema-validation-failures-contradict-hooks-activate-automatically-claim-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-002-20260218: BUG-002 Hook Schema Validation Failures Contradict "Hooks Activate Automatically" Claim [CRITICAL]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-003-20260218-marketplace-name-derivation-claim-is-asserted-not-demonstrated-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-003-20260218: Marketplace Name Derivation Claim is Asserted, Not Demonstrated [CRITICAL]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-004-20260218-enable-hooks-recommended-framing-understates-the-risk-of-skipping-major" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-004-20260218: "Enable Hooks (Recommended)" Framing Understates the Risk of Skipping [MAJOR]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-005-20260218-jerry-session-start-command-is-undocumented-and-unverifiable-major" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-005-20260218: jerry session start Command is Undocumented and Unverifiable [MAJOR]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-006-20260218-skill-auto-activation-via-trigger-keywords-presented-as-reliable-with-no-documented-failure-modes-major" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-006-20260218: Skill Auto-Activation via Trigger Keywords Presented as Reliable with No Documented Failure Modes [MAJOR]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-007-20260218-windows-support-claim-overstated-relative-to-in-progress-status-major" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-007-20260218: Windows Support Claim Overstated Relative to "In Progress" Status [MAJOR]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-008-20260218-no-version-assertion-that-plugin-ui-matches-described-interface-major" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-008-20260218: No Version Assertion That /plugin UI Matches Described Interface [MAJOR]
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#da-009-20260218-bootstrap-rollback-rm-command-is-potentially-destructive-on-macos-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      DA-009-20260218: Bootstrap Rollback rm Command Is Potentially Destructive on macOS [MINOR]
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="devils-advocate-report-installation-documentation-set">Devil's Advocate Report: Installation Documentation Set<a class="headerlink" href="#devils-advocate-report-installation-documentation-set" title="Permanent link">&para;</a></h1>
+<p><strong>Strategy:</strong> S-002 Devil's Advocate
+<strong>Deliverable:</strong> <code>docs/INSTALLATION.md</code>, <code>docs/index.md</code>, <code>docs/BOOTSTRAP.md</code>, <code>docs/runbooks/getting-started.md</code>
+<strong>Criticality:</strong> C2 (Standard)
+<strong>Date:</strong> 2026-02-18
+<strong>Reviewer:</strong> adv-executor agent
+<strong>H-16 Compliance:</strong> S-003 Steelman applied 2026-02-18 — confirmed in <code>docs/reviews/adv-s003-steelman-install-docs.md</code></p>
+<hr />
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#summary">Summary</a></td>
+<td>Overall assessment and recommendation</td>
+</tr>
+<tr>
+<td><a href="#findings-table">Findings Table</a></td>
+<td>All DA-NNN findings with severity and dimension</td>
+</tr>
+<tr>
+<td><a href="#detailed-findings">Detailed Findings</a></td>
+<td>Evidence, analysis, and response requirements for each finding</td>
+</tr>
+<tr>
+<td><a href="#recommendations">Recommendations</a></td>
+<td>Prioritized action list by P0/P1/P2</td>
+</tr>
+<tr>
+<td><a href="#scoring-impact">Scoring Impact</a></td>
+<td>Dimension-level impact from Devil's Advocate analysis</td>
+</tr>
+<tr>
+<td><a href="#execution-statistics">Execution Statistics</a></td>
+<td>Execution metadata</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>10 counter-arguments identified: 3 Critical, 5 Major, 2 Minor. The documentation set makes confident claims about a two-command installation path and optional hooks that are undermined by unverified preconditions — specifically, whether the plugin is actually published to the Claude Code marketplace, whether the exact CLI command syntax is accurate, and whether the known BUG-002 hook schema validation failures contradict the "hooks work automatically" claim. Two Critical findings (DA-001, DA-002) directly attack the documentation's most prominent user-facing promises; if either counter-argument is valid, a significant portion of new users will encounter failures with no actionable resolution path in the docs. The documentation cannot be accepted in its current form without either (a) verifying the installation commands work end-to-end or (b) prominently disclosing what cannot be verified at documentation time. <strong>Recommendation: REVISE — address all Critical and Major findings before release.</strong></p>
+<hr />
+<h2 id="findings-table">Findings Table<a class="headerlink" href="#findings-table" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Severity</th>
+<th>Evidence</th>
+<th>Affected Dimension</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DA-001-20260218</td>
+<td>"Two commands" install claim is unverified — plugin may not be published</td>
+<td>Critical</td>
+<td>"Jerry is a public Claude Code plugin. Install it with two commands" (INSTALLATION.md, Quick Install heading)</td>
+<td>Evidence Quality</td>
+</tr>
+<tr>
+<td>DA-002-20260218</td>
+<td>BUG-002 hook schema validation failures contradict "hooks activate automatically" claim</td>
+<td>Critical</td>
+<td>"Hooks activate automatically the next time you start Claude Code — no additional configuration needed." (INSTALLATION.md, Enable Hooks section)</td>
+<td>Internal Consistency</td>
+</tr>
+<tr>
+<td>DA-003-20260218</td>
+<td>Marketplace name derivation claim is asserted, not demonstrated</td>
+<td>Critical</td>
+<td>"Remote installs (geekatron/jerry): marketplace name is geekatron-jerry" (INSTALLATION.md, Troubleshooting section)</td>
+<td>Methodological Rigor</td>
+</tr>
+<tr>
+<td>DA-004-20260218</td>
+<td>"Hooks are optional" framing understates the risk of operating without them</td>
+<td>Major</td>
+<td>Section heading reads "Enable Hooks (Recommended)" — not "Required" (INSTALLATION.md)</td>
+<td>Actionability</td>
+</tr>
+<tr>
+<td>DA-005-20260218</td>
+<td><code>jerry session start</code> command is undocumented in the CLI reference</td>
+<td>Major</td>
+<td>"Open Claude Code in the same terminal session... You can also trigger it explicitly: jerry session start" (getting-started.md, Step 3)</td>
+<td>Completeness</td>
+</tr>
+<tr>
+<td>DA-006-20260218</td>
+<td>Skill auto-activation via trigger keywords is presented as reliable — no failure mode documented</td>
+<td>Major</td>
+<td>"The skill activates automatically when your message contains trigger keywords: research, analyze..." (getting-started.md, Step 4)</td>
+<td>Completeness</td>
+</tr>
+<tr>
+<td>DA-007-20260218</td>
+<td>Windows support claim overstated given "in progress" status</td>
+<td>Major</td>
+<td>"Windows support is actively in progress — core functionality works" vs. "In progress — core functionality works, edge cases may exist" (INSTALLATION.md header, index.md Platform Support)</td>
+<td>Internal Consistency</td>
+</tr>
+<tr>
+<td>DA-008-20260218</td>
+<td>No version assertion that <code>/plugin</code> command interface matches described UI</td>
+<td>Major</td>
+<td>"Run /plugin in Claude Code — Go to the Installed tab" (INSTALLATION.md, Verification section)</td>
+<td>Evidence Quality</td>
+</tr>
+<tr>
+<td>DA-009-20260218</td>
+<td>Bootstrap rollback uses <code>rm</code> on symlinks — dangerous on macOS when symlink target does not exist</td>
+<td>Minor</td>
+<td>"rm .claude/rules .claude/patterns # macOS/Linux" (BOOTSTRAP.md, Rollback section)</td>
+<td>Actionability</td>
+</tr>
+<tr>
+<td>DA-010-20260218</td>
+<td>Local clone install step 3 uses a different marketplace name than the remote install</td>
+<td>Minor</td>
+<td>"Local clone installs: marketplace name is jerry-framework — use /plugin install jerry@jerry-framework" (INSTALLATION.md, Troubleshooting) vs. no explicit explanation of why names differ</td>
+<td>Methodological Rigor</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="detailed-findings">Detailed Findings<a class="headerlink" href="#detailed-findings" title="Permanent link">&para;</a></h2>
+<h3 id="da-001-20260218-two-commands-install-claim-is-unverified-critical">DA-001-20260218: "Two Commands" Install Claim is Unverified [CRITICAL]<a class="headerlink" href="#da-001-20260218-two-commands-install-claim-is-unverified-critical" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, Quick Install (Most Users) section; <code>docs/index.md</code>, Quick Start section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 3 — Logical flaws, Unstated assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"Jerry is a public Claude Code plugin. Install it with two commands in Claude Code:"
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/plugin marketplace add https://github.com/geekatron/jerry
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/plugin install jerry@geekatron-jerry
+</code></pre></div>
+(INSTALLATION.md, Quick Install section, lines 44–49)</p>
+</blockquote>
+<p>Also in <code>docs/index.md</code>, Quick Start section:</p>
+<blockquote>
+<p>"In Claude Code, run two commands"</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The documentation opens with a strong, unqualified claim: Jerry is a <em>public</em> Claude Code plugin that installs with <em>two commands</em>. This claim has three unstated preconditions that have not been verified:</p>
+<ol>
+<li>
+<p><strong>The GitHub repository must be configured as a valid Claude Code plugin source.</strong> Claude Code's plugin marketplace does not automatically recognize any GitHub repository as a plugin source. The repository must contain a <code>claude-plugin.json</code> or equivalent manifest recognized by the Claude Code plugin system. The documentation does not state whether this manifest exists, is correctly structured, or has been tested against a real Claude Code installation.</p>
+</li>
+<li>
+<p><strong><code>/plugin marketplace add</code> must succeed against <code>https://github.com/geekatron/jerry</code>.</strong> This command implies that the Claude Code plugin marketplace can resolve the repository URL at the time of user execution — meaning the repository must be public, contain the correct plugin metadata, and be resolvable by the version of Claude Code the user has installed. None of these conditions are verified in the documentation.</p>
+</li>
+<li>
+<p><strong>The instruction exists in the context of an Early Access project.</strong> <code>docs/index.md</code> explicitly states: "Jerry is under active development. The framework is functional and used in production workflows, but APIs, skill interfaces, and configuration formats may change between releases." The Quick Install instruction makes no similar caveat. A new user reading INSTALLATION.md in isolation will encounter no warning that the marketplace install path may be aspirational rather than tested.</p>
+</li>
+</ol>
+<p>If the plugin is not yet published to a state where <code>/plugin marketplace add https://github.com/geekatron/jerry</code> succeeds, every user who follows the Quick Install path will fail at Step 1, with no recovery path other than the Local Clone Install — which requires Git (a dependency the documentation explicitly claims is not needed: "You do <strong>not</strong> need Git... to install and use Jerry's skills").</p>
+<p>The counter-argument: the documentation's most prominent claim — "install with two commands" — may be untrue at the time of publication, and the documentation provides no mechanism for a user to discover this before spending time troubleshooting.</p>
+<p><strong>Impact:</strong> If this counter-argument is valid, the Quick Install section fails for all users, the "2 commands" value proposition is false, and the fallback (Local Clone Install) silently contradicts the "no Git required" prerequisite claim.</p>
+<p><strong>Dimension:</strong> Evidence Quality</p>
+<p><strong>Response Required:</strong> The creator must provide one of: (a) evidence that <code>/plugin marketplace add https://github.com/geekatron/jerry</code> succeeds end-to-end on a fresh Claude Code 1.0.33+ installation, or (b) a disclosure in the Quick Install section that the marketplace path requires the plugin to be published, with a link to a status page or release note.</p>
+<p><strong>Acceptance Criteria:</strong> Either (a) a documented test result showing the two-command install succeeds, or (b) a sentence in the Quick Install section that reads approximately: "Note: This install path requires Jerry to be registered in the Claude Code marketplace. See <a href="https://github.com/geekatron/jerry/releases">releases</a> to confirm the current release status before proceeding."</p>
+<hr />
+<h3 id="da-002-20260218-bug-002-hook-schema-validation-failures-contradict-hooks-activate-automatically-claim-critical">DA-002-20260218: BUG-002 Hook Schema Validation Failures Contradict "Hooks Activate Automatically" Claim [CRITICAL]<a class="headerlink" href="#da-002-20260218-bug-002-hook-schema-validation-failures-contradict-hooks-activate-automatically-claim-critical" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, Enable Hooks (Recommended) section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 2 — Contradicting evidence; Step 3 — Unstated assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"That's it. Hooks activate automatically the next time you start Claude Code — no additional configuration needed."
+(INSTALLATION.md, Enable Hooks section, line 137)</p>
+<p>"Without uv, hooks fail silently (fail-open) — skills still work, but you lose the automated guardrail enforcement that makes Jerry most effective."
+(INSTALLATION.md, Capability Matrix section, line 153)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The documentation claims hooks activate automatically after installing uv, with "no additional configuration needed." This claim is directly contradicted by an open known bug in the Jerry framework itself.</p>
+<p>BUG-002 (documented in the project's MEMORY context) describes "Hook JSON Schema Validation Failures — L2 enforcement completely broken" with 7 root causes across 4 files: <code>user-prompt-submit.py</code>, <code>pre_tool_use.py</code>, <code>subagent_stop.py</code>, and <code>hooks.json</code>. The bug description states "L2 enforcement completely broken."</p>
+<p>The documentation's claim — "hooks activate automatically... no additional configuration needed" — is accurate only if the hooks actually function after activation. If BUG-002 represents unfixed code that ships to users, then:</p>
+<ol>
+<li>Users who install uv and expect L2 per-prompt enforcement (UserPromptSubmit hook) will get silent failures — the hook will not function as documented.</li>
+<li>The Capability Matrix table shows "Per-prompt quality reinforcement (L2): Yes" for the "With uv" column — this entry is false if BUG-002 is not resolved before release.</li>
+<li>The documentation's hooks section is the primary reason given for why users should install uv. If the hooks are broken, the instruction to install uv is providing false value.</li>
+</ol>
+<p>The counter-argument does not require BUG-002 to be unresolved at release — it requires that the documentation be accurate at the time it is published. The documentation currently makes an unqualified positive claim ("hooks activate automatically") without referencing any known defect status. If BUG-002 is resolved before release, the finding is moot. If it is not, the documentation is inaccurate on a material claim.</p>
+<p>The "fail-open" framing (hooks fail silently, skills still work) is used to minimize the consequence of hooks not working — but this framing only applies to the case where uv is <em>not</em> installed. The documentation does not disclose the case where uv is installed but hooks fail due to defects.</p>
+<p><strong>Impact:</strong> If hooks are shipped in a broken state, users who follow the Enable Hooks section will install uv, restart Claude Code, see no visible error (fail-open), and believe hooks are working when they are not. The documentation provides no mechanism to verify hook function beyond "you should see project context loading in the session output" — which will not appear if the SessionStart hook has a schema validation failure.</p>
+<p><strong>Dimension:</strong> Internal Consistency</p>
+<p><strong>Response Required:</strong> The creator must confirm: (a) BUG-002 is resolved before publication of this documentation, or (b) the documentation discloses the known hook defect status and links to a tracking issue.</p>
+<p><strong>Acceptance Criteria:</strong> Either (a) a statement that BUG-002 has been fixed and the fix is in the release branch, with a reference to the commit or PR, or (b) a note in the Hooks Verification section reading approximately: "If hooks are not firing despite uv being installed, see [known issue #NNN] for current status."</p>
+<hr />
+<h3 id="da-003-20260218-marketplace-name-derivation-claim-is-asserted-not-demonstrated-critical">DA-003-20260218: Marketplace Name Derivation Claim is Asserted, Not Demonstrated [CRITICAL]<a class="headerlink" href="#da-003-20260218-marketplace-name-derivation-claim-is-asserted-not-demonstrated-critical" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, Quick Install section (Step 2 note); Troubleshooting section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 3 — Unstated assumptions, Historical precedents of failure</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"Marketplace name: Run /plugin marketplace list to see your marketplace name. It should show geekatron-jerry."
+(INSTALLATION.md, Quick Install section, lines 63–64)</p>
+<p>"Remote installs (geekatron/jerry): marketplace name is geekatron-jerry — use /plugin install jerry@geekatron-jerry"
+"Local clone installs (~/plugins/jerry): marketplace name is jerry-framework — use /plugin install jerry@jerry-framework"
+(INSTALLATION.md, Troubleshooting section, lines 430–433)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The documentation asserts with certainty that the marketplace name for a remote install will be <code>geekatron-jerry</code> and for a local clone install will be <code>jerry-framework</code>. These assertions carry two implicit claims that are not verified:</p>
+<ol>
+<li>
+<p><strong>The naming algorithm is deterministic and documented.</strong> The documentation implies that Claude Code derives the marketplace name predictably from the URL (replacing <code>/</code> with <code>-</code> for remote installs, using the directory name for local installs). However, the documentation does not cite the Claude Code documentation for this behavior, test it on the specified version (1.0.33+), or acknowledge that the naming algorithm could change in future Claude Code versions.</p>
+</li>
+<li>
+<p><strong>The derivation from directory name for local installs is assumed, not verified.</strong> A user who clones to <code>~/plugins/jerry</code> is told the marketplace name will be <code>jerry-framework</code>, not <code>jerry</code>. This means the directory name (<code>jerry</code>) does not directly map to the marketplace name — there is an additional <code>-framework</code> suffix. The documentation does not explain where the <code>-framework</code> suffix comes from, which means a user whose local clone produces a different name (e.g., after a Claude Code version update) has no framework for diagnosing the discrepancy.</p>
+</li>
+<li>
+<p><strong>The install command <code>jerry@jerry-framework</code> in Step 3 of the Local Clone Install section is presented as a fixed string.</strong> If the marketplace name differs (e.g., user clones to a different directory, or Claude Code version changes the naming algorithm), the install command fails with "plugin not found" — a failure the Troubleshooting section addresses but the primary install path does not.</p>
+</li>
+</ol>
+<p>The counter-argument: the documentation asserts specific marketplace names as facts rather than as observed outcomes that could vary. The S-003 Steelman report flagged this as SM-004 (two-step install pattern unexplained) — the Devil's Advocate finding is more specific: the particular name values <code>geekatron-jerry</code> and <code>jerry-framework</code> are presented as known facts but are actually empirical claims about Claude Code's internal naming algorithm that have not been verified in documentation.</p>
+<p><strong>Impact:</strong> Users who get a different marketplace name than documented will encounter "plugin not found" and have no diagnostic path other than running <code>/plugin marketplace list</code> — which is mentioned in the troubleshooting section but not in the primary install path as a diagnostic step before attempting install.</p>
+<p><strong>Dimension:</strong> Methodological Rigor</p>
+<p><strong>Response Required:</strong> The creator must provide: (a) citation of the Claude Code documentation that specifies how marketplace names are derived, or (b) test evidence showing the exact names produced by the commands on a clean install, or (c) revision of the install instructions to use <code>/plugin marketplace list</code> as a required diagnostic step before running <code>/plugin install</code>.</p>
+<p><strong>Acceptance Criteria:</strong> One of: (a) a footnote citing the Claude Code docs on marketplace name derivation, (b) a note in the install steps stating "The exact marketplace name depends on Claude Code's internal naming — run <code>/plugin marketplace list</code> and use the name shown in the <code>@suffix</code>", or (c) documentation of the test case confirming <code>geekatron-jerry</code> and <code>jerry-framework</code> are the actual names produced.</p>
+<hr />
+<h3 id="da-004-20260218-enable-hooks-recommended-framing-understates-the-risk-of-skipping-major">DA-004-20260218: "Enable Hooks (Recommended)" Framing Understates the Risk of Skipping [MAJOR]<a class="headerlink" href="#da-004-20260218-enable-hooks-recommended-framing-understates-the-risk-of-skipping-major" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Major</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, Enable Hooks section header; <code>docs/index.md</code>, Quick Start Step 2</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 3 — Alternative interpretations; Step 2 — Unstated assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"### Enable Hooks (Recommended)"
+(INSTALLATION.md, section heading)</p>
+<p>"### 2. Enable Hooks (Optional)"
+(index.md, Quick Start section heading — note the label is "Optional" here vs. "Recommended" in INSTALLATION.md)</p>
+<p>"Without uv, hooks fail silently (fail-open) — skills still work, but you lose the automated guardrail enforcement that makes Jerry most effective."
+(INSTALLATION.md, Capability Matrix section)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The hook installation section is labeled "Recommended" in INSTALLATION.md and "Optional" in index.md — an inconsistency the S-003 report did not flag. More critically, the framing of hooks as optional (or merely recommended) is in tension with the framework's own quality enforcement claims.</p>
+<p>The documentation elsewhere asserts that Jerry's value proposition includes: L2 per-prompt quality reinforcement, L3 pre-tool-call AST validation, and P-003 subagent hierarchy enforcement at the hook layer. The quality-enforcement framework defines a 5-layer enforcement architecture where L2–L4 are hook-dependent. The documentation's own Capability Matrix confirms that without uv, per-prompt quality reinforcement, pre-tool-call validation, and subagent enforcement are all absent.</p>
+<p>The counter-argument: calling hooks "optional" or merely "recommended" for a framework whose core value proposition is behavioral guardrails is logically inconsistent. A user who installs Jerry as a skill-only tool (without hooks) is using approximately 40% of the advertised functionality (skills only), but the documentation frames this as a reasonable default for "most users" — the Quick Install section makes no mention of hooks.</p>
+<p>Specifically: the "Quick Install (Most Users)" section installs only skills. The Enable Hooks section is a separate step that a user can skip. The index.md Quick Start labels hooks as "Optional." This framing implies that skill-only use is the common case and that the framework is substantially useful without hooks. But the documented core value proposition ("Context Rot," "behavioral guardrails," "rule re-injection") is entirely dependent on hooks. A user who skips hooks has a framework that provides structured prompts (skills) but none of the behavioral enforcement.</p>
+<p><strong>Impact:</strong> Users who follow the Quick Install and skip the hooks section will use Jerry as a prompt-template system only, will encounter context rot (the problem Jerry claims to solve), and will not understand why. The documentation has given them no clear signal that they have opted out of the framework's primary safety mechanism.</p>
+<p><strong>Dimension:</strong> Actionability</p>
+<p><strong>Response Required:</strong> Revise the framing so it accurately conveys the consequence of skipping hooks. The current "Recommended" label with the note "skills still work" implies hooks are an enhancement — the documentation should clearly state that hooks are the behavioral enforcement layer and that skipping them leaves the core anti-context-rot features inactive.</p>
+<p><strong>Acceptance Criteria:</strong> Either (a) the Enable Hooks section is relabeled "Required for Full Function" with a clear note that the behavioral guardrail features depend on hooks, or (b) the Quick Install section includes a one-line note: "Note: The two-command install provides Jerry's skills. For behavioral guardrails and context rot mitigation, complete Step 3 (Enable Hooks)." Also: resolve the "Recommended" vs. "Optional" inconsistency between INSTALLATION.md and index.md.</p>
+<hr />
+<h3 id="da-005-20260218-jerry-session-start-command-is-undocumented-and-unverifiable-major">DA-005-20260218: <code>jerry session start</code> Command is Undocumented and Unverifiable [MAJOR]<a class="headerlink" href="#da-005-20260218-jerry-session-start-command-is-undocumented-and-unverifiable-major" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Major</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/runbooks/getting-started.md</code>, Step 3</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 2 — Unstated assumptions; Step 3 — Logical flaws</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"Open Claude Code in the same terminal session where JERRY_PROJECT is set. Jerry's SessionStart hook runs automatically when Claude Code starts. You can also trigger it explicitly:
+<code>jerry session start</code>"
+(getting-started.md, Step 3, lines 99–104)</p>
+</blockquote>
+<p>Also from <code>docs/CLAUDE.md</code> Quick Reference:</p>
+<blockquote>
+<p><code>jerry session start|end|status|abandon</code> — CLI v0.2.2</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The <code>jerry session start</code> command is presented as a way to explicitly trigger the SessionStart hook. This claim has a critical unstated assumption: the <code>jerry</code> CLI must be on the user's PATH. The Getting Started runbook's prerequisites list Claude Code 1.0.33+, Jerry plugin installation, and uv — it does not mention the Jerry CLI or how to install it.</p>
+<p>A user who has installed Jerry as a plugin via <code>/plugin install jerry@geekatron-jerry</code> has access to Jerry's <em>skills</em> within Claude Code, but may not have access to the <code>jerry</code> CLI binary on their system PATH. The INSTALLATION.md Troubleshooting section notes: "jerry: command not found — The Jerry CLI is not on your PATH, or the plugin is not installed." This troubleshooting entry confirms the failure mode exists but does not explain how to resolve it for a user who installed via plugin (as opposed to a developer who cloned the repository).</p>
+<p>The documentation creates a false equivalence: installing Jerry as a Claude Code plugin and having the <code>jerry</code> CLI available are presented as the same outcome, but they may not be. The Getting Started runbook uses <code>jerry session start</code> as an explicit verification step — if this command is not available for plugin-only users, Step 3 of the runbook fails for the majority of users following the recommended Quick Install path.</p>
+<p>Additionally, the CLAUDE.md Quick Reference states CLI version 0.2.2 — but the Getting Started runbook's tested versions note "Jerry CLI v0.2.0." This version mismatch is unexplained.</p>
+<p><strong>Impact:</strong> Users who installed via the Quick Install plugin path may have no <code>jerry</code> CLI command, making Step 3 of the Getting Started runbook fail at the explicit trigger step. The fallback (Claude Code auto-starting the hook) is not verifiable without the CLI, leaving users with no way to confirm the hook ran successfully.</p>
+<p><strong>Dimension:</strong> Completeness</p>
+<p><strong>Response Required:</strong> Clarify whether <code>jerry session start</code> is available to plugin-only users or only to developers who cloned the repository. If it is not available to plugin users, remove the command from the Getting Started runbook and replace it with an alternative verification method. Also resolve the CLI version mismatch between CLAUDE.md (v0.2.2) and getting-started.md (v0.2.0).</p>
+<p><strong>Acceptance Criteria:</strong> One of: (a) a note in the Getting Started prerequisites confirming the <code>jerry</code> CLI is available after plugin install and how to verify it, or (b) removal of the <code>jerry session start</code> explicit trigger and replacement with a plugin-appropriate verification (e.g., "Open Claude Code and check for <code>&lt;project-context&gt;</code> in the session output").</p>
+<hr />
+<h3 id="da-006-20260218-skill-auto-activation-via-trigger-keywords-presented-as-reliable-with-no-documented-failure-modes-major">DA-006-20260218: Skill Auto-Activation via Trigger Keywords Presented as Reliable with No Documented Failure Modes [MAJOR]<a class="headerlink" href="#da-006-20260218-skill-auto-activation-via-trigger-keywords-presented-as-reliable-with-no-documented-failure-modes-major" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Major</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/runbooks/getting-started.md</code>, Step 4</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 3 — Unaddressed risks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"The skill activates automatically when your message contains trigger keywords: <strong>research</strong>, <strong>analyze</strong>, <strong>investigate</strong>, <strong>explore</strong>, <strong>root cause</strong>, or <strong>why</strong>."
+(getting-started.md, Step 4, lines 128–129)</p>
+<p>"Expected behavior: Claude responds by activating the problem-solving skill — you will see a message indicating which agent was selected (e.g., 'Invoking ps-researcher...') and where its output will be saved"
+(getting-started.md, Step 4, lines 148–150)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The documentation presents skill auto-activation as a simple, reliable mechanism: include a trigger keyword, and the skill activates. This claim contains several unstated risks:</p>
+<ol>
+<li>
+<p><strong>Trigger keyword matching is LLM-mediated, not deterministic.</strong> The skills activate because the CLAUDE.md and rules files instruct the LLM to invoke them when trigger keywords are present. This is behavioral guidance, not code — the LLM may not invoke a skill even when the keyword is present if the instruction has been lost to context rot (the very problem Jerry is designed to solve). The documentation presents skill activation as if it is a deterministic lookup, when it is fundamentally a probabilistic LLM behavior.</p>
+</li>
+<li>
+<p><strong>The trigger keyword <code>why</code> is too broad to be reliable.</strong> A user asking "Why is Python popular?" would contain the trigger keyword <code>why</code> but is a general question, not a research task. The documentation implies <code>why</code> reliably triggers <code>/problem-solving</code>, but a general question with <code>why</code> may or may not activate the skill depending on the LLM's context interpretation.</p>
+</li>
+<li>
+<p><strong>The documented expected behavior ("you will see a message indicating which agent was selected") is not guaranteed.</strong> The LLM may activate the skill internally and produce output without the expected agent-selection message, or may produce a response that does not match the expected output pattern the user is looking for. The Getting Started runbook's verification step relies on the user recognizing a specific output pattern that is described but not shown as a concrete example.</p>
+</li>
+<li>
+<p><strong>No troubleshooting entry exists for "skill keyword present but skill did not activate."</strong> The troubleshooting table in getting-started.md has an entry for "<code>&lt;project-context&gt;</code> appears but skill does not activate" — but this entry attributes the cause to "trigger keyword not present" and suggests using one of the "exact trigger keywords." This guidance is circular: it tells the user to use the exact keywords, but does not acknowledge that using exact keywords does not guarantee activation.</p>
+</li>
+</ol>
+<p><strong>Impact:</strong> A new user who follows Step 4 exactly, uses an exact trigger keyword, but does not see the expected activation message will have no diagnostic path. They will not know whether the skill did not activate, activated silently, or the expected output format changed.</p>
+<p><strong>Dimension:</strong> Completeness</p>
+<p><strong>Response Required:</strong> Add a disclosure that skill activation is LLM-mediated behavior, not deterministic code. Revise the trigger keyword list to note that <code>why</code> is a broad keyword that may not reliably trigger the skill. Add a fallback explicit invocation path (e.g., <code>/problem-solving research X</code>) for users where keyword activation does not work.</p>
+<p><strong>Acceptance Criteria:</strong> The Step 4 description includes: (a) a note that explicit skill invocation (<code>/problem-solving</code>) is always available as a fallback, and (b) the expected output section is a concrete example block (as recommended by SM-007) rather than a textual description, so users can verify success against a concrete pattern.</p>
+<hr />
+<h3 id="da-007-20260218-windows-support-claim-overstated-relative-to-in-progress-status-major">DA-007-20260218: Windows Support Claim Overstated Relative to "In Progress" Status [MAJOR]<a class="headerlink" href="#da-007-20260218-windows-support-claim-overstated-relative-to-in-progress-status-major" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Major</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, header Platform Note; <code>docs/index.md</code>, Platform Support section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 3 — Internal consistency</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong>
+INSTALLATION.md header (lines 4–5):</p>
+<blockquote>
+<p>"Windows support is actively in progress — core functionality works, but some hooks may behave differently."</p>
+</blockquote>
+<p>index.md Platform Support table (line 59):</p>
+<blockquote>
+<p>"Windows | In progress — core functionality works, edge cases may exist"</p>
+</blockquote>
+<p>INSTALLATION.md Windows-specific sections: Complete Windows instructions are present throughout (PowerShell commands for all major operations, specific Windows troubleshooting entries, Windows-specific path handling).</p>
+<p><strong>Analysis:</strong>
+The documentation provides complete Windows instructions throughout INSTALLATION.md — PowerShell equivalents for every bash command, Windows-specific troubleshooting entries, Windows path handling guidance. This thoroughness creates an implicit claim that Windows is a supported platform in practice.</p>
+<p>However, the platform note caveats Windows as "in progress" and "edge cases may exist." These two signals are in tension: the documentation is detailed enough for Windows to suggest full support, but the platform note warns users that behavior may differ.</p>
+<p>The specific counter-argument: "some hooks may behave differently" (INSTALLATION.md header) is vague and not quantified. A Windows user cannot determine from this statement which hooks may behave differently, in what way, or how to detect whether they are experiencing a documented "edge case" vs. a real bug. The BOOTSTRAP.md Windows section says junction points "must be on the same drive as the source" — this is a concrete limitation, but the INSTALLATION.md platform note does not flag it.</p>
+<p>Additionally, INSTALLATION.md's Developer Setup section states "See CONTRIBUTING.md for the full Make target equivalents table" — but the CONTRIBUTING.md file is linked as <code>https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md</code>, which is an external link to a repository that may not yet be public or may not contain the referenced table. A Windows developer following the setup instructions who encounters <code>make</code> errors is directed to an external file that may not exist.</p>
+<p><strong>Impact:</strong> Windows users will invest effort setting up Jerry based on complete-looking documentation, then encounter unspecified "edge cases" with no diagnostic path. The vagueness of "some hooks may behave differently" is not actionable.</p>
+<p><strong>Dimension:</strong> Internal Consistency</p>
+<p><strong>Response Required:</strong> Either (a) enumerate which specific hooks are known to behave differently on Windows and what the behavioral difference is, or (b) revise the Windows instructions to carry a more prominent "Windows is not fully supported" warning at the start of each Windows section rather than only in the header note. Verify the CONTRIBUTING.md link is live and contains the referenced table.</p>
+<p><strong>Acceptance Criteria:</strong> The Windows platform caveat names at least one concrete known limitation or links to a Windows-specific tracking issue. The CONTRIBUTING.md link is verified to exist and contain the Make target equivalents table.</p>
+<hr />
+<h3 id="da-008-20260218-no-version-assertion-that-plugin-ui-matches-described-interface-major">DA-008-20260218: No Version Assertion That <code>/plugin</code> UI Matches Described Interface [MAJOR]<a class="headerlink" href="#da-008-20260218-no-version-assertion-that-plugin-ui-matches-described-interface-major" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Major</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, Verification section; Quick Install section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 2 — Unstated assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"1. Run /plugin in Claude Code
+2. Go to the <strong>Installed</strong> tab
+3. Confirm jerry appears in the list"
+(INSTALLATION.md, Quick Install section, lines 68–70)</p>
+<p>"1. Run /plugin
+2. Go to the <strong>Errors</strong> tab
+3. Verify no errors related to jerry"
+(INSTALLATION.md, Verification — Check for errors, lines 281–283)</p>
+<p>"Check the <strong>Errors</strong> tab in /plugin" (INSTALLATION.md, Troubleshooting — Skills not appearing)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+The documentation repeatedly references specific UI elements of the <code>/plugin</code> command: the "Installed" tab, the "Discover" tab, and the "Errors" tab. These UI elements are treated as known, stable facts about Claude Code's interface.</p>
+<p>The documentation specifies Claude Code version 1.0.33+ as a prerequisite but does not state which version of Claude Code introduced the tabbed <code>/plugin</code> interface. The Claude Code changelog history is not referenced anywhere in the documentation. A user with Claude Code 1.0.33 may have a different <code>/plugin</code> UI than a user with a later version — the tabs may have been added in a version after 1.0.33, may have different names, or the tab-based navigation may have been replaced in newer versions.</p>
+<p>The verification procedure is entirely dependent on the <code>/plugin</code> command showing these specific tabs. If the UI has changed — or if the tabs were not present in all supported versions — the verification procedure fails silently. The user runs <code>/plugin</code>, sees a different interface, and has no diagnostic path.</p>
+<p><strong>Impact:</strong> Users on the minimum supported version (1.0.33) or on future versions where the UI has changed will follow verification instructions that do not match their actual interface. The only indication that this might be version-dependent is the minimum version prerequisite, which is not linked to the UI description.</p>
+<p><strong>Dimension:</strong> Evidence Quality</p>
+<p><strong>Response Required:</strong> Either (a) confirm which Claude Code version introduced the tabbed <code>/plugin</code> interface and update the minimum version requirement if needed, or (b) add screenshots or version-pinned notes to the verification sections, or (c) add an alternative verification method that does not depend on the UI structure (e.g., a command-line verification).</p>
+<p><strong>Acceptance Criteria:</strong> The verification section includes a note about which Claude Code version the described UI applies to, or provides a version-agnostic verification path.</p>
+<hr />
+<h3 id="da-009-20260218-bootstrap-rollback-rm-command-is-potentially-destructive-on-macos-minor">DA-009-20260218: Bootstrap Rollback <code>rm</code> Command Is Potentially Destructive on macOS [MINOR]<a class="headerlink" href="#da-009-20260218-bootstrap-rollback-rm-command-is-potentially-destructive-on-macos-minor" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Minor</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/BOOTSTRAP.md</code>, Rollback section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 3 — Unaddressed risks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"# 1. Remove the symlinks/junctions
+rm .claude/rules .claude/patterns        # macOS/Linux</p>
+<h1 id="on-windows-rmdir-clauderules-claudepatterns">On Windows: rmdir .claude\rules .claude\patterns"<a class="headerlink" href="#on-windows-rmdir-clauderules-claudepatterns" title="Permanent link">&para;</a></h1>
+<p>(BOOTSTRAP.md, Rollback section, lines 141–142)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+On macOS/Linux, <code>rm</code> on a symlink removes the symlink itself — which is the correct behavior here. However, the comment <code># macOS/Linux</code> following the <code>rm</code> command conflates two platforms that have different <code>rm</code> defaults. More importantly, the command is presented as safe without a caveat: if <code>.claude/rules</code> is a regular directory (not a symlink) — for example, on a developer who is in a file-copy fallback state per the BOOTSTRAP.md Platform Notes — running <code>rm .claude/rules</code> will fail because <code>rm</code> without <code>-r</code> cannot remove directories.</p>
+<p>The S-003 Steelman (SM-011) flagged a related issue about Windows junction rollback. The Devil's Advocate finding extends this: even on macOS, the rollback command assumes the current state is "symlinked" when it may be in "file copy fallback" state (per the BOOTSTRAP.md Platform Notes table). A developer in file-copy fallback who runs the rollback command will see an error and be left in an intermediate state.</p>
+<p><strong>Impact:</strong> Minor — this only affects developers (contributors), not plugin users. But a failed rollback in file-copy fallback state leaves <code>.claude/rules</code> in an inconsistent state with no guidance on recovery.</p>
+<p><strong>Dimension:</strong> Actionability</p>
+<p><strong>Response Required:</strong> Add a note: "If you are in file-copy fallback state (non-symlinked), use <code>rm -r .claude/rules .claude/patterns</code> instead." Acknowledgment sufficient; explicit revision optional.</p>
+<p><strong>Acceptance Criteria:</strong> Acknowledgment in the rollback section that the <code>rm</code> command applies to symlink state only; file-copy fallback state requires <code>rm -r</code>.</p>
+<hr />
+<h3 id="da-010-20260218-local-clone-marketplace-name-jerry-framework-has-no-explained-derivation-minor">DA-010-20260218: Local Clone Marketplace Name <code>jerry-framework</code> Has No Explained Derivation [MINOR]<a class="headerlink" href="#da-010-20260218-local-clone-marketplace-name-jerry-framework-has-no-explained-derivation-minor" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Minor</td>
+</tr>
+<tr>
+<td><strong>Section</strong></td>
+<td><code>docs/INSTALLATION.md</code>, Local Clone Install — Step 3; Troubleshooting section</td>
+</tr>
+<tr>
+<td><strong>Strategy Step</strong></td>
+<td>Step 2 — Unstated assumptions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidence:</strong></p>
+<blockquote>
+<p>"/plugin install jerry@jerry-framework"
+(INSTALLATION.md, Local Clone Install, Step 3, line 199)</p>
+<p>"Local clone installs (~/plugins/jerry): marketplace name is jerry-framework — use /plugin install jerry@jerry-framework"
+(INSTALLATION.md, Troubleshooting, line 433)</p>
+</blockquote>
+<p><strong>Analysis:</strong>
+A user who clones to <code>~/plugins/jerry</code> is instructed to use the marketplace name <code>jerry-framework</code>. The directory they cloned into is named <code>jerry</code>, not <code>jerry-framework</code>. The documentation does not explain where the <code>-framework</code> suffix comes from. If the marketplace name is derived from the directory name (as implied by the pattern), cloning to <code>~/plugins/jerry</code> should produce marketplace name <code>jerry</code>, not <code>jerry-framework</code>.</p>
+<p>This is a concrete instance of the DA-003 finding at the Minor level: the local clone marketplace name <code>jerry-framework</code> is stated as a fact but its derivation is unexplained and seemingly inconsistent with the directory name <code>jerry</code>. A user who clones to a different directory (e.g., <code>~/tools/jerry</code>) will get a different marketplace name and the install command <code>jerry@jerry-framework</code> will fail.</p>
+<p><strong>Impact:</strong> Minor — the Troubleshooting section's advice "run <code>/plugin marketplace list</code> to see the actual marketplace name" provides a recovery path. But the primary install instructions give a specific name that may be wrong, sending users to troubleshooting unnecessarily.</p>
+<p><strong>Dimension:</strong> Methodological Rigor</p>
+<p><strong>Response Required:</strong> Add a note in Step 3 of the Local Clone Install explaining that the marketplace name is derived from the directory name and may differ if the user cloned to a non-default path. Suggest running <code>/plugin marketplace list</code> first. Acknowledgment sufficient.</p>
+<p><strong>Acceptance Criteria:</strong> Step 3 of the Local Clone Install includes a note: "The marketplace name is based on your clone directory name. If you used a non-default path, run <code>/plugin marketplace list</code> to see your actual marketplace name before running <code>/plugin install</code>."</p>
+<hr />
+<h2 id="recommendations">Recommendations<a class="headerlink" href="#recommendations" title="Permanent link">&para;</a></h2>
+<h3 id="p0-critical-must-resolve-before-acceptance">P0 — Critical (MUST resolve before acceptance)<a class="headerlink" href="#p0-critical-must-resolve-before-acceptance" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Action</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DA-001-20260218</td>
+<td>Verify that <code>/plugin marketplace add https://github.com/geekatron/jerry</code> succeeds on a fresh Claude Code 1.0.33+ installation, OR add a disclosure note in the Quick Install section that the marketplace path requires the plugin to be published.</td>
+<td>Documented test result, OR a sentence in the Quick Install section disclosing the marketplace publication prerequisite.</td>
+</tr>
+<tr>
+<td>DA-002-20260218</td>
+<td>Confirm BUG-002 (hook schema validation failures) is resolved before publishing this documentation, OR add a note in the Hooks Verification section pointing to the tracking issue for known hook defects.</td>
+<td>Statement that BUG-002 is fixed with reference to the fix commit/PR, OR a note in the verification section referencing the open bug.</td>
+</tr>
+<tr>
+<td>DA-003-20260218</td>
+<td>Cite the Claude Code documentation that defines how marketplace names are derived, OR provide test evidence showing <code>geekatron-jerry</code> and <code>jerry-framework</code> are the actual names produced, OR revise the install instructions to instruct users to run <code>/plugin marketplace list</code> before attempting <code>/plugin install</code>.</td>
+<td>One of the three listed approaches implemented.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="p1-major-should-resolve-require-justification-if-not">P1 — Major (SHOULD resolve; require justification if not)<a class="headerlink" href="#p1-major-should-resolve-require-justification-if-not" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Action</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DA-004-20260218</td>
+<td>Resolve "Recommended" vs. "Optional" inconsistency between INSTALLATION.md and index.md. Revise framing to clearly communicate that hooks are the behavioral enforcement layer, not an enhancement.</td>
+<td>Consistent label across both documents; Quick Install section notes that hooks enable behavioral guardrails.</td>
+</tr>
+<tr>
+<td>DA-005-20260218</td>
+<td>Clarify whether <code>jerry session start</code> is available to plugin-only users. If not, remove from Getting Started runbook and provide an alternative. Resolve CLI version mismatch (v0.2.2 vs. v0.2.0).</td>
+<td>Clear statement of who can use <code>jerry session start</code>; consistent version number; plugin-user-appropriate verification path.</td>
+</tr>
+<tr>
+<td>DA-006-20260218</td>
+<td>Add a note that skill activation is LLM-mediated (not deterministic), document the explicit invocation fallback (<code>/problem-solving</code>), and add a concrete expected output block (SM-007 resolution).</td>
+<td>Disclosure of probabilistic nature; explicit invocation documented as fallback; concrete output example block.</td>
+</tr>
+<tr>
+<td>DA-007-20260218</td>
+<td>Name at least one concrete known Windows limitation or link to a Windows tracking issue. Verify CONTRIBUTING.md link is live and contains the Make target equivalents table.</td>
+<td>Named limitation or tracking issue; CONTRIBUTING.md link verified live with referenced content.</td>
+</tr>
+<tr>
+<td>DA-008-20260218</td>
+<td>Confirm which Claude Code version introduced the tabbed <code>/plugin</code> interface. Add a version-pinned note or version-agnostic alternative verification.</td>
+<td>Version note in verification section, or alternative verification method that does not depend on UI tab names.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="p2-minor-may-resolve-acknowledgment-sufficient">P2 — Minor (MAY resolve; acknowledgment sufficient)<a class="headerlink" href="#p2-minor-may-resolve-acknowledgment-sufficient" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Action</th>
+<th>Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DA-009-20260218</td>
+<td>Add caveat to BOOTSTRAP.md Rollback section that <code>rm</code> applies to symlink state; file-copy fallback requires <code>rm -r</code>.</td>
+<td>Acknowledgment of the distinction; optional revision.</td>
+</tr>
+<tr>
+<td>DA-010-20260218</td>
+<td>Add note in Local Clone Install Step 3 that marketplace name derives from clone directory name; suggest <code>/plugin marketplace list</code> verification.</td>
+<td>Note added; acknowledgment sufficient.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="scoring-impact">Scoring Impact<a class="headerlink" href="#scoring-impact" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Weight</th>
+<th>Impact</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completeness</td>
+<td>0.20</td>
+<td>Negative</td>
+<td>DA-005 (CLI undocumented for plugin users), DA-006 (no explicit invocation fallback, no concrete output example), DA-007 (Windows limitations unnamed): three Major findings identify gaps in coverage. Users following the documented paths will encounter undocumented failure modes.</td>
+</tr>
+<tr>
+<td>Internal Consistency</td>
+<td>0.20</td>
+<td>Negative</td>
+<td>DA-002 (hook status contradicts BUG-002), DA-004 ("Recommended" vs. "Optional" inconsistency across documents), DA-007 (complete Windows instructions vs. "in progress" caveat): the documentation makes claims that are inconsistent with known defect state and inconsistent across its own documents.</td>
+</tr>
+<tr>
+<td>Methodological Rigor</td>
+<td>0.20</td>
+<td>Negative</td>
+<td>DA-003 (marketplace name derivation asserted without citation), DA-010 (local clone name unexplained): key instructions depend on specific string values that are not derived from documented behavior.</td>
+</tr>
+<tr>
+<td>Evidence Quality</td>
+<td>0.15</td>
+<td>Negative</td>
+<td>DA-001 (two-command claim unverified), DA-008 (UI tab names assumed stable across versions): the most prominent user-facing claims are unverified assertions about Claude Code's behavior.</td>
+</tr>
+<tr>
+<td>Actionability</td>
+<td>0.15</td>
+<td>Negative</td>
+<td>DA-004 (hooks framed as optional when they are the primary enforcement layer), DA-006 (no explicit invocation fallback), DA-009 (rollback edge case undocumented): users making informed decisions about whether to install hooks lack the information needed to understand the consequence.</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td>0.10</td>
+<td>Neutral</td>
+<td>Cross-document links are consistent and present. H-04, P-002, P-003 citations are accurate. Links to external docs (CONTRIBUTING.md) are the sole traceability concern (DA-007) but this affects Completeness more than traceability.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall Assessment:</strong> Major revision required. Three Critical findings (DA-001, DA-002, DA-003) attack the documentation's most prominent claims — the two-command install, the automatic hook activation, and the marketplace name derivation. If any of these counter-arguments are valid, a significant fraction of new users will encounter failures that the documentation does not help them diagnose. The five Major findings are addressable but represent meaningful coverage gaps and internal inconsistencies. The documentation should not be published until the Critical findings are either resolved or disclosed.</p>
+<hr />
+<h2 id="execution-statistics">Execution Statistics<a class="headerlink" href="#execution-statistics" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Strategy</td>
+<td>S-002 Devil's Advocate</td>
+</tr>
+<tr>
+<td>Execution ID</td>
+<td>20260218</td>
+</tr>
+<tr>
+<td>Template</td>
+<td><code>.context/templates/adversarial/s-002-devils-advocate.md</code></td>
+</tr>
+<tr>
+<td>Documents Examined</td>
+<td>4 (INSTALLATION.md, index.md, BOOTSTRAP.md, getting-started.md)</td>
+</tr>
+<tr>
+<td>Prior Strategy Output</td>
+<td><code>docs/reviews/adv-s003-steelman-install-docs.md</code> (S-003 Steelman — H-16 satisfied)</td>
+</tr>
+<tr>
+<td>Total Findings</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Critical</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Major</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Minor</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Protocol Steps Completed</td>
+<td>5 of 5</td>
+</tr>
+<tr>
+<td>H-16 Compliance</td>
+<td>Confirmed — S-003 Steelman applied 2026-02-18 before this execution</td>
+</tr>
+<tr>
+<td>H-15 Self-Review</td>
+<td>Applied — findings verified for: specific evidence, justified severity, consistent identifiers, no omissions</td>
+</tr>
+<tr>
+<td>P0 Findings</td>
+<td>3 (block acceptance)</td>
+</tr>
+<tr>
+<td>P1 Findings</td>
+<td>5</td>
+</tr>
+<tr>
+<td>P2 Findings</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Dimensions with Negative Impact</td>
+<td>5 of 6</td>
+</tr>
+<tr>
+<td>Dimensions Neutral</td>
+<td>1 of 6 (Traceability)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Strategy: S-002 Devil's Advocate</em>
+<em>Template Version: 1.0.0</em>
+<em>SSOT: <code>.context/rules/quality-enforcement.md</code></em>
+<em>Execution Date: 2026-02-18</em>
+<em>Finding Prefix: DA-NNN-20260218</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>

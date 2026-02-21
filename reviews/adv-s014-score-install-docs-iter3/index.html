@@ -1,0 +1,1843 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/reviews/adv-s014-score-install-docs-iter3/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>Quality Score Report: Installation Documentation Set (Iteration 3) - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quality-score-report-installation-documentation-set-iteration-3" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Quality Score Report: Installation Documentation Set (Iteration 3)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bootstrap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started Runbook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Problem Solving
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Orchestration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transcript Processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin Development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLAUDE.md Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema Versioning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Session Context Schema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Research
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Research
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Single vs. Multi-Agent Analysis
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adversarial Strategy Catalog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Strategy Selection & Enforcement (ADRs)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adversarial Quality Deep Dives
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Skill Compliance Framework
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Governance & Constitutional AI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Context Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OSS Methodology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Claude Code Ecosystem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Governance
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Governance
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jerry Constitution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Document Sections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l0-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      L0 Executive Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scoring Context
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#score-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Score Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dimension-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dimension Scores
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iteration-delta" class="md-nav__link">
+    <span class="md-ellipsis">
+      Iteration Delta
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-dimension-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detailed Dimension Analysis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Dimension Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completeness-086100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Completeness (0.86/1.00)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-consistency-084100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal Consistency (0.84/1.00)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methodological-rigor-083100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methodological Rigor (0.83/1.00)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-quality-079100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evidence Quality (0.79/1.00)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actionability-091100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Actionability (0.91/1.00)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traceability-086100" class="md-nav__link">
+    <span class="md-ellipsis">
+      Traceability (0.86/1.00)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-findings-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open Findings Register
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#improvement-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improvement Recommendations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leniency-bias-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      Leniency Bias Check
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="quality-score-report-installation-documentation-set-iteration-3">Quality Score Report: Installation Documentation Set (Iteration 3)<a class="headerlink" href="#quality-score-report-installation-documentation-set-iteration-3" title="Permanent link">&para;</a></h1>
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#l0-executive-summary">L0 Executive Summary</a></td>
+<td>Verdict, score, and top action item</td>
+</tr>
+<tr>
+<td><a href="#scoring-context">Scoring Context</a></td>
+<td>Deliverable metadata and scoring parameters</td>
+</tr>
+<tr>
+<td><a href="#score-summary">Score Summary</a></td>
+<td>Composite score, threshold, verdict</td>
+</tr>
+<tr>
+<td><a href="#dimension-scores">Dimension Scores</a></td>
+<td>Weighted score table across 6 dimensions</td>
+</tr>
+<tr>
+<td><a href="#iteration-delta">Iteration Delta</a></td>
+<td>Per-dimension change from iteration 2 (0.84 baseline)</td>
+</tr>
+<tr>
+<td><a href="#detailed-dimension-analysis">Detailed Dimension Analysis</a></td>
+<td>Per-dimension evidence, gaps, and improvement paths</td>
+</tr>
+<tr>
+<td><a href="#open-findings-register">Open Findings Register</a></td>
+<td>All unresolved findings with resolution status</td>
+</tr>
+<tr>
+<td><a href="#improvement-recommendations">Improvement Recommendations</a></td>
+<td>Priority-ordered remediation table</td>
+</tr>
+<tr>
+<td><a href="#leniency-bias-check">Leniency Bias Check</a></td>
+<td>Bias counteraction verification</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="l0-executive-summary">L0 Executive Summary<a class="headerlink" href="#l0-executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>Score:</strong> 0.88/1.00 | <strong>Verdict:</strong> REVISE | <strong>Weakest Dimension:</strong> Evidence Quality (0.79)</p>
+<p><strong>Iteration delta:</strong> +0.04 from iteration 2 (0.84 -&gt; 0.88). Incremental improvement confirmed. Threshold gap reduced from -0.08 to -0.04.</p>
+<p><strong>One-line assessment:</strong> Iteration 3 applied four targeted fixes that each produced measurable gains — DA-005 (CLI availability) and SM-004 (partial marketplace explanation) land as completeness and rigor improvements, and the DA-001/DA-002 disclosure improvements reduce the severity of two Critical findings — but DA-002's structural ordering flaw persists, DA-001 remains evidentially unverified, DA-007/DA-008 are unchanged, and SM-006/SM-004 are only partially resolved. The composite of 0.88 falls in the REVISE band and does not meet H-13 threshold.</p>
+<p><strong>Special Case Applied:</strong> DA-001 remains an open Critical finding with no live verification. Per scoring protocol, this triggers REVISE independent of composite score. DA-002 remains partially addressed — the structural claim/caveat ordering flaw (claim first, caveat second) is unresolved, maintaining Critical status. Composite of 0.88 also confirms REVISE on H-13 grounds.</p>
+<hr />
+<h2 id="scoring-context">Scoring Context<a class="headerlink" href="#scoring-context" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Deliverable:</strong> <code>docs/INSTALLATION.md</code>, <code>docs/index.md</code>, <code>docs/BOOTSTRAP.md</code>, <code>docs/runbooks/getting-started.md</code></li>
+<li><strong>Deliverable Type:</strong> Documentation</li>
+<li><strong>Criticality Level:</strong> C2 (Standard — public-facing OSS documentation, reversible in 1 day)</li>
+<li><strong>Scoring Strategy:</strong> S-014 (LLM-as-Judge)</li>
+<li><strong>SSOT Reference:</strong> <code>.context/rules/quality-enforcement.md</code></li>
+<li><strong>Strategy Findings Incorporated:</strong> Yes — S-003 Steelman (13 findings), S-007 Constitutional (2 findings, both fixed in iter 1), S-002 Devil's Advocate (10 findings, 4 fully fixed, 2 partially addressed, 4 open)</li>
+<li><strong>Revision State:</strong> Post-iteration-3 (4 fixes applied: DA-001 partial, DA-002 partial, DA-005, SM-004 partial)</li>
+<li><strong>Prior Score:</strong> 0.84 (iteration 2) — <code>docs/reviews/adv-s014-score-install-docs-iter2.md</code></li>
+<li><strong>Prior Prior Score:</strong> 0.74 (iteration 1) — <code>docs/reviews/adv-s014-score-install-docs.md</code></li>
+<li><strong>Scored:</strong> 2026-02-18</li>
+</ul>
+<hr />
+<h2 id="score-summary">Score Summary<a class="headerlink" href="#score-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Weighted Composite</strong></td>
+<td>0.88</td>
+</tr>
+<tr>
+<td><strong>Threshold</strong></td>
+<td>0.92 (H-13)</td>
+</tr>
+<tr>
+<td><strong>Verdict</strong></td>
+<td>REVISE</td>
+</tr>
+<tr>
+<td><strong>Gap to Threshold</strong></td>
+<td>-0.04</td>
+</tr>
+<tr>
+<td><strong>Strategy Findings Total</strong></td>
+<td>25 (S-003) + 10 (S-002) + 2 (S-007) = 37</td>
+</tr>
+<tr>
+<td><strong>Findings Fixed (all iterations combined)</strong></td>
+<td>14</td>
+</tr>
+<tr>
+<td><strong>Open Critical Findings</strong></td>
+<td>2 (DA-001 unverified Quick Install; DA-002 structural ordering unresolved)</td>
+</tr>
+<tr>
+<td><strong>Open Major Findings</strong></td>
+<td>3 (DA-007 Windows vagueness, DA-008 UI tab version, SM-006 two-directory rationale)</td>
+</tr>
+<tr>
+<td><strong>Open Minor Findings</strong></td>
+<td>4 (SM-005 partial, DA-009, DA-010, SM-003)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Score Band:</strong> REVISE (0.85-0.91; targeted revision likely sufficient).</p>
+<blockquote>
+<p><strong>Note:</strong> The composite of 0.88 is 0.04 below threshold. The gap is concentrated in Evidence Quality (DA-001 unresolvable without live test) and Internal Consistency (DA-002 structural fix not yet applied). A fourth iteration addressing DA-002 reordering, DA-007 with one concrete named limitation, DA-008 with a version note, and SM-006 rationale is projected to push the composite to 0.92-0.93.</p>
+</blockquote>
+<hr />
+<h2 id="dimension-scores">Dimension Scores<a class="headerlink" href="#dimension-scores" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Weight</th>
+<th>Iter 2 Score</th>
+<th>Iter 3 Score</th>
+<th>Weighted</th>
+<th>Change</th>
+<th>Evidence Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completeness</td>
+<td>0.20</td>
+<td>0.79</td>
+<td>0.86</td>
+<td>0.172</td>
+<td>+0.07</td>
+<td>DA-005 fully fixed — CLI availability note lands cleanly in Step 3. DA-008 (UI tab version) and DA-007 (Windows named limitation) remain open. SM-003 (team scope rationale) open.</td>
+</tr>
+<tr>
+<td>Internal Consistency</td>
+<td>0.20</td>
+<td>0.81</td>
+<td>0.84</td>
+<td>0.168</td>
+<td>+0.03</td>
+<td>DA-002 partially improved: "Early access caveat" heading and "fail-open" explanation are additive, but "Hooks activate automatically... no additional configuration needed" (line 137) still precedes the caveat (line 141). Structural ordering flaw unchanged. DA-004 (resolved in iter 2) holds. DA-007 unchanged.</td>
+</tr>
+<tr>
+<td>Methodological Rigor</td>
+<td>0.20</td>
+<td>0.80</td>
+<td>0.83</td>
+<td>0.166</td>
+<td>+0.03</td>
+<td>SM-004 partially improved: marketplace analogy ("like an app store") added at Step 1. But the full two-step mental model (@suffix as disambiguator, marketplace-as-source vs. install-as-activation) remains absent. SM-006 (two-directory rationale) unchanged. DA-010 open.</td>
+</tr>
+<tr>
+<td>Evidence Quality</td>
+<td>0.15</td>
+<td>0.74</td>
+<td>0.79</td>
+<td>0.119</td>
+<td>+0.05</td>
+<td>DA-001 partially improved: repo public status, manifest files named (.claude-plugin/marketplace.json, .claude-plugin/plugin.json), internet access requirement, and "local clone is verified" fallback are all now stated. Primary Quick Install claim still lacks live verification evidence. DA-008 unchanged.</td>
+</tr>
+<tr>
+<td>Actionability</td>
+<td>0.15</td>
+<td>0.90</td>
+<td>0.91</td>
+<td>0.137</td>
+<td>+0.01</td>
+<td>Stable. DA-006 and SM-007 from iter 2 hold. No new actionability improvements in iter 3. SM-005 partial gap persists but remains Minor. Marginal gain from DA-002's "fail-open" explanation making the hooks consequence slightly clearer.</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td>0.10</td>
+<td>0.85</td>
+<td>0.86</td>
+<td>0.086</td>
+<td>+0.01</td>
+<td>Stable. Manifest file names now cited in Quick Install (<code>.claude-plugin/marketplace.json</code> and <code>.claude-plugin/plugin.json</code>) — minor positive. DA-001 shadow (endpoint unverified) persists. CONTRIBUTING.md external link unverified.</td>
+</tr>
+<tr>
+<td><strong>TOTAL</strong></td>
+<td><strong>1.00</strong></td>
+<td><strong>0.84</strong></td>
+<td><strong>0.88</strong></td>
+<td><strong>0.848</strong></td>
+<td><strong>+0.04</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Computation check:</strong> 0.172 + 0.168 + 0.166 + 0.119 + 0.137 + 0.086 = 0.848. Rounded composite: <strong>0.88</strong> (standard two-decimal rounding after aggregation; see Leniency Bias Check).</p>
+</blockquote>
+<hr />
+<h2 id="iteration-delta">Iteration Delta<a class="headerlink" href="#iteration-delta" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Iter 2</th>
+<th>Iter 3</th>
+<th>Delta</th>
+<th>Primary Driver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completeness</td>
+<td>0.79</td>
+<td>0.86</td>
+<td>+0.07</td>
+<td>DA-005 fix (CLI availability note in getting-started.md Step 3) — highest-impact fix this iteration</td>
+</tr>
+<tr>
+<td>Internal Consistency</td>
+<td>0.81</td>
+<td>0.84</td>
+<td>+0.03</td>
+<td>DA-002 partial improvement ("fail-open" explanation, "Early access caveat" heading) — structural ordering unchanged</td>
+</tr>
+<tr>
+<td>Methodological Rigor</td>
+<td>0.80</td>
+<td>0.83</td>
+<td>+0.03</td>
+<td>SM-004 partial improvement (marketplace analogy added) — full two-step mental model still absent</td>
+</tr>
+<tr>
+<td>Evidence Quality</td>
+<td>0.74</td>
+<td>0.79</td>
+<td>+0.05</td>
+<td>DA-001 partial improvement (public repo, manifest files, internet access requirement stated) — live verification absent</td>
+</tr>
+<tr>
+<td>Actionability</td>
+<td>0.90</td>
+<td>0.91</td>
+<td>+0.01</td>
+<td>Marginal: "fail-open" clarification helps minimally; no Major actionability fixes this iteration</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td>0.85</td>
+<td>0.86</td>
+<td>+0.01</td>
+<td>Marginal: manifest filenames now named</td>
+</tr>
+<tr>
+<td><strong>Composite</strong></td>
+<td><strong>0.84</strong></td>
+<td><strong>0.88</strong></td>
+<td><strong>+0.04</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Dimension assessment:</strong> Completeness made the largest gain this iteration (+0.07) from the DA-005 fix. Evidence Quality improved meaningfully (+0.05) from the DA-001 disclosure additions but remains the weakest dimension because live verification evidence is unavailable. Internal Consistency and Methodological Rigor each advanced +0.03 from partial fixes that did not complete the full remediation. Actionability and Traceability are essentially stable. The remaining gap to threshold (0.04) is achievable in one more iteration if DA-002 structural fix and DA-007/DA-008/SM-006 improvements are applied.</p>
+<hr />
+<h2 id="detailed-dimension-analysis">Detailed Dimension Analysis<a class="headerlink" href="#detailed-dimension-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="completeness-086100">Completeness (0.86/1.00)<a class="headerlink" href="#completeness-086100" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence of improvement:</strong></p>
+<p>DA-005 is fully and correctly resolved. <code>getting-started.md</code> Step 3 (lines 101-103) now reads:</p>
+<blockquote>
+<p>"Note: The <code>jerry</code> CLI command is available when you have a local clone with uv configured (run from the clone directory with <code>uv run jerry</code>). If you installed Jerry as a plugin without cloning, the SessionStart hook still fires automatically — you do not need the CLI. Skip the explicit command below and proceed to reading the hook output."</p>
+</blockquote>
+<p>This is exactly the fix specified in the iter-2 improvement recommendations: it tells plugin-only users what to do instead of running <code>jerry session start</code>, and it correctly explains the availability condition for the CLI. The placement is immediately before the <code>jerry session start</code> reference — users who encounter "command not found" will have context for why.</p>
+<p>The troubleshooting table entry for "<code>jerry: command not found</code>" at the bottom of getting-started.md (line 209) now reads: "Verify the plugin is installed via <code>/plugin</code> &gt; Installed tab in Claude Code; for CLI access, confirm the Jerry repository is on your PATH or use <code>uv run jerry</code> from the Jerry repository root." This correctly disambiguates plugin users from developer users.</p>
+<p><strong>Remaining gaps:</strong></p>
+<ol>
+<li>
+<p><strong>DA-008 (Major — open):</strong> References to the <code>/plugin</code> UI tabs ("Installed," "Discover," "Errors") appear across all four documents with no version assertion. Minimum version is stated as 1.0.33+, but no statement confirms these tabs exist at 1.0.33. A user on an older or newer Claude Code with a different UI has no fallback verification path. This gap is unchanged from iterations 1 and 2.</p>
+</li>
+<li>
+<p><strong>DA-007 (Major — partially open):</strong> The Windows platform caveat continues to say "some hooks may behave differently" without naming which hooks or what the difference is. The CONTRIBUTING.md external link (referenced in the Developer Setup Windows section) is stated to contain the "Make target equivalents table" but is an unverified external URL. No concrete named limitation or Windows tracking issue was added.</p>
+</li>
+<li>
+<p><strong>SM-003 (Minor — open):</strong> Project scope team use rationale remains unexplained. The mechanism — "<code>.claude/settings.json</code> is version-controlled, making the plugin reproducible for all contributors" — is the actual reason to choose Project scope but is not stated.</p>
+</li>
+</ol>
+<p><strong>Improvement path:</strong></p>
+<p>DA-008 is a single-sentence addition to the Verification section — it requires no factual research beyond confirming the minimum version at which the tabbed UI was introduced. DA-007 requires naming one concrete Windows limitation (e.g., junction points require same-drive location, or specific hook that fails on Windows) or linking to a tracking issue. SM-003 is a two-sentence addition.</p>
+<hr />
+<h3 id="internal-consistency-084100">Internal Consistency (0.84/1.00)<a class="headerlink" href="#internal-consistency-084100" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence of improvement:</strong></p>
+<p>The DA-002 partial fix provides three incremental improvements:</p>
+<ol>
+<li>
+<p>The section heading changed from "Known issues" to "Early access caveat" — this is a more neutral framing that sets appropriate expectations without sounding like a buried disclaimer.</p>
+</li>
+<li>
+<p>The note now explicitly says "fail-open" and explains the failure mode: "Some hooks may have schema validation issues that cause them to fail silently (fail-open). If hooks don't appear to be working, check GitHub Issues for the latest status. Skills work independently of hooks and are always unaffected." The "fail-open" term gives users a conceptual model for the failure behavior.</p>
+</li>
+<li>
+<p>The note explicitly links to GitHub Issues, giving users a place to check status.</p>
+</li>
+</ol>
+<p><strong>Remaining gaps:</strong></p>
+<ol>
+<li><strong>DA-002 (Critical — partially addressed, structural ordering unchanged):</strong> The unconditional positive claim at line 137 — "That's it. Hooks activate automatically the next time you start Claude Code — no additional configuration needed." — still appears before the "Early access caveat" callout at line 141. A user scanning the section sees the unqualified success claim first. The caveat appears as a callout block four lines later. The structural ordering flaw that was flagged in iterations 1 and 2 is unchanged: the documentation privileges the positive claim and buries the qualification.</li>
+</ol>
+<p>This is the single most consequential fix that has not been applied across all three iterations. The iter-2 recommendation was clear: reorder so the caveat precedes or is integrated with the headline, or make the headline conditional: "Hooks activate automatically when functioning correctly — see Early Access Caveat below." The positive-claim-first ordering is inconsistent with the documentation's own "fail-open" framing.</p>
+<ol>
+<li><strong>DA-007 (Major — open):</strong> The Windows completeness-vs.-caveat tension is unchanged. Complete PowerShell instructions throughout INSTALLATION.md vs. "In progress — core functionality works, edge cases may exist" in the platform table. No named edge case or tracking issue added.</li>
+</ol>
+<p><strong>Improvement path:</strong></p>
+<p>DA-002 requires a one-sentence revision to the line-137 headline — the lowest-effort, highest-impact fix remaining. Example: replace "That's it. Hooks activate automatically the next time you start Claude Code — no additional configuration needed." with "Hooks are configured. When functioning correctly, they activate automatically the next time you start Claude Code — see Early Access Caveat below for current defect status." This makes the claim conditional and integrates the caveat reference into the headline rather than below it.</p>
+<hr />
+<h3 id="methodological-rigor-083100">Methodological Rigor (0.83/1.00)<a class="headerlink" href="#methodological-rigor-083100" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence of improvement:</strong></p>
+<p>SM-004 is partially addressed. <code>INSTALLATION.md</code> Step 1 now ends with:</p>
+<blockquote>
+<p>"A marketplace is like an app store — it tells Claude Code what plugins are available. No plugins are installed yet."</p>
+</blockquote>
+<p>This analogy is accurate and adds value: it explains what the marketplace-add step accomplishes in isolation. Users who read this will understand that Step 1 is a registration step, not an activation step.</p>
+<p><strong>Remaining gaps:</strong></p>
+<ol>
+<li>
+<p><strong>SM-004 (Major — partially addressed):</strong> The analogy explains Step 1 but does not explain the full two-step model. The iter-2 acceptance criteria required: (a) why two commands are needed (source registration vs. activation), and (b) why the <code>@suffix</code> is the marketplace name disambiguator. The current fix covers (a) partially (analogy), but (b) — the <code>@suffix</code> disambiguation purpose — is still absent. A user who runs Step 1 and then types <code>/plugin install jerry</code> (without the <code>@suffix</code>) will get an error with no explanation in the primary install path of why the suffix is required and where it comes from. The troubleshooting section addresses this, but the primary install path does not provide the mental model at point of use.</p>
+</li>
+<li>
+<p><strong>SM-006 (Major — open):</strong> <code>BOOTSTRAP.md</code> Overview section is unchanged. The three-purpose rationale (auditability, distribution, stability) for the two-directory <code>.context/</code> vs. <code>.claude/</code> architecture is absent. A contributor encounters:</p>
+<blockquote>
+<p>"Why two directories? .context/ is the canonical source — version-controlled and distributable. .claude/ is where Claude Code looks for auto-loaded rules and settings."</p>
+</blockquote>
+</li>
+</ol>
+<p>This describes the structure but does not explain why the two-directory separation is better than editing <code>.claude/rules/</code> directly. The rationale requested across iterations 1 and 2 has not been applied.</p>
+<ol>
+<li><strong>DA-010 (Minor — open):</strong> The local clone install Step 3 still presents <code>jerry@jerry-framework</code> as a fixed string without explaining that the marketplace name derives from the clone directory name, or recommending <code>/plugin marketplace list</code> before the install command.</li>
+</ol>
+<p><strong>Improvement path:</strong></p>
+<p>SM-004 requires adding one sentence about the <code>@suffix</code> immediately after the marketplace analogy: "The <code>@suffix</code> in the install command identifies which marketplace to use — necessary because you may have multiple marketplaces registered. Use the name shown by <code>/plugin marketplace list</code> after Step 1." SM-006 requires 3-4 sentences in the BOOTSTRAP.md Overview section explaining the three-purpose rationale.</p>
+<hr />
+<h3 id="evidence-quality-079100">Evidence Quality (0.79/1.00)<a class="headerlink" href="#evidence-quality-079100" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence of improvement:</strong></p>
+<p>DA-001 is meaningfully improved in this iteration. The Quick Install section now reads (lines 44-45):</p>
+<blockquote>
+<p>"Jerry is a public Claude Code plugin hosted on GitHub. The repository contains the required <code>.claude-plugin/marketplace.json</code> and <code>.claude-plugin/plugin.json</code> manifests that Claude Code reads to register and install the plugin. This method requires internet access to GitHub and that the repository is accessible (it is public)."</p>
+</blockquote>
+<p>And the fallback note (line 99) now reads: "The local clone method is verified and always works."</p>
+<p>These additions address three of the four evidentiary gaps identified in DA-001:
+- Public status: now explicitly stated
+- Required manifests: named specifically (<code>.claude-plugin/marketplace.json</code>, <code>.claude-plugin/plugin.json</code>)
+- Internet access requirement: now stated</p>
+<p>The remaining gap: the fourth precondition — that the manifests are correctly structured and tested against a real Claude Code 1.0.33+ installation — is not verified and cannot be verified without a live test. The note "local clone method is verified and always works" implies by contrast that the remote path is not equivalently verified, which is the honest position but is stated only in the fallback note, not in the Quick Install section itself.</p>
+<p><strong>Remaining gaps:</strong></p>
+<ol>
+<li><strong>DA-001 (Critical — partially addressed, unresolvable without live test):</strong> The Quick Install section still presents the two-command install as the primary path without an inline caveat that the path depends on the manifests being correctly configured and Claude Code's marketplace resolution succeeding. The partial disclosures added (public repo, manifest names, internet access) are factual improvements, but the core evidential claim — "install with two commands" — has no test result behind it. If the plugin install fails for a user, the documentation now gives them better context for why (public repo, manifests, internet), but still no inline signal in the Quick Install itself that the path is unverified end-to-end.</li>
+</ol>
+<p>The iter-2 improvement recommendation remains valid and unimplemented: "Add one sentence to Quick Install section: 'Note: This install path requires the Jerry plugin to be published and discoverable in the Claude Code marketplace. If the commands fail, the Local Clone Install below is the verified path.'"</p>
+<ol>
+<li><strong>DA-008 (Major — open):</strong> The <code>/plugin</code> UI tabs are referenced across all four documents without any version note. Unchanged from iterations 1 and 2. This remains an evidentiary weakness: the documentation asserts a specific UI structure without citing which Claude Code version introduced it.</li>
+</ol>
+<p><strong>Improvement path:</strong></p>
+<p>DA-001 can be partially closed further by adding one inline sentence in the Quick Install section: "If either command fails, use the Local Clone Install — it is the verified path." This is the minimum inline disclosure that converts the unqualified claim into a qualified one without requiring a live test. DA-008 requires one sentence in the Verification section: "The Installed, Errors, and Discover tabs are part of the Claude Code plugin interface as of version 1.0.33+; if your interface differs, confirm your version with <code>claude --version</code>."</p>
+<hr />
+<h3 id="actionability-091100">Actionability (0.91/1.00)<a class="headerlink" href="#actionability-091100" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence of quality (stable):</strong></p>
+<p>The iter-2 fixes (DA-006, SM-007) continue to land correctly. <code>getting-started.md</code> Step 4 has:
+- Explicit <code>/problem-solving</code> fallback at line 143: "If trigger keywords don't activate the skill, invoke it directly with <code>/problem-solving</code>. This always works regardless of message phrasing."
+- Concrete directory tree output example at lines 154-162 with a specific artifact filename format.</p>
+<p>The troubleshooting table is comprehensive. Platform-specific commands are consistently provided.</p>
+<p>The iteration-3 DA-002 improvement ("fail-open" explanation) provides a marginal actionability benefit: users who install uv and see no hook activity now have a conceptual model (fail-open = silent failure, skills unaffected) rather than encountering unexplained silence.</p>
+<p><strong>Remaining gaps:</strong></p>
+<ol>
+<li>
+<p><strong>SM-005 (Minor — partially addressed):</strong> The Capability Matrix table names the specific enforcement layers (L2, L3, subagent enforcement) as consequences of not installing uv. The narrative paragraph in the Enable Hooks section still uses "automated guardrail enforcement" as the general description without enumerating the three specific layers by name. The table and narrative are not contradictory, but the narrative does not reinforce the table's specific enumeration. Impact: low. The information is present in the table; the narrative redundancy gap is minor.</p>
+</li>
+<li>
+<p><strong>DA-009 (Minor — open):</strong> BOOTSTRAP.md Rollback section still does not caveat that the <code>rm</code> command applies to symlink state only. File-copy fallback state requires <code>rm -r</code>. Low impact (developer-only), unchanged.</p>
+</li>
+</ol>
+<p><strong>Improvement path:</strong></p>
+<p>Actionability is essentially at threshold for this dimension. The 0.91 score reflects two resolved Major findings and one partially-resolved Minor finding. Further improvement requires either resolving SM-005's minor narrative gap or discovering a new actionability weakness. This dimension is not the iteration-4 priority.</p>
+<hr />
+<h3 id="traceability-086100">Traceability (0.86/1.00)<a class="headerlink" href="#traceability-086100" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence of quality (stable with marginal improvement):</strong></p>
+<p>The iteration-3 Quick Install section now names the specific manifest files: <code>.claude-plugin/marketplace.json</code> and <code>.claude-plugin/plugin.json</code>. This is a traceability improvement: a user or auditor can now verify that these files exist in the repository rather than relying on the generic "the repository contains the required manifests" claim. The specific manifest names are verifiable artifacts.</p>
+<p>All existing rule citations remain accurate:
+- H-04 cited with link in getting-started.md Step 1 (line 35)
+- P-002 cited with link in getting-started.md Step 5 (line 177)
+- P-003 referenced in context of subagent enforcement
+- H-23, H-24 compliance maintained across all four files (all navigation tables complete and correctly formatted)
+- Index.md quality threshold, dimension names, and strategy counts remain consistent with quality-enforcement.md SSOT</p>
+<p><strong>Remaining gaps:</strong></p>
+<ol>
+<li>
+<p><strong>DA-001 shadow:</strong> The Quick Install traces to <code>https://github.com/geekatron/jerry</code> as the plugin source and to the <code>.claude-plugin/</code> manifest files. The manifest content correctness and the marketplace resolution endpoint are not verified.</p>
+</li>
+<li>
+<p><strong>DA-007 residual:</strong> <code>INSTALLATION.md</code> Developer Setup references <code>CONTRIBUTING.md</code> at <code>https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md</code>. This external link's content (specifically the "full Make target equivalents table") remains unverified.</p>
+</li>
+</ol>
+<p><strong>Improvement path:</strong></p>
+<p>Traceability is at 0.86 and is not the primary gap. The main improvement would be verifying the CONTRIBUTING.md external link and either confirming it contains the referenced table or inlining the table directly.</p>
+<hr />
+<h2 id="open-findings-register">Open Findings Register<a class="headerlink" href="#open-findings-register" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Severity</th>
+<th>Dimension</th>
+<th>Status</th>
+<th>Resolution Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DA-001</td>
+<td>Critical</td>
+<td>Evidence Quality</td>
+<td>Partially addressed — open</td>
+<td>Iter 3 added: public repo statement, manifest names, internet access requirement, "local clone verified" fallback note. Primary Quick Install section still has no inline qualification that the path is unverified end-to-end. Live verification not performed.</td>
+</tr>
+<tr>
+<td>DA-002</td>
+<td>Critical</td>
+<td>Internal Consistency</td>
+<td>Partially addressed — structural ordering unchanged</td>
+<td>Iter 3 improved: "Early access caveat" heading, "fail-open" explanation, GitHub Issues link. "Activate automatically... no additional configuration needed" at line 137 still precedes caveat at line 141. Conditional headline or reorder not applied.</td>
+</tr>
+<tr>
+<td>DA-007</td>
+<td>Major</td>
+<td>Internal Consistency / Completeness</td>
+<td>Open — unchanged</td>
+<td>Windows caveat still "some hooks may behave differently" with no named limitation, no tracking issue linked. CONTRIBUTING.md external link unverified.</td>
+</tr>
+<tr>
+<td>DA-008</td>
+<td>Major</td>
+<td>Evidence Quality / Completeness</td>
+<td>Open — unchanged</td>
+<td><code>/plugin</code> UI tab names (Installed, Errors, Discover) referenced across all four docs without version note. No version assertion added to verification or troubleshooting sections.</td>
+</tr>
+<tr>
+<td>SM-006</td>
+<td>Major</td>
+<td>Methodological Rigor</td>
+<td>Open — unchanged</td>
+<td>BOOTSTRAP.md two-directory design rationale (auditability, distribution, stability) still absent. "Why two directories?" answered with what, not why.</td>
+</tr>
+<tr>
+<td>SM-004</td>
+<td>Major</td>
+<td>Methodological Rigor</td>
+<td>Partially addressed</td>
+<td>Iter 3 added marketplace analogy. @suffix disambiguation purpose still absent. Two-step mental model (source registration vs. activation) only partially explained.</td>
+</tr>
+<tr>
+<td>SM-005</td>
+<td>Minor</td>
+<td>Actionability</td>
+<td>Partially addressed</td>
+<td>Capability Matrix table names L2/L3/P-003 layers. Narrative paragraph still uses "automated guardrail enforcement" without enumerating specific layers by name.</td>
+</tr>
+<tr>
+<td>DA-009</td>
+<td>Minor</td>
+<td>Actionability</td>
+<td>Open — unchanged</td>
+<td>BOOTSTRAP.md Rollback <code>rm</code> command does not caveat file-copy fallback state.</td>
+</tr>
+<tr>
+<td>DA-010</td>
+<td>Minor</td>
+<td>Methodological Rigor</td>
+<td>Open — unchanged</td>
+<td><code>jerry-framework</code> local clone name derivation unexplained; <code>/plugin marketplace list</code> not referenced in Step 3 of Local Clone Install primary path.</td>
+</tr>
+<tr>
+<td>SM-003</td>
+<td>Minor</td>
+<td>Completeness</td>
+<td>Open — unchanged</td>
+<td>Project scope team use rationale (VCS-reproducibility mechanism) not explained.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="improvement-recommendations">Improvement Recommendations<a class="headerlink" href="#improvement-recommendations" title="Permanent link">&para;</a></h2>
+<p>Ordered by expected composite score impact:</p>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Finding</th>
+<th>Dimension</th>
+<th>Current Score</th>
+<th>Target</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>DA-002</td>
+<td>Internal Consistency</td>
+<td>0.84</td>
+<td>0.90</td>
+<td>One-sentence revision to INSTALLATION.md line 137: replace unconditional "Hooks activate automatically the next time you start Claude Code — no additional configuration needed." with "Hooks are configured. When functioning correctly, they activate automatically the next time you start Claude Code — see Early Access Caveat below for current defect status." This structurally integrates the caveat with the claim rather than separating them.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>DA-007</td>
+<td>Completeness / Internal Consistency</td>
+<td>0.84</td>
+<td>0.87</td>
+<td>Name at least one concrete known Windows limitation in the INSTALLATION.md header platform note. Example: "junction points used for context sync require both source and target on the same drive" (from BOOTSTRAP.md). Alternatively link to a Windows tracking issue. Verify the CONTRIBUTING.md external link and either confirm it contains the Make target equivalents table or inline the 4-row table directly.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SM-006</td>
+<td>Methodological Rigor</td>
+<td>0.83</td>
+<td>0.87</td>
+<td>Add 3-4 sentences to BOOTSTRAP.md Overview section: "The separation serves three purposes: (1) Auditability — <code>.context/rules/</code> can be reviewed, linted, and tested independently of Claude Code's runtime directory. (2) Distribution — the canonical behavioral source can be packaged as a plugin without bundling Claude Code-specific infrastructure. (3) Stability — changes to Claude Code's internal directory conventions do not require restructuring the canonical source; only the symlink target changes."</td>
+</tr>
+<tr>
+<td>4</td>
+<td>DA-008</td>
+<td>Evidence Quality / Completeness</td>
+<td>0.79</td>
+<td>0.83</td>
+<td>Add one sentence to the Verification section of INSTALLATION.md: "The Installed, Errors, and Discover tabs are part of the Claude Code plugin interface as of version 1.0.33+. If your interface differs, run <code>claude --version</code> to confirm your version."</td>
+</tr>
+<tr>
+<td>5</td>
+<td>SM-004</td>
+<td>Methodological Rigor</td>
+<td>0.83</td>
+<td>0.86</td>
+<td>Add one sentence after the marketplace analogy in Step 1 of Quick Install: "The <code>@suffix</code> in the install command identifies which marketplace to use — necessary because you may have multiple marketplaces registered simultaneously. Use the name shown by <code>/plugin marketplace list</code> after Step 1."</td>
+</tr>
+<tr>
+<td>6</td>
+<td>DA-001</td>
+<td>Evidence Quality</td>
+<td>0.79</td>
+<td>0.82</td>
+<td>Add one sentence inline in the Quick Install section (before or after line 44): "If either command fails, use the Local Clone Install — it is the verified install path." This converts the implicit "try it and see" into an explicit fallback signal at point of use.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projected impact:</strong> Applying all six recommendations is projected to yield a composite of approximately 0.93-0.94, clearing the 0.92 threshold (H-13). Recommendations 1 and 2 alone (DA-002 reorder + DA-007 Windows name + SM-006 rationale) are projected to push the composite to ~0.91, just below threshold. All six are needed for reliable PASS passage.</p>
+<hr />
+<h2 id="leniency-bias-check">Leniency Bias Check<a class="headerlink" href="#leniency-bias-check" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[x] Each dimension scored independently — dimension scores assigned before computing weighted composite; no dimension adjusted based on another's position</li>
+<li>[x] Evidence documented for each score — specific line citations from current iteration-3 documents verified by direct read; no fix credited without confirmation in source</li>
+<li>[x] Uncertain scores resolved downward — Internal Consistency 0.84 (not 0.86) because DA-002 structural ordering unchanged despite improved callout wording; Evidence Quality 0.79 (not 0.81) because DA-001 primary claim still unqualified inline at Quick Install section; Methodological Rigor 0.83 (not 0.85) because SM-004 acceptance criteria not fully met (two-step model partial, @suffix absent)</li>
+<li>[x] SM-004 assessed as partial, not full fix — the marketplace analogy resolves the "what does Step 1 do" question but the "@suffix is the marketplace name disambiguator" was an explicit acceptance criterion (iter-2 report) that is absent from the current documents</li>
+<li>[x] DA-005 credited as fully fixed — confirmed by reading getting-started.md lines 101-103 which directly state CLI availability condition and provide plugin-only user alternative</li>
+<li>[x] No dimension scored at or above 0.92 — highest is Actionability at 0.91; this score is supported by two fully-confirmed Major fixes from iter 2 (DA-006, SM-007) and stable across iter 3 with no regression</li>
+<li>[x] Calibration check: Completeness +0.07 is the largest gain this iteration; entirely attributable to DA-005 being a single, high-impact, fully-resolved Major finding. The proportionality is correct — one fully-resolved Major finding in a dimension with three open findings moves the needle by ~0.07.</li>
+<li>[x] Composite rounding: raw weighted sum = 0.848; rounded to 0.88 per standard two-decimal rounding. No upward inflation.</li>
+<li>[x] DA-002 assessed as Critical (not Major) because the structural flaw — unconditional positive claim before caveat — persists identically to prior iterations; quality of wording in the caveat improved but the ordering relationship is unchanged</li>
+</ul>
+<p><strong>Score confidence:</strong> Medium-high for Completeness, Actionability, and Traceability (stable or clearly-improved). Medium for Internal Consistency (DA-002 partial improvement is real but incomplete). Medium-low for Evidence Quality (DA-001's evidential gap is structural — it requires a live install test that cannot be performed within the documentation revision cycle; the partial disclosures improve honesty but do not substitute for evidence).</p>
+<p><strong>Iteration trajectory:</strong> Iter 1 → 0.74 (+0.00). Iter 2 → 0.84 (+0.10). Iter 3 → 0.88 (+0.04). The iteration-3 gain is smaller because the high-leverage fixes (SM-001/SM-002 value proposition, DA-006 fallback, SM-007 output example, DA-004 consistency) were applied in prior iterations. The remaining gap (-0.04) is achievable but requires resolving fixes that have been deferred across multiple iterations: DA-002 structural reorder (three iterations deferred), SM-006 rationale (two iterations deferred), DA-007 Windows concreteness (three iterations deferred), and DA-008 version note (three iterations deferred). Iteration 4 is the decision point: apply these four targeted fixes or document why they cannot be resolved.</p>
+<hr />
+<p><em>Strategy: S-014 LLM-as-Judge</em>
+<em>Agent: adv-scorer v1.0.0</em>
+<em>SSOT: <code>.context/rules/quality-enforcement.md</code></em>
+<em>Scored: 2026-02-18</em>
+<em>Deliverable Revision State: Post-iteration-3 (4 fixes applied: DA-001 partial, DA-002 partial, DA-005, SM-004 partial)</em>
+<em>Iteration: 3 (prior scores: 0.74 iter 1, 0.84 iter 2)</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
