@@ -22,6 +22,11 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+import pytest
+
+# Requires uv for CLI invocation
+pytestmark = [pytest.mark.subprocess]
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 

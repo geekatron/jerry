@@ -33,9 +33,10 @@ from typing import Any
 
 import pytest
 
-# Mark as contract tests
+# Mark as contract tests (subprocess: requires uv for CLI invocation)
 pytestmark = [
     pytest.mark.contract,
+    pytest.mark.subprocess,
 ]
 
 
