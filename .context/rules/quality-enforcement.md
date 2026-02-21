@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-30 |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-31 |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
@@ -35,6 +35,8 @@
 <!-- L2-REINJECT: rank=5, tokens=30, content="Self-review REQUIRED before presenting any deliverable (H-15, S-010)." -->
 
 <!-- L2-REINJECT: rank=8, tokens=40, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
+
+<!-- L2-REINJECT: rank=9, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-31). Use /ast skill query_frontmatter() and validate_file(). NEVER use regex for frontmatter extraction." -->
 
 | ID | Rule | Source |
 |----|------|--------|
@@ -68,6 +70,7 @@
 | H-28 | Description: WHAT + WHEN + triggers, <1024 chars, no XML | skill-standards |
 | H-29 | Full repo-relative paths in SKILL.md | skill-standards |
 | H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
+| H-31 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
 
 ---
 

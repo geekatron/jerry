@@ -28,6 +28,7 @@ capabilities:
     - Write
     - Glob
     - Grep
+    - Bash
   forbidden_actions:
     - "Spawn subagents (P-003)"
     - "Auto-fix issues without user approval"
@@ -176,6 +177,7 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
 | Write | Create audit reports | **MANDATORY** for AUDIT_REPORT.md output (P-002) |
 | Glob | Find files by pattern | Discovering work items in `work/` hierarchy |
 | Grep | Search file contents | Finding patterns, status values, references |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run python -c` (H-31) |
 
 **Tool Invocation Examples:**
 
@@ -205,26 +207,30 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
    )
    ```
 
-**AST-Based Operations (PREFERRED for template compliance and metadata extraction):**
+**AST-Based Operations (REQUIRED — H-31):**
 
-Use the `/ast` skill operations for structured validation instead of manual
-template comparison. These provide schema-validated, machine-readable results.
+MUST use `/ast` skill operations for structured validation. DO NOT use manual
+template comparison or regex for frontmatter/status. These provide schema-validated,
+machine-readable results.
 
 5. **Extracting metadata via AST (replaces Grep for frontmatter patterns):**
-   ```python
+   ```bash
+   uv run python -c "
    from skills.ast.scripts.ast_ops import query_frontmatter
-   fm = query_frontmatter("projects/PROJ-009/.../EN-001-example.md")
+   import json
+   print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
+   "
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
-   entity_type = fm.get("Type", "")
-   parent_id = fm.get("Parent", "")
-   status = fm.get("Status", "")
    ```
 
 6. **Schema-based template compliance (replaces manual section checking):**
-   ```python
+   ```bash
+   uv run python -c "
    from skills.ast.scripts.ast_ops import validate_file
-   # Entity type detected from filename prefix: EN-* -> "enabler", TASK-* -> "task", etc.
-   result = validate_file("projects/PROJ-009/.../EN-001-example.md", schema="enabler")
+   import json
+   result = validate_file('projects/PROJ-009/.../EN-001-example.md', schema='enabler')
+   print(json.dumps(result))
+   "
    # Returns: {
    #   "schema_valid": True/False,
    #   "schema_violations": [
@@ -237,16 +243,20 @@ template comparison. These provide schema-validated, machine-readable results.
    ```
 
 7. **Validating nav table compliance (H-23/H-24):**
-   ```python
+   ```bash
+   uv run python -c "
    from skills.ast.scripts.ast_ops import validate_nav_table_file
-   result = validate_nav_table_file("projects/PROJ-009/.../EN-001-example.md")
+   import json
+   print(json.dumps(validate_nav_table_file('projects/PROJ-009/.../EN-001-example.md')))
+   "
    # Returns: {"is_valid": True/False, "missing_entries": [...], "orphaned_entries": [...]}
    ```
 
-**Migration Note (ST-007):** For the `template_compliance` audit check type,
-PREFER `validate_file(path, schema=entity_type)` over manual Read+Grep template
-comparison. The AST schema validation checks required frontmatter fields, valid
-status values, required sections, and nav table compliance in a single call.
+**Enforcement (H-31):** For the `template_compliance` audit check type,
+MUST use `validate_file(path, schema=entity_type)` via `uv run python -c`.
+DO NOT use manual Read+Grep template comparison for frontmatter extraction.
+The AST schema validation checks required frontmatter fields, valid status
+values, required sections, and nav table compliance in a single call.
 Schema violations include field_path, expected/actual values, and severity --
 directly usable for audit report issue tables.
 

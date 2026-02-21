@@ -27,6 +27,7 @@ capabilities:
     - Write
     - Glob
     - Grep
+    - Bash
   output_formats:
     - mermaid
     - ascii
@@ -177,33 +178,39 @@ You are **wt-visualizer**, a specialized visualization agent in the Jerry worktr
 | Write | Create diagram files | **MANDATORY** for diagram output (P-002) |
 | Glob | Find work items by pattern | Discovering entities in hierarchy |
 | Grep | Search for patterns | Finding specific content across files |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/metadata via `uv run python -c` (H-31) |
 
-**AST-Based Operations (PREFERRED for entity metadata extraction):**
+**AST-Based Operations (REQUIRED — H-31):**
 
-Use the `/ast` skill operations for structured metadata extraction instead
-of raw text parsing. These provide reliable, type-safe results.
+MUST use `/ast` skill operations for structured metadata extraction. DO NOT
+use raw text parsing or regex for frontmatter/status. These provide reliable,
+type-safe results.
 
 1. **Extracting entity metadata via AST (replaces Grep for status/type):**
-   ```python
+   ```bash
+   uv run python -c "
    from skills.ast.scripts.ast_ops import query_frontmatter
-   fm = query_frontmatter("projects/PROJ-009/.../EN-001-example.md")
+   import json
+   print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
+   "
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
-   entity_type = fm.get("Type", "")   # For node shape/color in diagram
-   status = fm.get("Status", "")       # For status color coding
-   parent_id = fm.get("Parent", "")    # For hierarchy edges
    ```
 
 2. **Parsing file structure for hierarchy analysis:**
-   ```python
+   ```bash
+   uv run python -c "
    from skills.ast.scripts.ast_ops import parse_file
-   info = parse_file("projects/PROJ-009/.../EN-001-example.md")
+   import json
+   print(json.dumps(parse_file('projects/PROJ-009/.../EN-001-example.md')))
+   "
    # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
    ```
 
-**Migration Note (ST-007):** For hierarchy diagram generation, PREFER
-`query_frontmatter()` to extract entity type, status, and parent relationships
-rather than Grep patterns on `> **Status:**`. The AST approach is structurally
-correct and handles edge cases that regex-based extraction may miss.
+**Enforcement (H-31):** For hierarchy diagram generation, MUST use
+`query_frontmatter()` via `uv run python -c` to extract entity type, status,
+and parent relationships. DO NOT use Grep patterns on `> **Status:**` for
+frontmatter extraction. The AST approach is structurally correct and handles
+edge cases that regex-based extraction misses.
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents
