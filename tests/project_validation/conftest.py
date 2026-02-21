@@ -208,6 +208,7 @@ def valid_categories() -> set[str]:
         "work",  # Work tracking files
         "runbooks",  # Execution guides
         "orchestration",  # Orchestration skill workflow state (per SKILL.md)
+        "critiques",  # Adversarial critique artifacts (optional)
     }
 
 
