@@ -75,7 +75,7 @@ Phase 1 research across 6 streams and 20 artifacts provides the definitive speci
 
 | Constraint | Source | Impact on Routing |
 |------------|--------|-------------------|
-| H-25 through H-30 | skill-standards | SKILL.md structure, naming, registration requirements |
+| H-25, H-26 | skill-standards | SKILL.md structure, naming, registration requirements |
 | H-22 | mandatory-skill-usage | Proactive skill invocation; /eng-team and /red-team must register trigger keywords |
 | AD-001 | Methodology-First Design | All routing produces methodology guidance, not execution automation |
 | AD-002 | 21-Agent Roster | Routing must address 10 /eng-team + 11 /red-team agents |
@@ -89,7 +89,7 @@ Phase 1 research across 6 streams and 20 artifacts provides the definitive speci
 
 ### 1. SKILL.md Structure
 
-Both /eng-team and /red-team follow Jerry's skill standard (H-25 through H-30). Each SKILL.md file provides the routing entry point for its skill.
+Both /eng-team and /red-team follow Jerry's skill standard (H-25, H-26). Each SKILL.md file provides the routing entry point for its skill.
 
 #### /eng-team SKILL.md Location and Structure
 
@@ -120,9 +120,9 @@ agents:
   - eng-incident
 ```
 
-**Description compliance (H-28):** WHAT: secure engineering methodology guidance across 10 agents. WHEN: system design, implementation, code review, testing, CI/CD, incident response with security context. Triggers listed. Under 1024 characters. No XML.
+**Description compliance (H-26):** WHAT: secure engineering methodology guidance across 10 agents. WHEN: system design, implementation, code review, testing, CI/CD, incident response with security context. Triggers listed. Under 1024 characters. No XML.
 
-**Agent definitions location (H-29):** `skills/eng-team/agents/{agent-name}.md` using full repo-relative paths.
+**Agent definitions location (H-26):** `skills/eng-team/agents/{agent-name}.md` using full repo-relative paths.
 
 #### /red-team SKILL.md Location and Structure
 
@@ -154,7 +154,7 @@ agents:
   - red-social
 ```
 
-#### Registration Requirements (H-30)
+#### Registration Requirements (H-26)
 
 Both skills MUST be registered in:
 - `CLAUDE.md` Quick Reference skills table
@@ -565,7 +565,7 @@ On /red-team skill invocation:
 | Purple team integration through defined cross-skill integration points | Enables the adversarial-collaborative dynamic that drives security improvement | HIGH -- 4 integration points derived from A-004 with elite organization validation |
 | /eng-team workflow traces to established SDLC models (MS SDL, SSDF, SAMM, SLSA) | Every agent activity has standards traceability for audit and compliance | HIGH -- F-001 mapping provides practice-level traceability |
 | Safety alignment compatibility without circumvention | Legitimate security work proceeds without triggering safety filters | HIGH -- methodology-first design validated by D-002 and Convergence 1 |
-| Jerry routing standards compliance (H-22, H-25-H-30) | Both skills integrate seamlessly with existing Jerry infrastructure | HIGH -- architectural requirements are well-defined |
+| Jerry routing standards compliance (H-22, H-25, H-26) | Both skills integrate seamlessly with existing Jerry infrastructure | HIGH -- architectural requirements are well-defined |
 
 ### Negative
 
@@ -627,10 +627,10 @@ Three convergence findings from S-001 directly validate this ADR's design decisi
 | H-22 (Proactive skill invocation) | COMPLIANT | Trigger maps in Section 2 and 6 registered for mandatory-skill-usage.md |
 | H-25 (SKILL.md exactly, case-sensitive) | COMPLIANT | Section 1 specifies `SKILL.md` for both skills |
 | H-26 (Kebab-case folder, matches name) | COMPLIANT | `skills/eng-team/` matches `name: eng-team`; `skills/red-team/` matches `name: red-team` |
-| H-27 (No README.md in skill folder) | COMPLIANT | Neither skill folder contains README.md |
-| H-28 (Description: WHAT+WHEN+triggers, <1024 chars, no XML) | COMPLIANT | Both descriptions specify what, when, and triggers; under 1024 characters; no XML |
-| H-29 (Full repo-relative paths) | COMPLIANT | Agent definitions at `skills/{skill}/agents/{agent}.md` |
-| H-30 (Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md) | COMPLIANT | Section 6 specifies all three registration points |
+| H-25 (No README.md in skill folder) | COMPLIANT | Neither skill folder contains README.md |
+| H-26 (Description: WHAT+WHEN+triggers, <1024 chars, no XML) | COMPLIANT | Both descriptions specify what, when, and triggers; under 1024 characters; no XML |
+| H-26 (Full repo-relative paths) | COMPLIANT | Agent definitions at `skills/{skill}/agents/{agent}.md` |
+| H-26 (Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md) | COMPLIANT | Section 6 specifies all three registration points |
 | H-31 (Clarify when ambiguous) | COMPLIANT | Disambiguation rules default to /eng-team and confirm with user when ambiguous |
 | P-003 (No recursive subagents) | COMPLIANT | Skills invoke agents as workers; no agent-spawns-agent chains |
 | P-020 (User authority) | COMPLIANT | ADR status is PROPOSED; requires user ratification |
@@ -724,7 +724,7 @@ Three convergence findings from S-001 directly validate this ADR's design decisi
 | CLAUDE.md | `CLAUDE.md` | Identity, HARD constraints, skill quick reference |
 | mandatory-skill-usage.md | `.context/rules/mandatory-skill-usage.md` | H-22 trigger map pattern, proactive invocation rules |
 | quality-enforcement.md | `.context/rules/quality-enforcement.md` | Quality gate (>= 0.92), criticality levels, strategy catalog |
-| skill-standards (H-25 to H-30) | `.context/rules/` | SKILL.md naming, folder structure, description, registration |
+| skill-standards (H-25, H-26) | `.context/rules/` | SKILL.md naming, folder structure, description, registration |
 
 ### External Standards Referenced
 

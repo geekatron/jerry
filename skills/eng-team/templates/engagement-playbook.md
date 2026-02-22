@@ -102,7 +102,7 @@ This playbook codifies the /eng-team's 8-step sequential phase-gate workflow int
 | **Agent** | eng-qa |
 | **Input** | Implementation artifacts, scan results from Step 4 |
 | **Output** | Test results, coverage reports, fuzzing findings |
-| **Quality Gate** | >= 90% line coverage (H-21), all critical test cases pass |
+| **Quality Gate** | >= 90% line coverage (H-20), all critical test cases pass |
 | **Templates** | [Security Test Plan](security-test-plan.md) (testing section) |
 
 **Actions:**

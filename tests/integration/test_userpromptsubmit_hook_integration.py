@@ -84,8 +84,8 @@ class TestUserPromptSubmitHookIntegration:
         assert exit_code == 0
         assert stdout_json is not None
         additional_context = stdout_json.get("additionalContext", "")
-        # Should contain constitutional principle references
-        assert "P-003" in additional_context or "HARD" in additional_context, (
+        # Should contain L2-REINJECT quality reinforcement content (EN-002 format)
+        assert "H-33" in additional_context or "AE-006" in additional_context, (
             f"Expected quality reinforcement. Got: {additional_context[:200]}..."
         )
 

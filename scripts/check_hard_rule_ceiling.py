@@ -31,7 +31,7 @@ from pathlib import Path
 # Even if quality-enforcement.md's ceiling value is tampered with, the
 # absolute maximum provides an independent hard stop. The SSOT ceiling
 # MUST be <= this value. Changes to this constant require C4 review.
-_ABSOLUTE_MAX_CEILING = 35
+_ABSOLUTE_MAX_CEILING = 28
 
 
 def find_quality_enforcement() -> Path:

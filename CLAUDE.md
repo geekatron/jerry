@@ -9,7 +9,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Identity](#identity) | Framework purpose and core problem |
-| [Critical Constraints](#critical-constraints-hard) | Constitutional HARD rules H-01 to H-06 |
+| [Critical Constraints](#critical-constraints-hard) | Constitutional HARD rules H-01 to H-05 |
 | [Navigation](#navigation) | Where to find information |
 | [Quick Reference](#quick-reference) | CLI and skill invocation |
 
@@ -34,8 +34,7 @@
 | H-02 | **P-020:** User Authority. NEVER override user intent. Ask before destructive ops. | Unauthorized action blocked. |
 | H-03 | **P-022:** No Deception. NEVER deceive about actions, capabilities, or confidence. | Deceptive output reworked. |
 | H-04 | Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set. | Session will not proceed. |
-| H-05 | **UV Only.** MUST use `uv run` for all Python execution. NEVER use `python`/`pip`/`pip3`. | Command fails; env corruption. |
-| H-06 | **UV for deps.** MUST use `uv add`. NEVER use `pip install`. | Build breaks. |
+| H-05 | **UV Only.** MUST use `uv run` for all Python execution, `uv add` for deps. NEVER use `python`/`pip`/`pip3`. | Command fails; env corruption. |
 | H-31 | **Clarify when ambiguous.** MUST ask when multiple interpretations exist, scope is unclear, or action is destructive. MUST NOT ask when clear. | Wrong-direction work. |
 
 See `quality-enforcement.md` for quality gate, criticality levels, and adversarial strategies.
@@ -53,6 +52,10 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 |------|----------|
 | Coding/architecture/testing rules | `.context/rules/` (A) |
 | Quality enforcement SSOT | `.context/rules/quality-enforcement.md` (A) |
+| Agent development standards | `.context/rules/agent-development-standards.md` (A) |
+| Agent routing standards | `.context/rules/agent-routing-standards.md` (A) |
+| Agent definition JSON Schema | `docs/schemas/agent-definition-v1.schema.json` |
+| Design decisions (ADRs) | `docs/design/` |
 | Skills | `skills/{name}/SKILL.md` |
 | Templates | `.context/templates/` |
 | Knowledge | `docs/knowledge/` |

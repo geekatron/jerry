@@ -4,19 +4,19 @@
 > **Project:** PROJ-010 Cyber Ops | EPIC-006 Documentation & Guides
 > **Date:** 2026-02-22
 > **Status:** Complete
-> **Governing Rule:** H-30 (Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md if proactive)
-> **SSOT References:** `.context/rules/skill-standards.md` (H-25 through H-30), `.context/rules/quality-enforcement.md`, `AGENTS.md`, `CLAUDE.md`, `.context/rules/mandatory-skill-usage.md`
+> **Governing Rule:** H-26 (Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md if proactive)
+> **SSOT References:** `.context/rules/skill-standards.md` (H-25, H-26), `.context/rules/quality-enforcement.md`, `AGENTS.md`, `CLAUDE.md`, `.context/rules/mandatory-skill-usage.md`
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
-| [Registration Requirements](#registration-requirements) | H-30 checklist and scope of changes |
+| [Registration Requirements](#registration-requirements) | H-26 checklist and scope of changes |
 | [AGENTS.md Registration Block](#agentsmd-registration-block) | Ready-to-insert agent registry content for 21 agents |
 | [CLAUDE.md Registration Block](#claudemd-registration-block) | Ready-to-insert Quick Reference skill table rows |
 | [mandatory-skill-usage.md Registration Block](#mandatory-skill-usagemd-registration-block) | Ready-to-insert trigger map and H-22 rule entries |
 | [MCP Tool Access Registration Block](#mcp-tool-access-registration-block) | Ready-to-insert Context7 agent matrix entries |
-| [Verification Checklist](#verification-checklist) | H-25 through H-30 compliance verification for both skills |
+| [Verification Checklist](#verification-checklist) | H-25 and H-26 compliance verification for both skills |
 
 ---
 
@@ -31,15 +31,15 @@ PROJ-010 Cyber Ops has produced two skills containing 21 agents total:
 | `/eng-team` | 10 | eng-architect, eng-lead, eng-backend, eng-frontend, eng-infra, eng-devsecops, eng-qa, eng-security, eng-reviewer, eng-incident | `skills/eng-team/SKILL.md` |
 | `/red-team` | 11 | red-lead, red-recon, red-vuln, red-exploit, red-privesc, red-lateral, red-persist, red-exfil, red-reporter, red-infra, red-social | `skills/red-team/SKILL.md` |
 
-### H-30 Registration Targets
+### H-26 Registration Targets
 
-Per H-30, new skills MUST be registered in three locations:
+Per H-26, new skills MUST be registered in three locations:
 
 | Target File | Registration Type | Required |
 |-------------|-------------------|----------|
-| `AGENTS.md` | Agent registry entries for all 21 agents, navigation table update, agent summary update, MCP tool access update | Yes (H-30) |
-| `CLAUDE.md` | Quick Reference Skills table -- 2 new rows | Yes (H-30) |
-| `.context/rules/mandatory-skill-usage.md` | Trigger Map entries + H-22 rule update for proactive invocation | Yes (H-30, both skills require proactive invocation per H-22) |
+| `AGENTS.md` | Agent registry entries for all 21 agents, navigation table update, agent summary update, MCP tool access update | Yes (H-26) |
+| `CLAUDE.md` | Quick Reference Skills table -- 2 new rows | Yes (H-26) |
+| `.context/rules/mandatory-skill-usage.md` | Trigger Map entries + H-22 rule update for proactive invocation | Yes (H-26, both skills require proactive invocation per H-22) |
 
 ### Auto-Escalation Note
 
@@ -389,14 +389,14 @@ Add to the `**Not included (by design):**` section:
 | eng-team | `skills/eng-team/` | Yes | Yes (`name: eng-team`) | PASS |
 | red-team | `skills/red-team/` | Yes | Yes (`name: red-team`) | PASS |
 
-### H-27: No README.md in Skill Folder
+### H-25: No README.md in Skill Folder
 
 | Skill | README.md present | Status |
 |-------|-------------------|--------|
 | eng-team | No | PASS |
 | red-team | No | PASS |
 
-### H-28: Description Field Compliance
+### H-26: Description Field Compliance
 
 | Requirement | eng-team | red-team |
 |-------------|----------|----------|
@@ -407,14 +407,14 @@ Add to the `**Not included (by design):**` section:
 | No XML tags | Yes | Yes |
 | Status | PASS | PASS |
 
-### H-29: Full Repo-Relative Paths
+### H-26: Full Repo-Relative Paths
 
 | Skill | All file references repo-relative | Status |
 |-------|-----------------------------------|--------|
 | eng-team | Yes (e.g., `skills/eng-team/agents/eng-architect.md`, `skills/eng-team/output/{engagement-id}/`) | PASS |
 | red-team | Yes (e.g., `skills/red-team/agents/red-lead.md`, `skills/red-team/output/{engagement-id}/`) | PASS |
 
-### H-30: Registration Completeness
+### H-26: Registration Completeness
 
 | Registration Target | eng-team | red-team | Status |
 |---------------------|----------|----------|--------|
@@ -472,7 +472,7 @@ All model tiers verified against agent frontmatter `model:` field:
 
 ## Summary
 
-This report provides complete, ready-to-insert registration content for all three H-30 registration targets plus the MCP tool standards file. All 21 agents across the `/eng-team` and `/red-team` skills have been verified against H-25 through H-30 compliance requirements.
+This report provides complete, ready-to-insert registration content for all three H-26 registration targets plus the MCP tool standards file. All 21 agents across the `/eng-team` and `/red-team` skills have been verified against H-25 and H-26 compliance requirements.
 
 **Registration blocks produced:**
 
@@ -488,4 +488,4 @@ This report provides complete, ready-to-insert registration content for all thre
 *Report produced: 2026-02-22*
 *FEAT-054: Framework Registration*
 *PROJ-010: Cyber Ops -- EPIC-006 Documentation & Guides*
-*Governing rule: H-30 (skill-standards.md)*
+*Governing rule: H-26 (skill-standards.md)*

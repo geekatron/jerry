@@ -768,7 +768,7 @@ Claude will quote the description back to you, showing exactly how it interprets
 
 > **Jerry Framework Note:** The following sections describe Anthropic's general skill distribution model (Claude.ai upload, API, GitHub hosting). Jerry skills are deployed via the repository filesystem — see [Context Distribution Architecture](#context-distribution-architecture) in Jerry Framework Conventions below. The general distribution guidance is included for completeness and for skills intended for community sharing outside Jerry.
 >
-> **H-27 Reminder:** The skill folder (`skills/your-skill-name/`) MUST NOT contain `README.md`. For GitHub hosting, the README belongs at the *hosting repository root*, not inside the skill folder. All skill documentation goes in `SKILL.md` or `references/`.
+> **H-25 Reminder:** The skill folder (`skills/your-skill-name/`) MUST NOT contain `README.md`. For GitHub hosting, the README belongs at the *hosting repository root*, not inside the skill folder. All skill documentation goes in `SKILL.md` or `references/`.
 
 ### Individual Installation
 
@@ -888,7 +888,7 @@ Jerry SKILL.md files follow a consistent structure:
 | [References](#references) | Source documents |
 
 > **Required by H-23/NAV-001.** SKILL.md is Claude-consumed markdown (always >30
-> lines). Navigation table with anchor links (H-24) enables Claude to understand
+> lines). Navigation table with anchor links (H-23) enables Claude to understand
 > document structure and navigate to relevant sections efficiently.
 
 ## Document Audience (Triple-Lens)

@@ -28,7 +28,7 @@
 
 ## Summary
 
-Create the /eng-team SKILL.md file with keyword trigger map, routing table, agent registry, and workflow definitions. Must comply with H-25 through H-30 (skill standards). This is the foundational skill definition that all other EPIC-003 features depend on for agent routing and workflow orchestration.
+Create the /eng-team SKILL.md file with keyword trigger map, routing table, agent registry, and workflow definitions. Must comply with H-25 and H-26 (skill standards). This is the foundational skill definition that all other EPIC-003 features depend on for agent routing and workflow orchestration.
 
 ---
 
@@ -36,9 +36,9 @@ Create the /eng-team SKILL.md file with keyword trigger map, routing table, agen
 
 - [ ] SKILL.md created per skill-standards (H-25: exactly SKILL.md, case-sensitive)
 - [ ] Folder uses kebab-case matching name field (H-26)
-- [ ] No README.md inside skill folder (H-27)
-- [ ] Description: WHAT + WHEN + triggers, <1024 chars, no XML (H-28)
-- [ ] Full repo-relative paths (H-29)
+- [ ] No README.md inside skill folder (H-25)
+- [ ] Description: WHAT + WHEN + triggers, <1024 chars, no XML (H-26)
+- [ ] Full repo-relative paths (H-26)
 - [ ] Keyword trigger map for /eng-team invocation
 - [ ] Agent routing table (8 agents mapped to contexts)
 - [ ] Workflow definitions (sequential, parallel, review gates)
