@@ -174,13 +174,13 @@ class TestH31RuleRegistration:
             "H-33 not found in quality-enforcement.md HARD Rule Index table"
         )
 
-    def test_hard_rule_index_when_checked_then_header_references_h31(
+    def test_hard_rule_index_when_checked_then_header_references_h36(
         self, quality_enforcement_content: str
     ) -> None:
-        """Section header must reference H-33 range (H-01 through H-33)."""
+        """Section header must reference H-36 range (H-01 through H-36)."""
         # Arrange/Act/Assert
-        assert "H-01 through H-33" in quality_enforcement_content, (
-            "quality-enforcement.md section header does not reference 'H-01 through H-33'"
+        assert "H-01 through H-36" in quality_enforcement_content, (
+            "quality-enforcement.md section header does not reference 'H-01 through H-36'"
         )
 
     def test_l2_reinject_when_checked_then_rank9_exists(

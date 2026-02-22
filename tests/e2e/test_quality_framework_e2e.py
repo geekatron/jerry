@@ -666,12 +666,12 @@ class TestPerformanceBenchmarks:
         assert exit_code == 0
         assert elapsed < 15.0, f"UserPromptSubmit hook took {elapsed:.2f}s, exceeds 15s timeout"
 
-    def test_rule_files_when_totaled_then_under_100kb(self) -> None:
-        """Total size of all .context/rules/*.md files is under 100KB."""
+    def test_rule_files_when_totaled_then_under_150kb(self) -> None:
+        """Total size of all .context/rules/*.md files is under 150KB."""
         total_size = sum(f.stat().st_size for f in RULES_DIR.iterdir() if f.suffix == ".md")
-        max_size = 100 * 1024  # 100KB
+        max_size = 150 * 1024  # 150KB (expanded for agent-development/routing-standards)
         assert total_size < max_size, (
-            f"Total rule files size {total_size / 1024:.1f}KB exceeds 100KB limit"
+            f"Total rule files size {total_size / 1024:.1f}KB exceeds 150KB limit"
         )
 
     def test_quality_preamble_when_generated_then_under_700_token_budget(

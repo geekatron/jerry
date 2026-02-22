@@ -1,6 +1,6 @@
 # Quality Enforcement -- Single Source of Truth
 
-<!-- VERSION: 1.5.0 | DATE: 2026-02-21 | SOURCE: EPIC-002 Final Synthesis, ADR-EPIC002-001, ADR-EPIC002-002, EN-002 HARD Rule Budget Enforcement, C4 Tournament Round 2 Revisions -->
+<!-- VERSION: 1.6.0 | DATE: 2026-02-21 | SOURCE: EPIC-002/EN-002/EN-001 — added H-34 (agent-dev), H-36 (agent-routing), consolidated H-20/H-21 -->
 
 > Canonical constants for the quality framework. All hooks, rules, and skills MUST reference this file.
 
@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-33 (post-EN-002 consolidation) |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-36 (post-EN-001/EN-002 consolidation) |
 | [Retired Rule IDs](#retired-rule-ids) | Tombstoned IDs from EN-002 consolidation |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
@@ -63,8 +63,7 @@
 | H-17 | Quality scoring REQUIRED for deliverables | quality-enforcement |
 | H-18 | Constitutional compliance check (S-007) | quality-enforcement |
 | H-19 | Governance escalation per AE rules | quality-enforcement |
-| H-20 | Test before implement (BDD Red phase) | testing-standards |
-| H-21 | 90% line coverage REQUIRED | testing-standards |
+| H-20 | Testing standards (BDD test-first Red phase, 90% line coverage REQUIRED) | testing-standards |
 | H-22 | Proactive skill invocation | mandatory-skill-usage |
 | H-23 | Markdown navigation (navigation table NAV-001, anchor links NAV-006) | markdown-navigation |
 | H-25 | Skill naming and structure (SKILL.md case, kebab-case folder, no README.md) | skill-standards |
@@ -72,6 +71,8 @@
 | H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
 | H-32 | GitHub Issue parity for jerry repo work items | project-workflow |
 | H-33 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
+| H-34 | Agent definition standards (YAML schema validation, constitutional compliance triplet) | agent-development-standards |
+| H-36 | Agent routing standards (circuit breaker max 3 hops, keyword-first routing) | agent-routing-standards |
 
 ---
 
@@ -90,6 +91,9 @@
 | H-06 | H-05 (sub-item b) | UV only for dependencies | 2026-02-21 |
 | H-12 | H-11 (sub-item b) | Docstrings REQUIRED on public functions | 2026-02-21 |
 | H-24 | H-23 (sub-item b) | Anchor links REQUIRED (NAV-006) | 2026-02-21 |
+| H-21 | H-20 (sub-item b) | 90% line coverage REQUIRED | 2026-02-21 |
+| H-35 | H-34 (sub-item b) | Constitutional compliance in agent definitions | 2026-02-21 |
+| H-37 | H-36 (sub-item b) | Keyword-first routing below 20 skills | 2026-02-21 |
 
 ---
 
@@ -175,12 +179,14 @@ Rules are classified by their enforcement reliability:
 | H-13, H-14, H-31 | quality-enforcement.md rank 2 | 3 |
 | H-15 | quality-enforcement.md rank 5 | 1 |
 | H-19 | quality-enforcement.md rank 8 | 1 |
-| H-20, H-21 | testing-standards.md rank 5 | 2 |
+| H-20 | testing-standards.md rank 5 | 1 |
 | H-22 | mandatory-skill-usage.md rank 6 | 1 |
 | H-23 | markdown-navigation.md rank 7 | 1 |
 | H-25, H-26 | skill-standards.md rank 7 | 2 |
 | H-33 | quality-enforcement.md rank 10 | 1 |
-| **Tier A Total** | | **19** |
+| H-34 | agent-development-standards.md rank 5 | 1 |
+| H-36 | agent-routing-standards.md rank 6 | 1 |
+| **Tier A Total** | | **20** |
 
 **Tier B** — Structural L2 (L1 awareness only, compensating controls prevent bypass):
 
@@ -193,7 +199,7 @@ Rules are classified by their enforcement reliability:
 | H-32 (GitHub Issue parity) | /worktracker skill enforcement, CI workflow | 1 |
 | **Tier B Total** | | **5** |
 
-**Total:** 24 HARD rules (19 Tier A + 5 Tier B)
+**Total:** 25 HARD rules (20 Tier A + 5 Tier B)
 
 > **Note:** Tier B rules are candidates for L2 marker addition pending effectiveness measurement (DEC-005). Current compensating controls provide adequate enforcement through deterministic mechanisms (hooks, skills, CI gates).
 
@@ -207,7 +213,7 @@ The ceiling of 25 HARD rules is derived from three independent constraint famili
 
 **Convergence:** All three families independently converge on 25 as the practical upper bound. The absolute maximum (28) is enforced by an independent constant in the L5 gate script, preventing self-referential ceiling manipulation.
 
-**Current count:** 25 HARD rules (post-consolidation from 31 per EN-002). Zero headroom is expected as an intermediate state; EN-001 will use the exception mechanism to add rules while consolidation creates permanent headroom.
+**Current count:** 25 HARD rules (post-EN-001/EN-002 consolidation). Zero headroom. H-34 (agent definition standards) and H-36 (agent routing standards) added via EN-001 with H-20/H-21 consolidation to stay at ceiling.
 
 ### HARD Rule Ceiling Exception Mechanism
 
@@ -227,7 +233,7 @@ Temporary ceiling expansion is permitted under controlled conditions:
 
 **Reversion enforcement (C-03):** The L5 CI gate provides automated enforcement — when the exception expires, the ceiling value is reverted to 25 and any excess rules will cause CI failure. The worktracker reversion deadline provides human-visible tracking.
 
-**EN-001 phasing note (C-02):** H-32 and H-33 were added by PROJ-005 and integrated via merge consolidation. EN-001 may require additional rule slots (H-34..H-35) for PROJ-007 agent patterns. Current headroom: 1 slot (24/25). The exception mechanism allows up to N=3 temporary expansion if needed.
+**EN-001 phasing note (C-02):** H-32 and H-33 were added by PROJ-005 via merge. EN-001 added H-34 (agent definition standards, compound: schema validation + constitutional compliance) and H-36 (agent routing standards, compound: circuit breaker + keyword-first routing) with H-20/H-21 testing consolidation. Current count: 25/25. H-35, H-37, H-21 retired into compound parents.
 
 ---
 

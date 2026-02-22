@@ -52,6 +52,10 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 |------|----------|
 | Coding/architecture/testing rules | `.context/rules/` (A) |
 | Quality enforcement SSOT | `.context/rules/quality-enforcement.md` (A) |
+| Agent development standards | `.context/rules/agent-development-standards.md` (A) |
+| Agent routing standards | `.context/rules/agent-routing-standards.md` (A) |
+| Agent definition JSON Schema | `docs/schemas/agent-definition-v1.schema.json` |
+| Design decisions (ADRs) | `docs/design/` |
 | Skills | `skills/{name}/SKILL.md` |
 | Templates | `.context/templates/` |
 | Knowledge | `docs/knowledge/` |

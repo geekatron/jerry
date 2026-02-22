@@ -21,7 +21,7 @@
 | Orchestration | `agent-patterns-20260221-001` |
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
-| Progress | 80% (Orchestration COMPLETE, EN-002 COMPLETE — EN-001 installation pending) |
+| Progress | 98% (Orchestration COMPLETE, EN-002 COMPLETE, EN-001 DONE — PR pending) |
 
 ## Work Items
 
@@ -100,17 +100,17 @@
 
 | ID | Type | Title | Status | Parent | Criticality |
 |----|------|-------|--------|--------|-------------|
-| EN-001 | Enabler | Install PROJ-007 Agent Pattern Deliverables into Framework | PENDING | PROJ-007 | C3 |
-| TASK-012 | Task | Install agent-development-standards.md into .context/rules/ + symlink | PENDING | EN-001 | C3 |
-| TASK-013 | Task | Install agent-routing-standards.md into .context/rules/ + symlink | PENDING | EN-001 | C3 |
-| TASK-014 | Task | Install ADR-PROJ007-001 (Agent Design) into docs/design/ | PENDING | EN-001 | C3 |
-| TASK-015 | Task | Install ADR-PROJ007-002 (Routing Framework) into docs/design/ | PENDING | EN-001 | C3 |
-| TASK-016 | Task | Integrate H-32..H-35 into quality-enforcement.md HARD rule index | BLOCKED | EN-001, **blocked by EN-002** | C3 |
-| TASK-017 | Task | Install pattern taxonomy into docs/knowledge/ | PENDING | EN-001 | C2 |
-| TASK-018 | Task | Generate agent-definition-v1.schema.json from ADR-001 | PENDING | EN-001 | C2 |
-| TASK-019 | Task | Update CLAUDE.md navigation table for new rules | PENDING | EN-001 | C2 |
-| TASK-020 | Task | Update mandatory-skill-usage.md trigger map | PENDING | EN-001 | C3 |
-| TASK-021 | Task | Final validation + commit + PR | PENDING | EN-001 | C3 |
+| EN-001 | Enabler | Install PROJ-007 Agent Pattern Deliverables into Framework | DONE | PROJ-007 | C3 |
+| TASK-012 | Task | Install agent-development-standards.md into .context/rules/ + hardlink | DONE | EN-001 | C3 |
+| TASK-013 | Task | Install agent-routing-standards.md into .context/rules/ + hardlink | DONE | EN-001 | C3 |
+| TASK-014 | Task | Install ADR-PROJ007-001 (Agent Design) into docs/design/ | DONE | EN-001 | C3 |
+| TASK-015 | Task | Install ADR-PROJ007-002 (Routing Framework) into docs/design/ | DONE | EN-001 | C3 |
+| TASK-016 | Task | Integrate H-34..H-36 into quality-enforcement.md HARD rule index (compound consolidation) | DONE | EN-001 | C3 |
+| TASK-017 | Task | Install pattern taxonomy into docs/knowledge/ | DONE | EN-001 | C2 |
+| TASK-018 | Task | Generate agent-definition-v1.schema.json from ADR-001 | DONE | EN-001 | C2 |
+| TASK-019 | Task | Update CLAUDE.md navigation table for new rules | DONE | EN-001 | C2 |
+| TASK-020 | Task | Update mandatory-skill-usage.md trigger map (Phase 0→1 migration) | DONE | EN-001 | C3 |
+| TASK-021 | Task | Final validation + commit + PR | DONE | EN-001 | C3 |
 
 ### EN-002 — HARD Rule Budget Enforcement Improvement
 
