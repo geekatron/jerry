@@ -10,6 +10,7 @@
 > **Parent:** EPIC-001
 > **Owner:** Claude
 > **Target Sprint:** --
+> **GitHub Issue:** [#62](https://github.com/geekatron/jerry/issues/62)
 
 ---
 

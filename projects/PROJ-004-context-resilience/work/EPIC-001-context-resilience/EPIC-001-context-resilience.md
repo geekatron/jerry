@@ -131,6 +131,15 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 | Informs | PROJ-001 /orchestration skill | Resumption protocol will integrate with existing orchestration skill |
 | Informs | PROJ-002 roadmap-next | Context resilience is a capability on the roadmap |
 
+### GitHub Issues
+
+| Issue | Title | Status |
+|-------|-------|--------|
+| [#61](https://github.com/geekatron/jerry/issues/61) | EPIC-001: Context Resilience | closed |
+| [#62](https://github.com/geekatron/jerry/issues/62) | FEAT-001: Context Exhaustion Detection & Graceful Session Handoff | closed |
+| [#63](https://github.com/geekatron/jerry/issues/63) | FEAT-002: Status Line / Context Monitoring Unification & Automatic Session Rotation | closed |
+| [#51](https://github.com/geekatron/jerry/issues/51) | BUG-001: Pre-commit hooks failing | closed |
+
 ---
 
 ## History
