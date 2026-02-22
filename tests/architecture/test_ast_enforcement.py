@@ -21,7 +21,7 @@ artifacts that constitute system behavior for LLM agents.
 
 References:
     - H-33: AST-based parsing REQUIRED for worktracker entity ops
-    - H-30: Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md
+    - H-26: Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md
     - quality-enforcement.md: HARD Rule Index, L2-REINJECT markers
     - AE-002: .context/rules/ changes auto-escalate to C3
 """
@@ -177,10 +177,10 @@ class TestH31RuleRegistration:
     def test_hard_rule_index_when_checked_then_header_references_h31(
         self, quality_enforcement_content: str
     ) -> None:
-        """Section header must reference H-33 range (H-01 through H-33)."""
+        """Section header must reference H-33+ range (H-01 through H-36 post-EN-002)."""
         # Arrange/Act/Assert
-        assert "H-01 through H-33" in quality_enforcement_content, (
-            "quality-enforcement.md section header does not reference 'H-01 through H-33'"
+        assert "H-01 through H-36" in quality_enforcement_content, (
+            "quality-enforcement.md section header does not reference 'H-01 through H-36'"
         )
 
     def test_l2_reinject_when_checked_then_rank9_exists(
@@ -210,15 +210,17 @@ class TestH31RuleRegistration:
     def test_l2_reinject_when_checked_then_rank9_references_ast_functions(
         self, quality_enforcement_content: str
     ) -> None:
-        """L2-REINJECT rank=10 must reference both AST functions within the same directive."""
-        # Arrange — match within a single HTML comment to ensure both functions
-        # are in the same L2-REINJECT directive, not scattered across separate markers
-        pattern = r"<!--[^>]*rank=10[^>]*query_frontmatter\(\)[^>]*validate_file\(\)[^>]*-->"
+        """L2-REINJECT rank=10 must reference AST CLI commands within the same directive."""
+        # Arrange — match within a single HTML comment to ensure both CLI commands
+        # are in the same L2-REINJECT directive, not scattered across separate markers.
+        # EN-002 updated from Python function names to CLI commands:
+        # "jerry ast frontmatter" and "jerry ast validate"
+        pattern = r"<!--[^>]*rank=10[^>]*jerry ast frontmatter[^>]*jerry ast validate[^>]*-->"
 
         # Act/Assert
         assert re.search(pattern, quality_enforcement_content, re.DOTALL), (
-            "L2-REINJECT rank=10 does not reference query_frontmatter() and validate_file() "
-            "within the same HTML comment directive"
+            "L2-REINJECT rank=10 does not reference 'jerry ast frontmatter' and "
+            "'jerry ast validate' within the same HTML comment directive"
         )
 
     def test_l2_reinject_when_checked_then_rank9_content_is_substantive(
@@ -434,7 +436,7 @@ class TestWorktrackerAgentPluginRoot:
 
 
 class TestAstSkillRegistration:
-    """/ast skill must be registered per H-30 and source artifacts must exist."""
+    """/ast skill must be registered per H-26 and source artifacts must exist."""
 
     def test_claude_md_when_checked_then_ast_in_quick_reference(
         self, claude_md_content: str

@@ -132,7 +132,7 @@ This template guides security test planning per SSDF PW.8 (Test executable code 
 |-----------|---------|----------|-------------|
 | `sast_tools` | auto-detect | semgrep, codeql, bandit | SAST tool selection |
 | `dast_tools` | OWASP ZAP | burp, zap, nuclei | DAST tool selection |
-| `minimum_code_coverage` | 90% | 0-100% | Line coverage threshold (H-21) |
+| `minimum_code_coverage` | 90% | 0-100% | Line coverage threshold (H-20) |
 | `fuzzing_duration_hours` | 4 | 1-48 | Minimum fuzzing campaign duration |
 | `asvs_verification_level` | Level 2 | Level 1-3 | ASVS depth |
 | `scan_frequency` | per-commit | nightly, per-commit, manual | Automated scan schedule |

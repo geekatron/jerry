@@ -207,7 +207,7 @@ def test_domain_has_no_infrastructure_imports():
 ```
 
 **Why 5%?**
-- Few architectural rules (H-07, H-08, H-09, H-10)
+- Few architectural rules (H-07, H-10)
 - Architectural violations are rare once established
 
 ---
@@ -1020,7 +1020,7 @@ def test_domain_has_no_infrastructure_imports():
 
 ---
 
-#### H-08: Application has no interface imports
+#### H-07: Application has no interface imports
 
 ```python
 def test_application_has_no_interface_imports():
@@ -1034,7 +1034,7 @@ def test_application_has_no_interface_imports():
 
 ---
 
-#### H-09: Only bootstrap instantiates infrastructure
+#### H-07: Only bootstrap instantiates infrastructure
 
 ```python
 def test_only_bootstrap_imports_infrastructure_adapters():
@@ -1049,7 +1049,7 @@ def test_only_bootstrap_imports_infrastructure_adapters():
         for file in layer_path.rglob("*.py"):
             imports = extract_imports_from_file(file)
             adapters = [i for i in imports if "infrastructure/adapters" in i]
-            assert not adapters, f"{file.name} violates H-09: {adapters}"
+            assert not adapters, f"{file.name} violates H-07: {adapters}"
 ```
 
 ---
@@ -1145,13 +1145,13 @@ Based on the actual `tests/` directory structure:
 
 | Metric | Target | CI Configuration | Status |
 |--------|--------|-----------------|--------|
-| Line Coverage | >= 90% (H-21) | `--cov-fail-under=80` in CI | Gap: CI threshold is 80%, rule says 90% |
+| Line Coverage | >= 90% (H-20) | `--cov-fail-under=80` in CI | Gap: CI threshold is 80%, rule says 90% |
 | Branch Coverage | >= 85% | Not explicitly configured in CI | Gap: Not enforced |
 | Function Coverage | >= 95% | Not explicitly configured in CI | Gap: Not enforced |
 
 ### Key Gaps
 
-1. **Coverage threshold gap**: CI enforces 80% (`ci.yml` line 249), but H-21 requires 90%. The CI threshold should be raised to match the rule.
+1. **Coverage threshold gap**: CI enforces 80% (`ci.yml` line 249), but H-20 requires 90%. The CI threshold should be raised to match the rule.
 2. **Branch coverage not enforced**: `pyproject.toml` does not include `branch = true` in coverage configuration. Consider adding `[tool.coverage.run] branch = true`.
 3. **Test markers**: `pyproject.toml` defines markers for `happy-path`, `negative`, `edge-case`, `boundary` (lines 106-111), but not all tests use these markers consistently.
 4. **Coverage exclusions**: No `[tool.coverage.report] exclude_lines` configuration found in `pyproject.toml`. Should add exclusions for `TYPE_CHECKING`, `@abstractmethod`, etc.
@@ -1173,7 +1173,7 @@ Based on the actual `tests/` directory structure:
 ```
 tests/
   architecture/
-    test_composition_root.py                # H-07, H-08, H-09 boundary checks
+    test_composition_root.py                # H-07 boundary checks
     test_config_boundaries.py               # Domain/application boundary enforcement
     test_check_architecture_boundaries.py   # Cross-module boundary checks
     test_session_hook_architecture.py        # Hook architecture compliance
@@ -1275,7 +1275,7 @@ test = [
 
 ### Related Documents
 
-- [Testing Standards](../rules/testing-standards.md) - Enforcement rules (H-20, H-21)
+- [Testing Standards](../rules/testing-standards.md) - Enforcement rules (H-20)
 - [Architecture Layers Guide](architecture-layers.md) - Layer responsibilities
 - [Coding Practices Guide](coding-practices.md) - Mocking, fixtures
 

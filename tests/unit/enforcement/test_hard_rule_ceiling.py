@@ -113,14 +113,14 @@ class TestReadCeiling:
         assert result == 25
 
     def test_ceiling_when_different_value_then_returns_it(self) -> None:
-        # M-08: Value must be <= _ABSOLUTE_MAX_CEILING (35)
-        content = SAMPLE_QE_CONTENT.replace("<= 25", "<= 35")
+        # M-08: Value must be <= _ABSOLUTE_MAX_CEILING (28)
+        content = SAMPLE_QE_CONTENT.replace("<= 25", "<= 28")
         result = read_ceiling(content)
-        assert result == 35
+        assert result == 28
 
     def test_ceiling_when_exceeds_absolute_max_then_exits(self) -> None:
         # M-08: Independent hard stop prevents self-referential bypass
-        content = SAMPLE_QE_CONTENT.replace("<= 25", "<= 40")
+        content = SAMPLE_QE_CONTENT.replace("<= 25", "<= 30")
         with pytest.raises(SystemExit):
             read_ceiling(content)
 

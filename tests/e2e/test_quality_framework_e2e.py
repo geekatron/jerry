@@ -233,8 +233,8 @@ class TestCrossLayerInteractions:
         # Check that the enforcement architecture section exists with token data
         assert "Enforcement Architecture" in content
         assert "Tokens" in content
-        # L2 should have ~600 per prompt
-        assert "600" in content
+        # L2 should have ~850 per prompt (EN-002 updated from ~600)
+        assert "850" in content
 
     def test_ssot_references_when_checked_then_adr_sources_present(self) -> None:
         """SSOT references its source ADRs for traceability."""
