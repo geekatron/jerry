@@ -1,6 +1,6 @@
 # Jerry Framework vs. Anthropic Claude Code Best Practices
 
-<!-- VERSION: 1.0.0 | DATE: 2026-02-22 | SOURCE: EN-003 (PROJ-007) | CRITICALITY: C2 -->
+<!-- VERSION: 1.1.0 | DATE: 2026-02-22 | SOURCE: EN-003 (PROJ-007) | CRITICALITY: C2 -->
 
 > Comprehensive comparison of Jerry Framework patterns against Anthropic's official Claude Code best practices. Demonstrates alignment, identifies innovations, and documents gap closures.
 
@@ -432,22 +432,41 @@ Most framework documentation focuses on compliance with external standards. Jerr
 | `.context/rules/markdown-navigation-standards.md` | H-23/H-24 navigation tables |
 | `docs/governance/JERRY_CONSTITUTION.md` | Constitutional principles P-003, P-020, P-022 |
 
-### PROJ-007 Artifacts
+### PROJ-007 Research Artifacts (Phase 1-2: Evidence Base)
+
+> These artifacts contain the primary research that produced the evidence cited in this document. The orchestration root is `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/`.
+
+| Artifact | Agent | Location (relative to orchestration root) | Claims Supported |
+|----------|-------|------------------------------------------|-----------------|
+| Claude Code Architecture & Capabilities | ps-researcher-001 | `ps/phase-1/ps-researcher-001/` | Areas 2-5 (subagent, CLAUDE.md, hooks, tools) |
+| Agent Routing & Trigger Design | ps-researcher-002 | `ps/phase-1/ps-researcher-002/` | Innovation 11 (layered routing), 12 (anti-patterns), Area 8 (skills) |
+| Industry Best Practices & Prior Art | ps-researcher-003 | `ps/phase-1/ps-researcher-003/` | Error amplification data (1.3x vs 17x), Innovation 6 (adversarial), Area 6 (verification) |
+| LLM Instruction-Following Capacity | ps-researcher-004 | `ps/phase-1/ps-researcher-004/` | Innovation 8 (HARD rule ceiling), Innovation 2 (5-layer enforcement), Innovation 3 (L2 re-injection) |
+| Agent Design Alternatives (Trade Study) | nse-explorer-001 | `nse/phase-1/nse-explorer-001/` | Innovation 9 (agent schema), Innovation 13 (cognitive modes) |
+| Pattern Family Analysis | ps-analyst-001 | `ps/phase-2-analysis/ps-analyst-001/` | Innovation 13 (cognitive modes), Innovation 9 (agent schema) |
+| Routing Pattern Analysis | ps-analyst-002 | `ps/phase-2-analysis/ps-analyst-002/` | Innovation 11 (layered routing), Area 8 (skills) |
+| Context Rot Investigation | ps-investigator-001 | `ps/phase-2-analysis/ps-investigator-001/` | Area 1 (context window), Innovation 2 (5-layer enforcement) |
+| Architecture Analysis | nse-architecture-001 | `nse/phase-2-analysis/nse-architecture-001/` | Innovation 2 (5-layer enforcement), Innovation 14 (auto-escalation) |
+| Requirements Specification | nse-requirements-001 | `nse/phase-2-analysis/nse-requirements-001/` | H-34/H-35 source requirements (AR-*, SR-*, PR-*, HR-* IDs) |
+| Risk Assessment (FMEA) | nse-risk-001 | `nse/phase-2-analysis/nse-risk-001/` | Innovation 7 (FMEA, RPN 392/336/280/252) |
+
+### PROJ-007 Synthesis Artifacts (Phase 3-5: Derived Deliverables)
 
 | Artifact | Location |
 |----------|----------|
-| Phase 3 Synthesis (66 patterns, 8 families) | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-3-synthesis/ps-synthesizer-001/` |
+| Unified Pattern Taxonomy (66 patterns, 8 families) | `docs/knowledge/agent-pattern-taxonomy.md` |
+| Phase 3 Synthesis | `ps/phase-3-synthesis/ps-synthesizer-001/` (relative to orchestration root) |
 | ADR-PROJ007-001 (Agent Design) | `docs/design/ADR-PROJ007-001-agent-definition-format.md` |
 | ADR-PROJ007-002 (Routing Framework) | `docs/design/ADR-PROJ007-002-agent-routing-framework.md` |
-| V&V Plan | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/nse/phase-3-synthesis/nse-verification-001/` |
-| C4 Tournament Report | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-5-review/adversary/` |
-| Final Synthesis | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-5-review/ps-reporter-001/` |
+| V&V Plan | `nse/phase-3-synthesis/nse-verification-001/` (relative to orchestration root) |
+| C4 Tournament Report | `ps/phase-5-review/adversary/` (relative to orchestration root) |
+| Final Synthesis | `ps/phase-5-review/ps-reporter-001/` (relative to orchestration root) |
 | EN-003 Gap Closures | `projects/PROJ-007-agent-patterns/WORKTRACKER.md` (TASK-030..036) |
 
 ---
 
-<!-- VERSION: 1.0.0 | DATE: 2026-02-22 | SOURCE: EN-003 (PROJ-007) -->
-*Publication Version: 1.0.0*
+<!-- VERSION: 1.1.0 | DATE: 2026-02-22 | SOURCE: EN-003 (PROJ-007) | REVISION: Added Phase 1-2 research artifact traceability -->
+*Publication Version: 1.1.0*
 *Source: PROJ-007 Agent Patterns -- EN-003 Gap Closure & Publication*
 *Created: 2026-02-22*
 *Criticality: C2 (knowledge artifact)*
