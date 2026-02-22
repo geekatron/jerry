@@ -18,6 +18,7 @@ References:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -220,6 +221,10 @@ class TestFailOpen:
         result = json.loads(captured.out)
         assert result["decision"] == "approve"
 
+    @pytest.mark.skipif(
+        sys.platform == "win32",
+        reason="chmod(0o444) does not enforce read-only directories on Windows",
+    )
     def test_readonly_dir_still_approves(
         self,
         tmp_path: Path,
