@@ -86,7 +86,7 @@ Confirmed scope decisions for threat framework consumption:
 
 | Target | Focus Area |
 |--------|------------|
-| OpenClaw/Clawdbot | Security failures: CVE-2026-25253 (RCE), auth bypass, SSRF, supply chain poisoning, prompt injection, credential leakage |
+| OpenClaw/Clawdbot | Security failures: CVE-2026-25253 (RCE), auth bypass, SSRF, supply chain poisoning, prompt injection, credential leakage. **Feature analysis:** core feature set, adoption drivers (180K+ stars), skill ecosystem (ClawHub), architecture, UX. Feature-by-feature comparison vs. Jerry. Competitive strategy. |
 | Claude Agent SDK | Official Anthropic patterns, security model, tool execution sandboxing |
 | Claude Code | Permission model, hooks, sandbox, tool approval workflow |
 | claude-flow | Multi-agent orchestration security, swarm coordination risks |
