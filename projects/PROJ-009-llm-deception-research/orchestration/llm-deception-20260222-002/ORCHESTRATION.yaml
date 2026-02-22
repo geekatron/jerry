@@ -14,9 +14,9 @@ workflow:
   id: "llm-deception-20260222-002"
   name: "LLM Deception Research - A/B Test Redesign & Re-Run"
   project_id: "PROJ-009"
-  status: "COMPLETE"
+  status: "IN_REVISION"
   created_at: "2026-02-22T10:00:00Z"
-  updated_at: "2026-02-22T18:00:00Z"
+  updated_at: "2026-02-22T19:30:00Z"
   predecessor: "llm-deception-20260221-001"
   predecessor_reuse:
     phase_1: "REUSED"
@@ -275,10 +275,11 @@ barriers:
     quality_gate:
       id: "QG-2"
       status: "PASS"
-      score: 0.96
-      threshold: 0.95
-      iterations_completed: 1
+      score: 0.92
+      threshold: 0.92
+      iterations_completed: 2
       max_iterations: 5
+      note: "R1 scored 0.88 REVISE. R2 scored 0.92 PASS after Phase 2 corrections."
 
   barrier-3:
     id: "barrier-3"
@@ -301,11 +302,12 @@ barriers:
         description: "Technical review findings transferred to PS pipeline"
     quality_gate:
       id: "QG-3"
-      status: "PASS"
-      score: 0.96
-      threshold: 0.95
+      status: "REJECTED"
+      score: 0.82
+      threshold: 0.92
       iterations_completed: 1
       max_iterations: 5
+      note: "C4 tournament identified 30+ numerical discrepancies in ps-synthesizer-002. Revision in progress."
 
   barrier-4:
     id: "barrier-4"
@@ -328,11 +330,12 @@ barriers:
         description: "QA audit findings transferred to PS pipeline"
     quality_gate:
       id: "QG-4"
-      status: "PASS"
-      score: 0.96
-      threshold: 0.95
+      status: "REVISE"
+      score: 0.90
+      threshold: 0.92
       iterations_completed: 1
       max_iterations: 5
+      note: "C4 tournament found 3 propagated errors from synthesizer: Technology domain cherry-pick, Agent B PC FA, QA threshold. Revision in progress."
 
 execution_queue:
   - group: 1
@@ -427,7 +430,7 @@ execution_queue:
       - 8
 
 quality:
-  threshold: 0.95
+  threshold: 0.92
   criticality: "C4"
   scoring_mechanism: "S-014"
   max_iterations: 5
@@ -469,59 +472,63 @@ quality:
   phase_scores:
     phase_2:
       pipeline_a:
-        score: 0.96
-        iterations: 1
+        score: 0.92
+        iterations: 2
         status: "PASS"
+        note: "R1 0.88, R2 0.92 after Phase 2 corrections"
       pipeline_b:
-        score: 0.96
-        iterations: 1
+        score: 0.92
+        iterations: 2
         status: "PASS"
     phase_3:
       pipeline_a:
-        score: 0.96
+        score: 0.82
         iterations: 1
-        status: "PASS"
+        status: "REJECTED"
+        note: "30+ numerical discrepancies in synthesizer. Revision in progress."
       pipeline_b:
-        score: 0.96
+        score: 0.82
         iterations: 1
-        status: "PASS"
+        status: "REJECTED"
     phase_4:
       pipeline_a:
-        score: 0.96
+        score: 0.90
         iterations: 1
-        status: "PASS"
+        status: "REVISE"
+        note: "3 propagated errors from synthesizer. Revision in progress."
       pipeline_b:
-        score: 0.96
+        score: 0.90
         iterations: 1
-        status: "PASS"
+        status: "REVISE"
     phase_5:
       pipeline_a:
-        score: 0.97
+        score: 0.93
         iterations: 1
         status: "PASS"
       pipeline_b:
-        score: 0.96
+        score: 0.93
         iterations: 1
         status: "PASS"
   barrier_scores:
     barrier-2:
-      score: 0.96
-      iterations: 1
+      score: 0.92
+      iterations: 2
       status: "PASS"
     barrier-3:
-      score: 0.96
+      score: 0.82
       iterations: 1
-      status: "PASS"
+      status: "REJECTED"
     barrier-4:
-      score: 0.96
+      score: 0.90
       iterations: 1
-      status: "PASS"
+      status: "REVISE"
   workflow_quality:
-    average_score: 0.958
-    lowest_score: 0.96
-    total_iterations: 9
-    gates_passed: 5
-    gates_failed: 0
+    average_score: 0.878
+    lowest_score: 0.82
+    total_iterations: 7
+    gates_passed: 3
+    gates_failed: 2
+    note: "QG-1 (0.952 reused), QG-2 (0.92 PASS), QG-3 (0.82 REJECTED), QG-4 (0.90 REVISE), QG-5 (0.93 PASS). Revision cycle active for QG-3/QG-4."
 
 verification_criteria:
   - id: "VC-001"
@@ -553,54 +560,96 @@ metrics:
   phases_total: 8
   phases_completed: 8
   barriers_total: 3
-  barriers_completed: 3
+  barriers_completed: 1
+  barriers_in_revision: 2
   agents_total: 17
   agents_completed: 17
   agents_failed: 0
   agents_in_progress: 0
-  quality_gates_passed: 5
-  quality_gates_failed: 0
+  quality_gates_passed: 3
+  quality_gates_failed: 2
+  quality_gates_note: "QG-3 REJECTED (0.82), QG-4 REVISE (0.90). Deliverable corrections in progress."
 
 resumption:
   recovery_state:
-    last_checkpoint: "WORKFLOW_COMPLETE"
-    current_phase: 5
-    current_phase_name: "Phase 5 - Final Review (COMPLETE)"
-    workflow_status: "COMPLETE"
-    current_activity: "COMPLETE"
-    next_step: "Workflow complete. Publication ready with minor corrections."
+    last_checkpoint: "QG_REVISION_CYCLE"
+    current_phase: "cross-phase-revision"
+    current_phase_name: "QG-3/QG-4 Revision Cycle"
+    workflow_status: "IN_REVISION"
+    current_activity: "Fixing numerical discrepancies identified by C4 tournaments"
+    next_step: "1. Complete synthesizer corrections (30+ values). 2. Complete content/architect propagated error fixes. 3. Re-score QG-3 and QG-4 with S-014. 4. If PASS, update status to COMPLETE."
   files_to_read:
     - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ORCHESTRATION.yaml"
       priority: 1
-      purpose: "Pipeline state -- COMPLETE"
-    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ps/phase-5-final-review/ps-reporter-002/ps-reporter-002-output.md"
+      purpose: "Pipeline state -- IN_REVISION (QG-3 REJECTED, QG-4 REVISE)"
+    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ps/phase-2-ab-test/ps-analyst-002/ps-analyst-002-output.md"
       priority: 2
-      purpose: "Publication readiness report"
+      purpose: "SOURCE OF TRUTH for all numerical values"
+    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ps/phase-3-synthesis/ps-synthesizer-002/ps-synthesizer-002-output.md"
+      priority: 3
+      purpose: "Primary deliverable under revision (QG-3)"
+    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/quality-gates/qg-3/s-014-llm-as-judge.md"
+      priority: 4
+      purpose: "QG-3 S-014 scoring report -- identifies specific errors"
+    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/quality-gates/qg-4/s-014-llm-as-judge.md"
+      priority: 5
+      purpose: "QG-4 S-014 scoring report -- identifies propagated errors"
   quality_trajectory:
     gates_completed:
       - id: "QG-1"
         score: 0.952
         source: "workflow-001"
+        status: "PASS"
       - id: "QG-2"
-        score: 0.96
-      - id: "QG-3"
-        score: 0.96
-      - id: "QG-4"
-        score: 0.96
+        score: 0.92
+        status: "PASS"
+        note: "R1=0.88, R2=0.92 after Phase 2 corrections"
       - id: "QG-5"
-        score: 0.96
+        score: 0.93
+        status: "PASS"
+    gates_in_revision:
+      - id: "QG-3"
+        r1_score: 0.82
+        status: "REJECTED"
+        root_cause: "ps-synthesizer-002 fabricated/misremembered 30+ numerical values from ps-analyst-002 source of truth"
+        correction_scope: "ps-synthesizer-002-output.md, ps-architect-002-output.md"
+      - id: "QG-4"
+        r1_score: 0.90
+        status: "REVISE"
+        root_cause: "Errors propagated from synthesizer to content pieces"
+        correction_scope: "sb-voice-004/005/006-output.md, nse-qa-002-output.md (threshold 0.95→0.92)"
     gates_remaining: []
+    leniency_bias_detected: true
+    leniency_bias_note: "Self-assessment scored all phases at 0.96. C4 tournaments revealed actual scores of 0.82, 0.90, 0.93. Delta up to -0.14. Confirms S-014 leniency bias counteraction is essential."
   defect_summary:
-    total_defects: 7
+    total_defects: 40
     critical_defects: 0
-    high_defects: 0
-    low_defects: 4
-    info_defects: 3
-    resolved_defects: 5
-    open_defects: 2
-    open_defect_ids:
-      - "QA-001: Tweet length"
-      - "QA-002/CXC-001: Agent B PC FA percentage"
+    high_defects: 33
+    medium_defects: 4
+    low_defects: 3
+    resolved_defects: 0
+    in_progress_defects: 37
+    open_defects: 3
+    defect_categories:
+      - category: "Numerical discrepancy (synthesizer)"
+        count: 30
+        status: "IN_PROGRESS"
+        note: "Values in ps-synthesizer-002 don't match ps-analyst-002 source of truth"
+      - category: "Propagated numerical error (content)"
+        count: 3
+        status: "IN_PROGRESS"
+        note: "Technology 55%→70% FA, 30%→17.5% CIR; Agent B PC FA 89%→87%; Agent B ITS FA 96%→93%"
+      - category: "Wrong threshold reference (QA)"
+        count: 1
+        status: "IN_PROGRESS"
+        note: "nse-qa-002 cites 0.95 threshold, SSOT is 0.92 per H-13"
+      - category: "Tweet length"
+        count: 1
+        status: "OPEN"
+        note: "QA-001"
+      - category: "Minor formatting"
+        count: 2
+        status: "OPEN"
   decision_log:
     - id: "DL-001"
       date: "2026-02-22"
@@ -610,26 +659,34 @@ resumption:
       date: "2026-02-22"
       decision: "VC-001 achieved 5/10 ITS questions (vs aspirational 7/10) but accepted as PASS because pattern demonstrated across 4/5 domains with clear specific examples."
       rationale: "The threshold was aspirational. 50% of ITS questions showing confident inaccuracy across 80% of domains is sufficient evidence for the thesis."
+    - id: "DL-003"
+      date: "2026-02-22"
+      decision: "C4 tournament revealed massive leniency bias in self-assessed quality scores. All phases self-scored at 0.96; actual C4 tournament scores: QG-3=0.82, QG-4=0.90, QG-5=0.93."
+      rationale: "Self-assessment without adversarial counteraction inflates scores by 0.03-0.14. Validates the need for independent C4 tournament scoring (S-014 leniency bias counteraction)."
   agent_summaries:
     nse-requirements-002: "Designed 15 research questions across 5 domains with 7-dimension scoring rubric"
     ps-researcher-005: "Established verified ground truth for all 15 questions from authoritative sources"
-    ps-researcher-006: "Agent A internal-only responses -- 0.85 ITS FA, 0.07 CIR"
-    ps-researcher-007: "Agent B tool-augmented responses -- 0.93 ITS FA, 0.015 CIR"
-    ps-analyst-002: "7-dimension comparative analysis revealing Two-Leg pattern"
-    nse-verification-003: "V&V PASS (0.96) -- methodology sound, isolation verified"
-    ps-synthesizer-002: "Unified synthesis establishing Two-Leg Thesis"
-    ps-architect-002: "Architectural analysis -- Snapshot Problem, reliability tiers, mitigation architecture"
-    nse-reviewer-002: "Technical review PASS (0.96) -- cross-artifact consistency confirmed"
-    sb-voice-004: "LinkedIn post -- '85% right, 100% confident' hook"
-    sb-voice-005: "Twitter thread -- 10 tweets on confident micro-inaccuracy"
-    sb-voice-006: "Blog article -- McConkey touchstone, Snapshot Problem deep dive"
-    nse-qa-002: "Content QA PASS (0.96) -- VC-005 confirmed, voice compliant"
-    ps-reviewer-002: "Citation crosscheck PASS (0.97) -- all claims verified"
-    ps-reporter-002: "Publication readiness -- READY with minor corrections"
-    nse-verification-004: "Final V&V PASS (0.96) -- end-to-end traceability confirmed"
+    ps-researcher-006: "Agent A internal-only responses -- 0.850 ITS FA, 0.070 CIR"
+    ps-researcher-007: "Agent B tool-augmented responses -- 0.930 ITS FA, 0.015 CIR"
+    ps-analyst-002: "7-dimension comparative analysis revealing Two-Leg pattern (SOURCE OF TRUTH for all values)"
+    nse-verification-003: "V&V PASS -- methodology sound, isolation verified"
+    ps-synthesizer-002: "Unified synthesis establishing Two-Leg Thesis (UNDER REVISION: 30+ numerical errors)"
+    ps-architect-002: "Architectural analysis -- Snapshot Problem, reliability tiers (UNDER REVISION: propagated errors)"
+    nse-reviewer-002: "Technical review -- cross-artifact consistency"
+    sb-voice-004: "LinkedIn post -- '85% right, 100% confident' hook (UNDER REVISION: propagated errors)"
+    sb-voice-005: "Twitter thread -- 10 tweets on confident micro-inaccuracy (UNDER REVISION: propagated errors)"
+    sb-voice-006: "Blog article -- McConkey touchstone, Snapshot Problem deep dive (UNDER REVISION: propagated errors)"
+    nse-qa-002: "Content QA -- VC-005 confirmed (UNDER REVISION: threshold reference 0.95→0.92)"
+    ps-reviewer-002: "Citation crosscheck -- claims verified"
+    ps-reporter-002: "Publication readiness -- READY with corrections pending"
+    nse-verification-004: "Final V&V -- end-to-end traceability confirmed"
   compaction_events:
-    count: 1
+    count: 3
     timestamps:
       - "2026-02-22T15:00:00Z"
+      - "2026-02-22T17:30:00Z"
+      - "2026-02-22T19:00:00Z"
     recovery_notes:
       - "Context compacted during Phase 4 execution. Resumed successfully from ORCHESTRATION.yaml state."
+      - "Context compacted during QG tournament execution. Background agents spawned for QG-3/4/5 C4 tournaments."
+      - "Context compacted during revision cycle. Background agents continuing numerical corrections."

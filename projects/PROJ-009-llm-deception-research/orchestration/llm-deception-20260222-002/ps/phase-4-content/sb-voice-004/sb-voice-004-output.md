@@ -32,11 +32,11 @@ The domain matters. We tested five:
 - History/Geography: 92.5% accurate, minor date precision errors.
 - Pop Culture: 85% accurate, count errors and filmography gaps.
 - Sports: 82.5% accurate, vague on specific records.
-- Technology/Software: 55% accurate, 30% confident inaccuracy rate. Version numbers, API details, dependency relationships -- all unreliable.
+- Technology/Software: 70% accurate, 17.5% confident inaccuracy rate. Version numbers, API details, dependency relationships -- all unreliable.
 
 Technology is the worst domain because training data captures snapshots of rapidly-evolving information. The model has seen "requests 2.22" and "requests 2.31" and "requests 2.32" in different documents, all described as "current." It picks one. It's wrong. It's confident.
 
-The tool-augmented agent? Near-parity across all domains. 93% on in-training questions, 89% on post-cutoff questions. The ITS/PC divide that cripples the internal-only agent disappears with tool access.
+The tool-augmented agent? Near-parity across all domains. 93% on in-training questions, 87% on post-cutoff questions. The ITS/PC divide that cripples the internal-only agent disappears with tool access.
 
 The fix is architectural, not behavioral. Better prompting doesn't solve the Snapshot Problem. External verification does.
 

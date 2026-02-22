@@ -47,7 +47,7 @@ Science/Medicine: 95% accurate, zero confident errors
 History/Geography: 92.5%, minor date issues
 Pop Culture: 85%, count errors
 Sports: 82.5%, vague on specifics
-Technology: 55%, 30% confident inaccuracy rate
+Technology: 70%, 17.5% confident inaccuracy rate
 
 Technology is broken.
 
@@ -74,7 +74,7 @@ When training data is contradictory across time, the model is confidently unreli
 
 The second agent had web search and documentation access.
 
-Same 15 questions. 93% accurate on in-training topics. 89% on post-cutoff topics.
+Same 15 questions. 93% accurate on in-training topics. 87% on post-cutoff topics.
 
 The gap between "knows about" and "doesn't know about" that cripples the internal-only agent? Disappears with tool access.
 

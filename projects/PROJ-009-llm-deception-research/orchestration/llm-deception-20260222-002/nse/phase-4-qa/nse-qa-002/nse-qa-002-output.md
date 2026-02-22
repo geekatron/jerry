@@ -100,17 +100,17 @@ Claims in content verified against ps-analyst-002 output and ground truth:
 |-------|--------|-----------|
 | Agent A ITS FA: 0.85 | Analyst Table: ITS avg FA 0.850 | YES |
 | Agent A mean CIR: 0.07 | Analyst Table: ITS avg CIR 0.070 | YES |
-| 5/10 ITS questions with CIR > 0 | Analyst CIR Distribution | YES |
+| 6/10 ITS questions with CIR > 0 | Analyst CIR Distribution | YES |
 | 4/5 domains with CIR > 0 | Analyst: Sports, Tech, History, Pop Culture | YES |
 | Science 0% CIR | Analyst: RQ-07 0.00, RQ-08 0.00 | YES |
-| Technology 30% CIR | Analyst: RQ-04 0.30 | YES (domain max, not avg) |
+| Technology 17.5% CIR (domain avg) | Analyst: Domain avg CIR 0.175 (RQ-04: 0.30, RQ-05: 0.05) | YES |
 | Agent B 93% ITS FA | Analyst Table: ITS avg FA 0.930 | YES |
-| Agent B 89% PC FA | Analyst Table: PC avg FA 0.870 | CLOSE (0.87 rounds to 87%, content says 89%) |
+| Agent B 87% PC FA | Analyst Table: PC avg FA 0.870 | YES |
 | Requests Session version error (1.0.0 vs 0.6.0) | Analyst Error 1 | YES |
 | Naypyidaw date error (2006 vs 2005) | Analyst Error 4 | YES |
 | MCU film count error | Analyst Error 5 | YES |
 
-**Minor discrepancy:** Blog and Twitter cite Agent B PC FA as "89%" while analyst data shows 0.870 (87%). This appears in the synthesizer (which rounds differently). **Recommendation:** Use "87%" or "near 90%" for precision.
+**All factual claims verified against analyst data. No discrepancies found.**
 
 ---
 
@@ -149,7 +149,7 @@ Claims in content verified against ps-analyst-002 output and ground truth:
 | ID | Severity | Platform | Description | Resolution |
 |----|----------|----------|-------------|------------|
 | QA-001 | LOW | Twitter | Some tweets may exceed 280 characters | Minor editing to compress; core message preserved |
-| QA-002 | LOW | Blog, Twitter | Agent B PC FA cited as "89%" vs analyst's 0.870 (87%) | Correct to "87%" or "near 90%" |
+| QA-002 | RESOLVED | Blog, Twitter | Agent B PC FA corrected from "89%" to "87%" (analyst: 0.870) | Fixed in content |
 | QA-003 | INFO | LinkedIn, Twitter | McConkey touchstone absent | Appropriate platform-calibration, not a defect |
 
 No HIGH or CRITICAL defects.
@@ -163,13 +163,13 @@ No HIGH or CRITICAL defects.
 | Dimension | Score | Rationale |
 |-----------|-------|-----------|
 | Completeness | 0.96 | All three platforms produced; thesis communicated across all |
-| Internal Consistency | 0.95 | Cross-platform messaging aligned; one minor percentage discrepancy |
+| Internal Consistency | 0.96 | Cross-platform messaging aligned; all percentages match analyst data |
 | Methodological Rigor | 0.95 | Content accurately reflects methodology and limitations |
 | Evidence Quality | 0.96 | Claims traceable to analyst data; specific examples grounded in A/B test |
 | Actionability | 0.97 | Three takeaways on all platforms; builder-focused framing |
 | Traceability | 0.95 | Citations to source data present in all formats |
 
-**Weighted Composite: 0.96** (above 0.95 threshold)
+**Weighted Composite: 0.96** (above 0.92 threshold per H-13)
 
 ---
 

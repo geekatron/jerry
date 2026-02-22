@@ -90,13 +90,13 @@ The Snapshot Problem explains the domain hierarchy:
 | **History/Geography** (92.5% FA, 5% CIR) | Most facts are stable, but specific dates can vary across sources. A model might absorb "2006" from one source when the actual date was late 2005. |
 | **Pop Culture** (85% FA, 7.5% CIR) | Extensive data but with inconsistencies in counts, awards, and credits. Training data from different years lists different MCU phase compositions. |
 | **Sports** (82.5% FA, 5% CIR) | Good general coverage but specific records and achievements are often conflated across similar athletes or events. |
-| **Technology** (55% FA, 30% CIR) | **The worst domain by far.** Version numbers, API details, and dependencies change constantly. Every training snapshot describes a different "current" state. The model is confident because it has seen the topic extensively. It is wrong because the snapshots contradict each other. |
+| **Technology** (70% FA, 17.5% CIR) | **The worst domain by far.** Version numbers, API details, and dependencies change constantly. Every training snapshot describes a different "current" state. The model is confident because it has seen the topic extensively. It is wrong because the snapshots contradict each other. |
 
 When training data is abundant and consistent, the model is reliable. When training data is abundant but inconsistent, the model is confidently unreliable. Volume creates confidence. Consistency creates accuracy. Technology has volume without consistency.
 
 #### The Tool-Augmented Agent
 
-Agent B -- the same model with web search -- scored 93% on in-training-set questions and 89% on post-cutoff questions. The devastating ITS/PC divide that defines Agent A (85% vs 7%) shrinks to a 4-point gap with tool access.
+Agent B -- the same model with web search -- scored 93% on in-training-set questions and 87% on post-cutoff questions. The devastating ITS/PC divide that defines Agent A (85% vs 7%) shrinks to a 6-point gap with tool access.
 
 This is the central architectural insight: **tool-augmented retrieval doesn't just solve the post-cutoff problem (Leg 2). It also catches the confident micro-inaccuracies in the training data (Leg 1).**
 

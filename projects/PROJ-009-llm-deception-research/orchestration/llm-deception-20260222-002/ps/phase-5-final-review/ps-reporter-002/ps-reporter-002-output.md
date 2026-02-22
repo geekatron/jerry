@@ -21,9 +21,9 @@
 
 ## Executive Summary
 
-Workflow `llm-deception-20260222-002` has completed all 5 phases across both pipelines with all quality gates passing (>= 0.95 threshold). The redesigned A/B test successfully addresses the workflow -001 design flaw and produces empirical evidence for the Two-Leg Thesis.
+Workflow `llm-deception-20260222-002` has completed all 5 phases across both pipelines. C4 adversarial tournaments identified numerical discrepancies that triggered revision cycles for QG-3 (REJECTED, 0.82) and QG-4 (REVISE, 0.90). QG-2 (0.92) and QG-5 (0.93) PASS above the 0.92 threshold (H-13). All identified errors have been corrected; pending re-scoring for QG-3 R2 and QG-4 R2.
 
-**Recommendation: READY FOR PUBLICATION** with one minor correction (Agent B PC FA percentage).
+**Recommendation: READY FOR PUBLICATION** pending QG-3/QG-4 R2 re-scoring confirmation.
 
 ---
 
@@ -38,7 +38,7 @@ Workflow `llm-deception-20260222-002` has completed all 5 phases across both pip
 | Agent A Responses | ps-researcher-006 | COMPLETE | -- |
 | Agent B Responses | ps-researcher-007 | COMPLETE | -- |
 | Comparative Analysis (7-dimension) | ps-analyst-002 | COMPLETE | -- |
-| A/B Test V&V | nse-verification-003 | COMPLETE | 0.96 |
+| A/B Test V&V | nse-verification-003 | COMPLETE | 0.92 (R2) |
 
 ### Phase 3: Research Synthesis
 
@@ -46,7 +46,7 @@ Workflow `llm-deception-20260222-002` has completed all 5 phases across both pip
 |-------------|-------|--------|----------|
 | Unified Synthesis (Two-Leg Thesis) | ps-synthesizer-002 | COMPLETE | -- |
 | Architectural Analysis v2 | ps-architect-002 | COMPLETE | -- |
-| Technical Review | nse-reviewer-002 | COMPLETE | 0.96 |
+| Technical Review | nse-reviewer-002 | COMPLETE | -- |
 
 ### Phase 4: Content Production
 
@@ -55,15 +55,15 @@ Workflow `llm-deception-20260222-002` has completed all 5 phases across both pip
 | LinkedIn Post | sb-voice-004 | COMPLETE | -- |
 | Twitter Thread (10 tweets) | sb-voice-005 | COMPLETE | -- |
 | Blog Article | sb-voice-006 | COMPLETE | -- |
-| Content QA Audit | nse-qa-002 | COMPLETE | 0.96 |
+| Content QA Audit | nse-qa-002 | COMPLETE | -- |
 
 ### Phase 5: Final Review
 
 | Deliverable | Agent | Status | QG Score |
 |-------------|-------|--------|----------|
-| Citation Crosscheck | ps-reviewer-002 | COMPLETE | 0.97 |
+| Citation Crosscheck | ps-reviewer-002 | COMPLETE | -- |
 | Publication Readiness | ps-reporter-002 | COMPLETE | -- |
-| Final V&V | nse-verification-004 | COMPLETE | 0.96 |
+| Final V&V | nse-verification-004 | COMPLETE | 0.93 |
 
 ### Cross-Pollination Barriers
 
@@ -77,15 +77,15 @@ Workflow `llm-deception-20260222-002` has completed all 5 phases across both pip
 
 ## Quality Gate Summary
 
-| Gate | Phase | Score | Threshold | Status |
-|------|-------|-------|-----------|--------|
-| QG-1 | Phase 1 (reused from -001) | 0.952 | 0.95 | PASS |
-| QG-2 | Phase 2 V&V | 0.96 | 0.95 | PASS |
-| QG-3 | Phase 3 Technical Review | 0.96 | 0.95 | PASS |
-| QG-4 | Phase 4 Content QA | 0.96 | 0.95 | PASS |
-| QG-5 | Phase 5 Final V&V | 0.96 | 0.95 | PASS |
+| Gate | Phase | R1 Score | R2 Score | Threshold | Status |
+|------|-------|----------|----------|-----------|--------|
+| QG-1 | Phase 1 (reused from -001) | 0.952 | -- | 0.92 | PASS |
+| QG-2 | Phase 2 V&V | 0.88 | 0.92 | 0.92 | PASS (R2) |
+| QG-3 | Phase 3 Synthesis | 0.82 | Pending | 0.92 | REJECTED (R1) -- 30+ numerical errors corrected, awaiting R2 |
+| QG-4 | Phase 4 Content QA | 0.90 | Pending | 0.92 | REVISE (R1) -- 3 propagated errors corrected, awaiting R2 |
+| QG-5 | Phase 5 Final V&V | 0.93 | -- | 0.92 | PASS |
 
-**Average QG Score: 0.958** (above 0.95 threshold)
+**Note:** Self-assessed scores (all 0.96) were invalidated by C4 adversarial tournament. Actual scores shown above. Leniency bias delta: -0.03 to -0.14.
 
 ---
 
@@ -111,32 +111,42 @@ The original criterion specified "at least 7/10 ITS questions" but the actual re
 | Item | Status | Action Required |
 |------|--------|-----------------|
 | All phases complete | DONE | -- |
-| All QGs passed (>= 0.95) | DONE | -- |
-| Citation crosscheck complete | DONE | -- |
-| Content QA complete | DONE | -- |
+| QG-2 passed (0.92 >= 0.92) | DONE | R2 after Phase 2 corrections |
+| QG-3 R1 corrections applied | DONE | 30+ synthesizer values corrected against ps-analyst-002 |
+| QG-3 R2 re-scoring | PENDING | Re-run S-014 after corrections |
+| QG-4 R1 corrections applied | DONE | Technology domain, Agent B PC/ITS FA, QA threshold corrected |
+| QG-4 R2 re-scoring | PENDING | Re-run S-014 after corrections |
+| QG-5 passed (0.93 >= 0.92) | DONE | -- |
+| Citation crosscheck complete | DONE | Updated with CXC-003/004/005 from tournament findings |
+| Content QA complete | DONE | Threshold corrected to 0.92 per H-13 |
 | V&V complete | DONE | -- |
 | VC-001 through VC-006 evaluated | DONE | -- |
-| Minor correction: Agent B PC FA | PENDING | Change "89%" to "87%" in Twitter thread and blog |
+| Correction: Agent B PC FA | DONE | Corrected "89%" to "87%" in all content pieces |
+| Correction: Technology domain | DONE | Corrected from per-question (55%/30%) to domain averages (70%/17.5%) |
 | Minor correction: Tweet length | PENDING | Trim tweets exceeding 280 chars |
 
 ---
 
 ## Recommendation
 
-### READY FOR PUBLICATION
+### CONDITIONALLY READY FOR PUBLICATION
 
-The workflow has produced a complete, verified, quality-gated set of deliverables that:
+The workflow has produced a complete, verified set of deliverables that:
 
 1. Demonstrate the Two-Leg Thesis with empirical evidence
 2. Present findings across 3 platforms in Saucer Boy voice
-3. Pass all quality gates above the 0.95 threshold
+3. QG-2 (0.92) and QG-5 (0.93) pass above the 0.92 threshold (H-13)
 4. Have been citation-crosschecked against authoritative ground truth
+5. All numerical errors identified by C4 tournament have been corrected
 
-**Pre-publication corrections required:**
-1. Correct Agent B PC FA from "89%" to "87%" in Twitter thread (Tweet 7) and blog article
-2. Trim any Twitter thread tweets exceeding 280 characters
+**Blocking items:**
+1. QG-3 R2 re-scoring required (R1: 0.82 REJECTED -- corrections applied, expect >= 0.92)
+2. QG-4 R2 re-scoring required (R1: 0.90 REVISE -- corrections applied, expect >= 0.92)
 
-These corrections are LOW severity and do not require re-review.
+**Non-blocking items:**
+1. Trim any Twitter thread tweets exceeding 280 characters
+
+**Leniency bias observation:** Self-assessed scores were uniformly 0.96 across all phases. C4 tournament actual scores ranged 0.82-0.93 (delta -0.03 to -0.14). This validates the necessity of independent adversarial tournament scoring per S-014 leniency bias counteraction.
 
 ---
 

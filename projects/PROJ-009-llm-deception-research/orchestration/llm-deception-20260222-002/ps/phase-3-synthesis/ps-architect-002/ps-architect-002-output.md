@@ -109,7 +109,7 @@ The A/B test results map directly to this spectrum:
 - **History/Geography (Slow/Medium):** 0.05 CIR -- rare snapshot conflicts
 - **Pop Culture/Media (Medium):** 0.075 CIR -- moderate snapshot conflicts
 - **Sports/Adventure (Medium):** 0.05 CIR -- moderate but model hedges
-- **Technology/Software (Fast):** 0.30 CIR -- extensive snapshot conflicts
+- **Technology/Software (Fast):** 0.175 CIR -- extensive snapshot conflicts
 
 ### Architectural Implication
 
@@ -128,7 +128,7 @@ Based on the empirical A/B test results and the Snapshot Problem analysis, we de
 | **T1: Highly Reliable** | 0.95+ FA, 0.00 CIR | Established science, mathematics, fundamental chemistry/physics | 0.95 | 0.00 | Trust with spot-check |
 | **T2: Reliable** | 0.90+ FA, <0.05 CIR | Established history, well-documented geography, canonical literature | 0.925 | 0.05 | Trust with verification of specific dates/numbers |
 | **T3: Moderate** | 0.80+ FA, <0.10 CIR | Pop culture, sports records, biographical details | 0.825-0.85 | 0.05-0.075 | Verify counts, dates, and specific claims |
-| **T4: Unreliable** | <0.80 FA, >0.10 CIR | Software versions, API details, recent technical changes | 0.55 | 0.30 | Always verify externally |
+| **T4: Unreliable** | <0.80 FA, >0.10 CIR | Software versions, API details, recent technical changes | 0.70 | 0.175 | Always verify externally |
 | **T5: Unavailable** | <0.20 FA | Post-cutoff events, real-time data | 0.00-0.20 | N/A (model declines) | External retrieval required |
 
 ### Tier Assignment Criteria
@@ -237,7 +237,7 @@ The domain-aware routing architecture introduces a tradeoff between response lat
 |----------|---------|----------|----------|
 | Always use tools (T1-T5) | High | Highest | Mission-critical applications |
 | Domain-aware routing (T3-T5 only) | Moderate | High | General-purpose agents |
-| Never use tools | Lowest | Variable (0.55-0.95 by domain) | Low-stakes, latency-sensitive |
+| Never use tools | Lowest | Variable (0.70-0.95 by domain) | Low-stakes, latency-sensitive |
 
 The domain-aware routing strategy provides the best latency-accuracy tradeoff for most applications by avoiding unnecessary tool calls for reliable domains while ensuring verification for unreliable ones.
 
@@ -382,7 +382,7 @@ This is why Recommendation 1 (domain-aware tool routing) mandates always verifyi
 |-----------|---------|----------|-----------------|
 | **Wrong version number** | "requests 1.0.0" vs "0.6.0" | High (can cause build failures) | Context7 / PyPI lookup |
 | **Wrong date (off by one year)** | "2006" vs "2005" | Medium (misleading but rarely actionable) | WebSearch |
-| **Wrong count** | "11 films" vs "6 films" | Medium (factually wrong, embarrassing if published) | WebSearch |
+| **Wrong count** | "11 films" vs "12 films" | Medium (factually wrong, embarrassing if published) | WebSearch |
 | **Wrong attribution** | Descent attributed to wrong mountain | Medium (factually wrong in specific) | WebSearch / domain expert |
 | **Wrong relationship** | "wraps directly" vs "adapter pattern" | Low-Medium (technically inaccurate but conceptually close) | Source code / documentation |
 | **Omission** | Missing events from a list | Low (incomplete but not wrong) | WebSearch for complete list |

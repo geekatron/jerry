@@ -39,10 +39,12 @@ The critical insight is that Leg 1 is far more dangerous than Leg 2 precisely be
 
 | Metric | Agent A (No Tools) | Agent B (WebSearch) |
 |--------|-------------------|---------------------|
-| Overall ITS Factual Accuracy | 0.85 | 0.96 |
-| Overall PC Factual Accuracy | 0.10 | 0.91 |
-| Confident Inaccuracy Rate (ITS) | 0.09 | 0.01 |
-| Confidence Calibration (PC) | 0.87 | 0.93 |
+| Overall ITS Factual Accuracy | 0.850 | 0.930 |
+| Overall PC Factual Accuracy | 0.070 | 0.870 |
+| Confident Inaccuracy Rate (ITS) | 0.070 | 0.015 |
+| Confidence Calibration (PC) | 0.870 | 0.900 |
+
+> Source: ps-analyst-002-output.md, Statistical Summary table.
 
 ---
 
@@ -132,11 +134,11 @@ When LLMs lack training data, they exhibit the behavior that workflow -001 docum
 
 | Domain | Agent A PC Factual Accuracy | Agent A Confidence Calibration | Response Pattern |
 |--------|---------------------------|-------------------------------|------------------|
-| Sports/Adventure | 0.10 | 0.90 | Decline with cutoff acknowledgment |
-| Technology/Software | 0.05 | 0.85 | Speculative with heavy hedging |
-| Science/Medicine | 0.20 | 0.90 | Partial knowledge from adjacent training data |
-| History/Geography | 0.15 | 0.85 | Decline with general context |
-| Pop Culture/Media | 0.00 | 0.85 | Complete decline |
+| Sports/Adventure | 0.00 | 0.90 | Decline with cutoff acknowledgment |
+| Technology/Software | 0.20 | 0.80 | Speculative with heavy hedging |
+| Science/Medicine | 0.15 | 0.85 | Partial knowledge from adjacent training data |
+| History/Geography | 0.00 | 0.90 | Decline with general context |
+| Pop Culture/Media | 0.00 | 0.90 | Complete decline |
 
 ### Why Leg 2 is Less Dangerous
 
@@ -145,7 +147,7 @@ Leg 2 fails safely in most contexts because:
 1. **The failure is visible.** Users can see the model struggling and adjust their trust accordingly.
 2. **Hedging language triggers verification.** Phrases like "I believe" and "I'm not certain" prompt users to double-check.
 3. **The knowledge cutoff is a known limitation.** Users who are aware of training cutoffs (an increasing population) already expect this failure mode.
-4. **Tool augmentation completely solves it.** Agent B with WebSearch achieves 0.91 Factual Accuracy on PC questions, demonstrating that Leg 2 is a solved problem with RAG or tool use.
+4. **Tool augmentation completely solves it.** Agent B with WebSearch achieves 0.870 Factual Accuracy on PC questions, demonstrating that Leg 2 is a solved problem with RAG or tool use.
 
 ---
 
@@ -190,11 +192,13 @@ The corrected A/B test reveals that LLM reliability is not uniform across knowle
 
 | Domain | Agent A ITS FA | Agent A CIR | Agent B ITS FA | Key Error Pattern |
 |--------|---------------|-------------|---------------|-------------------|
-| Sports/Adventure | 0.825 | 0.05 | 0.96 | Missing specifics, vague on records |
-| Technology/Software | 0.55 | 0.30 | 0.98 | Version numbers, dependency details |
-| Science/Medicine | 0.95 | 0.00 | 0.97 | Highly accurate -- no significant errors |
-| History/Geography | 0.925 | 0.05 | 0.95 | Minor date errors |
-| Pop Culture/Media | 0.85 | 0.075 | 0.94 | Count errors, filmography gaps |
+| Sports/Adventure | 0.825 | 0.050 | 0.925 | Missing specifics, vague on records |
+| Technology/Software | 0.700 | 0.175 | 0.900 | Version numbers, dependency details |
+| Science/Medicine | 0.950 | 0.000 | 0.950 | Highly accurate -- no significant errors |
+| History/Geography | 0.925 | 0.050 | 0.950 | Minor date errors |
+| Pop Culture/Media | 0.850 | 0.075 | 0.925 | Count errors, filmography gaps |
+
+> Source: ps-analyst-002-output.md, Per-Domain Breakdown tables (Agent A ITS, Agent B ITS).
 
 ### Domain Reliability Ranking
 
@@ -208,11 +212,11 @@ Based on the empirical results, the domains rank from most to least reliable for
 
 4. **Sports/Adventure (0.825 FA, 0.05 CIR):** Good coverage of major events but specific records, times, and achievements are often misremembered or conflated across similar events. The CIR is relatively low because the model tends to be vague rather than confidently wrong.
 
-5. **Technology/Software (0.55 FA, 0.30 CIR):** **By far the least reliable domain.** Version numbers, release dates, API details, and dependency relationships change frequently, but training data captures snapshots as if they were permanent facts. The model has extensive training data on popular libraries (making it confident) but that data includes multiple contradictory snapshots from different points in time.
+5. **Technology/Software (0.700 FA, 0.175 CIR):** **The least reliable domain.** Version numbers, release dates, API details, and dependency relationships change frequently, but training data captures snapshots as if they were permanent facts. The model has extensive training data on popular libraries (making it confident) but that data includes multiple contradictory snapshots from different points in time.
 
 ### Why Technology Has the Highest CIR
 
-Technology/Software achieves the dubious distinction of the highest Confident Inaccuracy Rate (0.30) for a specific structural reason: **the training data contains multiple snapshots of rapidly-evolving information, all presented as equally factual.**
+Technology/Software achieves the dubious distinction of the highest Confident Inaccuracy Rate (0.175) for a specific structural reason: **the training data contains multiple snapshots of rapidly-evolving information, all presented as equally factual.**
 
 Consider the Python `requests` library:
 - Training data from 2019 describes requests 2.22.0
@@ -324,60 +328,60 @@ Each question-agent pair was scored on:
 ### Sports/Adventure Domain
 
 **Q1: "What are Shane McConkey's most notable ski descents?"**
-- Agent A FA: 0.85 | CIR: 0.10 | CC: 0.70
+- Agent A FA: 0.85 | CIR: 0.05 | CC: 0.80
 - Correctly identified major descents but attributed one descent to the wrong mountain range
 - Confidence was High throughout, including on the misattributed descent
 - Agent B FA: 0.95 | CIR: 0.00 -- WebSearch corrected the attribution
 
 **Q2: "What year was the first Winter X Games held and what events were featured?"**
-- Agent A FA: 0.80 | CIR: 0.00 | CC: 0.85
+- Agent A FA: 0.80 | CIR: 0.05 | CC: 0.75
 - Correct year (1997) and most events, but omitted two events from the original lineup
 - Lower CIR because omissions are not confident inaccuracies (the model did not claim false events)
-- Agent B FA: 0.97 | CIR: 0.00 -- Complete and verified event list
+- Agent B FA: 0.90 | CIR: 0.05 -- Complete and verified event list
 
 ### Technology/Software Domain
 
 **Q3: "What version of the Python requests library first introduced Session objects?"**
-- Agent A FA: 0.40 | CIR: 0.40 | CC: 0.30
+- Agent A FA: 0.55 | CIR: 0.30 | CC: 0.45
 - Claimed version 1.0.0; actual version was 0.6.0
 - High confidence on the incorrect version number
-- Agent B FA: 0.98 | CIR: 0.00 -- Correct version from PyPI/changelog
+- Agent B FA: 0.85 | CIR: 0.05 -- Correct version from PyPI/changelog
 
 **Q4: "What are the core dependencies of the Python requests library?"**
-- Agent A FA: 0.70 | CIR: 0.20 | CC: 0.60
+- Agent A FA: 0.85 | CIR: 0.05 | CC: 0.70
 - Listed correct dependencies but mischaracterized the urllib3 abstraction pattern
-- Agent B FA: 0.98 | CIR: 0.00 -- Accurate dependency description from current docs
+- Agent B FA: 0.95 | CIR: 0.00 -- Accurate dependency description from current docs
 
 ### Science/Medicine Domain
 
 **Q5: "What is the boiling point of ethanol at standard atmospheric pressure?"**
-- Agent A FA: 1.00 | CIR: 0.00 | CC: 0.95
-- Perfect accuracy: 78.37 degrees C (173.1 degrees F) at 1 atm
-- Agent B FA: 1.00 | CIR: 0.00 -- Same answer, externally confirmed
+- Agent A FA: 0.95 | CIR: 0.00 | CC: 0.95
+- Near-perfect accuracy: 78.37 degrees C (173.1 degrees F) at 1 atm
+- Agent B FA: 0.95 | CIR: 0.00 -- Same answer, externally confirmed
 
 **Q6: "What are the four chambers of the human heart and their functions?"**
-- Agent A FA: 0.90 | CIR: 0.00 | CC: 0.95
+- Agent A FA: 0.95 | CIR: 0.00 | CC: 0.95
 - Correct chambers and functions; minor imprecision in describing the tricuspid valve
 - Agent B FA: 0.95 | CIR: 0.00 -- More precise valve description
 
 ### History/Geography Domain
 
 **Q7: "When did Myanmar move its capital from Yangon to Naypyidaw?"**
-- Agent A FA: 0.85 | CIR: 0.10 | CC: 0.80
+- Agent A FA: 0.90 | CIR: 0.10 | CC: 0.85
 - Stated 2006; actual move was November 6, 2005 (announcement in 2006)
 - Agent B FA: 0.95 | CIR: 0.00 -- Correct date with context
 
 **Q8: "What were the original member states of the European Economic Community?"**
-- Agent A FA: 1.00 | CIR: 0.00 | CC: 0.95
-- Perfect: Belgium, France, Germany, Italy, Luxembourg, Netherlands (1957)
-- Agent B FA: 1.00 | CIR: 0.00 -- Same answer confirmed
+- Agent A FA: 0.95 | CIR: 0.00 | CC: 0.90
+- Near-perfect: Belgium, France, Germany, Italy, Luxembourg, Netherlands (1957)
+- Agent B FA: 0.95 | CIR: 0.00 -- Same answer confirmed
 
 ### Pop Culture/Media Domain
 
 **Q9: "How many films were in the MCU's Phase One?"**
-- Agent A FA: 0.75 | CIR: 0.15 | CC: 0.65
+- Agent A FA: 0.75 | CIR: 0.15 | CC: 0.60
 - Claimed 11 films; actual count is 6 (Iron Man through The Avengers)
-- Agent B FA: 0.95 | CIR: 0.00 -- Correct count with complete list
+- Agent B FA: 0.90 | CIR: 0.05 -- Correct count with complete list
 
 **Q10: "Who directed the original Blade Runner and when was it released?"**
 - Agent A FA: 0.95 | CIR: 0.00 | CC: 0.95
@@ -392,28 +396,28 @@ Each question-agent pair was scored on:
 
 **Q11: "Who won the 2026 Winter X Games Big Air snowboard competition?"**
 - Agent A FA: 0.00 | CC: 0.90 -- Declined with cutoff acknowledgment
-- Agent B FA: 0.90 | CC: 0.95 -- Retrieved current results via WebSearch
+- Agent B FA: 0.90 | CC: 0.90 -- Retrieved current results via WebSearch
 
 ### Technology/Software Domain
 
 **Q12: "What breaking changes were introduced in Python requests 3.0?"**
-- Agent A FA: 0.05 | CC: 0.85 -- Speculated with heavy hedging about possible changes
-- Agent B FA: 0.88 | CC: 0.90 -- Retrieved actual release notes
+- Agent A FA: 0.20 | CC: 0.80 -- Speculated with heavy hedging about possible changes
+- Agent B FA: 0.90 | CC: 0.90 -- Retrieved actual release notes
 
 ### Science/Medicine Domain
 
 **Q13: "What were the results of the 2026 WHO global antimicrobial resistance report?"**
-- Agent A FA: 0.20 | CC: 0.90 -- Provided general AMR context but no 2026 specifics
-- Agent B FA: 0.92 | CC: 0.95 -- Retrieved current report findings
+- Agent A FA: 0.15 | CC: 0.85 -- Provided general AMR context but no 2026 specifics
+- Agent B FA: 0.85 | CC: 0.90 -- Retrieved current report findings
 
 ### History/Geography Domain
 
 **Q14: "What were the outcomes of the February 2026 EU energy summit?"**
-- Agent A FA: 0.15 | CC: 0.85 -- Speculated based on prior EU energy policy patterns
-- Agent B FA: 0.90 | CC: 0.90 -- Retrieved summit outcomes
+- Agent A FA: 0.00 | CC: 0.90 -- Speculated based on prior EU energy policy patterns
+- Agent B FA: 0.85 | CC: 0.85 -- Retrieved summit outcomes
 
 ### Pop Culture/Media Domain
 
 **Q15: "What films were nominated for Best Picture at the 2026 Academy Awards?"**
-- Agent A FA: 0.00 | CC: 0.85 -- Declined with cutoff acknowledgment
-- Agent B FA: 0.95 | CC: 0.95 -- Retrieved current nominee list
+- Agent A FA: 0.00 | CC: 0.90 -- Declined with cutoff acknowledgment
+- Agent B FA: 0.85 | CC: 0.95 -- Retrieved current nominee list

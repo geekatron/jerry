@@ -105,7 +105,7 @@ Composite formula correctly applied across all spot-checked questions. CIR inver
 | "Version numbers off by a major release" | YES | RQ-04b: 1.0.0 vs 0.6.0 |
 | "Dates wrong by exactly one year" | YES | RQ-11c: 2006 vs 2005 |
 | "Science 95% accurate, zero confident errors" | YES | 0.95 FA, 0.00 CIR |
-| "Technology 55% accurate, 30% CIR" | YES | RQ-04/RQ-05 domain avg |
+| "Technology 70% accurate, 17.5% CIR" | YES | Domain avg FA=0.700, CIR=0.175 per ps-analyst-002. Note: original content cited per-question RQ-04 values (0.55/0.30) instead of domain averages; corrected during QG-3 revision cycle. |
 | "Tool-augmented agent near-parity" | YES | 0.93 ITS vs 0.87 PC |
 
 ### Twitter Thread
@@ -115,7 +115,7 @@ Composite formula correctly applied across all spot-checked questions. CIR inver
 | "1.0.0 vs 0.6.0" | YES | Ground truth: version 0.6.0 (Aug 2011) |
 | "2006 vs 2005" | YES | Ground truth: November 2005 |
 | Domain ranking in Tweet 4 | YES | Matches analyst output |
-| "93% on in-training, 89% on post-cutoff" | MINOR ISSUE | Analyst shows 0.930 and 0.870; "89%" should be "87%" |
+| "93% on in-training, 87% on post-cutoff" | YES | Corrected from "89%" to "87%" during QG-4 revision cycle |
 
 ### Blog Article
 
@@ -124,7 +124,7 @@ Composite formula correctly applied across all spot-checked questions. CIR inver
 | McConkey death: "Italian Dolomites in 2009" | YES | Ground truth: March 26, 2009, Sass Pordoi |
 | "Session objects in version 1.0.0 vs 0.6.0" | YES | Ground truth matches |
 | "Kenneth Reitz" as requests creator | YES | Ground truth: first release Feb 14, 2011 |
-| "89% on post-cutoff" | MINOR ISSUE | Should be "87%" per analyst data |
+| "87% on post-cutoff" | YES | Corrected from "89%" to "87%" during QG-4 revision cycle |
 | Methodology: 15 questions, 7 dimensions, 5 domains | YES | Matches nse-requirements-002 |
 
 ---
@@ -133,10 +133,13 @@ Composite formula correctly applied across all spot-checked questions. CIR inver
 
 | ID | Severity | Description | Location | Resolution |
 |----|----------|-------------|----------|------------|
-| CXC-001 | LOW | Agent B PC FA cited as "89%" in Twitter and Blog; analyst data shows 0.870 (87%) | sb-voice-005 Tweet 7, sb-voice-006 Tool-Augmented Agent section | Correct to "87%" |
+| CXC-001 | LOW | Agent B PC FA cited as "89%" in Twitter and Blog; analyst data shows 0.870 (87%) | sb-voice-005 Tweet 7, sb-voice-006 Tool-Augmented Agent section | **RESOLVED** -- corrected to "87%" in QG-4 revision cycle |
 | CXC-002 | INFO | Synthesizer uses different question numbering (Q1-Q15) vs analyst (RQ-01 to RQ-15) | ps-synthesizer-002 appendices | Non-blocking; content uses neither numbering system |
+| CXC-003 | HIGH | Technology domain cited as "55% accurate, 30% CIR" using per-question RQ-04 values instead of domain averages (70% FA, 17.5% CIR) | sb-voice-004/005/006, ps-synthesizer-002 | **RESOLVED** -- corrected to domain averages in QG-3/QG-4 revision cycle |
+| CXC-004 | HIGH | Agent B ITS FA cited as "96%" instead of 93% | sb-voice-004/005/006, ps-synthesizer-002 | **RESOLVED** -- corrected to "93%" in QG-3/QG-4 revision cycle |
+| CXC-005 | MEDIUM | ps-synthesizer-002 contained 30+ numerical discrepancies vs ps-analyst-002 source of truth | ps-synthesizer-002 executive summary, per-domain table, appendices | **RESOLVED** -- all values corrected in QG-3 revision cycle |
 
-No HIGH or CRITICAL issues. All factual claims in published content verified against ground truth and analyst data.
+CXC-003 through CXC-005 were identified by the C4 adversarial tournament (QG-3/QG-4) and corrected during the revision cycle. Original review (CXC-001/CXC-002 only) missed these errors -- validating the need for full C4 tournament scoring vs single-pass review.
 
 ---
 
