@@ -717,3 +717,13 @@ def _add_hooks_namespace(
         "pre-tool-use",
         help="Handle PreToolUse hook event",
     )
+
+    hooks_subparsers.add_parser(
+        "stop",
+        help="Handle Stop hook event (context stop gate)",
+    )
+
+    hooks_subparsers.add_parser(
+        "subagent-stop",
+        help="Handle SubagentStop hook event (lifecycle tracking)",
+    )

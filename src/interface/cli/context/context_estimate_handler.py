@@ -33,6 +33,7 @@ import json
 import logging
 from typing import Any
 
+from src.context_monitoring.application.ports.sub_agent_reader import ISubAgentReader
 from src.context_monitoring.application.services.context_estimate_service import (
     ContextEstimateService,
 )
@@ -40,6 +41,7 @@ from src.context_monitoring.application.services.estimate_result import Estimate
 from src.context_monitoring.domain.value_objects.context_usage_input import (
     ContextUsageInput,
 )
+from src.context_monitoring.domain.value_objects.sub_agent_info import SubAgentInfo
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +57,7 @@ class ContextEstimateHandler:
 
     Attributes:
         _service: Application service for context estimation.
+        _sub_agent_reader: Optional reader for sub-agent data.
 
     Example:
         >>> handler = ContextEstimateHandler(service)
@@ -62,13 +65,20 @@ class ContextEstimateHandler:
         >>> assert exit_code == 0
     """
 
-    def __init__(self, service: ContextEstimateService) -> None:
+    def __init__(
+        self,
+        service: ContextEstimateService,
+        sub_agent_reader: ISubAgentReader | None = None,
+    ) -> None:
         """Initialize with the estimation service.
 
         Args:
             service: Application service for context estimation.
+            sub_agent_reader: Optional reader for sub-agent lifecycle
+                and context usage data (EN-018).
         """
         self._service = service
+        self._sub_agent_reader = sub_agent_reader
 
     def handle(self, stdin_json: str) -> int:
         """Handle the context estimate command.
@@ -85,17 +95,24 @@ class ContextEstimateHandler:
         raw_data = self._parse_stdin(stdin_json)
         if raw_data is None:
             result = self._service.estimate_degraded()
-            self._output(result, session_passthrough={})
+            self._output(result, session_passthrough={}, context_window_size=200_000)
             return 0
 
         usage = self._extract_usage(raw_data)
+        context_window = raw_data.get("context_window", {})
+        window_size = (
+            int(context_window.get("context_window_size", 200_000))
+            if isinstance(context_window, dict)
+            else 200_000
+        )
+
         if usage is None:
             result = self._service.estimate_degraded()
-            self._output(result, session_passthrough=raw_data)
+            self._output(result, session_passthrough=raw_data, context_window_size=window_size)
             return 0
 
         result = self._service.estimate(usage)
-        self._output(result, session_passthrough=raw_data)
+        self._output(result, session_passthrough=raw_data, context_window_size=window_size)
         return 0
 
     def _parse_stdin(self, stdin_json: str) -> dict[str, Any] | None:
@@ -181,14 +198,16 @@ class ContextEstimateHandler:
         self,
         result: EstimateResult,
         session_passthrough: dict[str, Any],
+        context_window_size: int,
     ) -> None:
         """Output structured JSON to stdout.
 
         Args:
             result: Estimation pipeline result.
             session_passthrough: Full Claude Code JSON for session block.
+            context_window_size: Window size for sub-agent fill calculation.
         """
-        output = {
+        output: dict[str, Any] = {
             "context": {
                 "fill_percentage": result.estimate.fill_percentage,
                 "tier": result.estimate.tier.value,
@@ -207,6 +226,79 @@ class ContextEstimateHandler:
             },
             "thresholds": result.thresholds,
             "action": result.action.value,
+            "sub_agents": self._read_sub_agents(context_window_size),
             "session": session_passthrough,
         }
         print(json.dumps(output))
+
+    def _read_sub_agents(self, context_window_size: int) -> dict[str, Any]:
+        """Read sub-agent data from lifecycle file and transcripts.
+
+        Fail-open: returns empty data on any error.
+
+        Args:
+            context_window_size: Window size for fill percentage calculation.
+
+        Returns:
+            Dict with sub-agent summary and per-agent details.
+        """
+        if self._sub_agent_reader is None:
+            return self._empty_sub_agents()
+
+        try:
+            agents = self._sub_agent_reader.read_sub_agents(context_window_size)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Sub-agent reader failed: %s", exc)
+            return self._empty_sub_agents()
+
+        active = [a for a in agents if a.status == "active"]
+        completed = [a for a in agents if a.status != "active"]
+
+        return {
+            "active_count": len(active),
+            "completed_count": len(completed),
+            "total_count": len(agents),
+            "aggregate": {
+                "total_context_tokens": sum(a.context_tokens for a in agents),
+                "total_output_tokens": sum(a.output_tokens for a in agents),
+            },
+            "agents": [self._agent_to_dict(a) for a in agents],
+        }
+
+    @staticmethod
+    def _agent_to_dict(agent: SubAgentInfo) -> dict[str, Any]:
+        """Convert a SubAgentInfo to a JSON-serializable dict.
+
+        Args:
+            agent: Sub-agent info value object.
+
+        Returns:
+            Dict representation for JSON output.
+        """
+        return {
+            "agent_id": agent.agent_id,
+            "agent_type": agent.agent_type,
+            "model": agent.model,
+            "status": agent.status,
+            "context_tokens": agent.context_tokens,
+            "context_fill_pct": agent.context_fill_pct,
+            "output_tokens": agent.output_tokens,
+        }
+
+    @staticmethod
+    def _empty_sub_agents() -> dict[str, Any]:
+        """Return empty sub-agent data structure.
+
+        Returns:
+            Dict with zero counts and empty agents list.
+        """
+        return {
+            "active_count": 0,
+            "completed_count": 0,
+            "total_count": 0,
+            "aggregate": {
+                "total_context_tokens": 0,
+                "total_output_tokens": 0,
+            },
+            "agents": [],
+        }

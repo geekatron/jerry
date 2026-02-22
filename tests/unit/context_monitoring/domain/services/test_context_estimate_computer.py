@@ -240,6 +240,43 @@ class TestDetectCompaction:
         )
         assert result.detected is False
 
+    def test_compaction_threshold_exact_10k_drop_not_detected(self) -> None:
+        """Token drop of exactly 10,000 does NOT trigger compaction (must be >10K)."""
+        computer = ContextEstimateComputer()
+        result = computer.detect_compaction(
+            current_tokens=90000,
+            current_session_id="abc123",
+            previous_tokens=100000,
+            previous_session_id="abc123",
+        )
+        assert result.detected is False
+
+    def test_compaction_large_drop_but_still_above_80pct(self) -> None:
+        """Drop > 10K but current >= 80% of previous is NOT compaction."""
+        computer = ContextEstimateComputer()
+        # 160000 is exactly 80% of 200000, so 160000 >= 200000 * 0.8 → not compaction
+        result = computer.detect_compaction(
+            current_tokens=160000,
+            current_session_id="abc123",
+            previous_tokens=200000,
+            previous_session_id="abc123",
+        )
+        assert result.detected is False
+
+    def test_compaction_just_above_both_thresholds(self) -> None:
+        """Drop > 10K AND current < 80% of previous IS compaction."""
+        computer = ContextEstimateComputer()
+        # 159000 < 200000 * 0.8 (160000) AND drop = 41000 > 10000 → compaction
+        result = computer.detect_compaction(
+            current_tokens=159000,
+            current_session_id="abc123",
+            previous_tokens=200000,
+            previous_session_id="abc123",
+        )
+        assert result.detected is True
+        assert result.from_tokens == 200000
+        assert result.to_tokens == 159000
+
 
 class TestDetermineRotationAction:
     """Test rotation action mapping for all tier x aggressiveness combinations."""
@@ -276,6 +313,40 @@ class TestDetermineRotationAction:
         """Graduated response table matches plan specification."""
         computer = ContextEstimateComputer(aggressiveness=aggressiveness)
         assert computer.determine_rotation_action(tier) == expected_action
+
+    def test_unknown_aggressiveness_falls_back_to_none(self) -> None:
+        """Unrecognized aggressiveness mode falls back to RotationAction.NONE."""
+        computer = ContextEstimateComputer(aggressiveness="nonexistent")
+        for tier in ThresholdTier:
+            assert computer.determine_rotation_action(tier) == RotationAction.NONE
+
+
+class TestNegativeTokenClamping:
+    """C4 remediation: negative token values are clamped to [0.0, 1.0]."""
+
+    def test_negative_fill_clamped_to_zero(self) -> None:
+        """Negative input_tokens (anomaly) results in fill clamped to 0.0."""
+        computer = ContextEstimateComputer()
+        usage = _make_usage(
+            input_tokens=-5000,
+            cache_creation=0,
+            cache_read=0,
+            window_size=200000,
+        )
+        estimate = computer.compute(usage)
+        assert estimate.fill_percentage == 0.0
+
+    def test_negative_window_size_falls_back_to_200k(self) -> None:
+        """Negative window_size defaults to 200K."""
+        computer = ContextEstimateComputer()
+        usage = _make_usage(
+            window_size=-1,
+            input_tokens=100000,
+            cache_creation=0,
+            cache_read=0,
+        )
+        estimate = computer.compute(usage)
+        assert estimate.window_size == 200000
 
 
 class TestThresholdsProperty:

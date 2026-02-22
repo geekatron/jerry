@@ -38,6 +38,10 @@ from src.application.queries import RetrieveProjectContextQuery
 from src.context_monitoring.application.ports.checkpoint_repository import (
     ICheckpointRepository,
 )
+from src.context_monitoring.application.ports.context_state import ContextState
+from src.context_monitoring.application.ports.context_state_store import (
+    IContextStateStore,
+)
 from src.context_monitoring.application.services.resumption_context_generator import (
     ResumptionContextGenerator,
 )
@@ -66,6 +70,7 @@ class HooksSessionStartHandler:
         _checkpoint_repository: Repository for loading the latest checkpoint.
         _resumption_generator: Generator for resumption context XML.
         _quality_context_generator: Generator for L1 session quality context XML.
+        _context_state_store: Optional store for cross-invocation state (EN-016).
 
     Example:
         >>> handler = HooksSessionStartHandler(
@@ -74,6 +79,7 @@ class HooksSessionStartHandler:
         ...     checkpoint_repository=repo,
         ...     resumption_generator=generator,
         ...     quality_context_generator=generator,
+        ...     context_state_store=state_store,
         ... )
         >>> exit_code = handler.handle(stdin_json)
     """
@@ -85,6 +91,7 @@ class HooksSessionStartHandler:
         checkpoint_repository: ICheckpointRepository,
         resumption_generator: ResumptionContextGenerator,
         quality_context_generator: SessionQualityContextGenerator,
+        context_state_store: IContextStateStore | None = None,
     ) -> None:
         """Initialize the handler with required services.
 
@@ -94,12 +101,15 @@ class HooksSessionStartHandler:
             checkpoint_repository: Repository for loading the latest checkpoint.
             resumption_generator: Generator for resumption context XML.
             quality_context_generator: Generator for L1 session quality context XML.
+            context_state_store: Optional cross-invocation state store (EN-016).
+                When provided, injects compaction/clear detection context.
         """
         self._query_dispatcher = query_dispatcher
         self._projects_dir = projects_dir
         self._checkpoint_repository = checkpoint_repository
         self._resumption_generator = resumption_generator
         self._quality_context_generator = quality_context_generator
+        self._context_state_store = context_state_store
 
     def handle(self, stdin_json: str) -> int:
         """Handle a SessionStart hook event.
@@ -120,10 +130,15 @@ class HooksSessionStartHandler:
         hook_data: dict[str, Any] = {}
         try:
             hook_data = json.loads(stdin_json)
-        except (json.JSONDecodeError, ValueError) as exc:
+        except (json.JSONDecodeError, TypeError, ValueError) as exc:
             print(f"[hooks/session-start] Failed to parse hook input: {exc}", file=sys.stderr)
 
-        _ = hook_data  # Available for future use (e.g., session_id)
+        session_id: str = hook_data.get("session_id", "")
+
+        # Step 1b: Compaction/clear detection from state file (EN-016, fail-open)
+        compaction_xml = self._detect_compaction_or_clear(session_id)
+        if compaction_xml:
+            context_parts.append(compaction_xml)
 
         # Step 2: Project context query (fail-open)
         try:
@@ -235,3 +250,84 @@ class HooksSessionStartHandler:
         escaped_content = xml_escape(content)
 
         return f"<worktracker>\n{escaped_content}\n</worktracker>"
+
+    def _detect_compaction_or_clear(self, session_id: str) -> str | None:
+        """Detect compaction or session clear from the cross-invocation state file.
+
+        EN-016: Compares the incoming session_id with the state file's
+        ``previous_session_id`` to determine what happened:
+
+        - Same session_id + state exists → compaction (context was compressed)
+        - Different session_id + state exists → /clear (new session started)
+        - No state file → initial start (no previous context)
+
+        Fail-open: any error returns None.
+
+        Args:
+            session_id: The session_id from the current SessionStart hook input.
+
+        Returns:
+            XML context string, or None if no detection or state unavailable.
+        """
+        if self._context_state_store is None:
+            return None
+
+        try:
+            state = self._context_state_store.load()
+        except Exception as exc:  # noqa: BLE001
+            print(
+                f"[hooks/session-start] State file read failed: {exc}",
+                file=sys.stderr,
+            )
+            return None
+
+        if state is None:
+            return None
+
+        if not session_id or not state.previous_session_id:
+            return None
+
+        if session_id == state.previous_session_id:
+            return self._compaction_notice(state)
+        return self._session_reset_notice(state)
+
+    def _compaction_notice(self, state: ContextState) -> str:
+        """Generate a compaction notice XML block.
+
+        Tells the LLM that context was just compacted and provides the
+        pre-compaction tier so it can adjust its behavior accordingly.
+
+        Args:
+            state: The pre-compaction context state.
+
+        Returns:
+            XML string with compaction notice.
+        """
+        return (
+            "<compaction-notice>\n"
+            f"  <pre-compaction-tier>{xml_escape(state.last_tier)}</pre-compaction-tier>\n"
+            f"  <pre-compaction-tokens>{state.previous_tokens}</pre-compaction-tokens>\n"
+            "  <action>Context was compacted. Re-read ORCHESTRATION.yaml and "
+            "WORKTRACKER.md to re-orient. Resume from the checkpoint below.</action>\n"
+            "</compaction-notice>"
+        )
+
+    def _session_reset_notice(self, state: ContextState) -> str:
+        """Generate a session reset notice XML block.
+
+        Tells the LLM that a /clear was issued and a new session started.
+        The previous session's state is provided for reference.
+
+        Args:
+            state: The previous session's context state.
+
+        Returns:
+            XML string with session reset notice.
+        """
+        return (
+            "<session-reset>\n"
+            f"  <previous-session-tier>{xml_escape(state.last_tier)}</previous-session-tier>\n"
+            "  <action>New session started (/clear). Previous session context is gone. "
+            "Re-read ORCHESTRATION.yaml and WORKTRACKER.md to re-orient.</action>\n"
+            "</session-reset>"
+        )

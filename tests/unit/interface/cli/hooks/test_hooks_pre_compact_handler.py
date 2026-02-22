@@ -22,6 +22,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from src.context_monitoring.application.ports.context_state import ContextState
 from src.context_monitoring.domain.value_objects.checkpoint_data import CheckpointData
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
@@ -253,3 +254,172 @@ class TestHooksPreCompactHandlerFailOpen:
         captured = capsys.readouterr()
         result = json.loads(captured.out)
         assert result is not None
+
+    def test_none_stdin_returns_valid_json(
+        self,
+        handler: HooksPreCompactHandler,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """FOS-001: None stdin (TypeError) still returns valid JSON with exit 0."""
+        exit_code = handler.handle(None)  # type: ignore[arg-type]
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert result is not None
+
+
+# =============================================================================
+# EN-015: Pre-compaction state store tests
+# =============================================================================
+
+
+class TestPreCompactStateSave:
+    """BDD: Handler saves pre-compaction state to IContextStateStore."""
+
+    def test_saves_pre_compaction_state_with_fill_and_session(
+        self,
+        mock_checkpoint_service: MagicMock,
+        mock_context_fill_estimator: MagicMock,
+        mock_abandon_handler: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Given a state store, handler saves fill estimate and session ID before compaction."""
+        mock_state_store = MagicMock()
+        handler = HooksPreCompactHandler(
+            checkpoint_service=mock_checkpoint_service,
+            context_fill_estimator=mock_context_fill_estimator,
+            abandon_handler=mock_abandon_handler,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "session_id": "session-xyz-789",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
+
+        handler.handle(hook_input)
+
+        mock_state_store.save.assert_called_once()
+        saved_state: ContextState = mock_state_store.save.call_args[0][0]
+        assert saved_state.previous_tokens == 176000
+        assert saved_state.previous_session_id == "session-xyz-789"
+        assert saved_state.last_tier == "EMERGENCY"
+        assert saved_state.last_rotation_action == "CHECKPOINT"
+
+    def test_state_save_uses_fallback_tokens_when_estimator_unavailable(
+        self,
+        mock_checkpoint_service: MagicMock,
+        mock_abandon_handler: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When context fill estimator fails, state uses fallback (0 tokens, NOMINAL)."""
+        mock_state_store = MagicMock()
+        failing_estimator = MagicMock()
+        failing_estimator.estimate.side_effect = RuntimeError("Estimation failed")
+
+        handler = HooksPreCompactHandler(
+            checkpoint_service=mock_checkpoint_service,
+            context_fill_estimator=failing_estimator,
+            abandon_handler=mock_abandon_handler,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "session_id": "session-abc",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
+
+        handler.handle(hook_input)
+
+        mock_state_store.save.assert_called_once()
+        saved_state: ContextState = mock_state_store.save.call_args[0][0]
+        assert saved_state.previous_tokens == 0
+        assert saved_state.last_tier == "NOMINAL"
+
+    def test_state_store_failure_is_fail_open(
+        self,
+        mock_checkpoint_service: MagicMock,
+        mock_context_fill_estimator: MagicMock,
+        mock_abandon_handler: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When state store save fails, handler continues and returns valid JSON."""
+        mock_state_store = MagicMock()
+        mock_state_store.save.side_effect = RuntimeError("State save failed")
+
+        handler = HooksPreCompactHandler(
+            checkpoint_service=mock_checkpoint_service,
+            context_fill_estimator=mock_context_fill_estimator,
+            abandon_handler=mock_abandon_handler,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
+
+        exit_code = handler.handle(hook_input)
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "checkpoint_id" in result  # Checkpoint still created
+        assert "State save failed" in captured.err
+
+    def test_no_state_store_backward_compatible(
+        self,
+        handler: HooksPreCompactHandler,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Without state store, handler works as before (backward compatible)."""
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
+
+        exit_code = handler.handle(hook_input)
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "checkpoint_id" in result
+
+    def test_empty_session_id_saved_as_empty_string(
+        self,
+        mock_checkpoint_service: MagicMock,
+        mock_context_fill_estimator: MagicMock,
+        mock_abandon_handler: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When hook input has no session_id, state uses empty string."""
+        mock_state_store = MagicMock()
+        handler = HooksPreCompactHandler(
+            checkpoint_service=mock_checkpoint_service,
+            context_fill_estimator=mock_context_fill_estimator,
+            abandon_handler=mock_abandon_handler,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps(
+            {
+                "hook_event_name": "PreCompact",
+                "transcript_path": "/tmp/transcript.jsonl",
+            }
+        )
+
+        handler.handle(hook_input)
+
+        saved_state: ContextState = mock_state_store.save.call_args[0][0]
+        assert saved_state.previous_session_id == ""

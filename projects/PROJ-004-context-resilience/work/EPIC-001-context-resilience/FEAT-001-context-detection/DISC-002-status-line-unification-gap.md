@@ -1,7 +1,7 @@
 # FEAT-001:DISC-002: Status Line / Context Monitoring Unification Gap
 
 > **Type:** discovery
-> **Status:** documented
+> **Status:** resolved
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-21
@@ -243,3 +243,4 @@ This is not a bug or a failure — it's an unrealized integration opportunity th
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-21 | Claude | Created discovery. Post-implementation review identified status line / context monitoring unification gap. |
+| 2026-02-21 | Claude | Resolved by FEAT-002: `jerry context estimate` CLI command with exact `current_usage` data, 5-tier threshold SSOT, jerry-statusline Phase 1 integration (ST-005). |

@@ -19,7 +19,7 @@
 | Field | Value |
 |-------|-------|
 | Project | PROJ-004-context-resilience |
-| Status | IN_PROGRESS |
+| Status | COMPLETE |
 | Created | 2026-02-19 |
 
 ---
@@ -28,9 +28,16 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | in_progress | high |
+| [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | completed | high |
 
 > Features, Enablers, Spikes, and Tasks are tracked within the Epic and its children.
+
+## Features
+
+| ID | Title | Status | Priority |
+|----|-------|--------|----------|
+| [FEAT-001](./work/EPIC-001-context-resilience/FEAT-001-context-detection/FEAT-001-context-detection.md) | Context Exhaustion Detection & Graceful Session Handoff | completed | high |
+| [FEAT-002](./work/EPIC-001-context-resilience/FEAT-002-status-line-unification/FEAT-002-status-line-unification.md) | Status Line / Context Monitoring Unification & Automatic Session Rotation | completed | high |
 
 ---
 
@@ -38,7 +45,7 @@
 
 | ID | Title | Status | Priority | Severity |
 |----|-------|--------|----------|----------|
-| [BUG-001](./work/EPIC-001-context-resilience/BUG-001-precommit-hook-failures.md) | Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors | done | high | major |
+| [BUG-001](./work/EPIC-001-context-resilience/BUG-001-precommit-hook-failures.md) | Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors | completed | high | major |
 
 ---
 
@@ -47,6 +54,9 @@
 | ID | Title | Status | Impact |
 |----|-------|--------|--------|
 | [DEC-001](./work/EPIC-001-context-resilience/FEAT-001-context-detection/DEC-001-cli-first-architecture.md) | CLI-First Hook Architecture & Context Monitoring Bounded Context | accepted | critical |
+| [DEC-002](./work/EPIC-001-context-resilience/FEAT-002-status-line-unification/DEC-002-json-not-rendering.md) | Jerry Returns JSON, Not Rendered Output | accepted | high |
+| [DEC-003](./work/EPIC-001-context-resilience/FEAT-002-status-line-unification/DEC-003-multi-hook-rotation.md) | Multi-Hook Rotation Architecture | accepted | high |
+| [DEC-004](./work/EPIC-001-context-resilience/FEAT-002-status-line-unification/DEC-004-sub-agent-tracking.md) | Sub-Agent Tracking via Transcript Parsing + Lifecycle Hooks | accepted | high |
 
 ---
 
@@ -74,3 +84,5 @@
 | 2026-02-21 | Claude | DISC-002 created: Status line / context monitoring unification gap. Status line has exact `current_usage` data from Claude Code API; Jerry uses heuristic transcript parsing. Status line should consume Jerry's `context_monitoring` BC via `jerry context estimate`, not remain independent. Domain belongs in `context_monitoring`, not `hooks`. |
 | 2026-02-21 | Claude | DISC-003 created: Unfounded subprocess latency claims. "Subprocess too heavy" was asserted without benchmarks during status line integration analysis. Hooks already use subprocess at prompt frequency. Measurement required before architectural rejection. |
 | 2026-02-21 | User | PROJ-004 status reopened: IN_PROGRESS. EPIC-001 reopened. Open discoveries (DISC-002, DISC-003) document unresolved architectural gaps that prevent project closure. Premature COMPLETE status was a P-022 (no deception) violation — open work items cannot be masked by a done label. |
+| 2026-02-21 | Claude | FEAT-002 created: Status Line / Context Monitoring Unification & Automatic Session Rotation. Resolves DISC-002 (jerry context estimate CLI) and DISC-003 (SPIKE-004 latency benchmark). 10 enablers (EN-009 through EN-018), 3 stories (ST-004, ST-005, ST-006), 1 spike (SPIKE-004), 3 decisions (DEC-002, DEC-003, DEC-004). |
+| 2026-02-21 | Claude | FEAT-002 complete. All implementation items done. jerry-statusline v3.0 integrated. Automatic session rotation operational via multi-hook orchestration. DISC-002 and DISC-003 resolved. EPIC-001 complete. PROJ-004 COMPLETE. |

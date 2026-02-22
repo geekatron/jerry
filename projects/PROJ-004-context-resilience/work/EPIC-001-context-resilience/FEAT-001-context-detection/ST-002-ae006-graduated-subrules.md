@@ -1,7 +1,7 @@
 # ST-002: AE-006 Graduated Sub-Rules
 
 > **Type:** story
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Created:** 2026-02-19

@@ -1,7 +1,7 @@
 # SPIKE-003: Validation Spikes — OQ-9 + Method C
 
 > **Type:** spike
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Created:** 2026-02-19

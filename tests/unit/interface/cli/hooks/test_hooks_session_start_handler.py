@@ -23,6 +23,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from src.context_monitoring.application.ports.context_state import ContextState
 from src.context_monitoring.domain.value_objects.checkpoint_data import CheckpointData
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
@@ -272,10 +273,22 @@ class TestHooksSessionStartHandlerFailOpen:
         result = json.loads(captured.out)
         assert "additionalContext" in result
 
+    # =============================================================================
+    # BDD Scenario: TASK-002 WORKTRACKER.md auto-injection
+    # =============================================================================
 
-# =============================================================================
-# BDD Scenario: TASK-002 WORKTRACKER.md auto-injection
-# =============================================================================
+    def test_none_stdin_returns_valid_json(
+        self,
+        handler: HooksSessionStartHandler,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """FOS-001: None stdin (TypeError) still returns valid JSON with exit 0."""
+        exit_code = handler.handle(None)  # type: ignore[arg-type]
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "additionalContext" in result
 
 
 class TestWorktrackerAutoInjection:
@@ -525,3 +538,240 @@ class TestWorktrackerAutoInjection:
         assert "&lt;" in ctx
         assert "&amp;" in ctx
         assert "&gt;" in ctx
+
+
+# =============================================================================
+# EN-016: Compaction/Clear detection from state file
+# =============================================================================
+
+
+def _make_state(
+    *,
+    previous_session_id: str = "session-abc-123",
+    last_tier: str = "CRITICAL",
+    previous_tokens: int = 160000,
+    last_rotation_action: str = "CHECKPOINT",
+) -> ContextState:
+    """Helper to create ContextState for tests."""
+    return ContextState(
+        previous_tokens=previous_tokens,
+        previous_session_id=previous_session_id,
+        last_tier=last_tier,
+        last_rotation_action=last_rotation_action,
+    )
+
+
+class TestCompactionDetection:
+    """BDD: Handler detects compaction from state file and injects notice."""
+
+    def test_compaction_detected_same_session_id(
+        self,
+        mock_query_dispatcher: MagicMock,
+        mock_checkpoint_repository: MagicMock,
+        mock_resumption_generator: MagicMock,
+        mock_quality_context_generator: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path,
+    ) -> None:
+        """When session_id matches state file, inject <compaction-notice>."""
+        mock_state_store = MagicMock()
+        mock_state_store.load.return_value = _make_state(
+            previous_session_id="session-xyz",
+            last_tier="CRITICAL",
+            previous_tokens=160000,
+        )
+
+        handler = HooksSessionStartHandler(
+            query_dispatcher=mock_query_dispatcher,
+            projects_dir=str(tmp_path),
+            checkpoint_repository=mock_checkpoint_repository,
+            resumption_generator=mock_resumption_generator,
+            quality_context_generator=mock_quality_context_generator,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps({"hook_event_name": "SessionStart", "session_id": "session-xyz"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        ctx = result["additionalContext"]
+        assert "<compaction-notice>" in ctx
+        assert "CRITICAL" in ctx
+        assert "160000" in ctx
+        assert "Re-read ORCHESTRATION.yaml" in ctx
+
+    def test_clear_detected_different_session_id(
+        self,
+        mock_query_dispatcher: MagicMock,
+        mock_checkpoint_repository: MagicMock,
+        mock_resumption_generator: MagicMock,
+        mock_quality_context_generator: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path,
+    ) -> None:
+        """When session_id differs from state file, inject <session-reset>."""
+        mock_state_store = MagicMock()
+        mock_state_store.load.return_value = _make_state(
+            previous_session_id="old-session",
+            last_tier="WARNING",
+        )
+
+        handler = HooksSessionStartHandler(
+            query_dispatcher=mock_query_dispatcher,
+            projects_dir=str(tmp_path),
+            checkpoint_repository=mock_checkpoint_repository,
+            resumption_generator=mock_resumption_generator,
+            quality_context_generator=mock_quality_context_generator,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps({"hook_event_name": "SessionStart", "session_id": "new-session"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        ctx = result["additionalContext"]
+        assert "<session-reset>" in ctx
+        assert "WARNING" in ctx
+        assert "New session started" in ctx
+
+    def test_no_state_file_no_notice(
+        self,
+        mock_query_dispatcher: MagicMock,
+        mock_checkpoint_repository: MagicMock,
+        mock_resumption_generator: MagicMock,
+        mock_quality_context_generator: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path,
+    ) -> None:
+        """When state file doesn't exist, no compaction/clear notice injected."""
+        mock_state_store = MagicMock()
+        mock_state_store.load.return_value = None
+
+        handler = HooksSessionStartHandler(
+            query_dispatcher=mock_query_dispatcher,
+            projects_dir=str(tmp_path),
+            checkpoint_repository=mock_checkpoint_repository,
+            resumption_generator=mock_resumption_generator,
+            quality_context_generator=mock_quality_context_generator,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps({"hook_event_name": "SessionStart", "session_id": "any-session"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        ctx = result["additionalContext"]
+        assert "<compaction-notice>" not in ctx
+        assert "<session-reset>" not in ctx
+
+    def test_no_state_store_backward_compatible(
+        self,
+        handler: HooksSessionStartHandler,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Without state store, handler works as before (no notice)."""
+        hook_input = json.dumps({"hook_event_name": "SessionStart", "session_id": "any-session"})
+
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        ctx = result["additionalContext"]
+        assert "<compaction-notice>" not in ctx
+        assert "<session-reset>" not in ctx
+
+    def test_state_store_failure_is_fail_open(
+        self,
+        mock_query_dispatcher: MagicMock,
+        mock_checkpoint_repository: MagicMock,
+        mock_resumption_generator: MagicMock,
+        mock_quality_context_generator: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path,
+    ) -> None:
+        """When state store read fails, handler continues without notice."""
+        mock_state_store = MagicMock()
+        mock_state_store.load.side_effect = RuntimeError("State read failed")
+
+        handler = HooksSessionStartHandler(
+            query_dispatcher=mock_query_dispatcher,
+            projects_dir=str(tmp_path),
+            checkpoint_repository=mock_checkpoint_repository,
+            resumption_generator=mock_resumption_generator,
+            quality_context_generator=mock_quality_context_generator,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps({"hook_event_name": "SessionStart", "session_id": "any-session"})
+        exit_code = handler.handle(hook_input)
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "additionalContext" in result
+        assert "State read failed" in captured.err
+
+    def test_no_session_id_in_hook_input_no_notice(
+        self,
+        mock_query_dispatcher: MagicMock,
+        mock_checkpoint_repository: MagicMock,
+        mock_resumption_generator: MagicMock,
+        mock_quality_context_generator: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path,
+    ) -> None:
+        """When hook input has no session_id, no compaction/clear notice."""
+        mock_state_store = MagicMock()
+        mock_state_store.load.return_value = _make_state()
+
+        handler = HooksSessionStartHandler(
+            query_dispatcher=mock_query_dispatcher,
+            projects_dir=str(tmp_path),
+            checkpoint_repository=mock_checkpoint_repository,
+            resumption_generator=mock_resumption_generator,
+            quality_context_generator=mock_quality_context_generator,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps({"hook_event_name": "SessionStart"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        ctx = result["additionalContext"]
+        assert "<compaction-notice>" not in ctx
+        assert "<session-reset>" not in ctx
+
+    def test_empty_previous_session_id_in_state_no_notice(
+        self,
+        mock_query_dispatcher: MagicMock,
+        mock_checkpoint_repository: MagicMock,
+        mock_resumption_generator: MagicMock,
+        mock_quality_context_generator: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+        tmp_path: Path,
+    ) -> None:
+        """When state has empty previous_session_id, no notice injected."""
+        mock_state_store = MagicMock()
+        mock_state_store.load.return_value = _make_state(previous_session_id="")
+
+        handler = HooksSessionStartHandler(
+            query_dispatcher=mock_query_dispatcher,
+            projects_dir=str(tmp_path),
+            checkpoint_repository=mock_checkpoint_repository,
+            resumption_generator=mock_resumption_generator,
+            quality_context_generator=mock_quality_context_generator,
+            context_state_store=mock_state_store,
+        )
+
+        hook_input = json.dumps({"hook_event_name": "SessionStart", "session_id": "any-session"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        ctx = result["additionalContext"]
+        assert "<compaction-notice>" not in ctx
+        assert "<session-reset>" not in ctx

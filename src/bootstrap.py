@@ -544,6 +544,11 @@ def create_hooks_handlers() -> dict[str, Any]:
     from src.context_monitoring.infrastructure.adapters.filesystem_checkpoint_repository import (
         FilesystemCheckpointRepository,
     )
+
+    # ST-006: State store for cross-invocation graduated escalation
+    from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
+        FilesystemContextStateStore,
+    )
     from src.context_monitoring.infrastructure.adapters.jsonl_transcript_reader import (
         JsonlTranscriptReader,
     )
@@ -576,6 +581,12 @@ def create_hooks_handlers() -> dict[str, Any]:
     )
     from src.interface.cli.hooks.hooks_session_start_handler import (
         HooksSessionStartHandler,
+    )
+    from src.interface.cli.hooks.hooks_stop_gate_handler import (
+        HooksStopGateHandler,
+    )
+    from src.interface.cli.hooks.hooks_subagent_stop_handler import (
+        HooksSubagentStopHandler,
     )
 
     project_root = Path.cwd()
@@ -631,11 +642,15 @@ def create_hooks_handlers() -> dict[str, Any]:
     # Pre-tool enforcement engine
     pre_tool_engine = PreToolEnforcementEngine(project_root=project_root)
 
+    # ST-006: Cross-invocation state store for graduated escalation
+    context_state_store = FilesystemContextStateStore(state_dir=project_root / ".jerry" / "local")
+
     return {
         "prompt-submit": HooksPromptSubmitHandler(
             context_fill_estimator=context_fill_estimator,
             checkpoint_service=checkpoint_service,
             reinforcement_engine=reinforcement_engine,
+            context_state_store=context_state_store,
         ),
         "session-start": HooksSessionStartHandler(
             query_dispatcher=query_dispatcher,
@@ -643,15 +658,23 @@ def create_hooks_handlers() -> dict[str, Any]:
             checkpoint_repository=checkpoint_repository,
             resumption_generator=resumption_generator,
             quality_context_generator=SessionQualityContextGenerator(),
+            context_state_store=context_state_store,
         ),
         "pre-compact": HooksPreCompactHandler(
             checkpoint_service=checkpoint_service,
             context_fill_estimator=context_fill_estimator,
             abandon_handler=abandon_handler,
+            context_state_store=context_state_store,
         ),
         "pre-tool-use": HooksPreToolUseHandler(
             enforcement_engine=pre_tool_engine,
             staleness_detector=staleness_detector,
+        ),
+        "stop": HooksStopGateHandler(
+            context_state_store=context_state_store,
+        ),
+        "subagent-stop": HooksSubagentStopHandler(
+            lifecycle_dir=project_root / ".jerry" / "local",
         ),
     }
 
@@ -678,6 +701,9 @@ def create_context_estimate_handler() -> Any:
     from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
         FilesystemContextStateStore,
     )
+    from src.context_monitoring.infrastructure.adapters.transcript_sub_agent_reader import (
+        TranscriptSubAgentReader,
+    )
     from src.interface.cli.context.context_estimate_handler import (
         ContextEstimateHandler,
     )
@@ -688,8 +714,11 @@ def create_context_estimate_handler() -> Any:
     computer = ContextEstimateComputer()
     state_store = FilesystemContextStateStore(state_dir=state_dir)
     service = ContextEstimateService(computer, state_store)
+    sub_agent_reader = TranscriptSubAgentReader(
+        lifecycle_path=state_dir / "subagent-lifecycle.json",
+    )
 
-    return ContextEstimateHandler(service)
+    return ContextEstimateHandler(service, sub_agent_reader=sub_agent_reader)
 
 
 def reset_singletons() -> None:

@@ -1,7 +1,7 @@
 # FEAT-001:DISC-003: Unfounded Subprocess Latency Claims in Architecture Decisions
 
 > **Type:** discovery
-> **Status:** documented
+> **Status:** resolved
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-02-21
@@ -136,3 +136,4 @@ Claims about performance must be backed by measurements. The cost of a benchmark
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-21 | Claude | Created discovery. Documented unfounded subprocess latency claims and their impact on architectural framing. |
+| 2026-02-21 | Claude | Resolved by SPIKE-004: Benchmark confirmed p50=96ms, p95=112ms, p99=138ms — well within 2s budget. |

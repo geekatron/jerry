@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.8
 -->
 
 > **Type:** spike
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19

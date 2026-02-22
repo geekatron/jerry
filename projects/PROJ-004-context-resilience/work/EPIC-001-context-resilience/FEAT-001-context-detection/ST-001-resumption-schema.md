@@ -1,7 +1,7 @@
 # ST-001: Enhanced Resumption Schema + Update Protocol
 
 > **Type:** story
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
