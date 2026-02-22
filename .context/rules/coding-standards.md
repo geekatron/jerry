@@ -11,7 +11,7 @@ paths:
 
 > Python coding rules, naming conventions, and error handling for Jerry.
 
-<!-- L2-REINJECT: rank=7, tokens=60, content="Type hints REQUIRED on all public functions (H-11). Docstrings REQUIRED on all public functions/classes/modules (H-12). Google-style format." -->
+<!-- L2-REINJECT: rank=7, content="Type hints REQUIRED on all public functions (H-11). Docstrings REQUIRED on all public functions/classes/modules (H-12). Google-style format." -->
 
 ## Document Sections
 

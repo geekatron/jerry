@@ -16,12 +16,12 @@
 | Metric | Value |
 |--------|-------|
 | Project | PROJ-007-agent-patterns |
-| Status | COMPLETE |
+| Status | IN PROGRESS |
 | Created | 2026-02-21 |
 | Orchestration | `agent-patterns-20260221-001` |
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
-| Progress | 100% (COMPLETE — all deliverables produced) |
+| Progress | 80% (Orchestration COMPLETE, EN-002 COMPLETE — EN-001 installation pending) |
 
 ## Work Items
 
@@ -95,6 +95,44 @@
 |----|------|-------|--------|--------|
 | TASK-011a | Task | Create final synthesis document (538 lines, 11 sections) | DONE | TASK-011 |
 | TASK-011b | Task | Update ORCHESTRATION.yaml to COMPLETE | DONE | TASK-011 |
+
+### Implementation: EN-001 — Install Deliverables into Framework
+
+| ID | Type | Title | Status | Parent | Criticality |
+|----|------|-------|--------|--------|-------------|
+| EN-001 | Enabler | Install PROJ-007 Agent Pattern Deliverables into Framework | PENDING | PROJ-007 | C3 |
+| TASK-012 | Task | Install agent-development-standards.md into .context/rules/ + symlink | PENDING | EN-001 | C3 |
+| TASK-013 | Task | Install agent-routing-standards.md into .context/rules/ + symlink | PENDING | EN-001 | C3 |
+| TASK-014 | Task | Install ADR-PROJ007-001 (Agent Design) into docs/design/ | PENDING | EN-001 | C3 |
+| TASK-015 | Task | Install ADR-PROJ007-002 (Routing Framework) into docs/design/ | PENDING | EN-001 | C3 |
+| TASK-016 | Task | Integrate H-32..H-35 into quality-enforcement.md HARD rule index | BLOCKED | EN-001, **blocked by EN-002** | C3 |
+| TASK-017 | Task | Install pattern taxonomy into docs/knowledge/ | PENDING | EN-001 | C2 |
+| TASK-018 | Task | Generate agent-definition-v1.schema.json from ADR-001 | PENDING | EN-001 | C2 |
+| TASK-019 | Task | Update CLAUDE.md navigation table for new rules | PENDING | EN-001 | C2 |
+| TASK-020 | Task | Update mandatory-skill-usage.md trigger map | PENDING | EN-001 | C3 |
+| TASK-021 | Task | Final validation + commit + PR | PENDING | EN-001 | C3 |
+
+### EN-002 — HARD Rule Budget Enforcement Improvement
+
+| ID | Type | Title | Status | Parent | Criticality |
+|----|------|-------|--------|--------|-------------|
+| EN-002 | Enabler | Implement HARD Rule Budget Enforcement Improvements | DONE | PROJ-007 | C3 |
+| DISC-001 | Discovery | HARD Rule Budget Ceiling Has No Principled Derivation | VALIDATED | EN-002 | — |
+| DISC-002 | Discovery | L2 Prompt Reinforcement Engine Coverage Gap | VALIDATED | EN-002 | — |
+| DEC-001 | Decision | HARD Rule Budget Implementation Plan (5 decisions) | ACCEPTED | EN-002 | — |
+| TASK-022 | Task | Expand L2 engine to read all auto-loaded rule files | DONE | EN-002 | C3 |
+| TASK-023 | Task | Consolidate H-25..H-30 into 2 compound rules | DONE | EN-002 | C3 |
+| TASK-024 | Task | Consolidate H-07..H-09 into 1 compound rule | DONE | EN-002 | C3 |
+| TASK-025 | Task | Classify rules into Tier A/B (L2 markers deferred per DEC-005) | DONE | EN-002 | C3 |
+| TASK-026 | Task | Update ceiling 35→25, two-tier model + exception mechanism | DONE | EN-002 | C3 |
+| TASK-027 | Task | Add L5 CI enforcement gate for HARD rule ceiling | DONE | EN-002 | C3 |
+| TASK-028 | Task | Measure enforcement effectiveness | DONE | EN-002 | C2 |
+
+### Bugs
+
+| ID | Type | Title | Status | Parent |
+|----|------|-------|--------|--------|
+| BUG-001 | Bug | Orchestration scaffold creates cartesian product of empty directories | PENDING | PROJ-007 |
 
 ### Artifact Inventory (33 of 33)
 

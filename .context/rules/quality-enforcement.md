@@ -1,6 +1,6 @@
 # Quality Enforcement -- Single Source of Truth
 
-<!-- VERSION: 1.3.0 | DATE: 2026-02-15 | SOURCE: EPIC-002 Final Synthesis, ADR-EPIC002-001, ADR-EPIC002-002 -->
+<!-- VERSION: 1.5.0 | DATE: 2026-02-21 | SOURCE: EPIC-002 Final Synthesis, ADR-EPIC002-001, ADR-EPIC002-002, EN-002 HARD Rule Budget Enforcement, C4 Tournament Round 2 Revisions -->
 
 > Canonical constants for the quality framework. All hooks, rules, and skills MUST reference this file.
 
@@ -8,10 +8,14 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-31 |
+| [HARD Rule Index](#hard-rule-index) | 25 HARD rules (H-01 through H-31, post-consolidation) |
+| [Retired Rule IDs](#retired-rule-ids) | Tombstoned IDs from EN-002 consolidation |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
+| [Two-Tier Enforcement Model](#two-tier-enforcement-model) | Tier A (L2-protected) vs Tier B (compensating controls) |
+| [HARD Rule Ceiling Derivation](#hard-rule-ceiling-derivation) | Principled upper boundary (25 rules) |
+| [HARD Rule Ceiling Exception Mechanism](#hard-rule-ceiling-exception-mechanism) | Controlled temporary expansion |
 | [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006 |
 | [Enforcement Architecture](#enforcement-architecture) | L1-L5 layer definitions |
 | [Strategy Catalog](#strategy-catalog) | S-001 through S-015 (selected and excluded) |
@@ -24,19 +28,19 @@
 
 > These are the authoritative HARD rules. Each rule CANNOT be overridden. See source files for consequences.
 
-<!-- L2-REINJECT: rank=1, tokens=50, content="Constitutional: No recursive subagents (P-003). User decides, never override (P-020). No deception (P-022). These are HARD constraints that CANNOT be overridden." -->
+<!-- L2-REINJECT: rank=1, content="Constitutional: No recursive subagents (P-003). User decides, never override (P-020). No deception (P-022). These are HARD constraints that CANNOT be overridden." -->
 
-<!-- L2-REINJECT: rank=2, tokens=90, content="Quality gate >= 0.92 weighted composite for C2+ deliverables (H-13). Creator-critic-revision cycle REQUIRED, minimum 3 iterations (H-14). Below threshold = REJECTED." -->
+<!-- L2-REINJECT: rank=2, content="Quality gate >= 0.92 weighted composite for C2+ deliverables (H-13). Creator-critic-revision cycle REQUIRED, minimum 3 iterations (H-14). Below threshold = REJECTED." -->
 
-<!-- L2-REINJECT: rank=2, tokens=50, content="Ambiguity resolution (H-31): When requirements have multiple valid interpretations, unclear scope, or imply destructive action -- MUST ask clarifying questions before proceeding. Do NOT assume. Do NOT ask when requirements are clear or answers are in the codebase." -->
+<!-- L2-REINJECT: rank=2, content="Ambiguity resolution (H-31): When requirements have multiple valid interpretations, unclear scope, or imply destructive action -- MUST ask clarifying questions before proceeding. Do NOT assume. Do NOT ask when requirements are clear or answers are in the codebase." -->
 
-<!-- L2-REINJECT: rank=3, tokens=25, content="UV only for Python (H-05/H-06). NEVER use python/pip directly." -->
+<!-- L2-REINJECT: rank=3, content="UV only for Python (H-05/H-06). NEVER use python/pip directly." -->
 
-<!-- L2-REINJECT: rank=4, tokens=30, content="LLM-as-Judge scoring (S-014): Apply strict rubric. Leniency bias must be actively counteracted." -->
+<!-- L2-REINJECT: rank=4, content="LLM-as-Judge scoring (S-014): Apply strict rubric. Leniency bias must be actively counteracted." -->
 
-<!-- L2-REINJECT: rank=5, tokens=30, content="Self-review REQUIRED before presenting any deliverable (H-15, S-010)." -->
+<!-- L2-REINJECT: rank=5, content="Self-review REQUIRED before presenting any deliverable (H-15, S-010)." -->
 
-<!-- L2-REINJECT: rank=8, tokens=40, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
+<!-- L2-REINJECT: rank=8, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
 
 | ID | Rule | Source |
 |----|------|--------|
@@ -46,9 +50,7 @@
 | H-04 | Active project REQUIRED | CLAUDE.md |
 | H-05 | UV only for Python execution | python-environment |
 | H-06 | UV only for dependencies | python-environment |
-| H-07 | Domain layer: no external imports | architecture-standards |
-| H-08 | Application layer: no infra/interface imports | architecture-standards |
-| H-09 | Composition root exclusivity | architecture-standards |
+| H-07 | Architecture layer isolation (domain imports, application imports, composition root) | architecture-standards |
 | H-10 | One class per file | architecture-standards |
 | H-11 | Type hints REQUIRED on public functions | coding-standards |
 | H-12 | Docstrings REQUIRED on public functions | coding-standards |
@@ -64,19 +66,30 @@
 | H-22 | Proactive skill invocation | mandatory-skill-usage |
 | H-23 | Navigation table REQUIRED (NAV-001) | markdown-navigation |
 | H-24 | Anchor links REQUIRED (NAV-006) | markdown-navigation |
-| H-25 | Skill file MUST be exactly `SKILL.md` (case-sensitive) | skill-standards |
-| H-26 | Skill folder MUST use kebab-case, match `name` field | skill-standards |
-| H-27 | No `README.md` inside skill folder | skill-standards |
-| H-28 | Description: WHAT + WHEN + triggers, <1024 chars, no XML | skill-standards |
-| H-29 | Full repo-relative paths in SKILL.md | skill-standards |
-| H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
+| H-25 | Skill naming and structure (SKILL.md case, kebab-case folder, no README.md) | skill-standards |
+| H-26 | Skill description, paths, and registration (WHAT+WHEN+triggers, repo-relative paths, CLAUDE.md+AGENTS.md) | skill-standards |
 | H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
+
+---
+
+## Retired Rule IDs
+
+> Rule IDs below were retired during EN-002 consolidation (2026-02-21). These IDs MUST NOT be reassigned to prevent confusion with historical references.
+
+| Retired ID | Consolidated Into | Original Rule | Date |
+|------------|-------------------|---------------|------|
+| H-08 | H-07 (sub-item b) | Application layer: no infra/interface imports | 2026-02-21 |
+| H-09 | H-07 (sub-item c) | Composition root exclusivity | 2026-02-21 |
+| H-27 | H-25 | No README.md inside skill folder | 2026-02-21 |
+| H-28 | H-26 | Skill description: WHAT+WHEN+triggers, <1024 chars, no XML | 2026-02-21 |
+| H-29 | H-26 | Full repo-relative paths in SKILL.md | 2026-02-21 |
+| H-30 | H-26 | Register in CLAUDE.md + AGENTS.md | 2026-02-21 |
 
 ---
 
 ## Quality Gate
 
-<!-- L2-REINJECT: rank=6, tokens=100, content="Criticality levels: C1 Routine (reversible 1 session, HARD only). C2 Standard (reversible 1 day, HARD+MEDIUM). C3 Significant (>1 day, all tiers). C4 Critical (irreversible, all tiers + tournament). AE-002: .context/rules/ = auto-C3. AE-001/AE-004: constitution/baselined ADR = auto-C4." -->
+<!-- L2-REINJECT: rank=6, content="Criticality levels: C1 Routine (reversible 1 session, HARD only). C2 Standard (reversible 1 day, HARD+MEDIUM). C3 Significant (>1 day, all tiers). C4 Critical (irreversible, all tiers + tournament). AE-002: .context/rules/ = auto-C3. AE-001/AE-004: constitution/baselined ADR = auto-C4." -->
 
 **Threshold:** >= 0.92 weighted composite score (C2+ deliverables)
 
@@ -137,9 +150,76 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 
 | Tier | Keywords | Override | Max Count |
 |------|----------|----------|-----------|
-| **HARD** | MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL | Cannot override | <= 35 |
+| **HARD** | MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL | Cannot override | <= 25 |
 | **MEDIUM** | SHOULD, RECOMMENDED, PREFERRED, EXPECTED | Documented justification | Unlimited |
 | **SOFT** | MAY, CONSIDER, OPTIONAL, SUGGESTED | No justification needed | Unlimited |
+
+### Two-Tier Enforcement Model
+
+Rules are classified by their enforcement reliability:
+
+**Tier A** — L2 engine-protected (per-prompt re-injection + compensating L3/L5 controls):
+
+| Rules | L2 Source | Count |
+|-------|-----------|-------|
+| H-01, H-02, H-03 | quality-enforcement.md rank 1 | 3 |
+| H-05, H-06 | python-environment.md rank 3 | 2 |
+| H-07, H-10 | architecture-standards.md rank 4 | 2 |
+| H-11, H-12 | coding-standards.md rank 7 | 2 |
+| H-13, H-14, H-31 | quality-enforcement.md rank 2 | 3 |
+| H-15 | quality-enforcement.md rank 5 | 1 |
+| H-19 | quality-enforcement.md rank 8 | 1 |
+| H-20, H-21 | testing-standards.md rank 5 | 2 |
+| H-22 | mandatory-skill-usage.md rank 6 | 1 |
+| H-23, H-24 | markdown-navigation.md rank 7 | 2 |
+| H-25, H-26 | skill-standards.md rank 7 | 2 |
+| **Tier A Total** | | **21** |
+
+**Tier B** — Structural L2 (L1 awareness only, compensating controls prevent bypass):
+
+| Rule | Compensating Controls | Count |
+|------|----------------------|-------|
+| H-04 (active project) | SessionStart hook enforcement (L3), CLI validation | 1 |
+| H-16 (steelman before critique) | /adversary skill enforcement, L1 rule awareness | 1 |
+| H-17 (quality scoring) | /adversary + /problem-solving skill enforcement | 1 |
+| H-18 (constitutional compliance) | S-007 strategy enforcement in /adversary skill | 1 |
+| **Tier B Total** | | **4** |
+
+**Total:** 25 HARD rules (21 Tier A + 4 Tier B)
+
+> **Note:** Tier B rules are candidates for L2 marker addition pending effectiveness measurement (DEC-005). Current compensating controls provide adequate enforcement through deterministic mechanisms (hooks, skills, CI gates).
+
+### HARD Rule Ceiling Derivation
+
+The ceiling of 25 HARD rules is derived from three independent constraint families (EN-002, C4 derivation scored 0.95 PASS, 2 iterations):
+
+1. **Cognitive Load** — LLM instruction-following reliability degrades when rule sets exceed ~20-25 items, consistent with chunking limits observed in structured prompt compliance benchmarks. At 25 rules, the framework operates at the practical upper bound; beyond this, enforcement reliability drops measurably.
+2. **Enforcement Coverage** — L2 per-prompt re-injection operates within an 850-token budget. Current 25 rules consume 559/850 tokens (65.8%) via 16 L2-REINJECT markers. Each additional rule requires ~30-50 tokens of reinforcement capacity, leaving room for ~6 additional markers before budget exhaustion.
+3. **Governance Burden** — Each HARD rule requires: (a) constitutional justification, (b) at least one enforcement mechanism (L2 marker, L3 AST gate, L5 CI check, or skill enforcement), and (c) ongoing maintenance. At 25 rules, governance overhead is manageable; beyond 28, the review burden for ceiling exceptions approaches the cost of the rules themselves.
+
+**Convergence:** All three families independently converge on 25 as the practical upper bound. The absolute maximum (28) is enforced by an independent constant in the L5 gate script, preventing self-referential ceiling manipulation.
+
+**Current count:** 25 HARD rules (post-consolidation from 31 per EN-002). Zero headroom is expected as an intermediate state; EN-001 will use the exception mechanism to add rules while consolidation creates permanent headroom.
+
+### HARD Rule Ceiling Exception Mechanism
+
+Temporary ceiling expansion is permitted under controlled conditions:
+
+| Condition | Requirement |
+|-----------|-------------|
+| Justification | C4-reviewed ADR documenting why the ceiling must be exceeded |
+| Scope | Maximum N=3 additional slots (ceiling+3 = 28 absolute max) |
+| Concurrency | Maximum 1 active exception at any time (M-09: no stacking) |
+| Duration | 3 months maximum; consolidation plan required |
+| Enforcement | L5 CI gate must be updated to reflect temporary ceiling |
+| Reversion | Consolidation or demotion must restore count to <= 25 within 3 months |
+| Tracking | Exception MUST be tracked as a worktracker entity with reversion deadline |
+
+**Process:** File an ADR per AE-003/AE-004. If approved after C4 review, update the L5 CI gate ceiling parameter in quality-enforcement.md (the `_ABSOLUTE_MAX_CEILING` constant in `check_hard_rule_ceiling.py` enforces the absolute maximum independently). Track the temporary expansion in the worktracker with a reversion deadline. The L5 CI gate will automatically enforce the updated ceiling on every commit and in GitHub Actions CI.
+
+**Reversion enforcement (C-03):** The L5 CI gate provides automated enforcement — when the exception expires, the ceiling value is reverted to 25 and any excess rules will cause CI failure. The worktracker reversion deadline provides human-visible tracking.
+
+**EN-001 phasing note (C-02):** EN-001 requires 4 additional rule slots (H-32..H-35) but the exception mechanism allows maximum N=3. EN-001 MUST therefore either: (a) consolidate existing rules to create permanent headroom before adding rules, or (b) phase the addition across two exception windows (3 rules in phase 1, consolidate, then 1 rule in phase 2).
 
 ---
 
@@ -161,14 +241,14 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 | Layer | Timing | Function | Context Rot | Tokens |
 |-------|--------|----------|-------------|--------|
 | L1 | Session start | Behavioral foundation via rules | Vulnerable | ~12,500 |
-| L2 | Every prompt | Re-inject critical rules | Immune | ~600/prompt |
+| L2 | Every prompt | Re-inject critical rules | Immune | ~850/prompt |
 | L3 | Before tool calls | Deterministic gating (AST) | Immune | 0 |
 | L4 | After tool calls | Output inspection, self-correction | Mixed | 0-1,350 |
 | L5 | Commit/CI | Post-hoc verification | Immune | 0 |
 
 **Context Rot:** Vulnerable = degrades with context fill. Immune = unaffected. Mixed = deterministic gating immune, self-correction vulnerable.
 
-**Total enforcement budget:** ~15,100 tokens (7.6% of 200K context)
+**Total enforcement budget:** ~15,350 tokens (7.7% of 200K context)
 
 ---
 
