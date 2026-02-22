@@ -1,13 +1,13 @@
 # EN-003: Context Monitoring Bounded Context Foundation
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** architecture
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 4-6h
@@ -155,18 +155,18 @@ Feature: CheckpointService orchestrates checkpoint lifecycle
 
 ### Acceptance Checklist
 
-- [ ] `src/context_monitoring/` directory structure created with `__init__.py` at each level
-- [ ] 4 value objects: frozen dataclasses with type hints and docstrings (H-10, H-11, H-12)
-- [ ] 3 domain events: frozen dataclasses, one class per file (H-10)
-- [ ] `ICheckpointRepository` Protocol: `save()`, `get_latest_unacknowledged()`, `acknowledge()`, `list_all()` (H-11, H-12)
-- [ ] `FilesystemCheckpointRepository`: atomic writes via `AtomicFileAdapter`, `.acknowledged` marker files
-- [ ] Sequential checkpoint IDs (cx-001, cx-002, ...)
-- [ ] `CheckpointService`: reads ORCHESTRATION.yaml (fail-open), assembles CheckpointData, calls repository
-- [ ] Acknowledgment timing: `acknowledge()` called AFTER data included in response (DEF-005)
-- [ ] `bootstrap.py` wires `FilesystemCheckpointRepository` -> `ICheckpointRepository`
-- [ ] H-07: domain layer has no external imports
-- [ ] H-08: application layer has no infrastructure imports
-- [ ] Unit tests: value object immutability, event construction, checkpoint CRUD, sequential IDs, acknowledged filtering, fail-open
+- [x] `src/context_monitoring/` directory structure created with `__init__.py` at each level
+- [x] 4 value objects: frozen dataclasses with type hints and docstrings (H-10, H-11, H-12)
+- [x] 3 domain events: frozen dataclasses, one class per file (H-10)
+- [x] `ICheckpointRepository` Protocol: `save()`, `get_latest_unacknowledged()`, `acknowledge()`, `list_all()` (H-11, H-12)
+- [x] `FilesystemCheckpointRepository`: atomic writes via `AtomicFileAdapter`, `.acknowledged` marker files
+- [x] Sequential checkpoint IDs (cx-001, cx-002, ...)
+- [x] `CheckpointService`: reads ORCHESTRATION.yaml (fail-open), assembles CheckpointData, calls repository
+- [x] Acknowledgment timing: `acknowledge()` called AFTER data included in response (DEF-005)
+- [x] `bootstrap.py` wires `FilesystemCheckpointRepository` -> `ICheckpointRepository`
+- [x] H-07: domain layer has no external imports
+- [x] H-08: application layer has no infrastructure imports
+- [x] Unit tests: value object immutability, event construction, checkpoint CRUD, sequential IDs, acknowledged filtering, fail-open
 
 ---
 
@@ -194,3 +194,4 @@ Create the `src/context_monitoring/` bounded context with proper hexagonal archi
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-02. Major redesign from v1. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

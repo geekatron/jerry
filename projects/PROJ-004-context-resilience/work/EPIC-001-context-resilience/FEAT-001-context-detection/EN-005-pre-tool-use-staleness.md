@@ -1,13 +1,13 @@
 # EN-005: PreToolUse Staleness Detection
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 1.5-2.5h
@@ -76,13 +76,13 @@ Feature: ORCHESTRATION.yaml staleness detection on pre-tool-use
 
 ### Acceptance Checklist
 
-- [ ] Staleness detection logic in `src/context_monitoring/` (appropriate layer)
-- [ ] Correct passthrough for non-ORCHESTRATION.yaml tool calls
-- [ ] Correct staleness detection when `updated_at` predates current phase
-- [ ] Warning format consistent with `PreToolEnforcementEngine` output
-- [ ] Fail-open on YAML parse errors
-- [ ] Unit tests: path matching, staleness calculation, passthrough, fail-open
-- [ ] Integration with `jerry hooks pre-tool-use` handler (EN-006) verified
+- [x] Staleness detection logic in `src/context_monitoring/` (appropriate layer)
+- [x] Correct passthrough for non-ORCHESTRATION.yaml tool calls
+- [x] Correct staleness detection when `updated_at` predates current phase
+- [x] Warning format consistent with `PreToolEnforcementEngine` output
+- [x] Fail-open on YAML parse errors
+- [x] Unit tests: path matching, staleness calculation, passthrough, fail-open
+- [x] Integration with `jerry hooks pre-tool-use` handler (EN-006) verified
 
 ---
 
@@ -107,3 +107,4 @@ Add ORCHESTRATION.yaml `resumption.updated_at` staleness detection to the `jerry
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-07. Redesigned from PostToolUse to PreToolUse. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

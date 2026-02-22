@@ -24,6 +24,7 @@ References:
 from __future__ import annotations
 
 import logging
+from xml.sax.saxutils import escape as xml_escape
 
 from src.context_monitoring.domain.value_objects.checkpoint_data import CheckpointData
 
@@ -90,10 +91,12 @@ class ResumptionContextGenerator:
     def _serialize_recovery_state(self, state: dict) -> str:
         """Serialize a resumption state dict to indented XML key-value pairs.
 
-        Each key-value pair in the dict is rendered as:
-            <key>value</key>
-
-        Nested structures are rendered using their str() representation.
+        TASK-001: Handles both structured fields (workflow_id, current_phase,
+        agent_statuses, quality_gate_state, next_actions, recovery_state)
+        and legacy raw content (orchestration_raw). Structured fields are
+        rendered with semantic XML tags; lists and dicts get compact
+        serialization. The orchestration_raw field is excluded from XML
+        rendering since it would duplicate structured content.
 
         Args:
             state: The resumption state dictionary to serialize.
@@ -102,11 +105,31 @@ class ResumptionContextGenerator:
             XML lines as a single string, indented with 4 spaces.
 
         Example:
-            >>> gen._serialize_recovery_state({"phase": "impl"})
-            "    <phase>impl</phase>\\n"
+            >>> gen._serialize_recovery_state({"workflow_id": "feat001"})
+            "    <workflow_id>feat001</workflow_id>\\n"
         """
         lines: list[str] = []
         for key, value in state.items():
+            # Skip raw content in XML (it's available via structured fields)
+            if key == "orchestration_raw":
+                continue
+
             safe_key = str(key).replace(" ", "_")
-            lines.append(f"    <{safe_key}>{value}</{safe_key}>\n")
+            if isinstance(value, list):
+                lines.append(f"    <{safe_key}>\n")
+                for item in value:
+                    if isinstance(item, dict):
+                        parts = ", ".join(f"{k}={xml_escape(str(v))}" for k, v in item.items())
+                        lines.append(f"      <item>{parts}</item>\n")
+                    else:
+                        lines.append(f"      <item>{xml_escape(str(item))}</item>\n")
+                lines.append(f"    </{safe_key}>\n")
+            elif isinstance(value, dict):
+                lines.append(f"    <{safe_key}>\n")
+                for k, v in value.items():
+                    inner_key = str(k).replace(" ", "_")
+                    lines.append(f"      <{inner_key}>{xml_escape(str(v))}</{inner_key}>\n")
+                lines.append(f"    </{safe_key}>\n")
+            else:
+                lines.append(f"    <{safe_key}>{xml_escape(str(value))}</{safe_key}>\n")
         return "".join(lines)

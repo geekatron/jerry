@@ -260,7 +260,7 @@ class EventSourcedSessionRepository:
 
             return None
 
-    def save(self, session: Session) -> None:
+    def save(self, session: Session) -> list[DomainEvent]:
         """Persist a session by saving its pending events.
 
         Collects uncommitted events from the session and appends
@@ -268,6 +268,9 @@ class EventSourcedSessionRepository:
 
         Args:
             session: The session aggregate to save.
+
+        Returns:
+            List of domain events that were saved.
 
         Raises:
             ConcurrencyError: If version mismatch detected.
@@ -279,7 +282,7 @@ class EventSourcedSessionRepository:
             pending_events = list(session.collect_events())
 
             if not pending_events:
-                return  # Nothing to save
+                return []  # Nothing to save
 
             # Convert to stored events
             stored_events = [
@@ -299,7 +302,7 @@ class EventSourcedSessionRepository:
             # Append to event store
             self._event_store.append(stream_id, stored_events, expected_version)
 
-            # Events saved successfully
+            return pending_events
 
     def exists(self, session_id: SessionId) -> bool:
         """Check if a session exists.

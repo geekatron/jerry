@@ -68,6 +68,9 @@ from src.session_management.infrastructure import (
     InMemorySessionRepository,
     OsEnvironmentAdapter,
 )
+from src.session_management.infrastructure.adapters.event_sourced_session_repository import (
+    EventSourcedSessionRepository,
+)
 
 # EN-025: Transcript parsing components (TDD-FEAT-004 Section 11.4)
 from src.transcript.application.commands import ParseTranscriptCommand
@@ -109,8 +112,8 @@ from src.work_tracking.infrastructure.persistence.in_memory_event_store import (
 )
 
 # Module-level session repository singleton for session state persistence
-# In production, this would be replaced with a file-based or database repository
-_session_repository: InMemorySessionRepository | None = None
+# EN-001: Uses EventSourcedSessionRepository for cross-process persistence
+_session_repository: EventSourcedSessionRepository | InMemorySessionRepository | None = None
 
 # Module-level event store and work item repository singletons
 # TD-018: Event-sourced implementation with FileSystemEventStore
@@ -126,19 +129,24 @@ _id_generator: WorkItemIdGenerator | None = None
 _serializer: ToonSerializer | None = None
 
 
-def get_session_repository() -> InMemorySessionRepository:
+def get_session_repository() -> EventSourcedSessionRepository | InMemorySessionRepository:
     """Get the shared session repository instance.
 
     Returns:
-        InMemorySessionRepository singleton instance
+        EventSourcedSessionRepository if a project is active (cross-process persistence),
+        InMemorySessionRepository otherwise (in-process only).
 
     Note:
-        This is a module-level singleton to preserve session state
-        across CLI invocations within the same process.
+        EN-001: Uses event-sourced repository with FileSystemEventStore
+        for cross-process session persistence.
     """
     global _session_repository
     if _session_repository is None:
-        _session_repository = InMemorySessionRepository()
+        event_store = get_event_store()
+        if isinstance(event_store, FileSystemEventStore):
+            _session_repository = EventSourcedSessionRepository(event_store=event_store)
+        else:
+            _session_repository = InMemorySessionRepository()
     return _session_repository
 
 
@@ -536,6 +544,11 @@ def create_hooks_handlers() -> dict[str, Any]:
     from src.context_monitoring.infrastructure.adapters.filesystem_checkpoint_repository import (
         FilesystemCheckpointRepository,
     )
+
+    # ST-006: State store for cross-invocation graduated escalation
+    from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
+        FilesystemContextStateStore,
+    )
     from src.context_monitoring.infrastructure.adapters.jsonl_transcript_reader import (
         JsonlTranscriptReader,
     )
@@ -568,6 +581,12 @@ def create_hooks_handlers() -> dict[str, Any]:
     )
     from src.interface.cli.hooks.hooks_session_start_handler import (
         HooksSessionStartHandler,
+    )
+    from src.interface.cli.hooks.hooks_stop_gate_handler import (
+        HooksStopGateHandler,
+    )
+    from src.interface.cli.hooks.hooks_subagent_stop_handler import (
+        HooksSubagentStopHandler,
     )
 
     project_root = Path.cwd()
@@ -623,11 +642,15 @@ def create_hooks_handlers() -> dict[str, Any]:
     # Pre-tool enforcement engine
     pre_tool_engine = PreToolEnforcementEngine(project_root=project_root)
 
+    # ST-006: Cross-invocation state store for graduated escalation
+    context_state_store = FilesystemContextStateStore(state_dir=project_root / ".jerry" / "local")
+
     return {
         "prompt-submit": HooksPromptSubmitHandler(
             context_fill_estimator=context_fill_estimator,
             checkpoint_service=checkpoint_service,
             reinforcement_engine=reinforcement_engine,
+            context_state_store=context_state_store,
         ),
         "session-start": HooksSessionStartHandler(
             query_dispatcher=query_dispatcher,
@@ -635,17 +658,67 @@ def create_hooks_handlers() -> dict[str, Any]:
             checkpoint_repository=checkpoint_repository,
             resumption_generator=resumption_generator,
             quality_context_generator=SessionQualityContextGenerator(),
+            context_state_store=context_state_store,
         ),
         "pre-compact": HooksPreCompactHandler(
             checkpoint_service=checkpoint_service,
             context_fill_estimator=context_fill_estimator,
             abandon_handler=abandon_handler,
+            context_state_store=context_state_store,
         ),
         "pre-tool-use": HooksPreToolUseHandler(
             enforcement_engine=pre_tool_engine,
             staleness_detector=staleness_detector,
         ),
+        "stop": HooksStopGateHandler(
+            context_state_store=context_state_store,
+        ),
+        "subagent-stop": HooksSubagentStopHandler(
+            lifecycle_dir=project_root / ".jerry" / "local",
+        ),
     }
+
+
+def create_context_estimate_handler() -> Any:
+    """Create the context estimate CLI handler with all dependencies.
+
+    Wires ContextEstimateComputer, FilesystemContextStateStore,
+    ContextEstimateService, and ContextEstimateHandler.
+
+    Returns:
+        ContextEstimateHandler ready to process stdin JSON.
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+        - EN-013: Bootstrap Wiring + Config Integration
+    """
+    from src.context_monitoring.application.services.context_estimate_service import (
+        ContextEstimateService,
+    )
+    from src.context_monitoring.domain.services.context_estimate_computer import (
+        ContextEstimateComputer,
+    )
+    from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
+        FilesystemContextStateStore,
+    )
+    from src.context_monitoring.infrastructure.adapters.transcript_sub_agent_reader import (
+        TranscriptSubAgentReader,
+    )
+    from src.interface.cli.context.context_estimate_handler import (
+        ContextEstimateHandler,
+    )
+
+    project_root = Path.cwd()
+    state_dir = project_root / ".jerry" / "local"
+
+    computer = ContextEstimateComputer()
+    state_store = FilesystemContextStateStore(state_dir=state_dir)
+    service = ContextEstimateService(computer, state_store)
+    sub_agent_reader = TranscriptSubAgentReader(
+        lifecycle_path=state_dir / "subagent-lifecycle.json",
+    )
+
+    return ContextEstimateHandler(service, sub_agent_reader=sub_agent_reader)
 
 
 def reset_singletons() -> None:

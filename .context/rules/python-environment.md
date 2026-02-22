@@ -2,7 +2,7 @@
 
 > UV-only Python environment. NEVER use system Python.
 
-<!-- L2-REINJECT: rank=3, content="UV ONLY. Use uv run for all Python. NEVER use python/pip/pip3 directly. Use uv add for deps." -->
+<!-- L2-REINJECT: rank=3, tokens=50, content="UV ONLY. Use uv run for all Python. NEVER use python/pip/pip3 directly. Use uv add for deps." -->
 
 ## Document Sections
 

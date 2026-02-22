@@ -1,12 +1,12 @@
 # ST-002: AE-006 Graduated Sub-Rules
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 1h
@@ -60,11 +60,11 @@ Feature: Graduated context exhaustion escalation rules
 
 ### Acceptance Checklist
 
-- [ ] AE-006a through AE-006e defined in Auto-Escalation Rules table
-- [ ] Each sub-rule: trigger condition, escalation action, enforcement mechanism
-- [ ] L2-REINJECT marker present (rank ~8, ~35 tokens)
-- [ ] Total L2-REINJECT budget within 600 tokens
-- [ ] Quality gate: C3 per AE-002
+- [x] AE-006a through AE-006e defined in Auto-Escalation Rules table
+- [x] Each sub-rule: trigger condition, escalation action, enforcement mechanism
+- [x] L2-REINJECT marker present (rank ~8, ~35 tokens)
+- [x] Total L2-REINJECT budget within 600 tokens
+- [x] Quality gate: C3 per AE-002
 
 ---
 
@@ -81,3 +81,4 @@ Feature: Graduated context exhaustion escalation rules
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Story created from CWI-05. |
+| 2026-02-21 | Claude | completed | AE-006a through AE-006e graduated sub-rules added to quality-enforcement.md. |

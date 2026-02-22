@@ -1,14 +1,14 @@
 # EPIC-001: Context Resilience
 
 > **Type:** epic
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** PROJ-004-context-resilience
-> **Owner:** --
+> **Owner:** Claude
 > **Target Quarter:** FY26-Q1
 
 ---
@@ -67,18 +67,20 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Context Exhaustion Detection & Graceful Session Handoff | pending | high | 0% |
+| FEAT-001 | Context Exhaustion Detection & Graceful Session Handoff | completed | high | 100% |
+| FEAT-002 | Status Line / Context Monitoring Unification & Automatic Session Rotation | completed | high | 100% |
 
 ### Spike Inventory
 
 | ID | Title | Status | Priority | Timebox |
 |----|-------|--------|----------|---------|
-| SPIKE-001 | Research Context Measurement, Detection Thresholds & Resumption Protocols | done | high | 8 hours |
-| SPIKE-002 | Jerry CLI Integration Architecture for Context Resilience | in_progress | high | 4 hours |
+| SPIKE-001 | Research Context Measurement, Detection Thresholds & Resumption Protocols | completed | high | 8 hours |
+| SPIKE-002 | Jerry CLI Integration Architecture for Context Resilience | completed | high | 4 hours |
 
 ### Feature Links
 
 - [FEAT-001: Context Exhaustion Detection & Graceful Session Handoff](./FEAT-001-context-detection/FEAT-001-context-detection.md)
+- [FEAT-002: Status Line / Context Monitoring Unification & Automatic Session Rotation](./FEAT-002-status-line-unification/FEAT-002-status-line-unification.md)
 
 ### Spike Links
 
@@ -95,10 +97,12 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 +------------------------------------------------------------------+
 |                     EPIC PROGRESS TRACKER                         |
 +------------------------------------------------------------------+
-| Features:  [....................] 0% (0/1 completed)              |
-| Spikes:    [....................] 0% (0/1 completed)              |
+| Features:  [####################] 100% (2/2 completed)           |
+| Spikes:    [####################] 100% (2/2 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [....................] 0%                               |
+| Discoveries: Resolved (DISC-002 → FEAT-002, DISC-003 → SPIKE-004)|
++------------------------------------------------------------------+
+| Overall:   [####################] 100% (COMPLETE)                |
 +------------------------------------------------------------------+
 ```
 
@@ -106,13 +110,14 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 1 |
-| **Completed Features** | 0 |
-| **In Progress Features** | 0 |
-| **Pending Features** | 1 |
-| **Total Spikes** | 1 |
-| **Completed Spikes** | 0 |
-| **Feature Completion %** | 0% |
+| **Total Features** | 2 |
+| **Completed Features** | 2 (FEAT-001, FEAT-002) |
+| **Total Spikes** | 2 |
+| **Completed Spikes** | 2 (SPIKE-001, SPIKE-002) |
+| **Tests** | 3875 passed, 0 failed, 63 skipped |
+| **C4 Review** | 0.953 PASS (FEAT-001), FEAT-002 implemented |
+| **Open Discoveries** | 0 (DISC-002 resolved by FEAT-002, DISC-003 resolved by SPIKE-004) |
+| **Feature Completion %** | 100% |
 
 ---
 
@@ -126,6 +131,15 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 | Informs | PROJ-001 /orchestration skill | Resumption protocol will integrate with existing orchestration skill |
 | Informs | PROJ-002 roadmap-next | Context resilience is a capability on the roadmap |
 
+### GitHub Issues
+
+| Issue | Title | Status |
+|-------|-------|--------|
+| [#61](https://github.com/geekatron/jerry/issues/61) | EPIC-001: Context Resilience | closed |
+| [#62](https://github.com/geekatron/jerry/issues/62) | FEAT-001: Context Exhaustion Detection & Graceful Session Handoff | closed |
+| [#63](https://github.com/geekatron/jerry/issues/63) | FEAT-002: Status Line / Context Monitoring Unification & Automatic Session Rotation | closed |
+| [#51](https://github.com/geekatron/jerry/issues/51) | BUG-001: Pre-commit hooks failing | closed |
+
 ---
 
 ## History
@@ -133,3 +147,7 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Epic created. Captures context exhaustion detection and graceful session handoff requirements. |
+| 2026-02-20 | Claude | in_progress | FEAT-001 implementation orchestration complete. 6 phases, 11 agents, 3 quality gates PASSED. |
+| 2026-02-21 | Claude | completed | All work items verified and closed. FEAT-001 complete (12 implementation items, 3 spikes, 1 discovery, 1 decision, 1 bug). EN-008 hardening complete. C4 adversarial review PASSED at 0.953. 3875 tests passing. Epic complete. |
+| 2026-02-21 | Claude | in_progress | Status reopened. DISC-002 (status line unification gap) and DISC-003 (unfounded latency claims) document unresolved architectural gaps. Open discoveries with actionable follow-on work prevent project closure. |
+| 2026-02-21 | Claude | completed | FEAT-002 (Status Line / Context Monitoring Unification) complete. DISC-002 resolved via `jerry context estimate` CLI. DISC-003 resolved via SPIKE-004 benchmark (p50=96ms). All 10 enablers, 3 stories, 1 spike, 3 decisions implemented. EPIC-001 complete. |

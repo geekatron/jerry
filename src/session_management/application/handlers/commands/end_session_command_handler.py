@@ -72,8 +72,5 @@ class EndSessionCommandHandler:
         # Complete the session
         session.complete(summary=command.summary or "")
 
-        # Persist
-        self._repository.save(session)
-
-        # Return raised events
-        return session.collect_events()
+        # Persist and return raised events
+        return self._repository.save(session)

@@ -97,8 +97,5 @@ class CreateSessionCommandHandler:
             project_id=project_id,
         )
 
-        # Persist
-        self._repository.save(session)
-
-        # Return raised events
-        return session.collect_events()
+        # Persist and return raised events
+        return self._repository.save(session)

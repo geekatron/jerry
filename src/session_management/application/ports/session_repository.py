@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Protocol
 
+from src.shared_kernel.domain_event import DomainEvent
+
 from ...domain.aggregates.session import Session
 from ...domain.value_objects.session_id import SessionId
 
@@ -67,21 +69,25 @@ class ISessionRepository(Protocol):
         """
         ...
 
-    def save(self, session: Session) -> None:
+    def save(self, session: Session) -> list[DomainEvent]:
         """Persist a session (new or updated).
 
         For event-sourced aggregates, this appends uncommitted events
-        to the event store.
+        to the event store. Returns the collected events so callers
+        don't need to call collect_events() separately.
 
         Args:
             session: The session aggregate to save
+
+        Returns:
+            List of domain events that were persisted.
 
         Raises:
             ConcurrencyError: If optimistic concurrency check fails
 
         Example:
             >>> session = Session.create(session_id, "Working on feature")
-            >>> repo.save(session)
+            >>> events = repo.save(session)
         """
         ...
 

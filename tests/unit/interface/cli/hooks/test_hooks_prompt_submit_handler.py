@@ -25,6 +25,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from src.context_monitoring.application.ports.context_state import ContextState
 from src.context_monitoring.domain.value_objects.checkpoint_data import CheckpointData
 from src.context_monitoring.domain.value_objects.fill_estimate import FillEstimate
 from src.context_monitoring.domain.value_objects.threshold_tier import ThresholdTier
@@ -250,6 +251,19 @@ class TestHooksPromptSubmitHandlerFailOpen:
         result = json.loads(captured.out)
         assert "additionalContext" in result
 
+    def test_none_stdin_returns_valid_json(
+        self,
+        handler: HooksPromptSubmitHandler,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """FOS-001: None stdin (TypeError) still returns valid JSON with exit 0."""
+        exit_code = handler.handle(None)  # type: ignore[arg-type]
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "additionalContext" in result
+
     def test_failure_logs_to_stderr(
         self,
         mock_checkpoint_service: MagicMock,
@@ -394,9 +408,10 @@ class TestAE006dEmergencyWarning:
 
         captured = capsys.readouterr()
         result = json.loads(captured.out)
-        assert "<context-emergency>" in result["additionalContext"]
-        assert "91% full" in result["additionalContext"]
-        assert "session handoff" in result["additionalContext"]
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "EMERGENCY" in result["additionalContext"]
+        assert "/compact" in result["additionalContext"]
+        assert "/clear" in result["additionalContext"]
 
     def test_critical_tier_does_not_include_emergency_warning(
         self,
@@ -427,4 +442,268 @@ class TestAE006dEmergencyWarning:
 
         captured = capsys.readouterr()
         result = json.loads(captured.out)
-        assert "<context-emergency>" not in result["additionalContext"]
+        # CRITICAL gets escalation but NOT /clear (that's EMERGENCY only)
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "CRITICAL" in result["additionalContext"]
+        assert "/compact" in result["additionalContext"]
+        assert "/clear" not in result["additionalContext"]
+
+
+# =============================================================================
+# ST-006: Graduated escalation from state file
+# =============================================================================
+
+
+class TestGraduatedEscalation:
+    """BDD: ST-006 graduated escalation from cross-invocation state file."""
+
+    def test_warning_tier_from_state_injects_escalation(
+        self,
+        mock_estimator: MagicMock,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """WARNING tier from state file injects escalation message."""
+        state_store = MagicMock()
+        state_store.load.return_value = ContextState(
+            previous_tokens=140000,
+            previous_session_id="sess-1",
+            last_tier="warning",
+            last_rotation_action="log_warning",
+        )
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=mock_estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "WARNING" in result["additionalContext"]
+        assert "Consider checkpointing" in result["additionalContext"]
+
+    def test_critical_tier_from_state_injects_escalation(
+        self,
+        mock_estimator: MagicMock,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """CRITICAL tier from state file injects stronger escalation."""
+        state_store = MagicMock()
+        state_store.load.return_value = ContextState(
+            previous_tokens=165000,
+            previous_session_id="sess-1",
+            last_tier="critical",
+            last_rotation_action="checkpoint",
+        )
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=mock_estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "CRITICAL" in result["additionalContext"]
+        assert "Checkpoint now" in result["additionalContext"]
+        assert "/compact" in result["additionalContext"]
+
+    def test_emergency_tier_from_state_injects_escalation(
+        self,
+        mock_estimator: MagicMock,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """EMERGENCY tier from state file injects urgent escalation."""
+        state_store = MagicMock()
+        state_store.load.return_value = ContextState(
+            previous_tokens=180000,
+            previous_session_id="sess-1",
+            last_tier="emergency",
+            last_rotation_action="emergency_handoff",
+        )
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=mock_estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "EMERGENCY" in result["additionalContext"]
+        assert "/compact" in result["additionalContext"]
+        assert "/clear" in result["additionalContext"]
+
+    def test_nominal_tier_no_escalation(
+        self,
+        mock_estimator: MagicMock,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """NOMINAL tier from state file does not inject escalation."""
+        state_store = MagicMock()
+        state_store.load.return_value = ContextState(
+            previous_tokens=50000,
+            previous_session_id="sess-1",
+            last_tier="nominal",
+            last_rotation_action="none",
+        )
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=mock_estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" not in result["additionalContext"]
+
+    def test_no_state_store_no_escalation_at_nominal(
+        self,
+        handler: HooksPromptSubmitHandler,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Without state store, NOMINAL transcript tier has no escalation."""
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" not in result["additionalContext"]
+
+    def test_state_store_failure_is_fail_open(
+        self,
+        mock_estimator: MagicMock,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """State store load failure does not crash handler."""
+        state_store = MagicMock()
+        state_store.load.side_effect = RuntimeError("disk error")
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=mock_estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        exit_code = handler.handle(hook_input)
+
+        assert exit_code == 0
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "additionalContext" in result
+
+    def test_state_tier_upgrades_transcript_tier_for_checkpoint(
+        self,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """State file CRITICAL upgrades transcript NOMINAL for checkpoint creation."""
+        # Transcript says NOMINAL
+        estimator = MagicMock()
+        estimator.estimate.return_value = FillEstimate(
+            fill_percentage=0.45,
+            tier=ThresholdTier.NOMINAL,
+            token_count=90000,
+        )
+        estimator.generate_context_monitor_tag.return_value = (
+            "<context-monitor>NOMINAL</context-monitor>"
+        )
+
+        # State file says CRITICAL
+        state_store = MagicMock()
+        state_store.load.return_value = ContextState(
+            previous_tokens=165000,
+            previous_session_id="sess-1",
+            last_tier="critical",
+            last_rotation_action="checkpoint",
+        )
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        # CRITICAL from state file triggers checkpoint even though transcript says NOMINAL
+        mock_checkpoint_service.create_checkpoint.assert_called_once()
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "CRITICAL" in result["additionalContext"]
+
+    def test_state_none_uses_transcript_tier_only(
+        self,
+        mock_checkpoint_service: MagicMock,
+        mock_reinforcement_engine: MagicMock,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When state store returns None, transcript tier drives escalation."""
+        # Transcript says WARNING
+        estimator = MagicMock()
+        estimator.estimate.return_value = FillEstimate(
+            fill_percentage=0.72,
+            tier=ThresholdTier.WARNING,
+            token_count=144000,
+        )
+        estimator.generate_context_monitor_tag.return_value = (
+            "<context-monitor>WARNING</context-monitor>"
+        )
+
+        # State file is empty
+        state_store = MagicMock()
+        state_store.load.return_value = None
+
+        handler = HooksPromptSubmitHandler(
+            context_fill_estimator=estimator,
+            checkpoint_service=mock_checkpoint_service,
+            reinforcement_engine=mock_reinforcement_engine,
+            context_state_store=state_store,
+        )
+
+        hook_input = json.dumps({"transcript_path": "/tmp/transcript.jsonl"})
+        handler.handle(hook_input)
+
+        captured = capsys.readouterr()
+        result = json.loads(captured.out)
+        assert "<context-escalation>" in result["additionalContext"]
+        assert "WARNING" in result["additionalContext"]
+        # No checkpoint at WARNING (only CRITICAL/EMERGENCY)
+        mock_checkpoint_service.create_checkpoint.assert_not_called()

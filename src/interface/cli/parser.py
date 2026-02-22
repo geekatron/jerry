@@ -96,6 +96,9 @@ Examples:
     # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
     _add_transcript_namespace(subparsers)
 
+    # Context namespace (EN-012: jerry context estimate)
+    _add_context_namespace(subparsers)
+
     # AST namespace (ST-004: jerry ast commands)
     _add_ast_namespace(subparsers)
 
@@ -619,13 +622,7 @@ def _add_ast_namespace(
     validate_parser.add_argument(
         "--schema",
         default=None,
-        help="Schema type to validate against (e.g., story, epic, task). Optional.",
-    )
-    validate_parser.add_argument(
-        "--nav",
-        action="store_true",
-        default=False,
-        help="Include detailed nav table entries in output.",
+        help="Schema type to validate against (e.g., entity). Optional.",
     )
 
     # ast query
@@ -643,47 +640,35 @@ def _add_ast_namespace(
         help="Node type to query (e.g., heading, blockquote, paragraph)",
     )
 
-    # ast frontmatter
-    frontmatter_parser = ast_subparsers.add_parser(
-        "frontmatter",
-        help="Extract blockquote frontmatter fields as JSON",
-        description="Extract all blockquote frontmatter fields from a markdown file.",
-    )
-    frontmatter_parser.add_argument(
-        "file",
-        help="Path to markdown file",
+
+def _add_context_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add context namespace commands.
+
+    Commands:
+        - estimate: Compute context fill estimate from Claude Code stdin JSON
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+        - FEAT-002: Status Line / Context Monitoring Unification
+    """
+    context_parser = subparsers.add_parser(
+        "context",
+        help="Context monitoring commands",
+        description="Context monitoring and fill estimation.",
     )
 
-    # ast modify
-    modify_parser = ast_subparsers.add_parser(
-        "modify",
-        help="Modify a frontmatter field",
-        description="Modify a frontmatter field value and write back to file.",
-    )
-    modify_parser.add_argument(
-        "file",
-        help="Path to markdown file",
-    )
-    modify_parser.add_argument(
-        "--key",
-        required=True,
-        help="Frontmatter field name to modify (case-sensitive).",
-    )
-    modify_parser.add_argument(
-        "--value",
-        required=True,
-        help="New value for the field.",
+    context_subparsers = context_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
     )
 
-    # ast reinject
-    reinject_parser = ast_subparsers.add_parser(
-        "reinject",
-        help="Extract L2-REINJECT directives as JSON",
-        description="Extract all L2-REINJECT directives from a markdown file.",
-    )
-    reinject_parser.add_argument(
-        "file",
-        help="Path to markdown file",
+    context_subparsers.add_parser(
+        "estimate",
+        help="Compute context fill estimate",
+        description="Read Claude Code JSON from stdin and compute context fill estimate.",
     )
 
 
@@ -731,4 +716,14 @@ def _add_hooks_namespace(
     hooks_subparsers.add_parser(
         "pre-tool-use",
         help="Handle PreToolUse hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "stop",
+        help="Handle Stop hook event (context stop gate)",
+    )
+
+    hooks_subparsers.add_parser(
+        "subagent-stop",
+        help="Handle SubagentStop hook event (lifecycle tracking)",
     )

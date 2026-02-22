@@ -9,13 +9,13 @@ paths:
 > Rules for building, structuring, and registering Jerry framework skills.
 > Based on Anthropic's "Complete Guide to Building Skills for Claude" (January 2026) and Jerry's established conventions across 8 production skills.
 
-<!-- L2-REINJECT: rank=7, content="Skills: SKILL.md exact case, kebab-case folder, no README.md (H-25). Description WHAT+WHEN+triggers, repo-relative paths, register in CLAUDE.md+AGENTS.md (H-26). Navigation table REQUIRED (H-23)." -->
+<!-- L2-REINJECT: rank=7, tokens=70, content="Skills: SKILL.md exact case (H-25). Folder kebab-case (H-26). No README.md in skill folder (H-27). Description MUST include WHAT + WHEN + triggers (H-28). Full repo-relative paths for all file references (H-29). Register in CLAUDE.md + AGENTS.md (H-30). Document Sections navigation table REQUIRED (H-23). .context/ is Claude-agnostic; .claude/rules/ symlinks to .context/rules/ for auto-loading." -->
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rules](#hard-rules) | Skill constraints H-25, H-26 (compound) |
+| [HARD Rules](#hard-rules) | Skill constraints H-25 through H-30 |
 | [Standards (MEDIUM)](#standards-medium) | Structural conventions, frontmatter, progressive disclosure |
 | [Guidance (SOFT)](#guidance-soft) | Optional practices and recommendations |
 
@@ -27,8 +27,12 @@ paths:
 
 | ID | Rule | Consequence |
 |----|------|-------------|
-| H-25 | **Skill naming and structure:** (a) Skill file MUST be exactly `SKILL.md` (case-sensitive, no variations); (b) Skill folder MUST use kebab-case (no spaces, underscores, or capitals) and match the `name` field in frontmatter; (c) No `README.md` inside the skill folder (all documentation in `SKILL.md` or `references/`). | Skill silently absent from session, not loadable, or loader bypasses SKILL.md. |
-| H-26 | **Skill description, paths, and registration:** (a) Frontmatter `description` MUST include WHAT + WHEN + trigger phrases, under 1024 chars, no XML tags (`< >`); (b) All file references in SKILL.md MUST use full repo-relative paths; (c) New skills MUST be registered in CLAUDE.md, AGENTS.md, and mandatory-skill-usage.md (if proactive per H-22). | Skill does not trigger, paths resolve incorrectly, or skill is undiscoverable. |
+| H-25 | Skill file MUST be exactly `SKILL.md` (case-sensitive). No variations (`SKILL.MD`, `skill.md`, `Skill.md`). Case sensitivity is required for Linux filesystems (Claude.ai, CI/CD) even if macOS (case-insensitive) accepts variations. | Skill silently absent from session. Claude's skill loader performs exact case match — no error raised, skill simply does not load. |
+| H-26 | Skill folder MUST use kebab-case. No spaces, underscores, or capitals. Folder name MUST match the `name` field in frontmatter. | Skill not loadable. |
+| H-27 | No `README.md` inside the skill folder. All documentation goes in `SKILL.md` or `references/`. | Some hosting and automation tooling (including Claude's skill loader) may use README.md preferentially, bypassing SKILL.md as the entry point. |
+| H-28 | Frontmatter `description` field MUST include WHAT it does AND WHEN to use it (trigger conditions). MUST include specific phrases users would say. Under 1024 characters. No XML tags (`< >`). | Skill does not trigger. Security risk (XML injection into system prompt). |
+| H-29 | All file references in SKILL.md MUST use full repo-relative paths (`skills/saucer-boy-framework-voice/references/voice-guide.md`), not relative paths (`references/voice-guide.md`). Claude's working directory at load time is session-state-dependent, not skill-location-dependent. | Relative paths resolve against CWD (unpredictable), not the skill folder. Full repo-relative paths are the only style that resolves correctly regardless of session state. |
+| H-30 | New skills MUST be registered in: (1) `CLAUDE.md` Quick Reference Skills table; (2) `AGENTS.md` for all agents defined; (3) `.context/rules/mandatory-skill-usage.md` trigger map IF the skill requires proactive invocation per H-22 (note: modifying this file triggers AE-002, auto-C3 minimum). | Skill undiscoverable, agents unregistered. Missing mandatory-skill-usage.md entry causes proactive invocation to silently fail. |
 
 ### Security Restrictions
 
@@ -164,7 +168,7 @@ For critical validations, consider bundling a script in `scripts/` that performs
 
 ### Existing Skills
 
-Rules H-25 and H-26 apply to all new skills immediately. Existing production skills (9 as of 2026-02-19) SHOULD be audited for compliance. Non-compliant existing skills MUST have a compliance issue filed in the worktracker.
+Rules H-25 through H-30 apply to all new skills immediately. Existing production skills (9 as of 2026-02-19) SHOULD be audited for compliance. Non-compliant existing skills MUST have a compliance issue filed in the worktracker.
 
 ---
 
@@ -182,9 +186,9 @@ Rules H-25 and H-26 apply to all new skills immediately. Existing production ski
 
 ---
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-21 | SOURCE: Anthropic Skill Guide (Jan 2026), Jerry Framework v0.2.3, EN-002 consolidation -->
+<!-- VERSION: 1.1.0 | DATE: 2026-02-19 | SOURCE: Anthropic Skill Guide (Jan 2026), Jerry Framework v0.2.3, C3 adversarial review -->
 
-*Standards Version: 1.2.0*
-*SSOT: `.context/rules/quality-enforcement.md` (H-25, H-26 registered — consolidated from H-25..H-30 per EN-002)*
+*Standards Version: 1.1.0*
+*SSOT: `.context/rules/quality-enforcement.md` (H-25 through H-30 registered)*
 *Source: Anthropic Skill Guide (Jan 2026) + Jerry Framework v0.2.3*
 *Created: 2026-02-19*

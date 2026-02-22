@@ -2,7 +2,7 @@
 
 > Proactive skill invocation rules. DO NOT wait for user to invoke.
 
-<!-- L2-REINJECT: rank=6, content="Proactive skill invocation REQUIRED (H-22). /problem-solving for research. /nasa-se for design. /orchestration for workflows. /transcript for transcript parsing and meeting notes. /adversary for standalone adversarial reviews, tournament scoring, formal strategy application. /ast for frontmatter extraction and entity validation (H-33)." -->
+<!-- L2-REINJECT: rank=6, tokens=50, content="Proactive skill invocation REQUIRED (H-22). /problem-solving for research. /nasa-se for design. /orchestration for workflows. /transcript for transcript parsing and meeting notes. /adversary for standalone adversarial reviews, tournament scoring, formal strategy application. /ast for frontmatter extraction and entity validation (H-33)." -->
 
 ## Document Sections
 
@@ -26,18 +26,16 @@
 
 ## Trigger Map
 
-> Phase 1 enhanced format (5-column) per `agent-routing-standards.md`. Backward-compatible: consumers parsing only columns 1+5 continue to function.
-
-| Detected Keywords | Negative Keywords | Priority | Compound Triggers | Skill |
-|---|---|---|---|---|
-| research, analyze, investigate, explore, root cause, why, debug, troubleshoot, diagnose, figure out, what went wrong, compare, evaluate | requirements, specification, V&V, adversarial, tournament, transcript, VTT, SRT, voice, persona | 6 | -- | `/problem-solving` |
-| requirements, specification, V&V, technical review, risk, design, architecture, interface, trade study, compliance | root cause, debug, adversarial, tournament, research (standalone), transcript | 5 | "technical review" (both words required) | `/nasa-se` |
-| orchestration, pipeline, workflow, multi-agent, phases, gates, plan, coordinate, break into steps, sequence | adversarial, transcript, root cause, debug | 1 | -- | `/orchestration` |
-| transcript, meeting notes, parse recording, meeting recording, VTT, SRT, captions, audio, summarize this meeting | adversarial, requirements, design | 2 | "parse recording" OR "meeting recording" (phrase match) | `/transcript` |
-| adversarial quality review, adversarial critique, rigorous critique, formal critique, adversarial, tournament, red team, devil's advocate, steelman, pre-mortem, quality gate, quality scoring | requirements, specification, design, research, investigate | 7 | "adversarial review" OR "quality gate" OR "quality scoring" (phrase match) | `/adversary` |
-| saucer boy, mcconkey, talk like mcconkey, pep talk, roast this code, saucer boy mode | -- | 3 | -- | `/saucer-boy` |
-| voice check, voice review, persona compliance, voice rewrite, voice fidelity, voice score, framework voice, persona review | -- | 4 | ("voice" OR "persona") AND ("review" OR "check" OR "score") | `/saucer-boy-framework-voice` |
-| frontmatter, entity metadata, status extraction, validate entity, parse markdown, blockquote frontmatter, nav table validation, schema validation | -- | 8 | -- | `/ast` |
+| Detected Keywords | Skill |
+|-------------------|-------|
+| research, analyze, investigate, explore, root cause, why | `/problem-solving` |
+| requirements, specification, V&V, technical review, risk | `/nasa-se` |
+| orchestration, pipeline, workflow, multi-agent, phases, gates | `/orchestration` |
+| transcript, meeting notes, parse recording, meeting recording, VTT, SRT, captions | `/transcript` |
+| adversarial quality review, adversarial critique, rigorous critique, formal critique, adversarial, tournament, red team, devil's advocate, steelman, pre-mortem, quality gate, quality scoring | `/adversary` |
+| saucer boy, mcconkey, talk like mcconkey, pep talk, roast this code, saucer boy mode | `/saucer-boy` |
+| voice check, voice review, persona compliance, voice rewrite, voice fidelity, voice score, framework voice, persona review | `/saucer-boy-framework-voice` |
+| frontmatter, entity metadata, status extraction, validate entity, parse markdown, blockquote frontmatter, nav table validation, schema validation | `/ast` |
 
 ---
 

@@ -1,12 +1,13 @@
 # SPIKE-003: Validation Spikes — OQ-9 + Method C
 
 > **Type:** spike
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Created:** 2026-02-19
 > **Parent:** FEAT-001
-> **Owner:** --
+> **Owner:** Claude
+> **Completed:** 2026-02-21
 > **Effort:** 3h (timebox)
 
 ---
@@ -40,11 +41,11 @@
 
 ## Acceptance Criteria
 
-- [ ] OQ-9: Report documenting `JsonlTranscriptReader` accuracy with measured divergence
-- [ ] Method C: Report documenting timing test results
-- [ ] Method C: If feasible, prototype committed
-- [ ] Both reports include recommendation: proceed/defer/abandon
-- [ ] Timebox respected (3 hours max)
+- [x] OQ-9: Report documenting `JsonlTranscriptReader` accuracy with measured divergence
+- [x] Method C: Report documenting timing test results
+- [x] Method C: If feasible, prototype committed (DEFERRED — Method A superior, no prototype needed)
+- [x] Both reports include recommendation: proceed/defer/abandon
+- [x] Timebox respected (3 hours max)
 
 ---
 
@@ -61,3 +62,4 @@
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Spike created from CWI-08. |
+| 2026-02-21 | Claude | completed | Spike completed. OQ-9: BLOCKER found — JsonlTranscriptReader corrected (three-field sum, nested path). Method C: DEFERRED — Method A superior. Report at orchestration/feat001-impl-20260220-001/impl/phase-4-cli-rules/spike-003-exec/spike-003-validation-report.md. Corrections applied to JsonlTranscriptReader, ITranscriptReader port, and test fixtures. |

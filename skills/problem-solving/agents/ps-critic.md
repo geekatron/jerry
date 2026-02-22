@@ -226,29 +226,35 @@ use the `/ast` skill to extract structured information before applying the
 S-014 scoring rubric.
 
 5. **Extracting entity context for scoring setup:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {artifact_path}
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("{artifact_path}")
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
-   # Use the "Type" field to select the appropriate schema for Completeness scoring
+   entity_type = fm.get("Type", "unknown")
+   # Use entity_type to select the appropriate schema for Completeness scoring
    ```
 
 6. **Checking nav table compliance for Completeness dimension (H-23/H-24):**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {artifact_path} --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   nav_result = validate_nav_table_file("{artifact_path}")
+   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = Completeness dimension deduction (missing sections)
    ```
 
 7. **Schema validation for entity deliverables:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {artifact_path} --schema {entity_type}
-   # Returns: {"schema_valid": true/false, "schema_violations": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file
+   result = validate_file("{artifact_path}", schema=entity_type)
+   # Returns: {"schema_valid": bool, "schema_violations": [...]}
    # Schema violations inform Completeness (0.20) and Methodological Rigor (0.20) scoring
-   # Inspect schema_violations array for field_path and message details
+   if not result["schema_valid"]:
+       for v in result["schema_violations"]:
+           print(f"{v['field_path']}: {v['message']}")
    ```
 
 **Migration Note (ST-010):** For deliverables that are Jerry entity files, use
-`jerry ast validate path --schema entity_type` to get schema violations BEFORE applying
+`validate_file(path, schema=entity_type)` to get schema violations BEFORE applying
 S-014 rubric dimensions. Schema violations directly impact the Completeness and
 Methodological Rigor scores.
 

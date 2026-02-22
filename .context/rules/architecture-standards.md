@@ -11,13 +11,13 @@ paths:
 
 > Hexagonal Architecture, CQRS, Event Sourcing, and file organization rules.
 
-<!-- L2-REINJECT: rank=4, content="Architecture layer isolation (H-07): (a) domain/ MUST NOT import application/infrastructure/interface/ (stdlib+shared_kernel only); (b) application/ MUST NOT import infrastructure/interface/; (c) only bootstrap.py instantiates infra adapters. One class per file (H-10)." -->
+<!-- L2-REINJECT: rank=4, tokens=60, content="domain/ MUST NOT import application/, infrastructure/, interface/. Only bootstrap.py instantiates infrastructure. One public class per file." -->
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rules](#hard-rules) | Architectural constraints H-07 (compound), H-10 |
+| [HARD Rules](#hard-rules) | Architectural constraints H-07 to H-10 |
 | [Layer Dependencies](#layer-dependencies) | Import boundary rules |
 | [Directory Structure](#directory-structure) | Hexagonal layer layout |
 | [Standards (MEDIUM)](#standards-medium) | Naming conventions, patterns |
@@ -31,7 +31,9 @@ paths:
 
 | ID | Rule | Consequence |
 |----|------|-------------|
-| H-07 | **Architecture layer isolation:** (a) `src/domain/` MUST NOT import from `application/`, `infrastructure/`, or `interface/` (stdlib and `shared_kernel/` only); (b) `src/application/` MUST NOT import from `infrastructure/` or `interface/`; (c) Only `src/bootstrap.py` SHALL instantiate infrastructure adapters. | Architecture test fails. CI blocks merge. |
+| H-07 | `src/domain/` MUST NOT import from `application/`, `infrastructure/`, or `interface/`. Stdlib and `shared_kernel/` only. | Architecture test fails. CI blocks merge. |
+| H-08 | `src/application/` MUST NOT import from `infrastructure/` or `interface/`. | Architecture test fails. CI blocks merge. |
+| H-09 | Only `src/bootstrap.py` SHALL instantiate infrastructure adapters. | Architecture test fails. |
 | H-10 | Each Python file SHALL contain exactly ONE public class or protocol. | AST check fails. |
 
 ---

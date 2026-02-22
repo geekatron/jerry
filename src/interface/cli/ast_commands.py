@@ -8,9 +8,6 @@ Provides the core functions that implement `jerry ast` subcommands:
     - ast_render: Roundtrip parse-render a markdown file through mdformat.
     - ast_validate: Validate a markdown file against an optional entity schema.
     - ast_query: Query AST nodes by type and output structured JSON.
-    - ast_frontmatter: Extract blockquote frontmatter fields as JSON.
-    - ast_modify: Modify a frontmatter field and write back to file.
-    - ast_reinject: Extract L2-REINJECT directives as JSON.
 
 Helper serializers:
     - token_to_dict: Convert a markdown-it-py Token to a JSON-serializable dict.
@@ -18,14 +15,13 @@ Helper serializers:
 
 Exit codes:
     0 -- Success
-    1 -- Validation failure (schema violations found) or modify key error
+    1 -- Validation failure (schema violations found)
     2 -- Parse error (file not found, unreadable, unknown schema type, etc.)
 
 References:
     - ST-004: Add jerry ast CLI Commands
     - ST-006: Schema Validation Engine
     - ST-001: JerryDocument Facade
-    - BUG-002: Route /ast Skill Through CLI
 """
 
 from __future__ import annotations
@@ -37,15 +33,7 @@ from typing import Any
 from markdown_it.token import Token
 from markdown_it.tree import SyntaxTreeNode
 
-from src.domain.markdown_ast import (
-    JerryDocument,
-    extract_frontmatter,
-    extract_nav_table,
-    extract_reinject_directives,
-    get_entity_schema,
-    validate_document,
-    validate_nav_table,
-)
+from src.domain.markdown_ast import JerryDocument, get_entity_schema, validate_document
 
 
 def token_to_dict(token: Token) -> dict[str, Any]:
@@ -213,7 +201,7 @@ def ast_render(file_path: str) -> int:
     return 0
 
 
-def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -> int:
+def ast_validate(file_path: str, schema: str | None = None) -> int:
     """Validate a markdown file against an optional entity schema.
 
     Parses the file to ensure it is valid markdown.  When ``schema`` is
@@ -222,22 +210,18 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
     document is then validated against the corresponding EntitySchema and a
     JSON report is printed to stdout.
 
-    Without ``--schema``: outputs a JSON report with nav table validation
-    results (is_valid, nav_table_valid, missing/orphaned entries).
+    Without ``--schema``: validates that the file is parseable and prints a
+    simple OK message.
 
     With ``--schema <type>``: performs full structural validation (frontmatter
     fields, required sections, nav table) and prints a structured JSON report.
     Returns exit code 1 if any violations are found.
-
-    With ``--nav``: includes detailed nav table entries in the output
-    (section_name, anchor, description, line_number).
 
     Args:
         file_path: Path to the markdown file to validate.
         schema: Optional entity type string (e.g., "epic", "story").  When
             provided the document is validated against the corresponding
             built-in EntitySchema.
-        nav: When True, include detailed nav table entries in the output.
 
     Returns:
         0 on success, 1 if schema violations are found, 2 if the file cannot
@@ -248,30 +232,9 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
         return exit_code
 
     doc = JerryDocument.parse(source)
-    nav_result = validate_nav_table(doc)
 
     if schema is None:
-        output: dict[str, Any] = {
-            "file": file_path,
-            "is_valid": nav_result.is_valid,
-            "nav_table_valid": nav_result.is_valid,
-            "missing_nav_entries": nav_result.missing_entries,
-            "orphaned_nav_entries": [entry.section_name for entry in nav_result.orphaned_entries],
-            "schema_valid": True,
-            "schema_violations": [],
-        }
-        if nav:
-            raw_entries = extract_nav_table(doc) or []
-            output["nav_entries"] = [
-                {
-                    "section_name": e.section_name,
-                    "anchor": e.anchor,
-                    "description": e.description,
-                    "line_number": e.line_number,
-                }
-                for e in raw_entries
-            ]
-        print(json.dumps(output, indent=2))
+        print(f"Validation OK: {file_path}")
         return 0
 
     # Look up the entity schema; treat unknown schema type as a usage error.
@@ -283,15 +246,11 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
 
     report = validate_document(doc, entity_schema)
 
-    output = {
+    output: dict[str, Any] = {
         "file": file_path,
         "schema": schema,
         "entity_type": report.entity_type,
-        "is_valid": report.is_valid and nav_result.is_valid,
-        "nav_table_valid": nav_result.is_valid,
-        "missing_nav_entries": nav_result.missing_entries,
-        "orphaned_nav_entries": [entry.section_name for entry in nav_result.orphaned_entries],
-        "schema_valid": report.is_valid,
+        "is_valid": report.is_valid,
         "field_count": report.field_count,
         "section_count": report.section_count,
         "violation_count": len(report.violations),
@@ -306,20 +265,9 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
             for v in report.violations
         ],
     }
-    if nav:
-        raw_entries = extract_nav_table(doc) or []
-        output["nav_entries"] = [
-            {
-                "section_name": e.section_name,
-                "anchor": e.anchor,
-                "description": e.description,
-                "line_number": e.line_number,
-            }
-            for e in raw_entries
-        ]
     print(json.dumps(output, indent=2))
 
-    return 0 if (report.is_valid and nav_result.is_valid) else 1
+    return 0 if report.is_valid else 1
 
 
 def ast_query(file_path: str, selector: str, json_output: bool = True) -> int:
@@ -350,102 +298,5 @@ def ast_query(file_path: str, selector: str, json_output: bool = True) -> int:
         "count": len(nodes),
         "nodes": [node_to_dict(n) for n in nodes],
     }
-    print(json.dumps(output, indent=2))
-    return 0
-
-
-def ast_frontmatter(file_path: str) -> int:
-    """Extract blockquote frontmatter fields from a markdown file as JSON.
-
-    Reads the file, parses it with JerryDocument, and prints a JSON object
-    mapping frontmatter key strings to value strings.  Prints ``{}`` if no
-    frontmatter is found.
-
-    Args:
-        file_path: Path to the markdown file.
-
-    Returns:
-        0 on success, 2 if the file cannot be read.
-    """
-    source, exit_code = _read_file(file_path)
-    if source is None:
-        return exit_code
-
-    doc = JerryDocument.parse(source)
-    fm = extract_frontmatter(doc)
-    print(json.dumps(dict(fm.items()), indent=2))
-    return 0
-
-
-def ast_modify(file_path: str, key: str, value: str) -> int:
-    """Modify a frontmatter field in a markdown file and write back.
-
-    Reads the file, parses it, modifies the named frontmatter field to the
-    new value, writes the updated content back to disk, and prints a JSON
-    status object to stdout.
-
-    Args:
-        file_path: Path to the markdown file.
-        key: The frontmatter field name to modify (case-sensitive).
-        value: The new value for the field.
-
-    Returns:
-        0 on success, 1 if the key does not exist in frontmatter, 2 if the
-        file cannot be read.
-    """
-    source, exit_code = _read_file(file_path)
-    if source is None:
-        return exit_code
-
-    doc = JerryDocument.parse(source)
-    fm = extract_frontmatter(doc)
-
-    try:
-        new_doc = fm.set(key, value)
-    except KeyError:
-        print(f"Error: Key '{key}' not found in frontmatter")
-        return 1
-
-    new_content = new_doc.render()
-    Path(file_path).write_text(new_content, encoding="utf-8")
-
-    output = {
-        "file": file_path,
-        "key": key,
-        "value": value,
-        "status": "modified",
-    }
-    print(json.dumps(output, indent=2))
-    return 0
-
-
-def ast_reinject(file_path: str) -> int:
-    """Extract all L2-REINJECT directives from a markdown file as JSON.
-
-    Reads the file, parses it with JerryDocument, and prints a JSON list
-    of directive objects.  Each object contains rank, tokens, content, and
-    line_number fields.  Prints ``[]`` if no directives are found.
-
-    Args:
-        file_path: Path to the markdown file.
-
-    Returns:
-        0 on success, 2 if the file cannot be read.
-    """
-    source, exit_code = _read_file(file_path)
-    if source is None:
-        return exit_code
-
-    doc = JerryDocument.parse(source)
-    directives = extract_reinject_directives(doc)
-    output = [
-        {
-            "rank": d.rank,
-            "tokens": d.tokens,
-            "content": d.content,
-            "line_number": d.line_number,
-        }
-        for d in directives
-    ]
     print(json.dumps(output, indent=2))
     return 0

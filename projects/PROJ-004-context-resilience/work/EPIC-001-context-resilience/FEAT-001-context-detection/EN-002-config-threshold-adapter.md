@@ -1,13 +1,13 @@
 # EN-002: ConfigThresholdAdapter + IThresholdConfiguration Port
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 1h
@@ -83,15 +83,15 @@ Feature: Context monitoring threshold configuration
 
 ### Acceptance Checklist
 
-- [ ] All 6 threshold keys have defaults in CLI config adapter
-- [ ] `jerry config get context_monitor.warning_threshold` returns `0.70`
-- [ ] `jerry config set context_monitor.warning_threshold 0.75 --scope project` persists override
-- [ ] Environment variable override works
-- [ ] `IThresholdConfiguration` Protocol defined with `get_threshold(tier: str) -> float` and `is_enabled() -> bool` (H-11, H-12)
-- [ ] `ConfigThresholdAdapter` implements `IThresholdConfiguration`, delegates to `LayeredConfigAdapter`
-- [ ] `bootstrap.py` wires `ConfigThresholdAdapter` as `IThresholdConfiguration` implementation
-- [ ] One class per file (H-10)
-- [ ] Unit tests: default retrieval, override precedence, `is_enabled()` flag
+- [x] All 6 threshold keys have defaults in CLI config adapter
+- [x] `jerry config get context_monitor.warning_threshold` returns `0.70`
+- [x] `jerry config set context_monitor.warning_threshold 0.75 --scope project` persists override
+- [x] Environment variable override works
+- [x] `IThresholdConfiguration` Protocol defined with `get_threshold(tier: str) -> float` and `is_enabled() -> bool` (H-11, H-12)
+- [x] `ConfigThresholdAdapter` implements `IThresholdConfiguration`, delegates to `LayeredConfigAdapter`
+- [x] `bootstrap.py` wires `ConfigThresholdAdapter` as `IThresholdConfiguration` implementation
+- [x] One class per file (H-10)
+- [x] Unit tests: default retrieval, override precedence, `is_enabled()` flag
 
 ---
 
@@ -116,3 +116,4 @@ Add threshold defaults to the existing LayeredConfigAdapter configuration system
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-01. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

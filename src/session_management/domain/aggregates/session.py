@@ -97,6 +97,7 @@ class Session(AggregateRoot):
     _description: str
     _project_id: str | None
     _completed_at: datetime | None
+    _abandon_reason: str
 
     # ==========================================================================
     # Factory Methods
@@ -137,6 +138,7 @@ class Session(AggregateRoot):
         # Initialize mutable state
         session._project_id = None
         session._completed_at = None
+        session._abandon_reason = ""
 
         # Raise creation event
         event = SessionCreated(
@@ -173,6 +175,11 @@ class Session(AggregateRoot):
     def completed_at(self) -> datetime | None:
         """Completion timestamp, if completed."""
         return self._completed_at
+
+    @property
+    def abandon_reason(self) -> str:
+        """Reason for abandonment, if abandoned."""
+        return self._abandon_reason
 
     # ==========================================================================
     # Command Methods
@@ -273,6 +280,7 @@ class Session(AggregateRoot):
 
         elif isinstance(event, SessionAbandoned):
             self._status = SessionStatus.ABANDONED
+            self._abandon_reason = event.reason
 
         elif isinstance(event, SessionProjectLinked):
             self._project_id = event.project_id
@@ -314,6 +322,7 @@ class Session(AggregateRoot):
         # Initialize mutable state
         session._project_id = None
         session._completed_at = None
+        session._abandon_reason = ""
 
         # Replay all events
         for event in events:
