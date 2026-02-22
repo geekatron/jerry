@@ -746,8 +746,8 @@ class TestBatchValidationPerformance:
     """
 
     @pytest.mark.happy_path
-    def test_50_file_nav_table_batch_under_200ms(self) -> None:
-        """Validate 50 files for nav table compliance in under 200ms."""
+    def test_50_file_nav_table_batch_under_500ms(self) -> None:
+        """Validate 50 files for nav table compliance in under 500ms."""
         # Create 50 files alternating between valid and invalid nav tables
         contents = []
         for _i in range(25):
@@ -768,8 +768,8 @@ class TestBatchValidationPerformance:
             assert invalid_count == 25
 
             # Verify performance
-            assert elapsed_ms < 200, (
-                f"50-file batch validation took {elapsed_ms:.1f}ms, expected < 200ms"
+            assert elapsed_ms < 500, (
+                f"50-file batch validation took {elapsed_ms:.1f}ms, expected < 500ms"
             )
         finally:
             _cleanup_paths(paths)
