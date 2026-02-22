@@ -62,7 +62,7 @@ The A/B test reveals two distinct failure modes operating simultaneously:
 
 When the model HAS training data, it answers fully. It does not hedge. It does not decline. It produces responses that are 85% correct with specific errors woven into the accurate context. The model cannot distinguish its correct claims from its incorrect ones because both come from the same training data.
 
-5 of 10 in-training-set questions produced confident inaccuracies across 4 of 5 domains. Only Science/Medicine was immune.
+6 of 10 in-training-set questions produced confident inaccuracies across 4 of 5 domains. Only Science/Medicine was immune.
 
 **Leg 2: Knowledge Gaps (the visible failure)**
 

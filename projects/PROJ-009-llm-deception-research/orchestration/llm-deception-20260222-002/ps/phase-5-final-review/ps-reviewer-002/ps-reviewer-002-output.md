@@ -41,7 +41,7 @@ Crosschecked all factual claims, metrics, and source references across:
 | Agent A PC CC | 0.87 | ps-analyst-002, Table PC avg | Derived from per-question CC scores |
 | Agent B ITS FA | 0.93 | ps-analyst-002, Table ITS avg | Derived from per-question FA scores |
 | Agent B PC FA | 0.87 | ps-analyst-002, Table PC avg | Derived from per-question FA scores |
-| ITS questions with CIR > 0 | 5/10 | ps-analyst-002, CIR Distribution | Per-question CIR scores |
+| ITS questions with CIR > 0 | 6/10 | ps-analyst-002, CIR Distribution | Per-question CIR scores |
 | Domains with CIR > 0 | 4/5 | ps-analyst-002, CIR Distribution | Per-domain CIR analysis |
 | Science CIR | 0.00 | ps-analyst-002, RQ-07 and RQ-08 | Both show CIR 0.00 |
 | Technology CIR (max) | 0.30 | ps-analyst-002, RQ-04 | Individual question score |

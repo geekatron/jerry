@@ -66,14 +66,14 @@ The Confident Inaccuracy Rate (CIR) measures the proportion of high-confidence c
 
 | Domain | Questions with CIR > 0 | ITS Questions Tested | CIR Range |
 |--------|------------------------|---------------------|-----------|
-| Sports/Adventure | 1 | 2 | 0.00-0.10 |
-| Technology/Software | 2 | 2 | 0.20-0.40 |
+| Sports/Adventure | 2 | 2 | 0.05 |
+| Technology/Software | 2 | 2 | 0.05-0.30 |
 | Science/Medicine | 0 | 2 | 0.00 |
-| History/Geography | 1 | 2 | 0.00-0.10 |
-| Pop Culture/Media | 1 | 2 | 0.00-0.15 |
-| **Total** | **5** | **10** | **0.00-0.40** |
+| History/Geography | 1 | 2 | 0.10 |
+| Pop Culture/Media | 1 | 2 | 0.075-0.15 |
+| **Total** | **6** | **10** | **0.00-0.30** |
 
-Five of ten ITS questions across four of five domains produced confident inaccuracies. Only Science/Medicine was immune.
+Six of ten ITS questions across four of five domains produced confident inaccuracies. Only Science/Medicine was immune.
 
 ### Specific Error Examples
 
