@@ -155,6 +155,22 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # HARD Rule Ceiling Enforcement (EN-002, L5 Post-Hoc)
+  # Counts HARD rules in quality-enforcement.md and fails if > ceiling.
+  # Prevents silent ceiling breaches that degrade enforcement quality.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: hard-rule-ceiling
+        name: HARD rule ceiling enforcement
+        entry: uv run python scripts/check_hard_rule_ceiling.py
+        language: system
+        # C-05: Trigger on any rule file change, not just quality-enforcement.md
+        files: \.context/rules/.*\.md$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Template Format Validation (EN-818)
   # =============================================================================
   - repo: local

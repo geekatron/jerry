@@ -106,11 +106,14 @@ class TestParseReinjectMarkers:
         assert "Quality gate >= 0.92" in str(markers[0]["content"])
         assert "H-13" in str(markers[0]["content"])
 
-    def test_parse_markers_when_valid_content_then_extracts_tokens(self) -> None:
-        """Token values should be extracted as integers."""
-        markers = PromptReinforcementEngine._parse_reinject_markers(SAMPLE_QUALITY_ENFORCEMENT)
-        token_values = [m["tokens"] for m in markers]
-        assert token_values == [90, 30, 100, 40]
+    def test_parse_markers_when_no_tokens_field_then_still_parses(self) -> None:
+        """Markers without deprecated tokens field should parse correctly (EN-002 R4)."""
+        content = '<!-- L2-REINJECT: rank=3, content="Rule without tokens field." -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 1
+        assert markers[0]["rank"] == 3
+        assert markers[0]["content"] == "Rule without tokens field."
+        assert "tokens" not in markers[0]
 
     def test_parse_markers_when_empty_content_then_returns_empty(self) -> None:
         """Empty content should return an empty list."""
@@ -142,7 +145,32 @@ class TestParseReinjectMarkers:
         assert len(markers) == 1
         assert markers[0]["content"] == "Single item."
         assert markers[0]["rank"] == 1
-        assert markers[0]["tokens"] == 20
+
+    def test_parse_markers_when_content_too_long_then_rejects(self) -> None:
+        """C-06: Content exceeding max length should be rejected."""
+        long_content = "x" * 501
+        content = f'<!-- L2-REINJECT: rank=1, tokens=200, content="{long_content}" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_html_comment_then_rejects(self) -> None:
+        """C-06: Content containing HTML comment delimiters should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="Inject --> escape" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_script_tag_then_rejects(self) -> None:
+        """C-06: Content containing script tags should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<script>alert(1)</script>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_at_max_length_then_accepts(self) -> None:
+        """C-06: Content exactly at max length should be accepted."""
+        exact_content = "x" * 500
+        content = f'<!-- L2-REINJECT: rank=1, tokens=200, content="{exact_content}" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 1
 
 
 # =============================================================================
@@ -246,14 +274,14 @@ class TestGenerateReinforcement:
 
 
 class TestBudgetEnforcement:
-    """Tests for 600-token budget constraint verification."""
+    """Tests for 850-token budget constraint verification (EN-002: updated from 600)."""
 
     def test_budget_enforcement_when_default_budget_then_within_limit(
         self, engine: PromptReinforcementEngine
     ) -> None:
-        """Generated reinforcement should fit within 600-token budget."""
+        """Generated reinforcement should fit within 850-token budget (EN-002)."""
         result = engine.generate_reinforcement()
-        assert result.token_estimate <= 600
+        assert result.token_estimate <= 850
 
     def test_budget_enforcement_when_tiny_budget_then_limits_items(self, rules_file: Path) -> None:
         """A very small budget should limit how many items are included."""
@@ -363,15 +391,118 @@ class TestErrorHandling:
         assert result.preamble == ""
         assert result.items_included == 0
 
-    def test_generate_reinforcement_when_directory_as_path_then_returns_empty(
+    def test_generate_reinforcement_when_empty_directory_then_returns_empty(
         self, tmp_path: Path
     ) -> None:
-        """Passing a directory instead of file should return empty (fail-open)."""
+        """Empty directory (no .md files) should return empty reinforcement."""
         engine = PromptReinforcementEngine(rules_path=tmp_path)
         result = engine.generate_reinforcement()
 
         assert result.preamble == ""
         assert result.items_included == 0
+
+
+# =============================================================================
+# TestMultiFileReading
+# =============================================================================
+
+
+class TestMultiFileReading:
+    """Tests for reading L2-REINJECT markers from multiple files in a directory."""
+
+    def test_multi_file_when_directory_with_multiple_md_files_then_reads_all(
+        self, tmp_path: Path
+    ) -> None:
+        """Directory with multiple .md files should extract markers from all."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        # File 1: quality-enforcement.md with 2 markers
+        (rules_dir / "quality-enforcement.md").write_text(
+            '<!-- L2-REINJECT: rank=1, tokens=50, content="Constitutional: P-003, P-020, P-022." -->\n'
+            '<!-- L2-REINJECT: rank=2, tokens=90, content="Quality gate >= 0.92 for C2+." -->\n',
+            encoding="utf-8",
+        )
+
+        # File 2: architecture-standards.md with 1 marker
+        (rules_dir / "architecture-standards.md").write_text(
+            '<!-- L2-REINJECT: rank=4, tokens=60, content="domain/ MUST NOT import application/." -->\n',
+            encoding="utf-8",
+        )
+
+        # File 3: testing-standards.md with 1 marker
+        (rules_dir / "testing-standards.md").write_text(
+            '<!-- L2-REINJECT: rank=5, tokens=40, content="Test before implement (BDD Red phase)." -->\n',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        assert result.items_total == 4
+        assert result.items_included == 4
+        assert "Constitutional" in result.preamble
+        assert "Quality gate" in result.preamble
+        assert "domain/" in result.preamble
+        assert "Test before implement" in result.preamble
+
+    def test_multi_file_when_directory_then_markers_sorted_by_rank_across_files(
+        self, tmp_path: Path
+    ) -> None:
+        """Markers from different files should be sorted by rank globally."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        # File with rank 5
+        (rules_dir / "z_last_alphabetically.md").write_text(
+            '<!-- L2-REINJECT: rank=1, tokens=20, content="First by rank." -->\n',
+            encoding="utf-8",
+        )
+
+        # File with rank 1 (alphabetically first but rank higher)
+        (rules_dir / "a_first_alphabetically.md").write_text(
+            '<!-- L2-REINJECT: rank=5, tokens=20, content="Last by rank." -->\n',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        # rank=1 should come before rank=5 regardless of file order
+        assert result.preamble.index("First by rank") < result.preamble.index("Last by rank")
+
+    def test_multi_file_when_directory_with_non_md_files_then_ignores_them(
+        self, tmp_path: Path
+    ) -> None:
+        """Non-.md files in the directory should be ignored."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        (rules_dir / "rules.md").write_text(
+            '<!-- L2-REINJECT: rank=1, tokens=20, content="From md file." -->\n',
+            encoding="utf-8",
+        )
+        (rules_dir / "config.yaml").write_text(
+            '<!-- L2-REINJECT: rank=2, tokens=20, content="From yaml file." -->\n',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        assert result.items_total == 1
+        assert "From md file" in result.preamble
+        assert "From yaml file" not in result.preamble
+
+    def test_multi_file_when_single_file_path_then_backward_compatible(
+        self, rules_file: Path
+    ) -> None:
+        """Passing a single file path should still work (backward compat)."""
+        engine = PromptReinforcementEngine(rules_path=rules_file, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        assert result.items_total == 4
+        assert result.items_included > 0
 
 
 # =============================================================================

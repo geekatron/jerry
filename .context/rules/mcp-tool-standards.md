@@ -4,7 +4,7 @@
 
 > Governance rules for proactive MCP tool usage across Jerry Framework agents.
 
-<!-- L2-REINJECT: rank=9, tokens=70, content="Context7 REQUIRED for external library/framework docs: resolve-library-id then query-docs; respect tool-enforced call limit. Memory-Keeper REQUIRED at phase boundaries: phase-complete→store, phase-start→retrieve. Fallback: persist to work/.mcp-fallback/ on MCP failure. Key: jerry/{project}/{entity-type}/{entity-id}." -->
+<!-- L2-REINJECT: rank=9, content="Context7 REQUIRED for external library/framework docs: resolve-library-id then query-docs; respect tool-enforced call limit. Memory-Keeper REQUIRED at phase boundaries: phase-complete→store, phase-start→retrieve. Fallback: persist to work/.mcp-fallback/ on MCP failure. Key: jerry/{project}/{entity-type}/{entity-id}." -->
 
 ## Document Sections
 

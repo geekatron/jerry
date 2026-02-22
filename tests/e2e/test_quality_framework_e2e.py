@@ -233,8 +233,8 @@ class TestCrossLayerInteractions:
         # Check that the enforcement architecture section exists with token data
         assert "Enforcement Architecture" in content
         assert "Tokens" in content
-        # L2 should have ~600 per prompt
-        assert "600" in content
+        # L2 should have ~850 per prompt (updated from 600 per EN-002)
+        assert "850" in content
 
     def test_ssot_references_when_checked_then_adr_sources_present(self) -> None:
         """SSOT references its source ADRs for traceability."""
@@ -365,17 +365,25 @@ class TestRuleComplianceValidation:
             assert section in content, f"Required section '{section}' missing from SSOT"
 
     def test_ssot_when_read_then_h_rules_h01_through_h16_defined(self) -> None:
-        """SSOT defines H-rules H-01 through H-16 (minimum original set)."""
+        """SSOT defines H-rules H-01 through H-16 (post-consolidation: H-08, H-09 absorbed into H-07)."""
         content = read_file(SSOT_PATH)
+        # H-08 and H-09 were consolidated into H-07 per EN-002
+        consolidated_ids = {"H-08", "H-09"}
         for i in range(1, 17):
             rule_id = f"H-{i:02d}"
+            if rule_id in consolidated_ids:
+                continue
             assert rule_id in content, f"H-rule '{rule_id}' missing from SSOT"
 
     def test_ssot_when_read_then_h_rules_extended_set_defined(self) -> None:
-        """SSOT defines extended H-rules H-17 through H-24."""
+        """SSOT defines extended H-rules H-17 through H-26 (post-consolidation: H-27..H-30 absorbed into H-25, H-26)."""
         content = read_file(SSOT_PATH)
-        for i in range(17, 25):
+        # H-27..H-30 were consolidated into H-25, H-26 per EN-002
+        consolidated_ids = {"H-27", "H-28", "H-29", "H-30"}
+        for i in range(17, 27):
             rule_id = f"H-{i:02d}"
+            if rule_id in consolidated_ids:
+                continue
             assert rule_id in content, f"Extended H-rule '{rule_id}' missing from SSOT"
 
     def test_ssot_when_read_then_selected_strategies_defined(self) -> None:
@@ -658,12 +666,12 @@ class TestPerformanceBenchmarks:
         assert exit_code == 0
         assert elapsed < 15.0, f"UserPromptSubmit hook took {elapsed:.2f}s, exceeds 15s timeout"
 
-    def test_rule_files_when_totaled_then_under_100kb(self) -> None:
-        """Total size of all .context/rules/*.md files is under 100KB."""
+    def test_rule_files_when_totaled_then_under_150kb(self) -> None:
+        """Total size of all .context/rules/*.md files is under 150KB."""
         total_size = sum(f.stat().st_size for f in RULES_DIR.iterdir() if f.suffix == ".md")
-        max_size = 100 * 1024  # 100KB
+        max_size = 150 * 1024  # 150KB (expanded for agent-development/routing-standards)
         assert total_size < max_size, (
-            f"Total rule files size {total_size / 1024:.1f}KB exceeds 100KB limit"
+            f"Total rule files size {total_size / 1024:.1f}KB exceeds 150KB limit"
         )
 
     def test_quality_preamble_when_generated_then_under_700_token_budget(
@@ -698,24 +706,26 @@ class TestPerformanceBenchmarks:
             if str(PROJECT_ROOT) in sys.path:
                 sys.path.remove(str(PROJECT_ROOT))
 
-    def test_l2_reinforcement_when_generated_then_under_600_token_budget(
+    def test_l2_reinforcement_when_generated_then_under_850_token_budget(
         self,
     ) -> None:
-        """L2 prompt reinforcement preamble is under the 600-token budget."""
+        """L2 prompt reinforcement preamble is under the 850-token budget (EN-002)."""
         sys.path.insert(0, str(PROJECT_ROOT))
         try:
             from src.infrastructure.internal.enforcement.prompt_reinforcement_engine import (
                 PromptReinforcementEngine,
             )
 
+            # EN-002: Engine now reads all auto-loaded rule files from directory
+            rules_dir = PROJECT_ROOT / ".context" / "rules"
             engine = PromptReinforcementEngine(
-                rules_path=SSOT_PATH,
-                token_budget=600,
+                rules_path=rules_dir,
+                token_budget=850,
             )
             result = engine.generate_reinforcement()
-            assert result.token_estimate <= 600, (
+            assert result.token_estimate <= 850, (
                 f"L2 reinforcement estimated at {result.token_estimate} tokens, "
-                f"exceeds 600-token budget"
+                f"exceeds 850-token budget"
             )
         finally:
             if str(PROJECT_ROOT) in sys.path:

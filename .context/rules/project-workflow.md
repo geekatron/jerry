@@ -10,6 +10,7 @@
 | [HARD Rule Reference](#hard-rule-reference) | H-04 active project requirement |
 | [GitHub Issue Parity](#github-issue-parity) | H-31 dual-tracking requirement |
 | [Workflow Phases](#workflow-phases) | Before, during, after work |
+| [Workflow Methodology (MEDIUM)](#workflow-methodology-medium) | Plan mode and structured workflow for C2+ work |
 | [Project Orientation](#project-orientation) | Minimal structural context for session start |
 | [Project Resolution](#project-resolution) | How to handle missing project context |
 
@@ -45,6 +46,27 @@
 | **After** | Update completion status. Capture learnings in `docs/experience/`. Commit with semantic messages. |
 
 > **Integrity enforcement (HARD):** All worktracker operations MUST follow WTI-001 through WTI-007. See `skills/worktracker/rules/worktracker-behavior-rules.md` for full definitions.
+
+---
+
+## Workflow Methodology (MEDIUM)
+
+> Override requires documented justification.
+
+| ID | Standard | Guidance | Source |
+|----|----------|----------|--------|
+| PM-M-001 | For C2+ work, SHOULD follow the explore-plan-approve-implement-verify sequence. Plan mode SHOULD be used when: (a) 3+ files will be affected, (b) multiple valid implementation approaches exist, or (c) no explicit user plan has been provided. Plan mode is NOT needed for: single-file changes, obvious bug fixes, or when the user provides detailed implementation instructions. | This formalizes the structured workflow pattern recommended by Anthropic's Claude Code best practices. For multi-agent workflows, `/orchestration` provides the equivalent coordination; PM-M-001 covers the single-agent case where the main context manages the work directly. Plan mode enables the user to review and approve the approach before implementation begins, reducing wrong-direction work (H-31 alignment). | Anthropic Claude Code best practices, H-31 (ambiguity resolution) |
+
+### PM-M-001 Decision Guide
+
+| Condition | Use Plan Mode? | Rationale |
+|-----------|---------------|-----------|
+| C1 task, single file, clear instructions | No | Overhead exceeds benefit |
+| C2 task, 3+ files, clear approach | Recommended | Confirms scope alignment |
+| C2 task, multiple valid approaches | Yes | User selects preferred approach |
+| C3+ task, any scope | Yes | High-impact work warrants explicit approval |
+| User provided detailed step-by-step | No | User's plan serves as the approved plan |
+| `/orchestration` is being invoked | No | Orchestration provides its own planning phase |
 
 ---
 
