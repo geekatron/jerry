@@ -1,12 +1,12 @@
 # FEAT-036: Templates & Playbook
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-22
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-22
 > **Parent:** EPIC-004
 > **Owner:** ---
 > **Target Sprint:** ---
@@ -82,3 +82,4 @@ Create templates and playbooks for /red-team engagements. Includes pentest engag
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | --- | pending | Feature created during EPIC-004 decomposition |
+| 2026-02-22 | Claude | completed | 5 templates created in skills/red-team/templates/: pentest-engagement.md, vulnerability-report.md, executive-summary.md, remediation-tracking.md, engagement-playbook.md. All templates use L0/L1/L2 levels and configurable rule sets (R-011). |

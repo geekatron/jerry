@@ -85,8 +85,8 @@
 | [FEAT-021](./work/EPIC-003-eng-team-build/FEAT-021-eng-architecture-agents/FEAT-021-eng-architecture-agents.md) | Architecture Agents (eng-architect, eng-lead) | completed | critical | EPIC-003 |
 | [FEAT-022](./work/EPIC-003-eng-team-build/FEAT-022-eng-implementation-agents/FEAT-022-eng-implementation-agents.md) | Implementation Agents (eng-backend, eng-frontend, eng-infra) | completed | critical | EPIC-003 |
 | [FEAT-023](./work/EPIC-003-eng-team-build/FEAT-023-eng-quality-agents/FEAT-023-eng-quality-agents.md) | Quality Agents (eng-qa, eng-security, eng-reviewer, eng-devsecops, eng-incident) | completed | critical | EPIC-003 |
-| [FEAT-024](./work/EPIC-003-eng-team-build/FEAT-024-eng-templates-playbook/FEAT-024-eng-templates-playbook.md) | Templates & Playbook | pending | high | EPIC-003 |
-| [FEAT-025](./work/EPIC-003-eng-team-build/FEAT-025-eng-adversary-integration/FEAT-025-eng-adversary-integration.md) | /adversary Integration | pending | high | EPIC-003 |
+| [FEAT-024](./work/EPIC-003-eng-team-build/FEAT-024-eng-templates-playbook/FEAT-024-eng-templates-playbook.md) | Templates & Playbook | completed | high | EPIC-003 |
+| [FEAT-025](./work/EPIC-003-eng-team-build/FEAT-025-eng-adversary-integration/FEAT-025-eng-adversary-integration.md) | /adversary Integration | completed | high | EPIC-003 |
 
 ---
 
@@ -102,8 +102,8 @@
 | [FEAT-033](./work/EPIC-004-red-team-build/FEAT-033-red-post-exploitation-agents/FEAT-033-red-post-exploitation-agents.md) | Post-Exploitation Agents (red-lateral, red-persist, red-exfil) | completed | critical | EPIC-004 |
 | [FEAT-034](./work/EPIC-004-red-team-build/FEAT-034-red-reporting-agent/FEAT-034-red-reporting-agent.md) | Reporting Agent (red-reporter) | completed | high | EPIC-004 |
 | [FEAT-035](./work/EPIC-004-red-team-build/FEAT-035-red-methodology-authorization/FEAT-035-red-methodology-authorization.md) | Methodology & Authorization Controls | completed | critical | EPIC-004 |
-| [FEAT-036](./work/EPIC-004-red-team-build/FEAT-036-red-templates-playbook/FEAT-036-red-templates-playbook.md) | Templates & Playbook | pending | high | EPIC-004 |
-| [FEAT-037](./work/EPIC-004-red-team-build/FEAT-037-red-adversary-integration/FEAT-037-red-adversary-integration.md) | /adversary Integration | pending | high | EPIC-004 |
+| [FEAT-036](./work/EPIC-004-red-team-build/FEAT-036-red-templates-playbook/FEAT-036-red-templates-playbook.md) | Templates & Playbook | completed | high | EPIC-004 |
+| [FEAT-037](./work/EPIC-004-red-team-build/FEAT-037-red-adversary-integration/FEAT-037-red-adversary-integration.md) | /adversary Integration | completed | high | EPIC-004 |
 
 ---
 
@@ -186,7 +186,8 @@
 | 2026-02-22 | Claude | EPIC-005 Phase 5 Purple Team Validation COMPLETED. 5 deliverables (3,754 lines): FEAT-040 Integration Framework (943 lines, 6-phase protocol, 4 integration points), FEAT-041 Gap Analysis (903 lines, 27 gaps: 2C/4H/12M/9L, 71% coverage), FEAT-042 Hardening Cycle (456 lines, 6 agent definitions enhanced, 17/27 gaps closed, coverage 79%→100% tactic-level), FEAT-043 Portability Validation (607 lines, 210/210 PV-001-PV-010 PASS, 3 non-critical findings), FEAT-044 Integration Testing (845 lines, 5/5 tests PASS WITH FINDINGS, 3 major + 6 minor defects). Barrier 5 PASSED: 0.957. |
 | 2026-02-22 | Claude | EPIC-006 Phase 6 Documentation & Guides COMPLETED. 5 deliverables (4,531 lines): FEAT-050 /eng-team User Guide (776 lines), FEAT-051 /red-team User Guide (1,046 lines), FEAT-052 Rule Set Customization Guide (972 lines), FEAT-053 Tool Integration Guide (1,246 lines), FEAT-054 Framework Registration Report (491 lines, ready-to-insert blocks for AGENTS.md, CLAUDE.md, mandatory-skill-usage.md). Barrier 6 PASSED: 0.959. |
 | 2026-02-22 | Claude | **PROJ-010 COMPLETED.** All 6 phases, 6 barriers, 6 epics, 36 features, 42 items DONE. Quality gate scores: Phase 1 (0.96), Phase 2 (0.96), Phase 3 (0.952), Phase 4 (0.9535), Phase 5 (0.957), Phase 6 (0.959). Average quality: 0.957. Total artifacts: ~80 files, ~25,000+ lines. /eng-team (10 agents) and /red-team (11 agents) built, validated, hardened, and documented. |
+| 2026-02-22 | Claude | **Completion finalized.** FEAT-024 (eng-team templates: 5 files), FEAT-025 (eng-team adversary integration), FEAT-036 (red-team templates: 5 files), FEAT-037 (red-team adversary integration) completed. FEAT-054 framework registration applied: AGENTS.md (37->58 agents), CLAUDE.md (2 skill rows), mandatory-skill-usage.md (H-22 + trigger map + disambiguation), mcp-tool-standards.md (21 agent matrix rows). All 42/42 items now genuinely complete. Skills registered and invocable. |
 
 ---
 
-*Last Updated: 2026-02-22 -- PROJECT COMPLETED*
+*Last Updated: 2026-02-22 -- PROJECT COMPLETED (42/42 items)*

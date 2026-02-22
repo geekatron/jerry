@@ -1,12 +1,12 @@
 # FEAT-024: Templates & Playbook
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-22
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-22
 > **Parent:** EPIC-003
 > **Owner:** ---
 > **Target Sprint:** ---
@@ -80,3 +80,4 @@ Create templates and playbooks for /eng-team workflows. Includes secure design r
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | --- | pending | Feature created |
+| 2026-02-22 | Claude | completed | 5 templates created in skills/eng-team/templates/: secure-design-review.md, code-review-security-checklist.md, threat-model.md, security-test-plan.md, engagement-playbook.md. All templates use L0/L1/L2 levels and configurable rule sets (R-011). |

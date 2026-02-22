@@ -1,12 +1,12 @@
 # FEAT-054: Framework Registration
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-22
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-22
 > **Parent:** EPIC-006
 > **Owner:** —
 > **Target Sprint:** —
@@ -79,3 +79,4 @@ Register both skills in Jerry framework per R-022 and H-30. Update AGENTS.md, CL
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | — | pending | Feature created |
+| 2026-02-22 | Claude | completed | Framework registration applied: AGENTS.md (nav table, summary 37->58, eng-team + red-team sections, 21 MCP Context7 entries), CLAUDE.md (2 skill rows), mandatory-skill-usage.md (H-22 update, 2 trigger map rows, L2-REINJECT update, disambiguation note), mcp-tool-standards.md (21 agent integration matrix rows). |

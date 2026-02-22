@@ -1,12 +1,12 @@
 # FEAT-037: /adversary Integration
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-22
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-22
 > **Parent:** EPIC-004
 > **Owner:** ---
 > **Target Sprint:** ---
@@ -78,3 +78,4 @@ Integrate /red-team with /adversary for quality enforcement per R-024. Define in
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | --- | pending | Feature created during EPIC-004 decomposition |
+| 2026-02-22 | Claude | completed | Created skills/red-team/adversary-integration.md: integration point mapping, finding quality review, engagement report scoring, remediation guidance quality, end-to-end quality workflow (scope docs C4, reports C2+, findings C1+). |

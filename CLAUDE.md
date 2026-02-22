@@ -79,6 +79,8 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 | `/transcript` | Transcription parsing |
 | `/ast` | Markdown AST: parse, query, validate, modify frontmatter |
+| `/eng-team` | Secure software engineering methodology (10 agents: architecture, implementation, quality, incident response) |
+| `/red-team` | Offensive security testing methodology (11 agents: recon, exploitation, post-exploitation, reporting) |
 
 **SessionStart Hook Tags:**
 

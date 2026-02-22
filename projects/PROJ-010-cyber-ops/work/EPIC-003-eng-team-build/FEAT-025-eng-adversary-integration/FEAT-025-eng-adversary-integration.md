@@ -1,12 +1,12 @@
 # FEAT-025: /adversary Integration
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-22
 > **Due:** ---
-> **Completed:** ---
+> **Completed:** 2026-02-22
 > **Parent:** EPIC-003
 > **Owner:** ---
 > **Target Sprint:** ---
@@ -77,3 +77,4 @@ Integrate /eng-team with /adversary for quality enforcement on all deliverables 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | --- | pending | Feature created |
+| 2026-02-22 | Claude | completed | Created skills/eng-team/adversary-integration.md: integration point mapping, scoring trigger definitions (output type x criticality decision table), escalation paths, eng-reviewer orchestration spec, end-to-end quality workflow. |
