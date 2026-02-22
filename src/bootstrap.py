@@ -558,6 +558,9 @@ def create_hooks_handlers() -> dict[str, Any]:
     from src.infrastructure.adapters.configuration.layered_config_adapter import (
         LayeredConfigAdapter,
     )
+    from src.infrastructure.adapters.configuration.lifecycle_dir_resolver import (
+        resolve_lifecycle_dir,
+    )
     from src.infrastructure.adapters.persistence.atomic_file_adapter import (
         AtomicFileAdapter,
     )
@@ -590,6 +593,7 @@ def create_hooks_handlers() -> dict[str, Any]:
     )
 
     project_root = Path.cwd()
+    lifecycle_dir = resolve_lifecycle_dir()
 
     # Shared infrastructure
     file_adapter = AtomicFileAdapter()
@@ -643,7 +647,7 @@ def create_hooks_handlers() -> dict[str, Any]:
     pre_tool_engine = PreToolEnforcementEngine(project_root=project_root)
 
     # ST-006: Cross-invocation state store for graduated escalation
-    context_state_store = FilesystemContextStateStore(state_dir=project_root / ".jerry" / "local")
+    context_state_store = FilesystemContextStateStore(state_dir=lifecycle_dir)
 
     return {
         "prompt-submit": HooksPromptSubmitHandler(
@@ -674,7 +678,7 @@ def create_hooks_handlers() -> dict[str, Any]:
             context_state_store=context_state_store,
         ),
         "subagent-stop": HooksSubagentStopHandler(
-            lifecycle_dir=project_root / ".jerry" / "local",
+            lifecycle_dir=lifecycle_dir,
         ),
     }
 
@@ -704,18 +708,20 @@ def create_context_estimate_handler() -> Any:
     from src.context_monitoring.infrastructure.adapters.transcript_sub_agent_reader import (
         TranscriptSubAgentReader,
     )
+    from src.infrastructure.adapters.configuration.lifecycle_dir_resolver import (
+        resolve_lifecycle_dir,
+    )
     from src.interface.cli.context.context_estimate_handler import (
         ContextEstimateHandler,
     )
 
-    project_root = Path.cwd()
-    state_dir = project_root / ".jerry" / "local"
+    lifecycle_dir = resolve_lifecycle_dir()
 
     computer = ContextEstimateComputer()
-    state_store = FilesystemContextStateStore(state_dir=state_dir)
+    state_store = FilesystemContextStateStore(state_dir=lifecycle_dir)
     service = ContextEstimateService(computer, state_store)
     sub_agent_reader = TranscriptSubAgentReader(
-        lifecycle_path=state_dir / "subagent-lifecycle.json",
+        lifecycle_path=lifecycle_dir / "subagent-lifecycle.json",
     )
 
     return ContextEstimateHandler(service, sub_agent_reader=sub_agent_reader)

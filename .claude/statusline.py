@@ -3,7 +3,7 @@
 ECW Status Line - Evolved Claude Workflow
 Single-file, self-contained status line for Claude Code.
 
-Version: 2.1.0
+Version: 3.0.0
 Python: 3.9+ (stdlib only, zero dependencies)
 License: MIT
 
@@ -36,40 +36,39 @@ Configuration:
 
 from __future__ import annotations
 
-import io
 import json
 import os
+import re
 import subprocess
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 # =============================================================================
-# WINDOWS UTF-8 FIX: Force UTF-8 for stdin/stdout to handle emoji/Unicode
-# =============================================================================
-if sys.platform == "win32":
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8", errors="replace")
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-
-# =============================================================================
 # VERSION
 # =============================================================================
 
-__version__ = "2.1.0"
+__version__ = "3.0.0"
+
+# Pattern to strip ANSI escape codes from untrusted input (e.g., git branch names)
+_ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
 
 # =============================================================================
 # DEFAULT CONFIGURATION (embedded - no external file required)
 # =============================================================================
 
 DEFAULT_CONFIG: dict[str, Any] = {
+    # Schema version for config/state compatibility checking
+    "schema_version": "1",
     # Display settings
     "display": {
         "compact_mode": False,
         "auto_compact_width": 80,
         "separator": " | ",
         "use_emoji": True,
+        "use_color": True,
         "progress_bar": {
             "width": 10,
             "filled_char": "▓",
@@ -155,6 +154,12 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "tokens_cached": 81,  # Cyan for cached tokens
         "compaction": 213,  # Pink for compaction indicator
     },
+    # Jerry Framework integration (FEAT-002)
+    "jerry": {
+        "enabled": True,  # Try calling jerry context estimate for domain data
+        "command": "",  # Override command; empty = auto-detect via CLAUDE_PLUGIN_ROOT
+        "timeout": 3,  # Timeout in seconds for jerry subprocess
+    },
     # Advanced settings
     "advanced": {
         "handle_cumulative_bug": True,
@@ -167,12 +172,45 @@ DEFAULT_CONFIG: dict[str, Any] = {
 # CONFIGURATION LOADING
 # =============================================================================
 
-CONFIG_PATHS = [
-    Path(__file__).parent / "ecw-statusline-config.json",
-    Path.home() / ".claude" / "ecw-statusline-config.json",
-]
+
+def _get_config_paths() -> list[Path]:
+    """Get config file search paths, handling missing HOME gracefully."""
+    paths = [Path(__file__).parent / "ecw-statusline-config.json"]
+    try:
+        paths.append(Path.home() / ".claude" / "ecw-statusline-config.json")
+    except (RuntimeError, KeyError, OSError):
+        # HOME not set or not resolvable (e.g., minimal Docker container, Windows CI)
+        pass
+    return paths
+
+
+CONFIG_PATHS = _get_config_paths()
 
 _transcript_cache: dict[str, tuple[float, dict[str, int]]] = {}
+
+
+def _schema_version_mismatch(found_version: Any) -> bool:
+    """Check whether a found schema version differs from the expected version.
+
+    Returns True if versions mismatch or the found version is unparseable.
+    Returns False if they match (integer comparison).
+
+    Non-string types (int, float, list, etc.) are treated as mismatches to
+    enforce strict type discipline. Float values like 1.9 would be silently
+    truncated by int(), so they are rejected explicitly.
+    """
+    expected = DEFAULT_CONFIG["schema_version"]
+    # Reject non-string types (floats would silently truncate, e.g. int(1.9) = 1)
+    if not isinstance(found_version, str):
+        return True
+    # Reject strings containing "." to prevent float-like version strings
+    found_stripped = found_version.strip()
+    if "." in found_stripped:
+        return True
+    try:
+        return int(found_stripped) != int(expected)
+    except (ValueError, TypeError):
+        return True
 
 
 def load_config() -> dict[str, Any]:
@@ -184,10 +222,22 @@ def load_config() -> dict[str, Any]:
             try:
                 with open(config_path, encoding="utf-8") as f:
                     user_config = json.load(f)
+                # Check for schema version mismatch before merging
+                user_schema_version = user_config.get("schema_version")
+                if user_schema_version is not None and _schema_version_mismatch(
+                    user_schema_version
+                ):
+                    debug_log(
+                        f"Config schema version mismatch: "
+                        f"found {user_schema_version}, "
+                        f"expected {DEFAULT_CONFIG['schema_version']}"
+                    )
                 config = deep_merge(config, user_config)
+                # Restore schema_version from DEFAULT_CONFIG (not user-overridable)
+                config["schema_version"] = DEFAULT_CONFIG["schema_version"]
                 debug_log(f"Loaded config from {config_path}")
                 break
-            except (json.JSONDecodeError, OSError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 debug_log(f"Config load error from {config_path}: {e}")
 
     return config
@@ -214,9 +264,32 @@ def deep_merge(base: dict, override: dict) -> dict:
 
 
 def debug_log(message: str) -> None:
-    """Log debug message to stderr if debug mode enabled."""
+    """Log debug message to file if debug mode enabled."""
     if os.environ.get("ECW_DEBUG") == "1":
-        print(f"[ECW-DEBUG] {message}", file=sys.stderr)
+        try:
+            log_path = os.path.join(os.path.expanduser("~"), ".claude", "statusline-debug.log")
+            with open(log_path, "a") as f:
+                import datetime
+
+                f.write(f"[{datetime.datetime.now().isoformat()}] {message}\n")
+        except OSError:
+            pass
+
+
+def configure_windows_console() -> None:
+    """Configure Windows console for UTF-8 output.
+
+    On Windows, the default console encoding may not support ANSI escape
+    sequences or Unicode characters. This function reconfigures stdout
+    to use UTF-8 encoding with error replacement for unsupported characters.
+    """
+    if sys.platform == "win32":
+        try:
+            # Reconfigure stdout for UTF-8 with error handling
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, OSError):
+            # Python < 3.7 or reconfigure not available
+            pass
 
 
 # =============================================================================
@@ -224,30 +297,241 @@ def debug_log(message: str) -> None:
 # =============================================================================
 
 
+def _resolve_state_path(config: dict) -> Path | None:
+    """Resolve state file path, returning None if HOME is unavailable."""
+    raw_path = config["compaction"]["state_file"]
+    if not isinstance(raw_path, str):
+        debug_log(f"Invalid state_file config type: {type(raw_path).__name__}")
+        return None
+    try:
+        return Path(os.path.expanduser(raw_path))
+    except (RuntimeError, KeyError, OSError, TypeError):
+        debug_log("Cannot resolve state file path: HOME not set or invalid config")
+        return None
+
+
 def load_state(config: dict) -> dict[str, Any]:
     """Load previous state for compaction detection."""
-    state_file = Path(os.path.expanduser(config["compaction"]["state_file"]))
+    default = {
+        "previous_context_tokens": 0,
+        "last_compaction_from": 0,
+        "last_compaction_to": 0,
+    }
+    state_file = _resolve_state_path(config)
 
-    if state_file.exists():
-        try:
+    if state_file is None:
+        return default
+
+    try:
+        if state_file.exists():
             with open(state_file, encoding="utf-8") as f:
-                return json.load(f)
-        except (json.JSONDecodeError, OSError) as e:
-            debug_log(f"State load error: {e}")
+                loaded = json.load(f)
+            # Check schema version - fall back to defaults on mismatch
+            loaded_version = loaded.get("schema_version")
+            if loaded_version is not None and _schema_version_mismatch(loaded_version):
+                debug_log(
+                    f"State schema version mismatch: "
+                    f"found {loaded_version}, "
+                    f"expected {DEFAULT_CONFIG['schema_version']}. "
+                    f"Discarding previous state data (compaction history "
+                    f"will be reset) and falling back to defaults."
+                )
+                return default
+            return loaded
+    except (json.JSONDecodeError, OSError) as e:
+        debug_log(f"State load error: {e}")
 
-    return {"previous_context_tokens": 0, "last_compaction_from": 0, "last_compaction_to": 0}
+    return default
 
 
 def save_state(config: dict, state: dict[str, Any]) -> None:
-    """Save current state for next invocation."""
-    state_file = Path(os.path.expanduser(config["compaction"]["state_file"]))
+    """Save current state for next invocation.
+
+    Uses atomic write pattern (write to temp file, then rename) to prevent
+    corruption from partial writes. Handles read-only filesystems and missing
+    HOME gracefully by logging a debug warning rather than crashing.
+    """
+    state_file = _resolve_state_path(config)
+
+    if state_file is None:
+        debug_log("Skipping state save: cannot resolve path (HOME not set)")
+        return
 
     try:
+        # Ensure schema_version is always written to state file
+        state["schema_version"] = DEFAULT_CONFIG["schema_version"]
         state_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(state_file, "w", encoding="utf-8") as f:
-            json.dump(state, f)
+        # Atomic write: write to temp file in same directory, then rename
+        fd = tempfile.NamedTemporaryFile(
+            mode="w",
+            dir=state_file.parent,
+            suffix=".tmp",
+            delete=False,
+            encoding="utf-8",
+        )
+        try:
+            json.dump(state, fd)
+            fd.close()  # Must close before os.replace on Windows
+            os.replace(fd.name, str(state_file))
+        except OSError:
+            fd.close()
+            try:
+                os.unlink(fd.name)
+            except OSError:
+                pass
+            raise
     except OSError as e:
-        debug_log(f"State save error: {e}")
+        debug_log(f"State save failed: {e}")
+
+
+# =============================================================================
+# JERRY FRAMEWORK INTEGRATION (FEAT-002)
+# =============================================================================
+
+
+def _get_claude_config_dir() -> Path | None:
+    """Get the Claude Code configuration directory (cross-platform).
+
+    Returns ~/.claude on macOS/Linux, %APPDATA%/claude on Windows.
+    """
+    if sys.platform == "win32":
+        appdata = os.environ.get("APPDATA", "")
+        if appdata:
+            return Path(appdata) / "claude"
+    try:
+        return Path.home() / ".claude"
+    except (RuntimeError, KeyError, OSError):
+        return None
+
+
+def _find_jerry_plugin_root() -> str | None:
+    """Find Jerry's install path from Claude Code's installed plugins registry.
+
+    Reads the installed_plugins.json to find the jerry plugin's installPath.
+    Works for any user who has jerry installed as a Claude Code plugin.
+    Cross-platform: handles ~/.claude (macOS/Linux) and %APPDATA%/claude (Windows).
+
+    Returns the installPath string or None if not found.
+    """
+    config_dir = _get_claude_config_dir()
+    if config_dir is None:
+        return None
+    registry = config_dir / "plugins" / "installed_plugins.json"
+    if not registry.exists():
+        return None
+    try:
+        data = json.loads(registry.read_text(encoding="utf-8"))
+        entries = data.get("plugins", {}).get("jerry@jerry-framework", [])
+        for entry in entries:
+            install_path = entry.get("installPath", "")
+            if install_path and os.path.isdir(install_path):
+                return install_path
+    except (json.JSONDecodeError, OSError, KeyError):
+        pass
+    return None
+
+
+def _build_jerry_command(config: dict, data: dict) -> list[str] | None:
+    """Build the jerry context estimate command.
+
+    Resolution order:
+    1. Explicit jerry.command in config file (user override)
+    2. CLAUDE_PLUGIN_ROOT env var (set by Claude Code for hooks)
+    3. Claude Code installed plugins registry (~/.claude/plugins/installed_plugins.json)
+    4. Workspace project_dir fallback
+
+    Returns None if Jerry is not available.
+    """
+    override = config.get("jerry", {}).get("command", "")
+    if override:
+        return override.split()
+
+    plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT", "")
+    if plugin_root and os.path.isdir(plugin_root):
+        return [
+            "uv",
+            "run",
+            "--directory",
+            plugin_root,
+            "jerry",
+            "--json",
+            "context",
+            "estimate",
+        ]
+
+    # Auto-discover from Claude Code's plugin registry
+    registry_root = _find_jerry_plugin_root()
+    if registry_root:
+        return [
+            "uv",
+            "run",
+            "--directory",
+            registry_root,
+            "jerry",
+            "--json",
+            "context",
+            "estimate",
+        ]
+
+    # Try workspace project_dir as fallback
+    project_dir = safe_get(data, "workspace", "project_dir", default="")
+    if project_dir and os.path.isfile(os.path.join(project_dir, "pyproject.toml")):
+        return [
+            "uv",
+            "run",
+            "--directory",
+            project_dir,
+            "jerry",
+            "--json",
+            "context",
+            "estimate",
+        ]
+
+    return None
+
+
+def try_jerry_estimate(input_json: str, config: dict, data: dict) -> dict[str, Any] | None:
+    """Try calling jerry context estimate for enhanced domain computation.
+
+    Returns Jerry's response dict or None if unavailable/failed.
+    Falls back silently — the statusline continues with standalone computation.
+    """
+    jerry_config = config.get("jerry", {})
+    if not jerry_config.get("enabled", True):
+        return None
+
+    cmd = _build_jerry_command(config, data)
+    if cmd is None:
+        debug_log("Jerry not available: no command found")
+        return None
+
+    timeout = jerry_config.get("timeout", 3)
+
+    try:
+        # Clear VIRTUAL_ENV to prevent uv venv mismatch when the statusline
+        # runs inside a different project's activated virtualenv
+        env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
+        result = subprocess.run(
+            cmd,
+            input=input_json,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            env=env,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            jerry_data = json.loads(result.stdout.strip())
+            debug_log(f"Jerry response received: tier={safe_get(jerry_data, 'context', 'tier')}")
+            return jerry_data
+        debug_log(f"Jerry failed: exit={result.returncode}, stderr={result.stderr[:200]}")
+    except subprocess.TimeoutExpired:
+        debug_log(f"Jerry timed out after {timeout}s")
+    except FileNotFoundError:
+        debug_log("Jerry command not found")
+    except (json.JSONDecodeError, OSError) as e:
+        debug_log(f"Jerry error: {e}")
+
+    return None
 
 
 # =============================================================================
@@ -255,24 +539,55 @@ def save_state(config: dict, state: dict[str, Any]) -> None:
 # =============================================================================
 
 
-def ansi_color(code: int) -> str:
-    """Generate ANSI 256-color escape sequence."""
+def _colors_enabled(config: dict | None) -> bool:
+    """Check whether ANSI color output is enabled.
+
+    Colors are disabled when:
+    - NO_COLOR environment variable is set (takes precedence, per no-color.org)
+    - display.use_color config is set to false
+    """
+    if os.environ.get("NO_COLOR") is not None:
+        return False
+    if config is not None and not safe_get(config, "display", "use_color", default=True):
+        return False
+    return True
+
+
+def ansi_color(code: int, config: dict | None = None) -> str:
+    """Generate ANSI 256-color escape sequence.
+
+    Returns empty string when colors are disabled via NO_COLOR env var
+    or display.use_color config.
+    """
+    if not _colors_enabled(config):
+        return ""
     if code == 0:
         return "\033[0m"
     return f"\033[38;5;{code}m"
 
 
-def ansi_reset() -> str:
-    """Generate ANSI reset escape sequence."""
+def ansi_reset(config: dict | None = None) -> str:
+    """Generate ANSI reset escape sequence.
+
+    Returns empty string when colors are disabled.
+    """
+    if not _colors_enabled(config):
+        return ""
     return "\033[0m"
 
 
 def get_terminal_width() -> int:
-    """Get current terminal width."""
+    """Get current terminal width.
+
+    Returns 0 when running as a subprocess (no TTY) to prevent
+    auto_compact_width from falsely triggering compact mode.
+    Claude Code runs the statusline as a piped subprocess, so
+    os.get_terminal_size() will always fail in that context.
+    """
     try:
         return os.get_terminal_size().columns
     except OSError:
-        return 120
+        return 0
 
 
 # =============================================================================
@@ -320,7 +635,7 @@ def parse_transcript_for_tools(transcript_path: str, config: dict) -> dict[str, 
     tool_tokens: dict[str, int] = {}
 
     try:
-        with open(transcript_path, encoding="utf-8") as f:
+        with open(transcript_path, encoding="utf-8", errors="replace") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -375,7 +690,7 @@ def _estimate_tokens(data: Any) -> int:
     """Estimate token count from data (rough: ~4 chars per token)."""
     if isinstance(data, str):
         return len(data) // 4
-    elif isinstance(data, (dict, list)):
+    elif isinstance(data, dict | list):
         return len(json.dumps(data)) // 4
     return 0
 
@@ -401,9 +716,17 @@ def extract_model_info(data: dict) -> tuple[str, str]:
 
 
 def extract_context_info(data: dict, config: dict) -> tuple[float, int, int, bool]:
-    """Extract context window usage."""
+    """Extract context window usage.
+
+    Prefers Claude Code's pre-calculated used_percentage when available,
+    as it accounts for output tokens (which become input on the next turn).
+    Falls back to input-only token calculation when used_percentage is absent.
+    """
     context_window_size = safe_get(data, "context_window", "context_window_size", default=200000)
     current_usage = safe_get(data, "context_window", "current_usage")
+
+    # Prefer Claude Code's pre-calculated percentage (includes output tokens)
+    used_pct = safe_get(data, "context_window", "used_percentage")
 
     if current_usage:
         input_tokens = safe_get(current_usage, "input_tokens", default=0)
@@ -418,7 +741,12 @@ def extract_context_info(data: dict, config: dict) -> tuple[float, int, int, boo
     if used_tokens > context_window_size and config["advanced"]["handle_cumulative_bug"]:
         is_estimated = True
 
-    percentage = (used_tokens / context_window_size) if context_window_size > 0 else 0
+    # Use Claude Code's percentage if available (accounts for output tokens);
+    # fall back to input-only calculation otherwise
+    if used_pct is not None and isinstance(used_pct, int | float) and used_pct > 0:
+        percentage = used_pct / 100.0
+    else:
+        percentage = (used_tokens / context_window_size) if context_window_size > 0 else 0
 
     return percentage, used_tokens, context_window_size, is_estimated
 
@@ -516,8 +844,11 @@ def extract_workspace_info(data: dict, config: dict) -> str:
     dir_config = config["directory"]
 
     if dir_config["abbreviate_home"]:
-        home = os.path.expanduser("~")
-        if current_dir.startswith(home):
+        try:
+            home = str(Path.home())
+        except (RuntimeError, KeyError, OSError):
+            home = ""
+        if home and current_dir.startswith(home):
             current_dir = "~" + current_dir[len(home) :]
 
     if dir_config["basename_only"]:
@@ -564,14 +895,16 @@ def get_git_info(data: dict, config: dict) -> tuple[str, bool, int] | None:
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
             cwd=cwd,
             capture_output=True,
-            text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout,
         )
 
         if result.returncode != 0:
             return None
 
-        branch = result.stdout.strip()
+        # Sanitize ANSI escape codes from git output to prevent terminal injection
+        branch = _ANSI_ESCAPE_RE.sub("", result.stdout.strip())
 
         max_len = git_config["max_branch_length"]
         if len(branch) > max_len:
@@ -581,7 +914,8 @@ def get_git_info(data: dict, config: dict) -> tuple[str, bool, int] | None:
             ["git", "status", "--porcelain"],
             cwd=cwd,
             capture_output=True,
-            text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout,
         )
 
@@ -605,8 +939,9 @@ def format_progress_bar(percentage: float, config: dict, color_code: int) -> str
     """Format a progress bar with color."""
     bar_config = config["display"]["progress_bar"]
     width = bar_config["width"]
-    filled_char = bar_config["filled_char"]
-    empty_char = bar_config["empty_char"]
+    use_emoji = config["display"]["use_emoji"]
+    filled_char = bar_config["filled_char"] if use_emoji else "#"
+    empty_char = bar_config["empty_char"] if use_emoji else "-"
     show_pct = bar_config["show_percentage"]
 
     display_pct = min(max(percentage, 0), 1.0)
@@ -614,8 +949,8 @@ def format_progress_bar(percentage: float, config: dict, color_code: int) -> str
     empty_count = width - filled_count
 
     bar = filled_char * filled_count + empty_char * empty_count
-    color = ansi_color(color_code)
-    reset = ansi_reset()
+    color = ansi_color(color_code, config)
+    reset = ansi_reset(config)
 
     if show_pct:
         pct_str = f"{int(percentage * 100)}%"
@@ -681,8 +1016,8 @@ def build_model_segment(data: dict, config: dict) -> str:
     icons = {"opus": "🔵", "sonnet": "🟣", "haiku": "🟢"}
     icon = icons.get(tier, "⚪") if config["display"]["use_emoji"] else ""
 
-    color = ansi_color(colors.get(tier, colors["sonnet"]))
-    reset = ansi_reset()
+    color = ansi_color(colors.get(tier, colors["sonnet"]), config)
+    reset = ansi_reset(config)
 
     if icon:
         return f"{color}{icon} {display_name}{reset}"
@@ -690,22 +1025,49 @@ def build_model_segment(data: dict, config: dict) -> str:
         return f"{color}{display_name}{reset}"
 
 
-def build_context_segment(data: dict, config: dict) -> str:
-    """Build the context window usage segment."""
-    percentage, used, total, is_estimated = extract_context_info(data, config)
+def _jerry_tier_to_color(tier: str, colors: dict) -> int:
+    """Map Jerry's ThresholdTier to ANSI color code.
+
+    Mapping: NOMINAL/LOW → green, WARNING → yellow, CRITICAL/EMERGENCY → red.
+    """
+    tier_upper = tier.upper() if tier else ""
+    if tier_upper in ("NOMINAL", "LOW"):
+        return colors["green"]
+    elif tier_upper == "WARNING":
+        return colors["yellow"]
+    elif tier_upper in ("CRITICAL", "EMERGENCY"):
+        return colors["red"]
+    return colors["green"]
+
+
+def build_context_segment(data: dict, config: dict, jerry_data: dict | None = None) -> str:
+    """Build the context window usage segment.
+
+    Uses Jerry's domain data (tier, fill_percentage) when available,
+    falling back to standalone computation.
+    """
     colors = config["colors"]
-    thresholds = config["context"]
-
-    color_code = get_threshold_color(
-        percentage,
-        thresholds["warning_threshold"],
-        thresholds["critical_threshold"],
-        colors,
-    )
-
     icon = "📊 " if config["display"]["use_emoji"] else ""
-    estimate_marker = "~" if is_estimated else ""
 
+    # Use Jerry data if available (ST-004/ST-005)
+    jerry_context = safe_get(jerry_data, "context") if jerry_data else None
+    if jerry_context and isinstance(jerry_context, dict):
+        percentage = jerry_context.get("fill_percentage", 0)
+        is_estimated = jerry_context.get("is_estimated", False)
+        tier = jerry_context.get("tier", "NOMINAL")
+        color_code = _jerry_tier_to_color(tier, colors)
+    else:
+        # Fallback: standalone computation with hardcoded thresholds
+        percentage, _used, _total, is_estimated = extract_context_info(data, config)
+        thresholds = config["context"]
+        color_code = get_threshold_color(
+            percentage,
+            thresholds["warning_threshold"],
+            thresholds["critical_threshold"],
+            colors,
+        )
+
+    estimate_marker = "~" if is_estimated else ""
     bar = format_progress_bar(percentage, config, color_code)
 
     return f"{icon}{estimate_marker}{bar}"
@@ -723,8 +1085,8 @@ def build_cost_segment(data: dict, config: dict) -> str:
 
     currency = cost_config["currency_symbol"]
     icon = "💰 " if config["display"]["use_emoji"] else ""
-    color = ansi_color(color_code)
-    reset = ansi_reset()
+    color = ansi_color(color_code, config)
+    reset = ansi_reset(config)
 
     return f"{icon}{color}{currency}{cost:.2f}{reset}"
 
@@ -738,15 +1100,18 @@ def build_tokens_segment(data: dict, config: dict) -> str:
     fresh, cached = extract_token_breakdown(data)
     colors = config["colors"]
 
-    icon = "⚡ " if config["display"]["use_emoji"] else ""
-    fresh_color = ansi_color(colors["tokens_fresh"])
-    cached_color = ansi_color(colors["tokens_cached"])
-    reset = ansi_reset()
+    use_emoji = config["display"]["use_emoji"]
+    icon = "⚡ " if use_emoji else ""
+    fresh_indicator = "→" if use_emoji else ">"
+    cached_indicator = "↺" if use_emoji else "<"
+    fresh_color = ansi_color(colors["tokens_fresh"], config)
+    cached_color = ansi_color(colors["tokens_cached"], config)
+    reset = ansi_reset(config)
 
     fresh_str = format_tokens_short(fresh)
     cached_str = format_tokens_short(cached)
 
-    return f"{icon}{fresh_color}{fresh_str}→{reset} {cached_color}{cached_str}↺{reset}"
+    return f"{icon}{fresh_color}{fresh_str}{fresh_indicator}{reset} {cached_color}{cached_str}{cached_indicator}{reset}"
 
 
 def build_session_segment(data: dict, config: dict) -> str:
@@ -763,32 +1128,79 @@ def build_session_segment(data: dict, config: dict) -> str:
     total_tokens = total_input + total_output
     tokens_str = format_tokens_short(total_tokens)
 
-    color = ansi_color(colors["cyan"])
-    reset = ansi_reset()
+    color = ansi_color(colors["cyan"], config)
+    reset = ansi_reset(config)
 
     return f"{icon}{color}{duration_str} {tokens_str}tok{reset}"
 
 
-def build_compaction_segment(data: dict, config: dict) -> str:
-    """
-    Build the compaction indicator segment.
-    Shows token delta when compaction is detected.
+def build_compaction_segment(data: dict, config: dict, jerry_data: dict | None = None) -> str:
+    """Build the compaction indicator segment.
+
+    Uses Jerry's compaction detection when available, falling back
+    to standalone state-file-based detection.
     Format: 📉 150k→46k
     """
-    compacted, from_tokens, to_tokens = extract_compaction_info(data, config)
+    # Use Jerry data if available (ST-005)
+    jerry_compaction = safe_get(jerry_data, "compaction") if jerry_data else None
+    if jerry_compaction and isinstance(jerry_compaction, dict):
+        compacted = jerry_compaction.get("detected", False)
+        from_tokens = jerry_compaction.get("from_tokens", 0)
+        to_tokens = jerry_compaction.get("to_tokens", 0)
+    else:
+        # Fallback: standalone compaction detection
+        compacted, from_tokens, to_tokens = extract_compaction_info(data, config)
 
     if not compacted:
         return ""
 
     colors = config["colors"]
-    icon = "📉 " if config["display"]["use_emoji"] else "↓"
-    color = ansi_color(colors["compaction"])
-    reset = ansi_reset()
+    use_emoji = config["display"]["use_emoji"]
+    icon = "📉 " if use_emoji else "v "
+    arrow = "→" if use_emoji else ">"
+    color = ansi_color(colors["compaction"], config)
+    reset = ansi_reset(config)
 
     from_str = format_tokens_short(from_tokens)
     to_str = format_tokens_short(to_tokens)
 
-    return f"{icon}{color}{from_str}→{to_str}{reset}"
+    return f"{icon}{color}{from_str}{arrow}{to_str}{reset}"
+
+
+def build_sub_agents_segment(jerry_data: dict | None, config: dict) -> str:
+    """Build the sub-agents summary segment from Jerry data.
+
+    Shows active/completed agent counts and total context usage.
+    Only displayed when Jerry data is available and agents exist.
+    Format: 🤖 2↑14↓ 892k ctx
+    """
+    if jerry_data is None:
+        return ""
+
+    sub_agents = safe_get(jerry_data, "sub_agents")
+    if not sub_agents or not isinstance(sub_agents, dict):
+        return ""
+
+    total = sub_agents.get("total_count", 0)
+    if total == 0:
+        return ""
+
+    active = sub_agents.get("active_count", 0)
+    completed = sub_agents.get("completed_count", 0)
+    total_ctx = safe_get(sub_agents, "aggregate", "total_context_tokens", default=0)
+
+    colors = config["colors"]
+    use_emoji = config["display"]["use_emoji"]
+    icon = "🤖 " if use_emoji else ""
+    color = ansi_color(colors["cyan"], config)
+    reset = ansi_reset(config)
+
+    ctx_str = format_tokens_short(total_ctx) if total_ctx > 0 else ""
+    ctx_part = f" {ctx_str}ctx" if ctx_str else ""
+
+    if active > 0:
+        return f"{icon}{color}{active}↑{completed}↓{ctx_part}{reset}"
+    return f"{icon}{color}{completed}↓{ctx_part}{reset}"
 
 
 def build_tools_segment(data: dict, config: dict) -> str:
@@ -803,8 +1215,8 @@ def build_tools_segment(data: dict, config: dict) -> str:
 
     colors = config["colors"]
     icon = "🔧 " if config["display"]["use_emoji"] else ""
-    color = ansi_color(colors["tools"])
-    reset = ansi_reset()
+    color = ansi_color(colors["tools"], config)
+    reset = ansi_reset(config)
 
     tool_strs = [f"{name}:{format_tokens_short(tokens)}" for name, tokens in tools]
     tools_display = " ".join(tool_strs)
@@ -823,21 +1235,23 @@ def build_git_segment(data: dict, config: dict) -> str:
     colors = config["colors"]
     git_config = config["git"]
 
-    icon = "🌿 " if config["display"]["use_emoji"] else ""
+    use_emoji = config["display"]["use_emoji"]
+    icon = "🌿 " if use_emoji else ""
 
     if is_clean:
-        status_icon = "✓" if git_config["show_status"] else ""
-        color = ansi_color(colors["git_clean"])
+        status_icon = ("✓" if use_emoji else "+") if git_config["show_status"] else ""
+        color = ansi_color(colors["git_clean"], config)
     else:
+        dirty_marker = "●" if use_emoji else "*"
         if git_config["show_uncommitted_count"]:
-            status_icon = f"●{uncommitted_count}"
+            status_icon = f"{dirty_marker}{uncommitted_count}"
         elif git_config["show_status"]:
-            status_icon = "●"
+            status_icon = dirty_marker
         else:
             status_icon = ""
-        color = ansi_color(colors["git_dirty"])
+        color = ansi_color(colors["git_dirty"], config)
 
-    reset = ansi_reset()
+    reset = ansi_reset(config)
 
     return f"{icon}{color}{branch} {status_icon}{reset}".strip()
 
@@ -848,8 +1262,8 @@ def build_directory_segment(data: dict, config: dict) -> str:
     colors = config["colors"]
 
     icon = "📂 " if config["display"]["use_emoji"] else ""
-    color = ansi_color(colors["directory"])
-    reset = ansi_reset()
+    color = ansi_color(colors["directory"], config)
+    reset = ansi_reset(config)
 
     return f"{icon}{color}{directory}{reset}"
 
@@ -859,8 +1273,13 @@ def build_directory_segment(data: dict, config: dict) -> str:
 # =============================================================================
 
 
-def build_status_line(data: dict, config: dict) -> str:
-    """Build the complete status line from all segments."""
+def build_status_line(data: dict, config: dict, jerry_data: dict | None = None) -> str:
+    """Build the complete status line from all segments.
+
+    When jerry_data is available (FEAT-002), uses Jerry's domain
+    computation for context/compaction/sub-agent segments. All other
+    segments use the raw Claude Code data.
+    """
     segments_config = config["segments"]
     display_config = config["display"]
     separator = display_config["separator"]
@@ -869,7 +1288,10 @@ def build_status_line(data: dict, config: dict) -> str:
     compact = display_config["compact_mode"]
     if not compact and display_config["auto_compact_width"] > 0:
         term_width = get_terminal_width()
-        if term_width < display_config["auto_compact_width"]:
+        # Only auto-compact when we have a real terminal width.
+        # When running as a subprocess (no TTY), term_width is 0 —
+        # don't compact, let Claude Code handle display truncation.
+        if term_width > 0 and term_width < display_config["auto_compact_width"]:
             compact = True
 
     segments = []
@@ -878,7 +1300,7 @@ def build_status_line(data: dict, config: dict) -> str:
         segments.append(build_model_segment(data, config))
 
     if segments_config["context"]:
-        segments.append(build_context_segment(data, config))
+        segments.append(build_context_segment(data, config, jerry_data=jerry_data))
 
     if segments_config["cost"]:
         segments.append(build_cost_segment(data, config))
@@ -890,8 +1312,15 @@ def build_status_line(data: dict, config: dict) -> str:
         if segments_config["session"]:
             segments.append(build_session_segment(data, config))
 
+        # Sub-agents segment (Jerry-only, FEAT-002) — before compaction/tools
+        # so it isn't pushed off-screen by long tool breakdowns
+        if jerry_data:
+            sub_agents_segment = build_sub_agents_segment(jerry_data, config)
+            if sub_agents_segment:
+                segments.append(sub_agents_segment)
+
         if segments_config.get("compaction", True):
-            compaction_segment = build_compaction_segment(data, config)
+            compaction_segment = build_compaction_segment(data, config, jerry_data=jerry_data)
             if compaction_segment:
                 segments.append(compaction_segment)
 
@@ -908,8 +1337,8 @@ def build_status_line(data: dict, config: dict) -> str:
     if segments_config["directory"] and not compact:
         segments.append(build_directory_segment(data, config))
 
-    sep_color = ansi_color(colors["separator"])
-    reset = ansi_reset()
+    sep_color = ansi_color(colors["separator"], config)
+    reset = ansi_reset(config)
     colored_sep = f"{sep_color}{separator}{reset}"
 
     return colored_sep.join(segments)
@@ -922,11 +1351,8 @@ def build_status_line(data: dict, config: dict) -> str:
 
 def main() -> None:
     """Main entry point."""
+    configure_windows_console()
     try:
-        # Force UTF-8 output on Windows to avoid UnicodeEncodeError with emoji/special chars
-        if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
-            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-
         config = load_config()
 
         if config["advanced"]["debug"]:
@@ -946,7 +1372,10 @@ def main() -> None:
             print("ECW: Parse error")
             return
 
-        status_line = build_status_line(data, config)
+        # FEAT-002: Try Jerry for enhanced domain computation
+        jerry_data = try_jerry_estimate(input_data, config, data)
+
+        status_line = build_status_line(data, config, jerry_data=jerry_data)
         print(status_line)
 
     except Exception as e:

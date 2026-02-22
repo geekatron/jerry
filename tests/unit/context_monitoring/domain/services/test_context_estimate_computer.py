@@ -75,6 +75,22 @@ class TestCompute:
         estimate = computer.compute(_make_usage())
         assert estimate.is_estimated is False
 
+    def test_used_percentage_preferred_over_token_calculation(self) -> None:
+        """Claude Code's used_percentage (includes output tokens) takes priority."""
+        computer = ContextEstimateComputer()
+        usage = _make_usage(
+            input_tokens=50000,
+            cache_creation=30000,
+            cache_read=60000,
+            window_size=200000,
+            used_pct=85.0,  # Higher than token-only calc (70%)
+        )
+        estimate = computer.compute(usage)
+        # Should use used_percentage (85%), not token calc (70%)
+        assert estimate.fill_percentage == pytest.approx(0.85)
+        # Token breakdown is still preserved for display
+        assert estimate.used_tokens == 140000
+
     def test_zero_tokens_uses_claude_code_percentage(self) -> None:
         """When all token counts are 0, falls back to used_percentage."""
         computer = ContextEstimateComputer()
@@ -98,6 +114,19 @@ class TestCompute:
         )
         estimate = computer.compute(usage)
         assert estimate.fill_percentage == 0.0
+
+    def test_none_used_percentage_falls_back_to_tokens(self) -> None:
+        """When used_percentage is None, uses input-only token calculation."""
+        computer = ContextEstimateComputer()
+        usage = _make_usage(
+            input_tokens=50000,
+            cache_creation=30000,
+            cache_read=60000,
+            window_size=200000,
+            used_pct=None,
+        )
+        estimate = computer.compute(usage)
+        assert estimate.fill_percentage == pytest.approx(0.70)
 
     def test_invalid_window_size_falls_back_to_200k(self) -> None:
         """Zero or negative window size defaults to 200K."""

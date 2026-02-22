@@ -118,12 +118,16 @@ class ContextEstimateComputer:
 
         total_tokens = usage.total_context_tokens
 
-        # Prefer Claude Code's pre-calculated percentage when available
-        # and our token-based calculation would be zero (before first API call)
-        if total_tokens == 0 and usage.used_percentage is not None:
+        # Prefer Claude Code's pre-calculated percentage when available.
+        # Claude Code's used_percentage includes output tokens (which become
+        # input on the next turn), giving a more accurate fill estimate than
+        # our input-only token sum.
+        if usage.used_percentage is not None and usage.used_percentage > 0:
             fill_pct = usage.used_percentage / 100.0
-        else:
+        elif total_tokens > 0:
             fill_pct = total_tokens / window_size if window_size > 0 else 0.0
+        else:
+            fill_pct = 0.0
 
         # Clamp to [0.0, 1.0]
         fill_pct = max(0.0, min(1.0, fill_pct))
