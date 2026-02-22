@@ -33,6 +33,10 @@
           "$ref": "#/$defs/hookTypeArray",
           "description": "Hooks executed when the main agent stops. Does not support matchers."
         },
+        "PreCompact": {
+          "$ref": "#/$defs/hookTypeArray",
+          "description": "Hooks executed before context compaction. Can checkpoint state before context is cleared."
+        },
         "SubagentStop": {
           "$ref": "#/$defs/hookTypeArray",
           "description": "Hooks executed when a subagent (spawned via Task tool) stops. Uses top-level decision/reason only."
@@ -65,6 +69,10 @@
             "$ref": "#/$defs/hookDefinition"
           },
           "description": "Array of hook definitions to execute when matcher matches."
+        },
+        "_comment": {
+          "type": "string",
+          "description": "Optional human-readable comment explaining the matcher configuration."
         }
       },
       "additionalProperties": false

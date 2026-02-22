@@ -2,7 +2,7 @@
 
 > Navigation table requirements for all Claude-consumed markdown files.
 
-<!-- L2-REINJECT: rank=7, content="Navigation table REQUIRED for Claude-consumed markdown >30 lines (H-23). Section names MUST use anchor links (H-24)." -->
+<!-- L2-REINJECT: rank=7, content="Markdown navigation REQUIRED for Claude-consumed markdown >30 lines (H-23): (a) navigation table (NAV-001), (b) section names with anchor links (NAV-006)." -->
 
 ## Document Sections
 

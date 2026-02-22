@@ -185,6 +185,40 @@ def deprecated_patterns() -> list[tuple[str, str]]:
 
 
 # =============================================================================
+# PROJECT STRUCTURE SPEC
+# =============================================================================
+#
+# Single source of truth for project directory structure expectations.
+# Derived from: skills/worktracker/rules/worktracker-directory-structure.md
+#
+# Required: PLAN.md, WORKTRACKER.md, work/
+# Optional: All category directories (created on-demand as work progresses)
+
+# Files that MUST exist in every project directory.
+REQUIRED_PROJECT_FILES: tuple[str, ...] = ("PLAN.md", "WORKTRACKER.md")
+
+# Directory that MUST exist in every project directory.
+REQUIRED_PROJECT_DIRS: tuple[str, ...] = ("work",)
+
+# Directories that MAY exist (optional, created on-demand).
+OPTIONAL_CATEGORY_DIRS: tuple[str, ...] = (
+    "research",
+    "synthesis",
+    "analysis",
+    "decisions",
+    "reports",
+    "design",
+    "investigations",
+    "reviews",
+    "runbooks",
+    "orchestration",
+)
+
+# All valid subdirectories (required + optional).
+ALL_VALID_DIRS: frozenset[str] = frozenset(REQUIRED_PROJECT_DIRS + OPTIONAL_CATEGORY_DIRS)
+
+
+# =============================================================================
 # CATEGORY FIXTURES
 # =============================================================================
 
@@ -192,24 +226,12 @@ def deprecated_patterns() -> list[tuple[str, str]]:
 @pytest.fixture
 def valid_categories() -> set[str]:
     """
-    Valid category directories per ADR-003.
+    Valid category directories per worktracker directory structure spec.
 
     These are the allowed subdirectories within a project workspace.
+    Derived from the shared spec constants above.
     """
-    return {
-        "research",
-        "synthesis",
-        "analysis",
-        "decisions",
-        "reports",
-        "design",
-        "investigations",
-        "reviews",
-        "work",  # Work tracking files
-        "runbooks",  # Execution guides
-        "orchestration",  # Orchestration skill workflow state (per SKILL.md)
-        "critiques",  # Adversarial critique artifacts (optional)
-    }
+    return set(ALL_VALID_DIRS)
 
 
 @pytest.fixture

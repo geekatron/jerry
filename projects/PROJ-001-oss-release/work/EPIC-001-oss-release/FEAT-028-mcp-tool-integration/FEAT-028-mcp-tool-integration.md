@@ -1,7 +1,7 @@
 # FEAT-028: MCP Tool Integration (Context7 + Memory-Keeper)
 
 > **Type:** feature
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
@@ -18,6 +18,7 @@
 |---------|---------|
 | [Summary](#summary) | What this feature delivers |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Children Stories/Enablers](#children-storiesenablers) | Child work items |
 | [Enablers](#enablers) | Implementation work items |
 | [Progress Summary](#progress-summary) | Tracking |
 | [History](#history) | Change log |
@@ -49,6 +50,12 @@ Add governance rules and agent definitions for proactive MCP tool usage across t
 | AC-5 | 4 SKILL.md files include MCP tools in `allowed-tools` frontmatter | PASS |
 | AC-6 | AGENTS.md has MCP Tool Access section with agent-to-tool matrix | PASS |
 | AC-7 | TOOL_REGISTRY.yaml has correct Memory-Keeper tool names and updated agent_permissions | PASS |
+
+---
+
+## Children Stories/Enablers
+
+See [Enablers](#enablers) below for the full decomposition.
 
 ---
 

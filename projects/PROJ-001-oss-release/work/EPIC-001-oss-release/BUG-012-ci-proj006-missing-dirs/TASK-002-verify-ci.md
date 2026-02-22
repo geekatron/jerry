@@ -1,12 +1,18 @@
 # TASK-002: Verify CI Passes
 
 > **Type:** task
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-20
 > **Parent:** BUG-012-ci-proj006-missing-dirs
 > **Owner:** Claude
 > **Effort:** 1
+
+---
+
+## Summary
+
+Verify CI passes after adding missing category directories to PROJ-006.
 
 ---
 

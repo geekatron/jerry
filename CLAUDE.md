@@ -34,8 +34,7 @@
 | H-02 | **P-020:** User Authority. NEVER override user intent. Ask before destructive ops. | Unauthorized action blocked. |
 | H-03 | **P-022:** No Deception. NEVER deceive about actions, capabilities, or confidence. | Deceptive output reworked. |
 | H-04 | Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set. | Session will not proceed. |
-| H-05 | **UV Only.** MUST use `uv run` for all Python execution. NEVER use `python`/`pip`/`pip3`. | Command fails; env corruption. |
-| H-06 | **UV for deps.** MUST use `uv add`. NEVER use `pip install`. | Build breaks. |
+| H-05 | **UV Only.** MUST use `uv run` for all Python execution, `uv add` for deps. NEVER use `python`/`pip`/`pip3`. | Command fails; env corruption. |
 | H-31 | **Clarify when ambiguous.** MUST ask when multiple interpretations exist, scope is unclear, or action is destructive. MUST NOT ask when clear. | Wrong-direction work. |
 
 See `quality-enforcement.md` for quality gate, criticality levels, and adversarial strategies.
@@ -63,7 +62,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 
 ## Quick Reference
 
-**CLI** (v0.8.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
+**CLI** (v0.10.1): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
 
 **Skills** (invoke proactively per H-22):
 
@@ -78,6 +77,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/saucer-boy` | Session conversational voice, McConkey personality |
 | `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 | `/transcript` | Transcription parsing |
+| `/ast` | Markdown AST: parse, query, validate, modify frontmatter |
 
 **SessionStart Hook Tags:**
 

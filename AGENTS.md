@@ -201,6 +201,8 @@ These agents manage work item verification, visualization, and auditing.
 
 **WTI Rules Enforced**: WTI-002 (No Closure Without Verification), WTI-003 (Truthful State), WTI-006 (Evidence-Based Closure)
 
+**AST Enforcement (H-33):** All wt-* agents have Bash tool access and MUST use `jerry ast` CLI commands (`uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter`, `jerry ast validate`, etc.) for frontmatter extraction and entity validation. Regex-based frontmatter parsing (`> **Status:**` grep) is prohibited.
+
 ---
 
 ## Transcript Skill Agents

@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.8
 -->
 
 > **Type:** spike
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
@@ -92,15 +92,24 @@ We hypothesize that:
 
 ### Summary
 
-_To be populated after research. Depends on SPIKE-001 completion._
+GO decision — AST-first architecture is feasible and beneficial for Jerry's markdown manipulation, with bounded scope to schema-heavy files. Four integration patterns evaluated; Pattern D (Hybrid: CLI + Skill with shared domain layer) recommended. Token reduction estimated at 15-30% per individual operation, 40-60% for batch operations. 5/6 Jerry markdown patterns schematizable.
 
 ### Detailed Findings
 
-_To be populated after research._
+- **Integration patterns:** 4 patterns analyzed (A: CLI-only, B: Skill-only, C: MCP server, D: Hybrid). Pattern D recommended for maximum flexibility.
+- **Token efficiency:** 15-30% per operation, 40-60% batch. AST JSON is more verbose but enables targeted node manipulation.
+- **Schema feasibility:** 5/6 patterns schematizable (worktracker entities, skill definitions, rules, templates, orchestration plans). Freeform prose out of scope.
+- **Risk analysis:** S-013 Inversion identified 7 failure modes; S-004 Pre-Mortem identified 6 scenarios. All mitigable.
+- **Implementation estimate:** ~1,740 LOC total, 6-week timeline, 10 stories, 37 story points for FEAT-001.
+
+See orchestration artifacts for full details:
+- `orchestration/spike-eval-20260219-001/ps/phase-4-arch-research/ps-researcher-002/integration-patterns-research.md`
+- `orchestration/spike-eval-20260219-001/ps/phase-5-feasibility/ps-analyst-002/feasibility-analysis.md`
+- `orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md`
 
 ### Evidence/References
 
-_To be populated after research._
+28 evidence-mapped claims across research artifacts. Cross-spike consistency verified by ps-reviewer-001. Full traceability in go-nogo-recommendation.md.
 
 ---
 
@@ -108,25 +117,36 @@ _To be populated after research._
 
 ### Decision
 
-_To be populated after research. Go/no-go with confidence level._
+**GO** — Adopt AST-first architecture with bounded scope. Confidence: HIGH.
+
+- **Library:** markdown-it-py v4.0.0 + mdformat v1.0.0
+- **Integration:** Pattern D (Hybrid: CLI + Skill with shared domain layer)
+- **Scope:** Schema-heavy files (worktracker, templates, skills, rules, orchestration)
+- **Conditional on:** R-01 proof-of-concept validating mdformat blockquote frontmatter write-back
 
 ### Recommended Actions
 
-_To be populated after research._
+1. Create R-01 proof-of-concept story for mdformat validation
+2. Define FEAT-001 implementation stories (10 stories, 37 SP from go/no-go recommendation)
+3. Create ADR documenting the GO decision
+4. Begin implementation with domain layer (MarkdownDocument, AST node types)
 
 ### Follow-up Work Items
 
 | Type | Title | Priority |
 |------|-------|----------|
-| _TBD_ | _Based on go/no-go: either integration feature or alternative strategy feature_ | _TBD_ |
+| Story | R-01 proof-of-concept: mdformat blockquote frontmatter write-back | high |
+| Story | Domain layer: MarkdownDocument value object and AST node types | high |
+| Story | Custom extensions: blockquote frontmatter, nav table, template placeholder, L2-REINJECT | high |
+| Story | CLI integration: `jerry md parse\|render\|validate\|query` | medium |
+| ADR | AST-first architecture GO decision | high |
 
 ### Risks/Considerations
 
-- Roundtrip fidelity loss may make AST operations destructive for freeform files
-- Token savings may be smaller than estimated if AST JSON representation is verbose
-- Schema definition and enforcement adds complexity that may not justify the benefit for low-structure files
-- Dual tooling surfaces (CLI + skills) increase maintenance burden
-- Migration of existing skills is non-trivial and may introduce regressions during transition
+- R-01 validation is a hard gate — if mdformat can't handle blockquote frontmatter write-back, the NO-GO alternative strategy (structured YAML primary with markdown rendering) should be activated
+- Bounded scope means freeform files continue with raw text manipulation
+- Migration of existing skills is incremental, not big-bang
+- mdformat code renderer reflow behavior needs validation
 
 ---
 
@@ -144,3 +164,4 @@ _To be populated after research._
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-19 | pending | Spike defined. 8-step research approach. Blocked on SPIKE-001 findings. 8h timebox. |
+| 2026-02-19 | completed | Spike completed via orchestration `spike-eval-20260219-001`. GO decision — adopt AST-first with markdown-it-py + mdformat, Pattern D hybrid integration. QG2 passed at 0.97. |

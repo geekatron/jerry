@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | 25 HARD rules (H-01 through H-31, post-consolidation) |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-33 (post-EN-002 consolidation) |
 | [Retired Rule IDs](#retired-rule-ids) | Tombstoned IDs from EN-002 consolidation |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
@@ -16,7 +16,7 @@
 | [Two-Tier Enforcement Model](#two-tier-enforcement-model) | Tier A (L2-protected) vs Tier B (compensating controls) |
 | [HARD Rule Ceiling Derivation](#hard-rule-ceiling-derivation) | Principled upper boundary (25 rules) |
 | [HARD Rule Ceiling Exception Mechanism](#hard-rule-ceiling-exception-mechanism) | Controlled temporary expansion |
-| [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006 |
+| [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006e (graduated context fill sub-rules) |
 | [Enforcement Architecture](#enforcement-architecture) | L1-L5 layer definitions |
 | [Strategy Catalog](#strategy-catalog) | S-001 through S-015 (selected and excluded) |
 | [Implementation](#implementation) | Operational implementation via /adversary skill, skill routing decision table |
@@ -34,7 +34,7 @@
 
 <!-- L2-REINJECT: rank=2, content="Ambiguity resolution (H-31): When requirements have multiple valid interpretations, unclear scope, or imply destructive action -- MUST ask clarifying questions before proceeding. Do NOT assume. Do NOT ask when requirements are clear or answers are in the codebase." -->
 
-<!-- L2-REINJECT: rank=3, content="UV only for Python (H-05/H-06). NEVER use python/pip directly." -->
+<!-- L2-REINJECT: rank=3, content="UV only for Python (H-05). NEVER use python/pip directly. Use uv run for execution, uv add for deps." -->
 
 <!-- L2-REINJECT: rank=4, content="LLM-as-Judge scoring (S-014): Apply strict rubric. Leniency bias must be actively counteracted." -->
 
@@ -42,18 +42,20 @@
 
 <!-- L2-REINJECT: rank=8, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
 
+<!-- L2-REINJECT: rank=9, tokens=40, content="AE-006 graduated escalation: NOMINAL=no-op, WARNING=log+consider-checkpoint, CRITICAL=auto-checkpoint+reduce-verbosity, EMERGENCY=mandatory-checkpoint+warn-user, COMPACTION=human-escalation-C3+." -->
+
+<!-- L2-REINJECT: rank=10, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-33). Use jerry ast frontmatter and jerry ast validate CLI commands. NEVER use regex for frontmatter extraction." -->
+
 | ID | Rule | Source |
 |----|------|--------|
 | H-01 | No recursive subagents (max 1 level) | P-003 |
 | H-02 | User authority -- never override | P-020 |
 | H-03 | No deception about actions/capabilities | P-022 |
 | H-04 | Active project REQUIRED | CLAUDE.md |
-| H-05 | UV only for Python execution | python-environment |
-| H-06 | UV only for dependencies | python-environment |
+| H-05 | UV-only Python environment (execution via `uv run`, dependencies via `uv add`) | python-environment |
 | H-07 | Architecture layer isolation (domain imports, application imports, composition root) | architecture-standards |
 | H-10 | One class per file | architecture-standards |
-| H-11 | Type hints REQUIRED on public functions | coding-standards |
-| H-12 | Docstrings REQUIRED on public functions | coding-standards |
+| H-11 | Public function signatures (type hints + docstrings REQUIRED) | coding-standards |
 | H-13 | Quality threshold >= 0.92 for C2+ | quality-enforcement |
 | H-14 | Creator-critic-revision cycle (3 min) | quality-enforcement |
 | H-15 | Self-review before presenting (S-010) | quality-enforcement |
@@ -64,11 +66,12 @@
 | H-20 | Test before implement (BDD Red phase) | testing-standards |
 | H-21 | 90% line coverage REQUIRED | testing-standards |
 | H-22 | Proactive skill invocation | mandatory-skill-usage |
-| H-23 | Navigation table REQUIRED (NAV-001) | markdown-navigation |
-| H-24 | Anchor links REQUIRED (NAV-006) | markdown-navigation |
+| H-23 | Markdown navigation (navigation table NAV-001, anchor links NAV-006) | markdown-navigation |
 | H-25 | Skill naming and structure (SKILL.md case, kebab-case folder, no README.md) | skill-standards |
 | H-26 | Skill description, paths, and registration (WHAT+WHEN+triggers, repo-relative paths, CLAUDE.md+AGENTS.md) | skill-standards |
 | H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
+| H-32 | GitHub Issue parity for jerry repo work items | project-workflow |
+| H-33 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
 
 ---
 
@@ -84,6 +87,9 @@
 | H-28 | H-26 | Skill description: WHAT+WHEN+triggers, <1024 chars, no XML | 2026-02-21 |
 | H-29 | H-26 | Full repo-relative paths in SKILL.md | 2026-02-21 |
 | H-30 | H-26 | Register in CLAUDE.md + AGENTS.md | 2026-02-21 |
+| H-06 | H-05 (sub-item b) | UV only for dependencies | 2026-02-21 |
+| H-12 | H-11 (sub-item b) | Docstrings REQUIRED on public functions | 2026-02-21 |
+| H-24 | H-23 (sub-item b) | Anchor links REQUIRED (NAV-006) | 2026-02-21 |
 
 ---
 
@@ -163,17 +169,18 @@ Rules are classified by their enforcement reliability:
 | Rules | L2 Source | Count |
 |-------|-----------|-------|
 | H-01, H-02, H-03 | quality-enforcement.md rank 1 | 3 |
-| H-05, H-06 | python-environment.md rank 3 | 2 |
+| H-05 | python-environment.md rank 3 | 1 |
 | H-07, H-10 | architecture-standards.md rank 4 | 2 |
-| H-11, H-12 | coding-standards.md rank 7 | 2 |
+| H-11 | coding-standards.md rank 7 | 1 |
 | H-13, H-14, H-31 | quality-enforcement.md rank 2 | 3 |
 | H-15 | quality-enforcement.md rank 5 | 1 |
 | H-19 | quality-enforcement.md rank 8 | 1 |
 | H-20, H-21 | testing-standards.md rank 5 | 2 |
 | H-22 | mandatory-skill-usage.md rank 6 | 1 |
-| H-23, H-24 | markdown-navigation.md rank 7 | 2 |
+| H-23 | markdown-navigation.md rank 7 | 1 |
 | H-25, H-26 | skill-standards.md rank 7 | 2 |
-| **Tier A Total** | | **21** |
+| H-33 | quality-enforcement.md rank 10 | 1 |
+| **Tier A Total** | | **19** |
 
 **Tier B** — Structural L2 (L1 awareness only, compensating controls prevent bypass):
 
@@ -183,9 +190,10 @@ Rules are classified by their enforcement reliability:
 | H-16 (steelman before critique) | /adversary skill enforcement, L1 rule awareness | 1 |
 | H-17 (quality scoring) | /adversary + /problem-solving skill enforcement | 1 |
 | H-18 (constitutional compliance) | S-007 strategy enforcement in /adversary skill | 1 |
-| **Tier B Total** | | **4** |
+| H-32 (GitHub Issue parity) | /worktracker skill enforcement, CI workflow | 1 |
+| **Tier B Total** | | **5** |
 
-**Total:** 25 HARD rules (21 Tier A + 4 Tier B)
+**Total:** 24 HARD rules (19 Tier A + 5 Tier B)
 
 > **Note:** Tier B rules are candidates for L2 marker addition pending effectiveness measurement (DEC-005). Current compensating controls provide adequate enforcement through deterministic mechanisms (hooks, skills, CI gates).
 
@@ -219,7 +227,7 @@ Temporary ceiling expansion is permitted under controlled conditions:
 
 **Reversion enforcement (C-03):** The L5 CI gate provides automated enforcement — when the exception expires, the ceiling value is reverted to 25 and any excess rules will cause CI failure. The worktracker reversion deadline provides human-visible tracking.
 
-**EN-001 phasing note (C-02):** EN-001 requires 4 additional rule slots (H-32..H-35) but the exception mechanism allows maximum N=3. EN-001 MUST therefore either: (a) consolidate existing rules to create permanent headroom before adding rules, or (b) phase the addition across two exception windows (3 rules in phase 1, consolidate, then 1 rule in phase 2).
+**EN-001 phasing note (C-02):** H-32 and H-33 were added by PROJ-005 and integrated via merge consolidation. EN-001 may require additional rule slots (H-34..H-35) for PROJ-007 agent patterns. Current headroom: 1 slot (24/25). The exception mechanism allows up to N=3 temporary expansion if needed.
 
 ---
 
@@ -232,7 +240,11 @@ Temporary ceiling expansion is permitted under controlled conditions:
 | AE-003 | New or modified ADR | Auto-C3 minimum |
 | AE-004 | Modifies baselined ADR | Auto-C4 |
 | AE-005 | Security-relevant code | Auto-C3 minimum |
-| AE-006 | Token exhaustion at C3+ (context compaction triggered) | Mandatory human escalation |
+| AE-006a | Context fill NOMINAL/LOW tier (< 0.70) | No action required |
+| AE-006b | Context fill WARNING tier (>= 0.70) | Log warning + consider checkpoint |
+| AE-006c | Context fill CRITICAL tier (>= 0.80) | Auto-checkpoint + reduce verbosity |
+| AE-006d | Context fill EMERGENCY tier (>= 0.88) | Mandatory checkpoint + warn user + prepare handoff |
+| AE-006e | Compaction event detected | Mandatory human escalation for C3+, auto-checkpoint, session restart recommended |
 
 ---
 

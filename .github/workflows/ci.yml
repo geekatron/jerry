@@ -119,14 +119,15 @@ jobs:
       - name: Validate plugin manifests
         run: uv run python scripts/validate_plugin_manifests.py
 
-      - name: Validate session_start_hook.py standalone
+      - name: Validate hook wrappers syntax
         run: |
-          # Test that session_start_hook.py runs without pip install -e .
-          # EN-001: Hook wrapper calls jerry CLI instead of deprecated entry point
-          python3 scripts/session_start_hook.py
-        env:
-          JERRY_PROJECT: ""
-          CLAUDE_PROJECT_DIR: ${{ github.workspace }}
+          # EN-007: Hook wrappers are thin scripts that delegate to jerry CLI.
+          # Validate they parse without errors (they will fail at runtime without
+          # uv/jerry installed, but syntax must be valid).
+          python3 -m py_compile hooks/session-start.py
+          python3 -m py_compile hooks/pre-compact.py
+          python3 -m py_compile hooks/pre-tool-use.py
+          python3 -m py_compile hooks/user-prompt-submit.py
 
       - name: Validate hook scripts syntax
         run: |
@@ -279,6 +280,7 @@ jobs:
           pytest \
             -m "not subprocess and not llm" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=html \
             --cov-report=term-missing \
@@ -298,6 +300,7 @@ jobs:
           pytest \
             -m "not subprocess and not llm" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=html \
             --cov-report=term-missing \
@@ -313,6 +316,15 @@ jobs:
             coverage.xml
             htmlcov/
             junit-pip-${{ matrix.python-version }}.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: pip
+          fail_ci_if_error: false
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -370,6 +382,7 @@ jobs:
           uv run pytest \
             -m "not llm and not subprocess" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=term-missing \
             --cov-fail-under=80 \
@@ -389,6 +402,7 @@ jobs:
           uv run pytest \
             -m "not llm and not subprocess" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=term-missing \
             --junitxml=junit-uv-${{ matrix.python-version }}.xml \
@@ -402,6 +416,15 @@ jobs:
           path: |
             coverage.xml
             junit-uv-${{ matrix.python-version }}.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: uv
+          fail_ci_if_error: false
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
