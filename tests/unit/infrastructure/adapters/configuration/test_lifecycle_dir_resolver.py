@@ -72,11 +72,12 @@ class TestResolveLifecycleDirPlatformDefault:
     """Tier 3: Platform default when no env var or config."""
 
     def test_platform_default_when_no_env_or_config(self) -> None:
-        """Falls back to ~/.jerry/local/ when nothing is set."""
+        """Falls back to platform-appropriate default when nothing is set."""
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("JERRY_LIFECYCLE_DIR", None)
             result = resolve_lifecycle_dir()
-        assert result == Path.home() / ".jerry" / "local"
+        expected = _platform_default_lifecycle_dir()
+        assert result == expected
 
     def test_returns_absolute_path(self) -> None:
         """All tiers return absolute paths."""
