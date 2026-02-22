@@ -261,3 +261,51 @@ This is a constructive, evidence-driven call to action:
 6. **Give vendors the opportunity** -- Anthropic, Boris, and others can use this to do better. That's the point.
 
 The Saucer Boy voice brings personality and engagement without crossing into disrespect. We're skiing the line between hard truth and positive energy.
+
+---
+
+## Re-Run Addendum (Workflow -002)
+
+> **Date:** 2026-02-22
+> **Predecessor:** `llm-deception-20260221-001` (completed, all QGs passed avg 0.959)
+> **New Workflow:** `llm-deception-20260222-002`
+
+### Design Flaw in Workflow -001
+
+Workflow -001 completed all 5 phases and passed all quality gates. However, the A/B test (Phase 2) had a **fundamental design flaw**: all 5 research questions were deliberately date-anchored to post-training-cutoff (Feb 2026), meaning Agent A (internal-only) simply declined to answer because it had no training data on those topics.
+
+**What it proved:** Knowledge gaps (obvious, uninteresting).
+**What it failed to prove:** Confident inaccuracy (the actual deception problem).
+
+Agent A scored high on "factual accuracy" (0.822) through *accuracy by omission* -- it wasn't wrong because it made no claims. This is the wrong thing to test.
+
+### What the Re-Run Must Prove
+
+When an LLM **HAS** training data on a topic, it can be **confidently wrong**. Real-world evidence: asking about Shane McConkey produced factual inaccuracies from training data that had to be corrected with WebSearch/WebFetch. The dangerous failure mode isn't "I don't know" -- it's "here's an answer that sounds authoritative but is factually incorrect."
+
+### Corrected Methodology
+
+- **15 questions** across **5 domains** (Sports/Adventure, Technology/Software, Science/Medicine, History/Geography, Pop Culture/Media)
+- **10 ITS questions** (In-Training-Set): Topics the model has training data for, chosen to probe areas where models commonly make confident factual errors
+- **5 PC questions** (Post-Cutoff): Topics after May 2025 cutoff as contrast group
+- **Ground truth established FIRST** using WebSearch/WebFetch before running either agent
+- **7-dimension scoring rubric** including new "Confident Inaccuracy Rate" metric
+- **Factual Accuracy penalizes omission** (declining to answer = 0.0, not 0.95)
+- Agent A prompted to encourage full answers, not hedge
+
+### Reuse from Workflow -001
+
+| Component | Status | Action |
+|-----------|--------|--------|
+| Phase 1 Evidence Collection | Valid | Reused as-is |
+| QG-1 | Valid | Reused as-is |
+| Phase 2-5 | Invalidated | Redesigned and re-executed in workflow -002 |
+
+### Verification Criteria
+
+1. Confident Inaccuracy Rate > 0 for at least 7/10 ITS questions across at least 4/5 domains
+2. Agent A makes specific wrong claims (not just omissions) on ITS questions
+3. Agent B corrects those wrong claims with sourced, verified facts
+4. Clear contrast between ITS behavior (confidently wrong) and PC behavior (declines/gaps)
+5. Content communicates the "confidently wrong" thesis across all 3 platforms
+6. 15+ questions, 5 domains with full per-question evidence tables

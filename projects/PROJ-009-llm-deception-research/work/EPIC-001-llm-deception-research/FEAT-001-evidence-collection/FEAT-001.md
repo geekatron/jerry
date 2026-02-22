@@ -1,12 +1,12 @@
 # FEAT-001: Evidence Collection
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Created:** 2026-02-22T00:00:00Z
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-22
 > **Parent:** EPIC-001
 > **Owner:** —
 > **Target Sprint:** —
@@ -40,12 +40,12 @@ Phase 1 evidence collection across academic literature, industry reports, and co
 
 ### Definition of Done
 
-- [ ] Academic literature on LLM sycophancy, deception, hallucination, RLHF failure modes collected
-- [ ] Industry reports from Anthropic, OpenAI, DeepMind, independents collected
-- [ ] Conversation histories mined for deception patterns (R-003)
-- [ ] All findings have citations with URLs (R-004)
-- [ ] All evidence persisted to repository
-- [ ] Barrier-1 quality gate passed (>= 0.95)
+- [x] Academic literature on LLM sycophancy, deception, hallucination, RLHF failure modes collected
+- [x] Industry reports from Anthropic, OpenAI, DeepMind, independents collected
+- [x] Conversation histories mined for deception patterns (R-003)
+- [x] All findings have citations with URLs (R-004)
+- [x] All evidence persisted to repository
+- [x] Barrier-1 quality gate passed (>= 0.95)
 
 ---
 
@@ -53,11 +53,11 @@ Phase 1 evidence collection across academic literature, industry reports, and co
 
 | ID | Type | Title | Status | Priority |
 |----|------|-------|--------|----------|
-| STORY-001 | Story | Academic Literature | pending | critical |
-| STORY-002 | Story | Industry Reports | pending | critical |
-| STORY-003 | Story | Conversation Mining | pending | critical |
-| EN-001 | Enabler | A/B Test Requirements | pending | high |
-| EN-002 | Enabler | Comparison Prior Art | pending | high |
+| STORY-001 | Story | Academic Literature | completed | critical |
+| STORY-002 | Story | Industry Reports | completed | critical |
+| STORY-003 | Story | Conversation Mining | completed | critical |
+| EN-001 | Enabler | A/B Test Requirements | completed | high |
+| EN-002 | Enabler | Comparison Prior Art | completed | high |
 
 ### Work Item Links
 
@@ -74,10 +74,12 @@ Phase 1 evidence collection across academic literature, industry reports, and co
 | Metric | Value |
 |--------|-------|
 | **Total Stories** | 3 |
-| **Completed Stories** | 0 |
+| **Completed Stories** | 3 |
 | **Total Enablers** | 2 |
-| **Completed Enablers** | 0 |
-| **Completion %** | 0% |
+| **Completed Enablers** | 2 |
+| **Completion %** | 100% |
+
+**Quality Gate:** QG-1 PASS at 0.953
 
 ---
 
@@ -86,3 +88,4 @@ Phase 1 evidence collection across academic literature, industry reports, and co
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | orch-planner | pending | Feature created during Phase 0 setup |
+| 2026-02-22 | orchestrator | completed | All 5 children completed. 15+ academic sources, industry reports from 4 labs, conversation mining with 5 Whys. A/B requirements and prior art delivered. QG-1 PASS at 0.953. |

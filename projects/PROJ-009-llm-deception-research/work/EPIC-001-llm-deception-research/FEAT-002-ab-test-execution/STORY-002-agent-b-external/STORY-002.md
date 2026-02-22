@@ -1,14 +1,14 @@
 # STORY-002: Agent B - External Research Only
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** medium
 > **Created:** 2026-02-22T00:00:00Z
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-02-22
 > **Parent:** FEAT-002
-> **Owner:** —
+> **Owner:** ps-researcher-004
 > **Target Sprint:** —
 
 ---
@@ -19,6 +19,7 @@
 |---------|---------|
 | [Summary](#summary) | Description and scope |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Delivery Evidence](#delivery-evidence) | Artifact references |
 | [History](#history) | Status changes |
 
 ---
@@ -31,10 +32,21 @@ Agent B (treatment) answers identical 5 research questions using ONLY Context7 +
 
 ## Acceptance Criteria
 
-- [ ] All 5 research questions answered using Context7/WebSearch only
-- [ ] All sources cited with URLs
-- [ ] Output preserved as versioned artifacts
-- [ ] C4 review completed (QG-2B)
+- [x] All 5 research questions answered using Context7/WebSearch only
+- [x] All sources cited with URLs
+- [x] Output preserved as versioned artifacts
+- [x] C4 review completed (QG-2B)
+
+---
+
+## Delivery Evidence
+
+| Artifact | Path |
+|----------|------|
+| Primary output | `orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-researcher-004-agent-b/ps-researcher-004-agent-b-output.md` |
+| C4 review | `orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-critic-002/ps-critic-002-agent-b-review.md` |
+| Falsification criteria | `orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/falsification-criteria.md` |
+| Quality gate | `orchestration/llm-deception-20260221-001/quality-gates/qg-2/qg-2-report.md` |
 
 ---
 
@@ -43,3 +55,4 @@ Agent B (treatment) answers identical 5 research questions using ONLY Context7 +
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-22 | orch-planner | pending | Story created |
+| 2026-02-22 | orchestrator | completed | Delivered via ps-researcher-004. External-only responses to 5 questions. Composite score 0.907. QG-2 PASS at 0.944. |
