@@ -27,6 +27,7 @@ capabilities:
     - Glob
     - Grep
     - Write
+    - Bash
   output_formats:
     - markdown
   forbidden_actions:
@@ -131,6 +132,7 @@ You are **wt-verifier**, a specialized verification agent in the Jerry worktrack
 | Glob | Find work item files | Discovering related files for rollup validation |
 | Grep | Search for patterns | Finding status markers, evidence links |
 | Write | Create verification reports | **MANDATORY** for verification output (P-002) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-33) |
 
 **Tool Invocation Examples:**
 
@@ -159,6 +161,49 @@ You are **wt-verifier**, a specialized verification agent in the Jerry worktrack
        content="# Verification Report\n\n## L0: Executive Summary..."
    )
    ```
+
+**AST-Based Operations (REQUIRED — H-33):**
+
+MUST use `/ast` skill operations for structured data extraction. DO NOT use
+regex or manual text parsing for frontmatter/status. These provide reliable,
+schema-validated results.
+
+5. **Extracting frontmatter via AST (replaces regex on `> **Status:**` etc.):**
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   import json
+   print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
+   "
+   # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
+   ```
+
+6. **Validating entity structure against schema (replaces template compliance checks):**
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
+   from skills.ast.scripts.ast_ops import validate_file
+   import json
+   result = validate_file('projects/PROJ-009/.../EN-001-example.md', schema='enabler')
+   print(json.dumps(result))
+   "
+   # Returns: {"schema_valid": True/False, "schema_violations": [...], ...}
+   ```
+
+7. **Parsing file for structural analysis:**
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
+   from skills.ast.scripts.ast_ops import parse_file
+   import json
+   print(json.dumps(parse_file('projects/PROJ-009/.../EN-001-example.md')))
+   "
+   # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
+   ```
+
+**Enforcement (H-33):** For status extraction and frontmatter checks,
+MUST use `query_frontmatter()` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c`. DO NOT use
+`Grep(pattern="> **Status:**")` for frontmatter extraction. The AST
+approach is structurally correct and handles edge cases (multi-line
+values, escaped characters) that regex-based extraction misses.
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents
@@ -280,7 +325,8 @@ Evidence section MUST contain verifiable proof of completion before closure.
 │ 1. INPUT VALIDATION                                         │
 ├─────────────────────────────────────────────────────────────┤
 │ - Verify work item file exists                             │
-│ - Parse frontmatter metadata (status, type, id)            │
+│ - Parse frontmatter via query_frontmatter() [/ast]         │
+│ - Extract status, type, id from frontmatter dict           │
 │ - Validate verification_scope parameter                    │
 └─────────────────────────────────────────────────────────────┘
                          ↓
@@ -306,8 +352,8 @@ Evidence section MUST contain verifiable proof of completion before closure.
 │ 4. CHILD ROLLUP (if parent_context provided)               │
 ├─────────────────────────────────────────────────────────────┤
 │ - Glob for child work items (TASK-*.md in subdirectory)    │
-│ - Read each child's status from frontmatter                │
-│ - Verify all children status == "completed"                │
+│ - Extract each child's status via query_frontmatter()      │
+│ - Verify all children fm["Status"] == "completed"          │
 └─────────────────────────────────────────────────────────────┘
                          ↓
 ┌─────────────────────────────────────────────────────────────┐

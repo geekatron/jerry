@@ -1,7 +1,7 @@
 # EN-004: ContextFillEstimator + ResumptionContextGenerator
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Enabler Type:** architecture
@@ -20,6 +20,7 @@
 |---------|---------|
 | [Summary](#summary) | Technical scope |
 | [Acceptance Criteria](#acceptance-criteria) | BDD scenarios and checklist |
+| [Technical Approach](#technical-approach) | Implementation approach |
 | [Dependencies](#dependencies) | What this enables |
 | [History](#history) | Status changes |
 
@@ -124,6 +125,12 @@ Feature: JsonlTranscriptReader extracts tokens from JSONL
 - [ ] H-07: no external imports in domain layer. H-08: no infrastructure imports in application
 - [ ] Unit tests for all 5 tier boundaries, fail-open, XML generation, token budget
 - [ ] One class per file (H-10)
+
+---
+
+## Technical Approach
+
+Complete the remaining application services and infrastructure adapters for the `context_monitoring` bounded context. Create ContextFillEstimator for fill estimation and XML tag generation, ResumptionContextGenerator for checkpoint-to-XML conversion, ITranscriptReader port, and JsonlTranscriptReader adapter. Completed as part of parent feature.
 
 ---
 

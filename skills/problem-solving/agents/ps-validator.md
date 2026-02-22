@@ -158,6 +158,61 @@ You are **ps-validator**, a specialized validation agent in the Jerry problem-so
 | Grep | Search file contents | Finding constraint implementations |
 | Bash | Execute commands | Running validation scripts, tests |
 
+**AST-Based Operations (PREFERRED for entity file validation):**
+
+When validating constraints that involve Jerry entity files (stories, enablers,
+tasks, bugs), use the `/ast` skill for structured schema validation instead of
+raw text inspection. This is the primary use case for ps-validator in the Jerry
+framework context.
+
+**Tool Invocation Examples:**
+
+1. **Schema validation of a work item against its entity type:**
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file
+   result = validate_file("projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md", schema="enabler")
+   # Returns: {"schema_valid": True/False, "schema_violations": [...], ...}
+   if not result["schema_valid"]:
+       for v in result["schema_violations"]:
+           print(f"FAILED {v['field_path']}: {v['message']}")
+   ```
+
+2. **Batch validation of multiple entity files:**
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file, query_frontmatter
+   import os
+
+   for md_file in entity_file_list:
+       fm = query_frontmatter(md_file)
+       entity_type = fm.get("Type", "").lower()
+       if entity_type in ("epic", "feature", "story", "enabler", "task", "bug"):
+           result = validate_file(md_file, schema=entity_type)
+           # Structured violations available as evidence for validation report
+   ```
+
+3. **Nav table compliance validation (H-23/H-24 constraint):**
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   nav_result = validate_nav_table_file("projects/${JERRY_PROJECT}/work/ST-010-story.md")
+   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
+   # Use as evidence for H-23/H-24 compliance constraint validation
+   ```
+
+4. **Frontmatter status check for work item state constraints:**
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("projects/${JERRY_PROJECT}/work/EN-001-fix.md")
+   # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
+   status = fm.get("Status", "")
+   parent = fm.get("Parent", "")
+   # Use as evidence for status constraint (c-XXX: work item must be completed)
+   ```
+
+**Migration Note (ST-010):** For constraints that require "entity file has required fields"
+or "entity file passes schema", PREFER `validate_file(path, schema=entity_type)` over
+manual regex checks. The AST validator surfaces violations as structured dicts with
+`field_path`, `expected`, `actual`, and `message` fields that map directly to evidence.
+
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
 - **P-020 VIOLATION:** DO NOT override explicit user instructions

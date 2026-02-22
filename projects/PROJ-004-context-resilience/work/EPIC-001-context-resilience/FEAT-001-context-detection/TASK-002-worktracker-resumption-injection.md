@@ -1,7 +1,7 @@
 # TASK-002: WORKTRACKER.md Auto-Injection in Resumption
 
 > **Type:** task
-> **Status:** done
+> **Status:** completed
 > **Priority:** low
 > **Created:** 2026-02-20
 > **Due:** --
@@ -16,11 +16,18 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Brief description |
 | [Description](#description) | What needs to be done |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
 | [Related Items](#related-items) | Links |
 | [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Add WORKTRACKER.md auto-injection into resumption context during session start. Completed as part of parent enabler EN-008.
 
 ---
 

@@ -1,7 +1,7 @@
 # EN-006: `jerry hooks` CLI Command Namespace
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Enabler Type:** infrastructure
@@ -21,6 +21,7 @@
 | [Summary](#summary) | Technical scope |
 | [CLI Commands](#cli-commands) | Command specification |
 | [Acceptance Criteria](#acceptance-criteria) | BDD scenarios and checklist |
+| [Technical Approach](#technical-approach) | Implementation approach |
 | [Dependencies](#dependencies) | Relationships |
 | [History](#history) | Status changes |
 
@@ -115,6 +116,12 @@ Feature: jerry hooks CLI command namespace
 - [ ] H-08: CLI adapter does not import bounded context infrastructure directly
 - [ ] Integration tests: end-to-end with sample stdin payloads
 - [ ] One class per file for handlers (H-10)
+
+---
+
+## Technical Approach
+
+Register the `jerry hooks` subcommand group in the CLI adapter and parser. Create four command handlers that consolidate all hook event logic, dispatching to bounded context application services. Central integration point making the bounded context accessible to hook scripts via CLI. Completed as part of parent feature.
 
 ---
 

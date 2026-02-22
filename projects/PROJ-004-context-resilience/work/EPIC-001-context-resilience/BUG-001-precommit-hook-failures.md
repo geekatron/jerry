@@ -1,7 +1,7 @@
 # BUG-001: Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors
 
 > **Type:** bug
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
@@ -20,7 +20,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | Brief description and key details |
-| [Reproduction Steps](#reproduction-steps) | Steps to reproduce the issue |
+| [Steps to Reproduce](#steps-to-reproduce) | Steps to reproduce the issue |
 | [Environment](#environment) | Environment where bug occurs |
 | [Evidence](#evidence) | Bug documentation |
 | [Acceptance Criteria](#acceptance-criteria) | Conditions for bug to be fixed |
@@ -40,7 +40,7 @@ Three pre-commit hook categories are failing, requiring `SKIP=spdx-license-heade
 
 ---
 
-## Reproduction Steps
+## Steps to Reproduce
 
 ### Prerequisites
 

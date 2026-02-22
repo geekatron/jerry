@@ -1,7 +1,7 @@
 # EN-004:DEC-001: Pre-commit Hook Installation Strategy
 
 > **Type:** decision
-> **Status:** ACCEPTED
+> **Status:** SUPERSEDED
 > **Priority:** HIGH
 > **Created:** 2026-02-11
 > **Parent:** EN-004
@@ -28,7 +28,7 @@
 
 Decision on the pre-commit hook installation strategy for BUG-010. Research revealed that a comprehensive installation mechanism already exists via `make setup` (Makefile lines 16-22), documented in CONTRIBUTING.md (lines 11-30) and INSTALLATION.md (lines 374-407). The session start hook's detect-and-warn behavior (`scripts/session_start_hook.py` lines 104-139) is intentional and appropriate.
 
-**Decisions Captured:** 2
+**Decisions Captured:** 3
 
 **Key Outcomes:**
 - BUG-010's original framing ("auto-install needed") is incorrect — the installation mechanism already exists
@@ -169,12 +169,49 @@ Run 'make setup' to install dependencies and hooks.
 
 ---
 
+### D-003: Override D-001 — auto-install hooks on session start
+
+**Date:** 2026-02-21
+**Participants:** Adam Nowak
+
+#### Decision
+
+User overrides D-001 per P-020 (User Authority). The session start hook
+MUST auto-install pre-commit hooks when they are missing, rather than
+only warning. This ensures all worktrees get hooks installed automatically
+on first Claude Code session.
+
+#### Rationale
+
+1. In practice, `make setup` was never run after creating worktrees
+2. All 6 active worktrees had no hooks installed — the detection-only
+   approach failed to achieve its goal
+3. Auto-install during session start is low-risk: `pre-commit install`
+   only creates hook shims (<2s), does not download environments
+
+#### Implementation
+
+- `check_precommit_hooks()` now accepts `uv_path` parameter
+- When hooks are missing and `uv_path` is available, runs `uv run pre-commit install`
+- On success: returns info message
+- On failure/timeout: falls back to warning with manual instructions
+- No `--install-hooks` flag: hook environments are created lazily on first commit
+
+#### Implications
+
+- **Positive:** All worktrees get hooks automatically; zero developer action required
+- **Negative:** Adds a subprocess call on session start when hooks are missing (~2s one-time cost)
+- **Supersedes:** D-001 (detection-only approach)
+
+---
+
 ## Decision Summary
 
 | ID | Decision | Date | Status |
 |----|----------|------|--------|
-| D-001 | Close BUG-010 as "won't fix" — installation mechanism already exists via `make setup` | 2026-02-11 | ACCEPTED |
+| D-001 | Close BUG-010 as "won't fix" — installation mechanism already exists via `make setup` | 2026-02-11 | SUPERSEDED (by D-003) |
 | D-002 | Improve session hook warning to reference `make setup` with Windows fallback | 2026-02-11 | ACCEPTED |
+| D-003 | Override D-001 — auto-install hooks on session start (P-020 User Authority) | 2026-02-21 | ACCEPTED |
 
 ---
 
@@ -198,6 +235,7 @@ Run 'make setup' to install dependencies and hooks.
 | Date | Author | Change |
 |------|--------|--------|
 | 2026-02-11 | Claude | Created decision document with two decisions: D-001 (close BUG-010) and D-002 (improve warning message). Based on ps-investigator and ps-researcher findings. |
+| 2026-02-21 | Claude | Added D-003: User override of D-001 per P-020. Auto-install hooks on session start. D-001 status changed to SUPERSEDED. |
 
 ---
 
@@ -208,15 +246,15 @@ id: "EN-004:DEC-001"
 parent_id: "EN-004"
 work_type: DECISION
 title: "Pre-commit Hook Installation Strategy"
-status: ACCEPTED
+status: SUPERSEDED
 priority: HIGH
 created_by: "Claude"
 created_at: "2026-02-11"
-updated_at: "2026-02-11"
+updated_at: "2026-02-21"
 decided_at: "2026-02-11"
 participants: ["Adam Nowak", "Claude"]
 tags: ["pre-commit", "makefile", "session-hook", "installation"]
-decision_count: 2
-superseded_by: null
+decision_count: 3
+superseded_by: "D-003"
 supersedes: null
 ```

@@ -1,12 +1,18 @@
 # TASK-001: Add Missing Category Directories to PROJ-006
 
 > **Type:** task
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-20
 > **Parent:** BUG-012-ci-proj006-missing-dirs
 > **Owner:** Claude
 > **Effort:** 1
+
+---
+
+## Summary
+
+Add missing category directories with `.gitkeep` files to PROJ-006-multi-instance.
 
 ---
 

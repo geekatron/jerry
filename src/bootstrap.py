@@ -656,6 +656,42 @@ def create_hooks_handlers() -> dict[str, Any]:
     }
 
 
+def create_context_estimate_handler() -> Any:
+    """Create the context estimate CLI handler with all dependencies.
+
+    Wires ContextEstimateComputer, FilesystemContextStateStore,
+    ContextEstimateService, and ContextEstimateHandler.
+
+    Returns:
+        ContextEstimateHandler ready to process stdin JSON.
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+        - EN-013: Bootstrap Wiring + Config Integration
+    """
+    from src.context_monitoring.application.services.context_estimate_service import (
+        ContextEstimateService,
+    )
+    from src.context_monitoring.domain.services.context_estimate_computer import (
+        ContextEstimateComputer,
+    )
+    from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
+        FilesystemContextStateStore,
+    )
+    from src.interface.cli.context.context_estimate_handler import (
+        ContextEstimateHandler,
+    )
+
+    project_root = Path.cwd()
+    state_dir = project_root / ".jerry" / "local"
+
+    computer = ContextEstimateComputer()
+    state_store = FilesystemContextStateStore(state_dir=state_dir)
+    service = ContextEstimateService(computer, state_store)
+
+    return ContextEstimateHandler(service)
+
+
 def reset_singletons() -> None:
     """Reset all module-level singletons (for testing).
 

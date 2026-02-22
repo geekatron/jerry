@@ -1,7 +1,7 @@
 # EN-007: Hook Wrapper Scripts + hooks.json Registration
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -21,6 +21,7 @@
 | [Summary](#summary) | Technical scope |
 | [Wrapper Pattern](#wrapper-pattern) | Script template |
 | [Acceptance Criteria](#acceptance-criteria) | BDD scenarios and checklist |
+| [Technical Approach](#technical-approach) | Implementation approach |
 | [Dependencies](#dependencies) | Relationships |
 | [History](#history) | Status changes |
 
@@ -112,6 +113,12 @@ Feature: Hook wrapper scripts delegate to CLI
 - [ ] Subprocess timeout 1s below hook timeout for each wrapper
 - [ ] All wrappers correctly pipe stdin/stdout
 - [ ] End-to-end test: wrapper with sample JSON stdin returns expected output
+
+---
+
+## Technical Approach
+
+Create four thin hook wrapper scripts and update `hooks/hooks.json` to register all hook events. Each wrapper reads stdin from Claude Code, calls `jerry hooks <event>` via subprocess, and pipes stdout back. All logic lives in bounded context and CLI commands. Scripts contain no imports from `src/`. Completed as part of parent feature.
 
 ---
 

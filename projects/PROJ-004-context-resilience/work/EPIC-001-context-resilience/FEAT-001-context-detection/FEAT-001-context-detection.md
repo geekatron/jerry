@@ -1,7 +1,7 @@
 # FEAT-001: Context Exhaustion Detection & Graceful Session Handoff
 
 > **Type:** feature
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
@@ -21,7 +21,7 @@
 | [Benefit Hypothesis](#benefit-hypothesis) | Expected benefits |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [MVP Definition](#mvp-definition) | Minimum viable scope |
-| [Children (Stories/Enablers)](#children-storiesenablers) | Work item inventory |
+| [Children Stories/Enablers](#children-storiesenablers) | Work item inventory |
 | [Progress Summary](#progress-summary) | Overall feature progress |
 | [Related Items](#related-items) | Dependencies |
 | [History](#history) | Status changes |
@@ -106,7 +106,7 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 ---
 
-## Children (Stories/Enablers)
+## Children Stories/Enablers
 
 ### Work Item Inventory
 

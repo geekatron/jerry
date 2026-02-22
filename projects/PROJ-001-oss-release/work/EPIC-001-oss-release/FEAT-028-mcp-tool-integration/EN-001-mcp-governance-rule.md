@@ -1,7 +1,7 @@
 # EN-001: MCP Governance Rule File
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** compliance
@@ -13,9 +13,27 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Brief description |
+| [Technical Approach](#technical-approach) | Implementation approach |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Delivery evidence |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Create `.context/rules/mcp-tool-standards.md` as the SSOT for MCP tool governance. Defines when and how agents should proactively use Context7 (documentation lookup) and Memory-Keeper (cross-session persistence).
+
+## Technical Approach
+
+Completed as part of parent feature. See evidence below.
+
+---
 
 ## Acceptance Criteria
 

@@ -1,7 +1,7 @@
 # EN-003: Memory-Keeper Agent Updates
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -13,9 +13,28 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Brief description |
+| [Technical Approach](#technical-approach) | Implementation approach |
+| [Agents Updated](#agents-updated) | Agent modification details |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Delivery evidence |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Add Memory-Keeper MCP tools to 7 agents across 4 skills. Each agent gets the tools appropriate to its role (store+retrieve+search for planners/architects, retrieve+search for synthesizers, store+retrieve for parsers/extractors).
+
+## Technical Approach
+
+Completed as part of parent feature. See evidence below.
+
+---
 
 ## Agents Updated
 

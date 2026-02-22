@@ -1,7 +1,7 @@
 # EN-001: FileSystemSessionRepository
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -20,6 +20,7 @@
 |---------|---------|
 | [Summary](#summary) | Technical scope |
 | [Acceptance Criteria](#acceptance-criteria) | BDD scenarios and checklist |
+| [Technical Approach](#technical-approach) | Implementation approach |
 | [Dependencies](#dependencies) | What this enables |
 | [History](#history) | Status changes |
 
@@ -110,6 +111,12 @@ Feature: FileSystemSessionRepository persists sessions across processes
 - [ ] `InMemorySessionRepository` retained for unit testing, not used in production wiring
 - [ ] `bootstrap.py` wires `FileSystemSessionRepository` as `ISessionRepository` implementation
 - [ ] One class per file (H-10)
+
+---
+
+## Technical Approach
+
+Implement using the established EventSourcedWorkItemRepository pattern: event registry for session domain events, stream ID convention, FileSystemEventStore delegation, and aggregate reconstitution via `Session.load_from_history()`. Completed as part of parent feature.
 
 ---
 

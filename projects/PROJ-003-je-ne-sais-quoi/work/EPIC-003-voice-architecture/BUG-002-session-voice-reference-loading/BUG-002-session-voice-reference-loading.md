@@ -28,11 +28,11 @@ PURPOSE: Document reference loading architecture failure in session voice skill
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | What the bug is |
-| [Reproduction Steps](#reproduction-steps) | How to reproduce |
+| [Steps to Reproduce](#steps-to-reproduce) | How to reproduce |
 | [Environment](#environment) | Where it occurs |
 | [Root Cause Analysis](#root-cause-analysis) | Why it happens |
 | [Acceptance Criteria](#acceptance-criteria) | When it's fixed |
-| [Children](#children-tasks--decisions) | Tasks and decisions |
+| [Children (Tasks / Decisions)](#children-tasks-decisions) | Tasks and decisions |
 | [Related Items](#related-items) | Hierarchy and links |
 | [History](#history) | Change log |
 
@@ -49,7 +49,7 @@ When `/saucer-boy` is invoked, the Skill tool loads the full SKILL.md (~300 line
 
 ---
 
-## Reproduction Steps
+## Steps to Reproduce
 
 ### Prerequisites
 

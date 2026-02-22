@@ -1,7 +1,7 @@
 # EN-006: Ambiguity Clarification Rule (H-31)
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** compliance
@@ -13,9 +13,27 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Brief description |
+| [Technical Approach](#technical-approach) | Implementation approach |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Delivery evidence |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Add H-31 "Clarify Before Acting When Ambiguous" as a HARD rule to the quality enforcement framework. When requirements have multiple valid interpretations, unclear scope, or imply destructive action, Claude MUST ask clarifying questions before proceeding. Reconcile TOOL_REGISTRY.yaml AskUserQuestion constraints which previously discouraged clarification.
+
+## Technical Approach
+
+Completed as part of quality enforcement framework updates. See evidence below.
+
+---
 
 ## Acceptance Criteria
 

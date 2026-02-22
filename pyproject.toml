@@ -1,6 +1,6 @@
 [project]
 name = "jerry"
-version = "0.8.0"
+version = "0.10.0"
 description = "A framework for behavior and workflow guardrails with knowledge accrual"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -33,6 +33,9 @@ dependencies = [
     "webvtt-py>=0.5.1",
     "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
     "filelock>=3.20.3",
+    "markdown-it-py>=4.0.0,<5.0.0",
+    "mdformat>=1.0.0,<2.0.0",
+    "mdit-py-plugins>=0.4.0",
     "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
 ]
 
@@ -82,6 +85,12 @@ disallow_untyped_defs = true
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+# Exclude completed PoC/spike scripts from linting. These are one-off research
+# artifacts that served their purpose (EN-001 R-01 PoC) and are preserved as
+# reference material, not production code. See BUG-001 for context.
+exclude = [
+    "projects/*/work/**/EN-*/r01_poc.py",
+]
 
 [tool.ruff.lint]
 select = [
@@ -110,6 +119,7 @@ markers = [
     "edge-case: marks tests as edge case scenarios",
     "boundary: marks tests as boundary value scenarios",
     "e2e: marks end-to-end tests (slow, full stack)",
+    "integration: marks integration tests (external dependencies)",
     "subprocess: marks tests that invoke external processes",
 ]
 
@@ -136,7 +146,7 @@ tag_format = "v$version"
 #   - design-version-bumping-process.md
 
 [tool.bumpversion]
-current_version = "0.8.0"
+current_version = "0.10.0"
 commit = true
 tag = true
 tag_name = "v{new_version}"
@@ -187,5 +197,6 @@ dev = [
     "pre-commit>=4.5.1",
     "pyright>=1.1.408",
     "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
     "ruff>=0.14.11",
 ]

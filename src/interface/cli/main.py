@@ -115,6 +115,10 @@ def main() -> int:
         return _handle_config(adapter, args, json_output)
     elif args.namespace == "transcript":
         return _handle_transcript(adapter, args, json_output)
+    elif args.namespace == "context":
+        return _handle_context(args)
+    elif args.namespace == "ast":
+        return _handle_ast(args, json_output)
     elif args.namespace == "hooks":
         return _handle_hooks(adapter, args)
 
@@ -344,6 +348,76 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
         )
 
     print(f"Unknown transcript command: {args.command}")
+    return 1
+
+
+def _handle_context(args: Any) -> int:
+    """Route context namespace commands.
+
+    Reads stdin JSON and delegates to the context estimate handler.
+    Does not require the CLIAdapter — uses its own bootstrap wiring.
+
+    Args:
+        args: Parsed arguments with .command.
+
+    Returns:
+        Exit code (always 0 for fail-open).
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+    """
+    if args.command is None:
+        print("No context command specified. Use 'jerry context --help'.")
+        return 1
+
+    if args.command == "estimate":
+        from src.bootstrap import create_context_estimate_handler
+
+        handler = create_context_estimate_handler()
+
+        # Read stdin
+        stdin_json = ""
+        if not sys.stdin.isatty():
+            stdin_json = sys.stdin.read()
+
+        return handler.handle(stdin_json)
+
+    print(f"Unknown context command: {args.command}")
+    return 1
+
+
+def _handle_ast(args: Any, json_output: bool) -> int:
+    """Route ast namespace commands.
+
+    Does not require the CLIAdapter; calls the domain layer directly via
+    ast_commands functions.
+
+    Args:
+        args: Parsed arguments with .command, .file, and optional .selector/.schema.
+        json_output: Whether JSON output was requested (passed through to commands).
+
+    Returns:
+        Exit code: 0 (success), 1 (validation failure), 2 (parse error).
+
+    References:
+        - ST-004: Add jerry ast CLI Commands
+    """
+    from src.interface.cli.ast_commands import ast_parse, ast_query, ast_render, ast_validate
+
+    if args.command is None:
+        print("No ast command specified. Use 'jerry ast --help'.")
+        return 1
+
+    if args.command == "parse":
+        return ast_parse(args.file, json_output)
+    elif args.command == "render":
+        return ast_render(args.file)
+    elif args.command == "validate":
+        return ast_validate(args.file, getattr(args, "schema", None))
+    elif args.command == "query":
+        return ast_query(args.file, args.selector, json_output)
+
+    print(f"Unknown ast command: {args.command}")
     return 1
 
 

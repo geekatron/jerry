@@ -1,7 +1,7 @@
 # TASK-004: Automated E2E Integration Test
 
 > **Type:** task
-> **Status:** done
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-02-20
 > **Due:** --
@@ -16,11 +16,18 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Brief description |
 | [Description](#description) | What needs to be done |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
 | [Related Items](#related-items) | Links |
 | [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Create automated E2E integration test exercising the complete detection-checkpoint-resumption pipeline. Completed as part of parent enabler EN-008.
 
 ---
 

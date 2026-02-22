@@ -1,7 +1,7 @@
 # EN-005: PreToolUse Staleness Detection
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
@@ -20,6 +20,7 @@
 |---------|---------|
 | [Summary](#summary) | Technical scope |
 | [Acceptance Criteria](#acceptance-criteria) | BDD scenarios and checklist |
+| [Technical Approach](#technical-approach) | Implementation approach |
 | [Dependencies](#dependencies) | Relationships |
 | [History](#history) | Status changes |
 
@@ -82,6 +83,12 @@ Feature: ORCHESTRATION.yaml staleness detection on pre-tool-use
 - [ ] Fail-open on YAML parse errors
 - [ ] Unit tests: path matching, staleness calculation, passthrough, fail-open
 - [ ] Integration with `jerry hooks pre-tool-use` handler (EN-006) verified
+
+---
+
+## Technical Approach
+
+Add ORCHESTRATION.yaml `resumption.updated_at` staleness detection to the `jerry hooks pre-tool-use` CLI command handler. Parse tool call target path, check if targeting ORCHESTRATION.yaml, compare `updated_at` against current phase start timestamp, and inject staleness warning if stale. Fail-open on parse errors. Completed as part of parent feature.
 
 ---
 

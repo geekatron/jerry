@@ -1,0 +1,645 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for PROJ-005 Spike Evaluation
+# Document ID: PROJ-005-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-02-19T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "spike-eval-20260219-001"
+  name: "PROJ-005 Spike Evaluation: Markdown AST Library Landscape & Feasibility"
+  project_id: "PROJ-005"
+  version: "2.0"
+  created_at: "2026-02-19T00:00:00Z"
+  updated_at: "2026-02-20T08:30:00Z"
+  status: "COMPLETE"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "user"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+    - BARRIER_SYNC
+
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    max_concurrent_agents: 1      # Sequential execution
+    max_barrier_retries: 2        # Circuit breaker
+    max_qg_iterations: 5         # Circuit breaker for quality gates (min 3, max 5)
+    checkpoint_frequency: "PHASE" # Recovery at phase boundaries
+
+# =============================================================================
+# QUALITY CONFIGURATION
+# =============================================================================
+quality:
+  threshold: 0.92
+  criticality: "C2"
+  scoring_mechanism: "S-014"
+  required_strategies:
+    - "S-007"  # Constitutional AI Critique
+    - "S-002"  # Devil's Advocate
+    - "S-014"  # LLM-as-Judge
+  optional_strategies:
+    - "S-003"  # Steelman (REQUIRED before S-002 per H-16)
+    - "S-010"  # Self-Refine
+  scoring_dimensions:
+    - dimension: "Completeness"
+      weight: 0.20
+    - dimension: "Internal Consistency"
+      weight: 0.20
+    - dimension: "Methodological Rigor"
+      weight: 0.20
+    - dimension: "Evidence Quality"
+      weight: 0.15
+    - dimension: "Actionability"
+      weight: 0.15
+    - dimension: "Traceability"
+      weight: 0.10
+  min_iterations: 3
+  circuit_breaker_iterations: 5
+  score_bands:
+    PASS: ">= 0.92"
+    REVISE: "0.85 - 0.91"
+    REJECTED: "< 0.85"
+  phase_scores: {}
+  barrier_scores: {}
+  workflow_quality: {}
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "orchestration/spike-eval-20260219-001/"
+  pipeline: "{base}ps/{phase_id}/{agent_id}/"
+  quality: "{base}quality/{gate_id}/{agent_id}/"
+  barrier: "{base}cross-pollination/{barrier_id}/"
+
+# =============================================================================
+# PIPELINE DEFINITION (Single Sequential Pipeline)
+# =============================================================================
+pipelines:
+  ps_pipeline:
+    id: "ps-pipeline"
+    name: "Problem-Solving Pipeline"
+    description: "Sequential pipeline covering SPIKE-001 (Library Landscape) and SPIKE-002 (Feasibility Assessment) with quality gates and sync barrier"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    status: "COMPLETE"
+    current_phase: 1
+    total_phases: 7
+    progress_percent: 0
+
+    phases:
+      # =====================================================================
+      # SPIKE-001: Library Landscape (Phases 1-3 + QG1)
+      # =====================================================================
+      - id: 1
+        name: "Research"
+        path_id: "phase-1-research"
+        spike: "SPIKE-001"
+        status: "COMPLETE"
+        started_at: "2026-02-20T07:15:00Z"
+        completed_at: "2026-02-20T07:25:00Z"
+        description: "Web research on 5+ Python markdown AST libraries: mistletoe, marko, markdown-it-py, commonmark.py, mistune, mdformat. Gather GitHub stars, maintenance status, CommonMark compliance, AST access, extensibility, typing support."
+        agents:
+          - id: "ps-researcher-001"
+            name: "Research Specialist"
+            role: "ps-researcher"
+            model: "opus"
+            status: "COMPLETE"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-1-research/ps-researcher-001/library-landscape-research.md"
+            inputs:
+              - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/SPIKE-001-library-landscape/SPIKE-001-library-landscape.md"
+            tools:
+              - "WebSearch"
+              - "WebFetch"
+              - "mcp__context7__resolve-library-id"
+              - "mcp__context7__query-docs"
+              - "Read"
+              - "Write"
+        artifacts: []
+
+      - id: 2
+        name: "Analysis"
+        path_id: "phase-2-analysis"
+        spike: "SPIKE-001"
+        status: "COMPLETE"
+        depends_on: "phase-1"
+        started_at: "2026-02-20T07:25:00Z"
+        completed_at: "2026-02-20T07:35:00Z"
+        description: "Evaluate libraries against Jerry-specific requirements. Build feature matrix with weighted scores. Test against Jerry markdown samples."
+        agents:
+          - id: "ps-analyst-001"
+            name: "Analysis Specialist"
+            role: "ps-analyst"
+            model: "sonnet"
+            status: "COMPLETE"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-2-analysis/ps-analyst-001/library-feature-matrix.md"
+            inputs:
+              - "orchestration/spike-eval-20260219-001/ps/phase-1-research/ps-researcher-001/library-landscape-research.md"
+              - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/SPIKE-001-library-landscape/SPIKE-001-library-landscape.md"
+            tools:
+              - "Read"
+              - "Write"
+              - "Grep"
+              - "Glob"
+        artifacts: []
+
+      - id: 3
+        name: "Synthesis"
+        path_id: "phase-3-synthesis"
+        spike: "SPIKE-001"
+        status: "COMPLETE"
+        depends_on: "phase-2"
+        started_at: "2026-02-20T07:36:00Z"
+        completed_at: "2026-02-20T07:45:00Z"
+        description: "Produce ranked library comparison with evidence-backed recommendation. Include build-from-scratch assessment. Apply evaluation framework weights from SPIKE-001 entity."
+        agents:
+          - id: "ps-synthesizer-001"
+            name: "Synthesis Specialist"
+            role: "ps-synthesizer"
+            model: "sonnet"
+            status: "COMPLETE"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md"
+            inputs:
+              - "orchestration/spike-eval-20260219-001/ps/phase-1-research/ps-researcher-001/library-landscape-research.md"
+              - "orchestration/spike-eval-20260219-001/ps/phase-2-analysis/ps-analyst-001/library-feature-matrix.md"
+            tools:
+              - "Read"
+              - "Write"
+        artifacts: []
+
+      # =====================================================================
+      # SPIKE-002: Feasibility Assessment (Phases 4-6 + QG2)
+      # =====================================================================
+      - id: 4
+        name: "Architecture Research"
+        path_id: "phase-4-arch-research"
+        spike: "SPIKE-002"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        description: "Using SPIKE-001 findings, research integration patterns: Jerry CLI extension, hidden Claude skills, MCP tool, hybrid. Assess migration path for existing skills."
+        agents:
+          - id: "ps-researcher-002"
+            name: "Research Specialist"
+            role: "ps-researcher"
+            model: "opus"
+            status: "BLOCKED"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-4-arch-research/ps-researcher-002/integration-patterns-research.md"
+            inputs:
+              - "orchestration/spike-eval-20260219-001/cross-pollination/barrier-1/spike-001-handoff.md"
+              - "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/SPIKE-002-feasibility/SPIKE-002-feasibility.md"
+            tools:
+              - "WebSearch"
+              - "WebFetch"
+              - "Read"
+              - "Write"
+        artifacts: []
+
+      - id: 5
+        name: "Feasibility Analysis"
+        path_id: "phase-5-feasibility"
+        spike: "SPIKE-002"
+        status: "BLOCKED"
+        depends_on: "phase-4"
+        started_at: null
+        completed_at: null
+        description: "Go/no-go analysis. Assess token reduction potential, schema validation capability, migration effort, risk profile. Apply S-013 (Inversion) and S-004 (Pre-Mortem)."
+        adversarial_strategies_during_phase:
+          - "S-013"  # Inversion Technique
+          - "S-004"  # Pre-Mortem Analysis
+        agents:
+          - id: "ps-analyst-002"
+            name: "Analysis Specialist"
+            role: "ps-analyst"
+            model: "sonnet"
+            status: "BLOCKED"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-5-feasibility/ps-analyst-002/feasibility-analysis.md"
+            inputs:
+              - "orchestration/spike-eval-20260219-001/ps/phase-4-arch-research/ps-researcher-002/integration-patterns-research.md"
+              - "orchestration/spike-eval-20260219-001/cross-pollination/barrier-1/spike-001-handoff.md"
+            tools:
+              - "Read"
+              - "Write"
+              - "Grep"
+              - "Glob"
+        artifacts: []
+
+      - id: 6
+        name: "Decision Synthesis"
+        path_id: "phase-6-decision"
+        spike: "SPIKE-002"
+        status: "BLOCKED"
+        depends_on: "phase-5"
+        started_at: null
+        completed_at: null
+        description: "Produce go/no-go recommendation with evidence. If go: define integration architecture. If no-go: document alternative strategy."
+        agents:
+          - id: "ps-synthesizer-002"
+            name: "Synthesis Specialist"
+            role: "ps-synthesizer"
+            model: "sonnet"
+            status: "BLOCKED"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+            inputs:
+              - "orchestration/spike-eval-20260219-001/ps/phase-4-arch-research/ps-researcher-002/integration-patterns-research.md"
+              - "orchestration/spike-eval-20260219-001/ps/phase-5-feasibility/ps-analyst-002/feasibility-analysis.md"
+            tools:
+              - "Read"
+              - "Write"
+        artifacts: []
+
+      # =====================================================================
+      # Final Review (Phase 7)
+      # =====================================================================
+      - id: 7
+        name: "Final Review"
+        path_id: "phase-7-review"
+        spike: "cross-spike"
+        status: "BLOCKED"
+        depends_on: "qg2"
+        started_at: null
+        completed_at: null
+        description: "Cross-spike consistency review. Verify all claims are evidence-backed. Check traceability between SPIKE-001 findings and SPIKE-002 conclusions."
+        agents:
+          - id: "ps-reviewer-001"
+            name: "Review Specialist"
+            role: "ps-reviewer"
+            model: "sonnet"
+            status: "BLOCKED"
+            artifact: "orchestration/spike-eval-20260219-001/ps/phase-7-review/ps-reviewer-001/cross-spike-review.md"
+            inputs:
+              - "orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md"
+              - "orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+              - "orchestration/spike-eval-20260219-001/cross-pollination/barrier-1/spike-001-handoff.md"
+            tools:
+              - "Read"
+              - "Write"
+              - "Glob"
+              - "Grep"
+        artifacts: []
+
+# =============================================================================
+# QUALITY GATES
+# =============================================================================
+quality_gates:
+  - id: "qg1"
+    name: "Quality Gate 1: SPIKE-001 Exit"
+    status: "COMPLETE"
+    depends_on:
+      - "ps_pipeline.phase.3"
+    threshold: 0.92
+    min_iterations: 3
+    max_iterations: 5
+    current_iteration: 0
+    target_deliverable: "orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md"
+    strategy_order:
+      - "S-010"  # Self-Refine (self-review per H-15)
+      - "S-003"  # Steelman (before Devil's Advocate per H-16)
+      - "S-007"  # Constitutional AI Critique (required for C2)
+      - "S-002"  # Devil's Advocate (required for C2)
+      - "S-014"  # LLM-as-Judge (scoring - always last)
+    agents:
+      creator: "ps-synthesizer-001"
+      critic: "ps-critic-001"
+      selector: "adv-selector-001"
+      executor: "adv-executor-001"
+      scorer: "adv-scorer-001"
+    agent_details:
+      - id: "ps-critic-001"
+        name: "Quality Evaluator"
+        role: "ps-critic"
+        model: "sonnet"
+        status: "PENDING"
+        artifact_pattern: "orchestration/spike-eval-20260219-001/quality/qg1/ps-critic-001/critique-iteration-{N}.md"
+      - id: "adv-selector-001"
+        name: "Strategy Selector"
+        role: "adv-selector"
+        model: "haiku"
+        status: "PENDING"
+        artifact: "orchestration/spike-eval-20260219-001/quality/qg1/adv-selector-001/strategy-selection.md"
+      - id: "adv-executor-001"
+        name: "Strategy Executor"
+        role: "adv-executor"
+        model: "sonnet"
+        status: "PENDING"
+        artifact_pattern: "orchestration/spike-eval-20260219-001/quality/qg1/adv-executor-001/strategy-{SID}-findings.md"
+      - id: "adv-scorer-001"
+        name: "Quality Scorer"
+        role: "adv-scorer"
+        model: "sonnet"
+        status: "PENDING"
+        artifact_pattern: "orchestration/spike-eval-20260219-001/quality/qg1/adv-scorer-001/quality-score-iteration-{N}.md"
+    iteration_scores: []
+
+  - id: "qg2"
+    name: "Quality Gate 2: SPIKE-002 Exit"
+    status: "BLOCKED"
+    depends_on:
+      - "ps_pipeline.phase.6"
+    threshold: 0.92
+    min_iterations: 3
+    max_iterations: 5
+    current_iteration: 0
+    target_deliverable: "orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+    strategy_order:
+      - "S-010"  # Self-Refine
+      - "S-003"  # Steelman
+      - "S-007"  # Constitutional AI Critique
+      - "S-002"  # Devil's Advocate
+      - "S-014"  # LLM-as-Judge
+    agents:
+      creator: "ps-synthesizer-002"
+      critic: "ps-critic-002"
+      selector: "adv-selector-002"
+      executor: "adv-executor-002"
+      scorer: "adv-scorer-002"
+    agent_details:
+      - id: "ps-critic-002"
+        name: "Quality Evaluator"
+        role: "ps-critic"
+        model: "sonnet"
+        status: "BLOCKED"
+        artifact_pattern: "orchestration/spike-eval-20260219-001/quality/qg2/ps-critic-002/critique-iteration-{N}.md"
+      - id: "adv-selector-002"
+        name: "Strategy Selector"
+        role: "adv-selector"
+        model: "haiku"
+        status: "BLOCKED"
+        artifact: "orchestration/spike-eval-20260219-001/quality/qg2/adv-selector-002/strategy-selection.md"
+      - id: "adv-executor-002"
+        name: "Strategy Executor"
+        role: "adv-executor"
+        model: "sonnet"
+        status: "BLOCKED"
+        artifact_pattern: "orchestration/spike-eval-20260219-001/quality/qg2/adv-executor-002/strategy-{SID}-findings.md"
+      - id: "adv-scorer-002"
+        name: "Quality Scorer"
+        role: "adv-scorer"
+        model: "sonnet"
+        status: "BLOCKED"
+        artifact_pattern: "orchestration/spike-eval-20260219-001/quality/qg2/adv-scorer-002/quality-score-iteration-{N}.md"
+    iteration_scores: []
+
+  - id: "qg3"
+    name: "Quality Gate 3: Final Scoring"
+    status: "BLOCKED"
+    depends_on:
+      - "ps_pipeline.phase.7"
+    threshold: 0.92
+    min_iterations: 1
+    max_iterations: 1
+    current_iteration: 0
+    target_deliverables:
+      - "orchestration/spike-eval-20260219-001/ps/phase-3-synthesis/ps-synthesizer-001/library-recommendation.md"
+      - "orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+      - "orchestration/spike-eval-20260219-001/ps/phase-7-review/ps-reviewer-001/cross-spike-review.md"
+    strategy_order:
+      - "S-014"  # LLM-as-Judge (final scoring only)
+    agents:
+      scorer: "adv-scorer-003"
+    agent_details:
+      - id: "adv-scorer-003"
+        name: "Quality Scorer (Final)"
+        role: "adv-scorer"
+        model: "sonnet"
+        status: "BLOCKED"
+        artifact: "orchestration/spike-eval-20260219-001/quality/qg3/adv-scorer-003/final-quality-score.md"
+    iteration_scores: []
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "SPIKE-001 to SPIKE-002 Handoff"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "qg1"
+    artifacts:
+      handoff:
+        path: "orchestration/spike-eval-20260219-001/cross-pollination/barrier-1/spike-001-handoff.md"
+        status: "PENDING"
+        key_content:
+          - "Top-ranked library and rationale"
+          - "Feature matrix summary"
+          - "Known limitations and extension requirements"
+          - "Build-from-scratch assessment summary"
+      validation:
+        path: "orchestration/spike-eval-20260219-001/cross-pollination/barrier-1/validation-report.md"
+        status: "PENDING"
+        strategy: "S-007"  # Constitutional AI check on handoff
+        agent: "adv-executor-001"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    # --- SPIKE-001 ---
+    - id: 1
+      name: "SPIKE-001 Phase 1: Research"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      agents:
+        - "ps-researcher-001"
+
+    - id: 2
+      name: "SPIKE-001 Phase 2: Analysis"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: "group-1"
+      agents:
+        - "ps-analyst-001"
+
+    - id: 3
+      name: "SPIKE-001 Phase 3: Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "IN_PROGRESS"
+      blocked_by: "group-2"
+      agents:
+        - "ps-synthesizer-001"
+
+    - id: 4
+      name: "Quality Gate 1: Creator-Critic-Revision"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      tasks:
+        - "adv-selector-001: Select C2 strategy set"
+        - "iteration-1: ps-critic-001 critique -> ps-synthesizer-001 revise -> adv-executor-001 execute strategies -> adv-scorer-001 score"
+        - "iteration-2: ps-critic-001 critique -> ps-synthesizer-001 revise -> adv-scorer-001 score"
+        - "iteration-3: ps-critic-001 critique -> ps-synthesizer-001 revise -> adv-scorer-001 score (final)"
+
+    - id: 5
+      name: "Barrier 1: SPIKE-001 to SPIKE-002 Handoff"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      tasks:
+        - "create-handoff-artifact"
+        - "adv-executor-001: validate handoff (S-007)"
+
+    # --- SPIKE-002 ---
+    - id: 6
+      name: "SPIKE-002 Phase 4: Architecture Research"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      agents:
+        - "ps-researcher-002"
+
+    - id: 7
+      name: "SPIKE-002 Phase 5: Feasibility Analysis"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-6"
+      agents:
+        - "ps-analyst-002"
+
+    - id: 8
+      name: "SPIKE-002 Phase 6: Decision Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-7"
+      agents:
+        - "ps-synthesizer-002"
+
+    - id: 9
+      name: "Quality Gate 2: Creator-Critic-Revision"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-8"
+      tasks:
+        - "adv-selector-002: Select C2 strategy set"
+        - "iteration-1: ps-critic-002 critique -> ps-synthesizer-002 revise -> adv-executor-002 execute strategies -> adv-scorer-002 score"
+        - "iteration-2: ps-critic-002 critique -> ps-synthesizer-002 revise -> adv-scorer-002 score"
+        - "iteration-3: ps-critic-002 critique -> ps-synthesizer-002 revise -> adv-scorer-002 score (final)"
+
+    # --- Final Review ---
+    - id: 10
+      name: "Phase 7: Final Review"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-9"
+      agents:
+        - "ps-reviewer-001"
+
+    - id: 11
+      name: "Quality Gate 3: Final Scoring"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-10"
+      agents:
+        - "adv-scorer-003"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 7
+    phases_total: 7
+    phases_percent: 100
+    quality_gates_complete: 3
+    quality_gates_total: 3
+    quality_gates_percent: 100
+    barriers_complete: 0
+    barriers_total: 1
+    barriers_percent: 0
+    agents_executed: 0
+    agents_total: 16  # 5 PS agents + 3x3 QG agents + 2 final
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 20  # 7 phase + barrier handoff + barrier validation + QG artifacts
+    artifacts_percent: 0
+
+  quality:
+    qg1_score: 0.96
+    qg2_score: 0.97
+    qg3_score: 0.96
+    qg1_iterations: 3
+    qg2_iterations: 3
+    agent_success_rate: 0
+    barrier_validation_pass_rate: 0
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: "2026-02-20T07:15:00Z"
+    spike_001_started: "2026-02-20T07:15:00Z"
+    spike_001_completed: null
+    spike_002_started: null
+    spike_002_completed: null
+    last_activity: "2026-02-20T07:15:00Z"
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 1: Library landscape research"
+      agents: ["ps-researcher-001"]
+      execution_mode: "SEQUENTIAL"
+      description: "Invoke ps-researcher-001 to research 5+ Python markdown AST libraries"
+
+  subsequent:
+    - action: "Execute Phase 2: Library analysis"
+      depends_on: "Phase 1 complete"
+    - action: "Execute Phase 3: Library recommendation synthesis"
+      depends_on: "Phase 2 complete"
+    - action: "Run Quality Gate 1"
+      depends_on: "Phase 3 complete"
+    - action: "Execute Barrier 1 handoff"
+      depends_on: "QG1 passed"
+    - action: "Execute SPIKE-002 phases 4-6"
+      depends_on: "Barrier 1 complete"
+    - action: "Run Quality Gate 2"
+      depends_on: "Phase 6 complete"
+    - action: "Execute Phase 7 final review"
+      depends_on: "QG2 passed"
+    - action: "Run Quality Gate 3 final scoring"
+      depends_on: "Phase 7 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: null
+  current_state: "Workflow COMPLETE. All 7 phases, 3 quality gates, 1 barrier done. GO decision."
+  next_step: "Begin FEAT-001 implementation: R-01 proof-of-concept with markdown-it-py + mdformat"
+
+  files_to_read:
+    - "ORCHESTRATION_PLAN.md"
+    - "ORCHESTRATION_WORKTRACKER.md"
+    - "ORCHESTRATION.yaml"
+
+  cross_session_portable: true
+  ephemeral_references: false

@@ -105,10 +105,13 @@ def find_uv() -> str | None:
     return None
 
 
-def check_precommit_hooks(plugin_root: Path) -> str | None:
-    """Check if pre-commit hooks are installed.
+def check_precommit_hooks(plugin_root: Path, uv_path: str | None = None) -> str | None:
+    """Check if pre-commit hooks are installed; auto-install if missing.
 
-    Returns warning message if hooks are missing, None if installed.
+    When hooks are missing and uv_path is available, runs
+    ``uv run pre-commit install`` to create hook shims.
+
+    Returns status message if action was taken, None if already installed.
     """
     # Find the git hooks directory (handles worktrees)
     git_path = plugin_root / ".git"
@@ -135,11 +138,36 @@ def check_precommit_hooks(plugin_root: Path) -> str | None:
     # Check if pre-commit hook exists and is not a sample
     precommit_hook = hooks_dir / "pre-commit"
     if not precommit_hook.exists() or precommit_hook.name.endswith(".sample"):
-        return (
-            "Pre-commit hooks are NOT installed. Tests will not run before commits.\n"
-            "Run 'make setup' to install dependencies and hooks.\n"
-            "(Windows: uv sync && uv run pre-commit install)"
-        )
+        if uv_path is not None:
+            # Auto-install hook shims (D-003 override of D-001, per P-020)
+            try:
+                install_result = subprocess.run(
+                    [uv_path, "run", "pre-commit", "install"],
+                    capture_output=True,
+                    cwd=str(plugin_root),
+                    timeout=8,
+                )
+                if install_result.returncode == 0:
+                    return "Pre-commit hooks auto-installed successfully."
+                else:
+                    stderr = install_result.stderr.decode("utf-8", errors="replace")
+                    return (
+                        f"Pre-commit hook auto-install failed (rc={install_result.returncode}): {stderr}\n"
+                        "Run 'make setup' to install dependencies and hooks.\n"
+                        "(Windows: uv sync && uv run pre-commit install)"
+                    )
+            except subprocess.TimeoutExpired:
+                return (
+                    "Pre-commit hook auto-install timed out.\n"
+                    "Run 'make setup' to install dependencies and hooks.\n"
+                    "(Windows: uv sync && uv run pre-commit install)"
+                )
+        else:
+            return (
+                "Pre-commit hooks are NOT installed. Tests will not run before commits.\n"
+                "Run 'make setup' to install dependencies and hooks.\n"
+                "(Windows: uv sync && uv run pre-commit install)"
+            )
 
     return None
 
@@ -324,7 +352,7 @@ def main() -> int:
         user_cwd = Path(original_cwd).resolve()
         jerry_root = plugin_root.resolve()
         if user_cwd == jerry_root or jerry_root in user_cwd.parents:
-            precommit_warning = check_precommit_hooks(plugin_root)
+            precommit_warning = check_precommit_hooks(plugin_root, uv_path=uv_path)
 
         # Transform to hook format with BOTH systemMessage and additionalContext
         system_message, additional_context = format_hook_output(cli_data, precommit_warning)

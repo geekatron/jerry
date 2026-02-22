@@ -28,7 +28,7 @@ PURPOSE: Document CI/CD failure caused by tests enforcing non-existent directory
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | What the bug is |
-| [Reproduction Steps](#reproduction-steps) | How to reproduce |
+| [Steps to Reproduce](#steps-to-reproduce) | How to reproduce |
 | [Environment](#environment) | Where it occurs |
 | [Root Cause Analysis](#root-cause-analysis) | Why it happens |
 | [Fix Description](#fix-description) | What was changed |
@@ -49,7 +49,7 @@ Two project validation tests enforce an undocumented requirement that each proje
 
 ---
 
-## Reproduction Steps
+## Steps to Reproduce
 
 ### Prerequisites
 
