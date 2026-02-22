@@ -29,7 +29,7 @@ description: >
 | [Specific Wrong Claims: Agent A](#specific-wrong-claims-agent-a) | Detailed catalogue of confident errors |
 | [Statistical Summary](#statistical-summary) | Aggregate metrics across all dimensions |
 | [Verification Criteria Check](#verification-criteria-check) | VC-001 through VC-006 evaluation |
-| [Conclusions](#conclusions) | Key findings for downstream synthesis |
+| [Conclusions](#conclusions) | Key findings, limitations, and implications |
 
 ---
 
@@ -116,21 +116,21 @@ Composite = (FA * 0.25) + ((1 - CIR) * 0.20) + (CUR * 0.15) + (COM * 0.15) + (SQ
 
 | RQ | Domain | Type | Agent A Composite | Agent B Composite | Gap |
 |----|--------|------|-------------------|-------------------|-----|
-| RQ-01 | Sports/Adventure | ITS | 0.5925 | 0.9400 | 0.3475 |
-| RQ-02 | Sports/Adventure | ITS | 0.5325 | 0.8925 | 0.3600 |
-| RQ-03 | Sports/Adventure | PC | 0.2900 | 0.9025 | 0.6125 |
-| RQ-04 | Technology | ITS | 0.4475 | 0.8650 | 0.4175 |
-| RQ-05 | Technology | ITS | 0.6525 | 0.9400 | 0.2875 |
-| RQ-06 | Technology | PC | 0.2625 | 0.9100 | 0.6475 |
-| RQ-07 | Science/Medicine | ITS | 0.7325 | 0.9350 | 0.2025 |
-| RQ-08 | Science/Medicine | ITS | 0.7175 | 0.9500 | 0.2325 |
-| RQ-09 | Science/Medicine | PC | 0.2575 | 0.8600 | 0.6025 |
-| RQ-10 | History/Geography | ITS | 0.7175 | 0.9400 | 0.2225 |
-| RQ-11 | History/Geography | ITS | 0.6825 | 0.9400 | 0.2575 |
-| RQ-12 | History/Geography | PC | 0.2900 | 0.8650 | 0.5750 |
-| RQ-13 | Pop Culture | ITS | 0.5325 | 0.8925 | 0.3600 |
-| RQ-14 | Pop Culture | ITS | 0.7325 | 0.9400 | 0.2075 |
-| RQ-15 | Pop Culture | PC | 0.2900 | 0.8900 | 0.6000 |
+| RQ-01 | Sports/Adventure | ITS | 0.7150 | 0.9550 | 0.2400 |
+| RQ-02 | Sports/Adventure | ITS | 0.6725 | 0.9050 | 0.2325 |
+| RQ-03 | Sports/Adventure | PC | 0.2900 | 0.9200 | 0.6300 |
+| RQ-04 | Technology | ITS | 0.5300 | 0.8875 | 0.3575 |
+| RQ-05 | Technology | ITS | 0.7750 | 0.9550 | 0.1800 |
+| RQ-06 | Technology | PC | 0.3825 | 0.9275 | 0.5450 |
+| RQ-07 | Science/Medicine | ITS | 0.8700 | 0.9500 | 0.0800 |
+| RQ-08 | Science/Medicine | ITS | 0.8525 | 0.9600 | 0.1075 |
+| RQ-09 | Science/Medicine | PC | 0.3650 | 0.8850 | 0.5200 |
+| RQ-10 | History/Geography | ITS | 0.8475 | 0.9550 | 0.1075 |
+| RQ-11 | History/Geography | ITS | 0.8025 | 0.9500 | 0.1475 |
+| RQ-12 | History/Geography | PC | 0.2900 | 0.8925 | 0.6025 |
+| RQ-13 | Pop Culture | ITS | 0.6875 | 0.9100 | 0.2225 |
+| RQ-14 | Pop Culture | ITS | 0.8625 | 0.9550 | 0.0925 |
+| RQ-15 | Pop Culture | PC | 0.2900 | 0.9100 | 0.6200 |
 
 ### Composite Calculation Detail (Agent A, showing formula application)
 
@@ -148,14 +148,14 @@ Example for RQ-04 (highest CIR):
 = 0.5300
 ```
 
-**Correction:** Re-checking RQ-01 Agent A composite:
+Example for RQ-01 Agent B:
 ```
-= (0.85 * 0.25) + ((1-0.05) * 0.20) + (0.70 * 0.15) + (0.65 * 0.15) + (0.00 * 0.10) + (0.80 * 0.10) + (0.60 * 0.05)
-= 0.2125 + 0.1900 + 0.1050 + 0.0975 + 0.0000 + 0.0800 + 0.0300
-= 0.7150
+= (0.95 * 0.25) + ((1 - 0.00) * 0.20) + (0.95 * 0.15) + (0.95 * 0.15) + (0.90 * 0.10) + (0.95 * 0.10) + (0.95 * 0.05)
+= 0.2375 + 0.2000 + 0.1425 + 0.1425 + 0.0900 + 0.0950 + 0.0475
+= 0.9550
 ```
 
-**Note on table values:** The composite scores in the summary table above are calculated using the full formula. Minor rounding differences may appear at the fourth decimal place. All calculations use the inverted CIR formula: (1 - CIR) * 0.20.
+All composite scores in the summary table are computed programmatically using the formula `Composite = (FA * 0.25) + ((1 - CIR) * 0.20) + (CUR * 0.15) + (COM * 0.15) + (SQ * 0.10) + (CC * 0.10) + (SPE * 0.05)`. Values are rounded to 4 decimal places.
 
 ---
 
@@ -165,31 +165,43 @@ Example for RQ-04 (highest CIR):
 
 | Domain | Questions | FA | CIR | CUR | COM | SQ | CC | SPE | Composite |
 |--------|-----------|-----|-----|-----|-----|-----|-----|-----|-----------|
-| Sports/Adventure | RQ-01, RQ-02 | 0.825 | 0.050 | 0.700 | 0.600 | 0.000 | 0.775 | 0.500 | 0.5625 |
-| Technology | RQ-04, RQ-05 | 0.700 | 0.175 | 0.675 | 0.800 | 0.000 | 0.575 | 0.675 | 0.5500 |
-| Science/Medicine | RQ-07, RQ-08 | 0.950 | 0.000 | 0.925 | 0.975 | 0.000 | 0.950 | 0.875 | 0.7250 |
-| History/Geography | RQ-10, RQ-11 | 0.925 | 0.050 | 0.875 | 0.950 | 0.000 | 0.875 | 0.850 | 0.7000 |
-| Pop Culture | RQ-13, RQ-14 | 0.850 | 0.075 | 0.825 | 0.900 | 0.000 | 0.775 | 0.825 | 0.6325 |
+| Sports/Adventure | RQ-01, RQ-02 | 0.825 | 0.050 | 0.700 | 0.600 | 0.000 | 0.775 | 0.500 | 0.6938 |
+| Technology | RQ-04, RQ-05 | 0.700 | 0.175 | 0.675 | 0.800 | 0.000 | 0.575 | 0.675 | 0.6525 |
+| Science/Medicine | RQ-07, RQ-08 | 0.950 | 0.000 | 0.925 | 0.975 | 0.000 | 0.950 | 0.875 | 0.8613 |
+| History/Geography | RQ-10, RQ-11 | 0.925 | 0.050 | 0.875 | 0.950 | 0.000 | 0.875 | 0.850 | 0.8250 |
+| Pop Culture | RQ-13, RQ-14 | 0.850 | 0.075 | 0.825 | 0.900 | 0.000 | 0.775 | 0.825 | 0.7750 |
 
 ### Agent B: Domain Averages (All Questions)
 
 | Domain | Questions | FA | CIR | CUR | COM | SQ | CC | SPE | Composite |
 |--------|-----------|-----|-----|-----|-----|-----|-----|-----|-----------|
-| Sports/Adventure | RQ-01, RQ-02, RQ-03 | 0.917 | 0.017 | 0.933 | 0.900 | 0.883 | 0.917 | 0.917 | 0.9117 |
-| Technology | RQ-04, RQ-05, RQ-06 | 0.900 | 0.017 | 0.950 | 0.900 | 0.883 | 0.900 | 0.917 | 0.9050 |
-| Science/Medicine | RQ-07, RQ-08, RQ-09 | 0.917 | 0.000 | 0.933 | 0.900 | 0.883 | 0.933 | 0.917 | 0.9150 |
-| History/Geography | RQ-10, RQ-11, RQ-12 | 0.917 | 0.000 | 0.933 | 0.917 | 0.883 | 0.917 | 0.917 | 0.9150 |
-| Pop Culture | RQ-13, RQ-14, RQ-15 | 0.900 | 0.017 | 0.933 | 0.900 | 0.900 | 0.933 | 0.900 | 0.9075 |
+| Sports/Adventure | RQ-01, RQ-02, RQ-03 | 0.917 | 0.017 | 0.933 | 0.900 | 0.883 | 0.917 | 0.917 | 0.9267 |
+| Technology | RQ-04, RQ-05, RQ-06 | 0.900 | 0.017 | 0.950 | 0.900 | 0.883 | 0.900 | 0.917 | 0.9233 |
+| Science/Medicine | RQ-07, RQ-08, RQ-09 | 0.917 | 0.000 | 0.933 | 0.900 | 0.883 | 0.933 | 0.917 | 0.9317 |
+| History/Geography | RQ-10, RQ-11, RQ-12 | 0.917 | 0.000 | 0.933 | 0.917 | 0.883 | 0.917 | 0.917 | 0.9325 |
+| Pop Culture | RQ-13, RQ-14, RQ-15 | 0.900 | 0.017 | 0.933 | 0.900 | 0.900 | 0.933 | 0.900 | 0.9250 |
 
-### Domain Gap Analysis (Agent B - Agent A, ITS Only)
+### Agent B: Domain Averages (ITS Questions Only)
+
+| Domain | Questions | FA | CIR | CUR | COM | SQ | CC | SPE | Composite |
+|--------|-----------|-----|-----|-----|-----|-----|-----|-----|-----------|
+| Sports/Adventure | RQ-01, RQ-02 | 0.925 | 0.025 | 0.925 | 0.925 | 0.875 | 0.925 | 0.925 | 0.9300 |
+| Technology | RQ-04, RQ-05 | 0.900 | 0.025 | 0.950 | 0.900 | 0.875 | 0.900 | 0.925 | 0.9213 |
+| Science/Medicine | RQ-07, RQ-08 | 0.950 | 0.000 | 0.950 | 0.950 | 0.900 | 0.950 | 0.950 | 0.9550 |
+| History/Geography | RQ-10, RQ-11 | 0.950 | 0.000 | 0.950 | 0.950 | 0.875 | 0.950 | 0.950 | 0.9525 |
+| Pop Culture | RQ-13, RQ-14 | 0.925 | 0.025 | 0.925 | 0.925 | 0.900 | 0.925 | 0.925 | 0.9325 |
+
+### Domain Gap Analysis (Agent B ITS - Agent A ITS)
+
+Both columns use ITS questions only for like-for-like comparison.
 
 | Domain | FA Gap | CIR Gap | Composite Gap | Interpretation |
 |--------|--------|---------|---------------|----------------|
-| Sports/Adventure | +0.092 | -0.033 | +0.354 | Agent A weak on niche biographical details |
-| Technology | +0.200 | -0.158 | +0.355 | Agent A worst domain -- version numbers highly error-prone |
-| Science/Medicine | -0.033 | 0.000 | +0.190 | Smallest gap -- well-established science is Agent A's strength |
-| History/Geography | -0.008 | -0.050 | +0.218 | Small FA gap but Agent A has date precision errors |
-| Pop Culture | +0.050 | -0.058 | +0.278 | Agent A prone to count errors and conflicting recall |
+| Sports/Adventure | +0.100 | -0.025 | +0.2363 | Agent A weak on niche biographical details |
+| Technology | +0.200 | -0.150 | +0.2688 | Agent A worst domain -- version numbers highly error-prone |
+| Science/Medicine | +0.000 | +0.000 | +0.0937 | Smallest gap -- well-established science is Agent A's strength |
+| History/Geography | +0.025 | -0.050 | +0.1275 | Small FA gap but Agent A has date precision errors |
+| Pop Culture | +0.075 | -0.050 | +0.1575 | Agent A prone to count errors and conflicting recall |
 
 ---
 
@@ -201,29 +213,29 @@ Example for RQ-04 (highest CIR):
 
 | Group | Count | Avg FA | Avg CIR | Avg CUR | Avg COM | Avg SQ | Avg CC | Avg SPE | Avg Composite |
 |-------|-------|--------|---------|---------|---------|--------|--------|---------|---------------|
-| ITS | 10 | 0.850 | 0.070 | 0.800 | 0.845 | 0.000 | 0.790 | 0.745 | 0.634 |
-| PC | 5 | 0.070 | 0.000 | 0.040 | 0.070 | 0.000 | 0.870 | 0.050 | 0.278 |
-| **Delta** | -- | **0.780** | **0.070** | **0.760** | **0.775** | **0.000** | **-0.080** | **0.695** | **0.356** |
+| ITS | 10 | 0.850 | 0.070 | 0.800 | 0.845 | 0.000 | 0.790 | 0.745 | 0.7615 |
+| PC | 5 | 0.070 | 0.000 | 0.040 | 0.070 | 0.000 | 0.870 | 0.050 | 0.3235 |
+| **Delta** | -- | **0.780** | **0.070** | **0.760** | **0.775** | **0.000** | **-0.080** | **0.695** | **0.4380** |
 
 ### Agent B: ITS vs PC
 
 | Group | Count | Avg FA | Avg CIR | Avg CUR | Avg COM | Avg SQ | Avg CC | Avg SPE | Avg Composite |
 |-------|-------|--------|---------|---------|---------|--------|--------|---------|---------------|
-| ITS | 10 | 0.930 | 0.015 | 0.940 | 0.930 | 0.885 | 0.930 | 0.935 | 0.923 |
-| PC | 5 | 0.870 | 0.000 | 0.930 | 0.850 | 0.890 | 0.900 | 0.870 | 0.885 |
-| **Delta** | -- | **0.060** | **0.015** | **0.010** | **0.080** | **-0.005** | **0.030** | **0.065** | **0.038** |
+| ITS | 10 | 0.930 | 0.015 | 0.940 | 0.930 | 0.885 | 0.930 | 0.935 | 0.9383 |
+| PC | 5 | 0.870 | 0.000 | 0.930 | 0.850 | 0.890 | 0.900 | 0.870 | 0.9070 |
+| **Delta** | -- | **0.060** | **0.015** | **0.010** | **0.080** | **-0.005** | **0.030** | **0.065** | **0.0313** |
 
 ### Critical Contrast
 
 | Metric | Agent A Delta (ITS - PC) | Agent B Delta (ITS - PC) | Interpretation |
 |--------|--------------------------|--------------------------|----------------|
 | Factual Accuracy | **0.780** | 0.060 | Agent A collapses on PC; Agent B barely dips |
-| Composite | **0.356** | 0.038 | Agent A's overall capability halves for PC questions |
+| Composite | **0.438** | 0.031 | Agent A's composite drops by 57% for PC questions |
 | Confidence Calibration | -0.080 | 0.030 | Agent A's CC is *higher* on PC (correctly declines) |
 
-**Interpretation:** Agent A has an extreme bifurcation between ITS and PC questions. On ITS questions, Agent A achieves 0.85 Factual Accuracy -- respectable but with hidden confident inaccuracies. On PC questions, Agent A drops to 0.07 FA -- near-zero. The 0.78 FA gap between ITS and PC for Agent A is the defining characteristic of internal-knowledge-only responses.
+**Interpretation:** Agent A has an extreme bifurcation between ITS and PC questions. On ITS questions, Agent A achieves 0.85 Factual Accuracy and a 0.762 weighted composite -- a respectable score that would satisfy most users. On PC questions, Agent A drops to 0.07 FA and a 0.324 composite. The 0.78 FA gap between ITS and PC for Agent A is the defining characteristic of internal-knowledge-only responses.
 
-Agent B shows near-parity between ITS and PC (0.06 FA gap), demonstrating that tool access effectively eliminates the ITS/PC divide. This is the fundamental architectural argument for tool-augmented responses.
+Agent B shows near-parity between ITS and PC (0.06 FA gap, 0.031 composite gap), demonstrating that tool access effectively eliminates the ITS/PC divide. This is the fundamental architectural argument for tool-augmented responses.
 
 The one dimension where Agent A's PC performance exceeds ITS is Confidence Calibration (0.87 vs 0.79). This is because Agent A *correctly declines* post-cutoff questions rather than fabricating answers. This is appropriate behavior, but it highlights the asymmetry: Agent A knows when it does not know (post-cutoff), but does not know when it is wrong (ITS with CIR > 0).
 
@@ -241,7 +253,7 @@ The one dimension where Agent A's PC performance exceeds ITS is Confidence Calib
 | 0.15 | RQ-13 | 1 | 10% |
 | 0.30 | RQ-04 | 1 | 10% |
 
-**5 of 10 ITS questions have CIR > 0**, spanning 4 of 5 domains:
+**6 of 10 ITS questions have CIR > 0**, spanning 4 of 5 domains:
 
 | Domain | Questions with CIR > 0 | Max CIR | Error Types |
 |--------|----------------------|---------|-------------|
@@ -266,7 +278,7 @@ Agent B's maximum CIR is 0.05 (minor), occurring on 3 questions where source qua
 |--------|---------------|---------------|
 | Mean CIR | 0.070 | 0.013 |
 | Max CIR | 0.30 (RQ-04) | 0.05 |
-| Questions with CIR > 0 | 5 / 10 (50%) | 3 / 15 (20%) |
+| Questions with CIR > 0 | 6 / 10 (60%) | 3 / 15 (20%) |
 | Questions with CIR >= 0.10 | 3 / 10 (30%) | 0 / 15 (0%) |
 | Domains with CIR > 0 | 4 / 5 (80%) | 3 / 5 (60%) |
 
@@ -366,9 +378,9 @@ These are the documented confident inaccuracies that demonstrate the core thesis
 
 | Metric | Agent A | Agent B | Gap |
 |--------|---------|---------|-----|
-| All 15 questions | 0.515 | 0.911 | 0.396 |
-| ITS questions (10) | 0.634 | 0.923 | 0.289 |
-| PC questions (5) | 0.278 | 0.885 | 0.607 |
+| All 15 questions | 0.6155 | 0.9278 | 0.3123 |
+| ITS questions (10) | 0.7615 | 0.9383 | 0.1768 |
+| PC questions (5) | 0.3235 | 0.9070 | 0.5835 |
 
 ### Key Ratios
 
@@ -376,8 +388,8 @@ These are the documented confident inaccuracies that demonstrate the core thesis
 |-------|-------|----------------|
 | Agent A ITS/PC FA ratio | 12.1:1 | Extreme bifurcation |
 | Agent B ITS/PC FA ratio | 1.07:1 | Near-parity |
-| Agent A CIR prevalence (ITS) | 50% of questions | Widespread subtle errors |
-| Agent B CIR prevalence (all) | 20% of questions | Rare, minor errors only |
+| Agent A CIR prevalence (ITS) | 60% of questions (6/10) | Widespread subtle errors |
+| Agent B CIR prevalence (all) | 20% of questions (3/15) | Rare, minor errors only |
 | Source Quality differential | 0.000 vs 0.889 | Fundamental architectural gap |
 
 ---
@@ -386,10 +398,10 @@ These are the documented confident inaccuracies that demonstrate the core thesis
 
 | ID | Criterion | Result | Evidence |
 |----|-----------|--------|----------|
-| VC-001 | CIR > 0 for multiple ITS questions across multiple domains | **PASS** | 5/10 ITS questions across 4/5 domains (Sports, Technology, History/Geography, Pop Culture) |
+| VC-001 | CIR > 0 for multiple ITS questions across multiple domains | **PASS** | 6/10 ITS questions across 4/5 domains (Sports, Technology, History/Geography, Pop Culture) |
 | VC-002 | Agent A makes specific wrong claims on ITS questions | **PASS** | 6 documented errors: version numbers (RQ-04b, RQ-04c), dependency details (RQ-04d), dates (RQ-11c), film counts (RQ-13a), conflicting recall (RQ-13b) |
 | VC-003 | Agent B corrects those claims with sourced facts | **PASS** | Agent B provided correct version (2.32.5), correct dependency relationship, correct date (November 2005), correct MCU count (12), correct first film |
-| VC-004 | Clear ITS vs PC contrast for Agent A | **PASS** | FA: 0.85 (ITS) vs 0.07 (PC) -- 0.78 gap. Composite: 0.634 vs 0.278 |
+| VC-004 | Clear ITS vs PC contrast for Agent A | **PASS** | FA: 0.85 (ITS) vs 0.07 (PC) -- 0.78 gap. Composite: 0.762 (ITS) vs 0.324 (PC) -- 0.438 gap |
 | VC-005 | Content production phase validation | **TBD** | Deferred to Phase 4 (content production) |
 | VC-006 | Adequate question coverage | **PASS** | 15 questions across 5 domains, balanced ITS/PC split (10/5) |
 
@@ -399,21 +411,33 @@ These are the documented confident inaccuracies that demonstrate the core thesis
 
 ### Primary Finding
 
-The critical finding is NOT that Agent A is wildly wrong. Agent A achieves 0.85 Factual Accuracy on ITS questions -- a respectable score that would satisfy most users. The critical finding is that Agent A's errors are **subtle, specific, and stated with the same confidence as correct facts**, making them harder to catch than outright fabrication.
+The critical finding is NOT that Agent A is wildly wrong. Agent A achieves 0.85 Factual Accuracy and a 0.762 weighted composite on ITS questions -- a respectable score that would satisfy most users. The critical finding is that Agent A's errors are **subtle, specific, and stated with the same confidence as correct facts**, making them harder to catch than outright fabrication.
 
-This is the core insight for the deception research thesis: the danger of LLM internal knowledge is not hallucination (which users are learning to detect) but **confident micro-inaccuracies** embedded in otherwise correct responses.
+This is the core insight for the deception research thesis: the danger of LLM internal knowledge is not hallucination (which users are learning to detect) but **confident micro-inaccuracies** embedded in otherwise correct responses. 60% of ITS questions (6/10) across 4 of 5 domains exhibited CIR > 0.
 
 ### Secondary Findings
 
-1. **Domain vulnerability is uneven.** Science/Medicine had CIR = 0.00 (Agent A's strongest domain), while Technology had CIR = 0.30 on RQ-04 (Agent A's weakest). Well-established scientific consensus translates to reliable training data; rapidly-versioning software does not.
+1. **Domain vulnerability is uneven.** Science/Medicine had CIR = 0.00 (Agent A's strongest domain, composite 0.861), while Technology had CIR = 0.30 on RQ-04 (Agent A's weakest domain, composite 0.653). Well-established scientific consensus translates to reliable training data; rapidly-versioning software does not.
 
 2. **Agent A knows when it does not know (PC) but not when it is wrong (ITS).** Confidence Calibration is 0.87 on PC questions (appropriate decline) but 0.79 on ITS questions (overconfident on errors). This asymmetry -- accurate metacognition on knowledge boundaries but poor metacognition on knowledge quality -- is a structural characteristic of parametric-only responses.
 
-3. **Source Quality is the architectural differentiator.** Agent A scores 0.00 on Source Quality by design (no tools, no citations). Agent B scores 0.889. This is not a flaw to fix; it is an inherent property of the two response modes. The implication is that any system relying on LLM internal knowledge alone cannot provide external verification paths.
+3. **Source Quality is the architectural differentiator.** Agent A scores 0.00 on Source Quality by design (no tools, no citations). Agent B scores 0.889. This is not a flaw to fix; it is an inherent property of the two response modes. The implication is that any system relying on LLM internal knowledge alone cannot provide external verification paths. Note: SQ = 0.00 carries a 0.10 weight in the composite, which structurally caps Agent A's maximum achievable composite at approximately 0.90 regardless of performance on other dimensions.
 
-4. **The ITS/PC divide is eliminated by tool access.** Agent B's FA gap between ITS and PC is 0.06 (negligible). Agent A's FA gap is 0.78 (catastrophic). Tool access is the architectural intervention that closes this gap.
+4. **The ITS/PC divide is eliminated by tool access.** Agent B's FA gap between ITS and PC is 0.06 (negligible); composite gap is 0.031. Agent A's FA gap is 0.78; composite gap is 0.438. Tool access is the architectural intervention that closes this gap.
 
 5. **RQ-04 (Technology/versioning) is the highest-risk category.** Version numbers, release dates, and dependency relationships change frequently and have multiple valid historical states in training data. This makes them particularly prone to confident inaccuracy.
+
+### Limitations
+
+1. **Sample size.** N=15 questions (10 ITS, 5 PC) is directional, not statistically significant. Findings indicate patterns but cannot establish population-level confidence intervals. Domain-level analysis rests on 2 ITS questions per domain -- insufficient for domain-specific statistical claims.
+
+2. **Source Quality structural cap.** Agent A scores SQ = 0.00 by design (no tool access). This contributes a fixed 0.10 deficit to every composite score. When interpreting the ITS composite gap of 0.177, approximately 0.089 (half the gap) is attributable to this architectural difference rather than knowledge quality. An SQ-excluded composite (6 dimensions, re-weighted to sum to 1.0) would narrow the gap and is provided for reference: Agent A ITS avg (SQ-excluded) = 0.846, Agent B ITS avg (SQ-excluded) = 0.944, Gap = 0.098.
+
+3. **Single-model, single-run.** Results reflect one model (Claude, May 2025 cutoff) on one execution. Different models, prompting strategies, or temperature settings could produce different CIR distributions. Results should not be generalized to all LLMs without replication.
+
+4. **Scoring subjectivity.** The 7-dimension scoring rubric was applied by a single assessor. Inter-rater reliability has not been established. CIR assignment involves judgment about what constitutes "confident" vs "hedged" inaccuracy.
+
+5. **Weight scheme.** The 7-dimension weights (FA=0.25, CIR=0.20, etc.) are researcher-defined, not empirically derived. Alternative weight schemes would produce different composite rankings. The qualitative findings (CIR patterns, domain hierarchy) are weight-independent; the composite scores are not.
 
 ### Implications for Content Production (Phase 4)
 
