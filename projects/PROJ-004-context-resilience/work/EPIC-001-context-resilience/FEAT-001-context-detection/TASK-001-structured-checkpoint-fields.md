@@ -43,13 +43,13 @@ Modify `_build_resumption_state()` to parse ORCHESTRATION.yaml with a YAML parse
 
 ## Acceptance Criteria
 
-- [ ] `CheckpointService._build_resumption_state()` parses ORCHESTRATION.yaml using `yaml.safe_load()`
-- [ ] Extracted structured fields: `current_phase`, `agent_statuses`, `quality_gate_state`, `next_actions`
-- [ ] Full ORCHESTRATION.yaml text preserved as `orchestration_raw` fallback
-- [ ] Fail-open: if YAML parsing fails, falls back to current text blob behavior
-- [ ] `ResumptionContextGenerator` renders structured fields in `<resumption-context>` XML
-- [ ] Unit tests for structured extraction (happy path + parse failure fallback)
-- [ ] Existing 229 hook tests still pass
+- [x] `CheckpointService._build_resumption_state()` parses ORCHESTRATION.yaml using `yaml.safe_load()`
+- [x] Extracted structured fields: `current_phase`, `agent_statuses`, `quality_gate_state`, `next_actions`
+- [x] Full ORCHESTRATION.yaml text preserved as `orchestration_raw` fallback
+- [x] Fail-open: if YAML parsing fails, falls back to current text blob behavior
+- [x] `ResumptionContextGenerator` renders structured fields in `<resumption-context>` XML
+- [x] Unit tests for structured extraction (happy path + parse failure fallback)
+- [x] Existing 229 hook tests still pass
 
 ---
 
@@ -86,3 +86,4 @@ Also update `ResumptionContextGenerator` to render structured fields rather than
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Created from ST-003 validation REC-1. |
+| 2026-02-21 | Claude | completed | Structured YAML checkpoint extraction implemented. |

@@ -102,20 +102,20 @@ Feature: jerry hooks CLI command namespace
 
 ### Acceptance Checklist
 
-- [ ] `jerry hooks prompt-submit` callable, accepts stdin JSON, returns stdout JSON
-- [ ] `jerry hooks session-start` callable
-- [ ] `jerry hooks pre-compact` callable
-- [ ] `jerry hooks pre-tool-use` callable
-- [ ] All 4 commands registered in CLI parser as subcommand group
-- [ ] All 4 handlers constructed via DI in `bootstrap.py`
-- [ ] Stdin payload read and parsed correctly
-- [ ] `jerry --json hooks prompt-submit` returns valid Claude Code hook response JSON
-- [ ] ContextFillEstimator, CheckpointService, ResumptionContextGenerator called correctly
-- [ ] `jerry hooks pre-compact` triggers session abandon via command dispatcher
-- [ ] Fail-open: step failures log stderr, continue, exit 0, return valid JSON
-- [ ] H-08: CLI adapter does not import bounded context infrastructure directly
-- [ ] Integration tests: end-to-end with sample stdin payloads
-- [ ] One class per file for handlers (H-10)
+- [x] `jerry hooks prompt-submit` callable, accepts stdin JSON, returns stdout JSON
+- [x] `jerry hooks session-start` callable
+- [x] `jerry hooks pre-compact` callable
+- [x] `jerry hooks pre-tool-use` callable
+- [x] All 4 commands registered in CLI parser as subcommand group
+- [x] All 4 handlers constructed via DI in `bootstrap.py`
+- [x] Stdin payload read and parsed correctly
+- [x] `jerry --json hooks prompt-submit` returns valid Claude Code hook response JSON
+- [x] ContextFillEstimator, CheckpointService, ResumptionContextGenerator called correctly
+- [x] `jerry hooks pre-compact` triggers session abandon via command dispatcher
+- [x] Fail-open: step failures log stderr, continue, exit 0, return valid JSON
+- [x] H-08: CLI adapter does not import bounded context infrastructure directly
+- [x] Integration tests: end-to-end with sample stdin payloads
+- [x] One class per file for handlers (H-10)
 
 ---
 
@@ -144,3 +144,4 @@ Register the `jerry hooks` subcommand group in the CLI adapter and parser. Creat
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-10. Resolves QG-2 DEF-004. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

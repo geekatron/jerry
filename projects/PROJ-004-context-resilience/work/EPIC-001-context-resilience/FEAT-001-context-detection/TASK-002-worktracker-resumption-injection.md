@@ -43,12 +43,12 @@ Add a WORKTRACKER.md read step to `HooksSessionStartHandler.handle()` that appen
 
 ## Acceptance Criteria
 
-- [ ] `HooksSessionStartHandler.handle()` reads `<JERRY_PROJECT>/WORKTRACKER.md` when project is active
-- [ ] WORKTRACKER.md content appended as `<worktracker>` XML block in `additionalContext`
-- [ ] Fail-open: if WORKTRACKER.md not found or unreadable, no error; skip injection
-- [ ] Token budget considered: WORKTRACKER.md content should be truncated if > 2000 tokens (configurable)
-- [ ] Unit tests for injection (happy path + file not found + truncation)
-- [ ] Existing 229 hook tests still pass
+- [x] `HooksSessionStartHandler.handle()` reads `<JERRY_PROJECT>/WORKTRACKER.md` when project is active
+- [x] WORKTRACKER.md content appended as `<worktracker>` XML block in `additionalContext`
+- [x] Fail-open: if WORKTRACKER.md not found or unreadable, no error; skip injection
+- [x] Token budget considered: WORKTRACKER.md content should be truncated if > 2000 tokens (configurable)
+- [x] Unit tests for injection (happy path + file not found + truncation)
+- [x] Existing 229 hook tests still pass
 
 ---
 
@@ -74,3 +74,4 @@ Consider token budget impact: WORKTRACKER.md files can grow large. Implement a t
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Created from ST-003 validation REC-3. |
+| 2026-02-21 | Claude | completed | WORKTRACKER.md auto-injection into resumption context implemented. |

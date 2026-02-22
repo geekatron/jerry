@@ -99,18 +99,18 @@ Feature: FileSystemSessionRepository persists sessions across processes
 
 ### Acceptance Checklist
 
-- [ ] `FileSystemSessionRepository` implements `ISessionRepository` protocol (H-11 type hints, H-12 docstrings)
-- [ ] Session events persisted to `.jerry/data/events/session-{id}.jsonl`
-- [ ] `jerry session start` creates a session that persists across process termination
-- [ ] `jerry session status` in a new process retrieves the active session
-- [ ] `jerry session abandon --reason "compaction"` correctly abandons persisted session
-- [ ] `Session.load_from_history()` correctly reconstitutes from event replay
-- [ ] Optimistic concurrency via `FileSystemEventStore` prevents concurrent writes
-- [ ] `get_active()` returns the most recent ACTIVE session across all streams
-- [ ] Unit tests: save/get round-trip, get_active, event replay, cross-process, concurrency
-- [ ] `InMemorySessionRepository` retained for unit testing, not used in production wiring
-- [ ] `bootstrap.py` wires `FileSystemSessionRepository` as `ISessionRepository` implementation
-- [ ] One class per file (H-10)
+- [x] `FileSystemSessionRepository` implements `ISessionRepository` protocol (H-11 type hints, H-12 docstrings)
+- [x] Session events persisted to `.jerry/data/events/session-{id}.jsonl`
+- [x] `jerry session start` creates a session that persists across process termination
+- [x] `jerry session status` in a new process retrieves the active session
+- [x] `jerry session abandon --reason "compaction"` correctly abandons persisted session
+- [x] `Session.load_from_history()` correctly reconstitutes from event replay
+- [x] Optimistic concurrency via `FileSystemEventStore` prevents concurrent writes
+- [x] `get_active()` returns the most recent ACTIVE session across all streams
+- [x] Unit tests: save/get round-trip, get_active, event replay, cross-process, concurrency
+- [x] `InMemorySessionRepository` retained for unit testing, not used in production wiring
+- [x] `bootstrap.py` wires `FileSystemSessionRepository` as `ISessionRepository` implementation
+- [x] One class per file (H-10)
 
 ---
 
@@ -136,3 +136,4 @@ Implement using the established EventSourcedWorkItemRepository pattern: event re
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-00. P0 foundation enabler. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

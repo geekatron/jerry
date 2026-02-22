@@ -174,8 +174,8 @@ Jerry's `context_monitoring` bounded context owns all context domain logic. The 
 |--------|-------|
 | **Completed Spikes** | 1/1 (SPIKE-004) |
 | **Decisions** | 3/3 accepted (DEC-002, DEC-003, DEC-004) |
-| **Enablers** | 10/10 done (EN-009 through EN-018) |
-| **Stories** | 3/3 done (ST-004, ST-005, ST-006) |
+| **Enablers** | 10/10 completed (EN-009 through EN-018) |
+| **Stories** | 3/3 completed (ST-004, ST-005, ST-006) |
 | **Latency p50** | 96ms (well within 2s budget) |
 | **Completion %** | 100% |
 

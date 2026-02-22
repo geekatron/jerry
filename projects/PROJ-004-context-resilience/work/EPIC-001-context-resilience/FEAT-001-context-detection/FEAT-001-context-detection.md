@@ -113,8 +113,8 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | done | high | 8h |
-| SPIKE-002 | Spike | Jerry CLI Integration Architecture for Context Resilience | done | high | 6h |
+| SPIKE-001 | Spike | Research Context Measurement, Detection Thresholds & Resumption Protocols | completed | high | 8h |
+| SPIKE-002 | Spike | Jerry CLI Integration Architecture for Context Resilience | completed | high | 6h |
 | DISC-001 | Discovery | Hook-CLI Architecture Violations and Enforcement Tech Debt | documented | critical | -- |
 | DISC-002 | Discovery | Status Line / Context Monitoring Unification Gap | documented | high | -- |
 | DISC-003 | Discovery | Unfounded Subprocess Latency Claims in Architecture Decisions | documented | medium | -- |
@@ -126,18 +126,18 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 
 | ID | CWI | Type | Title | Status | Priority | Effort |
 |----|-----|------|-------|--------|----------|--------|
-| EN-001 | CWI-00 | Enabler | FileSystemSessionRepository | done | critical | 3-4h |
-| EN-002 | CWI-01 | Enabler | ConfigThresholdAdapter + IThresholdConfiguration Port | done | high | 1h |
-| EN-003 | CWI-02 | Enabler | Context Monitoring Bounded Context Foundation | done | critical | 4-6h |
-| EN-004 | CWI-03 | Enabler | ContextFillEstimator + ResumptionContextGenerator Services | done | critical | 3-5h |
-| ST-001 | CWI-04 | Story | Enhanced Resumption Schema + Update Protocol | done | high | 2-3h |
-| ST-002 | CWI-05 | Story | AE-006 Graduated Sub-Rules | done | high | 1h |
-| EN-005 | CWI-07 | Enabler | PreToolUse Staleness Validation | done | medium | 2-3h |
-| SPIKE-003 | CWI-08 | Spike | Validation Spikes (OQ-9 + Method C) | done | high | 3h |
-| ST-003 | CWI-09 | Story | Threshold Validation + Calibration Documentation | done | medium | 4h |
-| EN-006 | CWI-10 | Enabler | `jerry hooks` CLI Namespace Registration | done | high | 1-1.5h |
-| EN-007 | CWI-11 | Enabler | Hook Wrapper Scripts + hooks.json Registration | done | high | 1-2h |
-| EN-008 | -- | Enabler | Context Resilience Hardening (TASK-001 through TASK-006) | done | high | 4h |
+| EN-001 | CWI-00 | Enabler | FileSystemSessionRepository | completed | critical | 3-4h |
+| EN-002 | CWI-01 | Enabler | ConfigThresholdAdapter + IThresholdConfiguration Port | completed | high | 1h |
+| EN-003 | CWI-02 | Enabler | Context Monitoring Bounded Context Foundation | completed | critical | 4-6h |
+| EN-004 | CWI-03 | Enabler | ContextFillEstimator + ResumptionContextGenerator Services | completed | critical | 3-5h |
+| ST-001 | CWI-04 | Story | Enhanced Resumption Schema + Update Protocol | completed | high | 2-3h |
+| ST-002 | CWI-05 | Story | AE-006 Graduated Sub-Rules | completed | high | 1h |
+| EN-005 | CWI-07 | Enabler | PreToolUse Staleness Validation | completed | medium | 2-3h |
+| SPIKE-003 | CWI-08 | Spike | Validation Spikes (OQ-9 + Method C) | completed | high | 3h |
+| ST-003 | CWI-09 | Story | Threshold Validation + Calibration Documentation | completed | medium | 4h |
+| EN-006 | CWI-10 | Enabler | `jerry hooks` CLI Namespace Registration | completed | high | 1-1.5h |
+| EN-007 | CWI-11 | Enabler | Hook Wrapper Scripts + hooks.json Registration | completed | high | 1-2h |
+| EN-008 | -- | Enabler | Context Resilience Hardening (TASK-001 through TASK-006) | completed | high | 4h |
 
 > CWI-06 superseded (merged into EN-004). All implementation items complete.
 
@@ -188,7 +188,7 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 | **Completed Spikes** | 3/3 (SPIKE-001, SPIKE-002, SPIKE-003) |
 | **Discoveries** | 3 documented (DISC-001, DISC-002, DISC-003) |
 | **Decisions** | 1/1 accepted (DEC-001 accepted) |
-| **Implementation Items** | 12/12 done (EN-001 through EN-008, ST-001 through ST-003, SPIKE-003) |
+| **Implementation Items** | 12/12 completed (EN-001 through EN-008, ST-001 through ST-003, SPIKE-003) |
 | **Tests** | 3875 passed, 0 failed, 63 skipped |
 | **C4 Review** | 0.953 PASS (2 iterations) |
 | **Completion %** | 100% |
@@ -222,6 +222,6 @@ Implement a context exhaustion detection mechanism that monitors session fill le
 | 2026-02-19 | User | pending | DEC-001 accepted: 4 architectural decisions (D-001 through D-004) approved. CLI-first hooks, proper bounded context, jerry hooks namespace, enforcement debt tracked separately. |
 | 2026-02-19 | Claude | pending | 11 worktracker entity files created: EN-001 through EN-007 (enablers), ST-001 through ST-003 (stories), SPIKE-003 (spike). All with BDD Gherkin acceptance criteria for red/green/refactor implementation. CWI-to-entity mapping complete. |
 | 2026-02-20 | Claude | pending | feat001-impl-20260220-001 orchestration complete. 6 phases, 11 agents, 3 quality gates PASSED. All enablers, stories, and spikes implemented. |
-| 2026-02-21 | Claude | done | All implementation work items verified and closed. EN-008 hardening completed (6 tasks). C4 adversarial review PASSED at 0.953. SPIKE-003 closed. 3875 tests passing. Feature complete. |
-| 2026-02-21 | Claude | done | DISC-002 created: Status line / context monitoring unification gap. Two independent systems compute context fill with different accuracy. Status line should consume Jerry's `context_monitoring` bounded context via CLI (`jerry context estimate`), not a hooks command. |
-| 2026-02-21 | Claude | done | DISC-003 created: Unfounded subprocess latency claims. "Subprocess too heavy" was asserted without measurement, influencing status line integration framing. Benchmark required. |
+| 2026-02-21 | Claude | completed | All implementation work items verified and closed. EN-008 hardening completed (6 tasks). C4 adversarial review PASSED at 0.953. SPIKE-003 closed. 3875 tests passing. Feature complete. |
+| 2026-02-21 | Claude | completed | DISC-002 created: Status line / context monitoring unification gap. Two independent systems compute context fill with different accuracy. Status line should consume Jerry's `context_monitoring` bounded context via CLI (`jerry context estimate`), not a hooks command. |
+| 2026-02-21 | Claude | completed | DISC-003 created: Unfounded subprocess latency claims. "Subprocess too heavy" was asserted without measurement, influencing status line integration framing. Benchmark required. |

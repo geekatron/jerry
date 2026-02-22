@@ -43,13 +43,13 @@ Create test scenarios that exercise the detection and checkpoint system with ORC
 
 ## Acceptance Criteria
 
-- [ ] Test with ORCHESTRATION.yaml representing a cross-pollinated pipeline pattern
-- [ ] Test with ORCHESTRATION.yaml representing a fan-out/fan-in pattern
-- [ ] Verify `CheckpointService._build_resumption_state()` correctly reads both pattern types
-- [ ] Verify `ResumptionContextGenerator` correctly renders resumption context for both patterns
-- [ ] Verify `StalenessDetector` correctly detects staleness for both pattern types
-- [ ] Tests added to `tests/unit/` or `tests/integration/` as appropriate
-- [ ] All existing 3652 tests still pass
+- [x] Test with ORCHESTRATION.yaml representing a cross-pollinated pipeline pattern
+- [x] Test with ORCHESTRATION.yaml representing a fan-out/fan-in pattern
+- [x] Verify `CheckpointService._build_resumption_state()` correctly reads both pattern types
+- [x] Verify `ResumptionContextGenerator` correctly renders resumption context for both patterns
+- [x] Verify `StalenessDetector` correctly detects staleness for both pattern types
+- [x] Tests added to `tests/unit/` or `tests/integration/` as appropriate
+- [x] All existing 3652 tests still pass
 
 ---
 
@@ -77,3 +77,4 @@ The key insight from validation is that the hooks themselves are pattern-agnosti
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Created from ST-003 validation AC-7 caveat. |
+| 2026-02-21 | Claude | completed | Multi-pattern orchestration validation implemented. |

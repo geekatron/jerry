@@ -89,4 +89,4 @@ The "subprocess too heavy" claim from DISC-003 was unfounded. Hooks already invo
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
-| 2026-02-21 | Claude | done | Benchmark complete. p50=96ms, p95=112ms, p99=138ms. DISC-003 resolved. |
+| 2026-02-21 | Claude | completed | Benchmark complete. p50=96ms, p95=112ms, p99=138ms. DISC-003 resolved. |

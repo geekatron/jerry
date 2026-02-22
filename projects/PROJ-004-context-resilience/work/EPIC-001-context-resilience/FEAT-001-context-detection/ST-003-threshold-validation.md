@@ -51,12 +51,12 @@ Feature: Threshold calibration across workflow types
 
 ### Acceptance Checklist
 
-- [ ] Monitored session completed against non-PROJ-001 workflow
-- [ ] Per-operation token cost data collected
-- [ ] Fill trajectory compared against PROJ-001 baseline
-- [ ] Threshold adjustment recommendations documented
-- [ ] Calibration protocol at `docs/knowledge/context-resilience/calibration-protocol.md`
-- [ ] Document includes: recalibration triggers, data collection method, result interpretation
+- [x] Monitored session completed against non-PROJ-001 workflow
+- [x] Per-operation token cost data collected
+- [x] Fill trajectory compared against PROJ-001 baseline
+- [x] Threshold adjustment recommendations documented
+- [x] Calibration protocol at `docs/knowledge/context-resilience/calibration-protocol.md`
+- [x] Document includes: recalibration triggers, data collection method, result interpretation
 
 ---
 
@@ -73,4 +73,4 @@ Feature: Threshold calibration across workflow types
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Story created from CWI-09. |
-| 2026-02-20 | Claude | done | Validation complete. 20 PASS, 5 PARTIAL, 1 DEFERRED. Calibration protocol created. |
+| 2026-02-20 | Claude | completed | Validation complete. 20 PASS, 5 PARTIAL, 1 DEFERRED. Calibration protocol created. |

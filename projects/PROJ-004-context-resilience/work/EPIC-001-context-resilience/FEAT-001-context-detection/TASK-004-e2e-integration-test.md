@@ -43,14 +43,14 @@ Create `tests/integration/test_context_exhaustion_e2e.py` that exercises the com
 
 ## Acceptance Criteria
 
-- [ ] `tests/integration/test_context_exhaustion_e2e.py` exists
-- [ ] Test creates a mock JSONL transcript fixture with token counts near EMERGENCY threshold
-- [ ] Test triggers `HooksPromptSubmitHandler` and verifies checkpoint is created
-- [ ] Test simulates new session: triggers `HooksSessionStartHandler` and verifies resumption XML in `additionalContext`
-- [ ] Test verifies `checkpoint_id` and `fill_percentage` are correctly round-tripped
-- [ ] Test covers the full exhaust -> checkpoint -> resume sequence (no mocked services except file I/O)
-- [ ] Test runs in CI (`uv run pytest tests/integration/`) with `@pytest.mark.integration` marker
-- [ ] All existing 3652 tests still pass
+- [x] `tests/integration/test_context_exhaustion_e2e.py` exists
+- [x] Test creates a mock JSONL transcript fixture with token counts near EMERGENCY threshold
+- [x] Test triggers `HooksPromptSubmitHandler` and verifies checkpoint is created
+- [x] Test simulates new session: triggers `HooksSessionStartHandler` and verifies resumption XML in `additionalContext`
+- [x] Test verifies `checkpoint_id` and `fill_percentage` are correctly round-tripped
+- [x] Test covers the full exhaust -> checkpoint -> resume sequence (no mocked services except file I/O)
+- [x] Test runs in CI (`uv run pytest tests/integration/`) with `@pytest.mark.integration` marker
+- [x] All existing 3652 tests still pass
 
 ---
 
@@ -80,3 +80,4 @@ Use `tmp_path` fixture for temporary `.jerry/checkpoints/` directory. Wire depen
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Created from ST-003 validation REC-2. |
+| 2026-02-21 | Claude | completed | E2E integration test implemented and passing. |

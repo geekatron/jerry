@@ -112,19 +112,19 @@ Feature: JsonlTranscriptReader extracts tokens from JSONL
 
 ### Acceptance Checklist
 
-- [ ] `ContextFillEstimator.estimate(transcript_path: str) -> FillEstimate` with type hints and docstring (H-11, H-12)
-- [ ] Correct tier boundaries: NOMINAL (<0.55), LOW (0.55-0.70), WARNING (0.70-0.80), CRITICAL (0.80-0.88), EMERGENCY (>0.88)
-- [ ] `<context-monitor>` XML tag generated with fill %, tier, recommended action
-- [ ] Fail-open: transcript errors return NOMINAL estimate
-- [ ] `ResumptionContextGenerator.generate(checkpoint: CheckpointData) -> str` (H-11, H-12)
-- [ ] Empty string when `resumption_state` is None
-- [ ] `<resumption-context>` XML within ~760 token budget
-- [ ] `ITranscriptReader` Protocol defined (H-11, H-12)
-- [ ] `JsonlTranscriptReader` reads from tail of JSONL efficiently
-- [ ] `bootstrap.py` wires all services and adapters
-- [ ] H-07: no external imports in domain layer. H-08: no infrastructure imports in application
-- [ ] Unit tests for all 5 tier boundaries, fail-open, XML generation, token budget
-- [ ] One class per file (H-10)
+- [x] `ContextFillEstimator.estimate(transcript_path: str) -> FillEstimate` with type hints and docstring (H-11, H-12)
+- [x] Correct tier boundaries: NOMINAL (<0.55), LOW (0.55-0.70), WARNING (0.70-0.80), CRITICAL (0.80-0.88), EMERGENCY (>0.88)
+- [x] `<context-monitor>` XML tag generated with fill %, tier, recommended action
+- [x] Fail-open: transcript errors return NOMINAL estimate
+- [x] `ResumptionContextGenerator.generate(checkpoint: CheckpointData) -> str` (H-11, H-12)
+- [x] Empty string when `resumption_state` is None
+- [x] `<resumption-context>` XML within ~760 token budget
+- [x] `ITranscriptReader` Protocol defined (H-11, H-12)
+- [x] `JsonlTranscriptReader` reads from tail of JSONL efficiently
+- [x] `bootstrap.py` wires all services and adapters
+- [x] H-07: no external imports in domain layer. H-08: no infrastructure imports in application
+- [x] Unit tests for all 5 tier boundaries, fail-open, XML generation, token budget
+- [x] One class per file (H-10)
 
 ---
 
@@ -152,3 +152,4 @@ Complete the remaining application services and infrastructure adapters for the 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-03 + merged CWI-06. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

@@ -104,15 +104,15 @@ Feature: Hook wrapper scripts delegate to CLI
 
 ### Acceptance Checklist
 
-- [ ] `hooks/user-prompt-submit.py` created (<=15 lines, no `src/` imports, exits 0)
-- [ ] `hooks/session-start.py` created (<=15 lines, no `src/` imports, exits 0)
-- [ ] `hooks/pre-compact.py` created (<=15 lines, no `src/` imports, exits 0)
-- [ ] `hooks/pre-tool-use.py` created (<=15 lines, no `src/` imports, exits 0)
-- [ ] `hooks/hooks.json` updated: SessionStart -> `hooks/session-start.py`, PreCompact added, PreToolUse -> `hooks/pre-tool-use.py`
-- [ ] `scripts/session_start_hook.py` retired
-- [ ] Subprocess timeout 1s below hook timeout for each wrapper
-- [ ] All wrappers correctly pipe stdin/stdout
-- [ ] End-to-end test: wrapper with sample JSON stdin returns expected output
+- [x] `hooks/user-prompt-submit.py` created (<=15 lines, no `src/` imports, exits 0)
+- [x] `hooks/session-start.py` created (<=15 lines, no `src/` imports, exits 0)
+- [x] `hooks/pre-compact.py` created (<=15 lines, no `src/` imports, exits 0)
+- [x] `hooks/pre-tool-use.py` created (<=15 lines, no `src/` imports, exits 0)
+- [x] `hooks/hooks.json` updated: SessionStart -> `hooks/session-start.py`, PreCompact added, PreToolUse -> `hooks/pre-tool-use.py`
+- [x] `scripts/session_start_hook.py` retired
+- [x] Subprocess timeout 1s below hook timeout for each wrapper
+- [x] All wrappers correctly pipe stdin/stdout
+- [x] End-to-end test: wrapper with sample JSON stdin returns expected output
 
 ---
 
@@ -135,3 +135,4 @@ Create four thin hook wrapper scripts and update `hooks/hooks.json` to register 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Enabler created from CWI-11. |
+| 2026-02-21 | Claude | completed | Implemented and verified as part of FEAT-001. |

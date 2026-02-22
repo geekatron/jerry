@@ -43,13 +43,13 @@ Add a write-back step in `CheckpointService.create_checkpoint()` that updates th
 
 ## Acceptance Criteria
 
-- [ ] `CheckpointService.create_checkpoint()` writes back to ORCHESTRATION.yaml after creating checkpoint
-- [ ] Write-back updates `resumption.latest_checkpoint_id`, `resumption.fill_percentage`, `resumption.tier`, `resumption.checkpoint_timestamp`
-- [ ] Uses `yaml.safe_load()` + `yaml.safe_dump()` to parse and write YAML (preserves structure)
-- [ ] Fail-open: if ORCHESTRATION.yaml not found or write fails, checkpoint still succeeds
-- [ ] Write uses atomic file write pattern (consistent with AtomicFileAdapter)
-- [ ] Unit tests for write-back (happy path + file not found + write failure fallback)
-- [ ] Existing 229 hook tests still pass
+- [x] `CheckpointService.create_checkpoint()` writes back to ORCHESTRATION.yaml after creating checkpoint
+- [x] Write-back updates `resumption.latest_checkpoint_id`, `resumption.fill_percentage`, `resumption.tier`, `resumption.checkpoint_timestamp`
+- [x] Uses `yaml.safe_load()` + `yaml.safe_dump()` to parse and write YAML (preserves structure)
+- [x] Fail-open: if ORCHESTRATION.yaml not found or write fails, checkpoint still succeeds
+- [x] Write uses atomic file write pattern (consistent with AtomicFileAdapter)
+- [x] Unit tests for write-back (happy path + file not found + write failure fallback)
+- [x] Existing 229 hook tests still pass
 
 ---
 
@@ -76,3 +76,4 @@ Consider using the existing `AtomicFileAdapter` for atomic writes to prevent cor
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Created from ST-003 validation AC-4 (PARTIAL). |
+| 2026-02-21 | Claude | completed | Checkpoint write-back to ORCHESTRATION.yaml implemented. |

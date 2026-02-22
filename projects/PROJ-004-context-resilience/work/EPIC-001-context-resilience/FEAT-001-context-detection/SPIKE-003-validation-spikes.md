@@ -62,4 +62,4 @@
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Spike created from CWI-08. |
-| 2026-02-21 | Claude | done | Spike completed. OQ-9: BLOCKER found — JsonlTranscriptReader corrected (three-field sum, nested path). Method C: DEFERRED — Method A superior. Report at orchestration/feat001-impl-20260220-001/impl/phase-4-cli-rules/spike-003-exec/spike-003-validation-report.md. Corrections applied to JsonlTranscriptReader, ITranscriptReader port, and test fixtures. |
+| 2026-02-21 | Claude | completed | Spike completed. OQ-9: BLOCKER found — JsonlTranscriptReader corrected (three-field sum, nested path). Method C: DEFERRED — Method A superior. Report at orchestration/feat001-impl-20260220-001/impl/phase-4-cli-rules/spike-003-exec/spike-003-validation-report.md. Corrections applied to JsonlTranscriptReader, ITranscriptReader port, and test fixtures. |

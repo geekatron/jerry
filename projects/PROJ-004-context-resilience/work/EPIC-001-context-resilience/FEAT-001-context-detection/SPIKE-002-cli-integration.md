@@ -11,6 +11,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.8
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
+> **Completed:** 2026-02-19
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 4
@@ -233,6 +234,6 @@ Full work item definitions with acceptance criteria and dependency graphs are in
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-19 | in_progress | Spike created to address SPIKE-001 gap: Jerry CLI infrastructure was not factored into context resilience design. SPIKE-001 focused entirely on hook scripts, missing existing CLI capabilities (TokenCounter, session lifecycle, config system, enforcement engines). |
-| 2026-02-19 | done | Phases 1-4 + QG-1 completed. CLI Capability Audit, Gap Analysis, ADR-SPIKE002-001 (QG-1 PASS at 0.94), initial work item synthesis (10 items CWI-00 through CWI-09). |
-| 2026-02-19 | done | User review identified ADR-SPIKE002-001 chose wrong alternative. DISC-001 documented 3 hook-CLI architecture violations. DEC-001 captured 4 corrective decisions (CLI-first hooks, proper bounded context, jerry hooks commands, enforcement debt tracking). |
-| 2026-02-19 | done | Phase 5 completed: (5a) ADR-SPIKE002-002 produced — chooses Alternative 3 (bounded context + CLI-first hooks), supersedes ADR-SPIKE002-001. (5b) QG-2 passed at 0.92 after 2 iterations (C3 criticality, 7 strategies). (5c) 12 revised work items (CWI-00 through CWI-11) aligned with bounded context architecture. Estimated effort: 26-35.5 hours. |
+| 2026-02-19 | completed | Phases 1-4 + QG-1 completed. CLI Capability Audit, Gap Analysis, ADR-SPIKE002-001 (QG-1 PASS at 0.94), initial work item synthesis (10 items CWI-00 through CWI-09). |
+| 2026-02-19 | completed | User review identified ADR-SPIKE002-001 chose wrong alternative. DISC-001 documented 3 hook-CLI architecture violations. DEC-001 captured 4 corrective decisions (CLI-first hooks, proper bounded context, jerry hooks commands, enforcement debt tracking). |
+| 2026-02-19 | completed | Phase 5 completed: (5a) ADR-SPIKE002-002 produced — chooses Alternative 3 (bounded context + CLI-first hooks), supersedes ADR-SPIKE002-001. (5b) QG-2 passed at 0.92 after 2 iterations (C3 criticality, 7 strategies). (5c) 12 revised work items (CWI-00 through CWI-11) aligned with bounded context architecture. Estimated effort: 26-35.5 hours. |
