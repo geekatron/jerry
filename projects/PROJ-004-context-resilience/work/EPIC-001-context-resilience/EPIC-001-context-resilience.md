@@ -1,12 +1,12 @@
 # EPIC-001: Context Resilience
 
 > **Type:** epic
-> **Status:** done
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** 2026-02-21
+> **Completed:** --
 > **Parent:** PROJ-004-context-resilience
 > **Owner:** Claude
 > **Target Quarter:** FY26-Q1
@@ -98,7 +98,9 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 | Features:  [####################] 100% (1/1 completed)           |
 | Spikes:    [####################] 100% (2/2 completed)           |
 +------------------------------------------------------------------+
-| Overall:   [####################] 100% (COMPLETE)                |
+| Discoveries: Open (DISC-002, DISC-003 documented, unresolved)  |
++------------------------------------------------------------------+
+| Overall:   IN PROGRESS — open discoveries require follow-on work |
 +------------------------------------------------------------------+
 ```
 
@@ -112,7 +114,8 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 | **Completed Spikes** | 2 (SPIKE-001, SPIKE-002) |
 | **Tests** | 3875 passed, 0 failed, 63 skipped |
 | **C4 Review** | 0.953 PASS |
-| **Feature Completion %** | 100% |
+| **Open Discoveries** | 2 (DISC-002, DISC-003 — documented, unresolved) |
+| **Feature Completion %** | Implementation 100%, discoveries open |
 
 ---
 
@@ -135,3 +138,4 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 | 2026-02-19 | Claude | pending | Epic created. Captures context exhaustion detection and graceful session handoff requirements. |
 | 2026-02-20 | Claude | in_progress | FEAT-001 implementation orchestration complete. 6 phases, 11 agents, 3 quality gates PASSED. |
 | 2026-02-21 | Claude | done | All work items verified and closed. FEAT-001 complete (12 implementation items, 3 spikes, 1 discovery, 1 decision, 1 bug). EN-008 hardening complete. C4 adversarial review PASSED at 0.953. 3875 tests passing. Epic complete. |
+| 2026-02-21 | Claude | in_progress | Status reopened. DISC-002 (status line unification gap) and DISC-003 (unfounded latency claims) document unresolved architectural gaps. Open discoveries with actionable follow-on work prevent project closure. |

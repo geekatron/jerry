@@ -19,7 +19,7 @@
 | Field | Value |
 |-------|-------|
 | Project | PROJ-004-context-resilience |
-| Status | COMPLETE |
+| Status | IN_PROGRESS |
 | Created | 2026-02-19 |
 
 ---
@@ -28,7 +28,7 @@
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | done | high |
+| [EPIC-001](./work/EPIC-001-context-resilience/EPIC-001-context-resilience.md) | Context Resilience | in_progress | high |
 
 > Features, Enablers, Spikes, and Tasks are tracked within the Epic and its children.
 
@@ -73,3 +73,4 @@
 | 2026-02-21 | Claude | FEAT-001 (Context Exhaustion Detection) marked done. All children complete: 8 enablers, 3 stories, 3 spikes, 1 discovery, 1 decision, 1 bug. EPIC-001 marked done. PROJ-004 COMPLETE. |
 | 2026-02-21 | Claude | DISC-002 created: Status line / context monitoring unification gap. Status line has exact `current_usage` data from Claude Code API; Jerry uses heuristic transcript parsing. Status line should consume Jerry's `context_monitoring` BC via `jerry context estimate`, not remain independent. Domain belongs in `context_monitoring`, not `hooks`. |
 | 2026-02-21 | Claude | DISC-003 created: Unfounded subprocess latency claims. "Subprocess too heavy" was asserted without benchmarks during status line integration analysis. Hooks already use subprocess at prompt frequency. Measurement required before architectural rejection. |
+| 2026-02-21 | User | PROJ-004 status reopened: IN_PROGRESS. EPIC-001 reopened. Open discoveries (DISC-002, DISC-003) document unresolved architectural gaps that prevent project closure. Premature COMPLETE status was a P-022 (no deception) violation — open work items cannot be masked by a done label. |
