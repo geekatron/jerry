@@ -63,20 +63,20 @@ Create the `/ast` skill -- the Claude-facing interface of Pattern D (Hybrid). Th
 
 ### Acceptance Checklist
 
-- [ ] `/ast` skill is invocable by Claude Code
-- [ ] Skill scripts import from `src/domain/markdown_ast/` (shared domain layer)
-- [ ] Claude can parse a file and get structured frontmatter data
-- [ ] Claude can modify a frontmatter field and write back
-- [ ] Claude can validate a file against a schema
-- [ ] SKILL.md follows Jerry skill template format
-- [ ] Unit tests for skill scripts achieve 90% line coverage (H-21)
+- [x] `/ast` skill is invocable by Claude Code
+- [x] Skill scripts import from `src/domain/markdown_ast/` (shared domain layer)
+- [x] Claude can parse a file and get structured frontmatter data
+- [x] Claude can modify a frontmatter field and write back
+- [x] Claude can validate a file against a schema
+- [x] SKILL.md follows Jerry skill template format
+- [x] Unit tests for skill scripts achieve 90% line coverage (H-21)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] SKILL.md reviewed for correctness
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] SKILL.md reviewed for correctness
 
 ---
 

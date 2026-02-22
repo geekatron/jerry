@@ -63,22 +63,22 @@ Implement the blockquote frontmatter extraction and write-back extension for mar
 
 ### Acceptance Checklist
 
-- [ ] Extract all key-value pairs from a Jerry entity blockquote frontmatter
-- [ ] Handle multiline values (e.g., wrapped descriptions)
-- [ ] Handle inline markdown in values (e.g., `**Status:** pending`)
-- [ ] Write-back: modify a single field, render, verify unmodified fields preserved
-- [ ] Write-back: add a new field to existing frontmatter
-- [ ] Works on WORKTRACKER entities, skill definitions, spike entities, enabler entities
-- [ ] Unit tests achieve 90% line coverage (H-21)
-- [ ] BDD test-first approach followed (H-20)
+- [x] Extract all key-value pairs from a Jerry entity blockquote frontmatter
+- [x] Handle multiline values (e.g., wrapped descriptions)
+- [x] Handle inline markdown in values (e.g., `**Status:** pending`)
+- [x] Write-back: modify a single field, render, verify unmodified fields preserved
+- [x] Write-back: add a new field to existing frontmatter
+- [x] Works on WORKTRACKER entities, skill definitions, spike entities, enabler entities
+- [x] Unit tests achieve 90% line coverage (H-21)
+- [x] BDD test-first approach followed (H-20)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] Type hints on all public functions (H-11)
-- [ ] Docstrings on all public functions (H-12)
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] Type hints on all public functions (H-11)
+- [x] Docstrings on all public functions (H-12)
 
 ---
 

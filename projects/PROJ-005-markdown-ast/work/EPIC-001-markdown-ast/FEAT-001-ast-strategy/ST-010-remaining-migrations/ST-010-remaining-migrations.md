@@ -64,19 +64,19 @@ Opportunistic migration of remaining skills to AST operations. Not all skills ne
 
 ### Acceptance Checklist
 
-- [ ] /adversary agents updated for read-only AST extraction where beneficial
-- [ ] /nasa-se agents updated for template instantiation via AST
-- [ ] /problem-solving agents updated where beneficial
-- [ ] Before/after comparison shows no behavioral regressions
-- [ ] 50-file batch validation completes in <100ms
-- [ ] Migration decisions documented (which agents changed, which stayed)
+- [x] /adversary agents updated for read-only AST extraction where beneficial
+- [x] /nasa-se agents updated for template instantiation via AST
+- [x] /problem-solving agents updated where beneficial
+- [x] Before/after comparison shows no behavioral regressions
+- [x] 50-file batch validation completes in <100ms
+- [x] Migration decisions documented (which agents changed, which stayed)
 
 ### Definition of Done
 
-- [ ] All identified agents updated
-- [ ] Before/after comparison documented
-- [ ] Performance benchmark documented
-- [ ] No behavioral regressions
+- [x] All identified agents updated
+- [x] Before/after comparison documented
+- [x] Performance benchmark documented
+- [x] No behavioral regressions
 
 ---
 

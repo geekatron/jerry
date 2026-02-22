@@ -63,21 +63,21 @@ Implement navigation table helpers that enable programmatic validation of H-23/H
 
 ### Acceptance Checklist
 
-- [ ] Find navigation table in a Jerry document (first table after frontmatter)
-- [ ] Extract section names and anchor links from navigation table
-- [ ] Validate: every `##` heading has a navigation entry
-- [ ] Validate: every navigation link resolves to a valid heading anchor
-- [ ] Report missing/orphaned entries with line numbers
-- [ ] `jerry ast validate <file> --nav` checks navigation table compliance
-- [ ] Unit tests achieve 90% line coverage (H-21)
+- [x] Find navigation table in a Jerry document (first table after frontmatter)
+- [x] Extract section names and anchor links from navigation table
+- [x] Validate: every `##` heading has a navigation entry
+- [x] Validate: every navigation link resolves to a valid heading anchor
+- [x] Report missing/orphaned entries with line numbers
+- [x] `jerry ast validate <file> --nav` checks navigation table compliance
+- [x] Unit tests achieve 90% line coverage (H-21)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] Type hints on all public functions (H-11)
-- [ ] Docstrings on all public functions (H-12)
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] Type hints on all public functions (H-11)
+- [x] Docstrings on all public functions (H-12)
 
 ---
 

@@ -64,22 +64,22 @@ Implement the core domain facade (`JerryDocument`) that provides the unified API
 
 ### Acceptance Checklist
 
-- [ ] `JerryDocument.parse(source: str)` returns a typed AST representation
-- [ ] `JerryDocument.render()` produces markdown output via mdformat
-- [ ] `JerryDocument.query(selector)` enables node lookup by type/attribute
-- [ ] `JerryDocument.transform(visitor)` enables node modification with new document return
-- [ ] Parse-render roundtrip preserves unmodified content (mdformat normalization accepted)
-- [ ] All public methods have type hints (H-11) and docstrings (H-12)
-- [ ] Unit tests achieve 90% line coverage (H-21)
-- [ ] BDD test-first approach followed (H-20)
+- [x] `JerryDocument.parse(source: str)` returns a typed AST representation
+- [x] `JerryDocument.render()` produces markdown output via mdformat
+- [x] `JerryDocument.query(selector)` enables node lookup by type/attribute
+- [x] `JerryDocument.transform(visitor)` enables node modification with new document return
+- [x] Parse-render roundtrip preserves unmodified content (mdformat normalization accepted)
+- [x] All public methods have type hints (H-11) and docstrings (H-12)
+- [x] Unit tests achieve 90% line coverage (H-21)
+- [x] BDD test-first approach followed (H-20)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] Type hints on all public functions (H-11)
-- [ ] Docstrings on all public functions (H-12)
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] Type hints on all public functions (H-11)
+- [x] Docstrings on all public functions (H-12)
 
 ---
 

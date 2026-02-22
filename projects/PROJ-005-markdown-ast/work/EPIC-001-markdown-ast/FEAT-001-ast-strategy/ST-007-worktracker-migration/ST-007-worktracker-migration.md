@@ -62,18 +62,18 @@ Pilot migration: update /worktracker agent definitions to use `/ast` skill opera
 
 ### Acceptance Checklist
 
-- [ ] wt-verifier agent uses AST-based frontmatter extraction for status checks
-- [ ] wt-auditor agent uses AST-based validation for integrity checks
-- [ ] wt-visualizer agent uses AST-based hierarchy extraction for diagrams
-- [ ] Before/after comparison on 10 real entity files shows no regressions
-- [ ] Agent outputs remain identical (behavior-preserving migration)
-- [ ] Schema validation errors are surfaced in agent reports
+- [x] wt-verifier agent uses AST-based frontmatter extraction for status checks
+- [x] wt-auditor agent uses AST-based validation for integrity checks
+- [x] wt-visualizer agent uses AST-based hierarchy extraction for diagrams
+- [x] Before/after comparison on 10 real entity files shows no regressions
+- [x] Agent outputs remain identical (behavior-preserving migration)
+- [x] Schema validation errors are surfaced in agent reports
 
 ### Definition of Done
 
-- [ ] All 3 worktracker agents updated
-- [ ] Before/after comparison documented
-- [ ] No behavioral regressions
+- [x] All 3 worktracker agents updated
+- [x] Before/after comparison documented
+- [x] No behavioral regressions
 
 ---
 

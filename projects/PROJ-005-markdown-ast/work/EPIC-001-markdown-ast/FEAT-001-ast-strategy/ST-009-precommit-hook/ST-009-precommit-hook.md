@@ -63,19 +63,19 @@ Integrate AST validation into the pre-commit hook pipeline. Only validate files 
 
 ### Acceptance Checklist
 
-- [ ] Pre-commit hook runs `jerry ast validate` on staged `.md` files
-- [ ] Only validates files with defined schemas (skips freeform files)
-- [ ] Reports validation errors clearly with file:line format
-- [ ] Blocks commit if validation errors found (exit code 1)
-- [ ] Passes cleanly when no errors (exit code 0)
-- [ ] Performance: <2 seconds for typical commit (5-10 files)
+- [x] Pre-commit hook runs `jerry ast validate` on staged `.md` files
+- [x] Only validates files with defined schemas (skips freeform files)
+- [x] Reports validation errors clearly with file:line format
+- [x] Blocks commit if validation errors found (exit code 1)
+- [x] Passes cleanly when no errors (exit code 0)
+- [x] Performance: <2 seconds for typical commit (5-10 files)
 
 ### Definition of Done
 
-- [ ] Hook script implemented
-- [ ] Pre-commit configuration updated
-- [ ] Tested with valid and invalid files
-- [ ] Documentation updated in contributing guide
+- [x] Hook script implemented
+- [x] Pre-commit configuration updated
+- [x] Tested with valid and invalid files
+- [x] Documentation updated in contributing guide
 
 ---
 

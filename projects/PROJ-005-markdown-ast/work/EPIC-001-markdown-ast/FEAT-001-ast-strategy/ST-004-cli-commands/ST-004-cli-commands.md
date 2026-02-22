@@ -64,21 +64,21 @@ Add the CLI adapter that exposes the domain layer as `jerry ast` subcommands. Th
 
 ### Acceptance Checklist
 
-- [ ] `jerry ast parse WORKTRACKER.md` outputs valid JSON AST
-- [ ] `jerry ast render WORKTRACKER.md` produces roundtripped markdown
-- [ ] `jerry ast validate WORKTRACKER.md --schema entity` reports validation results
-- [ ] `jerry ast query WORKTRACKER.md "blockquote.frontmatter"` returns structured data
-- [ ] Exit codes: 0 (success), 1 (validation failure), 2 (parse error)
-- [ ] `--help` documentation for all subcommands
-- [ ] Unit tests achieve 90% line coverage (H-21)
+- [x] `jerry ast parse WORKTRACKER.md` outputs valid JSON AST
+- [x] `jerry ast render WORKTRACKER.md` produces roundtripped markdown
+- [x] `jerry ast validate WORKTRACKER.md --schema entity` reports validation results
+- [x] `jerry ast query WORKTRACKER.md "blockquote.frontmatter"` returns structured data
+- [x] Exit codes: 0 (success), 1 (validation failure), 2 (parse error)
+- [x] `--help` documentation for all subcommands
+- [x] Unit tests achieve 90% line coverage (H-21)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] Type hints on all public functions (H-11)
-- [ ] Docstrings on all public functions (H-12)
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] Type hints on all public functions (H-11)
+- [x] Docstrings on all public functions (H-12)
 
 ---
 

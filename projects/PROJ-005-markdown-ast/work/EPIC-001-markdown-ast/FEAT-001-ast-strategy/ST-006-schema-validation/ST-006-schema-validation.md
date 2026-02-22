@@ -63,23 +63,23 @@ Implement the schema validation engine and initial schema definitions for WORKTR
 
 ### Acceptance Checklist
 
-- [ ] Schema definition API: define required frontmatter fields, types, allowed values
-- [ ] Schema definition API: define required sections (## headings)
-- [ ] Schema definition API: define navigation table requirements (H-23/H-24)
-- [ ] Validate a WORKTRACKER Epic entity against its schema -- catches missing fields
-- [ ] Validate a WORKTRACKER Story entity -- catches invalid status values
-- [ ] `jerry ast validate <file> --schema entity` returns structured validation report
-- [ ] Validation report includes: field path, expected, actual, severity
-- [ ] Unit tests achieve 90% line coverage (H-21)
+- [x] Schema definition API: define required frontmatter fields, types, allowed values
+- [x] Schema definition API: define required sections (## headings)
+- [x] Schema definition API: define navigation table requirements (H-23/H-24)
+- [x] Validate a WORKTRACKER Epic entity against its schema -- catches missing fields
+- [x] Validate a WORKTRACKER Story entity -- catches invalid status values
+- [x] `jerry ast validate <file> --schema entity` returns structured validation report
+- [x] Validation report includes: field path, expected, actual, severity
+- [x] Unit tests achieve 90% line coverage (H-21)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] Type hints on all public functions (H-11)
-- [ ] Docstrings on all public functions (H-12)
-- [ ] Schema definitions match `.context/templates/worktracker/` templates
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] Type hints on all public functions (H-11)
+- [x] Docstrings on all public functions (H-12)
+- [x] Schema definitions match `.context/templates/worktracker/` templates
 
 ---
 

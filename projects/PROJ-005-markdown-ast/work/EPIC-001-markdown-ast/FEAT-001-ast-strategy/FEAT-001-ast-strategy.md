@@ -54,27 +54,27 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 
 ### Definition of Done
 
-- [ ] SPIKE-001 complete: 5+ Python libraries evaluated with evidence
-- [ ] SPIKE-002 complete: AST architecture feasibility assessed
-- [ ] Build-from-scratch option formally evaluated against adoption options
-- [ ] Feature matrix comparing all options across Jerry-specific requirements
-- [ ] Go/no-go recommendation with rationale
-- [ ] Adversarial review completed (S-003 Steelman, S-002 Devil's Advocate, S-013 Inversion)
-- [ ] ADR published documenting the decision
-- [ ] If go: integration architecture defined (CLI extension vs hidden skills vs both)
-- [ ] If no-go: alternative strategy documented
+- [x] SPIKE-001 complete: 5+ Python libraries evaluated with evidence
+- [x] SPIKE-002 complete: AST architecture feasibility assessed
+- [x] Build-from-scratch option formally evaluated against adoption options
+- [x] Feature matrix comparing all options across Jerry-specific requirements
+- [x] Go/no-go recommendation with rationale
+- [x] Adversarial review completed (S-003 Steelman, S-002 Devil's Advocate, S-013 Inversion)
+- [x] ADR published documenting the decision
+- [x] If go: integration architecture defined (CLI extension vs hidden skills vs both)
+- N/A If no-go: alternative strategy documented (decision was GO)
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | 5+ Python markdown AST libraries identified and evaluated | [ ] |
-| AC-2 | Each library tested against Jerry markdown samples (blockquote frontmatter, nav tables, Mermaid, template placeholders) | [ ] |
-| AC-3 | Build-from-scratch effort estimated with architecture sketch | [ ] |
-| AC-4 | Feature matrix with weighted scoring published | [ ] |
-| AC-5 | Token efficiency analysis: AST operations vs raw text operations | [ ] |
-| AC-6 | Integration options assessed: Jerry CLI command, hidden skill, or hybrid | [ ] |
-| AC-7 | Adversarial review artifacts persisted to decisions/ | [ ] |
+| AC-1 | 5+ Python markdown AST libraries identified and evaluated | [x] |
+| AC-2 | Each library tested against Jerry markdown samples (blockquote frontmatter, nav tables, Mermaid, template placeholders) | [x] |
+| AC-3 | Build-from-scratch effort estimated with architecture sketch | [x] |
+| AC-4 | Feature matrix with weighted scoring published | [x] |
+| AC-5 | Token efficiency analysis: AST operations vs raw text operations | [x] |
+| AC-6 | Integration options assessed: Jerry CLI command, hidden skill, or hybrid | [x] |
+| AC-7 | Adversarial review artifacts persisted to decisions/ | [x] |
 
 ---
 

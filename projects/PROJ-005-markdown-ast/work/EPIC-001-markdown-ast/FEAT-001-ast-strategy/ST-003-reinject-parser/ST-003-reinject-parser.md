@@ -62,21 +62,21 @@ Implement the L2-REINJECT comment parser extension. These HTML comments carry st
 
 ### Acceptance Checklist
 
-- [ ] Extract all L2-REINJECT comments from a Jerry rule file
-- [ ] Parse structured fields: rank, tokens, content
-- [ ] Write-back: modify rank value, verify roundtrip
-- [ ] Write-back: modify content string, verify roundtrip
-- [ ] Works on `quality-enforcement.md` (6+ L2-REINJECT comments)
-- [ ] Non-L2-REINJECT HTML comments are preserved unchanged
-- [ ] Unit tests achieve 90% line coverage (H-21)
+- [x] Extract all L2-REINJECT comments from a Jerry rule file
+- [x] Parse structured fields: rank, tokens, content
+- [x] Write-back: modify rank value, verify roundtrip
+- [x] Write-back: modify content string, verify roundtrip
+- [x] Works on `quality-enforcement.md` (6+ L2-REINJECT comments)
+- [x] Non-L2-REINJECT HTML comments are preserved unchanged
+- [x] Unit tests achieve 90% line coverage (H-21)
 
 ### Definition of Done
 
-- [ ] Code complete and peer reviewed
-- [ ] Unit tests written and passing
-- [ ] 90% line coverage (H-21)
-- [ ] Type hints on all public functions (H-11)
-- [ ] Docstrings on all public functions (H-12)
+- [x] Code complete and peer reviewed
+- [x] Unit tests written and passing
+- [x] 90% line coverage (H-21)
+- [x] Type hints on all public functions (H-11)
+- [x] Docstrings on all public functions (H-12)
 
 ---
 
