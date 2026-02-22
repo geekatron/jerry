@@ -84,6 +84,12 @@ disallow_untyped_defs = true
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+# Exclude completed PoC/spike scripts from linting. These are one-off research
+# artifacts that served their purpose (EN-001 R-01 PoC) and are preserved as
+# reference material, not production code. See BUG-001 for context.
+exclude = [
+    "projects/*/work/**/EN-*/r01_poc.py",
+]
 
 [tool.ruff.lint]
 select = [

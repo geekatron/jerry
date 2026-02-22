@@ -46,7 +46,6 @@ from src.domain.markdown_ast import (
     validate_nav_table,
 )
 
-
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
@@ -68,11 +67,10 @@ def _read_file(file_path: str) -> str:
     try:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
-    except FileNotFoundError:
+    except FileNotFoundError as err:
         raise FileNotFoundError(
-            f"File not found: '{file_path}'. "
-            "Ensure the path is correct and the file exists."
-        )
+            f"File not found: '{file_path}'. Ensure the path is correct and the file exists."
+        ) from err
 
 
 def _write_file(file_path: str, content: str) -> None:
@@ -291,9 +289,7 @@ def validate_file(
         "is_valid": is_valid,
         "nav_table_valid": nav_result.is_valid,
         "missing_nav_entries": nav_result.missing_entries,
-        "orphaned_nav_entries": [
-            entry.section_name for entry in nav_result.orphaned_entries
-        ],
+        "orphaned_nav_entries": [entry.section_name for entry in nav_result.orphaned_entries],
         "schema_valid": schema_valid,
         "schema": schema,
         "schema_violations": schema_violations,

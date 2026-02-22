@@ -30,7 +30,7 @@ _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from skills.ast.scripts.ast_ops import (
+from skills.ast.scripts.ast_ops import (  # noqa: E402
     parse_file,
     query_frontmatter,
     validate_file,
@@ -97,7 +97,7 @@ def find_entity_files(projects_dir: str, target_count: int = 10) -> list[str]:
 
     # Build selection: one of each type first, then fill remaining
     selected: list[str] = []
-    for entity_type, paths in by_type.items():
+    for _entity_type, paths in by_type.items():
         if paths:
             selected.append(paths[0])
 
@@ -157,15 +157,11 @@ def run_comparison(file_path: str) -> dict[str, object]:
             validation = validate_file(file_path, schema=entity_type)
             result["schema_valid"] = validation["schema_valid"]
             result["nav_table_valid"] = validation["nav_table_valid"]
-            result["schema_violations_count"] = len(
-                validation.get("schema_violations", [])
-            )
+            result["schema_violations_count"] = len(validation.get("schema_violations", []))
             if not validation["schema_valid"]:
                 violations = validation.get("schema_violations", [])
                 for v in violations[:3]:  # Show first 3 violations
-                    errors.append(
-                        f"Schema violation: {v['field_path']} - {v['message']}"
-                    )
+                    errors.append(f"Schema violation: {v['field_path']} - {v['message']}")
         except Exception as e:
             errors.append(f"validate_file error: {e}")
     else:
@@ -175,8 +171,7 @@ def run_comparison(file_path: str) -> dict[str, object]:
     # Determine pass/fail
     # Pass = frontmatter extracted successfully (core migration requirement)
     result["passed"] = len(errors) == 0 or (
-        result.get("frontmatter_count", 0) > 0
-        and result.get("has_frontmatter", False)
+        result.get("frontmatter_count", 0) > 0 and result.get("has_frontmatter", False)
     )
 
     return result
@@ -215,8 +210,10 @@ def main() -> None:
         fm_count = result.get("frontmatter_count", 0)
         schema_valid = result.get("schema_valid", "N/A")
 
-        print(f"  [{i:2d}] {status} | {entity_type:8s} | fm={fm_count:2d} | "
-              f"schema={str(schema_valid):5s} | {rel_path}")
+        print(
+            f"  [{i:2d}] {status} | {entity_type:8s} | fm={fm_count:2d} | "
+            f"schema={str(schema_valid):5s} | {rel_path}"
+        )
 
         errors = result.get("errors", [])
         if errors:

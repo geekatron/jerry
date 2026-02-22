@@ -31,7 +31,6 @@ from src.domain.markdown_ast.reinject import (
     modify_reinject_directive,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -115,7 +114,9 @@ class TestReinjectDirective:
 
     def test_directive_has_content_field(self) -> None:
         """ReinjectDirective stores content as str."""
-        d = ReinjectDirective(rank=1, tokens=10, content="Some content.", line_number=0, raw_text="raw")
+        d = ReinjectDirective(
+            rank=1, tokens=10, content="Some content.", line_number=0, raw_text="raw"
+        )
         assert d.content == "Some content."
 
     def test_directive_has_line_number_field(self) -> None:

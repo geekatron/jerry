@@ -42,7 +42,6 @@ from skills.ast.scripts.ast_ops import (
     validate_nav_table_file,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures: temp file helpers
 # ---------------------------------------------------------------------------
@@ -722,7 +721,9 @@ class TestSchemaValidationForConstraints:
                 path = paths[i]
                 fm = query_frontmatter(path)
                 entity_type = fm.get("Type", "").lower()
-                assert entity_type == expected_type, f"File {i}: expected {expected_type}, got {entity_type}"
+                assert entity_type == expected_type, (
+                    f"File {i}: expected {expected_type}, got {entity_type}"
+                )
                 result = validate_file(path, schema=entity_type)
                 assert result["schema_valid"] == expected_valid, (
                     f"File {i}: expected schema_valid={expected_valid}, got {result['schema_valid']}"
@@ -749,7 +750,7 @@ class TestBatchValidationPerformance:
         """Validate 50 files for nav table compliance in under 200ms."""
         # Create 50 files alternating between valid and invalid nav tables
         contents = []
-        for i in range(25):
+        for _i in range(25):
             contents.append(WITH_NAV_TABLE_MD)
             contents.append(NO_NAV_TABLE_MD)
 
@@ -800,11 +801,7 @@ class TestBatchValidationPerformance:
     @pytest.mark.happy_path
     def test_50_file_parse_batch_under_200ms(self) -> None:
         """Parse 50 files for structural info in under 200ms."""
-        contents = (
-            [ADR_DELIVERABLE_MD] * 17
-            + [WITH_NAV_TABLE_MD] * 17
-            + [REVIEW_PACKAGE_MD] * 16
-        )
+        contents = [ADR_DELIVERABLE_MD] * 17 + [WITH_NAV_TABLE_MD] * 17 + [REVIEW_PACKAGE_MD] * 16
         paths = _write_temp_list(contents)
         try:
             start_time = time.perf_counter()

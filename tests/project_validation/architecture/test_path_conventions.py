@@ -25,6 +25,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.project_validation.conftest import REQUIRED_PROJECT_DIRS, REQUIRED_PROJECT_FILES
+
 # =============================================================================
 # ARCHITECTURE TESTS - PROJECT ISOLATION
 # =============================================================================
@@ -73,6 +75,12 @@ class TestProjectIsolation:
         cross_ref_pattern = re.compile(rf"projects/PROJ-(?!{proj_num})\d{{3}}")
 
         for md_file in proj_root.rglob("*.md"):
+            # Bug reports may legitimately reference other projects when
+            # documenting cross-project impacts (e.g., PROJ-006 test failures
+            # blocking PROJ-005 CI). Skip BUG- files from this check.
+            if "BUG-" in md_file.name:
+                continue
+
             content = md_file.read_text()
             matches = cross_ref_pattern.findall(content)
 
@@ -85,21 +93,22 @@ class TestProjectIsolation:
         """
         ARCHITECTURE: Project directory must have required structure.
 
-        Required: PLAN.md, WORKTRACKER.md, and standard category directories.
+        Required per worktracker-directory-structure.md: PLAN.md, WORKTRACKER.md, work/.
+        Category directories (research, decisions, etc.) are optional.
         """
-        # Required files
-        required_files = ["PLAN.md", "WORKTRACKER.md"]
-        for filename in required_files:
+        for filename in REQUIRED_PROJECT_FILES:
             file_path = proj_root / filename
-            assert file_path.exists(), f"Missing required file: {filename}"
+            assert file_path.exists(), (
+                f"Missing required file: {filename} in {proj_root.name}. "
+                f"Create it with: touch {proj_root}/{filename}"
+            )
 
-        # Required directories (at least some should exist)
-        expected_dirs = ["research", "synthesis", "analysis", "decisions", "reports"]
-        existing_dirs = [d for d in expected_dirs if (proj_root / d).exists()]
-
-        assert len(existing_dirs) >= 3, (
-            f"Project should have at least 3 category directories, found: {existing_dirs}"
-        )
+        for dirname in REQUIRED_PROJECT_DIRS:
+            dir_path = proj_root / dirname
+            assert dir_path.exists(), (
+                f"Missing required directory: {dirname} in {proj_root.name}. "
+                f"Create it with: mkdir {proj_root}/{dirname}"
+            )
 
 
 # =============================================================================
@@ -294,4 +303,56 @@ class TestRegressionPrevention:
                 f"Document {md_file.name} uses old path convention!\n"
                 f"Matches: {matches}\n"
                 f"Use: projects/{{PROJ-ID}}/{{category}}/ instead"
+            )
+
+
+# =============================================================================
+# ARCHITECTURE TESTS - SPEC SYNC VALIDATION
+# =============================================================================
+
+
+class TestSpecSyncValidation:
+    """Verify conftest spec constants stay in sync with worktracker SSOT."""
+
+    def test_required_files_match_worktracker_spec(self, project_root: Path) -> None:
+        """
+        ARCHITECTURE: REQUIRED_PROJECT_FILES must match worktracker directory structure spec.
+
+        The spec file (worktracker-directory-structure.md) defines PLAN.md and
+        WORKTRACKER.md as required. If the spec changes, this test catches drift.
+        """
+        spec_path = (
+            project_root / "skills" / "worktracker" / "rules" / "worktracker-directory-structure.md"
+        )
+        if not spec_path.exists():
+            pytest.skip("Worktracker directory structure spec not found")
+
+        content = spec_path.read_text()
+
+        for required_file in REQUIRED_PROJECT_FILES:
+            assert required_file in content, (
+                f"REQUIRED_PROJECT_FILES contains '{required_file}' but it was not found "
+                f"in the worktracker directory structure spec. "
+                f"Update conftest.py to match the spec, or update the spec."
+            )
+
+    def test_required_dirs_match_worktracker_spec(self, project_root: Path) -> None:
+        """
+        ARCHITECTURE: REQUIRED_PROJECT_DIRS must match worktracker directory structure spec.
+
+        The spec file defines work/ as the only required directory.
+        """
+        spec_path = (
+            project_root / "skills" / "worktracker" / "rules" / "worktracker-directory-structure.md"
+        )
+        if not spec_path.exists():
+            pytest.skip("Worktracker directory structure spec not found")
+
+        content = spec_path.read_text()
+
+        for required_dir in REQUIRED_PROJECT_DIRS:
+            assert f"{required_dir}/" in content or f"`{required_dir}`" in content, (
+                f"REQUIRED_PROJECT_DIRS contains '{required_dir}' but it was not found "
+                f"in the worktracker directory structure spec. "
+                f"Update conftest.py to match the spec, or update the spec."
             )

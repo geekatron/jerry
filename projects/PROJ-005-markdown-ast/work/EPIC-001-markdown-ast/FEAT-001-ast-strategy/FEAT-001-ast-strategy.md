@@ -136,7 +136,16 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 | Stories | 10 | 37 |
 | **Total** | **13** | **40** |
 
+### Bug Inventory
+
+| ID | Title | Status | Priority | Severity |
+|----|-------|--------|----------|----------|
+| BUG-001 | CI/CD lint and test failures on PR #48 | pending | high | major |
+
 ### Work Item Links
+
+**Bugs:**
+- [BUG-001: CI/CD lint and test failures on PR #48](./BUG-001-ci-cd-lint-test-failures/BUG-001-ci-cd-lint-test-failures.md)
 
 **Spikes:**
 - [SPIKE-001: Python Markdown AST Library Landscape](./SPIKE-001-library-landscape/SPIKE-001-library-landscape.md)
@@ -242,3 +251,4 @@ ST-010
 | 2026-02-20 | Claude | in-progress | EN-001 completed: R-01 PASS. All 3 checks pass across 3 entity types. Adversarial review (S-010 + S-014, score 0.83). Critical finding SR-001 fixed. Phase 1 stories unblocked. |
 | 2026-02-21 | Claude | in-progress | 9/10 stories completed (ST-001 through ST-008, ST-010). 1,925 LOC, 404 tests, 100% domain coverage. ST-009 (pre-commit hook) remaining. Worktracker synced with implementation state. |
 | 2026-02-21 | Claude | completed | ST-009 completed. All 13/13 items done (40/40 SP). check_markdown_schemas.py (274 LOC), 35 tests, 98% coverage. Performance: 10 files in 0.21s. FEAT-001 100% complete. |
+| 2026-02-21 | Claude | completed | BUG-001 filed: CI/CD failures on PR #48 — 32 ruff lint errors in r01_poc.py + 2 PROJ-006 test failures. 2 tasks created. |

@@ -113,7 +113,7 @@ PROHIBITED_MEDIUM_TIER_WORDS = [
 FORBIDDEN_ANTI_PATTERNS = [
     # Specific known fields
     r'Grep\(pattern=["\']>\s*\*\*Status:',
-    r'grep.*> \*\*Status:',
+    r"grep.*> \*\*Status:",
     r'Grep\(pattern=["\']>\s*\*\*Type:',
     r'Grep\(pattern=["\']>\s*\*\*Parent:',
     # Generic: any Grep targeting blockquote frontmatter pattern (> **Field:**)
@@ -307,7 +307,7 @@ class TestWorktrackerAgentLanguage:
         if ast_start == -1:
             return None
         # Find the end: next bold heading or ## section after the AST heading line
-        rest = content[ast_start + len("**AST-Based Operations"):]
+        rest = content[ast_start + len("**AST-Based Operations") :]
         # Skip past the first line (the heading itself)
         first_newline = rest.find("\n")
         if first_newline == -1:
@@ -316,7 +316,12 @@ class TestWorktrackerAgentLanguage:
         # Find the next bold heading starting with a capital letter
         end_match = re.search(r"\n\*\*[A-Z][a-z]", rest_after_heading)
         if end_match:
-            return content[ast_start:ast_start + len("**AST-Based Operations") + first_newline + end_match.start()]
+            return content[
+                ast_start : ast_start
+                + len("**AST-Based Operations")
+                + first_newline
+                + end_match.start()
+            ]
         return content[ast_start:]
 
     @pytest.mark.parametrize("agent_file", EXPECTED_WT_AGENT_FILES)
@@ -488,29 +493,25 @@ class TestAstSkillRegistration:
             "mandatory-skill-usage.md trigger map missing 'frontmatter' -> /ast mapping"
         )
 
-    def test_ast_skill_when_checked_then_skill_md_exists(
-        self, project_root: Path
-    ) -> None:
+    def test_ast_skill_when_checked_then_skill_md_exists(self, project_root: Path) -> None:
         """/ast skill must have a SKILL.md file (H-25)."""
         # Arrange
         skill_file = project_root / "skills" / "ast" / "SKILL.md"
 
         # Act/Assert
         assert skill_file.exists(), (
-            f"skills/ast/SKILL.md does not exist — /ast skill registered but source missing"
+            "skills/ast/SKILL.md does not exist — /ast skill registered but source missing"
         )
 
-    def test_ast_skill_when_checked_then_ast_ops_exists(
-        self, project_root: Path
-    ) -> None:
+    def test_ast_skill_when_checked_then_ast_ops_exists(self, project_root: Path) -> None:
         """ast_ops.py script must exist (referenced in agent examples)."""
         # Arrange
         ast_ops = project_root / "skills" / "ast" / "scripts" / "ast_ops.py"
 
         # Act/Assert
         assert ast_ops.exists(), (
-            f"skills/ast/scripts/ast_ops.py does not exist — agent examples reference "
-            f"'from skills.ast.scripts.ast_ops import' but file is missing"
+            "skills/ast/scripts/ast_ops.py does not exist — agent examples reference "
+            "'from skills.ast.scripts.ast_ops import' but file is missing"
         )
 
 
@@ -660,7 +661,14 @@ class TestWorktrackerAgentAntiPatterns:
         Looks at the match line and surrounding lines (up to 3 lines before)
         for prohibition keywords like 'DO NOT', 'NEVER', 'prohibited', 'forbidden'.
         """
-        prohibition_keywords = ["DO NOT", "NEVER", "prohibited", "forbidden", "replaces", "replaced"]
+        prohibition_keywords = [
+            "DO NOT",
+            "NEVER",
+            "prohibited",
+            "forbidden",
+            "replaces",
+            "replaced",
+        ]
         # Check the match line itself and up to 3 preceding lines
         start = max(0, match_line_idx - 3)
         context_lines = lines[start : match_line_idx + 1]
@@ -687,8 +695,7 @@ class TestWorktrackerAgentAntiPatterns:
                 if re.search(anti_pattern, line):
                     if not self._is_prohibition_context(lines, line_idx):
                         violations.append(
-                            f"  Line {line_idx + 1}: {line.strip()} "
-                            f"(pattern: {anti_pattern})"
+                            f"  Line {line_idx + 1}: {line.strip()} (pattern: {anti_pattern})"
                         )
 
         # Assert

@@ -23,7 +23,6 @@ References:
 from __future__ import annotations
 
 import os
-import re
 import tempfile
 
 import pytest
@@ -33,13 +32,11 @@ from skills.ast.scripts.ast_ops import (
     query_frontmatter,
     validate_file,
 )
+from src.domain.markdown_ast.jerry_document import JerryDocument
 from src.domain.markdown_ast.schema import (
-    ValidationReport,
     get_entity_schema,
     validate_document,
 )
-from src.domain.markdown_ast.jerry_document import JerryDocument
-
 
 # ---------------------------------------------------------------------------
 # Fixtures: temp file helpers
@@ -620,9 +617,7 @@ class TestEntityTypeDetection:
             ("BUG-004-plugin-uninstall.md", "bug"),
         ],
     )
-    def test_detect_entity_type_from_filename(
-        self, filename: str, expected_type: str
-    ) -> None:
+    def test_detect_entity_type_from_filename(self, filename: str, expected_type: str) -> None:
         """detect_entity_type correctly maps filename prefix to entity type."""
         assert detect_entity_type(filename) == expected_type
 
@@ -704,9 +699,7 @@ class TestDomainSchemaValidation:
         schema = get_entity_schema("task")
         report = validate_document(doc, schema)
         assert report.is_valid is False
-        status_violations = [
-            v for v in report.violations if v.field_path == "frontmatter.Status"
-        ]
+        status_violations = [v for v in report.violations if v.field_path == "frontmatter.Status"]
         assert len(status_violations) > 0
         assert "done" in status_violations[0].actual
 
