@@ -12,6 +12,7 @@
 | PROJ-004 | context-resilience | PENDING | Context exhaustion detection and graceful session handoff for multi-orchestration runs |
 | PROJ-005 | markdown-ast | PENDING | AST-based markdown manipulation to replace raw text operations across Jerry's full surface |
 | PROJ-006 | multi-instance | PENDING | Automated multi-instance Claude management via SDK or CLI to replace manual worktree + session workflows |
+| PROJ-009 | llm-deception-research | ACTIVE | Research documenting LLM deception patterns and behavioral flaws; multi-platform Saucer Boy content for Anthropic/Boris engagement |
 
 ## Project Lookup
 
@@ -21,3 +22,4 @@
 - **PROJ-004**: `projects/PROJ-004-context-resilience/`
 - **PROJ-005**: `projects/PROJ-005-markdown-ast/`
 - **PROJ-006**: `projects/PROJ-006-multi-instance/`
+- **PROJ-009**: `projects/PROJ-009-llm-deception-research/`

@@ -1,0 +1,83 @@
+# FEAT-003: Research Synthesis
+
+> **Type:** feature
+> **Status:** pending
+> **Priority:** high
+> **Impact:** high
+> **Created:** 2026-02-22T00:00:00Z
+> **Due:** —
+> **Completed:** —
+> **Parent:** EPIC-001
+> **Owner:** —
+> **Target Sprint:** —
+
+---
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Description and value proposition |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Children (Stories/Enablers)](#children-storiesenablers) | Story/enabler inventory |
+| [Progress Summary](#progress-summary) | Feature progress |
+| [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Phase 3 synthesis of Phase 1 evidence and Phase 2 A/B results into a unified thesis. Maps deception patterns to training incentive structures. Proposes architectural solutions grounded in evidence.
+
+**Value Proposition:**
+- Unify evidence collection and A/B test findings into a coherent research narrative
+- Map observed deception patterns to their root causes in training incentive structures
+- Propose concrete architectural solutions backed by empirical evidence
+
+---
+
+## Acceptance Criteria
+
+### Definition of Done
+
+- [ ] Unified synthesis document produced with full citations from Phase 1 and Phase 2
+- [ ] Deception patterns mapped to training incentive structures
+- [ ] Architectural analysis of proposed solutions complete
+- [ ] Technical review passed
+- [ ] Barrier-3 quality gate passed (>= 0.95)
+
+---
+
+## Children Stories/Enablers
+
+| ID | Type | Title | Status | Priority |
+|----|------|-------|--------|----------|
+| STORY-001 | Story | Unified Synthesis | pending | critical |
+| STORY-002 | Story | Architectural Analysis | pending | high |
+| EN-001 | Enabler | Technical Review | pending | high |
+
+### Work Item Links
+
+- [STORY-001: Unified Synthesis](./STORY-001-unified-synthesis/STORY-001.md)
+- [STORY-002: Architectural Analysis](./STORY-002-architectural-analysis/STORY-002.md)
+- [EN-001: Technical Review](./EN-001-technical-review/EN-001.md)
+
+---
+
+## Progress Summary
+
+| Metric | Value |
+|--------|-------|
+| **Total Stories** | 2 |
+| **Completed Stories** | 0 |
+| **Total Enablers** | 1 |
+| **Completed Enablers** | 0 |
+| **Completion %** | 0% |
+
+---
+
+## History
+
+| Date | Author | Status | Notes |
+|------|--------|--------|-------|
+| 2026-02-22 | orch-planner | pending | Feature created during Phase 0 setup |

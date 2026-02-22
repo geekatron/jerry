@@ -1,0 +1,541 @@
+# ORCHESTRATION.yaml - LLM Deception Research Pipeline State
+# Schema Version: 2.0.0
+# Generated: 2026-02-22T00:00:00Z
+# Source: orch-planner agent
+# Project: PROJ-009
+
+---
+
+schema_version: "2.0.0"
+id_source: "user"
+
+workflow:
+  id: "llm-deception-20260221-001"
+  name: "LLM Deception Research - Cross-Pollinated Pipeline"
+  project_id: "PROJ-009"
+  status: "ACTIVE"
+  created_at: "2026-02-22T00:00:00Z"
+  updated_at: "2026-02-22T00:00:00Z"
+  patterns:
+    - "SEQUENTIAL"
+    - "CONCURRENT"
+    - "BARRIER_SYNC"
+
+constraints:
+  max_agent_nesting: 1          # P-003: No recursive subagents
+  file_persistence: true        # P-002: Filesystem as infinite memory
+  user_authority: true           # P-020: User authority -- never override
+  max_concurrent_agents: 5
+  max_barrier_retries: 5         # Project-specific: up to 5 QG iterations
+  checkpoint_frequency: "PHASE"
+
+paths:
+  base: "orchestration/llm-deception-20260221-001/"
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+pipelines:
+  pipeline_a:
+    id: "pipeline-a-ps"
+    name: "Problem Solving Pipeline"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    total_phases: 5
+    status: "ACTIVE"
+
+    phases:
+      phase_1:
+        id: "phase-1-evidence"
+        name: "Evidence Collection"
+        sequence: 1
+        status: "PENDING"
+        entry_barrier: null
+        exit_barrier: "barrier-1"
+        agents:
+          ps-researcher-001:
+            role: "Academic literature research"
+            status: "PENDING"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-1-evidence/ps-researcher-001/"
+            output_file: "ps-researcher-001-output.md"
+            blocked_by: []
+          ps-researcher-002:
+            role: "Industry reports research"
+            status: "PENDING"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-1-evidence/ps-researcher-002/"
+            output_file: "ps-researcher-002-output.md"
+            blocked_by: []
+          ps-investigator-001:
+            role: "Conversation history mining"
+            status: "PENDING"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-1-evidence/ps-investigator-001/"
+            output_file: "ps-investigator-001-output.md"
+            blocked_by: []
+
+      phase_2:
+        id: "phase-2-ab-test"
+        name: "A/B Test Execution"
+        sequence: 2
+        status: "BLOCKED"
+        entry_barrier: "barrier-1"
+        exit_barrier: "barrier-2"
+        agents:
+          ps-researcher-003:
+            role: "Agent A - Internal knowledge only (no external tools)"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-researcher-003/"
+            output_file: "ps-researcher-003-output.md"
+            blocked_by:
+              - "barrier-1"
+          ps-researcher-004:
+            role: "Agent B - Context7 + WebSearch only (external tools)"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-researcher-004/"
+            output_file: "ps-researcher-004-output.md"
+            blocked_by:
+              - "barrier-1"
+          ps-critic-001:
+            role: "C4 adversarial review of Agent A output"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-critic-001/"
+            output_file: "ps-critic-001-output.md"
+            blocked_by:
+              - "ps-researcher-003"
+          ps-critic-002:
+            role: "C4 adversarial review of Agent B output"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-critic-002/"
+            output_file: "ps-critic-002-output.md"
+            blocked_by:
+              - "ps-researcher-004"
+          ps-analyst-001:
+            role: "Comparative analysis of Agent A vs Agent B"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-2-ab-test/ps-analyst-001/"
+            output_file: "ps-analyst-001-output.md"
+            blocked_by:
+              - "ps-critic-001"
+              - "ps-critic-002"
+
+      phase_3:
+        id: "phase-3-synthesis"
+        name: "Research Synthesis"
+        sequence: 3
+        status: "BLOCKED"
+        entry_barrier: "barrier-2"
+        exit_barrier: "barrier-3"
+        agents:
+          ps-synthesizer-001:
+            role: "Unified research synthesis across all evidence"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-3-synthesis/ps-synthesizer-001/"
+            output_file: "ps-synthesizer-001-output.md"
+            blocked_by:
+              - "barrier-2"
+          ps-architect-001:
+            role: "Architectural analysis of deception patterns"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-3-synthesis/ps-architect-001/"
+            output_file: "ps-architect-001-output.md"
+            blocked_by:
+              - "ps-synthesizer-001"
+
+      phase_4:
+        id: "phase-4-content"
+        name: "Content Production"
+        sequence: 4
+        status: "BLOCKED"
+        entry_barrier: "barrier-3"
+        exit_barrier: "barrier-4"
+        agents:
+          sb-voice-001:
+            role: "LinkedIn content production"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-4-content/sb-voice-001/"
+            output_file: "sb-voice-001-output.md"
+            blocked_by:
+              - "barrier-3"
+          sb-voice-002:
+            role: "Twitter thread production"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-4-content/sb-voice-002/"
+            output_file: "sb-voice-002-output.md"
+            blocked_by:
+              - "barrier-3"
+          sb-voice-003:
+            role: "Blog article production"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-4-content/sb-voice-003/"
+            output_file: "sb-voice-003-output.md"
+            blocked_by:
+              - "barrier-3"
+
+      phase_5:
+        id: "phase-5-final-review"
+        name: "Final Review"
+        sequence: 5
+        status: "BLOCKED"
+        entry_barrier: "barrier-4"
+        exit_barrier: null
+        agents:
+          ps-reviewer-001:
+            role: "Citation cross-check and verification"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-5-final-review/ps-reviewer-001/"
+            output_file: "ps-reviewer-001-output.md"
+            blocked_by:
+              - "barrier-4"
+          ps-reporter-001:
+            role: "Publication readiness report"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/ps/phase-5-final-review/ps-reporter-001/"
+            output_file: "ps-reporter-001-output.md"
+            blocked_by:
+              - "ps-reviewer-001"
+
+  pipeline_b:
+    id: "pipeline-b-nse"
+    name: "NASA Systems Engineering Pipeline"
+    short_alias: "nse"
+    skill_source: "nasa-systems-engineering"
+    total_phases: 5
+    status: "ACTIVE"
+
+    phases:
+      phase_1:
+        id: "phase-1-requirements"
+        name: "Requirements & Prior Art"
+        sequence: 1
+        status: "PENDING"
+        entry_barrier: null
+        exit_barrier: "barrier-1"
+        agents:
+          nse-requirements-001:
+            role: "A/B test requirements specification"
+            status: "PENDING"
+            output_path: "orchestration/llm-deception-20260221-001/nse/phase-1-requirements/nse-requirements-001/"
+            output_file: "nse-requirements-001-output.md"
+            blocked_by: []
+          nse-explorer-001:
+            role: "Prior art survey on LLM deception research"
+            status: "PENDING"
+            output_path: "orchestration/llm-deception-20260221-001/nse/phase-1-requirements/nse-explorer-001/"
+            output_file: "nse-explorer-001-output.md"
+            blocked_by: []
+
+      phase_2:
+        id: "phase-2-verification"
+        name: "A/B Test Verification & Validation"
+        sequence: 2
+        status: "BLOCKED"
+        entry_barrier: "barrier-1"
+        exit_barrier: "barrier-2"
+        agents:
+          nse-verification-001:
+            role: "A/B test V&V against requirements"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/nse/phase-2-verification/nse-verification-001/"
+            output_file: "nse-verification-001-output.md"
+            blocked_by:
+              - "barrier-1"
+
+      phase_3:
+        id: "phase-3-review"
+        name: "Technical Review"
+        sequence: 3
+        status: "BLOCKED"
+        entry_barrier: "barrier-2"
+        exit_barrier: "barrier-3"
+        agents:
+          nse-reviewer-001:
+            role: "Technical review of synthesis outputs"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/nse/phase-3-review/nse-reviewer-001/"
+            output_file: "nse-reviewer-001-output.md"
+            blocked_by:
+              - "barrier-2"
+
+      phase_4:
+        id: "phase-4-qa"
+        name: "Content QA Audit"
+        sequence: 4
+        status: "BLOCKED"
+        entry_barrier: "barrier-3"
+        exit_barrier: "barrier-4"
+        agents:
+          nse-qa-001:
+            role: "Content QA audit against requirements"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/nse/phase-4-qa/nse-qa-001/"
+            output_file: "nse-qa-001-output.md"
+            blocked_by:
+              - "barrier-3"
+
+      phase_5:
+        id: "phase-5-final-vv"
+        name: "Final Verification & Validation"
+        sequence: 5
+        status: "BLOCKED"
+        entry_barrier: "barrier-4"
+        exit_barrier: null
+        agents:
+          nse-verification-002:
+            role: "Final V&V of all deliverables"
+            status: "BLOCKED"
+            output_path: "orchestration/llm-deception-20260221-001/nse/phase-5-final-vv/nse-verification-002/"
+            output_file: "nse-verification-002-output.md"
+            blocked_by:
+              - "barrier-4"
+
+barriers:
+  barrier-1:
+    id: "barrier-1"
+    name: "Phase 1 Cross-Pollination"
+    after_phase: 1
+    status: "PENDING"
+    depends_on:
+      - "pipeline_a.phase.1"
+      - "pipeline_b.phase.1"
+    artifacts:
+      a_to_b:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-1/a-to-b/"
+        file: "barrier-1-a-to-b-synthesis.md"
+        status: "PENDING"
+        description: "Evidence collection findings transferred to NSE pipeline"
+      b_to_a:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-1/b-to-a/"
+        file: "barrier-1-b-to-a-synthesis.md"
+        status: "PENDING"
+        description: "Requirements and prior art transferred to PS pipeline"
+
+  barrier-2:
+    id: "barrier-2"
+    name: "Phase 2 Cross-Pollination"
+    after_phase: 2
+    status: "BLOCKED"
+    depends_on:
+      - "pipeline_a.phase.2"
+      - "pipeline_b.phase.2"
+    artifacts:
+      a_to_b:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-2/a-to-b/"
+        file: "barrier-2-a-to-b-synthesis.md"
+        status: "PENDING"
+        description: "A/B test results transferred to NSE pipeline"
+      b_to_a:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-2/b-to-a/"
+        file: "barrier-2-b-to-a-synthesis.md"
+        status: "PENDING"
+        description: "V&V findings transferred to PS pipeline"
+
+  barrier-3:
+    id: "barrier-3"
+    name: "Phase 3 Cross-Pollination"
+    after_phase: 3
+    status: "BLOCKED"
+    depends_on:
+      - "pipeline_a.phase.3"
+      - "pipeline_b.phase.3"
+    artifacts:
+      a_to_b:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-3/a-to-b/"
+        file: "barrier-3-a-to-b-synthesis.md"
+        status: "PENDING"
+        description: "Research synthesis transferred to NSE pipeline"
+      b_to_a:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-3/b-to-a/"
+        file: "barrier-3-b-to-a-synthesis.md"
+        status: "PENDING"
+        description: "Technical review findings transferred to PS pipeline"
+
+  barrier-4:
+    id: "barrier-4"
+    name: "Phase 4 Cross-Pollination"
+    after_phase: 4
+    status: "BLOCKED"
+    depends_on:
+      - "pipeline_a.phase.4"
+      - "pipeline_b.phase.4"
+    artifacts:
+      a_to_b:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-4/a-to-b/"
+        file: "barrier-4-a-to-b-synthesis.md"
+        status: "PENDING"
+        description: "Content production artifacts transferred to NSE pipeline"
+      b_to_a:
+        path: "orchestration/llm-deception-20260221-001/cross-pollination/barrier-4/b-to-a/"
+        file: "barrier-4-b-to-a-synthesis.md"
+        status: "PENDING"
+        description: "QA audit findings transferred to PS pipeline"
+
+execution_queue:
+  - group: 1
+    name: "Phase 1 Agents"
+    execution_mode: "PARALLEL"
+    status: "READY"
+    agents:
+      - "ps-researcher-001"
+      - "ps-researcher-002"
+      - "ps-investigator-001"
+      - "nse-requirements-001"
+      - "nse-explorer-001"
+    blocked_by: []
+
+  - group: 2
+    name: "Barrier 1 Cross-Pollination"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    agents: []
+    barrier: "barrier-1"
+    blocked_by:
+      - 1
+
+  - group: 3
+    name: "Phase 2 Agents"
+    execution_mode: "PARALLEL"
+    status: "BLOCKED"
+    agents:
+      - "ps-researcher-003"
+      - "ps-researcher-004"
+      - "ps-critic-001"
+      - "ps-critic-002"
+      - "ps-analyst-001"
+      - "nse-verification-001"
+    blocked_by:
+      - 2
+
+  - group: 4
+    name: "Barrier 2 Cross-Pollination"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    agents: []
+    barrier: "barrier-2"
+    blocked_by:
+      - 3
+
+  - group: 5
+    name: "Phase 3 Agents"
+    execution_mode: "PARALLEL"
+    status: "BLOCKED"
+    agents:
+      - "ps-synthesizer-001"
+      - "ps-architect-001"
+      - "nse-reviewer-001"
+    blocked_by:
+      - 4
+
+  - group: 6
+    name: "Barrier 3 Cross-Pollination"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    agents: []
+    barrier: "barrier-3"
+    blocked_by:
+      - 5
+
+  - group: 7
+    name: "Phase 4 Agents"
+    execution_mode: "PARALLEL"
+    status: "BLOCKED"
+    agents:
+      - "sb-voice-001"
+      - "sb-voice-002"
+      - "sb-voice-003"
+      - "nse-qa-001"
+    blocked_by:
+      - 6
+
+  - group: 8
+    name: "Barrier 4 Cross-Pollination"
+    execution_mode: "SEQUENTIAL"
+    status: "BLOCKED"
+    agents: []
+    barrier: "barrier-4"
+    blocked_by:
+      - 7
+
+  - group: 9
+    name: "Phase 5 Agents"
+    execution_mode: "PARALLEL"
+    status: "BLOCKED"
+    agents:
+      - "ps-reviewer-001"
+      - "ps-reporter-001"
+      - "nse-verification-002"
+    blocked_by:
+      - 8
+
+quality:
+  threshold: 0.95              # Project-specific (R-002/R-005)
+  criticality: "C4"
+  scoring_mechanism: "S-014"
+  max_iterations: 5            # Project-specific (R-002/R-005)
+  required_strategies:
+    - "S-001"                  # Red Team
+    - "S-002"                  # Devil's Advocate
+    - "S-003"                  # Steelman
+    - "S-004"                  # Pre-Mortem
+    - "S-007"                  # Constitutional AI
+    - "S-010"                  # Self-Refine
+    - "S-011"                  # Chain of Verification
+    - "S-012"                  # FMEA
+    - "S-013"                  # Inversion
+    - "S-014"                  # LLM-as-Judge
+  optional_strategies: []
+  phase_scores: {}
+  barrier_scores: {}
+  workflow_quality: {}
+
+metrics:
+  phases_total: 10             # 5 per pipeline
+  phases_completed: 0
+  barriers_total: 4
+  barriers_completed: 0
+  agents_total: 21
+  agents_completed: 0
+  agents_failed: 0
+  agents_in_progress: 0
+  quality_gates_passed: 0
+  quality_gates_failed: 0
+
+resumption:
+  recovery_state:
+    last_checkpoint: null
+    current_phase: 0
+    current_phase_name: "Phase 0 - Setup"
+    workflow_status: "ACTIVE"
+    current_activity: "orchestration-setup"
+    next_step: "Execute Phase 1 agents"
+  files_to_read:
+    - path: "projects/PROJ-009-llm-deception-research/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Pipeline state and agent status"
+    - path: "projects/PROJ-009-llm-deception-research/orchestration/ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Workflow design and phase definitions"
+    - path: "projects/PROJ-009-llm-deception-research/WORKTRACKER.md"
+      priority: 3
+      purpose: "Work item status and dependencies"
+  quality_trajectory:
+    gates_completed: []
+    gates_remaining:
+      - "QG-1"
+      - "QG-2A"
+      - "QG-2B"
+      - "QG-2"
+      - "QG-3"
+      - "QG-4L"
+      - "QG-4T"
+      - "QG-4B"
+      - "QG-4"
+      - "QG-5"
+  defect_summary:
+    total_defects: 0
+    critical_defects: 0
+    resolved_defects: 0
+    open_defects: 0
+  decision_log: []
+  agent_summaries: {}
+  compaction_events:
+    count: 0
+    timestamps: []
+    recovery_notes: []
