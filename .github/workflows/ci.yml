@@ -280,6 +280,7 @@ jobs:
           pytest \
             -m "not subprocess and not llm" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=html \
             --cov-report=term-missing \
@@ -299,6 +300,7 @@ jobs:
           pytest \
             -m "not subprocess and not llm" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=html \
             --cov-report=term-missing \
@@ -314,6 +316,15 @@ jobs:
             coverage.xml
             htmlcov/
             junit-pip-${{ matrix.python-version }}.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: pip
+          fail_ci_if_error: false
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -371,6 +382,7 @@ jobs:
           uv run pytest \
             -m "not llm and not subprocess" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=term-missing \
             --cov-fail-under=80 \
@@ -390,6 +402,7 @@ jobs:
           uv run pytest \
             -m "not llm and not subprocess" \
             --cov=src \
+            --cov-branch \
             --cov-report=xml \
             --cov-report=term-missing \
             --junitxml=junit-uv-${{ matrix.python-version }}.xml \
@@ -403,6 +416,15 @@ jobs:
           path: |
             coverage.xml
             junit-uv-${{ matrix.python-version }}.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          flags: uv
+          fail_ci_if_error: false
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

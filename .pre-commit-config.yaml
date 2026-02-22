@@ -183,7 +183,7 @@ repos:
     hooks:
       - id: pip-audit
         name: pip-audit security scan
-        entry: uv run pip-audit
+        entry: uv run --frozen pip-audit
         language: system
         pass_filenames: false
         # Only run on push to avoid slowdown on every commit
