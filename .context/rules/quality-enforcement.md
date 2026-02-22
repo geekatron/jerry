@@ -40,7 +40,7 @@
 
 <!-- L2-REINJECT: rank=9, tokens=40, content="AE-006 graduated escalation: NOMINAL=no-op, WARNING=log+consider-checkpoint, CRITICAL=auto-checkpoint+reduce-verbosity, EMERGENCY=mandatory-checkpoint+warn-user, COMPACTION=human-escalation-C3+." -->
 
-<!-- L2-REINJECT: rank=10, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-33). Use /ast skill query_frontmatter() and validate_file(). NEVER use regex for frontmatter extraction." -->
+<!-- L2-REINJECT: rank=10, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-33). Use jerry ast frontmatter and jerry ast validate CLI commands. NEVER use regex for frontmatter extraction." -->
 
 | ID | Rule | Source |
 |----|------|--------|
