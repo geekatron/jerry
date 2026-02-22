@@ -503,6 +503,151 @@ def create_command_dispatcher() -> CommandDispatcher:
     return dispatcher
 
 
+def create_hooks_handlers() -> dict[str, Any]:
+    """Create hooks command handlers for the CLI.
+
+    Wires all dependencies for the 4 hook event handlers:
+    - prompt-submit: Context fill estimation + L2 quality reinforcement
+    - session-start: Project context + resumption + quality reinforcement
+    - pre-compact: Checkpoint creation + context fill estimation
+    - pre-tool-use: AST enforcement + staleness detection
+
+    Returns:
+        Dictionary mapping hook command names to handler instances.
+
+    References:
+        - EN-006: jerry hooks CLI Command Namespace
+        - PROJ-004: Context Resilience
+    """
+    from pathlib import Path
+
+    from src.context_monitoring.application.services.checkpoint_service import (
+        CheckpointService,
+    )
+    from src.context_monitoring.application.services.context_fill_estimator import (
+        ContextFillEstimator,
+    )
+    from src.context_monitoring.application.services.resumption_context_generator import (
+        ResumptionContextGenerator,
+    )
+    from src.context_monitoring.infrastructure.adapters.config_threshold_adapter import (
+        ConfigThresholdAdapter,
+    )
+    from src.context_monitoring.infrastructure.adapters.filesystem_checkpoint_repository import (
+        FilesystemCheckpointRepository,
+    )
+    from src.context_monitoring.infrastructure.adapters.jsonl_transcript_reader import (
+        JsonlTranscriptReader,
+    )
+    from src.context_monitoring.infrastructure.adapters.staleness_detector import (
+        StalenessDetector,
+    )
+    from src.infrastructure.adapters.configuration.layered_config_adapter import (
+        LayeredConfigAdapter,
+    )
+    from src.infrastructure.adapters.persistence.atomic_file_adapter import (
+        AtomicFileAdapter,
+    )
+    from src.infrastructure.internal.enforcement.pre_tool_enforcement_engine import (
+        PreToolEnforcementEngine,
+    )
+    from src.infrastructure.internal.enforcement.prompt_reinforcement_engine import (
+        PromptReinforcementEngine,
+    )
+    from src.infrastructure.internal.enforcement.session_quality_context_generator import (
+        SessionQualityContextGenerator,
+    )
+    from src.interface.cli.hooks.hooks_pre_compact_handler import (
+        HooksPreCompactHandler,
+    )
+    from src.interface.cli.hooks.hooks_pre_tool_use_handler import (
+        HooksPreToolUseHandler,
+    )
+    from src.interface.cli.hooks.hooks_prompt_submit_handler import (
+        HooksPromptSubmitHandler,
+    )
+    from src.interface.cli.hooks.hooks_session_start_handler import (
+        HooksSessionStartHandler,
+    )
+
+    project_root = Path.cwd()
+
+    # Shared infrastructure
+    file_adapter = AtomicFileAdapter()
+    reinforcement_engine = PromptReinforcementEngine()
+
+    # Context monitoring services
+    transcript_reader = JsonlTranscriptReader()
+    config_adapter = LayeredConfigAdapter(
+        env_prefix="JERRY_",
+        root_config_path=project_root / ".jerry" / "config.toml",
+        defaults={
+            # NOTE: context_window_tokens is intentionally NOT in defaults.
+            # The adapter must distinguish "user explicitly configured" from
+            # "default" to support auto-detection priority chain (TASK-006).
+            "context_monitor.nominal_threshold": 0.55,
+            "context_monitor.warning_threshold": 0.70,
+            "context_monitor.critical_threshold": 0.80,
+            "context_monitor.emergency_threshold": 0.88,
+            "context_monitor.compaction_detection_threshold": 10000,
+            "context_monitor.enabled": True,
+        },
+    )
+    threshold_config = ConfigThresholdAdapter(config=config_adapter)
+    context_fill_estimator = ContextFillEstimator(
+        reader=transcript_reader,
+        threshold_config=threshold_config,
+    )
+
+    # Checkpoint services
+    checkpoint_dir = project_root / ".jerry" / "checkpoints"
+    checkpoint_repository = FilesystemCheckpointRepository(
+        checkpoint_dir=checkpoint_dir,
+        file_adapter=file_adapter,
+    )
+    checkpoint_service = CheckpointService(repository=checkpoint_repository)
+
+    # Session handlers (for pre-compact abandon)
+    session_repository = get_session_repository()
+    abandon_handler = AbandonSessionCommandHandler(repository=session_repository)
+
+    # Query dispatcher (for session-start project context)
+    query_dispatcher = create_query_dispatcher()
+
+    # Resumption context generator
+    resumption_generator = ResumptionContextGenerator()
+
+    # Staleness detector
+    staleness_detector = StalenessDetector(project_root=project_root)
+
+    # Pre-tool enforcement engine
+    pre_tool_engine = PreToolEnforcementEngine(project_root=project_root)
+
+    return {
+        "prompt-submit": HooksPromptSubmitHandler(
+            context_fill_estimator=context_fill_estimator,
+            checkpoint_service=checkpoint_service,
+            reinforcement_engine=reinforcement_engine,
+        ),
+        "session-start": HooksSessionStartHandler(
+            query_dispatcher=query_dispatcher,
+            projects_dir=get_projects_directory(),
+            checkpoint_repository=checkpoint_repository,
+            resumption_generator=resumption_generator,
+            quality_context_generator=SessionQualityContextGenerator(),
+        ),
+        "pre-compact": HooksPreCompactHandler(
+            checkpoint_service=checkpoint_service,
+            context_fill_estimator=context_fill_estimator,
+            abandon_handler=abandon_handler,
+        ),
+        "pre-tool-use": HooksPreToolUseHandler(
+            enforcement_engine=pre_tool_engine,
+            staleness_detector=staleness_detector,
+        ),
+    }
+
+
 def reset_singletons() -> None:
     """Reset all module-level singletons (for testing).
 

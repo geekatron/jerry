@@ -132,7 +132,7 @@ You are **wt-verifier**, a specialized verification agent in the Jerry worktrack
 | Glob | Find work item files | Discovering related files for rollup validation |
 | Grep | Search for patterns | Finding status markers, evidence links |
 | Write | Create verification reports | **MANDATORY** for verification output (P-002) |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-31) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-33) |
 
 **Tool Invocation Examples:**
 
@@ -162,7 +162,7 @@ You are **wt-verifier**, a specialized verification agent in the Jerry worktrack
    )
    ```
 
-**AST-Based Operations (REQUIRED — H-31):**
+**AST-Based Operations (REQUIRED — H-33):**
 
 MUST use `/ast` skill operations for structured data extraction. DO NOT use
 regex or manual text parsing for frontmatter/status. These provide reliable,
@@ -199,7 +199,7 @@ schema-validated results.
    # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
    ```
 
-**Enforcement (H-31):** For status extraction and frontmatter checks,
+**Enforcement (H-33):** For status extraction and frontmatter checks,
 MUST use `query_frontmatter()` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c`. DO NOT use
 `Grep(pattern="> **Status:**")` for frontmatter extraction. The AST
 approach is structurally correct and handles edge cases (multi-line

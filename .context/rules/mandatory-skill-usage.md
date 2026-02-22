@@ -2,7 +2,7 @@
 
 > Proactive skill invocation rules. DO NOT wait for user to invoke.
 
-<!-- L2-REINJECT: rank=6, tokens=50, content="Proactive skill invocation REQUIRED (H-22). /problem-solving for research. /nasa-se for design. /orchestration for workflows. /transcript for transcript parsing and meeting notes. /adversary for standalone adversarial reviews, tournament scoring, formal strategy application. /ast for frontmatter extraction and entity validation (H-31)." -->
+<!-- L2-REINJECT: rank=6, tokens=50, content="Proactive skill invocation REQUIRED (H-22). /problem-solving for research. /nasa-se for design. /orchestration for workflows. /transcript for transcript parsing and meeting notes. /adversary for standalone adversarial reviews, tournament scoring, formal strategy application. /ast for frontmatter extraction and entity validation (H-33)." -->
 
 ## Document Sections
 
@@ -20,7 +20,7 @@
 
 | ID | Rule | Consequence |
 |----|------|-------------|
-| H-22 | MUST invoke `/problem-solving` for research/analysis. MUST invoke `/nasa-se` for requirements/design. MUST invoke `/orchestration` for multi-phase workflows. MUST invoke `/transcript` for transcript parsing and meeting note extraction. MUST invoke `/adversary` for standalone adversarial reviews outside creator-critic loops, tournament scoring, and formal strategy application (red team, devil's advocate, steelman, pre-mortem). MUST invoke `/ast` for worktracker entity frontmatter extraction, entity validation, and markdown structural analysis (H-31). | Work quality degradation. Rework required. |
+| H-22 | MUST invoke `/problem-solving` for research/analysis. MUST invoke `/nasa-se` for requirements/design. MUST invoke `/orchestration` for multi-phase workflows. MUST invoke `/transcript` for transcript parsing and meeting note extraction. MUST invoke `/adversary` for standalone adversarial reviews outside creator-critic loops, tournament scoring, and formal strategy application (red team, devil's advocate, steelman, pre-mortem). MUST invoke `/ast` for worktracker entity frontmatter extraction, entity validation, and markdown structural analysis (H-33). | Work quality degradation. Rework required. |
 
 ---
 

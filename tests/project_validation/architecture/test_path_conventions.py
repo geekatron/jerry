@@ -81,6 +81,12 @@ class TestProjectIsolation:
             if "BUG-" in md_file.name:
                 continue
 
+            # Skip orchestration research artifacts that legitimately analyze
+            # other projects as study subjects (e.g., SPIKE research)
+            rel_parts = md_file.relative_to(proj_root).parts
+            if "orchestration" in rel_parts:
+                continue
+
             content = md_file.read_text()
             matches = cross_ref_pattern.findall(content)
 

@@ -1,5 +1,5 @@
 {
-  "description": "Jerry Framework plugin hooks for session management and project enforcement",
+  "description": "Jerry Framework plugin hooks for session management, context monitoring, and project enforcement",
   "hooks": {
     "SessionStart": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv sync && uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/scripts/session_start_hook.py",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.py",
             "timeout": 10000
           }
         ]
@@ -24,13 +24,30 @@
         ]
       }
     ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact.py",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit|MultiEdit|Bash",
+        "_comment": "Dual enforcement: (1) security guardrails (WI-SAO-015) then (2) architecture enforcement (EN-006/PROJ-004). Claude Code runs hooks in order; first 'block' wins.",
         "hooks": [
           {
             "type": "command",
             "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/scripts/pre_tool_use.py",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.py",
             "timeout": 5000
           }
         ]

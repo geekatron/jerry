@@ -2,11 +2,11 @@
 # Copyright (c) 2026 Adam Nowak
 
 """
-Architecture tests for H-31 AST-based parsing enforcement artifacts.
+Architecture tests for H-33 AST-based parsing enforcement artifacts.
 
 These tests verify that:
-1. H-31 is registered in quality-enforcement.md HARD Rule Index
-2. L2-REINJECT rank=9 marker exists for per-prompt reinforcement
+1. H-33 is registered in quality-enforcement.md HARD Rule Index
+2. L2-REINJECT rank=10 marker exists for per-prompt reinforcement
 3. All wt-* agents declare Bash in allowed_tools (tool gap closed)
 4. All wt-* agents use REQUIRED/MUST language, not PREFERRED (language gap closed)
 5. All wt-* agent examples use --directory ${CLAUDE_PLUGIN_ROOT} prefix
@@ -20,7 +20,7 @@ Test methodology: File content inspection using pathlib, validating governance
 artifacts that constitute system behavior for LLM agents.
 
 References:
-    - H-31: AST-based parsing REQUIRED for worktracker entity ops
+    - H-33: AST-based parsing REQUIRED for worktracker entity ops
     - H-30: Register in CLAUDE.md + AGENTS.md + mandatory-skill-usage.md
     - quality-enforcement.md: HARD Rule Index, L2-REINJECT markers
     - AE-002: .context/rules/ changes auto-escalate to C3
@@ -109,7 +109,7 @@ PROHIBITED_MEDIUM_TIER_WORDS = [
     "RECOMMENDED",
 ]
 
-# Anti-patterns: regex-based frontmatter extraction that H-31 prohibits
+# Anti-patterns: regex-based frontmatter extraction that H-33 prohibits
 FORBIDDEN_ANTI_PATTERNS = [
     # Specific known fields
     r'Grep\(pattern=["\']>\s*\*\*Status:',
@@ -155,98 +155,98 @@ class TestWorktrackerAgentDiscovery:
 
 
 # =============================================================================
-# Tests: H-31 Rule Registration (quality-enforcement.md)
+# Tests: H-33 Rule Registration (quality-enforcement.md)
 # =============================================================================
 
 
 class TestH31RuleRegistration:
-    """Tests for H-31 registration in quality-enforcement.md HARD Rule Index."""
+    """Tests for H-33 registration in quality-enforcement.md HARD Rule Index."""
 
     def test_hard_rule_index_when_checked_then_contains_h31(
         self, quality_enforcement_content: str
     ) -> None:
-        """H-31 must appear in the HARD Rule Index table."""
+        """H-33 must appear in the HARD Rule Index table."""
         # Arrange
-        pattern = r"\|\s*H-31\s*\|.*AST.*\|.*ast-enforcement\s*\|"
+        pattern = r"\|\s*H-33\s*\|.*AST.*\|.*ast-enforcement\s*\|"
 
         # Act/Assert
         assert re.search(pattern, quality_enforcement_content), (
-            "H-31 not found in quality-enforcement.md HARD Rule Index table"
+            "H-33 not found in quality-enforcement.md HARD Rule Index table"
         )
 
     def test_hard_rule_index_when_checked_then_header_references_h31(
         self, quality_enforcement_content: str
     ) -> None:
-        """Section header must reference H-31 range (H-01 through H-31)."""
+        """Section header must reference H-33 range (H-01 through H-33)."""
         # Arrange/Act/Assert
-        assert "H-01 through H-31" in quality_enforcement_content, (
-            "quality-enforcement.md section header does not reference 'H-01 through H-31'"
+        assert "H-01 through H-33" in quality_enforcement_content, (
+            "quality-enforcement.md section header does not reference 'H-01 through H-33'"
         )
 
     def test_l2_reinject_when_checked_then_rank9_exists(
         self, quality_enforcement_content: str
     ) -> None:
-        """L2-REINJECT rank=9 marker must exist for per-prompt AST reinforcement."""
+        """L2-REINJECT rank=10 marker must exist for per-prompt AST reinforcement."""
         # Arrange
-        pattern = r"<!--\s*L2-REINJECT:\s*rank=9.*H-31.*-->"
+        pattern = r"<!--\s*L2-REINJECT:\s*rank=10.*H-33.*-->"
 
         # Act/Assert
         assert re.search(pattern, quality_enforcement_content, re.DOTALL), (
-            "L2-REINJECT rank=9 marker for H-31 not found in quality-enforcement.md"
+            "L2-REINJECT rank=10 marker for H-33 not found in quality-enforcement.md"
         )
 
     def test_l2_reinject_when_checked_then_rank9_prohibits_regex(
         self, quality_enforcement_content: str
     ) -> None:
-        """L2-REINJECT rank=9 must include 'NEVER use regex' reinforcement."""
+        """L2-REINJECT rank=10 must include 'NEVER use regex' reinforcement."""
         # Arrange
-        pattern = r"rank=9.*NEVER use regex"
+        pattern = r"rank=10.*NEVER use regex"
 
         # Act/Assert
         assert re.search(pattern, quality_enforcement_content, re.DOTALL), (
-            "L2-REINJECT rank=9 does not contain 'NEVER use regex' reinforcement"
+            "L2-REINJECT rank=10 does not contain 'NEVER use regex' reinforcement"
         )
 
     def test_l2_reinject_when_checked_then_rank9_references_ast_functions(
         self, quality_enforcement_content: str
     ) -> None:
-        """L2-REINJECT rank=9 must reference both AST functions within the same directive."""
+        """L2-REINJECT rank=10 must reference both AST functions within the same directive."""
         # Arrange — match within a single HTML comment to ensure both functions
         # are in the same L2-REINJECT directive, not scattered across separate markers
-        pattern = r"<!--[^>]*rank=9[^>]*query_frontmatter\(\)[^>]*validate_file\(\)[^>]*-->"
+        pattern = r"<!--[^>]*rank=10[^>]*query_frontmatter\(\)[^>]*validate_file\(\)[^>]*-->"
 
         # Act/Assert
         assert re.search(pattern, quality_enforcement_content, re.DOTALL), (
-            "L2-REINJECT rank=9 does not reference query_frontmatter() and validate_file() "
+            "L2-REINJECT rank=10 does not reference query_frontmatter() and validate_file() "
             "within the same HTML comment directive"
         )
 
     def test_l2_reinject_when_checked_then_rank9_content_is_substantive(
         self, quality_enforcement_content: str
     ) -> None:
-        """L2-REINJECT rank=9 content field must be non-trivial (>= 50 chars)."""
+        """L2-REINJECT rank=10 content field must be non-trivial (>= 50 chars)."""
         # Arrange
-        pattern = r'rank=9.*?content="([^"]*)"'
+        pattern = r'rank=10.*?content="([^"]*)"'
         match = re.search(pattern, quality_enforcement_content)
 
         # Act/Assert
-        assert match, "L2-REINJECT rank=9 missing content= field"
+        assert match, "L2-REINJECT rank=10 missing content= field"
         content_value = match.group(1)
         assert len(content_value) >= 50, (
-            f"L2-REINJECT rank=9 content is too short ({len(content_value)} chars). "
+            f"L2-REINJECT rank=10 content is too short ({len(content_value)} chars). "
             f"Must be >= 50 chars for meaningful reinforcement."
         )
 
     def test_l2_reinject_when_checked_then_rank9_is_unique(
         self, quality_enforcement_content: str
     ) -> None:
-        """Only one L2-REINJECT marker should use rank=9 to avoid ambiguity."""
+        """Only one L2-REINJECT marker should use rank=10 to avoid ambiguity."""
         # Arrange
-        matches = re.findall(r"rank=9", quality_enforcement_content)
+        matches = re.findall(r"rank=10", quality_enforcement_content)
 
         # Act/Assert
         assert len(matches) == 1, (
-            f"Expected exactly 1 L2-REINJECT rank=9 marker, found {len(matches)}. "
+            f"Expected exactly 1 L2-REINJECT rank=10 marker, found {len(matches)}. "
             f"Duplicate ranks cause enforcement ambiguity."
         )
 
@@ -280,11 +280,11 @@ class TestWorktrackerAgentToolAccess:
         """Each wt-* agent must have a Bash row in the capabilities table."""
         # Arrange
         content = (wt_agents_dir / agent_file).read_text()
-        pattern = r"\|\s*Bash\s*\|.*AST.*\|.*REQUIRED.*H-31.*\|"
+        pattern = r"\|\s*Bash\s*\|.*AST.*\|.*REQUIRED.*H-33.*\|"
 
         # Act/Assert
         assert re.search(pattern, content), (
-            f"{agent_file} missing Bash row in capabilities table with H-31 reference"
+            f"{agent_file} missing Bash row in capabilities table with H-33 reference"
         )
 
 
@@ -328,13 +328,13 @@ class TestWorktrackerAgentLanguage:
     def test_agent_ast_section_when_checked_then_uses_required_heading(
         self, wt_agents_dir: Path, agent_file: str
     ) -> None:
-        """AST operations section must use 'REQUIRED — H-31' heading."""
+        """AST operations section must use 'REQUIRED — H-33' heading."""
         # Arrange
         content = (wt_agents_dir / agent_file).read_text()
 
         # Act/Assert
-        assert "REQUIRED — H-31" in content, (
-            f"{agent_file} AST section heading does not contain 'REQUIRED — H-31'"
+        assert "REQUIRED — H-33" in content, (
+            f"{agent_file} AST section heading does not contain 'REQUIRED — H-33'"
         )
 
     @pytest.mark.parametrize("agent_file", EXPECTED_WT_AGENT_FILES)
@@ -358,26 +358,26 @@ class TestWorktrackerAgentLanguage:
     def test_agent_enforcement_note_when_checked_then_references_h31(
         self, wt_agents_dir: Path, agent_file: str
     ) -> None:
-        """Enforcement note must reference H-31 (not 'Migration Note')."""
+        """Enforcement note must reference H-33 (not 'Migration Note')."""
         # Arrange
         content = (wt_agents_dir / agent_file).read_text()
 
         # Act/Assert
-        assert "**Enforcement (H-31):**" in content, (
-            f"{agent_file} missing '**Enforcement (H-31):**' note"
+        assert "**Enforcement (H-33):**" in content, (
+            f"{agent_file} missing '**Enforcement (H-33):**' note"
         )
 
     @pytest.mark.parametrize("agent_file", EXPECTED_WT_AGENT_FILES)
     def test_agent_when_checked_then_no_migration_note(
         self, wt_agents_dir: Path, agent_file: str
     ) -> None:
-        """Migration Note (ST-007) must have been replaced by Enforcement (H-31)."""
+        """Migration Note (ST-007) must have been replaced by Enforcement (H-33)."""
         # Arrange
         content = (wt_agents_dir / agent_file).read_text()
 
         # Act/Assert
         assert "Migration Note" not in content, (
-            f"{agent_file} still contains 'Migration Note' — should be 'Enforcement (H-31)'"
+            f"{agent_file} still contains 'Migration Note' — should be 'Enforcement (H-33)'"
         )
 
 
@@ -526,10 +526,10 @@ class TestAgentsMdEnforcement:
     def test_agents_md_when_checked_then_has_h31_enforcement_note(
         self, agents_md_content: str
     ) -> None:
-        """AGENTS.md must contain AST Enforcement (H-31) note."""
+        """AGENTS.md must contain AST Enforcement (H-33) note."""
         # Arrange/Act/Assert
-        assert "AST Enforcement (H-31)" in agents_md_content, (
-            "AGENTS.md missing 'AST Enforcement (H-31)' note in worktracker section"
+        assert "AST Enforcement (H-33)" in agents_md_content, (
+            "AGENTS.md missing 'AST Enforcement (H-33)' note in worktracker section"
         )
 
     def test_agents_md_when_checked_then_enforcement_prohibits_regex(
@@ -574,8 +574,8 @@ class TestAgentsMdEnforcement:
         # Act/Assert
         assert wt_match, "AGENTS.md missing 'Worktracker Skill Agents' section"
         wt_section = wt_match.group(0)
-        assert "AST Enforcement (H-31)" in wt_section, (
-            "H-31 enforcement note not in Worktracker Skill Agents section"
+        assert "AST Enforcement (H-33)" in wt_section, (
+            "H-33 enforcement note not in Worktracker Skill Agents section"
         )
 
 
@@ -637,7 +637,7 @@ class TestWorktrackerAgentAstExamples:
         # Act/Assert
         assert "validate_file" in content, (
             f"{agent_file} does not reference validate_file() in AST examples — "
-            f"L2-REINJECT rank=9 specifies both query_frontmatter() and validate_file()"
+            f"L2-REINJECT rank=10 specifies both query_frontmatter() and validate_file()"
         )
 
 
@@ -701,7 +701,7 @@ class TestWorktrackerAgentAntiPatterns:
         # Assert
         assert len(violations) == 0, (
             f"{agent_file} contains forbidden anti-patterns outside prohibition context. "
-            f"H-31 requires AST-based extraction, not regex:\n" + "\n".join(violations)
+            f"H-33 requires AST-based extraction, not regex:\n" + "\n".join(violations)
         )
 
     @pytest.mark.parametrize("agent_file", EXPECTED_WT_AGENT_FILES)

@@ -178,9 +178,9 @@ You are **wt-visualizer**, a specialized visualization agent in the Jerry worktr
 | Write | Create diagram files | **MANDATORY** for diagram output (P-002) |
 | Glob | Find work items by pattern | Discovering entities in hierarchy |
 | Grep | Search for patterns | Finding specific content across files |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/metadata via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-31) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/metadata via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-33) |
 
-**AST-Based Operations (REQUIRED — H-31):**
+**AST-Based Operations (REQUIRED — H-33):**
 
 MUST use `/ast` skill operations for structured metadata extraction. DO NOT
 use raw text parsing or regex for frontmatter/status. These provide reliable,
@@ -206,7 +206,7 @@ type-safe results.
    # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
    ```
 
-**Enforcement (H-31):** For hierarchy diagram generation, MUST use
+**Enforcement (H-33):** For hierarchy diagram generation, MUST use
 `query_frontmatter()` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` to extract entity type, status,
 and parent relationships. DO NOT use Grep patterns on `> **Status:**` for
 frontmatter extraction. The AST approach is structurally correct and handles

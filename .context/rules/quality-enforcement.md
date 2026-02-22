@@ -8,11 +8,11 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-31 |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-33 |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
-| [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006 |
+| [Auto-Escalation Rules](#auto-escalation-rules) | AE-001 through AE-006e (graduated context fill sub-rules) |
 | [Enforcement Architecture](#enforcement-architecture) | L1-L5 layer definitions |
 | [Strategy Catalog](#strategy-catalog) | S-001 through S-015 (selected and excluded) |
 | [Implementation](#implementation) | Operational implementation via /adversary skill, skill routing decision table |
@@ -28,6 +28,8 @@
 
 <!-- L2-REINJECT: rank=2, tokens=90, content="Quality gate >= 0.92 weighted composite for C2+ deliverables (H-13). Creator-critic-revision cycle REQUIRED, minimum 3 iterations (H-14). Below threshold = REJECTED." -->
 
+<!-- L2-REINJECT: rank=2, tokens=50, content="Ambiguity resolution (H-31): When requirements have multiple valid interpretations, unclear scope, or imply destructive action -- MUST ask clarifying questions before proceeding. Do NOT assume. Do NOT ask when requirements are clear or answers are in the codebase." -->
+
 <!-- L2-REINJECT: rank=3, tokens=25, content="UV only for Python (H-05/H-06). NEVER use python/pip directly." -->
 
 <!-- L2-REINJECT: rank=4, tokens=30, content="LLM-as-Judge scoring (S-014): Apply strict rubric. Leniency bias must be actively counteracted." -->
@@ -36,7 +38,9 @@
 
 <!-- L2-REINJECT: rank=8, tokens=40, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
 
-<!-- L2-REINJECT: rank=9, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-31). Use /ast skill query_frontmatter() and validate_file(). NEVER use regex for frontmatter extraction." -->
+<!-- L2-REINJECT: rank=9, tokens=40, content="AE-006 graduated escalation: NOMINAL=no-op, WARNING=log+consider-checkpoint, CRITICAL=auto-checkpoint+reduce-verbosity, EMERGENCY=mandatory-checkpoint+warn-user, COMPACTION=human-escalation-C3+." -->
+
+<!-- L2-REINJECT: rank=10, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-33). Use /ast skill query_frontmatter() and validate_file(). NEVER use regex for frontmatter extraction." -->
 
 | ID | Rule | Source |
 |----|------|--------|
@@ -70,7 +74,9 @@
 | H-28 | Description: WHAT + WHEN + triggers, <1024 chars, no XML | skill-standards |
 | H-29 | Full repo-relative paths in SKILL.md | skill-standards |
 | H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
-| H-31 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
+| H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
+| H-32 | GitHub Issue parity for jerry repo work items | project-workflow |
+| H-33 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
 
 ---
 
@@ -106,6 +112,7 @@
 | H-17 | Quality scoring via S-014 LLM-as-Judge REQUIRED for all C2+ deliverables. | Quantitative scoring provides objective progress tracking across revision iterations and enables threshold enforcement. | Unscored deliverable. |
 | H-18 | Constitutional compliance check (S-007) REQUIRED for all C2+ deliverables. | Ensures deliverables do not violate governance constraints that could cascade into systemic issues. | Unchecked compliance. |
 | H-19 | Governance escalation per AE rules REQUIRED. Auto-escalation conditions enforce minimum criticality. | Prevents high-impact changes from receiving insufficient review by enforcing minimum criticality classification. | Governance bypass. |
+| H-31 | Clarify before acting when requirements are ambiguous. MUST ask when: (1) multiple valid interpretations exist, (2) scope is unclear, (3) destructive or irreversible action implied. MUST NOT ask when requirements are clear or answer is discoverable from codebase. | Prevents wrong-direction work — incorrect assumptions are the most expensive failure mode. One clarifying question costs seconds; wrong-direction work costs hours. | Wrong-direction work. |
 
 ### Operational Score Bands
 
@@ -136,7 +143,7 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 
 | Tier | Keywords | Override | Max Count |
 |------|----------|----------|-----------|
-| **HARD** | MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL | Cannot override | <= 25 |
+| **HARD** | MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL | Cannot override | <= 35 |
 | **MEDIUM** | SHOULD, RECOMMENDED, PREFERRED, EXPECTED | Documented justification | Unlimited |
 | **SOFT** | MAY, CONSIDER, OPTIONAL, SUGGESTED | No justification needed | Unlimited |
 
@@ -151,7 +158,11 @@ Below-threshold deliverables are subdivided into operational bands for workflow 
 | AE-003 | New or modified ADR | Auto-C3 minimum |
 | AE-004 | Modifies baselined ADR | Auto-C4 |
 | AE-005 | Security-relevant code | Auto-C3 minimum |
-| AE-006 | Token exhaustion at C3+ (context compaction triggered) | Mandatory human escalation |
+| AE-006a | Context fill NOMINAL/LOW tier (< 0.70) | No action required |
+| AE-006b | Context fill WARNING tier (>= 0.70) | Log warning + consider checkpoint |
+| AE-006c | Context fill CRITICAL tier (>= 0.80) | Auto-checkpoint + reduce verbosity |
+| AE-006d | Context fill EMERGENCY tier (>= 0.88) | Mandatory checkpoint + warn user + prepare handoff |
+| AE-006e | Compaction event detected | Mandatory human escalation for C3+, auto-checkpoint, session restart recommended |
 
 ---
 

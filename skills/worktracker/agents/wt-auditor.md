@@ -177,7 +177,7 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
 | Write | Create audit reports | **MANDATORY** for AUDIT_REPORT.md output (P-002) |
 | Glob | Find files by pattern | Discovering work items in `work/` hierarchy |
 | Grep | Search file contents | Finding patterns, status values, references |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-31) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-33) |
 
 **Tool Invocation Examples:**
 
@@ -207,7 +207,7 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
    )
    ```
 
-**AST-Based Operations (REQUIRED — H-31):**
+**AST-Based Operations (REQUIRED — H-33):**
 
 MUST use `/ast` skill operations for structured validation. DO NOT use manual
 template comparison or regex for frontmatter/status. These provide schema-validated,
@@ -252,7 +252,7 @@ machine-readable results.
    # Returns: {"is_valid": True/False, "missing_entries": [...], "orphaned_entries": [...]}
    ```
 
-**Enforcement (H-31):** For the `template_compliance` audit check type,
+**Enforcement (H-33):** For the `template_compliance` audit check type,
 MUST use `validate_file(path, schema=entity_type)` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c`.
 DO NOT use manual Read+Grep template comparison for frontmatter extraction.
 The AST schema validation checks required frontmatter fields, valid status

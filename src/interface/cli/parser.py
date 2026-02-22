@@ -105,6 +105,9 @@ Examples:
         help=argparse.SUPPRESS,
     )
 
+    # Hooks namespace (EN-006: Context monitoring hook events)
+    _add_hooks_namespace(subparsers)
+
     return parser
 
 
@@ -632,4 +635,51 @@ def _add_ast_namespace(
     query_parser.add_argument(
         "selector",
         help="Node type to query (e.g., heading, blockquote, paragraph)",
+    )
+
+
+def _add_hooks_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add hooks namespace commands.
+
+    Commands:
+        - prompt-submit: Handle UserPromptSubmit hook event
+        - session-start: Handle SessionStart hook event
+        - pre-compact: Handle PreCompact hook event
+        - pre-tool-use: Handle PreToolUse hook event
+
+    References:
+        - EN-006: jerry hooks CLI Command Namespace
+    """
+    hooks_parser = subparsers.add_parser(
+        "hooks",
+        help="Claude Code hook event handlers",
+        description="Handle Claude Code hook events via CLI.",
+    )
+
+    hooks_subparsers = hooks_parser.add_subparsers(
+        title="commands",
+        dest="hooks_command",
+        metavar="<command>",
+    )
+
+    hooks_subparsers.add_parser(
+        "prompt-submit",
+        help="Handle UserPromptSubmit hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "session-start",
+        help="Handle SessionStart hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "pre-compact",
+        help="Handle PreCompact hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "pre-tool-use",
+        help="Handle PreToolUse hook event",
     )

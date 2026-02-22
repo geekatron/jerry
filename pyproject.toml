@@ -1,6 +1,6 @@
 [project]
 name = "jerry"
-version = "0.5.0"
+version = "0.9.0"
 description = "A framework for behavior and workflow guardrails with knowledge accrual"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -36,6 +36,7 @@ dependencies = [
     "markdown-it-py>=4.0.0,<5.0.0",
     "mdformat>=1.0.0,<2.0.0",
     "mdit-py-plugins>=0.4.0",
+    "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
 ]
 
 [project.optional-dependencies]
@@ -145,7 +146,7 @@ tag_format = "v$version"
 #   - design-version-bumping-process.md
 
 [tool.bumpversion]
-current_version = "0.5.0"
+current_version = "0.9.0"
 commit = true
 tag = true
 tag_name = "v{new_version}"

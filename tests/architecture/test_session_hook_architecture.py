@@ -215,22 +215,21 @@ class TestCLIAdapterLayerBoundaries:
 
 
 class TestSessionHookIsolation:
-    """Architecture: Session hook script must be a thin adapter."""
+    """Architecture: Session hook scripts must be thin adapters."""
 
     def test_session_start_hook_has_no_src_imports(
         self,
-        scripts_root: Path,
+        project_root: Path,
     ) -> None:
-        """T-028: session_start_hook.py only imports stdlib at top level.
+        """T-028: session-start.py only imports stdlib at top level.
 
         The hook script is a thin adapter that calls the CLI via subprocess.
         It should NOT import any src/ modules directly at the top level.
 
-        Fail-open imports inside try/except blocks are permitted, following
-        the established pattern from pre_tool_use.py (EN-703). These imports
-        gracefully degrade when the uv environment is not activated.
+        EN-007: Thin wrapper scripts live in hooks/ directory and delegate
+        to jerry hooks CLI commands via subprocess.
         """
-        hook_path = scripts_root / "session_start_hook.py"
+        hook_path = project_root / "hooks" / "session-start.py"
         assert hook_path.exists(), f"Hook script not found at {hook_path}"
 
         imports = get_unguarded_imports_from_file(hook_path)
@@ -241,24 +240,22 @@ class TestSessionHookIsolation:
         assert not src_imports, (
             f"Hook script has unguarded src imports: {src_imports}\n"
             f"Hook should call CLI via subprocess, not import src modules.\n"
-            f"Fail-open imports inside try/except are allowed (EN-706 pattern).\n"
             f"This ensures proper isolation and allows the hook to work\n"
             f"even when uv environment is not activated."
         )
 
     def test_session_start_hook_uses_only_allowed_stdlib(
         self,
-        scripts_root: Path,
+        project_root: Path,
     ) -> None:
         """Hook script should only use allowed stdlib modules at top level.
 
         Allowed: json, subprocess, os, sys, pathlib, datetime, typing
         Not allowed at top level: Any third-party or src modules
 
-        Fail-open imports inside try/except blocks are permitted, following
-        the established pattern from pre_tool_use.py (EN-703).
+        EN-007: Thin wrapper scripts only use stdlib.
         """
-        hook_path = scripts_root / "session_start_hook.py"
+        hook_path = project_root / "hooks" / "session-start.py"
         if not hook_path.exists():
             pytest.skip("Hook script not found")
 
@@ -281,7 +278,7 @@ class TestSessionHookIsolation:
             assert top_level in allowed_modules, (
                 f"Hook script imports unexpected module: {imp}\n"
                 f"Allowed: {allowed_modules}\n"
-                f"Use try/except guard for optional imports (EN-706 pattern)."
+                f"Use try/except guard for optional imports."
             )
 
 

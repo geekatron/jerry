@@ -358,7 +358,7 @@ wheels = [
 
 [[package]]
 name = "jerry"
-version = "0.5.0"
+version = "0.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "filelock" },
@@ -366,6 +366,7 @@ dependencies = [
     { name = "markdown-it-py" },
     { name = "mdformat" },
     { name = "mdit-py-plugins" },
+    { name = "pyyaml" },
     { name = "tiktoken" },
     { name = "webvtt-py" },
 ]
@@ -415,6 +416,7 @@ requires-dist = [
     { name = "pytest-archon", marker = "extra == 'test'", specifier = ">=0.0.6" },
     { name = "pytest-bdd", marker = "extra == 'test'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=4.0.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
     { name = "tiktoken", specifier = ">=0.5.0" },
     { name = "webvtt-py", specifier = ">=0.5.1" },
