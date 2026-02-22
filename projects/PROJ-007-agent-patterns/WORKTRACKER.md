@@ -16,12 +16,12 @@
 | Metric | Value |
 |--------|-------|
 | Project | PROJ-007-agent-patterns |
-| Status | IN PROGRESS |
+| Status | COMPLETE |
 | Created | 2026-02-21 |
 | Orchestration | `agent-patterns-20260221-001` |
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
-| Progress | 98% (Orchestration COMPLETE, EN-002 COMPLETE, EN-001 DONE — PR pending) |
+| Progress | 100% (Orchestration COMPLETE, EN-002 COMPLETE, EN-001 COMPLETE — PR #60 updated) |
 
 ## Work Items
 
@@ -127,6 +127,19 @@
 | TASK-026 | Task | Update ceiling 35→25, two-tier model + exception mechanism | DONE | EN-002 | C3 |
 | TASK-027 | Task | Add L5 CI enforcement gate for HARD rule ceiling | DONE | EN-002 | C3 |
 | TASK-028 | Task | Measure enforcement effectiveness | DONE | EN-002 | C2 |
+
+### EN-003 — Close Anthropic Gaps and Publish Research
+
+| ID | Type | Title | Status | Parent | Criticality |
+|----|------|-------|--------|--------|-------------|
+| EN-003 | Enabler | Close Anthropic Best Practice Gaps and Publish Comparison | DONE | PROJ-007 | C3 |
+| TASK-030 | Task | Add PM-M-001 Plan Mode Workflow standard to project-workflow.md | DONE | EN-003 | C3 |
+| TASK-031 | Task | Add ET-M-001 Extended Thinking standard to agent-development-standards.md | DONE | EN-003 | C3 |
+| TASK-032 | Task | Add FC-M-001 Fresh Context Review pattern to agent-development-standards.md | DONE | EN-003 | C3 |
+| TASK-033 | Task | Create jerry-vs-anthropic-best-practices.md publication artifact (453 lines, 8 sections) | DONE | EN-003 | C2 |
+| TASK-034 | Task | Update WORKTRACKER.md with EN-003 section | DONE | EN-003 | C1 |
+| TASK-035 | Task | Update PLAN.md to reflect actual execution phases | DONE | EN-003 | C1 |
+| TASK-036 | Task | Final validation, commit, and PR update | DONE | EN-003 | C3 |
 
 ### Bugs
 

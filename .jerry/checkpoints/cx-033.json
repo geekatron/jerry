@@ -1,0 +1,13 @@
+{
+  "checkpoint_id": "cx-033",
+  "context_state": {
+    "fill_percentage": 0.0,
+    "tier": "nominal",
+    "token_count": null,
+    "monitoring_ok": true,
+    "context_window": 200000,
+    "context_window_source": "default"
+  },
+  "resumption_state": null,
+  "created_at": "2026-02-22T09:16:58.793286+00:00"
+}

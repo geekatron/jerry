@@ -1,6 +1,6 @@
 # Agent Development Standards
 
-<!-- VERSION: 1.1.0 | DATE: 2026-02-21 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, V&V Plan | REVISION: Barrier 4 quality gate revisions (7 items) -->
+<!-- VERSION: 1.2.0 | DATE: 2026-02-22 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, V&V Plan, EN-003 | REVISION: EN-003 gap closures (ET-M-001 extended thinking, FC-M-001 fresh context review) -->
 
 > Canonical standards for agent definition format, structural patterns, behavioral constraints, and handoff protocols within the Jerry Framework. All agent definitions MUST reference this file.
 
@@ -13,7 +13,7 @@
 | [HARD Rules](#hard-rules) | Agent definition constraints H-34, H-35 |
 | [MEDIUM Standards](#medium-standards) | Overridable agent design standards with documented justification |
 | [Agent Definition Schema](#agent-definition-schema) | Required and recommended YAML frontmatter fields |
-| [Structural Patterns](#structural-patterns) | Identity, capabilities, guardrails, output, constitution sections |
+| [Structural Patterns](#structural-patterns) | Identity, capabilities, guardrails, output, constitution sections (incl. FC-M-001) |
 | [Tool Security Tiers](#tool-security-tiers) | T1-T5 tiered tool access with selection guidelines |
 | [Cognitive Mode Taxonomy](#cognitive-mode-taxonomy) | Five modes with selection criteria and design implications |
 | [Progressive Disclosure](#progressive-disclosure) | Three-tier content structure with context budget rules |
@@ -57,6 +57,7 @@
 | AD-M-008 | Agents SHOULD declare `validation.post_completion_checks` listing verifiable post-completion assertions. | Examples: `verify_file_created`, `verify_navigation_table`, `verify_citations_present`. Enables deterministic quality checking before LLM scoring. | QR-003 (output validation) |
 | AD-M-009 | Agent model selection SHOULD be justified per cognitive demands. | `opus` for complex reasoning, research, architecture, synthesis. `sonnet` for balanced analysis, standard production tasks. `haiku` for fast repetitive tasks, formatting, validation. | PR-007 (model selection) |
 | AD-M-010 | New agents SHOULD declare MCP tool usage in `capabilities.allowed_tools`. Research/documentation agents SHOULD use Context7; cross-session agents SHOULD use Memory-Keeper. | Aligns with MCP-M-002 from `mcp-tool-standards.md`. | AR-006 (tool restriction), MCP-M-002 |
+| ET-M-001 | Agent definitions SHOULD declare `reasoning_effort` aligned with criticality level. Mapping: C1=default, C2=medium, C3=high, C4=max. Orchestrator agents SHOULD use `high` or `max`. Validation-only agents (e.g., ps-validator, wt-auditor) MAY use `default`. | Orthogonal to AD-M-009 (model selection): model determines *which* model reasons, reasoning_effort determines *how deeply* it reasons. Extended thinking allocation scales with decision criticality to balance thoroughness against token cost. | Anthropic best practices (extended thinking), quality-enforcement.md criticality levels |
 
 ### Context Budget Standards
 
@@ -114,6 +115,7 @@ The canonical agent definition uses YAML frontmatter (validated by JSON Schema, 
 | `output.levels` | array | `L0`, `L1`, `L2` disclosure levels | PR-008 |
 | `validation.post_completion_checks` | array | Declarative verification assertions | QR-003 |
 | `session_context` | object | Handoff on_receive/on_send protocol | HR-001, HR-002 |
+| `reasoning_effort` | enum | Extended thinking allocation: `default`, `medium`, `high`, `max` (mapped to criticality per ET-M-001) | Anthropic best practices (extended thinking) |
 | `enforcement` | object | Quality gate tier and escalation path | QR-001 |
 
 ### Markdown Body Sections
@@ -175,6 +177,18 @@ For C2+ deliverables, the quality pattern operates as:
 | Layer 4: Tournament | All 10 strategies executed (quality-enforcement.md) | ~100K+ | C4 |
 
 **Iteration bounds:** Minimum 3 iterations per H-14. Maximum iterations by criticality: C2=5, C3=7, C4=10 (provisional values derived from Phase 3 Synthesis consensus analysis; calibrate against observed revision convergence rates). Plateau detection: delta < 0.01 for 3 consecutive iterations triggers circuit breaker (provisional; see `agent-routing-standards.md` for circuit breaker specification and calibration guidance).
+
+### Pattern 4: Fresh Context Reviewer (FC-M-001)
+
+For C3+ deliverables, review agents SHOULD be invoked via the Task tool to ensure context isolation and bias-free evaluation.
+
+| ID | Standard | Guidance | Source |
+|----|----------|----------|--------|
+| FC-M-001 | For C3+ deliverables, review agents SHOULD be invoked via Task tool to obtain fresh context isolation. For C4 deliverables, a second independent reviewer SHOULD be invoked with a separate Task call, receiving only the artifact and evaluation criteria. | The Task tool inherently provides context isolation: each subagent starts with a clean context window, free from the creator's reasoning artifacts and confirmation bias. When Pattern 3 (Creator-Critic-Revision) uses the Task tool for critic invocation (H-14), the critic already benefits from this isolation. FC-M-001 formalizes this architectural property as an explicit quality pattern. | Anthropic best practices (writer/reviewer fresh context), H-14 (creator-critic-revision), P-003 (single-level nesting) |
+
+**Why this works in Jerry:** The orchestrator-worker topology (Pattern 2, P-003 compliant) naturally creates fresh context boundaries. Each Task invocation gives the worker agent only what the orchestrator explicitly passes -- no accumulated reasoning, no sunk-cost bias, no anchoring to prior iterations. This is architecturally equivalent to Anthropic's recommendation to use separate context windows for writers and reviewers.
+
+**C4 independent review:** At C4 criticality, the tournament review (Pattern 3, Layer 4) already executes all 10 adversarial strategies. FC-M-001 adds an explicit second reviewer invocation that receives only: (a) the artifact file path, (b) the quality gate rubric, and (c) the success criteria -- deliberately excluding prior critic scores and revision history to prevent anchoring.
 
 ---
 
@@ -408,8 +422,8 @@ Each standard maps to an enforcement layer for compliance checking.
 
 ---
 
-<!-- VERSION: 1.1.0 | DATE: 2026-02-21 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis | REVISION: Barrier 4 quality gate (7 items: CB threshold derivations, H-34 implementation note, tool count citation, CB enforcement layer mapping, guardrails expansion guidance, tier vocabulary fixes, confidence calibration) -->
-*Standards Version: 1.1.0*
+<!-- VERSION: 1.2.0 | DATE: 2026-02-22 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, EN-003 | REVISION: EN-003 gap closures (ET-M-001, FC-M-001) -->
+*Standards Version: 1.2.0*
 *SSOT: `.context/rules/quality-enforcement.md` (H-34 compound registered, H-35 retired as sub-item)*
 *Source: PROJ-007 Agent Patterns -- ADR-PROJ007-001, Phase 3 Synthesis, V&V Plan, Integration Patterns*
 *Created: 2026-02-21*
