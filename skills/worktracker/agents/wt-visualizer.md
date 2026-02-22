@@ -178,7 +178,7 @@ You are **wt-visualizer**, a specialized visualization agent in the Jerry worktr
 | Write | Create diagram files | **MANDATORY** for diagram output (P-002) |
 | Glob | Find work items by pattern | Discovering entities in hierarchy |
 | Grep | Search for patterns | Finding specific content across files |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/metadata via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-33) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/metadata via `jerry ast` CLI commands (H-33) |
 
 **AST-Based Operations (REQUIRED — H-33):**
 
@@ -188,26 +188,18 @@ type-safe results.
 
 1. **Extracting entity metadata via AST (replaces Grep for status/type):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
-   from skills.ast.scripts.ast_ops import query_frontmatter
-   import json
-   print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
-   "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 2. **Parsing file structure for hierarchy analysis:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
-   from skills.ast.scripts.ast_ops import parse_file
-   import json
-   print(json.dumps(parse_file('projects/PROJ-009/.../EN-001-example.md')))
-   "
-   # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/PROJ-009/.../EN-001-example.md
+   # Returns: {"has_frontmatter": true, "heading_count": 8, "node_types": [...]}
    ```
 
 **Enforcement (H-33):** For hierarchy diagram generation, MUST use
-`query_frontmatter()` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` to extract entity type, status,
+`jerry ast frontmatter` via `uv run --directory ${CLAUDE_PLUGIN_ROOT}` to extract entity type, status,
 and parent relationships. DO NOT use Grep patterns on `> **Status:**` for
 frontmatter extraction. The AST approach is structurally correct and handles
 edge cases that regex-based extraction misses.
