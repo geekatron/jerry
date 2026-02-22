@@ -23,7 +23,7 @@
 
 Workflow `llm-deception-20260222-002` has completed all 5 phases across both pipelines. C4 adversarial tournaments identified numerical discrepancies that triggered revision cycles for QG-3 (REJECTED, 0.82) and QG-4 (REVISE, 0.90). QG-2 (0.92) and QG-5 (0.93) PASS above the 0.92 threshold (H-13). All identified errors have been corrected; pending re-scoring for QG-3 R2 and QG-4 R2.
 
-**Recommendation: READY FOR PUBLICATION** pending QG-3/QG-4 R2 re-scoring confirmation.
+**Recommendation: READY FOR PUBLICATION.** QG-3 R2=0.92 PASS, QG-4 R2=0.94 PASS. All 5 quality gates confirmed PASS.
 
 ---
 
@@ -81,8 +81,8 @@ Workflow `llm-deception-20260222-002` has completed all 5 phases across both pip
 |------|-------|----------|----------|-----------|--------|
 | QG-1 | Phase 1 (reused from -001) | 0.952 | -- | 0.92 | PASS |
 | QG-2 | Phase 2 V&V | 0.88 | 0.92 | 0.92 | PASS (R2) |
-| QG-3 | Phase 3 Synthesis | 0.82 | Pending | 0.92 | REJECTED (R1) -- 30+ numerical errors corrected, awaiting R2 |
-| QG-4 | Phase 4 Content QA | 0.90 | Pending | 0.92 | REVISE (R1) -- 3 propagated errors corrected, awaiting R2 |
+| QG-3 | Phase 3 Synthesis | 0.82 | 0.92 | 0.92 | PASS (R2) -- 30+ numerical errors corrected |
+| QG-4 | Phase 4 Content QA | 0.90 | 0.94 | 0.92 | PASS (R2) -- 3 propagated errors corrected |
 | QG-5 | Phase 5 Final V&V | 0.93 | -- | 0.92 | PASS |
 
 **Note:** Self-assessed scores (all 0.96) were invalidated by C4 adversarial tournament. Actual scores shown above. Leniency bias delta: -0.03 to -0.14.
@@ -113,9 +113,9 @@ The original criterion specified "at least 7/10 ITS questions" but the actual re
 | All phases complete | DONE | -- |
 | QG-2 passed (0.92 >= 0.92) | DONE | R2 after Phase 2 corrections |
 | QG-3 R1 corrections applied | DONE | 30+ synthesizer values corrected against ps-analyst-002 |
-| QG-3 R2 re-scoring | PENDING | Re-run S-014 after corrections |
+| QG-3 R2 re-scoring | DONE | R2=0.92 PASS |
 | QG-4 R1 corrections applied | DONE | Technology domain, Agent B PC/ITS FA, QA threshold corrected |
-| QG-4 R2 re-scoring | PENDING | Re-run S-014 after corrections |
+| QG-4 R2 re-scoring | DONE | R2=0.94 PASS |
 | QG-5 passed (0.93 >= 0.92) | DONE | -- |
 | Citation crosscheck complete | DONE | Updated with CXC-003/004/005 from tournament findings |
 | Content QA complete | DONE | Threshold corrected to 0.92 per H-13 |
@@ -129,22 +129,21 @@ The original criterion specified "at least 7/10 ITS questions" but the actual re
 
 ## Recommendation
 
-### CONDITIONALLY READY FOR PUBLICATION
+### READY FOR PUBLICATION
 
-The workflow has produced a complete, verified set of deliverables that:
+The workflow has produced a complete, verified, quality-gated set of deliverables that:
 
 1. Demonstrate the Two-Leg Thesis with empirical evidence
 2. Present findings across 3 platforms in Saucer Boy voice
-3. QG-2 (0.92) and QG-5 (0.93) pass above the 0.92 threshold (H-13)
+3. All 5 quality gates PASS above the 0.92 threshold (H-13): QG-1=0.952, QG-2=0.92, QG-3=0.92, QG-4=0.94, QG-5=0.93
 4. Have been citation-crosschecked against authoritative ground truth
-5. All numerical errors identified by C4 tournament have been corrected
+5. All numerical errors identified by C4 tournament have been corrected and verified
 
-**Blocking items:**
-1. QG-3 R2 re-scoring required (R1: 0.82 REJECTED -- corrections applied, expect >= 0.92)
-2. QG-4 R2 re-scoring required (R1: 0.90 REVISE -- corrections applied, expect >= 0.92)
+**Blocking items:** None.
 
 **Non-blocking items:**
 1. Trim any Twitter thread tweets exceeding 280 characters
+2. Minor: requests library date "December 2011" should be "August 2011" in synthesizer (QG-3 R2 P1)
 
 **Leniency bias observation:** Self-assessed scores were uniformly 0.96 across all phases. C4 tournament actual scores ranged 0.82-0.93 (delta -0.03 to -0.14). This validates the necessity of independent adversarial tournament scoring per S-014 leniency bias counteraction.
 

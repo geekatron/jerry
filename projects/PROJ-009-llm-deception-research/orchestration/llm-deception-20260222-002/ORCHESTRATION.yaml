@@ -14,9 +14,9 @@ workflow:
   id: "llm-deception-20260222-002"
   name: "LLM Deception Research - A/B Test Redesign & Re-Run"
   project_id: "PROJ-009"
-  status: "IN_REVISION"
+  status: "COMPLETE"
   created_at: "2026-02-22T10:00:00Z"
-  updated_at: "2026-02-22T19:30:00Z"
+  updated_at: "2026-02-22T20:00:00Z"
   predecessor: "llm-deception-20260221-001"
   predecessor_reuse:
     phase_1: "REUSED"
@@ -302,12 +302,12 @@ barriers:
         description: "Technical review findings transferred to PS pipeline"
     quality_gate:
       id: "QG-3"
-      status: "REJECTED"
-      score: 0.82
+      status: "PASS"
+      score: 0.92
       threshold: 0.92
-      iterations_completed: 1
+      iterations_completed: 2
       max_iterations: 5
-      note: "C4 tournament identified 30+ numerical discrepancies in ps-synthesizer-002. Revision in progress."
+      note: "R1=0.82 REJECTED (30+ numerical discrepancies). R2=0.92 PASS after corrections. 88/89 values verified."
 
   barrier-4:
     id: "barrier-4"
@@ -330,12 +330,12 @@ barriers:
         description: "QA audit findings transferred to PS pipeline"
     quality_gate:
       id: "QG-4"
-      status: "REVISE"
-      score: 0.90
+      status: "PASS"
+      score: 0.94
       threshold: 0.92
-      iterations_completed: 1
+      iterations_completed: 2
       max_iterations: 5
-      note: "C4 tournament found 3 propagated errors from synthesizer: Technology domain cherry-pick, Agent B PC FA, QA threshold. Revision in progress."
+      note: "R1=0.90 REVISE (3 propagated errors). R2=0.94 PASS after corrections. 47/47 numerical claims verified."
 
 execution_queue:
   - group: 1
@@ -482,24 +482,24 @@ quality:
         status: "PASS"
     phase_3:
       pipeline_a:
-        score: 0.82
-        iterations: 1
-        status: "REJECTED"
-        note: "30+ numerical discrepancies in synthesizer. Revision in progress."
+        score: 0.92
+        iterations: 2
+        status: "PASS"
+        note: "R1=0.82 REJECTED, R2=0.92 PASS after 30+ numerical corrections"
       pipeline_b:
-        score: 0.82
-        iterations: 1
-        status: "REJECTED"
+        score: 0.92
+        iterations: 2
+        status: "PASS"
     phase_4:
       pipeline_a:
-        score: 0.90
-        iterations: 1
-        status: "REVISE"
-        note: "3 propagated errors from synthesizer. Revision in progress."
+        score: 0.94
+        iterations: 2
+        status: "PASS"
+        note: "R1=0.90 REVISE, R2=0.94 PASS after 3 propagated error corrections"
       pipeline_b:
-        score: 0.90
-        iterations: 1
-        status: "REVISE"
+        score: 0.94
+        iterations: 2
+        status: "PASS"
     phase_5:
       pipeline_a:
         score: 0.93
@@ -515,20 +515,20 @@ quality:
       iterations: 2
       status: "PASS"
     barrier-3:
-      score: 0.82
-      iterations: 1
-      status: "REJECTED"
+      score: 0.92
+      iterations: 2
+      status: "PASS"
     barrier-4:
-      score: 0.90
-      iterations: 1
-      status: "REVISE"
+      score: 0.94
+      iterations: 2
+      status: "PASS"
   workflow_quality:
-    average_score: 0.878
-    lowest_score: 0.82
-    total_iterations: 7
-    gates_passed: 3
-    gates_failed: 2
-    note: "QG-1 (0.952 reused), QG-2 (0.92 PASS), QG-3 (0.82 REJECTED), QG-4 (0.90 REVISE), QG-5 (0.93 PASS). Revision cycle active for QG-3/QG-4."
+    average_score: 0.930
+    lowest_score: 0.92
+    total_iterations: 9
+    gates_passed: 5
+    gates_failed: 0
+    note: "QG-1=0.952 (reused), QG-2=0.92 (R2), QG-3=0.92 (R2), QG-4=0.94 (R2), QG-5=0.93. All gates PASS >= 0.92."
 
 verification_criteria:
   - id: "VC-001"
@@ -560,40 +560,30 @@ metrics:
   phases_total: 8
   phases_completed: 8
   barriers_total: 3
-  barriers_completed: 1
-  barriers_in_revision: 2
+  barriers_completed: 3
   agents_total: 17
   agents_completed: 17
   agents_failed: 0
   agents_in_progress: 0
-  quality_gates_passed: 3
-  quality_gates_failed: 2
-  quality_gates_note: "QG-3 REJECTED (0.82), QG-4 REVISE (0.90). Deliverable corrections in progress."
+  quality_gates_passed: 5
+  quality_gates_failed: 0
+  quality_gates_note: "All 5 gates PASS. QG-3 required R2 (0.82→0.92), QG-4 required R2 (0.90→0.94)."
 
 resumption:
   recovery_state:
-    last_checkpoint: "QG_REVISION_CYCLE"
-    current_phase: "cross-phase-revision"
-    current_phase_name: "QG-3/QG-4 Revision Cycle"
-    workflow_status: "IN_REVISION"
-    current_activity: "Fixing numerical discrepancies identified by C4 tournaments"
-    next_step: "1. Complete synthesizer corrections (30+ values). 2. Complete content/architect propagated error fixes. 3. Re-score QG-3 and QG-4 with S-014. 4. If PASS, update status to COMPLETE."
+    last_checkpoint: "WORKFLOW_COMPLETE"
+    current_phase: 5
+    current_phase_name: "Phase 5 - Final Review (COMPLETE)"
+    workflow_status: "COMPLETE"
+    current_activity: "COMPLETE"
+    next_step: "Workflow complete. All 5 quality gates PASS (>= 0.92). Publication ready."
   files_to_read:
     - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ORCHESTRATION.yaml"
       priority: 1
-      purpose: "Pipeline state -- IN_REVISION (QG-3 REJECTED, QG-4 REVISE)"
-    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ps/phase-2-ab-test/ps-analyst-002/ps-analyst-002-output.md"
+      purpose: "Pipeline state -- COMPLETE (all 5 QGs PASS)"
+    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ps/phase-5-final-review/ps-reporter-002/ps-reporter-002-output.md"
       priority: 2
-      purpose: "SOURCE OF TRUTH for all numerical values"
-    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/ps/phase-3-synthesis/ps-synthesizer-002/ps-synthesizer-002-output.md"
-      priority: 3
-      purpose: "Primary deliverable under revision (QG-3)"
-    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/quality-gates/qg-3/s-014-llm-as-judge.md"
-      priority: 4
-      purpose: "QG-3 S-014 scoring report -- identifies specific errors"
-    - path: "projects/PROJ-009-llm-deception-research/orchestration/llm-deception-20260222-002/quality-gates/qg-4/s-014-llm-as-judge.md"
-      priority: 5
-      purpose: "QG-4 S-014 scoring report -- identifies propagated errors"
+      purpose: "Publication readiness report"
   quality_trajectory:
     gates_completed:
       - id: "QG-1"
@@ -607,17 +597,14 @@ resumption:
       - id: "QG-5"
         score: 0.93
         status: "PASS"
-    gates_in_revision:
       - id: "QG-3"
-        r1_score: 0.82
-        status: "REJECTED"
-        root_cause: "ps-synthesizer-002 fabricated/misremembered 30+ numerical values from ps-analyst-002 source of truth"
-        correction_scope: "ps-synthesizer-002-output.md, ps-architect-002-output.md"
+        score: 0.92
+        status: "PASS"
+        note: "R1=0.82 REJECTED → R2=0.92 PASS. 30+ synthesizer corrections applied."
       - id: "QG-4"
-        r1_score: 0.90
-        status: "REVISE"
-        root_cause: "Errors propagated from synthesizer to content pieces"
-        correction_scope: "sb-voice-004/005/006-output.md, nse-qa-002-output.md (threshold 0.95→0.92)"
+        score: 0.94
+        status: "PASS"
+        note: "R1=0.90 REVISE → R2=0.94 PASS. 3 propagated error corrections applied."
     gates_remaining: []
     leniency_bias_detected: true
     leniency_bias_note: "Self-assessment scored all phases at 0.96. C4 tournaments revealed actual scores of 0.82, 0.90, 0.93. Delta up to -0.14. Confirms S-014 leniency bias counteraction is essential."
