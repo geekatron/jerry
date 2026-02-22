@@ -19,8 +19,8 @@
 | Status | ACTIVE |
 | Total Items | 25 |
 | Completed | 0 |
-| In Progress | 1 |
-| Pending | 24 |
+| In Progress | 7 |
+| Pending | 18 |
 
 | Entity Type | Count |
 |-------------|-------|
@@ -36,12 +36,12 @@
 ```
 EPIC-001: LLM Deception Research [in_progress]
 │
-├── FEAT-001: Evidence Collection [pending]
-│   ├── STORY-001: Academic Literature [pending]
-│   ├── STORY-002: Industry Reports [pending]
-│   ├── STORY-003: Conversation Mining [pending]
-│   ├── EN-001: A/B Test Requirements [pending]
-│   └── EN-002: Comparison Prior Art [pending]
+├── FEAT-001: Evidence Collection [in_progress]
+│   ├── STORY-001: Academic Literature [in_progress]
+│   ├── STORY-002: Industry Reports [in_progress]
+│   ├── STORY-003: Conversation Mining [in_progress]
+│   ├── EN-001: A/B Test Requirements [in_progress]
+│   └── EN-002: Comparison Prior Art [in_progress]
 │
 ├── FEAT-002: A/B Test Execution [pending]
 │   ├── STORY-001: Agent A Internal [pending]
@@ -80,7 +80,7 @@ EPIC-001: LLM Deception Research [in_progress]
 
 | ID | Title | Parent | Status | Priority | Phase | Stories | Enablers | Progress |
 |----|-------|--------|--------|----------|-------|---------|----------|----------|
-| FEAT-001 | Evidence Collection | EPIC-001 | pending | critical | 1 | 3 | 2 | 0% |
+| FEAT-001 | Evidence Collection | EPIC-001 | in_progress | critical | 1 | 3 | 2 | 0% |
 | FEAT-002 | A/B Test Execution | EPIC-001 | pending | critical | 2 | 3 | 1 | 0% |
 | FEAT-003 | Research Synthesis | EPIC-001 | pending | high | 3 | 2 | 1 | 0% |
 | FEAT-004 | Content Production | EPIC-001 | pending | high | 4 | 3 | 1 | 0% |
@@ -90,9 +90,9 @@ EPIC-001: LLM Deception Research [in_progress]
 
 | ID | Title | Parent | Status | Priority | Agent | Pipeline |
 |----|-------|--------|--------|----------|-------|----------|
-| FEAT-001/STORY-001 | Academic Literature | FEAT-001 | pending | critical | ps-researcher-001 | PS |
-| FEAT-001/STORY-002 | Industry Reports | FEAT-001 | pending | critical | ps-researcher-002 | PS |
-| FEAT-001/STORY-003 | Conversation Mining | FEAT-001 | pending | critical | ps-investigator-001 | PS |
+| FEAT-001/STORY-001 | Academic Literature | FEAT-001 | in_progress | critical | ps-researcher-001 | PS |
+| FEAT-001/STORY-002 | Industry Reports | FEAT-001 | in_progress | critical | ps-researcher-002 | PS |
+| FEAT-001/STORY-003 | Conversation Mining | FEAT-001 | in_progress | critical | ps-investigator-001 | PS |
 | FEAT-002/STORY-001 | Agent A Internal | FEAT-002 | pending | critical | ps-researcher-003 | PS |
 | FEAT-002/STORY-002 | Agent B External | FEAT-002 | pending | critical | ps-researcher-004 | PS |
 | FEAT-002/STORY-003 | Comparative Analysis | FEAT-002 | pending | critical | ps-analyst-001 | PS |
@@ -108,8 +108,8 @@ EPIC-001: LLM Deception Research [in_progress]
 
 | ID | Title | Parent | Status | Priority | Type | Agent | Pipeline |
 |----|-------|--------|--------|----------|------|-------|----------|
-| FEAT-001/EN-001 | A/B Test Requirements | FEAT-001 | pending | high | exploration | nse-requirements-001 | NSE |
-| FEAT-001/EN-002 | Comparison Prior Art | FEAT-001 | pending | high | exploration | nse-explorer-001 | NSE |
+| FEAT-001/EN-001 | A/B Test Requirements | FEAT-001 | in_progress | high | exploration | nse-requirements-001 | NSE |
+| FEAT-001/EN-002 | Comparison Prior Art | FEAT-001 | in_progress | high | exploration | nse-explorer-001 | NSE |
 | FEAT-002/EN-001 | A/B Test V&V | FEAT-002 | pending | high | compliance | nse-verification-001 | NSE |
 | FEAT-003/EN-001 | Technical Review | FEAT-003 | pending | high | compliance | nse-reviewer-001 | NSE |
 | FEAT-004/EN-001 | Content QA | FEAT-004 | pending | high | compliance | nse-qa-001 | NSE |
