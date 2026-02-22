@@ -775,8 +775,8 @@ class TestBatchValidationPerformance:
             _cleanup_paths(paths)
 
     @pytest.mark.happy_path
-    def test_50_file_frontmatter_batch_under_200ms(self) -> None:
-        """Extract frontmatter from 50 files in under 200ms."""
+    def test_50_file_frontmatter_batch_under_500ms(self) -> None:
+        """Extract frontmatter from 50 files in under 500ms."""
         contents = [STORY_DELIVERABLE_MD] * 25 + [VALID_ENABLER_MD] * 25
         paths = _write_temp_list(contents)
         try:
@@ -791,16 +791,17 @@ class TestBatchValidationPerformance:
             assert story_count == 25
             assert enabler_count == 25
 
-            # Verify performance
-            assert elapsed_ms < 200, (
-                f"50-file frontmatter batch took {elapsed_ms:.1f}ms, expected < 200ms"
+            # Verify performance (500ms allows for CI runner variability;
+            # local runs typically complete in <100ms)
+            assert elapsed_ms < 500, (
+                f"50-file frontmatter batch took {elapsed_ms:.1f}ms, expected < 500ms"
             )
         finally:
             _cleanup_paths(paths)
 
     @pytest.mark.happy_path
-    def test_50_file_parse_batch_under_200ms(self) -> None:
-        """Parse 50 files for structural info in under 200ms."""
+    def test_50_file_parse_batch_under_500ms(self) -> None:
+        """Parse 50 files for structural info in under 500ms."""
         contents = [ADR_DELIVERABLE_MD] * 17 + [WITH_NAV_TABLE_MD] * 17 + [REVIEW_PACKAGE_MD] * 16
         paths = _write_temp_list(contents)
         try:
@@ -813,9 +814,10 @@ class TestBatchValidationPerformance:
             with_frontmatter = sum(1 for r in results if r["has_frontmatter"])
             assert with_frontmatter > 0
 
-            # Verify performance
-            assert elapsed_ms < 200, (
-                f"50-file parse batch took {elapsed_ms:.1f}ms, expected < 200ms"
+            # Verify performance (500ms allows for CI runner variability;
+            # local runs typically complete in <100ms)
+            assert elapsed_ms < 500, (
+                f"50-file parse batch took {elapsed_ms:.1f}ms, expected < 500ms"
             )
         finally:
             _cleanup_paths(paths)

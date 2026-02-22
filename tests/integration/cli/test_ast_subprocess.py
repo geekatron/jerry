@@ -533,9 +533,7 @@ class TestJerryAstCli:
         story_file: Path,
     ) -> None:
         """jerry ast parse outputs valid JSON with tokens and tree."""
-        result = run_jerry_ast(
-            ["parse", str(story_file)], project_root, env_with_pythonpath
-        )
+        result = run_jerry_ast(["parse", str(story_file)], project_root, env_with_pythonpath)
 
         assert result.returncode == 0, f"stderr: {result.stderr}"
         data = json.loads(result.stdout)
@@ -552,9 +550,7 @@ class TestJerryAstCli:
         story_file: Path,
     ) -> None:
         """jerry ast render outputs normalized markdown."""
-        result = run_jerry_ast(
-            ["render", str(story_file)], project_root, env_with_pythonpath
-        )
+        result = run_jerry_ast(["render", str(story_file)], project_root, env_with_pythonpath)
 
         assert result.returncode == 0, f"stderr: {result.stderr}"
         assert "# ST-001" in result.stdout
@@ -566,9 +562,7 @@ class TestJerryAstCli:
         story_file: Path,
     ) -> None:
         """jerry ast validate without --schema prints OK message."""
-        result = run_jerry_ast(
-            ["validate", str(story_file)], project_root, env_with_pythonpath
-        )
+        result = run_jerry_ast(["validate", str(story_file)], project_root, env_with_pythonpath)
 
         assert result.returncode == 0, f"stderr: {result.stderr}"
         assert "Validation OK" in result.stdout
@@ -647,8 +641,7 @@ class TestErrorCases:
     ) -> None:
         """ast_ops raises FileNotFoundError for missing files."""
         code = (
-            "from skills.ast.scripts.ast_ops import parse_file; "
-            "parse_file('/nonexistent/file.md')"
+            "from skills.ast.scripts.ast_ops import parse_file; parse_file('/nonexistent/file.md')"
         )
         result = run_ast_op(code, project_root, env_with_pythonpath)
 
@@ -693,9 +686,7 @@ class TestErrorCases:
         env_with_pythonpath: dict[str, str],
     ) -> None:
         """jerry ast parse with missing file returns exit code 2."""
-        result = run_jerry_ast(
-            ["parse", "/nonexistent/file.md"], project_root, env_with_pythonpath
-        )
+        result = run_jerry_ast(["parse", "/nonexistent/file.md"], project_root, env_with_pythonpath)
 
         assert result.returncode == 2
 
