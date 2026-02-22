@@ -1,0 +1,597 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for PROJ-008 Agentic Security
+# Document ID: PROJ-008-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-02-22T00:00:00Z
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "agentic-sec-20260222-001"
+  name: "PROJ-008 Agentic Security - Cross-Pollinated Pipeline"
+  project_id: "PROJ-008"
+  version: "2.0"
+  created_at: "2026-02-22T00:00:00Z"
+  updated_at: "2026-02-22T00:00:00Z"
+  status: "ACTIVE"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+    - CONCURRENT
+    - BARRIER_SYNC
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 5
+    max_barrier_retries: 3
+    checkpoint_frequency: "PHASE"
+    criticality: "C4"
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "orchestration/agentic-sec-20260222-001/"
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  pipeline_ps:
+    id: "pipeline-ps"
+    name: "Problem-Solving Pipeline"
+    description: "Research, analysis, architecture, adversarial verification, and documentation"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    status: "PHASE_1_PENDING"
+    current_phase: 1
+    total_phases: 5
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "Deep Research"
+        path_id: "phase-1"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-researcher-001"
+            name: "Competitive Landscape Analysis"
+            status: "PENDING"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-001/ps-researcher-001-competitive-landscape.md"
+            inputs: ["projects/PROJ-008-agentic-security/PLAN.md"]
+          - id: "ps-researcher-002"
+            name: "Threat Framework Consumption"
+            status: "PENDING"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-002/ps-researcher-002-threat-framework-analysis.md"
+            inputs: ["projects/PROJ-008-agentic-security/PLAN.md"]
+          - id: "ps-analyst-001"
+            name: "Gap Analysis"
+            status: "PENDING"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-analyst-001/ps-analyst-001-gap-analysis.md"
+            inputs:
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-001/ps-researcher-001-competitive-landscape.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-002/ps-researcher-002-threat-framework-analysis.md"
+        artifacts: []
+
+      - id: 2
+        name: "Architecture"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-architect-001"
+            name: "Security Architecture Design"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-2/ps-architect-001/ps-architect-001-security-architecture.md"
+          - id: "ps-researcher-003"
+            name: "Security Pattern Research"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-2/ps-researcher-003/ps-researcher-003-security-patterns.md"
+        artifacts: []
+
+      - id: 3
+        name: "Implementation"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "barrier-2"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-analyst-002"
+            name: "Implementation Analysis"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-3/ps-analyst-002/ps-analyst-002-implementation-specs.md"
+          - id: "ps-critic-001"
+            name: "Security Code Review"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-3/ps-critic-001/ps-critic-001-security-review.md"
+        artifacts: []
+
+      - id: 4
+        name: "Adversarial Verification"
+        path_id: "phase-4"
+        status: "BLOCKED"
+        blocked_by: "barrier-3"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-investigator-001"
+            name: "Adversarial Testing"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-4/ps-investigator-001/ps-investigator-001-adversarial-testing.md"
+          - id: "ps-reviewer-001"
+            name: "Red Team Review"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-4/ps-reviewer-001/ps-reviewer-001-red-team-report.md"
+        artifacts: []
+
+      - id: 5
+        name: "Documentation"
+        path_id: "phase-5"
+        status: "BLOCKED"
+        blocked_by: "barrier-4"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "ps-synthesizer-001"
+            name: "Best Practices Synthesis"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-5/ps-synthesizer-001/ps-synthesizer-001-best-practices.md"
+          - id: "ps-reporter-001"
+            name: "Security Guide Authoring"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/ps/phase-5/ps-reporter-001/ps-reporter-001-security-guide.md"
+        artifacts: []
+
+  pipeline_nse:
+    id: "pipeline-nse"
+    name: "NASA-SE Pipeline"
+    description: "Requirements engineering, formal design, V&V, compliance verification"
+    short_alias: "nse"
+    skill_source: "nasa-systems-engineering"
+    status: "PHASE_1_PENDING"
+    current_phase: 1
+    total_phases: 5
+    progress_percent: 0
+
+    phases:
+      - id: 1
+        name: "Requirements Discovery"
+        path_id: "phase-1"
+        status: "PENDING"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-requirements-001"
+            name: "Security Requirements Discovery"
+            status: "PENDING"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-1/nse-requirements-001/nse-requirements-001-security-requirements.md"
+            inputs: ["projects/PROJ-008-agentic-security/PLAN.md"]
+          - id: "nse-explorer-001"
+            name: "Initial Risk Register"
+            status: "PENDING"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-1/nse-explorer-001/nse-explorer-001-risk-register.md"
+            inputs: ["projects/PROJ-008-agentic-security/PLAN.md"]
+        artifacts: []
+
+      - id: 2
+        name: "Formal Design"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "barrier-1"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-architecture-001"
+            name: "Formal Security Architecture"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-2/nse-architecture-001/nse-architecture-001-formal-architecture.md"
+          - id: "nse-requirements-002"
+            name: "Requirements Baseline"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-2/nse-requirements-002/nse-requirements-002-requirements-baseline.md"
+          - id: "nse-explorer-002"
+            name: "Trade Studies"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-2/nse-explorer-002/nse-explorer-002-trade-studies.md"
+        artifacts: []
+
+      - id: 3
+        name: "Integration Verification"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "barrier-2"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-verification-001"
+            name: "Implementation V&V"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-3/nse-verification-001/nse-verification-001-implementation-vv.md"
+          - id: "nse-integration-001"
+            name: "Integration Verification"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-3/nse-integration-001/nse-integration-001-integration-report.md"
+        artifacts: []
+
+      - id: 4
+        name: "Compliance Verification"
+        path_id: "phase-4"
+        status: "BLOCKED"
+        blocked_by: "barrier-3"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-verification-002"
+            name: "V&V Execution"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-4/nse-verification-002/nse-verification-002-vv-execution.md"
+          - id: "nse-verification-003"
+            name: "Compliance Matrix Verification"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-4/nse-verification-003/nse-verification-003-compliance-matrix.md"
+        artifacts: []
+
+      - id: 5
+        name: "Compliance Documentation"
+        path_id: "phase-5"
+        status: "BLOCKED"
+        blocked_by: "barrier-4"
+        started_at: null
+        completed_at: null
+        agents:
+          - id: "nse-verification-004"
+            name: "Compliance Reports"
+            status: "BLOCKED"
+            artifact: "orchestration/agentic-sec-20260222-001/nse/phase-5/nse-verification-004/nse-verification-004-compliance-reports.md"
+        artifacts: []
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "Research → Architecture Cross-Pollination"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "pipeline_ps.phase.1"
+      - "pipeline_nse.phase.1"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-1/ps-to-nse/handoff.md"
+        status: "PENDING"
+        key_content: "Research findings, threat maps, gap priorities"
+      nse_to_ps:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-1/nse-to-ps/handoff.md"
+        status: "PENDING"
+        key_content: "Requirements gaps, risk-driven research priorities"
+
+  - id: "barrier-2"
+    name: "Architecture → Implementation Cross-Pollination"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "pipeline_ps.phase.2"
+      - "pipeline_nse.phase.2"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-2/ps-to-nse/handoff.md"
+        status: "PENDING"
+        key_content: "Architecture patterns, ADR drafts, design rationale"
+      nse_to_ps:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-2/nse-to-ps/handoff.md"
+        status: "PENDING"
+        key_content: "V&V plan, requirements trace, architecture gaps"
+
+  - id: "barrier-3"
+    name: "Implementation → Verification Cross-Pollination"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "pipeline_ps.phase.3"
+      - "pipeline_nse.phase.3"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-3/ps-to-nse/handoff.md"
+        status: "PENDING"
+        key_content: "Implementation artifacts, code review findings"
+      nse_to_ps:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-3/nse-to-ps/handoff.md"
+        status: "PENDING"
+        key_content: "V&V results, integration issues, compliance gaps"
+
+  - id: "barrier-4"
+    name: "Verification → Documentation Cross-Pollination"
+    status: "PENDING"
+    completed_at: null
+    depends_on:
+      - "pipeline_ps.phase.4"
+      - "pipeline_nse.phase.4"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-4/ps-to-nse/handoff.md"
+        status: "PENDING"
+        key_content: "Adversarial findings, red team results, test gaps"
+      nse_to_ps:
+        path: "orchestration/agentic-sec-20260222-001/cross-pollination/barrier-4/nse-to-ps/handoff.md"
+        status: "PENDING"
+        key_content: "Compliance results, V&V coverage, documentation gaps"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      name: "Phase 1 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "READY"
+      agents:
+        - "ps-researcher-001"
+        - "ps-researcher-002"
+        - "nse-requirements-001"
+        - "nse-explorer-001"
+
+    - id: 2
+      name: "Phase 1 Convergence (PS gap analysis)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-1"
+      agents:
+        - "ps-analyst-001"
+
+    - id: 3
+      name: "Barrier 1 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-2"
+      tasks:
+        - "create-ps-to-nse-barrier-1"
+        - "create-nse-to-ps-barrier-1"
+
+    - id: 4
+      name: "Phase 2 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-3"
+      agents:
+        - "ps-architect-001"
+        - "ps-researcher-003"
+        - "nse-architecture-001"
+        - "nse-requirements-002"
+        - "nse-explorer-002"
+
+    - id: 5
+      name: "Barrier 2 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-4"
+      tasks:
+        - "create-ps-to-nse-barrier-2"
+        - "create-nse-to-ps-barrier-2"
+
+    - id: 6
+      name: "Phase 3 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-5"
+      agents:
+        - "ps-analyst-002"
+        - "ps-critic-001"
+        - "nse-verification-001"
+        - "nse-integration-001"
+
+    - id: 7
+      name: "Barrier 3 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-6"
+      tasks:
+        - "create-ps-to-nse-barrier-3"
+        - "create-nse-to-ps-barrier-3"
+
+    - id: 8
+      name: "Phase 4 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-7"
+      agents:
+        - "ps-investigator-001"
+        - "ps-reviewer-001"
+        - "nse-verification-002"
+        - "nse-verification-003"
+
+    - id: 9
+      name: "Barrier 4 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-8"
+      tasks:
+        - "create-ps-to-nse-barrier-4"
+        - "create-nse-to-ps-barrier-4"
+
+    - id: 10
+      name: "Phase 5 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "group-9"
+      agents:
+        - "ps-synthesizer-001"
+        - "ps-reporter-001"
+        - "nse-verification-004"
+
+    - id: 11
+      name: "Final Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "group-10"
+      agents:
+        - "orch-synthesizer-001"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+
+# =============================================================================
+# QUALITY
+# =============================================================================
+quality:
+  threshold: 0.95
+  criticality: "C4"
+  scoring_mechanism: "S-014"
+  iteration_ceiling: 5
+  required_strategies:
+    - "S-001"  # Red Team Analysis
+    - "S-002"  # Devil's Advocate
+    - "S-003"  # Steelman Technique
+    - "S-004"  # Pre-Mortem Analysis
+    - "S-007"  # Constitutional AI Critique
+    - "S-010"  # Self-Refine
+    - "S-011"  # Chain-of-Verification
+    - "S-012"  # FMEA
+    - "S-013"  # Inversion Technique
+    - "S-014"  # LLM-as-Judge
+  optional_strategies: []  # C4 = ALL strategies required, none optional
+
+  phase_scores: {}
+  barrier_scores: {}
+  workflow_quality:
+    average_score: null
+    lowest_score: null
+    total_iterations: 0
+    gates_passed: 0
+    gates_failed: 0
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 0
+    phases_total: 10
+    phases_percent: 0
+    barriers_complete: 0
+    barriers_total: 4
+    barriers_percent: 0
+    agents_executed: 0
+    agents_total: 21
+    agents_percent: 0
+    artifacts_created: 0
+    artifacts_total: 29
+    artifacts_percent: 0
+
+  quality:
+    agent_success_rate: 0
+    barrier_validation_pass_rate: 0
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: null
+    last_activity: null
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute Phase 1 agents (Group 1: parallel research)"
+      agents: ["ps-researcher-001", "ps-researcher-002", "nse-requirements-001", "nse-explorer-001"]
+      execution_mode: "PARALLEL"
+
+  subsequent:
+    - action: "Execute PS gap analysis (Group 2)"
+      depends_on: "Group 1 complete"
+    - action: "Complete Barrier 1 cross-pollination (Group 3)"
+      depends_on: "Group 2 complete"
+    - action: "Execute Phase 2 agents (Group 4)"
+      depends_on: "Barrier 1 complete"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  recovery_state:
+    last_checkpoint: null
+    current_phase: 0
+    current_phase_name: "Not started"
+    workflow_status: "ACTIVE"
+    current_activity: "Planning complete. Awaiting Phase 1 execution."
+    next_step: "Execute Phase 1 agents (Group 1)"
+    context_fill_at_update: null
+    updated_at: "2026-02-22T00:00:00Z"
+    cross_session_portable: true
+    ephemeral_references: false
+
+  files_to_read:
+    - path: "projects/PROJ-008-agentic-security/orchestration/agentic-sec-20260222-001/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state. Read resumption section first."
+    - path: "projects/PROJ-008-agentic-security/orchestration/agentic-sec-20260222-001/ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Strategic context. Agent definitions, phase descriptions, gate criteria."
+    - path: "projects/PROJ-008-agentic-security/orchestration/agentic-sec-20260222-001/ORCHESTRATION_WORKTRACKER.md"
+      priority: 3
+      purpose: "Tactical documentation. Feature status, blockers."
+    - path: "projects/PROJ-008-agentic-security/PLAN.md"
+      priority: 4
+      purpose: "Project-level plan. Scope, research targets, success criteria."
+    - path: "projects/PROJ-008-agentic-security/WORKTRACKER.md"
+      priority: 5
+      purpose: "Project-level work items. Epics, Features, Stories."
+
+  quality_trajectory:
+    gates_completed: []
+    gates_remaining:
+      - "gate-1-research-to-architecture"
+      - "gate-2-architecture-to-implementation"
+      - "gate-3-implementation-to-verification"
+      - "gate-4-verification-to-documentation"
+      - "gate-5-documentation-to-complete"
+    current_gate: null
+    current_gate_iteration: null
+    score_history: {}
+    lowest_dimension: null
+    total_iterations_used: 0
+
+  defect_summary:
+    total_defects_found: 0
+    total_defects_resolved: 0
+    unresolved_defects: []
+    recurring_patterns: []
+    last_gate_primary_defect: null
+
+  decision_log: []
+  agent_summaries: {}
+
+  compaction_events:
+    count: 0
+    events: []

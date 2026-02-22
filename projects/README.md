@@ -13,6 +13,7 @@
 | PROJ-005 | markdown-ast | PENDING | AST-based markdown manipulation to replace raw text operations across Jerry's full surface |
 | PROJ-006 | multi-instance | PENDING | Automated multi-instance Claude management via SDK or CLI to replace manual worktree + session workflows |
 | PROJ-007 | agent-patterns | ACTIVE | Research Claude Code agent and routing/trigger best practices to develop rules, patterns, and guides for building agents |
+| PROJ-008 | agentic-security | ACTIVE | Mission-critical security-first agentic platform — competitive gap analysis and Jerry hardening to set the industry standard |
 
 ## Project Lookup
 
@@ -23,3 +24,4 @@
 - **PROJ-005**: `projects/PROJ-005-markdown-ast/`
 - **PROJ-006**: `projects/PROJ-006-multi-instance/`
 - **PROJ-007**: `projects/PROJ-007-agent-patterns/`
+- **PROJ-008**: `projects/PROJ-008-agentic-security/`
