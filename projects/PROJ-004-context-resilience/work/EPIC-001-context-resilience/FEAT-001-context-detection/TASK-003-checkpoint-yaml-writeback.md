@@ -16,11 +16,18 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Brief description |
 | [Description](#description) | What needs to be done |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
 | [Related Items](#related-items) | Links |
 | [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Add checkpoint write-back step to ORCHESTRATION.yaml resumption section after checkpoint creation. Completed as part of parent enabler EN-008.
 
 ---
 

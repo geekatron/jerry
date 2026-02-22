@@ -20,7 +20,7 @@
 | [Summary](#summary) | Brief description and key objectives |
 | [Business Outcome Hypothesis](#business-outcome-hypothesis) | Expected outcomes |
 | [Lean Business Case](#lean-business-case) | Problem/solution/cost/benefit |
-| [Children (Features)](#children-features) | Feature inventory |
+| [Children Features/Capabilities](#children-featurescapabilities) | Feature inventory |
 | [Progress Summary](#progress-summary) | Overall epic progress |
 | [Related Items](#related-items) | Dependencies and related work |
 | [History](#history) | Status changes and key events |
@@ -61,7 +61,7 @@ Multi-orchestration workflows (C3/C4 criticality) routinely exhaust the ~200K to
 
 ---
 
-## Children (Features)
+## Children Features/Capabilities
 
 ### Feature Inventory
 

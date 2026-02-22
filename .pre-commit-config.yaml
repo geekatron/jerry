@@ -92,6 +92,21 @@ repos:
         args: [src/]
 
   # =============================================================================
+  # Markdown Schema Validation (ST-009, L5 Post-Hoc)
+  # Validates staged markdown entity files against their worktracker schemas.
+  # Fast check (~1s) that catches structural errors before the full test suite.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: markdown-schema-validation
+        name: markdown schema validation (AST)
+        entry: uv run python scripts/check_markdown_schemas.py
+        language: system
+        types: [markdown]
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Test Suite (configurable stage)
   # Uses uv run to ensure correct dependency management (DISC-008)
   # =============================================================================

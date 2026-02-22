@@ -9,7 +9,7 @@ PURPOSE: Fix session voice skill so references load and voice quality matches in
 -->
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** architecture
@@ -130,12 +130,12 @@ lines)     (~full 43KB)
 
 | ID | Title | Status | Effort | Owner |
 |----|-------|--------|--------|-------|
-| [TASK-001](#task-001) | Embed voice-guide pairs in SKILL.md | done | 1 | -- |
-| [TASK-002](#task-002) | Create ambient persona prompt | done | 2 | -- |
-| [TASK-003](#task-003) | Add dual-mode routing instructions to SKILL.md | done | 1 | -- |
-| [TASK-004](#task-004) | Update sb-voice always-load references | done | 1 | -- |
-| [TASK-005](#task-005) | Investigate `@` import pattern for reference auto-loading | done | 1 | -- |
-| [TASK-006](#task-006) | Validate fix with comparative voice quality test | done | 1 | -- |
+| TASK-001 | Embed voice-guide pairs in SKILL.md | done | 1 | -- |
+| TASK-002 | Create ambient persona prompt | done | 2 | -- |
+| TASK-003 | Add dual-mode routing instructions to SKILL.md | done | 1 | -- |
+| TASK-004 | Update sb-voice always-load references | done | 1 | -- |
+| TASK-005 | Investigate `@` import pattern for reference auto-loading | done | 1 | -- |
+| TASK-006 | Validate fix with comparative voice quality test | done | 1 | -- |
 
 ### TASK-001: Embed voice-guide pairs in SKILL.md
 

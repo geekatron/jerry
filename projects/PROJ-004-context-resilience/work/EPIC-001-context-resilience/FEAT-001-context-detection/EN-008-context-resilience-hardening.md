@@ -23,6 +23,7 @@
 | [Business Value](#business-value) | Features unlocked |
 | [Children (Tasks)](#children-tasks) | Task inventory |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Technical Approach](#technical-approach) | Implementation approach |
 | [Dependencies](#dependencies) | Relationships |
 | [History](#history) | Status changes |
 
@@ -90,6 +91,12 @@ Completing these tasks promotes all 5 PARTIAL verdicts to PASS, achieving full F
 - [ ] All existing 3652 tests still pass (no regression)
 - [ ] Context window size configurable per subscription/model (TASK-006)
 - [ ] 90% line coverage maintained (H-21)
+
+---
+
+## Technical Approach
+
+Address the 5 PARTIAL acceptance criteria items identified during FEAT-001 validation (ST-003) plus a critical configuration gap. Hardening work moves the context resilience system from functionally complete to production-grade through structured checkpoint fields, WORKTRACKER.md injection, YAML write-back, E2E testing, multi-pattern validation, and context window configuration.
 
 ---
 

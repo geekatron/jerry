@@ -1,7 +1,7 @@
 # EN-004: Skill Registry Updates
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -13,9 +13,27 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Brief description |
+| [Technical Approach](#technical-approach) | Implementation approach |
+| [Changes](#changes) | Detailed change list |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Update SKILL.md files, AGENTS.md, and TOOL_REGISTRY.yaml to reflect MCP tool additions across the framework.
+
+## Technical Approach
+
+Completed as part of parent feature. See evidence below.
+
+---
 
 ## Changes
 

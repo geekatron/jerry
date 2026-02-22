@@ -1,18 +1,26 @@
 # TASK-007: Add monitoring_ok Field to FillEstimate
 
 > **Type:** task
-> **Status:** done
+> **Status:** completed
 > **Priority:** medium
+> **Created:** 2026-02-20
 > **Parent:** FEAT-001-context-detection
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Brief description |
 | [Description](#description) | What this task addresses |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Context](#context) | Why this was deferred from TASK-006 |
 | [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Add `monitoring_ok: bool` field to FillEstimate to distinguish genuine NOMINAL readings from fail-open/disabled states. Completed as part of parent feature.
 
 ---
 

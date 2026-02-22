@@ -1,7 +1,7 @@
 # ST-003: Threshold Validation + Calibration Documentation
 
 > **Type:** story
-> **Status:** done
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-02-19

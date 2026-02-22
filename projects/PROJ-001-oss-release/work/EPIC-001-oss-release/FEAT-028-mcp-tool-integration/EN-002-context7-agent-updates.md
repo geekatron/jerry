@@ -1,7 +1,7 @@
 # EN-002: Context7 Agent Updates
 
 > **Type:** enabler
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
@@ -13,9 +13,27 @@
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Brief description |
+| [Technical Approach](#technical-approach) | Implementation approach |
+| [Acceptance Criteria](#acceptance-criteria) | Definition of done |
+| [Evidence](#evidence) | Delivery evidence |
+| [History](#history) | Change log |
+
+---
+
 ## Summary
 
 Add Context7 MCP tools (`mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) to 2 NASA-SE agents: nse-explorer and nse-architecture. Context7 was already in 5 PS agents — this extends coverage to NASA-SE agents that perform research.
+
+## Technical Approach
+
+Completed as part of parent feature. See evidence below.
+
+---
 
 ## Acceptance Criteria
 

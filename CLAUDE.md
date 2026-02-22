@@ -78,6 +78,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/saucer-boy` | Session conversational voice, McConkey personality |
 | `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 | `/transcript` | Transcription parsing |
+| `/ast` | Markdown AST: parse, query, validate, modify frontmatter |
 
 **SessionStart Hook Tags:**
 

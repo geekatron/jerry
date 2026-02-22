@@ -1,7 +1,7 @@
 # TASK-001: A/B Test Voice Configuration Matrix
 
 > **Type:** task
-> **Status:** done
+> **Status:** completed
 > **Priority:** high
 > **Activity:** RESEARCH
 > **Created:** 2026-02-20
@@ -14,12 +14,19 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Task overview |
 | [Description](#description) | What this task investigates |
 | [Test Matrix](#test-matrix) | 4-configuration A/B test design |
 | [Acceptance Criteria](#acceptance-criteria) | When this task is done |
 | [Results](#results) | Test scores and analysis |
 | [Evidence](#evidence) | Score report links |
 | [History](#history) | Change log |
+
+---
+
+## Summary
+
+A/B test comparing 4 voice configurations (sonnet/opus x 2refs/10refs) to determine optimal sb-voice setup.
 
 ---
 

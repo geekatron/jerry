@@ -16,11 +16,18 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Brief description |
 | [Description](#description) | What needs to be done |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
 | [Implementation Notes](#implementation-notes) | Technical guidance |
 | [Related Items](#related-items) | Links |
 | [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Extract structured fields from ORCHESTRATION.yaml in CheckpointService instead of storing raw text blob. Completed as part of parent enabler EN-008.
 
 ---
 

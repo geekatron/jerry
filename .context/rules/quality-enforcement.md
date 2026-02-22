@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [HARD Rule Index](#hard-rule-index) | H-01 through H-31 |
+| [HARD Rule Index](#hard-rule-index) | H-01 through H-33 |
 | [Quality Gate](#quality-gate) | Threshold, dimensions, weights, consequences |
 | [Criticality Levels](#criticality-levels) | C1-C4 decision classification with strategy sets |
 | [Tier Vocabulary](#tier-vocabulary) | HARD/MEDIUM/SOFT enforcement language |
@@ -39,6 +39,8 @@
 <!-- L2-REINJECT: rank=8, tokens=40, content="Governance escalation REQUIRED per AE rules (H-19). Touches .context/rules/ = auto-C3. Touches constitution = auto-C4." -->
 
 <!-- L2-REINJECT: rank=9, tokens=40, content="AE-006 graduated escalation: NOMINAL=no-op, WARNING=log+consider-checkpoint, CRITICAL=auto-checkpoint+reduce-verbosity, EMERGENCY=mandatory-checkpoint+warn-user, COMPACTION=human-escalation-C3+." -->
+
+<!-- L2-REINJECT: rank=10, tokens=30, content="AST-based parsing REQUIRED for worktracker entity operations (H-33). Use /ast skill query_frontmatter() and validate_file(). NEVER use regex for frontmatter extraction." -->
 
 | ID | Rule | Source |
 |----|------|--------|
@@ -74,7 +76,7 @@
 | H-30 | Register in CLAUDE.md + AGENTS.md (+ mandatory-skill-usage.md if proactive) | skill-standards |
 | H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
 | H-32 | GitHub Issue parity for jerry repo work items | project-workflow |
-
+| H-33 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
 
 ---
 

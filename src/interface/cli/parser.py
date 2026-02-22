@@ -96,6 +96,9 @@ Examples:
     # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
     _add_transcript_namespace(subparsers)
 
+    # AST namespace (ST-004: jerry ast commands)
+    _add_ast_namespace(subparsers)
+
     # EE-008: Undocumented philosophy command
     subparsers.add_parser(
         "why",
@@ -551,6 +554,87 @@ def _add_transcript_namespace(
         choices=["opus", "sonnet", "haiku"],
         default=None,
         help="Model for ps-critic agent (overrides --profile)",
+    )
+
+
+def _add_ast_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add ast namespace commands.
+
+    Commands:
+        - parse: Parse a markdown file and output the AST as JSON.
+        - render: Roundtrip parse-render a markdown file through mdformat.
+        - validate: Validate a markdown file against a schema.
+        - query: Query AST nodes by type and output structured JSON.
+
+    References:
+        - ST-004: Add jerry ast CLI Commands
+        - ST-001: JerryDocument Facade
+    """
+    ast_parser = subparsers.add_parser(
+        "ast",
+        help="Markdown AST operations",
+        description="Parse, query, transform, and validate markdown AST structures.",
+    )
+
+    ast_subparsers = ast_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # ast parse
+    parse_parser = ast_subparsers.add_parser(
+        "parse",
+        help="Parse markdown file to AST JSON",
+        description="Parse a markdown file and output its AST as structured JSON.",
+    )
+    parse_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast render
+    render_parser = ast_subparsers.add_parser(
+        "render",
+        help="Roundtrip render markdown file via mdformat",
+        description="Parse and re-render a markdown file through mdformat normalization.",
+    )
+    render_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast validate
+    validate_parser = ast_subparsers.add_parser(
+        "validate",
+        help="Validate markdown file",
+        description="Validate a markdown file, optionally against a named schema.",
+    )
+    validate_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    validate_parser.add_argument(
+        "--schema",
+        default=None,
+        help="Schema type to validate against (e.g., entity). Optional.",
+    )
+
+    # ast query
+    query_parser = ast_subparsers.add_parser(
+        "query",
+        help="Query AST nodes by type",
+        description="Query all AST nodes matching the given node type selector.",
+    )
+    query_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    query_parser.add_argument(
+        "selector",
+        help="Node type to query (e.g., heading, blockquote, paragraph)",
     )
 
 

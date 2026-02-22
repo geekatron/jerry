@@ -9,7 +9,7 @@ PURPOSE: Split voice into internal framework voice + user-invocable session conv
 -->
 
 > **Type:** epic
-> **Status:** in-progress
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-20
@@ -27,7 +27,7 @@ PURPOSE: Split voice into internal framework voice + user-invocable session conv
 |---------|---------|
 | [Summary](#summary) | What this epic is about |
 | [Business Outcome Hypothesis](#business-outcome-hypothesis) | Why voice architecture matters |
-| [Children (Features)](#children-features) | Feature inventory |
+| [Children Features/Capabilities](#children-featurescapabilities) | Feature inventory |
 | [Bugs](#bugs) | Defects and fixes |
 | [Enablers](#enablers) | Architecture and infrastructure |
 | [Progress Summary](#progress-summary) | Overall epic progress |
@@ -62,7 +62,7 @@ EPIC-001 produced a single `/saucer-boy` skill that handles framework output voi
 
 ---
 
-## Children (Features)
+## Children Features/Capabilities
 
 ### Feature Inventory
 

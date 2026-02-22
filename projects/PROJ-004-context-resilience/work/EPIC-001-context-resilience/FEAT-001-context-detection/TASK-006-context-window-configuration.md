@@ -16,6 +16,7 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Summary](#summary) | Brief description |
 | [Description](#description) | What needs to be done |
 | [Problem Analysis](#problem-analysis) | Root cause and impact |
 | [Research Findings](#research-findings) | Claude Code context window landscape |
@@ -24,6 +25,12 @@
 | [Implementation Notes](#implementation-notes) | Technical guidance |
 | [Related Items](#related-items) | Links |
 | [History](#history) | Status changes |
+
+---
+
+## Summary
+
+Wire the existing context window config key to ContextFillEstimator and add `[1m]` auto-detection for extended-context users. Completed as part of parent enabler EN-008.
 
 ---
 

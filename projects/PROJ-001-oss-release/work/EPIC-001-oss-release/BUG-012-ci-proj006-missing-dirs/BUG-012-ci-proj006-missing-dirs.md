@@ -1,7 +1,7 @@
 # BUG-012: CI Failures — PROJ-006 Incomplete Project Directory Structure
 
 > **Type:** bug
-> **Status:** done
+> **Status:** completed
 > **Completed:** 2026-02-20
 > **Priority:** high
 > **Impact:** high
@@ -18,6 +18,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | Brief description and key details |
+| [Steps to Reproduce](#steps-to-reproduce) | Schema-required reproduction stub |
 | [Reproduction Steps](#reproduction-steps) | Steps to reproduce the issue |
 | [Environment](#environment) | Environment where bug occurs |
 | [Root Cause Analysis](#root-cause-analysis) | Investigation and root cause details |
@@ -31,6 +32,12 @@
 ## Summary
 
 Two project validation tests fail for PROJ-006-multi-instance because the project was bootstrapped with only a `decisions/` directory, but tests require at least 3 of the expected category directories.
+
+---
+
+## Steps to Reproduce
+
+See [Reproduction Steps](#reproduction-steps) below for full details.
 
 **Key Details:**
 - **Symptom:** 2 test failures on PR #44 CI: `test_project_has_required_structure[PROJ-006-multi-instance]` and `test_directory_structure_complete[PROJ-006-multi-instance]`

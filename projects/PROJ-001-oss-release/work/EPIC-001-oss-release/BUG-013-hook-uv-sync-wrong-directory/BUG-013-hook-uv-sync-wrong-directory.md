@@ -17,6 +17,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | Brief description and key details |
+| [Steps to Reproduce](#steps-to-reproduce) | Schema-required reproduction stub |
 | [Reproduction Steps](#reproduction-steps) | Steps to reproduce the issue |
 | [Environment](#environment) | Environment where bug occurs |
 | [Root Cause Analysis](#root-cause-analysis) | Investigation and root cause details |
@@ -35,6 +36,12 @@ The SessionStart hook's `uv sync` command on line 10 of `hooks/hooks.json` runs 
 - **Symptom:** `uv sync` fails with `error: No pyproject.toml found in current directory or any parent directory` when CWD is not the Jerry repo. The SessionStart hook script never executes.
 - **Frequency:** Always, when Jerry plugin is used from a repository that lacks its own `pyproject.toml` or has an incompatible one.
 - **Workaround:** The second matched hook (if present) may succeed independently, masking the failure. Sessions sometimes appear to start normally due to duplicate hook matching.
+
+---
+
+## Steps to Reproduce
+
+See [Reproduction Steps](#reproduction-steps) below for full details.
 
 ---
 
