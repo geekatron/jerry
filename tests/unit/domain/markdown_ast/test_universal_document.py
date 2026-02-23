@@ -28,7 +28,6 @@ from src.domain.markdown_ast.universal_document import (
     UniversalParseResult,
 )
 
-
 # =============================================================================
 # Fixtures
 # =============================================================================
@@ -437,11 +436,12 @@ class TestUniversalParseResultDataclass:
     @pytest.mark.happy_path
     def test_parse_result_is_importable(self) -> None:
         """UniversalParseResult can be imported from its own module."""
+        # Verify the class exists and is a dataclass
+        import dataclasses
+
         from src.domain.markdown_ast.universal_parse_result import (
             UniversalParseResult as UPR,
         )
-        # Verify the class exists and is a dataclass
-        import dataclasses
         assert dataclasses.is_dataclass(UPR)
 
     @pytest.mark.happy_path

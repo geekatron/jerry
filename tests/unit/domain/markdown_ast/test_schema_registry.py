@@ -23,15 +23,7 @@ from types import MappingProxyType
 import pytest
 
 from src.domain.markdown_ast.schema import (
-    BUG_SCHEMA,
-    ENABLER_SCHEMA,
-    EPIC_SCHEMA,
-    FEATURE_SCHEMA,
-    STORY_SCHEMA,
-    TASK_SCHEMA,
     EntitySchema,
-    FieldRule,
-    SectionRule,
     get_entity_schema,
 )
 from src.domain.markdown_ast.schema_definitions import (
@@ -47,7 +39,6 @@ from src.domain.markdown_ast.schema_definitions import (
     STRATEGY_TEMPLATE_SCHEMA,
 )
 from src.domain.markdown_ast.schema_registry import SchemaRegistry
-
 
 # =============================================================================
 # SchemaRegistry Core Tests (WI-003)

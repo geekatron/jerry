@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from src.domain.markdown_ast.document_type import DocumentType, DocumentTypeDetector
+from src.domain.markdown_ast.document_type import DocumentType
 from src.domain.markdown_ast.frontmatter import (
     BlockquoteFrontmatter,
 )
@@ -151,7 +151,7 @@ class TestRuleFileRegression:
                 # Compare directive content
                 for legacy, universal in zip(
                     legacy_directives,
-                    universal_result.reinject_directives,
+                    universal_result.reinject_directives, strict=False
                 ):
                     assert legacy.rank == universal.rank, (
                         f"Rank mismatch in {rel_path}"
@@ -206,7 +206,7 @@ class TestPatternCollision:
                 )
 
         if collisions:
-            msg = f"Pattern collisions found:\n" + "\n".join(collisions)
+            msg = "Pattern collisions found:\n" + "\n".join(collisions)
             # This is a warning, not a hard failure, since first-match-wins
             # ensures deterministic behavior
             pytest.skip(f"Pattern collisions (first-match-wins applies): {msg}")

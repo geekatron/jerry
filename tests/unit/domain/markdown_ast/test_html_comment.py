@@ -25,15 +25,14 @@ from __future__ import annotations
 
 import pytest
 
-from src.domain.markdown_ast.input_bounds import InputBounds
-from src.domain.markdown_ast.jerry_document import JerryDocument
 from src.domain.markdown_ast.html_comment import (
     HtmlCommentBlock,
     HtmlCommentField,
     HtmlCommentMetadata,
     HtmlCommentResult,
 )
-
+from src.domain.markdown_ast.input_bounds import InputBounds
+from src.domain.markdown_ast.jerry_document import JerryDocument
 
 # =============================================================================
 # Happy Path Tests

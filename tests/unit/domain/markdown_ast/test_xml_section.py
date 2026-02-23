@@ -25,11 +25,8 @@ import pytest
 from src.domain.markdown_ast.input_bounds import InputBounds
 from src.domain.markdown_ast.jerry_document import JerryDocument
 from src.domain.markdown_ast.xml_section import (
-    XmlSection,
     XmlSectionParser,
-    XmlSectionResult,
 )
-
 
 # =============================================================================
 # Happy Path Tests

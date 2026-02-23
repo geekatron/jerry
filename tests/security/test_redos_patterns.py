@@ -135,7 +135,7 @@ class TestInternalPatternSafety:
     @pytest.mark.security
     def test_xml_section_pattern_safe(self) -> None:
         """XmlSectionParser's section pattern is safe on adversarial input."""
-        from src.domain.markdown_ast.xml_section import _build_section_pattern, XmlSectionParser
+        from src.domain.markdown_ast.xml_section import XmlSectionParser, _build_section_pattern
 
         pattern = _build_section_pattern(XmlSectionParser.ALLOWED_TAGS)
         # Adversarial: many lines of near-matches

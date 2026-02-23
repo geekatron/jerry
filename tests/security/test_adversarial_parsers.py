@@ -22,7 +22,6 @@ from src.domain.markdown_ast.jerry_document import JerryDocument
 from src.domain.markdown_ast.xml_section import XmlSectionParser
 from src.domain.markdown_ast.yaml_frontmatter import YamlFrontmatter
 
-
 # =============================================================================
 # A-01: YAML Deserialization Attack (!!python/object)
 # Mitigation: yaml.safe_load() only (M-01, T-YF-07)

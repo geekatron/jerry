@@ -25,7 +25,6 @@ from src.domain.markdown_ast.document_type import (
     DocumentTypeDetector,
 )
 
-
 # =============================================================================
 # Path-Based Detection Tests
 # =============================================================================

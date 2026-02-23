@@ -37,7 +37,6 @@ from src.domain.markdown_ast.yaml_frontmatter import (
     YamlFrontmatterResult,
 )
 
-
 # =============================================================================
 # Happy Path Tests
 # =============================================================================

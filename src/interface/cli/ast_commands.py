@@ -531,7 +531,7 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
         temp_fd = None  # Mark as closed
 
         # Atomic rename
-        os.rename(temp_path_str, str(target_path))
+        os.replace(temp_path_str, str(target_path))
         temp_path_str = None  # Mark as renamed (no cleanup needed)
     except OSError as exc:
         print(f"Error writing file {file_path}: {exc}")
