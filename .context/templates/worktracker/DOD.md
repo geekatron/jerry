@@ -61,4 +61,4 @@ This file is NOT a source of Acceptance Criteria. Do not copy these items into i
 ### Cross-References
 
 - **Content Quality Standards:** `skills/worktracker/rules/worktracker-content-standards.md`
-- **Behavior Rules (WTI-007a):** `skills/worktracker/rules/worktracker-behavior-rules.md`
+- **Behavior Rules (WTI-008a):** `skills/worktracker/rules/worktracker-behavior-rules.md`

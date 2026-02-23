@@ -1,7 +1,7 @@
 # Worktracker Content Quality Standards
 
 > Reference file for content quality in work items.
-> Loaded on-demand when creating or auditing work items.
+> Auto-loaded via SKILL.md `@` import. Referenced when creating or auditing work items.
 > Source: PROJ-005-jerry-process-improvements (synthesis of ADO skill patterns + industry research)
 > Created: 2026-02-17
 
@@ -68,8 +68,8 @@ If you find yourself writing AC that requires context not present in the work it
 | Work Item Type | Max AC Bullets | If You Need More |
 |----------------|---------------|------------------|
 | Story (PBI) | 5 | Split the story using SPIDR |
-| Bug | 3 | Split into separate bugs by symptom |
-| Task | 3 | Break into subtasks |
+| Bug | 5 | Split into separate bugs by symptom |
+| Task | 5 | Break into subtasks |
 | Enabler | 5 | Decompose into child tasks |
 | Feature | 5 | Decompose into stories/enablers |
 
@@ -81,16 +81,16 @@ If you find yourself writing AC that requires context not present in the work it
 
 | Anti-Pattern | Why It Fails | Rule Violated | Belongs In |
 |-------------|-------------|---------------|------------|
-| "All tests pass" | DoD item -- applies to every work item equally | WTI-007a | Definition of Done |
-| "Code reviewed and approved" | DoD item -- applies to every work item equally | WTI-007a | Definition of Done |
-| "Documentation updated" | DoD item -- applies to every work item equally | WTI-007a | Definition of Done |
-| "Deployed to staging" | DoD item -- deployment is process, not feature | WTI-007a | Definition of Done |
-| "Update AssetTypeRepository.cs" | Implementation detail -- specifies how, not what | WTI-007b | Description or Implementation Notes |
-| "Use IFooService.Bar() method" | Implementation detail -- names code artifacts | WTI-007b | Description or Implementation Notes |
-| "Should be able to edit profile" | Hedge word -- "should be able to" is not testable | WTI-007d | Rewrite: "User can edit profile" |
-| "Handles errors gracefully" | Vague -- what errors? What does "gracefully" mean? | WTI-007d | Rewrite with specific error messages |
-| "Shows relevant information" | Vague -- what information? Which fields? | WTI-007d | Rewrite with specific field list |
-| "If possible, support bulk operations" | Hedge word -- "if possible" makes it optional | WTI-007d | Decide: include it or don't |
+| "All tests pass" | DoD item -- applies to every work item equally | WTI-008a | Definition of Done |
+| "Code reviewed and approved" | DoD item -- applies to every work item equally | WTI-008a | Definition of Done |
+| "Documentation updated" | DoD item -- applies to every work item equally | WTI-008a | Definition of Done |
+| "Deployed to staging" | DoD item -- deployment is process, not feature | WTI-008a | Definition of Done |
+| "Update AssetTypeRepository.cs" | Implementation detail -- specifies how, not what | WTI-008b | Description or Implementation Notes |
+| "Use IFooService.Bar() method" | Implementation detail -- names code artifacts | WTI-008b | Description or Implementation Notes |
+| "Should be able to edit profile" | Hedge word -- "should be able to" is not testable | WTI-008d | Rewrite: "User can edit profile" |
+| "Handles errors gracefully" | Vague -- what errors? What does "gracefully" mean? | WTI-008d | Rewrite with specific error messages |
+| "Shows relevant information" | Vague -- what information? Which fields? | WTI-008d | Rewrite with specific field list |
+| "If possible, support bulk operations" | Hedge word -- "if possible" makes it optional | WTI-008d | Decide: include it or don't |
 
 ---
 
@@ -188,7 +188,7 @@ Before creating or finalizing any work item, answer these four questions:
 
 ### When to Split
 
-If AC exceeds the bullet count limits (WTI-007e), the work item scope is too large. Do not add more bullets -- split the item.
+If AC exceeds the bullet count limits (WTI-008e), the work item scope is too large. Do not add more bullets -- split the item.
 
 ### SPIDR Splitting Framework
 
@@ -213,7 +213,7 @@ Use SPIDR to identify how to split an oversized work item:
 
 ## Cross-References
 
-- **Behavior Rules (WTI-007, WTI-008):** `worktracker-behavior-rules.md`
+- **Behavior Rules (WTI-008, WTI-009):** `worktracker-behavior-rules.md`
 - **Definition of Done:** `.context/templates/worktracker/DOD.md`
 - **Entity Hierarchy:** `worktracker-entity-hierarchy.md`
 - **Template Usage:** `worktracker-templates.md`

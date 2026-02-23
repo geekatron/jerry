@@ -15,20 +15,37 @@ EXTENDS: DeliveryItem -> WorkItem
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Quick Creation Guide](#quick-creation-guide) | How to create a task quickly with quality AC |
+| [Frontmatter](#frontmatter) | YAML metadata schema for tasks |
+| [State Machine](#state-machine) | Task status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+| [Content](#content) | Description and acceptance criteria |
+| [Time Tracking](#time-tracking) | Original estimate, remaining, spent |
+| [Evidence](#evidence) | Deliverables and verification |
+| [History](#history) | Status changes and key events |
+
+---
+
 ## Quick Creation Guide
 
-<!-- READ THIS FIRST when creating a new Task. Rules: WTI-007, WTI-008. -->
+<!-- READ THIS FIRST when creating a new Task. Rules: WTI-008, WTI-009. -->
 
 ### Steps
 
 1. **Description:** 1-2 sentences. What will be done and why.
-2. **AC:** Max **3 bullets**. Focus on **verification** (what proves it's done), not implementation steps.
+2. **AC:** Max **5 bullets**. Focus on **verification** (what proves it's done), not implementation steps.
 3. **Implementation details** belong in Description or Implementation Notes, not AC.
 
 ### BAD vs GOOD AC (Tasks)
 
 ```markdown
-# BAD (violates WTI-007b):
+# BAD (violates WTI-008b):
 - [ ] Modify src/handlers/asset_handler.py to add delete method
 - [ ] Add try/except block for NotFoundException
 - [ ] Run pytest and verify all tests pass
@@ -44,23 +61,6 @@ EXTENDS: DeliveryItem -> WorkItem
 Before creating: Is every AC bullet about **what to verify**, not **how to implement**? If it mentions a file path or class name, move it to Description.
 
 **Reference:** `skills/worktracker/rules/worktracker-content-standards.md`
-
----
-
-## Document Sections
-
-| Section | Purpose |
-|---------|---------|
-| [Quick Creation Guide](#quick-creation-guide) | How to create a task quickly with quality AC |
-| [Frontmatter](#frontmatter) | YAML metadata schema for tasks |
-| [State Machine](#state-machine) | Task status transitions |
-| [Containment Rules](#containment-rules) | Parent/child constraints |
-| [Invariants](#invariants) | Business rules and constraints |
-| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
-| [Content](#content) | Description and acceptance criteria |
-| [Time Tracking](#time-tracking) | Original estimate, remaining, spent |
-| [Evidence](#evidence) | Deliverables and verification |
-| [History](#history) | Status changes and key events |
 
 ---
 
