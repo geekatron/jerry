@@ -622,7 +622,13 @@ def _add_ast_namespace(
     validate_parser.add_argument(
         "--schema",
         default=None,
-        help="Schema type to validate against (e.g., entity). Optional.",
+        help="Schema type to validate against (e.g., story, epic, task). Optional.",
+    )
+    validate_parser.add_argument(
+        "--nav",
+        action="store_true",
+        default=False,
+        help="Include detailed nav table entries in output.",
     )
 
     # ast query
@@ -638,6 +644,49 @@ def _add_ast_namespace(
     query_parser.add_argument(
         "selector",
         help="Node type to query (e.g., heading, blockquote, paragraph)",
+    )
+
+    # ast frontmatter
+    frontmatter_parser = ast_subparsers.add_parser(
+        "frontmatter",
+        help="Extract blockquote frontmatter fields as JSON",
+        description="Extract all blockquote frontmatter fields from a markdown file.",
+    )
+    frontmatter_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast modify
+    modify_parser = ast_subparsers.add_parser(
+        "modify",
+        help="Modify a frontmatter field",
+        description="Modify a frontmatter field value and write back to file.",
+    )
+    modify_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    modify_parser.add_argument(
+        "--key",
+        required=True,
+        help="Frontmatter field name to modify (case-sensitive).",
+    )
+    modify_parser.add_argument(
+        "--value",
+        required=True,
+        help="New value for the field.",
+    )
+
+    # ast reinject
+    reinject_parser = ast_subparsers.add_parser(
+        "reinject",
+        help="Extract L2-REINJECT directives as JSON",
+        description="Extract all L2-REINJECT directives from a markdown file.",
+    )
+    reinject_parser.add_argument(
+        "file",
+        help="Path to markdown file",
     )
 
 
