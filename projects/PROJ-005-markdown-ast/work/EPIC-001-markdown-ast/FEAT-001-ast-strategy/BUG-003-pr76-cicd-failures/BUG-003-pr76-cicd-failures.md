@@ -81,11 +81,11 @@ New source files and tests introduced in Phase 3 have ruff violations that were 
 
 ## Acceptance Criteria
 
-- [ ] CI "Lint & Format" job passes (0 ruff errors)
-- [ ] All Windows test matrix jobs pass (0 failures)
-- [ ] CI "CI Success" gate job passes
-- [ ] PR #76 is mergeable
-- [ ] No regressions on Linux/macOS test suites
+- [x] CI "Lint & Format" job passes (0 ruff errors)
+- [x] All Windows test matrix jobs pass (0 failures)
+- [x] CI "CI Success" gate job passes
+- [x] PR #76 is mergeable
+- [x] No regressions on Linux/macOS test suites
 
 ---
 
@@ -95,7 +95,7 @@ New source files and tests introduced in Phase 3 have ruff violations that were 
 |----|------|--------|
 | TASK-001 | Fix ruff lint violations (auto-fix + manual cleanup) | completed |
 | TASK-002 | Replace `os.rename()` with `os.replace()` in `ast_commands.py` | completed |
-| TASK-003 | Verify all CI jobs pass after fixes | pending |
+| TASK-003 | Verify all CI jobs pass after fixes | completed |
 
 ---
 
