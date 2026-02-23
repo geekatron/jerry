@@ -453,6 +453,62 @@ class TestAstValidate:
         data = json.loads(captured.out)
         assert "nav_entries" not in data
 
+    def test_validate_with_schema_and_nav_includes_entries(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """ast_validate with --schema AND --nav includes nav_entries in output."""
+        md = (
+            "# TASK-099 Test Task\n\n"
+            "> **Type:** task\n"
+            "> **Status:** pending\n"
+            "> **Priority:** medium\n"
+            "> **Created:** 2026-02-23\n"
+            "> **Parent:** FEAT-001\n\n"
+            "| Section | Purpose |\n"
+            "|---------|----------|\n"
+            "| [Summary](#summary) | Overview |\n\n"
+            "## Summary\n\nThis is a test task.\n"
+        )
+        md_file = tmp_path / "task.md"
+        md_file.write_text(md, encoding="utf-8")
+        ast_validate(str(md_file), schema="task", nav=True)
+        captured = capsys.readouterr()
+        data = json.loads(captured.out)
+        assert "nav_entries" in data
+        assert isinstance(data["nav_entries"], list)
+        assert len(data["nav_entries"]) > 0
+        entry = data["nav_entries"][0]
+        assert "section_name" in entry
+        assert "anchor" in entry
+        assert "description" in entry
+        assert "line_number" in entry
+
+    def test_validate_with_schema_returns_exit_code_0_for_valid_doc(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """ast_validate with --schema returns 0 when document passes validation."""
+        md = (
+            "# TASK-100 Valid Task\n\n"
+            "> **Type:** task\n"
+            "> **Status:** pending\n"
+            "> **Priority:** high\n"
+            "> **Created:** 2026-02-23\n"
+            "> **Parent:** FEAT-001\n\n"
+            "| Section | Purpose |\n"
+            "|---------|----------|\n"
+            "| [Summary](#summary) | Overview |\n\n"
+            "## Summary\n\nA fully valid task document.\n"
+        )
+        md_file = tmp_path / "valid-task.md"
+        md_file.write_text(md, encoding="utf-8")
+        result = ast_validate(str(md_file), schema="task")
+        captured = capsys.readouterr()
+        data = json.loads(captured.out)
+        assert result == 0
+        assert data["is_valid"] is True
+        assert data["schema_valid"] is True
+        assert data["violations"] == []
+
 
 # =============================================================================
 # ast_query Tests
