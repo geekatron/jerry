@@ -97,8 +97,7 @@ class TestWorktrackerEntityRegression:
             if universal_result.blockquote_frontmatter is not None:
                 legacy_fields = {f.key: f.value for f in legacy_fm.fields}
                 universal_fields = {
-                    f.key: f.value
-                    for f in universal_result.blockquote_frontmatter.fields
+                    f.key: f.value for f in universal_result.blockquote_frontmatter.fields
                 }
                 assert legacy_fields == universal_fields, (
                     f"Frontmatter mismatch in {rel_path}: "
@@ -127,9 +126,7 @@ class TestRuleFileRegression:
 
             # Legacy path: extract_reinject_directives directly
             rel_path = str(rule_file.relative_to(REPO_ROOT))
-            legacy_directives = extract_reinject_directives(
-                doc, file_path=rel_path
-            )
+            legacy_directives = extract_reinject_directives(doc, file_path=rel_path)
 
             # New path: UniversalDocument
             universal_result = UniversalDocument.parse(
@@ -140,9 +137,7 @@ class TestRuleFileRegression:
 
             if universal_result.reinject_directives is not None:
                 # Compare directive counts
-                assert len(legacy_directives) == len(
-                    universal_result.reinject_directives
-                ), (
+                assert len(legacy_directives) == len(universal_result.reinject_directives), (
                     f"Reinject directive count mismatch in {rel_path}: "
                     f"legacy={len(legacy_directives)}, "
                     f"universal={len(universal_result.reinject_directives)}"
@@ -150,15 +145,10 @@ class TestRuleFileRegression:
 
                 # Compare directive content
                 for legacy, universal in zip(
-                    legacy_directives,
-                    universal_result.reinject_directives, strict=False
+                    legacy_directives, universal_result.reinject_directives, strict=False
                 ):
-                    assert legacy.rank == universal.rank, (
-                        f"Rank mismatch in {rel_path}"
-                    )
-                    assert legacy.content == universal.content, (
-                        f"Content mismatch in {rel_path}"
-                    )
+                    assert legacy.rank == universal.rank, f"Rank mismatch in {rel_path}"
+                    assert legacy.content == universal.content, f"Content mismatch in {rel_path}"
 
 
 # =============================================================================
@@ -178,11 +168,9 @@ class TestPatternCollision:
 
         # Filter out files in .venv, node_modules, .git, etc.
         filtered = [
-            f for f in all_md_files
-            if not any(
-                part.startswith(".")
-                for part in f.relative_to(REPO_ROOT).parts[:-1]
-            )
+            f
+            for f in all_md_files
+            if not any(part.startswith(".") for part in f.relative_to(REPO_ROOT).parts[:-1])
             and "node_modules" not in str(f)
             and ".venv" not in str(f)
         ]
@@ -196,6 +184,7 @@ class TestPatternCollision:
                 from src.domain.markdown_ast.document_type import (
                     _path_matches_glob,
                 )
+
                 if _path_matches_glob(rel_path.replace("\\", "/"), glob_pattern):
                     matches.append((glob_pattern, doc_type))
 
@@ -229,6 +218,4 @@ class TestSchemaValidationRegression:
         for entity_type in existing_types:
             schema = get_entity_schema(entity_type)
             assert schema is not None, f"Schema for {entity_type} not found"
-            assert len(schema.field_rules) > 0, (
-                f"Schema for {entity_type} has no field rules"
-            )
+            assert len(schema.field_rules) > 0, f"Schema for {entity_type} has no field rules"

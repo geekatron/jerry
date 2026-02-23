@@ -145,13 +145,9 @@ def _check_nesting_depth(obj: object, max_depth: int, current: int = 0) -> bool:
     if current > max_depth:
         return False
     if isinstance(obj, dict):
-        return all(
-            _check_nesting_depth(v, max_depth, current + 1) for v in obj.values()
-        )
+        return all(_check_nesting_depth(v, max_depth, current + 1) for v in obj.values())
     if isinstance(obj, list):
-        return all(
-            _check_nesting_depth(item, max_depth, current + 1) for item in obj
-        )
+        return all(_check_nesting_depth(item, max_depth, current + 1) for item in obj)
     return True
 
 
@@ -256,8 +252,7 @@ class YamlFrontmatter:
                 start_line=start_line,
                 end_line=end_line,
                 parse_error=(
-                    f"YAML alias count exceeds maximum "
-                    f"({alias_count} > {bounds.max_alias_count})"
+                    f"YAML alias count exceeds maximum ({alias_count} > {bounds.max_alias_count})"
                 ),
             )
 
@@ -305,10 +300,7 @@ class YamlFrontmatter:
                 raw_yaml=raw_yaml,
                 start_line=start_line,
                 end_line=end_line,
-                parse_error=(
-                    f"YAML frontmatter must be a mapping, "
-                    f"got {type(result).__name__}"
-                ),
+                parse_error=(f"YAML frontmatter must be a mapping, got {type(result).__name__}"),
             )
 
         # --- Post-parse result size verification (M-20) ---
@@ -349,10 +341,7 @@ class YamlFrontmatter:
                 raw_yaml=raw_yaml,
                 start_line=start_line,
                 end_line=end_line,
-                parse_error=(
-                    f"YAML nesting depth exceeds maximum "
-                    f"({bounds.max_nesting_depth})"
-                ),
+                parse_error=(f"YAML nesting depth exceeds maximum ({bounds.max_nesting_depth})"),
             )
 
         # --- Build field objects with type normalization (DD-10) ---

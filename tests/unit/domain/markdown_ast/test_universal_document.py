@@ -442,6 +442,7 @@ class TestUniversalParseResultDataclass:
         from src.domain.markdown_ast.universal_parse_result import (
             UniversalParseResult as UPR,
         )
+
         assert dataclasses.is_dataclass(UPR)
 
     @pytest.mark.happy_path
@@ -451,9 +452,15 @@ class TestUniversalParseResultDataclass:
 
         field_names = {f.name for f in dataclasses.fields(UniversalParseResult)}
         expected = {
-            "document_type", "jerry_document", "yaml_frontmatter",
-            "blockquote_frontmatter", "xml_sections", "html_comments",
-            "reinject_directives", "nav_entries", "type_detection_warning",
+            "document_type",
+            "jerry_document",
+            "yaml_frontmatter",
+            "blockquote_frontmatter",
+            "xml_sections",
+            "html_comments",
+            "reinject_directives",
+            "nav_entries",
+            "type_detection_warning",
             "parse_errors",
         }
         assert field_names == expected

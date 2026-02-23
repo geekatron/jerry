@@ -59,9 +59,7 @@ _MAX_FILE_SIZE_BYTES: int = 1_048_576
 #: When True, path containment checks are enforced.
 #: Set to False in test environments where temp files are outside the repo.
 #: Also respects JERRY_DISABLE_PATH_CONTAINMENT env var for subprocess tests.
-_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get(
-    "JERRY_DISABLE_PATH_CONTAINMENT", ""
-) != "1"
+_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
 
 
 def token_to_dict(token: Token) -> dict[str, Any]:
@@ -620,9 +618,7 @@ def ast_detect(file_path: str) -> int:
 
     # Determine detection method
     method = "path"
-    path_type = DocumentTypeDetector._detect_from_path(
-        _normalize_for_detection(file_path)
-    )
+    path_type = DocumentTypeDetector._detect_from_path(_normalize_for_detection(file_path))
     if path_type is None:
         method = "structure"
 
@@ -705,8 +701,7 @@ def ast_metadata(file_path: str) -> int:
     blocks_output = [
         {
             "fields": [
-                {"key": f.key, "value": f.value, "line_number": f.line_number}
-                for f in block.fields
+                {"key": f.key, "value": f.value, "line_number": f.line_number} for f in block.fields
             ],
             "raw_comment": block.raw_comment,
             "line_number": block.line_number,

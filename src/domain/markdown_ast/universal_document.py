@@ -150,14 +150,10 @@ class UniversalDocument:
         if document_type is not None:
             detected_type = document_type
         elif file_path is not None:
-            detected_type, detection_warning = DocumentTypeDetector.detect(
-                file_path, content
-            )
+            detected_type, detection_warning = DocumentTypeDetector.detect(file_path, content)
         else:
             # Structure-only detection
-            detected_type, detection_warning = DocumentTypeDetector.detect(
-                "", content
-            )
+            detected_type, detection_warning = DocumentTypeDetector.detect("", content)
 
         # --- Determine which parsers to invoke ---
         parsers_to_run = _PARSER_MATRIX.get(detected_type, set())
@@ -174,9 +170,7 @@ class UniversalDocument:
         if "yaml" in parsers_to_run:
             yaml_result = YamlFrontmatter.extract(doc, bounds)
             if yaml_result.parse_error is not None:
-                parse_errors.append(
-                    f"YamlFrontmatter: {yaml_result.parse_error}"
-                )
+                parse_errors.append(f"YamlFrontmatter: {yaml_result.parse_error}")
 
         if "blockquote" in parsers_to_run:
             blockquote_result = BlockquoteFrontmatter.extract(doc)
@@ -185,17 +179,13 @@ class UniversalDocument:
             xml_parsed = XmlSectionParser.extract(doc, bounds)
             xml_result = xml_parsed.sections
             if xml_parsed.parse_error is not None:
-                parse_errors.append(
-                    f"XmlSectionParser: {xml_parsed.parse_error}"
-                )
+                parse_errors.append(f"XmlSectionParser: {xml_parsed.parse_error}")
 
         if "html_comment" in parsers_to_run:
             html_parsed = HtmlCommentMetadata.extract(doc, bounds)
             html_result = html_parsed.blocks
             if html_parsed.parse_error is not None:
-                parse_errors.append(
-                    f"HtmlCommentMetadata: {html_parsed.parse_error}"
-                )
+                parse_errors.append(f"HtmlCommentMetadata: {html_parsed.parse_error}")
 
         if "reinject" in parsers_to_run:
             reinject_list = extract_reinject_directives(doc)

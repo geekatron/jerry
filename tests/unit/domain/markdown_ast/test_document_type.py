@@ -36,42 +36,32 @@ class TestPathDetection:
     @pytest.mark.happy_path
     def test_agent_definition_path(self) -> None:
         """Agent definition detected from skills/*/agents/*.md path."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "skills/ast/agents/ast-parser.md", ""
-        )
+        doc_type, warning = DocumentTypeDetector.detect("skills/ast/agents/ast-parser.md", "")
         assert doc_type == DocumentType.AGENT_DEFINITION
         assert warning is None
 
     @pytest.mark.happy_path
     def test_skill_definition_path(self) -> None:
         """Skill definition detected from skills/*/SKILL.md path."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "skills/problem-solving/SKILL.md", ""
-        )
+        doc_type, warning = DocumentTypeDetector.detect("skills/problem-solving/SKILL.md", "")
         assert doc_type == DocumentType.SKILL_DEFINITION
 
     @pytest.mark.happy_path
     def test_rule_file_context_path(self) -> None:
         """Rule file detected from .context/rules/*.md path."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            ".context/rules/quality-enforcement.md", ""
-        )
+        doc_type, warning = DocumentTypeDetector.detect(".context/rules/quality-enforcement.md", "")
         assert doc_type == DocumentType.RULE_FILE
 
     @pytest.mark.happy_path
     def test_rule_file_claude_path(self) -> None:
         """Rule file detected from .claude/rules/*.md path."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            ".claude/rules/some-rule.md", ""
-        )
+        doc_type, warning = DocumentTypeDetector.detect(".claude/rules/some-rule.md", "")
         assert doc_type == DocumentType.RULE_FILE
 
     @pytest.mark.happy_path
     def test_adr_path(self) -> None:
         """ADR detected from docs/design/*.md path."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "docs/design/adr-epic002-001.md", ""
-        )
+        doc_type, warning = DocumentTypeDetector.detect("docs/design/adr-epic002-001.md", "")
         assert doc_type == DocumentType.ADR
 
     @pytest.mark.happy_path
@@ -93,9 +83,7 @@ class TestPathDetection:
     @pytest.mark.happy_path
     def test_worktracker_md_path(self) -> None:
         """WORKTRACKER.md detected from projects/*/WORKTRACKER.md."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "projects/PROJ-001/WORKTRACKER.md", ""
-        )
+        doc_type, warning = DocumentTypeDetector.detect("projects/PROJ-001/WORKTRACKER.md", "")
         assert doc_type == DocumentType.WORKTRACKER_ENTITY
 
     @pytest.mark.happy_path
@@ -138,17 +126,13 @@ class TestStructuralDetection:
     @pytest.mark.happy_path
     def test_yaml_frontmatter_structure(self) -> None:
         """YAML frontmatter (---) maps to AGENT_DEFINITION."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "unknown-path.md", "---\nname: test\n---\n"
-        )
+        doc_type, warning = DocumentTypeDetector.detect("unknown-path.md", "---\nname: test\n---\n")
         assert doc_type == DocumentType.AGENT_DEFINITION
 
     @pytest.mark.happy_path
     def test_blockquote_structure(self) -> None:
         """Blockquote frontmatter (> **) maps to WORKTRACKER_ENTITY."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "unknown-path.md", "> **Type:** story\n"
-        )
+        doc_type, warning = DocumentTypeDetector.detect("unknown-path.md", "> **Type:** story\n")
         assert doc_type == DocumentType.WORKTRACKER_ENTITY
 
     @pytest.mark.happy_path
@@ -209,9 +193,7 @@ class TestDualSignalWarning:
     @pytest.mark.happy_path
     def test_no_warning_with_no_structural_cue(self) -> None:
         """No warning when only path matches (no structural cue)."""
-        doc_type, warning = DocumentTypeDetector.detect(
-            "docs/knowledge/test.md", "Just text.\n"
-        )
+        doc_type, warning = DocumentTypeDetector.detect("docs/knowledge/test.md", "Just text.\n")
         assert doc_type == DocumentType.KNOWLEDGE_DOCUMENT
         assert warning is None
 
@@ -227,17 +209,13 @@ class TestPathNormalization:
     @pytest.mark.edge_case
     def test_leading_dot_slash_stripped(self) -> None:
         """Leading ./ is stripped from path."""
-        doc_type, _ = DocumentTypeDetector.detect(
-            "./skills/test/agents/test.md", ""
-        )
+        doc_type, _ = DocumentTypeDetector.detect("./skills/test/agents/test.md", "")
         assert doc_type == DocumentType.AGENT_DEFINITION
 
     @pytest.mark.edge_case
     def test_absolute_path_with_marker(self) -> None:
         """Absolute paths are handled by extracting repo-relative portion."""
-        doc_type, _ = DocumentTypeDetector.detect(
-            "/home/user/repo/skills/test/agents/test.md", ""
-        )
+        doc_type, _ = DocumentTypeDetector.detect("/home/user/repo/skills/test/agents/test.md", "")
         assert doc_type == DocumentType.AGENT_DEFINITION
 
 
@@ -272,18 +250,14 @@ class TestRecursiveGlobMatching:
     def test_multiple_double_star_falls_back_to_fnmatch(self) -> None:
         """Pattern with multiple ** segments falls back to fnmatch."""
         # skills/**/agents/**/*.md has two ** segments -- triggers fallback branch
-        doc_type, _ = DocumentTypeDetector.detect(
-            "skills/foo/agents/bar/my-agent.md", ""
-        )
+        doc_type, _ = DocumentTypeDetector.detect("skills/foo/agents/bar/my-agent.md", "")
         assert doc_type == DocumentType.AGENT_DEFINITION
 
     @pytest.mark.edge_case
     def test_prefix_longer_than_path_returns_false(self) -> None:
         """Path shorter than prefix pattern segments returns no match."""
         # Trigger the len(path_segments) < len(prefix_segments) branch
-        doc_type, _ = DocumentTypeDetector.detect(
-            "docs/single.md", "# Short\n"
-        )
+        doc_type, _ = DocumentTypeDetector.detect("docs/single.md", "# Short\n")
         # Should fall through to UNKNOWN or structural detection
         assert doc_type is not None
 
@@ -291,16 +265,12 @@ class TestRecursiveGlobMatching:
     def test_suffix_longer_than_remaining_returns_false(self) -> None:
         """Remaining path too short for suffix pattern returns no match."""
         # Trigger len(remaining_segments) < len(suffix_segments) branch
-        doc_type, _ = DocumentTypeDetector.detect(
-            "skills/.md", "# Test\n"
-        )
+        doc_type, _ = DocumentTypeDetector.detect("skills/.md", "# Test\n")
         assert doc_type is not None
 
     @pytest.mark.edge_case
     def test_prefix_segment_mismatch(self) -> None:
         """Path not matching any pattern falls to structural detection or UNKNOWN."""
-        doc_type, _ = DocumentTypeDetector.detect(
-            "random/deeply/nested/file.md", "# Just text\n"
-        )
+        doc_type, _ = DocumentTypeDetector.detect("random/deeply/nested/file.md", "# Just text\n")
         # No path pattern matches, no structural cues -> UNKNOWN
         assert doc_type == DocumentType.UNKNOWN

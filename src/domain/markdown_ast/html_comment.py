@@ -57,9 +57,7 @@ _METADATA_COMMENT_PATTERN = re.compile(
 )
 
 # Key-value pair pattern within a comment body (pipe-separated)
-_KV_PATTERN = re.compile(
-    r"(?P<key>[A-Za-z][A-Za-z0-9_-]*)\s*:\s*(?P<value>[^|]*?)(?:\s*\||$)"
-)
+_KV_PATTERN = re.compile(r"(?P<key>[A-Za-z][A-Za-z0-9_-]*)\s*:\s*(?P<value>[^|]*?)(?:\s*\||$)")
 
 # Control character pattern (M-18)
 _CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
@@ -179,10 +177,7 @@ class HtmlCommentMetadata:
             if len(blocks) >= bounds.max_comment_count:
                 return HtmlCommentResult(
                     blocks=tuple(blocks),
-                    parse_error=(
-                        f"Comment count exceeds maximum "
-                        f"({bounds.max_comment_count})"
-                    ),
+                    parse_error=(f"Comment count exceeds maximum ({bounds.max_comment_count})"),
                     parse_warnings=tuple(warnings),
                 )
 

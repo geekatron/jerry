@@ -75,13 +75,13 @@ def _run_pattern_with_timeout(
 # =============================================================================
 
 ADVERSARIAL_INPUTS = [
-    "a" * 10_000,                    # Repeated single char
-    "ab" * 5_000,                    # Repeated pair
-    " " * 10_000,                    # Whitespace flood
-    "a" * 5_000 + "!" + "a" * 5_000, # Char in middle
-    "a-b-c-" * 2_000,               # Repeated with separators
-    "1.2.3." * 2_000,               # Repeated version-like
-    "aaa" + "." * 10_000 + "bbb",   # Long alternation trigger
+    "a" * 10_000,  # Repeated single char
+    "ab" * 5_000,  # Repeated pair
+    " " * 10_000,  # Whitespace flood
+    "a" * 5_000 + "!" + "a" * 5_000,  # Char in middle
+    "a-b-c-" * 2_000,  # Repeated with separators
+    "1.2.3." * 2_000,  # Repeated version-like
+    "aaa" + "." * 10_000 + "bbb",  # Long alternation trigger
 ]
 
 
@@ -101,16 +101,12 @@ class TestValuePatternReDoSSafety:
             schema = DEFAULT_REGISTRY.get(schema_name)
             for rule in schema.field_rules:
                 if rule.value_pattern:
-                    patterns.append(
-                        (schema_name, rule.key, rule.value_pattern)
-                    )
+                    patterns.append((schema_name, rule.key, rule.value_pattern))
         assert len(patterns) > 0, "Expected at least some value_pattern regexes"
 
     @pytest.mark.security
     @pytest.mark.parametrize("adversarial_input", ADVERSARIAL_INPUTS[:4])
-    def test_patterns_complete_under_threshold(
-        self, adversarial_input: str
-    ) -> None:
+    def test_patterns_complete_under_threshold(self, adversarial_input: str) -> None:
         """All value_pattern regexes complete in < 2 seconds on adversarial input."""
         for schema_name in DEFAULT_REGISTRY.list_types():
             schema = DEFAULT_REGISTRY.get(schema_name)
@@ -139,7 +135,7 @@ class TestInternalPatternSafety:
 
         pattern = _build_section_pattern(XmlSectionParser.ALLOWED_TAGS)
         # Adversarial: many lines of near-matches
-        adversarial = ("<identity>\n" + "x\n" * 5_000 + "</identity>\n")
+        adversarial = "<identity>\n" + "x\n" * 5_000 + "</identity>\n"
         start = time.monotonic()
         list(pattern.finditer(adversarial))
         elapsed = time.monotonic() - start

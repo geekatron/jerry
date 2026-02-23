@@ -45,7 +45,7 @@ class TestHtmlCommentExtraction:
     @pytest.mark.happy_path
     def test_extract_single_comment_block(self) -> None:
         """Extracts a single pipe-separated metadata comment."""
-        source = '<!-- PS-ID: ADR-001 | ENTRY: 2026-02-23 | AGENT: test -->\n# Doc\n'
+        source = "<!-- PS-ID: ADR-001 | ENTRY: 2026-02-23 | AGENT: test -->\n# Doc\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -56,7 +56,7 @@ class TestHtmlCommentExtraction:
     @pytest.mark.happy_path
     def test_extract_field_keys(self) -> None:
         """Keys are correctly extracted from pipe-separated comment."""
-        source = '<!-- PS-ID: ADR-001 | ENTRY: 2026-02-23 -->\n'
+        source = "<!-- PS-ID: ADR-001 | ENTRY: 2026-02-23 -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -67,7 +67,7 @@ class TestHtmlCommentExtraction:
     @pytest.mark.happy_path
     def test_extract_field_values(self) -> None:
         """Values are correctly extracted from pipe-separated comment."""
-        source = '<!-- PS-ID: ADR-001 | ENTRY: 2026-02-23 -->\n'
+        source = "<!-- PS-ID: ADR-001 | ENTRY: 2026-02-23 -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -79,9 +79,9 @@ class TestHtmlCommentExtraction:
     def test_extract_multiple_comment_blocks(self) -> None:
         """Extracts multiple metadata comment blocks."""
         source = (
-            '<!-- VERSION: 1.0 | DATE: 2026-02-23 -->\n'
-            '# Doc\n'
-            '<!-- PS-ID: test-001 | AGENT: foo -->\n'
+            "<!-- VERSION: 1.0 | DATE: 2026-02-23 -->\n"
+            "# Doc\n"
+            "<!-- PS-ID: test-001 | AGENT: foo -->\n"
         )
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
@@ -92,7 +92,7 @@ class TestHtmlCommentExtraction:
     @pytest.mark.happy_path
     def test_raw_comment_preserved(self) -> None:
         """raw_comment contains the original comment text."""
-        source = '<!-- PS-ID: test -->\n'
+        source = "<!-- PS-ID: test -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -138,8 +138,7 @@ class TestReinjectExclusion:
     def test_non_reinject_comment_included(self) -> None:
         """Non-REINJECT comments with key-value pairs are included."""
         source = (
-            '<!-- L2-REINJECT: rank=1, content="test" -->\n'
-            '<!-- PS-ID: ADR-001 | AGENT: test -->\n'
+            '<!-- L2-REINJECT: rank=1, content="test" -->\n<!-- PS-ID: ADR-001 | AGENT: test -->\n'
         )
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
@@ -159,7 +158,7 @@ class TestNonMetadataComments:
     @pytest.mark.edge_case
     def test_plain_comment_ignored(self) -> None:
         """Plain comments without key: value pairs are ignored."""
-        source = '<!-- This is just a regular comment -->\n# Doc\n'
+        source = "<!-- This is just a regular comment -->\n# Doc\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -168,7 +167,7 @@ class TestNonMetadataComments:
     @pytest.mark.edge_case
     def test_comment_without_colon_ignored(self) -> None:
         """Comments without colon separator are ignored."""
-        source = '<!-- TODO fix this later -->\n'
+        source = "<!-- TODO fix this later -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -187,10 +186,7 @@ class TestBoundsEnforcement:
     def test_comment_count_limit(self) -> None:
         """Comment count exceeding max produces parse error (M-16)."""
         bounds = InputBounds(max_comment_count=1)
-        source = (
-            '<!-- A: 1 | B: 2 -->\n'
-            '<!-- C: 3 | D: 4 -->\n'
-        )
+        source = "<!-- A: 1 | B: 2 -->\n<!-- C: 3 | D: 4 -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc, bounds)
 
@@ -201,7 +197,7 @@ class TestBoundsEnforcement:
     def test_value_length_truncation(self) -> None:
         """Value exceeding max_value_length is truncated with warning (M-17)."""
         bounds = InputBounds(max_value_length=5)
-        source = '<!-- KEY: this-is-a-very-long-value -->\n'
+        source = "<!-- KEY: this-is-a-very-long-value -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc, bounds)
 
@@ -224,7 +220,7 @@ class TestControlCharacterStripping:
     @pytest.mark.edge_case
     def test_null_bytes_stripped_from_values(self) -> None:
         """Null bytes are stripped from comment values."""
-        source = '<!-- KEY: value\x00with\x01null -->\n'
+        source = "<!-- KEY: value\x00with\x01null -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -236,7 +232,7 @@ class TestControlCharacterStripping:
     @pytest.mark.edge_case
     def test_control_chars_stripped_from_keys(self) -> None:
         """Control characters are stripped from comment keys."""
-        source = '<!-- KE\x01Y: value -->\n'
+        source = "<!-- KE\x01Y: value -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -285,7 +281,7 @@ class TestEdgeCases:
     @pytest.mark.edge_case
     def test_single_field_comment(self) -> None:
         """Comment with a single key-value pair is extracted."""
-        source = '<!-- VERSION: 1.0 -->\n'
+        source = "<!-- VERSION: 1.0 -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -313,9 +309,7 @@ class TestImmutability:
     @pytest.mark.happy_path
     def test_block_is_frozen(self) -> None:
         """HtmlCommentBlock is frozen."""
-        block = HtmlCommentBlock(
-            fields=(), raw_comment="<!-- -->", line_number=0
-        )
+        block = HtmlCommentBlock(fields=(), raw_comment="<!-- -->", line_number=0)
         with pytest.raises(AttributeError):
             block.line_number = 99  # type: ignore[misc]
 
@@ -329,7 +323,7 @@ class TestImmutability:
     @pytest.mark.happy_path
     def test_blocks_is_tuple(self) -> None:
         """Blocks container is a tuple for immutability."""
-        source = '<!-- KEY: value -->\n'
+        source = "<!-- KEY: value -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -338,7 +332,7 @@ class TestImmutability:
     @pytest.mark.happy_path
     def test_fields_in_block_is_tuple(self) -> None:
         """Fields within a block are a tuple for immutability."""
-        source = '<!-- KEY: value -->\n'
+        source = "<!-- KEY: value -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 
@@ -347,7 +341,7 @@ class TestImmutability:
     @pytest.mark.happy_path
     def test_parse_warnings_is_tuple(self) -> None:
         """parse_warnings is a tuple for immutability."""
-        source = '<!-- KEY: value -->\n'
+        source = "<!-- KEY: value -->\n"
         doc = JerryDocument.parse(source)
         result = HtmlCommentMetadata.extract(doc)
 

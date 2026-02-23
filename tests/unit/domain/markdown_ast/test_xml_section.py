@@ -67,8 +67,15 @@ class TestXmlSectionExtraction:
     @pytest.mark.happy_path
     def test_all_allowed_tags(self) -> None:
         """All 7 ALLOWED_TAGS can be extracted."""
-        allowed = ["identity", "purpose", "input", "capabilities",
-                    "methodology", "output", "guardrails"]
+        allowed = [
+            "identity",
+            "purpose",
+            "input",
+            "capabilities",
+            "methodology",
+            "output",
+            "guardrails",
+        ]
         parts = []
         for tag in allowed:
             parts.append(f"<{tag}>\nContent for {tag}.\n</{tag}>\n\n")
@@ -151,9 +158,7 @@ class TestBoundsEnforcement:
         """Section count exceeding max produces parse error (M-16)."""
         bounds = InputBounds(max_section_count=1)
         source = (
-            "# Agent\n\n"
-            "<identity>\nFirst.\n</identity>\n\n"
-            "<methodology>\nSecond.\n</methodology>\n"
+            "# Agent\n\n<identity>\nFirst.\n</identity>\n\n<methodology>\nSecond.\n</methodology>\n"
         )
         doc = JerryDocument.parse(source)
         result = XmlSectionParser.extract(doc, bounds)

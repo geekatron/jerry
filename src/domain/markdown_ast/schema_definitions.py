@@ -123,9 +123,7 @@ STRATEGY_TEMPLATE_SCHEMA: EntitySchema = EntitySchema(
 FRAMEWORK_CONFIG_SCHEMA: EntitySchema = EntitySchema(
     entity_type="framework_config",
     field_rules=(),
-    section_rules=(
-        SectionRule(heading="Document Sections", required=False),
-    ),
+    section_rules=(SectionRule(heading="Document Sections", required=False),),
     require_nav_table=False,
 )
 
@@ -146,9 +144,7 @@ PATTERN_SCHEMA: EntitySchema = EntitySchema(
 KNOWLEDGE_SCHEMA: EntitySchema = EntitySchema(
     entity_type="knowledge_document",
     field_rules=(),
-    section_rules=(
-        SectionRule(heading="Document Sections", required=False),
-    ),
+    section_rules=(SectionRule(heading="Document Sections", required=False),),
     require_nav_table=False,
 )
 

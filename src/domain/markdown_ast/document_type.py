@@ -290,9 +290,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
         suffix_segments = suffix_pattern.split("/")
         if len(remaining_segments) < len(suffix_segments):
             return False
-        for rs, sp in zip(
-            reversed(remaining_segments), reversed(suffix_segments), strict=False
-        ):
+        for rs, sp in zip(reversed(remaining_segments), reversed(suffix_segments), strict=False):
             if not fnmatch.fnmatch(rs, sp):
                 return False
         return True

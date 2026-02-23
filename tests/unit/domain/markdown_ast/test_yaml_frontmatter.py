@@ -189,11 +189,7 @@ class TestFirstPairOnly:
     @pytest.mark.happy_path
     def test_second_yaml_block_ignored(self) -> None:
         """Only the first --- block is extracted; subsequent ones are ignored."""
-        source = (
-            "---\nfirst: block\n---\n\n"
-            "## Content\n\n"
-            "---\nsecond: block\n---\n"
-        )
+        source = "---\nfirst: block\n---\n\n## Content\n\n---\nsecond: block\n---\n"
         doc = JerryDocument.parse(source)
         result = YamlFrontmatter.extract(doc)
 

@@ -66,6 +66,7 @@ def _build_section_pattern(allowed_tags: frozenset[str]) -> re.Pattern[str]:
         re.MULTILINE | re.DOTALL,
     )
 
+
 # ---------------------------------------------------------------------------
 # Control character pattern (M-18)
 # Strips null bytes and non-printable control characters except \n, \r, \t
@@ -178,10 +179,7 @@ class XmlSectionParser:
             if len(sections) >= bounds.max_section_count:
                 return XmlSectionResult(
                     sections=tuple(sections),
-                    parse_error=(
-                        f"Section count exceeds maximum "
-                        f"({bounds.max_section_count})"
-                    ),
+                    parse_error=(f"Section count exceeds maximum ({bounds.max_section_count})"),
                     parse_warnings=tuple(warnings),
                 )
 
@@ -189,8 +187,7 @@ class XmlSectionParser:
             nested_open = f"<{tag_name}>"
             if nested_open in content:
                 warnings.append(
-                    f"Nested '<{tag_name}>' tag detected in "
-                    f"'<{tag_name}>' section; section skipped"
+                    f"Nested '<{tag_name}>' tag detected in '<{tag_name}>' section; section skipped"
                 )
                 continue
 
