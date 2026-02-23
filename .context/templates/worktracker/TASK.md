@@ -19,6 +19,7 @@ EXTENDS: DeliveryItem -> WorkItem
 
 | Section | Purpose |
 |---------|---------|
+| [Quick Creation Guide](#quick-creation-guide) | How to create a task quickly with quality AC |
 | [Frontmatter](#frontmatter) | YAML metadata schema for tasks |
 | [State Machine](#state-machine) | Task status transitions |
 | [Containment Rules](#containment-rules) | Parent/child constraints |
@@ -28,6 +29,38 @@ EXTENDS: DeliveryItem -> WorkItem
 | [Time Tracking](#time-tracking) | Original estimate, remaining, spent |
 | [Evidence](#evidence) | Deliverables and verification |
 | [History](#history) | Status changes and key events |
+
+---
+
+## Quick Creation Guide
+
+<!-- READ THIS FIRST when creating a new Task. Rules: WTI-008, WTI-009. -->
+
+### Steps
+
+1. **Description:** 1-2 sentences. What will be done and why.
+2. **AC:** Max **5 bullets**. Focus on **verification** (what proves it's done), not implementation steps.
+3. **Implementation details** belong in Description or Implementation Notes, not AC.
+
+### BAD vs GOOD AC (Tasks)
+
+```markdown
+# BAD (violates WTI-008b):
+- [ ] Modify src/handlers/asset_handler.py to add delete method
+- [ ] Add try/except block for NotFoundException
+- [ ] Run pytest and verify all tests pass
+
+# GOOD (compliant):
+- [ ] DELETE /api/v1/assets/{id} returns 204 No Content on success
+- [ ] DELETE /api/v1/assets/{id} returns 404 Not Found for nonexistent asset
+- [ ] Deleted asset no longer appears in GET /api/v1/assets list response
+```
+
+### Quality Check
+
+Before creating: Is every AC bullet about **what to verify**, not **how to implement**? If it mentions a file path or class name, move it to Description.
+
+**Reference:** `skills/worktracker/rules/worktracker-content-standards.md`
 
 ---
 
