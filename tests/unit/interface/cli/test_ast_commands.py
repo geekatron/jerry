@@ -32,6 +32,7 @@ from unittest.mock import patch
 
 import pytest
 
+import src.interface.cli.ast_commands as ast_commands_module
 from src.interface.cli.ast_commands import (
     ast_frontmatter,
     ast_modify,
@@ -48,6 +49,20 @@ from src.interface.cli.parser import create_parser
 # =============================================================================
 # Fixtures
 # =============================================================================
+
+
+@pytest.fixture(autouse=True)
+def _disable_path_containment() -> None:
+    """Disable path containment checks for CLI tests using temp files.
+
+    Test files are created in temp directories (e.g. /tmp) which are outside
+    the repository root. Path containment (WI-018, M-08) is a production
+    security feature that is tested separately with dedicated test cases.
+    """
+    original = ast_commands_module._ENFORCE_PATH_CONTAINMENT
+    ast_commands_module._ENFORCE_PATH_CONTAINMENT = False
+    yield  # type: ignore[misc]
+    ast_commands_module._ENFORCE_PATH_CONTAINMENT = original
 
 
 @pytest.fixture()
@@ -265,10 +280,8 @@ class TestAstParse:
         """ast_parse returns 2 when file read raises OSError."""
         from unittest.mock import patch as mock_patch
 
-        with mock_patch("src.interface.cli.ast_commands.Path") as MockPathClass:
-            mock_instance = MockPathClass.return_value
-            mock_instance.exists.return_value = True
-            mock_instance.read_text.side_effect = OSError("Permission denied")
+        # Mock Path.read_text at instance level to simulate OSError
+        with mock_patch.object(Path, "read_text", side_effect=OSError("Permission denied")):
             result = ast_parse(str(tmp_md_file))
         assert result == 2
 
