@@ -53,10 +53,15 @@ def project_root() -> Path:
 
 @pytest.fixture
 def env_with_pythonpath(project_root: Path) -> dict[str, str]:
-    """Create environment with PYTHONPATH set to project root."""
+    """Create environment with PYTHONPATH set to project root.
+
+    Also disables path containment checks (WI-018) since integration tests
+    use temp files outside the repository root.
+    """
     env = os.environ.copy()
     existing = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = f"{project_root}:{existing}" if existing else str(project_root)
+    env["JERRY_DISABLE_PATH_CONTAINMENT"] = "1"
     return env
 
 
