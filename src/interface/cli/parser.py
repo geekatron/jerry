@@ -689,6 +689,39 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
 
+    # ast detect (RE-006: WI-017)
+    detect_parser = ast_subparsers.add_parser(
+        "detect",
+        help="Detect document type of a markdown file",
+        description="Detect the Jerry document type using path-first, structure-fallback detection.",
+    )
+    detect_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast sections (RE-006: WI-017)
+    sections_parser = ast_subparsers.add_parser(
+        "sections",
+        help="Extract XML-tagged sections as JSON",
+        description="Extract XML-tagged sections (e.g., <identity>, <methodology>) from a markdown file.",
+    )
+    sections_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast metadata (RE-006: WI-017)
+    metadata_parser = ast_subparsers.add_parser(
+        "metadata",
+        help="Extract HTML comment metadata as JSON",
+        description="Extract structured metadata from HTML comments (e.g., PS-ID, VERSION blocks).",
+    )
+    metadata_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
 
 def _add_context_namespace(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],

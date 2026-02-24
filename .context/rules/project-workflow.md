@@ -42,10 +42,10 @@
 | Phase | Actions |
 |-------|---------|
 | **Before** | Set `JERRY_PROJECT` env var. Check `PLAN.md`. Review `WORKTRACKER.md`. Read relevant `docs/knowledge/`. Invoke `/worktracker` for structural guidance. |
-| **During** | Persist state to `WORKTRACKER.md` per WTI-001 through WTI-007. Update `PLAN.md`. Document decisions in `docs/design/`. |
+| **During** | Persist state to `WORKTRACKER.md` per WTI-001 through WTI-009. Update `PLAN.md`. Document decisions in `docs/design/`. |
 | **After** | Update completion status. Capture learnings in `docs/experience/`. Commit with semantic messages. |
 
-> **Integrity enforcement (HARD):** All worktracker operations MUST follow WTI-001 through WTI-007. See `skills/worktracker/rules/worktracker-behavior-rules.md` for full definitions.
+> **Integrity enforcement (HARD):** All worktracker operations MUST follow WTI-001 through WTI-009. See `skills/worktracker/rules/worktracker-behavior-rules.md` for full definitions.
 
 ---
 

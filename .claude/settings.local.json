@@ -82,17 +82,6 @@
           }
         ]
       }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run --directory /Users/anowak/workspace/github/jerry-wt/feat/proj-004-context-resilience jerry --json hooks subagent-stop",
-            "timeout": 5
-          }
-        ]
-      }
     ]
   }
 }

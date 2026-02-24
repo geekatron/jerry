@@ -1,0 +1,1397 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for PROJ-005 Universal Markdown Parser
+# Document ID: PROJ-005-AST-UNIVERSAL-ORCH-STATE
+# Version: 1.0
+# Last Updated: 2026-02-22T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+#
+# Disclaimer: Agent-generated content. Produced by orch-planner agent (v2.2.0)
+# within the Jerry Framework. Subject to human review and approval.
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "ast-universal-20260222-001"
+  name: "PROJ-005 Universal Markdown Parser: 10 File Type Support"
+  project_id: "PROJ-005"
+  branch: "feature/PROJ-005-ast-universal-markdown-parser"
+  version: "1.0"
+  created_at: "2026-02-22T00:00:00Z"
+  updated_at: "2026-02-23T00:00:00Z"
+  status: "ACTIVE"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - DUAL_PIPELINE
+    - CROSS_POLLINATED
+    - SYNC_BARRIER
+    - C4_TOURNAMENT
+
+  prerequisites:
+    - id: "FEAT-001"
+      name: "AST Strategy Evaluation & Library Selection (Complete Implementation)"
+      status: "COMPLETE"
+      artifact: "projects/PROJ-005-markdown-ast/orchestration/feat001-impl-20260220-001/ORCHESTRATION.yaml"
+      final_score: 0.951
+
+    - id: "GO-001"
+      name: "AST-first architecture adoption (markdown-it-py + mdformat, Pattern D)"
+      status: "DECIDED"
+      artifact: "projects/PROJ-005-markdown-ast/orchestration/spike-eval-20260219-001/ps/phase-6-decision/ps-synthesizer-002/go-nogo-recommendation.md"
+
+  stack_decision:
+    primary_library: "markdown-it-py"
+    primary_version: "4.0.0"
+    formatter: "mdformat"
+    formatter_version: "1.0.0"
+    plugins: "mdit-py-plugins"
+    plugins_version: "0.5.0"
+    dependencies_installed: true
+
+  existing_implementation:
+    domain_objects:
+      - file: "src/domain/markdown_ast/jerry_document.py"
+        class: "JerryDocument"
+        description: "Facade for parsed markdown documents"
+      - file: "src/domain/markdown_ast/frontmatter.py"
+        class: "BlockquoteFrontmatter"
+        description: "Blockquote-style frontmatter extraction"
+      - file: "src/domain/markdown_ast/nav_table.py"
+        class: "NavEntry"
+        description: "Navigation table extraction"
+      - file: "src/domain/markdown_ast/reinject.py"
+        class: "ReinjectDirective"
+        description: "L2-REINJECT HTML comment directives"
+      - file: "src/domain/markdown_ast/schema.py"
+        class: "EntitySchema"
+        description: "Schema validation engine (6 worktracker schemas)"
+    cli: "src/interface/cli/ast_commands.py"
+    skill: "skills/ast/SKILL.md"
+    tests:
+      unit_lines: 1012
+      integration_lines: 480
+      architecture_lines: 729
+
+  target_file_types:
+    - id: 1
+      name: "Agent definitions"
+      glob: "skills/*/agents/*.md"
+      frontmatter: "yaml"
+      body: "xml_tags"
+      schema_exists: true
+      schema_path: "docs/schemas/agent-definition-v1.schema.json"
+    - id: 2
+      name: "SKILL.md files"
+      glob: "skills/*/SKILL.md"
+      frontmatter: "yaml"
+      body: "headings"
+      schema_exists: false
+    - id: 3
+      name: "Rule files"
+      glob: ".context/rules/*.md"
+      frontmatter: "none"
+      body: "l2_reinject_comments,tables"
+      schema_exists: false
+    - id: 4
+      name: "ADRs"
+      glob: "docs/design/ADR-*.md"
+      frontmatter: "html_comment"
+      body: "status_sections"
+      schema_exists: false
+    - id: 5
+      name: "Strategy templates"
+      glob: ".context/templates/adversarial/s-*.md"
+      frontmatter: "blockquote"
+      body: "8_section_format"
+      schema_exists: false
+    - id: 6
+      name: "Worktracker entities"
+      glob: "projects/*/work/**/*.md"
+      frontmatter: "blockquote"
+      body: "entity_specific"
+      schema_exists: true
+      schema_count: 6
+    - id: 7
+      name: "CLAUDE.md / AGENTS.md"
+      glob: "{CLAUDE,AGENTS}.md"
+      frontmatter: "none"
+      body: "tables,skill_refs"
+      schema_exists: false
+    - id: 8
+      name: "Orchestration artifacts"
+      glob: "projects/*/orchestration/**/*.md"
+      frontmatter: "various"
+      body: "plans,handoffs,synthesis"
+      schema_exists: false
+    - id: 9
+      name: "Pattern documentation"
+      glob: ".context/patterns/**/*.md"
+      frontmatter: "blockquote"
+      body: "headings,patterns"
+      schema_exists: false
+    - id: 10
+      name: "Knowledge documents"
+      glob: "docs/knowledge/**/*.md"
+      frontmatter: "none"
+      body: "nav_tables,content"
+      schema_exists: false
+
+  required_enhancements:
+    - id: "RE-001"
+      name: "Multi-format frontmatter parsing"
+      description: "YAML (--- delimited) alongside existing blockquote format"
+      new_domain_file: "src/domain/markdown_ast/yaml_frontmatter.py"
+    - id: "RE-002"
+      name: "XML-tag section parsing"
+      description: "Extract <identity>, <methodology>, etc. from agent definitions"
+      new_domain_file: "src/domain/markdown_ast/xml_section.py"
+    - id: "RE-003"
+      name: "HTML comment metadata extraction"
+      description: "Parse ADR/template metadata from HTML comments"
+      new_domain_file: "src/domain/markdown_ast/html_comment.py"
+    - id: "RE-004"
+      name: "Document type detection"
+      description: "Auto-detect file type from path patterns and structural cues"
+      new_domain_file: "src/domain/markdown_ast/document_type.py"
+    - id: "RE-005"
+      name: "Extended schema validation"
+      description: "New schemas for all 10 file types"
+      modified_file: "src/domain/markdown_ast/schema.py"
+    - id: "RE-006"
+      name: "CLI extensions"
+      description: "New subcommands or enhanced flags for document type support"
+      modified_file: "src/interface/cli/ast_commands.py"
+    - id: "RE-007"
+      name: "Universal document facade"
+      description: "Unified facade delegating to type-specific parsers"
+      new_domain_file: "src/domain/markdown_ast/universal_document.py"
+
+  constraints:
+    max_agent_nesting: 1           # P-003: Single nesting level
+    file_persistence: true         # P-002: All state to filesystem
+    user_authority: true           # P-020: User approves gates + release
+    max_routing_hops: 3            # H-36: Circuit breaker
+    max_qg_iterations: 5           # User-specified maximum
+    min_qg_iterations: 3           # H-14 minimum
+    checkpoint_frequency: "PHASE"  # Recovery at phase completion boundaries
+
+# =============================================================================
+# QUALITY CONFIGURATION
+# =============================================================================
+quality:
+  criticality: "C4"
+  criticality_justification: "Architecture-level change affecting core parsing infrastructure. Security-sensitive input validation paths. Irreversible once downstream consumers depend on new schemas."
+
+  threshold: 0.95
+  threshold_source: "user-specified (above H-13 standard 0.92)"
+
+  scoring_mechanism: "S-014"
+
+  required_strategies:
+    - id: "S-014"
+      name: "LLM-as-Judge"
+      score: 4.40
+      family: "Iterative Self-Correction"
+    - id: "S-003"
+      name: "Steelman Technique"
+      score: 4.30
+      family: "Dialectical Synthesis"
+    - id: "S-013"
+      name: "Inversion Technique"
+      score: 4.25
+      family: "Structured Decomposition"
+    - id: "S-007"
+      name: "Constitutional AI Critique"
+      score: 4.15
+      family: "Iterative Self-Correction"
+    - id: "S-002"
+      name: "Devil's Advocate"
+      score: 4.10
+      family: "Role-Based Adversarialism"
+    - id: "S-004"
+      name: "Pre-Mortem Analysis"
+      score: 4.10
+      family: "Role-Based Adversarialism"
+    - id: "S-010"
+      name: "Self-Refine"
+      score: 4.00
+      family: "Iterative Self-Correction"
+    - id: "S-012"
+      name: "FMEA"
+      score: 3.75
+      family: "Structured Decomposition"
+    - id: "S-011"
+      name: "Chain-of-Verification"
+      score: 3.75
+      family: "Structured Decomposition"
+    - id: "S-001"
+      name: "Red Team Analysis"
+      score: 3.35
+      family: "Role-Based Adversarialism"
+
+  strategy_execution_order:
+    - order: 1
+      strategy: "S-010"
+      execution: "background_concurrent"
+    - order: 2
+      strategy: "S-003"
+      execution: "background_concurrent"
+      note: "Must complete before S-002 (H-16)"
+    - order: 3
+      strategy: "S-007"
+      execution: "background_concurrent"
+    - order: 4
+      strategy: "S-002"
+      execution: "background_concurrent"
+      depends_on: "S-003"
+      note: "H-16: Steelman before Devil's Advocate"
+    - order: 5
+      strategy: "S-004"
+      execution: "background_concurrent"
+    - order: 6
+      strategy: "S-013"
+      execution: "background_concurrent"
+    - order: 7
+      strategy: "S-012"
+      execution: "background_concurrent"
+    - order: 8
+      strategy: "S-011"
+      execution: "background_concurrent"
+    - order: 9
+      strategy: "S-001"
+      execution: "background_concurrent"
+    - order: 10
+      strategy: "S-014"
+      execution: "sequential_final"
+      note: "adv-scorer aggregates all findings, produces composite score"
+
+  adv_executor_model: "background_task_agents"
+  adv_executor_note: "Each strategy template executed by individual adv-executor agent running as background Task agent. All 10 run concurrently (S-002 waits for S-003 per H-16). Findings aggregated by adv-scorer."
+
+  scoring_dimensions:
+    - dimension: "Completeness"
+      weight: 0.20
+    - dimension: "Internal Consistency"
+      weight: 0.20
+    - dimension: "Methodological Rigor"
+      weight: 0.20
+    - dimension: "Evidence Quality"
+      weight: 0.15
+    - dimension: "Actionability"
+      weight: 0.15
+    - dimension: "Traceability"
+      weight: 0.10
+
+  score_bands:
+    PASS: ">= 0.95"
+    REVISE: "0.85 - 0.94"
+    REJECTED: "< 0.85"
+
+  plateau_detection:
+    threshold: 0.01
+    consecutive_count: 3
+    action: "circuit_breaker_halt_and_escalate"
+
+  gate_scores:
+    qg_b1: 0.951
+    qg_b2:
+      iteration_1: 0.812  # REJECTED — 42 findings, 11 P0, 10 P1
+      iteration_2: 0.924  # REVISE — 26/42 resolved, 7 P0 for iter 3
+      iteration_3: 0.960  # PASS — 41/46 resolved, 3 LOW unresolved, 3 informational NFs
+    qg_b3: null
+    qg_b4: null
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "orchestration/ast-universal-20260222-001/"
+  eng_pipeline: "{base}eng/{phase_id}/{agent_id}/"
+  red_pipeline: "{base}red/{phase_id}/{agent_id}/"
+  barriers: "{base}cross-pollination/{barrier_id}/"
+  barrier_direction: "{base}cross-pollination/{barrier_id}/{direction}/"
+  quality: "{base}quality/{gate_id}/"
+  synthesis: "{base}synthesis/"
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  # ---------------------------------------------------------------------------
+  # PIPELINE 1: ENGINEERING (/eng-team)
+  # ---------------------------------------------------------------------------
+  engineering:
+    alias: "eng"
+    skill: "/eng-team"
+    phases:
+      - id: "eng-phase-1"
+        name: "Architecture & Threat Model"
+        path_id: "phase-1-architecture"
+        execution_mode: "SEQUENTIAL"
+        agent: "eng-architect-001"
+        model: "opus"
+        status: "COMPLETE"
+        depends_on: []
+        blocked_by: []
+        outputs:
+          - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect-001/eng-architect-001-threat-model.md"
+          - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect-001/eng-architect-001-architecture-adr.md"
+          - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect-001/eng-architect-001-trust-boundaries.md"
+        barrier_after: "barrier-1"
+        started_at: "2026-02-22T00:00:00Z"
+        completed_at: "2026-02-23T00:00:00Z"
+
+      - id: "eng-phase-2"
+        name: "Implementation Planning"
+        path_id: "phase-2-planning"
+        execution_mode: "SEQUENTIAL"
+        agent: "eng-lead-001"
+        model: "opus"
+        status: "COMPLETE"
+        depends_on:
+          - "barrier-1"
+        blocked_by:
+          - "qg-b1"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/eng/phase-2-planning/eng-lead-001/eng-lead-001-implementation-plan.md"
+          - "orchestration/ast-universal-20260222-001/eng/phase-2-planning/eng-lead-001/eng-lead-001-dependency-assessment.md"
+        started_at: "2026-02-23T00:00:00Z"
+        completed_at: "2026-02-23T00:00:00Z"
+
+      - id: "eng-phase-3"
+        name: "Core Implementation"
+        path_id: "phase-3-implementation"
+        execution_mode: "SEQUENTIAL"
+        agent: "eng-backend-001"
+        model: "sonnet"
+        status: "COMPLETE"
+        depends_on:
+          - "eng-phase-2"
+        blocked_by:
+          - "eng-phase-2"
+        outputs:
+          - "src/domain/markdown_ast/yaml_frontmatter.py"
+          - "src/domain/markdown_ast/xml_section.py"
+          - "src/domain/markdown_ast/html_comment.py"
+          - "src/domain/markdown_ast/document_type.py"
+          - "src/domain/markdown_ast/universal_document.py"
+          - "src/domain/markdown_ast/universal_parse_result.py"
+          - "src/domain/markdown_ast/schema_registry.py"
+          - "src/domain/markdown_ast/schema_definitions.py"
+          - "src/domain/markdown_ast/input_bounds.py"
+          - "orchestration/ast-universal-20260222-001/eng/phase-3-implementation/eng-backend-001/eng-backend-001-implementation-report.md"
+        barrier_after: "barrier-2"
+        started_at: "2026-02-23T00:00:00Z"
+        completed_at: "2026-02-23T00:00:00Z"
+        completion_metrics:
+          work_items_completed: 25
+          new_source_files: 9
+          modified_source_files: 5
+          new_test_files: 10
+          unit_tests_passing: 446
+          full_suite_passing: 4897
+          domain_coverage_percent: 98
+          mitigations_implemented: 24
+
+      - id: "eng-phase-4"
+        name: "Testing & Fuzzing"
+        path_id: "phase-4-testing"
+        execution_mode: "SEQUENTIAL"
+        agent: "eng-qa-001"
+        model: "sonnet"
+        status: "PLANNED"
+        depends_on:
+          - "barrier-2"
+        blocked_by:
+          - "qg-b2"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/eng/phase-4-testing/eng-qa/test-strategy.md"
+          - "orchestration/ast-universal-20260222-001/eng/phase-4-testing/eng-qa/coverage-report.md"
+        started_at: null
+        completed_at: null
+
+      - id: "eng-phase-5"
+        name: "Security Review"
+        path_id: "phase-5-security"
+        execution_mode: "SEQUENTIAL"
+        agent: "eng-security-001"
+        model: "opus"
+        status: "PLANNED"
+        depends_on:
+          - "eng-phase-4"
+        blocked_by:
+          - "eng-phase-4"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/eng/phase-5-security/eng-security/security-review-report.md"
+        barrier_after: "barrier-3"
+        started_at: null
+        completed_at: null
+
+      - id: "eng-phase-6"
+        name: "Final Quality Gate"
+        path_id: "phase-6-quality-gate"
+        execution_mode: "SEQUENTIAL"
+        agent: "eng-reviewer-001"
+        model: "opus"
+        status: "PLANNED"
+        depends_on:
+          - "eng-phase-5"
+          - "barrier-3"
+        blocked_by:
+          - "qg-b3"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/eng/phase-6-quality-gate/eng-reviewer/quality-gate-report.md"
+          - "orchestration/ast-universal-20260222-001/eng/phase-6-quality-gate/eng-reviewer/release-readiness.md"
+        barrier_after: "barrier-4"
+        started_at: null
+        completed_at: null
+
+  # ---------------------------------------------------------------------------
+  # PIPELINE 2: RED TEAM (/red-team)
+  # ---------------------------------------------------------------------------
+  red_team:
+    alias: "red"
+    skill: "/red-team"
+    phases:
+      - id: "red-phase-1"
+        name: "Scope & Authorization"
+        path_id: "phase-1-scope"
+        execution_mode: "SEQUENTIAL"
+        agent: "red-lead-001"
+        model: "opus"
+        status: "COMPLETE"
+        depends_on: []
+        blocked_by: []
+        outputs:
+          - "orchestration/ast-universal-20260222-001/red/phase-1-scope/red-lead-001/red-lead-001-scope.md"
+        barrier_after: "barrier-1"
+        started_at: "2026-02-22T00:00:00Z"
+        completed_at: "2026-02-23T00:00:00Z"
+
+      - id: "red-phase-2"
+        name: "Vulnerability Analysis"
+        path_id: "phase-2-vulnerability"
+        execution_mode: "SEQUENTIAL"
+        agent: "red-vuln-001"
+        model: "opus"
+        status: "COMPLETE"
+        depends_on:
+          - "barrier-1"
+          - "eng-phase-3"
+        blocked_by:
+          - "qg-b1"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/red/phase-2-vulnerability/red-vuln-001/red-vuln-001-vulnerability-assessment.md"
+        barrier_after: "barrier-2"
+        started_at: "2026-02-23T00:00:00Z"
+        completed_at: "2026-02-23T00:00:00Z"
+        completion_metrics:
+          total_findings: 27
+          critical_findings: 2
+          high_findings: 8
+          medium_findings: 11
+          low_findings: 6
+          confidence: 0.88
+
+      - id: "red-phase-3"
+        name: "Exploitation Testing"
+        path_id: "phase-3-exploitation"
+        execution_mode: "SEQUENTIAL"
+        agent: "red-exploit-001"
+        model: "opus"
+        status: "PLANNED"
+        depends_on:
+          - "barrier-2"
+        blocked_by:
+          - "qg-b2"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/red/phase-3-exploitation/red-exploit/exploitation-report.md"
+        barrier_after: "barrier-3"
+        started_at: null
+        completed_at: null
+
+      - id: "red-phase-4"
+        name: "Findings & Remediation"
+        path_id: "phase-4-findings"
+        execution_mode: "SEQUENTIAL"
+        agent: "red-reporter-001"
+        model: "opus"
+        status: "PLANNED"
+        depends_on:
+          - "barrier-3"
+        blocked_by:
+          - "qg-b3"
+        outputs:
+          - "orchestration/ast-universal-20260222-001/red/phase-4-findings/red-reporter/engagement-report.md"
+        barrier_after: "barrier-4"
+        started_at: null
+        completed_at: null
+
+# =============================================================================
+# SYNC BARRIERS (Cross-Pollination)
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "Threat Model <-> Red Team Scope"
+    status: "COMPLETE"
+    eng_phase_after: "eng-phase-1"
+    red_phase_after: "red-phase-1"
+    quality_gate: "qg-b1"
+    handoffs:
+      eng_to_red:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-1/eng-to-red/handoff.md"
+        content: "Threat model findings inform red team targeting priorities"
+        status: "COMPLETE"
+      red_to_eng:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-1/red-to-eng/handoff.md"
+        content: "Scope document confirms attack surface boundaries for architecture"
+        status: "COMPLETE"
+    started_at: "2026-02-22T00:00:00Z"
+    completed_at: "2026-02-23T00:00:00Z"
+
+  - id: "barrier-2"
+    name: "Implementation <-> Vulnerability Testing"
+    status: "COMPLETE"
+    eng_phase_after: "eng-phase-3"
+    red_phase_after: "red-phase-2"
+    quality_gate: "qg-b2"
+    quality_score: 0.960
+    quality_iterations: 3
+    handoffs:
+      eng_to_red:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-2/eng-to-red/handoff.md"
+        content: "Implementation details: 9 new files, 21 mitigations, 446 tests, 98% coverage"
+        status: "COMPLETE"
+      red_to_eng:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-2/red-to-eng/handoff.md"
+        content: "27 vulnerability findings (2 Critical, 8 High) for security hardening"
+        status: "COMPLETE"
+    started_at: "2026-02-23T00:00:00Z"
+    completed_at: "2026-02-23T00:00:00Z"
+
+  - id: "barrier-3"
+    name: "Red Team Findings <-> Security Hardening"
+    status: "PLANNED"
+    eng_phase_after: "eng-phase-5"
+    red_phase_after: "red-phase-3"
+    quality_gate: "qg-b3"
+    handoffs:
+      eng_to_red:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-3/eng-to-red/handoff.md"
+        content: "Security review findings for red team validation"
+        status: "PENDING"
+      red_to_eng:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-3/red-to-eng/handoff.md"
+        content: "Exploitation findings + PoC evidence drive security hardening"
+        status: "PENDING"
+    started_at: null
+    completed_at: null
+
+  - id: "barrier-4"
+    name: "Final Synthesis"
+    status: "PLANNED"
+    eng_phase_after: "eng-phase-6"
+    red_phase_after: "red-phase-4"
+    quality_gate: "qg-b4"
+    handoffs:
+      bidirectional:
+        artifact: "orchestration/ast-universal-20260222-001/cross-pollination/barrier-4/synthesis/final-synthesis.md"
+        content: "Final quality gate + engagement report -> synthesis"
+        status: "PENDING"
+    started_at: null
+    completed_at: null
+
+# =============================================================================
+# QUALITY GATES (Per Barrier)
+# =============================================================================
+quality_gates:
+  - id: "qg-b1"
+    name: "Barrier 1 Quality Gate: Threat Model + Scope"
+    barrier: "barrier-1"
+    type: "C4_TOURNAMENT"
+    status: "PASS"
+    threshold: 0.95
+    min_iterations: 3
+    max_iterations: 5
+    strategies_required: 10
+    strategy_ids:
+      - "S-010"
+      - "S-003"
+      - "S-007"
+      - "S-002"
+      - "S-004"
+      - "S-013"
+      - "S-012"
+      - "S-011"
+      - "S-001"
+      - "S-014"
+    h16_ordering: "S-003 before S-002"
+    adv_executor_model: "background_concurrent"
+    scope:
+      - "Threat model (STRIDE/DREAD)"
+      - "Architecture ADR"
+      - "Trust boundary diagram"
+      - "Scope document (RED-XXXX)"
+    artifacts:
+      strategy_findings:
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-003-steelman-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-010-self-refine-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-007-constitutional-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-004-pre-mortem-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-013-inversion-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-012-fmea-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-011-chain-of-verification-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-001-red-team-findings.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-002-devils-advocate-findings.md"
+      scorer_reports:
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-014-scorer-report.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-014-scorer-report-iteration-2.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-014-scorer-report-iteration-3.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-014-scorer-report-iteration-4.md"
+        - "orchestration/ast-universal-20260222-001/quality/qg-b1/s-014-scorer-report-iteration-5.md"
+    iteration_scores:
+      - iteration: 1
+        score: 0.835
+        band: "REJECTED"
+        items_fixed: 0
+      - iteration: 2
+        score: 0.941
+        band: "REVISE"
+        items_fixed: 28
+      - iteration: 3
+        score: 0.944
+        band: "REVISE"
+        items_fixed: 6
+      - iteration: 4
+        score: 0.946
+        band: "REVISE"
+        items_fixed: 3
+      - iteration: 5
+        score: 0.951
+        band: "PASS"
+        items_fixed: 3
+    final_score: 0.951
+    per_deliverable_scores:
+      d1_threat_model: 0.951
+      d2_architecture_adr: 0.949
+      d3_trust_boundaries: 0.950
+      d4_red_team_scope: 0.953
+    completed_at: "2026-02-23T00:00:00Z"
+
+  - id: "qg-b2"
+    name: "Barrier 2 Quality Gate: Implementation + Vulnerability"
+    barrier: "barrier-2"
+    type: "C4_TOURNAMENT"
+    status: "PLANNED"
+    threshold: 0.95
+    min_iterations: 3
+    max_iterations: 5
+    strategies_required: 10
+    strategy_ids:
+      - "S-010"
+      - "S-003"
+      - "S-007"
+      - "S-002"
+      - "S-004"
+      - "S-013"
+      - "S-012"
+      - "S-011"
+      - "S-001"
+      - "S-014"
+    h16_ordering: "S-003 before S-002"
+    adv_executor_model: "background_concurrent"
+    scope:
+      - "Domain object implementations"
+      - "CLI extensions"
+      - "Unit tests"
+      - "Implementation plan compliance"
+      - "Vulnerability assessment"
+    artifacts:
+      iteration_pattern: "orchestration/ast-universal-20260222-001/quality/qg-b2/iteration-{N}-critique.md"
+      final_score: "orchestration/ast-universal-20260222-001/quality/qg-b2/final-score.md"
+    iteration_scores: []
+    final_score: null
+    completed_at: null
+
+  - id: "qg-b3"
+    name: "Barrier 3 Quality Gate: Exploitation + Security Review"
+    barrier: "barrier-3"
+    type: "C4_TOURNAMENT"
+    status: "PLANNED"
+    threshold: 0.95
+    min_iterations: 3
+    max_iterations: 5
+    strategies_required: 10
+    strategy_ids:
+      - "S-010"
+      - "S-003"
+      - "S-007"
+      - "S-002"
+      - "S-004"
+      - "S-013"
+      - "S-012"
+      - "S-011"
+      - "S-001"
+      - "S-014"
+    h16_ordering: "S-003 before S-002"
+    adv_executor_model: "background_concurrent"
+    scope:
+      - "Exploitation report with PoC evidence"
+      - "Security review report"
+      - "Test strategy and coverage"
+      - "Remediation completeness"
+    artifacts:
+      iteration_pattern: "orchestration/ast-universal-20260222-001/quality/qg-b3/iteration-{N}-critique.md"
+      final_score: "orchestration/ast-universal-20260222-001/quality/qg-b3/final-score.md"
+    iteration_scores: []
+    final_score: null
+    completed_at: null
+
+  - id: "qg-b4"
+    name: "Barrier 4 Quality Gate: Final Synthesis"
+    barrier: "barrier-4"
+    type: "C4_TOURNAMENT"
+    status: "PLANNED"
+    threshold: 0.95
+    min_iterations: 3
+    max_iterations: 5
+    strategies_required: 10
+    strategy_ids:
+      - "S-010"
+      - "S-003"
+      - "S-007"
+      - "S-002"
+      - "S-004"
+      - "S-013"
+      - "S-012"
+      - "S-011"
+      - "S-001"
+      - "S-014"
+    h16_ordering: "S-003 before S-002"
+    adv_executor_model: "background_concurrent"
+    scope:
+      - "Engineering quality gate report"
+      - "Release readiness assessment"
+      - "Red team engagement report"
+      - "Final synthesis document"
+      - "All findings cross-referenced"
+    artifacts:
+      iteration_pattern: "orchestration/ast-universal-20260222-001/quality/qg-b4/iteration-{N}-critique.md"
+      final_score: "orchestration/ast-universal-20260222-001/quality/qg-b4/final-score.md"
+      synthesis: "orchestration/ast-universal-20260222-001/synthesis/final-synthesis.md"
+    iteration_scores: []
+    final_score: null
+    completed_at: null
+
+# =============================================================================
+# AGENT REGISTRY
+# =============================================================================
+agents:
+  # --- Engineering Pipeline Agents ---
+  - id: "eng-architect-001"
+    agent: "eng-architect"
+    skill: "/eng-team"
+    pipeline: "engineering"
+    phase: "eng-phase-1"
+    role: "Architecture & Threat Modeling"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "src/domain/markdown_ast/"
+      - "src/interface/cli/ast_commands.py"
+      - "docs/schemas/agent-definition-v1.schema.json"
+      - ".context/rules/architecture-standards.md"
+      - ".context/rules/coding-standards.md"
+      - ".context/rules/agent-development-standards.md"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/threat-model.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/architecture-adr.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/trust-boundary-diagram.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "WebSearch"
+      - "WebFetch"
+      - "Context7"
+
+  - id: "eng-lead-001"
+    agent: "eng-lead"
+    skill: "/eng-team"
+    pipeline: "engineering"
+    phase: "eng-phase-2"
+    role: "Standards Enforcement & Implementation Planning"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/architecture-adr.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/threat-model.md"
+      - "orchestration/ast-universal-20260222-001/cross-pollination/barrier-1/red-to-eng/handoff.md"
+      - "pyproject.toml"
+      - ".context/rules/coding-standards.md"
+      - ".context/rules/architecture-standards.md"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-2-planning/eng-lead/implementation-plan.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-2-planning/eng-lead/dependency-assessment.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "WebSearch"
+      - "Context7"
+
+  - id: "eng-backend-001"
+    agent: "eng-backend"
+    skill: "/eng-team"
+    pipeline: "engineering"
+    phase: "eng-phase-3"
+    role: "Core Domain Implementation"
+    model: "sonnet"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-2-planning/eng-lead/implementation-plan.md"
+      - "src/domain/markdown_ast/"
+      - "src/interface/cli/ast_commands.py"
+      - "docs/schemas/agent-definition-v1.schema.json"
+      - ".context/rules/testing-standards.md"
+      - ".context/rules/coding-standards.md"
+    outputs:
+      - "src/domain/markdown_ast/yaml_frontmatter.py"
+      - "src/domain/markdown_ast/xml_section.py"
+      - "src/domain/markdown_ast/html_comment.py"
+      - "src/domain/markdown_ast/document_type.py"
+      - "src/domain/markdown_ast/universal_document.py"
+      - "orchestration/ast-universal-20260222-001/eng/phase-3-implementation/eng-backend/implementation-report.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  - id: "eng-qa-001"
+    agent: "eng-qa"
+    skill: "/eng-team"
+    pipeline: "engineering"
+    phase: "eng-phase-4"
+    role: "Testing & Fuzzing"
+    model: "sonnet"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "src/domain/markdown_ast/"
+      - "tests/"
+      - "orchestration/ast-universal-20260222-001/red/phase-2-vulnerability/red-vuln/vulnerability-assessment.md"
+      - "orchestration/ast-universal-20260222-001/cross-pollination/barrier-2/red-to-eng/handoff.md"
+      - ".context/rules/testing-standards.md"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-4-testing/eng-qa/test-strategy.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-4-testing/eng-qa/coverage-report.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  - id: "eng-security-001"
+    agent: "eng-security"
+    skill: "/eng-team"
+    pipeline: "engineering"
+    phase: "eng-phase-5"
+    role: "Security Code Review"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "src/domain/markdown_ast/"
+      - "src/interface/cli/ast_commands.py"
+      - "orchestration/ast-universal-20260222-001/red/phase-3-exploitation/red-exploit/exploitation-report.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/threat-model.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-4-testing/eng-qa/coverage-report.md"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-5-security/eng-security/security-review-report.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  - id: "eng-reviewer-001"
+    agent: "eng-reviewer"
+    skill: "/eng-team"
+    pipeline: "engineering"
+    phase: "eng-phase-6"
+    role: "Final Quality Gate & Release Readiness"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "src/domain/markdown_ast/"
+      - "tests/"
+      - "orchestration/ast-universal-20260222-001/eng/phase-5-security/eng-security/security-review-report.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-4-testing/eng-qa/coverage-report.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/architecture-adr.md"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/eng/phase-6-quality-gate/eng-reviewer/quality-gate-report.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-6-quality-gate/eng-reviewer/release-readiness.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  # --- Red Team Pipeline Agents ---
+  - id: "red-lead-001"
+    agent: "red-lead"
+    skill: "/red-team"
+    pipeline: "red_team"
+    phase: "red-phase-1"
+    role: "Scope & Authorization"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "src/domain/markdown_ast/"
+      - "src/interface/cli/ast_commands.py"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-1-scope/red-lead/scope-document.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  - id: "red-vuln-001"
+    agent: "red-vuln"
+    skill: "/red-team"
+    pipeline: "red_team"
+    phase: "red-phase-2"
+    role: "Vulnerability Analysis"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-1-scope/red-lead/scope-document.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-1-architecture/eng-architect/threat-model.md"
+      - "orchestration/ast-universal-20260222-001/cross-pollination/barrier-1/eng-to-red/handoff.md"
+      - "src/domain/markdown_ast/"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-2-vulnerability/red-vuln/vulnerability-assessment.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  - id: "red-exploit-001"
+    agent: "red-exploit"
+    skill: "/red-team"
+    pipeline: "red_team"
+    phase: "red-phase-3"
+    role: "Exploitation Testing"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-2-vulnerability/red-vuln/vulnerability-assessment.md"
+      - "orchestration/ast-universal-20260222-001/cross-pollination/barrier-2/eng-to-red/handoff.md"
+      - "src/domain/markdown_ast/"
+      - "src/interface/cli/ast_commands.py"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-3-exploitation/red-exploit/exploitation-report.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+  - id: "red-reporter-001"
+    agent: "red-reporter"
+    skill: "/red-team"
+    pipeline: "red_team"
+    phase: "red-phase-4"
+    role: "Findings & Remediation Reporting"
+    model: "opus"
+    tier: "T3"
+    status: "PLANNED"
+    started_at: null
+    completed_at: null
+    key_inputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-1-scope/red-lead/scope-document.md"
+      - "orchestration/ast-universal-20260222-001/red/phase-2-vulnerability/red-vuln/vulnerability-assessment.md"
+      - "orchestration/ast-universal-20260222-001/red/phase-3-exploitation/red-exploit/exploitation-report.md"
+      - "orchestration/ast-universal-20260222-001/eng/phase-5-security/eng-security/security-review-report.md"
+      - "orchestration/ast-universal-20260222-001/cross-pollination/barrier-3/eng-to-red/handoff.md"
+    outputs:
+      - "orchestration/ast-universal-20260222-001/red/phase-4-findings/red-reporter/engagement-report.md"
+    tools:
+      - "Read"
+      - "Write"
+      - "Edit"
+      - "Bash"
+      - "Glob"
+      - "Grep"
+      - "Context7"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 6
+  groups:
+    # --- Group 1: Parallel Pipeline Start ---
+    - id: 1
+      name: "Pipeline Start: ENG Phase 1 + RED Phase 1 (parallel)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: []
+      max_concurrent: 2
+      agents:
+        - "eng-architect-001"
+        - "red-lead-001"
+      description: "Launch both pipelines: eng-architect produces threat model + ADR; red-lead produces scope document"
+
+    # --- Group 2: Barrier 1 Quality Gate ---
+    - id: 2
+      name: "Barrier 1: Threat Model <-> Scope Sync + QG-B1"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by:
+        - "group-1"
+      gate: "qg-b1"
+      tasks:
+        - "Create eng-to-red handoff (threat model -> targeting priorities)"
+        - "Create red-to-eng handoff (scope -> attack surface boundaries)"
+        - "C4 tournament: 10 adv-executor background agents + adv-scorer"
+        - "Iterate up to 5 times until >= 0.95"
+      description: "Cross-pollinate threat model and scope. C4 tournament quality gate."
+
+    # --- Group 3: ENG Phase 2 (Planning) ---
+    - id: 3
+      name: "ENG Phase 2: Implementation Planning"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by:
+        - "group-2"
+      agents:
+        - "eng-lead-001"
+      description: "eng-lead decomposes 7 enhancements into ordered work items with dependency graph"
+
+    # --- Group 4: ENG Phase 3 + RED Phase 2 (parallel) ---
+    - id: 4
+      name: "ENG Phase 3 + RED Phase 2 (parallel): Implementation + Vulnerability"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by:
+        - "group-3"
+      max_concurrent: 2
+      agents:
+        - "eng-backend-001"
+        - "red-vuln-001"
+      description: "eng-backend implements domain objects + CLI; red-vuln analyzes vulnerability surface"
+
+    # --- Group 5: Barrier 2 Quality Gate ---
+    - id: 5
+      name: "Barrier 2: Implementation <-> Vulnerability Sync + QG-B2"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by:
+        - "group-4"
+      gate: "qg-b2"
+      tasks:
+        - "Create eng-to-red handoff (implemented code for testing)"
+        - "Create red-to-eng handoff (early vuln findings for hardening)"
+        - "C4 tournament: 10 adv-executor background agents + adv-scorer"
+        - "Iterate up to 5 times until >= 0.95"
+      description: "Cross-pollinate implementation and vulnerability findings. C4 tournament quality gate."
+
+    # --- Group 6: ENG Phase 4 + ENG Phase 5 + RED Phase 3 ---
+    - id: 6
+      name: "ENG Phase 4+5 + RED Phase 3: Testing + Security + Exploitation"
+      execution_mode: "PARALLEL"
+      status: "PLANNED"
+      blocked_by:
+        - "group-5"
+      max_concurrent: 2
+      agents:
+        - "eng-qa-001"
+        - "red-exploit-001"
+      sub_sequence:
+        - step: 1
+          agents: ["eng-qa-001", "red-exploit-001"]
+          mode: "PARALLEL"
+          description: "eng-qa testing/fuzzing + red-exploit exploitation testing run in parallel"
+        - step: 2
+          agents: ["eng-security-001"]
+          mode: "SEQUENTIAL"
+          description: "eng-security review after eng-qa completes, incorporating red-exploit findings"
+      description: "Testing, exploitation, and security review. eng-security depends on eng-qa completion."
+
+    # --- Group 7: Barrier 3 Quality Gate ---
+    - id: 7
+      name: "Barrier 3: Red Findings <-> Security Hardening Sync + QG-B3"
+      execution_mode: "SEQUENTIAL"
+      status: "PLANNED"
+      blocked_by:
+        - "group-6"
+      gate: "qg-b3"
+      tasks:
+        - "Create red-to-eng handoff (exploitation findings + PoC for hardening)"
+        - "Create eng-to-red handoff (security review findings for validation)"
+        - "C4 tournament: 10 adv-executor background agents + adv-scorer"
+        - "Iterate up to 5 times until >= 0.95"
+      description: "Cross-pollinate exploitation results and security review. C4 tournament quality gate."
+
+    # --- Group 8: ENG Phase 6 + RED Phase 4 (parallel) ---
+    - id: 8
+      name: "ENG Phase 6 + RED Phase 4 (parallel): Final Gate + Findings"
+      execution_mode: "PARALLEL"
+      status: "PLANNED"
+      blocked_by:
+        - "group-7"
+      max_concurrent: 2
+      agents:
+        - "eng-reviewer-001"
+        - "red-reporter-001"
+      description: "eng-reviewer final quality gate + red-reporter engagement report in parallel"
+
+    # --- Group 9: Barrier 4 Final Synthesis + Quality Gate ---
+    - id: 9
+      name: "Barrier 4: Final Synthesis + QG-B4"
+      execution_mode: "SEQUENTIAL"
+      status: "PLANNED"
+      blocked_by:
+        - "group-8"
+      gate: "qg-b4"
+      tasks:
+        - "Create bidirectional synthesis (quality gate + engagement report)"
+        - "Cross-reference all findings: security review vs exploitation results"
+        - "C4 tournament: 10 adv-executor background agents + adv-scorer"
+        - "ALL 10 strategies with concurrent background execution"
+        - "Iterate up to 5 times until >= 0.95"
+        - "Produce final synthesis document"
+        - "Release readiness determination: GO / NO-GO"
+      description: "Final cross-pollination synthesis. C4 tournament with all 10 strategies. Release readiness."
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "cp-003"
+  entries:
+    - id: "cp-001"
+      timestamp: "2026-02-23T00:00:00Z"
+      trigger: "BARRIER_COMPLETE"
+      recovery_point: "barrier-1"
+      description: "Barrier 1 complete. QG-B1 PASS at 0.951 after 5 iterations. eng-phase-1 and red-phase-1 both COMPLETE. Cross-pollination handoffs delivered. Ready for Group 3 (eng-lead-001 implementation planning)."
+    - id: "cp-002"
+      timestamp: "2026-02-23T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "eng-phase-2"
+      description: "ENG Phase 2 complete. eng-lead-001 produced implementation plan (25 work items, 5 phases, critical path identified) and dependency assessment (no new deps needed). Ready for Group 4 (eng-backend-001 + red-vuln-001 parallel)."
+    - id: "cp-003"
+      timestamp: "2026-02-23T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "group-4"
+      description: "Group 4 complete. eng-backend-001: 21 work items done, 9 new source files, 446 unit tests, 98% coverage, 24 mitigations. red-vuln-001: 27 findings (2 Critical, 8 High, 11 Medium, 6 Low), confidence 0.88. Barrier 2 handoffs written. Ready for Group 5 (QG-B2 C4 Tournament)."
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    eng_phases_complete: 3
+    eng_phases_total: 6
+    eng_phases_percent: 50
+    red_phases_complete: 2
+    red_phases_total: 4
+    red_phases_percent: 50
+    total_phases_complete: 5
+    total_phases_total: 10
+    total_phases_percent: 50
+    barriers_complete: 1
+    barriers_total: 4
+    barriers_percent: 25
+    quality_gates_complete: 1
+    quality_gates_total: 4
+    quality_gates_percent: 25
+    agents_executed: 5
+    agents_total: 10
+    agents_percent: 50
+    adv_executor_invocations: 12  # 10 strategies + selector + scorer for QG-B1
+    adv_executor_total_expected: 48  # 12 per gate x 4 gates (10 executors + selector + scorer)
+
+  quality:
+    qg_b1_score: 0.951
+    qg_b1_iterations: 5
+    qg_b2_score: 0.960  # PASS at iteration 3
+    qg_b2_iterations: 3
+    qg_b3_score: null
+    qg_b3_iterations: 0
+    qg_b4_score: null
+    qg_b4_iterations: 0
+    highest_score: 0.951
+    lowest_score: 0.951
+    average_score: 0.951
+
+  coverage:
+    overall_coverage_before: null
+    overall_coverage_after: null
+    new_module_coverage:
+      yaml_frontmatter: null
+      xml_section: null
+      html_comment: null
+      document_type: null
+      universal_document: null
+      schema_extensions: null
+
+  security:
+    total_findings: 27
+    critical_findings: 2
+    high_findings: 8
+    medium_findings: 11
+    low_findings: 6
+    informational_findings: 0
+    unresolved_critical_high: 10  # All 2 critical + 8 high pending remediation verification
+
+  timing:
+    workflow_started: "2026-02-22T00:00:00Z"
+    eng_phase_1_started: "2026-02-22T00:00:00Z"
+    eng_phase_1_completed: "2026-02-23T00:00:00Z"
+    red_phase_1_started: "2026-02-22T00:00:00Z"
+    red_phase_1_completed: "2026-02-23T00:00:00Z"
+    barrier_1_started: "2026-02-22T00:00:00Z"
+    barrier_1_completed: "2026-02-23T00:00:00Z"
+    eng_phase_2_started: "2026-02-23T00:00:00Z"
+    eng_phase_2_completed: "2026-02-23T00:00:00Z"
+    eng_phase_3_started: "2026-02-23T00:00:00Z"
+    eng_phase_3_completed: "2026-02-23T00:00:00Z"
+    red_phase_2_started: "2026-02-23T00:00:00Z"
+    red_phase_2_completed: "2026-02-23T00:00:00Z"
+    barrier_2_started: "2026-02-23T00:00:00Z"
+    barrier_2_completed: "2026-02-23T00:00:00Z"
+    eng_phase_4_started: null
+    eng_phase_4_completed: null
+    eng_phase_5_started: null
+    eng_phase_5_completed: null
+    red_phase_3_started: null
+    red_phase_3_completed: null
+    barrier_3_started: null
+    barrier_3_completed: null
+    eng_phase_6_started: null
+    eng_phase_6_completed: null
+    red_phase_4_started: null
+    red_phase_4_completed: null
+    barrier_4_started: null
+    barrier_4_completed: null
+    last_activity: "2026-02-23T00:00:00Z"
+    estimated_completion: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Execute QG-B2: C4 Tournament scoring eng-backend-001 implementation + red-vuln-001 vulnerability assessment"
+      gate: "qg-b2"
+      execution_mode: "SEQUENTIAL"
+      description: "Score both deliverables against >= 0.95 threshold. 10 adv-executor background agents + adv-scorer. Iterate up to 5 times."
+      unblocked_by: "Group 4 complete, Barrier 2 handoffs written"
+
+  subsequent:
+    - action: "Group 6: ENG Phase 4+5 (eng-qa, eng-security) + RED Phase 3 (red-exploit)"
+      depends_on: "QG-B2 PASS"
+    - action: "Barrier 3 sync + QG-B3"
+      depends_on: "Group 6 complete"
+    - action: "Group 8: ENG Phase 6 (eng-reviewer) + RED Phase 4 (red-reporter) in parallel"
+      depends_on: "QG-B3 PASS"
+    - action: "Barrier 4 final synthesis + QG-B4"
+      depends_on: "Group 8 complete"
+    - action: "Release readiness determination"
+      depends_on: "QG-B4 PASS"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  last_checkpoint: "cp-003"
+  current_state: "ACTIVE -- Group 4 complete. 5/10 phases done (50%). eng-backend-001: 21 WIs done, 9 new files, 446 tests, 98% coverage, 24 mitigations. red-vuln-001: 27 findings (2 Critical, 8 High). Barrier 2 handoffs written. Ready for Group 5: QG-B2 C4 Tournament."
+  next_step: "Execute QG-B2 C4 Tournament: score eng-backend-001 + red-vuln-001 deliverables"
+
+  files_to_read:
+    - "projects/PROJ-005-markdown-ast/ORCHESTRATION_PLAN.md"
+    - "projects/PROJ-005-markdown-ast/ORCHESTRATION.yaml"
+    - "src/domain/markdown_ast/"
+    - "src/interface/cli/ast_commands.py"
+
+  key_reference_files:
+    - "projects/PROJ-005-markdown-ast/orchestration/feat001-impl-20260220-001/ORCHESTRATION.yaml"
+    - "docs/schemas/agent-definition-v1.schema.json"
+    - ".context/rules/agent-development-standards.md"
+    - ".context/rules/architecture-standards.md"
+    - ".context/rules/coding-standards.md"
+    - ".context/rules/testing-standards.md"
+
+  cross_session_portable: true
+  ephemeral_references: false

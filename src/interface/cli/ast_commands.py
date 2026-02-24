@@ -31,6 +31,8 @@ References:
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -46,6 +48,18 @@ from src.domain.markdown_ast import (
     validate_document,
     validate_nav_table,
 )
+
+# ---------------------------------------------------------------------------
+# Path containment constants (WI-018, M-08, M-10)
+# ---------------------------------------------------------------------------
+
+#: Maximum file size in bytes (1 MB) per M-05.
+_MAX_FILE_SIZE_BYTES: int = 1_048_576
+
+#: When True, path containment checks are enforced.
+#: Set to False in test environments where temp files are outside the repo.
+#: Also respects JERRY_DISABLE_PATH_CONTAINMENT env var for subprocess tests.
+_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
 
 
 def token_to_dict(token: Token) -> dict[str, Any]:
@@ -141,22 +155,104 @@ def node_to_dict(node: SyntaxTreeNode) -> dict[str, Any]:
     }
 
 
+def _get_repo_root() -> Path:
+    """Determine the repository root directory.
+
+    Uses the location of this file to walk up to the repository root.
+    The repository root is identified by the presence of ``pyproject.toml``.
+
+    Returns:
+        Resolved absolute path to the repository root.
+    """
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        if (parent / "pyproject.toml").exists():
+            return parent
+    # Fallback: use 4 levels up from ast_commands.py
+    # (src/interface/cli/ast_commands.py -> root)
+    return Path(__file__).resolve().parents[3]
+
+
+def _check_path_containment(file_path: str) -> tuple[Path | None, str | None]:
+    """Verify that a file path is contained within the repository root (M-08, M-10).
+
+    Resolves the path, resolves symlinks, and verifies containment within
+    the repository root directory. Also enforces the 1 MB file size limit (M-05).
+
+    Args:
+        file_path: Path to the file to check.
+
+    Returns:
+        Tuple of (resolved_path, error_message). If the path is valid and
+        contained, error_message is None. Otherwise, resolved_path is None
+        and error_message describes the violation.
+    """
+    repo_root = _get_repo_root()
+
+    # Resolve the path (follows symlinks)
+    try:
+        resolved = Path(file_path).resolve()
+    except (OSError, ValueError) as exc:
+        return None, f"Cannot resolve path: {exc}"
+
+    # Also resolve via os.path.realpath for symlink detection (M-10)
+    realpath = Path(os.path.realpath(file_path))
+
+    # Check containment against repo root
+    if not resolved.is_relative_to(repo_root):
+        return None, f"Path escapes repository root: {file_path}"
+
+    # Check symlink resolution matches (M-10)
+    if resolved != realpath:
+        # Symlink detected -- verify the real path is also within repo root
+        if not realpath.is_relative_to(repo_root):
+            return None, f"Symlink target escapes repository root: {file_path}"
+
+    # File size check (M-05)
+    if resolved.exists():
+        try:
+            size = resolved.stat().st_size
+            if size > _MAX_FILE_SIZE_BYTES:
+                return None, (
+                    f"File exceeds maximum size "
+                    f"({size} bytes > {_MAX_FILE_SIZE_BYTES} bytes): {file_path}"
+                )
+        except OSError as exc:
+            return None, f"Cannot stat file: {exc}"
+
+    return resolved, None
+
+
 def _read_file(file_path: str) -> tuple[str | None, int]:
-    """Read a file and return its contents and an exit code.
+    """Read a file with path containment checks and return its contents.
+
+    Verifies path containment within the repository root (M-08),
+    resolves symlinks (M-10), and enforces file size limits (M-05)
+    before reading.
 
     Args:
         file_path: Path to the file to read.
 
     Returns:
-        A tuple of (content, exit_code). If the file is not found or
-        cannot be read, content is None and exit_code is 2.
+        A tuple of (content, exit_code). If the file is not found,
+        escapes the repository root, or cannot be read, content is
+        None and exit_code is 2.
     """
-    path = Path(file_path)
-    if not path.exists():
+    # --- Path containment check (WI-018, M-08, M-10) ---
+    if _ENFORCE_PATH_CONTAINMENT:
+        resolved, error = _check_path_containment(file_path)
+        if error is not None:
+            print(f"Error: {error}")
+            return None, 2
+        assert resolved is not None  # guaranteed by _check_path_containment
+    else:
+        resolved = Path(file_path).resolve()
+
+    if not resolved.exists():
         print(f"Error: File not found: {file_path}")
         return None, 2
     try:
-        content = path.read_text(encoding="utf-8")
+        content = resolved.read_text(encoding="utf-8")
         return content, 0
     except OSError as exc:
         print(f"Error reading file {file_path}: {exc}")
@@ -381,8 +477,9 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
     """Modify a frontmatter field in a markdown file and write back.
 
     Reads the file, parses it, modifies the named frontmatter field to the
-    new value, writes the updated content back to disk, and prints a JSON
-    status object to stdout.
+    new value, writes the updated content back to disk using atomic write
+    (temp file + rename) with TOCTOU mitigation (M-21, WI-020), and prints
+    a JSON status object to stdout.
 
     Args:
         file_path: Path to the markdown file.
@@ -407,7 +504,49 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
         return 1
 
     new_content = new_doc.render()
-    Path(file_path).write_text(new_content, encoding="utf-8")
+
+    # --- Atomic write with TOCTOU mitigation (WI-020, M-21) ---
+    target_path = Path(file_path).resolve()
+
+    # Re-verify path containment immediately before write
+    if _ENFORCE_PATH_CONTAINMENT:
+        repo_root = _get_repo_root()
+        if not target_path.is_relative_to(repo_root):
+            print(f"Error: Path escapes repository root at write time: {file_path}")
+            return 2
+
+    temp_fd = None
+    temp_path_str = None
+    try:
+        # Write to temp file in the same directory (ensures same filesystem for rename)
+        temp_fd, temp_path_str = tempfile.mkstemp(
+            dir=str(target_path.parent),
+            suffix=".tmp",
+            prefix=".ast_modify_",
+        )
+        os.write(temp_fd, new_content.encode("utf-8"))
+        os.close(temp_fd)
+        temp_fd = None  # Mark as closed
+
+        # Atomic rename
+        os.replace(temp_path_str, str(target_path))
+        temp_path_str = None  # Mark as renamed (no cleanup needed)
+    except OSError as exc:
+        print(f"Error writing file {file_path}: {exc}")
+        return 2
+    finally:
+        # Clean up temp file descriptor if still open
+        if temp_fd is not None:
+            try:
+                os.close(temp_fd)
+            except OSError:
+                pass
+        # Clean up temp file if rename failed
+        if temp_path_str is not None:
+            try:
+                os.unlink(temp_path_str)
+            except OSError:
+                pass
 
     output = {
         "file": file_path,
@@ -449,3 +588,148 @@ def ast_reinject(file_path: str) -> int:
     ]
     print(json.dumps(output, indent=2))
     return 0
+
+
+# ---------------------------------------------------------------------------
+# RE-006: New CLI subcommands (WI-017)
+# ---------------------------------------------------------------------------
+
+
+def ast_detect(file_path: str) -> int:
+    """Detect the document type of a markdown file.
+
+    Uses ``DocumentTypeDetector`` with path-first, structure-fallback
+    detection. Returns JSON with ``type``, ``method``, and optional
+    ``warning`` fields.
+
+    Args:
+        file_path: Path to the markdown file.
+
+    Returns:
+        0 on success, 2 if the file cannot be read.
+    """
+    from src.domain.markdown_ast.document_type import DocumentTypeDetector
+
+    source, exit_code = _read_file(file_path)
+    if source is None:
+        return exit_code
+
+    doc_type, warning = DocumentTypeDetector.detect(file_path, source)
+
+    # Determine detection method
+    method = "path"
+    path_type = DocumentTypeDetector._detect_from_path(_normalize_for_detection(file_path))
+    if path_type is None:
+        method = "structure"
+
+    output: dict[str, str | None] = {
+        "type": doc_type.value,
+        "method": method,
+    }
+    if warning:
+        output["warning"] = warning
+
+    print(json.dumps(output, indent=2))
+    return 0
+
+
+def ast_sections(file_path: str) -> int:
+    """Extract XML-tagged sections from a markdown file as JSON.
+
+    Uses ``XmlSectionParser`` to extract sections. Returns JSON list
+    of section objects with ``tag_name``, ``content``, ``start_line``,
+    and ``end_line`` fields.
+
+    Args:
+        file_path: Path to the markdown file.
+
+    Returns:
+        0 on success, 2 if the file cannot be read.
+    """
+    from src.domain.markdown_ast.input_bounds import InputBounds
+    from src.domain.markdown_ast.xml_section import XmlSectionParser
+
+    source, exit_code = _read_file(file_path)
+    if source is None:
+        return exit_code
+
+    doc = JerryDocument.parse(source)
+    result = XmlSectionParser.extract(doc, InputBounds.DEFAULT)
+
+    sections_output = [
+        {
+            "tag_name": s.tag_name,
+            "content": s.content,
+            "start_line": s.start_line,
+            "end_line": s.end_line,
+        }
+        for s in result.sections
+    ]
+
+    output: dict[str, Any] = {"sections": sections_output}
+    if result.parse_error:
+        output["parse_error"] = result.parse_error
+    if result.parse_warnings:
+        output["parse_warnings"] = list(result.parse_warnings)
+
+    print(json.dumps(output, indent=2))
+    return 0
+
+
+def ast_metadata(file_path: str) -> int:
+    """Extract HTML comment metadata from a markdown file as JSON.
+
+    Uses ``HtmlCommentMetadata`` to extract metadata blocks. Returns
+    JSON list of block objects, each containing fields and raw comment.
+
+    Args:
+        file_path: Path to the markdown file.
+
+    Returns:
+        0 on success, 2 if the file cannot be read.
+    """
+    from src.domain.markdown_ast.html_comment import HtmlCommentMetadata
+    from src.domain.markdown_ast.input_bounds import InputBounds
+
+    source, exit_code = _read_file(file_path)
+    if source is None:
+        return exit_code
+
+    doc = JerryDocument.parse(source)
+    result = HtmlCommentMetadata.extract(doc, InputBounds.DEFAULT)
+
+    blocks_output = [
+        {
+            "fields": [
+                {"key": f.key, "value": f.value, "line_number": f.line_number} for f in block.fields
+            ],
+            "raw_comment": block.raw_comment,
+            "line_number": block.line_number,
+        }
+        for block in result.blocks
+    ]
+
+    output: dict[str, Any] = {"blocks": blocks_output}
+    if result.parse_error:
+        output["parse_error"] = result.parse_error
+    if result.parse_warnings:
+        output["parse_warnings"] = list(result.parse_warnings)
+
+    print(json.dumps(output, indent=2))
+    return 0
+
+
+def _normalize_for_detection(file_path: str) -> str:
+    """Normalize a file path for document type detection.
+
+    Converts to forward-slash form and strips leading ``./``.
+
+    Args:
+        file_path: Raw file path.
+
+    Returns:
+        Normalized path string.
+    """
+    from src.domain.markdown_ast.document_type import _normalize_path
+
+    return _normalize_path(file_path)
