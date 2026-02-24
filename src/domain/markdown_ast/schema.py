@@ -524,17 +524,8 @@ BUG_SCHEMA: EntitySchema = EntitySchema(
 
 
 # ---------------------------------------------------------------------------
-# Schema registry lookup
+# Schema registry lookup (delegates to frozen SchemaRegistry, V-06 remediation)
 # ---------------------------------------------------------------------------
-
-_SCHEMA_REGISTRY: dict[str, EntitySchema] = {
-    "epic": EPIC_SCHEMA,
-    "feature": FEATURE_SCHEMA,
-    "story": STORY_SCHEMA,
-    "enabler": ENABLER_SCHEMA,
-    "task": TASK_SCHEMA,
-    "bug": BUG_SCHEMA,
-}
 
 
 def get_entity_schema(entity_type: str) -> EntitySchema:
@@ -544,8 +535,13 @@ def get_entity_schema(entity_type: str) -> EntitySchema:
     Returns the pre-defined EntitySchema for the given entity type identifier.
     The lookup is case-sensitive; ``"epic"`` is valid but ``"Epic"`` is not.
 
+    This function delegates to the frozen default ``SchemaRegistry`` in
+    ``schema_definitions.py``. It is backward compatible with the pre-registry
+    API. Supports all 15 registered schemas (6 worktracker + 9 file-type).
+
     Args:
-        entity_type: The entity type string to look up (e.g., "epic", "story").
+        entity_type: The entity type string to look up (e.g., "epic", "story",
+            "agent_definition", "adr").
 
     Returns:
         The corresponding EntitySchema instance.
@@ -559,10 +555,8 @@ def get_entity_schema(entity_type: str) -> EntitySchema:
         >>> schema.entity_type
         'epic'
         >>> get_entity_schema("unknown")
-        ValueError: Unknown entity type 'unknown'. Valid types: epic, feature, story, ...
+        ValueError: Unknown entity type 'unknown'. Valid types: ...
     """
-    schema = _SCHEMA_REGISTRY.get(entity_type)
-    if schema is None:
-        valid = ", ".join(sorted(_SCHEMA_REGISTRY.keys()))
-        raise ValueError(f"Unknown entity type '{entity_type}'. Valid types: {valid}.")
-    return schema
+    from src.domain.markdown_ast.schema_definitions import DEFAULT_REGISTRY
+
+    return DEFAULT_REGISTRY.get(entity_type)

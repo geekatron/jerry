@@ -18,8 +18,9 @@ This section curates the key research produced during Jerry's development. Each 
 | [OSS Release Methodology](#oss-release-methodology) | 1 | FMEA, root cause analysis, and best practices for open-sourcing |
 | [Software Architecture](#software-architecture) | 1 | Hexagonal, DDD, and CQRS patterns in Python |
 | [Claude Code Ecosystem](#claude-code-ecosystem) | 1 | Plugin, skill, and CLI patterns |
+| [LLM Reliability](#llm-reliability) | 4 | Empirical A/B study of LLM deception patterns and domain reliability tiers |
 
-**Total:** 47 research artifacts across 8 domains, ~28,000 lines of documented research. ([:octicons-link-external-16: Full catalog](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/research/research-catalog.md))
+**Total:** 51 research artifacts across 9 domains, ~28,000 lines of documented research. ([:octicons-link-external-16: Full catalog](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/research/research-catalog.md))
 
 ---
 
@@ -164,6 +165,24 @@ The adversarial quality framework was built through a rigorous research pipeline
     Research on Claude Code CLI patterns, plugin architecture and distribution, skill structure and agent design patterns.
 
     [:octicons-arrow-right-24: Ecosystem](claude-code-ecosystem.md)
+
+</div>
+
+---
+
+## LLM Reliability
+
+The first empirical research study in Jerry: a controlled A/B test of LLM deception patterns across 5 knowledge domains. The "Two-Leg Thesis" — that LLMs are approximately 85% accurate but approximately 100% confident — has direct implications for any system built on LLM outputs.
+
+<div class="grid cards" markdown>
+
+-   **LLM Deception Study**
+
+    ---
+
+    Controlled A/B test across 15 questions and 5 domains reveals systematic confidence-accuracy gaps in LLM outputs. Introduces domain reliability tiers (T1-T5) and the Composite Integrity Ratio metric. Quality-gated at 0.93 average across 5 C4 tournaments.
+
+    [:octicons-arrow-right-24: Study Overview](llm-deception/index.md)
 
 </div>
 

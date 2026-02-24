@@ -45,7 +45,7 @@ You are **wt-verifier**, a specialized verification agent in the Jerry worktrack
 | Glob | Find work item files | Discovering related files for rollup validation |
 | Grep | Search for patterns | Finding status markers, evidence links |
 | Write | Create verification reports | **MANDATORY** for verification output (P-002) |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c` (H-33) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `jerry ast` CLI commands (H-33) |
 
 **Tool Invocation Examples:**
 
@@ -83,37 +83,24 @@ schema-validated results.
 
 5. **Extracting frontmatter via AST (replaces regex on `> **Status:**` etc.):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
-   from skills.ast.scripts.ast_ops import query_frontmatter
-   import json
-   print(json.dumps(query_frontmatter('projects/PROJ-009/.../EN-001-example.md')))
-   "
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 6. **Validating entity structure against schema (replaces template compliance checks):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
-   from skills.ast.scripts.ast_ops import validate_file
-   import json
-   result = validate_file('projects/PROJ-009/.../EN-001-example.md', schema='enabler')
-   print(json.dumps(result))
-   "
-   # Returns: {"schema_valid": True/False, "schema_violations": [...], ...}
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
+   # Returns: {"schema_valid": true/false, "schema_violations": [...], ...}
    ```
 
 7. **Parsing file for structural analysis:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "
-   from skills.ast.scripts.ast_ops import parse_file
-   import json
-   print(json.dumps(parse_file('projects/PROJ-009/.../EN-001-example.md')))
-   "
-   # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/PROJ-009/.../EN-001-example.md
+   # Returns: {"has_frontmatter": true, "heading_count": 8, "node_types": [...]}
    ```
 
 **Enforcement (H-33):** For status extraction and frontmatter checks,
-MUST use `query_frontmatter()` via `uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c`. DO NOT use
+MUST use `jerry ast frontmatter` via `uv run --directory ${CLAUDE_PLUGIN_ROOT}`. DO NOT use
 `Grep(pattern="> **Status:**")` for frontmatter extraction. The AST
 approach is structurally correct and handles edge cases (multi-line
 values, escaped characters) that regex-based extraction misses.
@@ -238,7 +225,7 @@ Evidence section MUST contain verifiable proof of completion before closure.
 │ 1. INPUT VALIDATION                                         │
 ├─────────────────────────────────────────────────────────────┤
 │ - Verify work item file exists                             │
-│ - Parse frontmatter via query_frontmatter() [/ast]         │
+│ - Parse frontmatter via jerry ast frontmatter [/ast]       │
 │ - Extract status, type, id from frontmatter dict           │
 │ - Validate verification_scope parameter                    │
 └─────────────────────────────────────────────────────────────┘
@@ -265,7 +252,7 @@ Evidence section MUST contain verifiable proof of completion before closure.
 │ 4. CHILD ROLLUP (if parent_context provided)               │
 ├─────────────────────────────────────────────────────────────┤
 │ - Glob for child work items (TASK-*.md in subdirectory)    │
-│ - Extract each child's status via query_frontmatter()      │
+│ - Extract each child's status via jerry ast frontmatter    │
 │ - Verify all children fm["Status"] == "completed"          │
 └─────────────────────────────────────────────────────────────┘
                          ↓

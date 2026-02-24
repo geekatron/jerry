@@ -19,7 +19,7 @@
 |---------|---------|
 | [Summary](#summary) | Brief description and value proposition |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
-| [Children (Spikes)](#children-spikes) | Spike inventory |
+| [Children Stories/Enablers](#children-storiesenablers) | Spike inventory |
 | [Progress Summary](#progress-summary) | Overall feature progress |
 | [Related Items](#related-items) | Dependencies |
 | [History](#history) | Status changes |
@@ -61,7 +61,7 @@ Assess the two primary approaches for automated multi-instance Claude management
 
 ---
 
-## Children (Spikes)
+## Children Stories/Enablers
 
 | ID | Type | Title | Status | Priority | Timebox |
 |----|------|-------|--------|----------|---------|
@@ -99,8 +99,9 @@ Assess the two primary approaches for automated multi-instance Claude management
 
 | Dependency Type | Item | Description |
 |----------------|------|-------------|
-| SPIKE-001 informs | SPIKE-002 | Instance approach determines lifecycle design |
-| SPIKE-002 informs | Go/no-go ADR | Feasibility determines whether to proceed |
+| SPIKE-001 parallel with | SPIKE-002 | Cross-pollinated pipeline with sync barriers; research runs concurrently, analysis cross-informs |
+| Both spikes inform | Go/no-go ADR | Convergent Phase 3: ps-architect synthesizes both spikes into decision |
+| Orchestrated by | ORCHESTRATION_PLAN.md | Cross-pollinated pipeline pattern with quality gates at barriers |
 
 ---
 

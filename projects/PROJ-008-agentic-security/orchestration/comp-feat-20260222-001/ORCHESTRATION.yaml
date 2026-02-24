@@ -1,0 +1,452 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for PROJ-008 Competitive Feature Bridge
+# Document ID: PROJ-008-COMPFEAT-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-02-22T18:00:00Z
+
+schema_version: "3.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "comp-feat-20260222-001"
+  name: "PROJ-008 Competitive Feature Bridge - Cross-Pollinated Pipeline"
+  project_id: "PROJ-008"
+  version: "2.0"
+  created_at: "2026-02-22T12:00:00Z"
+  updated_at: "2026-02-22T18:00:00Z"
+  status: "COMPLETE"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL
+    - CONCURRENT
+    - BARRIER_SYNC
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 3
+    max_barrier_retries: 3
+    checkpoint_frequency: "PHASE"
+    criticality: "C4"
+
+  context:
+    parent_workflow: "agentic-sec-20260222-001"
+    purpose: "Bridge dropped competitive intelligence (ST-061) with completed security architecture to produce actionable, security-enabled feature designs and work items"
+    dropped_content: "ST-061 strategic content (5 competitive gaps, 5 leapfrog opportunities, P1-P7 priorities, requirements 9.1-9.8, Governance-as-Code killer feature strategy)"
+    outcome: "All ST-061 strategic content recovered. 33 FR-FEAT requirements, 4 trade studies, P1-P4 architecture designs, 4-phase roadmap, 82 work items decomposed."
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "orchestration/comp-feat-20260222-001/"
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  pipeline_ps:
+    id: "pipeline-ps"
+    name: "Problem-Solving Pipeline"
+    description: "Bridge analysis, security-feature mapping, feature architecture, roadmap synthesis"
+    short_alias: "ps"
+    skill_source: "problem-solving"
+    status: "COMPLETE"
+    current_phase: 3
+    total_phases: 3
+    progress_percent: 100
+
+    phases:
+      - id: 1
+        name: "Competitive-Security Bridge Analysis"
+        path_id: "phase-1"
+        status: "COMPLETE"
+        agents:
+          - id: "ps-analyst-003"
+            name: "Bridge Gap Analysis"
+            status: "COMPLETE"
+            score: 0.953
+            iterations: 1
+            lines: 566
+            artifact: "orchestration/comp-feat-20260222-001/ps/phase-1/ps-analyst-003/ps-analyst-003-bridge-analysis.md"
+            inputs:
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-001/ps-researcher-001-openclaw-feature-analysis.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-2/ps-architect-001/ps-architect-001-security-architecture.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-5/ps-synthesizer-001/ps-synthesizer-001-best-practices.md"
+          - id: "ps-researcher-004"
+            name: "Security-to-Feature Mapping"
+            status: "COMPLETE"
+            score: 0.953
+            iterations: 1
+            lines: 417
+            artifact: "orchestration/comp-feat-20260222-001/ps/phase-1/ps-researcher-004/ps-researcher-004-security-feature-mapping.md"
+            inputs:
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-001/ps-researcher-001-openclaw-feature-analysis.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-3/ps-analyst-002/ps-analyst-002-implementation-specs.md"
+              - "orchestration/agentic-sec-20260222-001/nse/phase-2/nse-requirements-002/nse-requirements-002-requirements-baseline.md"
+
+      - id: 2
+        name: "Security-Enabled Feature Architecture"
+        path_id: "phase-2"
+        status: "COMPLETE"
+        agents:
+          - id: "ps-architect-002"
+            name: "Feature Architecture Design"
+            status: "COMPLETE"
+            score: 0.954
+            iterations: 1
+            lines: 1174
+            artifact: "orchestration/comp-feat-20260222-001/ps/phase-2/ps-architect-002/ps-architect-002-feature-architecture.md"
+            inputs:
+              - "orchestration/comp-feat-20260222-001/cross-pollination/barrier-1/nse-to-ps/handoff.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-001/ps-researcher-001-openclaw-feature-analysis.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-2/ps-architect-001/ps-architect-001-security-architecture.md"
+
+      - id: 3
+        name: "Actionable Roadmap"
+        path_id: "phase-3"
+        status: "COMPLETE"
+        agents:
+          - id: "ps-synthesizer-002"
+            name: "Phased Feature Roadmap"
+            status: "COMPLETE"
+            score: 0.955
+            iterations: 1
+            lines: 650
+            artifact: "orchestration/comp-feat-20260222-001/ps/phase-3/ps-synthesizer-002/ps-synthesizer-002-feature-roadmap.md"
+
+  pipeline_nse:
+    id: "pipeline-nse"
+    name: "NASA-SE Pipeline"
+    description: "Feature requirements, trade studies, work item decomposition"
+    short_alias: "nse"
+    skill_source: "nasa-systems-engineering"
+    status: "COMPLETE"
+    current_phase: 3
+    total_phases: 3
+    progress_percent: 100
+
+    phases:
+      - id: 1
+        name: "Feature Requirements Derivation"
+        path_id: "phase-1"
+        status: "COMPLETE"
+        agents:
+          - id: "nse-requirements-003"
+            name: "Feature Requirements from Competitive Intelligence"
+            status: "COMPLETE"
+            score: 0.952
+            iterations: 1
+            lines: 695
+            artifact: "orchestration/comp-feat-20260222-001/nse/phase-1/nse-requirements-003/nse-requirements-003-feature-requirements.md"
+            inputs:
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-researcher-001/ps-researcher-001-openclaw-feature-analysis.md"
+              - "orchestration/agentic-sec-20260222-001/ps/phase-1/ps-analyst-001/ps-analyst-001-gap-analysis.md"
+              - "orchestration/agentic-sec-20260222-001/nse/phase-2/nse-requirements-002/nse-requirements-002-requirements-baseline.md"
+
+      - id: 2
+        name: "Feature Trade Studies"
+        path_id: "phase-2"
+        status: "COMPLETE"
+        agents:
+          - id: "nse-explorer-003"
+            name: "Feature Decision Trade Studies"
+            status: "COMPLETE"
+            score: 0.954
+            iterations: 1
+            lines: 923
+            artifact: "orchestration/comp-feat-20260222-001/nse/phase-2/nse-explorer-003/nse-explorer-003-feature-trade-studies.md"
+
+      - id: 3
+        name: "Work Item Decomposition"
+        path_id: "phase-3"
+        status: "COMPLETE"
+        agents:
+          - id: "nse-requirements-004"
+            name: "Work Item Decomposition"
+            status: "COMPLETE"
+            score: 0.953
+            iterations: 1
+            lines: 1245
+            artifact: "orchestration/comp-feat-20260222-001/nse/phase-3/nse-requirements-004/nse-requirements-004-work-items.md"
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  - id: "barrier-1"
+    name: "Bridge Analysis -> Feature Architecture Cross-Pollination"
+    status: "COMPLETE"
+    depends_on:
+      - "pipeline_ps.phase.1"
+      - "pipeline_nse.phase.1"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/comp-feat-20260222-001/cross-pollination/barrier-1/ps-to-nse/handoff.md"
+        status: "COMPLETE"
+      nse_to_ps:
+        path: "orchestration/comp-feat-20260222-001/cross-pollination/barrier-1/nse-to-ps/handoff.md"
+        status: "COMPLETE"
+
+  - id: "barrier-2"
+    name: "Feature Architecture -> Roadmap Cross-Pollination"
+    status: "COMPLETE"
+    depends_on:
+      - "pipeline_ps.phase.2"
+      - "pipeline_nse.phase.2"
+    artifacts:
+      ps_to_nse:
+        path: "orchestration/comp-feat-20260222-001/cross-pollination/barrier-2/ps-to-nse/handoff.md"
+        status: "COMPLETE"
+      nse_to_ps:
+        path: "orchestration/comp-feat-20260222-001/cross-pollination/barrier-2/nse-to-ps/handoff.md"
+        status: "COMPLETE"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 6
+  groups:
+    - id: 1
+      name: "Phase 1 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      agents:
+        - "ps-analyst-003"
+        - "ps-researcher-004"
+        - "nse-requirements-003"
+
+    - id: 2
+      name: "Barrier 1 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: [1]
+      tasks:
+        - "create-ps-to-nse-barrier-1"
+        - "create-nse-to-ps-barrier-1"
+
+    - id: 3
+      name: "Phase 2 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: [2]
+      agents:
+        - "ps-architect-002"
+        - "nse-explorer-003"
+
+    - id: 4
+      name: "Barrier 2 Cross-Pollination"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: [3]
+      tasks:
+        - "create-ps-to-nse-barrier-2"
+        - "create-nse-to-ps-barrier-2"
+
+    - id: 5
+      name: "Phase 3 Agents (PS + NSE parallel)"
+      execution_mode: "PARALLEL"
+      status: "COMPLETE"
+      blocked_by: [4]
+      agents:
+        - "ps-synthesizer-002"
+        - "nse-requirements-004"
+
+    - id: 6
+      name: "Final Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: [5]
+      agents:
+        - "orch-synthesizer-002"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "cp-comp-feat-006"
+  entries:
+    - id: "cp-comp-feat-001"
+      timestamp: "2026-02-22T13:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 1 complete (3 agents: ps-analyst-003, ps-researcher-004, nse-requirements-003)"
+    - id: "cp-comp-feat-002"
+      timestamp: "2026-02-22T14:00:00Z"
+      trigger: "BARRIER_COMPLETE"
+      recovery_point: "Barrier 1 complete (bidirectional cross-pollination)"
+    - id: "cp-comp-feat-003"
+      timestamp: "2026-02-22T15:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 2 complete (2 agents: ps-architect-002, nse-explorer-003)"
+    - id: "cp-comp-feat-004"
+      timestamp: "2026-02-22T16:00:00Z"
+      trigger: "BARRIER_COMPLETE"
+      recovery_point: "Barrier 2 complete (bidirectional cross-pollination)"
+    - id: "cp-comp-feat-005"
+      timestamp: "2026-02-22T17:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      recovery_point: "Phase 3 complete (2 agents: ps-synthesizer-002, nse-requirements-004)"
+    - id: "cp-comp-feat-006"
+      timestamp: "2026-02-22T18:00:00Z"
+      trigger: "WORKFLOW_COMPLETE"
+      recovery_point: "Workflow complete (final synthesis by orch-synthesizer-002)"
+
+# =============================================================================
+# QUALITY
+# =============================================================================
+quality:
+  threshold: 0.95
+  criticality: "C4"
+  scoring_mechanism: "S-014"
+  iteration_ceiling: 5
+  required_strategies:
+    - "S-001"
+    - "S-002"
+    - "S-003"
+    - "S-004"
+    - "S-007"
+    - "S-010"
+    - "S-011"
+    - "S-012"
+    - "S-013"
+    - "S-014"
+  optional_strategies: []
+
+  phase_scores:
+    phase-1:
+      ps:
+        agents:
+          ps-analyst-003: { score: 0.953, iterations: 1, status: "PASS" }
+          ps-researcher-004: { score: 0.953, iterations: 1, status: "PASS" }
+      nse:
+        agents:
+          nse-requirements-003: { score: 0.952, iterations: 1, status: "PASS" }
+    phase-2:
+      ps:
+        agents:
+          ps-architect-002: { score: 0.954, iterations: 1, status: "PASS" }
+      nse:
+        agents:
+          nse-explorer-003: { score: 0.954, iterations: 1, status: "PASS" }
+    phase-3:
+      ps:
+        agents:
+          ps-synthesizer-002: { score: 0.955, iterations: 1, status: "PASS" }
+      nse:
+        agents:
+          nse-requirements-004: { score: 0.953, iterations: 1, status: "PASS" }
+
+  barrier_scores:
+    barrier-1:
+      ps_to_nse: { status: "PASS" }
+      nse_to_ps: { status: "PASS" }
+    barrier-2:
+      ps_to_nse: { status: "PASS" }
+      nse_to_ps: { status: "PASS" }
+
+  workflow_quality:
+    average_score: 0.9534
+    lowest_score: 0.952
+    highest_score: 0.955
+    total_iterations: 7
+    gates_passed: 7
+    gates_failed: 0
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 6
+    phases_total: 6
+    phases_percent: 100
+    barriers_complete: 2
+    barriers_total: 2
+    barriers_percent: 100
+    agents_executed: 8
+    agents_total: 8
+    agents_percent: 100
+    artifacts_created: 13
+    artifacts_total: 13
+    artifacts_detail:
+      phase_1: 3
+      barrier_1: 2
+      phase_2: 2
+      barrier_2: 2
+      phase_3: 2
+      synthesis: 1
+      orchestration: 1
+
+  output:
+    total_lines: 5670
+    total_requirements: 33
+    total_trade_studies: 4
+    total_work_items: 82
+    feature_architectures: 4
+    roadmap_phases: 4
+    blockers_identified: 2
+    convergent_gaps: 3
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active:
+    - id: "B-004"
+      description: "L3 enforcement mechanism (200x effectiveness variation)"
+      severity: "CRITICAL"
+      impact: "P1 supply chain L3 runtime, P4 marketplace runtime sandboxing, TS-4 Phase 3"
+      mitigation: "L5 CI gates provide B-004-independent enforcement floor; Phase 1 features designed to be B-004-independent"
+    - id: "CG-001"
+      description: "L4-I06 behavioral drift monitor absent"
+      severity: "HIGH"
+      impact: "P7 aggregate intent monitoring, TS-2 multi-model behavioral monitoring"
+      mitigation: "9.5 resolution provides 3-component design with seed threat patterns"
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - "Commit all comp-feat-20260222-001 artifacts"
+  subsequent:
+    - "Begin EPIC-007 (Progressive Governance) implementation -- zero new architecture, config-only"
+    - "Resolve B-004 (L3 enforcement mechanism) to unblock P1 L3 runtime and P4 marketplace"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  recovery_state:
+    last_checkpoint: "cp-comp-feat-006"
+    current_phase: "COMPLETE"
+    current_phase_name: "Workflow Complete"
+    workflow_status: "COMPLETE"
+    current_activity: "All phases, barriers, and synthesis complete"
+    next_step: "Commit artifacts and begin implementation per roadmap Phase 1"
+    updated_at: "2026-02-22T18:00:00Z"
+    cross_session_portable: true
+    ephemeral_references: false
+
+  files_to_read:
+    - path: "projects/PROJ-008-agentic-security/orchestration/comp-feat-20260222-001/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state"
+    - path: "projects/PROJ-008-agentic-security/orchestration/comp-feat-20260222-001/ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Strategic context and agent definitions"
+    - path: "projects/PROJ-008-agentic-security/orchestration/comp-feat-20260222-001/synthesis/orch-synthesizer-002-workflow-synthesis.md"
+      priority: 3
+      purpose: "Final workflow synthesis"

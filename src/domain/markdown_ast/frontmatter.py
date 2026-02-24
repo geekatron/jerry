@@ -51,7 +51,7 @@ _FRONTMATTER_PATTERN = re.compile(r"^>\s*\*\*(?P<key>[^*:]+):\*\*\s*(?P<value>.+
 # ---------------------------------------------------------------------------
 
 
-@dataclass
+@dataclass(frozen=True)
 class FrontmatterField:
     """
     A single key-value field extracted from a Jerry blockquote frontmatter.

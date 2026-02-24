@@ -34,7 +34,7 @@
 We hypothesize that:
 1. Git worktree operations (add, remove, list) are fully automatable via `gitpython` or subprocess
 2. Branch provisioning (create, merge main, push) follows deterministic patterns already established in this project
-3. Claude instance binding depends on SPIKE-001 findings (SDK vs CLI determines how sessions attach to worktrees)
+3. Claude instance binding design varies by approach (SDK vs CLI) — Phase 1 researches worktree automation independently; Phase 2 incorporates SPIKE-001 findings via cross-pollination
 4. A `jerry worktree create|dispatch|merge|cleanup` command set could encapsulate the full lifecycle
 5. The main complexity is cross-worktree state coordination — ensuring ORCHESTRATION.yaml and WORKTRACKER.md stay consistent
 
@@ -88,10 +88,24 @@ _To be populated after research._
 
 ---
 
+## Execution Structure
+
+**Parallel-with-sync-point:** SPIKE-002 executes in parallel with SPIKE-001 within an orchestrated cross-pollinated pipeline. Phase 1 (worktree research) is approach-agnostic and runs concurrently with SPIKE-001 research. Phase 2 (session lifecycle design) incorporates SPIKE-001 findings via cross-pollination.
+
+| Phase | SPIKE-002 Work | Sync Point |
+|-------|---------------|------------|
+| Phase 1 (Research) | Current workflow audit, git worktree API, env provisioning | Barrier 1: Send worktree constraints to SPIKE-001; receive instance approaches from SPIKE-001 |
+| Phase 2 (Analysis) | Session lifecycle design for both approaches, informed by SDK/CLI capabilities | Barrier 2: Send lifecycle feasibility to SPIKE-001; receive scored recommendation |
+| Phase 3 (Decision) | Convergent: ps-architect creates go/no-go ADR from both spikes | — |
+
+See `ORCHESTRATION_PLAN.md` for full workflow diagram.
+
+---
+
 ## Related Items
 
 - Parent: [FEAT-001: Multi-Instance Strategy Assessment](./FEAT-001-instance-strategy.md)
-- Depends On: [SPIKE-001: Claude SDK vs CLI Instance Comparison](./SPIKE-001-sdk-vs-cli.md)
+- Parallel With: [SPIKE-001: Claude SDK vs CLI Instance Comparison](./SPIKE-001-sdk-vs-cli.md) (cross-pollinated pipeline)
 - Related: Current session — manual worktree management is the direct motivation
 
 ---
@@ -101,3 +115,4 @@ _To be populated after research._
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Spike defined. 7-step research approach. Depends on SPIKE-001 for instance binding design. 8h timebox. |
+| 2026-02-20 | pending | Restructured: parallel-with-sync-point execution with SPIKE-001. Phase 1 is approach-agnostic. Orchestration plan created. |

@@ -404,7 +404,18 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     References:
         - ST-004: Add jerry ast CLI Commands
     """
-    from src.interface.cli.ast_commands import ast_parse, ast_query, ast_render, ast_validate
+    from src.interface.cli.ast_commands import (
+        ast_detect,
+        ast_frontmatter,
+        ast_metadata,
+        ast_modify,
+        ast_parse,
+        ast_query,
+        ast_reinject,
+        ast_render,
+        ast_sections,
+        ast_validate,
+    )
 
     if args.command is None:
         print("No ast command specified. Use 'jerry ast --help'.")
@@ -415,9 +426,25 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     elif args.command == "render":
         return ast_render(args.file)
     elif args.command == "validate":
-        return ast_validate(args.file, getattr(args, "schema", None))
+        return ast_validate(
+            args.file,
+            getattr(args, "schema", None),
+            nav=getattr(args, "nav", False),
+        )
     elif args.command == "query":
         return ast_query(args.file, args.selector, json_output)
+    elif args.command == "frontmatter":
+        return ast_frontmatter(args.file)
+    elif args.command == "modify":
+        return ast_modify(args.file, args.key, args.value)
+    elif args.command == "reinject":
+        return ast_reinject(args.file)
+    elif args.command == "detect":
+        return ast_detect(args.file)
+    elif args.command == "sections":
+        return ast_sections(args.file)
+    elif args.command == "metadata":
+        return ast_metadata(args.file)
 
     print(f"Unknown ast command: {args.command}")
     return 1

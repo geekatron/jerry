@@ -30,11 +30,79 @@ _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from skills.ast.scripts.ast_ops import (  # noqa: E402
-    parse_file,
-    query_frontmatter,
-    validate_file,
+from src.domain.markdown_ast import (  # noqa: E402
+    JerryDocument,
+    extract_frontmatter,
+    get_entity_schema,
+    validate_document,
+    validate_nav_table,
 )
+
+
+def parse_file(file_path: str) -> dict:
+    """Parse a file and return structure info."""
+    with open(file_path, encoding="utf-8") as f:
+        source = f.read()
+    doc = JerryDocument.parse(source)
+    node_types = []
+    seen: set[str] = set()
+    for node in doc.tree.walk():
+        if node.is_root:
+            continue
+        if node.type not in seen:
+            seen.add(node.type)
+            node_types.append(node.type)
+    fm = extract_frontmatter(doc)
+    return {
+        "file_path": file_path,
+        "source_length": len(source),
+        "node_types": node_types,
+        "heading_count": len(doc.query("heading")),
+        "has_frontmatter": len(fm) > 0,
+    }
+
+
+def query_frontmatter(file_path: str) -> dict[str, str]:
+    """Extract frontmatter fields."""
+    with open(file_path, encoding="utf-8") as f:
+        source = f.read()
+    doc = JerryDocument.parse(source)
+    fm = extract_frontmatter(doc)
+    return dict(fm.items())
+
+
+def validate_file(file_path: str, schema: str | None = None) -> dict:
+    """Validate file structure."""
+    with open(file_path, encoding="utf-8") as f:
+        source = f.read()
+    doc = JerryDocument.parse(source)
+    nav_result = validate_nav_table(doc)
+    schema_valid = True
+    schema_violations: list[dict[str, str]] = []
+    if schema is not None:
+        entity_schema = get_entity_schema(schema)
+        report = validate_document(doc, entity_schema)
+        schema_valid = report.is_valid
+        schema_violations = [
+            {
+                "field_path": v.field_path,
+                "expected": v.expected,
+                "actual": v.actual,
+                "severity": v.severity,
+                "message": v.message,
+            }
+            for v in report.violations
+        ]
+    return {
+        "is_valid": nav_result.is_valid and schema_valid,
+        "nav_table_valid": nav_result.is_valid,
+        "missing_nav_entries": nav_result.missing_entries,
+        "orphaned_nav_entries": [e.section_name for e in nav_result.orphaned_entries],
+        "schema_valid": schema_valid,
+        "schema": schema,
+        "schema_violations": schema_violations,
+    }
+
 
 # ---------------------------------------------------------------------------
 # Entity type detection (same logic as in test suite)

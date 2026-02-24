@@ -94,6 +94,23 @@ jobs:
           pip install filelock mypy ruff
           pip-audit --strict
 
+      - name: Check for banned YAML APIs (M-04b)
+        run: |
+          echo "Checking for banned yaml.load() and yaml.unsafe_load() usage..."
+          FOUND=0
+          if grep -rn 'yaml\.load(' src/ --include='*.py' | grep -v 'yaml\.safe_load('; then
+            echo "ERROR: Found yaml.load() usage. Use yaml.safe_load() only (M-04b)."
+            FOUND=1
+          fi
+          if grep -rn 'yaml\.unsafe_load(' src/ --include='*.py'; then
+            echo "ERROR: Found yaml.unsafe_load() usage. Use yaml.safe_load() only (M-04b)."
+            FOUND=1
+          fi
+          if [ "$FOUND" -eq 1 ]; then
+            exit 1
+          fi
+          echo "No banned YAML APIs found. OK."
+
   # ===========================================================================
   # Plugin Validation (EN-005)
   # ===========================================================================

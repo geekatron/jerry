@@ -8,16 +8,19 @@ repo_name: geekatron/jerry
 
 theme:
   name: material
+  custom_dir: overrides
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: default
+      scheme: saucer-boy
       primary: deep purple
       accent: amber
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
-      scheme: slate
+      scheme: saucer-boy-dark
       primary: deep purple
       accent: amber
       toggle:
@@ -52,8 +55,21 @@ exclude_docs: |
   schemas/session_context.json
   schemas/types/
 
+extra_css:
+  - stylesheets/saucer-boy.css
+
 plugins:
   - search
+  - blog:
+      blog_dir: blog
+      post_date_format: long
+      post_url_format: "{slug}"
+      archive_date_format: yyyy
+      categories_allowed:
+        - Prompting
+        - Architecture
+        - Quality
+        - Process
 
 markdown_extensions:
   - admonition
@@ -72,11 +88,14 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - toc:
       permalink: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 # Nav curated by FEAT-024 content audit (ps-architect-001-content-audit.md).
 # 13 PUBLIC files from 57 total in docs/. Internal dirs excluded: knowledge/,
 # analysis/, design/, research/, specifications/, synthesis/, templates/.
 # ADRs (docs/adrs/) deferred pending internal work-item reference scrubbing.
+# Articles section added by PROJ-011 (Saucer Boy Articles).
 nav:
   - Home: index.md
   - Getting Started:
@@ -92,6 +111,8 @@ nav:
     - CLAUDE.md Guide: CLAUDE-MD-GUIDE.md
     - Schema Versioning: schemas/SCHEMA_VERSIONING.md
     - Session Context Schema: schemas/SESSION_CONTEXT_GUIDE.md
+  - Articles:
+    - blog/index.md
   - Research:
     - Overview: research/index.md
     - Single vs. Multi-Agent Analysis: research/single-vs-multi-agent.md
@@ -104,5 +125,10 @@ nav:
     - OSS Methodology: research/oss-methodology.md
     - Architecture Patterns: research/architecture-patterns.md
     - Claude Code Ecosystem: research/claude-code-ecosystem.md
+    - LLM Deception Study:
+        - Overview: research/llm-deception/index.md
+        - "The 85% Problem": research/llm-deception/the-85-problem.md
+        - Methodology & Results: research/llm-deception/methodology.md
+        - Architecture & Recommendations: research/llm-deception/architecture.md
   - Governance:
     - Jerry Constitution: governance/JERRY_CONSTITUTION.md

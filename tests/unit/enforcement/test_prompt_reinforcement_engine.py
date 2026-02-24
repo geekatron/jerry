@@ -19,6 +19,7 @@ References:
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -106,11 +107,14 @@ class TestParseReinjectMarkers:
         assert "Quality gate >= 0.92" in str(markers[0]["content"])
         assert "H-13" in str(markers[0]["content"])
 
-    def test_parse_markers_when_valid_content_then_extracts_tokens(self) -> None:
-        """Token values should be extracted as integers."""
-        markers = PromptReinforcementEngine._parse_reinject_markers(SAMPLE_QUALITY_ENFORCEMENT)
-        token_values = [m["tokens"] for m in markers]
-        assert token_values == [90, 30, 100, 40]
+    def test_parse_markers_when_no_tokens_field_then_still_parses(self) -> None:
+        """Markers without deprecated tokens field should parse correctly (EN-002 R4)."""
+        content = '<!-- L2-REINJECT: rank=3, content="Rule without tokens field." -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 1
+        assert markers[0]["rank"] == 3
+        assert markers[0]["content"] == "Rule without tokens field."
+        assert "tokens" not in markers[0]
 
     def test_parse_markers_when_empty_content_then_returns_empty(self) -> None:
         """Empty content should return an empty list."""
@@ -142,7 +146,107 @@ class TestParseReinjectMarkers:
         assert len(markers) == 1
         assert markers[0]["content"] == "Single item."
         assert markers[0]["rank"] == 1
-        assert markers[0]["tokens"] == 20
+
+    def test_parse_markers_when_content_too_long_then_rejects(self) -> None:
+        """C-06: Content exceeding max length should be rejected."""
+        long_content = "x" * 501
+        content = f'<!-- L2-REINJECT: rank=1, tokens=200, content="{long_content}" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_html_comment_then_rejects(self) -> None:
+        """C-06: Content containing HTML comment delimiters should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="Inject --> escape" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_script_tag_then_rejects(self) -> None:
+        """C-06: Content containing script tags should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<script>alert(1)</script>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_at_max_length_then_accepts(self) -> None:
+        """C-06: Content exactly at max length should be accepted."""
+        exact_content = "x" * 500
+        content = f'<!-- L2-REINJECT: rank=1, tokens=200, content="{exact_content}" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 1
+
+    def test_parse_markers_when_content_has_mixed_case_script_then_rejects(self) -> None:
+        """C-06: Case-insensitive matching should reject mixed-case script tags."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<ScRiPt>alert(1)</ScRiPt>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_iframe_then_rejects(self) -> None:
+        """C-06: Content containing iframe tags should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<iframe src=x>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_object_tag_then_rejects(self) -> None:
+        """C-06: Content containing object tags should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<object data=x>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_embed_tag_then_rejects(self) -> None:
+        """C-06: Content containing embed tags should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<EMBED src=x>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_javascript_uri_then_rejects(self) -> None:
+        """C-06: Content containing javascript: URI scheme should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="JavaScript:void(0)" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_data_html_uri_then_rejects(self) -> None:
+        """C-06: Content containing data:text/html URI should be rejected."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="data:text/html,payload" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_svg_tag_then_rejects(self) -> None:
+        """C-06: Content containing svg tags should be rejected (eng-security F-01)."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<svg onload=alert(1)>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_event_handler_then_rejects(self) -> None:
+        """C-06: Content containing inline event handlers should be rejected (eng-security F-01)."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<img onerror=alert(1)>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_content_has_mixed_case_event_handler_then_rejects(self) -> None:
+        """C-06: Case-insensitive event handler detection."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<div OnMouseOver=x>" -->'
+        markers = PromptReinforcementEngine._parse_reinject_markers(content)
+        assert len(markers) == 0
+
+    def test_parse_markers_when_oversized_content_then_logs_warning(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """C-06: Rejected oversized markers should log a warning."""
+        long_content = "x" * 501
+        content = f'<!-- L2-REINJECT: rank=1, tokens=200, content="{long_content}" -->'
+        with caplog.at_level("WARNING"):
+            PromptReinforcementEngine._parse_reinject_markers(content)
+        assert "C-06" in caplog.text
+        assert "content length" in caplog.text
+
+    def test_parse_markers_when_injection_detected_then_logs_warning(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """C-06: Rejected injection markers should log a warning."""
+        content = '<!-- L2-REINJECT: rank=1, tokens=20, content="<script>bad</script>" -->'
+        with caplog.at_level("WARNING"):
+            PromptReinforcementEngine._parse_reinject_markers(content)
+        assert "C-06" in caplog.text
+        assert "injection pattern" in caplog.text
 
 
 # =============================================================================
@@ -246,14 +350,14 @@ class TestGenerateReinforcement:
 
 
 class TestBudgetEnforcement:
-    """Tests for 600-token budget constraint verification."""
+    """Tests for 850-token budget constraint verification (EN-002: updated from 600)."""
 
     def test_budget_enforcement_when_default_budget_then_within_limit(
         self, engine: PromptReinforcementEngine
     ) -> None:
-        """Generated reinforcement should fit within 600-token budget."""
+        """Generated reinforcement should fit within 850-token budget (EN-002)."""
         result = engine.generate_reinforcement()
-        assert result.token_estimate <= 600
+        assert result.token_estimate <= 850
 
     def test_budget_enforcement_when_tiny_budget_then_limits_items(self, rules_file: Path) -> None:
         """A very small budget should limit how many items are included."""
@@ -363,15 +467,118 @@ class TestErrorHandling:
         assert result.preamble == ""
         assert result.items_included == 0
 
-    def test_generate_reinforcement_when_directory_as_path_then_returns_empty(
+    def test_generate_reinforcement_when_empty_directory_then_returns_empty(
         self, tmp_path: Path
     ) -> None:
-        """Passing a directory instead of file should return empty (fail-open)."""
+        """Empty directory (no .md files) should return empty reinforcement."""
         engine = PromptReinforcementEngine(rules_path=tmp_path)
         result = engine.generate_reinforcement()
 
         assert result.preamble == ""
         assert result.items_included == 0
+
+
+# =============================================================================
+# TestMultiFileReading
+# =============================================================================
+
+
+class TestMultiFileReading:
+    """Tests for reading L2-REINJECT markers from multiple files in a directory."""
+
+    def test_multi_file_when_directory_with_multiple_md_files_then_reads_all(
+        self, tmp_path: Path
+    ) -> None:
+        """Directory with multiple .md files should extract markers from all."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        # File 1: quality-enforcement.md with 2 markers
+        (rules_dir / "quality-enforcement.md").write_text(
+            '<!-- L2-REINJECT: rank=1, tokens=50, content="Constitutional: P-003, P-020, P-022." -->\n'
+            '<!-- L2-REINJECT: rank=2, tokens=90, content="Quality gate >= 0.92 for C2+." -->\n',
+            encoding="utf-8",
+        )
+
+        # File 2: architecture-standards.md with 1 marker
+        (rules_dir / "architecture-standards.md").write_text(
+            '<!-- L2-REINJECT: rank=4, tokens=60, content="domain/ MUST NOT import application/." -->\n',
+            encoding="utf-8",
+        )
+
+        # File 3: testing-standards.md with 1 marker
+        (rules_dir / "testing-standards.md").write_text(
+            '<!-- L2-REINJECT: rank=5, tokens=40, content="Test before implement (BDD Red phase)." -->\n',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        assert result.items_total == 4
+        assert result.items_included == 4
+        assert "Constitutional" in result.preamble
+        assert "Quality gate" in result.preamble
+        assert "domain/" in result.preamble
+        assert "Test before implement" in result.preamble
+
+    def test_multi_file_when_directory_then_markers_sorted_by_rank_across_files(
+        self, tmp_path: Path
+    ) -> None:
+        """Markers from different files should be sorted by rank globally."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        # File with rank 5
+        (rules_dir / "z_last_alphabetically.md").write_text(
+            '<!-- L2-REINJECT: rank=1, tokens=20, content="First by rank." -->\n',
+            encoding="utf-8",
+        )
+
+        # File with rank 1 (alphabetically first but rank higher)
+        (rules_dir / "a_first_alphabetically.md").write_text(
+            '<!-- L2-REINJECT: rank=5, tokens=20, content="Last by rank." -->\n',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        # rank=1 should come before rank=5 regardless of file order
+        assert result.preamble.index("First by rank") < result.preamble.index("Last by rank")
+
+    def test_multi_file_when_directory_with_non_md_files_then_ignores_them(
+        self, tmp_path: Path
+    ) -> None:
+        """Non-.md files in the directory should be ignored."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        (rules_dir / "rules.md").write_text(
+            '<!-- L2-REINJECT: rank=1, tokens=20, content="From md file." -->\n',
+            encoding="utf-8",
+        )
+        (rules_dir / "config.yaml").write_text(
+            '<!-- L2-REINJECT: rank=2, tokens=20, content="From yaml file." -->\n',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        assert result.items_total == 1
+        assert "From md file" in result.preamble
+        assert "From yaml file" not in result.preamble
+
+    def test_multi_file_when_single_file_path_then_backward_compatible(
+        self, rules_file: Path
+    ) -> None:
+        """Passing a single file path should still work (backward compat)."""
+        engine = PromptReinforcementEngine(rules_path=rules_file, token_budget=850)
+        result = engine.generate_reinforcement()
+
+        assert result.items_total == 4
+        assert result.items_included > 0
 
 
 # =============================================================================
@@ -432,3 +639,397 @@ class TestReinforcementContent:
         )
         assert rc.preamble == ""
         assert rc.token_estimate == 0
+
+
+# =============================================================================
+# TestFailOpenExceptionHandler (lines 116-118)
+# =============================================================================
+
+
+class TestFailOpenExceptionHandler:
+    """Tests for the catch-all fail-open handler in generate_reinforcement()."""
+
+    def test_generate_reinforcement_when_read_rules_raises_unexpected_then_returns_empty(
+        self, tmp_path: Path
+    ) -> None:
+        """Unexpected exception in _read_rules_file should trigger fail-open empty return."""
+        rules_path = tmp_path / "rules.md"
+        rules_path.write_text("content", encoding="utf-8")
+        engine = PromptReinforcementEngine(rules_path=rules_path)
+
+        with patch.object(
+            PromptReinforcementEngine,
+            "_read_rules_file",
+            side_effect=RuntimeError("Unexpected internal error"),
+        ):
+            result = engine.generate_reinforcement()
+
+        assert result.preamble == ""
+        assert result.token_estimate == 0
+        assert result.items_included == 0
+        assert result.items_total == 0
+
+    def test_generate_reinforcement_when_assemble_raises_then_returns_empty(
+        self, tmp_path: Path
+    ) -> None:
+        """Unexpected exception in _assemble_preamble should trigger fail-open."""
+        rules_path = tmp_path / "rules.md"
+        rules_path.write_text(
+            '<!-- L2-REINJECT: rank=1, content="Valid marker." -->',
+            encoding="utf-8",
+        )
+        engine = PromptReinforcementEngine(rules_path=rules_path)
+
+        with patch.object(
+            PromptReinforcementEngine,
+            "_assemble_preamble",
+            side_effect=TypeError("Unexpected type error"),
+        ):
+            result = engine.generate_reinforcement()
+
+        assert result.preamble == ""
+        assert result.token_estimate == 0
+        assert result.items_included == 0
+        assert result.items_total == 0
+
+    def test_generate_reinforcement_when_parse_markers_raises_then_returns_empty(
+        self, tmp_path: Path
+    ) -> None:
+        """Unexpected exception in _parse_reinject_markers should trigger fail-open."""
+        rules_path = tmp_path / "rules.md"
+        rules_path.write_text(
+            '<!-- L2-REINJECT: rank=1, content="Valid marker." -->',
+            encoding="utf-8",
+        )
+        engine = PromptReinforcementEngine(rules_path=rules_path)
+
+        with patch.object(
+            PromptReinforcementEngine,
+            "_parse_reinject_markers",
+            side_effect=MemoryError("Simulated memory error"),
+        ):
+            result = engine.generate_reinforcement()
+
+        assert result.preamble == ""
+        assert result.token_estimate == 0
+        assert result.items_included == 0
+        assert result.items_total == 0
+
+
+# =============================================================================
+# TestMalformedMarkerValueError (lines 211-213)
+# =============================================================================
+
+
+class TestMalformedMarkerValueError:
+    """Tests for ValueError/IndexError handling in _parse_reinject_markers()."""
+
+    def test_parse_markers_when_int_conversion_raises_value_error_then_skips(
+        self,
+    ) -> None:
+        """ValueError during int() conversion on matched rank should skip marker."""
+        content = '<!-- L2-REINJECT: rank=1, content="Valid." -->'
+
+        # Mock int() to raise ValueError after regex already matched
+        original_int = int
+
+        def patched_int(value: object, *args: object, **kwargs: object) -> int:
+            if value == "1":
+                raise ValueError("Simulated int conversion failure")
+            return original_int(value, *args, **kwargs)  # type: ignore[arg-type]
+
+        with patch("builtins.int", side_effect=patched_int):
+            markers = PromptReinforcementEngine._parse_reinject_markers(content)
+
+        # Marker should be skipped due to the ValueError
+        assert len(markers) == 0
+
+    def test_parse_markers_when_group_raises_index_error_then_skips(
+        self,
+    ) -> None:
+        """IndexError during match.group() should skip marker."""
+        content = (
+            '<!-- L2-REINJECT: rank=1, content="Survives." -->\n'
+            '<!-- L2-REINJECT: rank=2, content="Also survives." -->'
+        )
+
+        # We patch re.finditer to yield a mock match that raises IndexError
+        import re as re_module
+
+        original_finditer = re_module.finditer
+
+        call_count = 0
+
+        def patched_finditer(pattern: str, string: str, *args: object) -> object:
+            """Yield real matches but make the first one raise IndexError on group(2)."""
+            nonlocal call_count
+            for match in original_finditer(pattern, string):
+                call_count += 1
+                if call_count == 1:
+                    # Create a wrapper that raises IndexError on group(2)
+                    from unittest.mock import MagicMock
+
+                    bad_match = MagicMock()
+                    real_match = match  # bind loop var for closure (B023)
+                    bad_match.group.side_effect = lambda idx, m=real_match: (
+                        (_ for _ in ()).throw(IndexError("no such group"))
+                        if idx == 2
+                        else m.group(idx)
+                    )
+                    yield bad_match
+                else:
+                    yield match
+
+        with patch("re.finditer", side_effect=patched_finditer):
+            markers = PromptReinforcementEngine._parse_reinject_markers(content)
+
+        # First marker skipped due to IndexError, second survives
+        assert len(markers) == 1
+        assert markers[0]["content"] == "Also survives."
+
+
+# =============================================================================
+# TestReadRulesFileNonePath (line 288)
+# =============================================================================
+
+
+class TestReadRulesFileNonePath:
+    """Tests for _read_rules_file() when _rules_path is None."""
+
+    def test_read_rules_file_when_rules_path_is_none_then_returns_empty(self) -> None:
+        """_read_rules_file should return empty string when _rules_path is None."""
+        engine = PromptReinforcementEngine.__new__(PromptReinforcementEngine)
+        engine._rules_path = None  # type: ignore[assignment]
+        engine._token_budget = 850
+
+        result = engine._read_rules_file()
+        assert result == ""
+
+    def test_generate_reinforcement_when_rules_path_none_then_returns_empty(
+        self,
+    ) -> None:
+        """Full pipeline with None _rules_path should return empty reinforcement."""
+        engine = PromptReinforcementEngine.__new__(PromptReinforcementEngine)
+        engine._rules_path = None  # type: ignore[assignment]
+        engine._token_budget = 850
+
+        result = engine.generate_reinforcement()
+        assert result.preamble == ""
+        assert result.token_estimate == 0
+
+
+# =============================================================================
+# TestUnreadableMdFileInDirectory (lines 296-297)
+# =============================================================================
+
+
+class TestUnreadableMdFileInDirectory:
+    """Tests for individual md file read failures in directory scanning."""
+
+    def test_read_rules_file_when_unreadable_md_file_then_skips_it(self, tmp_path: Path) -> None:
+        """An unreadable .md file in the directory should be skipped, others read."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        # Write a valid file
+        (rules_dir / "a_valid.md").write_text(
+            '<!-- L2-REINJECT: rank=1, content="From valid file." -->',
+            encoding="utf-8",
+        )
+
+        # Write a file that will fail to read
+        bad_file = rules_dir / "b_broken.md"
+        bad_file.write_text("broken content", encoding="utf-8")
+
+        # Write another valid file
+        (rules_dir / "c_also_valid.md").write_text(
+            '<!-- L2-REINJECT: rank=3, content="From another valid file." -->',
+            encoding="utf-8",
+        )
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir)
+
+        # Patch the bad file's read_text to raise OSError
+        original_read_text = Path.read_text
+
+        def patched_read_text(self_path: Path, *args: object, **kwargs: object) -> str:
+            if self_path.name == "b_broken.md":
+                raise OSError("Permission denied")
+            return original_read_text(self_path, *args, **kwargs)  # type: ignore[arg-type]
+
+        with patch.object(Path, "read_text", patched_read_text):
+            result = engine._read_rules_file()
+
+        assert "From valid file." in result
+        assert "From another valid file." in result
+        assert "broken content" not in result
+
+    def test_read_rules_file_when_unicode_error_in_md_file_then_skips_it(
+        self, tmp_path: Path
+    ) -> None:
+        """A .md file with UnicodeDecodeError should be skipped."""
+        rules_dir = tmp_path / "rules"
+        rules_dir.mkdir()
+
+        (rules_dir / "a_good.md").write_text(
+            '<!-- L2-REINJECT: rank=1, content="Good file." -->',
+            encoding="utf-8",
+        )
+        bad_file = rules_dir / "b_bad_encoding.md"
+        bad_file.write_text("placeholder", encoding="utf-8")
+
+        engine = PromptReinforcementEngine(rules_path=rules_dir)
+
+        original_read_text = Path.read_text
+
+        def patched_read_text(self_path: Path, *args: object, **kwargs: object) -> str:
+            if self_path.name == "b_bad_encoding.md":
+                raise UnicodeDecodeError("utf-8", b"\xff", 0, 1, "invalid byte")
+            return original_read_text(self_path, *args, **kwargs)  # type: ignore[arg-type]
+
+        with patch.object(Path, "read_text", patched_read_text):
+            result = engine._read_rules_file()
+
+        assert "Good file." in result
+
+
+# =============================================================================
+# TestOuterOSErrorInReadRulesFile (lines 299-300)
+# =============================================================================
+
+
+class TestOuterOSErrorInReadRulesFile:
+    """Tests for outer except (OSError, UnicodeDecodeError) in _read_rules_file()."""
+
+    def test_read_rules_file_when_is_file_raises_os_error_then_returns_empty(
+        self, tmp_path: Path
+    ) -> None:
+        """OSError on is_file() should be caught by outer handler, return empty."""
+        rules_path = tmp_path / "rules.md"
+        rules_path.write_text("content", encoding="utf-8")
+        engine = PromptReinforcementEngine(rules_path=rules_path)
+
+        with patch.object(Path, "is_file", side_effect=OSError("Disk error")):
+            result = engine._read_rules_file()
+
+        assert result == ""
+
+    def test_read_rules_file_when_is_dir_raises_os_error_then_returns_empty(
+        self, tmp_path: Path
+    ) -> None:
+        """OSError on is_dir() should be caught by outer handler, return empty."""
+        rules_path = tmp_path / "rules"
+        rules_path.mkdir()
+        engine = PromptReinforcementEngine(rules_path=rules_path)
+
+        # is_file returns False (it's a directory), then is_dir raises
+        with (
+            patch.object(Path, "is_file", return_value=False),
+            patch.object(Path, "is_dir", side_effect=OSError("Disk error on is_dir")),
+        ):
+            result = engine._read_rules_file()
+
+        assert result == ""
+
+    def test_read_rules_file_when_read_text_raises_os_error_on_file_then_returns_empty(
+        self, tmp_path: Path
+    ) -> None:
+        """OSError on read_text() for a single file path should be caught."""
+        rules_path = tmp_path / "rules.md"
+        rules_path.write_text("content", encoding="utf-8")
+        engine = PromptReinforcementEngine(rules_path=rules_path)
+
+        with patch.object(Path, "read_text", side_effect=OSError("Cannot read file")):
+            result = engine._read_rules_file()
+
+        assert result == ""
+
+
+# =============================================================================
+# TestFindRulesPath (lines 315-323)
+# =============================================================================
+
+
+class TestFindRulesPath:
+    """Tests for _find_rules_path() method that walks up from CWD."""
+
+    def test_find_rules_path_when_claude_md_exists_with_rules_dir_then_returns_rules_dir(
+        self, tmp_path: Path
+    ) -> None:
+        """When CLAUDE.md exists and .claude/rules/ dir exists, return that dir."""
+        # Setup project structure
+        (tmp_path / "CLAUDE.md").write_text("# Project", encoding="utf-8")
+        rules_dir = tmp_path / ".claude" / "rules"
+        rules_dir.mkdir(parents=True)
+
+        with patch("pathlib.Path.cwd", return_value=tmp_path):
+            result = PromptReinforcementEngine._find_rules_path(
+                PromptReinforcementEngine.__new__(PromptReinforcementEngine)
+            )
+
+        assert result == rules_dir
+
+    def test_find_rules_path_when_claude_md_exists_without_rules_dir_then_returns_quality_enforcement(
+        self, tmp_path: Path
+    ) -> None:
+        """When CLAUDE.md exists but no .claude/rules/, fall back to quality-enforcement.md."""
+        (tmp_path / "CLAUDE.md").write_text("# Project", encoding="utf-8")
+        # Do NOT create .claude/rules/ directory
+
+        with patch("pathlib.Path.cwd", return_value=tmp_path):
+            result = PromptReinforcementEngine._find_rules_path(
+                PromptReinforcementEngine.__new__(PromptReinforcementEngine)
+            )
+
+        expected = tmp_path / ".context" / "rules" / "quality-enforcement.md"
+        assert result == expected
+
+    def test_find_rules_path_when_no_claude_md_anywhere_then_returns_cwd_fallback(
+        self, tmp_path: Path
+    ) -> None:
+        """When no CLAUDE.md found in any parent, fall back to CWD-relative path."""
+        # tmp_path has no CLAUDE.md and neither do its parents (up to root)
+        # We need a directory where no parent has CLAUDE.md
+        isolated_dir = tmp_path / "isolated" / "deep" / "dir"
+        isolated_dir.mkdir(parents=True)
+
+        with patch("pathlib.Path.cwd", return_value=isolated_dir):
+            result = PromptReinforcementEngine._find_rules_path(
+                PromptReinforcementEngine.__new__(PromptReinforcementEngine)
+            )
+
+        expected = isolated_dir / ".context" / "rules" / "quality-enforcement.md"
+        assert result == expected
+
+    def test_find_rules_path_when_claude_md_in_parent_dir_then_finds_it(
+        self, tmp_path: Path
+    ) -> None:
+        """When CLAUDE.md is in a parent directory, _find_rules_path should walk up to it."""
+        # CLAUDE.md at project root
+        (tmp_path / "CLAUDE.md").write_text("# Project", encoding="utf-8")
+        rules_dir = tmp_path / ".claude" / "rules"
+        rules_dir.mkdir(parents=True)
+
+        # CWD is a subdirectory
+        sub_dir = tmp_path / "src" / "deep" / "module"
+        sub_dir.mkdir(parents=True)
+
+        with patch("pathlib.Path.cwd", return_value=sub_dir):
+            result = PromptReinforcementEngine._find_rules_path(
+                PromptReinforcementEngine.__new__(PromptReinforcementEngine)
+            )
+
+        assert result == rules_dir
+
+    def test_init_when_no_rules_path_provided_then_uses_find_rules_path(
+        self, tmp_path: Path
+    ) -> None:
+        """Constructor with rules_path=None should invoke _find_rules_path."""
+        (tmp_path / "CLAUDE.md").write_text("# Project", encoding="utf-8")
+        rules_dir = tmp_path / ".claude" / "rules"
+        rules_dir.mkdir(parents=True)
+
+        with patch("pathlib.Path.cwd", return_value=tmp_path):
+            engine = PromptReinforcementEngine(rules_path=None)
+
+        assert engine._rules_path == rules_dir

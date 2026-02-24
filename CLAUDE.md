@@ -2,7 +2,7 @@
 
 > Procedural memory for Claude Code. Loaded once at session start.
 
-<!-- L2-REINJECT: rank=1, tokens=80, content="P-003: No recursive subagents (max 1 level). P-020: User authority -- NEVER override. P-022: NEVER deceive about actions/capabilities/confidence. Violations blocked." -->
+<!-- L2-REINJECT: rank=1, content="P-003: No recursive subagents (max 1 level). P-020: User authority -- NEVER override. P-022: NEVER deceive about actions/capabilities/confidence. Violations blocked." -->
 
 ## Document Sections
 
@@ -66,7 +66,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 
 ## Quick Reference
 
-**CLI** (v0.12.2): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
+**CLI** (v0.19.1): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
 
 **Skills** (invoke proactively per H-22):
 
