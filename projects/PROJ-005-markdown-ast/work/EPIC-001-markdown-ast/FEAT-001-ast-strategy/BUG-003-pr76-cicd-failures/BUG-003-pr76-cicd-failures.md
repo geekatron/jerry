@@ -19,6 +19,7 @@
 |---------|---------|
 | [Steps to Reproduce](#steps-to-reproduce) | How to trigger the bug |
 | [Summary](#summary) | Bug overview |
+| [Steps to Reproduce](#steps-to-reproduce) | How to trigger the bug |
 | [Failure Analysis](#failure-analysis) | Categorized CI failures |
 | [Root Cause Analysis](#root-cause-analysis) | Two distinct root causes |
 | [Acceptance Criteria](#acceptance-criteria) | Fix verification conditions |
@@ -73,6 +74,13 @@ All Linux, macOS, and non-AST-modify tests pass. This is a merge blocker.
 | `TestAstModify::test_modify_writes_file_back` | `assert 'done' in content` | File not modified (rename failed) |
 | `TestAstModify::test_modify_outputs_json_status` | `JSONDecodeError` | No JSON output (rename error) |
 | `TestMainAstRouting::test_main_routes_ast_modify` | `assert 2 == 0` | Same `os.rename()` issue |
+
+---
+
+## Steps to Reproduce
+
+1. Push to branch `feature/PROJ-005-ast-universal-markdown-parser` (PR #76)
+2. Observe CI failures in GitHub Actions: Lint & Format job (8 ruff violations) and Windows test matrix (4 test failures x 4 jobs)
 
 ---
 
