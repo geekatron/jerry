@@ -114,24 +114,24 @@ Next time you open an LLM, before you type anything, write down three things: wh
 
 ## References
 
-1. **Bender, E. M. & Koller, A.** (2020). "Climbing towards NLU: On Meaning, Form, and Understanding in the Age of Data." *ACL 2020.* [https://aclanthology.org/2020.acl-main.463/](https://aclanthology.org/2020.acl-main.463/)
+1. **Bender, E. M. & Koller, A.** (2020). "Climbing towards NLU: On Meaning, Form, and Understanding in the Age of Data." *ACL 2020.* [ACL Anthology](https://aclanthology.org/2020.acl-main.463/)
 
-2. **Liu, N. F. et al.** (2024). "Lost in the Middle: How Language Models Use Long Contexts." *Transactions of the Association for Computational Linguistics (TACL), 12,* 157-173. [https://arxiv.org/abs/2307.03172](https://arxiv.org/abs/2307.03172)
+2. **Liu, N. F. et al.** (2024). "Lost in the Middle: How Language Models Use Long Contexts." *Transactions of the Association for Computational Linguistics (TACL), 12,* 157-173. [arXiv](https://arxiv.org/abs/2307.03172)
 
-3. **Panickssery, A. et al.** (2024). "LLM Evaluators Recognize and Favor Their Own Generations." *NeurIPS 2024.* [https://proceedings.neurips.cc/paper_files/paper/2024/file/7f1f0218e45f5414c79c0679633e47bc-Paper-Conference.pdf](https://proceedings.neurips.cc/paper_files/paper/2024/file/7f1f0218e45f5414c79c0679633e47bc-Paper-Conference.pdf)
+3. **Panickssery, A. et al.** (2024). "LLM Evaluators Recognize and Favor Their Own Generations." *NeurIPS 2024.* [NeurIPS Proceedings](https://proceedings.neurips.cc/paper_files/paper/2024/file/7f1f0218e45f5414c79c0679633e47bc-Paper-Conference.pdf)
 
-4. **Sharma, M. et al.** (2024). "Towards Understanding Sycophancy in Language Models." *ICLR 2024.* [https://arxiv.org/abs/2310.13548](https://arxiv.org/abs/2310.13548)
+4. **Sharma, M. et al.** (2024). "Towards Understanding Sycophancy in Language Models." *ICLR 2024.* [arXiv](https://arxiv.org/abs/2310.13548)
 
-5. **Wei, J. et al.** (2022). "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models." *NeurIPS 2022.* [https://arxiv.org/abs/2201.11903](https://arxiv.org/abs/2201.11903)
+5. **Wei, J. et al.** (2022). "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models." *NeurIPS 2022.* [arXiv](https://arxiv.org/abs/2201.11903)
 
 ### Further Reading
 
-- **Brown, T. et al.** (2020). "Language Models are Few-Shot Learners." *NeurIPS 2020.* [https://arxiv.org/abs/2005.14165](https://arxiv.org/abs/2005.14165)
+- **Brown, T. et al.** (2020). "Language Models are Few-Shot Learners." *NeurIPS 2020.* [arXiv](https://arxiv.org/abs/2005.14165)
 
-- **Kojima, T. et al.** (2022). "Large Language Models are Zero-Shot Reasoners." *NeurIPS 2022.* [https://arxiv.org/abs/2205.11916](https://arxiv.org/abs/2205.11916)
+- **Kojima, T. et al.** (2022). "Large Language Models are Zero-Shot Reasoners." *NeurIPS 2022.* [arXiv](https://arxiv.org/abs/2205.11916)
 
-- **Vaswani, A. et al.** (2017). "Attention Is All You Need." *NeurIPS 2017.* [https://arxiv.org/abs/1706.03762](https://arxiv.org/abs/1706.03762)
+- **Vaswani, A. et al.** (2017). "Attention Is All You Need." *NeurIPS 2017.* [arXiv](https://arxiv.org/abs/1706.03762)
 
-- **White, J. et al.** (2023). "A Prompt Pattern Catalog to Enhance Prompt Engineering with ChatGPT." *arXiv preprint.* [https://arxiv.org/abs/2302.11382](https://arxiv.org/abs/2302.11382)
+- **White, J. et al.** (2023). "A Prompt Pattern Catalog to Enhance Prompt Engineering with ChatGPT." *arXiv preprint.* [arXiv](https://arxiv.org/abs/2302.11382)
 
-- **Ye, S. et al.** (2024). "Self-Preference Bias in LLM-as-a-Judge." [https://arxiv.org/abs/2410.21819](https://arxiv.org/abs/2410.21819)
+- **Ye, S. et al.** (2024). "Self-Preference Bias in LLM-as-a-Judge." [arXiv](https://arxiv.org/abs/2410.21819)

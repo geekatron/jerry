@@ -96,6 +96,43 @@
 }
 
 /* --------------------------------------------------------------------------
+   Dark mode: readability fixes
+   -------------------------------------------------------------------------- */
+
+/* Link underlines — color alone insufficient at ~2.1:1 contrast (WCAG 3:1) */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-color: rgba(179, 157, 219, 0.4);
+}
+
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset a:hover {
+  text-decoration-color: var(--md-accent-fg-color);
+}
+
+/* Halation reduction — soften pure white on dark bg for long-form reading */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset {
+  --md-default-fg-color: rgba(255, 255, 255, 0.82);
+}
+
+[data-md-color-scheme="saucer-boy-dark"] .md-content .md-typeset p {
+  line-height: 1.8;
+}
+
+/* Blockquote visibility — left border + subtle background */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset blockquote {
+  border-left: 3px solid var(--md-accent-fg-color);
+  background: rgba(255, 179, 0, 0.04);
+  padding: 0.5em 1em;
+}
+
+/* Checkbox visibility */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset .task-list-indicator::before {
+  border-color: rgba(255, 255, 255, 0.54);
+}
+
+/* --------------------------------------------------------------------------
    Blog post styling
    Clean, not decorative — matches the earned decoration principle
    -------------------------------------------------------------------------- */
