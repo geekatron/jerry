@@ -30,10 +30,13 @@
 
 | ID | Rule | Consequence | Source Requirements | Verification |
 |----|------|-------------|---------------------|--------------|
-| H-34 | Agent definition YAML frontmatter MUST validate against the canonical JSON Schema (`docs/schemas/agent-definition-v1.schema.json`). Required top-level fields: `name`, `version`, `description`, `model`, `identity`, `capabilities`, `guardrails`, `output`, `constitution`. Schema validation MUST execute before LLM-based quality scoring for C2+ deliverables. | Agent definition rejected at CI. Structural defects propagate to runtime. | AR-001 (YAML+MD format), AR-002 (required fields), AR-003 (schema validation), QR-003 (output schema) | L5 (CI): JSON Schema validation on PR. L3 (pre-tool): Schema check before agent invocation. |
-| H-35 | Every agent MUST declare constitutional compliance with at minimum P-003 (no recursive subagents), P-020 (user authority), and P-022 (no deception) in `constitution.principles_applied`. Worker agents (invoked via Task) MUST NOT include `Task` in `capabilities.allowed_tools`. Every agent MUST declare at minimum 3 entries in `capabilities.forbidden_actions` referencing the constitutional triplet. | Constitutional constraint bypass. Unauthorized recursive delegation. | SR-001 (constitutional compliance), AR-004 (single-level nesting), AR-006 (tool restriction), AR-012 (forbidden actions) | L3 (pre-tool): Schema validates minItems=3. L5 (CI): Grep for P-003/P-020/P-022 presence. |
+| H-34 | Agent definitions use a dual-file architecture: (a) `.md` files with official Claude Code frontmatter only (`name`, `description`, `model`, `tools`, `mcpServers`), and (b) companion `.governance.yaml` files validated against `docs/schemas/agent-governance-v1.schema.json`. Required governance fields: `version`, `tool_tier`, `identity`. Governance schema validation MUST execute before LLM-based quality scoring for C2+ deliverables. | Agent definition rejected at CI. Structural defects propagate to runtime. | AR-001 (YAML+MD format), AR-002 (required fields), AR-003 (schema validation), QR-003 (output schema) | L5 (CI): JSON Schema validation on PR. L3 (pre-tool): Schema check before agent invocation. |
+| H-35 | Every agent MUST declare constitutional compliance with at minimum P-003 (no recursive subagents), P-020 (user authority), and P-022 (no deception) in `.governance.yaml` `constitution.principles_applied`. Worker agents (invoked via Task) MUST NOT include `Task` in the official `tools` frontmatter field. Every agent MUST declare at minimum 3 entries in `.governance.yaml` `capabilities.forbidden_actions` referencing the constitutional triplet. | Constitutional constraint bypass. Unauthorized recursive delegation. | SR-001 (constitutional compliance), AR-004 (single-level nesting), AR-006 (tool restriction), AR-012 (forbidden actions) | L3 (pre-tool): Schema validates minItems=3. L5 (CI): Grep for P-003/P-020/P-022 presence. |
 
-**H-34 Implementation Note:** The schema file (`docs/schemas/agent-definition-v1.schema.json`) will be created as part of the Phase 5 implementation. Until the schema file exists, L3 schema validation is deferred; L5 CI enforcement activates when the schema file is committed. The HARD rule is immediately enforceable for its structural requirements (required fields, YAML delimiter presence) via pattern-matching pre-schema. The inline schema in ADR-PROJ007-001 Section 2 serves as the authoritative specification until the extracted schema file is available.
+**H-34 Architecture Note:** Agent definitions use a separation-of-concerns architecture:
+- **`.md` YAML frontmatter**: Official Claude Code fields only (12 recognized fields: `name`, `description`, `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `isolation`). Parsed by Claude Code runtime for tool enforcement and agent discovery.
+- **`.md` markdown body**: System prompt content visible to the agent LLM. Contains identity, methodology, guardrails, and output specifications as XML-tagged or markdown sections.
+- **`.governance.yaml`**: Machine-readable governance metadata validated by `docs/schemas/agent-governance-v1.schema.json`. Contains version, tool_tier, identity, persona, capabilities, guardrails, constitution, validation, and domain-specific extensions. The deprecated `docs/schemas/agent-definition-v1.schema.json` is retained for reference only.
 
 **HARD Rule Budget:** H-34 and H-35 are consolidated into compound H-34 in `quality-enforcement.md` HARD Rule Index (H-35 retired as sub-item b). Current budget: 25/25 rules at ceiling.
 
@@ -52,7 +55,7 @@
 | AD-M-003 | Agent description SHOULD include WHAT the agent does, WHEN to invoke it, and at least one trigger keyword. Maximum 1024 characters. No XML tags. | Aligns with H-28 (skill description standards). Description quality directly affects routing accuracy (AP-01 Keyword Tunnel prevention). | AR-009 (description quality), H-28 |
 | AD-M-004 | Agents producing stakeholder-facing deliverables SHOULD declare all three output levels (`L0`, `L1`, `L2`) in `output.levels`. | L0: Executive summary. L1: Technical detail. L2: Strategic implications. Internal-only agents MAY omit L0. | PR-008 (output levels) |
 | AD-M-005 | Agent `identity.expertise` SHOULD contain at minimum 2 specific domain competencies. | Generic expertise ("analysis", "writing") degrades routing signal quality. Prefer specific: "FMEA risk analysis", "hexagonal architecture patterns". | PR-003 (expertise domains) |
-| AD-M-006 | Agents SHOULD declare `persona` (tone, communication_style, audience_level) for consistent output voice. | Enum values -- tone: professional, technical, consultative. communication_style: consultative, directive, analytical. audience_level: adaptive, expert, intermediate, beginner. | PR-005 (persona) |
+| AD-M-006 | Agents SHOULD declare `persona` (tone, communication_style, audience_level) in `.governance.yaml` for consistent output voice. | `tone` and `communication_style` are free-form strings (not enums). RECOMMENDED values -- tone: professional, technical, consultative, analytical, rigorous, methodical. communication_style: consultative, directive, analytical, direct, structured, evidence-based. audience_level enum: adaptive, expert, intermediate, beginner. `character` field MAY be added for extended persona descriptions. | PR-005 (persona) |
 | AD-M-007 | Agents SHOULD declare `session_context` with `on_receive` and `on_send` processing steps for structured handoff participation. | Defines how the agent processes inbound handoff data and constructs outbound handoffs. See [Handoff Protocol](#handoff-protocol). | HR-001 (structured format), HR-002 (required fields) |
 | AD-M-008 | Agents SHOULD declare `validation.post_completion_checks` listing verifiable post-completion assertions. | Examples: `verify_file_created`, `verify_navigation_table`, `verify_citations_present`. Enables deterministic quality checking before LLM scoring. | QR-003 (output validation) |
 | AD-M-009 | Agent model selection SHOULD be justified per cognitive demands. | `opus` for complex reasoning, research, architecture, synthesis. `sonnet` for balanced analysis, standard production tasks. `haiku` for fast repetitive tasks, formatting, validation. | PR-007 (model selection) |
@@ -85,37 +88,57 @@
 
 ## Agent Definition Schema
 
-The canonical agent definition uses YAML frontmatter (validated by JSON Schema, H-34) followed by a structured Markdown body. The schema is stored at `docs/schemas/agent-definition-v1.schema.json` (JSON Schema Draft 2020-12).
+Agent definitions use a dual-file architecture per H-34.
 
-### Required YAML Fields
+### Official Frontmatter Fields (`.md` file)
+
+Only Claude Code's 12 official fields are permitted in YAML frontmatter. All other fields are silently ignored by Claude Code.
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| `name` | string | Yes | Agent identifier (kebab-case) |
+| `description` | string | Yes | When Claude should delegate to this agent |
+| `model` | enum | No | `sonnet`, `opus`, `haiku` (default: inherit) |
+| `tools` | string/array | No | Allowed tools. **Inherits ALL if omitted.** |
+| `disallowedTools` | string/array | No | Tools to deny |
+| `mcpServers` | object | No | MCP servers available (by name: `context7`, `memory-keeper`) |
+| `permissionMode` | enum | No | `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan` |
+| `maxTurns` | number | No | Max agentic turns |
+| `skills` | array | No | Skills to preload |
+| `hooks` | object | No | Lifecycle hooks |
+| `memory` | enum | No | `user`, `project`, `local` |
+| `background` | boolean | No | Run as background task |
+| `isolation` | enum | No | `worktree` |
+
+### Governance Fields (`.governance.yaml` file)
+
+Validated by `docs/schemas/agent-governance-v1.schema.json`. Sub-objects (`identity`, `persona`, `capabilities`, `guardrails`, `output`, `validation`) allow domain-specific extensions via `additionalProperties: true`.
+
+**Required fields:**
 
 | Field | Type | Constraint | Source |
 |-------|------|------------|--------|
-| `name` | string | Pattern: `^[a-z]+-[a-z]+(-[a-z]+)*$` | AR-001, AR-007 |
 | `version` | string | Pattern: `^\d+\.\d+\.\d+$` | AR-008 |
-| `description` | string | Max 1024 chars, no XML tags | AR-009, H-28 |
-| `model` | enum | `opus`, `sonnet`, `haiku` | PR-007 |
+| `tool_tier` | enum | `T1`, `T2`, `T3`, `T4`, `T5` | agent-development-standards (Tool Security Tiers) |
 | `identity.role` | string | Unique within parent skill | PR-001 |
 | `identity.expertise` | array | Min 2 entries | PR-003 |
 | `identity.cognitive_mode` | enum | `divergent`, `convergent`, `integrative`, `systematic`, `forensic` | PR-002 |
-| `capabilities.allowed_tools` | array | From authorized tool enum; principle of least privilege | AR-006 |
-| `capabilities.forbidden_actions` | array | Min 3 entries; MUST include P-003, P-020, P-022 references | AR-012 |
-| `guardrails.input_validation` | array | Min 1 validation rule | SR-002 |
-| `guardrails.output_filtering` | array | Min 3 entries (strings) | SR-003 |
-| `guardrails.fallback_behavior` | enum | `warn_and_retry`, `escalate_to_user`, `persist_and_halt` | SR-009 |
-| `output.required` | boolean | Whether agent produces file artifact | PR-008 |
-| `output.location` | string | Required when `output.required` is `true` | AR-010 |
-| `constitution.principles_applied` | array | Min 3 entries; MUST include P-003, P-020, P-022 | SR-001 |
 
-### Recommended YAML Fields
+**Recommended fields:**
 
 | Field | Type | Purpose | Source |
 |-------|------|---------|--------|
-| `persona` | object | Tone, communication_style, audience_level | PR-005 |
-| `output.levels` | array | `L0`, `L1`, `L2` disclosure levels | PR-008 |
+| `persona` | object | Tone (free-form string), communication_style (free-form string), audience_level, character | PR-005 |
+| `capabilities.forbidden_actions` | array | Min 3 entries; MUST include P-003, P-020, P-022 references | AR-012 |
+| `guardrails.input_validation` | array or object | Both formats accepted. Min 1 validation rule. | SR-002 |
+| `guardrails.output_filtering` | array | Min 3 entries (strings) | SR-003 |
+| `guardrails.fallback_behavior` | string | Pattern: `^[a-z_]+$`. Standard values: `warn_and_retry`, `escalate_to_user`, `persist_and_halt`. Domain-specific values allowed. | SR-009 |
+| `output.required` | boolean | Whether agent produces file artifact | PR-008 |
+| `output.location` | string | Required when `output.required` is `true` | AR-010 |
+| `output.levels` | array | Both enum-array (`[L0, L1, L2]`) and object-array formats accepted | PR-008 |
+| `constitution.principles_applied` | array | Min 3 entries; MUST include P-003, P-020, P-022 | SR-001 |
 | `validation.post_completion_checks` | array | Declarative verification assertions | QR-003 |
 | `session_context` | object | Handoff on_receive/on_send protocol | HR-001, HR-002 |
-| `reasoning_effort` | enum | Extended thinking allocation: `default`, `medium`, `high`, `max` (mapped to criticality per ET-M-001) | Anthropic best practices (extended thinking) |
 | `enforcement` | object | Quality gate tier and escalation path | QR-001 |
 
 ### Markdown Body Sections

@@ -19,7 +19,7 @@
 |---------|---------|
 | [Summary](#summary) | Brief description and value proposition |
 | [Acceptance Criteria](#acceptance-criteria) | Definition of done |
-| [Children (Spikes)](#children-spikes) | Spike inventory |
+| [Children Stories/Enablers](#children-storiesenablers) | Spike inventory |
 | [Progress Summary](#progress-summary) | Overall feature progress |
 | [Related Items](#related-items) | Dependencies |
 | [History](#history) | Status changes |
@@ -61,7 +61,7 @@ Assess the two primary approaches for automated multi-instance Claude management
 
 ---
 
-## Children (Spikes)
+## Children Stories/Enablers
 
 | ID | Type | Title | Status | Priority | Timebox |
 |----|------|-------|--------|----------|---------|

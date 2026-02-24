@@ -265,15 +265,18 @@ class TestWorktrackerAgentToolAccess:
     def test_agent_yaml_when_checked_then_declares_bash(
         self, wt_agents_dir: Path, agent_file: str
     ) -> None:
-        """Each wt-* agent must declare Bash in allowed_tools YAML."""
+        """Each wt-* agent must declare Bash in tools (official frontmatter) or allowed_tools (legacy)."""
         # Arrange
         content = (wt_agents_dir / agent_file).read_text()
-        pattern = r"allowed_tools:.*?- Bash"
+        # Official Claude Code frontmatter uses `tools:` (comma-separated string)
+        official_pattern = r"^tools:.*Bash"
+        # Legacy format uses `allowed_tools:` (YAML array)
+        legacy_pattern = r"allowed_tools:.*?- Bash"
 
         # Act/Assert
-        assert re.search(pattern, content, re.DOTALL), (
-            f"{agent_file} does not declare '- Bash' in allowed_tools YAML"
-        )
+        assert re.search(official_pattern, content, re.MULTILINE) or re.search(
+            legacy_pattern, content, re.DOTALL
+        ), f"{agent_file} does not declare Bash in tools or allowed_tools YAML"
 
     @pytest.mark.parametrize("agent_file", EXPECTED_WT_AGENT_FILES)
     def test_agent_capabilities_when_checked_then_has_bash_row(

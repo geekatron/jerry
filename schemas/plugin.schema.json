@@ -115,9 +115,22 @@
       "description": "Command definitions. All paths must start with './'."
     },
     "agents": {
-      "type": "string",
-      "pattern": "^\\./",
-      "description": "Relative path to agents directory. Must start with './'."
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\./",
+          "description": "Single relative path to agents directory."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\./"
+          },
+          "description": "Array of relative paths to agent files or directories."
+        }
+      ],
+      "description": "Agent definitions. All paths must start with './'."
     },
     "hooks": {
       "type": "string",

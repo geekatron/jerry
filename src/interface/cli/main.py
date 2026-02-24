@@ -119,6 +119,8 @@ def main() -> int:
         return _handle_context(args)
     elif args.namespace == "ast":
         return _handle_ast(args, json_output)
+    elif args.namespace == "agents":
+        return _handle_agents(args, json_output)
     elif args.namespace == "hooks":
         return _handle_hooks(adapter, args)
 
@@ -445,6 +447,231 @@ def _handle_ast(args: Any, json_output: bool) -> int:
         return ast_metadata(args.file)
 
     print(f"Unknown ast command: {args.command}")
+    return 1
+
+
+def _handle_agents(args: Any, json_output: bool) -> int:
+    """Route agents namespace commands.
+
+    Does not require the CLIAdapter; uses its own bootstrap wiring
+    for the agents bounded context.
+
+    Args:
+        args: Parsed arguments with .command.
+        json_output: Whether JSON output was requested.
+
+    Returns:
+        Exit code: 0 (success), 1 (error).
+
+    References:
+        - ADR-PROJ010-003: LLM Portability Architecture
+    """
+    if args.command is None:
+        print("No agents command specified. Use 'jerry agents --help'.")
+        return 1
+
+    from src.agents.infrastructure.adapters.claude_code_adapter import (
+        create_agents_build_handler,
+        create_agents_extract_handler,
+        create_agents_list_handler,
+        create_agents_validate_handler,
+    )
+
+    if args.command == "build":
+        handler = create_agents_build_handler()
+        from src.agents.application.commands.build_agents_command import (
+            BuildAgentsCommand,
+        )
+
+        command = BuildAgentsCommand(
+            adapter=getattr(args, "adapter", "claude_code"),
+            agent_name=getattr(args, "agent", None),
+            dry_run=getattr(args, "dry_run", False),
+        )
+        result = handler.handle(command)
+
+        if json_output:
+            import json
+
+            output = {
+                "built": result.built,
+                "failed": result.failed,
+                "dry_run": result.dry_run,
+                "artifacts": [
+                    {"path": str(a.path), "type": a.artifact_type} for a in result.artifacts
+                ],
+                "errors": result.errors,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            prefix = "[DRY RUN] " if result.dry_run else ""
+            print(f"{prefix}Built {result.built} agent(s), {result.failed} failed.")
+            for artifact in result.artifacts:
+                action = "Would write" if result.dry_run else "Wrote"
+                print(f"  {action}: {artifact.path}")
+            for error in result.errors:
+                print(f"  ERROR: {error}")
+
+        return 1 if result.failed > 0 else 0
+
+    elif args.command == "extract":
+        handler = create_agents_extract_handler()
+        from src.agents.application.commands.extract_canonical_command import (
+            ExtractCanonicalCommand,
+        )
+
+        command = ExtractCanonicalCommand(
+            agent_name=getattr(args, "agent", None),
+            source_adapter=getattr(args, "source_adapter", "claude_code"),
+        )
+        result = handler.handle(command)
+
+        if json_output:
+            import json
+
+            output = {
+                "extracted": result.extracted,
+                "failed": result.failed,
+                "errors": result.errors,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            print(f"Extracted {result.extracted} agent(s), {result.failed} failed.")
+            for error in result.errors:
+                print(f"  ERROR: {error}")
+
+        return 1 if result.failed > 0 else 0
+
+    elif args.command == "validate":
+        handler = create_agents_validate_handler()
+        from src.agents.application.queries.validate_agents_query import (
+            ValidateAgentsQuery,
+        )
+
+        query = ValidateAgentsQuery(
+            agent_name=getattr(args, "agent", None),
+        )
+        result = handler.handle(query)
+
+        if json_output:
+            import json
+
+            output = {
+                "total": result.total,
+                "passed": result.passed,
+                "failed": result.failed,
+                "is_valid": result.is_valid,
+                "issues": [
+                    {
+                        "agent": i.agent_name,
+                        "field": i.field,
+                        "message": i.message,
+                        "severity": i.severity,
+                    }
+                    for i in result.issues
+                ],
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            status = "PASS" if result.is_valid else "FAIL"
+            print(f"Validation {status}: {result.passed}/{result.total} passed.")
+            for issue in result.issues:
+                print(
+                    f"  [{issue.severity.upper()}] {issue.agent_name}: {issue.field} - {issue.message}"
+                )
+
+        return 0 if result.is_valid else 1
+
+    elif args.command == "list":
+        handler = create_agents_list_handler()
+        from src.agents.application.queries.list_agents_query import (
+            ListAgentsQuery,
+        )
+
+        query = ListAgentsQuery(
+            skill=getattr(args, "skill", None),
+        )
+        result = handler.handle(query)
+
+        if json_output:
+            import json
+
+            output = {
+                "total": result.total,
+                "agents": [
+                    {
+                        "name": a.name,
+                        "skill": a.skill,
+                        "version": a.version,
+                        "tool_tier": a.tool_tier,
+                        "cognitive_mode": a.cognitive_mode,
+                        "model_tier": a.model_tier,
+                        "description": a.description,
+                    }
+                    for a in result.agents
+                ],
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            print(f"Total: {result.total} agent(s)\n")
+            print(f"{'Name':<25} {'Skill':<20} {'Tier':<5} {'Mode':<12} {'Model':<18} {'Version'}")
+            print("-" * 100)
+            for a in result.agents:
+                print(
+                    f"{a.name:<25} {a.skill:<20} {a.tool_tier:<5} {a.cognitive_mode:<12} {a.model_tier:<18} {a.version}"
+                )
+
+        return 0
+
+    elif args.command == "diff":
+        # Diff: build in-memory, compare against existing files
+        handler = create_agents_build_handler()
+        from src.agents.application.commands.build_agents_command import (
+            BuildAgentsCommand,
+        )
+
+        command = BuildAgentsCommand(
+            adapter=getattr(args, "adapter", "claude_code"),
+            agent_name=getattr(args, "agent", None),
+            dry_run=True,  # Always dry-run for diff
+        )
+        result = handler.handle(command)
+
+        drift_count = 0
+        for artifact in result.artifacts:
+            if artifact.path.exists():
+                existing = artifact.path.read_text(encoding="utf-8")
+                if existing != artifact.content:
+                    drift_count += 1
+                    if not json_output:
+                        print(f"DRIFT: {artifact.path}")
+            else:
+                drift_count += 1
+                if not json_output:
+                    print(f"MISSING: {artifact.path}")
+
+        if json_output:
+            import json
+
+            output = {
+                "total_artifacts": len(result.artifacts),
+                "drift_count": drift_count,
+                "in_sync": drift_count == 0,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            if drift_count == 0:
+                print(
+                    f"All {len(result.artifacts)} generated files are in sync with canonical source."
+                )
+            else:
+                print(
+                    f"\n{drift_count} file(s) out of sync. Run 'jerry agents build' to regenerate."
+                )
+
+        return 1 if drift_count > 0 else 0
+
+    print(f"Unknown agents command: {args.command}")
     return 1
 
 
