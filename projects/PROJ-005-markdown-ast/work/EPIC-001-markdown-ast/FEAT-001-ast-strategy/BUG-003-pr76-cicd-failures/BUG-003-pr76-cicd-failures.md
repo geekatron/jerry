@@ -1,7 +1,7 @@
 # BUG-003: CI/CD failures on PR #76 — lint errors + Windows test failures
 
 > **Type:** bug
-> **Status:** resolved
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
@@ -17,12 +17,21 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Steps to Reproduce](#steps-to-reproduce) | How to trigger the bug |
 | [Summary](#summary) | Bug overview |
 | [Failure Analysis](#failure-analysis) | Categorized CI failures |
 | [Root Cause Analysis](#root-cause-analysis) | Two distinct root causes |
 | [Acceptance Criteria](#acceptance-criteria) | Fix verification conditions |
 | [Tasks](#tasks) | Fix tasks |
 | [Related Items](#related-items) | Links to PR, CI runs |
+
+---
+
+## Steps to Reproduce
+
+1. Push to `feature/PROJ-005-ast-universal-markdown-parser` branch
+2. Open PR #76
+3. Observe CI failures: 8 ruff lint violations + 4 Windows test failures across 4 matrix jobs
 
 ---
 

@@ -125,5 +125,10 @@ nav:
     - OSS Methodology: research/oss-methodology.md
     - Architecture Patterns: research/architecture-patterns.md
     - Claude Code Ecosystem: research/claude-code-ecosystem.md
+    - LLM Deception Study:
+        - Overview: research/llm-deception/index.md
+        - "The 85% Problem": research/llm-deception/the-85-problem.md
+        - Methodology & Results: research/llm-deception/methodology.md
+        - Architecture & Recommendations: research/llm-deception/architecture.md
   - Governance:
     - Jerry Constitution: governance/JERRY_CONSTITUTION.md
