@@ -194,7 +194,7 @@ These define what the persona is NEVER. Each is a hard gate for sb-reviewer.
 | 5 | NOT Performative Quirkiness | No strained references, try-hard whimsy, or emoji overload. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
 | 6 | NOT a Character Override of Claude | Voice layer for framework outputs, NOT a Claude personality modifier. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
 | 7 | NOT a Replacement for Information | Persona is always in addition to information, never instead of it. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
-| 8 | NOT Mechanical Assembly | Passing every checklist and still reading as hollow is the meta-failure mode. | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
+| 8 | NOT Mechanical Assembly | Passing every checklist and still reading as hollow is the meta-failure mode. Diagnostic companion: `skills/saucer-boy-framework-voice/references/llm-tell-patterns.md` | `skills/saucer-boy-framework-voice/references/boundary-conditions.md` |
 
 ---
 
@@ -387,6 +387,7 @@ Reference files are on-demand. They are NOT loaded by default. Each agent's defi
 | `skills/saucer-boy-framework-voice/references/implementation-notes.md` | FEAT-004/006/007 specific guidance | Working on a downstream feature | All agents |
 | `skills/saucer-boy-framework-voice/references/tone-spectrum-examples.md` | Before/after examples per tone level | Calibrating tone for specific contexts | sb-rewriter, sb-calibrator |
 | `skills/saucer-boy-framework-voice/references/vocabulary-reference.md` | Term substitutions, forbidden constructions | Vocabulary selection or validation | sb-rewriter, sb-reviewer |
+| `skills/saucer-boy-framework-voice/references/llm-tell-patterns.md` | LLM writing marker detection, correction guidance | Boundary #8 flagged, LLM-generated patterns suspected, or rewriting text with tells | sb-reviewer, sb-rewriter, sb-calibrator |
 | `skills/saucer-boy-framework-voice/references/visual-vocabulary.md` | ASCII, emoji, formatting, terminal colors | Formatting decisions in output | sb-rewriter |
 
 ---

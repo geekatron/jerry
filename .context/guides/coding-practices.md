@@ -232,7 +232,7 @@ class IRepository(Protocol[TAggregate, TId]):
 
 ## Docstring Best Practices
 
-### Why Docstrings Are Required (H-12)
+### Why Docstrings Are Required (H-11)
 
 **Rule**: All public functions, classes, and modules MUST have docstrings.
 
@@ -801,7 +801,7 @@ from re import Pattern
 from typing import ClassVar
 ```
 
-### Docstrings (H-12) -- Real Examples
+### Docstrings (H-11) -- Real Examples
 
 **`src/session_management/domain/aggregates/session.py`** -- Google-style class and method docstrings:
 ```python
@@ -886,7 +886,7 @@ class IQueryDispatcher(Protocol):
 
 ### Related Documents
 
-- [Coding Standards](../rules/coding-standards.md) - Enforcement rules (H-11, H-12)
+- [Coding Standards](../rules/coding-standards.md) - Enforcement rules (H-11)
 - [Architecture Layers Guide](architecture-layers.md) - Layer import rules
 - [Error Handling Guide](error-handling.md) - Exception hierarchy details
 

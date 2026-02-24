@@ -11,14 +11,14 @@ Enforces hexagonal layer boundaries:
     - Composition root is the only place that wires adapters to ports
 
 Acceptance Criteria Coverage:
-    - AC-FEAT001-009: Hexagonal architecture boundaries (H-07, H-08)
-    - AC-FEAT001-010: Port/adapter structural compliance (H-09)
+    - AC-FEAT001-009: Hexagonal architecture boundaries (H-07)
+    - AC-FEAT001-010: Port/adapter structural compliance (H-07)
     - AC-FEAT001-011: One class per file (H-10)
 
 References:
     - H-07: Domain layer: no external imports
-    - H-08: Application layer: no infra/interface imports
-    - H-09: Composition root exclusivity
+    - H-07: Application layer: no infra/interface imports
+    - H-07: Composition root exclusivity
     - FEAT-001: Context Detection
     - PROJ-004: Context Resilience
 """
@@ -210,14 +210,14 @@ class TestDomainLayerBoundaries:
 
 
 # =============================================================================
-# Application Layer Boundary (H-08)
+# Application Layer Boundary (H-07)
 # =============================================================================
 
 
 class TestApplicationLayerBoundaries:
     """Architecture: Application layer has no infrastructure or interface imports.
 
-    References: H-08 (architecture-standards), FEAT-001 (EN-003), PROJ-004
+    References: H-07 (architecture-standards), FEAT-001 (EN-003), PROJ-004
     """
 
     def test_application_has_no_infrastructure_imports(self) -> None:
@@ -259,7 +259,7 @@ class TestApplicationLayerBoundaries:
 class TestInfrastructureLayerBoundaries:
     """Architecture: Infrastructure may import domain and application ports only.
 
-    References: H-07/H-08 (architecture-standards), PROJ-004
+    References: H-07 (architecture-standards), PROJ-004
     """
 
     def test_infrastructure_has_no_interface_imports(self) -> None:
@@ -285,7 +285,7 @@ class TestInfrastructureLayerBoundaries:
 class TestPortAdapterStructure:
     """Architecture: Ports are protocols, adapters implement them.
 
-    References: H-09 (architecture-standards), FEAT-001 (EN-003), PROJ-004
+    References: H-07 (architecture-standards), FEAT-001 (EN-003), PROJ-004
     """
 
     def test_ports_directory_exists(self) -> None:

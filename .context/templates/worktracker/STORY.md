@@ -39,6 +39,30 @@ EFFORT: Story points (1-13 Fibonacci recommended)
 
 ---
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Template Structure](#template-structure) | Visual structure reference for story template |
+| [Quick Creation Guide](#quick-creation-guide) | How to create a story quickly with quality AC |
+| [Frontmatter](#frontmatter) | YAML metadata schema for stories |
+| [User Story](#user-story) | As a/I want/So that format |
+| [Summary](#summary) | Additional context and scope |
+| [Acceptance Criteria](#acceptance-criteria) | Gherkin format and checklist |
+| [Children (Tasks)](#children-tasks) | Task inventory and tracking |
+| [Progress Summary](#progress-summary) | Overall story progress |
+| [Estimation](#estimation) | Story points and sprint |
+| [Definition of Done](#definition-of-done) | Code quality, documentation, verification |
+| [Evidence](#evidence) | Deliverables and verification record |
+| [State Machine Reference](#state-machine-reference) | Story status transitions |
+| [Containment Rules](#containment-rules) | Parent/child constraints |
+| [Invariants](#invariants) | Business rules and constraints |
+| [Related Items](#related-items) | Hierarchy and related stories |
+| [History](#history) | Status changes and key events |
+| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+
+---
+
 ## Template Structure
 
 ```
@@ -76,25 +100,40 @@ CONTAINMENT:
 
 ---
 
-## Document Sections
+## Quick Creation Guide
 
-| Section | Purpose |
-|---------|---------|
-| [Frontmatter](#frontmatter) | YAML metadata schema for stories |
-| [User Story](#user-story) | As a/I want/So that format |
-| [Summary](#summary) | Additional context and scope |
-| [Acceptance Criteria](#acceptance-criteria) | Gherkin format and checklist |
-| [Children (Tasks)](#children-tasks) | Task inventory and tracking |
-| [Progress Summary](#progress-summary) | Overall story progress |
-| [Estimation](#estimation) | Story points and sprint |
-| [Definition of Done](#definition-of-done) | Code quality, documentation, verification |
-| [Evidence](#evidence) | Deliverables and verification record |
-| [State Machine Reference](#state-machine-reference) | Story status transitions |
-| [Containment Rules](#containment-rules) | Parent/child constraints |
-| [Invariants](#invariants) | Business rules and constraints |
-| [Related Items](#related-items) | Hierarchy and related stories |
-| [History](#history) | Status changes and key events |
-| [System Mapping](#system-mapping) | ADO, SAFe, JIRA mappings |
+<!-- READ THIS FIRST when creating a new Story/PBI. Rules: WTI-008, WTI-009. -->
+
+### Steps
+
+1. **User Story:** "As a [specific role], I want [observable goal], so that [business benefit]." Be specific -- not "As a user" but "As an inventory admin."
+2. **Summary:** 1-3 sentences. Describe what and why from the user's perspective.
+3. **AC:** Max **5 bullets**. Start each with actor/system. Describe observable outcomes.
+4. **AC must NOT contain DoD items** (tests, code review, documentation, deployment). See `DOD.md` for team-level DoD.
+5. Present AC to user for review before creating the file (WTI-009b).
+
+### BAD vs GOOD AC (Stories)
+
+```markdown
+# BAD (violates WTI-008a, WTI-008b, WTI-008d):
+- [ ] Implement user profile editing using React form components
+- [ ] Should be able to update email and name
+- [ ] All unit tests pass with 90%+ coverage
+- [ ] Code reviewed and approved
+- [ ] Documentation updated
+
+# GOOD (compliant):
+- [ ] User can edit their display name and email from the Profile Settings page
+- [ ] System validates email matches user@domain.tld format before saving
+- [ ] System displays success message "Profile updated" after save completes
+- [ ] User sees updated values immediately without page refresh
+```
+
+### Quality Check
+
+Before creating: (1) Can an engineer build this without questions? (2) Can QA write test cases from this AC? (3) Any ambiguous terms?
+
+**Reference:** `skills/worktracker/rules/worktracker-content-standards.md`
 
 ---
 
@@ -289,8 +328,14 @@ Maps to: ADO:Effort, SAFe:story_points, JIRA:story_points
 ## Definition of Done
 
 <!--
-REQUIRED: Standard checklist for story completion.
+TEAM-LEVEL DOD: These items are universal standards, not story-specific.
+See .context/templates/worktracker/DOD.md for the shared Definition of Done.
+WTI-008a: Do NOT include these items in individual work item Acceptance Criteria.
 -->
+
+> **These items are team-level DoD standards. Do NOT include them in individual work item Acceptance Criteria.**
+> See [DOD.md](DOD.md) for the shared Definition of Done reference.
+> **Universal test (WTI-008a):** If it applies to every work item equally, it is DoD -- not AC.
 
 ### Code Quality
 

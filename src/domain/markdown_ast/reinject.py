@@ -14,13 +14,23 @@ Format example::
     <!-- L2-REINJECT: rank=1, tokens=50, content="Constitutional: No recursive
     subagents (P-003). User decides, never override (P-020)." -->
 
+    <!-- L2-REINJECT: rank=2, content="UV only for Python (H-05)." -->
+
+Security constraints:
+    - Trusted path whitelist (M-22): directives from untrusted file paths
+      are silently excluded when ``file_path`` is provided.
+    - Case-insensitive matching for ``L2-REINJECT:`` prefix.
+    - ``tokens=`` field is optional (many production directives omit it).
+
 References:
     - ST-003: L2-REINJECT Parser
+    - ADR-PROJ005-003 Mitigation M-22 (Trusted Path Whitelist)
     - H-07: Domain layer constraint (no external infra/interface imports)
     - H-11: Type hints REQUIRED on all public functions
     - H-12: Docstrings REQUIRED on all public functions/classes/modules
 
 Exports:
+    TRUSTED_REINJECT_PATHS: Tuple of trusted path prefixes for L2-REINJECT directives.
     ReinjectDirective: Frozen dataclass representing a parsed L2-REINJECT comment.
     extract_reinject_directives: Extract all directives from a JerryDocument.
     modify_reinject_directive: Return a new document with one directive modified.
@@ -28,22 +38,41 @@ Exports:
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 
 from src.domain.markdown_ast.jerry_document import JerryDocument
 
 # ---------------------------------------------------------------------------
+# Trusted path whitelist (M-22, WI-019)
+# ---------------------------------------------------------------------------
+
+TRUSTED_REINJECT_PATHS: tuple[str, ...] = (
+    ".context/rules/",
+    ".claude/rules/",
+    "CLAUDE.md",
+)
+"""Path prefixes (or exact filenames) from which L2-REINJECT directives are trusted.
+
+Directives from untrusted paths are silently excluded when ``file_path`` is
+provided to ``extract_reinject_directives()``.
+"""
+
+# ---------------------------------------------------------------------------
 # Regex pattern
 # ---------------------------------------------------------------------------
 
 # Matches a full L2-REINJECT HTML comment on a single line.
+# Case-insensitive for "L2-REINJECT:" prefix.
+# tokens= field is optional (many production directives omit it).
 # Groups:
 #   1 - rank  (integer string)
-#   2 - tokens (integer string)
+#   2 - tokens (integer string or None if omitted)
 #   3 - content (everything inside the outer double-quotes; may contain \" escapes)
 _REINJECT_PATTERN: re.Pattern[str] = re.compile(
-    r'<!--\s*L2-REINJECT:\s*rank=(\d+),\s*tokens=(\d+),\s*content="((?:[^"\\]|\\.)*)"\s*-->'
+    r'<!--\s*L2-REINJECT:\s*rank=(\d+),\s*(?:tokens=(\d+),\s*)?content="((?:[^"\\]|\\.)*)"\s*-->',
+    re.IGNORECASE,
 )
 
 
@@ -91,24 +120,36 @@ class ReinjectDirective:
 # ---------------------------------------------------------------------------
 
 
-def extract_reinject_directives(doc: JerryDocument) -> list[ReinjectDirective]:
+def extract_reinject_directives(
+    doc: JerryDocument,
+    file_path: str | None = None,
+) -> list[ReinjectDirective]:
     """
     Extract all L2-REINJECT directives from a JerryDocument.
 
     Scans the document source line by line using the canonical L2-REINJECT
-    regex pattern. HTML comments that do not match the L2-REINJECT format are
-    silently ignored, preserving all other document content unchanged.
+    regex pattern (case-insensitive). HTML comments that do not match the
+    L2-REINJECT format are silently ignored.
+
+    When ``file_path`` is provided, directives are only returned if the
+    file path is within the trusted path whitelist (``TRUSTED_REINJECT_PATHS``).
+    Directives from untrusted paths are silently excluded (M-22).
+    When ``file_path`` is ``None``, no trust check is performed (backward
+    compatible).
 
     Directives are returned in document order (ascending line number).
 
     Args:
         doc: A JerryDocument whose source will be searched for L2-REINJECT
             comments. May be empty; returns an empty list in that case.
+        file_path: Optional file path for trust checking. When provided,
+            directives are excluded from untrusted paths. When ``None``
+            (default), no trust check is applied.
 
     Returns:
         A list of ReinjectDirective instances, one per matched comment, in
         document order. Returns an empty list if no L2-REINJECT comments are
-        found.
+        found or the file is untrusted.
 
     Examples:
         >>> doc = JerryDocument.parse('<!-- L2-REINJECT: rank=1, tokens=10, content="Hi." -->\\n')
@@ -118,18 +159,23 @@ def extract_reinject_directives(doc: JerryDocument) -> list[ReinjectDirective]:
         >>> directives[0].rank
         1
     """
+    # --- Trusted path check (M-22, WI-019) ---
+    if file_path is not None and not _is_trusted_path(file_path):
+        return []
+
     directives: list[ReinjectDirective] = []
     for line_number, line in enumerate(doc.source.splitlines()):
         match = _REINJECT_PATTERN.search(line)
         if match:
             rank = int(match.group(1))
-            tokens = int(match.group(2))
+            tokens_str = match.group(2)
+            tokens_val = int(tokens_str) if tokens_str is not None else 0
             content = match.group(3)
             raw_text = match.group(0)
             directives.append(
                 ReinjectDirective(
                     rank=rank,
-                    tokens=tokens,
+                    tokens=tokens_val,
                     content=content,
                     line_number=line_number,
                     raw_text=raw_text,
@@ -195,3 +241,41 @@ def modify_reinject_directive(
 
     modified_source = doc.source.replace(target.raw_text, new_raw, 1)
     return JerryDocument.parse(modified_source)
+
+
+# ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+
+def _is_trusted_path(file_path: str) -> bool:
+    """Check if a file path is within the trusted path whitelist (M-22).
+
+    Normalizes the path to forward slashes and checks against
+    ``TRUSTED_REINJECT_PATHS``. For directory prefixes, checks if the
+    normalized path contains the prefix. For exact filenames (no trailing
+    slash), checks if the path ends with the filename.
+
+    Args:
+        file_path: The file path to check (relative or absolute).
+
+    Returns:
+        ``True`` if the path is trusted, ``False`` otherwise.
+    """
+    normalized = file_path.replace(os.sep, "/")
+
+    # Strip leading ./ if present
+    if normalized.startswith("./"):
+        normalized = normalized[2:]
+
+    for trusted in TRUSTED_REINJECT_PATHS:
+        if trusted.endswith("/"):
+            # Directory prefix: check if the path contains this prefix
+            if trusted in normalized:
+                return True
+        else:
+            # Exact filename: check if path ends with it or equals it
+            if normalized == trusted or normalized.endswith("/" + trusted):
+                return True
+
+    return False

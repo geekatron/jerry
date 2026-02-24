@@ -168,6 +168,15 @@ class TestFrontmatterField:
         assert "Status" in r
         assert "pending" in r
 
+    @pytest.mark.happy_path
+    def test_field_is_frozen(self) -> None:
+        """FrontmatterField instances are immutable (WI-001)."""
+        field = FrontmatterField(key="Status", value="pending", line_number=0, start=0, end=20)
+        with pytest.raises(AttributeError):
+            field.key = "hacked"  # type: ignore[misc]
+        with pytest.raises(AttributeError):
+            field.value = "hacked"  # type: ignore[misc]
+
 
 # ---------------------------------------------------------------------------
 # extract_frontmatter convenience function tests

@@ -15,5 +15,8 @@ from src.infrastructure.adapters.configuration.env_config_adapter import (
 from src.infrastructure.adapters.configuration.layered_config_adapter import (
     LayeredConfigAdapter,
 )
+from src.infrastructure.adapters.configuration.lifecycle_dir_resolver import (
+    resolve_lifecycle_dir,
+)
 
-__all__ = ["EnvConfigAdapter", "LayeredConfigAdapter"]
+__all__ = ["EnvConfigAdapter", "LayeredConfigAdapter", "resolve_lifecycle_dir"]

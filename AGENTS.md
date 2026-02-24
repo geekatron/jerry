@@ -17,6 +17,8 @@
 | [Transcript Skill Agents](#transcript-skill-agents) | ts-* agents (5 total) |
 | [Framework Voice Skill Agents](#framework-voice-skill-agents) | sb-* agents (3 total) |
 | [Session Voice Skill Agents](#session-voice-skill-agents) | sb-voice agent (1 total) |
+| [Eng-Team Skill Agents](#eng-team-skill-agents) | eng-* agents (10 total) |
+| [Red-Team Skill Agents](#red-team-skill-agents) | red-* agents (11 total) |
 | [MCP Tool Access](#mcp-tool-access) | Context7 and Memory-Keeper agent matrix |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
@@ -47,13 +49,15 @@ to specific skills. This provides:
 | Transcript Agents | 5 | `/transcript` skill |
 | Framework Voice Agents | 3 | `/saucer-boy-framework-voice` skill |
 | Session Voice Agents | 1 | `/saucer-boy` skill |
-| **Total** | **37** | |
+| Eng-Team Agents | 10 | `/eng-team` skill |
+| Red-Team Agents | 11 | `/red-team` skill |
+| **Total** | **58** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 41 total files found; 4 template/extension files excluded from counts:
+> 62 total files found; 4 template/extension files excluded from counts:
 > `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 = 37 invokable agents.
-> Last verified: 2026-02-20.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 = 58 invokable agents.
+> Last verified: 2026-02-22.
 
 ---
 
@@ -201,7 +205,7 @@ These agents manage work item verification, visualization, and auditing.
 
 **WTI Rules Enforced**: WTI-002 (No Closure Without Verification), WTI-003 (Truthful State), WTI-006 (Evidence-Based Closure)
 
-**AST Enforcement (H-33):** All wt-* agents have Bash tool access and MUST use `/ast` skill operations (`uv run --directory ${CLAUDE_PLUGIN_ROOT} python -c "..."`) for frontmatter extraction and entity validation. Regex-based frontmatter parsing (`> **Status:**` grep) is prohibited.
+**AST Enforcement (H-33):** All wt-* agents have Bash tool access and MUST use `jerry ast` CLI commands (`uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter`, `jerry ast validate`, etc.) for frontmatter extraction and entity validation. Regex-based frontmatter parsing (`> **Status:**` grep) is prohibited.
 
 ---
 
@@ -248,6 +252,27 @@ Agents with MCP (Model Context Protocol) tool access for external documentation 
 | ps-synthesizer | problem-solving | resolve-library-id, query-docs |
 | nse-explorer | nasa-se | resolve-library-id, query-docs |
 | nse-architecture | nasa-se | resolve-library-id, query-docs |
+| eng-architect | eng-team | resolve-library-id, query-docs |
+| eng-lead | eng-team | resolve-library-id, query-docs |
+| eng-backend | eng-team | resolve-library-id, query-docs |
+| eng-frontend | eng-team | resolve-library-id, query-docs |
+| eng-infra | eng-team | resolve-library-id, query-docs |
+| eng-devsecops | eng-team | resolve-library-id, query-docs |
+| eng-qa | eng-team | resolve-library-id, query-docs |
+| eng-security | eng-team | resolve-library-id, query-docs |
+| eng-reviewer | eng-team | resolve-library-id, query-docs |
+| eng-incident | eng-team | resolve-library-id, query-docs |
+| red-lead | red-team | resolve-library-id, query-docs |
+| red-recon | red-team | resolve-library-id, query-docs |
+| red-vuln | red-team | resolve-library-id, query-docs |
+| red-exploit | red-team | resolve-library-id, query-docs |
+| red-privesc | red-team | resolve-library-id, query-docs |
+| red-lateral | red-team | resolve-library-id, query-docs |
+| red-persist | red-team | resolve-library-id, query-docs |
+| red-exfil | red-team | resolve-library-id, query-docs |
+| red-reporter | red-team | resolve-library-id, query-docs |
+| red-infra | red-team | resolve-library-id, query-docs |
+| red-social | red-team | resolve-library-id, query-docs |
 
 ### Memory-Keeper (Cross-Session Persistence)
 
@@ -261,7 +286,7 @@ Agents with MCP (Model Context Protocol) tool access for external documentation 
 | ts-parser | transcript | store, retrieve |
 | ts-extractor | transcript | store, retrieve |
 
-> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation).
+> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation). eng-*/red-* agents do not use Memory-Keeper; their persistence model uses file-based output per P-002 (engagement-scoped output directories), not cross-session MCP storage.
 
 ---
 
@@ -288,6 +313,90 @@ This agent is scoped to the `saucer-boy` skill and invoked via `/saucer-boy`.
 | `sb-voice` | `skills/saucer-boy/agents/sb-voice.md` | Session conversational voice — McConkey personality for work sessions | divergent |
 
 **Two Modes**: Ambient session personality (always-on during session) and explicit McConkey invocation (on-demand persona responses). Personality disengages for hard stops, security, governance, and user override (P-020).
+
+---
+
+## Eng-Team Skill Agents
+
+These agents implement secure software engineering methodology through the `/eng-team` skill, covering the full SDLC with security hardening at every phase. Follows an 8-step sequential phase-gate workflow with NIST SSDF governance, Microsoft SDL phases, OWASP ASVS verification, SLSA supply chain integrity, and DevSecOps automation patterns.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| eng-architect | `skills/eng-team/agents/eng-architect.md` | Solution Architect and Threat Modeler | Strategic |
+| eng-lead | `skills/eng-team/agents/eng-lead.md` | Engineering Lead and Standards Enforcer | Convergent |
+| eng-backend | `skills/eng-team/agents/eng-backend.md` | Secure Backend Engineer | Systematic |
+| eng-frontend | `skills/eng-team/agents/eng-frontend.md` | Secure Frontend Engineer | Systematic |
+| eng-infra | `skills/eng-team/agents/eng-infra.md` | Secure Infrastructure Engineer | Systematic |
+| eng-devsecops | `skills/eng-team/agents/eng-devsecops.md` | DevSecOps Pipeline Engineer | Systematic |
+| eng-qa | `skills/eng-team/agents/eng-qa.md` | Security QA Engineer | Systematic |
+| eng-security | `skills/eng-team/agents/eng-security.md` | Security Code Review Specialist | Forensic |
+| eng-reviewer | `skills/eng-team/agents/eng-reviewer.md` | Final Review Gate and Quality Enforcer | Convergent |
+| eng-incident | `skills/eng-team/agents/eng-incident.md` | Incident Response Specialist | Forensic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| eng-architect | System design, architecture decisions, threat modeling (STRIDE/DREAD/PASTA) | Architecture decision records, threat models |
+| eng-lead | Implementation planning, code standards enforcement, dependency governance | Implementation plans, standards mappings |
+| eng-backend | Server-side implementation with OWASP Top 10 and ASVS 5.0 compliance | Secure backend code, API security artifacts |
+| eng-frontend | Client-side implementation with XSS prevention, CSP, CORS hardening | Secure frontend code, CSP configurations |
+| eng-infra | IaC security, container hardening, SBOM generation, SLSA compliance | Infrastructure configurations, SBOMs |
+| eng-devsecops | SAST/DAST pipeline integration, secrets scanning, dependency analysis | Pipeline configurations, scan reports |
+| eng-qa | Security test strategy, fuzzing campaigns, property-based testing | Test artifacts, coverage reports |
+| eng-security | Manual secure code review against CWE Top 25 and OWASP ASVS | Finding reports with CWE classifications |
+| eng-reviewer | Final gate with /adversary integration for C2+ at >= 0.95 threshold | Quality scores, compliance status |
+| eng-incident | Incident response runbooks, vulnerability lifecycle management | IR plans, monitoring configurations |
+
+**Invocation**: Use `/eng-team` skill which orchestrates these agents in an 8-step sequential phase-gate workflow.
+
+**Model Tiers:** eng-architect (opus), eng-reviewer (opus); all others (sonnet).
+
+**Artifact Location**: `skills/eng-team/output/{engagement-id}/`
+
+---
+
+## Red-Team Skill Agents
+
+These agents implement offensive security methodology through the `/red-team` skill, covering the full MITRE ATT&CK kill chain (14/14 tactics). Follows a non-linear workflow with mandatory scope authorization (red-lead first), circuit breaker checks at every agent transition, and RoE-gated agents for high-impact operations. Follows PTES, OSSTMM, and NIST SP 800-115 methodologies.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| red-lead | `skills/red-team/agents/red-lead.md` | Engagement Lead & Scope Authority | Strategic |
+| red-recon | `skills/red-team/agents/red-recon.md` | Reconnaissance Specialist | Divergent |
+| red-vuln | `skills/red-team/agents/red-vuln.md` | Vulnerability Analyst | Systematic |
+| red-exploit | `skills/red-team/agents/red-exploit.md` | Exploitation Specialist | Systematic |
+| red-privesc | `skills/red-team/agents/red-privesc.md` | Privilege Escalation Specialist | Systematic |
+| red-lateral | `skills/red-team/agents/red-lateral.md` | Lateral Movement Specialist | Systematic |
+| red-persist | `skills/red-team/agents/red-persist.md` | Persistence Specialist (RoE-GATED) | Systematic |
+| red-exfil | `skills/red-team/agents/red-exfil.md` | Data Exfiltration Specialist (RoE-GATED) | Systematic |
+| red-reporter | `skills/red-team/agents/red-reporter.md` | Engagement Reporter & Documentation Specialist | Integrative |
+| red-infra | `skills/red-team/agents/red-infra.md` | Infrastructure & Tooling Specialist | Systematic |
+| red-social | `skills/red-team/agents/red-social.md` | Social Engineering Specialist (RoE-GATED) | Divergent |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| red-lead | Scope establishment, RoE definition, authorization management | Scope documents, RoE YAML |
+| red-recon | OSINT, network enumeration, service discovery, attack surface mapping | Reconnaissance reports |
+| red-vuln | Vulnerability identification, CVE research, exploit availability assessment | Vulnerability reports with risk scores |
+| red-exploit | Exploit methodology, payload crafting guidance, vulnerability chaining | Exploitation methodology reports |
+| red-privesc | Local/domain privilege escalation, credential harvesting, token manipulation | Privilege escalation reports |
+| red-lateral | Network pivoting, tunneling, living-off-the-land techniques | Lateral movement reports |
+| red-persist | Backdoor placement methodology, scheduled tasks, rootkit analysis (RoE-GATED) | Persistence methodology reports |
+| red-exfil | Data exfiltration channels, covert communication, DLP bypass (RoE-GATED) | Exfiltration methodology reports |
+| red-reporter | Engagement reports, finding documentation, executive summaries | Final engagement reports |
+| red-infra | C2 framework management, payload building, redirector infrastructure | Infrastructure methodology reports |
+| red-social | Phishing campaigns, pretexting, vishing methodology (RoE-GATED) | Social engineering methodology reports |
+
+**Invocation**: Use `/red-team` skill. red-lead MUST establish scope first (mandatory). After scope, any agent is invocable in any order.
+
+**Model Tiers:** red-lead (opus), red-reporter (opus); all others (sonnet).
+
+**Artifact Location**: `skills/red-team/output/{engagement-id}/`
+
+**RoE-Gated Agents:** red-persist, red-exfil, red-social require explicit authorization in the Rules of Engagement beyond standard scope authorization.
 
 ---
 

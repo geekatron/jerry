@@ -10,7 +10,7 @@ the single source of truth for enforcement configuration.
 
 References:
     - EN-703: PreToolUse Enforcement Engine
-    - H-07, H-08: Hexagonal Architecture import boundary rules
+    - H-07: Architecture layer isolation (compound: domain imports, application imports, composition root)
     - H-10: One-class-per-file rule
 """
 
@@ -37,7 +37,7 @@ EXEMPT_DIRECTORIES: set[str] = {"tests", "scripts", "hooks"}
 # Files exempt from import boundary checks (composition root)
 EXEMPT_FILES: set[str] = {"bootstrap.py"}
 
-# Layer dependency rules (H-07, H-08)
+# Layer dependency rules (H-07)
 # Key: source layer, Value: set of forbidden import targets
 LAYER_IMPORT_RULES: dict[str, set[str]] = {
     "domain": {"application", "infrastructure", "interface"},

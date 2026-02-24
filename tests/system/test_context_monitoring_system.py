@@ -26,7 +26,7 @@ Acceptance Criteria Coverage:
 References:
     - FEAT-001: Context Detection (EN-003, EN-004)
     - PROJ-004: Context Resilience
-    - H-09: Composition root exclusivity (note: system tests wire manually
+    - H-07: Composition root exclusivity (note: system tests wire manually
       because the production bootstrap requires a full project environment;
       composition root testing is covered by E2E tests via the actual CLI)
 """

@@ -622,7 +622,13 @@ def _add_ast_namespace(
     validate_parser.add_argument(
         "--schema",
         default=None,
-        help="Schema type to validate against (e.g., entity). Optional.",
+        help="Schema type to validate against (e.g., story, epic, task). Optional.",
+    )
+    validate_parser.add_argument(
+        "--nav",
+        action="store_true",
+        default=False,
+        help="Include detailed nav table entries in output.",
     )
 
     # ast query
@@ -638,6 +644,82 @@ def _add_ast_namespace(
     query_parser.add_argument(
         "selector",
         help="Node type to query (e.g., heading, blockquote, paragraph)",
+    )
+
+    # ast frontmatter
+    frontmatter_parser = ast_subparsers.add_parser(
+        "frontmatter",
+        help="Extract blockquote frontmatter fields as JSON",
+        description="Extract all blockquote frontmatter fields from a markdown file.",
+    )
+    frontmatter_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast modify
+    modify_parser = ast_subparsers.add_parser(
+        "modify",
+        help="Modify a frontmatter field",
+        description="Modify a frontmatter field value and write back to file.",
+    )
+    modify_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    modify_parser.add_argument(
+        "--key",
+        required=True,
+        help="Frontmatter field name to modify (case-sensitive).",
+    )
+    modify_parser.add_argument(
+        "--value",
+        required=True,
+        help="New value for the field.",
+    )
+
+    # ast reinject
+    reinject_parser = ast_subparsers.add_parser(
+        "reinject",
+        help="Extract L2-REINJECT directives as JSON",
+        description="Extract all L2-REINJECT directives from a markdown file.",
+    )
+    reinject_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast detect (RE-006: WI-017)
+    detect_parser = ast_subparsers.add_parser(
+        "detect",
+        help="Detect document type of a markdown file",
+        description="Detect the Jerry document type using path-first, structure-fallback detection.",
+    )
+    detect_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast sections (RE-006: WI-017)
+    sections_parser = ast_subparsers.add_parser(
+        "sections",
+        help="Extract XML-tagged sections as JSON",
+        description="Extract XML-tagged sections (e.g., <identity>, <methodology>) from a markdown file.",
+    )
+    sections_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast metadata (RE-006: WI-017)
+    metadata_parser = ast_subparsers.add_parser(
+        "metadata",
+        help="Extract HTML comment metadata as JSON",
+        description="Extract structured metadata from HTML comments (e.g., PS-ID, VERSION blocks).",
+    )
+    metadata_parser.add_argument(
+        "file",
+        help="Path to markdown file",
     )
 
 

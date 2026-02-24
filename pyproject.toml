@@ -1,6 +1,6 @@
 [project]
 name = "jerry"
-version = "0.10.0"
+version = "0.15.0"
 description = "A framework for behavior and workflow guardrails with knowledge accrual"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -101,6 +101,7 @@ select = [
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
+    "S506",  # WI-004: Ban unsafe YAML APIs (yaml.load, yaml.unsafe_load) (T-YF-07, M-01)
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
@@ -121,6 +122,8 @@ markers = [
     "e2e: marks end-to-end tests (slow, full stack)",
     "integration: marks integration tests (external dependencies)",
     "subprocess: marks tests that invoke external processes",
+    "security: marks security/adversarial test scenarios",
+    "regression: marks regression test scenarios",
 ]
 
 # =============================================================================
@@ -146,7 +149,7 @@ tag_format = "v$version"
 #   - design-version-bumping-process.md
 
 [tool.bumpversion]
-current_version = "0.10.0"
+current_version = "0.15.0"
 commit = true
 tag = true
 tag_name = "v{new_version}"

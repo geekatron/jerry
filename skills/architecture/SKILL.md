@@ -402,8 +402,8 @@ All architecture work adheres to the **Jerry Constitution v1.0**:
 | P-004: Explicit Provenance | Reasoning and sources documented | ADRs include context, alternatives considered, consequences |
 | P-011: Evidence-Based | Recommendations tied to evidence | Architecture reviews cite specific violations or compliance |
 | H-07: Domain Layer Isolation | Domain MUST NOT import external layers | `analyze` command verifies import boundaries |
-| H-08: Application Layer Isolation | Application MUST NOT import infrastructure/interface | `analyze` command verifies layer dependencies |
-| H-09: Composition Root Exclusivity | Only bootstrap.py instantiates infrastructure | Architecture test enforces this rule |
+| H-07: Application Layer Isolation | Application MUST NOT import infrastructure/interface | `analyze` command verifies layer dependencies |
+| H-07: Composition Root Exclusivity | Only bootstrap.py instantiates infrastructure | Architecture test enforces this rule |
 | H-10: One Class Per File | Each file contains exactly ONE public class | AST check enforces this rule |
 
 ---

@@ -243,7 +243,7 @@ Common tasks for skill authors and which shared resource to use:
 1. **Create skill directory:** `skills/{skill-name}/`
 2. **Create SKILL.md:** Copy structure from `skills/problem-solving/SKILL.md` or `skills/orchestration/SKILL.md`
    - Include triple-lens audience table
-   - Add navigation table (H-23/H-24)
+   - Add navigation table (H-23)
    - Document purpose, capabilities, when to use
    - List available agents/commands
    - Add constitutional compliance section
@@ -274,7 +274,7 @@ Shared resources adhere to the **Jerry Constitution v1.0**:
 | P-004: Explicit Provenance | Reasoning documented | Agent template includes provenance checklist |
 | P-022: No Deception | Transparent limitations | Playbook template includes anti-pattern catalog |
 | H-23: Navigation Tables | Required for 30+ line docs | All shared docs include navigation tables |
-| H-24: Anchor Links | Required in nav tables | All section names use correct anchor syntax |
+| H-23: Anchor Links | Required in nav tables | All section names use correct anchor syntax |
 
 **Self-Critique Checklist:**
 - [ ] P-002: Does agent template enforce file output?
@@ -282,7 +282,7 @@ Shared resources adhere to the **Jerry Constitution v1.0**:
 - [ ] P-004: Do templates include provenance/reasoning sections?
 - [ ] P-022: Are limitations and anti-patterns documented?
 - [ ] H-23: Do all docs over 30 lines have navigation tables?
-- [ ] H-24: Are anchor links correct in navigation tables?
+- [ ] H-23: Are anchor links correct in navigation tables?
 
 ---
 
