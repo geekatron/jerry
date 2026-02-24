@@ -1,6 +1,6 @@
 # C4 Tournament Summary — Marketing Deliverables
 
-**Deliverables:** `work/marketing/medium-article.md`, `work/marketing/slack-message.md`
+**Deliverables:** `marketing/medium-article.md`, `marketing/slack-message.md`
 **Source Blog:** `docs/blog/posts/why-structured-prompting-works.md`
 **Date:** 2026-02-24
 **Tournament:** C4 Full (All 10 Strategies)
@@ -184,19 +184,19 @@ All 5 cited papers verified:
 
 | Strategy | File |
 |----------|------|
-| S-001 Red Team | `work/marketing/adversary/s-001-red-team.md` |
-| S-002 Devil's Advocate | `work/marketing/adversary/s-002-devils-advocate.md` |
-| S-003 Steelman | `work/marketing/adversary/s-003-steelman.md` |
-| S-004 Pre-Mortem | `work/marketing/adversary/s-004-pre-mortem.md` |
-| S-007 Constitutional AI | `work/marketing/adversary/s-007-constitutional-ai-critique.md` |
-| S-010 Self-Refine | `work/marketing/adversary/s-010-self-refine.md` |
-| S-011 Chain-of-Verification | `work/marketing/adversary/s-011-chain-of-verification.md` |
-| S-012 FMEA | `work/marketing/adversary/s-012-fmea.md` |
-| S-013 Inversion | `work/marketing/adversary/s-013-inversion.md` |
-| S-014 Iteration 1 | `work/marketing/adversary/s-014-scoring-iteration-1.md` |
-| S-014 Iteration 2 | `work/marketing/adversary/s-014-scoring-iteration-2.md` |
-| S-014 Iteration 3 | `work/marketing/adversary/s-014-scoring-iteration-3.md` |
-| S-014 Iteration 4 | `work/marketing/adversary/s-014-scoring-iteration-4.md` |
-| S-014 Iteration 5 | `work/marketing/adversary/s-014-scoring-iteration-5.md` |
-| S-014 Iteration 6 | `work/marketing/adversary/s-014-scoring-iteration-6.md` |
-| **Tournament Summary** | `work/marketing/adversary/tournament-summary.md` |
+| S-001 Red Team | `marketing/adversary/s-001-red-team.md` |
+| S-002 Devil's Advocate | `marketing/adversary/s-002-devils-advocate.md` |
+| S-003 Steelman | `marketing/adversary/s-003-steelman.md` |
+| S-004 Pre-Mortem | `marketing/adversary/s-004-pre-mortem.md` |
+| S-007 Constitutional AI | `marketing/adversary/s-007-constitutional-ai-critique.md` |
+| S-010 Self-Refine | `marketing/adversary/s-010-self-refine.md` |
+| S-011 Chain-of-Verification | `marketing/adversary/s-011-chain-of-verification.md` |
+| S-012 FMEA | `marketing/adversary/s-012-fmea.md` |
+| S-013 Inversion | `marketing/adversary/s-013-inversion.md` |
+| S-014 Iteration 1 | `marketing/adversary/s-014-scoring-iteration-1.md` |
+| S-014 Iteration 2 | `marketing/adversary/s-014-scoring-iteration-2.md` |
+| S-014 Iteration 3 | `marketing/adversary/s-014-scoring-iteration-3.md` |
+| S-014 Iteration 4 | `marketing/adversary/s-014-scoring-iteration-4.md` |
+| S-014 Iteration 5 | `marketing/adversary/s-014-scoring-iteration-5.md` |
+| S-014 Iteration 6 | `marketing/adversary/s-014-scoring-iteration-6.md` |
+| **Tournament Summary** | `marketing/adversary/tournament-summary.md` |
