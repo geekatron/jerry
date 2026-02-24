@@ -102,6 +102,9 @@ Examples:
     # AST namespace (ST-004: jerry ast commands)
     _add_ast_namespace(subparsers)
 
+    # Agents namespace (ADR-PROJ010-003: Canonical agent build pipeline)
+    _add_agents_namespace(subparsers)
+
     # EE-008: Undocumented philosophy command
     subparsers.add_parser(
         "why",
@@ -638,6 +641,115 @@ def _add_ast_namespace(
     query_parser.add_argument(
         "selector",
         help="Node type to query (e.g., heading, blockquote, paragraph)",
+    )
+
+
+def _add_agents_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add agents namespace commands.
+
+    Commands:
+        - build: Build vendor-specific agent files from canonical source
+        - extract: Reverse-engineer canonical source from existing vendor files
+        - validate: Validate all canonical agent definitions against schema
+        - list: List agents with tier, skill, vendor status
+        - diff: Show drift between canonical source and generated output
+
+    References:
+        - ADR-PROJ010-003: LLM Portability Architecture
+    """
+    agents_parser = subparsers.add_parser(
+        "agents",
+        help="Agent definition build pipeline",
+        description="Build and manage vendor-agnostic canonical agent definitions.",
+    )
+
+    agents_subparsers = agents_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # agents build
+    build_parser = agents_subparsers.add_parser(
+        "build",
+        help="Build vendor-specific agent files from canonical source",
+        description="Generate vendor-specific agent files from canonical .agent.yaml + .prompt.md source.",
+    )
+    build_parser.add_argument(
+        "--adapter",
+        default="claude_code",
+        help="Target vendor adapter (default: claude_code)",
+    )
+    build_parser.add_argument(
+        "--agent",
+        default=None,
+        help="Specific agent to build (default: all)",
+    )
+    build_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Show what would be generated without writing files",
+    )
+
+    # agents extract
+    extract_parser = agents_subparsers.add_parser(
+        "extract",
+        help="Extract canonical source from existing vendor files",
+        description="Reverse-engineer canonical .agent.yaml + .prompt.md from existing agent files.",
+    )
+    extract_parser.add_argument(
+        "--agent",
+        default=None,
+        help="Specific agent to extract (default: all)",
+    )
+    extract_parser.add_argument(
+        "--source-adapter",
+        default="claude_code",
+        help="Source vendor format (default: claude_code)",
+    )
+
+    # agents validate
+    validate_parser = agents_subparsers.add_parser(
+        "validate",
+        help="Validate canonical agent definitions",
+        description="Validate all canonical agent definitions against JSON Schema and domain rules.",
+    )
+    validate_parser.add_argument(
+        "--agent",
+        default=None,
+        help="Specific agent to validate (default: all)",
+    )
+
+    # agents list
+    list_parser = agents_subparsers.add_parser(
+        "list",
+        help="List agents with metadata",
+        description="List all canonical agents with tier, skill, and model information.",
+    )
+    list_parser.add_argument(
+        "--skill",
+        default=None,
+        help="Filter by skill name",
+    )
+
+    # agents diff
+    diff_parser = agents_subparsers.add_parser(
+        "diff",
+        help="Show drift between canonical and generated files",
+        description="Compare canonical source against generated vendor files to detect drift.",
+    )
+    diff_parser.add_argument(
+        "--agent",
+        default=None,
+        help="Specific agent to diff (default: all)",
+    )
+    diff_parser.add_argument(
+        "--adapter",
+        default="claude_code",
+        help="Vendor adapter to compare against (default: claude_code)",
     )
 
 

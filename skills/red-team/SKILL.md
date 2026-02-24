@@ -9,7 +9,7 @@ description: >
   All engagements require red-lead scope authorization before any other agent.
   Follows PTES, OSSTMM, and ATT&CK methodology frameworks.
 version: "1.0.0"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 activation-keywords:
   - "penetration test"
   - "pentest"
@@ -266,31 +266,28 @@ Request a specific agent:
 "Ask red-reporter to generate the executive summary"
 ```
 
-### Option 3: Task Tool Invocation
+### Option 3: Native Agent Invocation
 
-For programmatic invocation within workflows:
+Agents are registered via `plugin.json` and discovered by Claude Code automatically. The orchestrator invokes them as named subagents:
 
 ```python
 Task(
     description="red-recon: Reconnaissance of target network",
-    subagent_type="general-purpose",
+    subagent_type="red-recon",
     prompt="""
-You are the red-recon agent (v1.0.0).
-
 ## RED TEAM CONTEXT (REQUIRED)
 - **Engagement ID:** RED-0001
 - **Scope Document:** skills/red-team/output/RED-0001/red-lead-scope.md
 - **Target:** 10.0.0.0/24
 - **Phase:** Reconnaissance
 
-## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/red-team/output/RED-0001/red-recon-network-enumeration.md
-
 ## TASK
 Perform network reconnaissance methodology guidance for the authorized target range.
 """
 )
 ```
+
+Claude Code enforces the agent's `tools` frontmatter — red-recon only has access to Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch and the Context7 MCP server.
 
 ---
 

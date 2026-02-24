@@ -1,0 +1,75 @@
+# Abstract ↔ Vendor Tool and Model Mappings
+# Used by jerry agents build to translate canonical definitions to vendor format.
+#
+# References:
+#   - ADR-PROJ010-003: LLM Portability Architecture
+#   - agent-development-standards.md: Tool Security Tiers
+
+tool_map:
+  file_read:
+    claude_code: Read
+    openai: file_search
+    google_adk: read_file
+    ollama: null
+  file_write:
+    claude_code: Write
+    openai: null
+    google_adk: write_file
+    ollama: null
+  file_edit:
+    claude_code: Edit
+    openai: null
+    google_adk: edit_file
+    ollama: null
+  file_search_glob:
+    claude_code: Glob
+    openai: null
+    google_adk: list_files
+    ollama: null
+  file_search_content:
+    claude_code: Grep
+    openai: file_search
+    google_adk: search_files
+    ollama: null
+  shell_execute:
+    claude_code: Bash
+    openai: code_interpreter
+    google_adk: shell
+    ollama: null
+  web_search:
+    claude_code: WebSearch
+    openai: web_search
+    google_adk: google_search
+    ollama: null
+  web_fetch:
+    claude_code: WebFetch
+    openai: null
+    google_adk: fetch_url
+    ollama: null
+  notebook_edit:
+    claude_code: NotebookEdit
+    openai: null
+    google_adk: null
+    ollama: null
+  agent_delegate:
+    claude_code: Task
+    openai: null
+    google_adk: null
+    ollama: null
+
+model_map:
+  reasoning_high:
+    claude_code: opus
+    openai: gpt-4o
+    google_adk: gemini-2.5-pro
+    ollama: llama3.1:70b
+  reasoning_standard:
+    claude_code: sonnet
+    openai: gpt-4o-mini
+    google_adk: gemini-2.0-flash
+    ollama: llama3.2
+  fast:
+    claude_code: haiku
+    openai: gpt-4o-mini
+    google_adk: gemini-2.0-flash
+    ollama: llama3.2:3b

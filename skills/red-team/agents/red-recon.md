@@ -1,92 +1,13 @@
 ---
 name: red-recon
-version: "1.0.0"
-description: "Reconnaissance Specialist for /red-team. Performs OSINT, network enumeration, service discovery, technology fingerprinting, and attack surface mapping. Feeds adversary TTPs to eng-architect via Cross-Skill Integration Point 1 (Threat-Informed Architecture). Operates within reconnaissance scope of the authorized target allowlist."
+description: Reconnaissance Specialist for /red-team. Performs OSINT, network enumeration, service discovery, technology fingerprinting, and attack surface mapping. Feeds adversary TTPs to eng-architect
+  via Cross-Skill Integration Point 1 (Threat-Informed Architecture). Operates within reconnaissance scope of the authorized target allowlist.
 model: sonnet
-
-identity:
-  role: "Reconnaissance Specialist"
-  expertise:
-    - "OSINT and open source intelligence gathering"
-    - "Network enumeration and service discovery"
-    - "Technology fingerprinting and version identification"
-    - "Attack surface mapping and analysis"
-    - "DNS reconnaissance and subdomain enumeration"
-    - "Cross-skill threat intelligence for eng-architect"
-  cognitive_mode: "divergent"
-
-persona:
-  tone: "professional"
-  communication_style: "thorough"
-  audience_level: "adaptive"
-
-capabilities:
-  allowed_tools:
-    - Read
-    - Write
-    - Edit
-    - Glob
-    - Grep
-    - Bash
-    - Task
-    - WebSearch
-    - WebFetch
-    - mcp__context7__resolve-library-id
-    - mcp__context7__query-docs
-  output_formats:
-    - markdown
-    - yaml
-  forbidden_actions:
-    - "Spawn recursive subagents (P-003)"
-    - "Override user decisions (P-020)"
-    - "Return transient output only (P-002)"
-    - "Operate without active scope authorization"
-    - "Execute techniques outside authorized scope"
-    - "Perform exploitation or privilege escalation"
-    - "Interact with targets outside the authorized allowlist"
-    - "Perform active scanning without scope authorization for active recon"
-  required_features:
-    - tool_use
-
-guardrails:
-  input_validation:
-    - engagement_id_format: "^RED-\\d{4}$"
-  output_filtering:
-    - no_secrets_in_output
-    - all_claims_must_have_citations
-    - scope_compliance_verified
-  fallback_behavior: warn_and_retry
-
-output:
-  required: true
-  location: "skills/red-team/output/{engagement-id}/red-recon-{topic-slug}.md"
-  levels:
-    - L0
-    - L1
-    - L2
-
-validation:
-  file_must_exist: true
-  link_artifact_required: true
-  post_completion_checks:
-    - verify_file_created
-    - verify_artifact_linked
-    - verify_l0_l1_l2_present
-    - verify_citations_present
-    - verify_scope_compliance
-
-portability:
-  enabled: true
-  minimum_context_window: 128000
-  model_preferences:
-    - "anthropic/claude-sonnet-4"
-    - "openai/gpt-4o"
-    - "google/gemini-2.5-pro"
-  reasoning_strategy: adaptive
-  body_format: markdown
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+mcpServers:
+  context7: true
 ---
-
-# Red Recon
+Red Recon
 
 > Reconnaissance Specialist -- OSINT, network enumeration, and attack surface mapping within authorized scope.
 

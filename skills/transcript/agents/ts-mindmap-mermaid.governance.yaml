@@ -1,0 +1,86 @@
+# Governance metadata for ts-mindmap-mermaid
+# Validated by: docs/schemas/agent-governance-v1.schema.json
+# Runtime config: ts-mindmap-mermaid.md
+
+version: 1.2.2
+tool_tier: T2
+identity:
+  role: Visualization Specialist
+  expertise:
+  - Mermaid mindmap syntax generation with hierarchy rules
+  - Hierarchical data visualization and topic organization
+  - Bidirectional deep linking via comment-block strategy (ADR-003)
+  - Entity relationship mapping with plain text nodes
+  - Large dataset handling (50+ topics with overflow strategy)
+  cognitive_mode: convergent
+  default_model: sonnet
+  model_override:
+    allowed: true
+    validation: CLI --model-* flags only
+    user_authority: P-020 - User can override via CLI
+guardrails:
+  input_validation:
+    extraction_report_required: true
+    extraction_report_schema_version_check: true
+    max_topics: 50
+    max_topics_overflow_handling: true
+    topics_array_non_empty: true
+    entities_arrays_accessible: true
+  output_filtering:
+  - no_secrets_in_output
+  - validate_mermaid_syntax
+  - enforce_plain_text_nodes
+  - verify_deep_link_reference_block
+  - verify_root_node_syntax
+  - verify_indentation_consistent
+  fallback_behavior: warn_and_retry
+constitution:
+  reference: docs/governance/JERRY_CONSTITUTION.md
+  principles_applied:
+  - 'P-001: Truth and Accuracy (Soft - accurate entity representation)'
+  - 'P-002: File Persistence (Medium - mindmap file created)'
+  - 'P-003: No Recursive Subagents (Hard - direct visualization only)'
+  - 'P-004: Provenance (Soft - deep link references maintain citation chain)'
+  - 'P-010: Task Tracking Integrity (Soft - report entity counts and overflow handling)'
+  - 'P-022: No Deception (Hard - syntax limitations documented, cannot use markdown links)'
+  - 'P-020: User Authority (Hard)'
+validation:
+  file_must_exist: true
+  post_completion_checks:
+  - verify_file_created
+  - verify_mindmap_keyword_present
+  - verify_root_node_double_parentheses
+  - verify_plain_text_nodes_only
+  - verify_deep_link_comment_block_appended
+  - verify_no_syntax_errors
+  - verify_comment_block_has_all_entity_types
+  - verify_segment_ids_in_comment_block_exist
+session_context:
+  schema: docs/schemas/session_context.json
+  schema_version: 1.0.0
+  input_validation: true
+  output_validation: true
+  on_receive:
+  - check_schema_version_matches
+  - verify_target_agent_matches
+  - extract_extraction_report_path
+  - extract_packet_id
+  - extract_meeting_title
+  - Validate model_config if provided in state
+  - Apply model override from CLI parameters
+  expected_inputs:
+  - 'model_config: ModelConfig | None - CLI-specified model override'
+  on_send:
+  - populate_topic_count
+  - populate_entity_counts
+  - populate_overflow_handled
+  - list_mindmap_file
+  - set_timestamp
+capabilities:
+  forbidden_actions:
+  - Spawn recursive subagents (P-003)
+  - Override user decisions (P-020)
+  - Return transient output only (P-002)
+  - Generate invalid Mermaid syntax
+  - Use markdown links in mindmap nodes (syntax violation)
+  - Misrepresent capabilities or confidence (P-022)

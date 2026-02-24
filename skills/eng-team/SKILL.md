@@ -20,7 +20,7 @@ agents:
   - eng-security
   - eng-reviewer
   - eng-incident
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 activation-keywords:
   - "secure design"
   - "threat model"
@@ -166,23 +166,18 @@ Request a specific agent:
 "I need eng-security to review the authentication module"
 ```
 
-### Option 3: Task Tool Invocation
+### Option 3: Native Agent Invocation
 
-For programmatic invocation within workflows:
+Agents are registered via `plugin.json` and discovered by Claude Code automatically. The orchestrator invokes them as named subagents:
 
 ```python
 Task(
     description="eng-architect: Threat model for payment service",
-    subagent_type="general-purpose",
+    subagent_type="eng-architect",
     prompt="""
-You are the eng-architect agent (v1.0.0).
-
 ## ENG CONTEXT (REQUIRED)
 - **Engagement ID:** ENG-0042
 - **Topic:** Payment Service Threat Model
-
-## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/eng-team/output/ENG-0042/eng-architect-payment-threat-model.md
 
 ## TASK
 Produce a threat model for the payment service using STRIDE analysis
@@ -191,6 +186,8 @@ data flow analysis, and prioritized threat matrix.
 """
 )
 ```
+
+Claude Code enforces the agent's `tools` frontmatter — eng-architect only has access to Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch and the Context7 MCP server.
 
 ---
 
