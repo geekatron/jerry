@@ -88,7 +88,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --directory /Users/adamnowak/workspace/github/geekatron/jerry jerry --json hooks subagent-stop",
+            "command": "uv run --directory \"$CLAUDE_PROJECT_DIR\" jerry --json hooks subagent-stop",
             "timeout": 5
           }
         ]
