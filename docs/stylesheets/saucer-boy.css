@@ -102,6 +102,22 @@
   --md-shadow-z2: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.3), 0 0 0.05rem rgba(0, 0, 0, 0.15);
   --md-shadow-z3: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.4), 0 0 0.05rem rgba(0, 0, 0, 0.15);
 
+  /* Code syntax highlighting — matches Material slate scheme */
+  --md-code-hl-color:           #2977ff;
+  --md-code-hl-color--light:    rgba(41, 119, 255, 0.1);
+  --md-code-hl-number-color:    #e6695b;
+  --md-code-hl-special-color:   #f06090;
+  --md-code-hl-function-color:  #c973d9;
+  --md-code-hl-constant-color:  #9383e2;
+  --md-code-hl-keyword-color:   #6791e0;
+  --md-code-hl-string-color:    #2fb170;
+  --md-code-hl-name-color:      var(--md-code-fg-color);
+  --md-code-hl-operator-color:  var(--md-default-fg-color--light);
+  --md-code-hl-punctuation-color: var(--md-default-fg-color--light);
+  --md-code-hl-comment-color:   var(--md-default-fg-color--light);
+  --md-code-hl-generic-color:   var(--md-default-fg-color--light);
+  --md-code-hl-variable-color:  var(--md-default-fg-color--light);
+
   /* Footer */
   --md-footer-bg-color:         #0D0818;
   --md-footer-bg-color--dark:   #060410;
