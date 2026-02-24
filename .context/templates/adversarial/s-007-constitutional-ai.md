@@ -98,7 +98,7 @@ Systematic constitutional compliance report: enumerates applicable principles, c
 
 ### Context Requirements
 
-Load: `JERRY_CONSTITUTION.md` (P-001–P-043), `.context/rules/*.md` (H-01–H-24), `quality-enforcement.md` (SSOT).
+Load: `JERRY_CONSTITUTION.md` (P-001–P-043), `.context/rules/*.md` (H-01–H-33), `quality-enforcement.md` (SSOT).
 
 **Tier Mapping:** HARD (MUST, SHALL, NEVER, FORBIDDEN, REQUIRED, CRITICAL→Critical), MEDIUM (SHOULD, RECOMMENDED, PREFERRED, EXPECTED→Major), SOFT (MAY, CONSIDER, OPTIONAL, SUGGESTED→Minor).
 
@@ -124,8 +124,8 @@ Load: `JERRY_CONSTITUTION.md` (P-001–P-043), `.context/rules/*.md` (H-01–H-2
    - Document deliverables: `markdown-navigation-standards.md`, `quality-enforcement.md`
    - Template/rule deliverables: ALL rules (AE-002 triggers auto-C3)
    - Architecture/design: `architecture-standards.md`, `file-organization.md`
-4. Read `quality-enforcement.md` for HARD rule index (H-01 through H-24), tier vocabulary, auto-escalation rules
-   - **H-Rule Quick Reference:** 24 HARD rules exist (H-01 through H-24). See quality-enforcement.md lines 38-63 for the complete H-rule index with rule text and source files. Review this index before Step 2 to ensure no HARD rules are missed during principle enumeration.
+4. Read `quality-enforcement.md` for HARD rule index (H-01 through H-33), tier vocabulary, auto-escalation rules
+   - **H-Rule Quick Reference:** 33 HARD rules exist (H-01 through H-33). See quality-enforcement.md HARD Rule Index for the complete H-rule index with rule text and source files. Review this index before Step 2 to ensure no HARD rules are missed during principle enumeration.
 5. Create index of all loaded principles with tier classification
 
 **Decision Point:** AE-001 (constitution→C4), AE-002 (rules/templates→C3)
@@ -385,10 +385,10 @@ from domain.project import Project
 
 class CreateProjectCommandHandler(ICommandHandler):
     def handle(self, command):  # CC-002 violation (no type hints per H-11)
-        adapter = FilesystemProjectAdapter()  # CC-003 violation (violates H-09 composition root)
+        adapter = FilesystemProjectAdapter()  # CC-003 violation (violates H-07 composition root)
         project = Project.create(command.project_id, command.name)
         adapter.save(project)
-        # CC-004 violation (no docstring per H-12)
+        # CC-004 violation (no docstring per H-11)
 ```
 
 **Strategy Execution:**
@@ -396,20 +396,20 @@ class CreateProjectCommandHandler(ICommandHandler):
 **Step 1:** Loaded `JERRY_CONSTITUTION.md`, `architecture-standards.md`, `coding-standards.md`, `quality-enforcement.md`.
 
 **Step 2:** Identified applicable principles:
-- H-08: Application layer MUST NOT import from infrastructure (HARD)
-- H-09: Only bootstrap.py SHALL instantiate infrastructure adapters (HARD)
+- H-07: Application layer MUST NOT import from infrastructure (HARD)
+- H-07: Only bootstrap.py SHALL instantiate infrastructure adapters (HARD)
 - H-11: Type hints REQUIRED on public functions (HARD)
-- H-12: Docstrings REQUIRED on public classes (HARD)
+- H-11: Docstrings REQUIRED on public classes (HARD)
 - M-05: Handler naming convention `{Command}Handler` (MEDIUM)
 
 **Step 3:** Principle evaluation findings:
 
 | ID | Principle | Tier | Severity | Evidence | Affected Dimension |
 |----|-----------|------|----------|----------|--------------------|
-| CC-001-20260215T1430 | H-08: Application layer imports | HARD | Critical | Line 3: imports `infrastructure.adapters` | Methodological Rigor |
+| CC-001-20260215T1430 | H-07: Application layer imports | HARD | Critical | Line 3: imports `infrastructure.adapters` | Methodological Rigor |
 | CC-002-20260215T1430 | H-11: Type hints required | HARD | Critical | Line 6: `handle(self, command)` lacks type annotations | Methodological Rigor |
-| CC-003-20260215T1430 | H-09: Composition root exclusivity | HARD | Critical | Line 8: instantiates `FilesystemProjectAdapter` outside bootstrap | Methodological Rigor |
-| CC-004-20260215T1430 | H-12: Docstrings required | HARD | Critical | Class lacks docstring | Completeness |
+| CC-003-20260215T1430 | H-07: Composition root exclusivity | HARD | Critical | Line 8: instantiates `FilesystemProjectAdapter` outside bootstrap | Methodological Rigor |
+| CC-004-20260215T1430 | H-11: Docstrings required | HARD | Critical | Class lacks docstring | Completeness |
 | CC-005-20260215T1430 | M-05: Handler naming | MEDIUM | Major | COMPLIANT (`CreateProjectCommandHandler`) | N/A |
 
 **Step 4:** Remediation guidance (Critical findings only):
@@ -436,7 +436,7 @@ class CreateProjectCommandHandler(ICommandHandler):
         self._repository.save(project)
 ```
 
-**Result:** 4 Critical violations resolved. Score: 0.60→1.00 (REJECTED→PASS). Now complies with H-08, H-11, H-09, H-12.
+**Result:** 4 Critical violations resolved. Score: 0.60→1.00 (REJECTED→PASS). Now complies with H-07, H-11.
 
 ---
 
@@ -474,7 +474,7 @@ Check in Step 1: AE-001 (constitution→C4), AE-002 (rules/templates→C3), AE-0
 
 ### Cross-References
 
-**Sources:** `quality-enforcement.md` (SSOT H-01–H-24), `JERRY_CONSTITUTION.md` (P-001–P-043), `architecture-standards.md` (H-07–H-10), `coding-standards.md` (H-11, H-12), `testing-standards.md` (H-20, H-21), `markdown-navigation-standards.md` (H-23, H-24)
+**Sources:** `quality-enforcement.md` (SSOT H-01–H-33), `JERRY_CONSTITUTION.md` (P-001–P-043), `architecture-standards.md` (H-07, H-10), `coding-standards.md` (H-11), `testing-standards.md` (H-20), `markdown-navigation-standards.md` (H-23)
 
 **Templates:** s-003-steelman (before), s-002-devils-advocate (after), s-014-llm-as-judge (scoring), s-010-self-refine (H-15)
 
@@ -488,7 +488,7 @@ Use this checklist to validate this S-007 template against TEMPLATE-FORMAT.md v1
 
 - [x] All 8 canonical sections present (Identity, Purpose, Prerequisites, Execution Protocol, Output Format, Scoring Rubric, Examples, Integration)
 - [x] H-23: Navigation table present
-- [x] H-24: Navigation table uses anchor links
+- [x] H-23: Navigation table uses anchor links
 - [x] Metadata blockquote header present
 - [x] File length under 500 lines (currently ~480)
 - [x] Identity: 7 required fields + criticality tier table

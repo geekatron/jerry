@@ -272,7 +272,7 @@ class SqlAlchemyAdapter(IRepository):
 
 **Solution**: Application depends on **ports** (interfaces), infrastructure **implements** ports.
 
-### Why Only Bootstrap Instantiates Infrastructure (H-09)
+### Why Only Bootstrap Instantiates Infrastructure (H-07)
 
 **Reason**: Centralized wiring. All dependency injection happens in **one place** (`src/bootstrap.py`).
 
@@ -619,7 +619,7 @@ def test_domain_has_no_infrastructure_imports():
 
 - Reviewers check for layer violations
 - Look for imports that violate dependency rules
-- Verify H-09 (only bootstrap instantiates infrastructure)
+- Verify H-07 (only bootstrap instantiates infrastructure)
 
 ---
 
@@ -631,7 +631,7 @@ def test_domain_has_no_infrastructure_imports():
 
 ```
 src/
-  bootstrap.py                                           # Composition root (H-09)
+  bootstrap.py                                           # Composition root (H-07)
   shared_kernel/                                         # Cross-cutting: VertexId, DomainEvent, exceptions
   application/
     dispatchers/query_dispatcher.py                      # QueryDispatcher (routes queries)
@@ -659,7 +659,7 @@ src/
     infrastructure/adapters/filesystem_project_adapter.py # Adapter
 ```
 
-### Composition Root (H-09) -- Real Implementation
+### Composition Root (H-07) -- Real Implementation
 
 **`src/bootstrap.py`** is the sole composition root. It:
 - Imports ALL infrastructure adapters (lines 47-106)
@@ -684,7 +684,7 @@ All dependencies are created HERE and injected.
 
 | Test File | What It Verifies |
 |-----------|-----------------|
-| `tests/architecture/test_composition_root.py` | Bootstrap imports infrastructure; dispatchers/ports do not (H-09) |
+| `tests/architecture/test_composition_root.py` | Bootstrap imports infrastructure; dispatchers/ports do not (H-07) |
 | `tests/architecture/test_config_boundaries.py` | Domain has no infra/app imports; adapters implement ports |
 | `tests/session_management/architecture/test_architecture.py` | Per-context: domain layer stdlib-only, dependency direction inward |
 

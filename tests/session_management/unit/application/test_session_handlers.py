@@ -54,8 +54,14 @@ from src.session_management.domain.value_objects.session_id import SessionId
 
 @pytest.fixture
 def mock_repository() -> Mock:
-    """Create a mock ISessionRepository."""
-    return Mock()
+    """Create a mock ISessionRepository.
+
+    The save() method collects and returns events from the session,
+    matching the ISessionRepository protocol.
+    """
+    repo = Mock()
+    repo.save.side_effect = lambda session: list(session.collect_events())
+    return repo
 
 
 @pytest.fixture

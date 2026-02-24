@@ -41,6 +41,7 @@ from typing import TYPE_CHECKING, Any
 
 from src.bootstrap import (
     create_command_dispatcher,
+    create_hooks_handlers,
     create_query_dispatcher,
     create_session_command_handlers,
     get_projects_directory,
@@ -70,11 +71,13 @@ def create_cli_adapter() -> CLIAdapter:
     command_dispatcher = create_command_dispatcher()
     projects_dir = get_projects_directory()
     session_handlers = create_session_command_handlers()
+    hooks_handlers = create_hooks_handlers()
     return CLIAdapter(
         dispatcher=query_dispatcher,
         projects_dir=projects_dir,
         session_handlers=session_handlers,
         command_dispatcher=command_dispatcher,
+        hooks_handlers=hooks_handlers,
     )
 
 
@@ -112,6 +115,12 @@ def main() -> int:
         return _handle_config(adapter, args, json_output)
     elif args.namespace == "transcript":
         return _handle_transcript(adapter, args, json_output)
+    elif args.namespace == "context":
+        return _handle_context(args)
+    elif args.namespace == "ast":
+        return _handle_ast(args, json_output)
+    elif args.namespace == "hooks":
+        return _handle_hooks(adapter, args)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -342,6 +351,103 @@ def _handle_transcript(adapter: CLIAdapter, args: Any, json_output: bool) -> int
     return 1
 
 
+def _handle_context(args: Any) -> int:
+    """Route context namespace commands.
+
+    Reads stdin JSON and delegates to the context estimate handler.
+    Does not require the CLIAdapter — uses its own bootstrap wiring.
+
+    Args:
+        args: Parsed arguments with .command.
+
+    Returns:
+        Exit code (always 0 for fail-open).
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+    """
+    if args.command is None:
+        print("No context command specified. Use 'jerry context --help'.")
+        return 1
+
+    if args.command == "estimate":
+        from src.bootstrap import create_context_estimate_handler
+
+        handler = create_context_estimate_handler()
+
+        # Read stdin
+        stdin_json = ""
+        if not sys.stdin.isatty():
+            stdin_json = sys.stdin.read()
+
+        return handler.handle(stdin_json)
+
+    print(f"Unknown context command: {args.command}")
+    return 1
+
+
+def _handle_ast(args: Any, json_output: bool) -> int:
+    """Route ast namespace commands.
+
+    Does not require the CLIAdapter; calls the domain layer directly via
+    ast_commands functions.
+
+    Args:
+        args: Parsed arguments with .command, .file, and optional .selector/.schema.
+        json_output: Whether JSON output was requested (passed through to commands).
+
+    Returns:
+        Exit code: 0 (success), 1 (validation failure), 2 (parse error).
+
+    References:
+        - ST-004: Add jerry ast CLI Commands
+    """
+    from src.interface.cli.ast_commands import (
+        ast_detect,
+        ast_frontmatter,
+        ast_metadata,
+        ast_modify,
+        ast_parse,
+        ast_query,
+        ast_reinject,
+        ast_render,
+        ast_sections,
+        ast_validate,
+    )
+
+    if args.command is None:
+        print("No ast command specified. Use 'jerry ast --help'.")
+        return 1
+
+    if args.command == "parse":
+        return ast_parse(args.file, json_output)
+    elif args.command == "render":
+        return ast_render(args.file)
+    elif args.command == "validate":
+        return ast_validate(
+            args.file,
+            getattr(args, "schema", None),
+            nav=getattr(args, "nav", False),
+        )
+    elif args.command == "query":
+        return ast_query(args.file, args.selector, json_output)
+    elif args.command == "frontmatter":
+        return ast_frontmatter(args.file)
+    elif args.command == "modify":
+        return ast_modify(args.file, args.key, args.value)
+    elif args.command == "reinject":
+        return ast_reinject(args.file)
+    elif args.command == "detect":
+        return ast_detect(args.file)
+    elif args.command == "sections":
+        return ast_sections(args.file)
+    elif args.command == "metadata":
+        return ast_metadata(args.file)
+
+    print(f"Unknown ast command: {args.command}")
+    return 1
+
+
 def _handle_why() -> int:
     """Handle the 'why' command (EE-008).
 
@@ -363,6 +469,34 @@ def _handle_why() -> int:
         "That's why."
     )
     return 0
+
+
+def _handle_hooks(adapter: CLIAdapter, args: Any) -> int:
+    """Route hooks namespace commands.
+
+    Reads stdin JSON and delegates to the adapter's hooks handler.
+
+    Args:
+        adapter: CLI adapter instance
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+
+    References:
+        - EN-006: jerry hooks CLI Command Namespace
+    """
+    hooks_command = getattr(args, "hooks_command", None)
+    if hooks_command is None:
+        print("Error: No hooks command specified. Use 'jerry hooks --help'")
+        return 1
+
+    # Read hook input from stdin
+    stdin_json = ""
+    if not sys.stdin.isatty():
+        stdin_json = sys.stdin.read()
+
+    return adapter.cmd_hooks(hooks_command, stdin_json)
 
 
 if __name__ == "__main__":

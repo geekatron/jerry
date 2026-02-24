@@ -96,11 +96,20 @@ Examples:
     # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
     _add_transcript_namespace(subparsers)
 
+    # Context namespace (EN-012: jerry context estimate)
+    _add_context_namespace(subparsers)
+
+    # AST namespace (ST-004: jerry ast commands)
+    _add_ast_namespace(subparsers)
+
     # EE-008: Undocumented philosophy command
     subparsers.add_parser(
         "why",
         help=argparse.SUPPRESS,
     )
+
+    # Hooks namespace (EN-006: Context monitoring hook events)
+    _add_hooks_namespace(subparsers)
 
     return parser
 
@@ -548,4 +557,255 @@ def _add_transcript_namespace(
         choices=["opus", "sonnet", "haiku"],
         default=None,
         help="Model for ps-critic agent (overrides --profile)",
+    )
+
+
+def _add_ast_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add ast namespace commands.
+
+    Commands:
+        - parse: Parse a markdown file and output the AST as JSON.
+        - render: Roundtrip parse-render a markdown file through mdformat.
+        - validate: Validate a markdown file against a schema.
+        - query: Query AST nodes by type and output structured JSON.
+
+    References:
+        - ST-004: Add jerry ast CLI Commands
+        - ST-001: JerryDocument Facade
+    """
+    ast_parser = subparsers.add_parser(
+        "ast",
+        help="Markdown AST operations",
+        description="Parse, query, transform, and validate markdown AST structures.",
+    )
+
+    ast_subparsers = ast_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # ast parse
+    parse_parser = ast_subparsers.add_parser(
+        "parse",
+        help="Parse markdown file to AST JSON",
+        description="Parse a markdown file and output its AST as structured JSON.",
+    )
+    parse_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast render
+    render_parser = ast_subparsers.add_parser(
+        "render",
+        help="Roundtrip render markdown file via mdformat",
+        description="Parse and re-render a markdown file through mdformat normalization.",
+    )
+    render_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast validate
+    validate_parser = ast_subparsers.add_parser(
+        "validate",
+        help="Validate markdown file",
+        description="Validate a markdown file, optionally against a named schema.",
+    )
+    validate_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    validate_parser.add_argument(
+        "--schema",
+        default=None,
+        help="Schema type to validate against (e.g., story, epic, task). Optional.",
+    )
+    validate_parser.add_argument(
+        "--nav",
+        action="store_true",
+        default=False,
+        help="Include detailed nav table entries in output.",
+    )
+
+    # ast query
+    query_parser = ast_subparsers.add_parser(
+        "query",
+        help="Query AST nodes by type",
+        description="Query all AST nodes matching the given node type selector.",
+    )
+    query_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    query_parser.add_argument(
+        "selector",
+        help="Node type to query (e.g., heading, blockquote, paragraph)",
+    )
+
+    # ast frontmatter
+    frontmatter_parser = ast_subparsers.add_parser(
+        "frontmatter",
+        help="Extract blockquote frontmatter fields as JSON",
+        description="Extract all blockquote frontmatter fields from a markdown file.",
+    )
+    frontmatter_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast modify
+    modify_parser = ast_subparsers.add_parser(
+        "modify",
+        help="Modify a frontmatter field",
+        description="Modify a frontmatter field value and write back to file.",
+    )
+    modify_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+    modify_parser.add_argument(
+        "--key",
+        required=True,
+        help="Frontmatter field name to modify (case-sensitive).",
+    )
+    modify_parser.add_argument(
+        "--value",
+        required=True,
+        help="New value for the field.",
+    )
+
+    # ast reinject
+    reinject_parser = ast_subparsers.add_parser(
+        "reinject",
+        help="Extract L2-REINJECT directives as JSON",
+        description="Extract all L2-REINJECT directives from a markdown file.",
+    )
+    reinject_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast detect (RE-006: WI-017)
+    detect_parser = ast_subparsers.add_parser(
+        "detect",
+        help="Detect document type of a markdown file",
+        description="Detect the Jerry document type using path-first, structure-fallback detection.",
+    )
+    detect_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast sections (RE-006: WI-017)
+    sections_parser = ast_subparsers.add_parser(
+        "sections",
+        help="Extract XML-tagged sections as JSON",
+        description="Extract XML-tagged sections (e.g., <identity>, <methodology>) from a markdown file.",
+    )
+    sections_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast metadata (RE-006: WI-017)
+    metadata_parser = ast_subparsers.add_parser(
+        "metadata",
+        help="Extract HTML comment metadata as JSON",
+        description="Extract structured metadata from HTML comments (e.g., PS-ID, VERSION blocks).",
+    )
+    metadata_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+
+def _add_context_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add context namespace commands.
+
+    Commands:
+        - estimate: Compute context fill estimate from Claude Code stdin JSON
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+        - FEAT-002: Status Line / Context Monitoring Unification
+    """
+    context_parser = subparsers.add_parser(
+        "context",
+        help="Context monitoring commands",
+        description="Context monitoring and fill estimation.",
+    )
+
+    context_subparsers = context_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    context_subparsers.add_parser(
+        "estimate",
+        help="Compute context fill estimate",
+        description="Read Claude Code JSON from stdin and compute context fill estimate.",
+    )
+
+
+def _add_hooks_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add hooks namespace commands.
+
+    Commands:
+        - prompt-submit: Handle UserPromptSubmit hook event
+        - session-start: Handle SessionStart hook event
+        - pre-compact: Handle PreCompact hook event
+        - pre-tool-use: Handle PreToolUse hook event
+
+    References:
+        - EN-006: jerry hooks CLI Command Namespace
+    """
+    hooks_parser = subparsers.add_parser(
+        "hooks",
+        help="Claude Code hook event handlers",
+        description="Handle Claude Code hook events via CLI.",
+    )
+
+    hooks_subparsers = hooks_parser.add_subparsers(
+        title="commands",
+        dest="hooks_command",
+        metavar="<command>",
+    )
+
+    hooks_subparsers.add_parser(
+        "prompt-submit",
+        help="Handle UserPromptSubmit hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "session-start",
+        help="Handle SessionStart hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "pre-compact",
+        help="Handle PreCompact hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "pre-tool-use",
+        help="Handle PreToolUse hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "stop",
+        help="Handle Stop hook event (context stop gate)",
+    )
+
+    hooks_subparsers.add_parser(
+        "subagent-stop",
+        help="Handle SubagentStop hook event (lifecycle tracking)",
     )

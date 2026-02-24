@@ -34,6 +34,9 @@ capabilities:
     - WebFetch
     - mcp__context7__resolve-library-id
     - mcp__context7__query-docs
+    - mcp__memory-keeper__store
+    - mcp__memory-keeper__retrieve
+    - mcp__memory-keeper__search
   output_formats:
     - markdown
     - yaml
@@ -514,6 +517,22 @@ session_context:
 - [ ] `confidence` reflects option evaluation quality
 - [ ] `artifacts` lists created ADR files
 </session_context_validation>
+
+<memory_keeper_integration>
+## Memory-Keeper MCP Integration
+
+Use Memory-Keeper to persist architecture decisions across sessions and retrieve prior decisions for consistency.
+
+**Key Pattern:** `jerry/{project}/architecture/{decision-slug}`
+
+### When to Use
+
+| Event | Action | Tool |
+|-------|--------|------|
+| ADR created | Store decision summary + key rationale | `mcp__memory-keeper__store` |
+| New architecture task | Search for prior related decisions | `mcp__memory-keeper__search` |
+| Cross-session continuity | Retrieve prior architecture context | `mcp__memory-keeper__retrieve` |
+</memory_keeper_integration>
 
 </agent>
 

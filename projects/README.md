@@ -12,6 +12,9 @@
 | PROJ-004 | context-resilience | PENDING | Context exhaustion detection and graceful session handoff for multi-orchestration runs |
 | PROJ-005 | markdown-ast | PENDING | AST-based markdown manipulation to replace raw text operations across Jerry's full surface |
 | PROJ-006 | multi-instance | PENDING | Automated multi-instance Claude management via SDK or CLI to replace manual worktree + session workflows |
+| PROJ-007 | agent-patterns | ACTIVE | Agent design patterns, routing standards, and development lifecycle |
+| PROJ-010 | cyber-ops | ACTIVE | Elite /eng-team (secure software engineering) and /red-team (offensive security) skills for authorized pentesting and system hardening |
+| PROJ-011 | saucer-boy-articles | ACTIVE | High-quality articles in the Saucer Boy (McConkey) voice covering LLM engineering topics with C4 adversarial quality gates |
 
 ## Project Lookup
 
@@ -21,3 +24,6 @@
 - **PROJ-004**: `projects/PROJ-004-context-resilience/`
 - **PROJ-005**: `projects/PROJ-005-markdown-ast/`
 - **PROJ-006**: `projects/PROJ-006-multi-instance/`
+- **PROJ-007**: `projects/PROJ-007-agent-patterns/`
+- **PROJ-010**: `projects/PROJ-010-cyber-ops/`
+- **PROJ-011**: `projects/PROJ-011-saucer-boy-articles/`

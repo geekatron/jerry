@@ -89,7 +89,7 @@ S-014 should NOT be applied in these scenarios:
 
 1. **Early-stage brainstorming or ideation** — S-014 evaluates structured deliverables against completion criteria. Use S-003 (Steelman) or S-013 (Inversion) for exploratory work. Redirect to S-003 for idea strengthening before scoring.
 
-2. **Code implementation (non-design)** — S-014 is optimized for documentation, analysis, design, and research deliverables. Use H-20/H-21 (test-first BDD, coverage requirements) for code quality. Redirect to testing-standards.md.
+2. **Code implementation (non-design)** — S-014 is optimized for documentation, analysis, design, and research deliverables. Use H-20 (test-first BDD, coverage requirements) for code quality. Redirect to testing-standards.md.
 
 3. **C1 Routine work where quality scoring is optional** — For reversible single-session work (<3 files), S-010 (Self-Refine) alone may suffice. S-014 is optional at C1 criticality. Use judgment based on user needs.
 
@@ -841,8 +841,8 @@ Dependencies flow inward: Interface → Application → Domain. Infrastructure i
 
 ### Phase 1: Foundation (Week 1)
 - Create directory structure: `src/domain/`, `src/application/`, `src/infrastructure/`, `src/interface/`
-- Implement bootstrap.py composition root (H-09 compliance)
-- Add architecture tests validating layer dependencies (H-07, H-08)
+- Implement bootstrap.py composition root (H-07 compliance)
+- Add architecture tests validating layer dependencies (H-07)
 
 ### Phase 2: Migration (Weeks 2-3)
 - Migrate one domain aggregate (WorkItem) to hexagonal structure as a reference implementation
@@ -856,7 +856,7 @@ Dependencies flow inward: Interface → Application → Domain. Infrastructure i
 ### Success Criteria
 - All domain layer tests run without database or HTTP mocks (target: <1s test suite execution)
 - CLI and web API share identical application layer code (no duplication)
-- Architecture tests pass (no H-07, H-08 violations)
+- Architecture tests pass (no H-07 violations)
 
 ## Traceability
 - **Requirements:** FEAT-042 (CLI support), TECH-DEBT-018 (testability issues)
@@ -980,7 +980,7 @@ Use this checklist to validate this S-014 template against TEMPLATE-FORMAT.md v1
 
 - [x] All 8 canonical sections present in order (Identity, Purpose, Prerequisites, Execution Protocol, Output Format, Scoring Rubric, Examples, Integration)
 - [x] H-23: Navigation table present with Document Sections
-- [x] H-24: Navigation table uses anchor links
+- [x] H-23: Navigation table uses anchor links
 - [x] Metadata blockquote header present
 - [x] File length 1030 lines (exceeds 200-500 target due to comprehensive example and detailed rubrics, but within acceptable range for highest-complexity strategy)
 

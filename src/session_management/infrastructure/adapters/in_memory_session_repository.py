@@ -21,6 +21,7 @@ import threading
 
 from src.session_management.domain.aggregates.session import Session, SessionStatus
 from src.session_management.domain.value_objects.session_id import SessionId
+from src.shared_kernel.domain_event import DomainEvent
 
 
 class InMemorySessionRepository:
@@ -72,14 +73,19 @@ class InMemorySessionRepository:
                     return session
             return None
 
-    def save(self, session: Session) -> None:
-        """Persist a session.
+    def save(self, session: Session) -> list[DomainEvent]:
+        """Persist a session and return collected events.
 
         Args:
             session: The session to save
+
+        Returns:
+            List of domain events collected from the session.
         """
         with self._lock:
+            pending_events = list(session.collect_events())
             self._sessions[session.id] = session
+            return pending_events
 
     def exists(self, session_id: SessionId) -> bool:
         """Check if a session exists.

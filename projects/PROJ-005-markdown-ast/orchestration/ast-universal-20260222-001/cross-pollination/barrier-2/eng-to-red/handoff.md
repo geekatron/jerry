@@ -1,0 +1,73 @@
+# Barrier 2 Handoff: Engineering → Red Team
+
+> **From:** eng-backend-001 (ENG Phase 3)
+> **To:** red-exploit-001 (RED Phase 3)
+> **Barrier:** barrier-2
+> **Criticality:** C4
+> **Confidence:** 0.92
+
+---
+
+## Key Findings (Orientation)
+
+1. **21 work items implemented** across Phases 0-3 (WI-001 through WI-021), covering all 7 required enhancements (RE-001 through RE-007)
+2. **9 new source files** (1,923 lines) + 4 modified files -- all domain objects follow frozen dataclass pattern for immutability
+3. **24 threat model mitigations implemented** (M-01 through M-24) including yaml.safe_load() enforcement, path containment, input bounds, control character stripping, and atomic writes
+4. **446 unit tests passing** with 98% domain coverage, 4,870 full suite tests passing
+5. **3 known gaps documented** requiring follow-up: WI-022 (adversarial parser tests), WI-023 (ReDoS pattern testing), WI-024 (golden file regression), WI-025 (integration test expansion)
+
+## Artifacts
+
+| Artifact | Path | Purpose |
+|----------|------|---------|
+| Implementation Report | `orchestration/ast-universal-20260222-001/eng/phase-3-implementation/eng-backend-001/eng-backend-001-implementation-report.md` | Full WI completion matrix, coverage, mitigations |
+| YAML Frontmatter Parser | `src/domain/markdown_ast/yaml_frontmatter.py` | 391 lines -- yaml.safe_load() only, bounds enforcement |
+| XML Section Parser | `src/domain/markdown_ast/xml_section.py` | 265 lines -- regex-only, no xml.etree (eliminates XXE) |
+| HTML Comment Parser | `src/domain/markdown_ast/html_comment.py` | 269 lines -- L2-REINJECT exclusion, key-value extraction |
+| Document Type Detector | `src/domain/markdown_ast/document_type.py` | 300 lines -- path-first + structural cue fallback |
+| Universal Document | `src/domain/markdown_ast/universal_document.py` | 222 lines -- facade with type-dispatched parsing |
+| Schema Registry | `src/domain/markdown_ast/schema_registry.py` | 148 lines -- freeze() immutability |
+| Schema Definitions | `src/domain/markdown_ast/schema_definitions.py` | 182 lines -- 10 document type schemas |
+| Input Bounds | `src/domain/markdown_ast/input_bounds.py` | 75 lines -- frozen dataclass, 10 bounds |
+| CLI Extensions | `src/interface/cli/ast_commands.py` | Modified -- detect, sections, metadata commands + path containment |
+
+## Red Team Testing Targets
+
+### High-Priority Targets for Exploitation Testing
+
+| Priority | Component | Mitigation Implemented | Test Focus |
+|----------|-----------|----------------------|------------|
+| 1 | `yaml_frontmatter.py` | M-01 (safe_load only), M-07 (block size), M-20 (alias count), M-23 (duplicate keys) | Attempt yaml.load() bypass, billion laughs via alias expansion, deep nesting, oversized blocks |
+| 2 | `ast_commands.py` path containment | M-08 (repo root check), M-10 (symlink resolution) | Symlink chains, double-encoding, null bytes in paths, race conditions |
+| 3 | `html_comment.py` L2-REINJECT exclusion | M-13 (case-insensitive prefix), M-22 (trusted path whitelist at CLI) | Case variations, Unicode homoglyphs, mixed-case bypass, comment nesting |
+| 4 | `xml_section.py` regex parser | M-11 (regex-only, no xml.etree), M-15 (tag allowlist) | ReDoS patterns, tag injection beyond allowlist, nested tag bypass |
+| 5 | `schema_registry.py` freeze() | WI-003 (MappingProxyType after freeze) | Register after freeze(), mutation of returned schemas, concurrent registration |
+| 6 | `document_type.py` detection | M-14 (mismatch warning) | Path spoofing, structural cue manipulation, type confusion attacks |
+| 7 | `ast_commands.py` atomic write | M-21 (tempfile + os.replace) | TOCTOU between resolve and write, symlink injection at temp location |
+
+### Security Mitigations to Validate
+
+The implementation claims 24 mitigations. Key ones for red team validation:
+
+| Mitigation | Implementation | Validation Approach |
+|------------|---------------|-------------------|
+| M-01 | yaml.safe_load() exclusive | Verify no code paths use yaml.load(), yaml.unsafe_load(), or yaml.FullLoader |
+| M-04 | S506 ruff rule + CI grep | Attempt to introduce yaml.load() and verify CI catches it |
+| M-07 | InputBounds.max_yaml_block_size (65536) | Feed blocks at boundary (65535, 65536, 65537) |
+| M-08 | _resolve_and_check_path() in CLI | Path traversal with ../, symlinks, encoded paths |
+| M-11 | Regex-only XML (no xml.etree import) | Verify no xml module usage in entire codebase |
+| M-13 | L2-REINJECT case-insensitive exclusion | Unicode case folding, mixed encodings |
+| M-18 | Control character stripping | Feed \x00-\x1f in YAML values, XML content, HTML comments |
+| M-20 | Max 100 YAML aliases | Feed 99, 100, 101 aliases; check memory behavior |
+
+### Environment Variable to Note
+
+- `JERRY_DISABLE_PATH_CONTAINMENT=1` -- bypasses path containment for integration tests. Verify this cannot be exploited in production context.
+
+## Blockers
+
+None.
+
+---
+
+> *Handoff generated by orchestrator for Barrier 2 cross-pollination.*

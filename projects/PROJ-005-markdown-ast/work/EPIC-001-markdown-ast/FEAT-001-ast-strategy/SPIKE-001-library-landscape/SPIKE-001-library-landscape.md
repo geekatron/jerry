@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.8
 -->
 
 > **Type:** spike
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
@@ -124,23 +124,33 @@ We hypothesize that:
 
 ### Summary
 
-_To be populated after research._
+7 Python markdown AST libraries evaluated (markdown-it-py, mistletoe, marko, mistune, mdformat, pyromark, commonmark.py) plus MyST-Parser as supplementary. Research conducted via Web Search and Context7 with 35 citations. Full findings in orchestration artifacts.
 
 ### Library Evaluations
 
-_To be populated after research. One subsection per library._
+See `orchestration/spike-eval-20260219-001/ps/phase-1-research/ps-researcher-001/library-landscape-research.md` for detailed per-library evaluations.
 
 ### Feature Matrix
 
-_To be populated after research. Comparative table across all dimensions._
+See `orchestration/spike-eval-20260219-001/ps/phase-2-analysis/ps-analyst-001/library-feature-matrix.md` for weighted composite scores:
+
+| Library | Composite Score |
+|---------|----------------|
+| markdown-it-py + mdformat | 4.20 |
+| mistletoe | 3.75 |
+| marko | 3.40 |
+| mdformat (standalone) | 3.35 |
+| mistune | 3.10 |
+| pyromark | 1.75 |
+| commonmark.py | 1.55 |
 
 ### Build-from-Scratch Assessment
 
-_To be populated after research._
+Build-from-scratch estimated at 2,380-3,320 LOC. Not recommended — existing library with extensions is significantly lower effort (~470 LOC for recommended stack).
 
 ### Evidence/References
 
-_To be populated after research. All sources with URLs, version numbers, access dates._
+35 citations across research artifacts. See phase-1-research for full reference list with URLs, version numbers, and access dates.
 
 ---
 
@@ -148,25 +158,28 @@ _To be populated after research. All sources with URLs, version numbers, access 
 
 ### Decision
 
-_To be populated after research._
+**ADOPT:** markdown-it-py v4.0.0 + mdformat v1.0.0 — highest composite score (4.20), best extension API, roundtrip fidelity via mdformat, active maintenance.
 
 ### Recommended Actions
 
-_To be populated after research._
+1. Proceed to SPIKE-002 feasibility assessment (completed — GO decision)
+2. Begin FEAT-001 implementation with R-01 proof-of-concept validation
+3. Implement 4 custom extensions (~470 LOC): blockquote frontmatter parser, navigation table handler, template placeholder preserver, L2-REINJECT comment accessor
 
 ### Follow-up Work Items
 
 | Type | Title | Priority |
 |------|-------|----------|
-| _TBD_ | _To be defined based on findings_ | _TBD_ |
+| SPIKE-002 | AST-First Architecture Feasibility Assessment | high (completed) |
+| Story | R-01 proof-of-concept: mdformat blockquote frontmatter write-back | high |
+| Story | Implement markdown-it-py custom extensions | high |
 
 ### Risks/Considerations
 
-- Libraries may have stale development (last release > 1 year)
-- Roundtrip fidelity is rarely perfect — some formatting loss is common
-- Jerry's blockquote frontmatter is non-standard and may not parse natively in any library
-- Template placeholder syntax (`{{VAR}}`) may conflict with some parsers
-- Build-from-scratch sounds expensive but Jerry's markdown subset may be small enough to be tractable
+- Roundtrip fidelity requires mdformat — markdown-it-py alone doesn't render
+- Jerry's blockquote frontmatter requires custom extension (not natively supported)
+- Template placeholder syntax (`{{VAR}}`) needs preservation through parse/render cycle
+- mdformat code renderer may reflow content — needs validation (R-01)
 
 ---
 
@@ -184,3 +197,4 @@ _To be populated after research._
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-19 | pending | Spike defined. 7-step research approach with weighted evaluation framework. 12h timebox. |
+| 2026-02-19 | completed | Spike completed via orchestration `spike-eval-20260219-001`. 7 libraries evaluated, 35 citations. Recommendation: markdown-it-py + mdformat (composite 4.20). QG1 passed at 0.96. |

@@ -25,6 +25,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.project_validation.conftest import REQUIRED_PROJECT_DIRS
+
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
@@ -67,14 +69,14 @@ class TestCoreFilesExist:
         assert path.exists(), f"Missing PLAN.md: {path}"
 
     def test_directory_structure_complete(self, proj_root: Path) -> None:
-        """Required directories should exist."""
-        # At least 3 of these should exist
-        expected_dirs = ["research", "synthesis", "analysis", "decisions", "reports", "design"]
-        existing_dirs = [d for d in expected_dirs if (proj_root / d).exists()]
-
-        assert len(existing_dirs) >= 3, (
-            f"Missing category directories. Found: {existing_dirs}, expected at least 3 of: {expected_dirs}"
-        )
+        """Required directories should exist per worktracker spec."""
+        for dirname in REQUIRED_PROJECT_DIRS:
+            dir_path = proj_root / dirname
+            assert dir_path.exists(), (
+                f"Missing required directory: {dirname} in {proj_root.name}. "
+                f"Per worktracker-directory-structure.md, work/ is required. "
+                f"Create it with: mkdir {proj_root}/{dirname}"
+            )
 
 
 # =============================================================================

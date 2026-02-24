@@ -68,6 +68,9 @@ from src.session_management.infrastructure import (
     InMemorySessionRepository,
     OsEnvironmentAdapter,
 )
+from src.session_management.infrastructure.adapters.event_sourced_session_repository import (
+    EventSourcedSessionRepository,
+)
 
 # EN-025: Transcript parsing components (TDD-FEAT-004 Section 11.4)
 from src.transcript.application.commands import ParseTranscriptCommand
@@ -109,8 +112,8 @@ from src.work_tracking.infrastructure.persistence.in_memory_event_store import (
 )
 
 # Module-level session repository singleton for session state persistence
-# In production, this would be replaced with a file-based or database repository
-_session_repository: InMemorySessionRepository | None = None
+# EN-001: Uses EventSourcedSessionRepository for cross-process persistence
+_session_repository: EventSourcedSessionRepository | InMemorySessionRepository | None = None
 
 # Module-level event store and work item repository singletons
 # TD-018: Event-sourced implementation with FileSystemEventStore
@@ -126,19 +129,24 @@ _id_generator: WorkItemIdGenerator | None = None
 _serializer: ToonSerializer | None = None
 
 
-def get_session_repository() -> InMemorySessionRepository:
+def get_session_repository() -> EventSourcedSessionRepository | InMemorySessionRepository:
     """Get the shared session repository instance.
 
     Returns:
-        InMemorySessionRepository singleton instance
+        EventSourcedSessionRepository if a project is active (cross-process persistence),
+        InMemorySessionRepository otherwise (in-process only).
 
     Note:
-        This is a module-level singleton to preserve session state
-        across CLI invocations within the same process.
+        EN-001: Uses event-sourced repository with FileSystemEventStore
+        for cross-process session persistence.
     """
     global _session_repository
     if _session_repository is None:
-        _session_repository = InMemorySessionRepository()
+        event_store = get_event_store()
+        if isinstance(event_store, FileSystemEventStore):
+            _session_repository = EventSourcedSessionRepository(event_store=event_store)
+        else:
+            _session_repository = InMemorySessionRepository()
     return _session_repository
 
 
@@ -501,6 +509,222 @@ def create_command_dispatcher() -> CommandDispatcher:
     dispatcher.register(ParseTranscriptCommand, parse_transcript_handler.handle)
 
     return dispatcher
+
+
+def create_hooks_handlers() -> dict[str, Any]:
+    """Create hooks command handlers for the CLI.
+
+    Wires all dependencies for the 4 hook event handlers:
+    - prompt-submit: Context fill estimation + L2 quality reinforcement
+    - session-start: Project context + resumption + quality reinforcement
+    - pre-compact: Checkpoint creation + context fill estimation
+    - pre-tool-use: AST enforcement + staleness detection
+
+    Returns:
+        Dictionary mapping hook command names to handler instances.
+
+    References:
+        - EN-006: jerry hooks CLI Command Namespace
+        - PROJ-004: Context Resilience
+    """
+    from pathlib import Path
+
+    from src.context_monitoring.application.services.checkpoint_service import (
+        CheckpointService,
+    )
+    from src.context_monitoring.application.services.context_fill_estimator import (
+        ContextFillEstimator,
+    )
+    from src.context_monitoring.application.services.resumption_context_generator import (
+        ResumptionContextGenerator,
+    )
+    from src.context_monitoring.infrastructure.adapters.config_threshold_adapter import (
+        ConfigThresholdAdapter,
+    )
+    from src.context_monitoring.infrastructure.adapters.filesystem_checkpoint_repository import (
+        FilesystemCheckpointRepository,
+    )
+
+    # ST-006: State store for cross-invocation graduated escalation
+    from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
+        FilesystemContextStateStore,
+    )
+    from src.context_monitoring.infrastructure.adapters.jsonl_transcript_reader import (
+        JsonlTranscriptReader,
+    )
+    from src.context_monitoring.infrastructure.adapters.staleness_detector import (
+        StalenessDetector,
+    )
+    from src.infrastructure.adapters.configuration.layered_config_adapter import (
+        LayeredConfigAdapter,
+    )
+    from src.infrastructure.adapters.configuration.lifecycle_dir_resolver import (
+        resolve_lifecycle_dir,
+    )
+    from src.infrastructure.adapters.persistence.atomic_file_adapter import (
+        AtomicFileAdapter,
+    )
+    from src.infrastructure.internal.enforcement.pre_tool_enforcement_engine import (
+        PreToolEnforcementEngine,
+    )
+    from src.infrastructure.internal.enforcement.prompt_reinforcement_engine import (
+        PromptReinforcementEngine,
+    )
+    from src.infrastructure.internal.enforcement.session_quality_context_generator import (
+        SessionQualityContextGenerator,
+    )
+    from src.interface.cli.hooks.hooks_pre_compact_handler import (
+        HooksPreCompactHandler,
+    )
+    from src.interface.cli.hooks.hooks_pre_tool_use_handler import (
+        HooksPreToolUseHandler,
+    )
+    from src.interface.cli.hooks.hooks_prompt_submit_handler import (
+        HooksPromptSubmitHandler,
+    )
+    from src.interface.cli.hooks.hooks_session_start_handler import (
+        HooksSessionStartHandler,
+    )
+    from src.interface.cli.hooks.hooks_stop_gate_handler import (
+        HooksStopGateHandler,
+    )
+    from src.interface.cli.hooks.hooks_subagent_stop_handler import (
+        HooksSubagentStopHandler,
+    )
+
+    project_root = Path.cwd()
+    lifecycle_dir = resolve_lifecycle_dir()
+
+    # Shared infrastructure
+    file_adapter = AtomicFileAdapter()
+    reinforcement_engine = PromptReinforcementEngine()
+
+    # Context monitoring services
+    transcript_reader = JsonlTranscriptReader()
+    config_adapter = LayeredConfigAdapter(
+        env_prefix="JERRY_",
+        root_config_path=project_root / ".jerry" / "config.toml",
+        defaults={
+            # NOTE: context_window_tokens is intentionally NOT in defaults.
+            # The adapter must distinguish "user explicitly configured" from
+            # "default" to support auto-detection priority chain (TASK-006).
+            "context_monitor.nominal_threshold": 0.55,
+            "context_monitor.warning_threshold": 0.70,
+            "context_monitor.critical_threshold": 0.80,
+            "context_monitor.emergency_threshold": 0.88,
+            "context_monitor.compaction_detection_threshold": 10000,
+            "context_monitor.enabled": True,
+        },
+    )
+    threshold_config = ConfigThresholdAdapter(config=config_adapter)
+    context_fill_estimator = ContextFillEstimator(
+        reader=transcript_reader,
+        threshold_config=threshold_config,
+    )
+
+    # Checkpoint services
+    checkpoint_dir = project_root / ".jerry" / "checkpoints"
+    checkpoint_repository = FilesystemCheckpointRepository(
+        checkpoint_dir=checkpoint_dir,
+        file_adapter=file_adapter,
+    )
+    checkpoint_service = CheckpointService(repository=checkpoint_repository)
+
+    # Session handlers (for pre-compact abandon)
+    session_repository = get_session_repository()
+    abandon_handler = AbandonSessionCommandHandler(repository=session_repository)
+
+    # Query dispatcher (for session-start project context)
+    query_dispatcher = create_query_dispatcher()
+
+    # Resumption context generator
+    resumption_generator = ResumptionContextGenerator()
+
+    # Staleness detector
+    staleness_detector = StalenessDetector(project_root=project_root)
+
+    # Pre-tool enforcement engine
+    pre_tool_engine = PreToolEnforcementEngine(project_root=project_root)
+
+    # ST-006: Cross-invocation state store for graduated escalation
+    context_state_store = FilesystemContextStateStore(state_dir=lifecycle_dir)
+
+    return {
+        "prompt-submit": HooksPromptSubmitHandler(
+            context_fill_estimator=context_fill_estimator,
+            checkpoint_service=checkpoint_service,
+            reinforcement_engine=reinforcement_engine,
+            context_state_store=context_state_store,
+        ),
+        "session-start": HooksSessionStartHandler(
+            query_dispatcher=query_dispatcher,
+            projects_dir=get_projects_directory(),
+            checkpoint_repository=checkpoint_repository,
+            resumption_generator=resumption_generator,
+            quality_context_generator=SessionQualityContextGenerator(),
+            context_state_store=context_state_store,
+        ),
+        "pre-compact": HooksPreCompactHandler(
+            checkpoint_service=checkpoint_service,
+            context_fill_estimator=context_fill_estimator,
+            abandon_handler=abandon_handler,
+            context_state_store=context_state_store,
+        ),
+        "pre-tool-use": HooksPreToolUseHandler(
+            enforcement_engine=pre_tool_engine,
+            staleness_detector=staleness_detector,
+        ),
+        "stop": HooksStopGateHandler(
+            context_state_store=context_state_store,
+        ),
+        "subagent-stop": HooksSubagentStopHandler(
+            lifecycle_dir=lifecycle_dir,
+        ),
+    }
+
+
+def create_context_estimate_handler() -> Any:
+    """Create the context estimate CLI handler with all dependencies.
+
+    Wires ContextEstimateComputer, FilesystemContextStateStore,
+    ContextEstimateService, and ContextEstimateHandler.
+
+    Returns:
+        ContextEstimateHandler ready to process stdin JSON.
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+        - EN-013: Bootstrap Wiring + Config Integration
+    """
+    from src.context_monitoring.application.services.context_estimate_service import (
+        ContextEstimateService,
+    )
+    from src.context_monitoring.domain.services.context_estimate_computer import (
+        ContextEstimateComputer,
+    )
+    from src.context_monitoring.infrastructure.adapters.filesystem_context_state_store import (
+        FilesystemContextStateStore,
+    )
+    from src.context_monitoring.infrastructure.adapters.transcript_sub_agent_reader import (
+        TranscriptSubAgentReader,
+    )
+    from src.infrastructure.adapters.configuration.lifecycle_dir_resolver import (
+        resolve_lifecycle_dir,
+    )
+    from src.interface.cli.context.context_estimate_handler import (
+        ContextEstimateHandler,
+    )
+
+    lifecycle_dir = resolve_lifecycle_dir()
+
+    computer = ContextEstimateComputer()
+    state_store = FilesystemContextStateStore(state_dir=lifecycle_dir)
+    service = ContextEstimateService(computer, state_store)
+    sub_agent_reader = TranscriptSubAgentReader(
+        lifecycle_path=lifecycle_dir / "subagent-lifecycle.json",
+    )
+
+    return ContextEstimateHandler(service, sub_agent_reader=sub_agent_reader)
 
 
 def reset_singletons() -> None:

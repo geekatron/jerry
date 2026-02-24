@@ -1,0 +1,627 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
+"""
+Unit tests for the pre-commit markdown schema validation hook (ST-009).
+
+Tests cover:
+    - Schema detection from file paths (entity prefix -> schema type mapping)
+    - Validation logic with valid and invalid entity files
+    - Output formatting (violation messages, summary line)
+    - Exit codes (0 for pass, 1 for violations)
+    - Skipping non-entity markdown files
+
+Test Categories:
+    - detect_schema_from_path: Maps file paths to entity schema types
+    - validate_file: Validates individual files against detected schemas
+    - format_violation: Formats violations for IDE-friendly output
+    - main integration: End-to-end with mocked git output
+
+References:
+    - ST-009: Add Pre-Commit Validation Hook
+    - H-20: BDD test-first approach
+    - H-21: 90% line coverage
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+# Add project root to sys.path so we can import the script
+_project_root = Path(__file__).parent.parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+# ---------------------------------------------------------------------------
+# Import the module under test
+# ---------------------------------------------------------------------------
+
+from scripts.check_markdown_schemas import (  # noqa: E402
+    detect_schema_from_path,
+    format_summary,
+    format_violation,
+    get_staged_markdown_files,
+    main,
+    validate_file,
+)
+
+# ---------------------------------------------------------------------------
+# Fixtures: valid entity markdown sources
+# ---------------------------------------------------------------------------
+
+VALID_STORY_SOURCE = """\
+# ST-001: My Story
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this covers |
+| [Acceptance Criteria](#acceptance-criteria) | Done conditions |
+
+---
+
+> **Type:** story
+> **Status:** pending
+> **Priority:** medium
+> **Impact:** medium
+> **Created:** 2026-01-01
+> **Parent:** FEAT-001
+
+---
+
+## Summary
+
+Story summary.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Done when X
+"""
+
+INVALID_STORY_SOURCE = """\
+# ST-001: Missing Fields
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | What this covers |
+| [Acceptance Criteria](#acceptance-criteria) | Done conditions |
+
+---
+
+> **Status:** pending
+> **Priority:** medium
+
+---
+
+## Summary
+
+Story summary.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Done when X
+"""
+
+PLAIN_MARKDOWN = """\
+# Some Readme
+
+Just a plain markdown file with no entity structure.
+"""
+
+
+# ===========================================================================
+# Test: detect_schema_from_path
+# ===========================================================================
+
+
+class TestDetectSchemaFromPath:
+    """Tests for schema detection from file paths."""
+
+    def test_enabler_path(self) -> None:
+        """EN-xxx path in projects work directory returns 'enabler'."""
+        path = "projects/PROJ-001/work/EPIC-001/FEAT-001/EN-001-infra/EN-001-infra.md"
+        assert detect_schema_from_path(path) == "enabler"
+
+    def test_story_path(self) -> None:
+        """ST-xxx path in projects work directory returns 'story'."""
+        path = "projects/PROJ-005/work/EPIC-001/FEAT-001/ST-009-precommit/ST-009-precommit.md"
+        assert detect_schema_from_path(path) == "story"
+
+    def test_task_path(self) -> None:
+        """TASK-xxx path in projects work directory returns 'task'."""
+        path = "projects/PROJ-001/work/EPIC-001/FEAT-001/TASK-001-setup/TASK-001-setup.md"
+        assert detect_schema_from_path(path) == "task"
+
+    def test_bug_path(self) -> None:
+        """BUG-xxx path in projects work directory returns 'bug'."""
+        path = "projects/PROJ-003/work/BUG-011-fix/BUG-011-fix.md"
+        assert detect_schema_from_path(path) == "bug"
+
+    def test_feature_path_in_directory(self) -> None:
+        """FEAT-xxx path inside a directory returns 'feature'."""
+        path = "projects/PROJ-005/work/EPIC-001/FEAT-001-ast/FEAT-001-ast.md"
+        assert detect_schema_from_path(path) == "feature"
+
+    def test_feature_path_direct(self) -> None:
+        """FEAT-xxx.md directly under work returns 'feature'."""
+        path = "projects/PROJ-001/work/EPIC-001/FEAT-001-ast.md"
+        assert detect_schema_from_path(path) == "feature"
+
+    def test_epic_path_in_directory(self) -> None:
+        """EPIC-xxx path inside a directory returns 'epic'."""
+        path = "projects/PROJ-005/work/EPIC-001-markdown-ast/EPIC-001-markdown-ast.md"
+        assert detect_schema_from_path(path) == "epic"
+
+    def test_epic_path_direct(self) -> None:
+        """EPIC-xxx.md directly under work returns 'epic'."""
+        path = "projects/PROJ-001/work/EPIC-001-markdown-ast.md"
+        assert detect_schema_from_path(path) == "epic"
+
+    def test_random_md_returns_none(self) -> None:
+        """Random .md file outside projects/work returns None (skip)."""
+        path = "README.md"
+        assert detect_schema_from_path(path) is None
+
+    def test_context_rules_returns_none(self) -> None:
+        """.context/rules/ markdown file returns None (skip)."""
+        path = ".context/rules/coding-standards.md"
+        assert detect_schema_from_path(path) is None
+
+    def test_docs_markdown_returns_none(self) -> None:
+        """docs/ markdown file returns None (skip)."""
+        path = "docs/knowledge/some-doc.md"
+        assert detect_schema_from_path(path) is None
+
+    def test_plan_md_returns_none(self) -> None:
+        """PLAN.md in project directory returns None (skip)."""
+        path = "projects/PROJ-005-markdown-ast/PLAN.md"
+        assert detect_schema_from_path(path) is None
+
+    def test_worktracker_md_returns_none(self) -> None:
+        """WORKTRACKER.md in project directory returns None (skip)."""
+        path = "projects/PROJ-005-markdown-ast/WORKTRACKER.md"
+        assert detect_schema_from_path(path) is None
+
+
+# ===========================================================================
+# Test: validate_file
+# ===========================================================================
+
+
+class TestValidateFile:
+    """Tests for file validation logic using tmp_path."""
+
+    def test_valid_story_file_no_violations(self, tmp_path: Path) -> None:
+        """Valid entity file produces no violations."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(VALID_STORY_SOURCE, encoding="utf-8")
+
+        violations = validate_file(str(file_path), "story")
+        assert violations == []
+
+    def test_invalid_story_file_has_violations(self, tmp_path: Path) -> None:
+        """Invalid entity file (missing required fields) produces violations."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(INVALID_STORY_SOURCE, encoding="utf-8")
+
+        violations = validate_file(str(file_path), "story")
+        assert len(violations) > 0
+        # Should detect missing Type field at minimum
+        field_paths = [v.field_path for v in violations]
+        assert "frontmatter.Type" in field_paths
+
+    def test_nonexistent_file_returns_empty(self, tmp_path: Path) -> None:
+        """Non-existent file returns empty violations list (skip gracefully)."""
+        file_path = tmp_path / "does-not-exist.md"
+
+        violations = validate_file(str(file_path), "story")
+        assert violations == []
+
+    def test_valid_task_file_no_violations(self, tmp_path: Path) -> None:
+        """Valid task file (no nav table required) produces no violations."""
+        task_source = """\
+# TASK-001: My Task
+
+> **Type:** task
+> **Status:** pending
+> **Priority:** medium
+> **Created:** 2026-01-01
+> **Parent:** ST-001
+
+---
+
+## Summary
+
+Task summary.
+"""
+        file_path = tmp_path / "TASK-001.md"
+        file_path.write_text(task_source, encoding="utf-8")
+
+        violations = validate_file(str(file_path), "task")
+        assert violations == []
+
+
+# ===========================================================================
+# Test: format_violation
+# ===========================================================================
+
+
+class TestFormatViolation:
+    """Tests for violation output formatting."""
+
+    def test_format_includes_filepath_and_message(self) -> None:
+        """Formatted violation includes file path and message."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        v = ValidationViolation(
+            field_path="frontmatter.Type",
+            expected="field present (required)",
+            actual="field missing",
+            severity="error",
+            message="Required field 'Type' is missing from frontmatter.",
+        )
+
+        result = format_violation("path/to/file.md", v)
+        assert "path/to/file.md" in result
+        assert "Required field 'Type' is missing from frontmatter." in result
+
+    def test_format_uses_colon_separator(self) -> None:
+        """Formatted violation uses colon separator for IDE integration."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        v = ValidationViolation(
+            field_path="sections.Summary",
+            expected="## Summary section present",
+            actual="section missing",
+            severity="error",
+            message="Required section '## Summary' is missing from document.",
+        )
+
+        result = format_violation("file.md", v)
+        # Format should be "file:message"
+        assert result.startswith("file.md:")
+
+
+# ===========================================================================
+# Test: format_summary
+# ===========================================================================
+
+
+class TestFormatSummary:
+    """Tests for summary line formatting."""
+
+    def test_summary_format_no_violations(self) -> None:
+        """Summary with zero violations."""
+        result = format_summary(5, 0)
+        assert "5 files checked" in result
+        assert "0 violations found" in result
+
+    def test_summary_format_with_violations(self) -> None:
+        """Summary with violations."""
+        result = format_summary(3, 7)
+        assert "3 files checked" in result
+        assert "7 violations found" in result
+
+
+# ===========================================================================
+# Test: main (exit codes)
+# ===========================================================================
+
+
+class TestMain:
+    """Tests for main() exit codes with mocked git interaction."""
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_no_staged_files_exits_zero(self, mock_git: MagicMock) -> None:
+        """No staged markdown files -> exit 0."""
+        mock_git.return_value = []
+        assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_staged_non_entity_files_exits_zero(self, mock_git: MagicMock) -> None:
+        """Staged files that are not entity files -> exit 0 (all skipped)."""
+        mock_git.return_value = ["README.md", "docs/architecture.md"]
+        assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    @patch("scripts.check_markdown_schemas.validate_file")
+    def test_all_valid_exits_zero(self, mock_validate: MagicMock, mock_git: MagicMock) -> None:
+        """All valid entity files -> exit 0."""
+        mock_git.return_value = ["projects/PROJ-005/work/EPIC-001/FEAT-001/ST-001-x/ST-001-x.md"]
+        mock_validate.return_value = []
+        assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    @patch("scripts.check_markdown_schemas.validate_file")
+    def test_violations_found_exits_one(
+        self, mock_validate: MagicMock, mock_git: MagicMock
+    ) -> None:
+        """Entity files with violations -> exit 1."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        mock_git.return_value = ["projects/PROJ-005/work/EPIC-001/FEAT-001/ST-001-x/ST-001-x.md"]
+        mock_validate.return_value = [
+            ValidationViolation(
+                field_path="frontmatter.Type",
+                expected="field present (required)",
+                actual="field missing",
+                severity="error",
+                message="Required field 'Type' is missing from frontmatter.",
+            )
+        ]
+        assert main() == 1
+
+
+# ===========================================================================
+# Test: detect_schema_from_path — edge cases for coverage
+# ===========================================================================
+
+
+class TestDetectSchemaEdgeCases:
+    """Edge case tests for schema detection to cover line 95 (no entity match
+    in work dir)."""
+
+    def test_work_dir_file_without_entity_prefix_returns_none(self) -> None:
+        """File under projects/*/work/ but without any entity prefix returns None."""
+        path = "projects/PROJ-001/work/some-random-notes.md"
+        assert detect_schema_from_path(path) is None
+
+    def test_spike_file_under_feat_dir_returns_none(self) -> None:
+        """SPIKE- prefixed file under a FEAT- directory returns None (not misclassified)."""
+        path = "projects/PROJ-005/work/EPIC-001/FEAT-001/SPIKE-001-landscape/SPIKE-001-landscape.md"
+        # SPIKE is not in the entity pattern list; filename matching prevents
+        # ancestor directory (FEAT-001) from causing misclassification.
+        assert detect_schema_from_path(path) is None
+
+    def test_work_dir_nested_no_entity(self) -> None:
+        """Deeply nested file in work dir without entity prefix returns None."""
+        path = "projects/PROJ-001/work/decisions/ADR-001.md"
+        assert detect_schema_from_path(path) is None
+
+
+# ===========================================================================
+# Test: validate_file — OSError coverage
+# ===========================================================================
+
+
+class TestValidateFileEdgeCases:
+    """Edge case tests for validate_file error handling paths."""
+
+    def test_unreadable_file_returns_empty(self, tmp_path: Path) -> None:
+        """File that raises OSError on read returns empty violations list."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text("dummy content", encoding="utf-8")
+
+        with patch("pathlib.Path.read_text", side_effect=OSError("permission denied")):
+            violations = validate_file(str(file_path), "story")
+            assert violations == []
+
+    def test_non_utf8_file_returns_empty(self, tmp_path: Path) -> None:
+        """File with non-UTF-8 encoding returns empty violations (graceful skip)."""
+        file_path = tmp_path / "ST-002.md"
+        # Write raw bytes that are invalid UTF-8
+        file_path.write_bytes(b"# ST-002: Test\n\n> **Type:** story\n\xe9\xfe\xff\n")
+
+        violations = validate_file(str(file_path), "story")
+        assert violations == []
+
+
+# ===========================================================================
+# Test: get_staged_markdown_files
+# ===========================================================================
+
+
+class TestGetStagedMarkdownFiles:
+    """Tests for git staged file detection (lines 203-223)."""
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_staged_files_on_success(self, mock_run: MagicMock) -> None:
+        """Successful git command returns list of staged markdown files."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="README.md\nprojects/PROJ-001/work/ST-001/ST-001.md\n",
+        )
+        result = get_staged_markdown_files()
+        assert result == ["README.md", "projects/PROJ-001/work/ST-001/ST-001.md"]
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_empty_on_git_failure(self, mock_run: MagicMock) -> None:
+        """Non-zero git exit code returns empty list."""
+        mock_run.return_value = MagicMock(returncode=128, stdout="")
+        result = get_staged_markdown_files()
+        assert result == []
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_empty_on_timeout(self, mock_run: MagicMock) -> None:
+        """Git timeout returns empty list."""
+        import subprocess as sp
+
+        mock_run.side_effect = sp.TimeoutExpired(cmd="git", timeout=10)
+        result = get_staged_markdown_files()
+        assert result == []
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_returns_empty_on_git_not_found(self, mock_run: MagicMock) -> None:
+        """Git not found (FileNotFoundError) returns empty list."""
+        mock_run.side_effect = FileNotFoundError("git not found")
+        result = get_staged_markdown_files()
+        assert result == []
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_filters_blank_lines(self, mock_run: MagicMock) -> None:
+        """Blank lines in git output are filtered out."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="README.md\n\n\nST-001.md\n",
+        )
+        result = get_staged_markdown_files()
+        assert result == ["README.md", "ST-001.md"]
+
+    @patch("scripts.check_markdown_schemas.subprocess.run")
+    def test_empty_stdout_returns_empty(self, mock_run: MagicMock) -> None:
+        """Empty stdout from successful git command returns empty list."""
+        mock_run.return_value = MagicMock(returncode=0, stdout="")
+        result = get_staged_markdown_files()
+        assert result == []
+
+
+# ===========================================================================
+# Test: entity pattern / schema registry synchronization (H-3 from C4 review)
+# ===========================================================================
+
+
+class TestEntityPatternSync:
+    """Verify that _ENTITY_PATTERNS covers all schema types in the registry."""
+
+    def test_all_worktracker_schema_types_have_entity_patterns(self) -> None:
+        """Every worktracker schema type in the registry has a corresponding entity pattern."""
+        from scripts.check_markdown_schemas import _ENTITY_PATTERNS
+        from src.domain.markdown_ast.schema_definitions import DEFAULT_REGISTRY
+
+        # _ENTITY_PATTERNS covers worktracker entities only, not file-type schemas
+        _WORKTRACKER_TYPES = {"epic", "feature", "story", "enabler", "task", "bug"}
+        pattern_schema_types = {schema_type for _, schema_type in _ENTITY_PATTERNS}
+        registry_worktracker_types = set(DEFAULT_REGISTRY.list_types()) & _WORKTRACKER_TYPES
+
+        missing = registry_worktracker_types - pattern_schema_types
+        assert missing == set(), f"Worktracker schema types without entity patterns: {missing}"
+
+    def test_all_entity_patterns_have_schemas(self) -> None:
+        """Every entity pattern maps to a valid schema type in the registry."""
+        from scripts.check_markdown_schemas import _ENTITY_PATTERNS
+        from src.domain.markdown_ast.schema_definitions import DEFAULT_REGISTRY
+
+        pattern_schema_types = {schema_type for _, schema_type in _ENTITY_PATTERNS}
+        registry_schema_types = set(DEFAULT_REGISTRY.list_types())
+
+        extra = pattern_schema_types - registry_schema_types
+        assert extra == set(), f"Entity patterns without corresponding schemas: {extra}"
+
+
+# ===========================================================================
+# Test: format_violation with line numbers (M-1)
+# ===========================================================================
+
+
+class TestFormatViolationLineNumbers:
+    """Tests for violation format with line number support."""
+
+    def test_violation_with_line_number_includes_line(self) -> None:
+        """Violation with line_number formats as file:line:message (1-based)."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        v = ValidationViolation(
+            field_path="frontmatter.Status",
+            expected="one of: pending, in_progress, completed",
+            actual="invalid",
+            severity="error",
+            message="Field 'Status' value 'invalid' is not in allowed values.",
+            line_number=5,
+        )
+        result = format_violation("path/to/ST-001.md", v)
+        assert (
+            result == "path/to/ST-001.md:6:Field 'Status' value 'invalid' is not in allowed values."
+        )
+
+    def test_violation_without_line_number_omits_line(self) -> None:
+        """Violation without line_number formats as file:message."""
+        from src.domain.markdown_ast.schema import ValidationViolation
+
+        v = ValidationViolation(
+            field_path="sections.Summary",
+            expected="## Summary section present",
+            actual="section missing",
+            severity="error",
+            message="Required section '## Summary' is missing.",
+        )
+        result = format_violation("file.md", v)
+        assert result == "file.md:Required section '## Summary' is missing."
+
+
+# ===========================================================================
+# Test: end-to-end integration (M-2)
+# ===========================================================================
+
+
+class TestPrecommitEndToEnd:
+    """End-to-end integration tests using real file I/O with mocked git."""
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_valid_story_passes(self, mock_git: MagicMock, tmp_path: Path) -> None:
+        """Valid story file passes schema validation end-to-end."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(VALID_STORY_SOURCE, encoding="utf-8")
+        mock_git.return_value = [str(file_path)]
+
+        # Patch detect_schema_from_path to accept our tmp_path
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            return_value="story",
+        ):
+            assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_invalid_story_fails(self, mock_git: MagicMock, tmp_path: Path) -> None:
+        """Invalid story file (missing Type, Impact, Created, Parent) fails end-to-end."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(INVALID_STORY_SOURCE, encoding="utf-8")
+        mock_git.return_value = [str(file_path)]
+
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            return_value="story",
+        ):
+            assert main() == 1
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_mixed_valid_and_non_entity_passes(self, mock_git: MagicMock, tmp_path: Path) -> None:
+        """Mix of valid entity file and non-entity file passes (non-entity skipped)."""
+        story_path = tmp_path / "ST-001.md"
+        story_path.write_text(VALID_STORY_SOURCE, encoding="utf-8")
+        readme_path = tmp_path / "README.md"
+        readme_path.write_text(PLAIN_MARKDOWN, encoding="utf-8")
+        mock_git.return_value = [str(story_path), str(readme_path)]
+
+        # detect_schema_from_path returns "story" for the ST file, None for README
+        def detect_side_effect(path: str) -> str | None:
+            if "ST-001" in path:
+                return "story"
+            return None
+
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            side_effect=detect_side_effect,
+        ):
+            assert main() == 0
+
+    @patch("scripts.check_markdown_schemas.get_staged_markdown_files")
+    def test_violation_output_contains_file_and_summary(
+        self, mock_git: MagicMock, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """Violation output includes file path, violation messages, and summary."""
+        file_path = tmp_path / "ST-001.md"
+        file_path.write_text(INVALID_STORY_SOURCE, encoding="utf-8")
+        mock_git.return_value = [str(file_path)]
+
+        with patch(
+            "scripts.check_markdown_schemas.detect_schema_from_path",
+            return_value="story",
+        ):
+            exit_code = main()
+
+        assert exit_code == 1
+        captured = capsys.readouterr()
+        # Should contain violation messages and a summary line
+        assert "frontmatter" in captured.out
+        assert "files checked" in captured.out

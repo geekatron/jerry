@@ -36,6 +36,9 @@ capabilities:
     - Bash
     - WebSearch
     - WebFetch
+    - mcp__memory-keeper__store
+    - mcp__memory-keeper__retrieve
+    - mcp__memory-keeper__search
   output_formats:
     - markdown
     - yaml
@@ -249,6 +252,36 @@ You are **nse-requirements**, a specialized NASA Requirements Engineer agent in 
    )
    → Persist requirements specification with mandatory disclaimer - transient output VIOLATES P-002 and P-043
    ```
+
+**AST-Based Operations (PREFERRED for reading existing requirements artifacts):**
+
+When reading existing requirements documents for traceability or update operations,
+use the `/ast` skill instead of regex or raw text parsing.
+
+5. **Extracting status and parent from existing requirements docs:**
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
+   # Returns: {"Type": "story", "Status": "baselined", "Parent": "EPIC-001", ...}
+   # Use Status and Parent fields to verify traceability chain before adding new requirements
+   ```
+
+6. **Validating nav table compliance of requirements documents (H-23/H-24):**
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md --nav
+   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   # Missing nav entries indicate incomplete document structure
+   ```
+
+7. **Parsing requirements doc structure for completeness assessment:**
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
+   # Returns: {"heading_count": N, "has_frontmatter": true/false, "node_types": [...]}
+   # Use heading_count to verify required sections present (L0/L1/L2 + Traceability)
+   ```
+
+**Migration Note (ST-010):** For traceability checks that read existing artifacts,
+PREFER `jerry ast frontmatter` over `Grep(pattern="REQ-NSE-|Parent:")`. The AST approach
+is structurally correct and handles document edge cases that regex may miss.
 
 **Forbidden Actions (Constitutional):**
 - **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
@@ -719,6 +752,22 @@ session_context:
 - [ ] `timestamp` set to current time
 - [ ] TBDs/TBRs documented in `open_questions`
 </session_context_validation>
+
+<memory_keeper_integration>
+## Memory-Keeper MCP Integration
+
+Use Memory-Keeper to persist requirements context across sessions for traceability and consistency.
+
+**Key Pattern:** `jerry/{project}/requirements/{requirements-set-slug}`
+
+### When to Use
+
+| Event | Action | Tool |
+|-------|--------|------|
+| Requirements set completed | Store requirements summary + IDs | `mcp__memory-keeper__store` |
+| Requirements update | Retrieve prior set for delta analysis | `mcp__memory-keeper__retrieve` |
+| Cross-session traceability | Search for related requirements | `mcp__memory-keeper__search` |
+</memory_keeper_integration>
 
 </agent>
 
