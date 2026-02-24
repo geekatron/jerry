@@ -20,10 +20,12 @@
   --md-primary-fg-color:        #512DA8;
   --md-primary-fg-color--light: #7E57C2;
   --md-primary-fg-color--dark:  #311B92;
+  --md-primary-bg-color:        #fff;
 
   /* Accent: Amber */
   --md-accent-fg-color:         #FFB300;
   --md-accent-fg-color--transparent: rgba(255, 179, 0, 0.1);
+  --md-accent-bg-color:         #fff;
 
   /* Default background */
   --md-default-bg-color:        #FFFFFF;
@@ -50,20 +52,25 @@
    Built on slate with purple-shifted hue
    -------------------------------------------------------------------------- */
 [data-md-color-scheme="saucer-boy-dark"] {
+  color-scheme: dark;
   --md-hue: 270;
 
   /* Primary: Deep Purple (lighter for dark bg) */
   --md-primary-fg-color:        #7E57C2;
   --md-primary-fg-color--light: #B39DDB;
   --md-primary-fg-color--dark:  #512DA8;
+  --md-primary-bg-color:        #fff;
 
   /* Accent: Amber */
   --md-accent-fg-color:         #FFB300;
   --md-accent-fg-color--transparent: rgba(255, 179, 0, 0.1);
+  --md-accent-bg-color:         rgba(0, 0, 0, 0.87);
 
   /* Dark background with purple shift */
   --md-default-bg-color:        #1A1025;
   --md-default-bg-color--light: #241535;
+  --md-default-bg-color--lighter: rgba(26, 16, 37, 0.26);
+  --md-default-bg-color--lightest: rgba(26, 16, 37, 0.07);
   --md-default-fg-color:        rgba(255, 255, 255, 0.87);
   --md-default-fg-color--light: rgba(255, 255, 255, 0.54);
   --md-default-fg-color--lighter: rgba(255, 255, 255, 0.32);
@@ -71,11 +78,29 @@
 
   /* Code: dark with purple tint */
   --md-code-bg-color:           #241535;
+  --md-code-bg-color--light:    rgba(36, 21, 53, 0.9);
+  --md-code-bg-color--lighter:  rgba(36, 21, 53, 0.54);
   --md-code-fg-color:           #B0BEC5;
   --md-code-hl-color:           rgba(126, 87, 194, 0.15);
 
   /* Typeset */
+  --md-typeset-color:           var(--md-default-fg-color);
   --md-typeset-a-color:         #B39DDB;
+  --md-typeset-table-color:     rgba(255, 255, 255, 0.12);
+  --md-typeset-table-color--light: rgba(255, 255, 255, 0.035);
+  --md-typeset-kbd-color:       rgba(255, 255, 255, 0.12);
+  --md-typeset-kbd-accent-color: rgba(255, 255, 255, 0.2);
+  --md-typeset-kbd-border-color: #1A1025;
+  --md-typeset-mark-color:      rgba(68, 138, 255, 0.3);
+
+  /* Admonitions */
+  --md-admonition-fg-color:     var(--md-default-fg-color);
+  --md-admonition-bg-color:     var(--md-default-bg-color);
+
+  /* Shadows — dark mode needs subtler depth cues */
+  --md-shadow-z1: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.2), 0 0 0.05rem rgba(0, 0, 0, 0.1);
+  --md-shadow-z2: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.3), 0 0 0.05rem rgba(0, 0, 0, 0.15);
+  --md-shadow-z3: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.4), 0 0 0.05rem rgba(0, 0, 0, 0.15);
 
   /* Footer */
   --md-footer-bg-color:         #0D0818;
@@ -93,6 +118,43 @@
 /* Success admonitions: Green (PASS) */
 :root {
   --md-admonition-icon--success: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>');
+}
+
+/* --------------------------------------------------------------------------
+   Dark mode: readability fixes
+   -------------------------------------------------------------------------- */
+
+/* Link underlines — color alone insufficient at ~2.1:1 contrast (WCAG 3:1) */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-color: rgba(179, 157, 219, 0.4);
+}
+
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset a:hover {
+  text-decoration-color: var(--md-accent-fg-color);
+}
+
+/* Halation reduction — soften pure white on dark bg for long-form reading */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset {
+  --md-default-fg-color: rgba(255, 255, 255, 0.82);
+}
+
+[data-md-color-scheme="saucer-boy-dark"] .md-content .md-typeset p {
+  line-height: 1.8;
+}
+
+/* Blockquote visibility — left border + subtle background */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset blockquote {
+  border-left: 3px solid var(--md-accent-fg-color);
+  background: rgba(255, 179, 0, 0.04);
+  padding: 0.5em 1em;
+}
+
+/* Checkbox visibility */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset .task-list-indicator::before {
+  border-color: rgba(255, 255, 255, 0.54);
 }
 
 /* --------------------------------------------------------------------------
