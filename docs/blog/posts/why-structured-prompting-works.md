@@ -67,7 +67,7 @@ So you review, you get the plan tight. Then you do something counterintuitive: s
 
 Why a new conversation? Two reasons.
 
-First, the context window is finite. Every token from your planning conversation is taking up space that should be used for execution. [Liu et al. (2023)](https://arxiv.org/abs/2307.03172) found that models pay the most attention to what's at the beginning and end of a long context, and significantly less to everything in the middle. They studied retrieval tasks, but the attentional pattern applies here too: your carefully crafted instructions from message three are competing with forty messages of planning debate, and the model isn't weighing them evenly.
+First, the context window is finite. Every token from your planning conversation is taking up space that should be used for execution. [Liu et al. (2024)](https://arxiv.org/abs/2307.03172) found that models pay the most attention to what's at the beginning and end of a long context, and significantly less to everything in the middle. They studied retrieval tasks, but the attentional pattern applies here too: your carefully crafted instructions from message three are competing with forty messages of planning debate, and the model isn't weighing them evenly.
 
 Second, planning and execution are different jobs. A clean context lets the model focus on one thing instead of carrying all the noise from the planning debate.
 
