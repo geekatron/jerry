@@ -106,10 +106,24 @@ _To be populated after research._
 
 ---
 
+## Execution Structure
+
+**Parallel-with-sync-point:** SPIKE-001 and SPIKE-002 execute in parallel within an orchestrated cross-pollinated pipeline. Research phases run concurrently; findings cross-pollinate at sync barriers before analysis phases proceed.
+
+| Phase | SPIKE-001 Work | Sync Point |
+|-------|---------------|------------|
+| Phase 1 (Research) | SDK capabilities audit + CLI automation audit | Barrier 1: Send instance approaches to SPIKE-002; receive worktree constraints from SPIKE-002 |
+| Phase 2 (Analysis) | Trade-off scoring on 8 dimensions, informed by worktree constraints | Barrier 2: Send scored recommendation to SPIKE-002; receive session lifecycle feasibility |
+| Phase 3 (Decision) | Convergent: ps-architect creates go/no-go ADR from both spikes | — |
+
+See `ORCHESTRATION_PLAN.md` for full workflow diagram.
+
+---
+
 ## Related Items
 
 - Parent: [FEAT-001: Multi-Instance Strategy Assessment](./FEAT-001-instance-strategy.md)
-- Informs: [SPIKE-002: Automated Worktree & Session Lifecycle](./SPIKE-002-worktree-lifecycle.md)
+- Parallel With: [SPIKE-002: Automated Worktree & Session Lifecycle](./SPIKE-002-worktree-lifecycle.md) (cross-pollinated pipeline)
 - Related: PROJ-004 context resilience — session lifecycle overlaps
 
 ---
@@ -119,3 +133,4 @@ _To be populated after research._
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-20 | pending | Spike defined. 7-step research approach with 8-dimension comparison framework. 12h timebox. |
+| 2026-02-20 | pending | Restructured: parallel-with-sync-point execution with SPIKE-002. Orchestration plan created. |
