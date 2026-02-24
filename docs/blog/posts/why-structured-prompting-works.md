@@ -27,7 +27,7 @@ The LLM reads that and goes: "Cool, I'll pick some frameworks from my training d
 
 And it will look like an answer. That's the dangerous part. At their core, these models predict the next token based on everything before it. Post-training techniques like RLHF shape that behavior, but when your instructions leave room for interpretation, the prediction mechanism fills the gaps with whatever pattern showed up most often in the training data. Not what's actually true about *your* repo. The output comes back with clean structure, professional headings, and authoritative language. Reads like an expert wrote it.
 
-Except the expert part is a mirage. I call it the fluency-competence gap. Bender and Koller showed back in 2020 that models learn to sound like they understand without actually understanding. Sharma et al. found in 2024 that RLHF, the technique used to make models helpful, actually makes this worse by rewarding confident-sounding responses over accurate ones. The model learned to *sound* expert, not because it verified anything. When you don't define what rigor means, you get plausible instead of rigorous. Every time, across every model family.
+Except the expert part is a mirage. I call it the fluency-competence gap. [Bender and Koller (2020)](https://aclanthology.org/2020.acl-main.463/) showed that models learn to sound like they understand without actually understanding. [Sharma et al. (2024)](https://arxiv.org/abs/2310.13548) found that RLHF, the technique used to make models helpful, actually makes this worse by rewarding confident-sounding responses over accurate ones. The model learned to *sound* expert, not because it verified anything. When you don't define what rigor means, you get plausible instead of rigorous. Every time, across every model family.
 
 ## Level 2: Scope the Ask
 
@@ -35,7 +35,7 @@ In my experience, most people get the bulk of the benefit with a prompt that's j
 
 > *"Research the top 10 industry frameworks for X. For each, cite the original source. Then analyze this repo against the top 5. Show your selection criteria. I want to see why you picked those 5 before you apply them. Present findings in a comparison table."*
 
-Same topic. But now the LLM knows: find real sources, show your work, let me check before you commit. You've gone from "generate whatever" to "generate something that meets specific constraints." That matters at the architecture level. Specific instructions narrow the space of outputs the model considers acceptable. Vague instructions let it fill in every blank with defaults. Wei et al. (2022) demonstrated this with chain-of-thought prompting: just adding intermediate reasoning steps to a prompt measurably improved performance on arithmetic, commonsense, and symbolic reasoning tasks. Structure in, structure out.
+Same topic. But now the LLM knows: find real sources, show your work, let me check before you commit. You've gone from "generate whatever" to "generate something that meets specific constraints." That matters at the architecture level. Specific instructions narrow the space of outputs the model considers acceptable. Vague instructions let it fill in every blank with defaults. [Wei et al. (2022)](https://arxiv.org/abs/2201.11903) demonstrated this with chain-of-thought prompting: just adding intermediate reasoning steps to a prompt measurably improved performance on arithmetic, commonsense, and symbolic reasoning tasks. Structure in, structure out.
 
 For most day-to-day work, that's honestly enough. You don't need a flight plan for the bunny hill.
 
@@ -52,7 +52,7 @@ Same ask as Level 1. Frameworks applied to a repo. But now the model knows:
 - Why two work streams instead of one pass? Because gap analysis and framework research pull in different directions. Separate them, and each gets the attention it needs.
 - You want grounded evidence, not pattern completion from training data. The evidence constraint forces the model to look outward instead of interpolating from what it already "knows."
 - Self-critique against dimensions you defined. Not the model's own vague sense of "good enough," but completeness, consistency, and evidence quality as you specified them.
-- Here's the tension with that self-critique step. I just told the model to evaluate its own work, but models genuinely struggle with self-assessment. Panickssery et al. (2024) showed that LLMs recognize and favor their own output, consistently rating it higher than external evaluators do. Self-critique in the prompt is still useful as a first pass, a way to catch obvious gaps. But it's not a substitute for your eyes on the output. The human checkpoints are where real quality control happens.
+- Here's the tension with that self-critique step. I just told the model to evaluate its own work, but models genuinely struggle with self-assessment. [Panickssery et al. (2024)](https://proceedings.neurips.cc/paper_files/paper/2024/file/7f1f0218e45f5414c79c0679633e47bc-Paper-Conference.pdf) showed that LLMs recognize and favor their own output, consistently rating it higher than external evaluators do. Self-critique in the prompt is still useful as a first pass, a way to catch obvious gaps. But it's not a substitute for your eyes on the output. The human checkpoints are where real quality control happens.
 - And plan before product. You evaluate the process before committing to the output.
 
 One more thing that bites hard: once bad output enters a multi-phase pipeline, it doesn't just persist. It compounds. This is a well-established pattern in pipeline design, and it hits LLM workflows especially hard. Each downstream phase takes the previous output at face value and adds another layer of polished-sounding analysis on top. By phase three, the whole thing looks authoritative. The errors are structural. It's not garbage in, garbage out. It's garbage in, increasingly polished garbage out, and it gets much harder to tell the difference the deeper into the pipeline you go. The human checkpoints catch this. Reviewing the plan catches it earlier.
@@ -67,7 +67,7 @@ So you review, you get the plan tight. Then you do something counterintuitive: s
 
 Why a new conversation? Two reasons.
 
-First, the context window is finite. Every token from your planning conversation is taking up space that should be used for execution. Liu et al. (2023) found that models pay the most attention to what's at the beginning and end of a long context, and significantly less to everything in the middle. They studied retrieval tasks, but the attentional pattern applies here too: your carefully crafted instructions from message three are competing with forty messages of planning debate, and the model isn't weighing them evenly.
+First, the context window is finite. Every token from your planning conversation is taking up space that should be used for execution. [Liu et al. (2023)](https://arxiv.org/abs/2307.03172) found that models pay the most attention to what's at the beginning and end of a long context, and significantly less to everything in the middle. They studied retrieval tasks, but the attentional pattern applies here too: your carefully crafted instructions from message three are competing with forty messages of planning debate, and the model isn't weighing them evenly.
 
 Second, planning and execution are different jobs. A clean context lets the model focus on one thing instead of carrying all the noise from the planning debate.
 
@@ -112,4 +112,26 @@ Next time you open an LLM, before you type anything, write down three things: wh
 
 ---
 
-**Further reading:** The claims in this article are grounded in published research. For full references with links, see the companion [citations document](why-structured-prompting-works-citations.md). Start with Liu et al. (2023) on the lost-in-the-middle effect, Wei et al. (2022) on chain-of-thought prompting, and Panickssery et al. (2024) on LLM self-preference bias.
+## References
+
+1. **Bender, E. M. & Koller, A.** (2020). "Climbing towards NLU: On Meaning, Form, and Understanding in the Age of Data." *ACL 2020.* [https://aclanthology.org/2020.acl-main.463/](https://aclanthology.org/2020.acl-main.463/)
+
+2. **Liu, N. F. et al.** (2024). "Lost in the Middle: How Language Models Use Long Contexts." *Transactions of the Association for Computational Linguistics (TACL), 12,* 157-173. [https://arxiv.org/abs/2307.03172](https://arxiv.org/abs/2307.03172)
+
+3. **Panickssery, A. et al.** (2024). "LLM Evaluators Recognize and Favor Their Own Generations." *NeurIPS 2024.* [https://proceedings.neurips.cc/paper_files/paper/2024/file/7f1f0218e45f5414c79c0679633e47bc-Paper-Conference.pdf](https://proceedings.neurips.cc/paper_files/paper/2024/file/7f1f0218e45f5414c79c0679633e47bc-Paper-Conference.pdf)
+
+4. **Sharma, M. et al.** (2024). "Towards Understanding Sycophancy in Language Models." *ICLR 2024.* [https://arxiv.org/abs/2310.13548](https://arxiv.org/abs/2310.13548)
+
+5. **Wei, J. et al.** (2022). "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models." *NeurIPS 2022.* [https://arxiv.org/abs/2201.11903](https://arxiv.org/abs/2201.11903)
+
+### Further Reading
+
+- **Brown, T. et al.** (2020). "Language Models are Few-Shot Learners." *NeurIPS 2020.* [https://arxiv.org/abs/2005.14165](https://arxiv.org/abs/2005.14165)
+
+- **Kojima, T. et al.** (2022). "Large Language Models are Zero-Shot Reasoners." *NeurIPS 2022.* [https://arxiv.org/abs/2205.11916](https://arxiv.org/abs/2205.11916)
+
+- **Vaswani, A. et al.** (2017). "Attention Is All You Need." *NeurIPS 2017.* [https://arxiv.org/abs/1706.03762](https://arxiv.org/abs/1706.03762)
+
+- **White, J. et al.** (2023). "A Prompt Pattern Catalog to Enhance Prompt Engineering with ChatGPT." *arXiv preprint.* [https://arxiv.org/abs/2302.11382](https://arxiv.org/abs/2302.11382)
+
+- **Ye, S. et al.** (2024). "Self-Preference Bias in LLM-as-a-Judge." [https://arxiv.org/abs/2410.21819](https://arxiv.org/abs/2410.21819)

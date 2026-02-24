@@ -17,6 +17,7 @@
 
 | Section | Purpose |
 |---------|---------|
+| [Steps to Reproduce](#steps-to-reproduce) | How to trigger the bug |
 | [Summary](#summary) | Bug overview |
 | [Steps to Reproduce](#steps-to-reproduce) | How to trigger the bug |
 | [Failure Analysis](#failure-analysis) | Categorized CI failures |
@@ -24,6 +25,14 @@
 | [Acceptance Criteria](#acceptance-criteria) | Fix verification conditions |
 | [Tasks](#tasks) | Fix tasks |
 | [Related Items](#related-items) | Links to PR, CI runs |
+
+---
+
+## Steps to Reproduce
+
+1. Push to `feature/PROJ-005-ast-universal-markdown-parser` branch
+2. Open PR #76
+3. Observe CI failures: 8 ruff lint violations + 4 Windows test failures across 4 matrix jobs
 
 ---
 
