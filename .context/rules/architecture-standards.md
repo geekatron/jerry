@@ -56,7 +56,7 @@ src/
   infrastructure/   # Adapters (persistence, messaging, external), read models
   interface/        # CLI, API, hooks
   shared_kernel/    # Identity types, base classes, common protocols
-  bootstrap.py      # Composition root (H-09)
+  bootstrap.py      # Composition root (H-07c)
 ```
 
 **Project workspace:** `projects/PROJ-{NNN}-{slug}/` with `PLAN.md`, `WORKTRACKER.md`, `.jerry/data/items/`, `work/`, `research/`, `synthesis/`, `decisions/`.

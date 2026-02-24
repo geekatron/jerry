@@ -253,7 +253,7 @@ class TestHookEnforcementE2E:
 
     def test_pretool_hook_when_pip_install_command_then_responds(self) -> None:
         """PreToolUse hook processes pip install command without crashing."""
-        exit_code, stdout_json, _stderr = run_pretool_hook(
+        exit_code, stdout_json, _ = run_pretool_hook(
             "Bash",
             {"command": "pip install requests"},
         )
@@ -263,7 +263,7 @@ class TestHookEnforcementE2E:
 
     def test_pretool_hook_when_rm_rf_root_then_blocks(self) -> None:
         """PreToolUse hook blocks dangerous rm -rf / command."""
-        exit_code, stdout_json, _stderr = run_pretool_hook(
+        exit_code, stdout_json, _ = run_pretool_hook(
             "Bash",
             {"command": "rm -rf /"},
         )
@@ -274,7 +274,7 @@ class TestHookEnforcementE2E:
 
     def test_pretool_hook_when_safe_command_then_approves(self) -> None:
         """PreToolUse hook approves safe bash commands."""
-        exit_code, stdout_json, _stderr = run_pretool_hook(
+        exit_code, stdout_json, _ = run_pretool_hook(
             "Bash",
             {"command": "ls -la /tmp"},
         )
@@ -306,7 +306,7 @@ class TestHookEnforcementE2E:
 
     def test_userprompt_hook_when_executed_then_returns_valid_json(self) -> None:
         """UserPromptSubmit hook returns valid JSON with quality reinforcement."""
-        exit_code, stdout_json, stderr = run_userprompt_hook()
+        exit_code, stdout_json, _ = run_userprompt_hook()
         assert exit_code == 0
         assert stdout_json is not None
 
@@ -314,7 +314,7 @@ class TestHookEnforcementE2E:
         self,
     ) -> None:
         """UserPromptSubmit hook output contains quality reinforcement content."""
-        exit_code, stdout_json, stderr = run_userprompt_hook()
+        exit_code, stdout_json, _ = run_userprompt_hook()
         assert exit_code == 0
         assert stdout_json is not None
         additional = stdout_json.get("additionalContext", "")

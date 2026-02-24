@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Update the CLAUDE.md navigation table to reference the new agent standards rule files.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

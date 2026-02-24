@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Update the mandatory-skill-usage.md trigger map with agent-related keywords for routing.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Install agent-routing-standards into `.context/rules/` and create `.claude/rules/` symlink for auto-loading.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

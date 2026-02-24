@@ -27,7 +27,7 @@
 
 | File | Demonstrates | Key Rules |
 |------|-------------|-----------|
-| `value_object_pattern.py` | Frozen dataclasses, validation in `__post_init__`, factory methods | H-11 (type hints), H-12 (docstrings) |
+| `value_object_pattern.py` | Frozen dataclasses, validation in `__post_init__`, factory methods | H-11 (type hints, docstrings) |
 | `domain_event_pattern.py` | Past-tense naming, EVENT_TYPE, payload serialization, from_dict() factory | Immutability, `_payload()` pattern |
 | `aggregate_pattern.py` | `_apply()`, `collect_events()`, factory methods, invariant enforcement | H-07 (no external imports) |
 
@@ -41,7 +41,7 @@
 
 | File | Demonstrates | Key Rules |
 |------|-------------|-----------|
-| `repository_pattern.py` | IRepository protocol, InMemoryRepository, FileRepository adapter, optimistic locking | H-09 (composition root only) |
+| `repository_pattern.py` | IRepository protocol, InMemoryRepository, FileRepository adapter, optimistic locking | H-07 (composition root only) |
 
 ### Shared Kernel Patterns
 
@@ -88,7 +88,7 @@
 
 ✅ **Valid Python** - Must pass `ruff check` and `mypy`
 ✅ **Type Hints** - All public functions (H-11)
-✅ **Docstrings** - All public classes and functions (H-12)
+✅ **Docstrings** - All public classes and functions (H-11)
 ✅ **Examples** - Docstring examples showing usage
 ✅ **Self-Contained** - Can be read independently
 ✅ **Commented** - Explain WHY, not just WHAT

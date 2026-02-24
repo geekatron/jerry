@@ -75,4 +75,4 @@ TOCTOU trade-off between `get_context_window_tokens()` and
 | Date       | Status  | Notes                                    |
 |------------|---------|------------------------------------------|
 | 2026-02-20 | Created | Deferred from TASK-006 C4 adversarial review |
-| 2026-02-20 | Done    | Implemented: field on FillEstimate, sentinel, XML tag, 9 tests |
+| 2026-02-20 | completed | Implemented: field on FillEstimate, sentinel, XML tag, 9 tests |

@@ -1,13 +1,13 @@
 # BUG-001: Pre-commit hooks failing — 10 test failures, SPDX violations, pyright errors
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-02-21
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EPIC-001
 > **Owner:** --
 > **Found In:** 0.5.0
@@ -108,17 +108,17 @@ All pre-commit hooks pass. Commit succeeds.
 
 ### Fix Verification
 
-- [ ] `git commit` succeeds without any SKIP flags on a clean staging of changed files
-- [ ] All 4 hook wrapper scripts have SPDX + copyright headers
-- [ ] pyright passes on `src/` with zero errors
-- [ ] All 10 failing tests pass or are properly skipped with documented justification
-- [ ] No new test failures introduced
+- [x] `git commit` succeeds without any SKIP flags on a clean staging of changed files
+- [x] All 4 hook wrapper scripts have SPDX + copyright headers
+- [x] pyright passes on `src/` with zero errors
+- [x] All 10 failing tests pass or are properly skipped with documented justification
+- [x] No new test failures introduced
 
 ### Quality Checklist
 
-- [ ] Existing tests still passing
-- [ ] No new issues introduced
-- [ ] Pre-commit hooks run clean end-to-end
+- [x] Existing tests still passing
+- [x] No new issues introduced
+- [x] Pre-commit hooks run clean end-to-end
 
 ---
 
@@ -142,3 +142,4 @@ All pre-commit hooks pass. Commit succeeds.
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-21 | Claude | pending | Initial report. Discovered during commit of test suite (8750cc5). 3 hook categories failing. |
+| 2026-02-21 | Claude | completed | All pre-commit hook failures resolved. Tests passing, SPDX compliant, pyright clean. |

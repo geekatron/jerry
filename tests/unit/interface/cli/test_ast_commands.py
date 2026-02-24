@@ -32,6 +32,7 @@ from unittest.mock import patch
 
 import pytest
 
+import src.interface.cli.ast_commands as ast_commands_module
 from src.interface.cli.ast_commands import (
     ast_frontmatter,
     ast_modify,
@@ -48,6 +49,20 @@ from src.interface.cli.parser import create_parser
 # =============================================================================
 # Fixtures
 # =============================================================================
+
+
+@pytest.fixture(autouse=True)
+def _disable_path_containment() -> None:
+    """Disable path containment checks for CLI tests using temp files.
+
+    Test files are created in temp directories (e.g. /tmp) which are outside
+    the repository root. Path containment (WI-018, M-08) is a production
+    security feature that is tested separately with dedicated test cases.
+    """
+    original = ast_commands_module._ENFORCE_PATH_CONTAINMENT
+    ast_commands_module._ENFORCE_PATH_CONTAINMENT = False
+    yield  # type: ignore[misc]
+    ast_commands_module._ENFORCE_PATH_CONTAINMENT = original
 
 
 @pytest.fixture()
@@ -265,10 +280,8 @@ class TestAstParse:
         """ast_parse returns 2 when file read raises OSError."""
         from unittest.mock import patch as mock_patch
 
-        with mock_patch("src.interface.cli.ast_commands.Path") as MockPathClass:
-            mock_instance = MockPathClass.return_value
-            mock_instance.exists.return_value = True
-            mock_instance.read_text.side_effect = OSError("Permission denied")
+        # Mock Path.read_text at instance level to simulate OSError
+        with mock_patch.object(Path, "read_text", side_effect=OSError("Permission denied")):
             result = ast_parse(str(tmp_md_file))
         assert result == 2
 
@@ -452,6 +465,62 @@ class TestAstValidate:
         captured = capsys.readouterr()
         data = json.loads(captured.out)
         assert "nav_entries" not in data
+
+    def test_validate_with_schema_and_nav_includes_entries(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """ast_validate with --schema AND --nav includes nav_entries in output."""
+        md = (
+            "# TASK-099 Test Task\n\n"
+            "> **Type:** task\n"
+            "> **Status:** pending\n"
+            "> **Priority:** medium\n"
+            "> **Created:** 2026-02-23\n"
+            "> **Parent:** FEAT-001\n\n"
+            "| Section | Purpose |\n"
+            "|---------|----------|\n"
+            "| [Summary](#summary) | Overview |\n\n"
+            "## Summary\n\nThis is a test task.\n"
+        )
+        md_file = tmp_path / "task.md"
+        md_file.write_text(md, encoding="utf-8")
+        ast_validate(str(md_file), schema="task", nav=True)
+        captured = capsys.readouterr()
+        data = json.loads(captured.out)
+        assert "nav_entries" in data
+        assert isinstance(data["nav_entries"], list)
+        assert len(data["nav_entries"]) > 0
+        entry = data["nav_entries"][0]
+        assert "section_name" in entry
+        assert "anchor" in entry
+        assert "description" in entry
+        assert "line_number" in entry
+
+    def test_validate_with_schema_returns_exit_code_0_for_valid_doc(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """ast_validate with --schema returns 0 when document passes validation."""
+        md = (
+            "# TASK-100 Valid Task\n\n"
+            "> **Type:** task\n"
+            "> **Status:** pending\n"
+            "> **Priority:** high\n"
+            "> **Created:** 2026-02-23\n"
+            "> **Parent:** FEAT-001\n\n"
+            "| Section | Purpose |\n"
+            "|---------|----------|\n"
+            "| [Summary](#summary) | Overview |\n\n"
+            "## Summary\n\nA fully valid task document.\n"
+        )
+        md_file = tmp_path / "valid-task.md"
+        md_file.write_text(md, encoding="utf-8")
+        result = ast_validate(str(md_file), schema="task")
+        captured = capsys.readouterr()
+        data = json.loads(captured.out)
+        assert result == 0
+        assert data["is_valid"] is True
+        assert data["schema_valid"] is True
+        assert data["violations"] == []
 
 
 # =============================================================================

@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Install ADR-PROJ007-002 (routing framework) into `docs/design/` and update status to Accepted.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

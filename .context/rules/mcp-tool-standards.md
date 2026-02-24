@@ -139,12 +139,35 @@ Memory-Keeper is REQUIRED at orchestration phase boundaries (MCP-002). Memory-Ke
 | orch-synthesizer | — | retrieve, search | Cross-pipeline context retrieval |
 | ts-parser | — | store, retrieve | Transcript session persistence |
 | ts-extractor | — | store, retrieve | Extraction results persistence |
+| eng-architect | resolve, query | — | Library/framework security research |
+| eng-lead | resolve, query | — | Standards and dependency research |
+| eng-backend | resolve, query | — | Backend framework security docs |
+| eng-frontend | resolve, query | — | Frontend framework security docs |
+| eng-infra | resolve, query | — | Infrastructure and container docs |
+| eng-devsecops | resolve, query | — | Security tooling documentation |
+| eng-qa | resolve, query | — | Testing framework documentation |
+| eng-security | resolve, query | — | Security standard documentation |
+| eng-reviewer | resolve, query | — | Standards verification research |
+| eng-incident | resolve, query | — | IR framework documentation |
+| red-lead | resolve, query | — | Methodology framework research |
+| red-recon | resolve, query | — | Reconnaissance tool documentation |
+| red-vuln | resolve, query | — | Vulnerability database research |
+| red-exploit | resolve, query | — | Exploitation framework docs |
+| red-privesc | resolve, query | — | OS and AD documentation |
+| red-lateral | resolve, query | — | Network protocol documentation |
+| red-persist | resolve, query | — | OS internals documentation |
+| red-exfil | resolve, query | — | Protocol and channel documentation |
+| red-reporter | resolve, query | — | Reporting framework docs |
+| red-infra | resolve, query | — | C2 framework documentation |
+| red-social | resolve, query | — | Social engineering methodology |
 
 **Not included (by design):**
 - **adv-*** — Self-contained strategy execution; no external research or cross-session state
 - **wt-*** — Read-only auditing of worktracker files
 - **ps-critic, ps-validator, ps-reviewer** — Quality evaluation; no external library research needed
 - **ps-reporter** — Report generation from existing data
+- **eng-*** — File-based persistence per P-002 (engagement-scoped output); no cross-session state requirement
+- **red-*** — File-based persistence per P-002 (engagement-scoped output); scope documents and evidence stored in engagement directories
 
 > **Classification rule for new agents:** See MCP-M-002 in [MEDIUM Standards](#medium-standards).
 

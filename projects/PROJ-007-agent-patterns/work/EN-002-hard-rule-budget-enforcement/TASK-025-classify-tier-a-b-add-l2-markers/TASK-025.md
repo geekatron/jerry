@@ -21,6 +21,7 @@
 > **Criticality:** C3 (AE-002 — touches `.context/rules/`)
 > **Parent:** EN-002
 > **Source:** DEC-001 D-002, derivation R2 "Draft Tier A/B Classification" section
+> **Created:** 2026-02-21T23:50:00Z
 
 ---
 

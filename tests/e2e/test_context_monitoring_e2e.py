@@ -166,8 +166,8 @@ class TestPromptSubmitHookE2E:
         assert result.returncode == 0
         data = json.loads(result.stdout.strip())
         additional = data.get("additionalContext", "")
-        # Quality reinforcement injects L2-REINJECT constitutional principles
-        assert "Constitutional" in additional
+        # Quality reinforcement injects L2-REINJECT content (EN-002 format)
+        assert "H-33" in additional or "AE-006" in additional
 
 
 # =============================================================================

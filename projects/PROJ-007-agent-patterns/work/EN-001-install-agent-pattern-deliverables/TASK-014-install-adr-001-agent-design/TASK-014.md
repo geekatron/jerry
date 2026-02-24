@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Install ADR-PROJ007-001 (agent design) into `docs/design/` and update status to Accepted.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

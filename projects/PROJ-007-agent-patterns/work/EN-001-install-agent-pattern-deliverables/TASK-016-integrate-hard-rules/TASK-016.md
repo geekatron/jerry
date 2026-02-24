@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Integrate H-32 through H-35 into the quality-enforcement.md HARD Rule Index and update the rule budget.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

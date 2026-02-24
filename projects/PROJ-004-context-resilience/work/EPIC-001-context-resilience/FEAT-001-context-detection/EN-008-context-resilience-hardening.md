@@ -1,13 +1,13 @@
 # EN-008: Context Resilience Hardening
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 14-20h
@@ -82,15 +82,15 @@ Completing these tasks promotes all 5 PARTIAL verdicts to PASS, achieving full F
 
 ### Definition of Done
 
-- [ ] All 6 child tasks completed
-- [ ] DoD-4 promoted from PARTIAL to PASS (structured fields)
-- [ ] DoD-5 promoted from PARTIAL to PASS (WORKTRACKER.md injection)
-- [ ] AC-4 promoted from PARTIAL to PASS (checkpoint write-back)
-- [ ] DoD-7/NFC-1 promoted from PARTIAL to PASS (automated E2E test)
-- [ ] AC-7 promoted from PARTIAL to PASS (multi-pattern validation)
-- [ ] All existing 3652 tests still pass (no regression)
-- [ ] Context window size configurable per subscription/model (TASK-006)
-- [ ] 90% line coverage maintained (H-21)
+- [x] All 6 child tasks completed
+- [x] DoD-4 promoted from PARTIAL to PASS (structured fields)
+- [x] DoD-5 promoted from PARTIAL to PASS (WORKTRACKER.md injection)
+- [x] AC-4 promoted from PARTIAL to PASS (checkpoint write-back)
+- [x] DoD-7/NFC-1 promoted from PARTIAL to PASS (automated E2E test)
+- [x] AC-7 promoted from PARTIAL to PASS (multi-pattern validation)
+- [x] All existing 3652 tests still pass (no regression)
+- [x] Context window size configurable per subscription/model (TASK-006)
+- [x] 90% line coverage maintained (H-21)
 
 ---
 
@@ -114,3 +114,4 @@ Address the 5 PARTIAL acceptance criteria items identified during FEAT-001 valid
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Enabler created from ST-003 validation report. 5 PARTIAL items tracked as TASK-001 through TASK-005. |
 | 2026-02-20 | Claude | pending | TASK-006 added: context window size hardcoded to 200K, config key exists but disconnected. Different subscriptions/models have different context windows; auto-detection insufficient. |
+| 2026-02-21 | Claude | completed | All 6 hardening tasks (TASK-001 through TASK-006) implemented. 52 new tests added. |

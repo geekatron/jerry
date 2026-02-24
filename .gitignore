@@ -59,7 +59,7 @@ htmlcov/
 *.tgz
 *.bak
 
-# Jerry local data (locks, sessions)
-.jerry/local/
+# Jerry local data (locks, sessions, checkpoints)
+.jerry/
 projects/*/.jerry/
 logs/hook-errors.log

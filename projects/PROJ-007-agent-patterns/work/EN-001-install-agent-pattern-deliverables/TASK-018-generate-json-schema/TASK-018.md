@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Generate the agent-definition JSON Schema from the ADR-PROJ007-001 specification for H-32 validation.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

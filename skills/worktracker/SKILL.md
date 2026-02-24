@@ -45,6 +45,7 @@ The Worktracker skill provides comprehensive work item tracking and task managem
 - **Work Item Hierarchy**: Initiative → Epic → Feature → Story/Enabler → Task → Subtask
 - **Progress Tracking**: Status management, effort tracking, completion metrics
 - **Template Enforcement**: Consistent work item creation using standardized templates
+- **Content Quality**: AC clarity, brevity limits, anti-pattern detection (WTI-008, WTI-009)
 - **Manifest Management**: WORKTRACKER.md files as single source of truth
 - **System Mappings**: Compatible with ADO Scrum, SAFe, and JIRA workflows
 
@@ -65,6 +66,7 @@ The following rules are automatically loaded when this skill is invoked:
 
 @rules/worktracker-behavior-rules.md
 @rules/worktracker-templates.md
+@rules/worktracker-content-standards.md
 
 ---
 
@@ -122,7 +124,8 @@ Agents enforce Worktracker Integrity (WTI) rules defined in `.context/templates/
 | WTI-004 | Synchronize Before Reporting | wt-auditor |
 | WTI-005 | Atomic State Updates | wt-auditor |
 | WTI-006 | Evidence-Based Closure | wt-verifier |
-| WTI-007 | Mandatory Template Usage | wt-auditor |
+| WTI-008 | Content Quality Standards | wt-auditor |
+| WTI-009 | Collaboration Before Creation | (interactive -- MAIN CONTEXT) |
 
 ### Output Templates
 

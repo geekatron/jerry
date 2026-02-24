@@ -57,7 +57,7 @@ repos:
     hooks:
       - id: architecture-boundaries
         name: architecture boundary validation
-        entry: uv run python scripts/check_architecture_boundaries.py
+        entry: uv run --frozen python scripts/check_architecture_boundaries.py
         language: system
         types: [python]
         pass_filenames: false
@@ -71,7 +71,7 @@ repos:
     hooks:
       - id: spdx-license-headers
         name: SPDX license header validation
-        entry: uv run python scripts/check_spdx_headers.py
+        entry: uv run --frozen python scripts/check_spdx_headers.py
         language: system
         types: [python]
         pass_filenames: false
@@ -84,7 +84,7 @@ repos:
     hooks:
       - id: pyright
         name: pyright type checking
-        entry: uv run pyright
+        entry: uv run --frozen pyright
         language: system
         types: [python]
         pass_filenames: false
@@ -100,9 +100,25 @@ repos:
     hooks:
       - id: markdown-schema-validation
         name: markdown schema validation (AST)
-        entry: uv run python scripts/check_markdown_schemas.py
+        entry: uv run --frozen python scripts/check_markdown_schemas.py
         language: system
         types: [markdown]
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
+  # HARD Rule Ceiling Enforcement (EN-002, L5 Post-Hoc)
+  # Counts HARD rules in quality-enforcement.md and fails if > ceiling.
+  # Prevents silent ceiling breaches that degrade enforcement quality.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: hard-rule-ceiling
+        name: HARD rule ceiling enforcement
+        entry: uv run --frozen python scripts/check_hard_rule_ceiling.py
+        language: system
+        # C-05: Trigger on any rule file change, not just quality-enforcement.md
+        files: \.context/rules/.*\.md$
         pass_filenames: false
         stages: [pre-commit]
 
@@ -114,7 +130,7 @@ repos:
     hooks:
       - id: pytest
         name: pytest (full suite via uv)
-        entry: uv run pytest
+        entry: uv run --frozen pytest
         language: system
         # Trigger on Python AND Markdown changes. Architecture tests (test_path_conventions.py)
         # validate markdown content (hardcoded paths, cross-project refs). Without markdown
@@ -134,7 +150,7 @@ repos:
     hooks:
       - id: validate-plugin-manifests
         name: Validate plugin manifests
-        entry: uv run python scripts/validate_plugin_manifests.py
+        entry: uv run --frozen python scripts/validate_plugin_manifests.py
         language: system
         # Trigger on any manifest file change
         files: (plugin\.json|marketplace\.json|hooks\.json)$
@@ -148,25 +164,9 @@ repos:
     hooks:
       - id: version-sync
         name: Validate version sync
-        entry: uv run python scripts/sync_versions.py --check
+        entry: uv run --frozen python scripts/sync_versions.py --check
         language: system
         files: (pyproject\.toml|plugin\.json|marketplace\.json|CLAUDE\.md)$
-        pass_filenames: false
-        stages: [pre-commit]
-
-  # =============================================================================
-  # HARD Rule Ceiling Enforcement (EN-002, L5 Post-Hoc)
-  # Counts HARD rules in quality-enforcement.md and fails if > ceiling.
-  # Prevents silent ceiling breaches that degrade enforcement quality.
-  # =============================================================================
-  - repo: local
-    hooks:
-      - id: hard-rule-ceiling
-        name: HARD rule ceiling enforcement
-        entry: uv run python scripts/check_hard_rule_ceiling.py
-        language: system
-        # C-05: Trigger on any rule file change, not just quality-enforcement.md
-        files: \.context/rules/.*\.md$
         pass_filenames: false
         stages: [pre-commit]
 
@@ -177,7 +177,7 @@ repos:
     hooks:
       - id: validate-templates
         name: Validate adversarial strategy templates
-        entry: uv run python scripts/validate_templates.py
+        entry: uv run --frozen python scripts/validate_templates.py
         language: system
         files: \.context/templates/adversarial/.*\.md$
         pass_filenames: false

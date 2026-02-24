@@ -27,12 +27,15 @@ References:
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
 from src.infrastructure.internal.enforcement.reinforcement_content import (
     ReinforcementContent,
 )
+
+logger = logging.getLogger(__name__)
 
 # Token budget for L2 reinforcement per prompt
 # Updated from 600 to 850 to support markers from all auto-loaded rule files
@@ -123,7 +126,15 @@ class PromptReinforcementEngine:
     _MAX_MARKER_CONTENT_LENGTH = 500
 
     # Patterns that indicate injection attempts in marker content (C-06)
-    _INJECTION_PATTERNS = re.compile(r"<!--|-->|<script|</script")
+    # Case-insensitive to prevent bypass via mixed-case tags (e.g., <ScRiPt>)
+    # Covers: HTML comments, script/iframe/object/embed/svg tags, JS URI
+    # schemes, inline event handlers (eng-security F-01, red-team RT-C06-001)
+    _INJECTION_PATTERNS = re.compile(
+        r"<!--|-->|<script|</script|<iframe|</iframe|<object|</object"
+        r"|<embed|</embed|<svg|</svg|javascript:|data:text/html"
+        r"|\bon\w+\s*=",
+        re.IGNORECASE,
+    )
 
     @staticmethod
     def _parse_reinject_markers(content: str) -> list[dict[str, str | int]]:
@@ -139,7 +150,10 @@ class PromptReinforcementEngine:
 
         Content is sanitized to prevent injection attacks (C-06):
         - Markers with content exceeding 500 characters are rejected
-        - Markers containing HTML comment delimiters or script tags are rejected
+        - Markers containing HTML/script/iframe/object/embed/svg tags,
+          inline event handlers, JS URI schemes, or HTML comment
+          delimiters are rejected (case-insensitive)
+        - Rejected markers are logged at WARNING level for forensic analysis
 
         Note:
             The engine does NOT use declared token counts for budget decisions.
@@ -170,10 +184,22 @@ class PromptReinforcementEngine:
 
                 # C-06: Reject oversized content (prevents budget exhaustion)
                 if len(marker_content) > PromptReinforcementEngine._MAX_MARKER_CONTENT_LENGTH:
+                    logger.warning(
+                        "C-06: Rejected L2-REINJECT marker (rank=%s): "
+                        "content length %d exceeds max %d",
+                        match.group(1),
+                        len(marker_content),
+                        PromptReinforcementEngine._MAX_MARKER_CONTENT_LENGTH,
+                    )
                     continue
 
                 # C-06: Reject content containing injection patterns
                 if PromptReinforcementEngine._INJECTION_PATTERNS.search(marker_content):
+                    logger.warning(
+                        "C-06: Rejected L2-REINJECT marker (rank=%s): "
+                        "content matches injection pattern",
+                        match.group(1),
+                    )
                     continue
 
                 markers.append(

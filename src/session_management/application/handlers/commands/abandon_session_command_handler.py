@@ -70,8 +70,5 @@ class AbandonSessionCommandHandler:
         # Abandon the session
         session.abandon(reason=command.reason or "")
 
-        # Persist
-        self._repository.save(session)
-
-        # Return raised events
-        return session.collect_events()
+        # Persist and return raised events
+        return self._repository.save(session)

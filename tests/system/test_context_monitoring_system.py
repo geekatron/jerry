@@ -26,7 +26,7 @@ Acceptance Criteria Coverage:
 References:
     - FEAT-001: Context Detection (EN-003, EN-004)
     - PROJ-004: Context Resilience
-    - H-09: Composition root exclusivity (note: system tests wire manually
+    - H-07: Composition root exclusivity (note: system tests wire manually
       because the production bootstrap requires a full project environment;
       composition root testing is covered by E2E tests via the actual CLI)
 """
@@ -279,7 +279,7 @@ class TestCheckpointWithOrchestration:
 
         # Verify resumption state captured
         assert checkpoint.resumption_state is not None
-        assert "orchestration" in checkpoint.resumption_state
+        assert "orchestration_raw" in checkpoint.resumption_state
 
         # Verify resumption XML generated
         xml = generator.generate(checkpoint)

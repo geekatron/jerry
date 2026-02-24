@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Run final end-to-end validation, commit all EN-001 installation changes, and create the pull request.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |

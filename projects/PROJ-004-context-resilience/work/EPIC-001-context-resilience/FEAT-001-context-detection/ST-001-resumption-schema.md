@@ -1,12 +1,12 @@
 # ST-001: Enhanced Resumption Schema + Update Protocol
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-19
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** FEAT-001
 > **Owner:** --
 > **Effort:** 2-3h
@@ -62,12 +62,12 @@ Feature: ORCHESTRATION.yaml v2.0 resumption schema
 
 ### Acceptance Checklist
 
-- [ ] ORCHESTRATION.yaml template has v2.0 resumption schema with all 7 sub-sections
-- [ ] Backward compatible: existing 5 fields preserved in Recovery State
-- [ ] Orchestrator prompt includes update protocol with 6 triggers
-- [ ] L2-REINJECT marker in `quality-enforcement.md` within 600-token total budget
-- [ ] `updated_at` ISO 8601 timestamp field present
-- [ ] Quality gate: C3 per AE-002
+- [x] ORCHESTRATION.yaml template has v2.0 resumption schema with all 7 sub-sections
+- [x] Backward compatible: existing 5 fields preserved in Recovery State
+- [x] Orchestrator prompt includes update protocol with 6 triggers
+- [x] L2-REINJECT marker in `quality-enforcement.md` within 600-token total budget
+- [x] `updated_at` ISO 8601 timestamp field present
+- [x] Quality gate: C3 per AE-002
 
 ---
 
@@ -87,3 +87,4 @@ Feature: ORCHESTRATION.yaml v2.0 resumption schema
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-19 | Claude | pending | Story created from CWI-04. |
+| 2026-02-21 | Claude | completed | Resumption schema v2.0 implemented with 7 sub-sections. |

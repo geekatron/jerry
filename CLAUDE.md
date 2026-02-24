@@ -9,7 +9,7 @@
 | Section | Purpose |
 |---------|---------|
 | [Identity](#identity) | Framework purpose and core problem |
-| [Critical Constraints](#critical-constraints-hard) | Constitutional HARD rules H-01 to H-06 |
+| [Critical Constraints](#critical-constraints-hard) | Constitutional HARD rules H-01 to H-05 |
 | [Navigation](#navigation) | Where to find information |
 | [Quick Reference](#quick-reference) | CLI and skill invocation |
 
@@ -66,7 +66,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 
 ## Quick Reference
 
-**CLI** (v0.11.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
+**CLI** (v0.15.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
 
 **Skills** (invoke proactively per H-22):
 
@@ -82,6 +82,8 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 | `/transcript` | Transcription parsing |
 | `/ast` | Markdown AST: parse, query, validate, modify frontmatter |
+| `/eng-team` | Secure software engineering methodology (10 agents: architecture, implementation, quality, incident response) |
+| `/red-team` | Offensive security testing methodology (11 agents: recon, exploitation, post-exploitation, reporting) |
 
 **SessionStart Hook Tags:**
 

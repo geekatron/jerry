@@ -21,6 +21,7 @@
 > **Criticality:** C3 (AE-002 — touches `.context/rules/`)
 > **Parent:** EN-002
 > **Source:** DISC-002, DEC-001 D-001
+> **Created:** 2026-02-21T23:50:00Z
 
 ---
 

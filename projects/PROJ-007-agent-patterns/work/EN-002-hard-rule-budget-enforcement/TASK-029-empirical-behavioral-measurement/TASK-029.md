@@ -21,6 +21,7 @@
 > **Criticality:** C2 (standard — reversible, research scope)
 > **Parent:** EN-002
 > **Source:** DEC-005 (deferred empirical measurement), C4 Tournament S-014 Round 3 (Evidence Quality gap)
+> **Created:** 2026-02-21T23:50:00Z
 
 ---
 

@@ -1,11 +1,11 @@
 # TASK-006: Context Window Size Detection and Configuration
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-20
 > **Due:** --
-> **Completed:** --
+> **Completed:** 2026-02-21
 > **Parent:** EN-008
 > **Owner:** --
 > **Effort:** 6-8h
@@ -141,37 +141,37 @@ This is the single authoritative ordering for context window detection. All impl
 
 ### Configuration (fix the disconnect)
 
-- [ ] `IThresholdConfiguration` port exposes `get_context_window_tokens() -> int` method
-- [ ] `ConfigThresholdAdapter` implements `get_context_window_tokens()` reading from `context_monitor.context_window_tokens` config key
-- [ ] `ContextFillEstimator` reads context window size from `IThresholdConfiguration` instead of hardcoded constant
-- [ ] `bootstrap.py` wires the config value through (fix the disconnect at line 585)
-- [ ] User can override via environment variable: `JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=500000`
-- [ ] User can override via `.jerry/config.toml`: `[context_monitor]\ncontext_window_tokens = 500000`
-- [ ] Default remains 200,000 when not configured (backward compatible)
+- [x] `IThresholdConfiguration` port exposes `get_context_window_tokens() -> int` method
+- [x] `ConfigThresholdAdapter` implements `get_context_window_tokens()` reading from `context_monitor.context_window_tokens` config key
+- [x] `ContextFillEstimator` reads context window size from `IThresholdConfiguration` instead of hardcoded constant
+- [x] `bootstrap.py` wires the config value through (fix the disconnect at line 585)
+- [x] User can override via environment variable: `JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=500000`
+- [x] User can override via `.jerry/config.toml`: `[context_monitor]\ncontext_window_tokens = 500000`
+- [x] Default remains 200,000 when not configured (backward compatible)
 
 ### Auto-Detection
 
-- [ ] `ANTHROPIC_MODEL` env var is checked for `[1m]` suffix (using `endswith`, not substring `in`) → sets context window to 1,000,000
-- [ ] Auto-detected value is used when user has not explicitly configured a value
-- [ ] Auto-detection is fail-open: any exception during detection falls back to 200K default
-- [ ] All detection logic lives in `ConfigThresholdAdapter` (infrastructure layer), NOT in `ContextFillEstimator` (application layer) -- see [Architectural Decision](#architectural-decision-detection-in-configthresholdadapter)
+- [x] `ANTHROPIC_MODEL` env var is checked for `[1m]` suffix (using `endswith`, not substring `in`) → sets context window to 1,000,000
+- [x] Auto-detected value is used when user has not explicitly configured a value
+- [x] Auto-detection is fail-open: any exception during detection falls back to 200K default
+- [x] All detection logic lives in `ConfigThresholdAdapter` (infrastructure layer), NOT in `ContextFillEstimator` (application layer) -- see [Architectural Decision](#architectural-decision-detection-in-configthresholdadapter)
 
 ### Observability
 
-- [ ] `<context-monitor>` XML tag includes `<context-window>` field showing the active window size in tokens
-- [ ] `<context-monitor>` XML tag includes `<context-window-source>` field showing how it was determined
-- [ ] Valid `<context-window-source>` values: `config`, `env-1m-detection`, `default`
-- [ ] Calibration protocol (`docs/knowledge/context-resilience/calibration-protocol.md`) updated with configuration instructions per plan
+- [x] `<context-monitor>` XML tag includes `<context-window>` field showing the active window size in tokens
+- [x] `<context-monitor>` XML tag includes `<context-window-source>` field showing how it was determined
+- [x] Valid `<context-window-source>` values: `config`, `env-1m-detection`, `default`
+- [x] Calibration protocol (`docs/knowledge/context-resilience/calibration-protocol.md`) updated with configuration instructions per plan
 
 ### Tests
 
 > **BDD Requirement (H-20):** Write the failing test for each acceptance criterion BEFORE implementing the corresponding step.
 
-- [ ] Unit test: `ContextFillEstimator.estimate()` uses context window from `IThresholdConfiguration.get_context_window_tokens()` -- verified by mocking adapter to return 500,000 and asserting `fill_percentage = token_count / 500_000` (not 200,000)
-- [ ] Unit tests for: explicit config override (env var), explicit config override (toml), `ANTHROPIC_MODEL` `[1m]` suffix detection via `endswith`, `ANTHROPIC_MODEL` without `[1m]` suffix (returns default), `ANTHROPIC_MODEL` not set (returns default), default fallback
-- [ ] Unit test: `[1m]` detection does NOT false-positive on model names containing `[1m]` in non-suffix positions (e.g., `my-custom-[1m]-wrapper` if using substring matching)
-- [ ] Unit test: XML output includes `<context-window>` and `<context-window-source>` with correct values for each detection path
-- [ ] Existing 229 hook tests still pass (no regression)
+- [x] Unit test: `ContextFillEstimator.estimate()` uses context window from `IThresholdConfiguration.get_context_window_tokens()` -- verified by mocking adapter to return 500,000 and asserting `fill_percentage = token_count / 500_000` (not 200,000)
+- [x] Unit tests for: explicit config override (env var), explicit config override (toml), `ANTHROPIC_MODEL` `[1m]` suffix detection via `endswith`, `ANTHROPIC_MODEL` without `[1m]` suffix (returns default), `ANTHROPIC_MODEL` not set (returns default), default fallback
+- [x] Unit test: `[1m]` detection does NOT false-positive on model names containing `[1m]` in non-suffix positions (e.g., `my-custom-[1m]-wrapper` if using substring matching)
+- [x] Unit test: XML output includes `<context-window>` and `<context-window-source>` with correct values for each detection path
+- [x] Existing 229 hook tests still pass (no regression)
 
 ---
 
@@ -377,3 +377,4 @@ This is intentionally not shipped now because all current entries would equal th
 | 2026-02-20 | pending | Created. Config key exists but disconnected. |
 | 2026-02-20 | pending | Revised after research. Context windows vary: 200K (standard), 500K (Enterprise), 1M (extended `[1m]`). Auto-detection possible via `ANTHROPIC_MODEL` env var `[1m]` suffix and transcript model field. `/status` exposes account info. Configuration-first with auto-detection fallback. |
 | 2026-02-20 | pending | Revised after C2 adversarial review (S-003 Steelman, S-007 Constitutional AI, S-002 Devil's Advocate, S-014 LLM-as-Judge). Score 0.646 REJECTED. 4 Critical findings addressed: (1) SM-004 contradictory priority orderings consolidated to single canonical 5-step ordering; (2) CC-001 H-08 violation risk eliminated -- all detection in ConfigThresholdAdapter, not estimator; (3) DA-001 "most common cases" claim removed, auto-detection scoped to `[1m]` only, Enterprise requires config; (4) DA-002 SRP concern addressed with architectural decision section + scope reduction (removed lookup table and transcript reading). Major fixes: effort revised 4h→6-8h; `endswith` replaces `in` for `[1m]` detection; estimator-config wiring test added; `__init__` constructor sample added; `context-window-source` values enumerated; calibration table corrected; caching behavior documented. |
+| 2026-02-21 | Claude | completed | Context window configuration with dynamic sizing implemented. |

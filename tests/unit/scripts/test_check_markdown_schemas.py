@@ -484,24 +484,26 @@ class TestGetStagedMarkdownFiles:
 class TestEntityPatternSync:
     """Verify that _ENTITY_PATTERNS covers all schema types in the registry."""
 
-    def test_all_schema_types_have_entity_patterns(self) -> None:
-        """Every schema type in the registry has a corresponding entity pattern."""
+    def test_all_worktracker_schema_types_have_entity_patterns(self) -> None:
+        """Every worktracker schema type in the registry has a corresponding entity pattern."""
         from scripts.check_markdown_schemas import _ENTITY_PATTERNS
-        from src.domain.markdown_ast.schema import _SCHEMA_REGISTRY
+        from src.domain.markdown_ast.schema_definitions import DEFAULT_REGISTRY
 
+        # _ENTITY_PATTERNS covers worktracker entities only, not file-type schemas
+        _WORKTRACKER_TYPES = {"epic", "feature", "story", "enabler", "task", "bug"}
         pattern_schema_types = {schema_type for _, schema_type in _ENTITY_PATTERNS}
-        registry_schema_types = set(_SCHEMA_REGISTRY.keys())
+        registry_worktracker_types = set(DEFAULT_REGISTRY.list_types()) & _WORKTRACKER_TYPES
 
-        missing = registry_schema_types - pattern_schema_types
-        assert missing == set(), f"Schema types in registry without entity patterns: {missing}"
+        missing = registry_worktracker_types - pattern_schema_types
+        assert missing == set(), f"Worktracker schema types without entity patterns: {missing}"
 
     def test_all_entity_patterns_have_schemas(self) -> None:
         """Every entity pattern maps to a valid schema type in the registry."""
         from scripts.check_markdown_schemas import _ENTITY_PATTERNS
-        from src.domain.markdown_ast.schema import _SCHEMA_REGISTRY
+        from src.domain.markdown_ast.schema_definitions import DEFAULT_REGISTRY
 
         pattern_schema_types = {schema_type for _, schema_type in _ENTITY_PATTERNS}
-        registry_schema_types = set(_SCHEMA_REGISTRY.keys())
+        registry_schema_types = set(DEFAULT_REGISTRY.list_types())
 
         extra = pattern_schema_types - registry_schema_types
         assert extra == set(), f"Entity patterns without corresponding schemas: {extra}"

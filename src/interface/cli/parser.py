@@ -96,6 +96,9 @@ Examples:
     # Transcript namespace (TASK-251: TDD-FEAT-004 Section 11)
     _add_transcript_namespace(subparsers)
 
+    # Context namespace (EN-012: jerry context estimate)
+    _add_context_namespace(subparsers)
+
     # AST namespace (ST-004: jerry ast commands)
     _add_ast_namespace(subparsers)
 
@@ -686,6 +689,70 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
 
+    # ast detect (RE-006: WI-017)
+    detect_parser = ast_subparsers.add_parser(
+        "detect",
+        help="Detect document type of a markdown file",
+        description="Detect the Jerry document type using path-first, structure-fallback detection.",
+    )
+    detect_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast sections (RE-006: WI-017)
+    sections_parser = ast_subparsers.add_parser(
+        "sections",
+        help="Extract XML-tagged sections as JSON",
+        description="Extract XML-tagged sections (e.g., <identity>, <methodology>) from a markdown file.",
+    )
+    sections_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+    # ast metadata (RE-006: WI-017)
+    metadata_parser = ast_subparsers.add_parser(
+        "metadata",
+        help="Extract HTML comment metadata as JSON",
+        description="Extract structured metadata from HTML comments (e.g., PS-ID, VERSION blocks).",
+    )
+    metadata_parser.add_argument(
+        "file",
+        help="Path to markdown file",
+    )
+
+
+def _add_context_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add context namespace commands.
+
+    Commands:
+        - estimate: Compute context fill estimate from Claude Code stdin JSON
+
+    References:
+        - EN-012: jerry context estimate CLI Command
+        - FEAT-002: Status Line / Context Monitoring Unification
+    """
+    context_parser = subparsers.add_parser(
+        "context",
+        help="Context monitoring commands",
+        description="Context monitoring and fill estimation.",
+    )
+
+    context_subparsers = context_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    context_subparsers.add_parser(
+        "estimate",
+        help="Compute context fill estimate",
+        description="Read Claude Code JSON from stdin and compute context fill estimate.",
+    )
+
 
 def _add_hooks_namespace(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
@@ -731,4 +798,14 @@ def _add_hooks_namespace(
     hooks_subparsers.add_parser(
         "pre-tool-use",
         help="Handle PreToolUse hook event",
+    )
+
+    hooks_subparsers.add_parser(
+        "stop",
+        help="Handle Stop hook event (context stop gate)",
+    )
+
+    hooks_subparsers.add_parser(
+        "subagent-stop",
+        help="Handle SubagentStop hook event (lifecycle tracking)",
     )

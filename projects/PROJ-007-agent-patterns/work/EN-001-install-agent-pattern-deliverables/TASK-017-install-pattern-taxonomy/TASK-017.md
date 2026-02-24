@@ -13,6 +13,12 @@
 
 ---
 
+## Summary
+
+Install the agent pattern taxonomy into `docs/knowledge/` as reference material.
+
+---
+
 ## Document Sections
 
 | Section | Purpose |
