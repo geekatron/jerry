@@ -469,6 +469,8 @@ class PreToolEnforcementEngine:
         Each Python file should contain at most one public class.
         Private classes (prefixed with underscore) are exempt.
         __init__.py files are exempt.
+        Enum subclasses are exempt (value types, not behavior classes;
+        ADR-PROJ005-003 DD-2 documents Enum co-location as intentional).
 
         Args:
             tree: Parsed AST module.
@@ -487,6 +489,12 @@ class PreToolEnforcementEngine:
             if isinstance(node, ast.ClassDef):
                 # Skip private classes (underscore prefix)
                 if not node.name.startswith("_"):
+                    # Skip Enum subclasses (value types, not behavior classes)
+                    if self._is_enum_subclass(node):
+                        continue
+                    # Skip frozen dataclasses (immutable value objects)
+                    if self._is_frozen_dataclass(node):
+                        continue
                     public_classes.append(node.name)
 
         if len(public_classes) > 1:
@@ -497,6 +505,61 @@ class PreToolEnforcementEngine:
             ]
 
         return []
+
+    @staticmethod
+    def _is_enum_subclass(node: ast.ClassDef) -> bool:
+        """Check if a class definition is an Enum subclass.
+
+        Enum classes are value types that define named constants, not
+        behavior classes. Co-locating an Enum with its consumer class
+        is a common and accepted pattern (e.g., DocumentType Enum
+        co-located with DocumentTypeDetector per ADR-PROJ005-003).
+
+        Args:
+            node: The class definition AST node to check.
+
+        Returns:
+            True if the class inherits from Enum or a known Enum base.
+        """
+        enum_bases = {"Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"}
+        for base in node.bases:
+            if isinstance(base, ast.Name) and base.id in enum_bases:
+                return True
+            if isinstance(base, ast.Attribute) and base.attr in enum_bases:
+                return True
+        return False
+
+    @staticmethod
+    def _is_frozen_dataclass(node: ast.ClassDef) -> bool:
+        """Check if a class definition is a frozen dataclass.
+
+        Frozen dataclasses are immutable value objects (data carriers),
+        not behavior classes. Co-locating a frozen dataclass return type
+        with its producer class is an accepted pattern (e.g.,
+        UniversalParseResult co-located with UniversalDocument per
+        ADR-PROJ005-003 DD-3).
+
+        Args:
+            node: The class definition AST node to check.
+
+        Returns:
+            True if the class has a ``@dataclass(frozen=True)`` decorator.
+        """
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Call):
+                func = decorator.func
+                is_dataclass = (isinstance(func, ast.Name) and func.id == "dataclass") or (
+                    isinstance(func, ast.Attribute) and func.attr == "dataclass"
+                )
+                if is_dataclass:
+                    for kw in decorator.keywords:
+                        if (
+                            kw.arg == "frozen"
+                            and isinstance(kw.value, ast.Constant)
+                            and kw.value.value is True
+                        ):
+                            return True
+        return False
 
     def _check_governance_escalation(self, file_path: str) -> str | None:
         """Check if a file requires governance criticality escalation.

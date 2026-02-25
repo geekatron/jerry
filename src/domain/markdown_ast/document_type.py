@@ -46,12 +46,14 @@ class DocumentType(Enum):
 
     AGENT_DEFINITION = "agent_definition"
     SKILL_DEFINITION = "skill_definition"
+    SKILL_RESOURCE = "skill_resource"
     RULE_FILE = "rule_file"
     ADR = "adr"
     STRATEGY_TEMPLATE = "strategy_template"
     WORKTRACKER_ENTITY = "worktracker_entity"
     FRAMEWORK_CONFIG = "framework_config"
     ORCHESTRATION_ARTIFACT = "orchestration_artifact"
+    TEMPLATE = "template"
     PATTERN_DOCUMENT = "pattern_document"
     KNOWLEDGE_DOCUMENT = "knowledge_document"
     UNKNOWN = "unknown"
@@ -66,33 +68,105 @@ class DocumentTypeDetector:
     """
 
     # Ordered list: first match wins. More specific patterns before broader.
+    # Security: path-first detection prevents content-based type spoofing
+    # (T-DT-01 CWE-843). Pattern ordering is security-critical -- more
+    # specific patterns MUST precede catch-alls to prevent type confusion.
     PATH_PATTERNS: list[tuple[str, DocumentType]] = [
-        # 1. Most specific patterns first
+        # --- Tier 1: Most specific patterns ---
         ("skills/*/agents/*.md", DocumentType.AGENT_DEFINITION),
         ("skills/*/SKILL.md", DocumentType.SKILL_DEFINITION),
         (".context/rules/*.md", DocumentType.RULE_FILE),
         (".claude/rules/*.md", DocumentType.RULE_FILE),
         ("docs/design/*.md", DocumentType.ADR),
+        ("docs/adrs/*.md", DocumentType.ADR),
         (".context/templates/adversarial/*.md", DocumentType.STRATEGY_TEMPLATE),
-        # 2. Worktracker patterns (multiple paths)
+        # --- Tier 2: Skill resources (before broad skill/* catch-all) ---
+        ("skills/*/PLAYBOOK.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/rules/*.md", DocumentType.RULE_FILE),
+        ("skills/*/tests/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/composition/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/reference/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/references/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/templates/*.md", DocumentType.TEMPLATE),
+        ("skills/*/docs/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/validation/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/knowledge/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("skills/shared/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/test_data/**/*.md", DocumentType.SKILL_RESOURCE),
+        ("skills/*/*.md", DocumentType.SKILL_RESOURCE),
+        # --- Tier 3: Worktracker entities ---
         ("projects/*/WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
         ("projects/*/work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
-        # 3. Framework config (exact filenames)
+        ("projects/*/PLAN.md", DocumentType.FRAMEWORK_CONFIG),
+        ("projects/*/ORCHESTRATION_PLAN.md", DocumentType.FRAMEWORK_CONFIG),
+        ("projects/*/ORCHESTRATION_WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
+        ("projects/*/decisions/*.md", DocumentType.ADR),
+        ("projects/*/analysis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/research/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/synthesis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/critiques/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/README.md", DocumentType.FRAMEWORK_CONFIG),
+        ("projects/README.md", DocumentType.FRAMEWORK_CONFIG),
+        # --- Tier 4: Framework config (root-level files) ---
         ("CLAUDE.md", DocumentType.FRAMEWORK_CONFIG),
         ("AGENTS.md", DocumentType.FRAMEWORK_CONFIG),
-        # 4. Broader patterns last
+        ("README.md", DocumentType.FRAMEWORK_CONFIG),
+        ("CONTRIBUTING.md", DocumentType.FRAMEWORK_CONFIG),
+        ("CODE_OF_CONDUCT.md", DocumentType.FRAMEWORK_CONFIG),
+        ("SECURITY.md", DocumentType.FRAMEWORK_CONFIG),
+        ("GOVERNANCE.md", DocumentType.FRAMEWORK_CONFIG),
+        # --- Tier 5: Broader patterns (catch-alls last) ---
         ("projects/*/orchestration/**/*.md", DocumentType.ORCHESTRATION_ARTIFACT),
+        ("work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
+        (".context/templates/worktracker/*.md", DocumentType.TEMPLATE),
+        (".context/templates/design/*.md", DocumentType.TEMPLATE),
+        (".context/templates/**/*.md", DocumentType.TEMPLATE),
+        (".context/patterns/**/*.md", DocumentType.PATTERN_DOCUMENT),
+        (".context/guides/*.md", DocumentType.PATTERN_DOCUMENT),
         ("docs/knowledge/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/governance/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/research/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/playbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/synthesis/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/schemas/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/specifications/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/security/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/analysis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/scores/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/rewrites/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/runbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/blog/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/templates/*.md", DocumentType.TEMPLATE),
+        ("docs/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("runbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("commands/*.md", DocumentType.FRAMEWORK_CONFIG),
+        (".github/*.md", DocumentType.FRAMEWORK_CONFIG),
     ]
 
     # Structural cue priority order for conflicting signals.
     # Higher index = lower priority. First match in the ordered list wins.
+    # EN-002: Removed overly broad cues ("---" matched ALL files, "<!--"
+    # matched most files). Each cue must be specific to its document type.
+    # With comprehensive PATH_PATTERNS (63 entries), structural cues are
+    # a fallback that should rarely activate.
+    #
+    # Cues evaluated and rejected (eng-security F-002):
+    #   - "<purpose>": Also present in non-agent markdown files; too broad.
+    #   - "## Status": Common in ADRs but also in worktracker entities,
+    #     changelogs, and other files. Path patterns cover all ADR locations.
     STRUCTURAL_CUE_PRIORITY: list[tuple[str, DocumentType]] = [
-        ("---", DocumentType.AGENT_DEFINITION),
-        ("> **", DocumentType.WORKTRACKER_ENTITY),
+        # Agent definitions use XML-tagged sections (agent-development-standards.md)
         ("<identity>", DocumentType.AGENT_DEFINITION),
+        ("<methodology>", DocumentType.AGENT_DEFINITION),
+        # Worktracker entities use specific blockquote frontmatter
+        ("> **Type:**", DocumentType.WORKTRACKER_ENTITY),
+        # Rule files use L2-REINJECT markers
         ("<!-- L2-REINJECT", DocumentType.RULE_FILE),
-        ("<!--", DocumentType.ADR),
+        # Strategy templates use specific frontmatter
+        ("> **Strategy:**", DocumentType.STRATEGY_TEMPLATE),
+        # Skill definitions use version frontmatter
+        ("> **Version:**", DocumentType.SKILL_DEFINITION),
     ]
 
     @classmethod
@@ -106,6 +180,16 @@ class DocumentTypeDetector:
         Path patterns take priority (first-match-wins); structural cues are
         the fallback with defined priority ordering. A warning is returned
         when path-based and structure-based detection disagree (M-14).
+
+        Security precondition (CWE-843):
+            For the path-first security property to hold, ``file_path``
+            should be a repo-relative path or a verified filesystem path.
+            Adversarial absolute paths containing embedded directory markers
+            (e.g., ``/tmp/evil/skills/hack/agents/payload.md``) may bypass
+            the ``already_relative`` guard in ``_normalize_path`` and receive
+            an incorrect type classification. The CLI layer
+            (``ast_commands.py``) validates paths before calling this
+            function; direct API callers must ensure path provenance.
 
         Args:
             file_path: Relative or absolute file path. Normalized to
@@ -205,8 +289,10 @@ def _normalize_path(file_path: str) -> str:
     if path.startswith("./"):
         path = path[2:]
 
-    # Handle absolute paths: try to find repo-relative portion
-    # Look for known root markers
+    # Handle absolute paths: try to find repo-relative portion.
+    # Look for known root markers. If the path already starts with a
+    # known marker (idx=0), it's already repo-relative -- skip extraction
+    # to prevent embedded markers from causing false matches (F-001 CWE-22).
     root_markers = [
         "skills/",
         ".context/",
@@ -214,19 +300,41 @@ def _normalize_path(file_path: str) -> str:
         "docs/",
         "projects/",
         "src/",
+        "work/",
+        "runbooks/",
+        "commands/",
+        ".github/",
     ]
-    for marker in root_markers:
-        idx = path.find(marker)
-        if idx > 0:
-            path = path[idx:]
-            break
+    already_relative = any(path.startswith(m) for m in root_markers)
+    if not already_relative:
+        for marker in root_markers:
+            idx = path.find(marker)
+            if idx > 0:
+                path = path[idx:]
+                break
 
-    # Handle exact filename matches (CLAUDE.md, AGENTS.md)
+    # Handle root-level files that have no directory prefix in patterns.
+    # For absolute paths where no root marker was found, reduce to basename
+    # if the filename matches a known root-level file.
+    _ROOT_FILES = frozenset(
+        {
+            "CLAUDE.md",
+            "AGENTS.md",
+            "README.md",
+            "CONTRIBUTING.md",
+            "CODE_OF_CONDUCT.md",
+            "SECURITY.md",
+            "GOVERNANCE.md",
+            "SOUNDTRACK.md",
+        }
+    )
     basename = path.rsplit("/", 1)[-1] if "/" in path else path
-    if basename in ("CLAUDE.md", "AGENTS.md"):
-        # Check if it's at the repo root (no deeper nesting beyond expected)
-        # For pattern matching, we need just the basename
-        path = basename
+    if basename in _ROOT_FILES and "/" in path:
+        # Only reduce to basename if the path has directory components
+        # that weren't resolved by root markers above
+        is_under_known_root = any(path.startswith(m) for m in root_markers)
+        if not is_under_known_root:
+            path = basename
 
     return path
 
@@ -236,7 +344,10 @@ def _path_matches_glob(path: str, pattern: str) -> bool:
 
     Supports ``*`` (single directory segment) and ``**`` (recursive).
 
-    Uses ``fnmatch`` for simple patterns and manual splitting for ``**``.
+    Uses ``fnmatch.fnmatchcase`` for case-sensitive, platform-independent
+    matching. BUG-005: ``fnmatch.fnmatch`` calls ``os.path.normcase`` on
+    Windows, which lowercases paths and converts ``/`` to ``\\``, breaking
+    pattern ordering (e.g., ``PLAN.md`` matching ``plan.md``).
 
     Args:
         path: Normalized forward-slash file path.
@@ -247,7 +358,7 @@ def _path_matches_glob(path: str, pattern: str) -> bool:
     """
     if "**" in pattern:
         return _match_recursive_glob(path, pattern)
-    return fnmatch.fnmatch(path, pattern)
+    return fnmatch.fnmatchcase(path, pattern)
 
 
 def _match_recursive_glob(path: str, pattern: str) -> bool:
@@ -267,7 +378,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
     parts = pattern.split("**")
     if len(parts) != 2:
         # Multiple ** -- fall back to fnmatch (best effort)
-        return fnmatch.fnmatch(path, pattern)
+        return fnmatch.fnmatchcase(path, pattern)
 
     prefix_pattern = parts[0].rstrip("/")
     suffix_pattern = parts[1].lstrip("/")
@@ -280,7 +391,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
         if len(path_segments) < len(prefix_segments):
             return False
         for ps, pp in zip(path_segments, prefix_segments, strict=False):
-            if not fnmatch.fnmatch(ps, pp):
+            if not fnmatch.fnmatchcase(ps, pp):
                 return False
         remaining_segments = path_segments[len(prefix_segments) :]
     else:
@@ -291,7 +402,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
         if len(remaining_segments) < len(suffix_segments):
             return False
         for rs, sp in zip(reversed(remaining_segments), reversed(suffix_segments), strict=False):
-            if not fnmatch.fnmatch(rs, sp):
+            if not fnmatch.fnmatchcase(rs, sp):
                 return False
         return True
 

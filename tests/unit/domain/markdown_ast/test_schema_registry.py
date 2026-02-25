@@ -184,9 +184,9 @@ class TestDefaultRegistry:
         assert DEFAULT_REGISTRY.frozen is True
 
     @pytest.mark.happy_path
-    def test_default_registry_has_15_schemas(self) -> None:
-        """DEFAULT_REGISTRY contains all 15 schemas (6 existing + 9 new)."""
-        assert len(DEFAULT_REGISTRY.schemas) == 15
+    def test_default_registry_has_17_schemas(self) -> None:
+        """DEFAULT_REGISTRY contains all 17 schemas (6 existing + 9 new + 2 EN-002)."""
+        assert len(DEFAULT_REGISTRY.schemas) == 17
 
     @pytest.mark.happy_path
     def test_default_registry_contains_existing_worktracker_schemas(self) -> None:
@@ -196,7 +196,7 @@ class TestDefaultRegistry:
 
     @pytest.mark.happy_path
     def test_default_registry_contains_new_schemas(self) -> None:
-        """All 9 new file-type schemas are registered."""
+        """All 11 new file-type schemas are registered (9 original + 2 EN-002)."""
         new_types = [
             "agent_definition",
             "skill_definition",
@@ -207,6 +207,8 @@ class TestDefaultRegistry:
             "orchestration_artifact",
             "pattern_document",
             "knowledge_document",
+            "skill_resource",
+            "template",
         ]
         for entity_type in new_types:
             assert entity_type in DEFAULT_REGISTRY.schemas

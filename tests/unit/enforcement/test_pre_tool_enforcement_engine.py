@@ -905,6 +905,234 @@ class TestEnforcementDecision:
 
 
 # =============================================================================
+# V-041: Enum Subclass Exemption Tests (EN-002)
+# =============================================================================
+
+
+class TestV041EnumSubclassExemption:
+    """Tests for Enum subclass exemption in one-class-per-file (EN-002).
+
+    Enum classes are value types that define named constants. Co-locating
+    an Enum with its consumer class is accepted per ADR-PROJ005-003 DD-2.
+    """
+
+    def test_evaluate_write_when_enum_plus_public_class_then_approves(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """An Enum subclass + a public class should be approved (Enum exempt)."""
+        content = '''"""Module with Enum and consumer class."""
+
+from enum import Enum
+
+
+class Color(Enum):
+    """Color constants."""
+
+    RED = "red"
+    GREEN = "green"
+    BLUE = "blue"
+
+
+class ColorPicker:
+    """Picks colors."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "color.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "approve"
+
+    def test_evaluate_write_when_enum_attribute_form_then_approves(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """Enum via enum.Enum attribute form should also be exempt."""
+        content = '''"""Module with enum.Enum attribute form."""
+
+import enum
+
+
+class Status(enum.Enum):
+    """Status constants."""
+
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+
+
+class StatusChecker:
+    """Checks status."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "status.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "approve"
+
+    def test_evaluate_write_when_str_enum_then_approves(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """StrEnum subclass is also exempt."""
+        content = '''"""Module with StrEnum and consumer."""
+
+from enum import StrEnum
+
+
+class Direction(StrEnum):
+    """Direction constants."""
+
+    NORTH = "north"
+    SOUTH = "south"
+
+
+class Navigator:
+    """Navigates."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "direction.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "approve"
+
+    def test_evaluate_write_when_non_enum_two_classes_then_blocks(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """Two regular classes (no Enum) should still be blocked."""
+        content = '''"""Module with two regular classes."""
+
+
+class RegularClassA:
+    """First class."""
+    pass
+
+
+class RegularClassB:
+    """Second class."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "double.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "block"
+        assert any("one-class-per-file" in v.lower() for v in decision.violations)
+
+
+# =============================================================================
+# V-041: Frozen Dataclass Exemption Tests (EN-002)
+# =============================================================================
+
+
+class TestV041FrozenDataclassExemption:
+    """Tests for frozen dataclass exemption in one-class-per-file (EN-002).
+
+    Frozen dataclasses are immutable value objects. Co-locating a frozen
+    dataclass return type with its producer class is accepted per
+    ADR-PROJ005-003 DD-3.
+    """
+
+    def test_evaluate_write_when_frozen_dataclass_plus_class_then_approves(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """A frozen dataclass + a public class should be approved."""
+        content = '''"""Module with frozen dataclass and producer."""
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class ParseResult:
+    """Immutable parse result."""
+
+    content: str
+    is_valid: bool
+
+
+class Parser:
+    """Parses documents."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "parser.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "approve"
+
+    def test_evaluate_write_when_non_frozen_dataclass_plus_class_then_blocks(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """A mutable dataclass + a public class should be blocked (not exempt)."""
+        content = '''"""Module with mutable dataclass and another class."""
+
+from dataclasses import dataclass
+
+
+@dataclass
+class MutableState:
+    """Mutable state (not exempt)."""
+
+    count: int
+
+
+class StateManager:
+    """Manages state."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "state.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "block"
+        assert any("one-class-per-file" in v.lower() for v in decision.violations)
+
+    def test_evaluate_write_when_dataclass_frozen_false_then_blocks(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """A dataclass(frozen=False) + class should be blocked."""
+        content = '''"""Module with explicitly non-frozen dataclass."""
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=False)
+class Config:
+    """Mutable config."""
+
+    debug: bool
+
+
+class ConfigLoader:
+    """Loads config."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "config.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "block"
+        assert any("one-class-per-file" in v.lower() for v in decision.violations)
+
+    def test_evaluate_write_when_dataclasses_attribute_form_then_approves(
+        self, engine: PreToolEnforcementEngine, project_root: Path
+    ) -> None:
+        """Frozen dataclass via dataclasses.dataclass attribute form is exempt."""
+        content = '''"""Module with dataclasses.dataclass attribute form."""
+
+import dataclasses
+
+
+@dataclasses.dataclass(frozen=True)
+class ValueObject:
+    """Immutable value object."""
+
+    name: str
+
+
+class Service:
+    """Uses the value object."""
+    pass
+'''
+        file_path = str(project_root / "src" / "domain" / "service.py")
+        decision = engine.evaluate_write(file_path, content)
+
+        assert decision.action == "approve"
+
+
+# =============================================================================
 # Combined Violation Tests
 # =============================================================================
 
