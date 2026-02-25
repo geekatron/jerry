@@ -102,6 +102,9 @@ Examples:
     # AST namespace (ST-004: jerry ast commands)
     _add_ast_namespace(subparsers)
 
+    # Agents namespace (PROJ-012: Agent Configuration)
+    _add_agents_namespace(subparsers)
+
     # EE-008: Undocumented philosophy command
     subparsers.add_parser(
         "why",
@@ -720,6 +723,74 @@ def _add_ast_namespace(
     metadata_parser.add_argument(
         "file",
         help="Path to markdown file",
+    )
+
+
+def _add_agents_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add agents namespace commands.
+
+    Commands:
+        - list: List all agent definitions
+        - validate: Validate agents against schema
+        - show: Show fully composed agent configuration
+
+    References:
+        - PROJ-012: Agent Configuration Extraction & Schema Enforcement
+    """
+    agents_parser = subparsers.add_parser(
+        "agents",
+        help="Agent configuration commands",
+        description="Discover, validate, and inspect agent definitions.",
+    )
+
+    agents_subparsers = agents_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # agents list
+    list_parser = agents_subparsers.add_parser(
+        "list",
+        help="List all agent definitions",
+        description="Discover and display all agent definitions across skills.",
+    )
+    list_parser.add_argument(
+        "--skill",
+        default=None,
+        help="Filter by skill name (e.g., problem-solving, nasa-se)",
+    )
+
+    # agents validate
+    validate_parser = agents_subparsers.add_parser(
+        "validate",
+        help="Validate agent configs against schema",
+        description="Validate composed agent configurations against the JSON Schema.",
+    )
+    validate_parser.add_argument(
+        "agent_name",
+        nargs="?",
+        default=None,
+        help="Specific agent name to validate (validates all if omitted)",
+    )
+
+    # agents show
+    show_parser = agents_subparsers.add_parser(
+        "show",
+        help="Show fully composed agent configuration",
+        description="Display the fully composed configuration for an agent (defaults + frontmatter + config vars).",
+    )
+    show_parser.add_argument(
+        "agent_name",
+        help="Agent name to show (e.g., ps-researcher)",
+    )
+    show_parser.add_argument(
+        "--raw",
+        action="store_true",
+        default=False,
+        help="Show raw frontmatter without composition",
     )
 
 

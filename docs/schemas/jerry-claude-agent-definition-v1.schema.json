@@ -1,0 +1,487 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/jerry-claude-agent-definition/v1.1.0",
+  "title": "Jerry Claude Agent Definition Schema",
+  "description": "Validates YAML frontmatter of Jerry Framework agent definition files. Dual-layer: Claude Code native fields + Jerry governance fields. ADR-PROJ007-001, PROJ-012.",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "description",
+    "model",
+    "identity",
+    "capabilities",
+    "guardrails"
+  ],
+
+  "$defs": {
+    "tool_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "description": "Tool identifier. Cross-referenced against TOOL_REGISTRY.yaml at CI (L5)."
+    },
+    "kebab_case_name": {
+      "type": "string",
+      "pattern": "^[a-z]+-[a-z]+(-[a-z]+)*$",
+      "description": "Kebab-case identifier for agent names."
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    }
+  },
+
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/kebab_case_name",
+      "description": "Agent identifier. Must follow {skill-prefix}-{function} kebab-case pattern. (AR-007)"
+    },
+    "version": {
+      "$ref": "#/$defs/semver",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format. (AR-008)"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1024,
+      "not": {
+        "pattern": "<[^>]+>"
+      },
+      "description": "WHAT + WHEN + triggers. Max 1024 chars, no XML tags. (AR-009, H-28)"
+    },
+    "model": {
+      "type": "string",
+      "enum": ["opus", "sonnet", "haiku"],
+      "description": "Model tier selection. opus=complex, sonnet=balanced, haiku=fast. (PR-007)"
+    },
+
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool_name" },
+      "description": "Claude Code native: allowlist of tools available to agent. Overrides inherited tools."
+    },
+    "disallowedTools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool_name" },
+      "description": "Claude Code native: denylist of tools removed from inherited/specified tools."
+    },
+    "permissionMode": {
+      "type": "string",
+      "enum": ["default", "acceptEdits", "dontAsk", "bypassPermissions", "plan"],
+      "description": "Claude Code native: permission escalation behavior."
+    },
+    "maxTurns": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Claude Code native: maximum agentic turns before stopping."
+    },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Claude Code native: skills preloaded into subagent context."
+    },
+    "mcpServers": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "Claude Code native: MCP servers available to subagent."
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Claude Code native: lifecycle hooks (PreToolUse, PostToolUse, Stop)."
+    },
+    "memory": {
+      "type": "string",
+      "enum": ["user", "project", "local"],
+      "description": "Claude Code native: persistent memory scope."
+    },
+    "background": {
+      "type": "boolean",
+      "description": "Claude Code native: always run as background task."
+    },
+    "isolation": {
+      "type": "string",
+      "enum": ["worktree"],
+      "description": "Claude Code native: git worktree isolation."
+    },
+
+    "identity": {
+      "type": "object",
+      "required": ["role", "expertise", "cognitive_mode"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Clear, singular role title. Unique within parent skill. (PR-001)"
+        },
+        "expertise": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 2,
+          "description": "Domain competencies. Minimum 2 entries, specific not generic. (PR-003)"
+        },
+        "cognitive_mode": {
+          "type": "string",
+          "enum": ["divergent", "convergent", "integrative", "systematic", "forensic", "strategic", "mixed", "divergent-then-convergent"],
+          "description": "Reasoning approach. See agent-development-standards.md Section 5 for selection criteria. (PR-002)"
+        },
+        "belbin_role": {
+          "type": "string",
+          "description": "Belbin team role classification."
+        },
+        "nasa_processes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "NPR 7123.1D process references for NASA-SE agents."
+        },
+        "orchestration_patterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Orchestration pattern references for orch-* agents."
+        },
+        "modes": {
+          "type": "object",
+          "description": "Multi-mode reasoning configuration."
+        },
+        "default_model": {
+          "type": "string",
+          "description": "Default model for model-override capable agents."
+        },
+        "model_override": {
+          "type": "object",
+          "properties": {
+            "allowed": { "type": "boolean" },
+            "validation": { "type": "string" },
+            "user_authority": { "type": "string" }
+          },
+          "description": "Model override configuration for user-configurable agents."
+        },
+        "name": {
+          "type": "string",
+          "description": "Alternative display name for agent."
+        },
+        "character": {
+          "type": "string",
+          "description": "Character description for persona-driven agents."
+        }
+      },
+      "additionalProperties": true
+    },
+    "persona": {
+      "type": "object",
+      "properties": {
+        "tone": {
+          "type": "string",
+          "description": "Output tone."
+        },
+        "communication_style": {
+          "type": "string",
+          "description": "Communication approach."
+        },
+        "audience_level": {
+          "type": "string",
+          "description": "Target audience expertise level."
+        },
+        "character": {
+          "type": "string",
+          "description": "Extended character description for persona-driven agents."
+        }
+      },
+      "additionalProperties": true,
+      "description": "Output voice configuration. (PR-005)"
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["allowed_tools", "forbidden_actions"],
+      "properties": {
+        "allowed_tools": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/tool_name" },
+          "description": "Authorized Jerry tool list. Principle of least privilege. (AR-006)"
+        },
+        "output_formats": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Supported output format types."
+        },
+        "forbidden_actions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3,
+          "description": "Actions the agent must not perform. Must reference P-003, P-020, P-022. (AR-012)"
+        },
+        "required_features": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Required runtime features (e.g., tool_use)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "guardrails": {
+      "type": "object",
+      "required": ["input_validation", "output_filtering", "fallback_behavior"],
+      "properties": {
+        "input_validation": {
+          "description": "Input format validation rules. Array of objects or object with named validators. (SR-002)",
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1
+            },
+            {
+              "type": "object",
+              "minProperties": 1
+            }
+          ]
+        },
+        "output_filtering": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Output safety filters. Governance requires minimum 3 entries (SR-003); schema allows 1+ for structural validation."
+        },
+        "fallback_behavior": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$",
+          "description": "Error recovery strategy identifier. (SR-009)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "Whether the agent must produce an output artifact."
+        },
+        "location": {
+          "type": "string",
+          "description": "Artifact file path template with variables. (AR-010)"
+        },
+        "template": {
+          "type": "string",
+          "description": "Output template reference."
+        },
+        "levels": {
+          "description": "Output disclosure levels. Array of strings or object with L0/L1/L2 definitions. (PR-008)",
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["L0", "L1", "L2"]
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "L0": { "type": "object" },
+                "L1": { "type": "object" },
+                "L2": { "type": "object" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "secondary_artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Additional output artifact path templates."
+        },
+        "schema": {
+          "type": "object",
+          "description": "Output schema definition for structured output agents."
+        }
+      },
+      "if": {
+        "properties": { "required": { "const": true } }
+      },
+      "then": {
+        "required": ["location"]
+      },
+      "additionalProperties": true
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "file_must_exist": { "type": "boolean" },
+        "link_artifact_required": { "type": "boolean" },
+        "disclaimer_required": { "type": "boolean" },
+        "post_completion_checks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "description": "Post-completion validation checks. (QR-003)"
+    },
+    "constitution": {
+      "type": "object",
+      "required": ["principles_applied"],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Path to constitution document."
+        },
+        "principles_applied": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Constitutional principles. Governance requires minimum 3 including P-003, P-020, P-022 (SR-001); schema allows 1+ for structural validation."
+        }
+      },
+      "additionalProperties": false
+    },
+    "prior_art": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Referenced prior art citations."
+    },
+    "enforcement": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["hard", "medium", "soft"]
+        },
+        "escalation_path": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "session_context": {
+      "type": "object",
+      "properties": {
+        "schema": { "type": "string" },
+        "schema_version": { "type": "string" },
+        "input_validation": { "type": "boolean" },
+        "output_validation": { "type": "boolean" },
+        "on_receive": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "on_send": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "expected_inputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "description": "Handoff protocol configuration. (HR-001, HR-002)"
+    },
+    "portability": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "minimum_context_window": { "type": "integer", "minimum": 1 },
+        "model_preferences": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reasoning_strategy": { "type": "string" },
+        "body_format": { "type": "string" }
+      },
+      "additionalProperties": true,
+      "description": "Cross-environment portability configuration."
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "array"
+        },
+        "optional": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": true,
+      "description": "Agent input declarations."
+    },
+    "audit_checks": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Audit check declarations for validation agents."
+    },
+    "reasoning_effort": {
+      "type": "string",
+      "enum": ["default", "medium", "high", "max"],
+      "description": "Extended thinking allocation per ET-M-001. C1=default, C2=medium, C3=high, C4=max."
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "variables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "field"],
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "Jerry CLI config key (e.g., jerry.agents.default_model)"
+              },
+              "field": {
+                "type": "string",
+                "description": "Agent definition field this maps to"
+              },
+              "description": {
+                "type": "string",
+                "description": "Human-readable description of the variable"
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "description": "Template variable declarations for Jerry CLI config substitution."
+    },
+
+    "nasa_standards": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "string" } },
+        { "type": "object", "additionalProperties": true }
+      ],
+      "description": "NASA standards references for NASA-SE agents."
+    },
+    "activation_keywords": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Keywords that activate this agent via routing."
+    },
+    "orchestration_references": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "string" } },
+        { "type": "object", "additionalProperties": true }
+      ],
+      "description": "Orchestration pattern references."
+    },
+    "wti_rules": {
+      "oneOf": [
+        { "type": "array" },
+        { "type": "object", "additionalProperties": true }
+      ],
+      "description": "Worktracker integrity rules for WTI agents."
+    },
+    "diagram_types": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Supported diagram types for visualization agents."
+    },
+    "type": {
+      "type": "string",
+      "description": "Agent type classification (e.g., aggregator)."
+    },
+    "domain": {
+      "type": "string",
+      "description": "Agent domain scope."
+    },
+    "parent_skill": {
+      "type": "string",
+      "description": "Parent skill identifier."
+    }
+  },
+  "additionalProperties": true
+}

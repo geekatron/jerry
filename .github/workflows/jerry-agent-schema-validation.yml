@@ -1,0 +1,54 @@
+# Agent Schema Validation (PROJ-012)
+# L5 enforcement for H-34 (agent definition YAML schema validation).
+# Validates all agent definition files against the canonical JSON Schema
+# whenever agent definitions, schemas, or tool registry are modified.
+#
+# Source: agent-development-standards.md (H-34), quality-enforcement.md (L5 layer)
+# Project: PROJ-012-agent-optimization
+
+name: Agent Schema Validation
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "skills/*/agents/*.md"
+      - "docs/schemas/jerry-claude-agent-*"
+      - "TOOL_REGISTRY.yaml"
+  pull_request:
+    paths:
+      - "skills/*/agents/*.md"
+      - "docs/schemas/jerry-claude-agent-*"
+      - "TOOL_REGISTRY.yaml"
+
+permissions:
+  contents: read
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # Agent Definition Schema Validation (H-34, L5)
+  # ===========================================================================
+  validate-agents:
+    name: Validate Agent Schemas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Validate agent definition schemas
+        run: uv run python scripts/jerry-validate-agent-schemas.py

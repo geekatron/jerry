@@ -16,6 +16,7 @@ compatibility rules for all machine-readable schemas in the Jerry framework.
 
 | Schema | Location | Current Version |
 |--------|----------|-----------------|
+| Agent Definition | `docs/schemas/jerry-claude-agent-definition-v1.schema.json` | 1.1.0 |
 | Session Context | `docs/schemas/session_context.json` | 1.0.0 |
 | Tool Registry | `TOOL_REGISTRY.yaml` | 1.0.0 |
 | Orchestration Template | `skills/orchestration/templates/ORCHESTRATION.template.yaml` | 2.0.0 |
@@ -260,6 +261,8 @@ Schemas should reference this document:
 
 | Date | Schema | Version | Change |
 |------|--------|---------|--------|
+| 2026-02-24 | jerry-claude-agent-definition-v1.schema.json | 1.1.0 | Dual-layer schema: Claude Code native + Jerry governance fields. Renamed from agent-definition-v1.schema.json. Added tools, disallowedTools, permissionMode, maxTurns, skills, mcpServers, hooks, memory, background, isolation. Relaxed additionalProperties on identity, persona, capabilities, guardrails, output, session_context. Expanded enums. Added $defs, config section, portability, inputs, audit_checks, reasoning_effort. (PROJ-012) |
+| 2026-02-21 | agent-definition-v1.schema.json | 1.0.0 | Initial agent definition schema (ADR-PROJ007-001) |
 | 2026-01-12 | TOOL_REGISTRY.yaml | 1.0.0 | Initial versioning added |
 | 2026-01-12 | ORCHESTRATION.template.yaml | 2.0.0 | Schema version field added |
 | 2026-01-12 | Agent TEMPLATE.md | 1.0.0 | YAML frontmatter added |

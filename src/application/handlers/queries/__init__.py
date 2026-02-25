@@ -16,6 +16,11 @@ Naming Convention:
     {Verb}{Noun}QueryHandler - e.g., RetrieveProjectContextQueryHandler
 """
 
+from src.application.handlers.queries.agent_config_query_handlers import (
+    ListAgentConfigsQueryHandler,
+    ShowAgentConfigQueryHandler,
+    ValidateAgentConfigQueryHandler,
+)
 from src.application.handlers.queries.retrieve_project_context_query_handler import (
     RetrieveProjectContextQueryHandler,
 )
@@ -27,7 +32,10 @@ from src.application.handlers.queries.validate_project_query_handler import (
 )
 
 __all__ = [
+    "ListAgentConfigsQueryHandler",
     "RetrieveProjectContextQueryHandler",
     "ScanProjectsQueryHandler",
+    "ShowAgentConfigQueryHandler",
+    "ValidateAgentConfigQueryHandler",
     "ValidateProjectQueryHandler",
 ]

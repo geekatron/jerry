@@ -3,7 +3,7 @@
 # Single Source of Truth for tool definitions and agent permissions
 #
 # Document ID: JERRY-TOOL-REG-001
-# Last Updated: 2026-01-12
+# Last Updated: 2026-02-24
 # Created By: WI-SAO-017 (Centralize Tool Registry)
 # Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
 
@@ -675,6 +675,545 @@ agent_permissions:
         - mcp__memory-keeper__search
       focus: "Cross-document synthesis, pattern extraction, recommendations"
 
+  # --------------------------------------------------------------------------
+  # ADVERSARY AGENTS (skills/adversary/agents/)
+  # --------------------------------------------------------------------------
+  adversary_agents:
+    adv-executor:
+      file: "skills/adversary/agents/adv-executor.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+      focus: "Strategy template execution, finding reports with severity classification"
+
+    adv-scorer:
+      file: "skills/adversary/agents/adv-scorer.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+      focus: "S-014 LLM-as-Judge rubric scoring, 6-dimension weighted composite"
+
+    adv-selector:
+      file: "skills/adversary/agents/adv-selector.md"
+      model: "haiku"
+      tools:
+        - Read
+        - Write
+        - Glob
+      focus: "Criticality-to-strategy mapping, execution plan generation"
+
+  # --------------------------------------------------------------------------
+  # ENG-TEAM AGENTS (skills/eng-team/agents/)
+  # --------------------------------------------------------------------------
+  eng_team_agents:
+    eng-architect:
+      file: "skills/eng-team/agents/eng-architect.md"
+      model: "opus"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Solution architecture, threat modeling (STRIDE/DREAD/PASTA)"
+
+    eng-backend:
+      file: "skills/eng-team/agents/eng-backend.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Secure backend implementation, OWASP Top 10 and ASVS 5.0 compliance"
+
+    eng-devsecops:
+      file: "skills/eng-team/agents/eng-devsecops.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "SAST/DAST pipeline configuration, secrets scanning, container scanning"
+
+    eng-frontend:
+      file: "skills/eng-team/agents/eng-frontend.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Secure frontend implementation, XSS prevention, CSP configuration"
+
+    eng-incident:
+      file: "skills/eng-team/agents/eng-incident.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Incident response runbooks, vulnerability lifecycle management"
+
+    eng-infra:
+      file: "skills/eng-team/agents/eng-infra.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "IaC security, container hardening, supply chain security (SBOM, SLSA)"
+
+    eng-lead:
+      file: "skills/eng-team/agents/eng-lead.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Implementation planning, code standards enforcement, dependency governance"
+
+    eng-qa:
+      file: "skills/eng-team/agents/eng-qa.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Security test strategy, fuzzing, property-based testing, OWASP Testing Guide"
+
+    eng-reviewer:
+      file: "skills/eng-team/agents/eng-reviewer.md"
+      model: "opus"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Final review gate, quality enforcement, /adversary integration for C2+"
+
+    eng-security:
+      file: "skills/eng-team/agents/eng-security.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Manual secure code review, CWE Top 25, OWASP ASVS 5.0 verification"
+
+  # --------------------------------------------------------------------------
+  # RED-TEAM AGENTS (skills/red-team/agents/)
+  # --------------------------------------------------------------------------
+  red_team_agents:
+    red-lead:
+      file: "skills/red-team/agents/red-lead.md"
+      model: "opus"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Engagement lead, scope authority, Rules of Engagement management"
+
+    red-recon:
+      file: "skills/red-team/agents/red-recon.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "OSINT, network enumeration, service discovery, attack surface mapping"
+
+    red-vuln:
+      file: "skills/red-team/agents/red-vuln.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Vulnerability identification, CVE research, attack path analysis"
+
+    red-exploit:
+      file: "skills/red-team/agents/red-exploit.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Exploit development methodology, payload crafting, vulnerability chaining"
+
+    red-privesc:
+      file: "skills/red-team/agents/red-privesc.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Local/domain privilege escalation, credential harvesting, token manipulation"
+
+    red-lateral:
+      file: "skills/red-team/agents/red-lateral.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Network pivoting, tunneling, living-off-the-land techniques"
+
+    red-persist:
+      file: "skills/red-team/agents/red-persist.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Persistence methodology, backdoor placement, rootkit analysis (RoE-gated)"
+
+    red-exfil:
+      file: "skills/red-team/agents/red-exfil.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Data exfiltration methodology, covert channels, DLP bypass assessment (RoE-gated)"
+
+    red-reporter:
+      file: "skills/red-team/agents/red-reporter.md"
+      model: "opus"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Engagement reporting, finding documentation, risk scoring, remediation"
+
+    red-infra:
+      file: "skills/red-team/agents/red-infra.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "C2 framework management, payload building, infrastructure OPSEC"
+
+    red-social:
+      file: "skills/red-team/agents/red-social.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+        - Task
+        - WebSearch
+        - WebFetch
+        - mcp__context7__resolve-library-id
+        - mcp__context7__query-docs
+      focus: "Social engineering methodology, phishing, pretexting, vishing (RoE-gated)"
+
+  # --------------------------------------------------------------------------
+  # SAUCER-BOY AGENTS (skills/saucer-boy/agents/)
+  # --------------------------------------------------------------------------
+  saucer_boy_agents:
+    sb-voice:
+      file: "skills/saucer-boy/agents/sb-voice.md"
+      model: "opus"
+      tools:
+        - Read
+        - Glob
+        - Grep
+      focus: "McConkey-style conversational voice for work sessions"
+
+  # --------------------------------------------------------------------------
+  # SAUCER-BOY-FRAMEWORK-VOICE AGENTS (skills/saucer-boy-framework-voice/agents/)
+  # --------------------------------------------------------------------------
+  saucer_boy_framework_voice_agents:
+    sb-calibrator:
+      file: "skills/saucer-boy-framework-voice/agents/sb-calibrator.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+      focus: "Voice fidelity scoring (0-1 scale), leniency bias counteraction"
+
+    sb-reviewer:
+      file: "skills/saucer-boy-framework-voice/agents/sb-reviewer.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+      focus: "5 Authenticity Tests evaluation, boundary condition compliance"
+
+    sb-rewriter:
+      file: "skills/saucer-boy-framework-voice/agents/sb-rewriter.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Edit
+      focus: "Voice transformation, information-preserving rewriting to Saucer Boy voice"
+
+  # --------------------------------------------------------------------------
+  # TRANSCRIPT AGENTS (skills/transcript/agents/)
+  # --------------------------------------------------------------------------
+  transcript_agents:
+    ts-parser:
+      file: "skills/transcript/agents/ts-parser.md"
+      model: "haiku"
+      tools:
+        - Read
+        - Write
+        - Glob
+        - Bash
+        - mcp__memory-keeper__store
+        - mcp__memory-keeper__retrieve
+      focus: "Strategy Pattern orchestrator for hybrid transcript parsing"
+
+    ts-extractor:
+      file: "skills/transcript/agents/ts-extractor.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Glob
+        - mcp__memory-keeper__store
+        - mcp__memory-keeper__retrieve
+      focus: "Semantic entity extraction (speakers, actions, decisions, topics)"
+
+    ts-formatter:
+      file: "skills/transcript/agents/ts-formatter.md"
+      model: "haiku"
+      tools:
+        - Read
+        - Write
+        - Glob
+      focus: "Formatted Markdown output with packet structure and bidirectional linking"
+
+    ts-mindmap-ascii:
+      file: "skills/transcript/agents/ts-mindmap-ascii.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Glob
+      focus: "ASCII art mindmap visualization for non-Mermaid environments"
+
+    ts-mindmap-mermaid:
+      file: "skills/transcript/agents/ts-mindmap-mermaid.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Glob
+      focus: "Mermaid mindmap visualization from extracted transcript entities"
+
+  # --------------------------------------------------------------------------
+  # WORKTRACKER AGENTS (skills/worktracker/agents/)
+  # --------------------------------------------------------------------------
+  worktracker_agents:
+    wt-auditor:
+      file: "skills/worktracker/agents/wt-auditor.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Glob
+        - Grep
+        - Bash
+      focus: "Worktracker integrity auditing, template compliance, orphan detection"
+
+    wt-verifier:
+      file: "skills/worktracker/agents/wt-verifier.md"
+      model: "sonnet"
+      tools:
+        - Read
+        - Write
+        - Glob
+        - Grep
+        - Bash
+      focus: "Acceptance criteria verification before work item closure"
+
+    wt-visualizer:
+      file: "skills/worktracker/agents/wt-visualizer.md"
+      model: "haiku"
+      tools:
+        - Read
+        - Write
+        - Glob
+        - Grep
+        - Bash
+      focus: "Mermaid diagram generation for worktracker hierarchies and timelines"
+
 # ============================================================================
 # VALIDATION RULES
 # ============================================================================
@@ -795,15 +1334,22 @@ categories:
 
 metrics:
   total_tools: 18  # 14 core + 2 Context7 + 5 Memory-Keeper (individual tools counted)
-  total_agents: 25
+  total_agents: 61  # 3 core + 58 skill agents
   agents_by_family:
     core: 3
     problem_solving: 9
     nasa_se: 10
     orchestration: 3
-  agents_with_task_tool: 3
-  agents_with_web_tools: 14
-  agents_with_context7: 7  # 5 PS + 2 NSE
+    adversary: 3
+    eng_team: 10
+    red_team: 11
+    saucer_boy: 1
+    saucer_boy_framework_voice: 3
+    transcript: 5
+    worktracker: 3
+  agents_with_task_tool: 24  # 1 core + 2 PS/NSE + 10 eng-team + 11 red-team
+  agents_with_web_tools: 36  # 1 core + 5 PS + 9 NSE + 10 eng-team + 11 red-team
+  agents_with_context7: 28  # 5 PS + 2 NSE + 10 eng-team + 11 red-team
   agents_with_memory_keeper: 7  # 3 orch + ps-architect + nse-requirements + 2 transcript
 
 ---

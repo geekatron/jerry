@@ -121,6 +121,8 @@ def main() -> int:
         return _handle_ast(args, json_output)
     elif args.namespace == "hooks":
         return _handle_hooks(adapter, args)
+    elif args.namespace == "agents":
+        return _handle_agents(adapter, args)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -445,6 +447,41 @@ def _handle_ast(args: Any, json_output: bool) -> int:
         return ast_metadata(args.file)
 
     print(f"Unknown ast command: {args.command}")
+    return 1
+
+
+def _handle_agents(adapter: CLIAdapter, args: Any) -> int:
+    """Route agents namespace commands.
+
+    Args:
+        adapter: CLI adapter instance
+        args: Parsed arguments
+
+    Returns:
+        Exit code
+
+    References:
+        - PROJ-012: Agent Configuration Extraction & Schema Enforcement
+    """
+    if args.command is None:
+        print("No agents command specified. Use 'jerry agents --help'.")
+        return 1
+
+    if args.command == "list":
+        return adapter.cmd_agents_list(
+            skill_filter=getattr(args, "skill", None),
+        )
+    elif args.command == "validate":
+        return adapter.cmd_agents_validate(
+            agent_name=getattr(args, "agent_name", None),
+        )
+    elif args.command == "show":
+        return adapter.cmd_agents_show(
+            agent_name=args.agent_name,
+            raw=getattr(args, "raw", False),
+        )
+
+    print(f"Unknown agents command: {args.command}")
     return 1
 
 

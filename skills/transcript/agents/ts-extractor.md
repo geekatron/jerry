@@ -41,7 +41,8 @@ capabilities:
 # === GUARDRAILS (PAT-AGENT-001) ===
 guardrails:
   input_validation:
-    - pattern: "model override via CLI flags only"
+    model_override:
+      pattern: "model override via CLI flags only"
       enforcement: hard
       rationale: "P-020 user authority for model selection"
     format_required: "chunked"

@@ -36,13 +36,19 @@ from typing import Any
 from src.application.dispatchers.command_dispatcher import CommandDispatcher
 from src.application.dispatchers.query_dispatcher import QueryDispatcher
 from src.application.handlers.queries import (
+    ListAgentConfigsQueryHandler,
     RetrieveProjectContextQueryHandler,
     ScanProjectsQueryHandler,
+    ShowAgentConfigQueryHandler,
+    ValidateAgentConfigQueryHandler,
     ValidateProjectQueryHandler,
 )
 from src.application.queries import (
+    ListAgentConfigsQuery,
     RetrieveProjectContextQuery,
     ScanProjectsQuery,
+    ShowAgentConfigQuery,
+    ValidateAgentConfigQuery,
     ValidateProjectQuery,
 )
 
@@ -411,6 +417,22 @@ def create_query_dispatcher() -> QueryDispatcher:
         repository=work_item_repository,
     )
 
+    # Create agent config handlers (PROJ-012)
+    from src.infrastructure.adapters.configuration.agent_config_resolver import (
+        AgentConfigResolver,
+    )
+
+    agent_config_resolver = AgentConfigResolver()
+    validate_agent_config_handler = ValidateAgentConfigQueryHandler(
+        resolver=agent_config_resolver,
+    )
+    list_agent_configs_handler = ListAgentConfigsQueryHandler(
+        resolver=agent_config_resolver,
+    )
+    show_agent_config_handler = ShowAgentConfigQueryHandler(
+        resolver=agent_config_resolver,
+    )
+
     # Create and configure dispatcher
     dispatcher = QueryDispatcher()
     dispatcher.register(RetrieveProjectContextQuery, retrieve_project_context_handler.handle)
@@ -419,6 +441,9 @@ def create_query_dispatcher() -> QueryDispatcher:
     dispatcher.register(GetSessionStatusQuery, get_session_status_handler.handle)
     dispatcher.register(ListWorkItemsQuery, list_work_items_handler.handle)
     dispatcher.register(GetWorkItemQuery, get_work_item_handler.handle)
+    dispatcher.register(ValidateAgentConfigQuery, validate_agent_config_handler.handle)
+    dispatcher.register(ListAgentConfigsQuery, list_agent_configs_handler.handle)
+    dispatcher.register(ShowAgentConfigQuery, show_agent_config_handler.handle)
 
     return dispatcher
 

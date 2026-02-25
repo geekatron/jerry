@@ -1323,6 +1323,185 @@ class CLIAdapter:
         return 0
 
     # =========================================================================
+    # Agents Namespace Commands (PROJ-012: Agent Configuration)
+    # =========================================================================
+
+    def cmd_agents_list(
+        self,
+        skill_filter: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """List all agent definitions.
+
+        Args:
+            skill_filter: Optional skill name to filter by.
+            json_output: Whether to output as JSON.
+
+        Returns:
+            Exit code (0 for success).
+        """
+        from src.application.queries.agent_config_queries import ListAgentConfigsQuery
+
+        skills_dir = self._get_skills_dir()
+        query = ListAgentConfigsQuery(
+            skills_dir=skills_dir,
+            skill_filter=skill_filter,
+        )
+        agents = self._dispatcher.dispatch(query)
+
+        if json_output:
+            output = {
+                "agents": [
+                    {
+                        "name": a.name,
+                        "skill": a.skill,
+                        "model": a.model,
+                        "cognitive_mode": a.cognitive_mode,
+                        "version": a.version,
+                    }
+                    for a in agents
+                ],
+                "count": len(agents),
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            if not agents:
+                print("No agents found.")
+                return 0
+            print(f"{'Name':<30} {'Skill':<25} {'Model':<8} {'Mode':<15} {'Version'}")
+            print("-" * 90)
+            for a in agents:
+                print(f"{a.name:<30} {a.skill:<25} {a.model:<8} {a.cognitive_mode:<15} {a.version}")
+            print(f"\n{len(agents)} agents found.")
+
+        return 0
+
+    def cmd_agents_validate(
+        self,
+        agent_name: str | None = None,
+        json_output: bool = False,
+    ) -> int:
+        """Validate agent configs against the schema.
+
+        Args:
+            agent_name: Specific agent to validate, or None for all.
+            json_output: Whether to output as JSON.
+
+        Returns:
+            Exit code (0 for success, 1 if any validation errors).
+        """
+        from src.application.queries.agent_config_queries import (
+            ValidateAgentConfigQuery,
+        )
+
+        skills_dir = self._get_skills_dir()
+        schema_path, defaults_path = self._get_agent_schema_paths()
+
+        query = ValidateAgentConfigQuery(
+            skills_dir=skills_dir,
+            schema_path=schema_path,
+            defaults_path=defaults_path,
+            agent_name=agent_name,
+        )
+        results = self._dispatcher.dispatch(query)
+
+        passed = sum(1 for r in results if r.is_valid)
+        failed = len(results) - passed
+
+        if json_output:
+            output = {
+                "results": [
+                    {
+                        "agent": r.agent_name,
+                        "file": r.file_path,
+                        "valid": r.is_valid,
+                        "errors": r.errors,
+                        "yaml_error": r.yaml_error,
+                    }
+                    for r in results
+                ],
+                "summary": {"total": len(results), "passed": passed, "failed": failed},
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            for r in results:
+                if r.is_valid:
+                    print(f"  PASS  {r.agent_name}")
+                else:
+                    print(f"  FAIL  {r.agent_name}")
+                    if r.yaml_error:
+                        print(f"        YAML: {r.yaml_error}")
+                    for err in r.errors:
+                        print(f"        {err}")
+            print(f"\n{len(results)} agents: {passed} passed, {failed} failed")
+
+        return 1 if failed > 0 else 0
+
+    def cmd_agents_show(
+        self,
+        agent_name: str,
+        raw: bool = False,
+        json_output: bool = False,
+    ) -> int:
+        """Show fully composed agent configuration.
+
+        Args:
+            agent_name: Agent name to show.
+            raw: Show raw frontmatter without composition.
+            json_output: Whether to output as JSON.
+
+        Returns:
+            Exit code (0 for success, 1 if agent not found).
+        """
+        import yaml as yaml_lib
+
+        from src.application.queries.agent_config_queries import ShowAgentConfigQuery
+
+        skills_dir = self._get_skills_dir()
+        _, defaults_path = self._get_agent_schema_paths()
+
+        query = ShowAgentConfigQuery(
+            agent_name=agent_name,
+            skills_dir=skills_dir,
+            defaults_path=defaults_path,
+            raw=raw,
+        )
+        result = self._dispatcher.dispatch(query)
+
+        if "error" in result:
+            print(f"Error: {result['error']}")
+            return 1
+
+        if json_output:
+            print(json.dumps(result, indent=2, default=str))
+        else:
+            print(yaml_lib.dump(result, default_flow_style=False, sort_keys=False))
+
+        return 0
+
+    def _get_skills_dir(self) -> str:
+        """Get the skills directory path.
+
+        Returns:
+            Absolute path to skills/ directory.
+        """
+        project_root = os.environ.get("CLAUDE_PROJECT_DIR", str(Path.cwd()))
+        return str(Path(project_root) / "skills")
+
+    def _get_agent_schema_paths(self) -> tuple[str, str]:
+        """Get paths to agent schema and defaults files.
+
+        Returns:
+            Tuple of (schema_path, defaults_path).
+        """
+        project_root = os.environ.get("CLAUDE_PROJECT_DIR", str(Path.cwd()))
+        schema = str(
+            Path(project_root) / "docs" / "schemas" / "jerry-claude-agent-definition-v1.schema.json"
+        )
+        defaults = str(Path(project_root) / "docs" / "schemas" / "jerry-claude-agent-defaults.yaml")
+        return schema, defaults
+
+    # =========================================================================
     # Transcript Namespace Commands (TASK-251: TDD-FEAT-004 Section 11.3)
     # =========================================================================
 
