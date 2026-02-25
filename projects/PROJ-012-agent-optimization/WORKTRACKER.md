@@ -19,6 +19,7 @@
 
 **Status:** Done
 **Criticality:** C2 (Standard)
+**GitHub Issue:** [#93](https://github.com/geekatron/jerry/issues/93)
 **Quality Gate:** PASS — 0.935 (C3 adversarial review on doc alignment subset)
 
 **Scope:**
