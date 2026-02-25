@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "jerry",
-      "description": "Adds structured problem-solving, work tracking, and knowledge management capabilities. Includes 8 specialized agents (researcher, analyst, architect, etc.), NASA Systems Engineering processes, and multi-agent orchestration.",
+      "description": "Behavior and workflow guardrails with knowledge accrual for Claude Code. 12 skills and 58 specialized agents covering problem-solving, work tracking, systems engineering, orchestration, adversarial quality review, secure engineering, offensive security, and transcript parsing.",
       "source": "./",
       "version": "0.21.0",
       "category": "productivity",
