@@ -1479,6 +1479,81 @@ class CLIAdapter:
 
         return 0
 
+    def cmd_agents_compose(
+        self,
+        target: str,
+        output_dir: str | None = None,
+        clean: bool = False,
+        json_output: bool = False,
+    ) -> int:
+        """Compose agent configs and write to output directory.
+
+        Args:
+            target: Agent name or 'all' for all agents.
+            output_dir: Output directory (default: .claude/agents/).
+            clean: Remove existing .md files before writing.
+            json_output: Whether to output as JSON.
+
+        Returns:
+            Exit code (0 for success, 1 if any errors).
+        """
+        from src.application.queries.agent_config_queries import ComposeAgentConfigQuery
+
+        skills_dir = self._get_skills_dir()
+        _, defaults_path = self._get_agent_schema_paths()
+
+        # Default output dir: .claude/agents/ relative to project root
+        if output_dir is None:
+            project_root = os.environ.get("CLAUDE_PROJECT_DIR", str(Path.cwd()))
+            output_dir = str(Path(project_root) / ".claude" / "agents")
+
+        # Resolve target
+        agent_name = None if target == "all" else target
+
+        query = ComposeAgentConfigQuery(
+            skills_dir=skills_dir,
+            defaults_path=defaults_path,
+            output_dir=output_dir,
+            clean=clean,
+            agent_name=agent_name,
+        )
+        results = self._dispatcher.dispatch(query)
+
+        succeeded = sum(1 for r in results if r.success)
+        failed = len(results) - succeeded
+
+        if json_output:
+            output: dict[str, Any] = {
+                "results": [
+                    {
+                        "agent": r.agent_name,
+                        "source": r.source_path,
+                        "output": r.output_path,
+                        "success": r.success,
+                        "error": r.error,
+                    }
+                    for r in results
+                ],
+                "summary": {
+                    "total": len(results),
+                    "succeeded": succeeded,
+                    "failed": failed,
+                    "output_dir": output_dir,
+                },
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            for r in results:
+                if r.success:
+                    print(f"  OK  {r.agent_name}")
+                else:
+                    print(f"  FAIL  {r.agent_name}: {r.error}")
+            print(f"\nComposed {succeeded} agents to {output_dir}")
+            if failed > 0:
+                print(f"  {failed} failed")
+
+        return 1 if failed > 0 else 0
+
     def _get_skills_dir(self) -> str:
         """Get the skills directory path.
 

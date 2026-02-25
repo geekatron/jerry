@@ -36,6 +36,7 @@ from typing import Any
 from src.application.dispatchers.command_dispatcher import CommandDispatcher
 from src.application.dispatchers.query_dispatcher import QueryDispatcher
 from src.application.handlers.queries import (
+    ComposeAgentConfigQueryHandler,
     ListAgentConfigsQueryHandler,
     RetrieveProjectContextQueryHandler,
     ScanProjectsQueryHandler,
@@ -44,6 +45,7 @@ from src.application.handlers.queries import (
     ValidateProjectQueryHandler,
 )
 from src.application.queries import (
+    ComposeAgentConfigQuery,
     ListAgentConfigsQuery,
     RetrieveProjectContextQuery,
     ScanProjectsQuery,
@@ -432,6 +434,9 @@ def create_query_dispatcher() -> QueryDispatcher:
     show_agent_config_handler = ShowAgentConfigQueryHandler(
         resolver=agent_config_resolver,
     )
+    compose_agent_config_handler = ComposeAgentConfigQueryHandler(
+        resolver=agent_config_resolver,
+    )
 
     # Create and configure dispatcher
     dispatcher = QueryDispatcher()
@@ -444,6 +449,7 @@ def create_query_dispatcher() -> QueryDispatcher:
     dispatcher.register(ValidateAgentConfigQuery, validate_agent_config_handler.handle)
     dispatcher.register(ListAgentConfigsQuery, list_agent_configs_handler.handle)
     dispatcher.register(ShowAgentConfigQuery, show_agent_config_handler.handle)
+    dispatcher.register(ComposeAgentConfigQuery, compose_agent_config_handler.handle)
 
     return dispatcher
 

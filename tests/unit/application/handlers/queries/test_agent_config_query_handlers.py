@@ -20,11 +20,13 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.application.handlers.queries.agent_config_query_handlers import (
+    ComposeAgentConfigQueryHandler,
     ListAgentConfigsQueryHandler,
     ShowAgentConfigQueryHandler,
     ValidateAgentConfigQueryHandler,
 )
 from src.application.queries.agent_config_queries import (
+    ComposeAgentConfigQuery,
     ListAgentConfigsQuery,
     ShowAgentConfigQuery,
     ValidateAgentConfigQuery,
@@ -32,6 +34,7 @@ from src.application.queries.agent_config_queries import (
 from src.infrastructure.adapters.configuration.agent_config_resolver import (
     AgentConfigResolver,
     AgentInfo,
+    ComposeResult,
     ValidationResult,
 )
 
@@ -443,3 +446,68 @@ class TestShowAgentConfigQueryHandlerNegative:
 
         assert "error" in result
         assert "frontmatter" in result["error"].lower() or "No YAML" in result["error"]
+
+
+# === ComposeAgentConfigQueryHandler Tests ===
+
+
+class TestComposeAgentConfigQueryHandlerHappyPath:
+    """Happy path tests for ComposeAgentConfigQueryHandler."""
+
+    def test_should_construct_with_resolver(self, mock_resolver: MagicMock) -> None:
+        """Handler accepts an AgentConfigResolver at construction."""
+        handler = ComposeAgentConfigQueryHandler(resolver=mock_resolver)
+        assert handler._resolver is mock_resolver
+
+    def test_should_delegate_compose_all_to_dir(self, mock_resolver: MagicMock) -> None:
+        """Handler delegates to resolver.compose_all_to_dir with correct args."""
+        compose_result = ComposeResult(
+            agent_name="ps-researcher",
+            source_path="/skills/problem-solving/agents/ps-researcher.md",
+            output_path="/output/ps-researcher.md",
+            success=True,
+        )
+        mock_resolver.compose_all_to_dir.return_value = [compose_result]
+
+        handler = ComposeAgentConfigQueryHandler(resolver=mock_resolver)
+        query = ComposeAgentConfigQuery(
+            skills_dir="/skills",
+            defaults_path="/defaults.yaml",
+            output_dir="/output",
+            clean=True,
+            agent_name="ps-researcher",
+        )
+
+        result = handler.handle(query)
+
+        mock_resolver.compose_all_to_dir.assert_called_once_with(
+            skills_dir="/skills",
+            defaults_path="/defaults.yaml",
+            output_dir="/output",
+            clean=True,
+            agent_name="ps-researcher",
+        )
+        assert len(result) == 1
+        assert result[0].success is True
+
+    def test_should_pass_none_agent_name_for_all(self, mock_resolver: MagicMock) -> None:
+        """Handler passes agent_name=None when composing all agents."""
+        mock_resolver.compose_all_to_dir.return_value = []
+
+        handler = ComposeAgentConfigQueryHandler(resolver=mock_resolver)
+        query = ComposeAgentConfigQuery(
+            skills_dir="/skills",
+            defaults_path="/defaults.yaml",
+            output_dir="/output",
+            agent_name=None,
+        )
+
+        handler.handle(query)
+
+        mock_resolver.compose_all_to_dir.assert_called_once_with(
+            skills_dir="/skills",
+            defaults_path="/defaults.yaml",
+            output_dir="/output",
+            clean=False,
+            agent_name=None,
+        )

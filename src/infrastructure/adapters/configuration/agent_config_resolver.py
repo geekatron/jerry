@@ -61,6 +61,25 @@ class AgentInfo:
     version: str
 
 
+@dataclass(frozen=True)
+class ComposeResult:
+    """Result of composing one agent to a file.
+
+    Attributes:
+        agent_name: Name of the composed agent.
+        source_path: Path to the original agent definition.
+        output_path: Path to the written output file.
+        success: Whether composition succeeded.
+        error: Error message if composition failed.
+    """
+
+    agent_name: str
+    source_path: str
+    output_path: str
+    success: bool
+    error: str | None = None
+
+
 @dataclass
 class ValidationResult:
     """Result of schema validation for one agent.
@@ -311,6 +330,164 @@ class AgentConfigResolver:
             if agent_file.stem == agent_name:
                 return agent_file
         return None
+
+    def _extract_frontmatter_and_body(self, agent_file: Path) -> tuple[dict[str, Any], str] | None:
+        """Extract YAML frontmatter and markdown body from an agent file.
+
+        Args:
+            agent_file: Path to the agent .md file.
+
+        Returns:
+            Tuple of (frontmatter_dict, body_string), or None if no frontmatter.
+        """
+        try:
+            content = agent_file.read_text(encoding="utf-8")
+        except OSError:
+            return None
+
+        if not content.startswith("---"):
+            return None
+
+        try:
+            end_idx = content.index("---", 3)
+        except ValueError:
+            return None
+
+        yaml_str = content[3:end_idx]
+        try:
+            data = yaml.safe_load(yaml_str)
+        except yaml.YAMLError:
+            return None
+
+        if not isinstance(data, dict):
+            return None
+
+        # Body is everything after the closing ---
+        body = content[end_idx + 3 :].lstrip("\n")
+        return data, body
+
+    def compose_agent_to_file(
+        self,
+        agent_file: Path,
+        defaults: dict[str, Any],
+        output_dir: Path,
+    ) -> ComposeResult:
+        """Compose a single agent and write to output directory.
+
+        Merges defaults with agent frontmatter, then writes a new .md file
+        with the composed YAML frontmatter and the original markdown body.
+
+        Args:
+            agent_file: Path to the source agent .md file.
+            defaults: Base defaults dictionary.
+            output_dir: Directory to write the composed file.
+
+        Returns:
+            ComposeResult indicating success or failure.
+        """
+        agent_name = agent_file.stem
+        output_path = output_dir / f"{agent_name}.md"
+
+        try:
+            result = self._extract_frontmatter_and_body(agent_file)
+            if result is None:
+                return ComposeResult(
+                    agent_name=agent_name,
+                    source_path=str(agent_file),
+                    output_path=str(output_path),
+                    success=False,
+                    error="No valid YAML frontmatter found",
+                )
+
+            frontmatter, body = result
+
+            # Deep merge: defaults + agent overrides
+            composed = self._deep_merge(copy.deepcopy(defaults), frontmatter)
+
+            # Substitute config variables
+            if self._config is not None:
+                composed = self._substitute_config_vars(composed)
+
+            # Write composed file: ---\n{yaml}\n---\n{body}
+            yaml_str = yaml.dump(composed, default_flow_style=False, sort_keys=False)
+            content = f"---\n{yaml_str}---\n{body}"
+            output_path.write_text(content, encoding="utf-8")
+
+            return ComposeResult(
+                agent_name=composed.get("name", agent_name),
+                source_path=str(agent_file),
+                output_path=str(output_path),
+                success=True,
+            )
+
+        except Exception as e:
+            return ComposeResult(
+                agent_name=agent_name,
+                source_path=str(agent_file),
+                output_path=str(output_path),
+                success=False,
+                error=str(e),
+            )
+
+    def compose_all_to_dir(
+        self,
+        skills_dir: str,
+        defaults_path: str,
+        output_dir: str,
+        clean: bool = False,
+        agent_name: str | None = None,
+    ) -> list[ComposeResult]:
+        """Compose agents and write to output directory.
+
+        Args:
+            skills_dir: Path to the skills directory.
+            defaults_path: Path to the base defaults YAML file.
+            output_dir: Directory to write composed files.
+            clean: If True, remove existing .md files before writing.
+            agent_name: If specified, compose only this agent.
+
+        Returns:
+            List of ComposeResult for each agent processed.
+        """
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        # Clean: remove existing .md files (preserve non-md files)
+        if clean:
+            for f in output_path.glob("*.md"):
+                f.unlink()
+
+        defaults = self._load_yaml(defaults_path)
+
+        # Single agent mode
+        if agent_name is not None:
+            agent_file = self.find_agent_file(skills_dir, agent_name)
+            if agent_file is None:
+                return [
+                    ComposeResult(
+                        agent_name=agent_name,
+                        source_path="(not found)",
+                        output_path=str(output_path / f"{agent_name}.md"),
+                        success=False,
+                        error=f"Agent '{agent_name}' not found",
+                    )
+                ]
+            return [self.compose_agent_to_file(agent_file, defaults, output_path)]
+
+        # All agents mode
+        skills_path = Path(skills_dir)
+        results: list[ComposeResult] = []
+        for agent_file in sorted(skills_path.glob("*/agents/*.md")):
+            if agent_file.name in ("README.md", "AGENTS.md"):
+                continue
+            if "TEMPLATE" in agent_file.name or "EXTENSION" in agent_file.name:
+                continue
+            if not self._has_frontmatter(agent_file):
+                continue
+
+            results.append(self.compose_agent_to_file(agent_file, defaults, output_path))
+
+        return results
 
     def _extract_frontmatter(self, agent_file: Path) -> dict[str, Any] | None:
         """Extract YAML frontmatter from an agent file.

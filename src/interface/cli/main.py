@@ -467,6 +467,8 @@ def _handle_agents(adapter: CLIAdapter, args: Any) -> int:
         print("No agents command specified. Use 'jerry agents --help'.")
         return 1
 
+    json_output = getattr(args, "json", False)
+
     if args.command == "list":
         return adapter.cmd_agents_list(
             skill_filter=getattr(args, "skill", None),
@@ -479,6 +481,13 @@ def _handle_agents(adapter: CLIAdapter, args: Any) -> int:
         return adapter.cmd_agents_show(
             agent_name=args.agent_name,
             raw=getattr(args, "raw", False),
+        )
+    elif args.command == "compose":
+        return adapter.cmd_agents_compose(
+            target=args.target,
+            output_dir=getattr(args, "output_dir", None),
+            clean=getattr(args, "clean", False),
+            json_output=json_output,
         )
 
     print(f"Unknown agents command: {args.command}")

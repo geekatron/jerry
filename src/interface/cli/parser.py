@@ -793,6 +793,32 @@ def _add_agents_namespace(
         help="Show raw frontmatter without composition",
     )
 
+    # agents compose
+    compose_parser = agents_subparsers.add_parser(
+        "compose",
+        help="Compose agent configs to .claude/agents/ directory",
+        description=(
+            "Compose agent definitions (defaults + frontmatter + config vars) "
+            "and write to output directory for Claude Code agent runtime."
+        ),
+    )
+    compose_parser.add_argument(
+        "target",
+        help="Agent name to compose, or 'all' for all agents",
+    )
+    compose_parser.add_argument(
+        "--output-dir",
+        dest="output_dir",
+        default=None,
+        help="Output directory (default: .claude/agents/)",
+    )
+    compose_parser.add_argument(
+        "--clean",
+        action="store_true",
+        default=False,
+        help="Remove existing .md files in output directory before writing",
+    )
+
 
 def _add_context_namespace(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],

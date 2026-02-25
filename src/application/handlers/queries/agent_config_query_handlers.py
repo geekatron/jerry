@@ -16,6 +16,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from src.application.queries.agent_config_queries import (
+    ComposeAgentConfigQuery,
     ListAgentConfigsQuery,
     ShowAgentConfigQuery,
     ValidateAgentConfigQuery,
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
     from src.infrastructure.adapters.configuration.agent_config_resolver import (
         AgentConfigResolver,
         AgentInfo,
+        ComposeResult,
         ValidationResult,
     )
 
@@ -136,3 +138,38 @@ class ShowAgentConfigQueryHandler:
 
         defaults = self._resolver.load_defaults(query.defaults_path)
         return self._resolver.compose_agent_config(agent_file, defaults)
+
+
+class ComposeAgentConfigQueryHandler:
+    """Handler for ComposeAgentConfigQuery.
+
+    Composes one or all agents and writes to output directory.
+
+    Attributes:
+        _resolver: AgentConfigResolver for composition and file writing.
+    """
+
+    def __init__(self, resolver: AgentConfigResolver) -> None:
+        """Initialize the handler.
+
+        Args:
+            resolver: AgentConfigResolver instance.
+        """
+        self._resolver = resolver
+
+    def handle(self, query: ComposeAgentConfigQuery) -> list[ComposeResult]:
+        """Handle the compose query.
+
+        Args:
+            query: Query with paths, output dir, and optional agent name.
+
+        Returns:
+            List of ComposeResult for each agent processed.
+        """
+        return self._resolver.compose_all_to_dir(
+            skills_dir=query.skills_dir,
+            defaults_path=query.defaults_path,
+            output_dir=query.output_dir,
+            clean=query.clean,
+            agent_name=query.agent_name,
+        )

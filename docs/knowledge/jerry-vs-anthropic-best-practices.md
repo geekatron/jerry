@@ -263,7 +263,7 @@ Jerry caps HARD rules at 25 with a derivation from three independent constraint 
 
 Jerry defines a canonical YAML+Markdown agent format validated against JSON Schema, with required fields, cognitive mode taxonomy, and tool security tiers. Anthropic's subagent definitions are free-form YAML with minimal structure.
 
-**Evidence:** H-34 (schema validation), `docs/schemas/agent-definition-v1.schema.json`, `agent-development-standards.md` Required YAML Fields table (15 required fields).
+**Evidence:** H-34 (schema validation), `docs/schemas/jerry-claude-agent-definition-v1.schema.json`, `agent-development-standards.md` Required YAML Fields table (15 required fields).
 
 ### Innovation 10: Structured Handoff Protocol
 

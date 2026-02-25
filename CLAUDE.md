@@ -54,7 +54,8 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | Quality enforcement SSOT | `.context/rules/quality-enforcement.md` (A) |
 | Agent development standards | `.context/rules/agent-development-standards.md` (A) |
 | Agent routing standards | `.context/rules/agent-routing-standards.md` (A) |
-| Agent definition JSON Schema | `docs/schemas/agent-definition-v1.schema.json` |
+| Agent definition JSON Schema | `docs/schemas/jerry-claude-agent-definition-v1.schema.json` |
+| Agent definition defaults | `docs/schemas/jerry-claude-agent-defaults.yaml` |
 | Design decisions (ADRs) | `docs/design/` |
 | Skills | `skills/{name}/SKILL.md` |
 | Templates | `.context/templates/` |
@@ -66,7 +67,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 
 ## Quick Reference
 
-**CLI** (v0.16.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate`
+**CLI** (v0.16.0): `jerry session start|end|status|abandon` | `jerry items list|show` | `jerry projects list|context|validate` | `jerry agents list|validate|show|compose`
 
 **Skills** (invoke proactively per H-22):
 

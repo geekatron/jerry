@@ -17,6 +17,7 @@ Naming Convention:
 """
 
 from src.application.queries.agent_config_queries import (
+    ComposeAgentConfigQuery,
     ListAgentConfigsQuery,
     ShowAgentConfigQuery,
     ValidateAgentConfigQuery,
@@ -28,6 +29,7 @@ from src.application.queries.scan_projects_query import ScanProjectsQuery
 from src.application.queries.validate_project_query import ValidateProjectQuery
 
 __all__ = [
+    "ComposeAgentConfigQuery",
     "ListAgentConfigsQuery",
     "RetrieveProjectContextQuery",
     "ScanProjectsQuery",

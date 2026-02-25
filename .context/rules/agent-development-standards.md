@@ -1,6 +1,6 @@
 # Agent Development Standards
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-22 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, V&V Plan, EN-003 | REVISION: EN-003 gap closures (ET-M-001 extended thinking, FC-M-001 fresh context review) -->
+<!-- VERSION: 1.3.0 | DATE: 2026-02-24 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, V&V Plan, EN-003, PROJ-012 | REVISION: PROJ-012 doc alignment — schema rename, defaults YAML reference, CLI tooling references, deferred language removal -->
 
 > Canonical standards for agent definition format, structural patterns, behavioral constraints, and handoff protocols within the Jerry Framework. All agent definitions MUST reference this file.
 
@@ -30,10 +30,10 @@
 
 | ID | Rule | Consequence | Source Requirements | Verification |
 |----|------|-------------|---------------------|--------------|
-| H-34 | Agent definition YAML frontmatter MUST validate against the canonical JSON Schema (`docs/schemas/agent-definition-v1.schema.json`). Required top-level fields: `name`, `version`, `description`, `model`, `identity`, `capabilities`, `guardrails`, `output`, `constitution`. Schema validation MUST execute before LLM-based quality scoring for C2+ deliverables. | Agent definition rejected at CI. Structural defects propagate to runtime. | AR-001 (YAML+MD format), AR-002 (required fields), AR-003 (schema validation), QR-003 (output schema) | L5 (CI): JSON Schema validation on PR. L3 (pre-tool): Schema check before agent invocation. |
+| H-34 | Agent definition YAML frontmatter MUST validate against the canonical JSON Schema (`docs/schemas/jerry-claude-agent-definition-v1.schema.json`). Required top-level fields: `name`, `version`, `description`, `model`, `identity`, `capabilities`, `guardrails`, `output`, `constitution`. Schema validation MUST execute before LLM-based quality scoring for C2+ deliverables. | Agent definition rejected at CI. Structural defects propagate to runtime. | AR-001 (YAML+MD format), AR-002 (required fields), AR-003 (schema validation), QR-003 (output schema) | L5 (CI): JSON Schema validation on PR. L3 (planned): Schema check before agent invocation. |
 | H-35 | Every agent MUST declare constitutional compliance with at minimum P-003 (no recursive subagents), P-020 (user authority), and P-022 (no deception) in `constitution.principles_applied`. Worker agents (invoked via Task) MUST NOT include `Task` in `capabilities.allowed_tools`. Every agent MUST declare at minimum 3 entries in `capabilities.forbidden_actions` referencing the constitutional triplet. | Constitutional constraint bypass. Unauthorized recursive delegation. | SR-001 (constitutional compliance), AR-004 (single-level nesting), AR-006 (tool restriction), AR-012 (forbidden actions) | L3 (pre-tool): Schema validates minItems=3. L5 (CI): Grep for P-003/P-020/P-022 presence. |
 
-**H-34 Implementation Note:** The schema file (`docs/schemas/agent-definition-v1.schema.json`) will be created as part of the Phase 5 implementation. Until the schema file exists, L3 schema validation is deferred; L5 CI enforcement activates when the schema file is committed. The HARD rule is immediately enforceable for its structural requirements (required fields, YAML delimiter presence) via pattern-matching pre-schema. The inline schema in ADR-PROJ007-001 Section 2 serves as the authoritative specification until the extracted schema file is available.
+**H-34 Implementation Note:** The schema file (`docs/schemas/jerry-claude-agent-definition-v1.schema.json`) is live. L5 CI enforcement is active via `scripts/jerry-validate-agent-schemas.py` and `.github/workflows/jerry-agent-schema-validation.yml`. L3 schema validation before agent invocation is planned but not yet wired into `scripts/pre_tool_use.py`. The schema implements a dual-layer design: Claude Code native fields (tools, disallowedTools, permissionMode, etc.) plus Jerry governance fields (identity, capabilities, guardrails, output, constitution). Agent definitions support a defaults-then-override composition pipeline using `docs/schemas/jerry-claude-agent-defaults.yaml`. Local validation is available via `jerry agents validate`.
 
 **HARD Rule Budget:** H-34 and H-35 are consolidated into compound H-34 in `quality-enforcement.md` HARD Rule Index (H-35 retired as sub-item b). Current budget: 25/25 rules at ceiling.
 
@@ -85,7 +85,7 @@
 
 ## Agent Definition Schema
 
-The canonical agent definition uses YAML frontmatter (validated by JSON Schema, H-34) followed by a structured Markdown body. The schema is stored at `docs/schemas/agent-definition-v1.schema.json` (JSON Schema Draft 2020-12).
+The canonical agent definition uses YAML frontmatter (validated by JSON Schema, H-34) followed by a structured Markdown body. The schema is stored at `docs/schemas/jerry-claude-agent-definition-v1.schema.json` (JSON Schema Draft 2020-12). Default values for common fields are defined in `docs/schemas/jerry-claude-agent-defaults.yaml`; agent definitions inherit these defaults and override as needed (defaults-then-override composition pipeline).
 
 ### Required YAML Fields
 
@@ -389,7 +389,7 @@ Each standard maps to an enforcement layer for compliance checking.
 | L2 (Every prompt) | H-34, H-35 re-injection via L2-REINJECT comments | HTML comment re-injection | Immune |
 | L3 (Pre-tool) | Schema validation before agent invocation | JSON Schema validation (deterministic) | Immune |
 | L4 (Post-tool) | CB-01 through CB-05 context budget monitoring | Advisory -- see note below | Mixed |
-| L5 (CI/commit) | Full schema validation on all `skills/*/agents/*.md` files | CI pipeline JSON Schema check | Immune |
+| L5 (CI/commit) | Full schema validation on all `skills/*/agents/*.md` files | CI pipeline JSON Schema check (`scripts/jerry-validate-agent-schemas.py`); local: `jerry agents validate` | Immune |
 
 **L4 Context Budget Note:** CB-01 through CB-05 are currently advisory standards. Operational monitoring of context budget usage (e.g., measuring tool result token consumption against CB-02's 50% threshold) requires future tooling that does not yet exist. Until such tooling is available, agent authors self-assess context budget compliance during development, and reviewers verify compliance qualitatively during the creator-critic-revision cycle (H-14). When L4 monitoring tooling becomes available, CB enforcement will transition from advisory to instrumented.
 
@@ -422,8 +422,8 @@ Each standard maps to an enforcement layer for compliance checking.
 
 ---
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-22 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, EN-003 | REVISION: EN-003 gap closures (ET-M-001, FC-M-001) -->
-*Standards Version: 1.2.0*
+<!-- VERSION: 1.3.0 | DATE: 2026-02-24 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, EN-003, PROJ-012 | REVISION: PROJ-012 doc alignment — schema rename, defaults YAML ref, CLI refs, deferred language removal -->
+*Standards Version: 1.3.0*
 *SSOT: `.context/rules/quality-enforcement.md` (H-34 compound registered, H-35 retired as sub-item)*
 *Source: PROJ-007 Agent Patterns -- ADR-PROJ007-001, Phase 3 Synthesis, V&V Plan, Integration Patterns*
 *Created: 2026-02-21*

@@ -54,10 +54,10 @@ to specific skills. This provides:
 | **Total** | **58** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 62 total files found; 4 template/extension files excluded from counts:
-> `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
+> 65 total files found; 7 non-agent files excluded from counts:
+> `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`, 3x `README.md` (in adversary, nasa-se, problem-solving; count corrected in PROJ-012).
 > Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 = 58 invokable agents.
-> Last verified: 2026-02-22.
+> Last verified: 2026-02-24.
 
 ---
 

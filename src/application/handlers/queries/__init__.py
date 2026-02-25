@@ -17,6 +17,7 @@ Naming Convention:
 """
 
 from src.application.handlers.queries.agent_config_query_handlers import (
+    ComposeAgentConfigQueryHandler,
     ListAgentConfigsQueryHandler,
     ShowAgentConfigQueryHandler,
     ValidateAgentConfigQueryHandler,
@@ -32,6 +33,7 @@ from src.application.handlers.queries.validate_project_query_handler import (
 )
 
 __all__ = [
+    "ComposeAgentConfigQueryHandler",
     "ListAgentConfigsQueryHandler",
     "RetrieveProjectContextQueryHandler",
     "ScanProjectsQueryHandler",
