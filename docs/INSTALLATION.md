@@ -78,12 +78,15 @@ Jerry is a **community Claude Code plugin** hosted on [GitHub](https://github.co
 
 **Step 1: Add the Jerry repository as a plugin source**
 
-Pick whichever command matches your setup — both do the same thing:
+Pick whichever command matches your setup — all three do the same thing:
 
 | Your Setup | Command |
 |------------|---------|
-| **SSH key configured** | `/plugin marketplace add geekatron/jerry` |
+| **SSH key configured** (shorthand) | `/plugin marketplace add geekatron/jerry` |
+| **SSH key configured** (explicit URL) | `/plugin marketplace add git@github.com:geekatron/jerry.git` |
 | **No SSH key (or not sure)** | `/plugin marketplace add https://github.com/geekatron/jerry.git` |
+
+> The `owner/repo` shorthand resolves to SSH under the hood — it's equivalent to the explicit SSH URL. Both require an SSH key configured for GitHub. The HTTPS URL works without SSH keys.
 
 This tells Claude Code where to find Jerry. Nothing is installed yet — you're just registering the source.
 
