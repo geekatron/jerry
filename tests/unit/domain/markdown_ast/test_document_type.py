@@ -23,6 +23,7 @@ import pytest
 from src.domain.markdown_ast.document_type import (
     DocumentType,
     DocumentTypeDetector,
+    _path_matches_glob,
 )
 
 # =============================================================================
@@ -413,6 +414,34 @@ class TestPathNormalization:
         doc_type, _ = DocumentTypeDetector.detect("/home/user/repo/skills/test/agents/test.md", "")
         assert doc_type == DocumentType.AGENT_DEFINITION
 
+    @pytest.mark.edge_case
+    def test_already_relative_path_skips_marker_extraction(self) -> None:
+        """Paths already starting with a root marker skip extraction (F-001 CWE-22)."""
+        # Path starts with "skills/" -- already relative, should not re-extract
+        doc_type, _ = DocumentTypeDetector.detect("skills/test/SKILL.md", "")
+        assert doc_type == DocumentType.SKILL_DEFINITION
+
+    @pytest.mark.edge_case
+    def test_root_file_from_absolute_path_reduces_to_basename(self) -> None:
+        """Absolute path to root-level file reduces to basename for matching."""
+        # /unknown/path/README.md -> basename "README.md" matches root-level pattern
+        doc_type, _ = DocumentTypeDetector.detect("/some/unknown/path/README.md", "")
+        assert doc_type == DocumentType.FRAMEWORK_CONFIG
+
+    @pytest.mark.edge_case
+    def test_root_file_under_known_root_keeps_full_path(self) -> None:
+        """Root file name under a known root marker keeps the full path."""
+        # projects/PROJ-001/README.md starts with "projects/" -- already relative,
+        # and is_under_known_root is True, so basename reduction is skipped.
+        doc_type, _ = DocumentTypeDetector.detect("projects/PROJ-001/README.md", "")
+        assert doc_type == DocumentType.FRAMEWORK_CONFIG
+
+    @pytest.mark.edge_case
+    def test_root_file_without_directory_stays_as_is(self) -> None:
+        """Root file with no directory component matches directly."""
+        doc_type, _ = DocumentTypeDetector.detect("CLAUDE.md", "")
+        assert doc_type == DocumentType.FRAMEWORK_CONFIG
+
 
 # =============================================================================
 # DocumentType Enum Tests
@@ -443,10 +472,11 @@ class TestRecursiveGlobMatching:
 
     @pytest.mark.edge_case
     def test_multiple_double_star_falls_back_to_fnmatch(self) -> None:
-        """Pattern with multiple ** segments falls back to fnmatch."""
-        # skills/**/agents/**/*.md has two ** segments -- triggers fallback branch
-        doc_type, _ = DocumentTypeDetector.detect("skills/foo/agents/bar/my-agent.md", "")
-        assert doc_type == DocumentType.AGENT_DEFINITION
+        """Pattern with multiple ** segments falls back to fnmatchcase."""
+        # Directly test _path_matches_glob with a multi-** pattern
+        # (no PATH_PATTERNS entry has multiple **, so we must test directly)
+        assert _path_matches_glob("a/b/c/d/e.md", "a/**/c/**/*.md") is True
+        assert _path_matches_glob("a/b/c/d/e.txt", "a/**/c/**/*.md") is False
 
     @pytest.mark.edge_case
     def test_prefix_longer_than_path_returns_false(self) -> None:
