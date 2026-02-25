@@ -141,18 +141,28 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 | ID | Title | Status | Priority | Severity |
 |----|-------|--------|----------|----------|
 | BUG-001 | CI/CD lint and test failures on PR #48 | resolved | high | major |
+| BUG-004 | Document type detection misclassifies most files as agent_definition | pending | high | major |
+
+### Enabler Inventory
+
+| ID | Type | Title | Status | Priority | Effort | Phase |
+|----|------|-------|--------|----------|--------|-------|
+| EN-001 | Enabler | R-01 PoC: mdformat blockquote frontmatter write-back | completed | critical | 3 | Gate |
+| EN-002 | Enabler | Document Type Ontology Hardening | pending | high | 13 | Post-release |
 
 ### Work Item Links
 
 **Bugs:**
 - [BUG-001: CI/CD lint and test failures on PR #48](./BUG-001-ci-cd-lint-test-failures/BUG-001-ci-cd-lint-test-failures.md)
+- [BUG-004: Document type detection misclassifies most files as agent_definition](./BUG-004-document-type-detection-misclassification/BUG-004-document-type-detection-misclassification.md)
 
 **Spikes:**
 - [SPIKE-001: Python Markdown AST Library Landscape](./SPIKE-001-library-landscape/SPIKE-001-library-landscape.md)
 - [SPIKE-002: AST-First Architecture Feasibility Assessment](./SPIKE-002-feasibility/SPIKE-002-feasibility.md)
 
-**Enabler:**
+**Enablers:**
 - [EN-001: R-01 PoC -- mdformat blockquote frontmatter write-back](./EN-001-r01-poc/EN-001-r01-poc.md)
+- [EN-002: Document Type Ontology Hardening](./EN-002-document-type-ontology-hardening/EN-002-document-type-ontology-hardening.md)
 
 **Stories:**
 - [ST-001: Implement JerryDocument facade](./ST-001-jerry-document/ST-001-jerry-document.md)

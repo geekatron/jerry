@@ -114,6 +114,160 @@ class TestPathDetection:
         )
         assert doc_type == DocumentType.KNOWLEDGE_DOCUMENT
 
+    # --- EN-002: New path pattern tests ---
+
+    @pytest.mark.happy_path
+    def test_skill_resource_playbook(self) -> None:
+        """Skill resource detected from skills/*/PLAYBOOK.md."""
+        doc_type, _ = DocumentTypeDetector.detect("skills/problem-solving/PLAYBOOK.md", "")
+        assert doc_type == DocumentType.SKILL_RESOURCE
+
+    @pytest.mark.happy_path
+    def test_skill_resource_composition(self) -> None:
+        """Skill resource detected from skills/*/composition/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "skills/adversary/composition/adv-selector.prompt.md", ""
+        )
+        assert doc_type == DocumentType.SKILL_RESOURCE
+
+    @pytest.mark.happy_path
+    def test_skill_resource_references(self) -> None:
+        """Skill resource detected from skills/*/references/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect("skills/saucer-boy/references/persona.md", "")
+        assert doc_type == DocumentType.SKILL_RESOURCE
+
+    @pytest.mark.happy_path
+    def test_skill_resource_docs(self) -> None:
+        """Skill resource detected from skills/*/docs/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect("skills/transcript/docs/migration.md", "")
+        assert doc_type == DocumentType.SKILL_RESOURCE
+
+    @pytest.mark.happy_path
+    def test_skill_rule_file(self) -> None:
+        """Rule file detected from skills/*/rules/*.md (reuses RULE_FILE type)."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "skills/worktracker/rules/worktracker-behavior-rules.md", ""
+        )
+        assert doc_type == DocumentType.RULE_FILE
+
+    @pytest.mark.happy_path
+    def test_skill_resource_catch_all(self) -> None:
+        """Skill resource catch-all for files like adversary-integration.md."""
+        doc_type, _ = DocumentTypeDetector.detect("skills/red-team/adversary-integration.md", "")
+        assert doc_type == DocumentType.SKILL_RESOURCE
+
+    @pytest.mark.happy_path
+    def test_template_skill_templates(self) -> None:
+        """Template detected from skills/*/templates/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "skills/worktracker/templates/story-template.md", ""
+        )
+        assert doc_type == DocumentType.TEMPLATE
+
+    @pytest.mark.happy_path
+    def test_template_context_worktracker(self) -> None:
+        """Template detected from .context/templates/worktracker/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            ".context/templates/worktracker/bug.template.md", ""
+        )
+        assert doc_type == DocumentType.TEMPLATE
+
+    @pytest.mark.happy_path
+    def test_template_context_design(self) -> None:
+        """Template detected from .context/templates/design/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(".context/templates/design/TDD.template.md", "")
+        assert doc_type == DocumentType.TEMPLATE
+
+    @pytest.mark.happy_path
+    def test_adr_from_docs_adrs(self) -> None:
+        """ADR detected from docs/adrs/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect("docs/adrs/adr-proj007-001.md", "")
+        assert doc_type == DocumentType.ADR
+
+    @pytest.mark.happy_path
+    def test_adr_from_project_decisions(self) -> None:
+        """ADR detected from projects/*/decisions/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "projects/PROJ-005/decisions/adr-ast-design.md", ""
+        )
+        assert doc_type == DocumentType.ADR
+
+    @pytest.mark.happy_path
+    def test_pattern_document_from_context_patterns(self) -> None:
+        """Pattern document detected from .context/patterns/**/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(".context/patterns/agent/agent-discovery.md", "")
+        assert doc_type == DocumentType.PATTERN_DOCUMENT
+
+    @pytest.mark.happy_path
+    def test_pattern_document_from_guides(self) -> None:
+        """Pattern document detected from .context/guides/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect(".context/guides/getting-started.md", "")
+        assert doc_type == DocumentType.PATTERN_DOCUMENT
+
+    @pytest.mark.happy_path
+    def test_framework_config_plan(self) -> None:
+        """Framework config detected from projects/*/PLAN.md."""
+        doc_type, _ = DocumentTypeDetector.detect("projects/PROJ-005/PLAN.md", "")
+        assert doc_type == DocumentType.FRAMEWORK_CONFIG
+
+    @pytest.mark.happy_path
+    def test_framework_config_readme(self) -> None:
+        """Framework config detected from root README.md."""
+        doc_type, _ = DocumentTypeDetector.detect("README.md", "")
+        assert doc_type == DocumentType.FRAMEWORK_CONFIG
+
+    @pytest.mark.happy_path
+    def test_knowledge_from_docs_research(self) -> None:
+        """Knowledge document detected from docs/research/**/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect("docs/research/agent-patterns/findings.md", "")
+        assert doc_type == DocumentType.KNOWLEDGE_DOCUMENT
+
+    @pytest.mark.happy_path
+    def test_knowledge_from_docs_catch_all(self) -> None:
+        """Knowledge document detected from docs/*.md catch-all."""
+        doc_type, _ = DocumentTypeDetector.detect("docs/INSTALLATION.md", "")
+        assert doc_type == DocumentType.KNOWLEDGE_DOCUMENT
+
+    @pytest.mark.happy_path
+    def test_worktracker_from_work_dir(self) -> None:
+        """Worktracker entity detected from work/**/*.md (repo-based pattern)."""
+        doc_type, _ = DocumentTypeDetector.detect("work/epics/EPIC-001.md", "")
+        assert doc_type == DocumentType.WORKTRACKER_ENTITY
+
+    @pytest.mark.happy_path
+    def test_framework_config_commands(self) -> None:
+        """Framework config detected from commands/*.md."""
+        doc_type, _ = DocumentTypeDetector.detect("commands/release.md", "")
+        assert doc_type == DocumentType.FRAMEWORK_CONFIG
+
+    # --- EN-002: First-match-wins ordering boundary tests ---
+
+    @pytest.mark.edge_case
+    def test_strategy_template_before_template_catch_all(self) -> None:
+        """Strategy template matches before .context/templates/**/ catch-all."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            ".context/templates/adversarial/s-001-red-team.md", ""
+        )
+        assert doc_type == DocumentType.STRATEGY_TEMPLATE
+
+    @pytest.mark.edge_case
+    def test_skill_agents_before_skill_catch_all(self) -> None:
+        """Agent definition in skills/*/agents/ matches before skills/*/ catch-all."""
+        doc_type, _ = DocumentTypeDetector.detect("skills/ast/agents/ast-parser.md", "")
+        assert doc_type == DocumentType.AGENT_DEFINITION
+
+    @pytest.mark.edge_case
+    def test_skill_definition_before_skill_catch_all(self) -> None:
+        """SKILL.md matches before skills/*/*.md catch-all."""
+        doc_type, _ = DocumentTypeDetector.detect("skills/transcript/SKILL.md", "")
+        assert doc_type == DocumentType.SKILL_DEFINITION
+
+    @pytest.mark.edge_case
+    def test_docs_design_before_docs_catch_all(self) -> None:
+        """docs/design/ matches ADR before docs/*.md catch-all."""
+        doc_type, _ = DocumentTypeDetector.detect("docs/design/adr-epic002-001.md", "")
+        assert doc_type == DocumentType.ADR
+
 
 # =============================================================================
 # Structural Fallback Tests
@@ -121,38 +275,51 @@ class TestPathDetection:
 
 
 class TestStructuralDetection:
-    """Tests for structure-based detection fallback."""
-
-    @pytest.mark.happy_path
-    def test_yaml_frontmatter_structure(self) -> None:
-        """YAML frontmatter (---) maps to AGENT_DEFINITION."""
-        doc_type, warning = DocumentTypeDetector.detect("unknown-path.md", "---\nname: test\n---\n")
-        assert doc_type == DocumentType.AGENT_DEFINITION
-
-    @pytest.mark.happy_path
-    def test_blockquote_structure(self) -> None:
-        """Blockquote frontmatter (> **) maps to WORKTRACKER_ENTITY."""
-        doc_type, warning = DocumentTypeDetector.detect("unknown-path.md", "> **Type:** story\n")
-        assert doc_type == DocumentType.WORKTRACKER_ENTITY
+    """Tests for structure-based detection fallback (EN-002 precise cues)."""
 
     @pytest.mark.happy_path
     def test_identity_tag_structure(self) -> None:
         """<identity> tag maps to AGENT_DEFINITION."""
-        # Note: "---" has higher priority than "<identity>" in the cue list,
-        # so we test with content that has <identity> but not ---
-        doc_type, warning = DocumentTypeDetector.detect(
+        doc_type, _ = DocumentTypeDetector.detect(
             "unknown-path.md", "# Agent\n\n<identity>\nAgent identity.\n</identity>\n"
         )
-        # "---" cue not found, "<identity>" found -> AGENT_DEFINITION
         assert doc_type == DocumentType.AGENT_DEFINITION
+
+    @pytest.mark.happy_path
+    def test_methodology_tag_structure(self) -> None:
+        """<methodology> tag maps to AGENT_DEFINITION."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "unknown-path.md", "# Agent\n\n<methodology>\nStep 1.\n</methodology>\n"
+        )
+        assert doc_type == DocumentType.AGENT_DEFINITION
+
+    @pytest.mark.happy_path
+    def test_blockquote_type_structure(self) -> None:
+        """> **Type:** maps to WORKTRACKER_ENTITY."""
+        doc_type, _ = DocumentTypeDetector.detect("unknown-path.md", "> **Type:** story\n")
+        assert doc_type == DocumentType.WORKTRACKER_ENTITY
 
     @pytest.mark.happy_path
     def test_reinject_structure(self) -> None:
         """<!-- L2-REINJECT maps to RULE_FILE."""
-        doc_type, warning = DocumentTypeDetector.detect(
+        doc_type, _ = DocumentTypeDetector.detect(
             "unknown-path.md", '<!-- L2-REINJECT: rank=1, content="test" -->\n'
         )
         assert doc_type == DocumentType.RULE_FILE
+
+    @pytest.mark.happy_path
+    def test_strategy_structure(self) -> None:
+        """> **Strategy:** maps to STRATEGY_TEMPLATE."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "unknown-path.md", "> **Strategy:** Red Team Analysis\n"
+        )
+        assert doc_type == DocumentType.STRATEGY_TEMPLATE
+
+    @pytest.mark.happy_path
+    def test_version_structure(self) -> None:
+        """> **Version:** maps to SKILL_DEFINITION."""
+        doc_type, _ = DocumentTypeDetector.detect("unknown-path.md", "> **Version:** 1.0.0\n")
+        assert doc_type == DocumentType.SKILL_DEFINITION
 
     @pytest.mark.edge_case
     def test_no_path_no_structure_returns_unknown(self) -> None:
@@ -160,6 +327,34 @@ class TestStructuralDetection:
         doc_type, warning = DocumentTypeDetector.detect("", "Just plain text.\n")
         assert doc_type == DocumentType.UNKNOWN
         assert warning is None
+
+    # --- EN-002: BUG-004 regression assertions ---
+
+    @pytest.mark.edge_case
+    def test_horizontal_rule_does_not_match_agent_definition(self) -> None:
+        """BUG-004: '---' no longer triggers agent_definition classification."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "unknown-path.md", "# Title\n\n---\n\nSome content.\n"
+        )
+        # Should be UNKNOWN, not AGENT_DEFINITION
+        assert doc_type == DocumentType.UNKNOWN
+
+    @pytest.mark.edge_case
+    def test_html_comment_does_not_match_adr(self) -> None:
+        """EN-002: Generic HTML comments no longer trigger ADR classification."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "unknown-path.md", "<!-- Some comment -->\n# Title\n"
+        )
+        assert doc_type == DocumentType.UNKNOWN
+
+    @pytest.mark.edge_case
+    def test_generic_blockquote_does_not_match_worktracker(self) -> None:
+        """EN-002: Generic blockquotes do not trigger worktracker classification."""
+        doc_type, _ = DocumentTypeDetector.detect(
+            "unknown-path.md", "> **Note:** This is important.\n"
+        )
+        # > **Note:** should NOT match > **Type:**
+        assert doc_type == DocumentType.UNKNOWN
 
 
 # =============================================================================
@@ -173,7 +368,7 @@ class TestDualSignalWarning:
     @pytest.mark.edge_case
     def test_mismatch_produces_warning(self) -> None:
         """Warning when path and structure disagree."""
-        # Path says ADR, structure has "> **" (worktracker)
+        # Path says ADR, structure has "> **Type:**" (worktracker)
         doc_type, warning = DocumentTypeDetector.detect(
             "docs/design/test-adr.md", "> **Type:** story\n"
         )
@@ -228,9 +423,9 @@ class TestDocumentTypeEnum:
     """Tests for DocumentType enum values."""
 
     @pytest.mark.happy_path
-    def test_all_11_values_exist(self) -> None:
-        """DocumentType has exactly 11 values."""
-        assert len(DocumentType) == 11
+    def test_all_13_values_exist(self) -> None:
+        """DocumentType has exactly 13 values (EN-002: +SKILL_RESOURCE, +TEMPLATE)."""
+        assert len(DocumentType) == 13
 
     @pytest.mark.happy_path
     def test_unknown_is_safe_default(self) -> None:

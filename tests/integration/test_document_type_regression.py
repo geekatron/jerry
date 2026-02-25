@@ -1,0 +1,178 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
+"""Full-repo regression test for DocumentTypeDetector (EN-002, TASK-006).
+
+Parametrized test that runs ``DocumentTypeDetector.detect()`` on every ``.md``
+file in the repository. Validates:
+
+    - BUG-004 gate: no file classified as ``agent_definition`` via structural
+      cue alone (path match must exist).
+    - UNKNOWN allowlist: any file classified as ``UNKNOWN`` must appear in
+      ``EXPECTED_UNKNOWN``. New uncovered files fail the test, forcing
+      explicit classification when new file categories are added.
+    - Enum completeness: ``DocumentType`` has exactly 13 values (EN-002).
+
+Exclusions:
+    - ``.git/`` -- git internals
+    - ``.claude/worktrees/`` -- temporary worktree copies
+    - ``.venv/`` -- virtual environment third-party packages
+    - ``.pytest_cache/`` -- pytest cache (contains auto-generated README.md)
+
+Performance target: < 30 seconds for full repo scan (TC-4). The test only
+calls ``detect()`` (path matching + string search), no full AST parse.
+
+References:
+    - EN-002: Document Type Ontology Hardening
+    - BUG-004: Document type detection misclassification
+    - H-20: BDD test-first
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from src.domain.markdown_ast.document_type import (
+    DocumentType,
+    DocumentTypeDetector,
+    _normalize_path,
+)
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+# Directories excluded from test discovery
+_EXCLUDED_DIRS = frozenset({".git", ".venv", ".pytest_cache"})
+
+# Files intentionally classified as UNKNOWN -- each entry requires
+# a justification comment. Target: < 20 files.
+EXPECTED_UNKNOWN: frozenset[str] = frozenset(
+    {
+        # Music playlist file -- intentionally outside the document ontology.
+        "SOUNDTRACK.md",
+    }
+)
+
+
+def _discover_md_files() -> list[str]:
+    """Discover all .md files in the repo, excluding internal directories.
+
+    Returns:
+        Sorted list of repo-relative file paths.
+    """
+    files: list[str] = []
+    for md_file in REPO_ROOT.rglob("*.md"):
+        rel = str(md_file.relative_to(REPO_ROOT))
+        # Skip excluded directories
+        parts = md_file.relative_to(REPO_ROOT).parts
+        if any(part in _EXCLUDED_DIRS for part in parts):
+            continue
+        # Skip worktree copies
+        if ".claude/worktrees/" in rel:
+            continue
+        files.append(rel)
+    return sorted(files)
+
+
+ALL_MD_FILES = _discover_md_files()
+
+
+# ---------------------------------------------------------------------------
+# Module-level assertions
+# ---------------------------------------------------------------------------
+
+
+class TestEnumCompleteness:
+    """Verify DocumentType enum has the expected number of values."""
+
+    def test_enum_has_13_values(self) -> None:
+        """DocumentType enum has exactly 13 values after EN-002 expansion."""
+        assert len(DocumentType) == 13, (
+            f"Expected 13 DocumentType values (EN-002), got {len(DocumentType)}. "
+            f"Values: {[dt.value for dt in DocumentType]}"
+        )
+
+    def test_new_enum_values_exist(self) -> None:
+        """EN-002 added SKILL_RESOURCE and TEMPLATE enum values."""
+        assert hasattr(DocumentType, "SKILL_RESOURCE")
+        assert hasattr(DocumentType, "TEMPLATE")
+        assert DocumentType.SKILL_RESOURCE.value == "skill_resource"
+        assert DocumentType.TEMPLATE.value == "template"
+
+
+# ---------------------------------------------------------------------------
+# Parametrized regression test
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("file_path", ALL_MD_FILES, ids=ALL_MD_FILES)
+class TestDocumentTypeRegression:
+    """Regression test: every .md file in the repo must classify correctly."""
+
+    def test_no_agent_definition_via_structure(self, file_path: str) -> None:
+        """BUG-004 gate: agent_definition must come from path, not structure.
+
+        If a file is classified as ``agent_definition``, verify that the
+        path-based detection returned ``agent_definition``. Any classification
+        via structural cue alone is a BUG-004 regression.
+        """
+        full_path = REPO_ROOT / file_path
+        content = full_path.read_text(encoding="utf-8", errors="replace")
+        doc_type, _ = DocumentTypeDetector.detect(file_path, content)
+
+        if doc_type == DocumentType.AGENT_DEFINITION:
+            normalized = _normalize_path(file_path)
+            path_type = DocumentTypeDetector._detect_from_path(normalized)
+            assert path_type is not None, (
+                f"{file_path} classified as agent_definition via STRUCTURE, "
+                f"not path. This is a BUG-004 regression. "
+                f"Normalized path: {normalized}"
+            )
+
+    def test_unknown_in_allowlist(self, file_path: str) -> None:
+        """UNKNOWN files must be in the EXPECTED_UNKNOWN allowlist.
+
+        Forces explicit classification when new file categories are added
+        to the repository.
+        """
+        full_path = REPO_ROOT / file_path
+        content = full_path.read_text(encoding="utf-8", errors="replace")
+        doc_type, _ = DocumentTypeDetector.detect(file_path, content)
+
+        if doc_type == DocumentType.UNKNOWN:
+            assert file_path in EXPECTED_UNKNOWN, (
+                f"{file_path} classified as UNKNOWN but not in EXPECTED_UNKNOWN. "
+                f"Either add a PATH_PATTERN for this file's category or add it "
+                f"to EXPECTED_UNKNOWN with a justification comment."
+            )
+
+
+# ---------------------------------------------------------------------------
+# Coverage and performance assertions
+# ---------------------------------------------------------------------------
+
+
+class TestRegressionCoverage:
+    """Verify the regression test has sufficient coverage."""
+
+    def test_discovers_minimum_file_count(self) -> None:
+        """Regression test discovers a reasonable number of .md files.
+
+        If this drops significantly, file discovery may be broken.
+        """
+        assert len(ALL_MD_FILES) >= 2500, (
+            f"Expected at least 2500 .md files, found {len(ALL_MD_FILES)}. "
+            f"File discovery may be broken."
+        )
+
+    def test_expected_unknown_is_minimal(self) -> None:
+        """EXPECTED_UNKNOWN allowlist is kept minimal (< 20 files)."""
+        assert len(EXPECTED_UNKNOWN) < 20, (
+            f"EXPECTED_UNKNOWN has {len(EXPECTED_UNKNOWN)} entries. "
+            f"Target is < 20. Add PATH_PATTERNS for frequently occurring categories."
+        )

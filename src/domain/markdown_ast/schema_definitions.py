@@ -148,6 +148,24 @@ KNOWLEDGE_SCHEMA: EntitySchema = EntitySchema(
     require_nav_table=False,
 )
 
+# ---------------------------------------------------------------------------
+# New file-type schemas (EN-002: Document Type Ontology Hardening)
+# ---------------------------------------------------------------------------
+
+SKILL_RESOURCE_SCHEMA: EntitySchema = EntitySchema(
+    entity_type="skill_resource",
+    field_rules=(),
+    section_rules=(),
+    require_nav_table=False,
+)
+
+TEMPLATE_SCHEMA: EntitySchema = EntitySchema(
+    entity_type="template",
+    field_rules=(),
+    section_rules=(),
+    require_nav_table=False,
+)
+
 
 # ---------------------------------------------------------------------------
 # Default registry: register all schemas and freeze (V-06 remediation)
@@ -173,6 +191,10 @@ DEFAULT_REGISTRY.register(FRAMEWORK_CONFIG_SCHEMA)
 DEFAULT_REGISTRY.register(ORCHESTRATION_SCHEMA)
 DEFAULT_REGISTRY.register(PATTERN_SCHEMA)
 DEFAULT_REGISTRY.register(KNOWLEDGE_SCHEMA)
+
+# Register EN-002 schemas (skill_resource, template)
+DEFAULT_REGISTRY.register(SKILL_RESOURCE_SCHEMA)
+DEFAULT_REGISTRY.register(TEMPLATE_SCHEMA)
 
 # Freeze after module-level registration (T-SV-05: runtime poisoning prevention)
 DEFAULT_REGISTRY.freeze()
