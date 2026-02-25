@@ -469,3 +469,38 @@ class TestRecursiveGlobMatching:
         doc_type, _ = DocumentTypeDetector.detect("random/deeply/nested/file.md", "# Just text\n")
         # No path pattern matches, no structural cues -> UNKNOWN
         assert doc_type == DocumentType.UNKNOWN
+
+
+# =============================================================================
+# BUG-005: Windows fnmatch.fnmatch Regression Tests
+# =============================================================================
+
+
+class TestWindowsFnmatchRegression:
+    """BUG-005: fnmatch.fnmatchcase prevents Windows normcase from breaking path matching."""
+
+    @pytest.mark.edge_case
+    def test_orchestration_path_not_matched_by_plan_pattern(self) -> None:
+        """BUG-005: orchestration/phase-1/plan.md must NOT match projects/*/PLAN.md.
+
+        On Windows, fnmatch.fnmatch lowercases PLAN.md to plan.md via
+        os.path.normcase, causing a false match. fnmatch.fnmatchcase
+        prevents this by doing case-sensitive comparison.
+        """
+        doc_type, _ = DocumentTypeDetector.detect(
+            "projects/PROJ-001/orchestration/phase-1/plan.md", ""
+        )
+        assert doc_type == DocumentType.ORCHESTRATION_ARTIFACT
+        assert doc_type != DocumentType.FRAMEWORK_CONFIG
+
+    @pytest.mark.edge_case
+    def test_case_sensitive_pattern_matching(self) -> None:
+        """BUG-005: Path matching is case-sensitive (PLAN.md != plan.md)."""
+        # projects/*/PLAN.md should match PLAN.md but not plan.md
+        doc_type_upper, _ = DocumentTypeDetector.detect("projects/PROJ-001/PLAN.md", "")
+        assert doc_type_upper == DocumentType.FRAMEWORK_CONFIG
+
+        # Lowercase plan.md in a project root should NOT match PLAN.md pattern
+        # It would fall through to a later pattern or UNKNOWN
+        doc_type_lower, _ = DocumentTypeDetector.detect("projects/PROJ-001/plan.md", "")
+        assert doc_type_lower != DocumentType.FRAMEWORK_CONFIG

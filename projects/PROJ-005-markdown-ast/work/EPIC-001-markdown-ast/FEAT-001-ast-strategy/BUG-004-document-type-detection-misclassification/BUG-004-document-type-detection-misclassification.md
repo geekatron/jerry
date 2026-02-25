@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.10
 -->
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major

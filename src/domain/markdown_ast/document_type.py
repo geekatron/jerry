@@ -344,7 +344,10 @@ def _path_matches_glob(path: str, pattern: str) -> bool:
 
     Supports ``*`` (single directory segment) and ``**`` (recursive).
 
-    Uses ``fnmatch`` for simple patterns and manual splitting for ``**``.
+    Uses ``fnmatch.fnmatchcase`` for case-sensitive, platform-independent
+    matching. BUG-005: ``fnmatch.fnmatch`` calls ``os.path.normcase`` on
+    Windows, which lowercases paths and converts ``/`` to ``\\``, breaking
+    pattern ordering (e.g., ``PLAN.md`` matching ``plan.md``).
 
     Args:
         path: Normalized forward-slash file path.
@@ -355,7 +358,7 @@ def _path_matches_glob(path: str, pattern: str) -> bool:
     """
     if "**" in pattern:
         return _match_recursive_glob(path, pattern)
-    return fnmatch.fnmatch(path, pattern)
+    return fnmatch.fnmatchcase(path, pattern)
 
 
 def _match_recursive_glob(path: str, pattern: str) -> bool:
@@ -375,7 +378,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
     parts = pattern.split("**")
     if len(parts) != 2:
         # Multiple ** -- fall back to fnmatch (best effort)
-        return fnmatch.fnmatch(path, pattern)
+        return fnmatch.fnmatchcase(path, pattern)
 
     prefix_pattern = parts[0].rstrip("/")
     suffix_pattern = parts[1].lstrip("/")
@@ -388,7 +391,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
         if len(path_segments) < len(prefix_segments):
             return False
         for ps, pp in zip(path_segments, prefix_segments, strict=False):
-            if not fnmatch.fnmatch(ps, pp):
+            if not fnmatch.fnmatchcase(ps, pp):
                 return False
         remaining_segments = path_segments[len(prefix_segments) :]
     else:
@@ -399,7 +402,7 @@ def _match_recursive_glob(path: str, pattern: str) -> bool:
         if len(remaining_segments) < len(suffix_segments):
             return False
         for rs, sp in zip(reversed(remaining_segments), reversed(suffix_segments), strict=False):
-            if not fnmatch.fnmatch(rs, sp):
+            if not fnmatch.fnmatchcase(rs, sp):
                 return False
         return True
 

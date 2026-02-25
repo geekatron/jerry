@@ -141,20 +141,22 @@ Evaluate the AST-first strategy for Jerry's markdown manipulation, select the be
 | ID | Title | Status | Priority | Severity |
 |----|-------|--------|----------|----------|
 | BUG-001 | CI/CD lint and test failures on PR #48 | resolved | high | major |
-| BUG-004 | Document type detection misclassifies most files as agent_definition | pending | high | major |
+| BUG-004 | Document type detection misclassifies most files as agent_definition | completed | high | major |
+| BUG-005 | Windows fnmatch.fnmatch applies normcase, breaking path pattern matching | in_progress | high | major |
 
 ### Enabler Inventory
 
 | ID | Type | Title | Status | Priority | Effort | Phase |
 |----|------|-------|--------|----------|--------|-------|
 | EN-001 | Enabler | R-01 PoC: mdformat blockquote frontmatter write-back | completed | critical | 3 | Gate |
-| EN-002 | Enabler | Document Type Ontology Hardening | pending | high | 13 | Post-release |
+| EN-002 | Enabler | Document Type Ontology Hardening | completed | high | 13 | Post-release |
 
 ### Work Item Links
 
 **Bugs:**
 - [BUG-001: CI/CD lint and test failures on PR #48](./BUG-001-ci-cd-lint-test-failures/BUG-001-ci-cd-lint-test-failures.md)
 - [BUG-004: Document type detection misclassifies most files as agent_definition](./BUG-004-document-type-detection-misclassification/BUG-004-document-type-detection-misclassification.md)
+- [BUG-005: Windows fnmatch.fnmatch applies normcase, breaking path pattern matching](./BUG-005-windows-fnmatch-path-matching/BUG-005-windows-fnmatch-path-matching.md)
 
 **Spikes:**
 - [SPIKE-001: Python Markdown AST Library Landscape](./SPIKE-001-library-landscape/SPIKE-001-library-landscape.md)
