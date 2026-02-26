@@ -1,0 +1,152 @@
+Jerry Framework Open-Source Release - Transcript
+
+
+**Adam Nowak:**
+Hey Claude, we're going to be talking about the outstanding effort uh for the Jerry framework.
+
+**Adam Nowak:**
+And Jerry is a Claude Code plugin
+
+**Adam Nowak:**
+with a series of skills
+
+**Adam Nowak:**
+that is to help mitigate context rock
+
+**Adam Nowak:**
+as well as
+
+**Adam Nowak:**
+uh let's see
+
+**Adam Nowak:**
+as well as a general problem solving framework.
+
+**Adam Nowak:**
+It has a couple of different tracks. It has a general problem solving framework and a NASA systems engineering problem solving framework. It has an orchestrator to be able to coordinate the skills and the agents. It has a transcription service and we'll also have a work tracker service.
+
+**Adam Nowak:**
+We are getting ready to release this as an open source
+
+**Adam Nowak:**
+project with an MIT license.
+
+**Adam Nowak:**
+And we need to focus on the following action items. So we need to optimize our quad file.
+
+**Adam Nowak:**
+We need to optimize our skills because we have just been developing them to test their behaviors, and we haven't necessarily applied all the best practices, such as leveraging, decomposition, and imports.
+
+**Adam Nowak:**
+You will need to create an orchestration plan. Well, actually, first you will need to
+
+**Adam Nowak:**
+Yeah, you'll need to create an orchestration plan for this. I would like you to use all the available agents,
+
+**Adam Nowak:**
+or the best available agents, in both the NASA SE and the problem solving skill through the orchestration skill.
+
+**Adam Nowak:**
+I would like to ensure that we have um
+
+**Adam Nowak:**
+adversarial.
+
+**Adam Nowak:**
+Critics in the feedback loop and the feedback loops funnel back upwards so the upstream agent can adjust any kind of feedback.
+
+**Adam Nowak:**
+And what I'd like you to do is research what are Claude code,
+
+**Adam Nowak:**
+plugin,
+
+**Adam Nowak:**
+and skill best practices, as well as writing Claude code or Claude. md file best practices.
+
+**Adam Nowak:**
+I need you to do high quality research where you can parallelize and put the agents in the background in order to find out and create a
+
+**Adam Nowak:**
+Documents that both humans and you
+
+**Adam Nowak:**
+can use for building skills with best practices. Eventually we will want to synthesize that down
+
+**Adam Nowak:**
+to rules and patterns that we can put into the dot claude rules and patterns folders respectively.
+
+**Adam Nowak:**
+We will also want to make runbooks and playbooks using the runbook and playbook templates.
+
+**Adam Nowak:**
+Then we have other action items. We need to make sure that we have
+
+**Adam Nowak:**
+Um, a new GitHub repository. We are going to rename the current Jerry repository to something different like Jerry Internal, JerryCore, or Saucer Boy.
+
+**Adam Nowak:**
+We're going to create a new Jerry repository to make it public facing.
+
+**Adam Nowak:**
+We need to work on runbooks and playbooks for how to use Jerry.
+
+**Adam Nowak:**
+And we need critic feedback loops in that one where the critique is thinking about the ideal user experience.
+
+**Adam Nowak:**
+For different levels of Claude knowledge. So someone that doesn't know anything about Claude, someone that has a good level of knowledge about Claude,
+
+**Adam Nowak:**
+uh, someone who has no knowledge about Jerry, someone who has a you know a medium knowledge of Jerry. So think about it as like the explain it to me like I'm five,
+
+**Adam Nowak:**
+then engineer, and then architect perspectives. So we need our playbooks to be criticized uh and be able to help those different
+
+**Adam Nowak:**
+um
+
+**Adam Nowak:**
+mental models.
+
+**Adam Nowak:**
+What else?
+
+**Adam Nowak:**
+Oh, and we're going to want to finish the bug, uh sorry, the work tracker skill. So we have um a bunch of information still in the ClaudeMD file at the root of the repository
+
+**Adam Nowak:**
+that needs to get extracted into the work tracker skill,
+
+**Adam Nowak:**
+and it needs to get decomposed, and it should leverage imports for those decomposed components that should always be pulled into memory, and everything else should just be as file references
+
+**Adam Nowak:**
+and hyperlinks
+
+**Adam Nowak:**
+so that you can load it contextually when it's necessary, and you also need to write those.
+
+**Adam Nowak:**
+Simple rules that you will understand about when to load those into context.
+
+**Adam Nowak:**
+So yeah,
+
+**Adam Nowak:**
+I will continue thinking about what are the other exercises, but these are the ones that we need to prioritize.
+
+**Adam Nowak:**
+We will need to let's see we will want to create a new feature in project 008,
+
+**Adam Nowak:**
+and that feature will be
+
+**Adam Nowak:**
+essentially about
+
+**Adam Nowak:**
+preparing Jerry for open.
+
+**Adam Nowak:**
+OSS release.
