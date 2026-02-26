@@ -1,0 +1,353 @@
+{
+  "metadata": {
+    "source_file": "chunks/chunk-000.json",
+    "extraction_timestamp": "2026-01-31T00:00:00Z",
+    "model": "opus",
+    "total_segments": 50,
+    "transcript_title": "Jerry Framework Open-Source Release"
+  },
+  "speakers": [
+    {
+      "name": "Adam Nowak",
+      "segment_count": 50,
+      "percentage": 100.0
+    }
+  ],
+  "action_items": [
+    {
+      "id": "ACT-001",
+      "description": "Optimize the Claude MD file",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0011",
+        "quote": "And we need to focus on the following action items. So we need to optimize our quad file."
+      }
+    },
+    {
+      "id": "ACT-002",
+      "description": "Optimize skills by applying best practices including leveraging decomposition and imports",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0012",
+        "quote": "We need to optimize our skills because we have just been developing them to test their behaviors, and we haven't necessarily applied all the best practices, such as leveraging, decomposition, and imports."
+      }
+    },
+    {
+      "id": "ACT-003",
+      "description": "Create an orchestration plan using NASA SE and problem solving skill agents",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0014",
+        "quote": "Yeah, you'll need to create an orchestration plan for this. I would like you to use all the available agents,"
+      }
+    },
+    {
+      "id": "ACT-004",
+      "description": "Implement adversarial critics in feedback loops that funnel back to upstream agents",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0018",
+        "quote": "Critics in the feedback loop and the feedback loops funnel back upwards so the upstream agent can adjust any kind of feedback."
+      }
+    },
+    {
+      "id": "ACT-005",
+      "description": "Research Claude Code plugin and skill best practices, as well as CLAUDE.md file best practices",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0021",
+        "quote": "and skill best practices, as well as writing Claude code or Claude. md file best practices."
+      }
+    },
+    {
+      "id": "ACT-006",
+      "description": "Create documentation for building skills with best practices that both humans and Claude can use",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0023",
+        "quote": "Documents that both humans and you"
+      }
+    },
+    {
+      "id": "ACT-007",
+      "description": "Synthesize research into rules and patterns for .claude rules and patterns folders",
+      "assignee": "Claude",
+      "priority": "medium",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0025",
+        "quote": "to rules and patterns that we can put into the dot claude rules and patterns folders respectively."
+      }
+    },
+    {
+      "id": "ACT-008",
+      "description": "Create runbooks and playbooks using templates",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0026",
+        "quote": "We will also want to make runbooks and playbooks using the runbook and playbook templates."
+      }
+    },
+    {
+      "id": "ACT-009",
+      "description": "Rename current Jerry repository to Jerry Internal, JerryCore, or Saucer Boy",
+      "assignee": "Adam Nowak",
+      "priority": "high",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0028",
+        "quote": "Um, a new GitHub repository. We are going to rename the current Jerry repository to something different like Jerry Internal, JerryCore, or Saucer Boy."
+      }
+    },
+    {
+      "id": "ACT-010",
+      "description": "Create a new public-facing Jerry repository",
+      "assignee": "Adam Nowak",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0029",
+        "quote": "We're going to create a new Jerry repository to make it public facing."
+      }
+    },
+    {
+      "id": "ACT-011",
+      "description": "Create runbooks and playbooks for how to use Jerry with critic feedback loops for different user experience levels",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0031",
+        "quote": "And we need critic feedback loops in that one where the critique is thinking about the ideal user experience."
+      }
+    },
+    {
+      "id": "ACT-012",
+      "description": "Finish the work tracker skill - extract content from ClaudeMD, decompose, and leverage imports",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.95,
+      "citation": {
+        "segment_id": "seg-0038",
+        "quote": "Oh, and we're going to want to finish the bug, uh sorry, the work tracker skill. So we have um a bunch of information still in the ClaudeMD file at the root of the repository"
+      }
+    },
+    {
+      "id": "ACT-013",
+      "description": "Write simple rules for when to load content into context",
+      "assignee": "Claude",
+      "priority": "medium",
+      "confidence": 0.85,
+      "citation": {
+        "segment_id": "seg-0043",
+        "quote": "Simple rules that you will understand about when to load those into context."
+      }
+    },
+    {
+      "id": "ACT-014",
+      "description": "Create a new feature in project 008 for preparing Jerry for OSS release",
+      "assignee": "Claude",
+      "priority": "high",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0046",
+        "quote": "We will need to let's see we will want to create a new feature in project 008,"
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-001",
+      "description": "Release Jerry as open source with MIT license",
+      "rationale": "To make the framework publicly available",
+      "confidence": 0.98,
+      "citation": {
+        "segment_id": "seg-0010",
+        "quote": "project with an MIT license."
+      }
+    },
+    {
+      "id": "DEC-002",
+      "description": "Use orchestration skill with NASA SE and problem solving agents",
+      "rationale": "To coordinate skills and agents effectively for the OSS release effort",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0015",
+        "quote": "or the best available agents, in both the NASA SE and the problem solving skill through the orchestration skill."
+      }
+    },
+    {
+      "id": "DEC-003",
+      "description": "Rename current Jerry repository and create new public-facing one",
+      "rationale": "To separate internal development from public release",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0028",
+        "quote": "We are going to rename the current Jerry repository to something different like Jerry Internal, JerryCore, or Saucer Boy."
+      }
+    },
+    {
+      "id": "DEC-004",
+      "description": "Use decomposition with imports for always-loaded components, file references for contextual loading",
+      "rationale": "To optimize context window usage and load content only when needed",
+      "confidence": 0.90,
+      "citation": {
+        "segment_id": "seg-0040",
+        "quote": "and it needs to get decomposed, and it should leverage imports for those decomposed components that should always be pulled into memory, and everything else should just be as file references"
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "QUE-001",
+      "question": "What are the other exercises/action items for the OSS release?",
+      "status": "unresolved",
+      "confidence": 0.75,
+      "citation": {
+        "segment_id": "seg-0045",
+        "quote": "I will continue thinking about what are the other exercises, but these are the ones that we need to prioritize."
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "TOP-001",
+      "name": "Jerry Framework Introduction",
+      "segment_range": {
+        "start": "seg-0001",
+        "end": "seg-0010"
+      },
+      "summary": "Introduction to Jerry as a Claude Code plugin with skills for mitigating context rot, problem solving frameworks (general and NASA SE), orchestration, transcription, and work tracker services. Announcement of open source release with MIT license."
+    },
+    {
+      "id": "TOP-002",
+      "name": "Claude MD and Skills Optimization",
+      "segment_range": {
+        "start": "seg-0011",
+        "end": "seg-0012"
+      },
+      "summary": "Need to optimize the Claude MD file and skills by applying best practices including decomposition and imports."
+    },
+    {
+      "id": "TOP-003",
+      "name": "Orchestration Planning",
+      "segment_range": {
+        "start": "seg-0013",
+        "end": "seg-0018"
+      },
+      "summary": "Creating an orchestration plan using NASA SE and problem solving skill agents with adversarial critics in feedback loops."
+    },
+    {
+      "id": "TOP-004",
+      "name": "Best Practices Research",
+      "segment_range": {
+        "start": "seg-0019",
+        "end": "seg-0026"
+      },
+      "summary": "Research on Claude Code plugin, skill, and CLAUDE.md best practices. Creating documentation, synthesizing into rules and patterns, and creating runbooks/playbooks."
+    },
+    {
+      "id": "TOP-005",
+      "name": "GitHub Repository Strategy",
+      "segment_range": {
+        "start": "seg-0027",
+        "end": "seg-0029"
+      },
+      "summary": "Renaming current Jerry repository and creating a new public-facing repository for the open source release."
+    },
+    {
+      "id": "TOP-006",
+      "name": "User Experience and Documentation",
+      "segment_range": {
+        "start": "seg-0030",
+        "end": "seg-0036"
+      },
+      "summary": "Creating runbooks and playbooks with critic feedback loops considering different user knowledge levels (ELI5, engineer, architect perspectives)."
+    },
+    {
+      "id": "TOP-007",
+      "name": "Work Tracker Skill Completion",
+      "segment_range": {
+        "start": "seg-0037",
+        "end": "seg-0043"
+      },
+      "summary": "Finishing the work tracker skill by extracting content from ClaudeMD, decomposing, leveraging imports, and writing rules for contextual loading."
+    },
+    {
+      "id": "TOP-008",
+      "name": "Project 008 Feature Creation",
+      "segment_range": {
+        "start": "seg-0044",
+        "end": "seg-0050"
+      },
+      "summary": "Creating a new feature in project 008 specifically for preparing Jerry for the OSS release."
+    }
+  ],
+  "follow_ups": [
+    {
+      "id": "FUP-001",
+      "description": "Continue identifying additional exercises/action items for OSS release",
+      "owner": "Adam Nowak",
+      "status": "pending",
+      "confidence": 0.85,
+      "citation": {
+        "segment_id": "seg-0045",
+        "quote": "I will continue thinking about what are the other exercises, but these are the ones that we need to prioritize."
+      }
+    },
+    {
+      "id": "FUP-002",
+      "description": "Parallelize agent research in background for high quality research",
+      "owner": "Claude",
+      "status": "pending",
+      "confidence": 0.80,
+      "citation": {
+        "segment_id": "seg-0022",
+        "quote": "I need you to do high quality research where you can parallelize and put the agents in the background in order to find out and create a"
+      }
+    }
+  ],
+  "key_concepts": [
+    {
+      "id": "CON-001",
+      "name": "Context Rot",
+      "description": "The phenomenon Jerry is designed to mitigate",
+      "citation": {
+        "segment_id": "seg-0004",
+        "quote": "that is to help mitigate context rock"
+      }
+    },
+    {
+      "id": "CON-002",
+      "name": "Jerry Framework Components",
+      "description": "General problem solving framework, NASA systems engineering framework, orchestrator, transcription service, work tracker service",
+      "citation": {
+        "segment_id": "seg-0008",
+        "quote": "It has a couple of different tracks. It has a general problem solving framework and a NASA systems engineering problem solving framework. It has an orchestrator to be able to coordinate the skills and the agents. It has a transcription service and we'll also have a work tracker service."
+      }
+    },
+    {
+      "id": "CON-003",
+      "name": "Three Perspectives",
+      "description": "ELI5 (explain like I'm five), Engineer, and Architect perspectives for documentation",
+      "citation": {
+        "segment_id": "seg-0033",
+        "quote": "uh, someone who has no knowledge about Jerry, someone who has a you know a medium knowledge of Jerry. So think about it as like the explain it to me like I'm five,"
+      }
+    }
+  ]
+}

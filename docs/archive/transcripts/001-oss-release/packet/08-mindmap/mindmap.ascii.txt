@@ -1,0 +1,114 @@
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    JERRY FRAMEWORK OPEN-SOURCE RELEASE                       │
+│                         Meeting Mindmap Summary                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
+┌───────────────────┐       ┌───────────────────┐       ┌───────────────────┐
+│   INTRODUCTION    │       │   OPTIMIZATION    │       │  ORCHESTRATION    │
+│    (TOP-001)      │       │    (TOP-002)      │       │    (TOP-003)      │
+└─────────┬─────────┘       └─────────┬─────────┘       └─────────┬─────────┘
+          │                           │                           │
+  ! DEC-001 MIT License       → ACT-001 Optimize         → ACT-003 Create
+  │ Release Jerry OSS         │ Claude MD file           │ orchestration plan
+  │                           │                          │
+  ├─ Context rot              → ACT-002 Optimize         → ACT-004 Implement
+  │  mitigation               │ skills (decomp,          │ adversarial critics
+  │                           │ imports)                 │ in feedback loops
+  ├─ Problem solving                                     │
+  │  frameworks                                          ! DEC-002 Use NASA SE
+  │                                                        + problem solving
+  ├─ NASA SE framework                                     agents
+  │
+  ├─ Orchestrator
+  │
+  └─ Transcription +
+     work tracker
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
+┌───────────────────┐       ┌───────────────────┐       ┌───────────────────┐
+│  BEST PRACTICES   │       │   GITHUB REPO     │       │   USER EXPERIENCE │
+│  RESEARCH         │       │   STRATEGY        │       │   & DOCUMENTATION │
+│    (TOP-004)      │       │    (TOP-005)      │       │    (TOP-006)      │
+└─────────┬─────────┘       └─────────┬─────────┘       └─────────┬─────────┘
+          │                           │                           │
+  → ACT-005 Research          → ACT-009 Rename            → ACT-011 Create
+  │ Claude Code plugin        │ current repo to           │ runbooks/playbooks
+  │ + skill best practices    │ Jerry Internal,           │ with critic loops
+  │                           │ JerryCore, or             │
+  → ACT-006 Create docs       │ Saucer Boy                ├─ ELI5 perspective
+  │ for humans + Claude       │                           │
+  │                           → ACT-010 Create            ├─ Engineer
+  → ACT-007 Synthesize        │ new public-facing         │  perspective
+  │ into rules/patterns       │ Jerry repo                │
+  │                           │                           └─ Architect
+  → ACT-008 Create            ! DEC-003 Separate            perspective
+    runbooks/playbooks          internal from public
+    using templates
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
+┌───────────────────┐       ┌───────────────────┐       ┌───────────────────┐
+│   WORK TRACKER    │       │  PROJECT 008      │       │   OPEN ITEMS      │
+│   SKILL           │       │  FEATURE          │       │                   │
+│    (TOP-007)      │       │    (TOP-008)      │       │                   │
+└─────────┬─────────┘       └─────────┬─────────┘       └─────────┬─────────┘
+          │                           │                           │
+  → ACT-012 Finish work       → ACT-014 Create            ? QUE-001 What are
+  │ tracker skill             │ new feature in            │ other exercises
+  │                           │ project 008 for           │ for OSS release?
+  ├─ Extract content          │ OSS preparation           │
+  │  from ClaudeMD            │                           ✓ FUP-001 Continue
+  │                                                       │ identifying action
+  ├─ Decompose                                            │ items
+  │                                                       │
+  ├─ Leverage imports                                     ✓ FUP-002 Parallelize
+  │                                                         agent research in
+  → ACT-013 Write rules                                     background
+  │ for context loading
+  │
+  ! DEC-004 Use imports
+    for always-loaded,
+    file refs for
+    contextual
+
+────────────────────────────────────────────────────────────────────────────────
+                              KEY CONCEPTS
+────────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────┐    ┌────────────────────┐    ┌────────────────────┐
+  │    Context Rot     │    │ Jerry Components   │    │ Three Perspectives │
+  │    (CON-001)       │    │    (CON-002)       │    │    (CON-003)       │
+  └─────────┬──────────┘    └─────────┬──────────┘    └─────────┬──────────┘
+            │                         │                         │
+    Core problem Jerry        ├─ General problem         ├─ ELI5 (no knowledge)
+    is designed to            │  solving framework       │
+    mitigate                  │                          ├─ Engineer (medium)
+                              ├─ NASA SE framework       │
+                              │                          └─ Architect (deep)
+                              ├─ Orchestrator
+                              │
+                              ├─ Transcription
+                              │  service
+                              │
+                              └─ Work tracker
+                                 service
+
+────────────────────────────────────────────────────────────────────────────────
+                              SUMMARY STATISTICS
+────────────────────────────────────────────────────────────────────────────────
+
+  Topics:        8       │   Decisions:    4       │   Questions:   1
+  Action Items: 14       │   Follow-ups:   2       │   Concepts:    3
+
+  Speaker: Adam Nowak (100% of segments)
+  Total Segments: 50
+
+────────────────────────────────────────────────────────────────────────────────
+LEGEND: → Action Item | ? Question | ! Decision | ✓ Follow-up
+────────────────────────────────────────────────────────────────────────────────

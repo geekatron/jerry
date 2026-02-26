@@ -137,6 +137,7 @@ class DocumentTypeDetector:
         ("docs/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/rewrites/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/runbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/archive/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/blog/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/templates/*.md", DocumentType.TEMPLATE),
         ("docs/*.md", DocumentType.KNOWLEDGE_DOCUMENT),

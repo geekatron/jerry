@@ -1,0 +1,22 @@
+{
+  "title": "Jerry Framework Open-Source Release",
+  "total_segments": 50,
+  "chunk_count": 1,
+  "chunk_size": 500,
+  "parsing_method": "llm",
+  "format_detected": "txt",
+  "speaker_summary": {
+    "Adam Nowak": 50
+  },
+  "chunks": [
+    {
+      "file": "chunks/chunk-000.json",
+      "start_segment": 0,
+      "end_segment": 49,
+      "segment_count": 50,
+      "speaker_summary": {
+        "Adam Nowak": 50
+      }
+    }
+  ]
+}
