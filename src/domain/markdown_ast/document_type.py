@@ -73,6 +73,7 @@ class DocumentTypeDetector:
     # specific patterns MUST precede catch-alls to prevent type confusion.
     PATH_PATTERNS: list[tuple[str, DocumentType]] = [
         # --- Tier 1: Most specific patterns ---
+        (".claude/agents/*.md", DocumentType.AGENT_DEFINITION),
         ("skills/*/agents/*.md", DocumentType.AGENT_DEFINITION),
         ("skills/*/SKILL.md", DocumentType.SKILL_DEFINITION),
         (".context/rules/*.md", DocumentType.RULE_FILE),
@@ -137,6 +138,7 @@ class DocumentTypeDetector:
         ("docs/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/rewrites/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/runbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/experience/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/blog/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("docs/templates/*.md", DocumentType.TEMPLATE),
         ("docs/*.md", DocumentType.KNOWLEDGE_DOCUMENT),

@@ -17,6 +17,7 @@
 | PROJ-009 | llm-deception-research | ACTIVE | Research documenting LLM deception patterns and behavioral flaws; multi-platform Saucer Boy content for Anthropic/Boris engagement |
 | PROJ-010 | cyber-ops | ACTIVE | Elite /eng-team (secure software engineering) and /red-team (offensive security) skills for authorized pentesting and system hardening |
 | PROJ-011 | saucer-boy-articles | ACTIVE | High-quality articles in the Saucer Boy (McConkey) voice covering LLM engineering topics with C4 adversarial quality gates |
+| PROJ-012 | agent-optimization | ACTIVE | Agent config extraction, schema enforcement, composed agent definitions, and CLI tooling |
 
 ## Project Lookup
 
@@ -31,3 +32,4 @@
 - **PROJ-009**: `projects/PROJ-009-llm-deception-research/`
 - **PROJ-010**: `projects/PROJ-010-cyber-ops/`
 - **PROJ-011**: `projects/PROJ-011-saucer-boy-articles/`
+- **PROJ-012**: `projects/PROJ-012-agent-optimization/`
