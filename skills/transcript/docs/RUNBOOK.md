@@ -267,7 +267,7 @@ Citation format in action items:
 
 3. **Re-run with token-based chunking:**
    ```bash
-   uv run jerry transcript parse <file.vtt> --output-dir <dir>
+   uv run --project "~/.claude/plugins/cache/jerry-framework/jerry/0.21.0" jerry transcript parse <file.vtt> --output-dir <dir>
    ```
 
 4. **Verify chunk sizes after generation:**
@@ -525,7 +525,7 @@ This runbook's troubleshooting procedures align with Jerry patterns:
 
 ---
 
-*Runbook Version: 1.3.1*
+*Runbook Version: 1.3.2*
 *Constitutional Compliance: P-001, P-002, P-004*
 *Pattern Compliance: PAT-RESILIENCE-001, PAT-QUALITY-002*
 *Risk Coverage: 6/6 YELLOW risks from FMEA + 3 mindmap risks (R-015, R-016, R-017) + 1 token risk (R-018)*
@@ -536,4 +536,5 @@ This runbook's troubleshooting procedures align with Jerry patterns:
 - *v1.3.0 (2026-01-30): EN-029 - Added pattern references section*
 - *v1.2.0 (2026-01-30): EN-026 - Added R-018 token overflow risk*
 - *v1.1.0 (2026-01-30): EN-024 - Added mindmap diagnostics (R-015, R-016, R-017)*
+- *v1.3.2 (2026-02-26): BUG-001 - Fix uv run jerry transcript parse to use --project flag*
 - *v1.0.0 (2026-01-26): Initial version per EN-005*
