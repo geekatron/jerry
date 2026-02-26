@@ -6,6 +6,7 @@ ComposeAgentsCommandHandler - Composes agent files with defaults.
 
 Generates vendor-specific agent files from canonical source, then
 deep-merges with base defaults to produce fully composed output.
+Writes to the same skill-scoped paths as build (skills/{skill}/agents/).
 
 Flow:
   1. repository.get(name) or list_all() -> CanonicalAgent(s)
@@ -14,7 +15,7 @@ Flow:
   4. Parse governance from generated .governance.yaml artifact content
   5. Include agent.extra_yaml fields (maxTurns, skills, hooks, memory, isolation)
   6. Merge: defaults_composer.compose(defaults, frontmatter + governance + extra_yaml)
-  7. Write composed .md to output_dir (.claude/agents/)
+  7. Write composed .md to artifact.path (skills/{skill}/agents/{agent}.md)
 
 References:
     - PROJ-012: Agent Configuration Extraction & Schema Enforcement
@@ -24,6 +25,7 @@ References:
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import yaml
@@ -44,7 +46,7 @@ class ComposeAgentsCommandHandler:
     """Handler for ComposeAgentsCommand.
 
     Reads canonical agents, generates vendor-specific output in-memory,
-    merges with defaults, and writes composed files.
+    merges with defaults, and writes composed files to skill agent directories.
 
     Attributes:
         _repository: Repository for reading canonical agent source.
@@ -81,7 +83,7 @@ class ComposeAgentsCommandHandler:
         """Handle the ComposeAgentsCommand.
 
         Args:
-            command: Compose command with vendor, output_dir, optional agent filter.
+            command: Compose command with vendor, optional agent filter.
 
         Returns:
             ComposeResult with counts and output paths.
@@ -107,21 +109,22 @@ class ComposeAgentsCommandHandler:
         else:
             agents = self._repository.list_all()
 
-        # Clean output dir if requested
+        # Clean existing agent .md files if requested
         if command.clean and not command.dry_run:
-            command.output_dir.mkdir(parents=True, exist_ok=True)
-            for f in command.output_dir.glob("*.md"):
-                f.unlink()
+            for agent in agents:
+                artifacts = adapter.generate(agent)
+                for artifact in artifacts:
+                    if artifact.path.exists():
+                        artifact.path.unlink()
 
         result = ComposeResult(dry_run=command.dry_run)
 
         for agent in agents:
             try:
-                composed_content = self._compose_agent(agent, adapter)
-                output_path = command.output_dir / f"{agent.name}.md"
+                composed_content, output_path = self._compose_agent(agent, adapter)
 
                 if not command.dry_run:
-                    command.output_dir.mkdir(parents=True, exist_ok=True)
+                    output_path.parent.mkdir(parents=True, exist_ok=True)
                     output_path.write_text(composed_content, encoding="utf-8")
 
                 result.output_paths.append(str(output_path))
@@ -132,7 +135,7 @@ class ComposeAgentsCommandHandler:
 
         return result
 
-    def _compose_agent(self, agent: CanonicalAgent, adapter: IVendorAdapter) -> str:
+    def _compose_agent(self, agent: CanonicalAgent, adapter: IVendorAdapter) -> tuple[str, Path]:
         """Compose a single agent: generate, parse, merge defaults, serialize.
 
         Args:
@@ -140,40 +143,43 @@ class ComposeAgentsCommandHandler:
             adapter: Vendor adapter for generating base output.
 
         Returns:
-            Complete composed .md file content.
+            Tuple of (composed .md content, output Path).
         """
         # 1. Generate vendor-specific artifacts in-memory
         artifacts = adapter.generate(agent)
 
-        # 2. Parse frontmatter from the .md artifact
+        # 2. Find the .md artifact and use its path as output location
         md_artifact = next(a for a in artifacts if a.artifact_type == "agent_definition")
+        output_path = md_artifact.path
+
+        # 3. Parse frontmatter from the .md artifact
         frontmatter, body = self._parse_md(md_artifact.content)
 
-        # 3. Parse governance from the .governance.yaml artifact
+        # 4. Parse governance from the .governance.yaml artifact
         gov_artifact = next((a for a in artifacts if a.artifact_type == "governance"), None)
         gov_data: dict[str, Any] = {}
         if gov_artifact:
             gov_data = yaml.safe_load(gov_artifact.content) or {}
 
-        # 4. Build per-agent config: frontmatter + governance + extra_yaml
+        # 5. Build per-agent config: frontmatter + governance + extra_yaml
         agent_config = dict(frontmatter)
         for key, value in gov_data.items():
             if key not in agent_config:
                 agent_config[key] = value
 
-        # 5. Include extra_yaml fields (maxTurns, skills, hooks, memory, isolation, etc.)
+        # 6. Include extra_yaml fields (maxTurns, skills, hooks, memory, isolation, etc.)
         for key, value in agent.extra_yaml.items():
             if key not in agent_config:
                 agent_config[key] = value
 
-        # 6. Merge with defaults
+        # 7. Merge with defaults
         composed = self._defaults_composer.compose(
             self._defaults,
             agent_config,
             self._config_var_resolver,
         )
 
-        # 7. Serialize back to YAML frontmatter + body
+        # 8. Serialize back to YAML frontmatter + body
         yaml_str = yaml.dump(
             composed,
             default_flow_style=False,
@@ -181,7 +187,7 @@ class ComposeAgentsCommandHandler:
             allow_unicode=True,
             width=200,
         )
-        return f"---\n{yaml_str}---\n{body}"
+        return f"---\n{yaml_str}---\n{body}", output_path
 
     @staticmethod
     def _parse_md(content: str) -> tuple[dict[str, Any], str]:

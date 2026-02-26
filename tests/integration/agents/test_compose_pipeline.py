@@ -5,6 +5,9 @@
 
 End-to-end test: real repository, real adapter, real defaults, real filesystem.
 Uses temp directories to avoid polluting the workspace.
+
+Compose writes to skill-scoped paths (skills/{skill}/agents/{agent}.md),
+the same directories as the build command.
 """
 
 from __future__ import annotations
@@ -112,7 +115,7 @@ def _create_mappings_yaml(infra_dir: Path) -> None:
 
 
 class TestComposePipeline:
-    """Integration test: canonical source -> compose -> composed output."""
+    """Integration test: canonical source -> compose -> composed output in skill dirs."""
 
     def test_compose_single_agent_end_to_end(self, tmp_path: Path) -> None:
         """Compose a single agent from canonical source with defaults."""
@@ -137,7 +140,6 @@ class TestComposePipeline:
             "persona": {"tone": "professional"},
         }
 
-        output_dir = tmp_path / "output"
         handler = ComposeAgentsCommandHandler(
             repository=repository,
             adapters={"claude_code": adapter},
@@ -147,7 +149,6 @@ class TestComposePipeline:
 
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="test-agent",
         )
 
@@ -158,7 +159,8 @@ class TestComposePipeline:
         assert result.composed == 1
         assert result.failed == 0
 
-        composed_file = output_dir / "test-agent.md"
+        # Composed file should be in the skill's agents directory
+        composed_file = skills_dir / "test-skill" / "agents" / "test-agent.md"
         assert composed_file.exists()
 
         content = composed_file.read_text(encoding="utf-8")
@@ -188,7 +190,6 @@ class TestComposePipeline:
         adapter = ClaudeCodeAdapter(tool_mapper, prompt_transformer, skills_dir)
         repository = FilesystemAgentRepository(skills_dir)
 
-        output_dir = tmp_path / "output"
         handler = ComposeAgentsCommandHandler(
             repository=repository,
             adapters={"claude_code": adapter},
@@ -196,20 +197,18 @@ class TestComposePipeline:
             defaults={"permissionMode": "default"},
         )
 
-        command = ComposeAgentsCommand(
-            vendor="claude_code",
-            output_dir=output_dir,
-        )
+        command = ComposeAgentsCommand(vendor="claude_code")
 
         result = handler.handle(command)
 
         assert result.composed == 2
         assert result.failed == 0
-        assert (output_dir / "agent-one.md").exists()
-        assert (output_dir / "agent-two.md").exists()
+        # Each agent in its own skill directory
+        assert (skills_dir / "skill-a" / "agents" / "agent-one.md").exists()
+        assert (skills_dir / "skill-b" / "agents" / "agent-two.md").exists()
 
-    def test_clean_removes_stale_files(self, tmp_path: Path) -> None:
-        """Clean flag removes pre-existing files before composing."""
+    def test_clean_removes_existing_agent_files(self, tmp_path: Path) -> None:
+        """Clean flag removes pre-existing files at agent paths before composing."""
         skills_dir = tmp_path / "skills"
         _create_canonical_source(skills_dir, "skill", "fresh-agent")
 
@@ -223,9 +222,10 @@ class TestComposePipeline:
         adapter = ClaudeCodeAdapter(tool_mapper, prompt_transformer, skills_dir)
         repository = FilesystemAgentRepository(skills_dir)
 
-        output_dir = tmp_path / "output"
-        output_dir.mkdir()
-        (output_dir / "stale.md").write_text("old content")
+        # Pre-existing file at the agent's expected output path
+        agents_dir = skills_dir / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        (agents_dir / "fresh-agent.md").write_text("old content")
 
         handler = ComposeAgentsCommandHandler(
             repository=repository,
@@ -236,11 +236,14 @@ class TestComposePipeline:
 
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             clean=True,
         )
 
         handler.handle(command)
 
-        assert not (output_dir / "stale.md").exists()
-        assert (output_dir / "fresh-agent.md").exists()
+        # File should exist with NEW content (clean removed old, compose wrote new)
+        composed_file = agents_dir / "fresh-agent.md"
+        assert composed_file.exists()
+        content = composed_file.read_text(encoding="utf-8")
+        assert content.startswith("---\n")
+        assert "old content" not in content

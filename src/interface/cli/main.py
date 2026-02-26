@@ -674,22 +674,13 @@ def _handle_agents(args: Any, json_output: bool) -> int:
 
     elif args.command == "compose":
         handler = create_agents_compose_handler()
-        from pathlib import Path
-
         from src.agents.application.commands.compose_agents_command import (
             ComposeAgentsCommand,
         )
 
-        output_dir_str = getattr(args, "output_dir", None)
-        if output_dir_str:
-            output_dir = Path(output_dir_str)
-        else:
-            output_dir = Path(".claude") / "agents"
-
         command = ComposeAgentsCommand(
             vendor=getattr(args, "vendor", "claude_code"),
             agent_name=getattr(args, "agent", None),
-            output_dir=output_dir,
             clean=getattr(args, "clean", False),
             dry_run=getattr(args, "dry_run", False),
         )

@@ -44,7 +44,7 @@ _DEFAULTS = {
 }
 
 
-def _make_md_artifact(name: str, path: Path, model: str = "sonnet") -> GeneratedArtifact:
+def _make_md_artifact(name: str, agents_dir: Path, model: str = "sonnet") -> GeneratedArtifact:
     """Create a .md GeneratedArtifact with frontmatter + body."""
     fm = {"name": name, "description": f"Test agent {name}", "model": model}
     fm_str = yaml.dump(fm, default_flow_style=False, sort_keys=False)
@@ -52,7 +52,7 @@ def _make_md_artifact(name: str, path: Path, model: str = "sonnet") -> Generated
         f"---\n{fm_str}---\n<agent>\n\n<identity>\nTest body for {name}\n</identity>\n\n</agent>\n"
     )
     return GeneratedArtifact(
-        path=path / f"{name}.md",
+        path=agents_dir / f"{name}.md",
         content=content,
         vendor=VendorTarget.CLAUDE_CODE,
         source_agent=name,
@@ -60,7 +60,7 @@ def _make_md_artifact(name: str, path: Path, model: str = "sonnet") -> Generated
     )
 
 
-def _make_gov_artifact(name: str, path: Path) -> GeneratedArtifact:
+def _make_gov_artifact(name: str, agents_dir: Path) -> GeneratedArtifact:
     """Create a .governance.yaml GeneratedArtifact."""
     gov = {
         "version": "1.0.0",
@@ -69,7 +69,7 @@ def _make_gov_artifact(name: str, path: Path) -> GeneratedArtifact:
     }
     content = yaml.dump(gov, default_flow_style=False, sort_keys=False)
     return GeneratedArtifact(
-        path=path / f"{name}.governance.yaml",
+        path=agents_dir / f"{name}.governance.yaml",
         content=content,
         vendor=VendorTarget.CLAUDE_CODE,
         source_agent=name,
@@ -82,7 +82,11 @@ def _make_handler(
     tmp_path: Path,
     defaults: dict[str, Any] | None = None,
 ) -> tuple[ComposeAgentsCommandHandler, MagicMock, MagicMock]:
-    """Build handler with mocked repository and adapter."""
+    """Build handler with mocked repository and adapter.
+
+    Artifacts are written to skill-scoped directories:
+    tmp_path/skills/{skill}/agents/{name}.md
+    """
     mock_repo = MagicMock()
     mock_adapter = MagicMock()
 
@@ -92,11 +96,12 @@ def _make_handler(
         mock_repo.get.return_value = None
     mock_repo.list_all.return_value = agents
 
-    # Adapter returns md + gov artifacts for each agent
+    # Adapter returns artifacts with skill-scoped paths
     def generate_side_effect(agent: Any) -> list[GeneratedArtifact]:
+        agents_dir = tmp_path / "skills" / agent.skill / "agents"
         return [
-            _make_md_artifact(agent.name, tmp_path),
-            _make_gov_artifact(agent.name, tmp_path),
+            _make_md_artifact(agent.name, agents_dir),
+            _make_gov_artifact(agent.name, agents_dir),
         ]
 
     mock_adapter.generate.side_effect = generate_side_effect
@@ -120,7 +125,7 @@ class TestHandleUnknownVendor:
 
     def test_raises_value_error_for_unknown_vendor(self, tmp_path: Path) -> None:
         handler, _, _ = _make_handler([], tmp_path)
-        command = ComposeAgentsCommand(vendor="openai", output_dir=tmp_path)
+        command = ComposeAgentsCommand(vendor="openai")
         with pytest.raises(ValueError, match="Unknown vendor: 'openai'"):
             handler.handle(command)
 
@@ -137,7 +142,6 @@ class TestHandleAgentNotFound:
         handler, _, _ = _make_handler([], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=tmp_path,
             agent_name="ghost-agent",
         )
         result = handler.handle(command)
@@ -156,11 +160,9 @@ class TestHandleSuccessfulCompose:
 
     def test_composes_single_agent(self, make_canonical_agent: Any, tmp_path: Path) -> None:
         agent = make_canonical_agent(name="ps-analyst", skill="problem-solving")
-        output_dir = tmp_path / "output"
         handler, _, _ = _make_handler([agent], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="ps-analyst",
         )
         result = handler.handle(command)
@@ -168,17 +170,17 @@ class TestHandleSuccessfulCompose:
         assert result.failed == 0
         assert len(result.output_paths) == 1
 
-    def test_composed_file_written_to_disk(self, make_canonical_agent: Any, tmp_path: Path) -> None:
+    def test_composed_file_written_to_skill_dir(
+        self, make_canonical_agent: Any, tmp_path: Path
+    ) -> None:
         agent = make_canonical_agent(name="ps-analyst", skill="problem-solving")
-        output_dir = tmp_path / "output"
         handler, _, _ = _make_handler([agent], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="ps-analyst",
         )
         handler.handle(command)
-        composed_file = output_dir / "ps-analyst.md"
+        composed_file = tmp_path / "skills" / "problem-solving" / "agents" / "ps-analyst.md"
         assert composed_file.exists()
         content = composed_file.read_text(encoding="utf-8")
         assert content.startswith("---\n")
@@ -186,16 +188,14 @@ class TestHandleSuccessfulCompose:
 
     def test_defaults_merged_into_composed(self, make_canonical_agent: Any, tmp_path: Path) -> None:
         agent = make_canonical_agent(name="test-agent", skill="test-skill")
-        output_dir = tmp_path / "output"
         handler, _, _ = _make_handler([agent], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="test-agent",
         )
         handler.handle(command)
 
-        composed_file = output_dir / "test-agent.md"
+        composed_file = tmp_path / "skills" / "test-skill" / "agents" / "test-agent.md"
         content = composed_file.read_text(encoding="utf-8")
         # Parse frontmatter
         end = content.find("---", 3)
@@ -208,12 +208,8 @@ class TestHandleSuccessfulCompose:
 
     def test_composes_all_agents(self, make_canonical_agent: Any, tmp_path: Path) -> None:
         agents = [make_canonical_agent(name=f"agent-{i}", skill="skill") for i in range(3)]
-        output_dir = tmp_path / "output"
         handler, _, _ = _make_handler(agents, tmp_path)
-        command = ComposeAgentsCommand(
-            vendor="claude_code",
-            output_dir=output_dir,
-        )
+        command = ComposeAgentsCommand(vendor="claude_code")
         result = handler.handle(command)
         assert result.composed == 3
         assert result.failed == 0
@@ -229,18 +225,16 @@ class TestHandleDryRun:
 
     def test_dry_run_does_not_write_files(self, make_canonical_agent: Any, tmp_path: Path) -> None:
         agent = make_canonical_agent(name="dry-agent", skill="skill")
-        output_dir = tmp_path / "output"
         handler, _, _ = _make_handler([agent], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="dry-agent",
             dry_run=True,
         )
         result = handler.handle(command)
         assert result.composed == 1
         assert result.dry_run is True
-        assert not (output_dir / "dry-agent.md").exists()
+        assert not (tmp_path / "skills" / "skill" / "agents" / "dry-agent.md").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -251,24 +245,28 @@ class TestHandleDryRun:
 class TestHandleClean:
     """Tests for ComposeAgentsCommandHandler.handle() with clean flag."""
 
-    def test_clean_removes_existing_md_files(
+    def test_clean_removes_existing_agent_files(
         self, make_canonical_agent: Any, tmp_path: Path
     ) -> None:
-        output_dir = tmp_path / "output"
-        output_dir.mkdir()
-        # Pre-existing file that should be removed
-        (output_dir / "stale-agent.md").write_text("old content")
+        agents_dir = tmp_path / "skills" / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        # Pre-existing file at the agent's expected path
+        (agents_dir / "new-agent.md").write_text("old content")
+
         agent = make_canonical_agent(name="new-agent", skill="skill")
         handler, _, _ = _make_handler([agent], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="new-agent",
             clean=True,
         )
         handler.handle(command)
-        assert not (output_dir / "stale-agent.md").exists()
-        assert (output_dir / "new-agent.md").exists()
+        # File should exist with NEW content (clean removed old, compose wrote new)
+        composed_file = agents_dir / "new-agent.md"
+        assert composed_file.exists()
+        content = composed_file.read_text(encoding="utf-8")
+        assert content.startswith("---\n")
+        assert "old content" not in content
 
 
 # ---------------------------------------------------------------------------
@@ -305,16 +303,14 @@ class TestHandleExtraYaml:
             extra_yaml={"maxTurns": 5, "isolation": True},
         )
 
-        output_dir = tmp_path / "output"
         handler, _, _ = _make_handler([agent], tmp_path)
         command = ComposeAgentsCommand(
             vendor="claude_code",
-            output_dir=output_dir,
             agent_name="extra-agent",
         )
         handler.handle(command)
 
-        composed_file = output_dir / "extra-agent.md"
+        composed_file = tmp_path / "skills" / "test-skill" / "agents" / "extra-agent.md"
         content = composed_file.read_text(encoding="utf-8")
         end = content.find("---", 3)
         fm = yaml.safe_load(content[3:end])

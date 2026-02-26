@@ -810,15 +810,10 @@ def _add_agents_namespace(
         help="Specific agent to compose (default: all)",
     )
     compose_parser.add_argument(
-        "--output-dir",
-        default=None,
-        help="Output directory (default: .claude/agents/)",
-    )
-    compose_parser.add_argument(
         "--clean",
         action="store_true",
         default=False,
-        help="Remove existing .md files in output dir before writing",
+        help="Remove existing agent .md files before composing",
     )
     compose_parser.add_argument(
         "--dry-run",
